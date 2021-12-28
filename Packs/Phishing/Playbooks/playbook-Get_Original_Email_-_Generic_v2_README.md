@@ -34,7 +34,7 @@ This playbook does not use any commands.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| MessgaeID | The original email message ID to retrieve. This should hold the value of the "Message-ID" header of the original email. |  | Optional |
+| MessageID | The original email message ID to retrieve. This should hold the value of the "Message-ID" header of the original email. |  | Optional |
 | UserID | The email address of the user to fetch the original email for. For Gmail, the authenticated user. |  | Optional |
 | EmailSubject | The original email subject. |  | Optional |
 | EmailBrand | If this value is provided, only the relevant playbook runs. If no value is provided, all sub-playbooks are run.<br/>Possible values:<br/>- Gmail<br/>- EWS v2<br/>- EWSO365<br/>- MicrosoftGraphMail<br/>- EmailSecurityGateway<br/><br/>Choosing EmailSecurityGateway executes the following if enabled:<br/>    - FireEye EX \(Email Security\)<br/>    - Proofpoint TAP<br/>    - Mimecast |  | Optional |
@@ -59,4 +59,4 @@ This playbook does not use any commands.
 
 ## Playbook Image
 ---
-![Get Original Email - Generic v2](Insert the link to your image here)
+![Get Original Email - Generic v2](../doc_files/Get_Original_Email_-_Generic_v2.png)

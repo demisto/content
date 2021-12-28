@@ -15,7 +15,7 @@ id: Get Original Email - Generic v2
 inputs:
 - description: The original email message ID to retrieve. This should hold the value
     of the "Message-ID" header of the original email.
-  key: MessgaeID
+  key: MessageID
   playbookInputQuery:
   required: false
   value: {}
@@ -162,7 +162,7 @@ tasks:
     scriptarguments:
       MessageID:
         complex:
-          root: inputs.MessgaeID
+          root: inputs.MessageID
       ThreadTopic:
         complex:
           root: inputs.EmailSubject
@@ -210,7 +210,7 @@ tasks:
     scriptarguments:
       MessageID:
         complex:
-          root: inputs.MessgaeID
+          root: inputs.MessageID
       TargetMailbox:
         complex:
           root: inputs.UserID
@@ -256,7 +256,7 @@ tasks:
     scriptarguments:
       MessageID:
         complex:
-          root: inputs.MessgaeID
+          root: inputs.MessageID
       UserID:
         complex:
           root: inputs.UserID
@@ -428,7 +428,7 @@ tasks:
     scriptarguments:
       MessageID:
         complex:
-          root: inputs.MessgaeID
+          root: inputs.MessageID
       UserID:
         complex:
           root: inputs.UserID

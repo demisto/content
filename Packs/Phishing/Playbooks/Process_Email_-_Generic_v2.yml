@@ -1378,7 +1378,7 @@ tasks:
       EmailSubject:
         complex:
           root: inputs.Thread-Topic
-      MessgaeID:
+      MessageID:
         complex:
           root: inputs.MessageID
       UserID:
@@ -1540,7 +1540,7 @@ tasks:
                 value:
                   simple: Thread-Topic
           accessor: headervalue
-      MessgaeID:
+      MessageID:
         complex:
           root: incident.phishingreporteremailheaders
           filters:
