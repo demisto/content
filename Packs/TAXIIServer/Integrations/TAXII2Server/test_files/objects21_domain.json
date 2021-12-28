@@ -59,9 +59,9 @@
             },
             "id": "attack-pattern--fcd476c2-9a09-5ed5-a32f-a9a22163d1a7",
             "modified": "2021-12-19T16:11:15.530720Z",
+            "name": "T1195",
             "spec_version": "2.1",
-            "type": "attack-pattern",
-            "name": "T1195"
+            "type": "attack-pattern"
         },
         {
             "created": "2021-12-19T16:11:15.530719Z",
@@ -73,7 +73,7 @@
             "id": "extension-definition--1ffe4bee-95e7-4e36-9a17-f56dbab3c777",
             "modified": "2021-12-19T16:11:15.530720Z",
             "name": "Cortex XSOAR TIM Attack Pattern",
-            "schema": "https://github.com/demisto/content/tree/master/Packs/TAXIIServer/doc_files/XSOAR_indicator_schema.json",
+            "schema": "https://github.com/demisto/content/blob/4265bd5c71913cd9d9ed47d9c37d0d4d3141c3eb/Packs/TAXIIServer/doc_files/XSOAR_indicator_schema.json",
             "spec_version": "2.1",
             "type": "extension-definition",
             "version": "1.0"
@@ -135,9 +135,9 @@
             },
             "id": "attack-pattern--29265197-ca3e-56b8-bc7c-649a92b9df1e",
             "modified": "2021-12-19T16:11:15.530696Z",
+            "name": "T1105",
             "spec_version": "2.1",
-            "type": "attack-pattern",
-            "name": "T1105"
+            "type": "attack-pattern"
         },
         {
             "created": "2021-12-19T16:11:15.530695Z",
@@ -149,7 +149,7 @@
             "id": "extension-definition--1ffe4bee-95e7-4e36-9a17-f56dbab3c777",
             "modified": "2021-12-19T16:11:15.530696Z",
             "name": "Cortex XSOAR TIM Attack Pattern",
-            "schema": "https://github.com/demisto/content/tree/master/Packs/TAXIIServer/doc_files/XSOAR_indicator_schema.json",
+            "schema": "https://github.com/demisto/content/blob/4265bd5c71913cd9d9ed47d9c37d0d4d3141c3eb/Packs/TAXIIServer/doc_files/XSOAR_indicator_schema.json",
             "spec_version": "2.1",
             "type": "extension-definition",
             "version": "1.0"

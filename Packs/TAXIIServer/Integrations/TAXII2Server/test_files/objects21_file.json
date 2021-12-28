@@ -59,7 +59,7 @@
                     "version": 1
                 }
             },
-            "id": "file--4c54e147-79e5-5c83-90b7-46d26ad71836",
+            "id": "file--37bd8c5e-e9f9-5a3b-92d1-75c34907455f",
             "modified": "2021-12-28T14:58:19.711497Z",
             "spec_version": "2.1",
             "type": "file",
@@ -75,7 +75,7 @@
             "id": "extension-definition--1ffe4bee-95e7-4e36-9a17-f56dbab3c777",
             "modified": "2021-12-28T14:58:19.711497Z",
             "name": "Cortex XSOAR TIM File",
-            "schema": "https://github.com/demisto/content/tree/master/Packs/TAXIIServer/doc_files/XSOAR_indicator_schema.json",
+            "schema": "https://github.com/demisto/content/blob/4265bd5c71913cd9d9ed47d9c37d0d4d3141c3eb/Packs/TAXIIServer/doc_files/XSOAR_indicator_schema.json",
             "spec_version": "2.1",
             "type": "extension-definition",
             "version": "1.0"
@@ -137,7 +137,7 @@
                     "version": 1
                 }
             },
-            "id": "file--74b23bc2-dc42-5181-afb0-0c240f25f4f5",
+            "id": "file--e6c3aa71-d6be-56c3-85ee-b714df13f1f0",
             "modified": "2021-12-28T14:58:19.711461Z",
             "spec_version": "2.1",
             "type": "file",
@@ -153,7 +153,7 @@
             "id": "extension-definition--1ffe4bee-95e7-4e36-9a17-f56dbab3c777",
             "modified": "2021-12-28T14:58:19.711461Z",
             "name": "Cortex XSOAR TIM File",
-            "schema": "https://github.com/demisto/content/tree/master/Packs/TAXIIServer/doc_files/XSOAR_indicator_schema.json",
+            "schema": "https://github.com/demisto/content/blob/4265bd5c71913cd9d9ed47d9c37d0d4d3141c3eb/Packs/TAXIIServer/doc_files/XSOAR_indicator_schema.json",
             "spec_version": "2.1",
             "type": "extension-definition",
             "version": "1.0"

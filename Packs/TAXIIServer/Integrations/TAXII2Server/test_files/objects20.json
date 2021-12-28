@@ -114,7 +114,7 @@
             "id": "extension-definition--1ffe4bee-95e7-4e36-9a17-f56dbab3c777",
             "modified": "2021-12-08T12:05:28.617414Z",
             "name": "Cortex XSOAR TIM IP",
-            "schema": "https://github.com/demisto/content/tree/master/Packs/TAXIIServer/doc_files/XSOAR_indicator_schema.json",
+            "schema": "https://github.com/demisto/content/blob/4265bd5c71913cd9d9ed47d9c37d0d4d3141c3eb/Packs/TAXIIServer/doc_files/XSOAR_indicator_schema.json",
             "spec_version": "2.0",
             "type": "extension-definition",
             "version": "1.0"
@@ -232,7 +232,7 @@
             "id": "extension-definition--1ffe4bee-95e7-4e36-9a17-f56dbab3c777",
             "modified": "2021-12-08T12:05:28.615431Z",
             "name": "Cortex XSOAR TIM IP",
-            "schema": "https://github.com/demisto/content/tree/master/Packs/TAXIIServer/doc_files/XSOAR_indicator_schema.json",
+            "schema": "https://github.com/demisto/content/blob/4265bd5c71913cd9d9ed47d9c37d0d4d3141c3eb/Packs/TAXIIServer/doc_files/XSOAR_indicator_schema.json",
             "spec_version": "2.0",
             "type": "extension-definition",
             "version": "1.0"
