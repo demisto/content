@@ -37,7 +37,8 @@ SCO_DET_ID_NAMESPACE = uuid.UUID('00abedb4-aa42-466c-9c01-fed23315a9b7')
 STIX_DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 TAXII_V20_CONTENT_LEN = 9765625
 TAXII_V21_CONTENT_LEN = 104857600
-TAXII_REQUIRED_FILTER_FIELDS = {'name', 'type', 'modified', 'createdTime', 'description'}
+TAXII_REQUIRED_FILTER_FIELDS = {'name', 'type', 'modified', 'createdTime', 'description',
+                                'accounttype', 'userid', 'mitreid'}
 
 XSOAR_TYPES_TO_STIX_SCO = {
     FeedIndicatorType.CIDR: 'ipv4-addr',
@@ -77,16 +78,16 @@ STIX2_TYPES_TO_XSOAR = {
     'threat-actor': ThreatIntel.ObjectsNames.THREAT_ACTOR,
     'infrastructure': ThreatIntel.ObjectsNames.INFRASTRUCTURE,
     'vulnerability': FeedIndicatorType.CVE,
-    "ipv4-addr": FeedIndicatorType.IP,
-    "ipv6-addr": FeedIndicatorType.IPv6,
-    "domain-name": [FeedIndicatorType.DomainGlob, FeedIndicatorType.Domain],
+    'ipv4-addr': FeedIndicatorType.IP,
+    'ipv6-addr': FeedIndicatorType.IPv6,
+    'domain-name': [FeedIndicatorType.DomainGlob, FeedIndicatorType.Domain],
     'user-account': FeedIndicatorType.Account,
     'email-addr': FeedIndicatorType.Email,
-    "url": FeedIndicatorType.URL,
-    "file": FeedIndicatorType.File,
+    'url': FeedIndicatorType.URL,
+    'file': FeedIndicatorType.File,
     'windows-registry-key': FeedIndicatorType.Registry,
 }
-
+# todo: add accept header cache.
 NGINX_TAXII2SERVER_CONF = '''
 server {
 
@@ -143,7 +144,7 @@ class TAXII2Server:
         self._http_server = http_server
         self._service_address = service_address
         self.fields_to_present = fields_to_present
-        self.has_extention = False if fields_to_present == {'name', 'type'} else True
+        self.has_extension = False if fields_to_present == {'name', 'type'} else True
         self._auth = None
         if credentials and (identifier := credentials.get('identifier')) and (password := credentials.get('password')):
             self._auth = (identifier, password)
@@ -295,7 +296,7 @@ class TAXII2Server:
         """
         found_collection = self.collections_by_id.get(collection_id, {})
         query = found_collection.get('query')
-        iocs, _ = find_indicators(
+        iocs, _, total = find_indicators(
             query=query,
             types=types,
             added_after=added_after,
@@ -322,7 +323,8 @@ class TAXII2Server:
                 response['more'] = True
                 response['next'] = str(limit + offset)
 
-        return response, first_added, last_added
+        content_range = f'items {offset}-{offset + limit}/{total}'
+        return response, first_added, last_added, content_range
 
     def get_objects(self, collection_id: str, added_after, limit: int, offset: int, types: list) -> tuple:
         """
@@ -334,7 +336,7 @@ class TAXII2Server:
 
         found_collection = self.collections_by_id.get(collection_id, {})
         query = found_collection.get('query')
-        iocs, extensions = find_indicators(
+        iocs, extensions, total = find_indicators(
             query=query,
             types=types,
             added_after=added_after,
@@ -351,7 +353,7 @@ class TAXII2Server:
 
         objects = limited_iocs
 
-        if SERVER.has_extention:
+        if SERVER.has_extension:
             limited_extensions = extensions[offset:offset + limit]
             objects = [val for pair in zip(limited_iocs, limited_extensions) for val in pair]
 
@@ -374,7 +376,9 @@ class TAXII2Server:
                 response['more'] = True
                 response['next'] = str(limit + offset)
 
-        return response, first_added, last_added
+        content_range = f'items {offset}-{offset + limit}/{total}'
+
+        return response, first_added, last_added, content_range
 
 
 SERVER: TAXII2Server = None  # type: ignore[assignment]
@@ -402,12 +406,10 @@ def taxii_validate_request_headers(f: Callable) -> Callable:
             else:
                 auth_success = False
             if not auth_success:
-                handle_long_running_error('Authorization failed')
                 return handle_response(HTTP_401_UNAUTHORIZED, {'title': 'Authorization failed'})
 
         request_headers = request.headers
         if (accept_header := request_headers.get('Accept')) not in accept_headers:
-            handle_long_running_error('Invalid TAXII Headers')
             return handle_response(HTTP_406_NOT_ACCEPABLE,
                                    {'title': 'Invalid TAXII Headers',
                                     'description': f'Invalid Accept header: {accept_header}, '
@@ -427,7 +429,6 @@ def taxii_validate_url_param(f: Callable) -> Callable:
         api_root = kwargs.get('api_root')
         collection_id = kwargs.get('collection_id')
         if api_root and not api_root == API_ROOT:
-            handle_long_running_error('Unknown API Root')
             return handle_response(HTTP_404_NOT_FOUND,
                                    {'title': 'Unknown API Root',
                                     'description': f"Unknown API Root {api_root}. Check possible API Roots using "
@@ -435,7 +436,6 @@ def taxii_validate_url_param(f: Callable) -> Callable:
 
         if collection_id:
             if not SERVER.collections_by_id.get(collection_id):
-                handle_long_running_error('Unknown Collection')
                 return handle_response(HTTP_404_NOT_FOUND,
                                        {'title': 'Unknown Collection',
                                         'description': f'No collection with id "{collection_id}". '
@@ -474,10 +474,11 @@ def handle_long_running_error(error: str):
 
 
 def handle_response(status_code: int, content: dict, date_added_first: str = None, date_added_last: str = None,
-                    content_type: str = None) -> Response:
+                    content_type: str = None, content_range: str = None) -> Response:
     """
     Create an HTTP taxii response from a taxii message.
     Args:
+        content_range: Content-Range response header
         status_code: status code to return
         content_type: response content type to return
         date_added_last: last added item creation time
@@ -498,6 +499,8 @@ def handle_response(status_code: int, content: dict, date_added_first: str = Non
         headers['X-TAXII-Date-Added-First'] = date_added_first
     if date_added_last:
         headers['X-TAXII-Date-Added-Last'] = date_added_last
+    if SERVER.version == TAXII_VER_2_0 and content_range:
+        headers['Content-Range'] = content_range
 
     return make_response(jsonify(content), status_code, headers)
 
@@ -512,7 +515,7 @@ def create_query(query: str, types: list) -> str:
         New query with types params
     """
     if types:
-        xsoar_types = []
+        xsoar_types: list = []
         if 'domain-name' in types:
             xsoar_types.extend(STIX2_TYPES_TO_XSOAR['domain-name'])
         for t in types:
@@ -548,8 +551,13 @@ def find_indicators(query: str, types: list, added_after, limit: int, offset: in
     new_limit = offset + limit + 1  # helps to verify that there is more indicators
     iocs = []
     extensions = []
-    field_filters = ','.join(TAXII_REQUIRED_FILTER_FIELDS) if is_manifest else ','.join(
-        set.union(SERVER.fields_to_present, TAXII_REQUIRED_FILTER_FIELDS))  # type: ignore[arg-type]
+    if is_manifest:
+        field_filters: Optional[str] = ','.join(TAXII_REQUIRED_FILTER_FIELDS)
+    elif SERVER.fields_to_present:
+        field_filters = ','.join(
+            set.union(SERVER.fields_to_present, TAXII_REQUIRED_FILTER_FIELDS))  # type: ignore[arg-type]
+    else:
+        field_filters = None
 
     demisto.debug(f'filter fields: {field_filters}')
 
@@ -559,8 +567,12 @@ def find_indicators(query: str, types: list, added_after, limit: int, offset: in
         limit=new_limit,
         from_date=added_after
     )
+
+    total = 0
+
     for ioc in indicator_searcher:
         found_indicators = ioc.get('iocs') or []
+        total = ioc.get('total')
         for xsoar_indicator in found_indicators:
             xsoar_type = xsoar_indicator.get('indicator_type')
             if is_manifest:
@@ -568,17 +580,14 @@ def find_indicators(query: str, types: list, added_after, limit: int, offset: in
                 if manifest_entry:
                     iocs.append(manifest_entry)
             else:
-
-                demisto.debug(f'found_indicator: {xsoar_indicator}')
-
                 stix_ioc, extension_definition = create_stix_object(xsoar_indicator, xsoar_type)
-                if SERVER.has_extention and stix_ioc:
+                if SERVER.has_extension and stix_ioc:
                     iocs.append(stix_ioc)
                     extensions.append(extension_definition)
                 elif stix_ioc:
                     iocs.append(stix_ioc)
 
-    return iocs, extensions
+    return iocs, extensions, total
 
 
 def create_sco_stix_uuid(xsoar_indicator: dict, stix_type: str) -> str:
@@ -594,15 +603,14 @@ def create_sco_stix_uuid(xsoar_indicator: dict, stix_type: str) -> str:
     elif stix_type == 'windows-registry-key':
         unique_id = uuid.uuid5(SCO_DET_ID_NAMESPACE, f'{{"key":"{value}"}}')
     elif stix_type == 'file':
-        custom_fields = xsoar_indicator.get('CustomFields', {})
-        if md5 := custom_fields.get('md5'):
-            unique_id = uuid.uuid5(SCO_DET_ID_NAMESPACE, f'{{"hashes":{{"MD5":"{md5}"}}}}')
-        elif sha1 := custom_fields.get('sha1'):
-            unique_id = uuid.uuid5(SCO_DET_ID_NAMESPACE, f'{{"hashes":{{"SHA-1":"{sha1}"}}}}')
-        elif sha256 := custom_fields.get('sha256'):
-            unique_id = uuid.uuid5(SCO_DET_ID_NAMESPACE, f'{{"hashes":{{"SHA-256":"{sha256}"}}}}')
-        elif sha512 := custom_fields.get('sha512'):
-            unique_id = uuid.uuid5(SCO_DET_ID_NAMESPACE, f'{{"hashes":{{"SHA-512":"{sha512}"}}}}')
+        if 'md5' == get_hash_type(value):
+            unique_id = uuid.uuid5(SCO_DET_ID_NAMESPACE, f'{{"hashes":{{"MD5":"{value}"}}}}')
+        elif 'sha1' == get_hash_type(value):
+            unique_id = uuid.uuid5(SCO_DET_ID_NAMESPACE, f'{{"hashes":{{"SHA-1":"{value}"}}}}')
+        elif 'sha256' == get_hash_type(value):
+            unique_id = uuid.uuid5(SCO_DET_ID_NAMESPACE, f'{{"hashes":{{"SHA-256":"{value}"}}}}')
+        elif 'sha512' == get_hash_type(value):
+            unique_id = uuid.uuid5(SCO_DET_ID_NAMESPACE, f'{{"hashes":{{"SHA-512":"{value}"}}}}')
         else:
             unique_id = uuid.uuid5(SCO_DET_ID_NAMESPACE, f'{{"value":"{value}"}}')
     else:
@@ -651,7 +659,7 @@ def create_manifest_entry(xsoar_indicator: dict, xsoar_type: str) -> dict:
         'date_added': parse(xsoar_indicator.get('timestamp')).strftime(STIX_DATE_FORMAT),  # type: ignore[arg-type]
     }
     if SERVER.version == TAXII_VER_2_1:
-        entry['version'] = parse(xsoar_indicator.get('modified')).strftime(STIX_DATE_FORMAT)  # type: ignore[assignment]
+        entry['version'] = parse(xsoar_indicator.get('modified')).strftime(STIX_DATE_FORMAT)  # type: ignore[arg-type]
     return entry
 
 
@@ -697,7 +705,7 @@ def create_stix_object(xsoar_indicator: dict, xsoar_type: str) -> tuple:
     xsoar_indicator_to_return = dict()
 
     # filter only requested fields
-    if SERVER.has_extention and SERVER.fields_to_present:
+    if SERVER.has_extension and SERVER.fields_to_present:
         # if Server fields_to_present is None - no filters, return all. If Existing fields - filter
         for field in SERVER.fields_to_present:
             value = xsoar_indicator.get(field)
@@ -708,7 +716,7 @@ def create_stix_object(xsoar_indicator: dict, xsoar_type: str) -> tuple:
         xsoar_indicator_to_return = xsoar_indicator
     extension_definition = {}
 
-    if SERVER.has_extention:
+    if SERVER.has_extension:
         xsoar_indicator_to_return['extension_type'] = 'property_extension'
         extention_id = f'extension-definition--{uuid.uuid4()}'
         extension_definition = {
@@ -730,7 +738,7 @@ def create_stix_object(xsoar_indicator: dict, xsoar_type: str) -> tuple:
         }
 
     if is_sdo:
-        stix_object['description'] = xsoar_indicator.get('CustomFields', {}).get('description')
+        stix_object['description'] = xsoar_indicator.get('CustomFields', {}).get('description', "")
     return stix_object, extension_definition
 
 
@@ -778,10 +786,14 @@ def get_calling_context():
     return demisto.callingContext.get('context', {})  # type: ignore[attr-defined]
 
 
-def parse_manifest_and_object_args():
+def parse_manifest_and_object_args() -> tuple:
+    """ Parses request args for manifest and objects requests. """
     added_after = request.args.get('added_after')
     types = argToList(request.args.get('match[type]'))
-    limit = 100
+    try:
+        limit = int(demisto.params().get('res_size'))
+    except ValueError as e:
+        raise ValueError(f'Invalid Response Size - {e}')
     offset = 0
 
     if request.args.get('match[id]') or request.args.get('match[version]'):
@@ -941,7 +953,7 @@ def taxii2_manifest(api_root: str, collection_id: str) -> Response:
     try:
         added_after, offset, limit, types = parse_manifest_and_object_args()
 
-        manifest_response, date_added_first, date_added_last = SERVER.get_manifest(
+        manifest_response, date_added_first, date_added_last, content_range = SERVER.get_manifest(
             collection_id=collection_id,
             added_after=added_after,
             offset=offset,
@@ -965,6 +977,7 @@ def taxii2_manifest(api_root: str, collection_id: str) -> Response:
         content=manifest_response,
         date_added_first=date_added_first,
         date_added_last=date_added_last,
+        content_range=content_range
     )
 
 
@@ -986,7 +999,7 @@ def taxii2_objects(api_root: str, collection_id: str) -> Response:
     try:
         added_after, offset, limit, types = parse_manifest_and_object_args()
 
-        objects_response, date_added_first, date_added_last = SERVER.get_objects(
+        objects_response, date_added_first, date_added_last, content_range = SERVER.get_objects(
             collection_id=collection_id,
             added_after=added_after,
             offset=offset,
@@ -1010,7 +1023,8 @@ def taxii2_objects(api_root: str, collection_id: str) -> Response:
         content=objects_response,
         date_added_first=date_added_first,
         date_added_last=date_added_last,
-        content_type=MEDIA_TYPE_STIX_V20 if SERVER.version == TAXII_VER_2_0 else MEDIA_TYPE_TAXII_V21
+        content_type=MEDIA_TYPE_STIX_V20 if SERVER.version == TAXII_VER_2_0 else MEDIA_TYPE_TAXII_V21,
+        content_range=content_range
     )
 
 
@@ -1022,7 +1036,7 @@ def test_module(params: dict) -> str:
     return 'ok'
 
 
-def main():
+def main():  # pragma: no cover
     """
     Main
     """

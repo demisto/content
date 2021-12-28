@@ -47,6 +47,13 @@ configuration:
   name: fields_filter
   required: false
   type: 0
+- additionalinfo: Maximum number of items to return.
+  defaultvalue: '2500'
+  display: Response Size
+  hidden: false
+  name: res_size
+  required: true
+  type: 0
 - display: Certificate (Required for HTTPS)
   name: certificate
   required: false

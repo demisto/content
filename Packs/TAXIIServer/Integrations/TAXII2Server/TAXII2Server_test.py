@@ -3,7 +3,7 @@ import io
 import json
 import pytest
 from requests.auth import _basic_auth_str
-from TAXII2Server import TAXII2Server, APP, uuid
+from TAXII2Server import TAXII2Server, APP, uuid, create_fields_list
 import demistomock as demisto
 
 HEADERS = {
@@ -25,7 +25,8 @@ def taxii2_server_v20(mocker):
                           credentials={'identifier': 'username',
                                        'password': 'password'},
                           version='2.0',
-                          service_address=None)
+                          service_address=None,
+                          fields_to_present=set())
 
     return server
 
@@ -44,7 +45,8 @@ def taxii2_server_v21(mocker):
                           credentials={'identifier': 'username',
                                        'password': 'password'},
                           version='2.1',
-                          service_address=None)
+                          service_address=None,
+                          fields_to_present=set())
 
     return server
 
@@ -52,6 +54,22 @@ def taxii2_server_v21(mocker):
 def util_load_json(path):
     with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
+
+
+@pytest.mark.parametrize('fields, result', [("", {'name', 'type'}), ('all', set()),
+                                            ('name,type,sha1', {'name', 'type', 'sha1'}),
+                                            ('value,type,sha1', {'name', 'type', 'sha1'}),
+                                            ('value,indicator_type,createdTime', {'name', 'type', 'createdTime'})])
+def test_create_fields_list(fields, result):
+    """
+        Given
+            # todo
+        When
+
+        Then
+
+    """
+    assert result == create_fields_list(fields)
 
 
 @pytest.mark.parametrize('headers', [{'Authorization': _basic_auth_str("user", "pwd")}, {}])
@@ -141,7 +159,7 @@ def test_taxii20_api_root(mocker, taxii2_server_v20):
         response = test_client.get('/threatintel/', headers=HEADERS)
         assert response.status_code == 200
         assert response.content_type == 'application/vnd.oasis.taxii+json; version=2.0'
-        assert response.json.get('title') == 'XSOAR TAXII2 Server ThreatIntel'
+        assert response.json.get('title') == 'Cortex XSOAR TAXII2 Server ThreatIntel'
 
 
 def test_taxii_wrong_api_root(mocker, taxii2_server_v20):
@@ -228,7 +246,7 @@ def test_taxii20_collection(mocker, taxii2_server_v20):
         response = test_client.get('/threatintel/collections/4c649e16-2bb7-50f5-8826-2a2d0a0b9631/', headers=HEADERS)
         assert response.status_code == 200
         assert response.content_type == 'application/vnd.oasis.taxii+json; version=2.0'
-        assert response.json == collections[0]
+        assert response.json == collections.get('collections')[0]
 
 
 def test_taxii21_collection(mocker, taxii2_server_v21):
@@ -246,7 +264,7 @@ def test_taxii21_collection(mocker, taxii2_server_v21):
         response = test_client.get('/threatintel/collections/4c649e16-2bb7-50f5-8826-2a2d0a0b9631/', headers=HEADERS)
         assert response.status_code == 200
         assert response.content_type == 'application/taxii+json;version=2.1'
-        assert response.json == collections[0]
+        assert response.json == collections.get('collections')[0]
 
 
 def test_taxii_wrong_collection_id(mocker, taxii2_server_v21):
@@ -282,6 +300,7 @@ def test_taxii20_manifest(mocker, taxii2_server_v20):
     headers['Range'] = 'items 0-4'
     mocker.patch('TAXII2Server.SERVER', taxii2_server_v20)
     mocker.patch.object(demisto, 'searchIndicators', return_value=iocs)
+    mocker.patch.object(demisto, 'params', return_value={'res_size': '100'})
     with APP.test_client() as test_client:
         response = test_client.get('/threatintel/collections/4c649e16-2bb7-50f5-8826-2a2d0a0b9631/manifest/',
                                    headers=headers)
@@ -301,6 +320,7 @@ def test_taxii21_manifest(mocker, taxii2_server_v21):
     """
     iocs = util_load_json('test_files/ip_iocs.json')
     manifest = util_load_json('test_files/manifest21.json')
+    mocker.patch.object(demisto, 'params', return_value={'res_size': '100'})
     mocker.patch('TAXII2Server.SERVER', taxii2_server_v21)
     mocker.patch.object(demisto, 'searchIndicators', return_value=iocs)
     with APP.test_client() as test_client:
@@ -327,12 +347,14 @@ def test_taxii20_objects(mocker, taxii2_server_v20):
     headers = copy.deepcopy(HEADERS)
     headers['Content-Range'] = 'items 0-2/5'
     mocker.patch.object(demisto, 'searchIndicators', return_value=iocs)
+    mocker.patch.object(demisto, 'params', return_value={'res_size': '100'})
     with APP.test_client() as test_client:
         response = test_client.get('/threatintel/collections/4c649e16-2bb7-50f5-8826-2a2d0a0b9631/objects/',
                                    headers=headers)
         assert response.status_code == 200
         assert response.content_type == 'application/vnd.oasis.stix+json; version=2.0'
         assert response.json == objects
+        assert response.headers.get('Content-Range') == 'items 0-2/5'
 
 
 @pytest.mark.parametrize('demisto_iocs_file,res_file,query_type', [
@@ -354,6 +376,7 @@ def test_taxii21_objects(mocker, taxii2_server_v21, demisto_iocs_file, res_file,
     mocker.patch('TAXII2Server.SERVER', taxii2_server_v21)
     mocker.patch.object(uuid, 'uuid4', return_value='1ffe4bee-95e7-4e36-9a17-f56dbab3c777')
     mocker.patch.object(demisto, 'searchIndicators', return_value=iocs)
+    mocker.patch.object(demisto, 'params', return_value={'res_size': '100'})
     with APP.test_client() as test_client:
         response = test_client.get('/threatintel/collections/e46189b5-c5c8-5c7f-b947-183e0302b4d3/'
                                    f'objects/?match[type]={query_type}&limit=2&next=1', headers=HEADERS)
@@ -376,10 +399,71 @@ def test_taxii21_bad_request(mocker, taxii2_server_v21, api_request):
     """
     mocker.patch('TAXII2Server.SERVER', taxii2_server_v21)
     mocker.patch.object(demisto, 'error')
+    mocker.patch.object(demisto, 'params', return_value={'res_size': '2500'})
     mocker.patch.object(demisto, 'updateModuleHealth')
     with APP.test_client() as test_client:
         response = test_client.get(f'/threatintel/collections/e46189b5-c5c8-5c7f-b947-183e0302b4d3/'
                                    f'{api_request}/?match[version]=3', headers=HEADERS)
-        assert response.status_code == 400
+        assert response.status_code == 404
         assert response.content_type == 'application/taxii+json;version=2.1'
-        assert 'Filtering by id or version is not supported.' in response.json.get('description')
+        assert 'Filtering by ID or version is not supported.' in response.json.get('description')
+
+
+@pytest.mark.parametrize('api_request', [
+    'objects', 'manifest'
+])
+def test_taxii20_bad_content_range(mocker, taxii2_server_v20, api_request):
+    """
+        Given
+            TAXII Server v2.0, non-supported range.
+        When
+            Calling get objects or manifest api request for given collection
+        Then
+            Validate that right error returned.
+    """
+    mocker.patch('TAXII2Server.SERVER', taxii2_server_v20)
+    mocker.patch.object(demisto, 'params', return_value={'res_size': '2500'})
+    headers = copy.deepcopy(HEADERS)
+    headers['Content-Range'] = 'items 8-2/10'
+    with APP.test_client() as test_client:
+        response = test_client.get(f'/threatintel/collections/e46189b5-c5c8-5c7f-b947-183e0302b4d3/'
+                                   f'{api_request}/', headers=headers)
+        assert response.status_code == 416
+
+
+@pytest.mark.parametrize('res_file,fields,has_extension', [
+    ('objects21_no_extention_file', {'name', 'type'}, False),
+    ('objects21_spec_fields_file', {'sha1'}, True),
+    ('objects21_domain', 'domain-name,attack-pattern')
+])
+def test_taxii21_objects_filtered_params(mocker, taxii2_server_v21, res_file, fields, has_extension):
+    """
+        Given
+            TAXII Server v2.1, collection_id, type parameter
+        When
+            Calling get objects api request for given collection
+        Then
+            Validate that right manifest returned.
+    """
+    iocs = util_load_json('test_files/file_iocs.json')
+    objects = util_load_json(f'test_files/{res_file}.json')
+    mocker.patch('TAXII2Server.SERVER', taxii2_server_v21)
+    mocker.patch('TAXII2Server.SERVER.fields_to_present', return_value={'name', 'type'})
+    mocker.patch('TAXII2Server.SERVER.has_extension', return_value=False)
+    mocker.patch.object(uuid, 'uuid4', return_value='1ffe4bee-95e7-4e36-9a17-f56dbab3c777')
+    mocker.patch.object(demisto, 'searchIndicators', return_value=iocs)
+    mocker.patch.object(demisto, 'params', return_value={'res_size': '100'})
+    with APP.test_client() as test_client:
+        response = test_client.get('/threatintel/collections/e46189b5-c5c8-5c7f-b947-183e0302b4d3/'
+                                   'objects/?match[type]=file', headers=HEADERS)
+        assert response.status_code == 200
+        assert response.content_type == 'application/taxii+json;version=2.1'
+        assert response.json == objects
+
+
+# todo: test has extention
+def create_json_output_file(result, file_name):
+    json_object = json.dumps(result, indent=4)
+    # Writing to sample.json
+    with open(f"test_files/{file_name}.json", "w") as outfile:
+        outfile.write(json_object)
