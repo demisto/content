@@ -40,5 +40,9 @@
             "mandatory": false,
             "display_name": "Microsoft Graph Mail Single User"
         }
-    }
+    },
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }
