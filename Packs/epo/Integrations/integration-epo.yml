@@ -79,8 +79,7 @@ script:
         } else if (result.StatusCode == 200){
             throw 'Error accessing ePO interface. Command: ' + url + ". Body: " +  result.Body;
         } else {
-            throw 'Error accessing ePO interface. Command: ' + url + ". Response:
-    " + JSON.stringify(result);
+            throw 'Error accessing ePO interface. Command: ' + url + ". Response: " + JSON.stringify(result);
         }
     }
 
@@ -100,8 +99,7 @@ script:
             params.proxy
         );
         if (result.StatusCode < 200 && result.StatusCode > 299) {
-            throw 'Failed to perform request ' + url + encodeToURLQuery(parameters)
-    + ', request status code: ' + result.StatusCode;
+            throw 'Failed to perform request ' + url + encodeToURLQuery(parameters) + ', request status code: ' + result.StatusCode;
         }
         return result;
     }
@@ -204,8 +202,7 @@ script:
 
     function epoGetLatestDatRaw() {
         var url = "http://update.nai.com/products/commonupdater/gdeltaavv.ini";
-        //Another option is to use avvdat.ini - provided here in case any additional
-    data from that file is needed in the future
+        //Another option is to use avvdat.ini - provided here in case any additional data from that file is needed in the future
         //var url = "http://update.nai.com/Products/CommonUpdater/avvdat.ini"
         result = doRawHttp("GET",url);
         var res = '';
@@ -231,8 +228,7 @@ script:
             ContentsFormat: formats.json,
             HumanReadable: md,
             EntryContext: {
-                    "mcafee(val.latestDAT === obj.latestDAT)": ec.mcafee, //backward
-    compatability
+                    "mcafee(val.latestDAT === obj.latestDAT)": ec.mcafee, //backward compatability
                     "McAfee.ePO.latestDAT": datVersion
             }
         };
@@ -247,8 +243,7 @@ script:
             var epoDAT = result.productDetectionProductVersion.split('.')[0];
             ec = {};
             ec.mcafee = {"epoDAT": epoDAT};
-            var md = "McAfee ePO Current DAT file version in repository is: **" +
-    epoDAT + '**\n';
+            var md = "McAfee ePO Current DAT file version in repository is: **" + epoDAT + '**\n';
             return {
                 Type: entryTypes.note,
                 Contents: result,
@@ -260,15 +255,13 @@ script:
                 }
             };
         } else {
-            throw 'Error getting current DAT version. Please check that the DAT file
-    exists. Response: ' + JSON.stringify(result);
+            throw 'Error getting current DAT version. Please check that the DAT file exists. Response: ' + JSON.stringify(result);
         }
     }
 
 
     function epoUpdateClientDatTask() {
-        var pArgs = {'searchText': 'VSEContentUpdateDemisto'}; //need to configure
-    this task in ePO beforehand
+        var pArgs = {'searchText': 'VSEContentUpdateDemisto'}; //need to configure this task in ePO beforehand
         var result = callEpo('clienttask.find', pArgs);
         if (result && Array.isArray(result)) {
             result = result[0];
@@ -276,10 +269,8 @@ script:
         if (result) {
               return result.objectId;
             }
-             // If reached here then the response is an empty "OK:", which means VSEContentUpdateDemisto
-    was not found in the server
-            throw 'Error getting DAT update task. It seems the task "VSEContentUpdateDemisto"
-    is missing from the EPO server. Please contact support for more details';
+             // If reached here then the response is an empty "OK:", which means VSEContentUpdateDemisto was not found in the server
+            throw 'Error getting DAT update task. It seems the task "VSEContentUpdateDemisto" is missing from the EPO server. Please contact support for more details';
     }
 
 
@@ -287,8 +278,7 @@ script:
         var clientTask = epoUpdateClientDatTask();
         var pArgs = {'names':args.systems, 'productId':'EPOAGENTMETA', 'taskId':clientTask};
 
-        var options = ['retryAttempts', 'retryIntervalInSeconds', 'abortAfterMinutes',
-    'stopAfterMinutes', 'randomizationInterval'];
+        var options = ['retryAttempts', 'retryIntervalInSeconds', 'abortAfterMinutes', 'stopAfterMinutes', 'randomizationInterval'];
         for (var i=0;i<options.length;i++) {
             if (args[options[i]]) {
                 pArgs[options[i]] = args[options[i]];
@@ -514,8 +504,7 @@ script:
 
         var md = tableToMarkdown(
                 'ePO tables:',
-                Object.keys(result || {}).map(function (k) { return result[k]; }),
-    // object keys
+                Object.keys(result || {}).map(function (k) { return result[k]; }), // object keys
                 args.headers && args.headers.split(',')
             );
 
@@ -553,8 +542,7 @@ script:
 
         var md = tableToMarkdown(
                 'ePO Table Query:',
-                Object.keys(result || {}).map(function (k) { return result[k]; }),
-    // object keys
+                Object.keys(result || {}).map(function (k) { return result[k]; }), // object keys
                 args.headers && args.headers.split(',')
             );
 
@@ -664,8 +652,7 @@ script:
 
             md = tableToMarkdown(
                 'ePO command *' + args.command + '* results:',
-                Object.keys(result || {}).map(function (k) { return result[k]; }),
-    // object keys
+                Object.keys(result || {}).map(function (k) { return result[k]; }),// object keys
                 args.headers && args.headers.split(',')
             );
             contents = result;
