@@ -443,8 +443,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 540,
-          "y": 3560
+          "x": 480,
+          "y": 3890
         }
       }
     note: false
@@ -523,7 +523,6 @@ tasks:
     nexttasks:
       '#none#':
       - "18"
-      - "20"
     scriptarguments:
       folder:
         simple: vm
@@ -563,7 +562,7 @@ tasks:
       brand: VMware
     nexttasks:
       '#none#':
-      - "19"
+      - "20"
     scriptarguments:
       UUID:
         simple: ${VMWare.[1].UUID}
@@ -617,7 +616,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 3190
+          "y": 3720
         }
       }
     note: false
@@ -651,8 +650,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 970,
-          "y": 2840
+          "x": 480,
+          "y": 3190
         }
       }
     note: false
@@ -693,8 +692,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 970,
-          "y": 3000
+          "x": 480,
+          "y": 3350
         }
       }
     note: false
@@ -720,7 +719,7 @@ tasks:
       brand: VMware
     nexttasks:
       '#none#':
-      - "15"
+      - "19"
     scriptarguments:
       uuid:
         complex:
@@ -730,8 +729,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 970,
-          "y": 3190
+          "x": 480,
+          "y": 3540
         }
       }
     note: false
@@ -778,7 +777,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2485,
+        "height": 3905,
         "width": 810,
         "x": 50,
         "y": 50

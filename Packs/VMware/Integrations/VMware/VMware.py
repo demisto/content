@@ -198,8 +198,8 @@ def get_vms(si, args):
     for child in children:
         summary = child.summary
         snapshot_create_date = datetime_to_string(
-            child.snapshot.currentSnapshot.config.createDate) if child.snapshot else ''
-        snapshot_uuid = child.snapshot.currentSnapshot.config.uuid if child.snapshot else ''
+            child.snapshot.currentSnapshot.config.createDate) if child.snapshot else None
+        snapshot_uuid = child.snapshot.currentSnapshot.config.uuid if child.snapshot else None
         if apply_get_vms_filters(args, summary):
             mac_address = ''
             try:
@@ -216,9 +216,9 @@ def get_vms(si, args):
                 'Path': summary.config.vmPathName,
                 'Guest': summary.config.guestFullName,
                 'UUID': summary.config.instanceUuid,
-                'IP': summary.guest.ipAddress if summary.guest.ipAddress else '',
+                'IP': summary.guest.ipAddress if summary.guest.ipAddress else None,
                 'State': summary.runtime.powerState,
-                'HostName': summary.guest.hostName if summary.guest.hostName else '',
+                'HostName': summary.guest.hostName if summary.guest.hostName else None,
                 'MACAddress': mac_address,
                 'SnapshotCreateDate': snapshot_create_date,
                 'SnapshotUUID': snapshot_uuid,
@@ -458,6 +458,8 @@ def get_events(si, args):
     time = vim.event.EventFilterSpec.ByTime()
     time.beginTime = dateparser.parse(args.get('start-date', ''))
     time.endTime = dateparser.parse(args.get('end-date', ''))
+    if (args.get('start-date') and not time.beginTime) or (args.get('end-date') and not time.endTime):
+        raise Exception("Dates given in a wrong format.")
     by_user_name = vim.event.EventFilterSpec.ByUsername()
     by_user_name.userList = args.get('user', '').split(',') if args.get('user') else None
     filter = vim.event.EventFilterSpec.ByEntity(entity=vm, recursion="self")  # type: ignore

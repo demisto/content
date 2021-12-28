@@ -1,3 +1,5 @@
+# pylint: disable=no-member
+# pylint: disable=no-name-in-module
 from collections import namedtuple
 from pyVmomi import vim
 

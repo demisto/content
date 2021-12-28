@@ -439,20 +439,6 @@ script:
           defaultValue: ""
           predefined:
             - ""
-        - name: guest-os-familiy
-          description: description
-          required: true
-          isArray: false
-          defaultValue: ""
-          predefined:
-            - ""
-        - name: guest-os-version
-          description: description
-          required: true
-          isArray: false
-          defaultValue: ""
-          predefined:
-            - ""
         - name: host
           description: The target host on which the virtual machine will run.
           required: true
