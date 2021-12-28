@@ -385,7 +385,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "15"
+      - "23"
     scriptarguments:
       expectedValue:
         simple: '["Reverted to Test Snapshot"]'
