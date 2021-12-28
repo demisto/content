@@ -838,8 +838,10 @@ async def slack_loop():
         client.socket_mode_request_listeners.append(listen)  # type: ignore
         try:
             await client.connect()
+            demisto.debug("Socket is connected")
             # After successful connection, we reset the backoff time.
             exception_await_seconds = 1
+            demisto.debug(f"Resetting exception wait time to {exception_await_seconds}")
             await asyncio.sleep(float("inf"))
         except Exception as e:
             demisto.debug(f"Exception in long running loop, waiting {exception_await_seconds} - {e}")
