@@ -184,6 +184,19 @@ class Client(BaseClient):
         response = response.strip("'").strip('"')
         return response
 
+    def trigger_contrib_build(self, base_branch: str, contrib_branch: str, pr_number: int, token: str):  # TODO: what is url?
+        # url = "https://code.pan.run/api/v4/projects/2596/trigger/pipeline"
+        headers = self._headers
+        data = {
+            'token': token,
+            'ref': base_branch,
+            'variables[CONTRIB_BRANCH]': contrib_branch,
+            'variables[PULL_REQUEST_NUMBER]': pr_number,
+            'variables[CI_COMMIT_BRANCH]': base_branch,
+            'variables[CI_PIPELINE_SOURCE]': 'contrib'
+        }
+        return self._http_request('post', url_suffix='projects/2596/trigger/pipeline', data=data, headers=headers)
+
 
 def get_projects_command(client, args):
     repository_storage = str(args.get('repository_storage', ''))
@@ -665,6 +678,38 @@ def gitlab_get_raw_file_command(client: Client, args: Dict[str, Any]) -> Union[C
     )
 
 
+def gitlab_trigger_contribution_build_command(client: Client, args: Dict[str, Any]) -> Union[CommandResults, Dict]:
+    """
+    Returns triggered pipeline for contribution build.
+    Args:
+        client (Client): Client to perform calls to GitLab services.
+        args (Dict[str, Any]): XSOAR arguments:
+            - 'base_branch': base branch of the pr.
+            - 'contrib_branch': the contributor's branch name.
+            - 'pr_number': the pull request number
+            - 'trigger_token': the gitlab trigger token.
+
+    Returns:
+        (CommandResults).
+    """
+    base_branch = args.get('base_branch')
+    contrib_branch = args.get('contrib_branch')
+    pr_number = args.get('pr_number')
+    trigger_token = args.get('trigger_token')
+
+    response = client.trigger_contrib_build(base_branch, contrib_branch, pr_number, trigger_token)
+
+    output = {k: v for k, v in response.items() if k in PIPELINE_FIELDS_TO_EXTRACT}
+
+    return CommandResults(
+        outputs_prefix='GitLab.Pipeline',
+        outputs_key_field='id',
+        outputs=output,
+        raw_response=response,
+        readable_output=tableToMarkdown('Successfully triggered build. Pipeline details:', output, removeNull=True)
+    )
+
+
 def test_module(client):
     # Test functions here
     response = client.get_version_request()
@@ -710,7 +755,8 @@ def main():
             'gitlab-issue-create': gitlab_create_issue_command,
             'gitlab-issue-edit': gitlab_edit_issue_command,
             'gitlab-group-projects-list': gitlab_group_projects_list_command,
-            'gitlab-raw-file-get': gitlab_get_raw_file_command
+            'gitlab-raw-file-get': gitlab_get_raw_file_command,
+            'gitlab-trigger-contribution-build': gitlab_trigger_contribution_build_command
         }
 
         if command == 'test-module':
