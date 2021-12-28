@@ -63,11 +63,11 @@ def util_load_json(path):
 def test_create_fields_list(fields, result):
     """
         Given
-            # todo
+            fields list parameter, expected result
         When
-
+            User enters filter_field param
         Then
-
+            Validate right result returned
     """
     assert result == create_fields_list(fields)
 
@@ -433,13 +433,11 @@ def test_taxii20_bad_content_range(mocker, taxii2_server_v20, api_request):
 
 @pytest.mark.parametrize('res_file,fields,has_extension', [
     ('objects21_no_extention_file', {'name', 'type'}, False),
-    ('objects21_spec_fields_file', {'sha1'}, True),
-    ('objects21_domain', 'domain-name,attack-pattern')
-])
+    ('objects21_spec_fields_file', {'sha1'}, True)])
 def test_taxii21_objects_filtered_params(mocker, taxii2_server_v21, res_file, fields, has_extension):
     """
         Given
-            TAXII Server v2.1, collection_id, type parameter
+            TAXII Server v2.1, collection_id, type parameter, filtered_fields params
         When
             Calling get objects api request for given collection
         Then
@@ -448,8 +446,8 @@ def test_taxii21_objects_filtered_params(mocker, taxii2_server_v21, res_file, fi
     iocs = util_load_json('test_files/file_iocs.json')
     objects = util_load_json(f'test_files/{res_file}.json')
     mocker.patch('TAXII2Server.SERVER', taxii2_server_v21)
-    mocker.patch('TAXII2Server.SERVER.fields_to_present', return_value={'name', 'type'})
-    mocker.patch('TAXII2Server.SERVER.has_extension', return_value=False)
+    mocker.patch('TAXII2Server.SERVER.fields_to_present', fields)
+    mocker.patch('TAXII2Server.SERVER.has_extension', has_extension)
     mocker.patch.object(uuid, 'uuid4', return_value='1ffe4bee-95e7-4e36-9a17-f56dbab3c777')
     mocker.patch.object(demisto, 'searchIndicators', return_value=iocs)
     mocker.patch.object(demisto, 'params', return_value={'res_size': '100'})
@@ -459,11 +457,3 @@ def test_taxii21_objects_filtered_params(mocker, taxii2_server_v21, res_file, fi
         assert response.status_code == 200
         assert response.content_type == 'application/taxii+json;version=2.1'
         assert response.json == objects
-
-
-# todo: test has extention
-def create_json_output_file(result, file_name):
-    json_object = json.dumps(result, indent=4)
-    # Writing to sample.json
-    with open(f"test_files/{file_name}.json", "w") as outfile:
-        outfile.write(json_object)

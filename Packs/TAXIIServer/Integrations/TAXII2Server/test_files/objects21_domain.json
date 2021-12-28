@@ -61,7 +61,7 @@
             "modified": "2021-12-19T16:11:15.530720Z",
             "spec_version": "2.1",
             "type": "attack-pattern",
-            "value": "T1195"
+            "name": "T1195"
         },
         {
             "created": "2021-12-19T16:11:15.530719Z",
@@ -137,7 +137,7 @@
             "modified": "2021-12-19T16:11:15.530696Z",
             "spec_version": "2.1",
             "type": "attack-pattern",
-            "value": "T1105"
+            "name": "T1105"
         },
         {
             "created": "2021-12-19T16:11:15.530695Z",

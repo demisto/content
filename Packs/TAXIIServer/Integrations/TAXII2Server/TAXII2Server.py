@@ -695,12 +695,15 @@ def create_stix_object(xsoar_indicator: dict, xsoar_type: str) -> tuple:
 
     stix_object = {
         'id': stix_id,
-        'value': xsoar_indicator.get('value'),
         'type': object_type,
         'spec_version': SERVER.version,
         'created': created_parsed,
         'modified': modified_parsed,
     }
+    if is_sdo:
+        stix_object['name'] = xsoar_indicator.get('value')
+    else:
+        stix_object['value'] = xsoar_indicator.get('value')
 
     xsoar_indicator_to_return = dict()
 
@@ -1072,8 +1075,8 @@ def main():  # pragma: no cover
 
     scheme = 'https' if not http_server else 'http'
 
-    if version == TAXII_VER_2_0 and not params.get('nginx_server_conf'):
-        params['nginx_server_conf'] = NGINX_TAXII2SERVER_CONF
+    # if version == TAXII_VER_2_0 and not params.get('nginx_server_conf'):
+    #     params['nginx_server_conf'] = NGINX_TAXII2SERVER_CONF
 
     demisto.debug(f'Command being called is {command}')
 

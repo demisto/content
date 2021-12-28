@@ -1,0 +1,207 @@
+{
+    "objects": [
+        {
+            "created": "2021-12-28T14:58:19.712448Z",
+            "extensions": {
+                "extension-definition--1ffe4bee-95e7-4e36-9a17-f56dbab3c777": {
+                    "extension_type": "property_extension",
+                    "sha1": "21359c4872fc6cde0e081bcd084d33442af78869"
+                }
+            },
+            "id": "file--66308be2-f027-5972-92d1-524ac96abff4",
+            "modified": "2021-12-28T14:58:19.712449Z",
+            "spec_version": "2.1",
+            "type": "file",
+            "value": "21359c4872fc6cde0e081bcd084d33442af78869"
+        },
+        {
+            "created": "2021-12-28T14:58:19.712448Z",
+            "created_by_ref": "identity--749249c0-f7c7-5428-a4ad-ea5e1627a221",
+            "description": "This schema adds TIM data to the object",
+            "extension_types": [
+                "property-extension"
+            ],
+            "id": "extension-definition--1ffe4bee-95e7-4e36-9a17-f56dbab3c777",
+            "modified": "2021-12-28T14:58:19.712449Z",
+            "name": "Cortex XSOAR TIM File",
+            "schema": "https://github.com/demisto/content/tree/master/Packs/TAXIIServer/doc_files/XSOAR_indicator_schema.json",
+            "spec_version": "2.1",
+            "type": "extension-definition",
+            "version": "1.0"
+        },
+        {
+            "created": "2021-12-28T14:58:19.711496Z",
+            "extensions": {
+                "extension-definition--1ffe4bee-95e7-4e36-9a17-f56dbab3c777": {
+                    "extension_type": "property_extension",
+                    "sha1": "c6cf51742a8a2f90e9b2d71aaaa95c1a3d71dada"
+                }
+            },
+            "id": "file--4c54e147-79e5-5c83-90b7-46d26ad71836",
+            "modified": "2021-12-28T14:58:19.711497Z",
+            "spec_version": "2.1",
+            "type": "file",
+            "value": "c6cf51742a8a2f90e9b2d71aaaa95c1a3d71dada"
+        },
+        {
+            "created": "2021-12-28T14:58:19.711496Z",
+            "created_by_ref": "identity--749249c0-f7c7-5428-a4ad-ea5e1627a221",
+            "description": "This schema adds TIM data to the object",
+            "extension_types": [
+                "property-extension"
+            ],
+            "id": "extension-definition--1ffe4bee-95e7-4e36-9a17-f56dbab3c777",
+            "modified": "2021-12-28T14:58:19.711497Z",
+            "name": "Cortex XSOAR TIM File",
+            "schema": "https://github.com/demisto/content/tree/master/Packs/TAXIIServer/doc_files/XSOAR_indicator_schema.json",
+            "spec_version": "2.1",
+            "type": "extension-definition",
+            "version": "1.0"
+        },
+        {
+            "created": "2021-12-28T14:58:19.711459Z",
+            "extensions": {
+                "extension-definition--1ffe4bee-95e7-4e36-9a17-f56dbab3c777": {
+                    "extension_type": "property_extension",
+                    "sha1": "0ac1351ea86fb595fa25fbf012c72a954fd12993"
+                }
+            },
+            "id": "file--74b23bc2-dc42-5181-afb0-0c240f25f4f5",
+            "modified": "2021-12-28T14:58:19.711461Z",
+            "spec_version": "2.1",
+            "type": "file",
+            "value": "0ac1351ea86fb595fa25fbf012c72a954fd12993"
+        },
+        {
+            "created": "2021-12-28T14:58:19.711459Z",
+            "created_by_ref": "identity--749249c0-f7c7-5428-a4ad-ea5e1627a221",
+            "description": "This schema adds TIM data to the object",
+            "extension_types": [
+                "property-extension"
+            ],
+            "id": "extension-definition--1ffe4bee-95e7-4e36-9a17-f56dbab3c777",
+            "modified": "2021-12-28T14:58:19.711461Z",
+            "name": "Cortex XSOAR TIM File",
+            "schema": "https://github.com/demisto/content/tree/master/Packs/TAXIIServer/doc_files/XSOAR_indicator_schema.json",
+            "spec_version": "2.1",
+            "type": "extension-definition",
+            "version": "1.0"
+        },
+        {
+            "created": "2021-12-28T14:58:19.711239Z",
+            "extensions": {
+                "extension-definition--1ffe4bee-95e7-4e36-9a17-f56dbab3c777": {
+                    "extension_type": "property_extension",
+                    "sha1": "c2360823160484e04a9f786b715fa9910f521ae1"
+                }
+            },
+            "id": "file--ae6e588d-a8bc-5557-a037-398d9636949e",
+            "modified": "2021-12-28T14:58:19.711240Z",
+            "spec_version": "2.1",
+            "type": "file",
+            "value": "c2360823160484e04a9f786b715fa9910f521ae1"
+        },
+        {
+            "created": "2021-12-28T14:58:19.711239Z",
+            "created_by_ref": "identity--749249c0-f7c7-5428-a4ad-ea5e1627a221",
+            "description": "This schema adds TIM data to the object",
+            "extension_types": [
+                "property-extension"
+            ],
+            "id": "extension-definition--1ffe4bee-95e7-4e36-9a17-f56dbab3c777",
+            "modified": "2021-12-28T14:58:19.711240Z",
+            "name": "Cortex XSOAR TIM File",
+            "schema": "https://github.com/demisto/content/tree/master/Packs/TAXIIServer/doc_files/XSOAR_indicator_schema.json",
+            "spec_version": "2.1",
+            "type": "extension-definition",
+            "version": "1.0"
+        },
+        {
+            "created": "2021-12-14T17:45:38.402950Z",
+            "extensions": {
+                "extension-definition--1ffe4bee-95e7-4e36-9a17-f56dbab3c777": {
+                    "extension_type": "property_extension",
+                    "sha1": "27e868c0505144f0708170df701d7c1ae8e1faea"
+                }
+            },
+            "id": "file--0e3b2c03-fa90-504e-8eec-5d1dc670475c",
+            "modified": "2021-12-27T16:11:40.513923Z",
+            "spec_version": "2.1",
+            "type": "file",
+            "value": "27e868c0505144f0708170df701d7c1ae8e1faea"
+        },
+        {
+            "created": "2021-12-14T17:45:38.402950Z",
+            "created_by_ref": "identity--749249c0-f7c7-5428-a4ad-ea5e1627a221",
+            "description": "This schema adds TIM data to the object",
+            "extension_types": [
+                "property-extension"
+            ],
+            "id": "extension-definition--1ffe4bee-95e7-4e36-9a17-f56dbab3c777",
+            "modified": "2021-12-27T16:11:40.513923Z",
+            "name": "Cortex XSOAR TIM File",
+            "schema": "https://github.com/demisto/content/tree/master/Packs/TAXIIServer/doc_files/XSOAR_indicator_schema.json",
+            "spec_version": "2.1",
+            "type": "extension-definition",
+            "version": "1.0"
+        },
+        {
+            "created": "2021-12-14T17:45:34.792287Z",
+            "extensions": {
+                "extension-definition--1ffe4bee-95e7-4e36-9a17-f56dbab3c777": {
+                    "extension_type": "property_extension",
+                    "sha1": "d4cf22f3db78bdc1ceb55431857d88166ce677d4"
+                }
+            },
+            "id": "file--1d12a1f0-b742-5f81-9c19-09dd0236fd72",
+            "modified": "2021-12-27T16:11:35.339540Z",
+            "spec_version": "2.1",
+            "type": "file",
+            "value": "d4cf22f3db78bdc1ceb55431857d88166ce677d4"
+        },
+        {
+            "created": "2021-12-14T17:45:34.792287Z",
+            "created_by_ref": "identity--749249c0-f7c7-5428-a4ad-ea5e1627a221",
+            "description": "This schema adds TIM data to the object",
+            "extension_types": [
+                "property-extension"
+            ],
+            "id": "extension-definition--1ffe4bee-95e7-4e36-9a17-f56dbab3c777",
+            "modified": "2021-12-27T16:11:35.339540Z",
+            "name": "Cortex XSOAR TIM File",
+            "schema": "https://github.com/demisto/content/tree/master/Packs/TAXIIServer/doc_files/XSOAR_indicator_schema.json",
+            "spec_version": "2.1",
+            "type": "extension-definition",
+            "version": "1.0"
+        },
+        {
+            "created": "2021-12-14T17:45:38.397583Z",
+            "extensions": {
+                "extension-definition--1ffe4bee-95e7-4e36-9a17-f56dbab3c777": {
+                    "extension_type": "property_extension",
+                    "sha1": "74d44c2949da7d5164adec78801733680da8c110"
+                }
+            },
+            "id": "file--5f7c17d1-2e2f-5e34-8ab2-de896a5c9809",
+            "modified": "2021-12-27T16:11:40.503074Z",
+            "spec_version": "2.1",
+            "type": "file",
+            "value": "74d44c2949da7d5164adec78801733680da8c110"
+        },
+        {
+            "created": "2021-12-14T17:45:38.397583Z",
+            "created_by_ref": "identity--749249c0-f7c7-5428-a4ad-ea5e1627a221",
+            "description": "This schema adds TIM data to the object",
+            "extension_types": [
+                "property-extension"
+            ],
+            "id": "extension-definition--1ffe4bee-95e7-4e36-9a17-f56dbab3c777",
+            "modified": "2021-12-27T16:11:40.503074Z",
+            "name": "Cortex XSOAR TIM File",
+            "schema": "https://github.com/demisto/content/tree/master/Packs/TAXIIServer/doc_files/XSOAR_indicator_schema.json",
+            "spec_version": "2.1",
+            "type": "extension-definition",
+            "version": "1.0"
+        }
+    ]
+}
