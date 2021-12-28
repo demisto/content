@@ -412,7 +412,7 @@ def main() -> None:
                 actions.identity_search_command(
                     domains,
                     demisto_args.get("latest-downloaded", "All time"),
-                    demisto_args.get("domain_type"),
+                    demisto_args.get("domain-type"),
                     password_properties,
                     limit_identities,
                 )

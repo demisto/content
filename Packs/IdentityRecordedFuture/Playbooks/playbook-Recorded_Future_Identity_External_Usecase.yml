@@ -49,7 +49,7 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
-      domain_type:
+      domain-type:
         simple: Authorization
       latest-downloaded:
         simple: All time

@@ -45,7 +45,7 @@ Get a list of identities for the specified period of time.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | latest-downloaded | Time frame for the leaked identities          | Optional |
-| domain_type       | Type of the domain(Email, Authorization, All) | Optional |
+| domain-type       | Type of the domain(Email, Authorization, All) | Optional |
 
 
 
@@ -58,7 +58,7 @@ Get a list of identities for the specified period of time.
 
 
 #### Command Example
-```!recordedfuture-identity-search latest-downloaded="All time" domain_type=Authorization```
+```!recordedfuture-identity-search latest-downloaded="All time" domain-type=Authorization```
 
 #### Context Example
 ```

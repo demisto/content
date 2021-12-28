@@ -22,7 +22,7 @@ This playbook does not use any scripts.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | latest-downloaded | Time frame for the leaked identities          | Last Year | Optional |
-| domain_type       | Type of the domain(Email, Authorization, All) | Authorization | Optional |
+| domain-type       | Type of the domain(Email, Authorization, All) | Authorization | Optional |
 | identities        | String of identities separated by semicolon   | RecordedFuture.Credentials.SearchIdentities | Required |
 | first-downloaded  | Time frame for the leaked identities          | Last Year | Oprional |
 

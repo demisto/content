@@ -76,7 +76,7 @@ script:
       - "Last 6 Months"
       - "Last Year"
       - "All time"
-    - name: domain_type
+    - name: domain-type
       description: Type of identities to search for (Authorization or Email). If not
         specified use All.
       required: false
