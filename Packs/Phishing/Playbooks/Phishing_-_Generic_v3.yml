@@ -3,10 +3,9 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Phishing - Generic v3
-description: |-
-  Use this playbook to investigate and remediate a potential phishing incident. The playbook simultaneously engages with the user that triggered the incident, while investigating the incident itself.
-
-  The final remediation tasks are always decided by a human analyst.
+description: "This playbook investigates and remediates a potential phishing incident. It engages with the user that triggered the incident while investigating the incident itself.\n\
+  Note: Final remediation tasks are always decided by a human analyst.
+  "
 starttaskid: "0"
 tasks:
   "0":
@@ -46,7 +45,7 @@ tasks:
       id: 469675b6-c693-42e3-891c-100ee64f3dd6
       version: -1
       name: Assign to analyst
-      description: Assign the incident to an analyst based on the analyst's organizational
+      description: Assigns the incident to an analyst based on the analyst's organizational
         role.
       scriptName: AssignAnalystToIncident
       type: regular
@@ -88,7 +87,7 @@ tasks:
       id: d6dfa5b6-7756-4f6f-8e97-c9c7bcd67ad7
       version: -1
       name: Manually review the incident
-      description: Review the incident to determine if the email that the user reported
+      description: Reviews the incident to determine if the email that the user reported
         is malicious.
       type: regular
       iscommand: false
@@ -119,7 +118,7 @@ tasks:
       id: 11da73b5-8815-42ea-89e6-d17ed25787d9
       version: -1
       name: Close investigation
-      description: Close the investigation.
+      description: Closes the investigation.
       script: Builtin|||closeInvestigation
       type: regular
       iscommand: true
@@ -181,7 +180,7 @@ tasks:
       id: 7a7d193e-ddc1-454b-80d4-d602c72c8155
       version: -1
       name: Store the email address of the reporting user
-      description: Store the email address of the user that reported the incident.
+      description: Stores the email address of the user that reported the incident.
       scriptName: Set
       type: regular
       iscommand: false
@@ -222,7 +221,7 @@ tasks:
       version: -1
       name: Acknowledge incident was received
       description: |
-        Send an auto-response to user that reported the incident, informing them the incident was received and being handled.
+        Send an auto-response to user that reported the incident, informing them the incident was received and is being handled.
       script: '|||send-mail'
       type: regular
       iscommand: true
@@ -312,7 +311,7 @@ tasks:
       id: 511c7226-fa33-4a95-88b7-709566ab4f90
       version: -1
       name: Update the user that the reported email is safe
-      description: Send an email to the user explaining that the email they reported
+      description: Sends an email to the user explaining that the email they reported
         is safe.
       script: '|||send-mail'
       type: regular
@@ -360,7 +359,7 @@ tasks:
       id: f9a62c93-67f8-41f2-8cd5-6a6a700ed9b4
       version: -1
       name: Update the user that the reported email is malicious
-      description: Send an email to the user explaining that the email they reported
+      description: Sends an email to the user explaining that the email they reported
         is malicious.
       script: '|||send-mail'
       type: regular
@@ -469,12 +468,12 @@ tasks:
       version: -1
       name: Process Email - Generic v2
       description: |
-        Add email details to the relevant context entities and handle the case where original emails are attached.
+        This playbook adds email details to the relevant context entities and handles the case where original emails are attached.
 
-        Added on this v2 playbook:
+        This v2 playbook:
         - Uses incident fields and not incident labels.
         - Provides separate paths to "Phishing Alerts".
-        - Uses the new "Get Original Email - Generic v2" playbook to retrieve original emails as eml files from the following integrations:
+        - Uses the new **Get Original Email - Generic v2** playbook to retrieve original emails as EML files from the following integrations:
             * EWS v2
             * Microsoft Graph Mail integration
             * Gmail
@@ -482,7 +481,7 @@ tasks:
             * Proofpoint Protection Server
             * Agari Phishing Defense
             * Mimecast
-        This will assist with parsing the email artifacts in a more efficient way.
+          This helps parse the email artifacts more efficiently.
       playbookName: Process Email - Generic v2
       type: playbook
       iscommand: false
@@ -529,6 +528,8 @@ tasks:
       File:
         complex:
           root: File
+      GetOriginalEmail:
+        simple: "True"
       UserID:
         complex:
           root: ReporterAddress
@@ -608,9 +609,11 @@ tasks:
       id: 6ad41556-9fe2-467c-8610-fc701343246b
       version: -1
       name: Search And Delete Emails - Generic v2
-      description: 'This playbook searches and deletes emails with similar attributes
-        of a malicious email using one of the following integrations: * EWS * Office
-        365. * Gmail * Agari Phishing Defense'
+      description: 'This playbook searches and deletes emails with similar attributes of a malicious email using one of the following integrations:
+        * EWS
+        * Office 365
+        * Gmail
+        * Agari Phishing Defense'
       playbookName: Search And Delete Emails - Generic v2
       type: playbook
       iscommand: false
@@ -805,10 +808,10 @@ tasks:
       id: 945915a4-395f-444f-8500-c80791cddcfd
       version: -1
       name: Manually remediate  the incident
-      description: "Consider the following:\n1. Search for and delete similar emails\n\
-        2. Inform the organization about the threat\n3. Hunt the relevant IOCs\n4.\
-        \ Update proxies and firewalls as necessary\n5. Block the malicious sender/\
-        \ domain in the mail-gateway "
+      description: "To manually remediate a phishing incident you need to:\n1. Search for and delete similar emails.\n\
+        2. Inform the organization about the threat.\n3. Hunt relevant IOCs.\n4.\
+        \ Update proxies and firewalls as necessary.\n5. Block the malicious sender/\
+        \ domain in the mail-gateway. "
       type: regular
       iscommand: false
       brand: ""
@@ -838,7 +841,7 @@ tasks:
       id: 7047c1ab-98bf-4a58-805b-7788d6e8a96a
       version: -1
       name: Should emails be searched and deleted?
-      description: Checks whether the "SearchAndDelete" playbook input is set to True.
+      description: Checks whether the **SearchAndDelete** playbook input is set to True.
       type: condition
       iscommand: false
       brand: ""
@@ -882,7 +885,7 @@ tasks:
       id: d8d3a1c3-6d94-4359-8bda-0e0be77c2f71
       version: -1
       name: Should indicators be blocked automatically?
-      description: Checks whether the "BlockIndicators" playbook input is set to True.
+      description: Checks whether the **BlockIndicators** playbook input is set to True.
       type: condition
       iscommand: false
       brand: ""
@@ -1028,9 +1031,9 @@ tasks:
       version: -1
       name: Email Address Enrichment - Generic v2.1
       description: |-
-        Enrich email addresses.
-        - Get information from Active Directory for internal addresses
-        - Get the domain-squatting reputation for external addresses
+        This playbook enriches email addresses by:
+        - Getting information from Active Directory for internal addresses.
+        - Getting the domain-squatting reputation for external addresses.
       playbookName: Email Address Enrichment - Generic v2.1
       type: playbook
       iscommand: false
@@ -1083,7 +1086,20 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
+      description: |-
+          This playbook extracts indicators from a file.
+          Supported file types:
+          - CSV
+          - PDF
+          - TXT
+          - HTM, HTML
+          - DOC, DOCX
+          - PPT
+          - PPTX
+          - RTF
+          - XLS
+          - XLSX
+          - XML
     nexttasks:
       '#none#':
       - "52"
@@ -1142,8 +1158,8 @@ tasks:
       id: d18654f5-16fd-441e-8db0-4e55f0df0f43
       version: -1
       name: Should the email be authenticated?
-      description: Whether the email should be authenticated using DKIM, SPF and DMARC.
-        This checks whether "AuthenticateEmail" output is set to "True" and whether
+      description: Checks whether the email should be authenticated using DKIM, SPF and DMARC.
+        This checks if "AuthenticateEmail" output is set to "True" and if
         there are headers from an email to authenticate.
       type: condition
       iscommand: false
@@ -1265,7 +1281,7 @@ tasks:
       id: 3056d685-6aaf-4d07-879e-48c2bb841b19
       version: -1
       name: Save authenticity check result to incident field
-      description: Save the verdict, regarding the authenticity of the email, in an
+      description: Saves the email authenticity verdict in an
         incident field.
       script: Builtin|||setIncident
       type: regular
@@ -1371,7 +1387,7 @@ tasks:
       id: c325df0c-5e0f-4ba9-8863-0b0c18410025
       version: -1
       name: Save reporter email address in field
-      description: Saves the email address of the reporter of the email, in an incident
+      description: Saves the email address of the email reporter in an incident
         field.
       script: Builtin|||setIncident
       type: regular
@@ -1408,7 +1424,7 @@ tasks:
       id: bf7ea13b-64cd-46fb-8563-825432a1c808
       version: -1
       name: Predict phishing type using pre-trained phishing model
-      description: Predicts the specific type of phishing mail using a pre-trained
+      description: Predicts the specific phishing mail type using a pre-trained
         machine learning model, and highlights the most important words used in the
         classification decision.
       scriptName: DBotPredictPhishingWords
@@ -1497,8 +1513,7 @@ tasks:
       id: 40fe8e89-4a2c-470f-8bd6-6bae51b4794e
       version: -1
       name: Update incident with predictions
-      description: Updates incident fields with the predictions of the machine-learning
-        phishing model.
+      description: Updates incident fields with the machine learning phishing model predictions.
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -1606,7 +1621,7 @@ tasks:
       version: -1
       name: Block Indicators - Generic v2
       description: |+
-        This playbook blocks malicious Indicators using all integrations that are enabled, using the following sub-playbooks:
+        This playbook blocks malicious indicators using all enabled integrations, with the following sub-playbooks:
 
         - Block URL - Generic
         - Block Account - Generic
@@ -1831,7 +1846,7 @@ tasks:
       id: 823dff2d-a49d-4b44-849d-8fdb23f8156b
       version: -1
       name: Entity Enrichment - Phishing v2
-      description: Enrich entities using one or more integrations
+      description: This playbook enriches entities using one or more integrations.
       playbookName: Entity Enrichment - Phishing v2
       type: playbook
       iscommand: false
@@ -2115,9 +2130,9 @@ tasks:
       version: -1
       name: Detect & Manage Phishing Campaigns
       description: |-
-        This playbook is used to find, create and manage phishing campaigns. When a number of similar phishing incidents exist in the system, the playbook can be used to:
+        This playbook is used to find, create, and manage phishing campaigns. When a number of similar phishing incidents exist in the system, the playbook can be used to:
         1. Find and tie together incidents that are related to the same phishing attack (a phishing campaign).
-        2. Search for an existing Phishing Campaign incident or create a new one for the tied Phishing incidents.
+        2. Search for an existing Phishing Campaign incident or create a new one for the tied phishing incidents.
         3. Link all detected phishing incidents to the Phishing Campaign incident that was found or created previously.
         4. Update the Phishing Campaign incident with the latest data about the campaign, and update all related phishing incidents to indicate that they are part of the campaign.
       playbookName: Detect & Manage Phishing Campaigns
@@ -2158,7 +2173,7 @@ tasks:
       id: fd39af07-3674-4de7-8d83-3fb41a3d2055
       version: -1
       name: Update the user that the email is a malicious campaign
-      description: Send an email to the user explaining that the email they reported
+      description: Sends an email to the user explaining that the email they reported
         is malicious.
       script: '|||send-mail'
       type: regular
@@ -2278,21 +2293,15 @@ tasks:
       version: -1
       name: Process Microsoft's Anti-Spam Headers
       description: |-
-        This playbook stores the SCL, BCL and PCL scores (if exists) to the associated incident fields (Phishing SCL Score, Phishing PCL Score, and Phishing BCL Score).
+        This playbook stores the SCL, BCL, and PCL scores if they exist to the associated incident fields (Phishing SCL Score, Phishing PCL Score, and Phishing BCL Score).
         It also does the following:
-        1) Sets the email classification to "spam" if the "SCL" score is equal to or higher than 5.
+        1) Sets the email classification to "spam" if the SCL score is equal to or greater than 5.
         2) Set the incident severity according to the playbook inputs (default is: PCL/BCL - Medium, SCL - Low). The severity of the incident is set only when one (or more) of the following occurs:
-        - PCL (Phishing Confidence Level) score is between and including 4-8: The message content is likely to be phishing.
-        - BCL (Bulk complaint level) score is between and including 4-7: The message is from a bulk sender that generates a mixed number of complaints. Between and including 8-9: The message is from a bulk sender that generates a high number of complaints.
-        - SCL (Spam confidence level) score is between and including 5-6: Spam filtering marked the message as Spam. 9: Spam filtering marked the message as High confidence spam)
-
-        For further information on SCL/BCL/PCL, see the following Microsoft documentation:
-
-        https://docs.microsoft.com/en-us/microsoft-365/security/office-365-security/spam-confidence-levels?view=o365-worldwide
-
-        https://docs.microsoft.com/en-us/microsoft-365/security/office-365-security/bulk-complaint-level-values?view=o365-worldwide
-
-        https://docs.microsoft.com/en-us/exchange/antispam-and-antimalware/antispam-protection/antispam-stamps?view=exchserver-2019
+          - PCL (Phishing Confidence Level) For a score between and including 4-8: The message content is likely to be phishing.
+          - [BCL](https://docs.microsoft.com/en-us/microsoft-365/security/office-365-security/bulk-complaint-level-values?view=o365-worldwide) (Bulk Complaint Level) For a score between and including 4-7: The message is from a bulk sender that generates a mixed number of complaints. 
+            For a score between and including 8-9: The message is from a bulk sender that generates a high number of complaints.
+          - [SCL](https://docs.microsoft.com/en-us/microsoft-365/security/office-365-security/spam-confidence-levels?view=o365-worldwide) (Spam Confidence Level) For a score between and including 5-6: Spam filtering marks the message as spam. 
+            For a score of 9: Spam filtering marks the message as high confidence spam. See [anti-spam stamps](https://docs.microsoft.com/en-us/exchange/antispam-and-antimalware/antispam-protection/antispam-stamps?view=exchserver-2019).
       playbookName: Process Microsoft's Anti-Spam Headers
       type: playbook
       iscommand: false
@@ -2363,7 +2372,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
+      description: 'This playbook detonates URLs using active integrations that support URL detonation.'
     nexttasks:
       '#none#':
       - "52"
@@ -2481,7 +2490,7 @@ tasks:
       id: 95bdf590-35fa-4d5c-8d22-f12a356b3cfc
       version: -1
       name: Store the email address of the reporting user
-      description: Store the email address of the user that reported the incident.
+      description: Stores the email address of the user that reported the incident.
       scriptName: Set
       type: regular
       iscommand: false
@@ -2547,51 +2556,46 @@ inputs:
     simple: "False"
   required: false
   description: |-
-    Enable the "Search and Delete" capability (can be either "True" or "False").
-    In case of a malicious email, the "Search and Delete" sub-playbook will look for other instances of the email and delete them pending analyst approval.
+    Enables the Search and Delete capability.
+    For a malicious email, the "Search and Delete" sub-playbook looks for other instances of the email and deletes them pending analyst approval.
   playbookInputQuery:
 - key: BlockIndicators
   value:
     simple: "False"
   required: false
   description: |-
-    Enable the "Block Indicators" capability (can be either "True" or "False").
-    In case of a malicious email, the "Block Indicators" sub-playbook will block all malicious indicators in the relevant integrations.
+    Enables the Block Indicators capability.
+    For a malicious email, the "Block Indicators" sub-playbook blocks all malicious indicators in the relevant integrations.
   playbookInputQuery:
 - key: AuthenticateEmail
   value:
-    simple: "True"
+    simple: "False"
   required: false
-  description: Whether the authenticity of the email should be verified, using SPF,
+  description: Determines whether the authenticity of the email should be verified using SPF,
     DKIM and DMARC.
   playbookInputQuery:
 - key: OnCall
   value:
     simple: "False"
   required: false
-  description: Set to true to assign only user that is currently on shift.
+  description: Set to True to assign only the user that is currently on shift.
   playbookInputQuery:
 - key: SearchAndDeleteIntegration
   value:
     simple: EWS
   required: false
   description: |-
-    Possible Values:
-    - EWS
-    - O365
-    - Gmail
-
-    Determines which product and playbook will be used to search and delete the phishing email from users' inboxes.
-    Set this to "O365" to use the "O365 - Security And Compliance - Search And Delete" playbook.
-    Set this to "EWS" to use the "Search And Delete Emails - EWS" playbook.
-    Set this to "Gmail" to use the "Search And Delete - Gmail" playbook.
+    Determines which product and playbook is used to search and delete the phishing email from the users' inboxes.
+      - Set this to "O365" to use the "O365 - Security And Compliance - Search And Delete" playbook.
+      - Set this to "EWS" to use the "Search And Delete Emails - EWS" playbook.
+      - Set this to "Gmail" to use the "Search And Delete - Gmail" playbook.
   playbookInputQuery:
 - key: O365DeleteType
   value:
     simple: Soft
   required: false
   description: |-
-    The method by which to delete emails using the O365 - Security And Compliance - Search And Delete playbook. Could be "Soft" (recoverable), or "Hard" (unrecoverable). Leave empty to decide manually for each email incident.
+    Sets the method to delete emails in the "O365 - Security And Compliance - Search And Delete" playbook. Can be "Soft" (recoverable), or "Hard" (unrecoverable). Leave empty to decide manually for each email incident.
     This is only applicable if the SearchAndDeleteIntegration input is set to O365.
   playbookInputQuery:
 - key: O365ExchangeLocation
@@ -2600,25 +2604,25 @@ inputs:
       root: incident
       accessor: emailto
   required: false
-  description: Used only when searching and deleting emails in O365. The exchange
-    location. Determines from where to search and delete emails searched using O365
+  description: The exchange location. Determines from where to search and delete emails using O365
     playbooks. Use the value "All" to search all mailboxes, or use ${incident.emailto}
-    to search and delete the email only from the recipient's inbox. Note - searching
-    all mailboxes may take a significant amount of time. This input is only applicable
-    if the SearchAndDeleteIntegration input is set to O365.
+    to search and delete the email only from the recipient's inbox. 
+    Note 
+    - Searching all mailboxes may take a significant amount of time.
+    - This input is used only when searching and deleting emails in O365.
+    - This input is only applicable if the SearchAndDeleteIntegration input is set to O365.
   playbookInputQuery:
 - key: O365AllowNotFoundSearchLocations
   value:
     simple: "False"
   required: false
-  description: Used only when searching and deleting emails in O365. Whether to include
-    mailboxes other than regular user mailboxes in the compliance search. Default
-    is "false".
+  description: Used only when searching and deleting emails in O365. Determines whether to include
+    mailboxes other than regular user mailboxes in the compliance search.
   playbookInputQuery:
 - key: O365ExchangeLocationExclusion
   value: {}
   required: false
-  description: Used only when searching and deleting emails in O365. Comma-separated
+  description: Used only when searching and deleting emails in O365. A comma-separated
     list of mailboxes/distribution groups to exclude when you use the value "All"
     for the O365ExchangeLocation input.
   playbookInputQuery:
@@ -2632,29 +2636,29 @@ inputs:
 - key: InternalDomains
   value: {}
   required: false
-  description: A CSV list of internal domains. The list will be used to determine
+  description: A CSV list of internal domains. The list is used to determine
     whether an email address is internal or external.
   playbookInputQuery:
 - key: DetonateURL
   value:
     simple: "False"
   required: false
-  description: Whether to use URL Detonation playbook or not. When detonating a URL
-    it's possible that it will take a few minutes. False is default.
+  description: Determines whether to use the "URL Detonation" playbook. Detonating a URL
+    may take a few minutes.
   playbookInputQuery:
 - key: InternalRange
   value: {}
   required: false
   description: |-
-    This input will be used in the task "Entity Enrichment - Phishing v2".
-    A list of internal IP ranges to check IP addresses against. The list should be provided in CIDR notation, separated by commas. An example of a list of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes). If a list is not provided, will use default list provided in the IsIPInRanges script (the known IPv4 private address ranges).
+    This input is used in the task "Entity Enrichment - Phishing v2" playbook.
+    A list of internal IP ranges to check IP addresses against. The list should be provided in CIDR notation, separated by commas. An example of a list of ranges is: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes). If a list is not provided, uses the default list provided in the IsIPInRanges script (the known IPv4 private address ranges).
   playbookInputQuery:
 - key: PhishingModelName
   value:
     simple: phishing_model
   required: false
-  description: Optional - the name of a pre-trained phishing model to use for phishing
-    type prediction using machine learning.
+  description: Optional - the name of a pre-trained phishing model to predict phishing
+    type using machine learning.
 outputs: []
 tests:
 - Phishing v2 - Test - Incident Starter
