@@ -628,11 +628,9 @@ tasks:
           accessor: attachmentname
       From:
         complex:
-          root: incident
-          accessor: emailfrom
-      ? |
-        O365AllowNotFoundExchangeLocations
-      : complex:
+          root: PhishingSender
+      O365AllowNotFoundExchangeLocations:
+        complex:
           root: inputs.O365AllowNotFoundSearchLocations
           transformers:
           - operator: toLowerCase
