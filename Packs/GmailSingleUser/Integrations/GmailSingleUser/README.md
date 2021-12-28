@@ -2,19 +2,36 @@ Use the Gmail Single User integration to send emails and fetch emails as inciden
 
 **Note:** We recommend using this integration if you only want to fetch and send emails from a single user's mailbox. If you require accessing multiple users mailboxes, use the [GMail Integration](https://xsoar.pan.dev/docs/reference/integrations/gmail).
 
+## Configure Gmail Single User on Cortex XSOAR
+
+1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+2. Search for Gmail Single User.
+3. Click **Add instance** to create and configure a new integration instance.
+    | **Parameter** | **Required** |
+    | --- | --- |
+    | Gmail of the user | True |
+    | Auth Code (run the !gmail-auth-link command to start the auth flow - see Application Authorization Flow section) | False |
+    | Client ID (Optional: use your own app - see Application Authorization Flow section) | False |
+    | Incident type | False |
+    | Fetch incidents | False |
+    | First fetch timestamp, in days | False |
+    | Events query (e.g., "from:example@demisto.com") | False |
+    | Maximum number of emails to pull per fetch | False | 
+    | Trust any certificate (not secure) | False |
+    | Use system proxy settings | False |
+
 ## Application Authorization Flow
 
-To allow Cortex XSOAR to access Gmail, the user has to approve the Demisto App using an OAuth 2.0 authorization flow. Follow these steps to authorize the Demisto app in Gmail.
+To allow Cortex XSOAR to access Gmail, the user has to approve the Demisto App using an OAuth 2.0 authorization flow or create a new app on his own.\
+Below are the steps to create OAuth 2.0 authorization flow.\
+To use the Demisto app, follow the steps mentioned in the 'GSuite Admins' section.\
+To create your own app, follow the steps mentioned in the 'All Account Types' section.\
+Once you have the app, please follow the 'Authorization Flow In Cortex XSOAR' section.
 
-1. Create and save an integration instance of the Gmail Single User integration. Do not fill in the *Auth Code* field, this will be obtained in the next steps.
-2. To obtain the **Auth Code** run the following command in the playground: ***!gmail-auth-link***. Access the link you receive to authenticate your Gmail account. 
-3. Complete the authentication process and copy the received code to the **Auth Code** configuration parameter of the integration instance. 
-4. Save the instance.
-5. To verify that authentication was configured correctly, run the ***!gmail-auth-test***.
+### GSuite Admins:
 
 **NOTE:** The Demisto App is going through the Google verification process. During the verification process the app is not fully verified, and you may receive from Google an "unverified app" warning in the authorization flow.
 
-### GSuite Admins:
 You can choose to trust the Demisto App so your users can configure the App. Instructions:
 * Go to [App Access Control](https://admin.google.com/ac/owl/list?tab=apps)
 * Choose: `Configure new app` -> `OAuth App Name Or Client ID`. 
@@ -22,7 +39,8 @@ You can choose to trust the Demisto App so your users can configure the App. Ins
 * Enter the following Client ID: `391797357217-pa6jda1554dbmlt3hbji2bivphl0j616.apps.googleusercontent.com`
 * You will see the `Demisto App` in the results page.
   ![Demisto App](doc_imgs/demisto-app-result.png)
-* Select the App and grant the App access as `Trusted`. 
+* Select the App and grant the App access as `Trusted`.
+* Proceed to the 'Authorization Flow In Cortex XSOAR' section to configure the OAuth 2.0 authorization in cortex XSOAR.
 
 Additional info available at: https://support.google.com/a/answer/7281227
 
@@ -33,33 +51,21 @@ Additional info available at: https://support.google.com/a/answer/7281227
 * If needed, configure the [Consent Screen](https://developers.google.com/workspace/guides/configure-oauth-consent). Fill in the Consent Screen information you would like to display to your users.
 * In the credentials page choose: `Create Credentials` -> `OAuth client ID`.
   ![Create Credentials](doc_imgs/create-credentials.png)
-* When creating the OAuth client ID, select **iOS** as the type (this type allows Apps to work only with a client id).
+* When creating the OAuth client ID, select **iOS** as the type (this type allows Apps to work only with a client id). **iOS** is the type used for all apps which are not Android (including desktop types)
 * Name the App and Bundle. You can choose a dummy bundle id such as `com.demisto.app`.
   ![OAuth App](doc_imgs/oauth-app.png)
 * Make sure to [enable the Gmail API](https://console.developers.google.com/apis/api/gmail.googleapis.com/overview) if you haven't done so.
 * After you create the app, copy the *client id* of the app that you created to the integration configuration.
-* Proceed with the OAuth 2.0 authorization flow detailed above.
+* Proceed to the 'Authorization Flow In Cortex XSOAR' section to configure the OAuth 2.0 authorization in cortex XSOAR.
 
+### Authorization Flow In Cortex XSOAR
+1. Create and save an integration instance of the Gmail Single User integration. Do not fill in the *Auth Code* field, this will be obtained in the next steps.
+2. To obtain the **Auth Code** run the following command in the playground: ***!gmail-auth-link***. Access the link you receive to authenticate your Gmail account. 
+3. Complete the authentication process and copy the received code to the **Auth Code** configuration parameter of the integration instance. 
+4. Save the instance.
+5. To verify that authentication was configured correctly, run the ***!gmail-auth-test***.
 
-## Configure Gmail Single User on Cortex XSOAR
-
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Gmail Single User.
-3. Click **Add instance** to create and configure a new integration instance.
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Gmail of the user | True |
-    | Auth Code (run the !gmail-auth-link command to start the auth flow - see Application Authorization Flow section above) | False |
-    | Client ID (Optional: use your own app - see Application Authorization Flow section - All account Types) | False |
-    | Incident type | False |
-    | Fetch incidents | False |
-    | First fetch timestamp, in days | False |
-    | Events query (e.g., "from:example@demisto.com") | False |
-    | Maximum number of emails to pull per fetch | False | 
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
-
-## Fetched Incidents Data
+### Fetched Incidents Data
 * Incident Name
 * Occurred
 * Owner
