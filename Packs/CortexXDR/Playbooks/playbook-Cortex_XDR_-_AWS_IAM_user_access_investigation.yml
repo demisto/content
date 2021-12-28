@@ -815,7 +815,7 @@ tasks:
     task:
       id: 94e599f9-c3db-4452-8db3-17033ecda3af
       version: -1
-      name: Check user AWS login profile
+      name: Check for AWS user login profile
       description: "Check the user AWS login profile configuration.\nIf a login profile\
         \ is configured, it needs to be deleted. \n\nThe user login profile configuration\
         \ can be found under https://console.aws.amazon.com/iam/home#/users/[username]\
@@ -828,8 +828,6 @@ tasks:
       - "19"
       Delete profile:
       - "10"
-      No profile:
-      - "19"
     separatecontext: false
     conditions:
     - label: Delete profile
