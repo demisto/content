@@ -38,34 +38,34 @@ script:
     arguments:
     - name: search
       default: true
-      description: String to search for in core.help command output.
+      description: String to search for in the core.help command output.
     - name: command
-      description: Command for which to print help.
+      description: The command for which to display help information.
     - name: prefix
-      description: Print help out for commands having the given prefix.
-    description: Prints help (information) for ePO commands. If no command argument
+      description: Displays help information for commands with the specified prefix.
+    description: Displays help (information) for ePO commands. If no command argument
       is specified, returns all ePO commands.
   - name: epo-get-latest-dat
     arguments: []
     outputs:
     - contextPath: McAfee.ePO.latestDAT
-      description: Latest McAfee DAT file version available.
+      description: Latest available McAfee DAT file version.
       type: number
-    description: Checks the latest DAT file version available in the public McAfee
+    description: Checks the latest available DAT file version in the public McAfee
       repository.
   - name: epo-get-current-dat
     arguments: []
     outputs:
     - contextPath: McAfee.ePO.epoDAT
-      description: Current installed McAfee DAT file in ePO repository
+      description: Current installed McAfee DAT file in the ePO repository
       type: number
-    description: Checks the existing DAT file version in ePO.
+    description: Checks the existing DAT file version in the ePO repository.
   - name: epo-command
     arguments: []
-    description: Executes the ePO command. Receives the mandatory ''command'' argument,
-      and other optional arguments. Run the ''epo-help'' command to get a list of
-      available commands. You can also control the response formart to be text instead
-      of the default json format using resp_type=text, You can also specify the ''headers''
+    description: Executes the ePO command. Receives the mandatory 'command' argument,
+      and other optional arguments. Run the 'epo-help' command to get a list of
+      available commands. You can control the response format to be text instead
+      of the default JSON format using resp_type=text. You can also specify the 'headers'
       argument to filter table headers. Example/:/ !epo-command command=system.find
       searchText=10.0.0.1 headers=EPOBranchNode.AutoID,EPOComputerProperties.ComputerName
   - name: epo-update-client-dat
@@ -83,7 +83,7 @@ script:
         to the client are aborted. Default is 5.
     - name: stopAfterMinutes
       description: The threshold (in minutes) that the client task is allowed to run.
-        Defaults to 20.
+        Default is 20.
     - name: randomizationInterval
       description: Duration (in minutes) over which to randomly spread task execution.
         Default is 0 (executes on all clients immediately).
@@ -91,7 +91,7 @@ script:
   - name: epo-update-repository
     arguments: []
     description: Triggers a server task in specific ePO servers to retrieve the latest
-      signatures from the update server.
+      signatures from the updated server.
   - name: epo-get-system-tree-group
     arguments:
     - name: search
@@ -103,7 +103,7 @@ script:
     - contextPath: McAfee.ePO.SystemTreeGroups.groupPath
       description: System tree group path.
       type: string
-    description: Returns system tree groups.
+    description: Returns a system tree group.
   - name: epo-find-systems
     arguments:
     - name: groupId
@@ -120,7 +120,7 @@ script:
       description: The unique ID within the tool retrieving the endpoint.
       type: String
     - contextPath: Endpoint.Name
-      description: Endpoint name
+      description: Endpoint name.
       type: string
     - contextPath: Endpoint.Domain
       description: Endpoint domain.
@@ -144,142 +144,142 @@ script:
       description: Number of processors.
       type: number
     - contextPath: Endpoint.Memory
-      description: Endpoint memory.
+      description: The amount of memory in the endpoint.
       type: number
     - contextPath: McAfee.ePO.Endpoint.ParentID
-      description: Endpoint Parent ID
+      description: Endpoint parent ID.
       type: Number
     - contextPath: McAfee.ePO.Endpoint.Name
-      description: Endpoint Computer Name
+      description: Endpoint computer name.
       type: String
     - contextPath: McAfee.ePO.Endpoint.Description
-      description: Endpoint Description
+      description: Endpoint description.
       type: String
     - contextPath: McAfee.ePO.Endpoint.SystemDescription
-      description: Endpoint System Description
+      description: Endpoint system description.
       type: String
     - contextPath: McAfee.ePO.Endpoint.TimeZone
-      description: Endpoint TimeZone
+      description: Endpoint time zone.
       type: String
     - contextPath: McAfee.ePO.Endpoint.DefaultLangID
-      description: Endpoint Default Language Id
+      description: Endpoint default language ID.
       type: String
     - contextPath: McAfee.ePO.Endpoint.UserName
-      description: Endpoint Username
+      description: Endpoint username.
       type: String
     - contextPath: McAfee.ePO.Endpoint.Domain
-      description: Endpoint Domain Name
+      description: Endpoint domain name.
       type: String
     - contextPath: McAfee.ePO.Endpoint.Hostname
-      description: Endpoint IP Host name
+      description: Endpoint IP host name.
       type: String
     - contextPath: McAfee.ePO.Endpoint.IPV6
-      description: Endpoint IPv6
+      description: Endpoint IPv6 address.
       type: String
     - contextPath: McAfee.ePO.Endpoint.IPAddress
-      description: Endpoint IP Address
+      description: Endpoint IP address.
       type: String
     - contextPath: McAfee.ePO.Endpoint.IPSubnet
-      description: Endpoint IP Subnet
+      description: Endpoint IP subnet.
       type: String
     - contextPath: McAfee.ePO.Endpoint.IPSubnetMask
-      description: Endpoint IP Subnet Mask
+      description: Endpoint IP subnet mask.
       type: String
     - contextPath: McAfee.ePO.Endpoint.IPV4x
-      description: Endpoint IPV4x
+      description: Endpoint IPV4x address.
       type: Number
     - contextPath: McAfee.ePO.Endpoint.IPXAddress
-      description: Endpoint IPX
+      description: Endpoint IPX address.
       type: String
     - contextPath: McAfee.ePO.Endpoint.SubnetAddress
-      description: Endpoint Subnet Address
+      description: Endpoint subnet address.
       type: String
     - contextPath: McAfee.ePO.Endpoint.SubnetMask
-      description: Endpoint Subnet Mask
+      description: Endpoint subnet mask.
       type: String
     - contextPath: McAfee.ePO.Endpoint.NetAddress
-      description: Endpoint Net Address
+      description: Endpoint net address.
       type: String
     - contextPath: McAfee.ePO.Endpoint.OS
-      description: Endpoint OS Type
+      description: Endpoint OS type.
       type: String
     - contextPath: McAfee.ePO.Endpoint.OSVersion
-      description: Endpoint OS Version
+      description: Endpoint OS version.
       type: String
     - contextPath: McAfee.ePO.Endpoint.OSServicePackVer
-      description: Endpoint OS Service Pack Version
+      description: Endpoint OS service pack version.
       type: String
     - contextPath: McAfee.ePO.Endpoint.OSBuildNum
-      description: Endpoint OS Build Number
+      description: Endpoint OS build number.
       type: Number
     - contextPath: McAfee.ePO.Endpoint.OSPlatform
-      description: Endpoint OS Platform
+      description: Endpoint OS platform.
       type: String
     - contextPath: McAfee.ePO.Endpoint.OSOEMID
-      description: Endpoint OS OEM ID
+      description: Endpoint OS OEM ID.
       type: String
     - contextPath: McAfee.ePO.Endpoint.Processor
-      description: Endpoint CPU Type
+      description: Endpoint CPU type.
       type: String
     - contextPath: McAfee.ePO.Endpoint.CPUSpeed
-      description: Endpoint CPU Speed
+      description: Endpoint CPU speed.
       type: Number
     - contextPath: McAfee.ePO.Endpoint.Processors
-      description: Endpoint Number of CPUs
+      description: The number of CPUs in the endpoint.
       type: Number
     - contextPath: McAfee.ePO.Endpoint.CPUSerialNum
-      description: Endpoint CPU Serial Number
+      description: The CPU serial number in the endpoint.
       type: String
     - contextPath: McAfee.ePO.Endpoint.Memory
-      description: Endpoint Total Physical Memory
+      description: The total amount of physical memory in the endpoint.
       type: Number
     - contextPath: McAfee.ePO.Endpoint.FreeMemory
-      description: Endpoint Free Memory
+      description: The amount of free memory in the endpoint.
       type: Number
     - contextPath: McAfee.ePO.Endpoint.FreeDiskSpace
-      description: Endpoint Free Disk Space
+      description: The amount of free disk space in the endpoint.
       type: Number
     - contextPath: McAfee.ePO.Endpoint.TotalDiskSpace
-      description: Endpoint Total Disk Space
+      description: The total amount of disk space in the endpoint.
       type: Number
     - contextPath: McAfee.ePO.Endpoint.UserProperty1
-      description: Endpoint User Property 1
+      description: Endpoint user property 1.
       type: String
     - contextPath: McAfee.ePO.Endpoint.UserProperty2
-      description: Endpoint User Property 2
+      description: Endpoint user property 2.
       type: String
     - contextPath: McAfee.ePO.Endpoint.UserProperty3
-      description: Endpoint User Property 3
+      description: Endpoint user property 3.
       type: String
     - contextPath: McAfee.ePO.Endpoint.UserProperty4
-      description: Endpoint User Property 4
+      description: Endpoint user property 4.
       type: String
     - contextPath: McAfee.ePO.Endpoint.SysvolFreeSpace
-      description: Endpoint System Volume Free Space
+      description: The amount of system volume free space in the endpoint.
       type: Number
     - contextPath: McAfee.ePO.Endpoint.SysvolTotalSpace
-      description: Endpoint System Volume Total Space
+      description: The amount of system volume total space in the endpoint.
       type: Number
     - contextPath: McAfee.ePO.Endpoint.Tags
-      description: Endpoint EPO Tags
+      description: Endpoint EPO tags.
       type: String
     - contextPath: McAfee.ePO.Endpoint.ExcludedTags
-      description: Endpoint EPO Excluded Tags
+      description: Endpoint EPO excluded tags.
       type: String
     - contextPath: McAfee.ePO.Endpoint.LastUpdate
-      description: Endpoint EPO Last Update
+      description: The date the endpoint ePO was last updated.
       type: Date
     - contextPath: McAfee.ePO.Endpoint.ManagedState
-      description: Endpoint EPO Managed State
+      description: Endpoint EPO managed state.
       type: Number
     - contextPath: McAfee.ePO.Endpoint.AgentGUID
-      description: Endpoint EPO Agent GUID
+      description: Endpoint EPO agent GUID.
       type: String
     - contextPath: McAfee.ePO.Endpoint.AgentVersion
-      description: Endpoint EPO Agent Version
+      description: Endpoint EPO agent version.
       type: String
     - contextPath: McAfee.ePO.Endpoint.AutoID
-      description: Endpoint EPO Auto ID
+      description: Endpoint EPO auto ID.
       type: Number
     description: Finds computers within a specified group in the McAfee ePO system
       tree.
@@ -287,19 +287,19 @@ script:
     arguments:
     - name: searchText
       required: true
-      description: Hostname to search.
+      description: Hostname to search for.
     - name: verbose
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: Whether to print all system data.
+      description: Whether to display all system data.
     outputs:
     - contextPath: Endpoint.ID
       description: The unique ID within the tool retrieving the endpoint.
       type: String
     - contextPath: Endpoint.Name
-      description: Endpoint name
+      description: Endpoint name.
       type: string
     - contextPath: Endpoint.Domain
       description: Endpoint domain.
@@ -323,197 +323,197 @@ script:
       description: Number of processors.
       type: number
     - contextPath: Endpoint.Memory
-      description: Endpoint memory.
+      description: The amount of memory in the endpoint.
       type: number
     - contextPath: McAfee.ePO.Endpoint.ParentID
-      description: Endpoint Parent ID
+      description: Endpoint parent ID.
       type: Number
     - contextPath: McAfee.ePO.Endpoint.Name
-      description: Endpoint Computer Name
+      description: Endpoint computer name.
       type: String
     - contextPath: McAfee.ePO.Endpoint.Description
-      description: Endpoint Description
+      description: Endpoint description.
       type: String
     - contextPath: McAfee.ePO.Endpoint.SystemDescription
-      description: Endpoint System Description
+      description: Endpoint system description.
       type: String
     - contextPath: McAfee.ePO.Endpoint.TimeZone
-      description: Endpoint TimeZone
+      description: Endpoint time zone.
       type: String
     - contextPath: McAfee.ePO.Endpoint.DefaultLangID
-      description: Endpoint Default Language Id
+      description: Endpoint default language ID.
       type: String
     - contextPath: McAfee.ePO.Endpoint.UserName
-      description: Endpoint Username
+      description: Endpoint username.
       type: String
     - contextPath: McAfee.ePO.Endpoint.Domain
-      description: Endpoint Domain Name
+      description: Endpoint domain name.
       type: String
     - contextPath: McAfee.ePO.Endpoint.Hostname
-      description: Endpoint IP Host name
+      description: Endpoint IP host name.
       type: String
     - contextPath: McAfee.ePO.Endpoint.IPV6
-      description: Endpoint IPv6
+      description: Endpoint IPv6 address.
       type: String
     - contextPath: McAfee.ePO.Endpoint.IPAddress
-      description: Endpoint IP Address
+      description: Endpoint IP address.
       type: String
     - contextPath: McAfee.ePO.Endpoint.IPSubnet
-      description: Endpoint IP Subnet
+      description: Endpoint IP subnet.
       type: String
     - contextPath: McAfee.ePO.Endpoint.IPSubnetMask
-      description: Endpoint IP Subnet Mask
+      description: Endpoint IP subnet mask.
       type: String
     - contextPath: McAfee.ePO.Endpoint.IPV4x
-      description: Endpoint IPV4x
+      description: Endpoint IPV4x address.
       type: Number
     - contextPath: McAfee.ePO.Endpoint.IPXAddress
-      description: Endpoint IPX
+      description: Endpoint IPX address.
       type: String
     - contextPath: McAfee.ePO.Endpoint.SubnetAddress
-      description: Endpoint Subnet Address
+      description: Endpoint subnet address.
       type: String
     - contextPath: McAfee.ePO.Endpoint.SubnetMask
-      description: Endpoint Subnet Mask
+      description: Endpoint subnet mask.
       type: String
     - contextPath: McAfee.ePO.Endpoint.NetAddress
-      description: Endpoint Net Address
+      description: Endpoint net address.
       type: String
     - contextPath: McAfee.ePO.Endpoint.OS
-      description: Endpoint OS Type
+      description: Endpoint OS type.
       type: String
     - contextPath: McAfee.ePO.Endpoint.OSVersion
-      description: Endpoint OS Version
+      description: Endpoint OS version.
       type: String
     - contextPath: McAfee.ePO.Endpoint.OSServicePackVer
-      description: Endpoint OS Service Pack Version
+      description: Endpoint OS service pack version.
       type: String
     - contextPath: McAfee.ePO.Endpoint.OSBuildNum
-      description: Endpoint OS Build Number
+      description: Endpoint OS build number.
       type: Number
     - contextPath: McAfee.ePO.Endpoint.OSPlatform
-      description: Endpoint OS Platform
+      description: Endpoint OS platform.
       type: String
     - contextPath: McAfee.ePO.Endpoint.OSOEMID
-      description: Endpoint OS OEM ID
+      description: Endpoint OS OEM ID.
       type: String
     - contextPath: McAfee.ePO.Endpoint.Processor
-      description: Endpoint CPU Type
+      description: Endpoint CPU type.
       type: String
     - contextPath: McAfee.ePO.Endpoint.CPUSpeed
-      description: Endpoint CPU Speed
+      description: Endpoint CPU speed.
       type: Number
     - contextPath: McAfee.ePO.Endpoint.Processors
-      description: Endpoint Number of CPUs
+      description: Number of CPUs in the endpoint.
       type: Number
     - contextPath: McAfee.ePO.Endpoint.CPUSerialNum
-      description: Endpoint CPU Serial Number
+      description: Endpoint CPU serial number.
       type: String
     - contextPath: McAfee.ePO.Endpoint.Memory
-      description: Endpoint Total Physical Memory
+      description: The total amount of physical memory in the endpoint.
       type: Number
     - contextPath: McAfee.ePO.Endpoint.FreeMemory
-      description: Endpoint Free Memory
+      description: The amount of free memory in the endpoint.
       type: Number
     - contextPath: McAfee.ePO.Endpoint.FreeDiskSpace
-      description: Endpoint Free Disk Space
+      description: The amount of free disk space in the endpoint.
       type: Number
     - contextPath: McAfee.ePO.Endpoint.TotalDiskSpace
-      description: Endpoint Total Disk Space
+      description: The total amount of disk space in the endpoint.
       type: Number
     - contextPath: McAfee.ePO.Endpoint.UserProperty1
-      description: Endpoint User Property 1
+      description: Endpoint user property 1.
       type: String
     - contextPath: McAfee.ePO.Endpoint.UserProperty2
-      description: Endpoint User Property 2
+      description: Endpoint user property 2.
       type: String
     - contextPath: McAfee.ePO.Endpoint.UserProperty3
-      description: Endpoint User Property 3
+      description: Endpoint user property 3.
       type: String
     - contextPath: McAfee.ePO.Endpoint.UserProperty4
-      description: Endpoint User Property 4
+      description: Endpoint user property 4.
       type: String
     - contextPath: McAfee.ePO.Endpoint.SysvolFreeSpace
-      description: Endpoint System Volume Free Space
+      description: The amount of system volume free space in the endpoint.
       type: Number
     - contextPath: McAfee.ePO.Endpoint.SysvolTotalSpace
-      description: Endpoint System Volume Total Space
+      description: The total amount of system volume space in the endpoint.
       type: Number
     - contextPath: McAfee.ePO.Endpoint.Tags
-      description: Endpoint EPO Tags
+      description: Endpoint ePO tags.
       type: String
     - contextPath: McAfee.ePO.Endpoint.ExcludedTags
-      description: Endpoint EPO Excluded Tags
+      description: Endpoint EPO excluded tags.
       type: String
     - contextPath: McAfee.ePO.Endpoint.LastUpdate
-      description: Endpoint EPO Last Update
+      description: The date the endpoint was last updated.
       type: Date
     - contextPath: McAfee.ePO.Endpoint.ManagedState
-      description: Endpoint EPO Managed State
+      description: Endpoint managed state.
       type: Number
     - contextPath: McAfee.ePO.Endpoint.AgentGUID
-      description: Endpoint EPO Agent GUID
+      description: Endpoint agent GUID.
       type: String
     - contextPath: McAfee.ePO.Endpoint.AgentVersion
-      description: Endpoint EPO Agent Version
+      description: Endpoint agent version.
       type: String
     - contextPath: McAfee.ePO.Endpoint.AutoID
-      description: Endpoint EPO Auto ID
+      description: Endpoint auto ID.
       type: Number
     description: Finds systems in the McAfee ePO system tree.
   - name: epo-wakeup-agent
     arguments:
     - name: names
       required: true
-      description: Agent hostname.
+      description: A comma-separated list of agent host names.
     description: Wakes up an agent.
   - name: epo-apply-tag
     arguments:
     - name: names
       required: true
-      description: Hostnames on which to apply tags.
+      description: A comma-separated list of host names on which to apply tags.
     - name: tagName
       required: true
       description: Tag name.
-    description: Applies a tag to hostnames.
+    description: Applies a tag to the specified host names.
   - name: epo-clear-tag
     arguments:
     - name: names
       required: true
-      description: Hostnames from which to clear tags.
+      description: A comma-separated list of host names from which to clear tags.
     - name: tagName
       required: true
       description: Tag name.
-    description: Clears a tag from hostnames.
+    description: Clears a tag from the specified host names.
   - name: epo-list-tag
     arguments:
     - name: searchText
       required: false
-      description: List tags that contains searchText in their name field
-    description: List all tags available in the ePO system or list tags contains searchText
-      if searchText is supplied.
+      description: List tags that contain the searchText in their name field.
+    description: List tags that contain the searchText.
+      If no searchText is specified, list all tags available in the ePO system.
     outputs:
     - contextPath: McAfee.ePO.Tags.tagId
-      description: Tag Id.
+      description: Tag ID.
       type: number
     - contextPath: McAfee.ePO.Tags.tagName
-      description: Tag Name.
+      description: Tag name.
       type: string
     - contextPath: McAfee.ePO.Tags.tagNotes
-      description: Tag Notes.
+      description: Tag notes.
       type: string
   - name: epo-get-tables
     arguments:
     - name: table
-      description: Name of the table.
-    description: Returns ePO all tables, an ePO table if the table argument is supplied.
+      description: Name of the table to retrieve.
+    description: Returns the ePO table of the table argument that is specified. If no table argument is specified, returns all ePO tables.
   - name: epo-query-table
     arguments:
     - name: target
       required: true
-      description: Table name
+      description: Name of the table.
     - name: select
-      description: 'The columns to select, in SQUID syntax. Example: "(select EPOEvents.AutoID
+      description: 'The columns to return, in SQUID syntax. Example: "(select EPOEvents.AutoID
         EPOEvents.DetectedUTC EPOEvents.ReceivedUTC)"'
     - name: where
       description: 'Filter results, in SQUID syntax. Example: "(where ( eq ( OrionTaskLogTask
@@ -526,7 +526,7 @@ script:
     - name: joinTables
       description: Perform join, in SQUID syntax.
     - name: query_name
-      description: Name for the query to appear in the context
+      description: Name for the query to appear in the context.
     outputs:
     - contextPath: McAfee.ePO.Query
       description: Query result.
@@ -535,14 +535,14 @@ script:
     arguments: []
     outputs:
     - contextPath: McAfee.ePO.Version
-      description: ePO version
+      description: ePO version.
       type: string
     description: Returns the ePO version.
   - name: epo-move-system
     arguments:
     - name: names
       required: true
-      description: Asset name.
+      description: A comma-separated list of asset names.
     - name: parentGroupId
       required: true
       description: Group ID.
@@ -557,179 +557,180 @@ script:
       required: true
       description: CSV list of key value pairs as additional arguments to pass, for
         example, "argName1:argValue1,argName2:argValue2".
-    description: Executes the ePO command. Run the ''epo-help'' command to get a list
+    description: Executes the ePO command. Run the 'epo-help' command to get a list
       of available commands. For example/:/  !epo-advanced-command command=clienttask.find
-      commandArgs=searchText:On-Demand. You can also specify the ''headers'' argument
+      commandArgs=searchText:On-Demand. You can also specify the 'headers' argument
       to filter table headers, for example/:/ !epo-command command=system.find searchText=10.0.0.1
       headers=EPOBranchNode.AutoID,EPOComputerProperties.ComputerName.
   - name: epo-find-client-task
     arguments:
     - name: searchText
       required: false
-      description: List client tasks that contains searchText in their name field.
+      description: List client tasks that contains the searchText in their name field.
     outputs:
     - contextPath: McAfee.ePO.ClientTask.objectId
-      description: Client Task Object ID
+      description: Client task object ID.
       type: number
     - contextPath: McAfee.ePO.ClientTask.objectName
-      description: Client Task Object Name
+      description: Client task object name.
       type: string
     - contextPath: McAfee.ePO.ClientTask.productId
-      description: Client Task Product ID
+      description: Client task product ID.
       type: string
     - contextPath: McAfee.ePO.ClientTask.productName
-      description: Client Task Product Name 
+      description: Client task product name.
       type: string
     - contextPath: McAfee.ePO.ClientTask.typeId
-      description: Client Task Type ID
+      description: Client task type ID.
       type: number
     - contextPath: McAfee.ePO.ClientTask.typeName
-      description: Client Task Type Name
+      description: Client task type name.
       type: string
-    description: Finds client tasks .
+    description: Finds client tasks.
   - name: epo-find-policy
     arguments:
     - name: searchText
       required: false
-      description: List policies that contains searchText in their name field or list
-        all policies.
+      description: List policies that contains the searchText in their name field. 
+      If no searchText is specified, list all policies in the ePO system.
     description: Finds policy.
   - name: epo-assign-policy-to-group
     arguments:
     - name: groupId
       required: true
-      description: System tree Group ID.(as returned by system.findGroups)
+      description: System tree group ID.(as returned by system.findGroups).
     - name: productId
       required: true
-      description: Product ID.(as returned by policy.find)
+      description: Product ID (as returned by policy.find).
     - name: objectId
       required: true
-      description: Object ID.(as returned by policy.find)
+      description: Object ID (as returned by policy.find).
     - name: resetInheritance
       required: false
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: If true resets the inheritance for the specified policy on the
-        given group. Defaults to false.
-    description: Assigns policy to the specified group or resets group's inheritance
+      description: If true, resets the inheritance for the specified policy on the
+        given group. Default is false.
+    description: Assigns a policy to the specified group or resets the group's inheritance
       for the specified policy
   - name: epo-assign-policy-to-system
     arguments:
     - name: names
       required: true
-      description: You need to either supply the "names" with a comma separated list
-        of names/ip addresses or a comma separated list of "ids" to which the policy
+      description: Either supply a comma-separated list of names/ip
+       addresses or a comma-separated list of IDs to which the policy
         is to be assigned.
     - name: productId
       required: true
-      description: Product ID.(as returned by policy.find)
+      description: Product ID (as returned by policy.find).
     - name: typeId
       required: true
-      description: Type ID.(as returned by policy.find)
+      description: Type ID (as returned by policy.find).
     - name: objectId
       required: true
-      description: Object ID.(as returned by policy.find)
+      description: Object ID (as returned by policy.find).
     - name: resetInheritance
       required: false
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: reset the inheritance for this object
-    description: Assigns policy to a supplied list of systems or resets systems' inheritance
-      for the specified policy
+      description: If true, resets the inheritance for the specified object. Default is false.
+    description: Assigns a policy to a supplied list of systems or resets the systems' inheritance
+      for the specified policy.
   - name: epo-list-issues
     arguments:
     - name: id
       required: false
-      description: The id of the issue to display
-    description: list all issues in the McAfee ePO system.
+      description: The ID of the issue to display.
+    description: List the issue for the ID that is specified. 
+     If no ID is specified, list all issues in the McAfee ePO system.
     outputs:
     - contextPath: McAfee.ePO.Issue.activityLog.date
-      description: Issue Activity Log date
+      description: Date of the issue activity log.
       type: string
     - contextPath: McAfee.ePO.Issue.activityLog.details
-      description: Issue Activity Log details
+      description: Details of the issue activity log.
       type: string
     - contextPath: McAfee.ePO.Issue.activityLog.id
-      description: Issue Activity Log ID
+      description: The ID of the issue activity log.
       type: number
     - contextPath: McAfee.ePO.Issue.activityLog.issueId
-      description: Issue Activity Log Issue Id
+      description: The issue ID of the activity log.
       type: number
     - contextPath: McAfee.ePO.Issue.activityLog.title
-      description: Issue Activity Log Title
+      description: The title of the issue activity log.
       type: string
     - contextPath: McAfee.ePO.Issue.activityLog.username
-      description: Issue Activity Log username
+      description: The username of the issue activity log.
       type: string
     - contextPath: McAfee.ePO.Issue.id
-      description: Issue Id
+      description: Issue ID.
       type: number
     - contextPath: McAfee.ePO.Issue.name
-      description: Issue Name
+      description: Issue name.
       type: string
     - contextPath: McAfee.ePO.Issue.type
-      description: Issue type
+      description: Issue type.
       type: string
     - contextPath: McAfee.ePO.Issue.description
-      description: Issue Description
+      description: Issue description.
       type: string
     - contextPath: McAfee.ePO.Issue.state
-      description: Issue State
+      description: Issue state.
       type: string
     - contextPath: McAfee.ePO.Issue.priority
-      description: Issue Priority
+      description: Issue priority.
       type: string
     - contextPath: McAfee.ePO.Issue.severity
-      description: Issue Severity
+      description: Issue severity.
       type: string
     - contextPath: McAfee.ePO.Issue.resolution
-      description: Issue Resolution
+      description: Issue resolution.
       type: string
     - contextPath: McAfee.ePO.Issue.creatorName
-      description: Issue CreatorName
+      description: Issue creator name.
       type: string
     - contextPath: McAfee.ePO.Issue.assignee
-      description: Issue AssigneeId
+      description: Issue assignee ID.
       type: number
     - contextPath: McAfee.ePO.Issue.assigneeName
-      description: Issue AssigneeName
+      description: Issue assignee name.
       type: string
     - contextPath: McAfee.ePO.Issue.createdDate
-      description: Issue CreatedDate
+      description: Date the issue was created.
       type: string
     - contextPath: McAfee.ePO.Issue.dueDate
-      description: Issue Due Date
+      description: Date the issue is due.
       type: string
     - contextPath: McAfee.ePO.Issue.ticketId
-      description: Issue TicketId
+      description: Ticket ID of the issue.
       type: string
     - contextPath: McAfee.ePO.Issue.ticketServerName
-      description: Issue TicketServerName
+      description: Issue ticket server name.
       type: string
   - name: epo-delete-issue
     arguments:
     - name: id
       required: true
-      description: The id of the issue to delete
-    description: Delete an issues.
+      description: The ID of the issue to delete
+    description: Delete an issue.
   - name: epo-create-issue
     arguments:
     - name: name
       required: true
-      description: issue name
+      description: Issue name.
     - name: description
       required: true
-      description: issue description
+      description: Issue description.
     - name: type
       required: false
-      description: issue type
+      description: Issue type.
     - name: state
       required: false
-      description: issue state
+      description: Issue state.
       auto: PREDEFINED
       predefined:
       - "UNKNOWN"
@@ -749,7 +750,7 @@ script:
       - "MEDIUM"
       - "HIGH"
       - "HIGHEST"
-      description: issue priority
+      description: Issue priority.
     - name: severity
       required: false
       auto: PREDEFINED
@@ -760,7 +761,7 @@ script:
       - "MEDIUM"
       - "HIGH"
       - "HIGHEST"
-      description: issue severity
+      description: Issue severity.
     - name: resolution
       required: false
       auto: PREDEFINED
@@ -769,47 +770,47 @@ script:
       - "FIXED"
       - "WAIVED"
       - "WILLNOTFIX"
-      description: issue resolution
+      description: Issue resolution.
     - name: due
       required: false
-      description: The due date of the issue in form ["yyyy-mm-dd hh:mm:ss"]
+      description: Due date of the issue in the format yyyy-mm-dd hh:mm:ss.
     - name: assignee_name
       required: false
-      description: Issue assignee_name
+      description: Name of the user assigned to the issue.
     - name: ticketServerName
       required: false
-      description: issue ticketServerName
+      description: Ticket server name of the issue.
     - name: ticketId
       required: false
-      description: issue ticketId
+      description: Ticket ID of the issue.
     - name: properties
       required: false
-      description: issue properties
+      description: Properties of the issue.
     outputs:
     - contextPath: McAfee.ePO.Issue.id
-      description: Issue Id
+      description: Issue ID.
       type: number
     - contextPath: McAfee.ePO.Issue.name
-      description: Issue Name
+      description: Issue name.
       type: string
     - contextPath: McAfee.ePO.Issue.description
-      description: Issue Description
+      description: Issue description.
       type: string
     description: Create an issue.
   - name: epo-update-issue
     arguments:
     - name: id
       required: true
-      description: The id of the issue to delete
+      description: The ID of the issue to update.
     - name: name
       required: true
-      description: issue name
+      description: Name of the issue to update.
     - name: description
       required: true
-      description: issue description
+      description: Description of the issue to update.
     - name: state
       required: false
-      description: issue state
+      description: State of the issue to update.
       auto: PREDEFINED
       predefined:
       - "UNKNOWN"
@@ -829,7 +830,7 @@ script:
       - "MEDIUM"
       - "HIGH"
       - "HIGHEST"
-      description: issue priority
+      description: Priority of the issue to update.
     - name: severity
       required: false
       auto: PREDEFINED
@@ -840,7 +841,7 @@ script:
       - "MEDIUM"
       - "HIGH"
       - "HIGHEST"
-      description: issue severity
+      description: Severity of the issue to update.
     - name: resolution
       required: false
       auto: PREDEFINED
@@ -849,22 +850,22 @@ script:
       - "FIXED"
       - "WAIVED"
       - "WILLNOTFIX"
-      description: issue resolution
+      description: Resolution of the issue to update.
     - name: due
       required: false
-      description: The due date of the issue in form ["yyyy-mm-dd hh:mm:ss"]
+      description: Due date of the issue to update.
     - name: assignee_name
       required: false
-      description: issue assignee_name
+      description: Name of the user assigned to the issue.
     - name: ticketServerName
       required: false
-      description: issue ticketServerName
+      description: Ticket server name of the issue.
     - name: ticketId
       required: false
-      description: issue ticketId
+      description: Ticket ID of the issue.
     - name: properties
       required: false
-      description: issue properties
+      description: Properties of the issue.
     description: Update an issue.
   dockerimage: demisto/python3:3.9.8.24399
   feed: false
