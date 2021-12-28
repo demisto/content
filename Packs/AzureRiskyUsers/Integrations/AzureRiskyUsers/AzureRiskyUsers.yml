@@ -1,0 +1,405 @@
+category: Vulnerability Management
+commonfields:
+  id: AzureRiskyUsers
+  version: -1
+configuration:
+- display: Client ID
+  name: client_id
+  required: true
+  type: 9
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+description: Azure Risky Users provides access to all at-risk users and risk detections
+  in the Azure AD environment.
+display: Azure Risky Users
+name: AzureRiskyUsers
+script:
+  commands:
+  - deprecated: false
+    description: Tests the connectivity to Azure.
+    execution: false
+    name: azure-risky-users-auth-test
+  - deprecated: false
+    description: Starts the authorization process. You then follow the
+      instructions in the command results.
+    execution: false
+    name: azure-risky-users-auth-start
+  - deprecated: false
+    description: Completes the authorization process. Run this command after executing the azure-risky-users-auth-start command.
+    execution: false
+    name: azure-risky-users-auth-complete
+  - deprecated: false
+    description: Reruns the authentication.
+      process.
+    execution: false
+    name: azure-risky-users-auth-reset
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: 'Sets the Risk State to retrieve. Possible values are: "atRisk", "confirmedCompromised", "remediated", or "dismissed"'
+      isArray: false
+      name: risk_state
+      predefined:
+      - atRisk
+      - confirmedCompromised
+      - remediated
+      - dismissed
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: Limit of results to retrieve.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '1'
+      description: Page number.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Sets the Risk Level to retrieve. Possible values are: "low", "medium", or "high"'
+      isArray: false
+      name: risk_level
+      predefined:
+      - low
+      - medium
+      - high
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns a comma separated list of all risky users and their properties.
+    execution: false
+    name: azure-risky-users-list
+    outputs:
+    - contextPath: AzureRiskyUsers.RiskyUser.id
+      description: Unique ID of the user at risk.
+      type: String
+    - contextPath: AzureRiskyUsers.RiskyUser.userDisplayName
+      description: Risky user display name.
+      type: String
+    - contextPath: AzureRiskyUsers.RiskyUser.userPrincipalName
+      description: Risky user principal name.
+      type: String
+    - contextPath: AzureRiskyUsers.RiskyUser.riskLevel
+      description: 'Level of the detected risky user. Possible values are: low, medium,
+        high, hidden, none, unknownFutureValue.'
+      type: String
+    - contextPath: AzureRiskyUsers.RiskyUser.riskState
+      description: 'State of the user''s risk. Possible values are: none, confirmedSafe,
+        remediated, dismissed, atRisk, confirmedCompromised.'
+      type: String
+    - contextPath: AzureRiskyUsers.RiskyUser.riskLastUpdatedDateTime
+      description: 'The date and time that the risky user was last updated. The DateTimeOffset
+        type represents date and time information using ISO 8601 format and is always
+        in UTC time. For example, midnight UTC on Jan 1, 2014 would look like this:
+        2014-01-01T00:00:00Z'
+      type: Date
+    - contextPath: AzureRiskyUsers.RiskyUser.isDeleted
+      description: Indicates whether the user is deleted.
+      type: Boolean
+    - contextPath: AzureRiskyUsers.RiskyUser.isProcessing
+      description: Indicates whether a user's risky state is being processed by the backend.
+      type: Boolean
+    - contextPath: AzureRiskyUsers.RiskyUser.riskDetail
+      description: 'Details of the detected risk. Possible values are: none, adminGeneratedTemporaryPassword,
+        userPerformedSecuredPasswordChange, userPerformedSecuredPasswordReset, adminConfirmedSigninSafe,
+        aiConfirmedSigninSafe, userPassedMFADrivenByRiskBasedPolicy, adminDismissedAllRiskForUser,
+        adminConfirmedSigninCompromised, hidden, adminConfirmedUserCompromised, unknownFutureValue.'
+      type: String
+  - arguments:
+    - default: false
+      description: Risky user ID to retrieve.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieves properties and relationships of a Risky User.
+    execution: false
+    name: azure-risky-user-get
+    outputs:
+    - contextPath: AzureRiskyUsers.RiskyUser.id
+      description: Unique ID of the user at risk.
+      type: String
+    - contextPath: AzureRiskyUsers.RiskyUser.userDisplayName
+      description: Risky user display name.
+      type: String
+    - contextPath: AzureRiskyUsers.RiskyUser.userPrincipalName
+      description: Risky user principal name.
+      type: String
+    - contextPath: AzureRiskyUsers.RiskyUser.riskLevel
+      description: 'Level of the detected risky user. Possible values are: low, medium,
+        high, hidden, none, unknownFutureValue.'
+      type: String
+    - contextPath: AzureRiskyUsers.RiskyUser.riskState
+      description: 'State of the user''s risk. Possible values are: none, confirmedSafe,
+        remediated, dismissed, atRisk, confirmedCompromised.'
+      type: String
+    - contextPath: AzureRiskyUsers.RiskyUser.riskLastUpdatedDateTime
+      description: 'The date and time that the risky user was last updated. The DateTimeOffset
+        type represents date and time information using ISO 8601 format and is always
+        in UTC time. For example, midnight UTC on Jan 1, 2014 would look like this:
+        2014-01-01T00:00:00Z'
+      type: Date
+    - contextPath: AzureRiskyUsers.RiskyUser.isDeleted
+      description: Indicates whether the user is deleted.
+      type: Boolean
+    - contextPath: AzureRiskyUsers.RiskyUser.isProcessing
+      description: Indicates whether a user's risky state is being processed by the
+        backend.
+      type: Boolean
+    - contextPath: AzureRiskyUsers.RiskyUser.riskDetail
+      description: 'Details of the detected risk. Possible values are: none, adminGeneratedTemporaryPassword,
+        userPerformedSecuredPasswordChange, userPerformedSecuredPasswordReset, adminConfirmedSigninSafe,
+        aiConfirmedSigninSafe, userPassedMFADrivenByRiskBasedPolicy, adminDismissedAllRiskForUser,
+        adminConfirmedSigninCompromised, hidden, adminConfirmedUserCompromised, unknownFutureValue.'
+      type: String
+  - arguments:
+    - default: false
+      defaultValue: '50'
+      description: Limit of results to retrieve.
+      isArray: false
+      name: limit
+      predefined:
+      - ''
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '1'
+      description: Page number.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Sets the Risk State to retrieve. Possible values are: "atRisk", "confirmedCompromised", "remediated", or "dismissed"'
+      isArray: false
+      name: risk_state
+      predefined:
+      - atRisk
+      - confirmedCompromised
+      - remediated
+      - dismissed
+      - confirmedSafe
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Sets the Risk Level to retrieve. Possible values are: "low", "medium", or "high".'
+      isArray: false
+      name: risk_level
+      predefined:
+      - low
+      - medium
+      - high
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns a comma separated list of the Risk Detection objects and their properties.
+    execution: false
+    name: azure-risky-users-risk-detections-list
+    outputs:
+    - contextPath: AzureRiskyUsers.RiskDetection.id
+      description: Unique ID of the risk detection. Inherited from the entity.
+      type: String
+    - contextPath: AzureRiskyUsers.RiskDetection.userId
+      description: The unique user ID.
+      type: String
+    - contextPath: AzureRiskyUsers.RiskDetection.userDisplayName
+      description: The user display name.
+      type: String
+    - contextPath: AzureRiskyUsers.RiskDetection.userPrincipalName
+      description: The user principal name (UPN).
+      type: String
+    - contextPath: AzureRiskyUsers.RiskDetection.riskDetail
+      description: 'Details of the detected risk. Possible values are: none, adminGeneratedTemporaryPassword,
+        userPerformedSecuredPasswordChange, userPerformedSecuredPasswordReset, adminConfirmedSigninSafe,
+        aiConfirmedSigninSafe, userPassedMFADrivenByRiskBasedPolicy, adminDismissedAllRiskForUser,
+        adminConfirmedSigninCompromised, hidden, adminConfirmedUserCompromised, unknownFutureValue.'
+      type: String
+    - contextPath: AzureRiskyUsers.RiskDetection.riskEventType
+      description: 'The type of risk event detected. Possible values are: unlikelyTravel,
+        anonymizedIPAddress, maliciousIPAddress, unfamiliarFeatures, malwareInfectedIPAddress,
+        suspiciousIPAddress, leakedCredentials, investigationsThreatIntelligence,
+        generic,adminConfirmedUserCompromised, mcasImpossibleTravel, mcasSuspiciousInboxManipulationRules,
+        investigationsThreatIntelligenceSigninLinked, maliciousIPAddressValidCredentialsBlockedIP,
+        and unknownFutureValue. If the risk detection is a premium detection, will
+        show generic.'
+      type: String
+    - contextPath: AzureRiskyUsers.RiskDetection.riskLevel
+      description: 'Level of the detected risk. Possible values are: low, medium,
+        high, hidden, none, unknownFutureValue.'
+      type: String
+    - contextPath: AzureRiskyUsers.RiskDetection.riskState
+      description: 'The state of a detected risky user or sign-in. Possible values
+        are: none, confirmedSafe, remediated, dismissed, atRisk, confirmedCompromised,
+        unknownFutureValue.'
+      type: String
+    - contextPath: AzureRiskyUsers.RiskDetection.ipAddress
+      description: The IP address of the client where the risk occurred.
+      type: String
+    - contextPath: AzureRiskyUsers.RiskDetection.source
+      description: The source of the risk detection. For example, activeDirectory.
+      type: String
+    - contextPath: AzureRiskyUsers.RiskDetection.detectionTimingType
+      description: 'Timing of the detected risk (real-time/offline). Possible values
+        are: notDefined, realtime, nearRealtime, offline, unknownFutureValue.'
+      type: String
+    - contextPath: AzureRiskyUsers.RiskDetection.lastUpdatedDateTime
+      description: 'Date and time that the risk detection was last updated. The DateTimeOffset
+        type represents date and time information using ISO 8601 format and is always
+        in UTC time. For example, midnight UTC on Jan 1, 2014 is look like this: 2014-01-01T00:00:00Z'
+      type: Date
+    - contextPath: AzureRiskyUsers.RiskDetection.location
+      description: Location of the sign-in.
+      type: String
+    - contextPath: AzureRiskyUsers.RiskDetection.activity
+      description: 'Indicates the activity type the detected risk is linked to. .
+        Possible values are: signin, user, unknownFutureValue.'
+      type: String
+    - contextPath: AzureRiskyUsers.RiskDetection.activityDateTime
+      description: 'Date and time that the risky activity occurred. The DateTimeOffset
+        type represents date and time information using ISO 8601 format and is always
+        in UTC time. For example, midnight UTC on Jan 1, 2014 is look like this: 2014-01-01T00:00:00Z'
+      type: Date
+    - contextPath: AzureRiskyUsers.RiskDetection.additionalInfo
+      description: Additional information associated with the risk detection in JSON
+        format.
+      type: String
+    - contextPath: AzureRiskyUsers.RiskDetection.correlationId
+      description: Correlation ID of the sign-in associated with the risk detection.
+        This property is null if the risk detection is not associated with a sign-in.
+      type: String
+    - contextPath: AzureRiskyUsers.RiskDetection.detectedDateTime
+      description: 'Date and time that the risk was detected. The DateTimeOffset type
+        represents date and time information using ISO 8601 format and is always in
+        UTC time. For example, midnight UTC on Jan 1, 2014 is look like this: 2014-01-01T00:00:00Z'
+      type: Date
+    - contextPath: AzureRiskyUsers.RiskDetection.requestId
+      description: Request ID of the sign-in associated with the risk detection. This
+        property is null if the risk detection is not associated with a sign-in.
+      type: String
+    - contextPath: AzureRiskyUsers.RiskDetection.tokenIssuerType
+      description: 'Indicates the type of token issuer for the detected sign-in risk.
+        Possible values are: AzureAD, ADFederationServices, UnknownFutureValue.'
+      type: String
+  - arguments:
+    - default: false
+      description: The risk detection ID to retrieve.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    deprecated: false
+    description: Reads the properties and relationships of a riskDetection object.
+    execution: false
+    name: azure-risky-users-risk-detection-get
+    outputs:
+    - contextPath: AzureRiskyUsers.RiskDetection.id
+      description: Unique ID of the risk detection. Inherited from the entity.
+      type: String
+    - contextPath: AzureRiskyUsers.RiskDetection.userId
+      description: The unique user ID.
+      type: String
+    - contextPath: AzureRiskyUsers.RiskDetection.userDisplayName
+      description: The user display name.
+      type: String
+    - contextPath: AzureRiskyUsers.RiskDetection.userPrincipalName
+      description: The user principal name (UPN).
+      type: String
+    - contextPath: AzureRiskyUsers.RiskDetection.riskDetail
+      description: 'Details of the detected risk. Possible values are: none, adminGeneratedTemporaryPassword,
+        userPerformedSecuredPasswordChange, userPerformedSecuredPasswordReset, adminConfirmedSigninSafe,
+        aiConfirmedSigninSafe, userPassedMFADrivenByRiskBasedPolicy, adminDismissedAllRiskForUser,
+        adminConfirmedSigninCompromised, hidden, adminConfirmedUserCompromised, unknownFutureValue.'
+      type: String
+    - contextPath: AzureRiskyUsers.RiskDetection.riskEventType
+      description: The type of risk event detected. The possible values are unlikelyTravel,
+        anonymizedIPAddress, maliciousIPAddress, unfamiliarFeatures, malwareInfectedIPAddress,
+        suspiciousIPAddress, leakedCredentials, investigationsThreatIntelligence,
+        generic,adminConfirmedUserCompromised, mcasImpossibleTravel, mcasSuspiciousInboxManipulationRules,
+        investigationsThreatIntelligenceSigninLinked, maliciousIPAddressValidCredentialsBlockedIP,
+        and unknownFutureValue. If the risk detection is a premium detection, will
+        show generic
+      type: String
+    - contextPath: AzureRiskyUsers.RiskDetection.riskLevel
+      description: 'Level of the detected risk. Possible values are: low, medium,
+        high, hidden, none, unknownFutureValue.'
+      type: String
+    - contextPath: AzureRiskyUsers.RiskDetection.riskState
+      description: 'The state of a detected risky user or sign-in. Possible values
+        are: none, confirmedSafe, remediated, dismissed, atRisk, confirmedCompromised,
+        unknownFutureValue.'
+      type: String
+    - contextPath: AzureRiskyUsers.RiskDetection.ipAddress
+      description: The IP address of the client where the risk occurred.
+      type: String
+    - contextPath: AzureRiskyUsers.RiskDetection.source
+      description: The source of the risk detection. For example, activeDirectory.
+      type: String
+    - contextPath: AzureRiskyUsers.RiskDetection.detectionTimingType
+      description: 'Timing of the detected risk (real-time/offline). Possible values
+        are: notDefined, realtime, nearRealtime, offline, unknownFutureValue.'
+      type: String
+    - contextPath: AzureRiskyUsers.RiskDetection.lastUpdatedDateTime
+      description: 'Date and time that the risk detection was last updated. The DateTimeOffset
+        type represents date and time information using ISO 8601 format and is always
+        in UTC time. For example, midnight UTC on Jan 1, 2014 is look like this: 2014-01-01T00:00:00Z'
+      type: Date
+    - contextPath: AzureRiskyUsers.RiskDetection.location
+      description: Location of the sign-in.
+      type: String
+    - contextPath: AzureRiskyUsers.RiskDetection.activity
+      description: 'Indicates the activity type the detected risk is linked to. .
+        Possible values are: signin, user, unknownFutureValue.'
+      type: String
+    - contextPath: AzureRiskyUsers.RiskDetection.activityDateTime
+      description: 'Date and time that the risky activity occurred. The DateTimeOffset
+        type represents date and time information using ISO 8601 format and is always
+        in UTC time. For example, midnight UTC on Jan 1, 2014 is look like this: 2014-01-01T00:00:00Z'
+      type: Date
+    - contextPath: AzureRiskyUsers.RiskDetection.additionalInfo
+      description: Additional information associated with the risk detection in JSON
+        format.
+      type: String
+    - contextPath: AzureRiskyUsers.RiskDetection.correlationId
+      description: Correlation ID of the sign-in associated with the risk detection.
+        This property is null if the risk detection is not associated with a sign-in.
+      type: String
+    - contextPath: AzureRiskyUsers.RiskDetection.detectedDateTime
+      description: 'Date and time that the risk was detected. The DateTimeOffset type
+        represents date and time information using ISO 8601 format and is always in
+        UTC time. For example, midnight UTC on Jan 1, 2014 is look like this: 2014-01-01T00:00:00Z'
+      type: Date
+    - contextPath: AzureRiskyUsers.RiskDetection.requestId
+      description: Request ID of the sign-in associated with the risk detection. This
+        property is null if the risk detection is not associated with a sign-in.
+      type: String
+    - contextPath: AzureRiskyUsers.RiskDetection.tokenIssuerType
+      description: 'Indicates the type of token issuer for the detected sign-in risk.
+        Possible values are: AzureAD, ADFederationServices, UnknownFutureValue.'
+      type: String
+  dockerimage: demisto/crypto:1.0.0.24380
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
