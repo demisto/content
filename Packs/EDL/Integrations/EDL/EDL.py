@@ -56,7 +56,7 @@ MIMETYPE_CSV: str = 'text/csv'
 MIMETYPE_TEXT: str = 'text/plain'
 
 FORMAT_CSV: str = 'csv'
-FORMAT_TEXT: str = 'text'
+FORMAT_TEXT: str = 'pan os (text)'
 FORMAT_JSON_SEQ: str = 'json-seq'
 FORMAT_JSON: str = 'json'
 FORMAT_ARG_MWG = 'mwg'
@@ -74,6 +74,7 @@ SORT_DESCENDING = 'desc'
 
 MWG_TYPE_OPTIONS = ["string", "applcontrol", "dimension", "category", "ip", "mediatype", "number", "regex"]
 
+INCREASE_LIMIT = 1.1
 '''Request Arguments Class'''
 
 
@@ -94,13 +95,14 @@ class RequestArguments:
     CTX_SORT_FIELDS = 'sort_field'
     CTX_SORT_ORDER = 'sort_order'
     CTX_PROTOCOL_STRIP_KEY = 'url_protocol_stripping'
+    CTX_URL_TRUNCATE_KEY = 'url_truncate'
 
     FILTER_FIELDS_ON_FORMAT_TEXT = "name,type"
     FILTER_FIELDS_ON_FORMAT_MWG = "name,type,sourceBrands"
     FILTER_FIELDS_ON_FORMAT_PROXYSG = "name,type,proxysgcategory"
-    FILTER_FIELDS_ON_FORMAT_CSV = "name,type,createdTime,firstSeen"
-    FILTER_FIELDS_ON_FORMAT_JSON = "name,type,createdTime,firstSeen"
-    FILTER_FIELDS_ON_FORMAT_XSOAR_JSON = "name,type,createdTime,firstSeen"
+    FILTER_FIELDS_ON_FORMAT_CSV = "name,type"
+    FILTER_FIELDS_ON_FORMAT_JSON = "name,type"
+    FILTER_FIELDS_ON_FORMAT_XSOAR_JSON = "name,type"
 
     def __init__(self,
                  query: str,
@@ -116,9 +118,8 @@ class RequestArguments:
                  category_attribute: str = '',
                  fields_to_present: str = None,
                  csv_text: bool = False,
-                 sort_field: str = '',
-                 sort_order: str = '',
                  url_protocol_stripping: bool = False,
+                 url_truncate: bool = False
                  ):
 
         self.query = query
@@ -135,8 +136,7 @@ class RequestArguments:
         self.category_attribute = []  # type:List
         self.fields_to_present = self.get_fields_to_present(fields_to_present)
         self.csv_text = csv_text
-        self.sort_field = sort_field
-        self.sort_order = sort_order
+        self.url_truncate = url_truncate
 
         if category_attribute is not None:
             category_attribute_list = category_attribute.split(',')
@@ -159,9 +159,9 @@ class RequestArguments:
             self.CTX_CATEGORY_ATTRIBUTE: self.category_attribute,
             self.CTX_FIELDS_TO_PRESENT: self.fields_to_present,
             self.CTX_CSV_TEXT: self.csv_text,
-            self.CTX_SORT_FIELDS: self.sort_field,
-            self.CTX_SORT_ORDER: self.sort_order,
-            self.CTX_PROTOCOL_STRIP_KEY: self.url_protocol_stripping
+            self.CTX_PROTOCOL_STRIP_KEY: self.url_protocol_stripping,
+            self.CTX_URL_TRUNCATE_KEY: self.url_truncate
+
         }
 
     @classmethod
@@ -182,13 +182,12 @@ class RequestArguments:
                 category_attributeself=ctx_dict.get(cls.CTX_CATEGORY_ATTRIBUTE),
                 fields_to_present=ctx_dict.get(cls.CTX_FIELDS_TO_PRESENT),
                 csv_text=ctx_dict.get(cls.CTX_CSV_TEXT),
-                sort_field=ctx_dict.get(cls.CTX_SORT_FIELDS),
-                sort_order=ctx_dict.get(cls.CTX_SORT_ORDER),
                 url_protocol_stripping=ctx_dict.get(cls.CTX_PROTOCOL_STRIP_KEY),
+                url_truncate=ctx_dict.get(cls.CTX_URL_TRUNCATE_KEY)
             )
         )
 
-    def get_fields_to_present(self, fields_to_present: str):
+    def get_fields_to_present(self, fields_to_present: str) -> str:
         # based on func ToIoC https://github.com/demisto/server/blob/master/domain/insight.go
 
         if fields_to_present == 'use_legacy_query':
@@ -209,6 +208,10 @@ class RequestArguments:
             if 'all' in argToList(fields_to_present):
                 return None
             else:
+                list_fields = argToList(fields_to_present)
+                if 'value' in list_fields:
+                    list_fields[list_fields.index('value')] = 'name'
+                    fields_to_present = ",".join(list_fields)
                 return fields_to_present
 
         return fields_for_format.get(self.out_format, self.FILTER_FIELDS_ON_FORMAT_TEXT)
@@ -248,11 +251,11 @@ def create_new_edl(request_args: RequestArguments) -> str:
         limit=limit
     )
     formatted_indicators = ''
-    if request_args.out_format == 'text':
+    if request_args.out_format == FORMAT_TEXT:
         if request_args.drop_invalids or request_args.collapse_ips != "Don't Collapse":
-            indicator_searcher.limit = int(limit*1.1)
-        new_iocs = find_indicators_to_limit(indicator_searcher, request_args)
-        new_iocs = text_format(new_iocs, request_args)
+            indicator_searcher.limit = int(limit * INCREASE_LIMIT)
+        new_iocs = get_indicators_to_format(indicator_searcher, request_args)
+        new_iocs = create_text_out_format(new_iocs, request_args)
         new_iocs.seek(0)
         for count, line in enumerate(new_iocs):
             # continue searching iocs if 1) iocs was truncated or 2) got all available iocs
@@ -261,7 +264,7 @@ def create_new_edl(request_args: RequestArguments) -> str:
             else:
                 formatted_indicators += line
     else:
-        new_iocs = find_indicators_to_limit(indicator_searcher, request_args)
+        new_iocs = get_indicators_to_format(indicator_searcher, request_args)
         new_iocs.seek(0)
         formatted_indicators = new_iocs.read()
     new_iocs.close()
@@ -280,8 +283,8 @@ def replace_field_name_to_output_format(fields: str):
     return new_list
 
 
-def find_indicators_to_limit(indicator_searcher: IndicatorsSearcher, request_args: RequestArguments) -> Union[
-    IO, IO[str]]:
+def get_indicators_to_format(indicator_searcher: IndicatorsSearcher, request_args: RequestArguments) ->\
+        Union[IO, IO[str]]:
     """
     Finds indicators using while loop with demisto.searchIndicators, and returns result and last page
 
@@ -294,7 +297,7 @@ def find_indicators_to_limit(indicator_searcher: IndicatorsSearcher, request_arg
     f = tempfile.TemporaryFile(mode='w+t')
     list_fields = replace_field_name_to_output_format(request_args.fields_to_present)
     headers_was_writen = False
-    files_by_category = {}
+    files_by_category = {}  # type:Dict
     try:
         for ioc_res in indicator_searcher:
             fetched_iocs = ioc_res.get('iocs') or []
@@ -310,15 +313,16 @@ def find_indicators_to_limit(indicator_searcher: IndicatorsSearcher, request_arg
 
                 if request_args.out_format in [FORMAT_JSON, FORMAT_XSOAR_JSON, FORMAT_JSON_SEQ, FORMAT_XSOAR_JSON_SEQ]:
                     xsoar = True if request_args.out_format in [FORMAT_XSOAR_JSON, FORMAT_XSOAR_JSON_SEQ] else False
-                    f.write(json_format(list_fields, ioc, xsoar, headers_was_writen))
+                    f.write(create_json_out_format(list_fields, ioc, xsoar, headers_was_writen))
                     headers_was_writen = True
 
                 if request_args.out_format == FORMAT_TEXT:
                     # save only the value and type of each indicator
-                    f.write(str(json.dumps({"value": ioc.get("value"), "indicator_type": ioc.get("indicator_type")}))+"\n")
+                    f.write(str(json.dumps({"value": ioc.get("value"),
+                                            "indicator_type": ioc.get("indicator_type")})) + "\n")
 
                 if request_args.out_format == FORMAT_CSV:
-                    f.write(csv_format(headers_was_writen, list_fields, ioc, request_args.fields_to_present))
+                    f.write(create_csv_out_format(headers_was_writen, list_fields, ioc, request_args.fields_to_present))
                     headers_was_writen = True
 
     except Exception as e:
@@ -327,20 +331,20 @@ def find_indicators_to_limit(indicator_searcher: IndicatorsSearcher, request_arg
     if request_args.out_format in [FORMAT_JSON, FORMAT_XSOAR_JSON, FORMAT_JSON_SEQ, FORMAT_XSOAR_JSON_SEQ]:
         f.write(']')
     if request_args.out_format == FORMAT_PROXYSG:
-        f = create_proxysg_all_category(f, files_by_category)
+        f = create_proxysg_all_category_out_format(f, files_by_category)
     return f
 
 
-def json_format(list_fields, indicator, xsoar=False, not_first_call=True):
+def create_json_out_format(list_fields: List, indicator: Dict, xsoar_format=False, not_first_call=True) -> str:
     filtered_json = {}
     if list_fields:
         for field in list_fields:
             value = indicator.get(field)
             if not value:
-                value = indicator.get('CustomFields').get(field)
+                value = indicator.get('CustomFields', {}).get(field)
             filtered_json[field] = value
         indicator = filtered_json
-    if not xsoar:
+    if not xsoar_format:
         json_format_indicator = {
             "indicator": indicator.get("value")
         }
@@ -354,10 +358,10 @@ def json_format(list_fields, indicator, xsoar=False, not_first_call=True):
     return '[' + json.dumps(indicator)
 
 
-def create_mwg_out_format(indicator: dict, mwg_type: str, headers_was_writen) -> str:
+def create_mwg_out_format(indicator: dict, mwg_type: str, headers_was_writen: bool) -> str:
     if not indicator.get('value'):
         return ''
-    value = "\"" + indicator.get('value') + "\""
+    value = "\"" + indicator.get('value', '') + "\""
     sources = indicator.get('sourceBrands')
     if sources:
         sources_string = "\"" + ','.join(sources) + "\""
@@ -371,7 +375,7 @@ def create_mwg_out_format(indicator: dict, mwg_type: str, headers_was_writen) ->
     return value + " " + sources_string + '\n'
 
 
-def create_proxysg_all_category(f, files_by_categry: dict):
+def create_proxysg_all_category_out_format(f: IO, files_by_categry: dict):
     for category, category_file in files_by_categry.items():
         f.write(f"define category {category}\n")
         category_file.seek(0)
@@ -382,18 +386,19 @@ def create_proxysg_all_category(f, files_by_categry: dict):
     return f
 
 
-def create_proxysg_out_format(indicator: dict, files_by_category: dict, category_attribute: list, category_default: str = 'bc_category'):
+def create_proxysg_out_format(indicator: dict, files_by_category: dict, category_attribute: list,
+                              category_default: str = 'bc_category'):
     num_of_returned_indicators = 0
 
     if indicator.get('indicator_type') in ['URL', 'Domain', 'DomainGlob'] and indicator.get('value'):
-        stripped_indicator = _PROTOCOL_REMOVAL.sub('', indicator.get('value'))
+        stripped_indicator = _PROTOCOL_REMOVAL.sub('', indicator.get('value', ''))
         indicator_proxysg_category = indicator.get('CustomFields', {}).get('proxysgcategory')
         # if a ProxySG Category is set and it is in the category_attribute list or that the attribute list is empty
         # than list add the indicator to it's category list
         if indicator_proxysg_category is not None and \
                 (indicator_proxysg_category in category_attribute or len(category_attribute) == 0):
             files_by_category = add_indicator_to_category(stripped_indicator, indicator_proxysg_category,
-                                                      files_by_category)
+                                                          files_by_category)
         else:
             # if ProxySG Category is not set or does not exist in the category_attribute list
             files_by_category = add_indicator_to_category(stripped_indicator, category_default, files_by_category)
@@ -402,7 +407,7 @@ def create_proxysg_out_format(indicator: dict, files_by_category: dict, category
     return files_by_category, num_of_returned_indicators
 
 
-def add_indicator_to_category(indicator, category, files_by_category):
+def add_indicator_to_category(indicator: str, category: str, files_by_category: Dict):
     if category in files_by_category.keys():
         files_by_category[category].write(indicator + '\n')
 
@@ -413,7 +418,7 @@ def add_indicator_to_category(indicator, category, files_by_category):
     return files_by_category
 
 
-def csv_format(headers_was_writen, list_fields, ioc, headers):
+def create_csv_out_format(headers_was_writen: bool, list_fields: List, ioc, headers):
     fields_value_list = []
     if not list_fields:
         values = list(ioc.values())
@@ -510,16 +515,16 @@ def list_to_str(inp_list: list, delimiter: str = ',', map_func: Callable = str) 
     return str_res
 
 
-def text_format(iocs, request_args: RequestArguments) -> Union[
-    IO, IO[str]]:
+def create_text_out_format(iocs: IO, request_args: RequestArguments) -> Union[IO, IO[str]]:
     """
-    Create a list result of formatted_indicators
-     * Empty list:
-         1) if add_comment_if_empty, return {'# Empty EDL'}
+    Create a list in new file of formatted_indicators
      * IP / CIDR:
          1) if collapse_ips, collapse IPs/CIDRs
      * URL:
-         1) if drop_invalids, drop invalids (length > 254 or has invalid chars)
+        1) if drop_invalids, drop invalids (length > 254 or has invalid chars)
+        2) if port_stripping, strip ports
+        3) if protocol_stripping, strip protocols
+        4) if url_truncate, truncate urls
     * Other indicator types:
         1) if drop_invalids, drop invalids (has invalid chars)
         2) if port_stripping, strip ports
@@ -534,12 +539,13 @@ def text_format(iocs, request_args: RequestArguments) -> Union[
         if not indicator:
             continue
         ioc_type = ioc.get('indicator_type')
-        # protocol stripping
-        if request_args.url_protocol_stripping:
-            indicator = _PROTOCOL_REMOVAL.sub('', indicator)
 
         if ioc_type not in [FeedIndicatorType.IP, FeedIndicatorType.IPv6,
                             FeedIndicatorType.CIDR, FeedIndicatorType.IPv6CIDR]:
+            # protocol stripping
+            if request_args.url_protocol_stripping:
+                indicator = _PROTOCOL_REMOVAL.sub('', indicator)
+
             indicator_without_port = _PORT_REMOVAL.sub(_URL_WITHOUT_PORT, indicator)
             if request_args.url_port_stripping:
                 # remove port from indicator - from demisto.com:369/rest/of/path -> demisto.com/rest/of/path
@@ -548,6 +554,10 @@ def text_format(iocs, request_args: RequestArguments) -> Union[
             elif indicator != indicator_without_port and request_args.drop_invalids:
                 # if port was in the indicator and url_port_stripping param not set - ignore the indicator
                 continue
+
+            if request_args.url_truncate and ioc_type == FeedIndicatorType.URL and len(indicator) >= PAN_OS_MAX_URL_LEN:
+                indicator = indicator[0:254]
+
             # Reformatting to PAN-OS URL format
             with_invalid_tokens_indicator = indicator
             # mix of text and wildcard in domain field handling
@@ -566,7 +576,7 @@ def text_format(iocs, request_args: RequestArguments) -> Union[
             # this could generate more than num entries according to PAGE_SIZE
             if indicator.startswith('*.'):
                 # formatted_indicators.add(indicator.lstrip('*.'))
-                formatted_indicators.write(str(indicator.lstrip('*.'))+'/n')
+                formatted_indicators.write(str(indicator.lstrip('*.')) + '/n')
 
         if request_args.collapse_ips != DONT_COLLAPSE and ioc_type in (FeedIndicatorType.IP, FeedIndicatorType.CIDR):
             ipv4_formatted_indicators.add(indicator)
@@ -575,17 +585,17 @@ def text_format(iocs, request_args: RequestArguments) -> Union[
             ipv6_formatted_indicators.add(indicator)
 
         else:
-            formatted_indicators.write(str(indicator)+'\n')
+            formatted_indicators.write(str(indicator) + '\n')
 
     if len(ipv4_formatted_indicators) > 0:
         ipv4_formatted_indicators = ips_to_ranges(ipv4_formatted_indicators, request_args.collapse_ips)
         for ip in ipv4_formatted_indicators:
-            formatted_indicators.write(str(ip)+'\n')
+            formatted_indicators.write(str(ip) + '\n')
 
     if len(ipv6_formatted_indicators) > 0:
         ipv6_formatted_indicators = ips_to_ranges(ipv6_formatted_indicators, request_args.collapse_ips)
         for ip in ipv6_formatted_indicators:
-            formatted_indicators.write(str(ip)+'\n')
+            formatted_indicators.write(str(ip) + '\n')
 
     return formatted_indicators
 
@@ -713,7 +723,7 @@ def get_request_args(request_args: dict, params: dict) -> RequestArguments:
     """
     limit = try_parse_integer(request_args.get('n', params.get('edl_size') or 10000), EDL_LIMIT_ERR_MSG)
     offset = try_parse_integer(request_args.get('s', 0), EDL_OFFSET_ERR_MSG)
-    out_format = request.args.get('v', params.get('format', 'text'))
+    out_format = request.args.get('v', params.get('format', FORMAT_TEXT))
     query = request_args.get('q', params.get('indicators_query') or '')
     mwg_type = request.args.get('t', params.get('mwg_type', "string"))
     strip_port = request_args.get('sp', params.get('url_port_stripping') or False)
@@ -723,10 +733,9 @@ def get_request_args(request_args: dict, params: dict) -> RequestArguments:
     category_attribute = request.args.get('ca', params.get('category_attribute', ''))
     collapse_ips = request_args.get('tr', params.get('collapse_ips', DONT_COLLAPSE))
     csv_text = request.args.get('tx', params.get('csv_text', False))
-    sort_field = request.args.get('sf', params.get('sort_field'))
-    sort_order = request.args.get('so', params.get('sort_order'))
     add_comment_if_empty = request_args.get('ce', params.get('add_comment_if_empty', True))
     fields_to_present = request.args.get('fi', params.get('fields_filter', ''))
+    url_truncate = request.args.get('ut', params.get('url_truncate', ''))
 
     # handle flags
     if drop_invalids == '':
@@ -789,9 +798,8 @@ def get_request_args(request_args: dict, params: dict) -> RequestArguments:
                             category_attribute,
                             fields_to_present,
                             csv_text,
-                            sort_field,
-                            sort_order,
-                            strip_protocol
+                            strip_protocol,
+                            url_truncate
                             )
 
 
@@ -841,14 +849,13 @@ def update_edl_command(args: Dict, params: Dict):
     drop_invalids = get_bool_arg_or_param(args, params, 'drop_invalids')
     add_comment_if_empty = get_bool_arg_or_param(args, params, 'add_comment_if_empty')
     offset = try_parse_integer(args.get('offset', 0), EDL_OFFSET_ERR_MSG)
-    mwg_type = params.get('mwg_type', "string")
-    category_default = params.get('category_default', 'bc_category')
-    category_attribute = params.get('category_attribute', '')
-    fields_to_present = params.get('fields_filter', '')
-    out_format = params.get('format', 'text')
+    mwg_type = args.get('mwg_type', "string")
+    category_default = args.get('category_default', 'bc_category')
+    category_attribute = args.get('category_attribute', '')
+    fields_to_present = args.get('fields_filter', '')
+    out_format = args.get('format', FORMAT_TEXT)
     csv_text = args.get('csv_text') == 'True'
-    sort_field = args.get('sort_field')
-    sort_order = args.get('sort_order')
+    url_truncate = args.get('url_truncate', '')
 
     if params.get('use_legacy_query'):
         # workaround for "msgpack: invalid code" error
@@ -867,9 +874,8 @@ def update_edl_command(args: Dict, params: Dict):
                                     category_attribute,
                                     fields_to_present,
                                     csv_text,
-                                    sort_field,
-                                    sort_order,
-                                    strip_protocol)
+                                    strip_protocol,
+                                    url_truncate)
 
     ctx = request_args.to_context_json()
     ctx[EDL_ON_DEMAND_KEY] = True
@@ -891,10 +897,10 @@ def initialize_edl_context(params: dict):
     category_default = params.get('category_default', 'bc_category')
     category_attribute = params.get('category_attribute', '')
     fields_to_present = params.get('fields_filter', '')
-    out_format = params.get('format', 'text')
+    out_format = params.get('format', FORMAT_TEXT)
     csv_text = params.get('csv_text') == 'True'
-    sort_field = params.get('sort_field')
-    sort_order = params.get('sort_order')
+    url_truncate = params.get('url_truncate')
+
     if params.get('use_legacy_query'):
         # workaround for "msgpack: invalid code" error
         fields_to_present = 'use_legacy_query'
@@ -912,9 +918,8 @@ def initialize_edl_context(params: dict):
                                     category_attribute,
                                     fields_to_present,
                                     csv_text,
-                                    sort_field,
-                                    sort_order,
-                                    url_protocol_stripping)
+                                    url_protocol_stripping,
+                                    url_truncate)
 
     EDL_ON_DEMAND_CACHE_PATH = demisto.uniqueFile()
     ctx = request_args.to_context_json()

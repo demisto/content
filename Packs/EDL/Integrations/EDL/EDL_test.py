@@ -25,9 +25,8 @@ class TestRequestArguments:
         RequestArguments.CTX_CATEGORY_ATTRIBUTE: [],
         RequestArguments.CTX_FIELDS_TO_PRESENT: 'name,type',
         RequestArguments.CTX_CSV_TEXT: False,
-        RequestArguments.CTX_SORT_FIELDS: '',
-        RequestArguments.CTX_SORT_ORDER: '',
-        RequestArguments.CTX_PROTOCOL_STRIP_KEY: False
+        RequestArguments.CTX_PROTOCOL_STRIP_KEY: False,
+        RequestArguments.CTX_URL_TRUNCATE_KEY: False
     }
 
     request_args = RequestArguments(
@@ -44,9 +43,8 @@ class TestRequestArguments:
         category_attribute='',
         fields_to_present=context_json[RequestArguments.CTX_FIELDS_TO_PRESENT],
         csv_text=context_json[RequestArguments.CTX_CSV_TEXT],
-        sort_field=context_json[RequestArguments.CTX_SORT_FIELDS],
-        sort_order=context_json[RequestArguments.CTX_SORT_ORDER],
-        url_protocol_stripping=context_json[RequestArguments.CTX_PROTOCOL_STRIP_KEY]
+        url_protocol_stripping=context_json[RequestArguments.CTX_PROTOCOL_STRIP_KEY],
+        url_truncate=context_json[RequestArguments.CTX_URL_TRUNCATE_KEY]
     )
 
     def test_to_context_json(self):
