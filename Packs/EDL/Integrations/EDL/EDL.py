@@ -117,7 +117,7 @@ class RequestArguments:
                  mwg_type: str = 'string',
                  category_default: str = 'bc_category',
                  category_attribute: str = '',
-                 fields_to_present: str = None,
+                 fields_to_present: str = '',
                  csv_text: bool = False,
                  url_protocol_stripping: bool = False,
                  url_truncate: bool = False
@@ -946,7 +946,7 @@ def initialize_edl_context(params: dict):
     fields_to_present = params.get('fields_filter', '')
     out_format = params.get('format', FORMAT_TEXT)
     csv_text = params.get('csv_text') == 'True'
-    url_truncate = params.get('url_truncate')
+    url_truncate = params.get('url_truncate', False)
 
     if params.get('use_legacy_query'):
         # workaround for "msgpack: invalid code" error
