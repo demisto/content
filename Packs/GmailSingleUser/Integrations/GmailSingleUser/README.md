@@ -49,7 +49,8 @@ Additional info available at: https://support.google.com/a/answer/7281227
 * **Optional**: You can use your own Google App instead of the default Demisto App. Follow the steps below.
 * Go to the developers credentials page: https://console.developers.google.com/apis/credentials (you may need to set up a [new project](https://cloud.google.com/resource-manager/docs/creating-managing-projects) if you haven't done so in the past).
 * If needed, configure the [Consent Screen](https://developers.google.com/workspace/guides/configure-oauth-consent). Fill in the Consent Screen information you would like to display to your users.
-* Make sure in the consent screen that you publish the app ![OAuth-Consent-Screen-Publication](doc_imgs/publish-OAuth-consent-screen.png) --> Press on 'Publish App' and confirm.
+* Make sure in the consent screen that you publish the app  --> Press on 'Publish App' and confirm.
+  ![OAuth-Consent-Screen-Publication](doc_imgs/publish-OAuth-consent-screen.png)
 * In the credentials page choose: `Create Credentials` -> `OAuth client ID`.
   ![Create Credentials](doc_imgs/create-credentials.png)
 * When creating the OAuth client ID, select **iOS** as the type (this type allows Apps to work only with a client id). **iOS** is the type used for all apps which are not Android (including desktop types)
@@ -61,10 +62,11 @@ Additional info available at: https://support.google.com/a/answer/7281227
 
 ### Authorization Flow In Cortex XSOAR
 1. Create and save an integration instance of the Gmail Single User integration. Do not fill in the *Auth Code* field, this will be obtained in the next steps.
-2. To obtain the **Auth Code** run the following command in the playground: ***!gmail-auth-link***. Access the link you receive to authenticate your Gmail account. 
-3. Complete the authentication process and copy the received code to the **Auth Code** configuration parameter of the integration instance. 
-4. Save the instance.
-5. To verify that authentication was configured correctly, run the ***!gmail-auth-test***.
+2. To obtain the **Auth Code** run the following command in the playground: ***!gmail-auth-link***. Access the link you receive to authenticate your Gmail account.
+3. If you get a message from Google saying that it cannot verify the application, click on proceed and click on enter to the app name and give the app you created permissions to your Google account and press proceed.
+4. Complete the authentication process and copy the received code to the **Auth Code** configuration parameter of the integration instance. 
+5. Save the instance.
+6. To verify that authentication was configured correctly, run the ***!gmail-auth-test***.
 
 ### Fetched Incidents Data
 * Incident Name
