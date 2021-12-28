@@ -35,17 +35,17 @@ def dt_to_filetime(dt):
     >>> dt_to_filetime(datetime(1970, 1, 1, 0, 0))
     116444736000000000L
     """
-    if (dt.tzinfo is None):
+    if dt.tzinfo is None:
         dt = dt.replace(tzinfo=utc)
     # return EPOCH_AS_FILETIME + (timegm(dt.timetuple()) * HUNDREDS_OF_NANOSECONDS)
-    adTime = EPOCH_AS_FILETIME + (timegm(dt.timetuple()) * HUNDREDS_OF_NANOSECONDS)
-    adTimeStr = str(adTime)
+    ad_time = EPOCH_AS_FILETIME + (timegm(dt.timetuple()) * HUNDREDS_OF_NANOSECONDS)
+    ad_time_str = str(ad_time)
     entry = ({
         "Type": entryTypes["note"],
         "ContentsFormat": formats["json"],
-        "Contents": adTime,
-        "HumanReadable": adTime,
-        "EntryContext": {"ADFileTime": adTime, "ADFileTimeStr": adTimeStr}
+        "Contents": ad_time,
+        "HumanReadable": ad_time,
+        "EntryContext": {"ADFileTime": ad_time, "ADFileTimeStr": ad_time_str}
     })
     return entry
 
@@ -54,14 +54,17 @@ def dt_to_filetime(dt):
 
 
 def main():
-    args = demisto.args()
-    days_ago = args['days_ago']
-    new_date = datetime.today() - timedelta(int(days_ago))
-    dt = new_date.replace(hour=0, minute=0, second=0, microsecond=0)
-    entry = dt_to_filetime(dt)
-    demisto.results(entry)
+    try:
+        args = demisto.args()
+        days_ago = args['days_ago']
+        new_date = datetime.today() - timedelta(int(days_ago))
+        dt = new_date.replace(hour=0, minute=0, second=0, microsecond=0)
+        entry = dt_to_filetime(dt)
+        demisto.results(entry)
+    except Exception as e:
+        demisto.error(traceback.format_exc())  # print the traceback
+        return_error(f'Failed to execute script.\nError:\n{str(e)}')
 
 
-'''ENTRY POINT'''
 if __name__ in ['__main__', 'builtin', 'builtins']:
     main()

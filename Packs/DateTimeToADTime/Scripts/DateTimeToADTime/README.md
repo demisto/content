@@ -1,4 +1,4 @@
-Converts unix time to AD Integer8 time. This is used in many AD date fields like pwdLastSet
+Converts unix time to AD Integer8 time. This is used in many AD date fields like pwdLastSet.
 
 ## Script Data
 ---
@@ -13,8 +13,8 @@ Converts unix time to AD Integer8 time. This is used in many AD date fields like
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| days_ago | Number of days before todays date |
+| days_ago | Number of days before todays date. |
 
 ## Outputs
 ---
-There are no outputs for this script.
+The converted AD time.
