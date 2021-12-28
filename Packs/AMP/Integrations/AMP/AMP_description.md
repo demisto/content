@@ -1,0 +1,1 @@
+To learn how to generate a Client ID and API Key, which are required for this integration, see the [Cisco AMP documentation.]( https://www.cisco.com/c/en/us/support/docs/security/amp-endpoints/201121-Overview-of-the-Cisco-AMP-for-Endpoints.html#anc1).

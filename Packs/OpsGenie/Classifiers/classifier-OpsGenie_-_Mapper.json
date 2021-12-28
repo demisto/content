@@ -1,0 +1,167 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "OpsGenie - Mapper",
+    "mapping": {
+        "OpsGenie Alert": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Alert Acknowledgement": {
+                    "complex": null,
+                    "simple": "acknowledged"
+                },
+                "Alert ID": {
+                    "complex": null,
+                    "simple": "id"
+                },
+                "Alert Name": {
+                    "complex": null,
+                    "simple": "message"
+                },
+                "Alert Source": {
+                    "complex": null,
+                    "simple": "source"
+                },
+                "Assigned User": {
+                    "complex": null,
+                    "simple": "owner"
+                },
+                "Last Seen": {
+                    "complex": null,
+                    "simple": "lastOccurredAt"
+                },
+                "Last Update Time": {
+                    "complex": null,
+                    "simple": "updatedAt"
+                },
+                "OpsGenie Alias": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "alias",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "OpsGenie Count Linked Alerts": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "count",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "OpsGenie Responder": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "responders",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "OpsGenie TinyId": {
+                    "complex": null,
+                    "simple": "tinyId"
+                },
+                "Source Priority": {
+                    "complex": null,
+                    "simple": "priority"
+                },
+                "Source Status": {
+                    "complex": null,
+                    "simple": "status"
+                },
+                "Tags": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "tags",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "occurred": {
+                    "complex": null,
+                    "simple": "createdAt"
+                }
+            }
+        },
+        "OpsGenie Incident": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Alert Source": {
+                    "complex": null,
+                    "simple": "source"
+                },
+                "Description": {
+                    "complex": null,
+                    "simple": "description"
+                },
+                "Event ID": {
+                    "complex": null,
+                    "simple": "id"
+                },
+                "Incident Link": {
+                    "complex": null,
+                    "simple": "links.web"
+                },
+                "Last Update Time": {
+                    "complex": null,
+                    "simple": "updatedAt"
+                },
+                "OpsGenie Alias": {
+                    "complex": null,
+                    "simple": "alias"
+                },
+                "OpsGenie Responder": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "responders",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "OpsGenie TinyId": {
+                    "complex": null,
+                    "simple": "tinyId"
+                },
+                "Source Priority": {
+                    "complex": null,
+                    "simple": "priority"
+                },
+                "Source Status": {
+                    "complex": null,
+                    "simple": "status"
+                },
+                "Tags": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "tags",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Team name": {
+                    "complex": null,
+                    "simple": "ownerTeam"
+                },
+                "Title": {
+                    "complex": null,
+                    "simple": "message"
+                },
+                "occurred": {
+                    "complex": null,
+                    "simple": "createdAt"
+                }
+            }
+        }
+    },
+    "name": "OpsGenie - Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}
