@@ -113,10 +113,12 @@ def get_account(account_email):
     )
 
 
-def send_email_to_mailbox(account, to, subject, body, bcc=None, cc=None, reply_to=None, html_body=None, attachments=[]):
+def send_email_to_mailbox(account, to, subject, body, bcc=None, cc=None, reply_to=None,
+                          html_body=None, attachments=[], raw_message=None):
     message_body = HTMLBody(html_body) if html_body else body
     m = Message(
         account=account,
+        mime_content=raw_message,
         folder=account.sent,
         cc_recipients=cc,
         bcc_recipients=bcc,
@@ -185,7 +187,8 @@ def collect_manual_attachments(manualAttachObj):
 
 
 def send_email(to, subject, body="", bcc=None, cc=None, replyTo=None, htmlBody=None,
-               attachIDs="", attachCIDs="", attachNames="", from_mailbox=None, manualAttachObj=None):
+               attachIDs="", attachCIDs="", attachNames="", from_mailbox=None, manualAttachObj=None,
+               raw_message=None):
     account = get_account(from_mailbox or ACCOUNT_EMAIL)
     bcc = bcc.split(",") if bcc else None
     cc = cc.split(",") if cc else None
@@ -195,7 +198,7 @@ def send_email(to, subject, body="", bcc=None, cc=None, replyTo=None, htmlBody=N
 
     attachments, attachments_names = process_attachments(attachCIDs, attachIDs, attachNames, manualAttachObj)
 
-    send_email_to_mailbox(account, to, subject, body, bcc, cc, replyTo, htmlBody, attachments)
+    send_email_to_mailbox(account, to, subject, body, bcc, cc, replyTo, htmlBody, attachments, raw_message)
     result_object = {
         'from': account.primary_smtp_address,
         'to': to,
