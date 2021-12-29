@@ -118,7 +118,7 @@ def send_email_to_mailbox(account, to, subject, body, bcc=None, cc=None, reply_t
     message_body = HTMLBody(html_body) if html_body else body
     m = Message(
         account=account,
-        mime_content=raw_message,
+        mime_content=raw_message.encode('UTF-8'),
         folder=account.sent,
         cc_recipients=cc,
         bcc_recipients=bcc,
