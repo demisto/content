@@ -1663,7 +1663,6 @@ tests:
 - test-domain-indicator
 - Calculate Severity - Generic v2 - Test
 - Wait Until Datetime - Test
-- Calculate Severity - Standard - Test
 - Extract Indicators From File - Generic v2 - Test
 - URL Enrichment - Generic v2 - Test
 - File Enrichment - Generic v2 - Test
