@@ -1,6 +1,7 @@
-import demistomock as demisto
-from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
-from CommonServerUserPython import *  # noqa
+# uncomment the import statements for debugging in PyCharm, VS Code or other IDEs.
+# import demistomock as demisto
+# from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
+# from CommonServerUserPython import *  # noqa
 
 TRANSLATE_OUTPUT_PREFIX = 'TheForce'
 
@@ -71,7 +72,7 @@ def main() -> None:
     args = demisto.args()
     command = demisto.command()
 
-    api_key = params.get('apikey')
+    api_key = params.get('apikey', {}).get('password')
     base_url = params.get('url', '')
     verify = not params.get('insecure', False)
     proxy = params.get('proxy', False)
