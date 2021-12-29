@@ -11,8 +11,9 @@ PIPELINE_FIELDS_TO_EXTRACT = {'id', 'project_id', 'status', 'ref', 'sha', 'creat
 
 
 class Client(BaseClient):
-    def __init__(self, server_url, verify, proxy, headers):
+    def __init__(self, server_url, verify, proxy, headers, trigger_token=''):
         super().__init__(base_url=server_url, verify=verify, proxy=proxy, headers=headers)
+        self.trigger_token = trigger_token
 
     def get_projects_request(self, repository_storage, last_activity_before, min_access_level, simple, sort,
                              membership, search_namespaces, archived, search, id_before, last_activity_after, starred,
@@ -184,8 +185,7 @@ class Client(BaseClient):
         response = response.strip("'").strip('"')
         return response
 
-    def trigger_contrib_build(self, base_branch: str, contrib_branch: str, pr_number: int, token: str):  # TODO: what is url?
-        # url = "https://code.pan.run/api/v4/projects/2596/trigger/pipeline"
+    def trigger_contrib_build(self, base_branch: str, contrib_branch: str, pr_number: int, token: str):
         headers = self._headers
         data = {
             'token': token,
@@ -695,9 +695,10 @@ def gitlab_trigger_contribution_build_command(client: Client, args: Dict[str, An
     base_branch = args.get('base_branch', '')
     contrib_branch = args.get('contrib_branch', '')
     pr_number = args.get('pr_number', '')
-    trigger_token = args.get('trigger_token', '')
+    if not client.trigger_token:
+        return_error("A trigger token is required in the integration instance configuration")
 
-    response = client.trigger_contrib_build(base_branch, contrib_branch, pr_number, trigger_token)
+    response = client.trigger_contrib_build(base_branch, contrib_branch, pr_number, client.trigger_token)
 
     output = {k: v for k, v in response.items() if k in PIPELINE_FIELDS_TO_EXTRACT}
 
@@ -725,6 +726,8 @@ def main():
     url = params.get('url')
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
+    # you can find this trigger in https://vault.paloaltonetworks.local/home#R2VuZXJpY1NlY3JldERldGFpbHM6RGF0YVZhdWx0Ojc5NjU1N2RmLTg5YzQtNGQ5Yi04YmNlLTljNTMwZWU1NjVjYTpSZWNvcmRJbmRleDo1OklzVHJ1bmNhdGVk
+    trigger_token = params.get('trigger_token', '')
     headers = {}
     headers['PRIVATE-TOKEN'] = f'{params["api_key"]}'
 
@@ -733,7 +736,7 @@ def main():
 
     try:
         urllib3.disable_warnings()
-        client = Client(urljoin(url, ""), verify_certificate, proxy, headers=headers)
+        client = Client(urljoin(url, ""), verify_certificate, proxy, headers=headers, trigger_token=trigger_token)
         commands = {
             'gitlab-get-projects': get_projects_command,
             'gitlab-projects-get-access-requests': projects_get_access_requests_command,

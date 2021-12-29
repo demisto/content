@@ -12,6 +12,10 @@ configuration:
   name: api_key
   required: true
   type: 4
+- display: Trigger Token
+  name: trigger_token
+  required: false
+  type: 4
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -1077,12 +1081,6 @@ script:
       name: pr_number
       required: true
       secret: false
-    - default: false
-      description: The Build Trigger token
-      isArray: false
-      name: trigger_token
-      required: true
-      secret: true
     description: Trigger a contribution build
     name: gitlab-trigger-contribution-build
     outputs:

@@ -12,7 +12,7 @@ from GitLab import Client, gitlab_pipelines_schedules_list_command, gitlab_pipel
     gitlab_trigger_contribution_build_command
 
 BASE_URL = 'https://gitlab.com/api/v4'
-mock_client = Client(BASE_URL, verify=False, proxy=False, headers=dict())
+mock_client = Client(BASE_URL, verify=False, proxy=False, headers=dict(), trigger_token='token')
 
 
 def util_load_json(path):

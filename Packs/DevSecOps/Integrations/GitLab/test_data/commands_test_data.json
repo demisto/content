@@ -147,8 +147,7 @@
     "args": {
       "base_branch": "base_test",
       "pr_number": 1,
-      "contrib_branch": "contrib_branch",
-      "trigger_token": "token_test"
+      "contrib_branch": "contrib_branch"
     }
   },
   "jobs": {
