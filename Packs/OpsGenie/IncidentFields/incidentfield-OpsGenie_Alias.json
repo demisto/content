@@ -5,7 +5,7 @@
     "name": "OpsGenie Alias",
     "ownerOnly": false,
     "cliName": "opsgeniealias",
-    "type": "number",
+    "type": "shortText",
     "closeForm": false,
     "editForm": true,
     "required": false,
