@@ -4822,6 +4822,13 @@
             "fromversion": "5.5.0"
         },
         {
+            "integrations": [
+                "RemoteAccess v2"
+            ],
+            "playbookID": "RemoteAccessTest",
+            "fromversion": "6.0.0"
+        },
+        {
             "playbookID": "AzureRiskyUsers",
             "fromversion": "6.0.0",
             "integrations": "AzureRiskyUsers"
@@ -4879,6 +4886,7 @@
         "JoeSecurityTestDetonation": "Issue 25650",
         "JoeSecurityTestPlaybook": "Issue 25649",
         "Cortex Data Lake Test": "Issue 24346",
+        "Phishing - Core - Test - Incident Starter": "Issue 26784",
         "Test Playbook McAfee ATD": "Issue 33409",
         "Detonate Remote File From URL -McAfee-ATD - Test": "Issue 33407",
         "Test Playbook McAfee ATD Upload File": "Issue 33408",
@@ -4923,6 +4931,7 @@
         "Phishing v2 - Test - Actual Incident": "Issue 41322",
         "Kaspersky Security Center - Test": "Issue 36487",
         "carbonBlackEndpointStandardTestPlaybook": "Issue 36936",
+        "RemoteAccessTest": "Issue 44245",
         "test_Qradar_v2": "the integration is deprecated as we released Qradar V3",
         "XsoarPowershellTesting-Test": "Issue 32689",
         "Unit42 Intel Objects Feed - Test": "Issue 44100",
