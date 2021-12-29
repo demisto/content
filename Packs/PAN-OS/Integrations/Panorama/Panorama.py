@@ -2324,6 +2324,7 @@ def panorama_get_url_category_command(url_cmd: str, url: str, additional_suspici
     categories_dict_hr: Dict[str, list] = {}
     command_results: List[CommandResults] = []
     for url in urls:
+        err_readable_output = None
         try:
             category = panorama_get_url_category(url_cmd, url)
             if category in categories_dict:
@@ -2336,31 +2337,24 @@ def panorama_get_url_category_command(url_cmd: str, url: str, additional_suspici
             categories_dict[category] = list((set(categories_dict[category])).union(set(context_urls)))
 
             score = calculate_dbot_score(category.lower(), additional_suspicious, additional_malicious)
-            dbot_score = Common.DBotScore(
-                indicator=url,
-                indicator_type=DBotScoreType.URL,
-                integration_name='PAN-OS',
-                score=score
-            )
-            url_obj = Common.URL(
-                url=url,
-                dbot_score=dbot_score,
-                category=category
-            )
-            readable_output = tableToMarkdown('URL', url_obj.to_context())
-        except Exception as e:
-            dbot_score = Common.DBotScore(
-                indicator=url,
-                indicator_type=DBotScoreType.URL,
-                integration_name='PAN-OS',
-                score=0
-            )
-            url_obj = Common.URL(
-                url=url,
-                dbot_score=dbot_score
-            )
-            readable_output = str(e)
 
+        except Exception as e:
+            score = 0
+            category = None
+            err_readable_output = str(e)
+
+        dbot_score = Common.DBotScore(
+            indicator=url,
+            indicator_type=DBotScoreType.URL,
+            integration_name='PAN-OS',
+            score=score
+        )
+        url_obj = Common.URL(
+            url=url,
+            dbot_score=dbot_score,
+            category=category
+        )
+        readable_output = err_readable_output or tableToMarkdown('URL', url_obj.to_context())
         command_results.append(CommandResults(
             indicator=url_obj,
             readable_output=readable_output
