@@ -45,7 +45,7 @@ def cve_to_context(cve) -> Dict[str, str]:
     cvss = cve.get('cvss')
     return {
         'ID': cve.get('id', ''),
-        'CVSS': cvss if cvss else 'N\\A',
+        'CVSS': cvss or 'N\\A',
         'Published': cve.get('Published', '').rstrip('Z'),
         'Modified': cve.get('Modified', '').rstrip('Z'),
         'Description': cve.get('summary', '')
