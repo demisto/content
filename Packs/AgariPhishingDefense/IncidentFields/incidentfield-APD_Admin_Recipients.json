@@ -5,7 +5,7 @@
  "name": "APD Admin Recipients",
  "ownerOnly": false,
  "cliName": "apdadminrecipients",
- "type": "shortText",
+ "type": "tagsSelect",
  "closeForm": false,
  "editForm": true,
  "required": false,
