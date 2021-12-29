@@ -9,7 +9,7 @@ import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 CONTRIBUTION_BUILD_INSTANCE_URL = "https://content-gold.paloaltonetworks.com/instance/" \
-                                  "execute/GenericWebhook_contribution_build"
+                                  "execute/Generic Webhook_trigger_contribution_build"
 
 
 def arguments_handler():
