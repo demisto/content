@@ -1,23 +1,29 @@
 id: Process Email - Generic v2
 version: -1
-contentitemexportablefields:
-  contentitemfields: {}
 name: Process Email - Generic v2
 description: |
-  Add email details to the relevant context entities and handle the case where original emails are attached.
+  This playbook adds email details to the relevant context entities and handles original email attachments.
 
-  Added on this v2 playbook:
-  - Uses incident fields and not incident labels.
-  - Provides separate paths to "Phishing Alerts".
-  - Uses the new "Get Original Email - Generic v2" playbook to retrieve original emails as eml files for both EWS v2 and Microsoft Graph Mail integration. This will assist with parsing the email artifacts in a more efficient way.
+  The v2 playbook enables parsing email artifacts more efficiently, including:
+  - Using incident fields and not incident labels.
+  - Providing separate paths to "Phishing Alerts".
+  - Using the new "Get Original Email - Generic v2" playbook to retrieve original emails as EML files from the following integrations:
+    * EWS v2
+    * Microsoft Graph Mail integration
+    * Gmail
+    * FireEye EX and FireEye CM
+    * Proofpoint Protection Server
+    * Agari Phishing Defense (EWS v2, MSGraph Mail, Gmail)
+    * Mimecast
+
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 028c057d-2a33-4b5e-8501-ad0166f55e06
+    taskid: 8d769766-1866-4c54-88bb-20b85aed68a2
     type: start
     task:
-      id: 028c057d-2a33-4b5e-8501-ad0166f55e06
+      id: 8d769766-1866-4c54-88bb-20b85aed68a2
       version: -1
       name: ""
       iscommand: false
@@ -43,14 +49,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 161bad06-c10f-4c3b-8599-1743e279f703
+    taskid: 5df18b50-2fa9-4ce8-8aa4-93f91ddc5c56
     type: condition
     task:
-      id: 161bad06-c10f-4c3b-8599-1743e279f703
+      id: 5df18b50-2fa9-4ce8-8aa4-93f91ddc5c56
       version: -1
       name: Do we have original emails attached?
       description: Identify whether the incident includes an email message attached
-        as an eml or msg file and return the answer to playbook. Also saves the identified
+        as an EML or MSG file and return the answer to playbook. Also saves the identified
         entry ID to context for use for later. Commonly used in automated playbooks
         that handle phishing reports sent to a special phishing mailbox set up by
         the security team.
@@ -86,13 +92,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: e5d2019a-9e65-4698-8e1f-1c9ae1dcda0f
+    taskid: 3594df61-f404-418b-8d61-8e516b29108b
     type: regular
     task:
-      id: e5d2019a-9e65-4698-8e1f-1c9ae1dcda0f
+      id: 3594df61-f404-418b-8d61-8e516b29108b
       version: -1
       name: Add original email details to context
-      description: Sets the details of the email that was forwarded under the Email
+      description: Sets the details of the email that was forwarded under the email
         context key.
       scriptName: Set
       type: regular
@@ -113,7 +119,7 @@ tasks:
       {
         "position": {
           "x": -110,
-          "y": 2020
+          "y": 2590
         }
       }
     note: false
@@ -125,10 +131,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 869479fe-4f37-4211-8d7f-333e7931bc80
+    taskid: 25ea98f0-c7f4-438c-8bb3-31231e9553fa
     type: regular
     task:
-      id: 869479fe-4f37-4211-8d7f-333e7931bc80
+      id: 25ea98f0-c7f4-438c-8bb3-31231e9553fa
       version: -1
       name: Extract email artifacts and attachments
       description: Parses an email from an EML or MSG file and populates all relevant
@@ -152,7 +158,7 @@ tasks:
       {
         "position": {
           "x": 660,
-          "y": 1075
+          "y": 1645
         }
       }
     note: false
@@ -164,10 +170,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: e3b5e51d-c643-400d-84fd-fd54ad6b5014
+    taskid: b5bde5c9-9629-4e50-80f3-ad8068cb182b
     type: condition
     task:
-      id: e3b5e51d-c643-400d-84fd-fd54ad6b5014
+      id: b5bde5c9-9629-4e50-80f3-ad8068cb182b
       version: -1
       name: Can an image of the email be rendered?
       description: Checks whether the email is HTML-formatted, and whether the Rasterize
@@ -223,7 +229,7 @@ tasks:
       {
         "position": {
           "x": 340,
-          "y": 2390
+          "y": 3080
         }
       }
     note: false
@@ -235,13 +241,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: c41951dc-221e-41e2-8c39-87bb5e20b74c
+    taskid: db697829-30c4-4af4-8a13-c610488132fc
     type: regular
     task:
-      id: c41951dc-221e-41e2-8c39-87bb5e20b74c
+      id: db697829-30c4-4af4-8a13-c610488132fc
       version: -1
       name: Render HTML to an image
-      description: Rasterize an email body into an image
+      description: Rasterizes an email body into an image.
       tags:
       - email_html_image
       script: '|||rasterize-email'
@@ -264,7 +270,7 @@ tasks:
       {
         "position": {
           "x": 100,
-          "y": 2610
+          "y": 3300
         }
       }
     note: false
@@ -276,10 +282,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: b2be48ca-b624-4cd5-87d1-0124aa3e741d
+    taskid: bca619c6-2b64-4748-87a1-943bee4069f0
     type: title
     task:
-      id: b2be48ca-b624-4cd5-87d1-0124aa3e741d
+      id: bca619c6-2b64-4748-87a1-943bee4069f0
       version: -1
       name: Done
       type: title
@@ -291,7 +297,7 @@ tasks:
       {
         "position": {
           "x": 340,
-          "y": 2840
+          "y": 3530
         }
       }
     note: false
@@ -303,10 +309,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 9fe923a7-22d9-49ee-81e1-9e2c4fb762f7
+    taskid: 432b097c-439a-45ce-8a51-a01b275dd8e4
     type: title
     task:
-      id: 9fe923a7-22d9-49ee-81e1-9e2c4fb762f7
+      id: 432b097c-439a-45ce-8a51-a01b275dd8e4
       version: -1
       name: Email Screenshot
       type: title
@@ -321,7 +327,7 @@ tasks:
       {
         "position": {
           "x": 340,
-          "y": 2260
+          "y": 2950
         }
       }
     note: false
@@ -333,13 +339,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 6d65c30c-731e-4eeb-84d3-fcf30b3cd04c
+    taskid: 9996c9bc-f6ae-4dfe-84b4-9ffc68cc37fa
     type: condition
     task:
-      id: 6d65c30c-731e-4eeb-84d3-fcf30b3cd04c
+      id: 9996c9bc-f6ae-4dfe-84b4-9ffc68cc37fa
       version: -1
       name: Should the original email be retrieved?
-      description: If True, retrieve the original email in the thread
+      description: Determines whether to retrieve the original email in the thread.
       type: condition
       iscommand: false
       brand: ""
@@ -386,7 +392,7 @@ tasks:
       {
         "position": {
           "x": -260,
-          "y": 200
+          "y": 190
         }
       }
     note: false
@@ -398,13 +404,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: eefa9fe2-e6a7-4031-893a-2765e539d1c4
+    taskid: 182a8a03-eeb6-4780-8384-e115db2b9851
     type: condition
     task:
-      id: eefa9fe2-e6a7-4031-893a-2765e539d1c4
+      id: 182a8a03-eeb6-4780-8384-e115db2b9851
       version: -1
       name: Was the original email retrieved?
-      description: Is there an "Email" object in the context?
+      description: Determines whether there is an email object in the context.
       type: condition
       iscommand: false
       brand: ""
@@ -427,7 +433,7 @@ tasks:
       {
         "position": {
           "x": 180,
-          "y": 1240
+          "y": 1810
         }
       }
     note: false
@@ -439,10 +445,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: fa0cb93f-20d4-4972-8e3b-b2784250864d
+    taskid: fb33e0db-2552-4a83-8d98-048d039767f1
     type: regular
     task:
-      id: fa0cb93f-20d4-4972-8e3b-b2784250864d
+      id: fb33e0db-2552-4a83-8d98-048d039767f1
       version: -1
       name: Display email information in layout
       description: Updates Cortex XSOAR incident fields using data from the email
@@ -618,7 +624,7 @@ tasks:
       {
         "position": {
           "x": 1280,
-          "y": 2090
+          "y": 2780
         }
       }
     note: false
@@ -630,13 +636,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 5a305f89-a43d-403d-8105-3c6da2421f45
+    taskid: 1a8cd39f-2278-4286-897d-a8233df11163
     type: regular
     task:
-      id: 5a305f89-a43d-403d-8105-3c6da2421f45
+      id: 1a8cd39f-2278-4286-897d-a8233df11163
       version: -1
       name: Display email headers in layout - Email.Headers
-      description: Fills the "Email Headers" grid field in the incident layout with
+      description: Fills the "Email Headers" field in the incident layout with
         the retrieved email headers.
       scriptName: SetGridField
       type: regular
@@ -644,7 +650,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "11"
+      - "19"
     scriptarguments:
       columns:
         simple: headername,headervalue
@@ -658,13 +664,14 @@ tasks:
         simple: headername
       unpack_nested_elements:
         simple: "false"
+    reputationcalc: 2
     continueonerror: true
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 340,
-          "y": 2020
+          "y": 2590
         }
       }
     note: false
@@ -676,10 +683,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 02773e7a-623b-491d-8667-76e99063765c
+    taskid: 06c229f7-0d36-4831-8482-641670b43e31
     type: condition
     task:
-      id: 02773e7a-623b-491d-8667-76e99063765c
+      id: 06c229f7-0d36-4831-8482-641670b43e31
       version: -1
       name: Were email headers extracted successfully?
       description: Checks whether the email headers were extracted from the original
@@ -716,7 +723,7 @@ tasks:
       {
         "position": {
           "x": 660,
-          "y": 1660
+          "y": 2230
         }
       }
     note: false
@@ -728,10 +735,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: c6b99de4-efa1-4a02-88fb-b39e7a0804cc
+    taskid: 21a3fde3-5449-4927-8744-20183901636d
     type: title
     task:
-      id: c6b99de4-efa1-4a02-88fb-b39e7a0804cc
+      id: 21a3fde3-5449-4927-8744-20183901636d
       version: -1
       name: Incident Layout Display
       type: title
@@ -747,7 +754,7 @@ tasks:
       {
         "position": {
           "x": 1060,
-          "y": 1490
+          "y": 2060
         }
       }
     note: false
@@ -759,10 +766,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: b6224cc9-ed84-4bed-8fcb-d077722b4f14
+    taskid: 9606b1d8-7a0c-49e5-8c05-e8001132c545
     type: condition
     task:
-      id: b6224cc9-ed84-4bed-8fcb-d077722b4f14
+      id: 9606b1d8-7a0c-49e5-8c05-e8001132c545
       version: -1
       name: Are there any files in the incident?
       description: Checks whether the incident contains any kind of file.
@@ -801,14 +808,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 9c9c52d2-81ed-4dc4-820b-0be7f403ecc4
+    taskid: 46c8c603-b607-4886-8b1c-e41c37944df3
     type: regular
     task:
-      id: 9c9c52d2-81ed-4dc4-820b-0be7f403ecc4
+      id: 46c8c603-b607-4886-8b1c-e41c37944df3
       version: -1
       name: Save incident files separately from email attachments
       description: Saves the files that were initially involved with the incident
-        in a separate context key so that they are available separate from email attachment
+        in a separate context key so they are available separate from email attachment
         files.
       scriptName: SetAndHandleEmpty
       type: regular
@@ -840,10 +847,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 4b384f12-dc73-45ae-8990-d193d01095c0
+    taskid: e71cd2a6-3a02-44dc-8af3-d0423e74e56a
     type: title
     task:
-      id: 4b384f12-dc73-45ae-8990-d193d01095c0
+      id: e71cd2a6-3a02-44dc-8af3-d0423e74e56a
       version: -1
       name: Attachment Information
       description: Set multiple keys/values to the context.
@@ -863,7 +870,7 @@ tasks:
       {
         "position": {
           "x": 2370,
-          "y": 1660
+          "y": 2230
         }
       }
     note: false
@@ -875,10 +882,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: 67edc7b4-d501-4e1c-81f6-81ad153677cb
+    taskid: 3863273b-e1b3-4176-8128-cfe52980865f
     type: regular
     task:
-      id: 67edc7b4-d501-4e1c-81f6-81ad153677cb
+      id: 3863273b-e1b3-4176-8128-cfe52980865f
       version: -1
       name: Save number of attachments
       description: Saves the number of attachments in the email.
@@ -913,7 +920,7 @@ tasks:
       {
         "position": {
           "x": 1760,
-          "y": 1860
+          "y": 2430
         }
       }
     note: false
@@ -925,10 +932,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: d105cce8-ab7c-4719-8962-c91351b8f245
+    taskid: 3632c262-6b02-4e9c-8200-590700987dfd
     type: regular
     task:
-      id: d105cce8-ab7c-4719-8962-c91351b8f245
+      id: 3632c262-6b02-4e9c-8200-590700987dfd
       version: -1
       name: Save attachment extensions
       description: Saves the email attachment extensions.
@@ -968,7 +975,7 @@ tasks:
       {
         "position": {
           "x": 1360,
-          "y": 1860
+          "y": 2430
         }
       }
     note: false
@@ -980,10 +987,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: 8c120a38-8df9-4f1f-872b-53bd062b968c
+    taskid: 3c3294fd-4282-4c5c-8061-71ab9375d863
     type: regular
     task:
-      id: 8c120a38-8df9-4f1f-872b-53bd062b968c
+      id: 3c3294fd-4282-4c5c-8061-71ab9375d863
       version: -1
       name: Save attachment MD5 hashes
       description: Saves the email attachment MD5 hashes.
@@ -1023,7 +1030,7 @@ tasks:
       {
         "position": {
           "x": 2167.5,
-          "y": 1860
+          "y": 2430
         }
       }
     note: false
@@ -1035,10 +1042,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: a1330e9f-c433-42f9-8593-ca456d69dab6
+    taskid: 54fb6a06-d996-4971-8845-1515c0a789c7
     type: regular
     task:
-      id: a1330e9f-c433-42f9-8593-ca456d69dab6
+      id: 54fb6a06-d996-4971-8845-1515c0a789c7
       version: -1
       name: Save attachment names
       description: Saves the email attachment names.
@@ -1078,7 +1085,7 @@ tasks:
       {
         "position": {
           "x": 2980,
-          "y": 1860
+          "y": 2430
         }
       }
     note: false
@@ -1090,10 +1097,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: 0bac780b-129b-4b4b-84df-6325cabc8431
+    taskid: 12758f95-72cc-4152-80c3-d47d193c88bc
     type: regular
     task:
-      id: 0bac780b-129b-4b4b-84df-6325cabc8431
+      id: 12758f95-72cc-4152-80c3-d47d193c88bc
       version: -1
       name: Save attachment sizes
       description: Saves the email attachment sizes.
@@ -1133,7 +1140,7 @@ tasks:
       {
         "position": {
           "x": 2580,
-          "y": 1860
+          "y": 2430
         }
       }
     note: false
@@ -1145,10 +1152,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: 56901aa0-20e7-44b1-8ea4-a54c6ddf9185
+    taskid: e46b20fc-c636-4aec-84cd-398399963607
     type: regular
     task:
-      id: 56901aa0-20e7-44b1-8ea4-a54c6ddf9185
+      id: e46b20fc-c636-4aec-84cd-398399963607
       version: -1
       name: Save attachment types
       description: Saves the email attachment types.
@@ -1188,7 +1195,7 @@ tasks:
       {
         "position": {
           "x": 3390,
-          "y": 1860
+          "y": 2430
         }
       }
     note: false
@@ -1200,14 +1207,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: d04d1f99-cc47-41a7-8b3f-2dc99f51677f
+    taskid: e7851ac8-e073-4265-80a6-5672bc266563
     type: regular
     task:
-      id: d04d1f99-cc47-41a7-8b3f-2dc99f51677f
+      id: e7851ac8-e073-4265-80a6-5672bc266563
       version: -1
       name: Normalize Reporter Email Headers
-      description: This task normalizes the keys names of the headers which are different
-        with each client. It will assist with extracting the relevant values for the
+      description: This task normalizes the keys names of the headers, which are different
+        with each client. It facilitates extracting the relevant values for the
         next tasks.
       scriptName: SetGridField
       type: regular
@@ -1247,10 +1254,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: a353acb2-9257-4df4-8af5-63f652d7a3ed
+    taskid: 916f50ae-1904-4b57-8cfb-fb145e1c1d2d
     type: regular
     task:
-      id: a353acb2-9257-4df4-8af5-63f652d7a3ed
+      id: 916f50ae-1904-4b57-8cfb-fb145e1c1d2d
       version: -1
       name: Extract Reporter Email Headers
       description: Preserves the original state of reporter's headers, which are stored
@@ -1286,22 +1293,25 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: d9b2f7bd-fa99-4fea-8655-8e859fa2cd0a
+    taskid: 0ba10465-2993-45df-8e26-861f651e6b71
     type: playbook
     task:
-      id: d9b2f7bd-fa99-4fea-8655-8e859fa2cd0a
+      id: 0ba10465-2993-45df-8e26-861f651e6b71
       version: -1
       name: Get Original Email - Generic v2
       description: |-
-        Use this playbook to retrieve the original email in the thread, including headers and attahcments, when the reporting user forwarded the original email not as an attachment.
+        This v2 playbook is used inside the phishing flow. The inputs in this version do not use labels and also allow the user to supply an email brand.
+        Note: You must have the necessary permissions in your email service to execute a global search.
 
-        You must have the necessary permissions in your email service to execute global search.
-
+        To retrieve the email files directly from the email service providers, use one of the provided inputs (Agari Phishing Defense customers should also use the following):
         - EWS: eDiscovery
         - Gmail: Google Apps Domain-Wide Delegation of Authority
-        - MSGraph: As described here:
-            * https://docs.microsoft.com/en-us/graph/api/message-get
-            * https://docs.microsoft.com/en-us/graph/api/user-list-messages
+        - MSGraph: As described in the [message-get API](https://docs.microsoft.com/en-us/graph/api/message-get) and the [user-list-messages API](https://docs.microsoft.com/en-us/graph/api/user-list-messages).</li></ul>
+        - EmailSecurityGateway retrieves eml files from:
+            * FireEye EX
+            * FireEye CM
+            * Proofpoint Protection Server
+            * Mimecast
       playbookName: Get Original Email - Generic v2
       type: playbook
       iscommand: false
@@ -1310,6 +1320,9 @@ tasks:
       '#none#':
       - "36"
     scriptarguments:
+      EmailBrand:
+        complex:
+          root: inputs.EmailBrand
       EmailSubject:
         complex:
           root: inputs.Thread-Topic
@@ -1341,14 +1354,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: 838269c2-4da2-4b5b-8734-7f1d86422cfe
+    taskid: feaf683a-92f6-43f3-84d2-b9e422b737d8
     type: condition
     task:
-      id: 838269c2-4da2-4b5b-8734-7f1d86422cfe
+      id: feaf683a-92f6-43f3-84d2-b9e422b737d8
       version: -1
       name: Do we have original emails attached?
       description: Identifies whether the incident includes an email message attached
-        as an eml or msg file and returns the answer to a playbook. Also saves the
+        as an EML or MSG file and returns the answer to playbook. Also saves the
         identified entry ID to context for later use. Commonly used in automated playbooks
         that handle phishing reports sent to a special phishing mailbox set up by
         the security team.
@@ -1360,7 +1373,7 @@ tasks:
       "no":
       - "18"
       "yes":
-      - "3"
+      - "41"
     scriptarguments:
       entryid:
         simple: ${File.EntryID}
@@ -1384,13 +1397,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: 25a645a6-540d-447d-8de9-fc3ae16bc466
+    taskid: 9bbbf2fa-0874-4bb0-8e61-d939725d4e3d
     type: regular
     task:
-      id: 25a645a6-540d-447d-8de9-fc3ae16bc466
+      id: 9bbbf2fa-0874-4bb0-8e61-d939725d4e3d
       version: -1
       name: Display email headers in layout - Email.HeadersMap
-      description: Fills the "Email Headers" grid field in the incident layout with
+      description: Fills the "Email Headers" field in the incident layout with
         the retrieved email headers.
       scriptName: SetGridField
       type: regular
@@ -1398,7 +1411,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "11"
+      - "19"
     scriptarguments:
       columns:
         simple: headername,headervalue
@@ -1412,13 +1425,14 @@ tasks:
         simple: headername
       unpack_nested_elements:
         simple: "true"
+    reputationcalc: 2
     continueonerror: true
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 790,
-          "y": 2020
+          "y": 2590
         }
       }
     note: false
@@ -1430,22 +1444,25 @@ tasks:
     isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: 60428e3a-d35f-4be9-852e-1834a3055810
+    taskid: e4288592-44d9-4a38-80f0-ed5f5bf70881
     type: playbook
     task:
-      id: 60428e3a-d35f-4be9-852e-1834a3055810
+      id: e4288592-44d9-4a38-80f0-ed5f5bf70881
       version: -1
       name: Get Original Email - Generic v2
       description: |-
-        Use this playbook to retrieve the original email in the thread, including headers and attahcments, when the reporting user forwarded the original email not as an attachment.
+        This playbook retrieves the original email in the thread including headers and attachments, when the reporting user forwarded the original email not as an attachment.
 
-        You must have the necessary permissions in your email service to execute global search.
+        Note: You must have the necessary permissions in your email service to execute a global search.
 
         - EWS: eDiscovery
         - Gmail: Google Apps Domain-Wide Delegation of Authority
-        - MSGraph: As described here:
-            * https://docs.microsoft.com/en-us/graph/api/message-get
-            * https://docs.microsoft.com/en-us/graph/api/user-list-messages
+        - MSGraph: As described in the [message-get API](https://docs.microsoft.com/en-us/graph/api/message-get) and the [user-list-messages API](https://docs.microsoft.com/en-us/graph/api/user-list-messages).</li></ul>
+        - EmailSecurityGateway retrieves eml files from:
+            * FireEye EX
+            * FireEye CM
+            * Proofpoint Protection Server
+            * Mimecast
       playbookName: Get Original Email - Generic v2
       type: playbook
       iscommand: false
@@ -1509,13 +1526,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "39":
     id: "39"
-    taskid: 2113716f-6e64-4016-8a79-99704e0f558a
+    taskid: 00aaa8aa-1f4b-4390-88ed-89618d43e85e
     type: condition
     task:
-      id: 2113716f-6e64-4016-8a79-99704e0f558a
+      id: 00aaa8aa-1f4b-4390-88ed-89618d43e85e
       version: -1
       name: Check if attachments were found in eml file
-      description: Checks if attachments were found in an eml file to display their
+      description: Checks if attachments were found in an EML file to display their
         details in the layout.
       type: condition
       iscommand: false
@@ -1540,7 +1557,7 @@ tasks:
       {
         "position": {
           "x": 660,
-          "y": 1240
+          "y": 1810
         }
       }
     note: false
@@ -1552,10 +1569,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "40":
     id: "40"
-    taskid: 49bc5e00-458f-4a76-8b78-7a6722b1a655
+    taskid: f0965d4e-d773-40d5-86ed-1033ba39d9f3
     type: regular
     task:
-      id: 49bc5e00-458f-4a76-8b78-7a6722b1a655
+      id: f0965d4e-d773-40d5-86ed-1033ba39d9f3
       version: -1
       name: Set ExtractedHeadersMap
       description: Set a value in context under the key you entered.
@@ -1583,7 +1600,7 @@ tasks:
       {
         "position": {
           "x": 790,
-          "y": 1850
+          "y": 2430
         }
       }
     note: false
@@ -1593,7 +1610,202 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-system: true
+  "41":
+    id: "41"
+    taskid: 710b0ea5-cc2e-4fb5-80b6-89764e57459a
+    type: condition
+    task:
+      id: 710b0ea5-cc2e-4fb5-80b6-89764e57459a
+      version: -1
+      name: Did the automation find more than one email?
+      description: Checks if the Get Original Email - Generic v2 playbook found more than
+        one EML file.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "42"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: greaterThan
+          left:
+            value:
+              complex:
+                root: File
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: File.Extension
+                      iscontext: true
+                    right:
+                      value:
+                        simple: eml
+                    ignorecase: true
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: File.Extension
+                      iscontext: true
+                    right:
+                      value:
+                        simple: msg
+                    ignorecase: true
+                accessor: EntryID
+                transformers:
+                - operator: uniq
+                - operator: count
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 1090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: 524c2ea5-8d47-40e4-8295-03b16a635355
+    type: collection
+    task:
+      id: 524c2ea5-8d47-40e4-8295-03b16a635355
+      version: -1
+      name: Handling multiple email files
+      description: Asks the user to provide the EntryID of one of the EML files found.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "43"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 1300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: Several email files were found, please pick the relevant one
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Which EntryID should the playbook process?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg:
+        - complex:
+            root: File
+            filters:
+            - - operator: isEqualString
+                left:
+                  value:
+                    simple: File.Extension
+                  iscontext: true
+                right:
+                  value:
+                    simple: eml
+                ignorecase: true
+              - operator: isEqualString
+                left:
+                  value:
+                    simple: File.Extension
+                  iscontext: true
+                right:
+                  value:
+                    simple: msg
+                ignorecase: true
+            accessor: Name
+        - {}
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Handling multiple email files
+      description: Please review the email files retrieved using the Get Original Email
+        - Generic v2 playbook and insert the relevant entry ID to process.
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: a0d681cd-7626-4609-8480-3dd03e172fbd
+    type: regular
+    task:
+      id: a0d681cd-7626-4609-8480-3dd03e172fbd
+      version: -1
+      name: Set the relevant file entry id
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: reportedemailentryid
+      value:
+        complex:
+          root: Handling multiple email files.Answers
+          accessor: "0"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 1470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -1601,11 +1813,13 @@ view: |-
       "16_34_Yes-Alerts": 0.45,
       "18_22_Email Exist": 0.38,
       "23_24_yes": 0.49,
+      "41_3_#default#": 0.35,
+      "41_42_yes": 0.5,
       "4_5_yes": 0.57
     },
     "paper": {
       "dimensions": {
-        "height": 3415,
+        "height": 4105,
         "width": 4030,
         "x": -260,
         "y": -510
@@ -1618,7 +1832,7 @@ inputs:
     complex:
       root: File
   required: false
-  description: An EML or MSG file with
+  description: An EML or MSG file.
   playbookInputQuery:
 - key: Email
   value:
@@ -1626,7 +1840,7 @@ inputs:
       root: incident
       accessor: emailto
   required: false
-  description: The receiving email address.
+  description: The receiver email address.
   playbookInputQuery:
 - key: EmailCC
   value:
@@ -1634,7 +1848,7 @@ inputs:
       root: incident
       accessor: emailcc
   required: false
-  description: CC addresses.
+  description: The email CC addresses.
   playbookInputQuery:
 - key: EmailFrom
   value:
@@ -1642,7 +1856,7 @@ inputs:
       root: incident
       accessor: emailfrom
   required: false
-  description: The originator of the email.
+  description: The sender email address.
   playbookInputQuery:
 - key: EmailSubject
   value:
@@ -1666,7 +1880,7 @@ inputs:
       root: incident
       accessor: emailhtml
   required: false
-  description: The email’s html.
+  description: The email’s HTML.
   playbookInputQuery:
 - key: EmailHeaders
   value:
@@ -1689,28 +1903,29 @@ inputs:
     simple: "False"
   required: false
   description: |-
-    Retrieves the original email in the thread. Default is "False".
+    Retrieves the original email in the thread.
 
     You must have the necessary permissions in your email service to execute global search.
 
-    - EWS: eDiscovery
-    - Gmail: Google Apps Domain-Wide Delegation of Authority
-    - MSGraph: As described here:
-      * https://docs.microsoft.com/en-us/graph/api/message-get
-      * https://docs.microsoft.com/en-us/graph/api/user-list-messages
+    - For EWS: eDiscovery
+    - For Gmail: Google Apps Domain-Wide Delegation of Authority
+    - For MSGraph: As described in the [message-get API](https://docs.microsoft.com/en-us/graph/api/message-get) and the [user-list-messages API](https://docs.microsoft.com/en-us/graph/api/user-list-messages)
   playbookInputQuery:
 - key: MessageID
-  value: {}
+  value:
+    complex:
+      root: incident
+      accessor: emailmessageid
   required: false
-  description: The original email message id to retrieve. Holds the value of the "Message-ID"
-    header of the original email. This value will be passed as an input to the playbook
-    "Get Original Email - Generic v2"
+  description: The original email message ID to retrieve. Holds the value of the "Message-ID"
+    header of the original email. This value is passed as an input to the 
+    Get Original Email - Generic v2 playbook.
   playbookInputQuery:
 - key: UserID
   value:
     complex:
       root: incident
-      accessor: emailfrom
+      accessor: emailto
       transformers:
       - operator: replaceMatch
         args:
@@ -1721,39 +1936,56 @@ inputs:
             value:
               simple: $1
   required: false
-  description: The user's email address for which to retrieve the original email.
-    This value will be passed as an input to the playbook "Get Original Email - Generic
-    v2".
+  description: The user's email address to retrieve the original email.
+    This value is passed as an input to the Get Original Email - Generic
+    v2 playbook.
   playbookInputQuery:
 - key: Thread-Topic
+  value:
+    complex:
+      root: incident
+      accessor: emailsubject
+  required: false
+  description:  The value of the "Thread-Topic" header which holds the original email subject, needed for forwarded email scenarios. It is passed as an input to the Get Original Email - Generic v2 playbook to use in the relevant sub-playbooks.
+  playbookInputQuery:
+- key: EmailBrand
   value: {}
   required: false
-  description: The value of the "Thread-Topic" header which holds the original email
-    subject. This is necessary for forwarded emails scenarios. It will be passed as
-    an input to the "Get Original Email - Generic v2" playbook to be used in the relevant
-    sub-playbooks.
+  description:
+    "If this value is provided, only the relevant playbook runs. If no value is provided, all sub-playbooks are run..
+    Possible values:
+    - Gmail
+    - EWS v2
+    - MicrosoftGraphMail
+    - EmailSecurityGateway
+
+    Choosing the EmailSecurityGateway executes the following if enabled:
+        - FireEye EX (Email Security)
+        - Proofpoint TAP
+        - Mimecast"
+
   playbookInputQuery:
 outputs:
 - contextPath: Email.HTML
-  description: Email 'html' body if exists.
+  description: The email HTML body if it exists.
   type: string
 - contextPath: Email
-  description: Email object.
+  description: The email object.
   type: string
 - contextPath: Email.CC
-  description: Email 'cc' addresses.
+  description: The email CC addresses.
   type: string
 - contextPath: Email.From
-  description: Email 'from' sender.
+  description: The email sender address.
   type: string
 - contextPath: Email.Subject
-  description: Email subject.
+  description: The email subject.
   type: string
 - contextPath: Email.To
-  description: Email 'to' addresses.
+  description: The email receiver addresses.
   type: string
 - contextPath: Email.Text
-  description: Email 'text' body if exists.
+  description: The email text body if it exists.
   type: string
 - contextPath: Email.Headers
   description: The full email headers as a single string.
@@ -1765,8 +1997,8 @@ outputs:
   description: The format of the email if available.
   type: string
 - contextPath: File
-  description: The File object.
+  description: The file object.
   type: string
 tests:
 - Process Email - Generic - Test - Incident Starter
-fromversion: 6.1.0
+fromversion: 6.0.0
