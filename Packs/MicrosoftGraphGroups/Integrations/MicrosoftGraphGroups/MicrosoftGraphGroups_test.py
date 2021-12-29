@@ -1,6 +1,6 @@
 import pytest
 from MicrosoftGraphGroups import parse_outputs, camel_case_to_readable, MsGraphClient, list_groups_command, \
-    get_group_command, create_group_command, list_members_command, demisto
+    get_group_command, create_group_command, list_members_command, demisto, main
 from test_data.response_constants import RESPONSE_LIST_GROUPS, RESPONSE_GET_GROUP, RESPONSE_CREATE_GROUP, \
     RESPONSE_LIST_MEMBERS_UNDER_100, RESPONSE_LIST_MEMBERS_ABOVE_100
 from test_data.result_constants import EXPECTED_LIST_GROUPS, EXPECTED_GET_GROUP, EXPECTED_CREATE_GROUP, \
@@ -76,3 +76,26 @@ def test_list_members_command(args, response, expected_result, mocker):
 
     assert expected_result == result[1]['MSGraphGroups(val.ID === obj.ID)'][
         'Members']  # entry context is found in the 2nd place in the result of the command
+
+
+@pytest.mark.parametrize('params, expected_result', [
+    ({'_tenant_id': '_tenant_id', '_auth_id': '_auth_id'}, 'Key must be provided.'),
+    ({'_tenant_id': '_tenant_id', 'credentials': {'password': '1234'}}, 'Authentication ID must be provided.'),
+    ({'credentials': {'password': '1234'}, '_auth_id': '_auth_id'}, 'Token must be provided.')
+])
+def test_params(mocker, params, expected_result):
+    """
+    Given:
+      - Configuration parameters
+    When:
+      - One of the required parameters are missed.
+    Then:
+      - Ensure the exception message as expected.
+    """
+
+    mocker.patch.object(demisto, 'params', return_value=params)
+
+    with pytest.raises(Exception) as e:
+        main()
+
+    assert expected_result in str(e.value)

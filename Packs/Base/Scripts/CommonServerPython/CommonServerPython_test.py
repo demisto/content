@@ -2703,6 +2703,56 @@ class TestBaseClient:
             resp_json = json.loads(e.res.text)
             assert e.res.status_code == 400
             assert resp_json.get('error') == 'additional text'
+    
+    def test_http_request_timeout_default(self, requests_mock):
+        requests_mock.get('http://example.com/api/v2/event', text=json.dumps(self.text))
+        self.client._http_request('get', 'event')
+        assert requests_mock.last_request.timeout == self.client.REQUESTS_TIMEOUT
+    
+    def test_http_request_timeout_given_func(self, requests_mock):
+        requests_mock.get('http://example.com/api/v2/event', text=json.dumps(self.text))
+        timeout = 120
+        self.client._http_request('get', 'event', timeout=timeout)
+        assert requests_mock.last_request.timeout == timeout
+
+    def test_http_request_timeout_given_class(self, requests_mock):
+        from CommonServerPython import BaseClient
+        requests_mock.get('http://example.com/api/v2/event', text=json.dumps(self.text))
+        timeout = 44
+        new_client = BaseClient('http://example.com/api/v2/', timeout=timeout)
+        new_client._http_request('get', 'event')
+        assert requests_mock.last_request.timeout == timeout
+
+    def test_http_request_timeout_environ_system(self, requests_mock, mocker):
+        from CommonServerPython import BaseClient
+        requests_mock.get('http://example.com/api/v2/event', text=json.dumps(self.text))
+        timeout = 10
+        mocker.patch.dict(os.environ, {'REQUESTS_TIMEOUT': str(timeout)})
+        new_client = BaseClient('http://example.com/api/v2/')
+        new_client._http_request('get', 'event')
+        assert requests_mock.last_request.timeout == timeout
+
+    def test_http_request_timeout_environ_integration(self, requests_mock, mocker):
+        requests_mock.get('http://example.com/api/v2/event', text=json.dumps(self.text))
+        timeout = 180.1
+        # integration name is set to Test in the fixture handle_calling_context
+        mocker.patch.dict(os.environ, {'REQUESTS_TIMEOUT.Test': str(timeout)})
+        from CommonServerPython import BaseClient
+        new_client = BaseClient('http://example.com/api/v2/')
+        new_client._http_request('get', 'event')
+        assert requests_mock.last_request.timeout == timeout
+
+    def test_http_request_timeout_environ_script(self, requests_mock, mocker):
+        requests_mock.get('http://example.com/api/v2/event', text=json.dumps(self.text))
+        timeout = 23.4
+        script_name = 'TestScript'
+        mocker.patch.dict(os.environ, {'REQUESTS_TIMEOUT.' + script_name: str(timeout)})
+        mocker.patch.dict(demisto.callingContext, {'context': {'ScriptName': script_name}})
+        mocker.patch.object(CommonServerPython, 'get_integration_name', return_value='')
+        from CommonServerPython import BaseClient
+        new_client = BaseClient('http://example.com/api/v2/')
+        new_client._http_request('get', 'event')
+        assert requests_mock.last_request.timeout == timeout
 
     def test_is_valid_ok_codes_empty(self):
         from requests import Response

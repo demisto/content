@@ -18,5 +18,9 @@
         "MITRE",
         "Feed",
         "ATT&CK"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }
