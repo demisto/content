@@ -105,6 +105,38 @@ def initialize_server(host, port, secure_connection, unsecure):
     return Server(host)
 
 
+def user_account_to_boolean_fields(user_account_control):
+    """
+    parse the userAccountControl into boolean values.
+    following the values from:
+    https://docs.microsoft.com/en-US/troubleshoot/windows-server/identity/useraccountcontrol-manipulate-account-properties
+    """
+    return {
+        'SCRIPT': bool(user_account_control & 0x0001),
+        'ACCOUNTDISABLE': bool(user_account_control & 0x0002),
+        'HOMEDIR_REQUIRED': bool(user_account_control & 0x0008),
+        'LOCKOUT': bool(user_account_control & 0x0010),
+        'PASSWD_NOTREQD': bool(user_account_control & 0x0020),
+        'PASSWD_CANT_CHANGE': bool(user_account_control & 0x0040),
+        'ENCRYPTED_TEXT_PWD_ALLOWED': bool(user_account_control & 0x0080),
+        'TEMP_DUPLICATE_ACCOUNT': bool(user_account_control & 0x0100),
+        'NORMAL_ACCOUNT': bool(user_account_control & 0x0200),
+        'INTERDOMAIN_TRUST_ACCOUNT': bool(user_account_control & 0x0800),
+        'WORKSTATION_TRUST_ACCOUNT': bool(user_account_control & 0x1000),
+        'SERVER_TRUST_ACCOUNT': bool(user_account_control & 0x2000),
+        'DONT_EXPIRE_PASSWORD': bool(user_account_control & 0x10000),
+        'MNS_LOGON_ACCOUNT': bool(user_account_control & 0x20000),
+        'SMARTCARD_REQUIRED': bool(user_account_control & 0x40000),
+        'TRUSTED_FOR_DELEGATION': bool(user_account_control & 0x80000),
+        'NOT_DELEGATED': bool(user_account_control & 0x100000),
+        'USE_DES_KEY_ONLY': bool(user_account_control & 0x200000),
+        'DONT_REQ_PREAUTH': bool(user_account_control & 0x400000),
+        'PASSWORD_EXPIRED': bool(user_account_control & 0x800000),
+        'TRUSTED_TO_AUTH_FOR_DELEGATION': bool(user_account_control & 0x1000000),
+        'PARTIAL_SECRETS_ACCOUNT': bool(user_account_control & 0x04000000),
+    }
+
+
 def account_entry(person_object, custom_attributes):
     # create an account entry from a person objects
     account = {
@@ -580,9 +612,10 @@ def search_users(default_base_dn, page_size):
 
     if args.get('user-account-control-out', '') == 'true':
         # display a literal translation of the numeric account control flag
-        for i, user in enumerate(entries['flat']):
+        for user in entries['flat']:
             flag_no = user.get('userAccountControl')[0]
-            entries['flat'][i]['userAccountControl'] = COOMON_ACCOUNT_CONTROL_FLAGS.get(flag_no) or flag_no
+            user['userAccountControl'] = COOMON_ACCOUNT_CONTROL_FLAGS.get(flag_no) or flag_no
+            user.update(user_account_to_boolean_fields(flag_no))
 
     demisto_entry = {
         'ContentsFormat': formats['json'],
