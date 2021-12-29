@@ -3660,7 +3660,7 @@ def test_handle_tags_in_message_sync(mocker):
     mocker.patch.object(slack_sdk.WebClient, 'api_call', side_effect=api_call)
 
     user_exists_message = 'Hello <@spengler>!'
-    user_exists_message_inemail ="Hello <@spengler>! connected with spengler@ghostbusters.example.com !"
+    user_exists_message_inemail = "Hello <@spengler>! connected with spengler@ghostbusters.example.com !"
     user_doesnt_exist_message = 'Goodbye <@PetahTikva>!'
 
     user_message_exists_result = handle_tags_in_message_sync(user_exists_message)
