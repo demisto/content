@@ -62,8 +62,9 @@ C/t/GFcoOUze68WuI/BqMAiWhPJ1ioL7RI2ZPvI=
 '''
 
 
-def test_nginx_conf(tmp_path: Path):
+def test_nginx_conf(tmp_path: Path, mocker):
     from NGINXApiModule import create_nginx_server_conf
+    mocker.patch('NGINXApiModule.INTEGRATION_NAME', '')
     conf_file = str(tmp_path / "nginx-test-server.conf")
     create_nginx_server_conf(conf_file, 12345, params={})
     with open(conf_file, 'rt') as f:
@@ -107,10 +108,11 @@ def test_nginx_start_fail(mocker: MockerFixture, nginx_cleanup):
 
 
 @docker_only
-def test_nginx_start_fail_directive(nginx_cleanup):
+def test_nginx_start_fail_directive(nginx_cleanup, mocker):
     """Test that nginx fails when invalid global directive is passed
     """
     import NGINXApiModule as module
+    mocker.patch('NGINXApiModule.INTEGRATION_NAME', '')
     try:
         module.start_nginx_server(12345, {'nginx_global_directives': 'bad_directive test;'})
         pytest.fail('nginx start should fail')
@@ -124,8 +126,9 @@ def test_nginx_start_fail_directive(nginx_cleanup):
     {},
     {'certificate': SSL_TEST_CRT, 'key': SSL_TEST_KEY},
 ])
-def test_nginx_test_start_valid(nginx_cleanup, params):
+def test_nginx_test_start_valid(nginx_cleanup, params, mocker):
     import NGINXApiModule as module
+    mocker.patch('NGINXApiModule.INTEGRATION_NAME', '')
     module.test_nginx_server(11300, params)
     # check that nginx process is not up
     sleep(0.5)
@@ -137,6 +140,7 @@ def test_nginx_test_start_valid(nginx_cleanup, params):
 def test_nginx_log_process(nginx_cleanup, mocker: MockerFixture):
     import NGINXApiModule as module
     # clear logs for test
+    mocker.patch('NGINXApiModule.INTEGRATION_NAME', '')
     Path(module.NGINX_SERVER_ACCESS_LOG).unlink(missing_ok=True)
     Path(module.NGINX_SERVER_ERROR_LOG).unlink(missing_ok=True)
     global NGINX_PROCESS
