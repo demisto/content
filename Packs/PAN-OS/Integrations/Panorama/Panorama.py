@@ -86,6 +86,10 @@ class PAN_OS_Not_Found(Exception):
         pass
 
 
+class InvalidUrlLengthException(Exception):
+    pass
+
+
 def http_request(uri: str, method: str, headers: dict = {},
                  body: dict = {}, params: dict = {}, files: dict = None, is_pcap: bool = False) -> Any:
     """
@@ -130,7 +134,7 @@ def http_request(uri: str, method: str, headers: dict = {},
                 if DEVICE_GROUP:
                     raise Exception('URL filtering commands are only available on Firewall devices.')
                 if 'Node can be at most 1278 characters' in response_msg:
-                    raise Exception('URL Node can be at most 1278 characters.')
+                    raise InvalidUrlLengthException('URL Node can be at most 1278 characters.')
                 raise Exception('The URL filtering license is either expired or not active.'
                                 ' Please contact your PAN-OS representative.')
 
@@ -2338,7 +2342,7 @@ def panorama_get_url_category_command(url_cmd: str, url: str, additional_suspici
 
             score = calculate_dbot_score(category.lower(), additional_suspicious, additional_malicious)
 
-        except Exception as e:
+        except InvalidUrlLengthException as e:
             score = 0
             category = None
             err_readable_output = str(e)
