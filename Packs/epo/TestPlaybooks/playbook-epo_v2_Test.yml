@@ -1524,4 +1524,3 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 6.0.0
-description: This is a test playbook it runs as part of the build process
