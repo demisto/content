@@ -10,6 +10,7 @@ Main additions to this version:
     - Supporting the new "Phishing Alerts" pack.
 3) Adding "Detonate URL - Generic" playbook.
 4) Four new playbook inputs: `InternalDomains`, `DetonateURL`, `InternalRange`, `PhishingModelName`. You can find their descriptions in the table at the bottom of this page.
+5) **This playbook will be available from version 6.1** since it relies on the "On field change" configuration which is set to `inline`  in the `Phishing` incident type. This will allow the extraction of indicators whenever an incident field is changed.
 
 ##### Triggers
 The investigation is triggered by an email sent or forwarded to a designated "phishing inbox". A mail listener integration that listens to that mailbox, will use every received email to create a phishing incident in Cortex XSOAR.
