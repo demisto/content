@@ -1194,6 +1194,8 @@ TEST_DATA = [
         'Wrapper EML.eml'
     )
 ]
+
+
 @pytest.mark.parametrize('only_nested, from_, to, attachments, file_name', TEST_DATA)
 def test_parse_only_nested_eml(mocker, only_nested, from_, to, attachments, file_name):
     """
