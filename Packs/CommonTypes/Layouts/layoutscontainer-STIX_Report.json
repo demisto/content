@@ -640,49 +640,7 @@
                     }
                 ],
                 "type": "custom"
-            },
-			{
-				"hidden": false,
-				"id": "xprenymfqy",
-				"name": "Additional Info",
-				"sections": [
-					{
-						"displayType": "ROW",
-						"h": 2,
-						"hideName": false,
-						"i": "xprenymfqy-e3aed540-6824-11ec-b6cb-5dd4525582ca",
-						"items": [
-							{
-								"endCol": 2,
-								"fieldId": "feedmandiantversion",
-								"height": 22,
-								"id": "indicator_feedmandiantversion",
-								"index": 0,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "feedmandiantreportid",
-								"height": 22,
-								"id": "indicator_feedmandiantreportid",
-								"index": 1,
-								"sectionItemType": "field",
-								"startCol": 0
-							}
-						],
-						"maxW": 3,
-						"minH": 1,
-						"moved": false,
-						"name": "FeedMandiant",
-						"static": false,
-						"w": 3,
-						"x": 0,
-						"y": 0
-					}
-				],
-				"type": "custom"
-			}
+            }
         ]
     },
     "indicatorsQuickView": {

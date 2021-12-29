@@ -1,5 +1,4 @@
 Mandiant Feed
-This integration was integrated and tested with version 4 of FeedMandiant
 
 ## Configure FeedMandiant on Cortex XSOAR
 
@@ -9,26 +8,25 @@ This integration was integrated and tested with version 4 of FeedMandiant
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Server URL (e.g. https://api.intelligence.fireeye.com) |  | True |
-    | X-App-Name | X-App-Name header is required for this API. | True |
-    | Public Key |  | True |
-    | Password |  | True |
-    | Maximum number of indicators per fetch |  | False |
-    | Indicator Type | The indicators' type to fetch. Indicator type might include the following: Domains, IPs, Files and URLs. | False |
-    | First fetch time |  | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-    | Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | False |
-    | Retrieve Indicator Metadata | Retrieve additional information for each indicator. Please note that this requires additional API calls. | False |
-    | Create Relationships. | Please note that this requires additional API calls. | False |
     | Fetch indicators |  | False |
     | Indicator Reputation | Indicators from this integration instance will be marked with this reputation | False |
     | Source Reliability | Reliability of the source providing the intelligence data | True |
-    | Feed Fetch Interval |  | False |
-    | Minimum severity of alerts to fetch |  | True |
-    | Timeout | API calls timeout. | False |
-    | Tags | Supports CSV values. | False |
     | Traffic Light Protocol Color | The Traffic Light Protocol \(TLP\) designation to apply to indicators fetched from the feed | False |
+    | Feed Fetch Interval |  | False |
+    | Public Key |  | True |
+    | Secret Key |  | True |
+    | Indicator Type | The indicators' type to fetch. Indicator type might include the following: Domains, IPs, Files and URLs. | False |
+    | First fetch time |  | False |
+    | Server URL (e.g. https://api.intelligence.fireeye.com) |  | True |
+    | X-App-Name | X-App-Name header is required for this API. | True |
+    | Maximum number of indicators per fetch |  | False |
+    | Tags | Supports CSV values. | False |
+    | Timeout | API calls timeout. | False |
+    | Trust any certificate (not secure) |  | False |
+    | Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | False |
+    | Retrieve Indicator Metadata | Retrieve additional information for each indicator. Please note that this requires additional API calls. | False |
+    | Create Relationships. | Please note that this requires additional API calls. | False |
+    | Use system proxy settings |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -55,7 +53,3 @@ get mandiant indicators
 #### Context Output
 
 There is no context output for this command.
-
-#### Command Example
-```!feed-mandiant-get-indicators type=Actors,Malware,Indicators ```
-

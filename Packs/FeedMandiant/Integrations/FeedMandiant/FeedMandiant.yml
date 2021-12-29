@@ -61,13 +61,6 @@ configuration:
   name: feedFetchInterval
   required: false
   type: 19
-- additionalinfo: When selected, the exclusion list is ignored for indicators from
-    this feed. This means that if an indicator from this feed is on the exclusion
-    list, the indicator might still be added to the system.
-  display: Bypass exclusion list
-  name: feedBypassExclusionList
-  required: false
-  type: 8
 - display: Public Key
   displaypassword: Secret Key
   name: auth
@@ -117,6 +110,17 @@ configuration:
   name: timeout
   required: false
   type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- additionalinfo: When selected, the exclusion list is ignored for indicators from
+    this feed. This means that if an indicator from this feed is on the exclusion
+    list, the indicator might still be added to the system.
+  display: Bypass exclusion list
+  name: feedBypassExclusionList
+  required: false
+  type: 8
 - additionalinfo: Retrieve additional information for each indicator. Please note
     that this requires additional API calls.
   defaultvalue: 'false'
@@ -128,10 +132,6 @@ configuration:
   defaultvalue: 'false'
   display: Create Relationships.
   name: indicatorRelationships
-  required: false
-  type: 8
-- display: Trust any certificate (not secure)
-  name: insecure
   required: false
   type: 8
 - display: Use system proxy settings
