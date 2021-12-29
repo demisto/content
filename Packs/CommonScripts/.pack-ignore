@@ -64,3 +64,5 @@ ignore=SC106
 [file:script-DBotClosedIncidentsPercentage.yml]
 ignore=SC106
 
+[file:script-DeleteConext.yml]
+ignore=SC106
