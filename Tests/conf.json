@@ -1982,7 +1982,8 @@
         },
         {
             "integrations": "VMware",
-            "playbookID": "VMWare Test"
+            "playbookID": "VMWare Test",
+            "timeout": 1000
         },
         {
             "integrations": "carbonblack-v2",

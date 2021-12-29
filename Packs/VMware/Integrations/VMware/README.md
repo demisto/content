@@ -7,15 +7,20 @@ This integration was integrated and tested with version 7.03 of VMware
 2. Search for VMware.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server URL (i.e., 192.168.0.1:30022) | The server URL of the VCenter. | True |
-    | Credentials | Username and password used to login into the system. | True |
-    |  |  | True |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
+    | **Parameter**                        | **Description**                                   | **Required** |
+    |--------------------------------------|------------|---|
+    | Server URL (i.e., 192.168.0.1:30022) | The server URL of the VCenter.                    | True       |
+    | Credentials                          | Username and password used to login into the system. | True       |
+    | insecure                             | Trust any certificate (not secure).               | True       |
+    | proxy                                | Use system proxy settings.                        | False      |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
+## Use Cases
+- Create and revert to snapshot.
+- Get information regarding virtual machines.
+- Power-on, power-off, suspend, reboot, clone, create, delete, relocate, resigster and unregister virtual machines.
+
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
@@ -29,12 +34,12 @@ Returns all virtual machines on a system.
 `vmware-get-vms`
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| ip | List of IPs to filter VMs by.| Optional | 
-| hostname | Hostname to filter VMs by.| Optional | 
-| name | List of VM names to filter VMs by.| Optional | 
-| uuid | List of UUIDs to filter VMs by.| Optional | 
+| **Argument Name** | **Description**                    | **Required** |
+|-------------------|------------------------------------|--------------|
+| ip                | List of IPs to filter VMs by.      | Optional     | 
+| hostname          | Hostname to filter VMs by.         | Optional     | 
+| name              | List of VM names to filter VMs by. | Optional     | 
+| uuid              | List of UUIDs to filter VMs by.    | Optional     | 
 
 
 #### Context Output
@@ -367,11 +372,11 @@ Gets events of VM.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | vm-uuid | VM UUID of virtual machine to get events of. | Required | 
-| event-type | Type of events to get, given in CSV (i.e.,  VmGuestRebootEvent,VmGuestShutdownEvent). Possible values are: . Default is VmGuestRebootEvent,VmGuestShutdownEvent,VmPoweredOnEvent,VmPoweredOffEvent,VmSuspendedEvent. | Optional | 
-| start-date | Event's start date. Possible values are: . | Optional | 
-| end-date | Event's end date. Possible values are: . | Optional | 
-| user | User name. Possible values are: . | Optional | 
-| limit | Number of events to return. Possible values are: . Default is 50. | Optional | 
+| event-type | Type of events to get, given in CSV (i.e.,  VmGuestRebootEvent,VmGuestShutdownEvent). Default is VmGuestRebootEvent,VmGuestShutdownEvent,VmPoweredOnEvent,VmPoweredOffEvent,VmSuspendedEvent. | Optional | 
+| start-date | Event's start date. | Optional | 
+| end-date | Event's end date. | Optional | 
+| user | User name. | Optional | 
+| limit | Number of events to return. Default is 50. | Optional | 
 
 
 #### Context Output
@@ -522,17 +527,17 @@ Creates a new virtual machine in the current folder and attaches it to the speci
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | Display name of the virtual machine. Possible values are: . | Required | 
-| cpu-num | Number of virtual processors in a virtual machine. Possible values are: . | Required | 
-| cpu-allocation | Resource limits for CPU. Possible values are: . | Required | 
-| memory | Resource limits for memory. Possible values are: . | Required | 
-| virtual-memory | Size of a virtual machine's memory, in MB. Possible values are: . | Required | 
-| guestld | Short guest operating system identifier. Possible values are: . | Optional | 
-| guest-os-familiy | description. Possible values are: . | Required | 
-| guest-os-version | description. Possible values are: . | Required | 
-| host | The target host on which the virtual machine will run. Possible values are: . | Required | 
-| folder | The target folder in which the virtual machine will be located. Possible values are: . | Required | 
-| pool | The resource pool to which the virtual machine will be attached. Possible values are: . | Optional | 
+| name | Display name of the virtual machine. | Required | 
+| cpu-num | Number of virtual processors in a virtual machine. | Required | 
+| cpu-allocation | Resource limits for CPU. | Required | 
+| memory | Resource limits for memory. | Required | 
+| virtual-memory | Size of a virtual machine's memory, in MB. | Required | 
+| guestld | Short guest operating system identifier. | Optional | 
+| guest-os-familiy | description. | Required | 
+| guest-os-version | description.  | Required | 
+| host | The target host on which the virtual machine will run.  | Required | 
+| folder | The target folder in which the virtual machine will be located.  | Required | 
+| pool | The resource pool to which the virtual machine will be attached.  | Optional | 
 
 
 #### Context Output
@@ -598,14 +603,14 @@ Creates a clone of this virtual machine. If the virtual machine is used as a tem
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| uuid | The UUID of the VM to clone. Possible values are: . | Required | 
-| name | The name of the new virtual machine. Possible values are: . | Required | 
-| folder | The location of the new virtual machine. Possible values are: . | Required | 
-| template | Specifies whether or not the new virtual machine should be marked as a template. Possible values are: . | Optional | 
+| uuid | The UUID of the VM to clone.  | Required | 
+| name | The name of the new virtual machine.  | Required | 
+| folder | The location of the new virtual machine.  | Required | 
+| template | Specifies whether or not the new virtual machine should be marked as a template.  | Optional | 
 | powerOn | Specifies whether or not the new VirtualMachine should be powered on after creation. Possible values are: true, false. Default is False. | Required | 
-| datastore | The datastore where the virtual machine should be located. Possible values are: . | Optional | 
-| host | The target host for the virtual machine. Possible values are: . | Optional | 
-| pool | The resource pool to which this virtual machine should be attached. Possible values are: . | Optional | 
+| datastore | The datastore where the virtual machine should be located.  | Optional | 
+| host | The target host for the virtual machine.  | Optional | 
+| pool | The resource pool to which this virtual machine should be attached.  | Optional | 
 
 
 #### Context Output
@@ -669,14 +674,14 @@ Relocates a virtual machine to the location specified.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| datastore | The datastore where the virtual machine should be located. If not specified, the current datastore is used. Possible values are: . | Optional | 
-| folder | The folder where the virtual machine should be located. Possible values are: . | Required | 
-| host | The target host for the virtual machine. Possible values are: . | Optional | 
-| pool | The resource pool to which this virtual machine should be attached. Possible values are: . | Optional | 
-| service | The service endpoint of vCenter where the virtual machine should be located. If not specified, the current vCenter service is used. Possible values are: . | Optional | 
-| profile | Storage profile requirement for Virtual Machine's home directory. Possible values are: . | Optional | 
+| datastore | The datastore where the virtual machine should be located. If not specified, the current datastore is used.  | Optional | 
+| folder | The folder where the virtual machine should be located.  | Required | 
+| host | The target host for the virtual machine.  | Optional | 
+| pool | The resource pool to which this virtual machine should be attached.  | Optional | 
+| service | The service endpoint of vCenter where the virtual machine should be located. If not specified, the current vCenter service is used.  | Optional | 
+| profile | Storage profile requirement for Virtual Machine's home directory.  | Optional | 
 | priority | The task priorityץ. Possible values are: defaultPriority, highPriority, lowPriority. | Required | 
-| uuid | The UUID of the VM to relocate. Possible values are: . | Required | 
+| uuid | The UUID of the VM to relocate.  | Required | 
 
 
 #### Context Output
@@ -703,7 +708,7 @@ Destroys this object, deleting its contents and removing it from its parent fold
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| uuid | The UUID of the VM to delete. Possible values are: . | Required | 
+| uuid | The UUID of the VM to delete.  | Required | 
 
 
 #### Context Output
@@ -733,11 +738,11 @@ Adds an existing virtual machine to the folder.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| path | A datastore path to the virtual machine. Possible values are: . | Required | 
-| name | The name to be assigned to the virtual machine. Possible values are: . | Required | 
-| host | The target host on which the virtual machine will run. Possible values are: . | Required | 
+| path | A datastore path to the virtual machine.  | Required | 
+| name | The name to be assigned to the virtual machine.  | Required | 
+| host | The target host on which the virtual machine will run.  | Required | 
 | asTemplate | Flag to specify whether or not the virtual machine should be marked as a template. Possible values are: true, false. Default is False. | Optional | 
-| folder | Folder to register the VM to. Possible values are: . | Required | 
+| folder | Folder to register the VM to.  | Required | 
 
 
 #### Context Output
@@ -762,7 +767,7 @@ emoves this virtual machine from the inventory without removing any of the virtu
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| uuid | The UUID of the VM to remove. Possible values are: . | Required | 
+| uuid | The UUID of the VM to remove.  | Required | 
 
 
 #### Context Output

@@ -855,6 +855,7 @@ def main():  # pragma: no cover
     try:
         logout(si)
     except Exception as ex:
+        demisto.error(traceback.format_exc())   # print the traceback
         res.append({  # type: ignore
             "Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": "Logout failed. " + str(ex)})
 
