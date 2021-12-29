@@ -13,6 +13,7 @@ CONTRIBUTION_BUILD_INSTANCE_URL = "https://content-gold.paloaltonetworks.com/ins
 
 
 def arguments_handler():
+
     """ Validates and parses script arguments.
 
      Returns:
