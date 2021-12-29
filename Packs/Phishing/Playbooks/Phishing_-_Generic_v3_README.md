@@ -1,45 +1,46 @@
 This playbook investigates and remediates a potential phishing incident. It engages with the user that triggered the incident while investigating the incident itself.
 Note: Final remediation tasks are always decided by a human analyst. 
 
-
-Main additions to this version:
-1) Changing all labels to incident fields.
-2) Use "Process Email - Generic v2" (replaces the older version) - the enhancements introduced in this version are:
+v3 includes:
+- Changing all labels to incident fields.
+- **Process Email - Generic v2** playbook (replaces the older version), which includes:
     - Changing all labels to incident fields.
-    - Better handling of forwarded emails.
-    - Supporting the new "Phishing Alerts" pack.
-3) Adding "Detonate URL - Generic" playbook.
-4) Four new playbook inputs: `InternalDomains`, `DetonateURL`, `InternalRange`, `PhishingModelName`. You can find their descriptions in the table at the bottom of this page.
-5) **This playbook will be available from version 6.1** since it relies on the "On field change" configuration which is set to `inline`  in the `Phishing` incident type. This will allow the extraction of indicators whenever an incident field is changed.
+    - Better handling for forwarded emails.
+    - Support for the new "Phishing Alerts" pack.
+- New **Detonate URL - Generic** playbook.
+- New playbook inputs (see their descriptions in the table at the bottom of this page): 
+    - InternalDomains
+    - DetonateURL
+    - InternalRange
+    - PhishingModelName
+- Inline field extraction, which requires the **On field change** configuration to be set to "inline" in the **Phishing** incident type. This enables extracting indicators whenever an incident field is changed (available for Cortex XSOAR from version 6.1).
 
 ##### Triggers
-The investigation is triggered by an email sent or forwarded to a designated "phishing inbox". A mail listener integration that listens to that mailbox, will use every received email to create a phishing incident in Cortex XSOAR.
-A mail listener can be one of the following integrations:
+The investigation is triggered by an email sent or forwarded to a designated phishing inbox. One of the following mail listener integrations creates a phishing incident in Cortex XSOAR from every received email.
 - EWS v2
 - Gmail
 - Microsoft Mail Graph
-- Mail Listener (does not support retrieval of original emails when the suspected emails are not attached)
+- Mail Listener (does not support retrieving original emails when the suspected emails are not attached)
 
 ##### Configuration
-- Create an email inbox that should be used for phishing reports. Make sure the user in control of that inbox has the permissions required by your integration (EWS v2, Gmail or MSGraph).
-- Configure the `Phishing` incident type to run the `Phishing Investigation - Generic v2` playbook.
-- Configure the inputs of the main `Phishing Investigation - Generic v2` playbook.
-- Optional - configure the Active Directory critical asset names under the inputs of the `Calculate Severity - Generic v2` inputs or leave them empty.
-- Optional - Configure the `InternalRange` and `ResolveIP` inputs of the `IP Enrichment - External - Generic v2` playbook.
-- Optional - Configure the `Rasterize` and `VerifyURL` inputs of the `URL Enrichment - Generic v2` playbook.
-- Optional - Personalize the user engagement messages sent throughout the investigation in the `Phishing - Generic v3` playbook. 
-These tasks have the following names:
-  - Acknowledge incident was received (task #13)
-  - Update the user that the reported email is safe (task #16)
-  - Update the user that the reported email is malicious (task #17)
-  - Update the user that the email is a malicious campaign (task #130)
-- Optional - Configure the `ExchangeLocation` input of the `Search And Delete Emails - Generic v2` playbook.
-- Optional - Configure the `SearchAndDeleteIntegration` input of the `Search And Delete Emails - Generic v2` playbook.
-- Optional - Personalize the inputs of the `Detect & Manage Phishing Campaigns` playbook.
+- Create an email inbox for phishing reports. Make sure the user in control of that inbox has the permissions required by your integration (EWS v2, Gmail, or MSGraph).
+- Configure the **Phishing** incident type to run the **Phishing Investigation - Generic v2** playbook.
+- Configure the main **Phishing Investigation - Generic v2** playbook inputs.
+- Optional: Configure the Active Directory critical asset names in the **Calculate Severity - Generic v2** inputs or leave them empty.
+- Optional: Configure the *InternalRange* and *ResolveIP* inputs in the **IP Enrichment - External - Generic v2** playbook.
+- Optional: Configure the *Rasterize* and *VerifyURL* inputs in the **URL Enrichment - Generic v2** playbook.
+- Optional: Personalize the user engagement messages sent throughout the investigation in the **Phishing - Generic v3** playbook under the following tasks: 
+    - **Acknowledge incident was received** (task #13)
+    - **Update the user that the reported email is safe** (task #16)
+    - **Update the user that the reported email is malicious** (task #17)
+    - **Update the user that the email is a malicious campaign** (task #130)
+- Optional: Configure the *ExchangeLocation* input in the **Search And Delete Emails - Generic v2** playbook.
+- Optional: Configure the *SearchAndDeleteIntegration* input in the **Search And Delete Emails - Generic v2** playbook.
+- Optional: Personalize the inputs in the **Detect & Manage Phishing Campaigns** playbook.
 
 ##### Best Practices & Suggestions
-- The email received in the designated phishing inbox should be an email **containing** the potential phishing email as a file attachment, so that the headers of the original suspected email are retained. In case that the email is not attached, the original email with its headers will be retrieved only if the required permissions are configured and the `GetOriginalEmail` input of the `Process Email - Generic v2` is set to `True`.
-- Using Gmail or EWS v2 work best with the use case.
+- The email received in the designated phishing inbox should contain the potential phishing email as a file attachment so the headers of the original suspected email are retained. If the email is not attached, the original email with its headers is retrieved only if the required permissions are configured and the *GetOriginalEmail* input is set to True in the **Process Email - Generic v2** playbook.
+- Gmail or EWS v2 works best with the use case.
 - Configuring the optional configurations can greatly enhance the investigation.
 
 ## Dependencies
@@ -100,4 +101,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Phishing - Generic v3](../doc_files/Phishing_-_Generic_v3.png)
+![Phishing - Generic v3](Insert the link to your image here)
