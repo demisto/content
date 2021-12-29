@@ -3539,7 +3539,8 @@ def save_file(file_name, file_content):
     return attachment_internal_path
 
 
-def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, max_depth=3, bom=False):
+def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, parse_only_nested=False, max_depth=3,
+               bom=False):
     global ENCODINGS_TYPES
 
     if max_depth == 0:
@@ -3656,6 +3657,8 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
                             inner_eml, inner_attached_emails = handle_eml(file_path=f.name,
                                                                           file_name=attachment_file_name,
                                                                           max_depth=max_depth - 1)
+                            if not inner_attached_emails and parse_only_nested:
+                                return inner_eml, []
                             attached_emails.append(inner_eml)
                             attached_emails.extend(inner_attached_emails)
                             # if we are outter email is a singed attachment it is a wrapper and we don't return the output of
@@ -3802,6 +3805,7 @@ def main():
         return_error('Minimum max_depth is 1, the script will parse just the top email')
 
     parse_only_headers = demisto.args().get('parse_only_headers', 'false').lower() == 'true'
+    parse_only_nested = demisto.args().get('parse_only_nested', 'false').lower() == 'true'
     try:
         result = demisto.executeCommand('getFilePath', {'id': entry_id})
         if is_error(result):
@@ -3836,10 +3840,12 @@ def main():
                   'application/pkcs7-mime', 'multipart/related']):
             if 'unicode (with bom) text' in file_type_lower:
                 email_data, attached_emails = handle_eml(
-                    file_path, False, file_name, parse_only_headers, max_depth, bom=True
+                    file_path, False, file_name, parse_only_headers, parse_only_nested, max_depth, bom=True
                 )
             else:
-                email_data, attached_emails = handle_eml(file_path, False, file_name, parse_only_headers, max_depth)
+                email_data, attached_emails = handle_eml(
+                    file_path, False, file_name, parse_only_headers, parse_only_nested, max_depth
+                )
             output = create_email_output(email_data, attached_emails)
 
         elif ('ascii text' in file_type_lower or 'unicode text' in file_type_lower
@@ -3851,7 +3857,8 @@ def main():
 
                 if file_contents and 'Content-Type:'.lower() in file_contents.lower():
                     email_data, attached_emails = handle_eml(file_path, b64=False, file_name=file_name,
-                                                             parse_only_headers=parse_only_headers, max_depth=max_depth)
+                                                             parse_only_headers=parse_only_headers,
+                                                             parse_only_nested=parse_only_nested, max_depth=max_depth)
                     output = create_email_output(email_data, attached_emails)
                 else:
                     # Try a base64 decode
@@ -3859,6 +3866,7 @@ def main():
                     if file_contents and 'Content-Type:'.lower() in file_contents.lower():
                         email_data, attached_emails = handle_eml(file_path, b64=True, file_name=file_name,
                                                                  parse_only_headers=parse_only_headers,
+                                                                 parse_only_nested=parse_only_nested,
                                                                  max_depth=max_depth)
                         output = create_email_output(email_data, attached_emails)
                     else:
@@ -3866,6 +3874,7 @@ def main():
                             # Try to open
                             email_data, attached_emails = handle_eml(file_path, b64=False, file_name=file_name,
                                                                      parse_only_headers=parse_only_headers,
+                                                                     parse_only_nested=parse_only_nested,
                                                                      max_depth=max_depth)
                             is_data_populated = is_email_data_populated(email_data)
                             if not is_data_populated:
@@ -3886,6 +3895,8 @@ def main():
         email = output  # output may be a single email
         if isinstance(output, list) and len(output) > 0:
             email = output[0]
+        if parse_only_nested:
+            file_name = "{}.eml".format(email.get("Subject", "No name"))
         return_outputs(
             readable_output=data_to_md(email, file_name, print_only_headers=parse_only_headers),
             outputs={

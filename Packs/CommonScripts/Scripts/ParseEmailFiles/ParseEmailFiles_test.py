@@ -1178,6 +1178,50 @@ def test_only_parts_of_object_email_saved(mocker):
     assert results[0]['EntryContext']['Email']['AttachmentNames'] == ['logo5.png', 'logo2.png']
 
 
+TEST_DATA = [
+    (
+        'true',
+        'sr-test02@demistodev.onmicrosoft.com',
+        'sr-test01@demistodev.onmicrosoft.com',
+        '',
+        'Hi again.eml'
+    ),
+    (
+        'false',
+        'sr-test01@demistodev.onmicrosoft.com',
+        'testuser01@demistodev.onmicrosoft.com',
+        'Hi again.eml',
+        'Wrapper EML.eml'
+    )
+]
+@pytest.mark.parametrize('only_nested, from_, to, attachments, file_name', TEST_DATA)
+def test_parse_only_nested_eml(mocker, only_nested, from_, to, attachments, file_name):
+    """
+        Fixes: https://github.com/demisto/etc/issues/45133
+        Given: A wrapper email.
+        When: Parsing a wrapper email file with parse_only_nested=true.
+        Then: Only the nested email returns.
+    """
+    mocker.patch.object(demisto, 'args', return_value={'entryid': 'test', 'parse_only_nested': only_nested})
+    mocker.patch.object(demisto, 'executeCommand', side_effect=exec_command_for_file('Wrapper EML.eml'))
+    mocker.patch.object(demisto, 'results')
+
+    main()
+
+    results = demisto.results.call_args[0]
+
+    assert len(results) == 1
+    if only_nested == 'true':
+        assert results[0]['EntryContext']['Email']['From'] == from_
+        assert results[0]['EntryContext']['Email']['To'] == to
+        assert results[0]['EntryContext']['Email']['Attachments'] == attachments
+    else:
+        assert results[0]['EntryContext']['Email'][0]['From'] == from_
+        assert results[0]['EntryContext']['Email'][0]['To'] == to
+        assert results[0]['EntryContext']['Email'][0]['Attachments'] == attachments
+    assert '### {}'.format(file_name) in results[0]['HumanReadable']
+
+
 def test_pkcs7_mime(mocker):
     """
     Given: An email file smime2.p7m of type application/pkcs7-mime and info -

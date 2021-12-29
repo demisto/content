@@ -10,6 +10,13 @@ args:
   predefined:
   - "true"
   - "false"
+- auto: PREDEFINED
+  defaultValue: "false"
+  description: Will parse only the nested email in a wraper email
+  name: parse_only_nested
+  predefined:
+  - "true"
+  - "false"
 - defaultValue: "3"
   description: How many levels deep we should parse the attached emails (e.g. email
     contains an emails contains an email). Default depth level is 3. Minimum level
