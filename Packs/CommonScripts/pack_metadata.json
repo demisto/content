@@ -39,6 +39,10 @@
         "MicrosoftGraphListener": {
             "mandatory": false,
             "display_name": "Microsoft Graph Mail Single User"
+        },
+        "RemoteAccess": {
+            "mandatory": false,
+            "display_name": "RemoteAccess v2"
         }
     },
     "marketplaces": [
