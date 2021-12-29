@@ -48,6 +48,7 @@ DEFAULT_CHROME_OPTIONS = [
 ]
 
 USER_CHROME_OPTIONS = demisto.params().get('chrome_options', "")
+PAGES_LIMITATION = 20
 
 
 def return_err_or_warn(msg):
@@ -250,7 +251,7 @@ def convert_pdf_to_jpeg(path: str, max_pages: int, password: str, horizontal: bo
     :param max_pages: max pages to render
     :param password: PDF password
     :param horizontal: if True, will combine the pages horizontally
-    :return: stream of combined image
+    :return: A list of stream of combined images
     """
     demisto.debug(f'Loading file at Path: {path}')
     input_pdf = PdfFileReader(open(path, "rb"), strict=False)
@@ -276,17 +277,25 @@ def convert_pdf_to_jpeg(path: str, max_pages: int, password: str, horizontal: bo
                 images.append(Image.open(os.path.join(output_folder, page)))
         min_shape = min([(np.sum(page_.size), page_.size) for page_ in images])[1]  # get the minimal width
 
-        if horizontal:
-            imgs_comb = np.hstack([np.asarray(i.resize(min_shape)) for i in images])
-        else:
-            imgs_comb = np.vstack([np.asarray(i.resize(min_shape)) for i in images])
+        # Divide the list of images into separate lists with constant length (20),
+        # due to the limitation of images in jpeg format (max size ~65,000 pixels).
+        # Create a list of lists (length == 20) of images to combine each list (20 images) to one image
+        images_matrix = [images[i:i + PAGES_LIMITATION] for i in range(0, len(images), PAGES_LIMITATION)]
 
-        imgs_comb = Image.fromarray(imgs_comb)
-        output = BytesIO()
-        imgs_comb.save(output, 'JPEG')  # type: ignore
-        demisto.debug('Combining all pages - COMPLETED')
+        outputs = []
+        for images_list in images_matrix:
+            if horizontal:
+                imgs_comb = np.hstack([np.asarray(image.resize(min_shape)) for image in images_list])
+            else:
+                imgs_comb = np.vstack([np.asarray(image.resize(min_shape)) for image in images_list])
 
-        return output.getvalue()
+            imgs_comb = Image.fromarray(imgs_comb)
+            output = BytesIO()
+            imgs_comb.save(output, 'JPEG')  # type: ignore
+            demisto.debug('Combining all pages - COMPLETED')
+            outputs.append(output.getvalue())
+
+        return outputs
 
 
 def rasterize_command():
@@ -363,12 +372,15 @@ def rasterize_pdf_command():
     file_name = f'{file_name}.jpeg'  # type: ignore
 
     with open(file_path, 'rb') as f:
-        output = convert_pdf_to_jpeg(path=os.path.realpath(f.name), max_pages=max_pages, password=password,
+        images = convert_pdf_to_jpeg(path=os.path.realpath(f.name), max_pages=max_pages, password=password,
                                      horizontal=horizontal)
-        res = fileResult(filename=file_name, data=output)
-        res['Type'] = entryTypes['image']
+        results = []
+        for image in images:
+            res = fileResult(filename=file_name, data=image)
+            res['Type'] = entryTypes['image']
+            results.append(res)
 
-        demisto.results(res)
+        demisto.results(results)
 
 
 def module_test():

@@ -72,5 +72,9 @@
             "mandatory": false,
             "display_name": "Mail Sender (New)"
         }
-    }
+    },
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

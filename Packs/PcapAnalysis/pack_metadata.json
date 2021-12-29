@@ -213,5 +213,9 @@
             "mandatory": false,
             "display_name": "Maltiverse"
         }
-    }
+    },
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }
