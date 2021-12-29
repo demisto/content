@@ -726,7 +726,8 @@ def main():
     url = params.get('url')
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
-    # you can find this trigger in https://vault.paloaltonetworks.local/home#R2VuZXJpY1NlY3JldERldGFpbHM6RGF0YVZhdWx0Ojc5NjU1N2RmLTg5YzQtNGQ5Yi04YmNlLTljNTMwZWU1NjVjYTpSZWNvcmRJbmRleDo1OklzVHJ1bmNhdGVk
+    # you can find this trigger in https://vault.paloaltonetworks.local/home#R2VuZXJpY1NlY3JldERldGFpbH
+    # M6RGF0YVZhdWx0Ojc5NjU1N2RmLTg5YzQtNGQ5Yi04YmNlLTljNTMwZWU1NjVjYTpSZWNvcmRJbmRleDo1OklzVHJ1bmNhdGVk
     trigger_token = params.get('trigger_token', '')
     headers = {}
     headers['PRIVATE-TOKEN'] = f'{params["api_key"]}'
