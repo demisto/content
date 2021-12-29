@@ -234,7 +234,7 @@ Suspends a powered-on virtual machine.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | VMWare.UUID | String | VM instance UUID. | 
-| VMWare.State | String | VM state \(i.e,. poweredOn, poweredOff, suspended, HardRebooted\). | 
+| VMWare.State | String | VM state \(i.e., poweredOn, poweredOff, suspended, HardRebooted\). | 
 
 
 #### Command Example
@@ -283,7 +283,7 @@ There is no context output for this command.
 
 ### vmware-create-snapshot
 ***
-Creates VM snapshot
+Creates a VM snapshot.
 
 
 #### Base Command
@@ -356,7 +356,7 @@ Reverts VM to snapshot.
 
 ### vmware-get-events
 ***
-Gets events of VM.
+Gets events of a VM.
 
 
 #### Base Command
