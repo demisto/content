@@ -100,9 +100,9 @@ FORMAT_URL_ADDITIONAL_TEST_CASES = [
     ('ftps://foo.bar/baz%27%28%29%2A%2B,', "ftps://foo.bar/baz'()*+,"),
 ]
 
-REDIRECT_NON_ATP_PROOF_POINT = [('https://www.test.test.com/test.html?redirectURL=https://evxil.com/malz.html',
-                                 ['https://www.test.test.com/test.html?redirectURL=https://evxil.com/malz.html',
-                                  'https://evxil.com/malz.html'])]
+REDIRECT_NON_ATP_PROOF_POINT = [('https://www.test.test.com/test.html?redirectURL=https://evil.com/mal.html',
+                                 ['https://www.test.test.com/test.html?redirectURL=https://evil.com/mal.html',
+                                  'https://evil.com/mal.html'])]
 
 REDIRECT_TEST_CASES = PROOF_POINT_REDIRECTS + REDIRECT_NON_ATP_PROOF_POINT
 
