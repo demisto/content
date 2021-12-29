@@ -5,5 +5,5 @@
 - Login is done by using the **Private Key** and **Secret Key** that was given you by Mandiant.
 
 ### Note
-- Checking the boxes (*Retrieve Indicator Metadata* and *Create Relationships*) will cause for additional API calls, it is advised to limit the number of indicators in order to prevent system overload.
+- Checking the boxes *Retrieve Indicator Metadata* and *Create Relationships* will cause additional API calls to retrieve additional data, it is advised to limit the number of indicators in order to prevent system overload.
 - Creating relationships could create additional indicators.

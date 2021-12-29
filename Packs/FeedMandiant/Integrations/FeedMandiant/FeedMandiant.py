@@ -9,7 +9,6 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
 ''' CONSTANTS '''
 
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 INDICATORS_TYPE_RESPONSE = {'malware': 'malware',
                             'actor': 'threat-actors',
                             }
@@ -42,14 +41,22 @@ class MandiantClient(BaseClient):
     """
 
     def __init__(self, base_url: str, username: str, password: str, verify: bool, proxy: bool, timeout: int,
-                 x_app_name: str):
-        super().__init__(base_url=base_url, auth=(username, password), verify=verify, proxy=proxy)
+                 x_app_name: str, first_fetch: str, limit: int, types: List,
+                 metadata: bool = False, enrichment: bool = False, tags: List = [], tlp_color: Optional[str] = None):
+        super().__init__(base_url=base_url, auth=(username, password), verify=verify, proxy=proxy, ok_codes=[200])
         self._headers = {
             'X-App-Name': x_app_name,
             'Accept': 'application/json',
             'Authorization': f'Bearer {self._get_token()}'
         }
-        self._timeout = timeout
+        self.timeout = timeout
+        self.first_fetch = first_fetch
+        self.limit = limit
+        self.types = types
+        self.metadata = metadata
+        self.tlp_color = tlp_color
+        self.tags = tags
+        self.enrichment = enrichment
 
     @logger
     def _get_token(self) -> str:
@@ -63,8 +70,7 @@ class MandiantClient(BaseClient):
         token = integration_context.get('token', '')
         valid_until = integration_context.get('valid_until')
 
-        now = datetime.now(timezone.utc)
-        now_timestamp = datetime.timestamp(now)
+        now_timestamp = arg_to_datetime('now').timestamp()  # type:ignore
         # if there is a key and valid_until, and the current time is smaller than the valid until
         # return the current token
         if token and valid_until:
@@ -84,7 +90,7 @@ class MandiantClient(BaseClient):
         data = {
             'grant_type': 'client_credentials'
         }
-        resp = self._http_request(method='POST', url_suffix='token', resp_type='json', data=data, ok_codes=[200])
+        resp = self._http_request(method='POST', url_suffix='token', resp_type='json', data=data)
         self._token = resp.get('access_token')
 
         integration_context = get_integration_context()
@@ -95,48 +101,66 @@ class MandiantClient(BaseClient):
 
         return self._token
 
-    def get_metadata(self, indicator: Dict, indicator_type: str) -> Dict:
+    def get_indicator_additional_info(self, identifier: str, indicator_type: str, info_type: str = "") \
+            -> Union[Dict, List]:
         """
         Get additional information for given indicator.
 
         Args:
-            indicator (Dict): Basic indicator.
+            identifier (Dict): Indicator's identifier.
             indicator_type (str): The indicator type.
+            info_type (str): Type of additional info
         Returns:
             Dict: Additional metadata of the indicator.
         """
+        url = f"v4/{MAP_TYPE_TO_URL[indicator_type]}"
+        url = urljoin(url, identifier)
+        url = urljoin(url, info_type)
+        if url[-1] == '/':
+            url = url[:-1]
+
         try:
-            identifier = indicator.get('id')
-            res = self._http_request(
-                method="GET", url_suffix=f'/v4/{MAP_TYPE_TO_URL[indicator_type]}/{identifier}', timeout=self._timeout,
-                ok_codes=[200])
-        except DemistoException:
-            res = indicator
+            call_result = self._http_request(method="GET", url_suffix=url, timeout=self.timeout)
+        except DemistoException as e:
+            # If there is an internal issue inside the server, don't fail the entire fetch session
+            if e.res.status_code != 500:
+                raise e
+
+        res = call_result
+        if info_type:
+            # for additional info the api call result structure is different
+            if info_type == 'attack-pattern':
+                res = call_result.get('attack-patterns', {})
+                if isinstance(res, str) and res == 'redacted':
+                    res = []  # type: ignore
+                elif res and isinstance(res, dict):
+                    res = list(res.values())
+            else:
+                res = call_result.get(info_type, [])
         return res
 
-    def get_indicator_info(self, identifier: str, info_type: str) -> List:
+    def get_indicators(self, indicator_type: str, params: Dict = {}) -> List:
         """
         Get additional information for given indicator.
 
         Args:
             identifier (str): Indicator's id.
-            info_type (str): The indicator type.
+            info_type (str): Additional info type.
+            indicator_type (str): The indicator type.
+            params (Dict): HTTP call params
         Returns:
-            Dict: Additional metadata of the indicator.
+            List: list indicators.
         """
         try:
-            res = self._http_request(method="GET", url_suffix=f'/v4/malware/{identifier}/{info_type}',
-                                     timeout=self._timeout, ok_codes=[200])
-            if info_type == 'attack-pattern':
-                res = res.get('attack-patterns')
+            url = f'/v4/{MAP_TYPE_TO_URL[indicator_type]}'
 
-                if res.get('malware', {}).get('attack-patterns') == 'redacted':
-                    res = []
-            else:
-                res = res.get(info_type, [])
+            res = self._http_request(method="GET", url_suffix=url, timeout=self.timeout, params=params)
+
+            res = res.get(MAP_TYPE_TO_RESPONSE[indicator_type], [])
 
         except DemistoException:
             res = []
+
         return res
 
 
@@ -155,30 +179,28 @@ def get_new_indicators(client: MandiantClient, last_run: str, indicator_type: st
         List: new indicators
 
     """
-    start_date = dateparser.parse(last_run, settings={'TIMEZONE': 'UTC'})
+    start_date = arg_to_datetime(last_run)
 
+    params = {}
     if indicator_type == 'Indicators':
         # for indicator type the earliest time to fetch is 90 days ago
-        earliest_fetch = dateparser.parse('90 days ago', settings={'TIMEZONE': 'UTC'})
+        earliest_fetch = arg_to_datetime('90 days ago')
         start_date = max(earliest_fetch, start_date)
+        params = {'start_epoch': int(start_date.timestamp()), 'limit': limit}  # type:ignore
 
-    params = {'start_epoch': int(start_date.timestamp()), 'limit': limit} if indicator_type == 'Indicators' else {}
+    new_indicators_list = client.get_indicators(indicator_type, params=params)
 
-    res = client._http_request(method="GET", url_suffix=f'/v4/{MAP_TYPE_TO_URL[indicator_type]}',
-                               timeout=client._timeout, params=params, ok_codes=[200])
-
-    new_indicators_list = res.get(MAP_TYPE_TO_RESPONSE[indicator_type], [])
-
-    date_key = 'last_seen' if indicator_type == 'Indicators' else 'last_updated'
-
-    new_indicators_list.sort(key=lambda x: dateparser.parse(x.get(date_key)), reverse=True)  # new to old
-    new_indicators_list = list(filter(lambda x: dateparser.parse(x[date_key]).timestamp() > start_date.timestamp(),
-                                      new_indicators_list))
+    if indicator_type != 'Indicators':
+        new_indicators_list.sort(key=lambda x: arg_to_datetime(x.get('last_updated')), reverse=True)  # new to old
+        new_indicators_list = list(
+            filter(lambda x: arg_to_datetime(x['last_updated']).timestamp() > start_date.timestamp(),  # type: ignore
+                   new_indicators_list))
 
     return new_indicators_list
 
 
-def get_indicator_list(client: MandiantClient, limit: int, first_fetch: str, indicator_type: str) -> List[Dict]:
+def get_indicator_list(client: MandiantClient, limit: int, first_fetch: str, indicator_type: str,
+                       update_context: bool = True) -> List[Dict]:
     """
     Get list of indicators from given type.
     Args:
@@ -186,12 +208,12 @@ def get_indicator_list(client: MandiantClient, limit: int, first_fetch: str, ind
         limit (int): number of indicators to return.
         first_fetch (str): Get indicators newer than first_fetch.
         indicator_type (str): indicator type
-
+        update_context (bool): Whether or not save to context the last run
     Returns:
         List[Dict]: list of indicators
     """
     last_run_dict = demisto.getLastRun()
-    indicators_list = last_run_dict.get(indicator_type + 'List', [])
+    indicators_list = last_run_dict.get(f'{indicator_type}List', [])
     if len(indicators_list) < limit:
         last_run = last_run_dict.get(indicator_type + 'Last', first_fetch)
         new_indicators_list = get_new_indicators(client, last_run, indicator_type, limit)
@@ -199,13 +221,14 @@ def get_indicator_list(client: MandiantClient, limit: int, first_fetch: str, ind
 
     if indicators_list:
         new_indicators_list = indicators_list[:limit]
-        last_run_dict[indicator_type + 'List'] = indicators_list[limit:]
 
-        date_key = 'last_seen' if indicator_type == 'Indicators' else 'last_updated'
+        if update_context:
+            last_run_dict[indicator_type + 'List'] = indicators_list[limit:]
 
-        last_run_dict[indicator_type + 'Last'] = new_indicators_list[-1][date_key]
+            date_key = 'last_seen' if indicator_type == 'Indicators' else 'last_updated'
 
-        demisto.setLastRun(last_run_dict)
+            last_run_dict[indicator_type + 'LastFetch'] = new_indicators_list[-1][date_key]
+            demisto.setLastRun(last_run_dict)
 
         indicators_list = new_indicators_list
 
@@ -306,21 +329,22 @@ def get_relationships_actor(raw_indicator: Dict) -> List:
     return relationships
 
 
-def create_malware_indicator(raw_indicator: Dict) -> Dict:
+def create_malware_indicator(client: MandiantClient, raw_indicator: Dict) -> Dict:
     """
       Creates a malware indicator
       Args:
+          client (MandiantClient): client
           raw_indicator (Dict): indicator
-
       Returns:
           Dict: malware indicator
     """
     fields = {'operatingsystemrefs': raw_indicator.get('operating_systems'),
               'aliases': raw_indicator.get('aliases'),
               'capabilities': raw_indicator.get('capabilities'),
-              'tags': raw_indicator.get('industries'),
+              'tags': [i.get('name', '') for i in   # type:ignore
+                       argToList(raw_indicator.get('industries'))] + client.tags,  # type:ignore
               'mandiantdetections': raw_indicator.get('detections'),
-              'yara': [(yara.get('name'), yara.get('id')) for yara in
+              'yara': [(yara.get('name'), yara.get('id')) for yara in  # type: ignore
                        raw_indicator.get('yara', [])] if raw_indicator.get('yara', []) != 'redacted' else [],
               'roles': raw_indicator.get('roles'),
               'stixid': raw_indicator.get('id'),
@@ -328,6 +352,7 @@ def create_malware_indicator(raw_indicator: Dict) -> Dict:
               'description': raw_indicator.get('description'),
               'updateddate': raw_indicator.get('last_updated'),
               'lastseenbysource': raw_indicator.get('last_activity_time'),
+              'trafficlightprotocol': client.tlp_color
               }
 
     fields = {k: v for k, v in fields.items() if v and v != 'redacted'}  # filter none and redacted values
@@ -342,10 +367,11 @@ def create_malware_indicator(raw_indicator: Dict) -> Dict:
     return indicator_obj
 
 
-def create_report_indicator(raw_indicator: Dict, entity_a: str, entity_a_type: str) -> Dict:
+def create_report_indicator(client: MandiantClient, raw_indicator: Dict, entity_a: str, entity_a_type: str) -> Dict:
     """
       Creates a malware indicator
       Args:
+        client (MandiantClient): client
         raw_indicator (Dict): indicator
         entity_a (str): entity_a name (for relationship)
         entity_a_type (str): entity_a type (for relationship)
@@ -353,12 +379,13 @@ def create_report_indicator(raw_indicator: Dict, entity_a: str, entity_a_type: s
           Dict: report indicator
     """
     fields = {'mandiantreportid': raw_indicator.get('report_id'),
-              'tags': raw_indicator.get('intelligence_type'),
+              'tags': argToList(raw_indicator.get('intelligence_type')) + client.tags,
               'stixid': raw_indicator.get('id'),
               'title': raw_indicator.get('title'),
               'published': raw_indicator.get('published_date'),
               'mandiantversion': raw_indicator.get('version'),
               'reporttype': raw_indicator.get('report_type'),
+              'trafficlightprotocol': client.tlp_color
               }
 
     fields = {k: v for k, v in fields.items() if v and v != 'redacted'}
@@ -405,10 +432,12 @@ def create_general_indicator(raw_indicator: Dict, entity_a: str, entity_a_type: 
     return indicator_obj
 
 
-def create_attack_pattern_indicator(raw_indicator: Dict, entity_a: str, entity_a_type: str) -> Dict:
+def create_attack_pattern_indicator(client: MandiantClient, raw_indicator: Dict, entity_a: str,
+                                    entity_a_type: str) -> Dict:
     """
         Creates a attack_pattern indicator
         Args:
+          client (MandiantClient): client
           raw_indicator (Dict): indicator
           entity_a (str): entity_a name (for relationship)
           entity_a_type (str): entity_a type (for relationship)
@@ -421,6 +450,7 @@ def create_attack_pattern_indicator(raw_indicator: Dict, entity_a: str, entity_a
               'updateddate': raw_indicator.get('modified'),
               'description': raw_indicator.get('description'),
               'stixid': raw_indicator.get('id'),
+              'trafficlightprotocol': client.tlp_color
               }
 
     fields = {k: v for k, v in fields.items() if v and v != 'redacted'}
@@ -441,25 +471,29 @@ def create_attack_pattern_indicator(raw_indicator: Dict, entity_a: str, entity_a
     return indicator_obj
 
 
-def create_actor_indicator(raw_indicator: Dict) -> Dict:
+def create_actor_indicator(client: MandiantClient, raw_indicator: Dict) -> Dict:
     """
     Create indicator
     Args:
+        client (MandiantClient): client
         raw_indicator (Dict): raw indicator
 
     Returns: Parsed indicator
     """
     raw_indicator = {k: v for k, v in raw_indicator.items() if v and v != 'redacted'}  # filter none and redacted values
     fields = {'primarymotivation': raw_indicator.get('motivations'),
-              'tags': [industry.get('name') for industry in raw_indicator.get('industries', [])],
-              'aliases': [alias.get('name') for alias in raw_indicator.get('aliases', [])],
-              'firstseenbysource': [item.get('earliest') for item in raw_indicator.get('observed', [])],
-              'lastseenbysource': [item.get('recent') for item in raw_indicator.get('observed', [])],
-              'targets': [target.get('name') for target in raw_indicator.get('locations', {}).get('target', [])],
+              'tags': [industry.get('name') for industry in  # type: ignore
+                       raw_indicator.get('industries', [])] + client.tags,
+              'aliases': [alias.get('name') for alias in raw_indicator.get('aliases', [])],  # type:ignore
+              'firstseenbysource': [item.get('earliest') for item in raw_indicator.get('observed', [])],  # type:ignore
+              'lastseenbysource': [item.get('recent') for item in raw_indicator.get('observed', [])],  # type:ignore
+              'targets': [target.get('name') for target in  # type:ignore
+                          raw_indicator.get('locations', {}).get('target', [])],  # type:ignore
               'stixid': raw_indicator.get('id'),
               'name': raw_indicator.get('name'),
               'description': raw_indicator.get('description'),
               'updateddate': raw_indicator.get('last_updated'),
+              'trafficlightprotocol': client.tlp_color
               }
 
     fields = {k: v for k, v in fields.items() if v and v != 'redacted'}  # filter none and redacted values
@@ -474,10 +508,11 @@ def create_actor_indicator(raw_indicator: Dict) -> Dict:
     return indicator_obj
 
 
-def create_indicator(raw_indicator: Dict) -> Dict:
+def create_indicator(client: MandiantClient, raw_indicator: Dict) -> Dict:
     """
     Create indicator
     Args:
+        client (MandiantClient): client
         raw_indicator (Dict): raw indicator
 
     Returns: Parsed indicator
@@ -486,6 +521,7 @@ def create_indicator(raw_indicator: Dict) -> Dict:
               'firstseenbysource': raw_indicator.get('first_seen'),
               'lastseenbysource': raw_indicator.get('last_seen'),
               'stixid': raw_indicator.get('id'),
+              'trafficlightprotocol': client.tlp_color
               }
 
     fields = {k: v for k, v in fields.items() if v and v != 'redacted'}  # filter none and redacted values
@@ -507,7 +543,7 @@ MAP_INDICATORS_FUNCTIONS = {
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module(client: MandiantClient) -> str:
+def test_module(client: MandiantClient, args: Dict) -> str:
     """Tests API connectivity and authentication'
 
     Returning 'ok' indicates that the integration works like it is supposed to.
@@ -523,7 +559,7 @@ def test_module(client: MandiantClient) -> str:
 
     message: str = ''
     try:
-        client._generate_token()
+        get_indicators_command(client, args=args, update_context=False)
         message = 'ok'
     except DemistoException as e:
         if 'Forbidden' in str(e) or 'Authorization' in str(e) or 'Unauthorized' in str(e):
@@ -533,7 +569,7 @@ def test_module(client: MandiantClient) -> str:
     return message
 
 
-def enrich_indicators(client: MandiantClient, indicators_list: List, indicator_type: str) -> List:
+def add_relationships(client: MandiantClient, indicators_list: List, indicator_type: str) -> List:
     """
     For each indicator in indicators_list create relationships and adding the relevant indicators
     Args:
@@ -546,79 +582,109 @@ def enrich_indicators(client: MandiantClient, indicators_list: List, indicator_t
     """
     indicators: List[Dict] = []
     for indicator in indicators_list:
-        reports = [create_report_indicator(report, indicator.get('name', ''), MAP_NAME_TO_TYPE[indicator_type])
-                   for report in client.get_indicator_info(indicator.get('id', ''), 'reports')]
+        indicator_id = indicator.get('fields', {}).get('stixid', '')
+        indicator_name = indicator.get('fields', {}).get('name', '')
+        reports_list = client.get_indicator_additional_info(indicator_type=indicator_type,
+                                                            identifier=indicator_id,
+                                                            info_type='reports')
 
-        general_indicators = [create_general_indicator(general_indicator, indicator.get('name', ''),
+        reports = [create_report_indicator(client, report, indicator_name, MAP_NAME_TO_TYPE[indicator_type])
+                   for report in reports_list if report]
+
+        general_indicators_list = client.get_indicator_additional_info(indicator_type=indicator_type,
+                                                                       identifier=indicator_id,
+                                                                       info_type='indicators')
+
+        general_indicators = [create_general_indicator(general_indicator, indicator_name,
                                                        MAP_NAME_TO_TYPE[indicator_type])
-                              for general_indicator in client.get_indicator_info(indicator.get('id', ''), 'indicators')]
+                              for general_indicator in general_indicators_list if general_indicator]
 
-        attack_pattern = [create_attack_pattern_indicator(attack_pattern, indicator.get('name', ''),
+        attack_pattern_list = client.get_indicator_additional_info(indicator_type=indicator_type,
+                                                                   identifier=indicator_id,
+                                                                   info_type='attack-pattern')
+
+        attack_pattern = [create_attack_pattern_indicator(client, attack_pattern, indicator_name,
                                                           MAP_NAME_TO_TYPE[indicator_type])
-                          for attack_pattern in client.get_indicator_info(indicator.get('id', ''), 'attack-pattern')]
+                          for attack_pattern in attack_pattern_list if attack_pattern]
 
         indicators = indicators + reports + general_indicators + attack_pattern
 
     return indicators
 
 
-def fetch_indicators(client: MandiantClient, limit: int, first_fetch: str, metadata: bool, enrichment: bool,
-                     types: List[str]):
+def fetch_indicators(client: MandiantClient, args: Dict = {}, update_context: bool = True):
     """
-    fetch indicator
+    For each type the fetch indicator command will:
+        1. Fetch a list of indicators, this is done in a single API call and retrieve minimal data for each indicator.
+        2. Fetch additional metadata, in order to fetch additional metadata an API call is required for each indicator.
+           Note: the additional data is added to the original indicator.
+        3. Create relationships (enrichment), each indicator requires an additional 3 API calls in order to create
+           relationships.
+
+        The result is the a single list of all the indicators and the new indicators created during the enrichment.
     Args:
         client (MandiantClient): client
-        limit (int): number of indicators to fetch
-        first_fetch (str): first fetch
-        metadata (bool): whether or not to get extra information for each indicator
-        enrichment (bool): whether or not to get relationships for each indicator
-        types (List): indicators types
-
+        args (Dict): This if given arguments, their values are used instead the one in the client
+        update_context (bool): Whether or not to update the context.
     Returns:
-        List of indictors
+        List of all indicators
     """
+
+    limit = int(args.get('limit', client.limit))
+    metadata = argToBoolean(args.get('indicatorMetadata', client.metadata))
+    enrichment = argToBoolean(args.get('indicatorRelationships', client.enrichment))
+    types = argToList(args.get('type', client.types))
+
+    first_fetch = client.first_fetch
+
     result = []
     for indicator_type in types:
 
-        indicators_list = get_indicator_list(client, limit, first_fetch, indicator_type)
+        indicators_list = get_indicator_list(client, limit, first_fetch, indicator_type, update_context)
 
         if metadata and indicator_type != 'Indicators':
-            indicators_list = [client.get_metadata(i, indicator_type) for i in indicators_list]
+            indicators_list = [client.get_indicator_additional_info(identifier=indicator.get('id'),  # type:ignore
+                                                                    indicator_type=indicator_type)
+                               for indicator in indicators_list]
 
-        indicators = [MAP_INDICATORS_FUNCTIONS[indicator_type](indicator) for indicator in indicators_list]
+        indicators = [MAP_INDICATORS_FUNCTIONS[indicator_type](client, indicator) for indicator in indicators_list]
 
         if enrichment and indicator_type != 'Indicators':
-            indicators = enrich_indicators(client, indicators, indicator_type)
+            indicators = add_relationships(client, indicators, indicator_type)
         result += indicators
+
     return result
 
 
-def get_indicators_command(client: MandiantClient, limit: int, first_fetch: str, metadata: bool, enrichment: bool,
-                           types: List[str]):
+def get_indicators_command(client: MandiantClient, args: Dict, update_context: bool = True):
     """
     Get indicators command
     Args:
         client (MandiantClient): client
-        limit (int): number of indicators to fetch
-        first_fetch (str): first fetch
-        metadata (bool): whether or not to get extra information for each indicator
-        enrichment (bool): whether or not to get relationships for each indicator
-        types (List): indicators types
+        args:
+            limit (int): number of indicators to fetch
+            metadata (bool): whether or not to get extra information for each indicator
+            enrichment (bool): whether or not to get relationships for each indicator
+            types (List): indicators types
+        update_context (bool): If set, doesn't update the context output
 
-    Returns: List
+    Returns:
 
     """
-    indicators = fetch_indicators(client, limit, first_fetch, metadata, enrichment, types)
+    indicators = fetch_indicators(client, args, update_context)
     human_readable = tableToMarkdown('Indicators from AutoFocus Tags Feed:', indicators,
                                      headers=['value', 'type', 'fields'], headerTransform=string_to_table_header,
                                      removeNull=True)
-    return CommandResults(
-        readable_output=human_readable,
-        outputs_prefix='',
-        outputs_key_field='',
-        raw_response=indicators,
-        outputs={},
-    )
+    if update_context:
+        return CommandResults(
+            readable_output=human_readable,
+            outputs_prefix='',
+            outputs_key_field='',
+            raw_response=indicators,
+            outputs={},
+        )
+    else:
+        return human_readable
 
 
 ''' MAIN FUNCTION '''
@@ -641,6 +707,13 @@ def main() -> None:
     base_url = params.get('url', '')
     timeout = int(params.get('timeout', 60))
     x_app_name = params.get('xappname')
+    tlp_color = demisto.params().get('tlp_color')
+    feedTags = argToList(demisto.params().get('feedTags'))
+    first_fetch = params.get('first_fetch', '3 days ago')
+    limit = int(params.get('max_fetch', 50))
+    metadata = argToBoolean(params.get('indicatorMetadata', False))
+    enrichment = argToBoolean(params.get('indicatorRelationships', False))
+    types = argToList(params.get('type'))
 
     demisto.debug(f'Command being called is {command}')
     try:
@@ -651,30 +724,25 @@ def main() -> None:
             username=username,
             password=password,
             timeout=timeout,
-            x_app_name=x_app_name
+            x_app_name=x_app_name,
+            tags=feedTags,
+            tlp_color=tlp_color,
+            first_fetch=first_fetch,
+            limit=limit,
+            metadata=metadata,
+            enrichment=enrichment,
+            types=types
         )
 
         if command == 'test-module':
-            result = test_module(client)
+            result = test_module(client, args)
             return_results(result)
 
         elif command == 'feed-mandiant-get-indicators':
-            limit = int(args.get('limit', 50))
-            metadata = argToBoolean(args.get('indicatorMetadata', False))
-            enrichment = argToBoolean(args.get('indicatorRelationships', False))
-            types = argToList(args.get('type'))
-            first_fetch = params.get('first_fetch', '3 days ago')
-
-            return_results(get_indicators_command(client, limit, first_fetch, metadata, enrichment, types))
+            return_results(get_indicators_command(client, args))
 
         elif command == 'fetch-indicators':
-            limit = int(params.get('max_fetch', 50))
-            first_fetch = params.get('first_fetch', '3 days ago')
-            metadata = argToBoolean(params.get('indicatorMetadata', False))
-            enrichment = argToBoolean(params.get('indicatorRelationships', False))
-            types = argToList(params.get('type'))
-
-            indicators = fetch_indicators(client, limit, first_fetch, metadata, enrichment, types)
+            indicators = fetch_indicators(client)
             for b in batch(indicators, batch_size=2000):
                 demisto.createIndicators(b)
         else:

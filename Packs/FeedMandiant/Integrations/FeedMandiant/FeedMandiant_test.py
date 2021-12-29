@@ -2,12 +2,12 @@ import json
 import io
 import freezegun
 import pytest
-from FeedMandiant import MandiantClient, DemistoException
+from FeedMandiant import MandiantClient
 
 
 def mock_client():
     MandiantClient._get_token = lambda x: 'token'
-    client = MandiantClient('url', 'username', 'password', False, False, 60, 'x_app_name')
+    client = MandiantClient('url', 'username', 'password', False, False, 60, 'x_app_name', 'first_fetch', 1, [])
     return client
 
 
@@ -29,7 +29,7 @@ def test_create_indicator():
     from FeedMandiant import create_indicator
     raw_indicators = util_load_json('./test_data/raw_indicators.json')
     result_indicators = util_load_json('./test_data/result_indicators.json')
-    res = create_indicator(raw_indicators['metadata_indicator'])
+    res = create_indicator(mock_client(), raw_indicators['metadata_indicator'])
 
     assert res == result_indicators['metadata_indicator']
 
@@ -62,83 +62,9 @@ def test_get_token():
     """
     from FeedMandiant import MandiantClient
     MandiantClient._generate_token = lambda x: 'token'
-    client = MandiantClient('url', 'username', 'password', False, False, 60, 'x_app_name')
+    client = MandiantClient('url', 'username', 'password', False, False, 60, 'x_app_name', 'first_fetch', 1, [])
     res = client._get_token()
     assert res == 'token'
-
-
-def test_get_metadata_valid(mocker):
-    """
-        Given -
-           indicator id
-        When -
-            running get_metadata
-        Then -
-            receive metadata indicator
-    """
-    client = mock_client()
-
-    result_indicators = util_load_json('./test_data/result_indicators.json')
-    mocker.patch.object(client, '_http_request', return_value=result_indicators['metadata_indicator'])
-
-    indicator = {'id': '1'}
-
-    res = client.get_metadata(indicator, 'Malware')
-
-    assert res == result_indicators['metadata_indicator']
-
-
-def test_get_metadata_invalid(mocker):
-    """
-        Given -
-           invalid indicator id
-        When -
-            running get_metadata
-        Then -
-            receive the original indicator
-    """
-    client = mock_client()
-    mocker.patch.object(client, '_http_request', side_effect=DemistoException('some exception'))
-
-    indicator = {'id': '1'}
-
-    res = client.get_metadata(indicator, 'Malware')
-
-    assert res == indicator
-
-
-@pytest.mark.parametrize('info_type', ['report', 'attack-pattern'])
-def test_get_indicator_info_valid(mocker, info_type):
-    """
-        Given -
-           indicator id
-        When -
-            running get_indicator_info
-        Then -
-            receive indicator
-    """
-    client = mock_client()
-    mocker.patch.object(client, '_http_request',
-                        return_value={'attack-patterns': {'malware': {'attack-patterns': 'redacted'}}})
-
-    res = client.get_indicator_info('id', info_type)
-    assert res == []
-
-
-def test_get_indicator_info_invalid(mocker):
-    """
-        Given -
-           invalid indicator id
-        When -
-            running get_indicator_info
-        Then -
-            receive empty list
-    """
-    client = mock_client()
-    mocker.patch.object(client, '_http_request', side_effect=DemistoException('some exception'))
-
-    res = client.get_indicator_info('id', 'type')
-    assert res == []
 
 
 @freezegun.freeze_time('2020-11-25T11:57:28Z')
@@ -222,7 +148,7 @@ def test_create_malware_indicator():
     from FeedMandiant import create_malware_indicator
     raw_indicators = util_load_json('./test_data/raw_indicators.json')
     res_indicators = util_load_json('./test_data/result_indicators.json')
-    res = create_malware_indicator(raw_indicators['metadata_indicator'])
+    res = create_malware_indicator(mock_client(), raw_indicators['metadata_indicator'])
     assert res == res_indicators['malware_indicator']
 
 
@@ -230,7 +156,7 @@ def test_create_report_indicator():
     from FeedMandiant import create_report_indicator
     raw_indicators = util_load_json('./test_data/raw_indicators.json')
     res_indicators = util_load_json('./test_data/result_indicators.json')
-    res = create_report_indicator(raw_indicators['metadata_indicator'], 'entity_a', 'entity_a_type')
+    res = create_report_indicator(mock_client(), raw_indicators['metadata_indicator'], 'entity_a', 'entity_a_type')
     assert res == res_indicators['report_indicator']
 
 
@@ -246,7 +172,7 @@ def test_create_attack_pattern_indicator():
     from FeedMandiant import create_attack_pattern_indicator
     raw_indicators = util_load_json('./test_data/raw_indicators.json')
     res_indicators = util_load_json('./test_data/result_indicators.json')
-    res = create_attack_pattern_indicator(raw_indicators['metadata_indicator'], 'entity_a', 'entity_a_type')
+    res = create_attack_pattern_indicator(mock_client(), raw_indicators['metadata_indicator'], 'entity_a', 'entity_a_type')
     assert res == res_indicators['attack_pattern_indicator']
 
 
@@ -254,19 +180,8 @@ def test_create_actor_indicator():
     from FeedMandiant import create_actor_indicator
     raw_indicators = util_load_json('./test_data/raw_indicators.json')
     res_indicators = util_load_json('./test_data/result_indicators.json')
-    res = create_actor_indicator(raw_indicators['metadata_indicator'])
+    res = create_actor_indicator(mock_client(), raw_indicators['metadata_indicator'])
     assert res == res_indicators['actor_indicator']
-
-
-def test_enrich_indicators(mocker):
-    from FeedMandiant import enrich_indicators
-    client = mock_client()
-    raw_indicators = util_load_json('./test_data/raw_indicators.json')
-    res_indicators = util_load_json('./test_data/result_indicators.json')
-
-    mocker.patch.object(client, 'get_indicator_info', return_value=[raw_indicators['metadata_indicator']])
-    res = enrich_indicators(client, [raw_indicators['metadata_indicator']], 'Malware')
-    assert res == res_indicators['enrich']
 
 
 @pytest.mark.parametrize('command', ['test-module', 'feed-mandiant-get-indicators'])
