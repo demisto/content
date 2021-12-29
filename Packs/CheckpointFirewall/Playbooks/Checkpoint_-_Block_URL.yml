@@ -4,7 +4,7 @@ name: Checkpoint - Block URL
 description: "This playbook blocks URLs using Checkpoint Firewall through Custom URL\
   \ Categories.\nThe playbook checks whether the input URL category already exists,\
   \ and if the URLs are a part of this category. Otherwise, it will create the category,\
-  \ block the URLs, and publish the configuration."
+  \ add the URLs, and publish the configuration."
 starttaskid: '0'
 tasks:
   '0':

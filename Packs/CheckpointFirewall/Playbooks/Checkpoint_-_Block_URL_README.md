@@ -1,5 +1,5 @@
 This playbook blocks URLs using Checkpoint Firewall through Custom URL Categories.
-The playbook checks whether the input URL category already exists, and if the URLs are a part of this category. Otherwise, it will create the category, block the URLs, and publish the configuration.
+The playbook checks whether the input URL category already exists, and if the URLs are a part of this category. Otherwise, it will create the category, add the URLs, and publish the configuration.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -40,4 +40,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Checkpoint - Block URL](Insert the link to your image here)
+![Checkpoint - Block URL](../doc_files/Checkpoint_-_Block_URL.png)
