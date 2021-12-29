@@ -395,19 +395,19 @@ script:
       description: Whether the security context of the user isn't delegated to a service even if the service account is set as trusted for Kerberos delegation.
       type: bool
     - contextPath: ActiveDirectory.Users.userAccountControlFields.USE_DES_KEY_ONLY
-      description: Whether .
+      description: Whether to restrict this principal to use only Data Encryption Standard (DES) encryption types for keys.
       type: bool
     - contextPath: ActiveDirectory.Users.userAccountControlFields.DONT_REQ_PREAUTH
-      description: Whether .
+      description: Whether this account require Kerberos pre-authentication for logging on.
       type: bool
     - contextPath: ActiveDirectory.Users.userAccountControlFields.PASSWORD_EXPIRED
-      description: Whether .
+      description: Whether the user password is expired.
       type: bool
     - contextPath: ActiveDirectory.Users.userAccountControlFields.TRUSTED_TO_AUTH_FOR_DELEGATION
-      description: Whether .
+      description: Whether the account is enabled for delegation.
       type: bool
     - contextPath: ActiveDirectory.Users.userAccountControlFields.PARTIAL_SECRETS_ACCOUNT
-      description: Whether .
+      description: Whether the account is a read-only domain controller (RODC).
       type: bool
     - contextPath: 'Account.DisplayName'
       description: The display name of the user.
