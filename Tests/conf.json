@@ -4782,6 +4782,13 @@
             "fromversion": "6.0.0"
         },
         {
+            "integrations": [
+                "Demisto REST API"
+            ],
+            "playbookID": "TestDemistoRestAPI",
+            "fromversion": "5.5.0"
+        },
+        {
             "scripts": [
                 "SplunkShowAsset",
                 "SplunkShowDrilldown",
