@@ -1867,6 +1867,7 @@ class Pack(object):
         """
         task_status = False
         pack_names = pack_names if pack_names else []
+        is_missing_dependencies = False
 
         try:
             self.set_pack_dependencies(packs_dependencies_mapping)
