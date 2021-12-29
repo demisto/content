@@ -1,6 +1,5 @@
 import concurrent.futures
 import secrets
-import signal
 from enum import Enum
 from ipaddress import ip_address
 from typing import Tuple, Set, Dict, Callable
@@ -3630,5 +3629,5 @@ def main() -> None:
 ''' ENTRY POINT '''
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
-    register_signal_handler_profiling_dump(signal_type=signal.SIGUSR1, profiling_dump_rows_limit=PROFILING_DUMP_ROWS_LIMIT)
+    register_signal_handler_profiling_dump(profiling_dump_rows_limit=PROFILING_DUMP_ROWS_LIMIT)
     main()

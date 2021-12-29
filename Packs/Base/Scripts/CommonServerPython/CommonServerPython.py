@@ -27,7 +27,15 @@ from threading import Lock
 import demistomock as demisto
 import warnings
 
-import signal
+OS_LINUX = False
+OS_MAC = False
+OS_WINDOWS = False
+if sys.platform.startswith('linux'):
+    OS_LINUX = True
+elif sys.platform.startswith('darwin'):
+    OS_MAC = True
+elif sys.platform.startswith('win32'):
+    OS_WINDOWS = True
 
 
 class WarningsHandler(object):
@@ -2522,7 +2530,16 @@ def get_integration_name():
     :return: Calling integration's name
     :rtype: ``str``
     """
-    return demisto.callingContext.get('context', '').get('IntegrationBrand')
+    return demisto.callingContext.get('context', {}).get('IntegrationBrand', '')
+
+
+def get_script_name():
+    """
+    Getting calling script name
+    :return: Calling script name
+    :rtype: ``str``
+    """
+    return demisto.callingContext.get('context', {}).get('ScriptName', '')
 
 
 class Common(object):
@@ -7073,7 +7090,18 @@ if 'requests' in sys.modules:
         :rtype: ``None``
         """
 
-        def __init__(self, base_url, verify=True, proxy=False, ok_codes=tuple(), headers=None, auth=None):
+        REQUESTS_TIMEOUT = 60
+
+        def __init__(
+            self,
+            base_url,
+            verify=True,
+            proxy=False,
+            ok_codes=tuple(),
+            headers=None,
+            auth=None,
+            timeout=REQUESTS_TIMEOUT,
+        ):
             self._base_url = base_url
             self._verify = verify
             self._ok_codes = ok_codes
@@ -7087,6 +7115,11 @@ if 'requests' in sys.modules:
 
             if not verify:
                 skip_cert_verification()
+
+            # removing trailing = char from env var value added by the server
+            entity_timeout = os.getenv('REQUESTS_TIMEOUT.' + (get_integration_name() or get_script_name()), '')
+            system_timeout = os.getenv('REQUESTS_TIMEOUT', '')
+            self.timeout = float(entity_timeout or system_timeout or timeout)
 
         def __del__(self):
             try:
@@ -7162,7 +7195,7 @@ if 'requests' in sys.modules:
                 pass
 
         def _http_request(self, method, url_suffix='', full_url=None, headers=None, auth=None, json_data=None,
-                          params=None, data=None, files=None, timeout=10, resp_type='json', ok_codes=None,
+                          params=None, data=None, files=None, timeout=None, resp_type='json', ok_codes=None,
                           return_empty_response=False, retries=0, status_list_to_retry=None,
                           backoff_factor=5, raise_on_redirect=False, raise_on_status=False,
                           error_handler=None, empty_valid_codes=None, **kwargs):
@@ -7269,6 +7302,9 @@ if 'requests' in sys.modules:
                 auth = auth if auth else self._auth
                 if retries:
                     self._implement_retry(retries, status_list_to_retry, backoff_factor, raise_on_redirect, raise_on_status)
+                if not timeout:
+                    timeout = self.timeout
+
                 # Execute
                 res = self._session.request(
                     method,
@@ -8360,20 +8396,6 @@ def get_message_threads_dump(_sig, _frame):
     return ret_value
 
 
-# DEPRECATED - use register_signal_handler_profiling_dump instead
-def register_signal_handler_threads_dump(signal_type=signal.SIGUSR1):
-    """
-    Function that registers the threads dump signal listener
-
-    :type signal_type: ``int``
-    :param signal_type: The type of the signal to register
-
-    :return: No data returned
-    :rtype: ``None``
-    """
-    signal.signal(signal_type, signal_handler_profiling_dump)
-
-
 def get_message_memory_dump(_sig, _frame):
     """
     Listener function to dump the memory to log info
@@ -8387,15 +8409,15 @@ def get_message_memory_dump(_sig, _frame):
     :return: Message to print.
     :rtype: ``str``
     """
-    classes_dict = {}
+    classes_dict = {}  # type: Dict[str, Dict]
     for obj in gc.get_objects():
         size = sys.getsizeof(obj, 0)
         if hasattr(obj, '__class__'):
             cls = str(obj.__class__)[8:-2]
             if cls in classes_dict:
-                current_class = classes_dict.get(cls)
-                current_class['count'] += 1
-                current_class['size'] += size
+                current_class = classes_dict.get(cls, {})  # type: Dict
+                current_class['count'] += 1  # type: ignore
+                current_class['size'] += size  # type: ignore
                 classes_dict[cls] = current_class
             else:
                 current_class = {
@@ -8515,12 +8537,9 @@ def signal_handler_profiling_dump(_sig, _frame):
     LOG.print_log()
 
 
-def register_signal_handler_profiling_dump(signal_type=signal.SIGUSR1, profiling_dump_rows_limit=PROFILING_DUMP_ROWS_LIMIT):
+def register_signal_handler_profiling_dump(signal_type=None, profiling_dump_rows_limit=PROFILING_DUMP_ROWS_LIMIT):
     """
     Function that registers the threads and memory dump signal listener
-
-    :type signal_type: ``int``
-    :param signal_type: The type of the signal to register
 
     :type profiling_dump_rows_limit: ``int``
     :param profiling_dump_rows_limit: The max number of profiling related rows to print to the log
@@ -8528,7 +8547,14 @@ def register_signal_handler_profiling_dump(signal_type=signal.SIGUSR1, profiling
     :return: No data returned
     :rtype: ``None``
     """
-    globals_ = globals()
-    globals_[PROFILING_DUMP_ROWS_LIMIT] = profiling_dump_rows_limit
+    if OS_LINUX or OS_MAC:
 
-    signal.signal(signal_type, signal_handler_profiling_dump)
+        import signal
+
+        globals_ = globals()
+        globals_['PROFILING_DUMP_ROWS_LIMIT'] = profiling_dump_rows_limit
+
+        requested_signal = signal_type if signal_type else signal.SIGUSR1
+        signal.signal(requested_signal, signal_handler_profiling_dump)
+    else:
+        demisto.info('Not a Linux or Mac OS, profiling using a signal is not supported.')
