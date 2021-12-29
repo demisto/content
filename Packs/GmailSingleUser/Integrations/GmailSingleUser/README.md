@@ -49,7 +49,7 @@ Additional info available at: https://support.google.com/a/answer/7281227
 * **Optional**: You can use your own Google App instead of the default Demisto App. Follow the steps below.
 * Go to the developers credentials page: https://console.developers.google.com/apis/credentials (you may need to set up a [new project](https://cloud.google.com/resource-manager/docs/creating-managing-projects) if you haven't done so in the past).
 * If needed, configure the [Consent Screen](https://developers.google.com/workspace/guides/configure-oauth-consent). Fill in the Consent Screen information you would like to display to your users.
-* Make sure in the consent screen that you publish the app  --> Press on 'Publish App' and confirm.
+* Make sure in the consent screen that you publish the app  -> Press on `Publish App` and confirm.
   ![OAuth-Consent-Screen-Publication](doc_imgs/publish-OAuth-consent-screen.png)
 * In the credentials page choose: `Create Credentials` -> `OAuth client ID`.
   ![Create Credentials](doc_imgs/create-credentials.png)
