@@ -19288,8 +19288,8 @@ Get account asset groups
                     "54.155.52.85",
                     "96.252.18.158",
                     "172.31.10.110",
-                    "172.31.11.47",
-                    "172.31.11.229"
+                    "1.1.1.1",
+                    "1.1.1.1"
                 ],
                 "IP_RANGE": [
                     "1.1.1.3-1.1.1.9",
@@ -19309,7 +19309,7 @@ Get account asset groups
 >### Group List
 >|APPLIANCE_IDS|DEFAULT_APPLIANCE_ID|ID|IP_SET|TITLE|
 >|---|---|---|---|---|
->|  |  | 492950 | IP: 1.1.1.1,<br/>1.1.2.1,<br/>1.1.2.3,<br/>1.5.2.1,<br/>1.5.6.1,<br/>8.8.8.8,<br/>18.130.16.32,<br/>23.96.25.100,<br/>34.99.231.241,<br/>35.185.27.57,<br/>52.58.204.23,<br/>54.155.52.85,<br/>96.252.18.158,<br/>172.31.10.110,<br/>172.31.11.47,<br/>172.31.11.229<br/>IP_RANGE: 1.1.1.3-1.1.1.9,<br/>1.1.2.8-1.1.2.9,<br/>1.2.2.2-1.2.2.3,<br/>192.168.0.87-192.168.0.92 | All |
+>|  |  | 492950 | IP: 1.1.1.1,<br/>1.1.2.1,<br/>1.1.2.3,<br/>1.5.2.1,<br/>1.5.6.1,<br/>8.8.8.8,<br/>18.130.16.32,<br/>23.96.25.100,<br/>34.99.231.241,<br/>35.185.27.57,<br/>52.58.204.23,<br/>54.155.52.85,<br/>96.252.18.158,<br/>172.31.10.110,<br/>1.1.1.1,<br/>1.1.1.1<br/>IP_RANGE: 1.1.1.3-1.1.1.9,<br/>1.1.2.8-1.1.2.9,<br/>1.2.2.2-1.2.2.3,<br/>192.168.0.87-192.168.0.92 | All |
 
 
 ### qualys-report-fetch
@@ -21018,7 +21018,7 @@ Get a list of hosts with the hosts latest vulnerability data, based on the host 
                             "PORT": "3389",
                             "PROTOCOL": "tcp",
                             "QID": "38170",
-                            "RESULTS": "Certificate #0 CN=WIN-2IDQKTU63RC (WIN-2IDQKTU63RC) doesn&apos;t resolve",
+                            "RESULTS": "Certificate #0 CN=WIN-2AAABX64SXS (WIN-2AAABX64SXS) doesn&apos;t resolve",
                             "SEVERITY": "2",
                             "SSL": "1",
                             "STATUS": "Active",
@@ -21036,7 +21036,7 @@ Get a list of hosts with the hosts latest vulnerability data, based on the host 
                             "PORT": "3389",
                             "PROTOCOL": "tcp",
                             "QID": "38173",
-                            "RESULTS": "Certificate #0 CN=WIN-2IDQKTU63RC unable to get local issuer certificate",
+                            "RESULTS": "Certificate #0 CN=WIN-2AAABX64SXS unable to get local issuer certificate",
                             "SEVERITY": "2",
                             "SSL": "1",
                             "STATUS": "Active",
@@ -21106,12 +21106,12 @@ Get a list of hosts with the hosts latest vulnerability data, based on the host 
                     "HOSTNAME": "i-070b64d396f8037e7"
                 },
                 "ID": "35700896",
-                "IP": "172.31.11.47",
+                "IP": "1.1.1.1",
                 "LAST_PC_SCANNED_DATE": "2018-07-08T22:03:23Z",
                 "LAST_SCAN_DATETIME": "2018-10-25T19:13:37Z",
                 "LAST_VM_SCANNED_DATE": "2018-10-25T19:13:11Z",
                 "LAST_VM_SCANNED_DURATION": "1083",
-                "NETBIOS": "WIN-2IDQKTU63RC",
+                "NETBIOS": "WIN-2AAABX64SXS",
                 "OS": "Windows 2008 R2/7",
                 "QG_HOSTID": "a30ba2e0-1e90-4f16-b755-2db8f44b67a7",
                 "TRACKING_METHOD": "EC2"
@@ -21259,7 +21259,7 @@ Get a list of hosts with the hosts latest vulnerability data, based on the host 
                     "HOSTNAME": "i-055ef1b4734491575"
                 },
                 "ID": "69291564",
-                "IP": "172.31.11.229",
+                "IP": "1.1.1.1",
                 "LAST_PC_SCANNED_DATE": "2018-07-08T22:03:23Z",
                 "LAST_SCAN_DATETIME": "2018-10-25T19:12:25Z",
                 "LAST_VM_SCANNED_DATE": "2018-10-25T19:11:35Z",
@@ -21279,8 +21279,8 @@ Get a list of hosts with the hosts latest vulnerability data, based on the host 
 >### Host Detection List
 >|DETECTIONS|DNS_DATA|ID|IP|
 >|---|---|---|---|
->| {'QID': '38170', 'RESULTS': 'Certificate #0 CN=WIN-2IDQKTU63RC (WIN-2IDQKTU63RC) doesn&apos;t resolve'},<br/>{'QID': '38173', 'RESULTS': 'Certificate #0 CN=WIN-2IDQKTU63RC unable to get local issuer certificate'},<br/>{'QID': '38601', 'RESULTS': 'CIPHER\tKEY-EXCHANGE\tAUTHENTICATION\tMAC\tENCRYPTION(KEY-STRENGTH)\tGRADE\nTLSv1 WITH RC4 CIPHERS IS SUPPORTED\t \t \t \t \t \nRC4-MD5\tRSA\tRSA\tMD5\tRC4(128)\tMEDIUM\nRC4-SHA\tRSA\tRSA\tSHA1\tRC4(128)\tMEDIUM\nTLSv1.1 WITH RC4 CIPHERS IS SUPPORTED\t \t \t \t \t \nRC4-MD5\tRSA\tRSA\tMD5\tRC4(128)\tMEDIUM\nRC4-SHA\tRSA\tRSA\tSHA1\tRC4(128)\tMEDIUM\nTLSv1.2 WITH RC4 CIPHERS IS SUPPORTED\t \t \t \t \t \nRC4-MD5\tRSA\tRSA\tMD5\tRC4(128)\tMEDIUM\nRC4-SHA\tRSA\tRSA\tSHA1\tRC4(128)\tMEDIUM'},<br/>{'QID': '38628', 'RESULTS': 'TLSv1.0 is supported'},<br/>{'QID': '38657', 'RESULTS': 'CIPHER\tKEY-EXCHANGE\tAUTHENTICATION\tMAC\tENCRYPTION(KEY-STRENGTH)\tGRADE\nTLSv1 WITH 64-BIT CBC CIPHERS IS SUPPORTED\t \t \t \t \t \nDES-CBC3-SHA\tRSA\tRSA\tSHA1\t3DES(168)\tMEDIUM\nTLSv1.1 WITH 64-BIT CBC CIPHERS IS SUPPORTED\t \t \t \t \t \nDES-CBC3-SHA\tRSA\tRSA\tSHA1\t3DES(168)\tMEDIUM\nTLSv1.2 WITH 64-BIT CBC CIPHERS IS SUPPORTED\t \t \t \t \t \nDES-CBC3-SHA\tRSA\tRSA\tSHA1\t3DES(168)\tMEDIUM'},<br/>{'QID': '70000', 'RESULTS': 'WIN-2IDQKTU63RC'},<br/>{'QID': '90043', 'RESULTS': None},<br/>{'QID': '90882', 'RESULTS': 'RDP Supported Encryption methods:  RC4(40 bit),RC4(56 bit)'} | HOSTNAME: i-070b64d396f8037e7 | 35700896 | 172.31.11.47 |
->| {'QID': '70000', 'RESULTS': 'AMAZON-544DB96A'},<br/>{'QID': '70001', 'RESULTS': 'Device Name\tComment\tType\nIPC$\tRemote IPC\t-2147483645\nC$\tDefault share\t-2147483648\nADMIN$\tRemote Admin\t-2147483648'},<br/>{'QID': '90043', 'RESULTS': None},<br/>{'QID': '90882', 'RESULTS': 'RDP Supported Encryption methods:  RC4(40 bit),RC4(56 bit)'},<br/>{'QID': '90883', 'RESULTS': 'RDP Public key is 512 bits long.'},<br/>{'QID': '105500', 'RESULTS': 'QID: 105500 detected on port 3389 over TCP.'},<br/>{'QID': '105501', 'RESULTS': 'QID: 105501 detected on port 3389 over TCP.'},<br/>{'QID': '105632', 'RESULTS': 'EOL/Obsolete Operating System : Windows Server 2003 R2 Detected'} | HOSTNAME: i-055ef1b4734491575 | 69291564 | 172.31.11.229 |
+>| {'QID': '38170', 'RESULTS': 'Certificate #0 CN=WIN-2AAABX64SXS (WIN-2AAABX64SXS) doesn&apos;t resolve'},<br/>{'QID': '38173', 'RESULTS': 'Certificate #0 CN=WIN-2AAABX64SXS unable to get local issuer certificate'},<br/>{'QID': '38601', 'RESULTS': 'CIPHER\tKEY-EXCHANGE\tAUTHENTICATION\tMAC\tENCRYPTION(KEY-STRENGTH)\tGRADE\nTLSv1 WITH RC4 CIPHERS IS SUPPORTED\t \t \t \t \t \nRC4-MD5\tRSA\tRSA\tMD5\tRC4(128)\tMEDIUM\nRC4-SHA\tRSA\tRSA\tSHA1\tRC4(128)\tMEDIUM\nTLSv1.1 WITH RC4 CIPHERS IS SUPPORTED\t \t \t \t \t \nRC4-MD5\tRSA\tRSA\tMD5\tRC4(128)\tMEDIUM\nRC4-SHA\tRSA\tRSA\tSHA1\tRC4(128)\tMEDIUM\nTLSv1.2 WITH RC4 CIPHERS IS SUPPORTED\t \t \t \t \t \nRC4-MD5\tRSA\tRSA\tMD5\tRC4(128)\tMEDIUM\nRC4-SHA\tRSA\tRSA\tSHA1\tRC4(128)\tMEDIUM'},<br/>{'QID': '38628', 'RESULTS': 'TLSv1.0 is supported'},<br/>{'QID': '38657', 'RESULTS': 'CIPHER\tKEY-EXCHANGE\tAUTHENTICATION\tMAC\tENCRYPTION(KEY-STRENGTH)\tGRADE\nTLSv1 WITH 64-BIT CBC CIPHERS IS SUPPORTED\t \t \t \t \t \nDES-CBC3-SHA\tRSA\tRSA\tSHA1\t3DES(168)\tMEDIUM\nTLSv1.1 WITH 64-BIT CBC CIPHERS IS SUPPORTED\t \t \t \t \t \nDES-CBC3-SHA\tRSA\tRSA\tSHA1\t3DES(168)\tMEDIUM\nTLSv1.2 WITH 64-BIT CBC CIPHERS IS SUPPORTED\t \t \t \t \t \nDES-CBC3-SHA\tRSA\tRSA\tSHA1\t3DES(168)\tMEDIUM'},<br/>{'QID': '70000', 'RESULTS': 'WIN-2AAABX64SXS'},<br/>{'QID': '90043', 'RESULTS': None},<br/>{'QID': '90882', 'RESULTS': 'RDP Supported Encryption methods:  RC4(40 bit),RC4(56 bit)'} | HOSTNAME: i-070b64d396f8037e7 | 35700896 | 1.1.1.1 |
+>| {'QID': '70000', 'RESULTS': 'AMAZON-544DB96A'},<br/>{'QID': '70001', 'RESULTS': 'Device Name\tComment\tType\nIPC$\tRemote IPC\t-2147483645\nC$\tDefault share\t-2147483648\nADMIN$\tRemote Admin\t-2147483648'},<br/>{'QID': '90043', 'RESULTS': None},<br/>{'QID': '90882', 'RESULTS': 'RDP Supported Encryption methods:  RC4(40 bit),RC4(56 bit)'},<br/>{'QID': '90883', 'RESULTS': 'RDP Public key is 512 bits long.'},<br/>{'QID': '105500', 'RESULTS': 'QID: 105500 detected on port 3389 over TCP.'},<br/>{'QID': '105501', 'RESULTS': 'QID: 105501 detected on port 3389 over TCP.'},<br/>{'QID': '105632', 'RESULTS': 'EOL/Obsolete Operating System : Windows Server 2003 R2 Detected'} | HOSTNAME: i-055ef1b4734491575 | 69291564 | 1.1.1.1 |
 
 
 ### qualys-host-update
