@@ -14,5 +14,9 @@
     "useCases": [],
     "keywords": [
         "CVE"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }
