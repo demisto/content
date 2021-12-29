@@ -21,7 +21,7 @@ configuration:
   required: false
   type: 8
 description: Leverage Symantec Deepsight Intelligence
-display: Symantec Deepsight Intelligence (Beta)
+display: Symantec Deepsight Intelligence
 name: Symantec Deepsight Intelligence
 script:
   commands:
@@ -370,5 +370,4 @@ script:
   type: python
 tests:
 - Symantec Deepsight Test
-beta: true
 fromversion: 5.0.0
