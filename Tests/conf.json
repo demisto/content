@@ -386,6 +386,10 @@
             "fromversion": "5.5.0"
         },
         {
+            "playbookID": "Traps test",
+            "integrations": "Traps"
+        },
+        {
             "integrations": "Pipl",
             "playbookID": "Pipl Test"
         },
@@ -1589,19 +1593,22 @@
             "integrations": "SplunkPy",
             "playbookID": "SplunkPy parse-raw - Test",
             "memory_threshold": 100,
-            "instance_names": "use_default_handler"
+            "instance_names": "use_default_handler",
+            "is_mockable": false
         },
         {
             "integrations": "SplunkPy",
             "playbookID": "SplunkPy-Test-V2_default_handler",
             "memory_threshold": 500,
-            "instance_names": "use_default_handler"
+            "instance_names": "use_default_handler",
+            "is_mockable": false
         },
         {
             "integrations": "SplunkPy",
             "playbookID": "Splunk-Test_default_handler",
             "memory_threshold": 200,
-            "instance_names": "use_default_handler"
+            "instance_names": "use_default_handler",
+            "is_mockable": false
         },
         {
             "integrations": "AnsibleTower",
@@ -1612,7 +1619,8 @@
             "integrations": "SplunkPy",
             "playbookID": "SplunkPySearch_Test_default_handler",
             "memory_threshold": 200,
-            "instance_names": "use_default_handler"
+            "instance_names": "use_default_handler",
+            "is_mockable": false
         },
         {
             "integrations": "SplunkPy",
@@ -2960,7 +2968,8 @@
             "playbookID": "Splunk Indicator Hunting Test",
             "fromversion": "5.0.0",
             "memory_threshold": 500,
-            "instance_names": "use_default_handler"
+            "instance_names": "use_default_handler",
+            "is_mockable": false
         },
         {
             "integrations": "BPA",
@@ -4782,6 +4791,11 @@
             "fromversion": "6.0.0"
         },
         {
+            "integrations": "AzureDataExplorer",
+            "playbookID": "playbook-AzureDataExplorer-Test",
+            "fromversion": "6.0.0"
+        },
+        {
             "integrations": [
                 "Demisto REST API"
             ],
@@ -4815,7 +4829,14 @@
             "fromversion": "5.5.0"
         },
         {
-          "playbookID": "AzureRiskyUsers",
+            "integrations": [
+                "RemoteAccess v2"
+            ],
+            "playbookID": "RemoteAccessTest",
+            "fromversion": "6.0.0"
+        },
+        {
+            "playbookID": "AzureRiskyUsers",
             "fromversion": "6.0.0",
             "integrations": "AzureRiskyUsers"
         },
@@ -4917,6 +4938,7 @@
         "Phishing v2 - Test - Actual Incident": "Issue 41322",
         "Kaspersky Security Center - Test": "Issue 36487",
         "carbonBlackEndpointStandardTestPlaybook": "Issue 36936",
+        "RemoteAccessTest": "Issue 44245",
         "test_Qradar_v2": "the integration is deprecated as we released Qradar V3",
         "XsoarPowershellTesting-Test": "Issue 32689",
         "Unit42 Intel Objects Feed - Test": "Issue 44100",
@@ -4941,7 +4963,10 @@
         "Mimecast test": "Issue 26906",
         "RedLockTest": "Issue 24600",
         "AutoFocus V2 test": "Issue 26464",
-        "SplunkPy_KV_commands_default_handler": "Issue 41419"
+        "SplunkPy_KV_commands_default_handler": "Issue 41419",
+        "LogRhythm REST test": "Issue 40654",
+        "Recorded Future Test": "Quota issue - will ve reverted un 1.1.22",
+        "RecordedFutureFeed - Test": "Quota issue - will ve reverted un 1.1.22"
     },
     "skipped_integrations": {
         
