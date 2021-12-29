@@ -104,8 +104,9 @@ REDIRECT_NON_ATP_PROOF_POINT = [('https://www.test.test.com/test.html?redirectUR
                                  ['https://www.test.test.com/test.html?redirectURL=https://evxil.com/malz.html',
                                   'https://evxil.com/malz.html'])]
 
-FORMAT_URL_TEST_DATA = NOT_FORMAT_TO_FORMAT + PROOF_POINT_REDIRECTS + FORMAT_URL_ADDITIONAL_TEST_CASES + \
-                       REDIRECT_NON_ATP_PROOF_POINT
+REDIRECT_TEST_CASES = PROOF_POINT_REDIRECTS + REDIRECT_NON_ATP_PROOF_POINT
+
+FORMAT_URL_TEST_DATA = NOT_FORMAT_TO_FORMAT + REDIRECT_TEST_CASES + FORMAT_URL_ADDITIONAL_TEST_CASES
 
 
 class TestFormatURL:
