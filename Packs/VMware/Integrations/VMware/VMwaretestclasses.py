@@ -18,11 +18,11 @@ class DeviceInfo:
 
 
 class Hardware:
-    device_obj = vim.vm.device.VirtualEthernetCard()
-    device_obj.deviceInfo = vim.Description()
+    device_obj = vim.vm.device.VirtualEthernetCard()  # mypy: ignore
+    device_obj.deviceInfo = vim.Description()  # mypy: ignore
     device_obj.deviceInfo.label = 'Network adapter 123'
     device_obj.macAddress = 'mac test'
-    device_obj.backing = vim.vm.device.VirtualDevice.BackingInfo()
+    device_obj.backing = vim.vm.device.VirtualDevice.BackingInfo()  # mypy: ignore
     device_obj.wakeOnLanEnabled = True
     device = [device_obj]
 

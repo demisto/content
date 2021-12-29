@@ -125,11 +125,11 @@ def search_for_obj(content, vim_type, name, folder=None, recurse=True):
 
 
 def create_vm_config_creator(host, args):
-    spec = vim.vm.ConfigSpec()
-    files = vim.vm.FileInfo()
+    spec = vim.vm.ConfigSpec()  # mypy: ignore
+    files = vim.vm.FileInfo()  # mypy: ignore
     files.vmPathName = "[" + host.datastore[0].name + "]" + args.get('name')
-    resource_allocation_spec = vim.ResourceAllocationInfo()
-    resource_allocation_info = vim.ResourceAllocationInfo()
+    resource_allocation_spec = vim.ResourceAllocationInfo()  # mypy: ignore
+    resource_allocation_info = vim.ResourceAllocationInfo()  # mypy: ignore
     resource_allocation_spec.limit = arg_to_number(args.get('cpu-allocation'))
     resource_allocation_info.limit = arg_to_number(args.get('memory'))
     spec.name = args.get('name')
@@ -153,7 +153,7 @@ def create_rellocation_locator_spec(vm, datastore):
 
     # construct locator for the disks
     for disk in template_disks:
-        locator = vim.vm.RelocateSpec.DiskLocator()
+        locator = vim.vm.RelocateSpec.DiskLocator()  # mypy: ignore
         locator.diskBackingInfo = disk.backing  # Backing information for the virtual disk at the destination
         locator.diskId = int(disk.key)
         locator.datastore = datastore  # Destination datastore
@@ -178,11 +178,11 @@ def apply_get_vms_filters(args, vm_summery):
 
 def get_priority(priority):
     if priority == 'highPriority':
-        return vim.VirtualMachine.MovePriority().highPriority
+        return vim.VirtualMachine.MovePriority().highPriority  # mypy: ignore
     elif priority == 'lowPriority':
-        return vim.VirtualMachine.MovePriority().lowPriority
+        return vim.VirtualMachine.MovePriority().lowPriority  # mypy: ignore
     else:
-        return vim.VirtualMachine.MovePriority().defaultPriority
+        return vim.VirtualMachine.MovePriority().defaultPriority  # mypy: ignore
 
 
 def get_vms(si, args):
@@ -455,12 +455,12 @@ def get_events(si, args):
     eventManager = content.eventManager
     limit, is_manual, page_size = get_limit(args)
 
-    time = vim.event.EventFilterSpec.ByTime()
-    time.beginTime = dateparser.parse(args.get('start-date', ''))
-    time.endTime = dateparser.parse(args.get('end-date', ''))
-    if (args.get('start-date') and not time.beginTime) or (args.get('end-date') and not time.endTime):
+    time = vim.event.EventFilterSpec.ByTime()  # mypy: ignore
+    time.beginTime = dateparser.parse(args.get('start-date', ''))  # mypy: ignore
+    time.endTime = dateparser.parse(args.get('end-date', ''))  # mypy: ignore
+    if (args.get('start-date') and not time.beginTime) or (args.get('end-date') and not time.endTime):  # mypy: ignore
         raise Exception("Dates given in a wrong format.")
-    by_user_name = vim.event.EventFilterSpec.ByUsername()
+    by_user_name = vim.event.EventFilterSpec.ByUsername()  # mypy: ignore
     by_user_name.userList = args.get('user', '').split(',') if args.get('user') else None
     filter = vim.event.EventFilterSpec.ByEntity(entity=vm, recursion="self")  # type: ignore
     ids = args.get('event-type').split(',')
@@ -469,8 +469,8 @@ def get_events(si, args):
     filterSpec.eventTypeId = ids  # type: ignore
     filterSpec.entity = filter  # type: ignore
     filterSpec.time = time
-    filterSpec.userName = by_user_name
-    filterSpec.maxCount = limit
+    filterSpec.userName = by_user_name  # mypy: ignore
+    filterSpec.maxCount = limit  # mypy: ignore
 
     eventRes = eventManager.QueryEvents(filterSpec)
     for e in eventRes:
@@ -643,11 +643,11 @@ def create_vm(si, args):
 def clone_vm(si, args):
     vm = get_vm(si, args.get('uuid'))
     content = si.RetrieveContent()
-    spec = vim.vm.CloneSpec()
-    relocate_spec = vim.vm.RelocateSpec()
+    spec = vim.vm.CloneSpec()  # mypy: ignore
+    relocate_spec = vim.vm.RelocateSpec()  # mypy: ignore
     relocate_spec.datastore = search_for_obj(content, [vim.Datastore], args.get('datastore'))
     relocate_spec.host = search_for_obj(content, [vim.HostSystem], args.get('host'))
-    relocate_spec.pool = search_for_obj(content, [vim.ResourcePool], args.get('pool'))
+    relocate_spec.pool = search_for_obj(content, [vim.ResourcePool], args.get('pool'))  # mypy: ignore
     spec.location = relocate_spec
     spec.template = argToBoolean(args.get('template', False))
     spec.powerOn = argToBoolean(args.get('powerOn'))
@@ -704,10 +704,10 @@ def relocate_vm(si, args):
     vm = get_vm(si, args.get('uuid'))
 
     priority = get_priority(args.get('priority'))
-    spec = vim.VirtualMachineRelocateSpec()
+    spec = vim.VirtualMachineRelocateSpec()  # mypy: ignore
     spec.folder = search_for_obj(content, [vim.Folder], args.get('folder'))
     spec.host = search_for_obj(content, [vim.HostSystem], args.get('host'))
-    spec.pool = search_for_obj(content, [vim.ResourcePool], args.get('pool'))
+    spec.pool = search_for_obj(content, [vim.ResourcePool], args.get('pool'))  # mypy: ignore
     datastore = search_for_obj(content, [vim.Datastore], args.get('datastore'))
 
     if datastore:
@@ -841,8 +841,8 @@ def main():  # pragma: no cover
             result = unregister_vm(si, demisto.args())
         res.append(result)
     except Exception as ex:
-        if hasattr(ex, 'msg') and ex.msg:
-            message = ex.msg
+        if hasattr(ex, 'msg') and ex.msg:  # mypy: ignore
+            message = ex.msg  # mypy: ignore
         else:
             message = ex
         res.append(
