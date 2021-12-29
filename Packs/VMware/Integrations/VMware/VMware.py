@@ -804,7 +804,7 @@ def main():  # pragma: no cover
     res = []
     si = None
     try:
-        demisto.debug('Command being called is ' + demisto.command()')
+        demisto.debug('Command being called is ' + demisto.command())
         si, vsphere_client = login(demisto.params())
 
         if demisto.command() == 'test-module':
