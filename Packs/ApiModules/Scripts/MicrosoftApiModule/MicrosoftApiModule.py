@@ -120,6 +120,7 @@ class MicrosoftClient(BaseClient):
         self.timeout = timeout
 
         self.multi_resource = multi_resource
+
         if self.multi_resource:
             self.resources = resources if resources else []
             self.resource_to_access_token: Dict[str, str] = {}
