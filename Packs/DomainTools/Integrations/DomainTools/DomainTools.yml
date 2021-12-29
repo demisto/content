@@ -19,11 +19,11 @@ configuration:
   defaultvalue: ""
   type: 0
   required: true
-- display: API Key
-  name: key
-  defaultvalue: ""
-  type: 4
-  required: true
+- displaypassword: API Key
+  name: credentials
+  type: 9
+  required: false
+  hiddenusername: true
 - display: Trust any certificate (not secure)
   name: insecure
   defaultvalue: ""
@@ -33,6 +33,12 @@ configuration:
   name: proxy
   defaultvalue: ""
   type: 8
+  required: false
+- display: API Key (Deprecated)
+  hidden: true
+  name: key
+  defaultvalue: ""
+  type: 4
   required: false
 script:
   script: ''
