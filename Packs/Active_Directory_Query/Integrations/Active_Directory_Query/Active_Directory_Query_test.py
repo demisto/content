@@ -500,3 +500,18 @@ def test_search__no_control_exist(mocker):
     Active_Directory_Query.search_users('dc=test,dc=test_1', page_size=20)
 
     assert '**No entries.**' in demisto.results.call_args[0][0]['HumanReadable']
+
+
+def test_user_account_to_boolean_fields():
+    """
+    Given:
+        a userAccountControl value
+    When:
+        parsing the userAccountControl fields
+    Then:
+        Only the relevant fields will be marked as true
+    """
+    import Active_Directory_Query
+
+    fields = Active_Directory_Query.user_account_to_boolean_fields(0x50)
+    assert {k for k, v in fields.items() if v} == {'LOCKOUT', 'PASSWD_CANT_CHANGE'}
