@@ -27,8 +27,8 @@ jobs:
           PR_NUMBER: ${{ github.event.pull_request.number }}
           BASE_BRANCH: ${{ github.event.pull_request.base.ref }}
           CONTRIB_BRANCH: ${{ github.event.pull_request.head.label }}
-          USERNAME: ${{ Secrets.SECRET_CHECK_USER }}
-          PASSWORD: ${{ Secrets.SECRET_CHECK_PASS }}
+          USERNAME: ${{ secrets.TRIGGER_BUILD_USER }}
+          PASSWORD: ${{ secrets.TRIGGER_BUILD_PASSWORD }}
         run: |
           echo "Trigger contribution build for PR: $PR_NUMBER with base branch: $BASE_BRANCH contrib branch: $CONTRIB_BRANCH"
           python Utils/github_workflow_scripts/trigger_contribution_build.py --pr_number $PR_NUMBER --base_branch $BASE_BRANCH --contrib_branch $CONTRIB_BRANCH --username $USERNAME --password $PASSWORD
