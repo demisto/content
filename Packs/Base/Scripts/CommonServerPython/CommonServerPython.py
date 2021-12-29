@@ -8304,7 +8304,7 @@ def set_feed_last_run(last_run_indicators):
 def set_last_mirror_run(last_mirror_run):
     """
     This function sets the mirror last run: from XSOAR version 6.6.0: using `demisto.setLastMirrorRun()`.
-    Before XSOAR version 6.6.0: we don't set the given data`, an exception will be raised.
+    Before XSOAR version 6.6.0: we don't set the given data, an exception will be raised.
     :type last_mirror_run: ``dict``
     :param last_mirror_run: Data to save in "LastMirrorRun" object.
     :rtype: ``None``
@@ -8319,9 +8319,9 @@ def set_last_mirror_run(last_mirror_run):
 def get_last_mirror_run():  # type: () -> Optional[Dict[Any, Any]]
     """
     This function gets the mirror last run: from XSOAR version 6.6.0: using `demisto.getLastMirrorRun()`.
-    Before XSOAR version 6.6.0: we don't get the given data`, an exception will be raised.
+    Before XSOAR version 6.6.0: we don't get the given data, an exception will be raised.
     :rtype: ``dict``
-    :return: All indicators from the feed's last run
+    :return: A dictionary represents the data that was already set in the previous runs (or an empty dict if we did not set anything yet).
     """
     if is_demisto_version_ge('6.6.0'):
         return demisto.getLastMirrorRun() or {}
