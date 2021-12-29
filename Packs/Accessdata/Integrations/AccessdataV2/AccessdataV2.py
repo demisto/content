@@ -136,7 +136,7 @@ def _label_search_term(client, caseid, keyword, filter_json):
     if not case:
         raise ValueError(f"Failed to gather case with id ({caseid}).")
 
-    case.evidence.search_keyword([keyword], filter=filter_json)
+    case.evidence.search_keyword([keyword], filter=loads(filter_json))
     return CommandResults(
         outputs_prefix="Accessdata.Case.Label",
         outputs={
