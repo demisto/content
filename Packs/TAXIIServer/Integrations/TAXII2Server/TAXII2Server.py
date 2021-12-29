@@ -296,7 +296,7 @@ class TAXII2Server:
                 response['more'] = True
                 response['next'] = str(limit + offset)
 
-        content_range = f'items {offset}-{offset + limit}/{total}'
+        content_range = f'items {offset}-{len(objects)}/{total}'
         return response, first_added, last_added, content_range
 
     def get_objects(self, collection_id: str, added_after, limit: int, offset: int, types: list) -> tuple:
@@ -349,7 +349,7 @@ class TAXII2Server:
                 response['more'] = True
                 response['next'] = str(limit + offset)
 
-        content_range = f'items {offset}-{offset + limit}/{total}'
+        content_range = f'items {offset}-{len(limited_iocs)}/{total}'
 
         return response, first_added, last_added, content_range
 
@@ -447,10 +447,11 @@ def handle_long_running_error(error: str):
 
 
 def handle_response(status_code: int, content: dict, date_added_first: str = None, date_added_last: str = None,
-                    content_type: str = None, content_range: str = None) -> Response:
+                    content_type: str = None, content_range: str = None, query_time: str = None ) -> Response:
     """
     Create an HTTP taxii response from a taxii message.
     Args:
+        query_time: time query took
         content_range: Content-Range response header
         status_code: status code to return
         content_type: response content type to return
@@ -474,6 +475,8 @@ def handle_response(status_code: int, content: dict, date_added_first: str = Non
         headers['X-TAXII-Date-Added-Last'] = date_added_last
     if SERVER.version == TAXII_VER_2_0 and content_range:
         headers['Content-Range'] = content_range
+    if query_time:
+        headers['X-TAXII2SERVER-Query-Time-Secs'] = query_time
 
     return make_response(jsonify(content), status_code, headers)
 
@@ -928,6 +931,7 @@ def taxii2_manifest(api_root: str, collection_id: str) -> Response:
         `here <https://docs.oasis-open.org/cti/taxii/v2.1/os/taxii-v2.1-os.html#_Toc31107538>`__.
     """
     try:
+        created = datetime.now(timezone.utc)
         added_after, offset, limit, types = parse_manifest_and_object_args()
 
         manifest_response, date_added_first, date_added_last, content_range = SERVER.get_manifest(
@@ -948,13 +952,16 @@ def taxii2_manifest(api_root: str, collection_id: str) -> Response:
         handle_long_running_error(error)
         return handle_response(HTTP_400_BAD_REQUEST, {'title': 'Manifest Request Error',
                                                       'description': error})
+    query_time = (datetime.now(timezone.utc) - created).total_seconds()
+    query_time_str = "{:.3f}".format(query_time)
 
     return handle_response(
         status_code=HTTP_200_OK,
         content=manifest_response,
         date_added_first=date_added_first,
         date_added_last=date_added_last,
-        content_range=content_range
+        content_range=content_range,
+        query_time=query_time_str
     )
 
 
@@ -974,6 +981,7 @@ def taxii2_objects(api_root: str, collection_id: str) -> Response:
         `here <https://docs.oasis-open.org/cti/taxii/v2.1/csprd01/taxii-v2.1-csprd01.html#_Toc532988038>`__.
     """
     try:
+        created = datetime.now(timezone.utc)
         added_after, offset, limit, types = parse_manifest_and_object_args()
 
         objects_response, date_added_first, date_added_last, content_range = SERVER.get_objects(
@@ -995,13 +1003,17 @@ def taxii2_objects(api_root: str, collection_id: str) -> Response:
         return handle_response(HTTP_400_BAD_REQUEST, {'title': 'Objects Request Error',
                                                       'description': error})
 
+    query_time = (datetime.now(timezone.utc) - created).total_seconds()
+    query_time_str = "{:.3f}".format(query_time)
+
     return handle_response(
         status_code=HTTP_200_OK,
         content=objects_response,
         date_added_first=date_added_first,
         date_added_last=date_added_last,
         content_type=MEDIA_TYPE_STIX_V20 if SERVER.version == TAXII_VER_2_0 else MEDIA_TYPE_TAXII_V21,
-        content_range=content_range
+        content_range=content_range,
+        query_time=query_time_str
     )
 
 

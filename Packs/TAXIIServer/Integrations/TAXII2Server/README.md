@@ -71,3 +71,59 @@ For more information, visit [TAXII2 Documentation](https://docs.oasis-open.org/c
 - Filtering objects by ID or version not allowed.
 - POST and DELETE objects is not allowed. Can not add or delete indicators using TAXII2 Server. 
 
+
+## How UUIDs work in TAXII2 XSOAR
+
+---
+### STIX Cyber Objects (SCO)
+All STIX SCOs UUIDs follow [STIX 2.1 guidelines](https://docs.oasis-open.org/cti/stix/v2.1/os/stix-v2.1-os.html#_64yvzeku5a5c) and use UUID5 with STIX unique namespace 
+(`00abedb4-aa42-466c-9c01-fed23315a9b7`). This is used so all SCOs created have persistent UUID across all producers.
+
+### STIX Domain Objects (SDO)
+Unlike SCOs STIX 2.1 specs for SDOs require a UUID4. While this solution works if the UUID is part of the DB
+it is not the case in XSOAR. If the SDO already has a unique UUID stored it will use it, if it will generate a unique and **persistent** UUID using the following method.
+
+A general UUID5 is created using the NameSpace_URL as follows:
+
+`PAWN_UUID = uuid.uuid5(uuid.NAMESPACE_URL, 'https://www.paloaltonetworks.com')`
+
+The generated UUID is then used to create a unique UUID5 per customer:
+
+`UNIQUE_UUID = uuid.uuid5(PAWN_UUID, <UniqueCostumerString>)`
+
+we then use this UUID as a base `namespace` to generate UUIDs for SDOs following STIX 2.1 specs. Using this method
+we create unique and persistent UUIDs per customer.
+
+## Cortex XSOAR TIM Extension Fields
+
+---
+When selected in the integration settings (XSOAR Extension Fields) the TAXII 2 integration will generate an extension object and an extension attribute that holds XSOAR additinal
+TIM fields (System generated and custom). A general example of these two related objects will look as followed:
+```JSON
+{
+  "id": "extension-definition--<UUID>",
+  "type": "extension-definition",
+  "spec_version": "2.1",
+  "name": "XSOAR TIM <XSOAR Type>",
+  "description": "This schema adds TIM data to the object",
+  "created": "<creation date>",
+  "modified": "<modification date>",
+  "created_by_ref": "identity--<UUID of creator>",
+  "schema": "https://github.com/demisto/content/tree/master/Packs/TAXIIServer/doc_files/XSOAR_indicator_schema.jso",
+  "version": "1.0",
+  "extension_types": ["property-extension"]
+},
+{
+    "type": "ipv4-addr",
+    "spec_version": "2.1",
+    "id": "ipv4-addr--2f689bf9-0ff2-545f-aa61-e495eb8cecc7",
+    "value": "8.8.8.8",
+    "extensions":{
+        "extension-definition--<UUID>": {
+           "Extension_type": "property_extension",
+           "Field_1": "Value1",
+           "Field_2": "Value2",
+           "Field_3": "Value3"
+        }
+    }
+}
