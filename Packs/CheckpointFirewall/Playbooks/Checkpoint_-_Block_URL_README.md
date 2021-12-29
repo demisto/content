@@ -16,9 +16,10 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 ### Commands
 * checkpoint-application-site-add
 * checkpoint-login-and-get-session-id
-* checkpoint-application-site-category-add
-* checkpoint-application-site-category-get
 * checkpoint-logout
+* checkpoint-application-site-category-get
+* checkpoint-application-site-update
+* checkpoint-application-site-category-add
 
 ## Playbook Inputs
 ---
@@ -31,6 +32,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | URL_application_site_category | URL category object name.  The category to add URL into. | Suspicious | Required |
 | checkpoint_error_handling | In case one of the actions for publish/install policy fails due to issues on the Checkpoint side, This input will determine whether the playbook will continue or stop for manual review. Also, in case of Continue the session id will logout and all changes will discard.<br/>Values can be "Continue" or "Stop".<br/>The default value will be "Stop". | Stop | Required |
 | block_URL_error_handling | In case one of the actions for block URL playbook fails due to issues on the Checkpoint side, This input will determine whether the playbook will continue or stop for manual review. Also, in case of Continue the session id will logout and all changes will discard.<br/>Values can be "Continue" or "Stop".<br/>The default value will be "Stop". | Stop | Required |
+| application_site_name | Define the Application Site Name. Default: Bad_URLs. | Bad_URLs | Required |
 
 ## Playbook Outputs
 ---
@@ -38,4 +40,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Checkpoint - Block URL](../doc_files/Checkpoint_-_Block_URL.png)
+![Checkpoint - Block URL](Insert the link to your image here)

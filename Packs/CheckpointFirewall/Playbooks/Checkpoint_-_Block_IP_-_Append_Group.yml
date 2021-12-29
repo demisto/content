@@ -106,7 +106,7 @@ tasks:
       {
         "position": {
           "x": 840,
-          "y": 2870
+          "y": 3010
         }
       }
     note: false
@@ -282,7 +282,7 @@ tasks:
       {
         "position": {
           "x": 220,
-          "y": 1560
+          "y": 1700
         }
       }
     note: false
@@ -322,7 +322,7 @@ tasks:
       {
         "position": {
           "x": 220,
-          "y": 1910
+          "y": 2050
         }
       }
     note: false
@@ -356,7 +356,7 @@ tasks:
       {
         "position": {
           "x": 220,
-          "y": 2670
+          "y": 2810
         }
       }
     note: false
@@ -391,7 +391,7 @@ tasks:
       {
         "position": {
           "x": -90,
-          "y": 1420
+          "y": 1560
         }
       }
     note: false
@@ -429,7 +429,7 @@ tasks:
       {
         "position": {
           "x": 220,
-          "y": 1240
+          "y": 1380
         }
       }
     note: false
@@ -506,7 +506,7 @@ tasks:
       {
         "position": {
           "x": -330,
-          "y": 1090
+          "y": 1230
         }
       }
     note: false
@@ -580,7 +580,7 @@ tasks:
       {
         "position": {
           "x": -90,
-          "y": 2080
+          "y": 2220
         }
       }
     note: false
@@ -606,7 +606,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "30"
+      - "35"
     scriptarguments:
       auto_logout:
         simple: "False"
@@ -683,7 +683,7 @@ tasks:
       {
         "position": {
           "x": -330,
-          "y": 2260
+          "y": 2400
         }
       }
     note: false
@@ -713,7 +713,7 @@ tasks:
       {
         "position": {
           "x": -330,
-          "y": 2490
+          "y": 2630
         }
       }
     note: false
@@ -775,7 +775,7 @@ tasks:
       '#default#':
       - "29"
       "No":
-      - "30"
+      - "35"
     separatecontext: false
     conditions:
     - label: "No"
@@ -842,10 +842,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: fdaf35df-5949-4168-8afd-4d82f0e8c2bc
+    taskid: ae2ec864-c837-4aaa-8382-c2567c48a10a
     type: regular
     task:
-      id: fdaf35df-5949-4168-8afd-4d82f0e8c2bc
+      id: ae2ec864-c837-4aaa-8382-c2567c48a10a
       version: -1
       name: Append network object
       description: Updates the specified group object.
@@ -873,13 +873,20 @@ tasks:
                   simple: inputs.IP
                 iscontext: true
           accessor: name
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: currentMembers
+                iscontext: true
     continueonerror: true
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 220,
-          "y": 1060
+          "y": 1220
         }
       }
     note: false
@@ -1027,7 +1034,61 @@ tasks:
       {
         "position": {
           "x": 220,
-          "y": 1730
+          "y": 1870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: 6bdf7795-cd12-4ece-825f-701cc62b6457
+    type: regular
+    task:
+      id: 6bdf7795-cd12-4ece-825f-701cc62b6457
+      version: -1
+      name: Get current group members
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      key:
+        simple: currentMembers
+      value:
+        complex:
+          root: CheckPoint.Group
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: CheckPoint.Group.name
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.group_name
+                iscontext: true
+              ignorecase: true
+          accessor: members.member-name
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 1040
         }
       }
     note: false
@@ -1042,7 +1103,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3835,
+        "height": 3975,
         "width": 1550,
         "x": -330,
         "y": -900

@@ -2,9 +2,9 @@ id: Checkpoint - Block URL
 version: -1
 name: Checkpoint - Block URL
 description: "This playbook blocks URLs using Checkpoint Firewall through Custom URL\
-  \ Categories.\nThe playbook checks whether the input URL category already exists\
+  \ Categories.\nThe playbook checks whether the input URL category already exists,\
   \ and if the URLs are a part of this category. Otherwise, it will create the category,\
-  \ adds the URL, and publish the configuration. Please remember to assign the site category to a policy rule!"
+  \ block the URLs, and publish the configuration."
 starttaskid: '0'
 tasks:
   '0':
@@ -22,7 +22,13 @@ tasks:
       '#none#':
       - '5'
     separatecontext: false
-    view: "{\n  \"position\": {\n    \"x\": 540,\n    \"y\": -950\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": -1280
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -69,8 +75,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 270,
-          "y": 1210
+          "x": 460,
+          "y": 1200
         }
       }
     note: false
@@ -96,7 +102,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 540,
+          "x": 690,
           "y": 1760
         }
       }
@@ -109,10 +115,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '3':
     id: '3'
-    taskid: 0bd83706-906f-4bc5-87d5-c78e1e7f5f87
+    taskid: 8dd5b070-41b9-4aef-880a-18b964ee5f16
     type: regular
     task:
-      id: 0bd83706-906f-4bc5-87d5-c78e1e7f5f87
+      id: 8dd5b070-41b9-4aef-880a-18b964ee5f16
       version: -1
       name: Checkpoint application site append URLs
       description: Added the URL as  application site in Checkpoint firewall.
@@ -127,7 +133,7 @@ tasks:
       identifier:
         simple: ${inputs.URL}
       name:
-        simple: XSOAR-${inputs.URL}
+        simple: ${inputs.application_site_name}
       primary_category:
         simple: ${inputs.URL_application_site_category}
       session_id:
@@ -137,8 +143,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 270,
-          "y": 640
+          "x": 460,
+          "y": 250
         }
       }
     note: false
@@ -168,8 +174,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 270,
-          "y": -655
+          "x": 460,
+          "y": -955
         }
       }
     note: false
@@ -181,13 +187,13 @@ tasks:
     isautoswitchedtoquietmode: false
   '5':
     id: '5'
-    taskid: f3c018de-8713-4953-8caa-f3081378a497
+    taskid: d3b456a4-5da6-441d-897a-5dbe043fbf67
     type: condition
     task:
-      id: f3c018de-8713-4953-8caa-f3081378a497
+      id: d3b456a4-5da6-441d-897a-5dbe043fbf67
       version: -1
       name: Is Checkpoint firewall enabled?
-      description: Check if Checkpoint instance is availble
+      description: Is Checkpoint firewall enabled
       type: condition
       iscommand: false
       brand: ''
@@ -216,7 +222,13 @@ tasks:
                         simple: CheckPointFirewall,CheckPointFirewall_v2
                 accessor: brand
             iscontext: true
-    view: "{\n  \"position\": {\n    \"x\": 540,\n    \"y\": -825\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": -1140
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -247,8 +259,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 270,
-          "y": 1590
+          "x": 460,
+          "y": 1580
         }
       }
     note: false
@@ -260,19 +272,19 @@ tasks:
     isautoswitchedtoquietmode: false
   '7':
     id: '7'
-    taskid: c496f3a1-0302-4487-820e-b59488ba2ac1
+    taskid: 0a45e01c-feb1-4ecb-8016-bc262d9f3410
     type: condition
     task:
-      id: c496f3a1-0302-4487-820e-b59488ba2ac1
+      id: 0a45e01c-feb1-4ecb-8016-bc262d9f3410
       version: -1
-      name: Was the application site URL added?
+      name: Was the application site URL created?
       description: Validate if URL was added to application site successfully.
       type: condition
       iscommand: false
       brand: ''
     nexttasks:
       '#default#':
-      - "8"
+      - "19"
       yes:
       - '1'
     separatecontext: false
@@ -289,8 +301,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 270,
-          "y": 830
+          "x": 460,
+          "y": 420
         }
       }
     note: false
@@ -324,8 +336,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -10,
-          "y": 1025
+          "x": 180,
+          "y": 985
         }
       }
     note: false
@@ -368,8 +380,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 270,
-          "y": -320
+          "x": 460,
+          "y": -610
         }
       }
     note: false
@@ -418,8 +430,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -10,
-          "y": 460
+          "x": 180,
+          "y": 80
         }
       }
     note: false
@@ -455,8 +467,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -10,
-          "y": -140
+          "x": 180,
+          "y": -430
         }
       }
     note: false
@@ -493,8 +505,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 270,
-          "y": -490
+          "x": 460,
+          "y": -780
         }
       }
     note: false
@@ -528,8 +540,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -320,
-          "y": 220
+          "x": -130,
+          "y": -70
         }
       }
     note: false
@@ -568,8 +580,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -10,
-          "y": 20
+          "x": 180,
+          "y": -270
         }
       }
     note: false
@@ -612,8 +624,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -320,
-          "y": 1210
+          "x": -130,
+          "y": 1200
         }
       }
     note: false
@@ -642,8 +654,93 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -320,
-          "y": 1420
+          "x": -130,
+          "y": 1410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 0221271d-ff45-4d8f-8931-50d480c548a5
+    type: regular
+    task:
+      id: 0221271d-ff45-4d8f-8931-50d480c548a5
+      version: -1
+      name: 'Update Existing Application Site '
+      description: "Edits an existing application using the object name or UID. \n\
+        It's impossible to set 'application-signature' when the application was initialized\
+        \ with 'url-list' and vice-versa."
+      script: '|||checkpoint-application-site-update'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      identifier:
+        simple: ${inputs.application_site_name}
+      primary_category:
+        simple: ${inputs.URL_application_site_category}
+      session_id:
+        simple: ${CheckPoint.Login.session-id}
+      url_list_to_add:
+        simple: ${inputs.URL}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 180,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 492d875a-b6d8-4b18-85b0-12477df2de55
+    type: condition
+    task:
+      id: 492d875a-b6d8-4b18-85b0-12477df2de55
+      version: -1
+      name: Was the application site URL append?
+      description: Validate if URL was added to application site successfully.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: CheckPoint
+                accessor: ApplicationSite
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 180,
+          "y": 750
         }
       }
     note: false
@@ -655,13 +752,15 @@ tasks:
     isautoswitchedtoquietmode: false
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "20_8_#default#": 0.68
+    },
     "paper": {
       "dimensions": {
-        "height": 2775,
-        "width": 1240,
-        "x": -320,
-        "y": -950
+        "height": 3105,
+        "width": 1200,
+        "x": -130,
+        "y": -1280
       }
     }
   }
@@ -709,6 +808,12 @@ inputs:
     \ continue or stop for manual review. Also, in case of Continue the session id\
     \ will logout and all changes will discard.\nValues can be \"Continue\" or \"\
     Stop\".\nThe default value will be \"Stop\"."
+  playbookInputQuery:
+- key: application_site_name
+  value:
+    simple: Bad_URLs
+  required: true
+  description: 'Define the Application Site Name. Default: Bad_URLs.'
   playbookInputQuery:
 outputs: []
 fromversion: 5.0.0
