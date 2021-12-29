@@ -2766,10 +2766,7 @@
         },
         {
             "playbookID": "Send Investigation Summary Reports - Test",
-            "integrations": "EWS Mail Sender",
-            "instance_names": [
-                "ews_mail_sender_labdemisto"
-            ],
+            "integrations": "Gmail",
             "fromversion": "4.5.0",
             "memory_threshold": 100
         },
