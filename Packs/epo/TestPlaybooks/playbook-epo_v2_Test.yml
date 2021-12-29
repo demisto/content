@@ -1,14 +1,16 @@
 id: McAfee ePO v2 Test
-version: -1
+version: 31
+vcShouldKeepItemLegacyProdMachine: false
 name: McAfee ePO v2 Test
+description: This is a test playbook it runs as part of the build process
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 79d44974-43db-4ede-8c90-70f312a85320
+    taskid: e619e238-98e9-4f14-803d-1749a9f88231
     type: start
     task:
-      id: 79d44974-43db-4ede-8c90-70f312a85320
+      id: e619e238-98e9-4f14-803d-1749a9f88231
       version: -1
       name: ""
       iscommand: false
@@ -34,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 3ca10283-edc1-4f7e-8449-a32f89d1aa4a
+    taskid: 42406dd3-85a4-419d-8664-bbf39f9a88f4
     type: regular
     task:
-      id: 3ca10283-edc1-4f7e-8449-a32f89d1aa4a
+      id: 42406dd3-85a4-419d-8664-bbf39f9a88f4
       version: -1
       name: DeleteContext
       script: DeleteContext
@@ -67,10 +69,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: d25bcb22-e6f4-4c92-8b75-c30678b90b99
+    taskid: 895c5a67-2d82-4867-82e3-16f4095adf0b
     type: regular
     task:
-      id: d25bcb22-e6f4-4c92-8b75-c30678b90b99
+      id: 895c5a67-2d82-4867-82e3-16f4095adf0b
       version: -1
       name: epo-help
       script: McAfee ePO v2|||epo-help
@@ -97,10 +99,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 9f7e5454-67ea-41da-8313-6bd3b4679d8e
+    taskid: 8fb5eef1-beb8-4b1c-81a7-13090fdc44cf
     type: regular
     task:
-      id: 9f7e5454-67ea-41da-8313-6bd3b4679d8e
+      id: 8fb5eef1-beb8-4b1c-81a7-13090fdc44cf
       version: -1
       name: epo-get-latest-dat
       script: McAfee ePO v2|||epo-get-latest-dat
@@ -127,10 +129,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 0abadf91-b397-421f-8442-0bdf08d91eae
+    taskid: 86b2868b-9d6c-4fff-84d6-3c375d0fada9
     type: condition
     task:
-      id: 0abadf91-b397-421f-8442-0bdf08d91eae
+      id: 86b2868b-9d6c-4fff-84d6-3c375d0fada9
       version: -1
       name: Verify Outputs
       type: condition
@@ -164,10 +166,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: cf61bed3-6263-4682-8e30-595d5c3589b2
+    taskid: 2a2c05fa-1129-42b0-8bb5-4818bc07810e
     type: regular
     task:
-      id: cf61bed3-6263-4682-8e30-595d5c3589b2
+      id: 2a2c05fa-1129-42b0-8bb5-4818bc07810e
       version: -1
       name: epo-get-current-dat
       script: McAfee ePO v2|||epo-get-current-dat
@@ -194,10 +196,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: d0a177b6-0471-4412-81a8-1b133b737fc1
+    taskid: 9766fa9e-5e7e-4619-8c1b-1b966d2b9da3
     type: condition
     task:
-      id: d0a177b6-0471-4412-81a8-1b133b737fc1
+      id: 9766fa9e-5e7e-4619-8c1b-1b966d2b9da3
       version: -1
       name: Verify Outputs
       type: condition
@@ -231,10 +233,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 7c57e19f-a9c6-43c2-8870-45684f68cf3a
+    taskid: 36a96a69-5846-456e-89c6-d5ae978c556b
     type: regular
     task:
-      id: 7c57e19f-a9c6-43c2-8870-45684f68cf3a
+      id: 36a96a69-5846-456e-89c6-d5ae978c556b
       version: -1
       name: epo-update-client-dat
       script: McAfee ePO v2|||epo-update-client-dat
@@ -264,10 +266,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 52dd59b5-7f33-41e1-826c-29fb16c84dd3
+    taskid: b4e9c9a5-4a18-4bd4-8b73-f9467e264785
     type: regular
     task:
-      id: 52dd59b5-7f33-41e1-826c-29fb16c84dd3
+      id: b4e9c9a5-4a18-4bd4-8b73-f9467e264785
       version: -1
       name: epo-update-repository
       script: McAfee ePO v2|||epo-update-repository
@@ -294,10 +296,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: cb0d50e0-c04d-455b-8a9e-ab49b6a2d94b
+    taskid: 74b7256f-970c-4675-8c44-e60cac08fa90
     type: regular
     task:
-      id: cb0d50e0-c04d-455b-8a9e-ab49b6a2d94b
+      id: 74b7256f-970c-4675-8c44-e60cac08fa90
       version: -1
       name: epo-get-system-tree-group
       script: McAfee ePO v2|||epo-get-system-tree-group
@@ -324,10 +326,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: fae9fe1e-7984-4b97-8b3c-a452679610d5
+    taskid: 9a8f7300-ee5b-4d76-8504-47954b2f2e7e
     type: condition
     task:
-      id: fae9fe1e-7984-4b97-8b3c-a452679610d5
+      id: 9a8f7300-ee5b-4d76-8504-47954b2f2e7e
       version: -1
       name: Verify Outputs
       type: condition
@@ -366,10 +368,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: ed8685fe-d5b4-4577-807c-66f0840db747
+    taskid: 549066d3-810b-44f6-8c1d-99f8c9773b95
     type: regular
     task:
-      id: ed8685fe-d5b4-4577-807c-66f0840db747
+      id: 549066d3-810b-44f6-8c1d-99f8c9773b95
       version: -1
       name: epo-find-systems
       script: McAfee ePO v2|||epo-find-systems
@@ -401,10 +403,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: bfb99082-9b39-4d16-8624-80aa25f2973b
+    taskid: 9f870eab-2070-4397-8bef-d9a493680725
     type: condition
     task:
-      id: bfb99082-9b39-4d16-8624-80aa25f2973b
+      id: 9f870eab-2070-4397-8bef-d9a493680725
       version: -1
       name: Verify Outputs
       type: condition
@@ -443,10 +445,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 890cee9b-ff3c-4a8b-8b86-a91eac895801
+    taskid: b4e7d42c-8e9e-416a-8d06-7ef71ab90055
     type: regular
     task:
-      id: 890cee9b-ff3c-4a8b-8b86-a91eac895801
+      id: b4e7d42c-8e9e-416a-8d06-7ef71ab90055
       version: -1
       name: epo-find-system
       script: McAfee ePO v2|||epo-find-system
@@ -476,10 +478,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 3fd3380c-e884-4f53-88a7-37939711fc83
+    taskid: 0ba2eca9-6aab-472c-88a9-df1740a777ec
     type: condition
     task:
-      id: 3fd3380c-e884-4f53-88a7-37939711fc83
+      id: 0ba2eca9-6aab-472c-88a9-df1740a777ec
       version: -1
       name: Verify Outputs
       type: condition
@@ -487,7 +489,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "16"
+      - "17"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -516,45 +518,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "16":
-    id: "16"
-    taskid: 3d52dee9-690a-4e59-83d1-f09ac18563cf
-    type: regular
-    task:
-      id: 3d52dee9-690a-4e59-83d1-f09ac18563cf
-      version: -1
-      name: epo-wakeup-agent
-      script: McAfee ePO v2|||epo-wakeup-agent
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "17"
-    scriptarguments:
-      names:
-        simple: 192.168.1.102
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 3200
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 08df27e0-47b5-46de-8d67-8a8aff9715ac
+    taskid: 61357009-4f49-4d02-8b2a-2e35c6398c73
     type: regular
     task:
-      id: 08df27e0-47b5-46de-8d67-8a8aff9715ac
+      id: 61357009-4f49-4d02-8b2a-2e35c6398c73
       version: -1
       name: epo-apply-tag
       script: McAfee ePO v2|||epo-apply-tag
@@ -586,10 +555,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: b241022a-511a-44c8-8638-a6bf7338f5e9
+    taskid: 2409d91b-2cbe-41e1-83ac-eba77c6df96b
     type: regular
     task:
-      id: b241022a-511a-44c8-8638-a6bf7338f5e9
+      id: 2409d91b-2cbe-41e1-83ac-eba77c6df96b
       version: -1
       name: epo-clear-tag
       script: McAfee ePO v2|||epo-clear-tag
@@ -621,10 +590,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 1a56f417-e0e9-4a86-831d-a13cda6f8772
+    taskid: 95e3650d-8b04-4bc5-8eb9-c0eeb4c513e9
     type: regular
     task:
-      id: 1a56f417-e0e9-4a86-831d-a13cda6f8772
+      id: 95e3650d-8b04-4bc5-8eb9-c0eeb4c513e9
       version: -1
       name: epo-list-tag
       script: McAfee ePO v2|||epo-list-tag
@@ -651,10 +620,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: bc80b324-f631-4972-8e77-cb84eb719a7c
+    taskid: 525b16c8-3703-4be9-827b-862b8beaa2b9
     type: condition
     task:
-      id: bc80b324-f631-4972-8e77-cb84eb719a7c
+      id: 525b16c8-3703-4be9-827b-862b8beaa2b9
       version: -1
       name: Verify Outputs
       type: condition
@@ -698,10 +667,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 9368ec44-3e91-416d-8ca9-bb95a23babd2
+    taskid: 90c0d65a-36af-44b8-8365-a9cfade6e2a8
     type: regular
     task:
-      id: 9368ec44-3e91-416d-8ca9-bb95a23babd2
+      id: 90c0d65a-36af-44b8-8365-a9cfade6e2a8
       version: -1
       name: epo-get-tables
       script: McAfee ePO v2|||epo-get-tables
@@ -728,10 +697,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: 4d0d5151-1e93-4c2c-8967-22d30fbcb6d4
+    taskid: 3a53a48f-2728-447f-8292-63923f7efebd
     type: regular
     task:
-      id: 4d0d5151-1e93-4c2c-8967-22d30fbcb6d4
+      id: 3a53a48f-2728-447f-8292-63923f7efebd
       version: -1
       name: epo-query-table
       script: McAfee ePO v2|||epo-query-table
@@ -761,10 +730,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: 0676fd03-0f88-41d6-8737-79de2154c781
+    taskid: 9d615439-404f-4c29-8de0-ecc6ad5be8a1
     type: condition
     task:
-      id: 0676fd03-0f88-41d6-8737-79de2154c781
+      id: 9d615439-404f-4c29-8de0-ecc6ad5be8a1
       version: -1
       name: Verify Outputs
       type: condition
@@ -798,10 +767,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 60a0c470-6634-4c1e-8156-ccf281b86e33
+    taskid: 98e1ee06-2b09-49bf-8ea7-263b24e5a349
     type: regular
     task:
-      id: 60a0c470-6634-4c1e-8156-ccf281b86e33
+      id: 98e1ee06-2b09-49bf-8ea7-263b24e5a349
       version: -1
       name: epo-get-version
       script: McAfee ePO v2|||epo-get-version
@@ -828,10 +797,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 22d1b861-60d7-4221-8155-47a3f2c761c1
+    taskid: 66fe8a76-7a3b-4f24-8a6b-da13933b2842
     type: condition
     task:
-      id: 22d1b861-60d7-4221-8155-47a3f2c761c1
+      id: 66fe8a76-7a3b-4f24-8a6b-da13933b2842
       version: -1
       name: Verify Outputs
       type: condition
@@ -865,10 +834,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: afb5eba6-f1c4-4748-8a90-55e146903fd0
+    taskid: 11dd1c50-a550-4b72-8446-0d7bc3383ba9
     type: regular
     task:
-      id: afb5eba6-f1c4-4748-8a90-55e146903fd0
+      id: 11dd1c50-a550-4b72-8446-0d7bc3383ba9
       version: -1
       name: epo-move-system
       script: McAfee ePO v2|||epo-move-system
@@ -900,10 +869,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: 57f68b23-a304-4af9-88a6-ca267505b9a1
+    taskid: 5884c473-a5d6-4e87-8353-5250884285ce
     type: regular
     task:
-      id: 57f68b23-a304-4af9-88a6-ca267505b9a1
+      id: 5884c473-a5d6-4e87-8353-5250884285ce
       version: -1
       name: epo-advanced-command
       script: McAfee ePO v2|||epo-advanced-command
@@ -935,10 +904,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: a1358650-d543-4d82-85a3-f34fc08fc700
+    taskid: 61c4df99-e3dc-44a4-80e8-467ed8eed571
     type: regular
     task:
-      id: a1358650-d543-4d82-85a3-f34fc08fc700
+      id: 61c4df99-e3dc-44a4-80e8-467ed8eed571
       version: -1
       name: epo-find-client-task
       script: McAfee ePO v2|||epo-find-client-task
@@ -965,10 +934,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: b2e2f69e-5e8f-4326-8fee-3dd2201296cf
+    taskid: 5af810c8-9203-4856-8423-6392e7e73997
     type: condition
     task:
-      id: b2e2f69e-5e8f-4326-8fee-3dd2201296cf
+      id: 5af810c8-9203-4856-8423-6392e7e73997
       version: -1
       name: Verify Outputs
       type: condition
@@ -1027,10 +996,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: c81ad2e3-f963-468b-8655-27e5fa175f46
+    taskid: 2cef389c-b54b-439e-811f-bd8b3f06bf2d
     type: regular
     task:
-      id: c81ad2e3-f963-468b-8655-27e5fa175f46
+      id: 2cef389c-b54b-439e-811f-bd8b3f06bf2d
       version: -1
       name: epo-find-policy
       script: McAfee ePO v2|||epo-find-policy
@@ -1057,10 +1026,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: 9b328ed6-71c9-42e8-8f49-30380cbacb34
+    taskid: 1bd7dc4f-2835-4358-82ba-dc3d8fc4b919
     type: regular
     task:
-      id: 9b328ed6-71c9-42e8-8f49-30380cbacb34
+      id: 1bd7dc4f-2835-4358-82ba-dc3d8fc4b919
       version: -1
       name: epo-assign-policy-to-group
       script: McAfee ePO v2|||epo-assign-policy-to-group
@@ -1094,10 +1063,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: 4d3ef53e-ed75-4fd1-88b1-f146bb492e36
+    taskid: 8d500cca-baef-4f67-8ce9-223cccd7bb9a
     type: regular
     task:
-      id: 4d3ef53e-ed75-4fd1-88b1-f146bb492e36
+      id: 8d500cca-baef-4f67-8ce9-223cccd7bb9a
       version: -1
       name: epo-assign-policy-to-system
       script: McAfee ePO v2|||epo-assign-policy-to-system
@@ -1133,22 +1102,22 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: 5e056d03-78fb-4825-8450-467fee13b9f0
+    taskid: 1a3397e1-53e8-4d79-8657-c3a0d74c15ef
     type: regular
     task:
-      id: 5e056d03-78fb-4825-8450-467fee13b9f0
+      id: 1a3397e1-53e8-4d79-8657-c3a0d74c15ef
       version: -1
       name: epo-list-issues
       script: McAfee ePO v2|||epo-list-issues
       type: regular
       iscommand: true
-      brand: ""
+      brand: McAfee ePO v2
     nexttasks:
       '#none#':
       - "34"
     scriptarguments:
       id:
-        simple: "10"
+        simple: "12"
     separatecontext: false
     view: |-
       {
@@ -1166,10 +1135,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: 275e1477-d6c3-45f8-8122-fb72fadb9dbf
+    taskid: 5ff1bfdf-a8d0-46dc-861e-7d751587b099
     type: condition
     task:
-      id: 275e1477-d6c3-45f8-8122-fb72fadb9dbf
+      id: 5ff1bfdf-a8d0-46dc-861e-7d751587b099
       version: -1
       name: Verify Outputs
       type: condition
@@ -1177,7 +1146,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "36"
+      - "41"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1280,10 +1249,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: ba6215ce-8d63-4863-8465-3dcaaa695b8f
+    taskid: 4a209686-7aeb-45f0-88ee-062596ada601
     type: regular
     task:
-      id: ba6215ce-8d63-4863-8465-3dcaaa695b8f
+      id: 4a209686-7aeb-45f0-88ee-062596ada601
       version: -1
       name: epo-delete-issue
       script: McAfee ePO v2|||epo-delete-issue
@@ -1313,10 +1282,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: 78bc8972-5460-4c87-85ce-7caeac38d1a3
+    taskid: 443fb305-2b27-465f-89f5-590c9a5edd5c
     type: regular
     task:
-      id: 78bc8972-5460-4c87-85ce-7caeac38d1a3
+      id: 443fb305-2b27-465f-89f5-590c9a5edd5c
       version: -1
       name: epo-create-issue
       script: McAfee ePO v2|||epo-create-issue
@@ -1358,10 +1327,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: 7413a528-1bba-4a06-86a1-3d9415718e80
+    taskid: 0d82c7fe-adc1-44dc-8f72-daf586faa198
     type: condition
     task:
-      id: 7413a528-1bba-4a06-86a1-3d9415718e80
+      id: 0d82c7fe-adc1-44dc-8f72-daf586faa198
       version: -1
       name: Verify Outputs
       type: condition
@@ -1405,16 +1374,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: 45c89f3a-1364-49d9-8c48-f0b397e61df4
+    taskid: b1deb52b-a72b-4243-88db-647c832ae286
     type: regular
     task:
-      id: 45c89f3a-1364-49d9-8c48-f0b397e61df4
+      id: b1deb52b-a72b-4243-88db-647c832ae286
       version: -1
       name: epo-update-issue
       script: McAfee ePO v2|||epo-update-issue
       type: regular
       iscommand: true
-      brand: ""
+      brand: McAfee ePO v2
     nexttasks:
       '#none#':
       - "35"
@@ -1442,16 +1411,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "39":
     id: "39"
-    taskid: 725c3067-b23b-4611-859d-82fca587faa1
+    taskid: 1adca739-1b90-46ba-885f-735d1923efbb
     type: title
     task:
-      id: 725c3067-b23b-4611-859d-82fca587faa1
+      id: 1adca739-1b90-46ba-885f-735d1923efbb
       version: -1
       name: Test Done
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     view: |-
       {
@@ -1469,10 +1437,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "40":
     id: "40"
-    taskid: fed210be-5d37-439b-8ee3-c7857f2464dc
+    taskid: c7526a0f-755a-4c81-8c0d-0d19b046bdca
     type: regular
     task:
-      id: fed210be-5d37-439b-8ee3-c7857f2464dc
+      id: c7526a0f-755a-4c81-8c0d-0d19b046bdca
       version: -1
       name: epo-move-system (return back)
       script: McAfee ePO v2|||epo-move-system
@@ -1502,13 +1470,52 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: 7c15d105-e2e7-4959-804f-2eace01f3078
+    type: regular
+    task:
+      id: 7c15d105-e2e7-4959-804f-2eace01f3078
+      version: -1
+      name: DeleteContext
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 730,
+          "y": 6885
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 7815,
-        "width": 850,
+        "width": 1070,
         "x": 40,
         "y": 50
       }
