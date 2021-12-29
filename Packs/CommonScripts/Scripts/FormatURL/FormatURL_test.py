@@ -1,3 +1,4 @@
+from typing import List, Union
 from urllib.parse import urlparse
 
 import pytest
@@ -99,7 +100,12 @@ FORMAT_URL_ADDITIONAL_TEST_CASES = [
     ('ftps://foo.bar/baz%27%28%29%2A%2B,', "ftps://foo.bar/baz'()*+,"),
 ]
 
-FORMAT_URL_TEST_DATA = NOT_FORMAT_TO_FORMAT + PROOF_POINT_REDIRECTS + FORMAT_URL_ADDITIONAL_TEST_CASES
+REDIRECT_NON_ATP_PROOF_POINT = [('https://www.test.test.com/test.html?redirectURL=https://evxil.com/malz.html',
+                                 ['https://www.test.test.com/test.html?redirectURL=https://evxil.com/malz.html',
+                                  'https://evxil.com/malz.html'])]
+
+FORMAT_URL_TEST_DATA = NOT_FORMAT_TO_FORMAT + PROOF_POINT_REDIRECTS + FORMAT_URL_ADDITIONAL_TEST_CASES + \
+                       REDIRECT_NON_ATP_PROOF_POINT
 
 
 class TestFormatURL:
@@ -119,7 +125,7 @@ class TestFormatURL:
         assert replace_protocol(non_formatted_url) == expected
 
     @pytest.mark.parametrize('url_, expected', FORMAT_URL_TEST_DATA)
-    def test_format_url(self, url_, expected):
+    def test_format_url(self, url_: str, expected: Union[List[str], str]):
         """
         Given:
         - URL.
@@ -131,7 +137,9 @@ class TestFormatURL:
         - Ensure URL is formatted as expected
         """
         from FormatURL import format_urls
-        assert format_urls([url_]).outputs == [expected]
+        if not isinstance(expected, list):
+            expected = [expected]
+        assert format_urls([url_])[0]['Contents'] == expected
 
     @pytest.mark.parametrize('url_, expected', [
         ('https://urldefense.proofpoint.com/v2/url?u=http-3A__links.mkt3337.com_ctt-3Fkn-3D3-26ms-3DMzQ3OTg3MDQS1-26r'
@@ -277,10 +285,9 @@ class TestFormatURL:
         - Ensure URL are formatted as expected.
         """
         from FormatURL import main
-        import FormatURL
         import demistomock as demisto
         mocker.patch.object(demisto, 'args', return_value={'input': f'{TEST_URL_HTTP}'})
-        mock_results = mocker.patch.object(FormatURL, 'return_results')
+        mock_results = mocker.patch.object(demisto, 'results')
         main()
         result_ = mock_results.call_args.args[0]
-        assert result_.outputs == [TEST_URL_HTTP]
+        assert result_['Contents'] == [TEST_URL_HTTP]

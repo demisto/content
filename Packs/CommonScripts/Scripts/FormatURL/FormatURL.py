@@ -97,6 +97,40 @@ def replace_protocol(url_: str) -> str:
     return url_
 
 
+def search_for_redirect_url_in_first_query_parameter(parse_results: ParseResult) -> Optional[str]:
+    """
+    Returns a redirect URL if finds it under the assumption:
+    1) The redirect URL is in first query parameter value.
+    2) The value starts with http.
+
+    If both terms exists, returns the value of the first parameter, else returns None.
+    Args:
+        parse_results (Str): Parse results of a non formatted URL.
+
+    Returns:
+        (Optional[str]): Redirected URL if satisfies above condition, None otherwise.
+    """
+    if not parse_results.query:
+        return None
+    # parse_results.query has a structure of <param1>=<param1-value>&<param2>=<param2-value>...
+    # if there are no query params, then parse_results.query is ''.
+    query_parameters: List[str] = parse_results.query.split('&')
+    # Having at least one query parameter means that the len is at least 2, because first cell is empty given above
+    # mentioned structure of <param1>=<param1-value>&<param2>=<param2-value>...
+    if query_parameters:
+        # First query parameter is of structure <param1>=<param1-value>
+        first_query_parameter: List[str] = query_parameters[0].split('=')
+        # Validation of unexpected split behaviour
+        if not len(first_query_parameter) == 2:
+            demisto.error(f'Unexpected parse of query parameter: {query_parameters[0]}: Parse: {first_query_parameter}')
+            return None
+        first_query_parameter_value: str = first_query_parameter[1]
+        # Redirect URL according to the given assumption
+        if first_query_parameter_value.startswith('http'):
+            return first_query_parameter_value
+    return None
+
+
 def format_urls(non_formatted_urls: List[str]) -> List[Dict]:
     """
     Formats a single URL.
@@ -107,8 +141,9 @@ def format_urls(non_formatted_urls: List[str]) -> List[Dict]:
         (Set[str]): Formatted URL, with its expanded URL if such exists.
     """
 
-    def format_single_url(non_formatted_url) -> List[str]:
+    def format_single_url(non_formatted_url: str) -> List[str]:
         parse_results: ParseResult = urlparse(non_formatted_url)
+        additional_redirect_url: Optional[str] = None
         if re.match(ATP_REGEX, non_formatted_url):
             non_formatted_url = get_redirect_url_from_query(non_formatted_url, parse_results, 'url')
         elif match := PROOF_POINT_URL_REG.search(non_formatted_url):
@@ -119,18 +154,19 @@ def format_urls(non_formatted_urls: List[str]) -> List[Dict]:
                 non_formatted_url = get_redirect_url_proof_point_v2(non_formatted_url, parse_results)
             else:
                 non_formatted_url = get_redirect_url_from_query(non_formatted_url, parse_results, 'u')
+        else:
+            additional_redirect_url = search_for_redirect_url_in_first_query_parameter(parse_results)
         # Common handling for unescape and normalizing
         non_formatted_url = unquote(unescape(non_formatted_url.replace('[.]', '.')))
         formatted_url = replace_protocol(non_formatted_url)
-        return formatted_url
+        return [formatted_url, additional_redirect_url] if additional_redirect_url else [formatted_url]
 
     formatted_urls_groups = [format_single_url(url_) for url_ in non_formatted_urls]
     return [{
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
-        'Contents': [urls]
-    }  for urls in formatted_urls_groups]
-
+        'Contents': urls
+    } for urls in formatted_urls_groups]
 
 
 def main():
