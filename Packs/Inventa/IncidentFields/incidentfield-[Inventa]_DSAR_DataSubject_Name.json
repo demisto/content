@@ -7,6 +7,7 @@
     "cliName": "inventadsardatasubjectname",
     "closeForm": false,
     "content": true,
+    "description": "Name of a Data Subject",
     "editForm": true,
     "group": 0,
     "hidden": false,

@@ -109,7 +109,7 @@
         ]
     },
     "inventa-get-dsar-transactions": {
-        "transactions": "None"
+        "transactions": [{}]
     },
     "inventa-get-dsar-files": {
         "files": [

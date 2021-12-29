@@ -7,7 +7,7 @@
     "cliName": "inventanationalid",
     "closeForm": false,
     "content": true,
-    "description": "National ID for the PII",
+    "description": "National ID for the PII. Can be used as a constraint",
     "editForm": true,
     "group": 0,
     "hidden": false,

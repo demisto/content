@@ -21,7 +21,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Use the Inventa integration to generate DSAR reports within Inventa instance and retrieve DSAR data for the XSOAR
+description: Use the Inventa integration to generate DSAR reports within Inventa instance
+  and retrieve DSAR data for the XSOAR
 display: 1Touch.io's Inventa Connector
 name: Inventa
 script:
@@ -101,7 +102,8 @@ script:
     - description: ID of a DSAR ticket within Inventa
       name: ticket_id
       required: true
-    description: Retrieves list of databases and tables containing info about data subject
+    description: Retrieves list of databases and tables containing info about data
+      subject
     name: inventa-get-dsar-databases
     outputs:
     - contextPath: Inventa.DSAR.DataBases.databases
@@ -118,7 +120,7 @@ script:
       description: Name of a data subject
       type: String
     - contextPath: Inventa.DataSubject.email
-      description: Email address of a data subject 
+      description: Email address of a data subject
       type: String
   - arguments:
     - description: ID of a DSAR ticket within Inventa
@@ -191,6 +193,43 @@ script:
       description: ID of a data subject within Inventa
       type: String
   - arguments:
+    - description: National ID of a PII
+      name: national_id
+    - description: Passport Number of a PII
+      name: passport_number
+    - description: Driver's License of a PII
+      name: driver_license
+    - description: Tax ID of a PII
+      name: tax_id
+    - description: Credit Card Number of a PII
+      name: cc_number
+    - description: Given Name of a PII
+      name: given_name
+    - description: Surname of a PII
+      name: surname
+    - description: Full Name of a PII
+      name: full_name
+    - description: Vehicle Number of a PII
+      name: vehicle_number
+    - description: Phone Number of a PII
+      name: phone_number
+    - description: Birthday of a PII
+      name: birthday
+    - description: City of Resdence of a PII
+      name: city
+    - description: Street Address of a PII
+      name: street_address
+    - description: Inventa's ticket ID
+      name: ticket_id
+    - description: Inventa's Datasubject ID
+      name: datasubject_id
+    description: Validates incident's inputs
+    name: inventa-validate-incident-inputs
+    outputs:
+    - contextPath: Inventa.Incident.validated
+      description: Whether incident inputs are validated
+      type: Boolean
+  - arguments:
     - description: Reason for DSAR report
       name: reason
       required: true
@@ -203,7 +242,7 @@ script:
     - contextPath: Inventa.DataSubjects.Ticket.ticket_id
       description: ID of a DSAR ticket, created within Inventa
       type: String
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.9.9.25564
   runonce: false
   script: ''
   subtype: python3

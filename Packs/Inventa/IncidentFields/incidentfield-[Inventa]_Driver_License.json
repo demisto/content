@@ -7,7 +7,7 @@
     "cliName": "inventadriverlicense",
     "closeForm": false,
     "content": true,
-    "description": "Driver's license for the PII",
+    "description": "Driver's license for the PII. Can be used as a constraint.",
     "editForm": true,
     "group": 0,
     "hidden": false,

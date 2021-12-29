@@ -7,7 +7,7 @@
     "cliName": "inventacreditcardnumber",
     "closeForm": false,
     "content": true,
-    "description": "Credit Card number for the PII",
+    "description": "Credit Card number for the PII. Can be used as a constraint.",
     "editForm": true,
     "group": 0,
     "hidden": false,

@@ -12,8 +12,9 @@ you are implementing with your integration
 
 import json
 import io
+from pytest import raises
 # from __future__ import print_function
-from Inventa import main, Client, format_pii_entities, generate_datasubject_payload
+from Inventa import main, Client, format_pii_entities, generate_datasubject_payload, validate_incident_inputs_command
 # import pytest
 import demistomock as demisto
 # from CommonServerPython import entryTypes
@@ -55,6 +56,10 @@ mock_arguments_constraints = {
     "birthday": "TEST_BIRTHDAY",
     "city": "TEST_CITY",
     "street_address": "TEST_STREET_ADDRESS"
+}
+mock_arguments_constraints_fail = {
+    "given_name": "TEST_GIVEN_NAME",
+    "surname": "TEST_SURNAME"
 }
 mock_arguments_ticket = {
     "ticket_id": "TEST_TICKET_ID"
@@ -451,6 +456,55 @@ def test_get_dsar_dataassets_cmd(mocker):
         assert dataasset_1["name"] == dataasset_2["name"]
         assert dataasset_1["description"] == dataasset_2["description"]
         assert reasons_1 == reasons_2
+
+
+def test_validate_incident_inputs_cmd(mocker):
+    command_name = 'inventa-get-dsar-dataassets'
+    mocker_automate(mocker, command_name, [])
+
+    NATIONAL_ID = demisto.args().get("national_id", "")
+    PASSPORT_NUMBER = demisto.args().get("passport_number", "")
+    DRIVER_LICENSE = demisto.args().get("driver_license", "")
+    TAX_ID = demisto.args().get("tax_id", "")
+    CC_NUMBER = demisto.args().get("cc_number", "")
+    GIVEN_NAME = demisto.args().get("given_name", "")
+    SURNAME = demisto.args().get("surname", "")
+    FULL_NAME = demisto.args().get("full_name", "")
+    VEHICLE_NUMBER = demisto.args().get("vehicle_number", "")
+    PHONE_NUMBER = demisto.args().get("phone_number", "")
+    BIRTHDAY = demisto.args().get("birthday", "")
+    CITY = demisto.args().get("city", "")
+    STREET_ADDRESS = demisto.args().get("street_address", "")
+    TICKET_ID = demisto.args().get("ticket_id", "")
+    DATASUBJECT_ID = demisto.args().get("datasubject_id", "")
+
+    # test presence of constraints
+    constraints = [
+        TICKET_ID,
+        DATASUBJECT_ID,
+        NATIONAL_ID,
+        PASSPORT_NUMBER,
+        DRIVER_LICENSE,
+        TAX_ID,
+        CC_NUMBER,
+        (GIVEN_NAME and VEHICLE_NUMBER),
+        (GIVEN_NAME and PHONE_NUMBER),
+        (GIVEN_NAME and SURNAME and BIRTHDAY),
+        (GIVEN_NAME and SURNAME and CITY and STREET_ADDRESS),
+        (FULL_NAME and BIRTHDAY),
+        (FULL_NAME and CITY and STREET_ADDRESS)
+    ]
+
+    constraint_passed = False
+    for constraint in constraints:
+        if constraint:
+            constraint_passed = True
+            break
+
+    assert constraint_passed
+
+    with raises(Exception, match="Validation failed: constraints missing. Check incident's inputs."):
+        validate_incident_inputs_command(**mock_arguments_constraints_fail)
 
 
 def test_generate_datasubject_payload():

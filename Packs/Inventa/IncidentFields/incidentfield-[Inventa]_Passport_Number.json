@@ -7,7 +7,7 @@
     "cliName": "inventapassportnumber",
     "closeForm": false,
     "content": true,
-    "description": "Passport Number for the PII",
+    "description": "Passport Number for the PII. Can be used as a constraint",
     "editForm": true,
     "group": 0,
     "hidden": false,

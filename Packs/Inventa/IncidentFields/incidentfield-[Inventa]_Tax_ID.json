@@ -7,7 +7,7 @@
     "cliName": "inventataxid",
     "closeForm": false,
     "content": true,
-    "description": "Tax Id for the PII",
+    "description": "Tax Id for the PII. Can be used as a constraint",
     "editForm": true,
     "group": 0,
     "hidden": false,

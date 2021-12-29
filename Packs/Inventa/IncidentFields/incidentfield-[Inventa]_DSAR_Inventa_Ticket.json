@@ -7,6 +7,7 @@
     "cliName": "inventadsarinventaticket",
     "closeForm": false,
     "content": true,
+    "description": "ID of a DSAR ticket within Inventa",
     "editForm": true,
     "group": 0,
     "hidden": false,
@@ -22,7 +23,7 @@
     "threshold": 72,
     "type": "shortText",
     "unmapped": false,
-    "unsearchable": true,
+    "unsearchable": false,
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "6.0.0"

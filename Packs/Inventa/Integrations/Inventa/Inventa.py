@@ -16,6 +16,32 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 ''' CONSTANTS '''
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
+empty_file = {
+    "id": "",
+    "timestamp": "",
+    "name": "",
+    "size": "",
+    "path": "",
+    "url": "",
+    "entityTypes": ""
+}
+empty_transaction: Dict = {
+}
+empty_dataasset: Dict = {
+    "id": "",
+    "name": "",
+    "piis": "",
+    "reasonsOfProcessing": ""
+}
+empty_database: Dict = {
+    "id": "",
+    "name": "",
+    "database": "",
+    "entityTypes": ""
+}
+empty_pii: Dict = {
+    "entities": []
+}
 
 
 ''' CLIENT CLASS '''
@@ -114,9 +140,15 @@ class Client(BaseClient):
         return result
 
     def get_dsar(self, ticket_id: Any) -> Dict:
+        ticket_details = self.get_ticket(ticket_id)
+        demisto.debug(f"{ticket_details}")
+        datasubject_id = ticket_details.get("piiId", "")
+        demisto.debug(f"{datasubject_id}")
+
         return self._http_request(
             method="GET",
             url_suffix=f"/dsr/api/dsar-management/personal-data-usage/ticket/{ticket_id}",
+            # url_suffix=f"/pii/api/piis/{datasubject_id}/sources",
             return_empty_response=True,
             retries=5
         )
@@ -240,13 +272,14 @@ def get_dsar_transactions_command(client: Client, ticket_id: int) -> CommandResu
                               outputs_prefix="Inventa.Dsar.Transactions",
                               outputs_key_field="id")
     else:
-        return CommandResults(outputs={"transactions": "None"},
+        return CommandResults(outputs={"transactions": [empty_transaction]},
                               outputs_prefix="Inventa.Dsar.Transactions",
                               outputs_key_field="id")
 
 
 def get_dsar_files_command(client: Client, ticket_id: int) -> CommandResults:
     dsar = client.get_dsar(ticket_id)
+    demisto.debug(f"{dsar}")
     files = dsar.get("copiesUsageData", {}).get("files", [])
     demisto.debug(f"{files}")
     for file in files:
@@ -272,7 +305,7 @@ def get_dsar_files_command(client: Client, ticket_id: int) -> CommandResults:
                               outputs_key_field="id")
 
     else:
-        return CommandResults(outputs={"files": "None"},
+        return CommandResults(outputs={"files": [empty_file]},
                               outputs_prefix="Inventa.Dsar.Files",
                               outputs_key_field="id")
 
@@ -340,6 +373,63 @@ def get_dsar_dataassets_command(client: Client, ticket_id: int) -> CommandResult
         return CommandResults(outputs={"dataAssets": "None"},
                               outputs_prefix="Inventa.Dsar.DataAssets",
                               outputs_key_field="id")
+
+
+def validate_incident_inputs_command(**kwargs):
+    ticket_id = kwargs.get("ticket_id", "")
+    datasubject_id = kwargs.get("datasubject_id", "")
+    national_id = kwargs.get("national_id", "")
+    passport_number = kwargs.get("passport_number", "")
+    driver_license = kwargs.get("driver_license", "")
+    tax_id = kwargs.get("tax_id", "")
+    cc_number = kwargs.get("cc_number", "")
+    given_name = kwargs.get("given_name", "")
+    surname = kwargs.get("surname", "")
+    full_name = kwargs.get("full_name", "")
+    vehicle_number = kwargs.get("vehicle_number", "")
+    phone_number = kwargs.get("phone_number", "")
+    birthday = kwargs.get("birthday", "")
+    city = kwargs.get("city", "")
+    street_address = kwargs.get("street_address", "")
+
+    demisto.debug(f"{ticket_id}")
+    demisto.debug(f"{datasubject_id}")
+
+    constraints = [
+        national_id,
+        passport_number,
+        driver_license,
+        tax_id,
+        cc_number,
+        (given_name and vehicle_number),
+        (given_name and phone_number),
+        (given_name and surname and birthday),
+        (given_name and surname and city and street_address),
+        (full_name and birthday),
+        (full_name and city and street_address)
+    ]
+
+    constraints_validated = False
+    for constraint in constraints:
+        if constraint:
+            demisto.debug(f"{constraint}")
+            constraints_validated = True
+            break
+
+    ticket_validated = False
+    if ticket_id:
+        ticket_validated = True
+    datasubject_id_validated = False
+    if datasubject_id:
+        datasubject_id_validated = True
+
+    demisto.debug("CONSTRAINTS")
+    if constraints_validated or ticket_validated or datasubject_id_validated:
+        return CommandResults(outputs={"validated": True},
+                              outputs_prefix="Inventa.Incident",
+                              outputs_key_field="validated")
+    else:
+        raise Exception("Validation failed: constraints missing. Check incident's inputs.")
 
 
 def test_module(client: Client) -> str:
@@ -451,6 +541,9 @@ def main() -> None:
 
         elif demisto.command() == 'inventa-get-entities':
             return_results(get_entities_command(client))
+
+        elif demisto.command() == 'inventa-validate-incident-inputs':
+            return_results(validate_incident_inputs_command(**demisto.args()))
 
     # Log exceptions and return errors
     except Exception as e:

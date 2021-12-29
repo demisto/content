@@ -7,7 +7,7 @@
     "cliName": "inventafullname",
     "closeForm": false,
     "content": true,
-    "description": "Full Name for the PII",
+    "description": "Full Name for the PII.Used in [full_name + birthday] and [full_name + city + street_address] constraints",
     "editForm": true,
     "group": 0,
     "hidden": false,
