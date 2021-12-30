@@ -4361,7 +4361,9 @@
             "instance_names": [
                 "no_sync_long_timeout",
                 "ews_mail_sender_labdemisto"
-            ]
+            ],
+            "memory_threshold": 160,
+            "pid_threshold": 80
         },
         {
             "playbookID": "PCAP Search test",
