@@ -13,5 +13,11 @@
     "tags": [],
     "useCases": [],
     "keywords": [],
-    "githubUser": ["dannomayernotabot"]
+    "githubUser": [
+        "dannomayernotabot"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

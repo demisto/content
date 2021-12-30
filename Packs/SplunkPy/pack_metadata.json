@@ -44,5 +44,9 @@
         "Malware",
         "CommonTypes",
         "AccessInvestigation"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }
