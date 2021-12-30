@@ -40,7 +40,8 @@ You can choose to trust the Demisto App so your users can configure the App. Ins
 * You will see the `Demisto App` in the results page.
   ![Demisto App](doc_imgs/demisto-app-result.png)
 * Select the App and grant the App access as `Trusted`.
-* Proceed to the 'Authorization Flow In Cortex XSOAR' section to configure the OAuth 2.0 authorization in cortex XSOAR.
+* Add the Demisto app client ID `391797357217-pa6jda1554dbmlt3hbji2bivphl0j616.apps.googleusercontent.com` to the integration configuration 
+* Proceed to the 'Authorization Flow In Cortex XSOAR' section to configure the OAuth 2.0 authorization in Cortex XSOAR.
 
 Additional info available at: https://support.google.com/a/answer/7281227
 
@@ -58,7 +59,7 @@ Additional info available at: https://support.google.com/a/answer/7281227
   ![OAuth App](doc_imgs/oauth-app.png)
 * Make sure to [enable the Gmail API](https://console.developers.google.com/apis/api/gmail.googleapis.com/overview) if you haven't done so.
 * After you create the app, copy the *client id* of the app that you created to the integration configuration.
-* Proceed to the 'Authorization Flow In Cortex XSOAR' section to configure the OAuth 2.0 authorization in cortex XSOAR.
+* Proceed to the 'Authorization Flow In Cortex XSOAR' section to configure the OAuth 2.0 authorization in Cortex XSOAR.
 
 ### Authorization Flow In Cortex XSOAR
 1. Create and save an integration instance of the Gmail Single User integration. Do not fill in the *Auth Code* field, this will be obtained in the next steps.
