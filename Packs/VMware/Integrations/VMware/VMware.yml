@@ -281,7 +281,8 @@ script:
       name: limit
       required: false
       secret: false
-    - description: The page number from which to start the search. Must be used along with page_size.
+    - description: The page number from which to start the search. Must be used along
+        with page_size.
       isArray: false
       name: page
       required: false
@@ -594,8 +595,8 @@ script:
     - auto: PREDEFINED
       defaultValue: "False"
       name: as_template
-      description: Specifies whether or not the virtual machine should be marked
-        as a template.
+      description: Specifies whether or not the virtual machine should be marked as
+        a template.
       required: false
       isArray: false
       predefined:
@@ -607,8 +608,8 @@ script:
       isArray: false
     outputs: []
   - name: vmware-unregister-vm
-    description: Removes this virtual machine from the inventory without removing any
-      of the virtual machine's files on disk.
+    description: Removes this virtual machine from the inventory without removing
+      any of the virtual machine's files on disk.
     deprecated: false
     arguments:
     - name: uuid

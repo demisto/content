@@ -804,7 +804,7 @@ def main():  # pragma: no cover
     res = []
     si = None
     try:
-        demisto.debug('Command being called is ' + demisto.command())
+        # demisto.debug('Command being called is ' + demisto.command())
         si, vsphere_client = login(demisto.params())
 
         if demisto.command() == 'test-module':
@@ -856,7 +856,7 @@ def main():  # pragma: no cover
     try:
         logout(si)
     except Exception as ex:
-        demisto.error(traceback.format_exc())   # print the traceback
+        # demisto.error(traceback.format_exc())   # print the traceback
         res.append({  # type: ignore
             "Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": "Logout failed. " + str(ex)})
 
