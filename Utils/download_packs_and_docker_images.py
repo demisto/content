@@ -8,8 +8,8 @@
 import argparse
 import os
 import tempfile
-from os import path
 from zipfile import ZIP_DEFLATED, ZipFile
+from pathlib import Path
 
 import requests
 
@@ -72,7 +72,7 @@ def get_docker_images_with_tag(pack_names: dict, id_set_json: dict) -> set:
     return docker_images
 
 
-def get_pack_names(pack_display_names, id_set_json) -> dict:
+def get_pack_names(pack_display_names: list, id_set_json: dict) -> dict:
     """ Given pack_display_names try and parse it into a pack name as appears in content repo"""
     pack_names = dict()
     if 'Packs' not in id_set_json:
@@ -126,7 +126,7 @@ def download_and_save_docker_images(docker_images: set, output_path: str) -> Non
             print(f"\tDownloading docker image: {image}")
             image_pair = image.split(':')
             image_data = cli.images.pull(image_pair[0], image_pair[1])
-            image_file_name = path.join(temp_dir.name, path.basename(image) + '.tar')
+            image_file_name = os.path.join(temp_dir.name, os.path.basename(image) + '.tar')
             with open(image_file_name, 'wb') as f:
                 for chunk in image_data.save(named=True):
                     f.write(chunk)
@@ -170,13 +170,14 @@ def main():
     verify_ssl = not options.insecure
     id_set_json = load_bucket_id_set(verify_ssl)
     pack_names = get_pack_names(pack_display_names, id_set_json)
+    Path(output_path).mkdir(parents=True, exist_ok=True)
     if not options.skip_packs:
-        download_and_save_packs(pack_names, id_set_json, path.join(output_path, 'packs'), verify_ssl)
+        download_and_save_packs(pack_names, id_set_json, os.path.join(output_path, 'packs'), verify_ssl)
     else:
         print('Skipping packs.zip creation')
     docker_images = get_docker_images_with_tag(pack_names, id_set_json)
     if not options.skip_docker:
-        download_and_save_docker_images(docker_images, path.join(output_path, 'docker'))
+        download_and_save_docker_images(docker_images, os.path.join(output_path, 'docker'))
     else:
         print('Skipping dockers.zip creation')
 
