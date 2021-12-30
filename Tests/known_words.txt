@@ -5,3 +5,13 @@ firewalls
 IOCs
 Emails
 IncidentsPerFeed
+IPs
+CMD
+CVSS
+DNS
+Hostnames
+Src
+Srcs
+Subdomains
+Dsts
+Dst
