@@ -4366,6 +4366,20 @@
             "pid_threshold": 80
         },
         {
+            "playbookID": "Phishing v3 - DomainSquatting+EML+MaliciousIndicators - Test",
+            "fromversion": "6.1.0",
+            "timeout": 7000,
+            "integrations": [
+                "EWS Mail Sender",
+                "Demisto REST API"
+            ],
+            "instance_names": [
+                "ews_mail_sender_srtest02"
+            ],
+            "memory_threshold": 160,
+            "pid_threshold": 80
+        },
+        {
             "playbookID": "PCAP Search test",
             "fromversion": "5.0.0"
         },
