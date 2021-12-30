@@ -355,87 +355,233 @@ class Client(BaseClient):
 
         return response
 
-    def gcp_iam_service_account_create_request(self, project_name, service_account_id, display_name, description):
-        # TODO
+    def gcp_iam_service_account_create_request(self, project_name: str, service_account_id: str,
+                                               display_name: str = None, description: str = None):
+        """
+        Create a service account in project.
+        Args:
+            project_name (str): The name of the project associated with the service account.
+            service_account_id (str): The account ID that is used to generate the service account email address,
+                                   and a stable unique ID.
+            display_name (str): Human readable name for the created service account.
+            description (str): Human readable description for created the service account.
 
-        response = self._http_request('GET')
+        Returns:
+            dict: API response from GCP.
 
-        return response
+        """
+        body = remove_empty_elements({"accountId": service_account_id,
+                                      "serviceAccount":
+                                          {
+                                              "displayName": display_name,
+                                              "description": description
+                                          }
+                                      })
 
-    def gcp_iam_service_account_update_request(self, service_account_name, display_name, description):
-        # TODO
+        request = self.iam_service.projects().serviceAccounts().create(name=project_name, body=body)
 
-        response = self._http_request('GET')
-
-        return response
-
-    def gcp_iam_service_account_list_request(self, project_name, limit, page):
-        # TODO
-
-        response = self._http_request('GET')
-
-        return response
-
-    def gcp_iam_service_account_get_request(self, service_account_name):
-        # TODO
-
-        response = self._http_request('GET')
-
-        return response
-
-    def gcp_iam_service_account_enable_request(self, service_account_name):
-        # TODO
-
-        response = self._http_request('GET')
+        response = request.execute()
 
         return response
 
-    def gcp_iam_service_account_disable_request(self, service_account_name):
-        # TODO
+    def gcp_iam_service_account_update_request(self, service_account_name: str, fields_to_update: str,
+                                               display_name: str = None, description: str = None) -> dict:
+        """
+        Update service account.
+        Args:
+            service_account_name (str): The name of the service account to update.
+            fields_to_update (str): Comma-separated names of the fields to update.
+            display_name (str): Human readable name for the updated service account.
+            description (str): Human readable description for updated the service account.
 
-        response = self._http_request('GET')
+        Returns:
+            dict: API response from GCP.
 
-        return response
+        """
+        body = remove_empty_elements({
+            "serviceAccount":
+                {"displayName": display_name,
+                 "description": description
+                 },
+            "updateMask": fields_to_update
+        })
 
-    def gcp_iam_service_account_key_create_request(self, service_account_name):
-        # TODO
-
-        response = self._http_request('GET')
-
-        return response
-
-    def gcp_iam_service_account_key_list_request(self, service_account_name, limit, page):
-        # TODO
-
-        response = self._http_request('GET')
-
-        return response
-
-    def gcp_iam_service_account_key_get_request(self, key_name):
-        # TODO
-
-        response = self._http_request('GET')
-
-        return response
-
-    def gcp_iam_service_account_key_enable_request(self, key_name):
-        # TODO
-
-        response = self._http_request('GET')
+        request = self.iam_service.projects().serviceAccounts().patch(name=service_account_name, body=body)
+        response = request.execute()
 
         return response
 
-    def gcp_iam_service_account_key_disable_request(self, key_name):
-        # TODO
+    def gcp_iam_service_account_list_request(self, project_name: str, limit: int = None,
+                                             page_token: str = None) -> dict:
+        """
+        List service accounts in project.
+        Args:
+            project_name (str): The name of the project associated with the service accounts to retrieve.
+            limit (int): The number of results to retrieve.
+            page_token (str): Pagination token returned from a previous request.
 
-        response = self._http_request('GET')
+        Returns:
+            dict: API response from GCP.
+
+        """
+        params = assign_params(name=project_name, pageSize=limit, pageToken=page_token)
+
+        request = self.iam_service.projects().serviceAccounts().list(**params)
+        response = request.execute()
 
         return response
 
-    def gcp_iam_service_account_key_delete_request(self, key_name):
-        # TODO
+    def gcp_iam_service_account_get_request(self, service_account_name: str) -> dict:
+        """
+        Retrieve project service account information.
+        Args:
+            service_account_name (str): The name of service account to retrieve.
 
-        response = self._http_request('GET')
+        Returns:
+            dict: API response from GCP.
+
+        """
+        request = self.iam_service.projects().serviceAccounts().get(name=service_account_name)
+        response = request.execute()
+
+        return response
+
+    def gcp_iam_service_account_enable_request(self, service_account_name: str) -> dict:
+        """
+        Enable project service account.
+        Args:
+            service_account_name (str): The name of service account to enable.
+
+        Returns:
+            dict: API response from GCP.
+
+        """
+        request = self.iam_service.projects().serviceAccounts().enable(name=service_account_name)
+        response = request.execute()
+
+        return response
+
+    def gcp_iam_service_account_disable_request(self, service_account_name: str) -> dict:
+        """
+        Disable project service account.
+        Args:
+            service_account_name (str): The name of service account to disable.
+
+        Returns:
+            dict: API response from GCP.
+
+        """
+        request = self.iam_service.projects().serviceAccounts().disable(name=service_account_name)
+        response = request.execute()
+
+        return response
+
+    def gcp_iam_service_account_delete_request(self, service_account_name: str) -> dict:
+        """
+        Delete service account key.
+        Args:
+            service_account_name (str): The name of service account to delete.
+
+        Returns:
+            dict: API response from GCP.
+
+        """
+        request = self.iam_service.projects().serviceAccounts().delete(name=service_account_name)
+        response = request.execute()
+
+        return response
+
+    def gcp_iam_service_account_key_create_request(self, service_account_name: str, key_algorithm: str) -> dict:
+        """
+        Create a service account key.
+        Args:
+            service_account_name (str): The name of the service account associated with the key.
+            key_algorithm (str): The RSA key algorithm.
+
+        Returns:
+            dict: API response from GCP.
+
+        """
+        body = assign_params(keyAlgorithm=key_algorithm)
+
+        request = self.iam_service.projects().serviceAccounts().keys().create(name=service_account_name, body=body)
+        response = request.execute()
+
+        return response
+
+    def gcp_iam_service_account_key_list_request(self, service_account_name: str) -> dict:
+        """
+        List service accounts keys.
+        Args:
+            service_account_name (str): The name of the service account associated with the keys.
+
+        Returns:
+            dict: API response from GCP.
+
+        """
+
+        request = self.iam_service.projects().serviceAccounts().keys().list(name=service_account_name)
+        response = request.execute()
+
+        return response
+
+    def gcp_iam_service_account_key_get_request(self, key_name: str) -> dict:
+        """
+        Retrieve service account key information.
+        Args:
+            key_name (str): The resource name of the service account key to retrieve.
+
+        Returns:
+            dict: API response from GCP.
+
+        """
+        request = self.iam_service.projects().serviceAccounts().keys().get(name=key_name)
+        response = request.execute()
+
+        return response
+
+    def gcp_iam_service_account_key_enable_request(self, key_name: str) -> dict:
+        """
+        Enable service account key.
+        Args:
+            key_name (str): The resource name of the service account key to enable.
+
+        Returns:
+            dict: API response from GCP.
+
+        """
+        request = self.iam_service.projects().serviceAccounts().keys().enable(name=key_name)
+        response = request.execute()
+
+        return response
+
+    def gcp_iam_service_account_key_disable_request(self, key_name: str) -> dict:
+        """
+        Disable service account key.
+        Args:
+            key_name (str): The resource name of the service account key to disable.
+
+        Returns:
+            dict: API response from GCP.
+
+        """
+        request = self.iam_service.projects().serviceAccounts().keys().disable(name=key_name)
+        response = request.execute()
+
+        return response
+
+    def gcp_iam_service_account_key_delete_request(self, key_name: str) -> dict:
+        """
+        Delete service account key.
+        Args:
+            key_name (str): The resource name of the service account key to delete.
+
+        Returns:
+            dict: API response from GCP.
+
+        """
+        request = self.iam_service.projects().serviceAccounts().keys().delete(name=key_name)
+        response = request.execute()
 
         return response
 
@@ -724,6 +870,47 @@ def add_members_to_policy(role: str, iam_policy: list, members: list, command_na
                         f'If you wish to add a new policy, consider using the {command_name} command.')
 
     return iam_policy
+
+
+def generate_service_account_command_output(response: dict, output_key: str = None,
+                                            readable_header: str = 'Service account information:') -> CommandResults:
+    """
+    Generate command output for service account commands.
+    Args:
+        response (dict): API response from GCP.
+        output_key (str): Used to access to required data in the response.
+        readable_header (str): Readable message header for XSOAR war room.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+
+    """
+    if output_key:
+        outputs = copy.deepcopy(response.get(output_key, []))
+    else:
+        outputs = copy.deepcopy(response)
+
+    if not isinstance(outputs, list):
+        outputs = [outputs]
+
+    for output in outputs:
+        output["disabled"] = output.get("disabled", False)
+
+    readable_output = tableToMarkdown(readable_header,
+                                      outputs,
+                                      headers=["name", "displayName", "description", "projectId"],
+                                      headerTransform=pascalToSpace
+                                      )
+
+    command_results = CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='GCP.IAM.ServiceAccount',
+        outputs_key_field='name',
+        outputs=outputs,
+        raw_response=response
+    )
+
+    return command_results
 
 
 def gcp_iam_projects_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -1452,36 +1639,50 @@ def gcp_iam_group_membership_delete_command(client: Client, args: Dict[str, Any]
 
 
 def gcp_iam_service_account_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Create a service account in project.
+    Args:
+        client (Client): GCP API client.
+        args (dict): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+
+    """
     project_name = args.get('project_name')
     service_account_id = args.get('service_account_id')
     display_name = args.get('display_name')
     description = args.get('description')
 
+    if not 6 <= len(service_account_id) <= 30:
+        raise Exception('Service account ID length has to be between 6-30 characters.')
+
     response = client.gcp_iam_service_account_create_request(
         project_name, service_account_id, display_name, description)
-    command_results = CommandResults(
-        outputs_prefix='GCP.IAM',
-        outputs_key_field='',
-        outputs=response,
-        raw_response=response
-    )
 
-    return command_results
+    return generate_service_account_command_output(response)
 
 
 def gcp_iam_service_account_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Update service account.
+    Args:
+        client (Client): GCP API client.
+        args (dict): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+
+    """
     service_account_name = args.get('service_account_name')
     display_name = args.get('display_name')
     description = args.get('description')
+    fields_to_update = args.get('fields_to_update')
 
-    response = client.gcp_iam_service_account_update_request(service_account_name, display_name, description)
+    client.gcp_iam_service_account_update_request(service_account_name, fields_to_update, display_name, description)
     command_results = CommandResults(
-        outputs_prefix='GCP.IAM',
-        outputs_key_field='',
-        outputs=response,
-        raw_response=response
+        readable_output=f'Service account {service_account_name} updated successfully.'
     )
-
     return command_results
 
 
@@ -1515,72 +1716,185 @@ def get_pagination_request_result(limit: int, page: int, max_page_size: int, cli
     return client_request(limit=limit, page_token=page_token, **kwargs)
 
 
-def gcp_iam_service_account_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    project_name = args.get('project_name')
-    limit = arg_to_number(args.get('limit') or '50')
-    page = arg_to_number(args.get('page') or '1')
+def gcp_iam_service_accounts_get_command(client: Client, args: Dict[str, Any]) -> Union[CommandResults, list]:
+    """
+    List service accounts in project, or retrieve specific project service account information.
+    Args:
+        client (Client): GCP API client.
+        args (dict): Command arguments from XSOAR.
 
-    response = client.gcp_iam_service_account_list_request(project_name, limit, page)
-    command_results = CommandResults(
-        outputs_prefix='GCP.IAM',
-        outputs_key_field='',
-        outputs=response,
-        raw_response=response
-    )
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
 
-    return command_results
+    """
+    service_account_name = argToList(args.get('service_account_name'))
+
+    if service_account_name:  # Retrieve specific service accounts information,
+        command_results_list: List[CommandResults] = []
+        for account in service_account_name:
+            try:
+                response = client.gcp_iam_service_account_get_request(account)
+                command_results_list.append(generate_service_account_command_output(response))
+            except Exception as exception:
+                error = CommandResults(
+                    readable_output=f'An error occurred while retrieving {account}.\n {exception}'
+                )
+                command_results_list.append(error)
+
+        return command_results_list
+
+    else:  # List service accounts in project.
+        project_name = args.get('project_name')
+
+        if not project_name:
+            raise Exception('One of the arguments: ''service_account_name'' or ''project_name'' must be provided.')
+
+        limit = arg_to_number(args.get('limit') or '50')
+        page = arg_to_number(args.get('page') or '1')
+        max_limit = 100
+
+        validate_pagination_arguments(limit, page)
+        if limit > max_limit:
+            raise Exception("The limit argument is out of range. It must be between 1 and 100.")
+
+        readable_message = get_pagination_readable_message(header='Service Account List:', limit=limit, page=page)
+
+        if page > 1:
+            response = get_pagination_request_result(limit, page, max_limit,
+                                                     client.gcp_iam_service_account_list_request,
+                                                     project_name=project_name)
+
+        else:
+            response = client.gcp_iam_service_account_list_request(project_name=project_name, limit=limit)
+
+        return generate_service_account_command_output(response, output_key="accounts",
+                                                       readable_header=readable_message)
 
 
-def gcp_iam_service_account_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    service_account_name = args.get('service_account_name')
+def gcp_iam_service_account_enable_command(client: Client, args: Dict[str, Any]) -> list:
+    """
+    Enable project service account.
+    Args:
+        client (Client): GCP API client.
+        args (dict): Command arguments from XSOAR.
 
-    response = client.gcp_iam_service_account_get_request(service_account_name)
-    command_results = CommandResults(
-        outputs_prefix='GCP.IAM',
-        outputs_key_field='',
-        outputs=response,
-        raw_response=response
-    )
+    Returns:
+        list[CommandResults]: outputs, readable outputs and raw response for XSOAR.
 
-    return command_results
+    """
+    service_account_name = argToList(args.get('service_account_name'))
+    command_results_list: List[CommandResults] = []
 
+    for account in service_account_name:
+        try:
+            client.gcp_iam_service_account_enable_request(account)
+            command_results_list.append(CommandResults(
+                readable_output=f'Service account {account} updated successfully.'
+            ))
+        except Exception as exception:
+            error = CommandResults(
+                readable_output=f'An error occurred while trying to enable {account}.\n {exception}'
+            )
+            command_results_list.append(error)
 
-def gcp_iam_service_account_enable_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    service_account_name = args.get('service_account_name')
-
-    response = client.gcp_iam_service_account_enable_request(service_account_name)
-    command_results = CommandResults(
-        outputs_prefix='GCP.IAM',
-        outputs_key_field='',
-        outputs=response,
-        raw_response=response
-    )
-
-    return command_results
+    return command_results_list
 
 
-def gcp_iam_service_account_disable_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    service_account_name = args.get('service_account_name')
+def gcp_iam_service_account_disable_command(client: Client, args: Dict[str, Any]) -> list:
+    """
+    Disable project service account.
+    Args:
+        client (Client): GCP API client.
+        args (dict): Command arguments from XSOAR.
 
-    response = client.gcp_iam_service_account_disable_request(service_account_name)
-    command_results = CommandResults(
-        outputs_prefix='GCP.IAM',
-        outputs_key_field='',
-        outputs=response,
-        raw_response=response
-    )
+    Returns:
+        list[CommandResults]: outputs, readable outputs and raw response for XSOAR.
 
-    return command_results
+    """
+    service_account_name = argToList(args.get('service_account_name'))
+    command_results_list: List[CommandResults] = []
+
+    for account in service_account_name:
+        try:
+            client.gcp_iam_service_account_disable_request(account)
+            command_results_list.append(CommandResults(
+                readable_output=f'Service account {account} updated successfully.'
+            ))
+        except Exception as exception:
+            error = CommandResults(
+                readable_output=f'An error occurred while trying to disable {account}.\n {exception}'
+            )
+            command_results_list.append(error)
+
+    return command_results_list
 
 
 def gcp_iam_service_account_delete_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    service_account_name = args.get('service_account_name')
+    """
+    Delete service account key.
+    Args:
+        client (Client): GCP API client.
+        args (dict): Command arguments from XSOAR.
 
-    response = client.gcp_iam_service_account_delete_request(service_account_name)
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+
+    """
+    service_account_name = argToList(args.get('service_account_name'))
+    command_results_list: List[CommandResults] = []
+
+    for account in service_account_name:
+        try:
+            client.gcp_iam_service_account_delete_request(account)
+            command_results_list.append(CommandResults(
+                readable_output=f'Service account {account} deleted successfully.'
+            ))
+        except Exception as exception:
+            error = CommandResults(
+                readable_output=f'An error occurred while trying to deleted {account}.\n {exception}'
+            )
+            command_results_list.append(error)
+
+    return command_results_list
+
+
+def generate_service_account_key_command_output(response: dict, output_key: str = None,
+                                                readable_header: str = 'Service account key information:') -> CommandResults:
+    """
+    Generate command output for service account key commands.
+    Args:
+        response (dict): API response from GCP.
+        output_key (str): Used to access to required data in the response.
+        readable_header (str): Readable message header for XSOAR war room.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+
+    """
+    if output_key:
+        outputs = copy.deepcopy(response.get(output_key, []))
+    else:
+        outputs = copy.deepcopy(response)
+
+    if not isinstance(outputs, list):
+        outputs = [outputs]
+
+    for output in outputs:
+        output["disabled"] = output.get("disabled", False)
+
+    outputs = update_time_format(outputs, ['validAfterTime', 'validBeforeTime'])
+
+    readable_output = tableToMarkdown(readable_header,
+                                      outputs,
+                                      headers=["name", "validAfterTime", "validBeforeTime", "disabled", "keyType"],
+                                      headerTransform=pascalToSpace
+                                      )
+
     command_results = CommandResults(
-        outputs_prefix='GCP.IAM',
-        outputs_key_field='',
-        outputs=response,
+        readable_output=readable_output,
+        outputs_prefix='GCP.IAM.ServiceAccountKey',
+        outputs_key_field='name',
+        outputs=outputs,
         raw_response=response
     )
 
@@ -1588,109 +1902,173 @@ def gcp_iam_service_account_delete_command(client: Client, args: Dict[str, Any])
 
 
 def gcp_iam_service_account_key_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Create a service account key.
+    Args:
+        client (Client): GCP API client.
+        args (dict): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+
+    """
     service_account_name = args.get('service_account_name')
+    key_algorithm = args.get('key_algorithm')
 
-    response = client.gcp_iam_service_account_key_create_request(service_account_name)
-    command_results = CommandResults(
-        outputs_prefix='GCP.IAM',
-        outputs_key_field='',
-        outputs=response,
-        raw_response=response
-    )
-
-    return command_results
+    response = client.gcp_iam_service_account_key_create_request(service_account_name, key_algorithm)
+    return generate_service_account_key_command_output(response)
 
 
-def gcp_iam_service_account_key_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    service_account_name = args.get('service_account_name')
-    limit = arg_to_number(args.get('limit') or '50')
-    page = arg_to_number(args.get('page') or '1')
+def gcp_iam_service_account_keys_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    List service accounts keys, or retrieve service account key information.
+    Args:
+        client (Client): GCP API client.
+        args (dict): Command arguments from XSOAR.
 
-    response = client.gcp_iam_service_account_key_list_request(service_account_name, limit, page)
-    command_results = CommandResults(
-        outputs_prefix='GCP.IAM',
-        outputs_key_field='',
-        outputs=response,
-        raw_response=response
-    )
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
 
-    return command_results
-
-
-def gcp_iam_service_account_key_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
     key_name = args.get('key_name')
 
-    response = client.gcp_iam_service_account_key_get_request(key_name)
-    command_results = CommandResults(
-        outputs_prefix='GCP.IAM',
-        outputs_key_field='',
-        outputs=response,
-        raw_response=response
-    )
+    if key_name:  # Retrieve specific service account key information.
+        response = client.gcp_iam_service_account_key_get_request(key_name)
+        return generate_service_account_key_command_output(response)
 
-    return command_results
+    else:
+
+        service_account_name = args.get('service_account_name')
+        if not service_account_name:
+            raise Exception('One of the arguments: ''service_account_name'' or ''key_name'' must be provided.')
+
+        limit = arg_to_number(args.get('limit') or '50')
+        page = arg_to_number(args.get('page') or '1')
+        validate_pagination_arguments(limit, page)
+        response = client.gcp_iam_service_account_key_list_request(service_account_name)
+
+        readable_message = get_pagination_readable_message(header='Service Account Keys List:', limit=limit, page=page)
+        start = (page - 1) * limit
+        end = start + limit
+
+        outputs = []
+
+        if response.get('keys') and len(response.get('keys')) >= start:
+            min_index = min(len(response.get('keys')), end)
+            for key in response.get('keys')[start:min_index]:
+                outputs.append(dict(key))
+
+        for output in outputs:
+            output["disabled"] = output.get("disabled", False)
+
+        outputs = update_time_format(outputs, ['validAfterTime', 'validBeforeTime'])
+
+        readable_output = tableToMarkdown(readable_message,
+                                          outputs,
+                                          headers=["name", "validAfterTime", "validBeforeTime", "disabled", "keyType"],
+                                          headerTransform=pascalToSpace
+                                          )
+
+        command_results = CommandResults(
+            readable_output=readable_output,
+            outputs_prefix='GCP.IAM.ServiceAccountKey',
+            outputs_key_field='name',
+            outputs=outputs,
+            raw_response=response
+        )
+
+        return command_results
 
 
-def gcp_iam_service_account_key_enable_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    key_name = args.get('key_name')
+def gcp_iam_service_account_key_enable_command(client: Client, args: Dict[str, Any]) -> list:
+    """
+    Enable service account key.
+    Args:
+        client (Client): GCP API client.
+        args (dict): Command arguments from XSOAR.
 
-    response = client.gcp_iam_service_account_key_enable_request(key_name)
-    command_results = CommandResults(
-        outputs_prefix='GCP.IAM',
-        outputs_key_field='',
-        outputs=response,
-        raw_response=response
-    )
+    Returns:
+        list[CommandResults]: outputs, readable outputs and raw response for XSOAR.
 
-    return command_results
+    """
+    key_name = argToList(args.get('key_name'))
+    command_results_list: List[CommandResults] = []
 
+    for key in key_name:
+        try:
+            client.gcp_iam_service_account_key_enable_request(key)
+            command_results_list.append(CommandResults(
+                readable_output=f'Service account key {key} updated successfully.'
+            ))
+        except Exception as exception:
+            error = CommandResults(
+                readable_output=f'An error occurred while trying to enable {key}.\n {exception}'
+            )
+            command_results_list.append(error)
 
-def gcp_iam_service_account_key_disable_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    key_name = args.get('key_name')
-
-    response = client.gcp_iam_service_account_key_disable_request(key_name)
-    command_results = CommandResults(
-        outputs_prefix='GCP.IAM',
-        outputs_key_field='',
-        outputs=response,
-        raw_response=response
-    )
-
-    return command_results
+    return command_results_list
 
 
-def gcp_iam_service_account_key_delete_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    key_name = args.get('key_name')
+def gcp_iam_service_account_key_disable_command(client: Client, args: Dict[str, Any]) -> list:
+    """
+    Disable service account key.
+    Args:
+        client (Client): GCP API client.
+        args (dict): Command arguments from XSOAR.
 
-    response = client.gcp_iam_service_account_key_delete_request(key_name)
-    command_results = CommandResults(
-        outputs_prefix='GCP.IAM',
-        outputs_key_field='',
-        outputs=response,
-        raw_response=response
-    )
+    Returns:
+        list[CommandResults]: outputs, readable outputs and raw response for XSOAR.
 
-    return command_results
+    """
+    key_name = argToList(args.get('key_name'))
+    command_results_list: List[CommandResults] = []
 
+    for key in key_name:
+        try:
+            client.gcp_iam_service_account_key_disable_request(key)
+            command_results_list.append(CommandResults(
+                readable_output=f'Service account key {key} updated successfully.'
+            ))
+        except Exception as exception:
+            error = CommandResults(
+                readable_output=f'An error occurred while trying to disable {key}.\n {exception}'
+            )
+            command_results_list.append(error)
+
+    return command_results_list
+
+
+def gcp_iam_service_account_key_delete_command(client: Client, args: Dict[str, Any]) -> list:
+    """
+    Delete service account key.
+    Args:
+        client (Client): GCP API client.
+        args (dict): Command arguments from XSOAR.
+
+    Returns:
+        list[CommandResults]: outputs, readable outputs and raw response for XSOAR.
+
+    """
+    key_name = argToList(args.get('key_name'))
+    command_results_list: List[CommandResults] = []
+
+    for key in key_name:
+        try:
+            client.gcp_iam_service_account_key_delete_request(key)
+            command_results_list.append(CommandResults(
+                readable_output=f'Service account key {key} deleted successfully.'
+            ))
+        except Exception as exception:
+            error = CommandResults(
+                readable_output=f'An error occurred while trying to delete {key}.\n {exception}'
+            )
+            command_results_list.append(error)
+
+    return command_results_list
 
 def gcp_iam_organization_role_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    organization_name = args.get('organization_name')
-    role_id = args.get('role_id')
-    description = args.get('description')
-    title = args.get('title')
-    permission = args.get('permission')
-
-    response = client.gcp_iam_organization_role_create_request(
-        organization_name, role_id, description, title, permission)
-    command_results = CommandResults(
-        outputs_prefix='GCP.IAM',
-        outputs_key_field='',
-        outputs=response,
-        raw_response=response
-    )
-
-    return command_results
-
+    # TODO
+    pass
 
 def gcp_iam_organization_role_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     role_name = args.get('role_name')

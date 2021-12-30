@@ -282,3 +282,326 @@ def test_gcp_iam_grantable_role_list_command(client):
     assert result.outputs_prefix == 'GCP.IAM.Roles'
     assert result.outputs[0].get('name') == "roles/accessapproval.approver"
     assert result.outputs[0].get('title') == "Access Approval Approver"
+
+
+def test_gcp_iam_service_account_create_command(client):
+    """
+    Create a service account in project.
+    Given:
+     - User has provided valid credentials.
+    When:
+     - gcp-iam-service-account-create called.
+    Then:
+     - Ensure number of items is correct.
+     - Ensure outputs prefix is correct.
+     - Ensure a sample value from the API matches what is generated in the context.
+    """
+    mock_response = load_mock_response('service_account/service_account_create.json')
+    client.gcp_iam_service_account_create_request = Mock(return_value=mock_response)
+
+    project_name = "projects/project-id-1"
+    service_account_id = "poc-test12"
+    display_name = "user-1-display-name"
+    description = "my poc service"
+
+    command_args = dict(project_name=project_name, service_account_id=service_account_id,
+                        display_name=display_name, description=description)
+
+    result = GCP_IAM.gcp_iam_service_account_create_command(client, command_args)
+
+    assert len(result.outputs) == 1
+    assert len(result.outputs[0]) == 9
+    assert result.outputs_prefix == 'GCP.IAM.ServiceAccount'
+    assert result.outputs[0].get('description') == description
+
+
+def test_gcp_iam_service_account_update_command(client):
+    """
+    Update service account.
+    Given:
+     - User has provided valid credentials.
+    When:
+     - gcp-iam-service-account-update called.
+    Then:
+     - Ensure results readable output.
+    """
+    client.gcp_iam_service_account_update_request = Mock(return_value={})
+
+    service_account_name = "projects/project-id-1/serviceAccounts/poc-test12@project-name-1.iam.gserviceaccount.com"
+    service_account_id = "poc-test12"
+    display_name = "user-1-display-name"
+    description = "my poc service"
+
+    command_args = dict(service_account_name=service_account_name, service_account_id=service_account_id,
+                        display_name=display_name, description=description)
+
+    result = GCP_IAM.gcp_iam_service_account_update_command(client, command_args)
+
+    assert result.readable_output == f'Service account {service_account_name} updated successfully.'
+
+
+def test_gcp_iam_service_account_list_command(client):
+    """
+    List service accounts in project.
+    Given:
+     - User has provided valid credentials.
+    When:
+     - gcp-iam-service-account-update called.
+    Then:
+     - Ensure number of items is correct.
+     - Ensure outputs prefix is correct.
+     - Ensure a sample value from the API matches what is generated in the context.
+    """
+    mock_response = load_mock_response('service_account/service_account_list.json')
+    client.gcp_iam_service_account_list_request = Mock(return_value=mock_response)
+
+    project_name = "projects/project-id-1"
+
+    command_args = dict(project_name=project_name)
+
+    result = GCP_IAM.gcp_iam_service_accounts_get_command(client, command_args)
+
+    assert len(result.outputs) == 2
+    assert len(result.outputs[0]) == 8
+    assert result.outputs_prefix == 'GCP.IAM.ServiceAccount'
+    assert result.outputs[0].get('projectId') == "project-id-1"
+
+
+def test_gcp_iam_service_account_get_command(client):
+    """
+    Retrieve project service account information.
+    Given:
+     - User has provided valid credentials.
+    When:
+     - gcp-iam-service-account-get called.
+    Then:
+     - Ensure number of items is correct.
+     - Ensure outputs prefix is correct.
+     - Ensure a sample value from the API matches what is generated in the context.
+    """
+    mock_response = load_mock_response('service_account/service_account_get.json')
+    client.gcp_iam_service_account_get_request = Mock(return_value=mock_response)
+
+    service_account_name = "projects/project-id-1/serviceAccounts/poc-test12@project-name-1.iam.gserviceaccount.com"
+
+    command_args = dict(service_account_name=service_account_name)
+
+    result = GCP_IAM.gcp_iam_service_accounts_get_command(client, command_args)
+
+    assert len(result) == 1
+    assert len(result[0].outputs) == 1
+    assert len(result[0].outputs[0]) == 9
+    assert result[0].outputs_prefix == 'GCP.IAM.ServiceAccount'
+    assert result[0].outputs[0].get('projectId') == 'rich-agency-334609'
+
+
+def test_gcp_iam_service_account_enable_command(client):
+    """
+    Enable project service account.
+    Given:
+     - User has provided valid credentials.
+    When:
+     - gcp-iam-service-account-enable called.
+    Then:
+     - Ensure results readable output.
+    """
+    client.gcp_iam_service_account_enable_request = Mock(return_value={})
+
+    service_account_name = "projects/project-id-1/serviceAccounts/poc-test12@project-name-1.iam.gserviceaccount.com"
+
+    command_args = dict(service_account_name=service_account_name)
+
+    result = GCP_IAM.gcp_iam_service_account_enable_command(client, command_args)
+
+    assert result[0].readable_output == f'Service account {service_account_name} updated successfully.'
+
+
+def test_gcp_iam_service_account_disable_command(client):
+    """
+    Disable project service account.
+    Given:
+     - User has provided valid credentials.
+    When:
+     - gcp-iam-service-account-disable called.
+    Then:
+     - Ensure results readable output.
+    """
+    client.gcp_iam_service_account_disable_request = Mock(return_value={})
+
+    service_account_name = "projects/project-id-1/serviceAccounts/poc-test12@project-name-1.iam.gserviceaccount.com"
+
+    command_args = dict(service_account_name=service_account_name)
+
+    result = GCP_IAM.gcp_iam_service_account_disable_command(client, command_args)
+
+    assert result[0].readable_output == f'Service account {service_account_name} updated successfully.'
+
+
+def test_gcp_iam_service_account_delete_command(client):
+    """
+    Delete project service account.
+    Given:
+     - User has provided valid credentials.
+    When:
+     - gcp-iam-service-account-delete called.
+    Then:
+     - Ensure results readable output.
+    """
+    client.gcp_iam_service_account_delete_request = Mock(return_value={})
+
+    service_account_name = "projects/project-id-1/serviceAccounts/poc-test12@project-name-1.iam.gserviceaccount.com"
+
+    command_args = dict(service_account_name=service_account_name)
+
+    result = GCP_IAM.gcp_iam_service_account_delete_command(client, command_args)
+
+    assert result[0].readable_output == f'Service account {service_account_name} deleted successfully.'
+
+
+def test_gcp_iam_service_account_key_create_command(client):
+    """
+    Create a service account key.
+    Given:
+     - User has provided valid credentials.
+    When:
+     - gcp-iam-service-account-key-create called.
+    Then:
+     - Ensure number of items is correct.
+     - Ensure outputs prefix is correct.
+     - Ensure a sample value from the API matches what is generated in the context.
+    """
+    mock_response = load_mock_response('service_account_key/service_account_key_create.json')
+    client.gcp_iam_service_account_key_create_request = Mock(return_value=mock_response)
+
+    service_account_name = "projects/project-id-1/serviceAccounts/test-2@project-id-1.iam.gserviceaccount.com"
+
+    command_args = dict(service_account_name=service_account_name)
+
+    result = GCP_IAM.gcp_iam_service_account_key_create_command(client, command_args)
+
+    assert len(result.outputs) == 1
+    assert len(result.outputs[0]) == 9
+    assert result.outputs_prefix == 'GCP.IAM.ServiceAccountKey'
+    assert result.outputs[0].get('privateKeyData') == "my-private-key-data"
+    assert not result.outputs[0].get('disabled')
+
+
+def test_gcp_iam_service_account_key_list_command(client):
+    """
+    List service accounts keys.
+    Given:
+     - User has provided valid credentials.
+    When:
+     - gcp-iam-service-account-key-list called.
+    Then:
+     - Ensure number of items is correct.
+     - Ensure outputs prefix is correct.
+     - Ensure a sample value from the API matches what is generated in the context.
+    """
+    mock_response = load_mock_response('service_account_key/service_account_key_list.json')
+    client.gcp_iam_service_account_key_list_request = Mock(return_value=mock_response)
+
+    service_account_name = "projects/project-id-1/serviceAccounts/test-2@project-id-1.iam.gserviceaccount.com"
+
+    command_args = dict(service_account_name=service_account_name)
+
+    result = GCP_IAM.gcp_iam_service_account_keys_get_command(client, command_args)
+
+    assert len(result.outputs) == 2
+    assert len(result.outputs[0]) == 7
+    assert result.outputs_prefix == 'GCP.IAM.ServiceAccountKey'
+    assert not result.outputs[1].get('disabled')
+    assert result.outputs[1].get(
+        'name') == "projects/rich-agency-334609/serviceAccounts/integration-test-5@395661807466.iam.gserviceaccount.com/keys/service-account-key-1"
+
+
+def test_gcp_iam_service_account_key_get_command(client):
+    """
+    Retrieve service account key information.
+    Given:
+     - User has provided valid credentials.
+    When:
+     - gcp-iam-service-account-key-get called.
+    Then:
+     - Ensure number of items is correct.
+     - Ensure outputs prefix is correct.
+     - Ensure a sample value from the API matches what is generated in the context.
+    """
+    mock_response = load_mock_response('service_account_key/service_account_key_get.json')
+    client.gcp_iam_service_account_key_get_request = Mock(return_value=mock_response)
+
+    key_name = "projects/rich-agency-334609/serviceAccounts/integration-test-5@395661807466.iam.gserviceaccount.com/keys/service-account-key-1"
+
+    command_args = dict(key_name=key_name)
+
+    result = GCP_IAM.gcp_iam_service_account_keys_get_command(client, command_args)
+
+    assert len(result.outputs) == 1
+    assert len(result.outputs[0]) == 7
+    assert result.outputs_prefix == 'GCP.IAM.ServiceAccountKey'
+    assert not result.outputs[0].get('disabled')
+    assert result.outputs[0].get(
+        'name') == "projects/rich-agency-334609/serviceAccounts/integration-test-5@395661807466.iam.gserviceaccount.com/keys/service-account-key-1"
+
+
+def test_gcp_iam_service_account_key_enable_command(client):
+    """
+    Enable service account key.
+    Given:
+     - User has provided valid credentials.
+    When:
+     - gcp-iam-service-account-enable called.
+    Then:
+     - Ensure results readable output.
+    """
+    client.gcp_iam_service_account_key_enable_request = Mock(return_value={})
+
+    key_name = "projects/rich-agency-334609/serviceAccounts/integration-test-5@395661807466.iam.gserviceaccount.com/keys/service-account-key-1"
+
+    command_args = dict(key_name=key_name)
+
+    result = GCP_IAM.gcp_iam_service_account_key_enable_command(client, command_args)
+
+    assert result[0].readable_output == f'Service account key {key_name} updated successfully.'
+
+
+def test_gcp_iam_service_account_key_disable_command(client):
+    """
+    Disable service account key.
+    Given:
+     - User has provided valid credentials.
+    When:
+     - gcp-iam-service-account-disable called.
+    Then:
+     - Ensure results readable output.
+    """
+    client.gcp_iam_service_account_key_disable_request = Mock(return_value={})
+
+    key_name = "projects/rich-agency-334609/serviceAccounts/integration-test-5@395661807466.iam.gserviceaccount.com/keys/service-account-key-1"
+
+    command_args = dict(key_name=key_name)
+
+    result = GCP_IAM.gcp_iam_service_account_key_disable_command(client, command_args)
+
+    assert result[0].readable_output == f'Service account key {key_name} updated successfully.'
+
+
+def test_gcp_iam_service_account_key_delete_command(client):
+    """
+    Delete service account key.
+    Given:
+     - User has provided valid credentials.
+    When:
+     - gcp-iam-service-account-delete called.
+    Then:
+     - Ensure results readable output.
+    """
+    client.gcp_iam_service_account_key_delete_request = Mock(return_value={})
+
+    key_name = "projects/rich-agency-334609/serviceAccounts/integration-test-5@395661807466.iam.gserviceaccount.com/keys/service-account-key-1"
+
+    command_args = dict(key_name=key_name)
+
+    result = GCP_IAM.gcp_iam_service_account_key_delete_command(client, command_args)
+
+    assert result[0].readable_output == f'Service account key {key_name} deleted successfully.'
