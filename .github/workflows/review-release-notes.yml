@@ -29,6 +29,7 @@ jobs:
           file_exit_code=0
           changed_files="${{ steps.changed-files.outputs.all_changed_files }}"
           echo "files are: $changed_files"
+          echo "new script"
           for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
             echo ""
             echo "  Checking File: $file"
