@@ -10,3 +10,6 @@ ignore=BA113
 
 [file:ManageOOOusers.yml]
 ignore=CJ105
+
+[file:README.md]
+ignore=RM106

@@ -481,3 +481,43 @@ def test_search_file_command(mock_response, file_hash, expected_results):
     assert results[0].indicator.sha1 == expected_results[1]
     assert results[0].indicator.sha256 == expected_results[2]
     assert results[0].outputs.get('IndicatorValue') in expected_results
+
+
+@pytest.mark.parametrize(argnames='ioc_type, ioc_val',
+                         argvalues=[('url', 'test_url'),
+                                    ('domain', 'test_domain'),
+                                    ('ipv4_address', 'test_ipv4_address'),
+                                    ('filehash', '123456789012345678901234567890ab'),
+                                    ])
+def test_search_indicator_command__no_indicator(requests_mock, ioc_type, ioc_val):
+    """
+    Given:
+        - Indicator not exist in AutoFocus
+
+    When:
+        - Run the reputation command
+
+    Then:
+        - Validate the expected result is return with detailed information
+    """
+
+    # prepare
+    from AutofocusV2 import search_url_command, search_ip_command, search_domain_command, search_file_command
+    ioc_type_to_command = {
+        'url': search_url_command,
+        'domain': search_domain_command,
+        'ipv4_address': search_ip_command,
+        'filehash': search_file_command,
+    }
+    no_indicator_response = {
+        'tags': []
+    }
+
+    requests_mock.get(f'https://autofocus.paloaltonetworks.com/api/v1.0/tic?indicatorType={ioc_type}'
+                      f'&indicatorValue={ioc_val}&includeTags=true', json=no_indicator_response)
+
+    # run
+    result = ioc_type_to_command[ioc_type](ioc_val, 'B - Usually reliable', True)
+
+    # validate
+    assert f'{ioc_val} was not found in AutoFocus' in result[0].readable_output
