@@ -4,7 +4,7 @@ import VMware
 from datetime import datetime
 from collections import namedtuple
 from pyVmomi import vim
-from Packs.VMware.Integrations.VMware.test_data.VMwaretestclasses import Si, VsphereClient, VM,\
+from test_data.VMwaretestclasses import Si, VsphereClient, VM,\
     VirtualMachineRelocateSpec, Task, Folder, CloneSpec, Summary, \
     Content, Child, ViewManager, Snapshot, Host, ConfigSpec, FileInfo, ResourceAllocationInfo, EventManager, \
     Event
@@ -19,28 +19,28 @@ PARAMS_GET_TAG = [
     ({'category': 'tet1', 'tag': 'tag'}, None)]
 
 PARAMS_GET_VM_FILTERS = [
-    ({'ip': '1111', 'name': 'test_vm', 'uuid': '12345', 'hostname': 'test_host'},
+    ({'ip': '1111', 'vm_name': 'test_vm', 'uuid': '12345', 'hostname': 'test_host'},
      {'ipAddress': '1111', 'name': 'test_vm', 'uuid': '12345', 'hostname': 'test_host'},
      True),
-    ({'ip': '1111', 'name': None, 'uuid': '12345', 'hostname': 'test_host'},
+    ({'ip': '1111', 'vm_name': None, 'uuid': '12345', 'hostname': 'test_host'},
      {'ipAddress': '1111', 'name': 'test_vm', 'uuid': '12345', 'hostname': 'test_host'},
      True),
-    ({'ip': '1111', 'name': 'test_vm', 'uuid': None, 'hostname': 'test_host'},
+    ({'ip': '1111', 'vm_name': 'test_vm', 'uuid': None, 'hostname': 'test_host'},
      {'ipAddress': '1111', 'name': 'test_vm', 'uuid': '12345', 'hostname': 'test_host'},
      True),
-    ({'ip': None, 'name': 'test_vm', 'uuid': '12345', 'hostname': 'test_host'},
+    ({'ip': None, 'vm_name': 'test_vm', 'uuid': '12345', 'hostname': 'test_host'},
      {'ipAddress': '1111', 'name': 'test_vm', 'uuid': '12345', 'hostname': 'test_host'},
      True),
-    ({'ip': '1111', 'name': 'test_vm', 'uuid': '12345', 'hostname': None},
+    ({'ip': '1111', 'vm_name': 'test_vm', 'uuid': '12345', 'hostname': None},
      {'ipAddress': '1111', 'name': 'test_vm', 'uuid': '12345', 'hostname': 'test_host'},
      True),
-    ({'ip': None, 'name': 'test_vm', 'uuid': '12345', 'hostname': None},
+    ({'ip': None, 'vm_name': 'test_vm', 'uuid': '12345', 'hostname': None},
      {'ipAddress': '1111', 'name': 'test_vm', 'uuid': '1234', 'hostname': 'test_host'},
      False),
-    ({'ip': '1111', 'name': 'test_vm', 'uuid': None, 'hostname': None},
+    ({'ip': '1111', 'vm_name': 'test_vm', 'uuid': None, 'hostname': None},
      {'ipAddress': '1111', 'name': 'tet_vm', 'uuid': '12345', 'hostname': 'test_host'},
      False),
-    ({'ip': '1111', 'name': 'test_vm', 'uuid': None, 'hostname': None},
+    ({'ip': '1111', 'vm_name': 'test_vm', 'uuid': None, 'hostname': None},
      {'ipAddress': '111', 'name': 'test_vm', 'uuid': '12345', 'hostname': 'test_host'},
      False)
 ]
@@ -71,16 +71,16 @@ EVENTS = [
 ]
 
 PARAMS_GET_EVENTS = [
-    ({'vm-uuid': '123', 'user': 'test_user,test_user2', 'start-date': '2019-10-23T00:00:00',
-      'end-date': '2021-12-16T12:00:00', 'event-type': '', 'limit': '50'},
+    ({'vm-uuid': '123', 'user': 'test_user,test_user2', 'start_date': '2019-10-23T00:00:00',
+      'end_date': '2021-12-16T12:00:00', 'event-type': '', 'limit': '50'},
      EVENTS,
      3),
-    ({'vm-uuid': '123', 'user': 'test_user', 'start-date': '2019-10-23T00:00:00',
-      'end-date': '2021-12-16T12:00:00', 'event-type': '', 'limit': '50'},
+    ({'vm-uuid': '123', 'user': 'test_user', 'start_date': '2019-10-23T00:00:00',
+      'end_date': '2021-12-16T12:00:00', 'event-type': '', 'limit': '50'},
      [EVENTS[0], EVENTS[2]],
      2),
-    ({'vm-uuid': '123', 'user': 'test_user2', 'start-date': '2019-10-23T00:00:00',
-      'end-date': '2021-12-16T12:00:00', 'event-type': 'reboot VM', 'limit': '50'},
+    ({'vm-uuid': '123', 'user': 'test_user2', 'start_date': '2019-10-23T00:00:00',
+      'end_date': '2021-12-16T12:00:00', 'event-type': 'reboot VM', 'limit': '50'},
      [EVENTS[1]],
      1)
 ]
@@ -236,7 +236,7 @@ def test_create_vm_config_creator(monkeypatch):
     assert res.memoryAllocation.limit == int(args.get('memory'))
     assert res.memoryMB == int(args.get('virtual-memory'))
     assert res.files.vmPathName == '[test1]test1'
-    assert res.guestId == args.get('guestId')
+    assert res.guestId == args.get('guest-id')
 
 
 def test_list_vms_by_tag(monkeypatch):
@@ -414,7 +414,7 @@ def test_register_vm(monkeypatch):
     monkeypatch.setattr(Folder, 'RegisterVM_Task', lambda this, path, name, asTemplate, pool, host: Task())
 
     res = VMware.register_vm(si, {'folder': 'test_folder', 'host': 'test_host', 'pool': 'test_pool', 'path': None,
-                                  'asTemplate': False})
+                                  'as_template': False})
     assert res.get('HumanReadable') == 'Virtual Machine was registered successfully.'
 
 
