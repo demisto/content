@@ -1,4 +1,5 @@
-This playbook searches Gmail to identify and delete emails with similar attributes to the malicious email.
+This playbook searches Gmail to identify and delete emails with similar attributes to the malicious email.\
+`Note`: Searching through large amount of mailboxes might trigger a 429 error code. You can find more details here: https://developers.google.com/gmail/api/guides/handle-errors#:~:text=A%20429%20%22Too%20many%20requests,per%2Duser%20concurrent%20request%20limit. 
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
