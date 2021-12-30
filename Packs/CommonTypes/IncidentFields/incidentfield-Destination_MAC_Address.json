@@ -1,10 +1,10 @@
 {
   "associatedToAll": false,
   "associatedTypes": [
-      "Qradar Generic",
-      "FireEye NX IPS Event",
-      "FireEye NX Alert",
-      "FireEye EX Alert"
+    "Qradar Generic",
+    "FireEye NX IPS Event",
+    "FireEye NX Alert",
+    "FireEye EX Alert"
   ],
   "breachScript": "",
   "caseInsensitive": true,
@@ -30,7 +30,7 @@
   "ownerOnly": false,
   "placeholder": "",
   "propagationLabels": [
-      "all"
+    "all"
   ],
   "required": false,
   "script": "",
