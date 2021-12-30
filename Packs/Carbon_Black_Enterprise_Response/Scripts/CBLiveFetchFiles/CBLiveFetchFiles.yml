@@ -24,4 +24,4 @@ timeout: 0s
 fromversion: 5.0.0
 tests:
 - No Test
-dockerimage: demisto/python:2.7.18.24066
+dockerimage: demisto/python:2.7.18.24398

@@ -1167,7 +1167,8 @@ def test_logger_replace_strs(mocker):
     ilog('special chars like ZAQ!@#$%&* should be replaced even when url-encoded like ZAQ%21%40%23%24%25%26%2A')
     assert ('' not in ilog.replace_strs)
     assert ilog.messages[0] == '<XX_REPLACED> is <XX_REPLACED> and b64: <XX_REPLACED>'
-    assert ilog.messages[1] == 'special chars like <XX_REPLACED> should be replaced even when url-encoded like <XX_REPLACED>'
+    assert ilog.messages[1] == \
+           'special chars like <XX_REPLACED> should be replaced even when url-encoded like <XX_REPLACED>'
 
 
 TEST_SSH_KEY_ESC = '-----BEGIN OPENSSH PRIVATE KEY-----\\nb3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAACFw' \
@@ -2703,6 +2704,56 @@ class TestBaseClient:
             resp_json = json.loads(e.res.text)
             assert e.res.status_code == 400
             assert resp_json.get('error') == 'additional text'
+    
+    def test_http_request_timeout_default(self, requests_mock):
+        requests_mock.get('http://example.com/api/v2/event', text=json.dumps(self.text))
+        self.client._http_request('get', 'event')
+        assert requests_mock.last_request.timeout == self.client.REQUESTS_TIMEOUT
+    
+    def test_http_request_timeout_given_func(self, requests_mock):
+        requests_mock.get('http://example.com/api/v2/event', text=json.dumps(self.text))
+        timeout = 120
+        self.client._http_request('get', 'event', timeout=timeout)
+        assert requests_mock.last_request.timeout == timeout
+
+    def test_http_request_timeout_given_class(self, requests_mock):
+        from CommonServerPython import BaseClient
+        requests_mock.get('http://example.com/api/v2/event', text=json.dumps(self.text))
+        timeout = 44
+        new_client = BaseClient('http://example.com/api/v2/', timeout=timeout)
+        new_client._http_request('get', 'event')
+        assert requests_mock.last_request.timeout == timeout
+
+    def test_http_request_timeout_environ_system(self, requests_mock, mocker):
+        from CommonServerPython import BaseClient
+        requests_mock.get('http://example.com/api/v2/event', text=json.dumps(self.text))
+        timeout = 10
+        mocker.patch.dict(os.environ, {'REQUESTS_TIMEOUT': str(timeout)})
+        new_client = BaseClient('http://example.com/api/v2/')
+        new_client._http_request('get', 'event')
+        assert requests_mock.last_request.timeout == timeout
+
+    def test_http_request_timeout_environ_integration(self, requests_mock, mocker):
+        requests_mock.get('http://example.com/api/v2/event', text=json.dumps(self.text))
+        timeout = 180.1
+        # integration name is set to Test in the fixture handle_calling_context
+        mocker.patch.dict(os.environ, {'REQUESTS_TIMEOUT.Test': str(timeout)})
+        from CommonServerPython import BaseClient
+        new_client = BaseClient('http://example.com/api/v2/')
+        new_client._http_request('get', 'event')
+        assert requests_mock.last_request.timeout == timeout
+
+    def test_http_request_timeout_environ_script(self, requests_mock, mocker):
+        requests_mock.get('http://example.com/api/v2/event', text=json.dumps(self.text))
+        timeout = 23.4
+        script_name = 'TestScript'
+        mocker.patch.dict(os.environ, {'REQUESTS_TIMEOUT.' + script_name: str(timeout)})
+        mocker.patch.dict(demisto.callingContext, {'context': {'ScriptName': script_name}})
+        mocker.patch.object(CommonServerPython, 'get_integration_name', return_value='')
+        from CommonServerPython import BaseClient
+        new_client = BaseClient('http://example.com/api/v2/')
+        new_client._http_request('get', 'event')
+        assert requests_mock.last_request.timeout == timeout
 
     def test_is_valid_ok_codes_empty(self):
         from requests import Response
@@ -5856,3 +5907,95 @@ def test_arg_to_number():
     from CommonServerPython import arg_to_number
     result = arg_to_number(u'1')
     assert result == 1
+
+
+def test_get_message_threads_dump():
+    from CommonServerPython import get_message_threads_dump
+    result = str(get_message_threads_dump(None, None))
+    assert ' Start Threads Dump ' in result
+    assert ' End Threads Dump ' in result
+    assert 'CommonServerPython.py' in result
+    assert 'get_message_threads_dump' in result
+
+
+def test_get_message_memory_dump():
+    from CommonServerPython import get_message_memory_dump
+    result = str(get_message_memory_dump(None, None))
+    assert ' Start Variables Dump ' in result
+    assert ' Start Local Vars ' in result
+    assert ' End Local Vars ' in result
+    assert ' Start Top ' in result
+    assert ' Globals by Size ' in result
+    assert ' End Top ' in result
+    assert ' End Variables Dump ' in result
+    assert '<class \'' in result
+
+
+class TestSetAndGetLastMirrorRun:
+
+    def test_get_last_mirror_run_in_6_6(self, mocker):
+        """
+        Given: 6.6.0 environment and getLastMirrorRun returns results
+        When: Execute mirroring run
+        Then: Returning demisto.getLastRun object
+        """
+        import demistomock as demisto
+        from CommonServerPython import get_last_mirror_run
+        mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.6.0"})
+        mocker.patch.object(demisto, 'getLastMirrorRun', return_value={"lastMirrorRun": "2018-10-24T14:13:20+00:00"})
+        result = get_last_mirror_run()
+        assert result == {"lastMirrorRun": "2018-10-24T14:13:20+00:00"}
+
+    def test_get_last_mirror_run_in_6_6_when_return_empty_results(self, mocker):
+        """
+        Given: 6.6.0 environment and getLastMirrorRun returns empty results
+        When: Execute mirroring run
+        Then: Returning demisto.getLastRun empty object
+        """
+        import demistomock as demisto
+        from CommonServerPython import get_last_mirror_run
+        mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.6.0"})
+        mocker.patch.object(demisto, 'getLastMirrorRun', return_value={})
+        result = get_last_mirror_run()
+        assert result == {}
+
+    def test_get_last_run_in_6_5(self, mocker):
+        """
+        Given: 6.5.0 environment and getLastMirrorRun returns results
+        When: Execute mirroring run
+        Then: Get a string which represent we can't use this function
+        """
+        import demistomock as demisto
+        from CommonServerPython import get_last_mirror_run
+        mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.5.0"})
+        get_last_run = mocker.patch.object(demisto, 'getLastMirrorRun')
+        with raises(DemistoException, match='You cannot use getLastMirrorRun as your version is below 6.6.0'):
+            get_last_mirror_run()
+            assert get_last_run.called is False
+
+    def test_set_mirror_last_run_in_6_6(self, mocker):
+        """
+        Given: 6.6.0 environment
+        When: Execute mirroring run
+        Then: Using demisto.setLastMirrorRun to save results
+        """
+        import demistomock as demisto
+        from CommonServerPython import set_last_mirror_run
+        mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.6.0"})
+        set_last_run = mocker.patch.object(demisto, 'setLastMirrorRun', return_value={})
+        set_last_mirror_run({"lastMirrorRun": "2018-10-24T14:13:20+00:00"})
+        set_last_run.assert_called_with({"lastMirrorRun": "2018-10-24T14:13:20+00:00"})
+
+    def test_set_mirror_last_run_in_6_5(self, mocker):
+        """
+        Given: 6.5.0 environment
+        When: Execute mirroring run
+        Then: Don't use demisto.setLastMirrorRun
+        """
+        import demistomock as demisto
+        from CommonServerPython import set_last_mirror_run
+        mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.5.0"})
+        set_last_run = mocker.patch.object(demisto, 'setLastMirrorRun', return_value={})
+        with raises(DemistoException, match='You cannot use setLastMirrorRun as your version is below 6.6.0'):
+            set_last_mirror_run({"lastMirrorRun": "2018-10-24T14:13:20+00:00"})
+            assert set_last_run.called is False

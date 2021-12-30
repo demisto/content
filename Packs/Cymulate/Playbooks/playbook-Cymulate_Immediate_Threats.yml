@@ -35,7 +35,7 @@ tasks:
     task:
       id: 463812d0-1bf4-4ff1-8657-9b52687e16b6
       version: -1
-      name: Push malicious hashes to Endpoint Security blocklist
+      name: Push malicious hashes to Endpoint Security block list
       type: regular
       iscommand: false
       brand: ''
@@ -87,7 +87,7 @@ tasks:
     task:
       id: b16fdc41-4e70-474d-81df-90029415d017
       version: -1
-      name: Push malicious URL's to Web Gateway blocklist
+      name: Push malicious URL's to Web Gateway block list
       type: regular
       iscommand: false
       brand: ''

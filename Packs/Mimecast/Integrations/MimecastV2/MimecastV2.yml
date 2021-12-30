@@ -512,7 +512,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Set to "block" to blacklist the URL, "permit" to whitelist it
+      description: Set to "block" to block list the URL, "permit" to add to allow list.
       isArray: false
       name: action
       predefined:
