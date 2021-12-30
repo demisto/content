@@ -931,7 +931,7 @@
                         "y": 3
                     },
                     {
-                        "description": "**PCL** - Phishing Confidence Level (4-8: The message content is likely to be phishing.)\\n**BCL** - Bulk complaint level (4-7: The message is from a bulk sender that generates a mixed number of complaints. 8-9: The message is from a bulk sender that generates a high number of complaints.)\\n**SCL** - Spam confidence level (5-6: Spam filtering marked the message as Spam. 9: Spam filtering marked the message as High confidence spam)\\n`Note`: The default value is 0, but it can be changed when the \\\"Process Microsoft's Email Headers\\\" playbook runs.",
+                        "description": "**PCL** - Phishing Confidence Level (4-8: The message content is likely to be phishing.)\n**BCL** - Bulk complaint level (4-7: The message is from a bulk sender that generates a mixed number of complaints. 8-9: The message is from a bulk sender that generates a high number of complaints.)\n**SCL** - Spam confidence level (5-6: Spam filtering marked the message as Spam. 9: Spam filtering marked the message as High confidence spam)\n`Note`: The default value is 0, but it can be changed when the \"Process Microsoft's Email Headers\" playbook runs.",
                         "displayType": "ROW",
                         "h": 4,
                         "hideName": false,
