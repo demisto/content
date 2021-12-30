@@ -386,6 +386,10 @@
             "fromversion": "5.5.0"
         },
         {
+            "playbookID": "Traps test",
+            "integrations": "Traps"
+        },
+        {
             "integrations": "Pipl",
             "playbookID": "Pipl Test"
         },
@@ -1589,19 +1593,22 @@
             "integrations": "SplunkPy",
             "playbookID": "SplunkPy parse-raw - Test",
             "memory_threshold": 100,
-            "instance_names": "use_default_handler"
+            "instance_names": "use_default_handler",
+            "is_mockable": false
         },
         {
             "integrations": "SplunkPy",
             "playbookID": "SplunkPy-Test-V2_default_handler",
             "memory_threshold": 500,
-            "instance_names": "use_default_handler"
+            "instance_names": "use_default_handler",
+            "is_mockable": false
         },
         {
             "integrations": "SplunkPy",
             "playbookID": "Splunk-Test_default_handler",
             "memory_threshold": 200,
-            "instance_names": "use_default_handler"
+            "instance_names": "use_default_handler",
+            "is_mockable": false
         },
         {
             "integrations": "AnsibleTower",
@@ -1612,7 +1619,8 @@
             "integrations": "SplunkPy",
             "playbookID": "SplunkPySearch_Test_default_handler",
             "memory_threshold": 200,
-            "instance_names": "use_default_handler"
+            "instance_names": "use_default_handler",
+            "is_mockable": false
         },
         {
             "integrations": "SplunkPy",
@@ -2255,6 +2263,10 @@
             ],
             "memory_threshold": 160,
             "pid_threshold": 80
+        },
+        {
+            "playbookID": "Phishing - Core - Test - Actual Incident",
+            "fromversion": "6.0.0"
         },
         {
             "integrations": "duo",
@@ -2960,7 +2972,8 @@
             "playbookID": "Splunk Indicator Hunting Test",
             "fromversion": "5.0.0",
             "memory_threshold": 500,
-            "instance_names": "use_default_handler"
+            "instance_names": "use_default_handler",
+            "is_mockable": false
         },
         {
             "integrations": "BPA",
@@ -4782,6 +4795,11 @@
             "fromversion": "6.0.0"
         },
         {
+            "integrations": "AzureDataExplorer",
+            "playbookID": "playbook-AzureDataExplorer-Test",
+            "fromversion": "6.0.0"
+        },
+        {
             "scripts": [
                 "SplunkShowAsset",
                 "SplunkShowDrilldown",
@@ -4806,6 +4824,18 @@
         {
             "playbookID": "JsonToTable - Test Playbook",
             "fromversion": "5.5.0"
+        },
+        {
+            "integrations": [
+                "RemoteAccess v2"
+            ],
+            "playbookID": "RemoteAccessTest",
+            "fromversion": "6.0.0"
+        },
+        {
+            "playbookID": "AzureRiskyUsers",
+            "fromversion": "6.0.0",
+            "integrations": "AzureRiskyUsers"
         },
         {
             "integrations": "KafkaV3",
@@ -4861,6 +4891,7 @@
         "JoeSecurityTestPlaybook": "Issue 25649",
         "Cortex Data Lake Test": "Issue 24346",
         "Phishing - Core - Test - Incident Starter": "Issue 26784",
+        "Phishing - Core - Test - Actual Incident": "Issue 45227",
         "Test Playbook McAfee ATD": "Issue 33409",
         "Detonate Remote File From URL -McAfee-ATD - Test": "Issue 33407",
         "Test Playbook McAfee ATD Upload File": "Issue 33408",
@@ -4905,6 +4936,7 @@
         "Phishing v2 - Test - Actual Incident": "Issue 41322",
         "Kaspersky Security Center - Test": "Issue 36487",
         "carbonBlackEndpointStandardTestPlaybook": "Issue 36936",
+        "RemoteAccessTest": "Issue 44245",
         "test_Qradar_v2": "the integration is deprecated as we released Qradar V3",
         "XsoarPowershellTesting-Test": "Issue 32689",
         "Unit42 Intel Objects Feed - Test": "Issue 44100",
@@ -4926,9 +4958,16 @@
         "Cherwell Example Scripts - test": "Issue 27107",
         "Cofense Intelligence v2 test": "Issue 44499",
         "Endpoint Malware Investigation - Generic - Test": "Issue 44779",
-        "Mimecast test": "Issue 26906"
+        "Mimecast test": "Issue 26906",
+        "RedLockTest": "Issue 24600",
+        "AutoFocus V2 test": "Issue 26464",
+        "SplunkPy_KV_commands_default_handler": "Issue 41419",
+        "LogRhythm REST test": "Issue 40654",
+        "Recorded Future Test": "Quota issue - will ve reverted un 1.1.22",
+        "RecordedFutureFeed - Test": "Quota issue - will ve reverted un 1.1.22"
     },
     "skipped_integrations": {
+        
         "_comment1": "~~~ NO INSTANCE ~~~",
         "Ipstack": "Usage limit reached (Issue 38063)",
         "AnsibleAlibabaCloud": "No instance - issue 40447",
@@ -5015,17 +5054,18 @@
         "Akamai WAF": "Issue 32318",
         "FraudWatch": "Issue 34299",
         "Cisco Stealthwatch": "No instance - developed by Qmasters",
+        "AzureRiskyUsers": "No instance - developed by Qmasters",
         "Armis": "No instance - developed by SOAR Experts",
-
+        
         "_comment2": "~~~ UNSTABLE ~~~",
         "Tenable.sc": "unstable instance",
         "ThreatConnect v2": "unstable instance",
-
+        
         "_comment3": "~~~ QUOTA ISSUES ~~~",
         "Lastline": "issue 20323",
         "Google Resource Manager": "Cannot create projects because have reached allowed quota.",
         "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota.",
-
+        
         "_comment4": "~~~ OTHER ~~~",
         "Anomali ThreatStream v2": "Will be deprecated soon.",
         "Anomali ThreatStream": "Will be deprecated soon.",
@@ -5208,7 +5248,7 @@
         "HelloWorldPremium-Test"
     ],
     "docker_thresholds": {
-
+        
         "_comment": "Add here docker images which are specific to an integration and require a non-default threshold (such as rasterize or ews). That way there is no need to define this multiple times. You can specify full image name with version or without.",
         "images": {
             "demisto/chromium": {
