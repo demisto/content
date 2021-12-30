@@ -1,8 +1,8 @@
 # Perquisites to run this script:
 #
 # 1. Python 3.8+
-# 2. docker is installed (if not, use the `-sd` option)
-# 3. docker python is installed (install it by running pip install docker or pip3 install docker or use the `-sd` option)
+# 2. docker is installed (if not, you can still use the `-sd` option)
+# 3. docker python is installed (install it by running "pip install docker" or "pip3 install docker" or use the `-sd` option)
 
 
 import argparse
@@ -33,6 +33,7 @@ def create_content_item_id_set(id_set_list: list) -> dict:
 
 
 def zip_folder(source_path, output_path):
+    """ Zips the folder and its containing files"""
     with ZipFile(output_path + '.zip', 'w', ZIP_DEFLATED) as source_zip:
         for root, dirs, files in os.walk(source_path, topdown=True):
             for f in files:
@@ -40,58 +41,70 @@ def zip_folder(source_path, output_path):
                 source_zip.write(filename=full_file_path, arcname=f)
 
 
-def get_docker_images_with_tag(pack_names: list, id_set_json: dict) -> list:
+def get_docker_images_with_tag(pack_names: dict, id_set_json: dict) -> set:
     """ Given a pack name returns its docker images with its latest tag"""
+    print('Starting to collect docker images')
     integration_names_id_set = create_content_item_id_set(id_set_json['integrations'])
     script_names_id_set = create_content_item_id_set(id_set_json['scripts'])
     docker_images = set()
-    for pack_name in pack_names:
+    for pack_d_name, pack_name in pack_names.items():
         if pack_name not in id_set_json['Packs']:
-            print(f"Pack {pack_name} was not found in id_set.json.")
+            print(f"\tPack {pack_d_name} was not found in id_set.json.")
             continue
         content_items = id_set_json['Packs'][pack_name]['ContentItems']
         integrations = content_items['integrations'] if 'integrations' in content_items else []
         scripts = content_items['scripts'] if 'scripts' in content_items else []
-        for integration in integrations:
-            if 'docker_image' in integration_names_id_set[integration]:
-                docker_images.add(integration_names_id_set[integration]['docker_image'])
-        for script in scripts:
-            if 'docker_image' in script_names_id_set[script]:
-                docker_images.add(script_names_id_set[script]['docker_image'])
+        if integrations:
+            print(f"\t{pack_d_name} docker images found for integrations:")
+            for integration in integrations:
+                if 'docker_image' in integration_names_id_set[integration]:
+                    docker_image = integration_names_id_set[integration]['docker_image']
+                    print(f"\t\t{docker_image} - used by {integration}")
+                    docker_images.add(docker_image)
+        if scripts:
+            print(f"\t{pack_d_name} docker images found for scripts:")
+            for script in scripts:
+                if 'docker_image' in script_names_id_set[script]:
+                    docker_image = script_names_id_set[script]['docker_image']
+                    print(f"\t\t{docker_image} - used by {script}")
+                    docker_images.add(docker_image)
 
-    return list(docker_images)
+    return docker_images
 
 
-def get_pack_names(pack_display_names, id_set_json) -> list:
+def get_pack_names(pack_display_names, id_set_json) -> dict:
     """ Given pack_display_names try and parse it into a pack name as appears in content repo"""
-    pack_names = set()
+    pack_names = dict()
     if 'Packs' not in id_set_json:
         raise ValueError('Packs is missing from id_set.json.')
     d_names_id_set = dict()
+    # create display name id_set.json
     for pack_name, pack_value in id_set_json['Packs'].items():
         d_names_id_set[pack_value['name']] = pack_name
+
+    # create result given display name id_set.json
     for d_name in pack_display_names:
         if d_name not in d_names_id_set:
             print(f"Couldn't find pack {d_name}. Skipping pack.")
             continue
-        pack_names.add(d_names_id_set[d_name])
-    return list(pack_names)
+        pack_names[d_name] = d_names_id_set[d_name]
+    return pack_names
 
 
-def download_and_save_packs(pack_names: list, id_set_json: dict, output_path: str, verify_ssl: bool) -> None:
+def download_and_save_packs(pack_names: dict, id_set_json: dict, output_path: str, verify_ssl: bool) -> None:
     """ Download and save packs under """
     if 'Packs' not in id_set_json:
         raise ValueError('Packs missing from id_set.json.')
     id_set_packs = id_set_json['Packs']
-    print("Starting to download packs with dependencies")
+    print("Starting to download packs")
     temp_dir = tempfile.TemporaryDirectory()
     try:
-        for pack_name in pack_names:
+        for pack_d_name, pack_name in pack_names.items():
             if pack_name not in id_set_packs:
-                print(f"\tCouldn't find {pack_name} in id_set.json. Skipping pack download.")
+                print(f"\tCouldn't find {pack_d_name} in id_set.json. Skipping pack download.")
                 continue
             pack_version = id_set_packs[pack_name]['current_version']
-            print(f"\tDownloading {pack_name} Pack")
+            print(f"\tDownloading {pack_d_name} Pack")
             r = requests.request(method='GET',
                                  url=f'{BUCKET_PACKS_URL}/{pack_name}/{pack_version}/{pack_name}.zip',
                                  verify=verify_ssl)
@@ -102,11 +115,10 @@ def download_and_save_packs(pack_names: list, id_set_json: dict, output_path: st
         temp_dir.cleanup()
 
 
-def download_and_save_docker_images(pack_names: list, output_path: str, id_set_json: dict) -> None:
+def download_and_save_docker_images(docker_images: set, output_path: str) -> None:
     """ Downloads and saves the docker images into docker.zip in output_path"""
     import docker  # import docker only when required
     print("Starting to download docker images for given packs")
-    docker_images = get_docker_images_with_tag(pack_names, id_set_json)
     cli = docker.from_env(timeout=120)
     temp_dir = tempfile.TemporaryDirectory()
     try:
@@ -162,8 +174,9 @@ def main():
         download_and_save_packs(pack_names, id_set_json, path.join(output_path, 'packs'), verify_ssl)
     else:
         print('Skipping packs.zip creation')
+    docker_images = get_docker_images_with_tag(pack_names, id_set_json)
     if not options.skip_docker:
-        download_and_save_docker_images(pack_names, path.join(output_path, 'docker'), id_set_json)
+        download_and_save_docker_images(docker_images, path.join(output_path, 'docker'))
     else:
         print('Skipping dockers.zip creation')
 
