@@ -2236,7 +2236,12 @@ inputs:
   value: {}
   required: false
   description: |-
-    If this value is provided, only the relevant playbook runs. If no value is provided, all sub-playbooks are run. Possible values: - Gmail - EWS v2 - MicrosoftGraphMail - EmailSecurityGateway
+    If this value is provided, only the relevant playbook runs. If no value is provided, all sub-playbooks are run.
+    Possible values:
+    - Gmail
+    - EWS v2
+    - MicrosoftGraphMail
+    - EmailSecurityGateway
     Choosing the EmailSecurityGateway executes the following if enabled: - FireEye EX (Email Security) - Proofpoint TAP - Mimecast.
   playbookInputQuery:
 outputs:
