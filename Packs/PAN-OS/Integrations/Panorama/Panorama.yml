@@ -2412,6 +2412,10 @@ script:
       name: source-user
     - description: Target number of the firewall. Use only on a Panorama instance.
       name: target
+      isArray: true
+    - description: Target vsys of the firewall. Use only on a Panorama instance.
+      name: vsys
+      isArray: true
     description: Checks whether a session matches a specified security policy. This
       command is only available on Firewall instances.
     name: panorama-security-policy-match

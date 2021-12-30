@@ -536,24 +536,6 @@ def test_build_policy_match_query():
     assert response == expected
 
 
-def test_panorama_security_policy_match_command_no_target():
-    """
-    Given:
-     - a Panorama instance(mocked parameter) without the target argument
-
-    When:
-     - running the panorama-security-policy-match command
-
-    Then:
-     - Validate a proper error is raised
-    """
-    from Panorama import panorama_security_policy_match_command
-    err_msg = "The 'panorama-security-policy-match' command is relevant for a Firewall instance " \
-              "or for a Panorama instance, to be used with the target argument."
-    with pytest.raises(DemistoException, match=err_msg):
-        panorama_security_policy_match_command(demisto.args())
-
-
 def test_panorama_register_ip_tag_command_wrongful_args(mocker):
     """
     Given:
