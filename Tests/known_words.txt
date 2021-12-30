@@ -12,3 +12,4 @@ Deprecated
 EPOFindSystem
 boolean
 xdr
+Darktrace
