@@ -223,6 +223,8 @@ script:
       name: ticket_id
     - description: Inventa's Datasubject ID
       name: datasubject_id
+    - description: Report reason
+      name: reason
     description: Validates incident's inputs
     name: inventa-validate-incident-inputs
     outputs:

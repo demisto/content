@@ -14,7 +14,7 @@
     "id": "incident_inventadriverlicense",
     "isReadOnly": false,
     "locked": false,
-    "name": "[Inventa] Driver License",
+    "name": "Inventa Driver License",
     "neverSetAsRequired": false,
     "ownerOnly": true,
     "required": false,

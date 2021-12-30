@@ -14,7 +14,7 @@
     "id": "incident_inventadsardatasubjectemail",
     "isReadOnly": false,
     "locked": false,
-    "name": "[Inventa] DSAR DataSubject Email",
+    "name": "Inventa DSAR DataSubject Email",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "required": false,

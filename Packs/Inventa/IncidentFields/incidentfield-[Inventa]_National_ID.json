@@ -14,7 +14,7 @@
     "id": "incident_inventanationalid",
     "isReadOnly": false,
     "locked": false,
-    "name": "[Inventa] National ID",
+    "name": "Inventa National ID",
     "neverSetAsRequired": false,
     "ownerOnly": true,
     "required": false,

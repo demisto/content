@@ -391,6 +391,7 @@ def validate_incident_inputs_command(**kwargs):
     birthday = kwargs.get("birthday", "")
     city = kwargs.get("city", "")
     street_address = kwargs.get("street_address", "")
+    reason = kwargs.get("reason", "")
 
     demisto.debug(f"{ticket_id}")
     demisto.debug(f"{datasubject_id}")
@@ -409,6 +410,7 @@ def validate_incident_inputs_command(**kwargs):
         (full_name and city and street_address)
     ]
 
+
     constraints_validated = False
     for constraint in constraints:
         if constraint:
@@ -424,7 +426,15 @@ def validate_incident_inputs_command(**kwargs):
         datasubject_id_validated = True
 
     demisto.debug("CONSTRAINTS")
-    if constraints_validated or ticket_validated or datasubject_id_validated:
+    if constraints_validated and reason:
+        return CommandResults(outputs={"validated": True},
+                              outputs_prefix="Inventa.Incident",
+                              outputs_key_field="validated")
+    elif datasubject_id_validated and reason:
+        return CommandResults(outputs={"validated": True},
+                              outputs_prefix="Inventa.Incident",
+                              outputs_key_field="validated")
+    elif ticket_validated:
         return CommandResults(outputs={"validated": True},
                               outputs_prefix="Inventa.Incident",
                               outputs_key_field="validated")

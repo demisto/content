@@ -14,7 +14,7 @@
     "id": "incident_inventadsardatasubjectid",
     "isReadOnly": false,
     "locked": false,
-    "name": "[Inventa] DSAR DataSubject ID",
+    "name": "Inventa DSAR DataSubject ID",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "required": false,

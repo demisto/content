@@ -14,7 +14,7 @@
     "id": "incident_inventadsarinventaticket",
     "isReadOnly": false,
     "locked": false,
-    "name": "[Inventa] DSAR Inventa Ticket",
+    "name": "Inventa DSAR Inventa Ticket",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "required": false,

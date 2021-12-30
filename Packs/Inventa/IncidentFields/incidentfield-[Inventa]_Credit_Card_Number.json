@@ -14,7 +14,7 @@
     "id": "incident_inventacreditcardnumber",
     "isReadOnly": false,
     "locked": false,
-    "name": "[Inventa] Credit Card Number",
+    "name": "Inventa Credit Card Number",
     "neverSetAsRequired": false,
     "ownerOnly": true,
     "required": false,

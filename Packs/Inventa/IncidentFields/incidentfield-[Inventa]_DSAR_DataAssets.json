@@ -78,7 +78,7 @@
     "id": "incident_inventadsardataassets",
     "isReadOnly": false,
     "locked": false,
-    "name": "[Inventa] DSAR DataAssets",
+    "name": "Inventa DSAR DataAssets",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "required": false,

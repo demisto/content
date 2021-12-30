@@ -14,7 +14,7 @@
     "id": "incident_inventareportreason",
     "isReadOnly": false,
     "locked": false,
-    "name": "[Inventa] Report Reason",
+    "name": "Inventa Report Reason",
     "neverSetAsRequired": false,
     "ownerOnly": true,
     "required": false,

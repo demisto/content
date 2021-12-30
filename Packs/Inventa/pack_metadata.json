@@ -13,9 +13,7 @@
         "GDPR",
         "PII"
     ],
-    "itemPrefix": [
-        "[Inventa]"
-    ],
+    "itemPrefix": [],
     "useCases": [],
     "keywords": [],
     "githubUser": [

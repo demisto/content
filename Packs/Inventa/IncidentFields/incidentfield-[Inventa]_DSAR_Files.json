@@ -102,7 +102,7 @@
     "id": "incident_inventadsarfiles",
     "isReadOnly": false,
     "locked": false,
-    "name": "[Inventa] DSAR Files",
+    "name": "Inventa DSAR Files",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "required": false,

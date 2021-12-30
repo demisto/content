@@ -39,7 +39,7 @@
     "id": "incident_inventadsartransactions",
     "isReadOnly": false,
     "locked": false,
-    "name": "[Inventa] DSAR Transactions",
+    "name": "Inventa DSAR Transactions",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "required": false,

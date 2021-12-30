@@ -14,7 +14,7 @@
     "id": "incident_inventapiientities",
     "isReadOnly": false,
     "locked": false,
-    "name": "[Inventa] PII Entities",
+    "name": "Inventa PII Entities",
     "neverSetAsRequired": false,
     "ownerOnly": true,
     "required": false,

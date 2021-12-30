@@ -1,16 +1,16 @@
 id: DSAR Inventa Handler
-version: -1
-fromversion: 6.0.0
+version: 2
+vcShouldKeepItemLegacyProdMachine: false
 name: DSAR Inventa Handler
 description: Handling DSAR requests
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: ea4bed34-3106-4463-8428-db3859087cc7
+    taskid: 7aae740c-a535-43e5-84a1-03a827f3f4aa
     type: start
     task:
-      id: ea4bed34-3106-4463-8428-db3859087cc7
+      id: 7aae740c-a535-43e5-84a1-03a827f3f4aa
       version: -1
       name: ""
       description: Entry point
@@ -36,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 7fa0f6e9-a69e-491b-8022-073e9abab334
+    taskid: f09432a3-b1ad-42da-814e-912021e1d5ed
     type: regular
     task:
-      id: 7fa0f6e9-a69e-491b-8022-073e9abab334
+      id: f09432a3-b1ad-42da-814e-912021e1d5ed
       version: -1
       name: get datasubject id
       description: get datasubject id
@@ -104,10 +104,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: c3d1a003-fa2d-4b65-8f26-f5033ac1f49a
+    taskid: 4839afe4-fa5c-4319-8a9c-6a3d67eef643
     type: regular
     task:
-      id: c3d1a003-fa2d-4b65-8f26-f5033ac1f49a
+      id: 4839afe4-fa5c-4319-8a9c-6a3d67eef643
       version: -1
       name: create ticket
       description: create ticket
@@ -150,10 +150,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 2ebb3911-c7da-44bf-8bbb-1b35cfb10553
+    taskid: 781ce535-2486-4282-891a-3b9134c2ef62
     type: regular
     task:
-      id: 2ebb3911-c7da-44bf-8bbb-1b35cfb10553
+      id: 781ce535-2486-4282-891a-3b9134c2ef62
       version: -1
       name: get files
       description: Get DSAR files
@@ -192,10 +192,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 1278ceb6-bd72-44eb-8c8f-1fdf5f555e09
+    taskid: b2ea5ebe-86bb-4d35-836e-6dd79403ab9c
     type: regular
     task:
-      id: 1278ceb6-bd72-44eb-8c8f-1fdf5f555e09
+      id: b2ea5ebe-86bb-4d35-836e-6dd79403ab9c
       version: -1
       name: get transactions
       description: Get DSAR transactions
@@ -229,10 +229,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 94e5eebc-50fe-4ebd-8387-5d5c30c3ecc9
+    taskid: 7add2dca-18fd-4f18-8a9e-ea3386fdcc99
     type: regular
     task:
-      id: 94e5eebc-50fe-4ebd-8387-5d5c30c3ecc9
+      id: 7add2dca-18fd-4f18-8a9e-ea3386fdcc99
       version: -1
       name: get databases
       description: Get DSAR databases
@@ -269,10 +269,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 409a99d4-9861-44eb-8903-b41059a5d678
+    taskid: 1a8980d3-0897-4e95-8f07-fbf775075d7e
     type: regular
     task:
-      id: 409a99d4-9861-44eb-8903-b41059a5d678
+      id: 1a8980d3-0897-4e95-8f07-fbf775075d7e
       version: -1
       name: get dataassets
       description: Get DSAR dataassets
@@ -309,10 +309,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: be0f07d5-8e95-4a95-882f-274b8132c824
+    taskid: e4d07eb5-e90f-4015-8ecc-d2b4f485cc71
     type: regular
     task:
-      id: be0f07d5-8e95-4a95-882f-274b8132c824
+      id: e4d07eb5-e90f-4015-8ecc-d2b4f485cc71
       version: -1
       name: get piis
       description: Get DSAR piis
@@ -353,10 +353,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 11f349b6-54a0-46a6-8198-cd9e6b575bd6
+    taskid: 551d9a15-2604-40de-8076-5e3bfdab26ef
     type: title
     task:
-      id: 11f349b6-54a0-46a6-8198-cd9e6b575bd6
+      id: 551d9a15-2604-40de-8076-5e3bfdab26ef
       version: -1
       name: Ticket Id
       description: commands.local.cmd.extract.indicators
@@ -383,10 +383,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: e4f2bb7c-5886-4821-835b-3fada480e229
+    taskid: a86d4e36-202e-48ea-872d-9e4630915568
     type: regular
     task:
-      id: e4f2bb7c-5886-4821-835b-3fada480e229
+      id: a86d4e36-202e-48ea-872d-9e4630915568
       version: -1
       name: set ticket id
       description: Set a value in context under the key you entered.
@@ -419,10 +419,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: fff64245-cd9a-4503-8d64-f0ddec36dace
+    taskid: 1f735ccd-24f0-429e-80c8-5de28ed0997a
     type: regular
     task:
-      id: fff64245-cd9a-4503-8d64-f0ddec36dace
+      id: 1f735ccd-24f0-429e-80c8-5de28ed0997a
       version: -1
       name: set datasubject id
       description: Set a value in context under the key you entered.
@@ -461,10 +461,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: cb3e1030-1c17-4ffd-83da-e02a2ddb550f
+    taskid: a8a1f289-567c-4fc3-82c7-8d2100f00968
     type: title
     task:
-      id: cb3e1030-1c17-4ffd-83da-e02a2ddb550f
+      id: a8a1f289-567c-4fc3-82c7-8d2100f00968
       version: -1
       name: Done
       description: Done
@@ -488,10 +488,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: f255635b-5ec6-45f7-8fea-cfac51e90251
+    taskid: d3a251d7-9479-4549-8cbe-a45dda6377a8
     type: regular
     task:
-      id: f255635b-5ec6-45f7-8fea-cfac51e90251
+      id: d3a251d7-9479-4549-8cbe-a45dda6377a8
       version: -1
       name: Datasubject Id
       description: Get PII id from ticket
@@ -528,10 +528,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 4f506f62-bf1c-424f-8004-9147be982bea
+    taskid: fc336d7c-9108-4e0a-84b9-22534ef20f6f
     type: regular
     task:
-      id: 4f506f62-bf1c-424f-8004-9147be982bea
+      id: fc336d7c-9108-4e0a-84b9-22534ef20f6f
       version: -1
       name: Set Datasubject Id
       description: Set a value in context under the key you entered.
@@ -568,10 +568,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 29c44534-312a-4aad-8b19-5c345ebc7bcf
+    taskid: f70a4402-e7d4-4177-8830-e39d70a1fdac
     type: regular
     task:
-      id: 29c44534-312a-4aad-8b19-5c345ebc7bcf
+      id: f70a4402-e7d4-4177-8830-e39d70a1fdac
       version: -1
       name: Link
       description: commands.local.cmd.linkIncidents
@@ -614,10 +614,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: e5d12e82-a5eb-4cab-804e-dd2ae19151c4
+    taskid: ca499893-d65f-4834-8055-0c43017fdaf8
     type: regular
     task:
-      id: e5d12e82-a5eb-4cab-804e-dd2ae19151c4
+      id: ca499893-d65f-4834-8055-0c43017fdaf8
       version: -1
       name: Find related incidents
       description: Searches Demisto incidents
@@ -648,10 +648,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: b660ae47-2fec-44c3-880e-554356aa929f
+    taskid: 7b8fd85f-966b-4028-8ec5-82285b19ee7d
     type: regular
     task:
-      id: b660ae47-2fec-44c3-880e-554356aa929f
+      id: 7b8fd85f-966b-4028-8ec5-82285b19ee7d
       version: -1
       name: Files to Grid
       description: Creates a Grid table from items or key-value pairs.
@@ -690,10 +690,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 9bfca2da-0a6a-4ab9-8367-daf7f831eed4
+    taskid: 55cdee19-3c5e-49f8-8c2a-71826335d7ea
     type: regular
     task:
-      id: 9bfca2da-0a6a-4ab9-8367-daf7f831eed4
+      id: 55cdee19-3c5e-49f8-8c2a-71826335d7ea
       version: -1
       name: Databases to Grid
       description: Creates a Grid table from items or key-value pairs.
@@ -732,10 +732,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 70bbed5d-263c-444c-8228-44f1c61a24c4
+    taskid: 4a0877da-0863-431c-8a30-014026c20d72
     type: regular
     task:
-      id: 70bbed5d-263c-444c-8228-44f1c61a24c4
+      id: 4a0877da-0863-431c-8a30-014026c20d72
       version: -1
       name: Data Assets to Grid
       description: Creates a Grid table from items or key-value pairs.
@@ -774,10 +774,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: bc9a1363-8c3b-40c9-8d98-e58138c2d502
+    taskid: 1b429ac4-eadb-48d4-863f-108dffa5b898
     type: regular
     task:
-      id: bc9a1363-8c3b-40c9-8d98-e58138c2d502
+      id: 1b429ac4-eadb-48d4-863f-108dffa5b898
       version: -1
       name: PIIs to Grid
       description: Creates a Grid table from items or key-value pairs.
@@ -816,10 +816,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: 6c52f02a-490f-4d40-8372-17d5b44645d5
+    taskid: a2e09ba9-f611-48bf-820d-d9da833be2f4
     type: regular
     task:
-      id: 6c52f02a-490f-4d40-8372-17d5b44645d5
+      id: a2e09ba9-f611-48bf-820d-d9da833be2f4
       version: -1
       name: DataSubject Details
       description: Get datasubject details
@@ -862,10 +862,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: 73b0007a-3289-4640-8513-761f86ecb9e0
+    taskid: fedf9913-daab-484c-8e58-baa35cc0d794
     type: title
     task:
-      id: 73b0007a-3289-4640-8513-761f86ecb9e0
+      id: fedf9913-daab-484c-8e58-baa35cc0d794
       version: -1
       name: Handle Context
       description: Handle Context
@@ -896,10 +896,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: caab0de0-afcf-4627-81ba-e6a4ceca6ede
+    taskid: 80fb05ed-b09b-4d2a-8547-faa5e3f42ba9
     type: condition
     task:
-      id: caab0de0-afcf-4627-81ba-e6a4ceca6ede
+      id: 80fb05ed-b09b-4d2a-8547-faa5e3f42ba9
       version: -1
       name: Check if related incidents list is empty
       description: Check if related incidents found
@@ -949,10 +949,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: d84928db-7e1a-4d91-84f7-32392146df37
+    taskid: c9fbdf9a-18ee-484c-856e-dce30f7dc4af
     type: regular
     task:
-      id: d84928db-7e1a-4d91-84f7-32392146df37
+      id: c9fbdf9a-18ee-484c-856e-dce30f7dc4af
       version: -1
       name: Validate Inputs
       description: Validates incident's inputs
@@ -977,13 +977,15 @@ tasks:
       full_name:
         simple: ${incident.inventafullname}
       given_name:
-        simple: ${incident.firstname}
+        simple: ${incident.givenname}
       national_id:
         simple: ${incident.inventanationalid}
       passport_number:
         simple: ${incident.inventapassportnumber}
       phone_number:
         simple: ${incident.phonenumber}
+      reason:
+        simple: ${incident.inventareportreason}
       street_address:
         simple: ${incident.streetaddress}
       surname:
@@ -1011,10 +1013,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: a19341f9-5b80-492f-8c26-94688fd266e2
+    taskid: c75e6aa9-d7a8-455c-87a8-d432338ad895
     type: condition
     task:
-      id: a19341f9-5b80-492f-8c26-94688fd266e2
+      id: c75e6aa9-d7a8-455c-87a8-d432338ad895
       version: -1
       name: Datasubject & Ticket Check
       description: Datasubject & Ticket Check
@@ -1092,93 +1094,91 @@ inputs:
     simple: ${incident.inventanationalid}
   required: false
   description: ""
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: Passport Number
   value:
     simple: ${incident.inventapassportnumber}
   required: false
   description: ""
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: Driver License
   value:
     simple: ${incident.inventadriverlicense}
   required: false
   description: ""
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: Tax ID
   value:
     simple: ${incident.inventataxid}
   required: false
   description: ""
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: Credit Card Number
   value:
     simple: ${incident.inventacreditcardnumber}
   required: false
   description: ""
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: First Name
   value:
     simple: ${incident.firstname}
   required: false
   description: ""
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: Surname
   value:
     simple: ${incident.surname}
   required: false
   description: ""
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: Full Name
   value:
     simple: ${incident.inventafullname}
   required: false
   description: ""
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: Vehicle Number
   value:
     simple: ${incident.inventavehiclenumber}
   required: false
   description: ""
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: Phone Number
   value:
     simple: ${incident.phonenumber}
   required: false
   description: ""
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: Birthday
   value:
     simple: ${incident.inventabirthday}
   required: false
   description: ""
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: City
   value:
     simple: ${incident.city}
   required: false
   description: ""
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: Street Address
   value:
     simple: ${incident.streetaddress}
   required: false
   description: ""
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: Reason
   value:
     simple: ${incident.inventadsarreportreason}
   required: false
   description: ""
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: Ticket
   value:
     simple: ${incident.inventadsarinventaticket}
   required: false
   description: ""
-  playbookInputQuery:
+  playbookInputQuery: null
 outputs:
 - contextPath: Inventa.PiiEntities.entities
   description: entities for certain PII
-tests:
-- No tests (auto formatted)

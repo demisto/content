@@ -14,7 +14,7 @@
     "id": "incident_inventataxid",
     "isReadOnly": false,
     "locked": false,
-    "name": "[Inventa] Tax ID",
+    "name": "Inventa Tax ID",
     "neverSetAsRequired": false,
     "ownerOnly": true,
     "required": false,

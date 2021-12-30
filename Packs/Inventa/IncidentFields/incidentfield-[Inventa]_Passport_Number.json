@@ -14,7 +14,7 @@
     "id": "incident_inventapassportnumber",
     "isReadOnly": false,
     "locked": false,
-    "name": "[Inventa] Passport Number",
+    "name": "Inventa Passport Number",
     "neverSetAsRequired": false,
     "ownerOnly": true,
     "required": false,

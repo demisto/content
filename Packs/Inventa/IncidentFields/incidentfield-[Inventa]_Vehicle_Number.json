@@ -14,7 +14,7 @@
     "id": "incident_inventavehiclenumber",
     "isReadOnly": false,
     "locked": false,
-    "name": "[Inventa] Vehicle Number",
+    "name": "Inventa Vehicle Number",
     "neverSetAsRequired": false,
     "ownerOnly": true,
     "required": false,

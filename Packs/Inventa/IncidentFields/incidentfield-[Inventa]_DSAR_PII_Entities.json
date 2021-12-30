@@ -30,7 +30,7 @@
     "id": "incident_inventadsarpiientities",
     "isReadOnly": false,
     "locked": false,
-    "name": "[Inventa] DSAR PII Entities",
+    "name": "Inventa DSAR PII Entities",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "required": false,

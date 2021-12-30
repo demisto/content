@@ -14,7 +14,7 @@
     "id": "incident_inventafullname",
     "isReadOnly": false,
     "locked": false,
-    "name": "[Inventa] Full Name",
+    "name": "Inventa Full Name",
     "neverSetAsRequired": false,
     "ownerOnly": true,
     "required": false,
