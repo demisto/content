@@ -1660,6 +1660,7 @@ For more details about the authentication used in this integration, see <a href=
 <div class="cl-preview-section"><hr></div>
 <div class="cl-preview-section">
 <p>Revoke a user session- Invalidates all the refresh tokens issued to applications for a user. Permission: Directory.AccessAsUser.All(Delegated)</div>
+<li><strong>API URL (<a href="https://docs.microsoft.com/en-us/graph/api/user-revokesigninsessions?view=graph-rest-1.0&tabs=http">https://docs.microsoft.com/en-us/graph/api/user-revokesigninsessions?view=graph-rest-1.0&tabs=http</a>)</strong></li>
 <div class="cl-preview-section">
 <h5 id="base-command">Base Command</h5>
 </div>
