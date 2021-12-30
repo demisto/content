@@ -1531,7 +1531,7 @@
             "timeout": 240
         },
         {
-            "playbookID": "Process Email - Generic - Test - Actual Incident",
+            "playbookID": "Process Email - Generic - Test - Actual Incident"
         },
         {
             "integrations": "CrowdstrikeFalcon",
