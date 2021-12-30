@@ -1,5 +1,4 @@
 category: Case Management
-beta: true
 commonfields:
   id: QuestKace
   version: -1
@@ -56,7 +55,7 @@ configuration:
   required: false
   type: 8
 description: Use the Comprehensive Quest KACE solution to Provision, manage, secure, and service all network-connected devices.
-display: Quest KACE Systems Management Appliance (Beta)
+display: Quest KACE Systems Management Appliance
 name: QuestKace
 script:
   commands:

@@ -1,5 +1,5 @@
  ## Login to Quest Kace
- Please enter your organization's common user name and password to login.
+ Please enter your organization's common username and password to login.
  
 ### There are 3 types of users who can access API actions:
 - Administrator: All API actions are available. In queries, matching data for all users is returned.
@@ -22,6 +22,3 @@ e.g. machine all,software limited,status limited
 Filtering is accomplished using the filtering query parameter. A comma is used to separate multiple filters.
 All filters are matched in the returned data set. Each filter is specified by an optional entity name, a field name, an
 operator, and a value.
-
-
-Note: This is a beta Integration, which lets you implement and test pre-release software. Since the integration is beta, it might contain bugs. Updates to the integration during the beta phase might include non-backward compatible features. We appreciate your feedback on the quality and usability of the integration to help us identify issues, fix them, and continually improve.
