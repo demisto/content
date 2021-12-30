@@ -20,7 +20,7 @@
     "description": "",
     "associatedToAll": false,
     "associatedTypes": [
-    	"Domain"
+        "Domain"
     ],
     "caseInsensitive": true,
     "columns": null,
