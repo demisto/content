@@ -4,7 +4,8 @@ import VMware
 from datetime import datetime
 from collections import namedtuple
 from pyVmomi import vim
-from Packs.VMware.Integrations.VMware.test_data.VMwaretestclasses import Si, VsphereClient, VM, VirtualMachineRelocateSpec, Task, Folder, CloneSpec, Summary, \
+from Packs.VMware.Integrations.VMware.test_data.VMwaretestclasses import Si, VsphereClient, VM,\
+    VirtualMachineRelocateSpec, Task, Folder, CloneSpec, Summary, \
     Content, Child, ViewManager, Snapshot, Host, ConfigSpec, FileInfo, ResourceAllocationInfo, EventManager, \
     Event
 
