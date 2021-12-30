@@ -17,3 +17,5 @@ aws
 taxii
 dll
 msi
+cve
+cvss
