@@ -5,3 +5,5 @@ firewalls
 IOCs
 Emails
 IncidentsPerFeed
+boolean
+xdr
