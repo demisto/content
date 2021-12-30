@@ -277,6 +277,7 @@ def power_on(si, uuid):
             'EntryContext': ec
         }
     elif task.info.state == 'error':
+        demisto.debug('Task finished in error state, the fault is {}')
         raise Exception('Error occured while trying to power on Virtual Machine.')
 
 
