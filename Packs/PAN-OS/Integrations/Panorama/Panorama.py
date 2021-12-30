@@ -4732,7 +4732,7 @@ def devices(targets=None, vsys_s=None):
                     vsys_s_entry = vsys_s_entry if isinstance(vsys_s_entry, list) else [vsys_s_entry]
                     final_vsys_s = map(lambda x: x['@name'], vsys_s_entry)
                 else:
-                    final_vsys_s = [None]
+                    final_vsys_s = iter([None])
             else:
                 final_vsys_s = vsys_s
             for vsys in final_vsys_s:
