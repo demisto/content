@@ -4730,10 +4730,12 @@ def devices(targets=None, vsys_s=None):
                 if device.get('multi-vsys', 'no') == 'yes':
                     vsys_s_entry = dict_safe_get(device, ['vsys', 'entry'])
                     vsys_s_entry = vsys_s_entry if isinstance(vsys_s_entry, list) else [vsys_s_entry]
-                    vsys_s = map(lambda x: x['@name'], vsys_s_entry)
+                    final_vsys_s = map(lambda x: x['@name'], vsys_s_entry)
                 else:
-                    vsys_s = [None]
-            for vsys in vsys_s:
+                    final_vsys_s = [None]
+            else:
+                final_vsys_s = vsys_s
+            for vsys in final_vsys_s:
                 yield device['serial'], vsys
 
 
