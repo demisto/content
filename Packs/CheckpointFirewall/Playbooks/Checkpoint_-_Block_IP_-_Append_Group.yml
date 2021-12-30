@@ -1187,7 +1187,7 @@ view: |-
 inputs:
 - key: IP
   value:
-    simple: 192.241.215.162,192.241.215.162
+    simple:
   required: true
   description: Array of malicious IPs to block.
   playbookInputQuery:
