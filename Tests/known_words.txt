@@ -5,10 +5,15 @@ firewalls
 IOCs
 Emails
 IncidentsPerFeed
+McAfee
+Endpoints
+IOC
+Deprecated
+EPOFindSystem
 boolean
 xdr
+Darktrace
 aws
 taxii
-deprecated
 dll
 msi
