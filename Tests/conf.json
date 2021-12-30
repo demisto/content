@@ -1421,6 +1421,17 @@
             "playbookID": "EWS Mail Sender Test 2"
         },
         {
+            "integrations": [
+                "EWS Mail Sender",
+                "SMIME Messaging"
+            ],
+            "instance_names": [
+                "ews_mail_sender_labdemisto",
+                "SMIME Messaging"
+            ],
+            "playbookID": "EWS Mail Sender Test 3"
+        },
+        {
             "playbookID": "decodemimeheader_-_test"
         },
         {
