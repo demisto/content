@@ -273,7 +273,7 @@ script:
       required: false
       isArray: false
     - name: user
-      description: User name.
+      description: If specified, only events triggered by the given user are retrieved.
       required: false
       isArray: false
     - description: Number of results to display.
