@@ -108,7 +108,7 @@ def download_and_save_packs(pack_names: dict, id_set_json: dict, output_path: st
             r = requests.request(method='GET',
                                  url=f'{BUCKET_PACKS_URL}/{pack_name}/{pack_version}/{pack_name}.zip',
                                  verify=verify_ssl)
-            with open(path.join(temp_dir.name, pack_name + '.zip'), 'wb') as f:
+            with open(os.path.join(temp_dir.name, pack_name + '.zip'), 'wb') as f:
                 f.write(r.content)
         zip_folder(temp_dir.name, output_path)
     finally:
