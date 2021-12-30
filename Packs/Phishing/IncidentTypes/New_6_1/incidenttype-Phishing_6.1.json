@@ -6,7 +6,7 @@
  "name": "Phishing",
  "color": "#3AD1D6",
  "sla": 240,
- "playbookId": "Phishing - Generic v3",
+ "playbookId": "playbook2",
  "hours": 0,
  "days": 3,
  "weeks": 1,
