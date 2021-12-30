@@ -20,7 +20,7 @@ def util_load_json(path: str) -> Any:
         return json.loads(f.read())
 
 
-def test_cado_create_project(requests_mock):
+def test_create_project_command_success(requests_mock):
     from CadoResponse import Client, create_project_command
     mock_response = {
         'id': 1
@@ -48,7 +48,35 @@ def test_cado_create_project(requests_mock):
     assert response.outputs == mock_response
 
 
-def test_cado_list_project(requests_mock):
+def test_create_project_command_project_exists(requests_mock):
+    from CadoResponse import Client, create_project_command
+    mock_response = {
+        "msg": "Project name already exists"
+    }
+
+    requests_mock.post(
+        'https://test.com/api/v2/projects',
+        json=mock_response,
+        status_code=409
+    )
+
+    client = Client(
+        base_url='https://test.com/api/v2/',
+        verify=False,
+        headers={
+            'Authentication': 'Bearer some_api_key'
+        }
+    )
+
+    args = {'project_name': 'testing-project', 'project_description': 'exists'}
+
+    response = create_project_command(client, args)
+
+    assert 'already exists' in response.readable_output
+
+
+
+def test_list_project_command_success(requests_mock):
     from CadoResponse import Client, list_project_command
 
     mock_response = [
@@ -92,7 +120,7 @@ def test_cado_list_project(requests_mock):
     assert response.outputs == mock_response
 
 
-def test_cado_get_pipeline(requests_mock):
+def test_get_pipeline_command_success(requests_mock):
     from CadoResponse import Client, get_pipeline_command
 
     mock_response = {
@@ -194,7 +222,8 @@ def test_cado_get_pipeline(requests_mock):
     ]
 
 
-def test_cado_list_ec2(requests_mock):
+
+def test_list_ec2_command_success(requests_mock):
     from CadoResponse import Client, list_ec2_command
 
     mock_response = {
@@ -255,7 +284,38 @@ def test_cado_list_ec2(requests_mock):
     ]
 
 
-def test_cado_list_s3(requests_mock):
+def test_list_ec2_command_bad_project_id(requests_mock):
+    from CadoResponse import Client, list_ec2_command
+
+    mock_response = {
+	    "msg": "The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again."
+    }
+
+    requests_mock.get(
+        'https://test.com/api/v2/projects/345345345/imports/ec2',
+        json=mock_response,
+        status_code=404
+    )
+
+    client = Client(
+        base_url='https://test.com/api/v2/',
+        verify=False,
+        headers={
+            'Authentication': 'Bearer some_api_key'
+        }
+    )
+
+    args = {
+        'project_id': 345345345,
+        "region": "us-west-2"
+    }
+
+    response = list_ec2_command(client, args)
+
+    assert 'Failed to execute' in response.readable_output
+
+
+def test_list_s3_command_success(requests_mock):
     from CadoResponse import Client, list_s3_command
 
     mock_response = {
@@ -285,7 +345,7 @@ def test_cado_list_s3(requests_mock):
     assert response.outputs == mock_response
 
 
-def test_cado_trigger_ec2(requests_mock):
+def test_trigger_ec2_command_success(requests_mock):
     from CadoResponse import Client, trigger_ec2_command
 
     mock_response = {
@@ -332,7 +392,44 @@ def test_cado_trigger_ec2(requests_mock):
     assert response.outputs == mock_response
 
 
-def test_cado_trigger_s3(requests_mock):
+def test_trigger_ec2_command_bad_project_id(requests_mock):
+    from CadoResponse import Client, trigger_ec2_command
+
+    mock_response = {
+	    "msg": "The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again."
+    }
+
+    requests_mock.post(
+        'https://test.com/api/v2/projects/3453345345/imports/ec2',
+        json=mock_response,
+        status_code=404
+    )
+
+    client = Client(
+        base_url='https://test.com/api/v2/',
+        verify=False,
+        headers={
+            'Authentication': 'Bearer some_api_key'
+        }
+    )
+
+    args = {
+        'project_id': 3453345345,
+        "instance_id": "test",
+        "region": "us-east=1",
+        "bucket": "test-bucket",
+        "compress": True,
+        "include_disks": True,
+        "include_hash": True,
+        "include_logs": True,
+        "include_screenshot": True
+    }
+
+    response = trigger_ec2_command(client, args)
+    assert 'Failed to execute' in response.readable_output
+
+
+def test_trigger_s3_command_success(requests_mock):
     from CadoResponse import Client, trigger_s3_command
 
     mock_response = {
