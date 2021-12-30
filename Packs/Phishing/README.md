@@ -1,3 +1,5 @@
+`Note`: For the Phishing Alerts use case, see the [Phishing Alerts Investigation pack](https://xsoar.pan.dev/docs/reference/packs/Phishing-Alerts).
+
 Phishing emails are one of the most frequent, easily executable, and harmful security attacks that organizations – regardless of size – face today. High-volume, persistent phishing alerts are a time sink to manage, with incident response requiring coordination between multiple security products and communications with end users. 
 With the Phishing content pack, you can significantly reduce the time your security analysts spend on phishing alerts and standardize the way you manage phishing incidents.
 This content pack includes playbooks that:
@@ -20,7 +22,7 @@ The pack also leverages machine learning to intelligently identify phishing camp
 
 As part of this pack, you will also get out-of-the-box phishing incident views, a full layout and automation scripts. All of these are easily customizable to suit the needs of your organization.
 
-_For more information, visit our [Cortex XSOAR Developer Docs](https://xsoar.pan.dev/docs/reference/playbooks/phishing-investigation---generic-v2)._
+_For more information, visit our [Cortex XSOAR Developer Docs](https://xsoar.pan.dev/docs/reference/playbooks/phishing---generic-v3)._
 
 _If you're new to our Phishing Content Pack, check out our [Setting Up a Phishing Incident in Cortex XSOAR](https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-tutorials/tutorials/phishing-use-case.html) tutorial._
 

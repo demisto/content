@@ -1,5 +1,8 @@
-This playbook investigates and remediates a potential phishing incident. It engages with the user that triggered the incident while investigating the incident itself.
-Note: Final remediation tasks are always decided by a human analyst. 
+`Note`: For the Phishing Alerts use case, see the [Phishing Alerts Investigation playbook](https://xsoar.pan.dev/docs/reference/playbooks/phishing-alerts-investigation).
+
+This playbook investigates and remediates a potential phishing incident. It engages with the user that triggered the incident while investigating the incident itself.\
+Note: Final remediation tasks are always decided by a human analyst.
+
 
 v3 includes:
 - Changing all labels to incident fields.
