@@ -1147,3 +1147,28 @@ def parentEntry():
 
 def getLicenseCustomField(api_key):
     return api_key
+
+
+def getLastMirrorRun():
+    """(Integration only)
+    Retrieves the LastMirrorRun object
+
+    Returns:
+      dict: LastMirrorRun object
+
+    """
+    return {}
+
+
+def setLastMirrorRun(obj):
+    """(Integration only)
+    Stores given object in the LastMirrorRun object
+
+    Args:
+      obj (dict): The object to store
+
+    Returns:
+      None: No data returned
+
+    """
+    return None
