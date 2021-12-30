@@ -5,6 +5,9 @@ firewalls
 IOCs
 Emails
 IncidentsPerFeed
+boolean
+xdr
+
 IPs
 CMD
 CVSS
