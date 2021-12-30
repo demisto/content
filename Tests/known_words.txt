@@ -19,3 +19,13 @@ dll
 msi
 cve
 cvss
+IPs
+CMD
+CVSS
+DNS
+Hostnames
+Src
+Srcs
+Subdomains
+Dsts
+Dst
