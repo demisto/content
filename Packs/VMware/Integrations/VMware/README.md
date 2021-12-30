@@ -301,8 +301,8 @@ Creates a VM snapshot.
 | vm-uuid | VM UUID of virtual machine to take snapshot of. | Required | 
 | name | Snapshot name. | Optional | 
 | description | Snapshot description. | Optional | 
-| memory | Snapshot the virtual machine's memory. Default is "True". Possible values are: true, false. Default is True. | Optional | 
-| quiesce | Quiesce guest file system (needs VMWare Tools installed). Default is "False". Possible values are: true, false. Default is False. | Optional | 
+| memory | Snapshot the virtual machine's memory. Possible values are: true, false. Default is True. | Optional | 
+| quiesce | Quiesce guest file system (needs VMWare Tools installed). Possible values are: true, false. Default is False. | Optional | 
 
 
 #### Context Output

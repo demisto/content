@@ -105,13 +105,13 @@ script:
       description: MAC address of VM.
       type: String
     - contextPath: VMWare.SnapshotCreateDate
-      description: Create date of the last snapshot of the VM.
+      description: The date and time when the last snapshot was created.
       type: String
     - contextPath: VMWare.SnapshotUUID
       description: UUID of the last snapshot of the VM.
       type: String
     - contextPath: VMWare.Deleted
-      description: If set to true, the VM was deleted.
+      description: If true, the VM was deleted.
       type: Boolean
   - arguments:
     - description: VM UUID of virtual machine to be powered on.
@@ -214,14 +214,14 @@ script:
     - description: Snapshot description.
       name: description
     - auto: PREDEFINED
-      defaultValue: "True"
+      defaultValue: "true"
       description: Snapshot the virtual machine's memory. Default is "True".
       name: memory
       predefined:
       - "true"
       - "false"
     - auto: PREDEFINED
-      defaultValue: "False"
+      defaultValue: "false"
       description: Quiesce guest file system (needs VMWare Tools installed). Default
         is "False".
       name: quiesce
@@ -281,13 +281,12 @@ script:
       name: limit
       required: false
       secret: false
-    - description: Page number you would like to view. Each page contains page_size
-        values. Must be used along with page_size.
+    - description: The page number from which to start the search. Must be used along with page_size.
       isArray: false
       name: page
       required: false
       secret: false
-    - description: Number of results per page to display.
+    - description: The number of results per page to display.
       isArray: false
       name: page_size
       required: false
@@ -296,7 +295,7 @@ script:
     name: vmware-get-events
     outputs:
     - contextPath: VMWareEvents.id
-      description: The id of the event.
+      description: The ID of the event.
       type: String
     - contextPath: VMWareEvents.Event
       description: Description of the event.
@@ -358,12 +357,12 @@ script:
       description: The category to which the tag belongs.
       type: String
     - contextPath: VMwareTag.VM
-      description: VM name which the tag attached to.
+      description: VM name to which the tag is attached.
       type: String
   - name: vmware-create-vm
     description: Creates a new virtual machine in the current folder and attaches
       it to the specified resource pool. This operation creates a virtual machine,
-      instead of cloning a virtual machine from an existing one.
+      rather than cloning an existing one.
     deprecated: false
     arguments:
     - name: name
@@ -403,8 +402,8 @@ script:
       description: VM name.
       type: String
     - contextPath: VMWare.Template
-      description: true if template, else false.
-      type: bool
+      description: If true, then the VM is a template, false otherwise.
+      type: Boolean
     - contextPath: VMWare.Path
       description: Path to VM.
       type: String
@@ -427,13 +426,13 @@ script:
       description: MAC address of VM.
       type: String
     - contextPath: VMWare.SnapshotCreateDate
-      description: Create date of the last snapshot of the VM.
+      description: The date and time when the last snapshot was created.
       type: String
     - contextPath: VMWare.SnapshotUUID
       description: UUID of the last snapshot of the VM.
       type: String
     - contextPath: VMWare.Deleted
-      description: If set to true, the VM was deleted.
+      description: If true, the VM was deleted.
       type: Boolean
   - name: vmware-clone-vm
     description: Creates a clone of this virtual machine. If the virtual machine is
@@ -485,7 +484,7 @@ script:
       type: String
     - contextPath: VMWare.Template
       description: true if template, else false.
-      type: bool
+      type: Boolean
     - contextPath: VMWare.Path
       description: Path to VM.
       type: String
@@ -508,16 +507,16 @@ script:
       description: MAC address of VM.
       type: String
     - contextPath: VMWare.SnapshotCreateDate
-      description: Create date of the last snapshot of the VM.
+      description: The date and time when the last snapshot was created.
       type: String
     - contextPath: VMWare.SnapshotUUID
       description: UUID of the last snapshot of the VM.
       type: String
     - contextPath: VMWare.Deleted
-      description: If set to true, the VM was deleted.
+      description: If true, the VM was deleted.
       type: Boolean
   - name: vmware-relocate-vm
-    description: Relocates a virtual machine to the location specified.
+    description: Relocates a virtual machine to a specified location.
     deprecated: false
     arguments:
     - name: datastore
@@ -574,7 +573,7 @@ script:
       description: VM instance UUID.
       type: String
     - contextPath: VMWare.Deleted
-      description: If set to true, the VM was deleted.
+      description: If true, the VM was deleted.
       type: String
   - name: vmware-register-vm
     description: Adds an existing virtual machine to the folder.
@@ -595,7 +594,7 @@ script:
     - auto: PREDEFINED
       defaultValue: "False"
       name: asTemplate
-      description: Flag to specify whether or not the virtual machine should be marked
+      description: Specifies whether or not the virtual machine should be marked
         as a template.
       required: false
       isArray: false
@@ -608,7 +607,7 @@ script:
       isArray: false
     outputs: []
   - name: vmware-unregister-vm
-    description: emoves this virtual machine from the inventory without removing any
+    description: Removes this virtual machine from the inventory without removing any
       of the virtual machine's files on disk.
     deprecated: false
     arguments:
