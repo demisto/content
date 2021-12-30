@@ -106,7 +106,7 @@ tasks:
       {
         "position": {
           "x": 840,
-          "y": 3010
+          "y": 3190
         }
       }
     note: false
@@ -118,10 +118,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: ffa5b55e-309a-45cb-8ed3-d84f8dd49d6c
+    taskid: f7d98ba6-c559-4ba1-800c-c74a8e2b6995
     type: condition
     task:
-      id: ffa5b55e-309a-45cb-8ed3-d84f8dd49d6c
+      id: f7d98ba6-c559-4ba1-800c-c74a8e2b6995
       version: -1
       name: Is there already exists  IP object in Checkpoint?
       description: Validate if there is IP object already in Checkpoint.
@@ -144,7 +144,7 @@ tasks:
                 root: CheckPoint.Objects
                 accessor: ipv4-address
             iscontext: true
-      - - operator: in
+      - - operator: inList
           left:
             value:
               complex:
@@ -171,10 +171,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: fcb4cf82-f85d-4d51-811f-aee74cec2a52
+    taskid: e045e3d4-2528-4d55-8f10-b2b13394a858
     type: regular
     task:
-      id: fcb4cf82-f85d-4d51-811f-aee74cec2a52
+      id: e045e3d4-2528-4d55-8f10-b2b13394a858
       version: -1
       name: Checkpoint add a host (from Inputs)
       description: Add host object to Checkpoint Firewall.
@@ -187,9 +187,23 @@ tasks:
       - "14"
     scriptarguments:
       ip_address:
-        simple: ${inputs.IP}
+        complex:
+          root: inputs.IP
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
       name:
-        simple: ${inputs.IP}
+        complex:
+          root: inputs.IP
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
       session_id:
         complex:
           root: CheckPoint
@@ -282,7 +296,7 @@ tasks:
       {
         "position": {
           "x": 220,
-          "y": 1700
+          "y": 1880
         }
       }
     note: false
@@ -322,7 +336,7 @@ tasks:
       {
         "position": {
           "x": 220,
-          "y": 2050
+          "y": 2230
         }
       }
     note: false
@@ -356,7 +370,7 @@ tasks:
       {
         "position": {
           "x": 220,
-          "y": 2810
+          "y": 2990
         }
       }
     note: false
@@ -391,7 +405,7 @@ tasks:
       {
         "position": {
           "x": -90,
-          "y": 1560
+          "y": 1740
         }
       }
     note: false
@@ -429,7 +443,7 @@ tasks:
       {
         "position": {
           "x": 220,
-          "y": 1380
+          "y": 1560
         }
       }
     note: false
@@ -506,7 +520,7 @@ tasks:
       {
         "position": {
           "x": -330,
-          "y": 1230
+          "y": 1390
         }
       }
     note: false
@@ -518,10 +532,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: f61c8a47-32d7-447a-8c1c-b78a56e13af4
+    taskid: 1e54c248-daf5-4479-876d-cf71a9b99d88
     type: regular
     task:
-      id: f61c8a47-32d7-447a-8c1c-b78a56e13af4
+      id: 1e54c248-daf5-4479-876d-cf71a9b99d88
       version: -1
       name: Checkpoint show object
       description: Get host object to check if IP already exist.
@@ -534,7 +548,14 @@ tasks:
       - "3"
     scriptarguments:
       filter_search:
-        simple: ${inputs.IP}
+        complex:
+          root: inputs.IP
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
       ip_only:
         simple: "true"
       session_id:
@@ -580,7 +601,7 @@ tasks:
       {
         "position": {
           "x": -90,
-          "y": 2220
+          "y": 2400
         }
       }
     note: false
@@ -683,7 +704,7 @@ tasks:
       {
         "position": {
           "x": -330,
-          "y": 2400
+          "y": 2580
         }
       }
     note: false
@@ -713,7 +734,7 @@ tasks:
       {
         "position": {
           "x": -330,
-          "y": 2630
+          "y": 2810
         }
       }
     note: false
@@ -725,10 +746,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: e318ce0a-c8d9-47e2-869d-ab779132d497
+    taskid: a4e24f56-878c-4103-82c6-cfe996941475
     type: regular
     task:
-      id: e318ce0a-c8d9-47e2-869d-ab779132d497
+      id: a4e24f56-878c-4103-82c6-cfe996941475
       version: -1
       name: Compare between Inputs IPs and the returned CP objects
       description: Compare  two lists and put the differences in context.
@@ -741,7 +762,14 @@ tasks:
       - "28"
     scriptarguments:
       left:
-        simple: ${inputs.IP}
+        complex:
+          root: inputs.IP
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
       right:
         simple: ${CheckPoint.Objects.ipv4-address}
     separatecontext: false
@@ -842,10 +870,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: ae2ec864-c837-4aaa-8382-c2567c48a10a
+    taskid: 6254b6c8-754e-4c75-88d3-28d6d486b5d5
     type: regular
     task:
-      id: ae2ec864-c837-4aaa-8382-c2567c48a10a
+      id: 6254b6c8-754e-4c75-88d3-28d6d486b5d5
       version: -1
       name: Append network object
       description: Updates the specified group object.
@@ -863,7 +891,7 @@ tasks:
         complex:
           root: CheckPoint.Objects
           filters:
-          - - operator: in
+          - - operator: inList
               left:
                 value:
                   simple: CheckPoint.Objects.ipv4-address
@@ -886,7 +914,7 @@ tasks:
       {
         "position": {
           "x": 220,
-          "y": 1220
+          "y": 1390
         }
       }
     note: false
@@ -1034,7 +1062,7 @@ tasks:
       {
         "position": {
           "x": 220,
-          "y": 1870
+          "y": 2050
         }
       }
     note: false
@@ -1064,7 +1092,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "30"
+      - "36"
     scriptarguments:
       key:
         simple: currentMembers
@@ -1098,12 +1126,58 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: a807ae25-6d0b-48df-851c-748ab0edefc6
+    type: regular
+    task:
+      id: a807ae25-6d0b-48df-851c-748ab0edefc6
+      version: -1
+      name: Checkpoint show object
+      description: Get host object to check if IP already exist.
+      script: '|||checkpoint-show-objects'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      filter_search:
+        complex:
+          root: inputs.IP
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+      ip_only:
+        simple: "true"
+      session_id:
+        simple: ${CheckPoint.Login.session-id}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3975,
+        "height": 4155,
         "width": 1550,
         "x": -330,
         "y": -900
@@ -1112,7 +1186,8 @@ view: |-
   }
 inputs:
 - key: IP
-  value: {}
+  value:
+    simple: 192.241.215.162,192.241.215.162
   required: true
   description: Array of malicious IPs to block.
   playbookInputQuery:

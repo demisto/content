@@ -4,7 +4,7 @@ name: Checkpoint - Block URL
 description: "This playbook blocks URLs using Checkpoint Firewall through Custom URL\
   \ Categories.\nThe playbook checks whether the input URL category already exists,\
   \ and if the URLs are a part of this category. Otherwise, it will create the category,\
-  \ add the URLs, and publish the configuration."
+  \ block the URLs, and publish the configuration."
 starttaskid: '0'
 tasks:
   '0':
@@ -115,10 +115,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '3':
     id: '3'
-    taskid: 8dd5b070-41b9-4aef-880a-18b964ee5f16
+    taskid: 6de4c75e-2094-4333-878b-169f73a7d3bf
     type: regular
     task:
-      id: 8dd5b070-41b9-4aef-880a-18b964ee5f16
+      id: 6de4c75e-2094-4333-878b-169f73a7d3bf
       version: -1
       name: Checkpoint application site append URLs
       description: Added the URL as  application site in Checkpoint firewall.
@@ -131,7 +131,14 @@ tasks:
       - '7'
     scriptarguments:
       identifier:
-        simple: ${inputs.URL}
+        complex:
+          root: inputs.URL
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
       name:
         simple: ${inputs.application_site_name}
       primary_category:
@@ -667,10 +674,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 0221271d-ff45-4d8f-8931-50d480c548a5
+    taskid: 28beae0e-0e08-4fcb-8490-bf56b83f8566
     type: regular
     task:
-      id: 0221271d-ff45-4d8f-8931-50d480c548a5
+      id: 28beae0e-0e08-4fcb-8490-bf56b83f8566
       version: -1
       name: 'Update Existing Application Site '
       description: "Edits an existing application using the object name or UID. \n\
@@ -691,7 +698,14 @@ tasks:
       session_id:
         simple: ${CheckPoint.Login.session-id}
       url_list_to_add:
-        simple: ${inputs.URL}
+        complex:
+          root: inputs.URL
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
     continueonerror: true
     separatecontext: false
     view: |-
@@ -775,7 +789,9 @@ inputs:
 - key: URL
   value: {}
   required: true
-  description: An array of URL to block.
+  description: |-
+    An array of URLs to block.
+    Example: ababab.com,babababa.org
   playbookInputQuery:
 - key: policy_package
   value:
