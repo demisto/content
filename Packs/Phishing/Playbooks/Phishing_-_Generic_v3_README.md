@@ -24,8 +24,7 @@ The investigation is triggered by an email sent or forwarded to a designated phi
 
 ##### Configuration
 - Create an email inbox for phishing reports. Make sure the user in control of that inbox has the permissions required by your integration (EWS v2, Gmail, or MSGraph).
-- Configure the **Phishing** incident type to run the **Phishing Investigation - Generic v2** playbook.
-- Configure the main **Phishing Investigation - Generic v2** playbook inputs.
+- Configure the main **Phishing - Generic v3** playbook inputs.
 - Optional: Configure the Active Directory critical asset names in the **Calculate Severity - Generic v2** inputs or leave them empty.
 - Optional: Configure the *InternalRange* and *ResolveIP* inputs in the **IP Enrichment - External - Generic v2** playbook.
 - Optional: Configure the *Rasterize* and *VerifyURL* inputs in the **URL Enrichment - Generic v2** playbook.
@@ -37,6 +36,8 @@ The investigation is triggered by an email sent or forwarded to a designated phi
 - Optional: Configure the *ExchangeLocation* input in the **Search And Delete Emails - Generic v2** playbook.
 - Optional: Configure the *SearchAndDeleteIntegration* input in the **Search And Delete Emails - Generic v2** playbook.
 - Optional: Personalize the inputs in the **Detect & Manage Phishing Campaigns** playbook.
+- Optional: Configure the minimum severity for PCL, SCL and BCL score in the **Process Microsoft's Anti-Spam Headers** playbook.
+- Optional: Configure the *EmailBrand* input in the **Process Email - Generic v2** playbook.
 
 ##### Best Practices & Suggestions
 - The email received in the designated phishing inbox should contain the potential phishing email as a file attachment so the headers of the original suspected email are retained. If the email is not attached, the original email with its headers is retrieved only if the required permissions are configured and the *GetOriginalEmail* input is set to True in the **Process Email - Generic v2** playbook.
@@ -101,4 +102,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Phishing - Generic v3](Insert the link to your image here)
+![Phishing - Generic v3](../doc_files/Phishing_-_Generic_v3.png)
