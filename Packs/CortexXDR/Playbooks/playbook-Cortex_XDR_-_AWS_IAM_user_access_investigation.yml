@@ -1427,9 +1427,23 @@ tasks:
     nexttasks:
       '#default#':
       - "46"
-      "Yes":
+      "yes":
       - "10"
     separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.AutoDeleteProfile
+                transformers:
+                - operator: toLowerCase
+            iscontext: true
+          right:
+            value:
+              simple: "true"
     view: |-
       {
         "position": {
@@ -1489,8 +1503,7 @@ view: |-
       "34_35_#default#": 0.16,
       "34_43_yes": 0.66,
       "38_20_yes": 0.74,
-      "38_39_#default#": 0.52,
-      "45_46_#default#": 0.43
+      "38_39_#default#": 0.52
     },
     "paper": {
       "dimensions": {
@@ -1522,7 +1535,13 @@ inputs:
     simple: "False"
   required: false
   description: 'True/False to initiate block IP playbook automatically '
-  playbookInputQuery:
+  playbookInputQuery: null
+- key: AutoDeleteProfile
+  value:
+    simple: "False"
+  required: false
+  description: True/False to automatically delete the user login profile if it exists.
+  playbookInputQuery: null
 outputs: []
 tests:
 - No tests
