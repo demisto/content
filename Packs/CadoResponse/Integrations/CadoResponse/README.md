@@ -1,5 +1,5 @@
 Automate data collection. Process data at cloud speed. Analyze with purpose.
-This integration was integrated and tested with version xx of CadoResponse
+This integration was integrated and tested with version 1.1.0 of CadoResponse
 
 ## Configure Cado Response on Cortex XSOAR
 
