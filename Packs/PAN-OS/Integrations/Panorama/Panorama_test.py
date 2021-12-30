@@ -942,3 +942,40 @@ def test_panorama_push_to_device_group_command(mocker, args, expected_request_pa
 
     demisto_result_got = return_results_mock.call_args.args[0]['EntryContext']
     assert demisto_result_got == expected_demisto_result
+
+
+def test_get_url_category__url_length_gt_1278(mocker):
+    """
+    Given:
+        - Error in response indicating the url to get category for is over the allowed length (1278 chars)
+
+    When:
+        - Run get_url_category command
+
+    Then:
+        - Validate a commandResult is returned with detailed readable output
+    """
+
+    # prepare
+    import Panorama
+    import requests
+    from Panorama import panorama_get_url_category_command
+    Panorama.DEVICE_GROUP = ''
+    mocked_res_dict = {
+        'response': {
+            '@status': 'error',
+            '@code': '20',
+            'msg': {'line': 'test -> url Node can be at most 1278 characters, but current length: 1288'}
+        }}
+    mocked_res_obj = requests.Response()
+    mocked_res_obj.status_code = 200
+    mocked_res_obj._content = json.dumps(mocked_res_dict).encode('utf-8')
+    mocker.patch.object(requests, 'request', return_value=mocked_res_obj)
+    mocker.patch.object(Panorama, 'xml2json', return_value=mocked_res_obj._content)
+    return_results_mock = mocker.patch.object(Panorama, 'return_results')
+
+    # run
+    panorama_get_url_category_command(url_cmd='url', url='test_url', additional_suspicious=[], additional_malicious=[])
+
+    # validate
+    assert 'URL Node can be at most 1278 characters.' == return_results_mock.call_args[0][0][1].readable_output
