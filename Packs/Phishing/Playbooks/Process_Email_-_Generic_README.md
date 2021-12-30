@@ -55,4 +55,4 @@ This playbook does not use any integrations.
 
 ## Playbook Image
 ---
-![Process Email - Generic](https://raw.githubusercontent.com/demisto/content/82895af983e287954ef4565db548f9ae91d0487a/Packs/Phishing/doc_files/Process_Email_-_Generic.png)
+![Process Email - Generic](../doc_files/Process_Email_-_Generic.png)
