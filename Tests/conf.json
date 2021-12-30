@@ -1531,6 +1531,9 @@
             "timeout": 240
         },
         {
+            "playbookID": "Process Email - Generic - Test - Actual Incident"
+        },
+        {
             "integrations": "CrowdstrikeFalcon",
             "playbookID": "Test - CrowdStrike Falcon",
             "fromversion": "4.1.0",
@@ -2263,6 +2266,10 @@
             ],
             "memory_threshold": 160,
             "pid_threshold": 80
+        },
+        {
+            "playbookID": "Phishing - Core - Test - Actual Incident",
+            "fromversion": "6.0.0"
         },
         {
             "integrations": "duo",
@@ -4836,6 +4843,10 @@
         {
             "integrations": "KafkaV3",
             "playbookID": "KafkaV3 Test"
+        },
+        {
+            "integrations": "McAfee ePO v2",
+            "playbookID": "McAfee ePO v2 Test"
         }
     ],
     "skipped_tests": {
@@ -4887,6 +4898,7 @@
         "JoeSecurityTestPlaybook": "Issue 25649",
         "Cortex Data Lake Test": "Issue 24346",
         "Phishing - Core - Test - Incident Starter": "Issue 26784",
+        "Phishing - Core - Test - Actual Incident": "Issue 45227",
         "Test Playbook McAfee ATD": "Issue 33409",
         "Detonate Remote File From URL -McAfee-ATD - Test": "Issue 33407",
         "Test Playbook McAfee ATD Upload File": "Issue 33408",
@@ -4959,7 +4971,8 @@
         "SplunkPy_KV_commands_default_handler": "Issue 41419",
         "LogRhythm REST test": "Issue 40654",
         "Recorded Future Test": "Quota issue - will ve reverted un 1.1.22",
-        "RecordedFutureFeed - Test": "Quota issue - will ve reverted un 1.1.22"
+        "RecordedFutureFeed - Test": "Quota issue - will ve reverted un 1.1.22",
+        "Process Email - Generic - Test - Actual Incident": "Issue 45227"
     },
     "skipped_integrations": {
         
