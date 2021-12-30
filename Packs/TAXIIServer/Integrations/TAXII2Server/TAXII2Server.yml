@@ -48,7 +48,7 @@ configuration:
   required: false
   type: 0
 - additionalinfo: Maximum number of items to return.
-  defaultvalue: '2500'
+  defaultvalue: '2000'
   display: Response Size
   hidden: false
   name: res_size

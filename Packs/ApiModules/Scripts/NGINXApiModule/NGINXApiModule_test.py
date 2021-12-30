@@ -74,6 +74,19 @@ def test_nginx_conf(tmp_path: Path, mocker):
         assert 'listen 12345 default_server' in conf
 
 
+def test_nginx_conf_taxii2(tmp_path: Path, mocker):
+    from NGINXApiModule import create_nginx_server_conf
+    NGINXApiModule.INTEGRATION_NAME = 'TAXII2 Server'
+    conf_file = str(tmp_path / "nginx-test-server.conf")
+    create_nginx_server_conf(conf_file, 12345, params={'version': '2.0', 'credentials': {'identifier': 'identifier'}})
+    with open(conf_file, 'rt') as f:
+        conf = f.read()
+        assert 'proxy_set_header Range $http_range;' in conf
+        assert '$http_authorization' in conf
+        assert '$http_range' in conf
+        assert '$http_accept' in conf
+
+
 NGINX_PROCESS: Optional[subprocess.Popen] = None
 
 

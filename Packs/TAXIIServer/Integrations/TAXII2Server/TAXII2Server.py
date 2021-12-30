@@ -38,7 +38,8 @@ STIX_DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 TAXII_V20_CONTENT_LEN = 9765625
 TAXII_V21_CONTENT_LEN = 104857600
 TAXII_REQUIRED_FILTER_FIELDS = {'name', 'type', 'modified', 'createdTime', 'description',
-                                'accounttype', 'userid', 'mitreid'}
+                                'accounttype', 'userid', 'mitreid', 'stixid'}
+PAGE_SIZE = 2000
 
 XSOAR_TYPES_TO_STIX_SCO = {
     FeedIndicatorType.CIDR: 'ipv4-addr',
@@ -284,8 +285,8 @@ class TAXII2Server:
             raise RequestedRangeNotSatisfiable
 
         if objects:
-            first_added = objects[0].get('date_added')
-            last_added = objects[-1].get('date_added')
+            first_added = objects[-1].get('date_added')
+            last_added = objects[0].get('date_added')
 
         response = {
             'objects': objects,
@@ -306,9 +307,9 @@ class TAXII2Server:
         Returns:
             The objects from given collection ID.
         """
-
         found_collection = self.collections_by_id.get(collection_id, {})
         query = found_collection.get('query')
+
         iocs, extensions, total = find_indicators(
             query=query,
             types=types,
@@ -331,8 +332,8 @@ class TAXII2Server:
             objects = [val for pair in zip(limited_iocs, limited_extensions) for val in pair]
 
         if limited_iocs:
-            first_added = limited_iocs[0].get('created')
-            last_added = limited_iocs[-1].get('created')
+            first_added = limited_iocs[-1].get('created')
+            last_added = limited_iocs[0].get('created')
 
         response = {}
         if self.version == TAXII_VER_2_0:
@@ -447,7 +448,7 @@ def handle_long_running_error(error: str):
 
 
 def handle_response(status_code: int, content: dict, date_added_first: str = None, date_added_last: str = None,
-                    content_type: str = None, content_range: str = None, query_time: str = None ) -> Response:
+                    content_type: str = None, content_range: str = None, query_time: str = None) -> Response:
     """
     Create an HTTP taxii response from a taxii message.
     Args:
@@ -541,6 +542,7 @@ def find_indicators(query: str, types: list, added_after, limit: int, offset: in
         filter_fields=field_filters,
         query=new_query,
         limit=new_limit,
+        size=PAGE_SIZE,
         from_date=added_after
     )
 
@@ -570,6 +572,8 @@ def create_sco_stix_uuid(xsoar_indicator: dict, stix_type: str) -> str:
     """
     Create uuid for sco objects.
     """
+    if stixid := xsoar_indicator.get('CustomFields', {}).get('stixid'):
+        return stixid
     value = xsoar_indicator.get('value')
     if stix_type == 'user-account':
         account_type = xsoar_indicator.get('CustomFields', {}).get('accounttype')
@@ -600,6 +604,8 @@ def create_sdo_stix_uuid(xsoar_indicator: dict, stix_type: str) -> str:
     """
     Create uuid for sdo objects.
     """
+    if stixid := xsoar_indicator.get('CustomFields', {}).get('stixid'):
+        return stixid
     value = xsoar_indicator.get('value')
     if stix_type == 'attack-pattern':
         if mitre_id := xsoar_indicator.get('CustomFields', {}).get('mitreid'):
@@ -669,7 +675,7 @@ def create_stix_object(xsoar_indicator: dict, xsoar_type: str) -> tuple:
     except Exception:
         modified_parsed = ''
 
-    stix_object = {
+    stix_object: Dict[str, Any] = {
         'id': stix_id,
         'type': object_type,
         'spec_version': SERVER.version,
@@ -796,7 +802,7 @@ def parse_manifest_and_object_args() -> tuple:
         limit_arg = request.args.get('limit')
 
         offset = int(next) if next else 0
-        limit = int(limit_arg) if limit_arg else 100
+        limit = int(limit_arg) if limit_arg else limit
 
     return added_after, offset, limit, types
 
@@ -983,7 +989,6 @@ def taxii2_objects(api_root: str, collection_id: str) -> Response:
     try:
         created = datetime.now(timezone.utc)
         added_after, offset, limit, types = parse_manifest_and_object_args()
-
         objects_response, date_added_first, date_added_last, content_range = SERVER.get_objects(
             collection_id=collection_id,
             added_after=added_after,

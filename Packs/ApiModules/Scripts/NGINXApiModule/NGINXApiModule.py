@@ -64,6 +64,10 @@ server {
         add_header X-Proxy-Cache $upstream_cache_status;
         # allow bypassing the cache with an arg of nocache=1 ie http://server:7000/?nocache=1
         proxy_cache_bypass $arg_nocache;
+        proxy_read_timeout 1800;
+        proxy_connect_timeout 1800;
+        proxy_send_timeout 1800;
+        send_timeout 1800;
     }
 }
 
@@ -103,7 +107,7 @@ def create_nginx_server_conf(file_path: str, port: int, params: Dict):
     credentials = params.get('credentials') or {}
     if credentials.get('identifier'):
         extra_cache_keys.append("$http_authorization")
-    if INTEGRATION_NAME == 'TAXII2 Server':
+    if INTEGRATION_NAME == 'TAXII2 Server':     # type: ignore[name-defined] # pylint: disable=E0602
         extra_cache_keys.append("$http_accept")
         if params.get('version') == '2.0':
             proxy_set_range_header = 'proxy_set_header Range $http_range;'
