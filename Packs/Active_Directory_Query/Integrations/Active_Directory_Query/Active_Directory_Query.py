@@ -391,7 +391,7 @@ def search_with_paging(search_filter, search_base, attributes=None, page_size=10
 
         entries_left_to_fetch -= len(conn.entries)
         total_entries += len(conn.entries)
-        cookie = conn.result['controls']['1.2.840.113556.1.4.319']['value']['cookie']
+        cookie = dict_safe_get(conn.result, ['controls', '1.2.840.113556.1.4.319', 'value', 'cookie'])
         time_diff = (start - datetime.now()).seconds
 
         entries.extend(conn.entries)
