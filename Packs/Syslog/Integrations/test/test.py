@@ -138,6 +138,7 @@ def main() -> None:
     proxy = demisto.params().get('proxy', False)
 
     demisto.debug(f'Command being called is {demisto.command()}')
+
     try:
 
         # TODO: Make sure you add the proper headers for authentication
