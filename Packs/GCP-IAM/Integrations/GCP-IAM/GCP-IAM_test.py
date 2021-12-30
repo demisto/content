@@ -43,8 +43,8 @@ def test_gcp_iam_project_list_command(client):
     """
     mock_response = load_mock_response('project/project_list.json')
     client.gcp_iam_project_list_request = Mock(return_value=mock_response)
-    parent = "organizations/org_id"
-    result = GCP_IAM.gcp_iam_project_list_command(client, {"parent": parent})
+    parent = "organizations/xsoar-organization"
+    result = GCP_IAM.gcp_iam_projects_get_command(client, {"parent": parent})
 
     assert len(result.outputs) == 2
     assert result.outputs_prefix == 'GCP.IAM.Project'
@@ -66,11 +66,11 @@ def test_gcp_iam_project_get_command(client):
     mock_response = load_mock_response('project/project_get.json')
     client.gcp_iam_project_get_request = Mock(return_value=mock_response)
     project_name = "projects/project-name-1"
-    result = GCP_IAM.gcp_iam_project_get_command(client, {"project_name": project_name})
+    result = GCP_IAM.gcp_iam_projects_get_command(client, {"project_name": project_name})
 
     assert len(result.outputs) == 1
     assert result.outputs_prefix == 'GCP.IAM.Project'
-    assert result.outputs[0].get('name') == 'projects/project-name-1'
+    assert result.outputs[0].get('name') == project_name
 
 
 def test_gcp_iam_project_iam_policy_get_command(client):
@@ -102,7 +102,7 @@ def test_gcp_iam_project_iam_test_permission_command(client):
     Given:
      - User has provided valid credentials.
     When:
-     - gcp-iam-project-iam-test-permission called.
+     - gcp-iam-project-iam-permission-test called.
     Then:
      - Ensure number of items is correct.
      - Ensure outputs prefix is correct.
@@ -113,12 +113,12 @@ def test_gcp_iam_project_iam_test_permission_command(client):
     project_name = "projects/project-name-1"
     permissions = "compute.instances.create,aiplatform.dataItems.create"
     result = GCP_IAM.gcp_iam_project_iam_test_permission_command(client, {"project_name": project_name,
-                                                                          permissions: permissions})
+                                                                          "permissions": permissions})
 
     assert len(result.outputs) == 2
     assert result.outputs_prefix == 'GCP.IAM.Permission'
-    assert result.outputs[1] == "compute.instances.create"
-    assert result.outputs[0] == "aiplatform.dataItems.create"
+    assert result.outputs[1].get('name') == "compute.instances.create"
+    assert result.outputs[0].get('name') == "aiplatform.dataItems.create"
 
 
 def test_gcp_iam_project_iam_member_add_command(client):
@@ -129,9 +129,7 @@ def test_gcp_iam_project_iam_member_add_command(client):
     When:
      - gcp-iam-project-iam-member-add called.
     Then:
-     - Ensure number of items is correct.
-     - Ensure outputs prefix is correct.
-     - Ensure a sample value from the API matches what is generated in the context.
+     - Ensure results readable output.
     """
     mock_response = load_mock_response('project/project_iam_policy_set.json')
     client.gcp_iam_project_iam_policy_set_request = Mock(return_value=mock_response)
@@ -141,17 +139,14 @@ def test_gcp_iam_project_iam_member_add_command(client):
 
     project_name = "projects/project-name-1"
     member = "user:user-1@xsoar.com"
+    role = "roles/browser"
     command_args = {"project_name": project_name,
-                    "role": "roles/browser",
+                    "role": role,
                     "members": member}
 
     result = GCP_IAM.gcp_iam_project_iam_member_add_command(client, command_args)
 
-    assert len(result.outputs.get('bindings')) == 2
-    assert result.outputs_prefix == 'GCP.IAM.Policy'
-    assert result.outputs.get('name') == project_name
-    assert result.outputs.get('bindings')[1].get('role') == 'roles/browser'
-    assert member in result.outputs.get('bindings')[1].get('members')
+    assert result.readable_output == f'Role {role} updated successfully.'
 
 
 def test_gcp_iam_project_iam_member_remove_command(client):
@@ -162,9 +157,7 @@ def test_gcp_iam_project_iam_member_remove_command(client):
     When:
      - gcp-iam-project-iam-member-remove called.
     Then:
-     - Ensure number of items is correct.
-     - Ensure outputs prefix is correct.
-     - Ensure a sample value from the API matches what is generated in the context.
+     - Ensure results readable output.
     """
     mock_response = load_mock_response('project/project_iam_policy_set.json')
     client.gcp_iam_project_iam_policy_set_request = Mock(return_value=mock_response)
@@ -174,17 +167,14 @@ def test_gcp_iam_project_iam_member_remove_command(client):
 
     project_name = "projects/project-name-1"
     member = "group:poctest@xsoar.com"
+    role = "roles/browser"
     command_args = {"project_name": project_name,
-                    "role": "roles/browser",
+                    "role": role,
                     "members": member}
 
     result = GCP_IAM.gcp_iam_project_iam_member_remove_command(client, command_args)
 
-    assert len(result.outputs.get('bindings')) == 2
-    assert result.outputs_prefix == 'GCP.IAM.Policy'
-    assert result.outputs.get('name') == project_name
-    assert result.outputs.get('bindings')[1].get('role') == 'roles/browser'
-    assert member not in result.outputs.get('bindings')[1].get('members')
+    assert result.readable_output == f'Role {role} updated successfully.'
 
 
 def test_gcp_iam_project_iam_policy_set_command(client):
@@ -233,17 +223,15 @@ def test_gcp_iam_project_iam_policy_set_command(client):
     assert result.outputs.get('bindings') == policy
 
 
-def test_gcp_iam_project_iam_policy_set_command(client):
+def test_gcp_iam_project_iam_policy_add_command(client):
     """
     Scenario: Add new project IAM policy.
     Given:
      - User has provided valid credentials.
     When:
-     - gcp-iam-project-iam-policy-add called.
+     - gcp-iam-project-iam-policy-create called.
     Then:
-     - Ensure number of items is correct.
-     - Ensure outputs prefix is correct.
-     - Ensure a sample value from the API matches what is generated in the context.
+     - Ensure results readable output.
     """
     mock_response = load_mock_response('project/project_iam_policy_set.json')
     client.gcp_iam_project_iam_policy_set_request = Mock(return_value=mock_response)
@@ -265,8 +253,32 @@ def test_gcp_iam_project_iam_policy_set_command(client):
 
     result = GCP_IAM.gcp_iam_project_iam_policy_add_command(client, command_args)
 
-    assert len(result.outputs.get('bindings')) == 2
-    assert result.outputs_prefix == 'GCP.IAM.Policy'
-    assert result.outputs.get('name') == project_name
-    assert result.outputs.get('bindings')[1].get("role") == role
-    assert result.outputs.get('bindings')[1].get("members") == members
+    assert result.readable_output == f'Role {role} updated successfully.'
+
+
+def test_gcp_iam_grantable_role_list_command(client):
+    """
+    Lists roles that can be granted on a Google Cloud resource.
+    Given:
+     - User has provided valid credentials.
+    When:
+     - gcp-iam-grantable-role-list called.
+    Then:
+     - Ensure number of items is correct.
+     - Ensure outputs prefix is correct.
+     - Ensure a sample value from the API matches what is generated in the context.
+    """
+    mock_response = load_mock_response('role/grantable_role_list.json')
+    client.gcp_iam_grantable_role_list_request = Mock(return_value=mock_response)
+
+    resource_name = "organizations/organization-name"
+
+    command_args = {"resource_name": resource_name}
+
+    result = GCP_IAM.gcp_iam_grantable_role_list_command(client, command_args)
+
+    assert len(result.outputs) == 2
+    assert len(result.outputs[0]) == 3
+    assert result.outputs_prefix == 'GCP.IAM.Roles'
+    assert result.outputs[0].get('name') == "roles/accessapproval.approver"
+    assert result.outputs[0].get('title') == "Access Approval Approver"

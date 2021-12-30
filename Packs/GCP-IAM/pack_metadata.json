@@ -1,5 +1,5 @@
 {
-    "name": "GCP-IAM",
+    "name": "GCP IAM",
     "description": "Manage identity and access control for Google Cloud Platform resources.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
