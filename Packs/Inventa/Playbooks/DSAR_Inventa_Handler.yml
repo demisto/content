@@ -1,6 +1,5 @@
 id: DSAR Inventa Handler
-version: 2
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: DSAR Inventa Handler
 description: Handling DSAR requests
 starttaskid: "0"
@@ -1094,91 +1093,94 @@ inputs:
     simple: ${incident.inventanationalid}
   required: false
   description: ""
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Passport Number
   value:
     simple: ${incident.inventapassportnumber}
   required: false
   description: ""
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Driver License
   value:
     simple: ${incident.inventadriverlicense}
   required: false
   description: ""
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Tax ID
   value:
     simple: ${incident.inventataxid}
   required: false
   description: ""
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Credit Card Number
   value:
     simple: ${incident.inventacreditcardnumber}
   required: false
   description: ""
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: First Name
   value:
     simple: ${incident.firstname}
   required: false
   description: ""
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Surname
   value:
     simple: ${incident.surname}
   required: false
   description: ""
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Full Name
   value:
     simple: ${incident.inventafullname}
   required: false
   description: ""
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Vehicle Number
   value:
     simple: ${incident.inventavehiclenumber}
   required: false
   description: ""
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Phone Number
   value:
     simple: ${incident.phonenumber}
   required: false
   description: ""
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Birthday
   value:
     simple: ${incident.inventabirthday}
   required: false
   description: ""
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: City
   value:
     simple: ${incident.city}
   required: false
   description: ""
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Street Address
   value:
     simple: ${incident.streetaddress}
   required: false
   description: ""
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Reason
   value:
     simple: ${incident.inventadsarreportreason}
   required: false
   description: ""
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Ticket
   value:
     simple: ${incident.inventadsarinventaticket}
   required: false
   description: ""
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: Inventa.PiiEntities.entities
   description: entities for certain PII
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
