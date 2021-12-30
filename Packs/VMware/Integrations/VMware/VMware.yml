@@ -36,19 +36,19 @@ script:
   commands:
   - arguments:
     - name: ip
-      description: List of IPs to filter VMs by.
+      description: A comma-separated list of IPs to filter VMs by.
       required: false
       isArray: true
     - name: hostname
       description: Hostname to filter VMs by.
       required: false
       isArray: false
-    - name: name
-      description: List of VM names to filter VMs by.
+    - name: vm_name
+      description: A comma-separated list of VM names to filter VMs by.
       required: false
       isArray: true
     - name: uuid
-      description: List of UUIDs to filter VMs by.
+      description: A comma-separated list of UUIDs to filter VMs by.
       required: false
       isArray: true
     - description: Number of results to display.
@@ -264,12 +264,12 @@ script:
       required: false
       isArray: false
       defaultValue: VmGuestRebootEvent,VmGuestShutdownEvent,VmPoweredOnEvent,VmPoweredOffEvent,VmSuspendedEvent
-    - name: start-date
-      description: Event's start date.
+    - name: start_date
+      description: Date from which to start the event search.
       required: false
       isArray: false
-    - name: end-date
-      description: Event's end date
+    - name: end_date
+      description: Date at which to stop the event search.
       required: false
       isArray: false
     - name: user
@@ -385,7 +385,7 @@ script:
       description: Size of a virtual machine's memory, in MB.
       required: true
       isArray: false
-    - name: guestld
+    - name: guest_id
       description: Short guest operating system identifier.
       required: false
       isArray: false
@@ -593,7 +593,7 @@ script:
       isArray: false
     - auto: PREDEFINED
       defaultValue: "False"
-      name: asTemplate
+      name: as_template
       description: Specifies whether or not the virtual machine should be marked
         as a template.
       required: false

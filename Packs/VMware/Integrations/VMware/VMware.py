@@ -138,8 +138,8 @@ def create_vm_config_creator(host, args):
     spec.memoryAllocation = resource_allocation_info
     spec.memoryMB = arg_to_number(args.get('virtual-memory'))
     spec.files = files
-    if args.get('guestId'):
-        spec.guestId = args.get('guestId')
+    if args.get('guest_id'):
+        spec.guestId = args.get('guest_id')
     return spec
 
 
@@ -164,13 +164,13 @@ def create_rellocation_locator_spec(vm, datastore):
 
 def apply_get_vms_filters(args, vm_summery):
     ips = argToList(args.get('ip'))
-    names = argToList(args.get('name'))
+    names = argToList(args.get('vm_name'))
     uuids = argToList(args.get('uuid'))
 
     ip = not args.get('ip') or (vm_summery.guest.ipAddress and vm_summery.guest.ipAddress in ips)
     hostname = not args.get('hostname') or (vm_summery.guest.hostName and vm_summery.guest.hostName == args.get(
         'hostname'))
-    name = not args.get('name') or vm_summery.config.name in names
+    name = not args.get('vm_name') or vm_summery.config.name in names
     uuid = not args.get('uuid') or vm_summery.config.instanceUuid in uuids
 
     return ip and hostname and name and uuid
@@ -457,9 +457,9 @@ def get_events(si, args):
     limit, is_manual, page_size = get_limit(args)
 
     time = vim.event.EventFilterSpec.ByTime()  # type: ignore
-    time.beginTime = dateparser.parse(args.get('start-date', ''))  # type: ignore
-    time.endTime = dateparser.parse(args.get('end-date', ''))  # type: ignore
-    if (args.get('start-date') and not time.beginTime) or (args.get('end-date') and not time.endTime):  # type: ignore
+    time.beginTime = dateparser.parse(args.get('start_date', ''))  # type: ignore
+    time.endTime = dateparser.parse(args.get('end_date', ''))  # type: ignore
+    if (args.get('start_date') and not time.beginTime) or (args.get('end_date') and not time.endTime):  # type: ignore
         raise Exception("Dates given in a wrong format.")
     by_user_name = vim.event.EventFilterSpec.ByUsername()  # type: ignore
     by_user_name.userList = args.get('user', '').split(',') if args.get('user') else None
@@ -766,7 +766,7 @@ def register_vm(si, args):
     pool = host.parent.resourcePool
 
     task = folder.RegisterVM_Task(path=args.get('path'), name=args.get('name'),
-                                  asTemplate=argToBoolean(args.get('asTemplate')), pool=pool, host=host)
+                                  asTemplate=argToBoolean(args.get('as_template')), pool=pool, host=host)
     wait_for_tasks(si, [task])
     if task.info.state == 'success':
         return {
