@@ -777,10 +777,11 @@ def parse_manifest_and_object_args() -> tuple:
     added_after = request.args.get('added_after')
     types = argToList(request.args.get('match[type]'))
     try:
-        limit = int(demisto.params().get('res_size'))
+        res_size = int(demisto.params().get('res_size'))
     except ValueError as e:
         raise ValueError(f'Invalid Response Size - {e}')
     offset = 0
+    limit = res_size
 
     if request.args.get('match[id]') or request.args.get('match[version]'):
         raise NotImplementedError('Filtering by ID or version is not supported.')
@@ -803,6 +804,9 @@ def parse_manifest_and_object_args() -> tuple:
 
         offset = int(next) if next else 0
         limit = int(limit_arg) if limit_arg else limit
+
+    if limit > res_size:
+        limit = res_size
 
     return added_after, offset, limit, types
 
