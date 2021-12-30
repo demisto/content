@@ -7,3 +7,8 @@ Emails
 IncidentsPerFeed
 boolean
 xdr
+aws
+taxii
+deprecated
+dll
+msi
