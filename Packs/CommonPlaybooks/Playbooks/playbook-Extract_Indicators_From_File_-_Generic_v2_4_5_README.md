@@ -1,4 +1,4 @@
-Extracts indicators from a file.
+This playbook extracts indicators from a file.
 Supported file types:
 - CSV
 - PDF
@@ -22,11 +22,11 @@ This playbook does not use any sub-playbooks.
 This playbook does not use any integrations.
 
 ### Scripts
-* Set
+* ExtractIndicatorsFromWordFile
 * ExtractIndicatorsFromTextFile
 * ConvertFile
+* Set
 * ReadPDFFileV2
-* ExtractIndicatorsFromWordFile
 
 ### Commands
 * image-ocr-extract-text
@@ -44,23 +44,23 @@ This playbook does not use any integrations.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| Domain.Name | Extracted domains. | unknown |
-| Account.Email.Address | Extracted emails addresses. | unknown |
-| File.MD5 | Extracted MD5 hash. | unknown |
-| File.SHA1 | Extracted SHA1 hash. | unknown |
-| File.SHA256 | Extracted SHA256 hash. | unknown |
-| IP.Address | Extracted IP addresses. | unknown |
-| File.Text | The text or images extracted from the PDF file. | unknown |
-| File.Producer | The PDF file producer. | unknown |
-| File.Title | The title of the PDF file. | unknown |
-| File.xap | The xap of the PDF file. | unknown |
-| File.Author | The author of the file. | unknown |
-| File.dc | The dc of the file. | unknown |
-| File.xapmm | The xapmm of the file. | unknown |
-| File.ModDate | The ModDate of the file. | unknown |
-| File.CreationDate | The CreationDate of the file. | unknown |
-| File.Pages | Number of pages in file. | unknown |
-| URL.Data | List of URLs that were extracted from the file. | unknown |
+| Domain.Name | The extracted domains. | string |
+| Account.Email.Address | The extracted email addresses. | string |
+| File.MD5 | The extracted MD5 hash. | string |
+| File.SHA1 | The extracted SHA1 hash. | string |
+| File.SHA256 | The extracted SHA256 hash. | string |
+| IP.Address | The extracted IP addresses. | string |
+| File.Text | The text or images extracted from the PDF file. | string |
+| File.Producer | The PDF file producer. | string |
+| File.Title | The title of the PDF file. | string |
+| File.xap | The XAP of the PDF file. | string |
+| File.Author | The author of the file. | string |
+| File.dc | The DC of the file. | string |
+| File.xapmm | The XAPMM of the file. | string |
+| File.ModDate | The mod date of the file. | string |
+| File.CreationDate | The creation date of the file. | string |
+| File.Pages | The number of pages in the file. | string |
+| URL.Data | A list of URLs that were extracted from the file. | string |
 
 ## Playbook Image
 ---

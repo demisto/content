@@ -5,7 +5,7 @@ contentitemexportablefields:
 name: Search And Delete Emails - Generic v2
 description: 'This playbook searches and deletes emails with similar attributes of a malicious email using one of the following integrations:
     * EWS
-    * Office 365.
+    * Office 365
     * Gmail
     * Agari Phishing Defense'
 starttaskid: "0"
@@ -191,8 +191,8 @@ tasks:
       id: 421d875d-ff1a-4808-8451-228e23cd6605
       version: -1
       name: In what integration should emails be searched and deleted?
-      description: Checks which integration and playbook should be used to run the
-        search & delete action, by checking the SearchAndDeleteIntegration playbook
+      description: Checks which integration and playbook should run the
+        search and delete action, by checking the SearchAndDeleteIntegration playbook
         input.
       type: condition
       iscommand: false
@@ -319,6 +319,15 @@ tasks:
                       value:
                         simple: active
             iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.SearchAndDeleteIntegration
+            iscontext: true
+          right:
+            value:
+              simple: O365
     - label: Both Enabled, input is EWS
       condition:
       - - operator: isNotEmpty
@@ -424,6 +433,15 @@ tasks:
                       value:
                         simple: active
             iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.SearchAndDeleteIntegration
+            iscontext: true
+          right:
+            value:
+              simple: EWS v2
     - label: Gmail
       condition:
       - - operator: isExists
@@ -519,7 +537,7 @@ tasks:
       id: d2db2ba7-3e13-47ce-8fd2-0842b89a386f
       version: -1
       name: From where should emails be searched and deleted?
-      description: Checks if a target to search and delete emails from was specified.
+      description: Checks whether a target to search and delete emails from was specified.
         Determined by the O365ExchangeLocation playbook input.
       type: condition
       iscommand: false
@@ -580,7 +598,7 @@ tasks:
       version: -1
       name: Manually decide where to search & delete the email
       description: Allows the analyst to decide where to search for and delete the
-        email from - is it from the mailbox of the recipient, or from all available
+        email - from the recipient's mailbox, or from all available
         mailboxes?
       type: condition
       iscommand: false
@@ -919,7 +937,7 @@ tasks:
       id: b622809c-289a-413c-8019-3d5bafda95cc
       version: -1
       name: Search And Delete Emails - Agari Phishing Defense
-      description: Remediate suspected message.
+      description: Remediates the suspected message.
       script: Agari Phishing Defense|||apd-remediate-message
       type: regular
       iscommand: true
@@ -1029,14 +1047,14 @@ inputs:
   value: {}
   required: false
   description: Used only in O365. The delete type to perform on the search results.
-    Possible values are Hard and Soft or leave empty to select manually. (Hard = Unrecoverable,
-    Soft=Recoverable)
+    Possible values are Hard or Soft, or leave empty to select manually (Hard = Unrecoverable,
+    Soft=Recoverable).
   playbookInputQuery:
 - key: O365ExchangeLocationExclusion
   value: {}
   required: false
   description: "Used only when searching and deleting emails in O365. The exchange
-    location. Determines from where to search and delete emails searched using O365
+    location. Determines where to search and delete emails searched using O365
     playbooks. Use the value 'All' to search all mailboxes, use 'SingleMailbox' to
     search and delete the email only from the recipient's inbox, or use 'Manual'
     to decide manually for every incident. Note: Searching all mailboxes may take
@@ -1048,9 +1066,7 @@ inputs:
       root: incident
       accessor: emailto
   required: false
-  description: The email address to which the email was sent. This is used if the
-    user decides to search for and delete emails only from the inbox of the recipient
-    using O365.
+  description: The email address to which the email was sent. This is used in 0365 to search for and delete emails only from the recipient's inbox.
   playbookInputQuery:
 - key: SearchThisWeek
   value:
