@@ -867,12 +867,17 @@ def get_group_members_command(client, args):
 
 def list_users_command(client, args):
     raw_response = client.list_users(args)
-    users = client.get_readable_users(raw_response)
-    context = createContext(users, removeNull=True)
+    verbose = args.get(verbose)
+    users = client.get_readable_users(raw_response, verbose)    
+    user_context = client.get_users_context(raw_response)
+    context = createContext(users_context, removeNull=True)
     outputs = {
-        'Okta.Group(val.ID && val.ID == obj.ID)': context
+        'Account(val.ID && val.ID == obj.ID)': context
     }
-    readable_output = tableToMarkdown('Users', users)
+    if verbose == 'true':
+        readable_output = f"### Okta users found:\n {users}"
+    else:
+        readable_output = f"### Okta users found:\n {tableToMarkdown('Users', users)} "
     
     return(
         readable_output,
