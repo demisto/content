@@ -54,17 +54,22 @@ def register_module_line(module_name, start_end, line, wrapper=0):
         :type line: ``int``
         :param line: the line number to record. (required)
 
+        :type wrapper: ``int``
+        :param wrapper: wrapper size (used for inline replacements with headers like ApiModules). (optional)
+
         :return: None
         :rtype: ``None``
     """
     global _MODULES_LINE_MAPPING
+    default_module_info = {'start': 0, 'start_wrapper': 0, 'end': float('inf'), 'end_wrapper': float('inf')}
     try:
         if start_end not in ('start', 'end'):
             raise ValueError('Invalid start_end argument. Acceptable values are: start, end.')
-        if not isinstance(line, int):
-            raise ValueError('Invalid line argument. Expected int got {}'.format(type(line)))
+        if not isinstance(line, int) or line < 0:
+            raise ValueError('Invalid line argument. Expected non-negative integer, '
+                             'got {}({})'.format(type(line), line))
 
-        _MODULES_LINE_MAPPING.setdefault(module_name, {'start': 0, 'end': float('inf')}).update(
+        _MODULES_LINE_MAPPING.setdefault(module_name, default_module_info).update(
             {start_end: line, '{}_wrapper'.format(start_end): line + wrapper}
         )
     except Exception as exc:
