@@ -120,7 +120,11 @@ switch (command) {
         sendRequest('GET','user');
         return 'ok';
     case 'demisto-api-post':
-        var body = JSON.parse(args.body);
+        if(args.body)
+            var body = JSON.parse(args.body);
+        else
+            logDebug('The body is empty.')
+
         return sendRequest('POST',args.uri, args.body);
     case 'demisto-api-get':
         return sendRequest('GET',args.uri);
