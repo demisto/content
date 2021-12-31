@@ -123,12 +123,6 @@ configuration:
   required: false
   type: 4
   defaultvalue:
-- additionalinfo: If using Jira Server (On-Prem) use v2 REST API
-  display: Jira On-Prem (v2 API)
-  name: jira_v2_api
-  required: false
-  type: 8
-  defaultvalue: "false"
 - display: Incident type
   name: incidentType
   required: false
@@ -220,6 +214,16 @@ script:
       isArray: false
       name: attribute
       required: true
+      secret: false
+    - default: false
+      predefined:
+        - 'true'
+        - 'false'
+      defaultValue: 'false'
+      description: if server is on prem and uses REST v2 API
+      isArray: false
+      name: is_jirav2api
+      required: false
       secret: false
     - default: false
       defaultValue: '50'
