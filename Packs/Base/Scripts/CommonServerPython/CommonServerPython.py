@@ -8699,3 +8699,4 @@ def register_signal_handler_profiling_dump(signal_type=None, profiling_dump_rows
 #     DO NOT ADD LINES AFTER THIS ONE     #
 ###########################################
 register_module_line('CommonServerPython', 'end', __line__())
+register_module_line('CustomScriptIntegration', 'start', __line__())
