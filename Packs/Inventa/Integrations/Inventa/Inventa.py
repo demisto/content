@@ -410,7 +410,6 @@ def validate_incident_inputs_command(**kwargs):
         (full_name and city and street_address)
     ]
 
-
     constraints_validated = False
     for constraint in constraints:
         if constraint:
