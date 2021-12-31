@@ -366,6 +366,68 @@ script:
       required: false
       secret: false
     deprecated: false
+    description: Lists users in your organization.
+    execution: false
+    name: okta-list-users
+    outputs:
+    - contextPath: Account.ID
+      description: Okta account ID.
+      type: String
+    - contextPath: Account.Email
+      description: Okta account email.
+      type: String
+    - contextPath: Account.Username
+      description: Okta account username.
+      type: String
+    - contextPath: Account.DisplayName
+      description: Okta account display name.
+      type: String
+    - contextPath: Account.Status
+      description: Okta account status.
+      type: String
+    - contextPath: Account.Created
+      description: Timestamp for when the user was created.
+      type: Date
+    - contextPath: Account.Activated
+      description: Timestamp for when the user was activated.
+      type: Date
+    - contextPath: Account.StatusChanged
+      description: Timestamp for when the user's status was last changed.
+      type: Date
+    - contextPath: Account.PasswordChanged
+      description: Timestamp for when the user's password was last changed.
+      type: Date
+  - arguments:
+    - default: false
+      description: 'Filters the lower time bound of the log events in the Internet Date/Time Format profile of ISO 8601. An example: 2017-05-03T16:22:18Z'
+      isArray: false
+      name: since
+      required: false
+      secret: false
+    - default: false
+      description: 'Filters the upper time bound of the log events in the Internet Date/Time Format profile of ISO 8601. An example: 2017-05-03T16:22:18Z'
+      isArray: false
+      name: until
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: ASCENDING
+      description: The order of the returned events. Can be "ASCENDING" or "DESCENDING". The default is "ASCENDING".
+      isArray: false
+      name: sortOrder
+      predefined:
+      - ASCENDING
+      - DESCENDING
+      required: false
+      secret: false
+    - default: false
+      description: The maximum number of results to return. The default is 100.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
     description: Fetches information for a single user. You must enter one or more parameters for the command to run.
     execution: false
     name: okta-get-user
