@@ -1,6 +1,6 @@
 from Okta_v2 import Client, get_user_command, get_group_members_command, create_user_command, \
     verify_push_factor_command, get_groups_for_user_command, get_user_factors_command, get_logs_command, \
-    get_zone_command, list_zones_command, update_zone_command, list_user_command
+    get_zone_command, list_zones_command, update_zone_command, list_users_command
 import pytest
 import json
 import io
@@ -608,8 +608,8 @@ def test_get_user_command(mocker, args, expected_context, expected_readable):
     ]
 )
 def test_list_user_command(mocker, args, expected_context, expected_readable):
-    mocker.patch.object(client, 'list_users', return_value=user_data)
-    readable, outputs, _ = list_user_command(client, args)
+    mocker.patch.object(client, 'list_users', return_value=user_data)s
+    readable, outputs, _ = list_users_command(client, args)
     assert outputs.get('Account(val.ID && val.ID === obj.ID)')[0] == expected_context
     assert expected_readable in readable
 
