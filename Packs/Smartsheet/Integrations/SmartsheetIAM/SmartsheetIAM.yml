@@ -1,0 +1,308 @@
+category: Identity and Access Management
+commonfields:
+  id: Smartsheet IAM
+  version: -1
+configuration:
+- name: credentials
+  display:
+  required: true
+  defaultvalue:
+  type: 9
+  additionalinfo:
+  displaypassword: Access Token
+  hiddenusername: true
+- name: send_mail
+  display: Send a welcome email to newly created users
+  required: false
+  defaultvalue:
+  type: 8
+- name: remove_from_sharing
+  display: Disable access to sheets for removed users
+  required: false
+  defaultvalue:
+  additionalinfo: If true, when a user is removed, they will be removed from sharing
+    for all sheets/workspaces in the organization account.
+  type: 8
+- name: transfer_sheets
+  display: Transfer sheets of removed users
+  additionalinfo: If true, a removed user's sheets are transferred to its manager
+    or to the default user specified below.
+  required: false
+  defaultvalue:
+  type: 8
+- name: default_transfer_to
+  display: Default user to transfer sheets of removed users
+  additionalinfo: Email of the default user to transfer sheets to, when the manager
+    of the removed user does not have a Smartsheet account.
+  required: false
+  defaultvalue:
+  type: 0
+- name: create_user_enabled
+  display: Allow creating users
+  required: false
+  defaultvalue: "true"
+  type: 8
+  additionalinfo:
+- name: update_user_enabled
+  display: Allow updating users
+  required: false
+  defaultvalue: "true"
+  type: 8
+  additionalinfo:
+- name: enable_user_enabled
+  display: Allow enabling users
+  required: false
+  defaultvalue: "true"
+  type: 8
+  additionalinfo:
+- name: create_if_not_exists
+  display: Automatically create user if not found in update command
+  required: false
+  defaultvalue: "true"
+  type: 8
+  additionalinfo:
+- name: mapper_in
+  display: Incoming Mapper
+  required: true
+  defaultvalue: User Profile - Smartsheet (Incoming)
+  type: 0
+  additionalinfo:
+- name: mapper_out
+  display: Outgoing Mapper
+  required: true
+  defaultvalue: User Profile - Smartsheet (Outgoing)
+  type: 0
+  additionalinfo:
+- name: insecure
+  display: Trust any certificate (not secure)
+  required: false
+  defaultvalue: ''
+  type: 8
+  additionalinfo:
+- name: proxy
+  display: Use system proxy settings
+  required: false
+  defaultvalue: ''
+  type: 8
+  additionalinfo:
+description: Integrate with Smartsheet services to perform Identity Lifecycle Management
+  operations.
+display: Smartsheet IAM
+name: Smartsheet IAM
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: User Profile indicator details.
+      isArray: false
+      name: user-profile
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: "true"
+      description: When set to true, after the command execution the status of the
+        user in the 3rd-party integration will be active.
+      isArray: false
+      name: allow-enable
+      predefined:
+      - "true"
+      - "false"
+      required: false
+      secret: false
+    deprecated: false
+    description: Creates a user.
+    execution: true
+    name: iam-create-user
+    outputs:
+    - contextPath: IAM.Vendor.active
+      description: When true, indicates that the employee's status is active in the
+        3rd-party integration.
+      type: Boolean
+    - contextPath: IAM.Vendor.brand
+      description: Name of the integration.
+      type: String
+    - contextPath: IAM.Vendor.details
+      description: Provides the raw data from the 3rd-party integration.
+      type: string
+    - contextPath: IAM.Vendor.email
+      description: The employee's email address.
+      type: String
+    - contextPath: IAM.Vendor.errorCode
+      description: HTTP error response code.
+      type: Number
+    - contextPath: IAM.Vendor.errorMessage
+      description: Reason why the API failed.
+      type: String
+    - contextPath: IAM.Vendor.id
+      description: The employee's user ID in the app.
+      type: String
+    - contextPath: IAM.Vendor.instanceName
+      description: Name of the integration instance.
+      type: string
+    - contextPath: IAM.Vendor.success
+      description: When true, indicates that the command was executed successfully.
+      type: Boolean
+    - contextPath: IAM.Vendor.username
+      description: The employee's username in the app.
+      type: String
+  - arguments:
+    - default: false
+      description: A User Profile indicator.
+      isArray: false
+      name: user-profile
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: "true"
+      description: When set to true, after the command execution the status of the
+        user in the 3rd-party integration will be active.
+      isArray: false
+      name: allow-enable
+      predefined:
+      - "true"
+      - "false"
+      required: false
+      secret: false
+    deprecated: false
+    description: Updates an existing user with the data passed in the user-profile
+      argument.
+    execution: true
+    name: iam-update-user
+    outputs:
+    - contextPath: IAM.Vendor.active
+      description: When true, indicates that the employee's status is active in the
+        3rd-party integration.
+      type: Boolean
+    - contextPath: IAM.Vendor.brand
+      description: Name of the integration.
+      type: String
+    - contextPath: IAM.Vendor.details
+      description: Provides the raw data from the 3rd-party integration.
+      type: string
+    - contextPath: IAM.Vendor.email
+      description: The employee's email address.
+      type: String
+    - contextPath: IAM.Vendor.errorCode
+      description: HTTP error response code.
+      type: Number
+    - contextPath: IAM.Vendor.errorMessage
+      description: Reason why the API failed.
+      type: String
+    - contextPath: IAM.Vendor.id
+      description: The employee's user ID in the app.
+      type: String
+    - contextPath: IAM.Vendor.instanceName
+      description: Name of the integration instance.
+      type: string
+    - contextPath: IAM.Vendor.success
+      description: When true, indicates that the command was executed successfully.
+      type: Boolean
+    - contextPath: IAM.Vendor.username
+      description: The employee's username in the app.
+      type: String
+  - arguments:
+    - default: false
+      description: A User Profile indicator.
+      isArray: false
+      name: user-profile
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieves a single user resource.
+    execution: false
+    name: iam-get-user
+    outputs:
+    - contextPath: IAM.Vendor.active
+      description: When true, indicates that the employee's status is active in the
+        3rd-party integration.
+      type: Boolean
+    - contextPath: IAM.Vendor.brand
+      description: Name of the integration.
+      type: String
+    - contextPath: IAM.Vendor.details
+      description: Provides the raw data from the 3rd-party integration.
+      type: string
+    - contextPath: IAM.Vendor.email
+      description: The employee's email address.
+      type: String
+    - contextPath: IAM.Vendor.errorCode
+      description: HTTP error response code.
+      type: Number
+    - contextPath: IAM.Vendor.errorMessage
+      description: Reason why the API failed.
+      type: String
+    - contextPath: IAM.Vendor.id
+      description: The employee's user ID in the app.
+      type: String
+    - contextPath: IAM.Vendor.instanceName
+      description: Name of the integration instance.
+      type: string
+    - contextPath: IAM.Vendor.success
+      description: When true, indicates that the command was executed successfully.
+      type: Boolean
+    - contextPath: IAM.Vendor.username
+      description: The employee's username in the app.
+      type: String
+  - arguments:
+    - default: false
+      description: A User Profile indicator.
+      isArray: false
+      name: user-profile
+      required: true
+      secret: false
+    deprecated: false
+    description: Disable an active user.
+    execution: true
+    name: iam-disable-user
+    outputs:
+    - contextPath: IAM.Vendor.active
+      description: When true, indicates that the employee's status is active in the
+        3rd-party integration.
+      type: Boolean
+    - contextPath: IAM.Vendor.brand
+      description: Name of the integration.
+      type: String
+    - contextPath: IAM.Vendor.details
+      description: Provides the raw data from the 3rd-party integration.
+      type: string
+    - contextPath: IAM.Vendor.email
+      description: The employee's email address.
+      type: String
+    - contextPath: IAM.Vendor.errorCode
+      description: HTTP error response code.
+      type: Number
+    - contextPath: IAM.Vendor.errorMessage
+      description: Reason why the API failed.
+      type: String
+    - contextPath: IAM.Vendor.id
+      description: The employee's user ID in the app.
+      type: String
+    - contextPath: IAM.Vendor.instanceName
+      description: Name of the integration instance.
+      type: string
+    - contextPath: IAM.Vendor.success
+      description: When true, indicates that the command was executed successfully.
+      type: Boolean
+    - contextPath: IAM.Vendor.username
+      description: The employee's username in the app.
+      type: String
+  - deprecated: false
+    description: Retrieves a User Profile schema, which holds all of the user fields
+      within the application. Used for outgoing-mapping through the Get Schema option.
+    execution: false
+    name: get-mapping-fields
+  dockerimage: demisto/smartsheet:1.0.0.23423
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: "-"
+  subtype: python3
+  type: python
+  ismappable: true
+  isremotesyncout: true
+tests:
+- No tests
+fromversion: 6.0.0

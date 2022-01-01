@@ -1,0 +1,269 @@
+{
+	"defaultIncidentType": "",
+	"description": "Maps a User Profile data to a Smartsheet user data.",
+	"id": "User Profile - Smartsheet (Outgoing)",
+	"mapping": {
+		"User Profile - Create": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+				"admin": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "extendedattributes",
+						"transformers": [
+							{
+								"args": {
+									"field": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "admin"
+										}
+									}
+								},
+								"operator": "getField"
+							}
+						]
+					},
+					"simple": ""
+				},
+				"department": {
+					"complex": null,
+					"simple": "department"
+				},
+				"email": {
+					"complex": null,
+					"simple": "email"
+				},
+				"firstName": {
+					"complex": null,
+					"simple": "givenname"
+				},
+				"groupAdmin": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "extendedattributes",
+						"transformers": [
+							{
+								"args": {
+									"field": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "groupAdmin"
+										}
+									}
+								},
+								"operator": "getField"
+							}
+						]
+					},
+					"simple": ""
+				},
+				"lastName": {
+					"complex": null,
+					"simple": "surname"
+				},
+				"licensedSheetCreator": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "extendedattributes",
+						"transformers": [
+							{
+								"args": {
+									"field": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "licensedSheetCreator"
+										}
+									}
+								},
+								"operator": "getField"
+							}
+						]
+					},
+					"simple": ""
+				},
+				"locale": {
+					"complex": null,
+					"simple": "locale"
+				},
+				"mobilePhone": {
+					"complex": null,
+					"simple": "mobilephone"
+				},
+				"resourceViewer": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "extendedattributes",
+						"transformers": [
+							{
+								"args": {
+									"field": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "resourceViewer"
+										}
+									}
+								},
+								"operator": "getField"
+							}
+						]
+					},
+					"simple": ""
+				},
+				"timeZone": {
+					"complex": null,
+					"simple": "timezone"
+				},
+				"title": {
+					"complex": null,
+					"simple": "title"
+				},
+				"workPhone": {
+					"complex": null,
+					"simple": "workphone"
+				}
+			}
+		},
+		"User Profile - Update": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+				"admin": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "extendedattributes",
+						"transformers": [
+							{
+								"args": {
+									"field": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "admin"
+										}
+									}
+								},
+								"operator": "getField"
+							}
+						]
+					},
+					"simple": ""
+				},
+				"department": {
+					"complex": null,
+					"simple": "department"
+				},
+				"email": {
+					"complex": null,
+					"simple": "email"
+				},
+				"firstName": {
+					"complex": null,
+					"simple": "givenname"
+				},
+				"groupAdmin": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "extendedattributes",
+						"transformers": [
+							{
+								"args": {
+									"field": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "groupAdmin"
+										}
+									}
+								},
+								"operator": "getField"
+							}
+						]
+					},
+					"simple": ""
+				},
+				"lastName": {
+					"complex": null,
+					"simple": "surname"
+				},
+				"licensedSheetCreator": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "extendedattributes",
+						"transformers": [
+							{
+								"args": {
+									"field": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "licensedSheetCreator"
+										}
+									}
+								},
+								"operator": "getField"
+							}
+						]
+					},
+					"simple": ""
+				},
+				"locale": {
+					"complex": null,
+					"simple": "locale"
+				},
+				"mobilePhone": {
+					"complex": null,
+					"simple": "mobilephone"
+				},
+				"resourceViewer": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "extendedattributes",
+						"transformers": [
+							{
+								"args": {
+									"field": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "resourceViewer"
+										}
+									}
+								},
+								"operator": "getField"
+							}
+						]
+					},
+					"simple": ""
+				},
+				"timeZone": {
+					"complex": null,
+					"simple": "timezone"
+				},
+				"title": {
+					"complex": null,
+					"simple": "title"
+				},
+				"workPhone": {
+					"complex": null,
+					"simple": "workphone"
+				}
+			}
+		}
+	},
+	"name": "User Profile - Smartsheet (Outgoing)",
+	"type": "mapping-outgoing",
+	"version": -1,
+	"fromVersion": "6.0.0"
+}

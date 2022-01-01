@@ -1,0 +1,52 @@
+{
+	"defaultIncidentType": "",
+	"description": "Maps a Smartsheet user data to a User Profile data.",
+	"id": "User Profile - Smartsheet (Incoming)",
+	"mapping": {
+		"User Profile": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Department": {
+					"complex": null,
+					"simple": "department"
+				},
+				"Email": {
+					"complex": null,
+					"simple": "email"
+				},
+				"Given Name": {
+					"complex": null,
+					"simple": "firstName"
+				},
+				"Surname": {
+					"complex": null,
+					"simple": "lastName"
+				},
+				"Locale": {
+					"complex": null,
+					"simple": "locale"
+				},
+				"Mobile Phone": {
+					"complex": null,
+					"simple": "mobilePhone"
+				},
+				"Title": {
+					"complex": null,
+					"simple": "title"
+				},
+				"Work Phone": {
+					"complex": null,
+					"simple": "workPhone"
+				},
+				"Timezone": {
+					"complex": null,
+					"simple": "timeZone"
+				}
+			}
+		}
+	},
+	"name": "User Profile - Smartsheet (Incoming)",
+	"type": "mapping-incoming",
+	"version": -1,
+	"fromVersion": "6.0.0"
+}
