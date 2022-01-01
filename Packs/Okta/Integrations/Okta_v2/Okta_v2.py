@@ -457,10 +457,10 @@ class Client(BaseClient):
             if key == 'query':
                 key = 'q'
             query_params[key] = encode_string_results(value)
-        if args.get(limit):
+        if args.get('limit'):
             return self._http_request(
                 method='GET',
-                url_suffix=uriy,
+                url_suffix=uri,
                 params=query_params
             )
         return self.get_paged_results(uri, query_params)
