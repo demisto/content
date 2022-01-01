@@ -464,7 +464,7 @@ class Client(BaseClient):
                 params=query_params
             )
         return self.get_paged_results(uri, query_params)
-        
+
     def list_groups(self, args):
         # Base url - if none of the the above specified - returns all the groups (default 200 items)
         uri = "groups"
