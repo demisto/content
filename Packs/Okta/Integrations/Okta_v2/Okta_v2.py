@@ -867,10 +867,10 @@ def get_group_members_command(client, args):
 
 def list_users_command(client, args):
     raw_response = client.list_users(args)
-    verbose = args.get(verbose)
+    verbose = args.get('verbose')
     users = client.get_readable_users(raw_response, verbose)    
     user_context = client.get_users_context(raw_response)
-    context = createContext(users_context, removeNull=True)
+    context = createContext(user_context, removeNull=True)
     outputs = {
         'Account(val.ID && val.ID == obj.ID)': context
     }
