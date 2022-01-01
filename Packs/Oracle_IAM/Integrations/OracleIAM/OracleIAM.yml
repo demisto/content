@@ -406,7 +406,7 @@ script:
       within the application. Used for outgoing-mapping through the Get Schema option.
     execution: false
     name: get-mapping-fields
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.9.8.24399
   feed: false
   isfetch: false
   longRunning: false
