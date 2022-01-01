@@ -4840,6 +4840,10 @@
         {
             "integrations": "KafkaV3",
             "playbookID": "KafkaV3 Test"
+        },
+        {
+            "playbookID": "Dedup - Generic v3",
+            "fromversion": "5.5.0"
         }
     ],
     "skipped_tests": {
