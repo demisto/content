@@ -611,8 +611,8 @@ def test_list_user_command(mocker, args, expected_context, expected_readable):
     mocker.patch.object(client, 'list_users', return_value=user_data)
     readable, outputs, _ = list_users_command(client, args)
     print("READABLE: ", readable)
-    print("OUTPUTS: ", outputs)
-    print("ARGS: ", args)
+    print("OUTPUTS: ", outputs[0])
+    print("OUTPUT: ", outputs.get('Account(val.ID == obj.ID)')[0])
     assert outputs.get('Account(val.ID && val.ID === obj.ID)')[0] == expected_context
     assert expected_readable in readable
 
