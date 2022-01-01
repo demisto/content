@@ -1,0 +1,7 @@
+pylint
+pytest==5.0.1
+pytest-mock
+requests-mock
+pytest-asyncio
+pytest
+requests
