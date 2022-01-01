@@ -4,10 +4,10 @@
   "no_regex": {
    "expected": [
     {
-     "name": "Syslog from [HostName][2021-11-09T17:07:20]",
+     "name": "Syslog from [HostName][REPLACE_WITH_CURRENT_YEAR-11-09T17:07:20]",
      "occurred": null,
-     "rawJSON": "{\"app_name\": null, \"facility\": \"log_alert\", \"host_name\": \"HostName\", \"msg\": \"softwareupdated[288]: Removing client SUUpdateServiceClient pid=90550, uid=375597002, installAuth=NO rights=(), transactions=0 (/System/Library/PreferencePanes/SoftwareUpdate.prefPane/Contents/XPCServices/com.apple.preferences.softwareupdate.remoteservice.xpc/Contents/MacOS/com.apple.preferences.softwareupdate.remoteservice)\", \"msg_id\": null, \"process_id\": null, \"sd\": {}, \"severity\": \"warning\", \"timestamp\": \"2021-11-09T17:07:20\", \"version\": null, \"occurred\": null}",
-     "details": "facility: log_alert\nhost_name: HostName\nmsg: softwareupdated[288]: Removing client SUUpdateServiceClient pid=90550, uid=375597002, installAuth=NO rights=(), transactions=0 (/System/Library/PreferencePanes/SoftwareUpdate.prefPane/Contents/XPCServices/com.apple.preferences.softwareupdate.remoteservice.xpc/Contents/MacOS/com.apple.preferences.softwareupdate.remoteservice)\nseverity: warning\ntimestamp: 2021-11-09T17:07:20"
+     "rawJSON": "{\"app_name\": null, \"facility\": \"log_alert\", \"host_name\": \"HostName\", \"msg\": \"softwareupdated[288]: Removing client SUUpdateServiceClient pid=90550, uid=375597002, installAuth=NO rights=(), transactions=0 (/System/Library/PreferencePanes/SoftwareUpdate.prefPane/Contents/XPCServices/com.apple.preferences.softwareupdate.remoteservice.xpc/Contents/MacOS/com.apple.preferences.softwareupdate.remoteservice)\", \"msg_id\": null, \"process_id\": null, \"sd\": {}, \"severity\": \"warning\", \"timestamp\": \"REPLACE_WITH_CURRENT_YEAR-11-09T17:07:20\", \"version\": null, \"occurred\": null}",
+     "details": "facility: log_alert\nhost_name: HostName\nmsg: softwareupdated[288]: Removing client SUUpdateServiceClient pid=90550, uid=375597002, installAuth=NO rights=(), transactions=0 (/System/Library/PreferencePanes/SoftwareUpdate.prefPane/Contents/XPCServices/com.apple.preferences.softwareupdate.remoteservice.xpc/Contents/MacOS/com.apple.preferences.softwareupdate.remoteservice)\nseverity: warning\ntimestamp: REPLACE_WITH_CURRENT_YEAR-11-09T17:07:20"
     }
    ]
   },
@@ -15,10 +15,10 @@
    "message_regex": "Removing client",
    "expected": [
     {
-     "name": "Syslog from [HostName][2021-11-09T17:07:20]",
+     "name": "Syslog from [HostName][REPLACE_WITH_CURRENT_YEAR-11-09T17:07:20]",
      "occurred": null,
-     "rawJSON": "{\"app_name\": null, \"facility\": \"log_alert\", \"host_name\": \"HostName\", \"msg\": \"softwareupdated[288]: Removing client SUUpdateServiceClient pid=90550, uid=375597002, installAuth=NO rights=(), transactions=0 (/System/Library/PreferencePanes/SoftwareUpdate.prefPane/Contents/XPCServices/com.apple.preferences.softwareupdate.remoteservice.xpc/Contents/MacOS/com.apple.preferences.softwareupdate.remoteservice)\", \"msg_id\": null, \"process_id\": null, \"sd\": {}, \"severity\": \"warning\", \"timestamp\": \"2021-11-09T17:07:20\", \"version\": null, \"occurred\": null}",
-     "details": "facility: log_alert\nhost_name: HostName\nmsg: softwareupdated[288]: Removing client SUUpdateServiceClient pid=90550, uid=375597002, installAuth=NO rights=(), transactions=0 (/System/Library/PreferencePanes/SoftwareUpdate.prefPane/Contents/XPCServices/com.apple.preferences.softwareupdate.remoteservice.xpc/Contents/MacOS/com.apple.preferences.softwareupdate.remoteservice)\nseverity: warning\ntimestamp: 2021-11-09T17:07:20"
+     "rawJSON": "{\"app_name\": null, \"facility\": \"log_alert\", \"host_name\": \"HostName\", \"msg\": \"softwareupdated[288]: Removing client SUUpdateServiceClient pid=90550, uid=375597002, installAuth=NO rights=(), transactions=0 (/System/Library/PreferencePanes/SoftwareUpdate.prefPane/Contents/XPCServices/com.apple.preferences.softwareupdate.remoteservice.xpc/Contents/MacOS/com.apple.preferences.softwareupdate.remoteservice)\", \"msg_id\": null, \"process_id\": null, \"sd\": {}, \"severity\": \"warning\", \"timestamp\": \"REPLACE_WITH_CURRENT_YEAR-11-09T17:07:20\", \"version\": null, \"occurred\": null}",
+     "details": "facility: log_alert\nhost_name: HostName\nmsg: softwareupdated[288]: Removing client SUUpdateServiceClient pid=90550, uid=375597002, installAuth=NO rights=(), transactions=0 (/System/Library/PreferencePanes/SoftwareUpdate.prefPane/Contents/XPCServices/com.apple.preferences.softwareupdate.remoteservice.xpc/Contents/MacOS/com.apple.preferences.softwareupdate.remoteservice)\nseverity: warning\ntimestamp: REPLACE_WITH_CURRENT_YEAR-11-09T17:07:20"
     }
    ]
   },
