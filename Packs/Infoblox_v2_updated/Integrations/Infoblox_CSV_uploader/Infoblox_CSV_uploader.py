@@ -111,7 +111,6 @@ elif demisto.command() == 'infoblox-upload-csv':
                       cookies=req_cookies,
                       verify=valid_cert)
     if r.status_code != requests.codes.ok:
-        #demisto.results (r.text)
         exit_msg = 'Error {} starting CSV import: {}'
         sys.exit(exit_msg.format(r.status_code, r.reason))
     results = r.json()

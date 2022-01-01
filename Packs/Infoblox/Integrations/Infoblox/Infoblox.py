@@ -88,7 +88,11 @@ class Client(BaseClient):
         try:
             return super()._http_request(method=method, url_suffix=url_suffix, full_url=full_url, headers=headers,
                                          auth=auth, json_data=json_data, params=self.params, data=data, files=files,
-                                         timeout=timeout, resp_type=resp_type, ok_codes=ok_codes, **kwargs)
+                                         timeout=timeout, resp_type=resp_type, ok_codes=ok_codes,
+                                         return_empty_response=return_empty_response, retries=retries,
+                                         status_list_to_retry=status_list_to_retry, backoff_factor=backoff_factor,
+                                         raise_on_redirect=raise_on_redirect, raise_on_status=raise_on_status,
+                                         error_handler=error_handler, empty_valid_codes=empty_valid_codes, **kwargs)
         except DemistoException as error:
             raise parse_demisto_exception(error, 'text')
 
@@ -313,7 +317,7 @@ class Client(BaseClient):
         suffix = reference_id
         return self._http_request('DELETE', suffix)
 
-    def list_records(self, zone):
+    def list_records(self, zone: str):
         params = {
             "zone": zone,
             "_return_as_object": 1
@@ -329,13 +333,87 @@ class Client(BaseClient):
         res = self._http_request('GET', "record:host", params=params)
         return res
 
-    def search_host_record(self, name):
+    def search_host_record(self, name: str):
         params = {
             "name": name,
             "_return_as_object": 1
         }
         res = self._http_request('GET', "record:host", params=params)
         return res
+
+    def create_record(self, suffix: Optional[str], **kwargs: Union[str, int, None]) -> Dict:
+        """Creates new record.
+        Args:
+            suffix: The infoblox object to be used as a url path.
+            kwargs: A dict of arguments to be passed to the rule body. The following may appear:
+                - name
+                - rp_zone
+                - comment
+                - ipv4addr
+                - ipv6addr
+                - mail_exchanger
+                - preference
+                - order
+                - preference
+                - replacement
+                - ptrdname
+                - priority
+                - target
+                - weight
+                - port
+                - text
+        Returns:
+            Response JSON
+        """
+        request_data = {key: val for key, val in kwargs.items() if val is not None}
+        request_params = {'_return_fields+': ','.join(request_data.keys()) + ',disable,name'}
+        rule = self._http_request('POST', suffix, data=json.dumps(request_data), params=request_params)
+        rule['result']['type'] = suffix
+        return rule
+
+    def add_host(self, host: Optional[str], ipadd: Optional[str]) -> Dict:
+        """Add a host record.
+        Args:
+            host: FQDN to change
+            ipadd: IP Address
+
+        Returns:
+            Response JSON
+        """
+        suffix = "record:host"
+        payload = '{ "name":"' + str(host) + '","ipv4addrs":[{"ipv4addr":"' + str(ipadd) + '"}]}'
+        headers = {'content-type': 'application/json', 'Accept-Charset': 'UTF-8'}
+
+        rule = self._http_request('POST', suffix, headers=headers, data=payload)
+        return rule
+
+    def update_host_ip(self, ref: str, ipv4addr: str):
+        params = {
+            "_return_fields": "ipv4addrs",
+            "_return_as_object": 1
+        }
+        payload = {
+            "ipv4addrs": [
+                {"ipv4addr": str(ipv4addr)}
+            ]
+        }
+        res = self._http_request('PUT', f"{ref}", params=params, json_data=payload)
+        return res
+
+    def delete_host(self, refid: Optional[str]) -> Dict:
+        """Deletes a host record.
+        Args:
+            refid: Reference ID from Infoblox
+
+        Returns:
+            Response JSON
+        """
+        headers = {'content-type': 'application/json', 'Accept-Charset': 'UTF-8'}
+
+        suffix = "record:host/" + str(refid)
+
+        rule = self._http_request('DELETE', suffix, headers=headers)
+        return rule
 
 
 ''' HELPER FUNCTIONS '''
@@ -949,17 +1027,96 @@ def list_records_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         client: Client object
         args: usually demisto.args()
     """
-    zone = args.get('zone')
+    zone = str(args.get('zone'))
     raw_response = client.list_records(zone)
 
     return '', {}, raw_response
 
 
 def search_host_record_command(client: Client, args: Dict):
-    name = args.get("name")
+    name = str(args.get("name"))
     raw_response = client.search_host_record(name)
 
     return tableToMarkdown("Host", raw_response["result"]), {"Infoblox": raw_response["result"]}, raw_response
+
+
+def create_a_record_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+    """
+    Args:
+        client: Client object
+        args: Usually demisto.args()
+
+    Returns:
+        Outputs
+    """
+    name = args.get('name')
+    ipv4addr = args.get('ipv4addr')
+    infoblox_object_type = 'record:a'
+
+    raw_response = client.create_record(infoblox_object_type, name=name, ipv4addr=ipv4addr)
+    rule = raw_response.get('result', {})
+    fixed_keys_rule_res = {RESPONSE_TRANSLATION_DICTIONARY.get(key, string_to_context_key(key)): val for key, val in
+                           rule.items()}
+    title = f'{INTEGRATION_NAME} - Host Record: {name} has been created:'
+    context = {
+        f'{INTEGRATION_CONTEXT_NAME}.ModifiedHostRecord(val.Name && val.Name === obj.Name)': fixed_keys_rule_res}
+    human_readable = tableToMarkdown(title, fixed_keys_rule_res, headerTransform=pascalToSpace)
+
+    # return raw_response, raw_response, raw_response
+    return human_readable, context, raw_response
+
+
+def add_host_record_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+    """
+    Args:
+        client: Client object
+        args: Usually demisto.args()
+
+    Returns:
+        Outputs
+    """
+    host = args.get('host')
+    ipadd = args.get('ipadd')
+
+    raw_response = client.add_host(host, ipadd)
+    demisto.results(raw_response)
+
+    return f'{INTEGRATION_NAME} - ' + raw_response['result'], {}, {}
+
+
+def update_host_ip_command(client: Client, args: Dict):
+    ref = str(args.get("ref"))
+    ipv4addr = str(args.get("ipv4addr"))
+
+    raw_response = client.update_host_ip(ref, ipv4addr)
+
+    return tableToMarkdown("Updated Hosts", raw_response["result"]), {"Infoblox": raw_response["result"]}, raw_response
+
+
+def delete_host_record_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+    """
+    Args:
+        client: Client object
+        args: Usually demisto.args()
+
+    Returns:
+        Outputs
+    """
+
+    refid = args.get('refid')
+
+    if "/" in str(refid):
+        refIDStr = str(refid).split("/")
+        refIDStr = refIDStr[1].split(":")
+        refid = refIDStr[0]
+
+    if refid:
+        raw_response = client.delete_host(refid)
+        demisto.results(raw_response)
+
+        return f'{INTEGRATION_NAME} - ' + raw_response['result'], {}, {}
+    else:
+        return f'{INTEGRATION_NAME} - No RefID', {}, {}
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
@@ -1005,7 +1162,11 @@ def main():  # pragma: no cover
         f'{INTEGRATION_COMMAND_NAME}-delete-rpz-rule': delete_rpz_rule_command,
         f'{INTEGRATION_COMMAND_NAME}-list-hosts': list_hosts_command,
         f'{INTEGRATION_COMMAND_NAME}-list-records': list_records_command,
-        f'{INTEGRATION_COMMAND_NAME}-search-host-record': search_host_record_command
+        f'{INTEGRATION_COMMAND_NAME}-search-host-record': search_host_record_command,
+        f'{INTEGRATION_COMMAND_NAME}-create-a-record': create_a_record_command,
+        f'{INTEGRATION_COMMAND_NAME}-add-host-record': add_host_record_command,
+        f'{INTEGRATION_COMMAND_NAME}-update-host-ip': update_host_ip_command,
+        f'{INTEGRATION_COMMAND_NAME}-delete-host-record': delete_host_record_command
     }
     try:
         if command in commands:

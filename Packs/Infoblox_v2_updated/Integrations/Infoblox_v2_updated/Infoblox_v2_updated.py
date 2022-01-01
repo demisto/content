@@ -78,14 +78,21 @@ class Client(BaseClient):
         super(Client, self).__init__(base_url, verify, proxy, ok_codes, headers, auth)
         self.params = params
 
-    def _http_request(self, method, url_suffix, full_url=None, headers=None, auth=None, json_data=None, params=None,
-                      data=None, files=None, timeout=10, resp_type='json', ok_codes=None, **kwargs):
+    def _http_request(self, method, url_suffix='', full_url=None, headers=None, auth=None, json_data=None,
+                      params=None, data=None, files=None, timeout=10, resp_type='json', ok_codes=None,
+                      return_empty_response=False, retries=0, status_list_to_retry=None,
+                      backoff_factor=5, raise_on_redirect=False, raise_on_status=False,
+                      error_handler=None, empty_valid_codes=None, **kwargs):
         if params:
             self.params.update(params)
         try:
             return super()._http_request(method=method, url_suffix=url_suffix, full_url=full_url, headers=headers,
                                          auth=auth, json_data=json_data, params=self.params, data=data, files=files,
-                                         timeout=timeout, resp_type=resp_type, ok_codes=ok_codes, **kwargs)
+                                         timeout=timeout, resp_type=resp_type, ok_codes=ok_codes,
+                                         return_empty_response=return_empty_response, retries=retries,
+                                         status_list_to_retry=status_list_to_retry, backoff_factor=backoff_factor,
+                                         raise_on_redirect=raise_on_redirect, raise_on_status=raise_on_status,
+                                         error_handler=error_handler, empty_valid_codes=empty_valid_codes, **kwargs)
         except DemistoException as error:
             demisto.results(str(error))
 
@@ -333,7 +340,7 @@ class Client(BaseClient):
         rule['result']['type'] = suffix
         return rule
 
-    def list_records(self, zone):
+    def list_records(self, zone: str):
         params = {
             "zone": zone,
             "_return_as_object": 1
@@ -372,7 +379,7 @@ class Client(BaseClient):
         rule = self._http_request('DELETE', suffix, headers=headers)
         return rule
 
-    def update_host_ip(self, ref, ipv4addr):
+    def update_host_ip(self, ref: str, ipv4addr: str):
         params = {
             "_return_fields": "ipv4addrs",
             "_return_as_object": 1
@@ -393,7 +400,7 @@ class Client(BaseClient):
         res = self._http_request('GET', "record:host", params=params)
         return res
 
-    def search_host_record(self, name):
+    def search_host_record(self, name: str):
         params = {
             "name": name,
             "_return_as_object": 1
@@ -1026,7 +1033,7 @@ def list_records_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         client: Client object
         args: usually demisto.args()
     """
-    zone = args.get('zone')
+    zone = str(args.get('zone'))
     raw_response = client.list_records(zone)
 
     return '', {}, raw_response
@@ -1062,7 +1069,7 @@ def delete_host_record_command(client: Client, args: Dict) -> Tuple[str, Dict, D
 
     refid = args.get('refid')
 
-    if "/" in refid:
+    if "/" in str(refid):
         refIDStr = str(refid).split("/")
         refIDStr = refIDStr[1].split(":")
         refid = refIDStr[0]
@@ -1077,8 +1084,8 @@ def delete_host_record_command(client: Client, args: Dict) -> Tuple[str, Dict, D
 
 
 def update_host_ip_command(client: Client, args: Dict):
-    ref = args.get("ref")
-    ipv4addr = args.get("ipv4addr")
+    ref = str(args.get("ref"))
+    ipv4addr = str(args.get("ipv4addr"))
 
     raw_response = client.update_host_ip(ref, ipv4addr)
 
@@ -1092,7 +1099,7 @@ def list_hosts_command(client: Client, args: Dict):
 
 
 def search_host_record_command(client: Client, args: Dict):
-    name = args.get("name")
+    name = str(args.get("name"))
     raw_response = client.search_host_record(name)
 
     return tableToMarkdown("Host", raw_response["result"]), {"Infoblox": raw_response["result"]}, raw_response
@@ -1155,6 +1162,8 @@ def main():  # pragma: no cover
     try:
         if command in commands:
             return_outputs(*commands[command](client, demisto.args()))
+        else:
+            raise (NotImplementedError())
     # Log exceptions
     except Exception as e:
         err_msg = f'Error in {INTEGRATION_NAME} - {e}'
