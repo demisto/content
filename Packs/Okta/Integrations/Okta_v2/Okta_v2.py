@@ -868,7 +868,7 @@ def get_group_members_command(client, args):
 def list_users_command(client, args):
     raw_response = client.list_users(args)
     verbose = args.get('verbose')
-    users = client.get_readable_users(raw_response, verbose)    
+    users = client.get_readable_users(raw_response, verbose)
     user_context = client.get_users_context(raw_response)
     context = createContext(user_context, removeNull=True)
     outputs = {
@@ -878,7 +878,7 @@ def list_users_command(client, args):
         readable_output = f"### Okta users found:\n {users}"
     else:
         readable_output = f"### Okta users found:\n {tableToMarkdown('Users', users)} "
-    
+
     return(
         readable_output,
         outputs,
