@@ -1,0 +1,220 @@
+{
+    "description": "Maps Wiz Issue fields for use in Integration Playbooks, when incoming via webhook.",
+    "feed": false,
+    "id": "Wiz Mapper Webhook",
+    "mapping": {
+        "Wiz Issue": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Details": {
+                    "complex": null,
+                    "simple": "control.description"
+                },
+                "Wiz Cloud Account": {
+                    "complex": null,
+                    "simple": "resource.subscriptionId"
+                },
+                "Wiz Cloud Account Name": {
+                    "complex": null,
+                    "simple": "resource.subscriptionName"
+                },
+                "Wiz Cloud Platform": {
+                    "complex": null,
+                    "simple": "resource.cloudPlatform"
+                },
+                "Wiz Details": {
+                    "complex": null,
+                    "simple": "control.description"
+                },
+                "Wiz Issue Due Date": {
+                    "complex": null,
+                    "simple": "issue.dueAt"
+                },
+                "Wiz Issue ID": {
+                    "complex": null,
+                    "simple": "issue.id"
+                },
+                "Wiz Issue Note": {
+                    "complex": null,
+                    "simple": "issue.note"
+                },
+                "Wiz Resource ID": {
+                    "complex": null,
+                    "simple": "resource.id"
+                },
+                "Wiz Resource Region": {
+                    "complex": null,
+                    "simple": "resource.region"
+                },
+                "Wiz Resource Type": {
+                    "complex": null,
+                    "simple": "resource.type"
+                },
+                "severity": {
+                    "complex": {
+                        "accessor": "severity",
+                        "filters": [],
+                        "root": "issue",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "limit": {
+                                        "isContext": false,
+                                        "value": null
+                                    },
+                                    "replaceWith": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "4"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "CRITICAL"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {
+                                        "isContext": false,
+                                        "value": null
+                                    },
+                                    "replaceWith": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "3"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "HIGH"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {
+                                        "isContext": false,
+                                        "value": null
+                                    },
+                                    "replaceWith": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "2"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "MEDIUM"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {
+                                        "isContext": false,
+                                        "value": null
+                                    },
+                                    "replaceWith": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "1"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "LOW"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {
+                                        "isContext": false,
+                                        "value": null
+                                    },
+                                    "replaceWith": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "0"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "INFORMATIONAL"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Description": {
+                    "complex": {
+                        "accessor": "control.description",
+                        "filters": [],
+                        "root": "raw_json",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "details": {
+                    "complex": null,
+                    "simple": "control.description"
+                },
+                "name": {
+                    "complex": null,
+                    "simple": "control.name"
+                },
+                "occurred": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "occurred",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "severity": {
+                    "complex": null,
+                    "simple": "control.severity"
+                }
+            }
+        }
+    },
+    "name": "Wiz Mapper Webhook",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}
