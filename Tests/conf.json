@@ -4395,8 +4395,11 @@
                 "Demisto REST API"
             ],
             "instance_names": [
-                "ews_mail_sender_srtest02"
+                "ews_mail_sender_srtest02",
+                "Generic Webhook - EWSv2 Phishing Mock"
             ],
+            "external_playbook_config": {"playbookID": "Phishing v3 - Generic",
+                "input_parameters":{"InternalDomains": {"simple": "demistodev.onmicrosoft.com"}}},
             "memory_threshold": 160,
             "pid_threshold": 80
         },
