@@ -97,7 +97,6 @@ def main():
                                readable_output=data_to_md(email, file_name, print_only_headers=parse_only_headers),
                                raw_response=email,
                                entry_type=EntryType.NOTE))
-            return_results(results)
         if isinstance(output, dict):
             results.append(CommandResults(outputs_prefix='Email',
                                           outputs=output,
@@ -105,6 +104,7 @@ def main():
                                                                      print_only_headers=parse_only_headers),
                                           raw_response=output,
                                           entry_type=EntryType.NOTE))
+        return_results(results)
 
     except Exception as e:
         demisto.error(str(e) + "\n\nTrace:\n" + traceback.format_exc())
