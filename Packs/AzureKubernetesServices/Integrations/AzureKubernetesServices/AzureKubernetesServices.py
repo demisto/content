@@ -6,7 +6,7 @@ import urllib3
 
 urllib3.disable_warnings()
 
-API_VERSION = '2020-09-01'
+API_VERSION = '2021-09-01'
 
 
 class AKSClient:
