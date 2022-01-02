@@ -1,5 +1,5 @@
 {
-    "name": "Gmail Single User (Beta)",
+    "name": "Gmail Single User",
     "description": "Gmail API using OAuth 2.0.",
     "support": "xsoar",
     "currentVersion": "1.1.5",
