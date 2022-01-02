@@ -610,11 +610,10 @@ def test_get_user_command(mocker, args, expected_context, expected_readable):
 def test_list_user_command(mocker, args, expected_context, expected_readable):
     mocker.patch.object(client, 'list_users', return_value=user_data)
     readable, outputs, _ = list_users_command(client, args)
-    
     assert outputs.get('Account(val.ID && val.ID == obj.ID)')[0] == expected_context
     assert expected_readable in readable
 
-    
+
 @pytest.mark.parametrize(
     "args ,expected_context",
     [
