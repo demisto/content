@@ -106,8 +106,119 @@ def fetch_issues():
         last_run = dateparser.parse(demisto.params().get('first_fetch', '7 days').strip())
         last_run = (last_run.isoformat()[:-3] + 'Z')
 
-    query = "query IssuesTable( $filterBy: IssueFilters $first: Int $after: String $orderBy: IssueOrder ) { issues( filterBy: $filterBy first: $first after: $after orderBy: $orderBy ) { nodes { ...IssueDetails } pageInfo { hasNextPage endCursor } totalCount informationalSeverityCount lowSeverityCount mediumSeverityCount highSeverityCount criticalSeverityCount uniqueEntityCount } } fragment IssueDetails on Issue { id control { id name query description } createdAt updatedAt projects { id name slug businessUnit riskProfile { businessImpact } } status severity entity { id name type } entitySnapshot { id type nativeType name subscriptionId subscriptionExternalId subscriptionName resourceGroupId resourceGroupExternalId region cloudPlatform cloudProviderURL status tags providerId subscriptionTags } note dueAt serviceTicket { externalId name url } serviceTickets { externalId name url action { id type } } }"
-    variables = {"first": 500, "filterBy": {"status": ["OPEN", "IN_PROGRESS"], "createdAt": {"after": last_run}, "relatedEntity": {}}, "orderBy": {"field": "SEVERITY", "direction": "DESC"}}
+    query = ("""
+        query IssuesTable(
+            $filterBy: IssueFilters
+            $first: Int
+            $after: String
+            $orderBy: IssueOrder
+          ) {
+            issues(
+                filterBy: $filterBy
+                first: $first
+                after: $after
+                orderBy: $orderBy
+            ) {
+                nodes {
+                    ...IssueDetails
+                }
+                pageInfo {
+                    hasNextPage
+                    endCursor
+                }
+                totalCount
+                informationalSeverityCount
+                lowSeverityCount
+                mediumSeverityCount
+                highSeverityCount
+                criticalSeverityCount
+                uniqueEntityCount
+            }
+        }
+
+        fragment IssueDetails on Issue {
+            id
+            control {
+                id
+                name
+                query
+                description
+            }
+            createdAt
+            updatedAt
+            projects {
+                id
+                name
+                slug
+                businessUnit
+                riskProfile {
+                    businessImpact
+                }
+            }
+            status
+            severity
+            entity {
+                id
+                name
+                type
+            }
+            entitySnapshot {
+                id
+                type
+                nativeType
+                name
+                subscriptionId
+                subscriptionExternalId
+                subscriptionName
+                resourceGroupId
+                resourceGroupExternalId
+                region
+                cloudPlatform
+                cloudProviderURL
+                status
+                tags
+                providerId
+                subscriptionTags
+            }
+            note
+            dueAt
+            serviceTicket {
+                externalId
+                name
+                url
+            }
+            serviceTickets {
+                externalId
+                name
+                url
+                action {
+                    id
+                    type
+                }
+            }
+        }
+    """)
+    variables = {
+        "first": 500,
+        "filterBy": {
+            "status": [
+                "OPEN",
+                "IN_PROGRESS"
+            ],
+            "createdAt": {
+                "after":
+                    last_run
+            },
+            "relatedEntity":
+                {}
+        },
+        "orderBy": {
+            "field":
+                "SEVERITY",
+            "direction":
+                "DESC"
+        }
+    }
 
     response = checkAPIerrors(query, variables)
     response_json = response.json()
@@ -140,18 +251,157 @@ def get_filtered_issues(issue_type, resource_id, severity, limit):
         demisto.info("You should (only) pass one filter")
         return "You should (only) pass one filter"
 
-    query = "query IssuesTable( $filterBy: IssueFilters $first: Int $after: String $orderBy: IssueOrder ) { issues( filterBy: $filterBy first: $first after: $after orderBy: $orderBy ) { nodes { ...IssueDetails } pageInfo { hasNextPage endCursor } totalCount informationalSeverityCount lowSeverityCount mediumSeverityCount highSeverityCount criticalSeverityCount uniqueEntityCount } } fragment IssueDetails on Issue { id control { id name query } createdAt updatedAt projects { id name slug businessUnit riskProfile { businessImpact } } status severity entity { id name type } entitySnapshot { id type nativeType name subscriptionId subscriptionExternalId subscriptionName resourceGroupId resourceGroupExternalId region cloudPlatform cloudProviderURL status tags providerId subscriptionTags } note dueAt serviceTicket { externalId name url } serviceTickets { externalId name url action { id type } } }"
+    query = ("""
+        query IssuesTable(
+            $filterBy: IssueFilters
+            $first: Int
+            $after: String
+            $orderBy: IssueOrder
+          ) {
+            issues(
+                filterBy: $filterBy
+                first: $first
+                after: $after
+                orderBy: $orderBy
+            ) {
+                nodes {
+                    ...IssueDetails
+                }
+                pageInfo {
+                    hasNextPage
+                    endCursor
+                }
+                totalCount
+                informationalSeverityCount
+                lowSeverityCount
+                mediumSeverityCount
+                highSeverityCount
+                criticalSeverityCount
+                uniqueEntityCount
+            }
+        }
+        fragment IssueDetails on Issue {
+            id
+            control {
+                id
+                name
+                query
+            }
+            createdAt
+            updatedAt
+            projects {
+                id
+                name
+                slug
+                businessUnit
+                riskProfile {
+                    businessImpact
+                }
+            }
+            status
+            severity
+            entity {
+                id
+                name
+                type
+            }
+            entitySnapshot {
+                id
+                type
+                nativeType
+                name
+                subscriptionId
+                subscriptionExternalId
+                subscriptionName
+                resourceGroupId
+                resourceGroupExternalId
+                region
+                cloudPlatform
+                cloudProviderURL
+                status
+                tags
+                providerId
+                subscriptionTags
+            }
+            note
+            dueAt
+            serviceTicket {
+                externalId
+                name
+                url
+            }
+            serviceTickets {
+                externalId
+                name
+                url
+                action {
+                    id
+                    type
+                }
+            }
+        }
+    """)
 
     if issue_type:
-        variables = {"first": limit, "filterBy": {"status": ["OPEN", "IN_PROGRESS"], "relatedEntity": {"type": [issue_type]}}, "orderBy": {"field": "SEVERITY", "direction": "DESC"}}
+        variables = {
+            "first": limit,
+            "filterBy": {
+                "status": [
+                    "OPEN",
+                    "IN_PROGRESS"
+                ],
+                "relatedEntity": {
+                    "type": [
+                        issue_type
+                    ]
+                }
+            },
+            "orderBy": {
+                "field":
+                    "SEVERITY",
+                "direction":
+                    "DESC"
+            }
+        }
     elif resource_id:
-        get_resource_graph_id_helper_variables = {"projectId": "*", "query": {"type": ["CLOUD_RESOURCE"], "where": {"providerUniqueId": {"EQUALS": resource_id}}}}
-        get_resource_graph_id_helper_query = "query GraphEntityResourceFilterAutosuggest( $query: GraphEntityQueryInput $projectId: String! ) { graphSearch(first: 100, query: $query, quick: true, projectId: $projectId) { nodes { entities { id name type } } } }"
+        get_resource_graph_id_helper_variables = {
+            "projectId": "*",
+            "query": {
+                "type": [
+                    "CLOUD_RESOURCE"
+                ],
+                "where": {
+                    "providerUniqueId": {
+                        "EQUALS":
+                            resource_id
+                    }
+                }
+            }
+        }
+        get_resource_graph_id_helper_query = ("""
+            query GraphEntityResourceFilterAutosuggest(
+                $query: GraphEntityQueryInput
+                $projectId: String!
+              ) {
+                graphSearch(
+                    first: 100, query: $query, quick: true, projectId: $projectId
+                ) {
+                    nodes {
+                        entities {
+                            id
+                            name
+                            type
+                        }
+                    }
+                }
+            }
+        """)
         graph_resource_response = checkAPIerrors(get_resource_graph_id_helper_query, get_resource_graph_id_helper_variables)
         graph_resource_response_json = graph_resource_response.json()
         if graph_resource_response_json['data']['graphSearch']['nodes'] != []:
             graph_resource_id = graph_resource_response_json['data']['graphSearch']['nodes'][0]['entities'][0]['id']
-            variables = {"first": limit, "filterBy": {"status": ["OPEN", "IN_PROGRESS"], "relatedEntity": {"id": graph_resource_id}}, "orderBy": {"field": "SEVERITY", "direction": "DESC"}}
+            variables = {"first": limit, "filterBy": {"status": ["OPEN", "IN_PROGRESS"], "relatedEntity": {"id":
+                         graph_resource_id}}, "orderBy": {"field": "SEVERITY", "direction": "DESC"}}
         else:
             demisto.info("Resource not found.")
             return "Resource not found."
@@ -168,8 +418,10 @@ def get_filtered_issues(issue_type, resource_id, severity, limit):
         elif severity.upper() == 'INFORMATIONAL':
             variables['filterBy']['severity'] = ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW', 'INFORMATIONAL']
         else:
-            demisto.info("You should only use these severity types: CRITICAL, HIGH, MEDIUM, LOW or INFORMATIONAL in upper or lower case.")
-            return "You should only use these severity types: CRITICAL, HIGH, MEDIUM, LOW or INFORMATIONAL in upper or lower case."
+            demisto.info("You should only use these severity types: CRITICAL, HIGH, MEDIUM, LOW or INFORMATIONAL "
+                         "in upper or lower case.")
+            return ("You should only use these severity types: CRITICAL, HIGH, MEDIUM, LOW or INFORMATIONAL in "
+                    "upper or lower case.")
 
     response = checkAPIerrors(query, variables)
     response_json = response.json()
@@ -195,8 +447,116 @@ def get_resource(resource_id):
 
     demisto.debug("get_resource, enter")
 
-    variables = {"fetchPublicExposurePaths": True, "fetchInternalExposurePaths": False, "fetchIssueAnalytics": False, "first": 50, "query": {"type": ["CLOUD_RESOURCE"], "select": True, "where": {"providerUniqueId": {"EQUALS": [resource_id]}}}, "projectId": "*", "fetchTotalCount": True, "quick": True}
-    query = "query GraphSearch( $query: GraphEntityQueryInput $controlId: ID $projectId: String! $first: Int $after: String $fetchTotalCount: Boolean! $quick: Boolean $fetchPublicExposurePaths: Boolean = false $fetchInternalExposurePaths: Boolean = false $fetchIssueAnalytics: Boolean = false ) { graphSearch( query: $query controlId: $controlId projectId: $projectId first: $first after: $after quick: $quick ) { totalCount @include(if: $fetchTotalCount) maxCountReached @include(if: $fetchTotalCount) pageInfo { endCursor hasNextPage } nodes { entities { id name type properties userMetadata { isInWatchlist isIgnored note } issueAnalytics: issues(filterBy: { status: [IN_PROGRESS, OPEN] }) @include(if: $fetchIssueAnalytics) { lowSeverityCount mediumSeverityCount highSeverityCount criticalSeverityCount } publicExposures(first: 10) @include(if: $fetchPublicExposurePaths) { nodes { ...NetworkExposureFragment } } otherSubscriptionExposures(first: 10) @include(if: $fetchInternalExposurePaths) { nodes { ...NetworkExposureFragment } } otherVnetExposures(first: 10) @include(if: $fetchInternalExposurePaths) { nodes { ...NetworkExposureFragment } } } aggregateCount } } } fragment NetworkExposureFragment on NetworkExposure { id portRange sourceIpRange destinationIpRange path { id name type properties issueAnalytics: issues(filterBy: { status: [IN_PROGRESS, OPEN] }) @include(if: $fetchIssueAnalytics) { lowSeverityCount mediumSeverityCount highSeverityCount criticalSeverityCount } } }"
+    variables = {
+        "fetchPublicExposurePaths": True,
+        "fetchInternalExposurePaths": False,
+        "fetchIssueAnalytics": False,
+        "first": 50,
+        "query": {
+            "type": [
+                "CLOUD_RESOURCE"
+            ],
+            "select": True,
+            "where": {
+                "providerUniqueId": {
+                    "EQUALS": [
+                        resource_id
+                    ]
+                }
+            }
+        },
+        "projectId": "*",
+        "fetchTotalCount": True,
+        "quick": True
+    }
+    query = ("""
+        query GraphSearch(
+            $query: GraphEntityQueryInput
+            $controlId: ID
+            $projectId: String!
+            $first: Int
+            $after: String
+            $fetchTotalCount: Boolean!
+            $quick: Boolean
+            $fetchPublicExposurePaths: Boolean = false
+            $fetchInternalExposurePaths: Boolean = false
+            $fetchIssueAnalytics: Boolean = false
+          ) {
+            graphSearch(
+                query: $query
+                controlId: $controlId
+                projectId: $projectId
+                first: $first
+                after: $after
+                quick: $quick
+            ) {
+                totalCount @include(if: $fetchTotalCount)
+                maxCountReached @include(if: $fetchTotalCount)
+                pageInfo {
+                    endCursor
+                    hasNextPage
+                }
+                nodes {
+                    entities {
+                        id
+                        name
+                        type
+                        properties
+                        userMetadata {
+                            isInWatchlist
+                            isIgnored
+                            note
+                        }
+                        issueAnalytics: issues(filterBy: { status: [IN_PROGRESS, OPEN] })
+                            @include(if: $fetchIssueAnalytics) {
+                            lowSeverityCount
+                            mediumSeverityCount
+                            highSeverityCount
+                            criticalSeverityCount
+                        }
+                        publicExposures(first: 10) @include(if: $fetchPublicExposurePaths) {
+                            nodes {
+                                ...NetworkExposureFragment
+                            }
+                        }
+                        otherSubscriptionExposures(first: 10)
+                            @include(if: $fetchInternalExposurePaths) {
+                            nodes {
+                                ...NetworkExposureFragment
+                            }
+                        }
+                        otherVnetExposures(first: 10)
+                            @include(if: $fetchInternalExposurePaths) {
+                                nodes {
+                                    ...NetworkExposureFragment
+                                }
+                            }
+                        }
+                        aggregateCount
+                    }
+                }
+            }
+
+            fragment NetworkExposureFragment on NetworkExposure {
+                id
+                portRange
+                sourceIpRange
+                destinationIpRange
+                path {
+                    id
+                    name
+                    type
+                    properties
+                    issueAnalytics: issues(filterBy: { status: [IN_PROGRESS, OPEN] })
+                        @include(if: $fetchIssueAnalytics) {
+                            lowSeverityCount
+                            mediumSeverityCount
+                            highSeverityCount
+                            criticalSeverityCount
+                        }
+                }
+            }
+    """)
 
     try:
         response = checkAPIerrors(query, variables)
