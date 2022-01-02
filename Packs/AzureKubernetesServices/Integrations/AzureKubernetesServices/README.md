@@ -1,8 +1,5 @@
 Deploy and manage containerized applications with a fully managed Kubernetes service.
-
 This integration was integrated and tested with API version 2021-09-01 of AKS.
-
-Note: The integration is in beta as it uses a preview version of the AKS API. The stable AKS API version does not contain all required endpoints used in some of the integration commands.
 
 ## Authorization
 In both options below, the [device authorization grant flow](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-device-code) is used.
@@ -26,7 +23,7 @@ You only need to fill in your subscription ID and resource group name. For more 
 To use a self-configured Azure application, you need to add a [new Azure App Registration in the Azure Portal](https://docs.microsoft.com/en-us/graph/auth-register-app-v2#register-a-new-application-using-the-azure-portal).
 
 * The application must have **user_impersonation** permission (can be found in *API permissions* section of the Azure Kubernetes Services app registrations).
-* The application must allow public client flows (can be found under the *Authentication* section of the Azure Kubernetes Services app registrations).
+* The application must allow **public client flows** (can be found under the *Authentication* section of the Azure Kubernetes Services app registrations).
 
 
 ## Configure Azure Kubernetes Services on Cortex XSOAR
