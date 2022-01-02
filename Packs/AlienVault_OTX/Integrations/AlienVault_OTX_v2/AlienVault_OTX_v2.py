@@ -193,7 +193,7 @@ def create_relationships(client: Client, relevant_field, entity_a: str, entity_a
 
     # pulse_info.pulses.[0].attack_ids.display_name - can contain a list of attack_ids
     if relevant_field and isinstance(relevant_field, list) and relevant_id in relevant_field[0]:
-        display_names = [relevant_field.get('display_name') for id in relevant_field[0].get(relevant_id)]
+        display_names = [id.get('display_name') for id in relevant_field[0].get(relevant_id)]
         if display_names:
             relationships = [EntityRelationship(
                 name=relationship_type,
