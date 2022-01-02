@@ -1016,11 +1016,12 @@ script:
     execution: false
     name: infoblox-delete-response-policy-zone
   - deprecated: false
+    description: List all host records in all zones
     execution: false
     name: infoblox-list-hosts
   - arguments:
     - default: false
-      description: Name of host
+      description: Record's name
       isArray: false
       name: name
       required: true
@@ -1031,15 +1032,109 @@ script:
     name: infoblox-search-host-record
   - arguments:
     - default: false
-      description: zone name
+      description: Zone's name
       isArray: false
       name: zone
       required: true
       secret: false
     deprecated: false
-    description: List all records of a zone
+    description: List all records of a given zone
     execution: false
     name: infoblox-list-records
+  - arguments:
+    - default: false
+      description: 'Record''s full name: <record_name>.<zone_name>'
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: IP Address
+      isArray: false
+      name: ipv4addr
+      required: false
+      secret: false
+    - default: false
+      description: optional
+      isArray: false
+      name: comment
+      required: false
+      secret: false
+    deprecated: false
+    description: Create a new record
+    execution: false
+    name: infoblox-create-record
+  - arguments:
+    - default: false
+      description: FQDN to change
+      isArray: false
+      name: host
+      required: false
+      secret: false
+    - default: false
+      description: IP Address
+      isArray: false
+      name: ipadd
+      required: false
+      secret: false
+    deprecated: false
+    execution: false
+    name: infoblox-add-host
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      defaultValue: ipv4addr
+      description: object reference to update
+      isArray: false
+      name: refid
+      predefined:
+      - IP Address
+      required: false
+      secret: false
+    deprecated: false
+    description: Update an IP of a host
+    execution: false
+    name: infoblox-update-host-ip
+  - arguments:
+    - default: false
+      description: object reference to update
+      isArray: false
+      name: refid
+      required: false
+      secret: false
+    deprecated: false
+    description: Delete a host record
+    execution: false
+    name: infoblox-delete-host
+  - arguments:
+    - default: false
+      description: record reference
+      isArray: false
+      name: refid
+      required: true
+      secret: false
+    - default: false
+      description: Record IP
+      isArray: false
+      name: ip4addr
+      required: true
+      secret: false
+    - default: false
+      description: Record's full name; <record_name>.<zone_name>
+      isArray: false
+      name: name
+      required: false
+      secret: false
+    - default: false
+      description: Record's comment
+      isArray: false
+      name: comment
+      required: false
+      secret: false
+    deprecated: false
+    description: Update a-record
+    execution: false
+    name: infoblox-update-a-record
   dockerimage: demisto/python3:3.9.8.24399
   feed: false
   isfetch: false

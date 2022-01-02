@@ -387,7 +387,7 @@ class Client(BaseClient):
         rule = self._http_request('POST', suffix, headers=headers, data=payload)
         return rule
 
-    def update_host_ip(self, ref: str, ipv4addr: str):
+    def update_host_ip(self, refid: str, ipv4addr: str):
         params = {
             "_return_fields": "ipv4addrs",
             "_return_as_object": 1
@@ -397,7 +397,22 @@ class Client(BaseClient):
                 {"ipv4addr": str(ipv4addr)}
             ]
         }
-        res = self._http_request('PUT', f"{ref}", params=params, json_data=payload)
+        res = self._http_request('PUT', f"{refid}", params=params, json_data=payload)
+        return res
+
+    def update_a_record(self, refid: str, ipv4addr: str, name: Optional[str], comment: Optional[str]):
+        params = {
+            "_return_fields": "ipv4addrs",
+            "_return_as_object": 1
+        }
+        payload = {
+            "ipv4addrs": [
+                {"ipv4addr": str(ipv4addr)}
+            ],
+            "name": name,
+            "comment": comment
+        }
+        res = self._http_request('PUT', f"{refid}", params=params, json_data=payload)
         return res
 
     def delete_host(self, refid: Optional[str]) -> Dict:
@@ -1085,10 +1100,21 @@ def add_host_record_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict
 
 
 def update_host_ip_command(client: Client, args: Dict):
-    ref = str(args.get("ref"))
+    refid = str(args.get("refid"))
     ipv4addr = str(args.get("ipv4addr"))
 
-    raw_response = client.update_host_ip(ref, ipv4addr)
+    raw_response = client.update_host_ip(refid, ipv4addr)
+
+    return tableToMarkdown("Updated Hosts", raw_response["result"]), {"Infoblox": raw_response["result"]}, raw_response
+
+
+def update_a_record_command(client: Client, args: Dict):
+    refid = str(args.get("refid"))
+    ipv4addr = str(args.get("ipv4addr"))
+    name = str(args.get("name"))
+    comment = str(args.get("comment"))
+
+    raw_response = client.update_a_record(refid, ipv4addr, name, comment)
 
     return tableToMarkdown("Updated Hosts", raw_response["result"]), {"Infoblox": raw_response["result"]}, raw_response
 
@@ -1166,6 +1192,7 @@ def main():  # pragma: no cover
         f'{INTEGRATION_COMMAND_NAME}-create-a-record': create_a_record_command,
         f'{INTEGRATION_COMMAND_NAME}-add-host-record': add_host_record_command,
         f'{INTEGRATION_COMMAND_NAME}-update-host-ip': update_host_ip_command,
+        f'{INTEGRATION_COMMAND_NAME}-update-a-record': update_a_record_command,
         f'{INTEGRATION_COMMAND_NAME}-delete-host-record': delete_host_record_command
     }
     try:
