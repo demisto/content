@@ -15,11 +15,11 @@ id: Get Original Email - Generic v2
 inputs:
 - description: The original email message ID to retrieve. This should hold the value
     of the "Message-ID" header of the original email.
-  key: MessgaeID
+  key: MessageID
   playbookInputQuery:
   required: false
   value: {}
-- description: The email address of the user to fetch the original email for. For gmail, the authenticated user.
+- description: The email address of the user to fetch the original email for. For Gmail, the authenticated user.
   key: UserID
   playbookInputQuery:
   required: false
@@ -34,6 +34,7 @@ inputs:
     Possible values:
     - Gmail
     - EWS v2
+    - EWSO365
     - MicrosoftGraphMail
     - EmailSecurityGateway
 
@@ -70,7 +71,7 @@ outputs:
   description: The email HTML.
   type: string
 - contextPath: Email.Body
-  description: The email text body
+  description: The email text body.
   type: string
 - contextPath: Email.Headers
   description: The email headers.
@@ -80,6 +81,7 @@ outputs:
   type: string
 - contextPath: Email.HeadersMap
   description: The email headers map.
+  type: string
 - contextPath: reportedemailentryid
   description: If the original EML was retrieved, this field holds the file's
     Entry ID.
@@ -160,7 +162,7 @@ tasks:
     scriptarguments:
       MessageID:
         complex:
-          root: inputs.MessgaeID
+          root: inputs.MessageID
       ThreadTopic:
         complex:
           root: inputs.EmailSubject
@@ -208,7 +210,7 @@ tasks:
     scriptarguments:
       MessageID:
         complex:
-          root: inputs.MessgaeID
+          root: inputs.MessageID
       TargetMailbox:
         complex:
           root: inputs.UserID
@@ -254,7 +256,7 @@ tasks:
     scriptarguments:
       MessageID:
         complex:
-          root: inputs.MessgaeID
+          root: inputs.MessageID
       UserID:
         complex:
           root: inputs.UserID
@@ -263,7 +265,7 @@ tasks:
     task:
       brand: ""
       description: |
-        This v2 playbook uses the reporter's email headers to retrieve the original email, which helps decrease the number of tasks to retrieve the original email. 
+        This v2 playbook uses the reporter's email headers to retrieve the original email, which helps reduce the number of tasks to retrieve the original email. 
         Use this playbook to retrieve the original email using the Gmail integration, including headers and attachments.
         Note: You must have the necessary Google Apps Domain-Wide Delegation of Authority permissions in your Gmail service to execute global search.
       id: 5481e887-03ee-44b2-8f26-411c0420cd3a
@@ -296,16 +298,25 @@ tasks:
               simple: Gmail
       label: Gmail
     - condition:
-      - - left:
-            iscontext: true
+      - - operator: isEqualString
+          left:
             value:
               complex:
                 root: inputs.EmailBrand
-          operator: isEqualString
+            iscontext: true
           right:
             value:
               simple: EWS v2
-      label: EWS v2
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.EmailBrand
+            iscontext: true
+          right:
+            value:
+              simple: EWSO365
+      label: EWS
     - condition:
       - - left:
             iscontext: true
@@ -336,7 +347,7 @@ tasks:
     nexttasks:
       '#default#':
       - "14"
-      EWS v2:
+      EWS:
       - "11"
       Email Security:
       - "15"
@@ -417,7 +428,7 @@ tasks:
     scriptarguments:
       MessageID:
         complex:
-          root: inputs.MessgaeID
+          root: inputs.MessageID
       UserID:
         complex:
           root: inputs.UserID
@@ -447,7 +458,7 @@ view: |-
   {
     "linkLabelsPosition": {
       "13_10_MSGraph": 0.9,
-      "13_11_EWS v2": 0.9,
+      "13_11_EWS": 0.9,
       "13_12_Gmail": 0.85,
       "13_15_Email Security": 0.9
     },
