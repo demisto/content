@@ -67,7 +67,18 @@ tasks:
       - "3"
     scriptarguments:
       vm-uuid:
-        simple: ${VMWare.[1].UUID}
+        complex:
+          root: VMWare
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: VMWare.Name
+                iscontext: true
+              right:
+                value:
+                  simple: test_vm_demo
+          accessor: UUID
     separatecontext: false
     view: |-
       {
@@ -94,7 +105,18 @@ tasks:
       - "4"
     scriptarguments:
       vm-uuid:
-        simple: ${VMWare.[1].UUID}
+        complex:
+          root: VMWare
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: VMWare.Name
+                iscontext: true
+              right:
+                value:
+                  simple: test_vm_demo
+          accessor: UUID
     separatecontext: false
     view: |-
       {
@@ -121,7 +143,18 @@ tasks:
       - "5"
     scriptarguments:
       vm-uuid:
-        simple: ${VMWare.[1].UUID}
+        complex:
+          root: VMWare
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: VMWare.Name
+                iscontext: true
+              right:
+                value:
+                  simple: test_vm_demo
+          accessor: UUID
     separatecontext: false
     view: |-
       {
@@ -148,7 +181,18 @@ tasks:
       - "6"
     scriptarguments:
       vm-uuid:
-        simple: ${VMWare.[1].UUID}
+        complex:
+          root: VMWare
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: VMWare.Name
+                iscontext: true
+              right:
+                value:
+                  simple: test_vm_demo
+          accessor: UUID
     separatecontext: false
     view: |-
       {
@@ -175,7 +219,18 @@ tasks:
       - "7"
     scriptarguments:
       vm-uuid:
-        simple: ${VMWare.[1].UUID}
+        complex:
+          root: VMWare
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: VMWare.Name
+                iscontext: true
+              right:
+                value:
+                  simple: test_vm_demo
+          accessor: UUID
     separatecontext: false
     view: |-
       {
@@ -202,7 +257,18 @@ tasks:
       - "12"
     scriptarguments:
       vm-uuid:
-        simple: ${VMWare.[1].UUID}
+        complex:
+          root: VMWare
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: VMWare.Name
+                iscontext: true
+              right:
+                value:
+                  simple: test_vm_demo
+          accessor: UUID
     separatecontext: false
     view: |-
       {
@@ -235,7 +301,18 @@ tasks:
         simple: Test Snapshot
       quiesce: {}
       vm-uuid:
-        simple: ${VMWare.[1].UUID}
+        complex:
+          root: VMWare
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: VMWare.Name
+                iscontext: true
+              right:
+                value:
+                  simple: test_vm_demo
+          accessor: UUID
     separatecontext: false
     view: |-
       {
@@ -264,7 +341,18 @@ tasks:
       snapshot-name:
         simple: Test Snapshot
       vm-uuid:
-        simple: ${VMWare.[1].UUID}
+        complex:
+          root: VMWare
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: VMWare.Name
+                iscontext: true
+              right:
+                value:
+                  simple: test_vm_demo
+          accessor: UUID
     separatecontext: false
     view: |-
       {
@@ -317,7 +405,17 @@ tasks:
       - "2"
     scriptarguments:
       left:
-        simple: ${VMWare.[1].State}
+        complex:
+          root: VMWare.Name
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: VMWare.Name
+                iscontext: true
+              right:
+                value:
+                  simple: ' test_vm_demo'
       right:
         simple: poweredOff
     results:
@@ -356,7 +454,18 @@ tasks:
         simple: HardRebooted
       fields: {}
       path:
-        simple: VMWare.[1].State
+        complex:
+          root: VMWare
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: VMWare.Name
+                iscontext: true
+              right:
+                value:
+                  simple: test_vm_demo
+          accessor: State
     separatecontext: false
     view: |-
       {
@@ -531,7 +640,18 @@ tasks:
       powerOn:
         simple: "false"
       uuid:
-        simple: ${VMWare.UUID}
+        complex:
+          root: VMWare
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: VMWare.Name
+                iscontext: true
+              right:
+                value:
+                  simple: test_playbook_vm
+          accessor: UUID
     separatecontext: false
     view: |-
       {
@@ -572,7 +692,16 @@ tasks:
         simple: highPriority
       uuid:
         complex:
-          root: VMWare.[1]
+          root: VMWare
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: VMWare.Name
+                iscontext: true
+              right:
+                value:
+                  simple: clone_vm_test_playbook
           accessor: UUID
     separatecontext: false
     view: |-
@@ -609,7 +738,16 @@ tasks:
     scriptarguments:
       uuid:
         complex:
-          root: VMWare.[1]
+          root: VMWare
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: VMWare.Name
+                iscontext: true
+              right:
+                value:
+                  simple: clone_vm_test_playbook
           accessor: UUID
     separatecontext: false
     view: |-
@@ -645,7 +783,18 @@ tasks:
       - "21"
     scriptarguments:
       uuid:
-        simple: ${VMWare.[0].UUID}
+        complex:
+          root: VMWare
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: VMWare.Name
+                iscontext: true
+              right:
+                value:
+                  simple: test_playbook_vm
+          accessor: UUID
     separatecontext: false
     view: |-
       {
@@ -686,8 +835,17 @@ tasks:
         simple: relocated_vm
       path:
         complex:
-          root: VMWare.[0]
-          accessor: Path
+          root: VMWare
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: VMWare.Name
+                iscontext: true
+              right:
+                value:
+                  simple: test_playbook_vm
+          accessor: UUID
     separatecontext: false
     view: |-
       {
@@ -723,7 +881,16 @@ tasks:
     scriptarguments:
       uuid:
         complex:
-          root: VMWare.[0]
+          root: VMWare
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: VMWare.Name
+                iscontext: true
+              right:
+                value:
+                  simple: test_playbook_vm
           accessor: UUID
     separatecontext: false
     view: |-
