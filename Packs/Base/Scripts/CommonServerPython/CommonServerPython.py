@@ -8510,12 +8510,41 @@ def get_message_local_vars():
     local_vars = list(locals().items())
     ret_value = '\n\n--- Start Local Vars ---\n\n'
     for current_local_var in local_vars:
-        ret_value += shorten_string_for_printing(str(current_local_var), 100) + '\n'
+        ret_value += shorten_string_for_printing(str(current_local_var), 64) + '\n'
 
     ret_value += '\n--- End Local Vars ---\n\n'
 
     return ret_value
 
+
+def get_size_of_object(input_object):
+    """Recursively iterate to sum size of object & members."""
+    from collections import deque
+    from collections.abc import Set, Mapping
+    from numbers import Number
+    ZERO_DEPTH_BASES = (str, bytes, Number, range, bytearray)
+    _seen_ids = set()
+    def inner(obj):
+        obj_id = id(obj)
+        if obj_id in _seen_ids:
+            return 0
+        _seen_ids.add(obj_id)
+        size = sys.getsizeof(obj)
+        if isinstance(obj, ZERO_DEPTH_BASES):
+            pass # bypass remaining control flow and return
+        elif isinstance(obj, (tuple, list, Set, deque)):
+            size += sum(inner(i) for i in obj)
+        elif isinstance(obj, Mapping):
+            size += sum(inner(k) + inner(v) for k, v in getattr(obj, 'items')())
+        # elif hasattr(obj, 'items'):
+        #     size += sum(inner(k) + inner(v) for k, v in getattr(obj, 'items')())
+        # Check for custom object instances - may subclass above too
+        if hasattr(obj, '__dict__'):
+            size += inner(vars(obj))
+        # if hasattr(obj, '__slots__'): # can have __slots__ with __dict__
+        #     size += sum(inner(getattr(obj, s)) for s in obj.__slots__ if hasattr(obj, s))
+        return size
+    return inner(input_object)
 
 def get_message_global_vars():
     """
@@ -8524,21 +8553,31 @@ def get_message_global_vars():
     :return: Message to print.
     :rtype: ``str``
     """
+    import types
+    excluded_globals = ['__name__', '__doc__', '__package__', '__loader__',
+                        '__spec__', '__annotations__', '__builtins__',
+                        '__file__', '__cached__',
+                       ]
+    excluded_types = [types.ModuleType, types.FunctionType,
+                   ]
     globals_dict = dict(globals())
     globals_dict_full = {}
     for current_key in globals_dict.keys():
         current_value = globals_dict[current_key]
-        globals_dict_full[current_key] = {
-            'name': current_key,
-            'value': current_value,
-            'size': sys.getsizeof(current_value)
-        }
+        # TODO Split to ModuleTypes sizes with isinstance(current_value, ModuleType)
+        if not type(current_value) in excluded_types and current_key not in excluded_globals:
+            globals_dict_full[current_key] = {
+                'name': current_key,
+                'value': current_value,
+                # Deep calculation. Better than sys.getsizeof(current_value)
+                'size': get_size_of_object(current_value)
+            }
 
     ret_value = '\n\n--- Start Top {} Globals by Size ---\n'.format(PROFILING_DUMP_ROWS_LIMIT)
     globals_sorted_by_size = sorted(globals_dict_full.values(), key=lambda d: d['size'], reverse=True)
     ret_value += 'Size\t\tName\t\tValue\n'
     for current_global in globals_sorted_by_size[:PROFILING_DUMP_ROWS_LIMIT]:
-        ret_value += '{}\t\t{}\t\t{}\n'.format(current_global["size"], current_global["name"], shorten_string_for_printing(current_global["value"], 100))
+        ret_value += '{}\t\t{}\t\t{}\n'.format(current_global["size"], current_global["name"], shorten_string_for_printing(str(current_global["value"]), 64))
     ret_value += '\n--- End Top {} Globals by Size ---\n'.format(PROFILING_DUMP_ROWS_LIMIT)
 
     return ret_value
