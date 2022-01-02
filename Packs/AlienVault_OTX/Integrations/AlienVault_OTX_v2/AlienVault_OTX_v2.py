@@ -96,25 +96,25 @@ def calculate_dbot_score(client: Client, raw_response: Union[dict, None]) -> flo
     """
     default_threshold = int(client.default_threshold)
     pulse_info = raw_response.get('pulse_info', {})
-    false_Positive = raw_response.getFalse_positive
+    false_Positive = raw_response.get('false_positive')
     if false_Positive:
-        if false_Positive.get("assessment") == "accepted":
-            return Common.DBotScore.Benign
+        if false_Positive[0].get("assessment") == "accepted":
+            return Common.DBotScore.GOOD
     else:
         validation = raw_response.get("validation", [])
         if not validation:
             if isinstance(pulse_info, dict):
                 count = int(pulse_info.get('count', '0'))
                 if count >= default_threshold:
-                    return Common.DBotScore.Malicious
+                    return Common.DBotScore.BAD
                 elif 0 < count < default_threshold:
                     return Common.DBotScore.SUSPICIOUS
                 else:
-                    return Common.DBotScore.Unknown
+                    return Common.DBotScore.NONE
         elif len(validation) == 1:
             return Common.DBotScore.SUSPICIOUS
         else:
-            return Common.DBotScore.Benign            
+            return Common.DBotScore.GOOD            
     return 0
 
 
@@ -171,16 +171,18 @@ def relationships_manager(client: Client, raw_response: dict, entity_a: str, ent
     # Attack pattern, general rs
     relationships += create_relationships(client, dict_safe_get(raw_response, ['pulse_info', 'pulses'], ['']), entity_a, entity_a_type, 'attack_ids', 
     FeedIndicatorType.indicator_type_by_server_version("STIX Attack Pattern"), EntityRelationship.Relationships.INDICATOR_OF)
-    params = {'limit' : client.max_indicator_relationships}
+    params = {'limit' : str(client.max_indicator_relationships)}
+    print(params)
     
-    _, _, urls_raw_respone = alienvault_get_related_urls_by_indicator_command(client, indicator_type, indicator, params)
-    relationships +=  create_relationships(client, dict_safe_get(urls_raw_respone, ['url_list', 'url'], ['']), entity_a, entity_a_type, '?', FeedIndicatorType.URL, EntityRelationship.Relationships.INDICATOR_OF)
+    # _, _, urls_raw_respone = alienvault_get_related_urls_by_indicator_command(client, indicator_type, indicator, params)
+    # relationships +=  create_relationships(client, dict_safe_get(urls_raw_respone, ['url_list'], ['']), entity_a, entity_a_type, 'url', FeedIndicatorType.URL, EntityRelationship.Relationships.INDICATOR_OF)
         
-    _, _, hash_raw_respone = alienvault_get_related_hashes_by_indicator_command(client, indicator_type, indicator, params)
-    relationships +=  create_relationships(client, dict_safe_get(hash_raw_respone, ['data', 'hash'], ['']), entity_a, entity_a_type, '?', FeedIndicatorType.File, EntityRelationship.Relationships.INDICATOR_OF)
-        
+    # _, _, hash_raw_respone = alienvault_get_related_hashes_by_indicator_command(client, indicator_type, indicator, params)
+    # relationships +=  create_relationships(client, dict_safe_get(hash_raw_respone, ['data'], ['']), entity_a, entity_a_type, 'hash', FeedIndicatorType.File, EntityRelationship.Relationships.INDICATOR_OF)
+  
     _, _, passive_dns_raw_respone = alienvault_get_passive_dns_data_by_indicator_command(client, indicator_type, indicator, params)
-    relationships +=  create_relationships(client, dict_safe_get(passive_dns_raw_respone, ['passive_dns', 'address'], ['']), entity_a, entity_a_type, '?', FeedIndicatorType.IP, EntityRelationship.Relationships.INDICATOR_OF)
+    print(passive_dns_raw_respone)
+    relationships +=  create_relationships(client, dict_safe_get(passive_dns_raw_respone, ['passive_dns'], ['']), entity_a, entity_a_type, 'address', FeedIndicatorType.IP, EntityRelationship.Relationships.INDICATOR_OF)
 
 
     return relationships
@@ -193,7 +195,7 @@ def create_relationships(client: Client, relevant_field, entity_a: str, entity_a
 
     # pulse_info.pulses.[0].attack_ids.display_name - can contain a list of attack_ids
     if relevant_field and isinstance(relevant_field, list) and relevant_id in relevant_field[0]:
-        display_names = [id.get('display_name') for id in relevant_field[0].get(relevant_id)]
+        display_names = [item.get(relevant_id) for item in relevant_field]
         if display_names:
             relationships = [EntityRelationship(
                 name=relationship_type,
@@ -584,7 +586,6 @@ def alienvault_get_related_urls_by_indicator_command(client: Client, indicator_t
                                 argument=indicator,
                                 sub_section='url_list',
                                 params=params)
-    print(raw_response)
     if raw_response and raw_response != 404:
         title = f'{INTEGRATION_NAME} - Related url list to queried indicator'
         context_entry: list = create_list_by_ec(list_entries=raw_response.get('url_list', {}), list_type='url_list')
