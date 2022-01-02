@@ -17,7 +17,7 @@ from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToM
     argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, ipv6Regex, batch, FeedIndicatorType, \
     encode_string_results, safe_load_json, remove_empty_elements, aws_table_to_markdown, is_demisto_version_ge, \
     appendContext, auto_detect_indicator_type, handle_proxy, get_demisto_version_as_str, get_x_content_info_headers, \
-    url_to_clickable_markdown, WarningsHandler, DemistoException, SmartGetDict, JsonTransformer
+    url_to_clickable_markdown, WarningsHandler, DemistoException, SmartGetDict, JsonTransformer, get_current_user
 import CommonServerPython
 
 try:
@@ -2704,12 +2704,12 @@ class TestBaseClient:
             resp_json = json.loads(e.res.text)
             assert e.res.status_code == 400
             assert resp_json.get('error') == 'additional text'
-    
+
     def test_http_request_timeout_default(self, requests_mock):
         requests_mock.get('http://example.com/api/v2/event', text=json.dumps(self.text))
         self.client._http_request('get', 'event')
         assert requests_mock.last_request.timeout == self.client.REQUESTS_TIMEOUT
-    
+
     def test_http_request_timeout_given_func(self, requests_mock):
         requests_mock.get('http://example.com/api/v2/event', text=json.dumps(self.text))
         timeout = 120
@@ -5999,3 +5999,11 @@ class TestSetAndGetLastMirrorRun:
         with raises(DemistoException, match='You cannot use setLastMirrorRun as your version is below 6.6.0'):
             set_last_mirror_run({"lastMirrorRun": "2018-10-24T14:13:20+00:00"})
             assert set_last_run.called is False
+
+
+def test_get_current_user(mocker):
+    name = 'John'
+    mocker.patch.object(CommonServerPython.demisto, 'getIntegrationContext',
+                        return_value={'context': {'User': {'username': name}}}
+                        )
+    assert get_current_user() == name

@@ -1172,3 +1172,7 @@ def setLastMirrorRun(obj):
 
     """
     return None
+
+
+def getCurrentUser():
+    return getIntegrationContext().get("context", {}).get("User", {}).get("username")

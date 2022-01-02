@@ -16,16 +16,14 @@ import sys
 import time
 import traceback
 import urllib
-from random import randint
+import warnings
 import xml.etree.cElementTree as ET
+from abc import abstractmethod
 from collections import OrderedDict
 from datetime import datetime, timedelta
-from abc import abstractmethod
 from distutils.version import LooseVersion
+from random import randint
 from threading import Lock
-
-import demistomock as demisto
-import warnings
 
 OS_LINUX = False
 OS_MAC = False
@@ -8586,3 +8584,10 @@ def register_signal_handler_profiling_dump(signal_type=None, profiling_dump_rows
         signal.signal(requested_signal, signal_handler_profiling_dump)
     else:
         demisto.info('Not a Linux or Mac OS, profiling using a signal is not supported.')
+
+def get_current_user():
+    """
+    :return: name of the current user, as it shows in the integration context.
+    returns None if not available.
+    """
+    return demisto.getIntegrationContext().get("context", {}).get("User", {}).get("username")
