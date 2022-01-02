@@ -1055,6 +1055,10 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
     try:
         data: dict = req.payload
         event: dict = data.get('event', {})
+        if authorizations := data.get('authorizations', []):
+            is_bot = authorizations[0].get('is_bot', False)
+        else:
+            is_bot = False
         subtype = data.get('subtype', '')
         text = event.get('text', '')
         user_id = event.get('user', '')
@@ -1117,7 +1121,7 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
                                                'text': entitlement_reply
                                            })
 
-        elif channel and channel[0] == 'D' and ENABLE_DM:
+        elif channel and is_bot and ENABLE_DM:
             # DM
             await handle_dm(user, text, ASYNC_CLIENT)  # type: ignore
         else:
