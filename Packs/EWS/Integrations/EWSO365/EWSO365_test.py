@@ -1,13 +1,13 @@
 import base64
-import datetime
 import json
-import dateparser
 import demistomock as demisto
 
 import pytest
 from exchangelib import EWSDate, EWSDateTime, EWSTimeZone
 from exchangelib.attachments import AttachmentId, ItemAttachment
 from exchangelib.items import Item, Message
+from freezegun import freeze_time
+
 from EWSO365 import (ExpandGroup, GetSearchableMailboxes, fetch_emails_as_incidents,
                      add_additional_headers, fetch_last_emails, find_folders,
                      get_expanded_group, get_searchable_mailboxes, handle_html,
@@ -360,14 +360,13 @@ def test_handle_html(mocker, html_input, expected_output):
     assert handle_html(html_input) == expected_output
 
 
-@pytest.mark.parametrize('since_datetime, filter_arg, expected_result, parse_result',
-                         [('', 'last_modified_time__gte', EWSDateTime.from_string('2021-05-23 13:18:14.901293+00:00'),
-                           datetime.datetime(year=2021, month=0o5, day=23,
-                                             hour=13, minute=18, second=14, microsecond=901293)),
+@freeze_time('2021-05-23 13:18:14.901293+00:00')
+@pytest.mark.parametrize('since_datetime, filter_arg, expected_result',
+                         [('', 'last_modified_time__gte', EWSDateTime.from_string('2021-05-23 13:08:14.901293+00:00')),
                           ('2021-05-23 21:28:14.901293+00:00', 'datetime_received__gte',
-                           '2021-05-23 21:28:14.901293+00:00', '2021-05-23 21:28:14.901293+00:00')
+                           '2021-05-23 21:28:14.901293+00:00')
                           ])
-def test_fetch_last_emails(mocker, since_datetime, filter_arg, expected_result, parse_result):
+def test_fetch_last_emails(mocker, since_datetime, filter_arg, expected_result):
     """
     Given:
         - First fetch timestamp - no last_run
@@ -401,17 +400,17 @@ def test_fetch_last_emails(mocker, since_datetime, filter_arg, expected_result, 
     client = TestNormalCommands.MockClient()
     client.get_folder_by_path = mock_get_folder_by_path
     mocker.patch.object(MockObject, 'filter')
-    mocker.patch.object(dateparser, 'parse', return_value=parse_result)
 
     fetch_last_emails(client, since_datetime=since_datetime)
     assert MockObject.filter.call_args[1].get(filter_arg) == expected_result
 
 
+@freeze_time('2021-05-23 18:28:14.901293+00:00')
 @pytest.mark.parametrize('max_fetch, expected_result',
                          [(6, 5),
                           (2, 2),
                           (5, 5)])
-def test_fetch_last_emails_max_fetch(mocker, max_fetch, expected_result):
+def test_fetch_last_emails_max_fetch(max_fetch, expected_result):
     """
     Given:
         - Max fetch is 6
@@ -448,8 +447,6 @@ def test_fetch_last_emails_max_fetch(mocker, max_fetch, expected_result):
     client = TestNormalCommands.MockClient()
     client.max_fetch = max_fetch
     client.get_folder_by_path = mock_get_folder_by_path
-    parse_result = datetime.datetime(year=2021, month=0o5, day=23, hour=18, minute=18, second=14, microsecond=901293)
-    mocker.patch.object(dateparser, 'parse', return_value=parse_result)
 
     emails = fetch_last_emails(client, since_datetime='')
     assert len(emails) == expected_result
@@ -516,7 +513,7 @@ def test_parse_incident_from_item_with_attachments():
     ({'_tenant_id': '_tenant_id', '_client_id': '_client_id', 'default_target_mailbox': 'default_target_mailbox'},
      'Key / Application Secret must be provided.')
 ])
-def test_key_params(mocker, params, expected_result):
+def test_invalid_key_params(mocker, params, expected_result):
     """
     Given:
       - Configuration parameters
@@ -530,14 +527,14 @@ def test_key_params(mocker, params, expected_result):
     mocker.patch.object(demisto, 'error')
     sub_main()
 
-    assert demisto.error.call_args[0][0] == "Exception: " + expected_result
+    assert "Exception: " + expected_result in demisto.error.call_args[0][0]
 
 
 @pytest.mark.parametrize('params, expected_result', [
     ({'_tenant_id': '_tenant_id', 'credentials': {'password': '1234'},
       'default_target_mailbox': 'default_target_mailbox'}, 'ID / Application ID must be provided.')
 ])
-def test_id_params(mocker, params, expected_result):
+def test_invalid_id_params(mocker, params, expected_result):
     """
     Given:
       - Configuration parameters
@@ -551,14 +548,14 @@ def test_id_params(mocker, params, expected_result):
     mocker.patch.object(demisto, 'error')
     sub_main()
 
-    assert demisto.error.call_args[0][0] == "Exception: " + expected_result
+    assert "Exception: " + expected_result in demisto.error.call_args[0][0]
 
 
 @pytest.mark.parametrize('params, expected_result', [
     ({'credentials': {'password': '1234'}, '_client_id': '_client_id',
       'default_target_mailbox': 'default_target_mailbox'}, 'Token / Tenant ID must be provided.')
 ])
-def test_token_params(mocker, params, expected_result):
+def test_invalid_token_params(mocker, params, expected_result):
     """
     Given:
       - Configuration parameters
@@ -572,4 +569,4 @@ def test_token_params(mocker, params, expected_result):
     mocker.patch.object(demisto, 'error')
     sub_main()
 
-    assert demisto.error.call_args[0][0] == "Exception: " + expected_result
+    assert "Exception: " + expected_result in demisto.error.call_args[0][0]
