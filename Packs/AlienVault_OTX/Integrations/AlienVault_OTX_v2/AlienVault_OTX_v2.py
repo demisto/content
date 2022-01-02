@@ -174,13 +174,13 @@ def relationships_manager(client: Client, raw_response: dict, entity_a: str, ent
     params = {'limit' : client.max_indicator_relationships}
     
     _, _, urls_raw_respone = alienvault_get_related_urls_by_indicator_command(client, indicator_type, indicator, params)
-    # relationships +=  create_relationships(client, dict_safe_get(urls_raw_respone, ['url_list', 'url'], ['']), entity_a, entity_a_type, '?', '?', EntityRelationship.Relationships.INDICATOR_OF)
+    relationships +=  create_relationships(client, dict_safe_get(urls_raw_respone, ['url_list', 'url'], ['']), entity_a, entity_a_type, '?', FeedIndicatorType.URL, EntityRelationship.Relationships.INDICATOR_OF)
         
-    # _, _, hash_raw_respone = alienvault_get_related_hashes_by_indicator_command(client, indicator_type, indicator, params)
-    # relationships +=  create_relationships(client, dict_safe_get(hash_raw_respone, ['data', 'hash'], ['']), entity_a, entity_a_type, '?', '?', EntityRelationship.Relationships.INDICATOR_OF)
+    _, _, hash_raw_respone = alienvault_get_related_hashes_by_indicator_command(client, indicator_type, indicator, params)
+    relationships +=  create_relationships(client, dict_safe_get(hash_raw_respone, ['data', 'hash'], ['']), entity_a, entity_a_type, '?', FeedIndicatorType.File, EntityRelationship.Relationships.INDICATOR_OF)
         
-    # _, _, passive_dns_raw_respone = alienvault_get_passive_dns_data_by_indicator_command(client, indicator_type, indicator, params)
-    # relationships +=  create_relationships(client, dict_safe_get(passive_dns_raw_respone, ['passive_dns', 'address'], ['']), entity_a, entity_a_type, '?', '?', EntityRelationship.Relationships.INDICATOR_OF)
+    _, _, passive_dns_raw_respone = alienvault_get_passive_dns_data_by_indicator_command(client, indicator_type, indicator, params)
+    relationships +=  create_relationships(client, dict_safe_get(passive_dns_raw_respone, ['passive_dns', 'address'], ['']), entity_a, entity_a_type, '?', FeedIndicatorType.IP, EntityRelationship.Relationships.INDICATOR_OF)
 
 
     return relationships
@@ -193,7 +193,7 @@ def create_relationships(client: Client, relevant_field, entity_a: str, entity_a
 
     # pulse_info.pulses.[0].attack_ids.display_name - can contain a list of attack_ids
     if relevant_field and isinstance(relevant_field, list) and relevant_id in relevant_field[0]:
-        display_names = None #[attack_id.get('display_name') for id in relevant_field[0].get(relevant_id)]
+        display_names = [relevant_field.get('display_name') for id in relevant_field[0].get(relevant_id)]
         if display_names:
             relationships = [EntityRelationship(
                 name=relationship_type,
