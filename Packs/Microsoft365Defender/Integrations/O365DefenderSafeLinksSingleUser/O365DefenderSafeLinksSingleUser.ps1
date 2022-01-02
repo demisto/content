@@ -703,9 +703,7 @@ class ExchangeOnlineClient {
             $this.CreateSession()
             Import-PSSession -Session $this.session -CommandName Get-SafeLinksRule -AllowClobber
 
-
             $results = Get-SafeLinksRule @cmd_params
-
             return $results
 
         }
