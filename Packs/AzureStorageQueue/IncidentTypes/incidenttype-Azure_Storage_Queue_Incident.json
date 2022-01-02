@@ -1,0 +1,23 @@
+{
+    "id": "Azure Storage Queue Incident",
+    "version": -1,
+    "vcShouldIgnore": false,
+    "locked": false,
+    "name": "Azure Storage Queue Incident",
+    "prevName": "Azure Storage Queue Incident",
+    "color": "#18DEE5",
+    "hours": 0,
+    "days": 0,
+    "weeks": 0,
+    "hoursR": 0,
+    "daysR": 0,
+    "weeksR": 0,
+    "system": false,
+    "readonly": false,
+    "default": false,
+    "autorun": false,
+    "disabled": false,
+    "reputationCalc": 0,
+    "layout": "Azure Storage Queue",
+    "fromVersion": "6.0.0"
+}
