@@ -22,9 +22,9 @@ Use the Gmail Single User integration to send emails and fetch emails as inciden
 
 ## Application Authorization Flow
 
-* To allow Cortex XSOAR to access Gmail, you need to approve the Demisto App (for GSuite Admins) or create your own app (for all other account types).\
-* To approve the Demisto app, follow the steps in 'GSuite Admins'.\
-* To create your own app, follow the steps in 'All Account Types'.\
+* To allow Cortex XSOAR to access Gmail, you need to approve the Demisto App (for GSuite Admins) or create your own app (for all other account types).
+* To approve the Demisto app, follow the steps in 'GSuite Admins'.
+* To create your own app, follow the steps in 'All Account Types'.
 * Once you have the app, follow the steps in 'Authorization Flow In Cortex XSOAR' to configure OAuth 2.0 authorization in Cortex XSOAR.
 
 ### GSuite Admins:
@@ -104,7 +104,7 @@ Sends an email using Gmail.
 | bcc | The BCC additional recipient email address. | Optional | 
 | htmlBody | The content (body) of the email to be sent in HTML format. | Optional | 
 | replyTo | The email address used to reply to the message. | Optional | 
-| attachNames | A comma-separated list of new names for attachments, according to the order they were attached to the email.<br/>               For example, to rename the first and third file: attachNames=new_fileName1,,new_fileName3<br/>To rename the second and fifth files: attachNames=,new_fileName2,,,new_fileNam | Optional | 
+| attachNames | A comma-separated list of new names for attachments, according to the order they were attached to the email.<br/> For example, to rename the first and third file: attachNames=new_fileName1,,new_fileName3<br/>To rename the second and fifth files: attachNames=,new_fileName2,,,new_fileNam | Optional | 
 | attachCIDs | A comma-separated list of CID images to embed attachments in the email. | Optional | 
 | transientFile | The text name for an attached file. Multiple files are supported as a comma-separated list. For example, transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test 2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz". | Optional | 
 | transientFileContent | The content for the attached file. Multiple files are supported as a comma-separated list. For example, transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test 2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz". | Optional | 
