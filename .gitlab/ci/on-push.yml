@@ -26,9 +26,6 @@ trigger-private-build:
 run-unittests-and-lint:
   extends:
     - .run-unittests-and-lint
-  rules:
-    - if: '$NIGHTLY'
-    - if: '$(./Tests/scripts/should_lint_all.sh)'
 
 
 # runs in circle for the on-push flow (because we need to run it there for contributors anyways)
