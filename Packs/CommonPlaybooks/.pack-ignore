@@ -62,3 +62,6 @@ ignore=RM106
 ignore=PB110
 [file:pack_metadata.json]
 ignore=PA129
+
+[file:Wait_And_Complete_Task_By_Status_README.md]
+ignore=RM106
