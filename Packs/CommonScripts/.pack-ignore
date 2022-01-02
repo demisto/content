@@ -25,7 +25,7 @@ ignore=SC105
 [file:ShowScheduledEntries.yml]
 ignore=SC105
 
-[file:GenerateSummaryReports.yml]
+[file:GenerateInvestigationSummaryReport.yml]
 ignore=SC105
 
 [file:script-hideFieldsOnNewIncident.yml]
