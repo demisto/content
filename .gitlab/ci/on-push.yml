@@ -27,7 +27,7 @@ run-unittests-and-lint:
   extends:
     - .run-unittests-and-lint
   before_script:
-    - SHOULD_LINT_ALL=$(./Tests/scripts/should_lint_all.sh)
+    - 'SHOULD_LINT_ALL=$(./Tests/scripts/should_lint_all.sh)'
   rules:
     - if: '$NIGHTLY'
     - if: '$SHOULD_LINT_ALL'
