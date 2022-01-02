@@ -1,6 +1,6 @@
 Deploy and manage containerized applications with a fully managed Kubernetes service.
 
-This integration was integrated and tested with API version 2020-09-01 of AKS.
+This integration was integrated and tested with API version 2021-09-01 of AKS.
 
 Note: The integration is in beta as it uses a preview version of the AKS API. The stable AKS API version does not contain all required endpoints used in some of the integration commands.
 
@@ -23,9 +23,10 @@ You only need to fill in your subscription ID and resource group name. For more 
 
 #### Self-Deployed Azure App
 
-To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal.
+To use a self-configured Azure application, you need to add a [new Azure App Registration in the Azure Portal](https://docs.microsoft.com/en-us/graph/auth-register-app-v2#register-a-new-application-using-the-azure-portal).
 
-The application must have *user_impersonation* permission and must allow public client flows (can be found under the **Authentication** section of the app).
+* The application must have **user_impersonation** permission (can be found in *API permissions* section of the Azure Kubernetes Services app registrations).
+* The application must allow public client flows (can be found under the *Authentication* section of the Azure Kubernetes Services app registrations).
 
 
 ## Configure Azure Kubernetes Services on Cortex XSOAR
@@ -44,6 +45,7 @@ The application must have *user_impersonation* permission and must allow public 
     | proxy | Use system proxy settings | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
