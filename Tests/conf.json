@@ -4404,6 +4404,33 @@
             "pid_threshold": 80
         },
         {
+            "playbookID": "Phishing v3 - Get Original Email + Search & Delete - Test",
+            "fromversion": "6.1.0",
+            "timeout": 7000,
+            "integrations": [
+                "EWS Mail Sender",
+                "Demisto REST API",
+                "EWSO365",
+                "Rasterize",
+                "SecurityAndCompliance",
+                "VirusTotal (API v3)"
+                
+            ],
+            "instance_names": [
+                "ews_mail_sender_srtest02"
+            ],
+            "external_playbook_config": {"playbookID": "Phishing v3 - Generic",
+                "input_parameters":
+                {
+                    "SearchAndDelete": {"simple": "True"},
+                    "SearchAndDeleteIntegration": {"Simple": "O365"},
+                    "O365DeleteType": {"Simple": "Soft"}
+                }
+            },
+            "memory_threshold": 160,
+            "pid_threshold": 80
+        },
+        {
             "playbookID": "PCAP Search test",
             "fromversion": "5.0.0"
         },
