@@ -8554,18 +8554,25 @@ def get_message_global_vars():
     :rtype: ``str``
     """
     import types
+    from unittest.mock import MagicMock
     excluded_globals = ['__name__', '__doc__', '__package__', '__loader__',
                         '__spec__', '__annotations__', '__builtins__',
-                        '__file__', '__cached__',
+                        '__file__', '__cached__', '_Feature',
                        ]
     excluded_types = [types.ModuleType, types.FunctionType,
                    ]
+    # TODO Maybe can do without this, and fix excluded_types?
+    excluded_types_names = [MagicMock.__name__,
+    ]
+
     globals_dict = dict(globals())
     globals_dict_full = {}
     for current_key in globals_dict.keys():
         current_value = globals_dict[current_key]
         # TODO Split to ModuleTypes sizes with isinstance(current_value, ModuleType)
-        if not type(current_value) in excluded_types and current_key not in excluded_globals:
+        if not type(current_value) in excluded_types \
+                and current_key not in excluded_globals \
+                and type(current_value).__name__ not in excluded_types_names:
             globals_dict_full[current_key] = {
                 'name': current_key,
                 'value': current_value,
