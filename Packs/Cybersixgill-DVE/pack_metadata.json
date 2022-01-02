@@ -54,5 +54,9 @@
         "command and control",
         "DDoS"
     ],
-    "githubUser": []
+    "githubUser": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

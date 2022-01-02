@@ -26,5 +26,9 @@
     },
     "itemPrefix": [
         "GRA"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }

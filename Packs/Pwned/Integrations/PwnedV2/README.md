@@ -1,7 +1,7 @@
 ## Overview
 ---
 
-Uses the Have I Been Pwned? service to check whether email addresses, domains, or usernames were compromised in previous breaches.
+Uses the Have I Been Pwned? service to check whether email addresses, domains, or usernames were compromised in previous breaches. Uses [API v3](https://haveibeenpwned.com/api/v3).
 
 ## Configure Have I Been Pwned? V2 on Cortex XSOAR
 ---

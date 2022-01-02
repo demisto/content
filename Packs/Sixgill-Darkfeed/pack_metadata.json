@@ -55,5 +55,9 @@
         "C2",
         "command and control",
         "DDoS"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }
