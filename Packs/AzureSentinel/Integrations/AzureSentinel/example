@@ -1,0 +1,7 @@
+'!azure-sentinel-threat-indicator-list limit=2'
+'!azure-sentinel-threat-indicator-query min_confidence=70'
+'!azure-sentinel-threat-indicator-create display_name=may indicator_type=domain threat_types=compromised,benign value=may.test tags=test'
+'!azure-sentinel-threat-indicator-update indicator_name=acbf912f-38bd-593c-e43d-d129439106f8 display_name=may indicator_type=domain value=may.test confidence=90'
+'!azure-sentinel-threat-indicator-delete indicator_names=0079702e-d364-656e-89b4-07545cb90c07'
+'!azure-sentinel-threat-indicator-tags-append indicator_name=acbf912f-38bd-593c-e43d-d129439106f8 tags=appendedTag'
+'!azure-sentinel-threat-indicator-tags-replace indicator_name=acbf912f-38bd-593c-e43d-d129439106f8 tags=replacedTag'

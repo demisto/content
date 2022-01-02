@@ -11,7 +11,7 @@ from freezegun import freeze_time
 from EWSO365 import (ExpandGroup, GetSearchableMailboxes, fetch_emails_as_incidents,
                      add_additional_headers, fetch_last_emails, find_folders,
                      get_expanded_group, get_searchable_mailboxes, handle_html,
-                     handle_transient_files, parse_incident_from_item, sub_main, log_stream)
+                     handle_transient_files, parse_incident_from_item)
 
 with open("test_data/commands_outputs.json", "r") as f:
     COMMAND_OUTPUTS = json.load(f)
