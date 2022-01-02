@@ -1,6 +1,6 @@
 id: playbook-AzureDevOps-Test
 version: 18
-fromServerVersion: 6.0.0
+fromVersion: 6.0.0
 contentitemexportablefields:
   contentitemfields:
     packID: AzureDevOps
