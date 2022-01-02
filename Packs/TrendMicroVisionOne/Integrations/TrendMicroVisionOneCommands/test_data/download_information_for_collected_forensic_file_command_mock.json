@@ -1,0 +1,6 @@
+{
+    "expires": "2022-01-02T17:34:57.000Z",
+    "filename": "XDR_ResponseApp_CollectFile_ID00000879_20220102T170600Z.7z",
+    "password": "ehh44l9h",
+    "url": "https://upload.xdr.trendmicro.com/arp/da9032e8-b40a-40c1-8512-f89bb504cb0d/collectedfiles/XDR_ResponseApp_CollectFile_ID00000879_20220102T170600Z.7z?X-Amz-Algorithm=AWS4-HMAC-SHA256\u0026X-Amz-Credential=AKIAXQVNLDPDYVQ5MK64%2F20220102%2Fus-east-1%2Fs3%2Faws4_request\u0026X-Amz-Date=20220102T173357Z\u0026X-Amz-Expires=60\u0026X-Amz-Signature=ab075631441dcac75914e39b8827d9d7d6e518c672043b5d6e6364d453df37fa\u0026X-Amz-SignedHeaders=host\u0026response-content-disposition=attachment%3B%20filename%3D%22XDR_ResponseApp_CollectFile_ID00000879_20220102T170600Z.7z%22"
+}
