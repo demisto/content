@@ -36,4 +36,4 @@ This playbook does not use any integrations.
 
 ## Playbook Image
 ---
-![Wait And Complete Task By Status](Insert the link to your image here)
+![Wait And Complete Task By Status](../doc_files/Wait_And_Complete_Task_By_Status.png)
