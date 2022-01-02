@@ -1,1 +1,4 @@
 
+#### Integrations
+##### Okta v2
+- Add command for okta-list-users for listing all the users in an organization on okta
