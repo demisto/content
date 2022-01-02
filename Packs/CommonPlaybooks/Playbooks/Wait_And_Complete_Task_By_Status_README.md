@@ -1,4 +1,4 @@
-Waits for a task to reach a certain status, and/or completes the task. The playbook should be used in a loop until the FoundTaskNames context key contains the name of the awaited task (the playbook outputs that name).
+Waits for a task to reach a certain status, and completes the task. The playbook should be used in a loop until the FoundTaskNames context key contains the name of the awaited task (the playbook outputs that name).
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.

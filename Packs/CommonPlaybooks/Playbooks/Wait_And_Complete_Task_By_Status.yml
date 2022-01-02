@@ -1,7 +1,7 @@
 id: Wait And Complete Task By Status
 version: -1
 name: Wait And Complete Task By Status
-description: Waits for a task to reach a certain status, and/or completes the task. The playbook
+description: Waits for a task to reach a certain status, and completes the task. The playbook
   should be used in a loop until the FoundTaskNames context key contains the name of the awaited task (the playbook outputs that name).
 starttaskid: "0"
 tasks:
