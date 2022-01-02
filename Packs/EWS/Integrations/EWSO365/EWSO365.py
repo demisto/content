@@ -2309,6 +2309,7 @@ def sub_main():
 
     try:
         client = EWSClient(**params)
+        start_logging()
         command = demisto.command()
         # commands that return a single note result
         normal_commands = {
