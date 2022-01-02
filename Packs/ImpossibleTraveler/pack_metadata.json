@@ -228,5 +228,9 @@
         "CrowdStrikeIntel",
         "Ipstack",
         "Shodan"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }

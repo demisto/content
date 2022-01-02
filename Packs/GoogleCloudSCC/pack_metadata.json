@@ -17,5 +17,9 @@
         "Threat Intelligence Management"
     ],
     "keywords": [],
-    "githubUser": []
+    "githubUser": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }
