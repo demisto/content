@@ -72,9 +72,9 @@ class ExchangeOnlinePowershellV2Client {
     }
     CreateSession() {
         $cmd_params = @{
-            "AppID" = $this.app_id
+            "AppID"        = $this.app_id
             "Organization" = $this.organization
-            "Certificate" = $this.certificate
+            "Certificate"  = $this.certificate
         }
         Connect-ExchangeOnline @cmd_params -ShowBanner:$false -WarningAction:SilentlyContinue | Out-Null
     }
@@ -133,7 +133,7 @@ class ExchangeOnlinePowershellV2Client {
         try
         {
             $cmd_params = @{
-                Name = $kwargs.name
+            Name = $kwargs.name
             }
             if ($kwargs.admin_display_name) {
                 $cmd_params.AdminDisplayName = $kwargs.admin_display_name
@@ -298,7 +298,7 @@ class ExchangeOnlinePowershellV2Client {
     ) {
         try {
             $cmd_params = @{
-                Name = $kwargs.name
+            Name = $kwargs.name
             }
 
             if ($kwargs.safe_links_policy) {
@@ -362,62 +362,9 @@ class ExchangeOnlinePowershellV2Client {
         https://docs.microsoft.com/en-us/powershell/module/exchange/set-safelinksrule?view=exchange-ps
         #>
     }
-    [PSObject]
-    GetUrlTrace(
-            [hashtable]$kwargs
-    )
-    {
-        try
-        {
-            $cmd_args = @{ }
-            if ($kwargs.start_date)
-            {
-                $cmd_args.StartDate = $kwargs.start_date
-                $cmd_args.EndDate = $end_date
-            }
-            if ($kwargs.click_id)
-            {
-                $cmd_args.ClickId = $kwargs.click_id
-            }
-            if ($kwargs.recipient_address)
-            {
-                $cmd_args.RecipientAddress = EncloseArgWithQuotes($kwargs.recipient_address)
-            }
-            if ($kwargs.url_or_domain)
-            {
-                $cmd_args.UrlOrDomain = $kwargs.url_or_domain
-            }
-            if ($kwargs.page)
-            {
-                $cmd_args.Page = $kwargs.page
-            }
-            $this.CreateSession()
-            $results = Get-UrlTrace @cmd_args
-
-            return $results
-        }
-        finally
-        {
-            $this.DisconnectSession()
-        }
-
-    }        <#
-        .DESCRIPTION
-        Use the Get-UrlTrace cmdlet to view the results of Safe Links actions in your cloud-based organization.
-        # Currently, the date range can't be more than seven days.
-
-        .EXAMPLE
-#       TODO: edit after tests to verify inputs
-        GetUrlTrace("")
-
-        .OUTPUTS
-        PSObject - Raw response
-
-        .LINK
-        https://docs.microsoft.com/en-us/powershell/module/exchange/get-urltrace?view=exchange-ps
-        #>
-
 }
+
+
 function GetPolicyListCommand {
     [CmdletBinding()]
     [OutputType([System.Object[]])]
@@ -510,26 +457,6 @@ function CreateUpdateRuleCommand {
     return $human_readable, $entry_context, $raw_response
 }
 
-function GetURLTraceCommand {
-    [CmdletBinding()]
-    [OutputType([System.Object[]])]
-    Param (
-        [Parameter(Mandatory)][ExchangeOnlinePowershellV2Client]$client,
-        [hashtable]$kwargs
-    )
-    if ($kwargs.start_date -and !$kwargs.end_date){
-        $end_date = Get-Date
-    }
-    $raw_response = $client.GetUrlTrace($kwargs)
-    if (!$raw_response){
-        return "#### No URL trace report found for the given criteria.", @{}, @{}
-    }
-
-    $human_readable = TableToMarkdown $raw_response "Results of $command"
-    $entry_context = @{ "$script:INTEGRATION_ENTRY_CONTEXT.URLTrace(obj.Url === val.Url)" = $raw_response }
-    return $human_readable, $entry_context, $raw_response
-}
-
 function TestModuleCommand($client) {
     try {
         $client.CreateSession()
@@ -589,9 +516,6 @@ function Main {
             }
             "$script:COMMAND_PREFIX-rule-update" {
                 ($human_readable, $entry_context, $raw_response) = CreateUpdateRuleCommand -client $exo_client -command_type "update" -kwargs $command_arguments
-            }
-            "$script:COMMAND_PREFIX-urltrace-get" {
-                ($human_readable, $entry_context, $raw_response) = GetURLTraceCommand -client $exo_client -kwargs $command_arguments
             }
 
             default {
