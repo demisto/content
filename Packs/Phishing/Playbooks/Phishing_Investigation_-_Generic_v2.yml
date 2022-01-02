@@ -1595,4 +1595,3 @@ fromversion: 5.0.0
 toversion: 5.9.9
 tests:
 - Phishing v2 - Test - Incident Starter
-- Phishing v2 - Get Original Email + Search & Delete - Test
