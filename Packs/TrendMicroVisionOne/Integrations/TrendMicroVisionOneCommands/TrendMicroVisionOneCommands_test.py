@@ -1,7 +1,5 @@
 import json
 import io
-import demistomock as demisto
-import pytest
 from TrendMicroVisionOneCommands import Client
 
 MOCK_URL = "https://trendmicro-fake-api.com"

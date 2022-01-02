@@ -1,7 +1,7 @@
 '''IMPORTS'''
-import demistomock as demisto
-from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
-from CommonServerUserPython import *  # noqa
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401 # pylint: disable=unused-wildcard-import
+from CommonServerUserPython import *  # noqa: F401
 
 import base64
 import json
@@ -19,36 +19,36 @@ CONTENT_TYPE_JSON = 'application/json'
 EMPTY_STRING = ''
 ASCII = 'ascii'
 API_TOKEN = 'apikey'
-VALUE_TYPE = 'valueType'
-TARGET_VALUE = 'targetValue'
-PRODUCT_ID = 'productId'
+VALUE_TYPE = 'value_type'
+TARGET_VALUE = 'target_value'
+PRODUCT_ID = 'product_id'
 DESCRIPTION = 'description'
-MESSAGE_ID = 'messageId'
-MAILBOX = 'mailBox'
-MESSAGE_DELIVERY_TIME = 'messageDeliveryTime'
-COMPUTER_ID = 'computerId'
+MESSAGE_ID = 'message_id'
+MAILBOX = 'mailbox'
+MESSAGE_DELIVERY_TIME = 'message_delivery_time'
+COMPUTER_ID = 'computer_id'
 FIELD = 'field'
 DATA = 'data'
 TYPE = 'type'
 VALUE = 'value'
-FILESHA = 'fileSha1'
+FILESHA = 'file_sha1'
 FILENAME = 'filename'
 CRITERIA = 'criteria'
 EXCEPTION_LIST = 'exceptionList'
 SUSPICIOUS_LIST = 'suspiciousObjectList'
 LAST_MODIFIED = 'lastModified'
-SCAN_ACTION = 'scanAction'
-RISK_LEVEL = 'riskLevel'
-EXPIRYDAY = 'expiredDay'
-TASKID = 'taskId'
-REPORT_ID = 'reportId'
+SCAN_ACTION = 'scan_action'
+RISK_LEVEL = 'risk_level'
+EXPIRYDAY = 'expiry_days'
+TASKID = 'task_id'
+REPORT_ID = 'report_id'
 OS_TYPE = 'os'
-FILE_PATH = 'filePath'
-FILE_URL = 'fileUrl'
-FILE_NAME = 'fileName'
-DOCUMENT_PASSWORD = 'documentPassword'
-ARCHIVE_PASSWORD = 'archivePassword'
-ACTION_ID = 'actionId'
+FILE_PATH = 'file_path'
+FILE_URL = 'file_url'
+FILE_NAME = 'filename'
+DOCUMENT_PASSWORD = 'document_password'
+ARCHIVE_PASSWORD = 'archive_password'
+ACTION_ID = 'action_id'
 # End Points
 ADD_BLOCKLIST_ENDPOINT = '/v2.0/xdr/response/block'
 REMOVE_BLOCKLIST_ENDPOINT = '/v2.0/xdr/response/restoreBlock'
@@ -305,8 +305,8 @@ def remove_block_list_mapping(task_status: str, data: Dict[str, Any]) -> Dict[st
     """
     action_id = data.get('actionId', {})
     return {
-        'actionId': action_id,
-        'taskStatus': task_status
+        'action_id': action_id,
+        'task_status': task_status
     }
 
 
@@ -331,10 +331,10 @@ def add_or_remove_from_block_list(client: Client, command: str, args: Dict[str, 
     if not description:
         description = EMPTY_STRING
     body = {
-        VALUE_TYPE: value_type,
-        TARGET_VALUE: target_value,
-        PRODUCT_ID: product_id,
-        DESCRIPTION: description,
+        'valueType': value_type,
+        'targetValue': target_value,
+        'productId': product_id,
+        'description': description,
     }
     if command == ADD_BLOCKLIST_COMMAND:
         response = client.http_request(POST, ADD_BLOCKLIST_ENDPOINT, data=json.dumps(body))
@@ -348,7 +348,7 @@ def add_or_remove_from_block_list(client: Client, command: str, args: Dict[str, 
     results = CommandResults(
         readable_output=tableToMarkdown(table_name[command], mapping_data),
         outputs_prefix='VisionOne.BlockList',
-        outputs_key_field='actionId',
+        outputs_key_field='action_id',
         outputs=mapping_data
     )
     return results
@@ -367,8 +367,8 @@ def quarantine_email_mapping(task_status: str, data: Dict[str, Any]) -> Dict[str
     """
     action_id = data.get('actionId', {})
     return {
-        'actionId': action_id,
-        'taskStatus': task_status
+        'action_id': action_id,
+        'task_status': task_status
     }
 
 
@@ -385,8 +385,8 @@ def delete_email_mapping(task_status: str, data: Dict[str, Any]) -> Dict[str, An
     """
     action_id = data.get('actionId', {})
     return {
-        'actionId': action_id,
-        'taskStatus': task_status
+        'action_id': action_id,
+        'task_status': task_status
     }
 
 
@@ -411,11 +411,11 @@ def quarantine_or_delete_email_message(client: Client, command: str, args: Dict[
     if not description:
         description = EMPTY_STRING
     body = {
-        MESSAGE_ID: message_id,
-        MAILBOX: mailbox,
-        MESSAGE_DELIVERY_TIME: message_delivery_time,
-        PRODUCT_ID: product_id,
-        DESCRIPTION: description
+        'messageId': message_id,
+        'mailBox': mailbox,
+        'messageDeliveryTime': message_delivery_time,
+        'productId': product_id,
+        'description': description
     }
     if command == QUARANTINE_EMAIL_COMMAND:
         response = client.http_request(POST, QUARANTINE_EMAIL_ENDPOINT, data=json.dumps(body))
@@ -430,7 +430,7 @@ def quarantine_or_delete_email_message(client: Client, command: str, args: Dict[
     results = CommandResults(
         readable_output=tableToMarkdown(table_name[command], mapping_data),
         outputs_prefix='VisionOne.Email',
-        outputs_key_field='actionId',
+        outputs_key_field='action_id',
         outputs=mapping_data
     )
     return results
@@ -448,8 +448,8 @@ def isolate_endpoint_mapping(task_status: str, data: Dict[str, Any]) -> Dict[str
     """
     action_id = data.get('actionId', {})
     return {
-        'actionId': action_id,
-        'taskStatus': task_status
+        'action_id': action_id,
+        'task_status': task_status
     }
 
 
@@ -465,8 +465,8 @@ def restore_endpoint_connection_mapping(task_status: str, data: Dict[str, Any]) 
     """
     action_id = data.get('actionId', {})
     return {
-        'actionId': action_id,
-        'taskStatus': task_status
+        'action_id': action_id,
+        'task_status': task_status
     }
 
 
@@ -492,9 +492,9 @@ def isolate_or_restore_connection(client: Client, command: str, args: Dict[str, 
     computer_id = client.get_computer_id(field, value)    # type: ignore
     demisto.results(computer_id)
     body = {
-        COMPUTER_ID: computer_id,
-        PRODUCT_ID: product_id,
-        DESCRIPTION: description
+        'computerId': computer_id,
+        'productId': product_id,
+        'description': description
     }
     if command == ISOLATE_ENDPOINT_COMMAND:
         response = client.http_request(POST, ISOLATE_CONNECTION_ENDPOINT, data=json.dumps(body))
@@ -509,7 +509,7 @@ def isolate_or_restore_connection(client: Client, command: str, args: Dict[str, 
     results = CommandResults(
         readable_output=tableToMarkdown(table_name[command], mapping_data),
         outputs_prefix='VisionOne.Endpoint_Connection',
-        outputs_key_field='actionId',
+        outputs_key_field='action_id',
         outputs=mapping_data
     )
     return results
@@ -539,24 +539,24 @@ def terminate_process(client: Client, args: Dict[str, Any]) -> Union[str, Comman
     if filename:
         file_list.append(filename)
     body = {
-        COMPUTER_ID: computer_id,
-        FILESHA: file_sha1,
-        PRODUCT_ID: product_id,
-        DESCRIPTION: description,
-        FILENAME: file_list
+        'computerId': computer_id,
+        'fileSha1': file_sha1,
+        'productId': product_id,
+        'description': description,
+        'filename': file_list
     }
     response = client.http_request(POST, TERMINATE_PROCESS_ENDPOINT, data=json.dumps(body))
     demisto.results(RAW_RESPONSE.format(raw_response=response))
     task_status = client.status_check(response)
     action_id = response.get('actionId', {})
     message = {
-        'actionId': action_id,
-        'taskStatus': task_status
+        'action_id': action_id,
+        'task_status': task_status
     }
     results = CommandResults(
         readable_output=tableToMarkdown(TABLE_TERMINATE_PROCESS, message),
         outputs_prefix='VisionOne.Terminate_Process',
-        outputs_key_field='actionId',
+        outputs_key_field='action_id',
         outputs=message
     )
     return results
@@ -575,13 +575,13 @@ def add_or_delete_from_exception_list(client: Client, command: str, args: Dict[s
     :return: sends data to demisto war room.
     :rtype: ``dict`
     """
-    types = args.get(TYPE)
+    type = args.get(TYPE)
     value = args.get(VALUE)
     body = {
         DATA: [
             {
-                TYPE: types,
-                VALUE: value
+                'type': type,
+                'value': value
             }
         ]
     }
@@ -638,12 +638,12 @@ def add_to_suspicious_list(client: Client, args: Dict[str, Any]) -> Union[str, C
     body = {
         DATA: [
             {
-                TYPE: types,
-                VALUE: value,
-                DESCRIPTION: description,
-                SCAN_ACTION: scan_action,
-                RISK_LEVEL: risk_level,
-                EXPIRYDAY: expiry
+                'type': types,
+                'value': value,
+                'description': description,
+                'scanAction': scan_action,
+                'riskLevel': risk_level,
+                'expiredDay': expiry
             }
         ]
     }
@@ -674,13 +674,13 @@ def delete_from_suspicious_list(client: Client, args: Dict[str, Any]) -> Union[s
     :return: sends data to demisto war room.
     :rtype: ``dict`
     """
-    types = args.get(TYPE)
+    type = args.get(TYPE)
     value = args.get(VALUE)
     body = {
         DATA: [
             {
-                TYPE: types,
-                VALUE: value
+                'type': type,
+                'value': value
             }
         ]
     }
@@ -768,10 +768,10 @@ def get_file_analysis_report(client: Client, args: Dict[str, Any]) -> Union[str,
                 data_value = {
                     'type': data.get("type", ""),
                     'value': data.get("value", ""),
-                    'risklevel': data.get("riskLevel", ""),
-                    'analysisCompletionTime': data.get("analysisCompletionTime", ""),
-                    'expiredTime': data.get("expiredTime", ""),
-                    'rootFileSha1': data.get("rootFileSha1", "")
+                    'risk_level': data.get("riskLevel", ""),
+                    'analysis_completion_time': data.get("analysisCompletionTime", ""),
+                    'expired_time': data.get("expiredTime", ""),
+                    'root_file_sha1': data.get("rootFileSha1", "")
                 }
                 message.get('data').append(data_value)
         results = CommandResults(
@@ -782,7 +782,10 @@ def get_file_analysis_report(client: Client, args: Dict[str, Any]) -> Union[str,
         )
     elif response.headers.get('Content-Type', '') == 'binary/octet-stream':
         data = response.content
-        results = fileResult('Sandbox_Analysis_Report.pdf', data, file_type=EntryType.FILE)
+        if types == 'vaReport':
+            results = fileResult('Sandbox_Analysis_Report.pdf', data, file_type=EntryType.FILE)
+        else:
+            results = fileResult('Sandbox_Investigation_Package.zip', data, file_type=EntryType.FILE)
     return results
 
 
@@ -807,24 +810,24 @@ def collect_file(client: Client, args: Dict[str, Any]) -> Union[str, CommandResu
     file_path = args.get(FILE_PATH)
     os = args.get(OS_TYPE)
     body = {
-        DESCRIPTION: description,
-        PRODUCT_ID: product_id,
-        COMPUTER_ID: computer_id,
-        FILE_PATH: file_path,
-        OS_TYPE: os
+        'description': description,
+        'productId': product_id,
+        'computerId': computer_id,
+        'filePath': file_path,
+        'os': os
     }
     response = client.http_request(POST, COLLECT_FORENSIC_FILE, data=json.dumps(body))
     demisto.results(RAW_RESPONSE.format(raw_response=response))
     task_status = client.status_check(response)
     action_id = response.get('actionId', {})
     message = {
-        'actionId': action_id,
-        'taskStatus': task_status
+        'action_id': action_id,
+        'task_status': task_status
     }
     results = CommandResults(
         readable_output=tableToMarkdown(TABLE_COLLECT_FILE, message),
         outputs_prefix='VisionOne.Collect_Forensic_File',
-        outputs_key_field='actionId',
+        outputs_key_field='action_id',
         outputs=message
     )
     return results
@@ -841,7 +844,7 @@ def download_information_collected_file(client: Client, args: Dict[str, Any]) ->
     :rtype: ``dict`
     """
     action_id = args.get(ACTION_ID)
-    params = {ACTION_ID: action_id}
+    params = {'actionId': action_id}
     response = client.http_request(GET, DOWNLOAD_INFORMATION_COLLECTED_FILE, params=params)
     demisto.results(RAW_RESPONSE.format(raw_response=response))
     file_url = response.get('data', '').get('url', '')
@@ -879,10 +882,10 @@ def submit_file_to_sandbox(client: Client, args: Dict[str, Any]) -> Union[str, C
     file_name = args.get(FILE_NAME)
     document_pass = args.get(DOCUMENT_PASSWORD)
     if document_pass:
-        data[DOCUMENT_PASSWORD] = base64.b64encode(document_pass.encode(ASCII)).decode(ASCII)
+        data['documentPassword'] = base64.b64encode(document_pass.encode(ASCII)).decode(ASCII)
     archive_pass = args.get(ARCHIVE_PASSWORD)
     if archive_pass:
-        data[ARCHIVE_PASSWORD] = base64.b64encode(archive_pass.encode(ASCII)).decode(ASCII)
+        data['archivePassword'] = base64.b64encode(archive_pass.encode(ASCII)).decode(ASCII)
     headers = {AUTHORIZATION: f'{BEARER}{client.api_key}'}
     try:
         file_content = requests.get(file_url, allow_redirects=True)

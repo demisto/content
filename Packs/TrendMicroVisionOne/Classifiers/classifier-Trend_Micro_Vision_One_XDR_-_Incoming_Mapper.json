@@ -1,0 +1,91 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "Trend Micro Vision One XDR - Incoming Mapper",
+    "mapping": {
+        "Trend Micro Vision One XDR Incident": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Trend Micro Vision One XDR Account Count": {
+                    "complex": null,
+                    "simple": "impactScope.accountCount"
+                },
+                "Trend Micro Vision One XDR Created Time": {
+                    "complex": null,
+                    "simple": "createdTime"
+                },
+                "Trend Micro Vision One XDR Desktop Count": {
+                    "complex": null,
+                    "simple": "impactScope.desktopCount"
+                },
+                "Trend Micro Vision One XDR Detail": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "detail",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "headers": {
+                                        "isContext": false,
+                                        "value": null
+                                    },
+                                    "title": {
+                                        "isContext": false,
+                                        "value": null
+                                    }
+                                },
+                                "operator": "JsonToTable"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Trend Micro Vision One XDR Email Address Count": {
+                    "complex": null,
+                    "simple": "impactScope.emailAddressCount"
+                },
+                "Trend Micro Vision One XDR Investigation Status": {
+                    "complex": null,
+                    "simple": "investigationStatus"
+                },
+                "Trend Micro Vision One XDR Priority Score": {
+                    "complex": null,
+                    "simple": "priorityScore"
+                },
+                "Trend Micro Vision One XDR Server Count": {
+                    "complex": null,
+                    "simple": "impactScope.serverCount"
+                },
+                "Trend Micro Vision One XDR Severity": {
+                    "complex": null,
+                    "simple": "severity"
+                },
+                "Trend Micro Vision One XDR Updated Time": {
+                    "complex": null,
+                    "simple": "updatedTime"
+                },
+                "Trend Micro Vision One XDR Workbench ID": {
+                    "complex": null,
+                    "simple": "workbenchId"
+                },
+                "Trend Micro Vision One XDR Workbench Link": {
+                    "complex": null,
+                    "simple": "workbenchLink"
+                },
+                "Trend Micro Vision One XDR Workbench Name": {
+                    "complex": null,
+                    "simple": "workbenchName"
+                },
+                "severity": {
+                    "complex": null,
+                    "simple": "severity"
+                }
+            }
+        }
+    },
+    "name": "Trend Micro Vision One XDR - Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

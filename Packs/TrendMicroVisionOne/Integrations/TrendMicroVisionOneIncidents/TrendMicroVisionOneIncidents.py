@@ -1,172 +1,145 @@
-"""Base Integration for Cortex XSOAR (aka Demisto)
-
-This is an empty Integration with some basic structure according
-to the code conventions.
-
-MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
-
-Developer Documentation: https://xsoar.pan.dev/docs/welcome
-Code Conventions: https://xsoar.pan.dev/docs/integrations/code-conventions
-Linting: https://xsoar.pan.dev/docs/integrations/linting
-
-This is an empty structure file. Check an example at;
-https://github.com/demisto/content/blob/master/Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py
-
-"""
-
-import demistomock as demisto
-from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
-from CommonServerUserPython import *  # noqa
-
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+from datetime import datetime, timezone, timedelta
+import json
 import requests
-import traceback
-from typing import Dict, Any
 
-# Disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
+# default settings
+V1_URL = 'https://api.xdr.trendmicro.com'
 
 
-''' CONSTANTS '''
-
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
-
-''' CLIENT CLASS '''
+def check_datetime_aware(d):
+    return (d.tzinfo is not None) and (d.tzinfo.utcoffset(d) is not None)
 
 
 class Client(BaseClient):
-    """Client class to interact with the service API
+    base_url_default = V1_URL
+    WB_STATUS_IN_PROGRESS = 1
 
-    This Client implements API calls, and does not contain any XSOAR logic.
-    Should only do requests and return data.
-    It inherits from BaseClient defined in CommonServer Python.
-    Most calls use _http_request() that handles proxy, SSL verification, etc.
-    For this  implementation, no special attributes defined
+    def __init__(self, token, base_url=None):
+        if not token:
+            raise ValueError('Authentication token missing')
+        self.token = token
+        self.base_url = base_url or Client.base_url_default
+
+    def make_headers(self):
+        return {
+            'Authorization': 'Bearer ' + self.token,
+            'Content-Type': 'application/json;charset=utf-8'
+        }
+
+    def get(self, path, **kwargs):
+        kwargs.setdefault('headers', {}).update(self.make_headers())
+        r = requests.get(self.base_url + path, **kwargs)
+        if ((200 == r.status_code)
+                and ('application/json' in r.headers.get('Content-Type', ''))):
+            return r.json()
+        raise RuntimeError(f'Request unsuccessful (GET {path}):'
+                           f' {r.status_code} {r.text}')
+
+    def put(self, path, **kwargs):
+        kwargs.setdefault('headers', {}).update(self.make_headers())
+        r = requests.put(self.base_url + path, **kwargs)
+        if ((200 == r.status_code)
+                and ('application/json' in r.headers.get('Content-Type', ''))):
+            return r.json()
+        raise RuntimeError(f'Request unsuccessful (PUT {path}):'
+                           f' {r.status_code} {r.text}')
+
+    def get_workbench_histories(self, start, end, offset=None, size=None):
+        if not check_datetime_aware(start):
+            start = start.astimezone()
+        if not check_datetime_aware(end):
+            end = end.astimezone()
+        start = start.astimezone(timezone.utc)
+        end = end.astimezone(timezone.utc)
+        start = start.isoformat(timespec='milliseconds').replace('+00:00', 'Z')
+        end = end.isoformat(timespec='milliseconds').replace('+00:00', 'Z')
+        # API returns data in the range of [offset, offset+limit)
+        return self.get(
+            '/v2.0/xdr/workbench/workbenchHistories',
+            params=dict([('startTime', start), ('endTime', end),
+                        ('sortBy', 'createdTime')]
+                        + ([('offset', offset)] if offset is not None else [])
+                        + ([('limit', size)] if size is not None else [])
+                        ))['data']['workbenchRecords']
+
+    def update_workbench(self, workbench_id, status):
+        return self.put(
+            f'/v2.0/xdr/workbench/workbenches/{workbench_id}',
+            json={'investigationStatus': status})
+
+
+def fetch_workbench_alerts(v1, start, end):
     """
-
-    # TODO: REMOVE the following dummy function:
-    def baseintegration_dummy(self, dummy: str) -> Dict[str, str]:
-        """Returns a simple python dict with the information provided
-        in the input (dummy).
-
-        :type dummy: ``str``
-        :param dummy: string to add in the dummy dict that is returned
-
-        :return: dict as {"dummy": dummy}
-        :rtype: ``str``
-        """
-
-        return {"dummy": dummy}
-    # TODO: ADD HERE THE FUNCTIONS TO INTERACT WITH YOUR PRODUCT API
-
-
-''' HELPER FUNCTIONS '''
-
-# TODO: ADD HERE ANY HELPER FUNCTION YOU MIGHT NEED (if any)
-
-''' COMMAND FUNCTIONS '''
-
-
-def test_module(client: Client) -> str:
-    """Tests API connectivity and authentication'
-
-    Returning 'ok' indicates that the integration works like it is supposed to.
-    Connection to the service is successful.
-    Raises exceptions if something goes wrong.
-
-    :type client: ``Client``
-    :param Client: client to use
-
-    :return: 'ok' if test passed, anything else will fail the test.
-    :rtype: ``str``
+    This function do the loop to get all workbench alerts by changing
+    the parameters of both 'offset' and 'size'.
     """
+    offset = 0
+    size = demisto.params().get('max_fetch')
+    alerts = []
+    while True:
+        gotten = v1.get_workbench_histories(start, end, offset, size)
+        if not gotten:
+            break
+        alerts.extend(gotten)
+        offset = len(alerts)
 
-    message: str = ''
+    incidents = []
+    if alerts:
+        for record in alerts:
+            incident = {
+                'name': record['workbenchName'],
+                'occurred': record['createdTime'],
+                'rawJSON': json.dumps(record)
+            }
+            incidents.append(incident)
+            last_event = datetime.strptime(record['createdTime'], "%Y-%m-%dT%H:%M:%SZ")
+
+        next_search = last_event + timedelta(0, 1)
+
+        demisto.setLastRun({
+            'start_time': next_search.isoformat()
+        })
+
+    return incidents
+
+
+def main():
+    v1_token = demisto.params().get('v1_token')
+    v1_url = demisto.params().get('v1_url')
+    v1 = Client(v1_token, v1_url)
+
     try:
-        # TODO: ADD HERE some code to test connectivity and authentication to your service.
-        # This  should validate all the inputs given in the integration configuration panel,
-        # either manually or by using an API that uses them.
-        message = 'ok'
-    except DemistoException as e:
-        if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
-            message = 'Authorization Error: make sure API Key is correctly set'
-        else:
-            raise e
-    return message
-
-
-# TODO: REMOVE the following dummy command function
-def baseintegration_dummy_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-
-    dummy = args.get('dummy', None)
-    if not dummy:
-        raise ValueError('dummy not specified')
-
-    # Call the Client function and get the raw response
-    result = client.baseintegration_dummy(dummy)
-
-    return CommandResults(
-        outputs_prefix='BaseIntegration',
-        outputs_key_field='',
-        outputs=result,
-    )
-# TODO: ADD additional command functions that translate XSOAR inputs/outputs to Client
-
-
-''' MAIN FUNCTION '''
-
-
-def main() -> None:
-    """main function, parses params and runs command functions
-
-    :return:
-    :rtype:
-    """
-
-    # TODO: make sure you properly handle authentication
-    # api_key = demisto.params().get('credentials', {}).get('password')
-
-    # get the service API url
-    base_url = urljoin(demisto.params()['url'], '/api/v1')
-
-    # if your Client class inherits from BaseClient, SSL verification is
-    # handled out of the box by it, just pass ``verify_certificate`` to
-    # the Client constructor
-    verify_certificate = not demisto.params().get('insecure', False)
-
-    # if your Client class inherits from BaseClient, system proxy is handled
-    # out of the box by it, just pass ``proxy`` to the Client constructor
-    proxy = demisto.params().get('proxy', False)
-
-    demisto.debug(f'Command being called is {demisto.command()}')
-    try:
-
-        # TODO: Make sure you add the proper headers for authentication
-        # (i.e. "Authorization": {api key})
-        headers: Dict = {}
-
-        client = Client(
-            base_url=base_url,
-            verify=verify_certificate,
-            headers=headers,
-            proxy=proxy)
-
         if demisto.command() == 'test-module':
-            # This is the call made when pressing the integration Test button.
-            result = test_module(client)
-            return_results(result)
+            end_time = datetime.now(timezone.utc)
+            days = int(demisto.params().get('first_fetch'))
+            start_time = end_time + timedelta(days=-days)
+            v1.get_workbench_histories(start_time, end_time, 0, 1)
+            demisto.results('ok')
 
-        # TODO: REMOVE the following dummy command case:
-        elif demisto.command() == 'baseintegration-dummy':
-            return_results(baseintegration_dummy_command(client, demisto.args()))
-        # TODO: ADD command cases for the commands you will implement
+        elif demisto.command() == 'fetch-incidents':
+            end_time = datetime.now(timezone.utc)
+            days = int(demisto.params().get('first_fetch'))
+            start_time = end_time + timedelta(days=-days)
 
-    # Log exceptions and return errors
-    except Exception as e:
-        demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+            last_run = demisto.getLastRun()
+            if last_run and 'start_time' in last_run:
+                start_time = datetime.fromisoformat(last_run.get('start_time'))
 
+            incidents = fetch_workbench_alerts(v1, start_time, end_time)
+            if incidents:
+                demisto.incidents(incidents)
+            else:
+                demisto.incidents([])
 
-''' ENTRY POINT '''
+    except Exception as err:
+        if demisto.command() == 'fetch-incidents':
+            LOG(str(err))
+            raise
+
+        demisto.error(traceback.format_exc())
+        return_error(str(err))
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
