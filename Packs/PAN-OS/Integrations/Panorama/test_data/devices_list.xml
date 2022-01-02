@@ -7,10 +7,8 @@
         <connected>yes</connected>
         <multi-vsys>yes</multi-vsys>
         <vsys>
-          <entry name="vsys1">
-          </entry>
-          <entry name="vsys2">
-          </entry>
+          <entry name="vsys1"/>
+          <entry name="vsys2"/>
         </vsys>
       </entry>
       <entry name="target2">
@@ -18,8 +16,7 @@
         <connected>yes</connected>
         <multi-vsys>no</multi-vsys>
         <vsys>
-          <entry name="vsys1">
-          </entry>
+          <entry name="vsys1"/>
         </vsys>
       </entry>
     </devices>
