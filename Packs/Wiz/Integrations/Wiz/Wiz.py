@@ -112,7 +112,6 @@ def fetch_issues():
     response = checkAPIerrors(query, variables)
     response_json = response.json()
 
-    issues = dict()
     issues = response_json['data']['issues']['nodes']
     while (response_json['data']['issues']['pageInfo']['hasNextPage']):
 
