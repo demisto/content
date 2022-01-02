@@ -23,8 +23,8 @@ Use the Gmail Single User integration to send emails and fetch emails as inciden
 ## Application Authorization Flow
 
 * To allow Cortex XSOAR to access Gmail, you need to approve the Demisto App (for GSuite Admins) or create your own app (for all other account types).\
-    * To approve the Demisto app, follow the steps in 'GSuite Admins'.\
-    * To create your own app, follow the steps in 'All Account Types'.\
+* To approve the Demisto app, follow the steps in 'GSuite Admins'.\
+* To create your own app, follow the steps in 'All Account Types'.\
 * Once you have the app, follow the steps in 'Authorization Flow In Cortex XSOAR' to configure OAuth 2.0 authorization in Cortex XSOAR.
 
 ### GSuite Admins:
