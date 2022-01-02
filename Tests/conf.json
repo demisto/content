@@ -4322,24 +4322,6 @@
             ]
         },
         {
-            "playbookID": "Phishing v2 - Get Original Email + Search & Delete - Test",
-            "fromversion": "6.0.0",
-            "timeout": 7000,
-            "integrations": [
-                "EWS Mail Sender",
-                "EWS v2",
-                "Demisto REST API",
-                "Rasterize",
-                "VirusTotal (API v3)",
-                "SecurityAndCompliance"
-            ],
-            "instance_names": [
-                "ews_mail_sender_srtest02",
-                "ewsv2_testbox",
-                "no_sync_long_timeout"
-            ]
-        },
-        {
             "playbookID": "PCAP Search test",
             "fromversion": "5.0.0"
         },
