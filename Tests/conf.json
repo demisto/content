@@ -4891,6 +4891,10 @@
         {
             "integrations": "McAfee ePO v2",
             "playbookID": "McAfee ePO v2 Test"
+        },
+        {
+            "playbookID": "Dedup - Generic v3",
+            "fromversion": "5.5.0"
         }
     ],
     "skipped_tests": {
