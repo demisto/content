@@ -4959,7 +4959,11 @@
         "SplunkPy_KV_commands_default_handler": "Issue 41419",
         "LogRhythm REST test": "Issue 40654",
         "Recorded Future Test": "Issue 26741",
-        "RecordedFutureFeed - Test": "Issue 43923"
+        "RecordedFutureFeed - Test": "Issue 43923",
+        "Traps test": "Issue 45189",
+        "Slack Test Playbook": "Issue 33448",
+        "Mail-Listener Test Playbook": "Issue 27845",
+        "McAfeeWebGatewayTest": "Issue 37020"
     },
     "skipped_integrations": {
         
