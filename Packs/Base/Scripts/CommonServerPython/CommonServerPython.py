@@ -8510,7 +8510,7 @@ def get_message_local_vars():
     local_vars = list(locals().items())
     ret_value = '\n\n--- Start Local Vars ---\n\n'
     for current_local_var in local_vars:
-        ret_value += str(current_local_var) + '\n'
+        ret_value += shorten_string_for_printing(str(current_local_var), 100) + '\n'
 
     ret_value += '\n--- End Local Vars ---\n\n'
 
@@ -8538,7 +8538,7 @@ def get_message_global_vars():
     globals_sorted_by_size = sorted(globals_dict_full.values(), key=lambda d: d['size'], reverse=True)
     ret_value += 'Size\t\tName\t\tValue\n'
     for current_global in globals_sorted_by_size[:PROFILING_DUMP_ROWS_LIMIT]:
-        ret_value += '{}\t\t{}\t\t{}\n'.format(current_global["size"], current_global["name"], current_global["value"])
+        ret_value += '{}\t\t{}\t\t{}\n'.format(current_global["size"], current_global["name"], shorten_string_for_printing(current_global["value"], 100))
     ret_value += '\n--- End Top {} Globals by Size ---\n'.format(PROFILING_DUMP_ROWS_LIMIT)
 
     return ret_value
@@ -8586,3 +8586,38 @@ def register_signal_handler_profiling_dump(signal_type=None, profiling_dump_rows
         signal.signal(requested_signal, signal_handler_profiling_dump)
     else:
         demisto.info('Not a Linux or Mac OS, profiling using a signal is not supported.')
+
+
+def shorten_string_for_printing(source_string, max_length):
+    """
+    Function that removes the middle of a long str, for printint or logging.
+    If needed, it will replace the middle with '...',
+    e.g. shorten_string_for_printing('123456789', 9) -> '123456789'
+    e.g. shorten_string_for_printing('1234567890', 9) -> 'abc...890'
+    e.g. shorten_string_for_printing('123456789012', 10) -> '1234...012'
+
+    :type source_string: ``str``
+    :param source_string: A long str that needs shortening.
+
+    :type max_length: ``int``
+    :param max_length: Maximum length of the returned str, should be higher than 0.
+
+    :return:: A string no longer than max_length.
+    :rtype: ``str``
+    """
+    if not source_string or max_length < 1 or len(source_string) <= max_length:
+        return source_string
+
+    extremeties_length = int((max_length - 3) / 2)
+    if max_length % 2 == 0:
+        # even max_length. Start with one more char than at the beginning
+        ret_value = source_string[:extremeties_length + 1] \
+          + '...' \
+          + source_string[-extremeties_length:]
+        return ret_value
+    else:
+        # odd max_length
+        ret_value = source_string[:extremeties_length] \
+          + '...' \
+          + source_string[-extremeties_length:]
+        return ret_value

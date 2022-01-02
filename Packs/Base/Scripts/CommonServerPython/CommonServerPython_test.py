@@ -5931,6 +5931,20 @@ def test_get_message_memory_dump():
     assert '<class \'' in result
 
 
+def test_shorten_string_for_printing():
+    from CommonServerPython import shorten_string_for_printing
+    assert shorten_string_for_printing(None, None) is None
+    assert shorten_string_for_printing('1', 9) == '1'
+    assert shorten_string_for_printing('123456789', 9) == '123456789'
+    assert shorten_string_for_printing('1234567890', 9) == '123...890'
+    assert shorten_string_for_printing('12345678901', 9) == '123...901'
+    assert shorten_string_for_printing('123456789012', 9) == '123...012'
+
+    assert shorten_string_for_printing('1234567890', 10) == '1234567890'
+    assert shorten_string_for_printing('12345678901', 10) == '1234...901'
+    assert shorten_string_for_printing('123456789012', 10) == '1234...012'
+
+
 class TestSetAndGetLastMirrorRun:
 
     def test_get_last_mirror_run_in_6_6(self, mocker):
