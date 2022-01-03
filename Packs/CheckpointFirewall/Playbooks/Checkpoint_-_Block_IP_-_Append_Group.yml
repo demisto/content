@@ -6,7 +6,7 @@ name: Checkpoint - Block IP - Append Group
 description: |-
   This playbook will use an object group in order to block IPs.
   The playbook receives malicious IP addresses as inputs, checks if the object group exists (and if not will create one), and will append the related IPs in that object.
-  Please remember to assign the appended group to a rule in your FW policy.
+  Please remember to assign the appended group to a rule in your FW policy. If not, you can use the `rule_name` and the playbook will create for this one.
 starttaskid: "0"
 tasks:
   "0":
@@ -106,7 +106,7 @@ tasks:
       {
         "position": {
           "x": 840,
-          "y": 3190
+          "y": 3850
         }
       }
     note: false
@@ -322,7 +322,7 @@ tasks:
       '#default#':
       - "17"
       "yes":
-      - "11"
+      - "39"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -370,7 +370,7 @@ tasks:
       {
         "position": {
           "x": 220,
-          "y": 2990
+          "y": 3670
         }
       }
     note: false
@@ -600,7 +600,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -90,
+          "x": -110,
           "y": 2400
         }
       }
@@ -704,7 +704,7 @@ tasks:
       {
         "position": {
           "x": -330,
-          "y": 2580
+          "y": 3270
         }
       }
     note: false
@@ -734,7 +734,7 @@ tasks:
       {
         "position": {
           "x": -330,
-          "y": 2810
+          "y": 3500
         }
       }
     note: false
@@ -1172,12 +1172,174 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: 14846fc4-2eec-45d2-8cb3-e96e09b197ca
+    type: regular
+    task:
+      id: 14846fc4-2eec-45d2-8cb3-e96e09b197ca
+      version: -1
+      name: Checkpoint access rule add
+      description: Add access rule to Checkpoint firewall.
+      script: '|||checkpoint-access-rule-add'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      destination:
+        simple: ${inputs.group_name}
+      layer:
+        simple: ${inputs.rule_layer}
+      name:
+        simple: ${inputs.rule_name}
+      position:
+        simple: ${inputs.rule_position}
+      session_id:
+        complex:
+          root: CheckPoint
+          accessor: Login.session-id
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -40,
+          "y": 2700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: f3ce033e-4562-4224-8193-4459a023d9c8
+    type: condition
+    task:
+      id: f3ce033e-4562-4224-8193-4459a023d9c8
+      version: -1
+      name: Was the access rule added?
+      description: Validate if access rule was  added.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "40"
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: CheckPoint.AccessRule
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -40,
+          "y": 2880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: 13874ea2-f0ad-4734-86f9-34478083b464
+    type: condition
+    task:
+      id: 13874ea2-f0ad-4734-86f9-34478083b464
+      version: -1
+      name: Is a rule name defined?
+      description: Check if rule name was defined in the inputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "11"
+      "yes":
+      - "37"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.rule_name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 2530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: 581e2e17-8f47-4668-8e30-8ca4cc0097ae
+    type: regular
+    task:
+      id: 581e2e17-8f47-4668-8e30-8ca4cc0097ae
+      version: -1
+      name: Print append was not successful
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      value:
+        simple: There was a problem to create a blocking rule with the defined group
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -40,
+          "y": 3090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "38_11_yes": 0.16
+    },
     "paper": {
       "dimensions": {
-        "height": 4155,
+        "height": 4815,
         "width": 1550,
         "x": -330,
         "y": -900
@@ -1186,10 +1348,11 @@ view: |-
   }
 inputs:
 - key: IP
-  value:
-    simple:
+  value: {}
   required: true
-  description: Array of malicious IPs to block.
+  description: |-
+    An array of malicious IPs to block (Can be also provided as a context path. e.g. ${IP} ).
+    Example:     1.1.1.1,2.2.2.2
   playbookInputQuery:
 - key: install_policy
   value:
@@ -1227,6 +1390,29 @@ inputs:
   required: true
   description: "Provide the group name to be appended with the provided IPs. \nThe\
     \ group will be created in case it did not exist before."
+  playbookInputQuery:
+- key: rule_name
+  value: {}
+  required: false
+  description: 'This input determines whether the Checkpoint firewall rule name is
+    used. With this name - a new blocking rule, with mentioned the group,  will be
+    created '
+  playbookInputQuery:
+- key: rule_layer
+  value:
+    simple: Network
+  required: false
+  description: |-
+    This input determines whether the Checkpoint firewall rule layer is used.
+    By default, we use the "Network" layer, but can be changed.
+  playbookInputQuery:
+- key: rule_position
+  value:
+    simple: top
+  required: false
+  description: |-
+    This input determines whether the Checkpoint firewall rule position is used.
+    By default, we are using the "top" position but can be changed.
   playbookInputQuery:
 outputs: []
 tests:
