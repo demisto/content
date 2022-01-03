@@ -29,11 +29,13 @@ jobs:
           file_exit_code=0
           changed_files="${{ steps.changed-files.outputs.all_changed_files }}"
           readarray -d ";" -t strarr <<< $changed_files
+          echo $strarr
           echo "new scripttt"
-          for file in $strarr; do
+          for (( n=0; n < ${#strarr[*]}; n++ ))
+          do
             echo ""
-            echo "  Checking File: $file"
-            demisto-sdk doc-review --release-notes -i "$file" --known-words Tests/known_words.txt || file_exit_code=$?
+            echo "  Checking File: ${strarr[n]}"
+            demisto-sdk doc-review --release-notes -i "${strarr[n]}" --known-words Tests/known_words.txt || file_exit_code=$?
             if [ ! $file_exit_code -eq 0 ]; then
               echo "  Setting Overall Exit Code to 1"
               overall_exit_code=1
