@@ -8527,7 +8527,9 @@ def get_size_of_object(input_object):
     :return: Size of input_object in bytes.
     :rtype: ``int``
     """
-    from collections import deque, Set, Mapping
+    # from collections import deque, Set, Mapping
+    from collections import deque, Mapping
+    from typing import Set
     from numbers import Number
     # Python 3 also needs range
     # ZERO_DEPTH_BASES = (str, bytes, Number, range, bytearray)
