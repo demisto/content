@@ -343,7 +343,7 @@ script:
         1000 max. default: 100'
       name: page_size
     - description: 'Token corresponding to a specific page of results, as provided
-        by metadata  default: None'
+        by metadata. default: None'
       name: page_token
     - description: 'Table headers to use the human readable output (if none provided,
         will show all table headers). Available headers: id, name, contact_count,
