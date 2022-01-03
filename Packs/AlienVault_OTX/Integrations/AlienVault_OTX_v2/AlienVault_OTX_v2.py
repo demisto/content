@@ -174,9 +174,8 @@ def relationships_manager(client: Client, raw_response: dict, entity_a: str, ent
     if client.max_indicator_relationships != 0:
         params = {'limit' : str(client.max_indicator_relationships)}
         _, _, urls_raw_response = alienvault_get_related_urls_by_indicator_command(client, indicator_type, indicator, params)
-
         relationships +=  create_relationships(client, dict_safe_get(urls_raw_response, ['url_list'], ['']), entity_a, entity_a_type, 'url', FeedIndicatorType.URL, EntityRelationship.Relationships.INDICATOR_OF)
-
+        
         _, _, hash_raw_response = alienvault_get_related_hashes_by_indicator_command(client, indicator_type, indicator, params)
         relationships +=  create_relationships(client, dict_safe_get(hash_raw_response, ['data'], ['']), entity_a, entity_a_type, 'hash', FeedIndicatorType.File, EntityRelationship.Relationships.INDICATOR_OF)
 
@@ -189,16 +188,12 @@ def relationships_manager(client: Client, raw_response: dict, entity_a: str, ent
 
 def create_relationships(client: Client, relevant_field, entity_a: str, entity_a_type: str, relevant_id : str, entity_b_type: str, relationship_type):
     relationships: list = []
-    print(relevant_field)
     if not client.create_relationships:
         return relationships
-
     # pulse_info.pulses.[0].attack_ids.display_name - can contain a list of attack_ids
     if relevant_field and isinstance(relevant_field, list) and relevant_id in relevant_field[0]:
         display_names = [item.get(relevant_id) for item in relevant_field]
         if display_names:
-            if relevant_id == 'url':
-                display_names = list(set(display_names))
             relationships = [EntityRelationship(
                 name=relationship_type,
                 entity_a=entity_a,
@@ -258,13 +253,9 @@ def ip_command(client: Client, ip_address: str, ip_version: str) -> List[Command
         raw_response = client.query(section=ip_version,
                                     argument=ip_)
         if raw_response and raw_response != 404:
-            ip_version = FeedIndicatorType.IP if ip_version == 'IPv4' else FeedIndicatorType.IPv6
-            relationships = relationships_manager(client, raw_response=raw_response, entity_a=ip_, indicator_type= 'domain',
-                                                  entity_a_type=ip_version, indicator=domain)
-            
-            
-            create_relationships(client, raw_response=dict_safe_get(raw_response, ['pulse_info', 'pulses', 'attack_ids'], ['']),
-                                                                entity_a=ip_, entity_a_type=ip_version, relevant_id='display_name',entity_b_type=FeedIndicatorType.indicator_type_by_server_version("STIX Attack Pattern"),relationship_type= EntityRelationship.Relationships.INDICATOR_OF)
+            ip_version = 'IPv4' if ip_version == 'IPv4' else FeedIndicatorType.IPv6
+            relationships = relationships_manager(client=client, raw_response=raw_response, entity_a=ip_, entity_a_type=ip_version, 
+                                                indicator_type= ip_version, indicator=ip_)
 
             dbot_score = Common.DBotScore(indicator=ip_, indicator_type=DBotScoreType.IP,
                                           integration_name=INTEGRATION_NAME,
