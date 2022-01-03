@@ -1,0 +1,190 @@
+id: Bitglass_App-Test
+version: -1
+name: Bitglass_App-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 6022a6a4-56d8-4a44-8000-608e1eadbd36
+    type: start
+    task:
+      id: 6022a6a4-56d8-4a44-8000-608e1eadbd36
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 570,
+          "y": 20
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 8c259e96-e4b3-4157-8f22-3c83f4bb6bb7
+    type: regular
+    task:
+      id: 8c259e96-e4b3-4157-8f22-3c83f4bb6bb7
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 570,
+          "y": 160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 209fdbb5-e50e-4b86-8c99-772c7c28f80f
+    type: regular
+    task:
+      id: 209fdbb5-e50e-4b86-8c99-772c7c28f80f
+      version: -1
+      name: helloworld-say-hello
+      description: Hello command - prints hello to anyone.
+      script: HelloWorld|||helloworld-say-hello
+      type: regular
+      iscommand: true
+      brand: HelloWorld
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      name:
+        simple: myname
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 570,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: b3e4df63-96bd-44a5-8163-0881a0afc8dd
+    type: condition
+    task:
+      id: b3e4df63-96bd-44a5-8163-0881a0afc8dd
+      version: -1
+      name: test helloworld-say-hello
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: hello
+            iscontext: true
+          right:
+            value:
+              simple: Hello myname
+    view: |-
+      {
+        "position": {
+          "x": 570,
+          "y": 520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: e91ca5cc-72c6-407d-8ccf-581e5dd7b10c
+    type: regular
+    task:
+      id: e91ca5cc-72c6-407d-8ccf-581e5dd7b10c
+      version: -1
+      name: closeInvestigation
+      description: Close the current incident
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      emailclassification: {}
+      id:
+        simple: ${incident.id}
+      phishingsubtype: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 570,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "3_4_yes": 0.5
+    },
+    "paper": {
+      "dimensions": {
+        "height": 775,
+        "width": 380,
+        "x": 570,
+        "y": 20
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.0.0
+description: Playbook for testing Bitglass integration

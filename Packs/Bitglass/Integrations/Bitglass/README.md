@@ -1,5 +1,5 @@
 The app pulls cloudaudit and access Bitglass log data filtered down to the specified DLP patterns. It also provides actions for access to Bitglass REST APIs for group and user manipulation.
-This integration was integrated and tested with version xx of Bitglass
+This integration was integrated and tested with version 1.0.14 of Bitglass
 
 ## Configure Bitglass on Cortex XSOAR
 
@@ -40,15 +40,15 @@ Filter log events by DLP pattern
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| bg_match_expression | Python regex expression to match the patterns. Default is Malware.*. | Required | 
-| bg_log_event | XSOAR Event ID###. Default is artifact:*.id. | Required | 
+| bg_match_expression | Python regex expression to match the patterns. Default is Malware.*. | Required |
+| bg_log_event | XSOAR Event ID###. Default is artifact:*.id. | Required |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Bitglass.user_name | string | Offending user name | 
+| Bitglass.user_name | string | Offending user name |
 
 
 #### Command Example
@@ -70,8 +70,8 @@ Create or update a group
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| bg_group_name | Name of the group to create or update. Default is RiskyUsers. | Required | 
-| bg_new_group_name | New name of the group to rename to. Default is RiskyUsers. | Optional | 
+| bg_group_name | Name of the group to create or update. Default is RiskyUsers. | Required |
+| bg_new_group_name | New name of the group to rename to. Default is RiskyUsers. | Optional |
 
 
 #### Context Output
@@ -97,7 +97,7 @@ Delete a group
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| bg_group_name | Name of the group to delete. Default is RiskyUsers. | Required | 
+| bg_group_name | Name of the group to delete. Default is RiskyUsers. | Required |
 
 
 #### Context Output
@@ -123,8 +123,8 @@ Add risky user to a group
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| bg_group_name | Name of the group to add the risky user to. Default is RiskyUsers. | Required | 
-| bg_user_name | User name to add. Default is ${Bitglass.user_name}. | Required | 
+| bg_group_name | Name of the group to add the risky user to. Default is RiskyUsers. | Required |
+| bg_user_name | User name to add. Default is ${Bitglass.user_name}. | Required |
 
 
 #### Context Output
@@ -150,8 +150,8 @@ Remove risky user from a group
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| bg_group_name | Name of the group to add the risky user to. Default is RiskyUsers. | Required | 
-| bg_user_name | User name to remove. Default is ${Bitglass.user_name}. | Required | 
+| bg_group_name | Name of the group to add the risky user to. Default is RiskyUsers. | Required |
+| bg_user_name | User name to remove. Default is ${Bitglass.user_name}. | Required |
 
 
 #### Context Output
@@ -177,18 +177,18 @@ Create or update user
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| bg_user_name | Email of the user to create or update. | Required | 
-| bg_first_name | First name. | Optional | 
-| bg_last_name | Last name. | Optional | 
-| bg_secondary_email | Secondary email. | Optional | 
-| bg_netbios_domain | NetBIOS domain. | Optional | 
-| bg_sam_account_name | SAM account domain. | Optional | 
-| bg_user_principal_name | User principal name. | Optional | 
-| bg_object_guid | Object GUID. | Optional | 
-| bg_country_code | Country code. | Optional | 
-| bg_mobile_number | Mobile number. | Optional | 
-| bg_admin_role | Admin role. | Optional | 
-| bg_group_membership | Place the user under the group. | Optional | 
+| bg_user_name | Email of the user to create or update. | Required |
+| bg_first_name | First name. | Optional |
+| bg_last_name | Last name. | Optional |
+| bg_secondary_email | Secondary email. | Optional |
+| bg_netbios_domain | NetBIOS domain. | Optional |
+| bg_sam_account_name | SAM account domain. | Optional |
+| bg_user_principal_name | User principal name. | Optional |
+| bg_object_guid | Object GUID. | Optional |
+| bg_country_code | Country code. | Optional |
+| bg_mobile_number | Mobile number. | Optional |
+| bg_admin_role | Admin role. | Optional |
+| bg_group_membership | Place the user under the group. | Optional |
 
 
 #### Context Output
@@ -214,7 +214,7 @@ Deactivate user
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| bg_user_name | Email of the user to deactivate. | Required | 
+| bg_user_name | Email of the user to deactivate. | Required |
 
 
 #### Context Output
@@ -240,7 +240,7 @@ Reactivate user
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| bg_user_name | Email of the user to reactivate. | Required | 
+| bg_user_name | Email of the user to reactivate. | Required |
 
 
 #### Context Output

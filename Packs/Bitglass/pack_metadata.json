@@ -1,0 +1,18 @@
+{
+    "name": "Bitglass",
+    "description": "Bitglass integration and playbooks",
+    "support": "partner",
+    "currentVersion": "1.0.13",
+    "author": "alexeiyur@gmail.com",
+    "url": "https://bitglass.com",
+    "email": "",
+    "categories": [
+        "Analytics & SIEM"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "asingh-bitglass"
+    ]
+}

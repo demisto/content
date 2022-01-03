@@ -1,0 +1,154 @@
+id: User Investigation - Bitglass
+version: -1
+name: User Investigation - Bitglass
+description: A sample playbook for Bitglass integration
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: e636d78b-db03-4138-892a-91d8b9ffb4e9
+    type: start
+    task:
+      id: e636d78b-db03-4138-892a-91d8b9ffb4e9
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 8d734744-47b5-4af8-8152-bfbf1e1f483d
+    type: regular
+    task:
+      id: 8d734744-47b5-4af8-8152-bfbf1e1f483d
+      version: -1
+      name: bitglass-filter-by-dlp-pattern
+      description: Filter log events by DLP pattern
+      script: Bitglass|||bitglass-filter-by-dlp-pattern
+      type: regular
+      iscommand: true
+      brand: Bitglass
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      bg_log_event:
+        simple: ${incident}
+      bg_match_expression:
+        simple: PCI.*
+      log_event:
+        simple: ${inputs.incident}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 90
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 315de004-0cec-4d7c-8dac-63c7411e27a5
+    type: title
+    task:
+      id: 315de004-0cec-4d7c-8dac-63c7411e27a5
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 18a80137-012e-42d2-8797-38a0085a72c9
+    type: regular
+    task:
+      id: 18a80137-012e-42d2-8797-38a0085a72c9
+      version: -1
+      name: bitglass-add-user-to-group
+      description: Add risky user to a group
+      script: Bitglass|||bitglass-add-user-to-group
+      type: regular
+      iscommand: true
+      brand: Bitglass
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 585,
+        "width": 380,
+        "x": 450,
+        "y": -60
+      }
+    }
+  }
+inputs:
+- key: incident
+  value:
+    simple: ${incident}
+  required: false
+  description: Bitglass Access or CloudAudit incident
+  playbookInputQuery:
+outputs: []
+tests:
+- Bitglass_App-Test
+fromversion: 6.0.0
