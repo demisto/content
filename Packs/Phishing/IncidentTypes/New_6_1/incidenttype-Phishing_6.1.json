@@ -21,7 +21,7 @@
  "reputationCalc": 2,
  "onChangeRepAlg": 2,
  "fromVersion": "6.1.0",
- "layout": "Phishing",
+ "layout": "Phishing Incident v3",
  "extractSettings": {
  "mode": "Specific",
   "fieldCliNameToExtractSettings": {
