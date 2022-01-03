@@ -27,7 +27,7 @@ jobs:
         run: |
           overall_exit_code=0
           file_exit_code=0
-          changed_files=${{ steps.changed-files.outputs.all_changed_files }}
+          changed_files="${{ steps.changed-files.outputs.all_changed_files }}"
           readarray -d ";" -t strarr <<< $changed_files
           echo "new scripttt"
           for file in $strarr; do
