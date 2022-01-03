@@ -8519,8 +8519,7 @@ def get_message_local_vars():
 
 def get_size_of_object(input_object):
     """Recursively iterate to sum size of object & members."""
-    from collections import deque
-    from collections.abc import Set, Mapping
+    from collections import deque, Set, Mapping
     from numbers import Number
     ZERO_DEPTH_BASES = (str, bytes, Number, range, bytearray)
     _seen_ids = set()
