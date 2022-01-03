@@ -1,0 +1,84 @@
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: aa421eaa-c9a1-4718-86c5-2e0136fb2468
+    propagationLabels:
+    - all
+    toServerVersion: ""
+id: e6be3524-06da-447d-86d7-f199ef80145c
+inputs: []
+name: test_new_pb
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 0dfb5cd4-33ff-42e9-89b3-6731962c7e9a
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 0dfb5cd4-33ff-42e9-89b3-6731962c7e9a
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Delete field from context
+      id: 1856c733-fcea-4c66-804e-543b4e791bde
+      iscommand: false
+      name: DELETECONTEXT
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: 1856c733-fcea-4c66-804e-543b4e791bde
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 170
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 215,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }

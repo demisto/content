@@ -1,0 +1,25 @@
+comment: my new script
+commonfields:
+  id: d2709ed8-4c19-4b44-81bb-2987bfbd49d4
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: aa421eaa-c9a1-4718-86c5-2e0136fb2468
+    propagationLabels:
+    - all
+    toServerVersion: ""
+dockerimage: demisto/python3:3.9.8.24399
+enabled: true
+engineinfo: {}
+name: new-script
+pswd: ""
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
