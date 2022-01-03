@@ -235,8 +235,6 @@ def get_all_updated_tags_since_last_fetch(client: Client,
             update_time = datetime.strptime(update_time, AF_TAGS_DATE_FORMAT).strftime(
                 DATE_FORMAT) if update_time else None
             update_time = date_to_timestamp(update_time, DATE_FORMAT)
-            if not update_time:
-                update_time = 1
             if update_time >= time_from_last_update:
                 # this means that the tag hase been updated, so it needs to be added to the list of updated tags
                 list_of_all_updated_tags.append(
