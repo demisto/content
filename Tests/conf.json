@@ -1,3 +1,4 @@
+
 {
     "testTimeout": 160,
     "testInterval": 20,
@@ -138,6 +139,26 @@
             "fromversion": "5.5.0",
             "memory_threshold": 300,
             "timeout": 1500
+        },
+        {
+            "integrations": "Azure Storage Container",
+            "playbookID": "playbook-AzureStorageContainer-Test",
+            "fromVersion": "6.0.0"
+        },
+        {
+            "integrations": "Azure Storage FileShare",
+            "playbookID": "playbook-AzureStorageFileShare-Test",
+            "fromVersion": "6.0.0"
+        },
+        {
+            "integrations": "Azure Storage Queue",
+            "playbookID": "playbook-AzureStorageQueue-Test",
+            "fromVersion": "6.0.0"
+        },
+        {
+            "integrations": "Azure Storage Table",
+            "playbookID": "playbook-AzureStorageTable-Test",
+            "fromVersion": "6.0.0"
         },
         {
             "integrations": "EwsExtension",
@@ -1419,6 +1440,17 @@
                 "ews_mail_sender_labdemisto"
             ],
             "playbookID": "EWS Mail Sender Test 2"
+        },
+        {
+            "integrations": [
+                "EWS Mail Sender",
+                "SMIME Messaging"
+            ],
+            "instance_names": [
+                "ews_mail_sender_labdemisto",
+                "SMIME Messaging"
+            ],
+            "playbookID": "EWS Mail Sender Test 3"
         },
         {
             "playbookID": "decodemimeheader_-_test"
@@ -4309,6 +4341,13 @@
             ]
         },
         {
+            "playbookID": "Atlassian Confluence Cloud-Test",
+            "fromversion": "6.2.0",
+            "integrations": [
+                "Atlassian Confluence Cloud"
+            ]
+        },
+        {
             "playbookID": "CrowdStrike_Falcon_X_-Test-Detonate_URL",
             "fromversion": "5.0.0",
             "integrations": [
@@ -4323,6 +4362,21 @@
             ]
         },
         {
+            "playbookID": "Phishing - Core - Test - Actual Incident",
+            "fromversion": "6.0.0",
+            "timeout": 4600,
+            "integrations": [
+                "EWS Mail Sender",
+                "Demisto REST API",
+                "Rasterize"
+            ],
+            "memory_threshold": 200
+        },
+        {
+            "playbookID": "Phishing v2 - Test - Actual Incident",
+            "fromversion": "6.0.0"
+        },
+        {
             "playbookID": "Phishing Investigation - Generic v2 - Campaign Test",
             "fromversion": "6.0.0",
             "timeout": 7000,
@@ -4335,7 +4389,9 @@
             "instance_names": [
                 "no_sync_long_timeout",
                 "ews_mail_sender_labdemisto"
-            ]
+            ],
+            "memory_threshold": 160,
+            "pid_threshold": 80
         },
         {
             "playbookID": "PCAP Search test",
@@ -4577,6 +4633,15 @@
             "fromversion": "5.0.0"
         },
         {
+            "playbookID": "Process Email - Generic - Test - Actual Incident",
+            "fromversion": "6.0.0",
+            "integrations": [
+                "XsoarPowershellTesting",
+                "Create-Mock-Feed-Relationships"
+            ],
+            "memory_threshold": 160
+        },
+        {
             "playbookID": "Analyst1 Integration Demonstration - Test",
             "fromversion": "5.0.0",
             "integrations": [
@@ -4803,6 +4868,13 @@
             "fromversion": "6.0.0"
         },
         {
+            "integrations": [
+                "Demisto REST API"
+            ],
+            "playbookID": "TestDemistoRestAPI",
+            "fromversion": "5.5.0"
+        },
+        {
             "scripts": [
                 "SplunkShowAsset",
                 "SplunkShowDrilldown",
@@ -4847,6 +4919,10 @@
         {
             "integrations": "McAfee ePO v2",
             "playbookID": "McAfee ePO v2 Test"
+        },
+        {
+            "playbookID": "Dedup - Generic v3",
+            "fromversion": "5.5.0"
         }
     ],
     "skipped_tests": {
@@ -4970,8 +5046,6 @@
         "AutoFocus V2 test": "Issue 26464",
         "SplunkPy_KV_commands_default_handler": "Issue 41419",
         "LogRhythm REST test": "Issue 40654",
-        "Recorded Future Test": "Quota issue - will ve reverted un 1.1.22",
-        "RecordedFutureFeed - Test": "Quota issue - will ve reverted un 1.1.22",
         "Process Email - Generic - Test - Actual Incident": "Issue 45227"
     },
     "skipped_integrations": {
