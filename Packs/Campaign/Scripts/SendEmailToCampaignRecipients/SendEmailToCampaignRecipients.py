@@ -11,10 +11,12 @@ def main():
         emailto = custom_fields.get('campaignemailto')
         subject = custom_fields.get('campaignemailsubject')
         email_body = custom_fields.get('campaignemailbody')
+        instance_to_use = custom_fields.get('emailsenderinstance')
         if not emailto:
             return_error(INVALID_EMAIL_TO_MSG)
 
-        demisto.executeCommand("send-mail", {"to": emailto, "subject": subject, "body": email_body})
+        demisto.executeCommand("send-mail", {"to": emailto, "subject": subject, "body": email_body,
+                                             "using": instance_to_use})
     except Exception as ex:
         return_error(f'Failed to execute SendEmailToCampaignRecipients. Error: {str(ex)}')
 

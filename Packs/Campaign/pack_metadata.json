@@ -35,6 +35,10 @@
         "CommonScripts": {
             "mandatory": true,
             "display_name": "Common Scripts"
+        },
+        "Demisto REST API": {
+            "mandatory": true,
+            "display_name": "Demisto REST API"
         }
     },
     "itemPrefix": [
