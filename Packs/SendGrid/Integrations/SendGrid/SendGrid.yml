@@ -422,7 +422,7 @@ script:
     name: sg-delete-list
     outputs:
     - contextPath: Sendgrid.DeleteListJobId
-      description: ' Job id of the async job'
+      description: 'Job id of the async job'
   dockerimage: demisto/sendgrid:1.0.0.25330
   runonce: false
   script: ''
