@@ -339,8 +339,8 @@ script:
       description: Email activity list associated with the messages matching your
         query.
   - arguments:
-    - description: ' Maximum number of elements to return. Defaults to 100, returns
-        1000 max  default: 100'
+    - description: 'Maximum number of elements to return. returns
+        1000 max. default: 100'
       name: page_size
     - description: 'Token corresponding to a specific page of results, as provided
         by metadata  default: None'
