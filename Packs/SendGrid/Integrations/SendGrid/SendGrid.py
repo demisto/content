@@ -778,7 +778,7 @@ def delete_list(args: dict, sg):
     elif response.status_code == 204:
         return 'The delete has been successful '
     else:
-        return 'List delete has been failed: ' + str(response.body)
+        return 'Failed to delete list: ' + str(response.body)
 
 
 def main():
