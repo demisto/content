@@ -187,6 +187,7 @@ tasks:
       - "17"
       - "24"
       - "32"
+      - "34"
     scriptarguments:
       CompleteTask:
         simple: "False"
@@ -314,6 +315,7 @@ tasks:
       '#none#':
       - "12"
       - "31"
+      - "35"
     separatecontext: false
     view: |-
       {
@@ -585,7 +587,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2090,
+          "x": 2650,
           "y": 1780
         }
       }
@@ -641,7 +643,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1800,
+          "x": 2360,
           "y": 1920
         }
       }
@@ -914,7 +916,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2360,
+          "x": 2920,
           "y": 1920
         }
       }
@@ -978,7 +980,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2360,
+          "x": 2920,
           "y": 2050
         }
       }
@@ -1223,6 +1225,140 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: a858b4aa-77e2-41c9-8381-6f7a9e846450
+    type: regular
+    task:
+      id: a858b4aa-77e2-41c9-8381-6f7a9e846450
+      version: -1
+      name: Get the File context
+      description: Gets a value from the specified incident's context.
+      scriptName: GetByIncidentId
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      get_key:
+        simple: File
+      incident_id:
+        complex:
+          root: FoundID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1680,
+          "y": 1780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: a7948575-018f-469b-8a83-982cd3f9dc95
+    type: condition
+    task:
+      id: a7948575-018f-469b-8a83-982cd3f9dc95
+      version: -1
+      name: Was the original email retrieved as an EML file?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "36"
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: File
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: File.Extension
+                      iscontext: true
+                    right:
+                      value:
+                        simple: eml
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: File.Name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Suspicious activity in your bank account [ACTION REQUIRED].eml
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1680,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: bf8ef2db-caae-492b-84e1-b61dec88aba7
+    type: regular
+    task:
+      id: bf8ef2db-caae-492b-84e1-b61dec88aba7
+      version: -1
+      name: Email not retrieved as EML
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      message:
+        simple: |-
+          The original email was not retrieved at all, or was not retrieved as an EML file which is what is expected to happen.
+          Possible reasons:
+          - Something in the Process Email - Generic v2 or Get Original Email - Generic v2 playbooks changed.
+          - Something in the EWS365 integration changed and the retrieved file is no longer retrieved as a file.
+          - The email was deleted from the mailbox where it was received (probably sr-test01) by someone or something else.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1680,
+          "y": 2340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -1232,7 +1368,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 2945,
-        "width": 3860,
+        "width": 4420,
         "x": -1120,
         "y": 50
       }
