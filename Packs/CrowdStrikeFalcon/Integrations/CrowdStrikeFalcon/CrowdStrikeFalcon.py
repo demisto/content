@@ -111,6 +111,13 @@ ENDPOINT_KEY_MAP = {
     'status': 'Status',
 }
 
+MIRROR_DIRECTION = {
+    'None': None,
+    'Incoming': 'In',
+    'Outgoing': 'Out',
+    'Incoming And Outgoing': 'Both'
+}
+
 ''' SPLIT KEY DICTIONARY '''
 
 """
@@ -1516,7 +1523,7 @@ def get_fetch_times_and_offset(incident_type):
     return last_fetch_time, offset, prev_fetch, last_fetch_timestamp
 
 
-def fetch_incidents():
+def fetch_incidents(mirror_direction: str = None, detection_tag: str = None, mirror_instance: str = None):
     incidents = []  # type:List
     current_fetch_info = demisto.getLastRun()
     fetch_incidents_or_detections = demisto.params().get('fetch_incidents_or_detections')
@@ -1553,6 +1560,11 @@ def fetch_incidents():
                     if incident_date_timestamp > last_fetch_timestamp:
                         last_fetch_time = incident_date
                         last_fetch_timestamp = incident_date_timestamp
+
+                    # adding fields for mirroring
+                    incident['mirror_direction'] = mirror_direction
+                    incident['mirror_tags'] = [detection_tag]
+                    incident['mirror_instance'] = mirror_instance
 
                     incidents.append(incident)
 
@@ -2980,12 +2992,17 @@ LOG('Command being called is {}'.format(demisto.command()))
 def main():
     command = demisto.command()
     args = demisto.args()
+
+    mirror_direction = MIRROR_DIRECTION.get(demisto.params().get('mirror_direction'))
+    detection_tag = demisto.params().get('detection_tag')
+    mirror_instance = demisto.integrationInstance()
+
     try:
         if command == 'test-module':
             result = test_module()
             return_results(result)
         elif command == 'fetch-incidents':
-            demisto.incidents(fetch_incidents())
+            demisto.incidents(fetch_incidents(mirror_direction, detection_tag, mirror_instance))
 
         elif command in ('cs-device-ran-on', 'cs-falcon-device-ran-on'):
             return_results(get_indicator_device_id())

@@ -42,6 +42,20 @@ configuration:
   name: incidentType
   required: false
   type: 13
+- additionalinfo: 'Choose the direction to mirror the detection: Incoming (from CrowdStrike
+    Falcon to XSOAR), Outgoing (from XSOAR to CrowdStrike Falcon), or Incoming and
+    Outgoing (from/to XSOAR and CrowdStrike Falcon).'
+  defaultvalue: None
+  display: Mirroring Direction
+  hidden: false
+  name: mirror_direction
+  options:
+  - None
+  - Incoming
+  - Outgoing
+  - Incoming And Outgoing
+  required: false
+  type: 15
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -60,10 +74,16 @@ configuration:
   - Incidents
   required: false
   type: 16
+- additionalinfo: A tag to add to mirrored out detection entries.
+  defaultvalue: tag
+  display: Detection entry tag
+  hidden: false
+  name: detection_tag
+  required: false
+  type: 0
 description: The CrowdStrike Falcon OAuth 2 API (formerly the Falcon Firehose API),
   enables fetching and resolving detections, searching devices, getting behaviors
-  by ID, containing hosts, and lifting host containment. getting behaviors by ID,
-  containing hosts, and lifting host containment.
+  by ID, containing hosts, and lifting host containment.
 display: CrowdStrike Falcon
 name: CrowdstrikeFalcon
 script:
@@ -2939,9 +2959,12 @@ script:
     description: Resolve incidents.
     execution: false
     name: cs-falcon-resolve-incident
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.9.9.25564
   feed: false
   isfetch: true
+  ismappable: true
+  isremotesyncin: true
+  isremotesyncout: true
   longRunning: false
   longRunningPort: false
   runonce: false
