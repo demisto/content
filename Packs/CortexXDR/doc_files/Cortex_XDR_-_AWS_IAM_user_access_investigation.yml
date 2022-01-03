@@ -1,29 +1,35 @@
 id: Cortex XDR - AWS IAM user access investigation
-version: -1
+version: 12
+contentitemexportablefields:
+  contentitemfields:
+    packID: ""
+    itemVersion: 4.2.12
+    fromServerVersion: 6.2.0
+    toServerVersion: ""
+vcShouldKeepItemLegacyProdMachine: false
 name: Cortex XDR - AWS IAM user access investigation
-description: "Investigate and respond to Cortex XDR Cloud alerts where an AWS IAM\
-  \ user`s access key is used suspiciously to access the cloud environment. \nThe\
-  \ following alerts are supported for AWS environments.\n- Penetration testing tool\
-  \ attempt\n- Penetration testing tool activity\n- Suspicious API call from a Tor\
-  \ exit node\n This is a beta playbook, which lets you implement and test pre-release\
-  \ software. At the moment we support AWS but are working towards multi-cloud support.\
-  \ Since the playbook is beta, it might contain bugs. Updates to the playbook during\
-  \ the beta phase might include non-backward compatible features. We appreciate your\
-  \ feedback on the quality and usability of the content to help us identify issues,\
-  \ fix them, and continually improve.\n"
+description: "Investigate and respond to Cortex XDR Cloud alerts where an AWS IAM
+  user`s access key is used suspiciously to access the cloud environment. \nThe following
+  alerts are supported for AWS environments.\n- Penetration testing tool attempt\n-
+  Penetration testing tool activity\n- Suspicious API call from a Tor exit node\n
+  This is a beta playbook, which lets you implement and test pre-release software.
+  At the moment we support AWS but are working towards multi-cloud support. Since
+  the playbook is beta, it might contain bugs. Updates to the playbook during the
+  beta phase might include non-backward compatible features. We appreciate your feedback
+  on the quality and usability of the content to help us identify issues, fix them,
+  and continually improve.\n"
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: eb45e1af-6483-41a6-869a-1bfdbf5c36c5
+    taskid: 5145ec07-575a-48fb-8749-53ce80e351ca
     type: start
     task:
-      id: eb45e1af-6483-41a6-869a-1bfdbf5c36c5
+      id: 5145ec07-575a-48fb-8749-53ce80e351ca
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "3"
@@ -44,10 +50,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 176b3fe5-66b3-4e4d-82f2-959ba2631703
+    taskid: bee9d8b0-3b7a-4520-8dd9-caa91ed31353
     type: regular
     task:
-      id: 176b3fe5-66b3-4e4d-82f2-959ba2631703
+      id: bee9d8b0-3b7a-4520-8dd9-caa91ed31353
       version: -1
       name: Get incident extra data
       description: Returns additional data for the specified incident, for example,
@@ -81,10 +87,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: f98a36c2-d92b-4545-8fe9-7a62278269d9
+    taskid: 1e478296-ef56-4d5e-8ea1-40ff589c1584
     type: regular
     task:
-      id: f98a36c2-d92b-4545-8fe9-7a62278269d9
+      id: 1e478296-ef56-4d5e-8ea1-40ff589c1584
       version: -1
       name: Get original cloud alert
       description: Returns information about each alert ID.
@@ -151,16 +157,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: d2284e8b-2ed7-4573-8613-f14529579557
+    taskid: 6f420913-35b5-4d74-8f63-9be84990802a
     type: title
     task:
-      id: d2284e8b-2ed7-4573-8613-f14529579557
+      id: 6f420913-35b5-4d74-8f63-9be84990802a
       version: -1
       name: Collect Additional Data
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "23"
@@ -183,10 +188,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 38e0d2b5-8dee-4633-86c9-67d0c7b290ba
+    taskid: 1e800f84-2299-40f8-8784-288a59483b52
     type: regular
     task:
-      id: 38e0d2b5-8dee-4633-86c9-67d0c7b290ba
+      id: 1e800f84-2299-40f8-8784-288a59483b52
       version: -1
       name: XQL Query - Last 100 API calls made with the access key
       description: Execute an XQL query and retrieve results of an executed XQL query
@@ -223,10 +228,10 @@ tasks:
                     | filter accesskey in("
               suffix:
                 value:
-                  simple: "\")\n| fields caller_ip, project, identity_name, identity_type,\
-                    \ identity_sub_type,accesskey, operation_name_orig, operation_status,\
-                    \ referenced_resource_name, caller_ip_asn_org, caller_ip_geolocation\
-                    \ \n| sort asc _time \n| limit 100"
+                  simple: "\")\n| fields caller_ip, project, identity_name, identity_type,
+                    identity_sub_type,accesskey, operation_name_orig, operation_status,
+                    referenced_resource_name, caller_ip_asn_org, caller_ip_geolocation
+                    \n| sort asc _time \n| limit 100"
       query_name:
         simple: apiCalls
       time_frame:
@@ -248,16 +253,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 91df1747-e288-4133-885c-e76fff79e929
+    taskid: 89f3311f-c706-44e5-8f16-7a93c068586d
     type: title
     task:
-      id: 91df1747-e288-4133-885c-e76fff79e929
+      id: 89f3311f-c706-44e5-8f16-7a93c068586d
       version: -1
       name: 'Remediation '
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "9"
@@ -280,10 +284,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 81f46d38-90d6-45fd-82f4-4d1f3adc1090
+    taskid: ea81f280-af39-4c7c-88f3-d43e6eb68f16
     type: regular
     task:
-      id: 81f46d38-90d6-45fd-82f4-4d1f3adc1090
+      id: ea81f280-af39-4c7c-88f3-d43e6eb68f16
       version: -1
       name: Set compromised IAM access key as inactive
       description: Changes the status of the specified access key from Active to Inactive,
@@ -336,10 +340,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: a0a9f984-0a6a-4ed2-8cc3-7b309a3cfa39
+    taskid: 9a89109a-f023-43c4-8919-59b45bb4c24d
     type: regular
     task:
-      id: a0a9f984-0a6a-4ed2-8cc3-7b309a3cfa39
+      id: 9a89109a-f023-43c4-8919-59b45bb4c24d
       version: -1
       name: Delete user login profile to AWS console
       description: Deletes the password for the specified IAM user, which terminates
@@ -375,10 +379,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: a5932e26-e7c8-4893-89e4-4d9be382f8ed
+    taskid: 150d03c0-7926-4970-83d0-187ffa80df74
     type: playbook
     task:
-      id: a5932e26-e7c8-4893-89e4-4d9be382f8ed
+      id: 150d03c0-7926-4970-83d0-187ffa80df74
       version: -1
       name: AWS IAM - User enrichment
       description: |
@@ -421,27 +425,26 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 838d6965-463c-4fd4-8bcb-1453148e9705
+    taskid: 7c82bc5d-9afa-47b4-8fd7-b332daeb0f3a
     type: regular
     task:
-      id: 838d6965-463c-4fd4-8bcb-1453148e9705
+      id: 7c82bc5d-9afa-47b4-8fd7-b332daeb0f3a
       version: -1
       name: 'Investigate collected data '
-      description: "To determine if this is a true positive event,  review the results\
-        \ of the XQL queries from the previous steps.\nThe queries search for the\
-        \ operations performed by the access key and the user in the recent time frame.\n\
-        Go over the results of the queries and search for the following items:\n\n\
-        1. Investigate the operation performed by the access key and examine the executed\
-        \ operations, by who it was executed, on which resource, and the operation\
-        \ status.\n\n2.  Investigate operations performed by the user and examine\
-        \ the executed operations, by who it was executed, on which resource, and\
-        \ the operation status.\nLook at any persistence, for example - a new user\
-        \ creation or key, etc.\n\n3. Investigate operations perform by the user and\
-        \ examine the executed operations, by who it was executed, on which resource,\
-        \ and the operation status.\nLook at any lateral movement operations. For\
-        \ example, an operation can be = AsumeRole.\n\n4. As an extra validation step\
-        \ it is recommended to query the user and/or the user's manager regarding\
-        \ the investigated suspicious activity."
+      description: |-
+        To determine if this is a true positive event,  review the results of the XQL queries from the previous steps.
+        The queries search for the operations performed by the access key and the user in the recent time frame.
+        Go over the results of the queries and search for the following items:
+
+        1. Investigate the operation performed by the access key and examine the executed operations, by who it was executed, on which resource, and the operation status.
+
+        2.  Investigate operations performed by the user and examine the executed operations, by who it was executed, on which resource, and the operation status.
+        Look at any persistence, for example - a new user creation or key, etc.
+
+        3. Investigate operations perform by the user and examine the executed operations, by who it was executed, on which resource, and the operation status.
+        Look at any lateral movement operations. For example, an operation can be = AsumeRole.
+
+        4. As an extra validation step it is recommended to query the user and/or the user's manager regarding the investigated suspicious activity.
       type: regular
       iscommand: false
       brand: ""
@@ -465,10 +468,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 5802803a-1f35-4f12-8484-53daf666a5cc
+    taskid: 39b4e931-ad6d-4ba2-87b0-cc1d3a2f7fe9
     type: regular
     task:
-      id: 5802803a-1f35-4f12-8484-53daf666a5cc
+      id: 39b4e931-ad6d-4ba2-87b0-cc1d3a2f7fe9
       version: -1
       name: XQL Query - Actions performed by the user in the last 7 days
       description: Execute an XQL query and retrieve results of an executed XQL query
@@ -499,15 +502,15 @@ tasks:
             args:
               prefix:
                 value:
-                  simple: "dataset = cloud_audit_logs \n| filter cloud_provider =\
-                    \ \"AWS\"\n| filter identity_name in(\""
+                  simple: "dataset = cloud_audit_logs \n| filter cloud_provider =
+                    \"AWS\"\n| filter identity_name in(\""
               suffix:
                 value:
-                  simple: "\") \n| dedup project, identity_name, operation_name_orig,\
-                    \ operation_status, referenced_resource_name \n| fields caller_ip,\
-                    \ project, identity_name, identity_type, identity_sub_type, operation_name_orig,\
-                    \ operation_status, referenced_resource_name, caller_ip_asn_org,\
-                    \ caller_ip_geolocation\n| limit 100"
+                  simple: "\") \n| dedup project, identity_name, operation_name_orig,
+                    operation_status, referenced_resource_name \n| fields caller_ip,
+                    project, identity_name, identity_type, identity_sub_type, operation_name_orig,
+                    operation_status, referenced_resource_name, caller_ip_asn_org,
+                    caller_ip_geolocation\n| limit 100"
       query_name:
         simple: userActions
       time_frame:
@@ -529,10 +532,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 50ae3b5e-74dd-4838-863f-a71b066cb0eb
+    taskid: f82e1579-3441-41b3-83ab-b90f8e50e94e
     type: condition
     task:
-      id: 50ae3b5e-74dd-4838-863f-a71b066cb0eb
+      id: f82e1579-3441-41b3-83ab-b90f8e50e94e
       version: -1
       name: Is it a Tor IP?
       description: Is it a Tor IP?
@@ -575,16 +578,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: d2c11e43-d9ab-4484-8845-56b2d7300801
+    taskid: c139f339-c6ac-4471-8618-5c3d4541b51a
     type: title
     task:
-      id: d2c11e43-d9ab-4484-8845-56b2d7300801
+      id: c139f339-c6ac-4471-8618-5c3d4541b51a
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     view: |-
       {
@@ -602,10 +604,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 5faab3e7-4e02-41cd-8e75-ee8413a662a3
+    taskid: 1cbee8f4-57eb-4b11-811d-7d28aebebc4b
     type: playbook
     task:
-      id: 5faab3e7-4e02-41cd-8e75-ee8413a662a3
+      id: 1cbee8f4-57eb-4b11-811d-7d28aebebc4b
       version: -1
       name: Block IP - Generic v2
       description: |-
@@ -664,10 +666,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 1283a7e1-6f4c-411d-8e29-d269c202c8d1
+    taskid: e6b949e1-1733-4f05-8dbe-f29abeecc6d8
     type: condition
     task:
-      id: 1283a7e1-6f4c-411d-8e29-d269c202c8d1
+      id: e6b949e1-1733-4f05-8dbe-f29abeecc6d8
       version: -1
       name: Decision making - true/false-positive alert
       description: Based on the collected data investigation, is it a true positive
@@ -697,16 +699,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: 55201935-0f2f-4f7d-8a51-89a141ab7f37
+    taskid: 86c71205-32c2-4e39-82dd-7160e63d4106
     type: title
     task:
-      id: 55201935-0f2f-4f7d-8a51-89a141ab7f37
+      id: 86c71205-32c2-4e39-82dd-7160e63d4106
       version: -1
       name: False Positive - Done
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "19"
@@ -727,10 +728,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: 4e46e03a-9d7b-4951-8563-fc01f0df9104
+    taskid: 298a3dda-edfc-4247-8b80-0dc10273b9e0
     type: condition
     task:
-      id: 4e46e03a-9d7b-4951-8563-fc01f0df9104
+      id: 298a3dda-edfc-4247-8b80-0dc10273b9e0
       version: -1
       name: Validate access key type is AKIA
       description: Validate access key type is AKIA
@@ -780,16 +781,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: 781ff8c8-ef7e-43f3-8e4b-869cc157ec73
+    taskid: 45a00798-586f-4d0b-81bf-36e3199edc9b
     type: title
     task:
-      id: 781ff8c8-ef7e-43f3-8e4b-869cc157ec73
+      id: 45a00798-586f-4d0b-81bf-36e3199edc9b
       version: -1
       name: Investigation
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "31"
@@ -810,16 +810,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: 94e599f9-c3db-4452-8db3-17033ecda3af
+    taskid: 762d4115-3cff-4bc6-8084-decba3d933b9
     type: condition
     task:
-      id: 94e599f9-c3db-4452-8db3-17033ecda3af
+      id: 762d4115-3cff-4bc6-8084-decba3d933b9
       version: -1
       name: Check for AWS user login profile
-      description: "Check the user AWS login profile configuration.\nIf a login profile\
-        \ is configured, it needs to be deleted. \n\nThe user login profile configuration\
-        \ can be found under https://console.aws.amazon.com/iam/home#/users/[username]\
-        \ under the security credentials tab."
+      description: "Check the user AWS login profile configuration.\nIf a login profile
+        is configured, it needs to be deleted. \n\nThe user login profile configuration
+        can be found under https://console.aws.amazon.com/iam/home#/users/[username]
+        under the security credentials tab."
       type: condition
       iscommand: false
       brand: ""
@@ -855,10 +855,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: 07e9e5ce-2671-46e3-8db1-d456d729d5cd
+    taskid: 399c8033-a0d9-4706-88fc-872f98766590
     type: regular
     task:
-      id: 07e9e5ce-2671-46e3-8db1-d456d729d5cd
+      id: 399c8033-a0d9-4706-88fc-872f98766590
       version: -1
       name: Enrich Source IP addresses
       description: Checks the reputation of an IP address in AutoFocus.
@@ -893,10 +893,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: a5d7d95e-13d9-41ca-8c7a-a6a0cbbc7e0c
+    taskid: 9844cb08-8a1c-48bd-8a6c-545bc69f0f92
     type: condition
     task:
-      id: a5d7d95e-13d9-41ca-8c7a-a6a0cbbc7e0c
+      id: 9844cb08-8a1c-48bd-8a6c-545bc69f0f92
       version: -1
       name: New IP addresses were found in the XQL query results?
       description: New IP addresses were found in the XQL query results?
@@ -941,10 +941,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: 8c6bd89b-1f16-4a39-8685-8d1d6f0923b8
+    taskid: 8bba471b-3b1a-4634-8ac7-24f773d02bc6
     type: regular
     task:
-      id: 8c6bd89b-1f16-4a39-8685-8d1d6f0923b8
+      id: 8bba471b-3b1a-4634-8ac7-24f773d02bc6
       version: -1
       name: Enrich new IP addresses
       description: Checks the reputation of an IP address in AutoFocus.
@@ -985,10 +985,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: 9ad170ca-8536-4964-851e-0263282b3488
+    taskid: 35a69900-f840-4a1b-8bb7-c0f15bc56a28
     type: condition
     task:
-      id: 9ad170ca-8536-4964-851e-0263282b3488
+      id: 35a69900-f840-4a1b-8bb7-c0f15bc56a28
       version: -1
       name: Check for supported xcloud alerts
       description: Check for supported xcloud alerts.
@@ -1025,16 +1025,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: 58ba296b-bac9-413f-8ccc-a1def6f8d6eb
+    taskid: 42c7ceb5-6f3c-4b9f-89cf-30680a2d2968
     type: title
     task:
-      id: 58ba296b-bac9-413f-8ccc-a1def6f8d6eb
+      id: 42c7ceb5-6f3c-4b9f-89cf-30680a2d2968
       version: -1
       name: Done - No supported alerts
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "36"
@@ -1055,16 +1054,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: 45ddfb42-aba2-4f43-8ad1-3fa8073303e3
+    taskid: f79e3091-ccba-4cae-8c07-ad509d1c3c36
     type: title
     task:
-      id: 45ddfb42-aba2-4f43-8ad1-3fa8073303e3
+      id: f79e3091-ccba-4cae-8c07-ad509d1c3c36
       version: -1
       name: Done - No supported alerts
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "19"
@@ -1085,10 +1083,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: d5ceed77-f82b-4fcf-8b24-ac72e3e56bc4
+    taskid: 050e74a4-5121-43d2-880c-502b1bdee304
     type: regular
     task:
-      id: d5ceed77-f82b-4fcf-8b24-ac72e3e56bc4
+      id: 050e74a4-5121-43d2-880c-502b1bdee304
       version: -1
       name: 'Tag indicators for EDL '
       description: commands.local.cmd.set.indicators
@@ -1139,10 +1137,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: 96cabd96-5472-4f5f-8e34-72e5a0e66a95
+    taskid: fb1655c9-a9b5-4b95-8630-b8cb68a9fefc
     type: condition
     task:
-      id: 96cabd96-5472-4f5f-8e34-72e5a0e66a95
+      id: fb1655c9-a9b5-4b95-8630-b8cb68a9fefc
       version: -1
       name: Automated block IP playbook?
       description: ''''''
@@ -1183,10 +1181,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "39":
     id: "39"
-    taskid: 56f29a78-77e6-4bd7-8f91-3298a9d39e3c
+    taskid: 104db0c0-3495-4b72-8b8d-a3046ea0b507
     type: regular
     task:
-      id: 56f29a78-77e6-4bd7-8f91-3298a9d39e3c
+      id: 104db0c0-3495-4b72-8b8d-a3046ea0b507
       version: -1
       name: Block IP  - Manual
       description: Block IP address according to IP enrichment and reputation results.
@@ -1213,10 +1211,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "40":
     id: "40"
-    taskid: 01d0ee6f-f516-4e15-8116-4e84fc0e3a52
+    taskid: 2b27c363-e9b7-4eba-894f-f06dce7bda63
     type: regular
     task:
-      id: 01d0ee6f-f516-4e15-8116-4e84fc0e3a52
+      id: 2b27c363-e9b7-4eba-894f-f06dce7bda63
       version: -1
       name: Set Remediation  Action
       description: Set a value in context under the key you entered.
@@ -1255,10 +1253,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "41":
     id: "41"
-    taskid: 14fccfdc-84e1-4e74-8480-7825263a9466
+    taskid: cba0b987-1cbd-4108-8c42-3898aa832c37
     type: regular
     task:
-      id: 14fccfdc-84e1-4e74-8480-7825263a9466
+      id: cba0b987-1cbd-4108-8c42-3898aa832c37
       version: -1
       name: Set Remediation  Action
       description: Set a value in context under the key you entered.
@@ -1302,10 +1300,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "42":
     id: "42"
-    taskid: f8072170-8f96-4b13-8413-57317cc0c64b
+    taskid: 795ddff3-2dfa-4245-80a4-386f14e9b5d2
     type: regular
     task:
-      id: f8072170-8f96-4b13-8413-57317cc0c64b
+      id: 795ddff3-2dfa-4245-80a4-386f14e9b5d2
       version: -1
       name: Set Remediation  Action
       description: Set a value in context under the key you entered.
@@ -1342,10 +1340,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "43":
     id: "43"
-    taskid: 3c9ae5c8-4cec-4444-8254-80157b136350
+    taskid: 2bb5bae9-7dde-4e5d-8e64-4387c67c767d
     type: regular
     task:
-      id: 3c9ae5c8-4cec-4444-8254-80157b136350
+      id: 2bb5bae9-7dde-4e5d-8e64-4387c67c767d
       version: -1
       name: Set incident type to XCLOUD
       description: commands.local.cmd.set.incident
@@ -1408,16 +1406,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: true
+    skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
   "45":
     id: "45"
-    taskid: 9ca18516-0441-4744-8535-c85fd0aac122
+    taskid: 098eee25-15c0-4e45-8b9b-42417ed75b0d
     type: condition
     task:
-      id: 9ca18516-0441-4744-8535-c85fd0aac122
+      id: 098eee25-15c0-4e45-8b9b-42417ed75b0d
       version: -1
       name: Automatically delete user login profile?
       description: Do you want XSOAR to automatically delete the user login profile?
@@ -1466,7 +1464,6 @@ tasks:
       id: 378287be-05c1-47ee-8207-a58e864a7c03
       version: -1
       name: Delete user login profile - Manual
-      description: "Delete the user login profile manually."
       type: regular
       iscommand: false
       brand: ""
@@ -1522,14 +1519,14 @@ inputs:
     Tag name for bad reputation IP addresses investigated in the incident.
     Use it when the EDL service is configured to add indicators to block in PANW PAN-OS.
     If indicator verdict (Malicious/Bad) is used to add indicators to XSOAR EDL you don't need to use the tag. Indicators will be set as malicious automatically in the incident.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: DAG
   value: {}
   required: false
   description: |-
     This input determines whether Palo Alto Networks Panorama or Firewall Dynamic Address Groups are used.
     Specify the Dynamic Address Group tag name for IP handling.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: AutoBlockIP
   value:
     simple: "False"
@@ -1543,6 +1540,3 @@ inputs:
   description: True/False to automatically delete the user login profile if it exists.
   playbookInputQuery: null
 outputs: []
-tests:
-- No tests
-fromversion: 6.2.0
