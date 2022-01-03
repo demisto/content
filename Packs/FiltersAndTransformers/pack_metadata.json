@@ -1,6 +1,6 @@
 {
-    "name": "MapRangeValues",
-    "description": "MapRangeValues",
+    "name": "FiltersAndTransformers",
+    "description": "FiltersAndTransformers",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
