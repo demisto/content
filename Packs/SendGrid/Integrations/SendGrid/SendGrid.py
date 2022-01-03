@@ -729,7 +729,7 @@ def get_list_contact_count_by_id(args: dict, sg):
             'EntryContext': ec
         }
     else:
-        return 'Retrieving list contact count details has been failed: ' + str(response.body)
+        return 'Failed to retrieve contact list count information: ' + str(response.body)
 
 
 def update_list_name(args: dict, sg):
