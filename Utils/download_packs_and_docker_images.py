@@ -171,15 +171,18 @@ def main():
     id_set_json = load_bucket_id_set(verify_ssl)
     pack_names = get_pack_names(pack_display_names, id_set_json)
     Path(output_path).mkdir(parents=True, exist_ok=True)
-    if not options.skip_packs:
+    if not options.skip_packs and pack_names:
         download_and_save_packs(pack_names, id_set_json, os.path.join(output_path, 'packs'), verify_ssl)
     else:
         print('Skipping packs.zip creation')
-    docker_images = get_docker_images_with_tag(pack_names, id_set_json)
-    if not options.skip_docker:
-        download_and_save_docker_images(docker_images, os.path.join(output_path, 'docker'))
+    if pack_names:
+        docker_images = get_docker_images_with_tag(pack_names, id_set_json)
+        if not options.skip_docker:
+            download_and_save_docker_images(docker_images, os.path.join(output_path, 'docker'))
+        else:
+            print('Skipping dockers.zip creation')
     else:
-        print('Skipping dockers.zip creation')
+        print('Skpping docker images collection since no packs were found')
 
 
 if __name__ == '__main__':
