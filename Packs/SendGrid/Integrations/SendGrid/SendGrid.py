@@ -701,7 +701,7 @@ def create_list(args: dict, sg):
         rBody = response.body
         body = json.loads(rBody.decode("utf-8"))
         ec = {'Sendgrid.NewList': body}
-        md = tableToMarkdown('New List has been created successfully ', body)
+        md = tableToMarkdown('New List has been successfully created ', body)
         return {
             'ContentsFormat': formats['json'],
             'Type': entryTypes['note'],
