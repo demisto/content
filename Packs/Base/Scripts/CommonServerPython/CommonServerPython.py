@@ -8518,7 +8518,15 @@ def get_message_local_vars():
 
 
 def get_size_of_object(input_object):
-    """Recursively iterate to sum size of object & members."""
+    """
+    A function that recursively iterate to sum size of object & members.
+
+    :type input_object: ``Any``
+    :param input_object: The object to calculate its memory footprint
+
+    :return: Size of input_object in bytes.
+    :rtype: ``int``
+    """
     from collections import deque, Set, Mapping
     from numbers import Number
     # Python 3 also needs range
