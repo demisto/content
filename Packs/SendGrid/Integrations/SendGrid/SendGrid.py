@@ -710,7 +710,7 @@ def create_list(args: dict, sg):
             'EntryContext': ec
         }
     else:
-        return 'New List creation has been failed: ' + str(response.body)
+        return 'Failed to create new list: ' + str(response.body)
 
 
 def get_list_contact_count_by_id(args: dict, sg):
