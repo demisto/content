@@ -8554,15 +8554,13 @@ def get_message_global_vars():
     :rtype: ``str``
     """
     import types
-    from unittest.mock import MagicMock
     excluded_globals = ['__name__', '__doc__', '__package__', '__loader__',
                         '__spec__', '__annotations__', '__builtins__',
                         '__file__', '__cached__', '_Feature',
                        ]
     excluded_types = [types.ModuleType, types.FunctionType,
                    ]
-    # TODO Maybe can do without this, and fix excluded_types?
-    excluded_types_names = [MagicMock.__name__,
+    excluded_types_names = ['MagicMock', # When running tests locally
     ]
 
     globals_dict = dict(globals())
