@@ -7,130 +7,109 @@ configuration:
   name: url
   required: true
   type: 0
-  defaultvalue:
-  additionalinfo:
 - display: Username (Basic Authentication)
   name: username
   required: false
   type: 0
-  defaultvalue:
-  additionalinfo:
 - display: Password (Deprecated - Use API token)
   name: password
   required: false
   type: 4
-  defaultvalue:
-  additionalinfo:
 - displaypassword: API token (Recommended)
   name: credentials
   required: false
   type: 9
   hiddenusername: true
-  display:
-  defaultvalue:
-  additionalinfo:
 - defaultvalue: OauthKey
-  additionalinfo: Will be ignored if other required fields are not provided (for example
-    both the Access Token and the Private Key).
+  additionalinfo: Will be ignored if other required fields are not provided (for example both the Access Token and the Private Key).
   display: Consumer key (OAuth 1.0)
   name: consumerKey
   required: false
   type: 0
 - display: Access Token
-  additionalinfo: Used for both OAuth 1.0 and Personal Access Token authentication
-    methods.
+  additionalinfo: Used for both OAuth 1.0 and Personal Access Token authentication methods.
   name: accessToken
   required: false
   type: 0
-  defaultvalue:
 - display: Private key (PKCS8 format)
   name: privateKey
   required: false
   type: 14
-  defaultvalue:
-  additionalinfo:
 - defaultvalue: status!=done
   display: Query (in JQL) for fetching incidents
   name: query
   required: false
   type: 0
-  additionalinfo:
 - additionalinfo: This parameter is dismissed while "Use created field to fetch incidents"
     is checked.
   display: Issue index to start fetching incidents from
   name: idOffset
   required: false
   type: 0
-  defaultvalue:
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
-  defaultvalue: ''
-  additionalinfo:
 - defaultvalue: 'false'
   display: Use system proxy settings
   name: proxy
   required: false
   type: 8
-  additionalinfo:
-- display: Mirror incoming incidents
-  name: incoming_mirror
-  required: false
-  type: 8
-  defaultvalue: "false"
-  additionalinfo:
-- defaultvalue: "true"
-  display: Use created field to fetch incidents
-  name: fetchByCreated
-  required: false
-  type: 8
-  additionalinfo:
-- display: Mirror outgoing incidents
-  name: outgoing_mirror
-  required: false
-  type: 8
-  defaultvalue: "true"
-  additionalinfo:
-- display: File entry tag
-  name: file_tag
-  required: false
-  type: 0
-  defaultvalue: attachment
-  additionalinfo: Choose the tag to add to an entry to mirror it as an attachment
-    in Jira.
-- display: Comment entry tag
-  name: comment_tag
-  required: false
-  type: 0
-  defaultvalue: comment
-  additionalinfo: Choose the tag to add to an entry to mirror it as a comment in Jira.
-- additionalinfo: Fetch comments for Jira ticket.
-  defaultvalue: "true"
-  display: Fetch comments
-  name: fetch_comments
-  required: false
-  type: 8
-- additionalinfo: Fetch attachments for Jira ticket.
-  defaultvalue: "true"
-  display: Fetch attachments
-  name: fetch_attachments
-  required: false
-  type: 8
-- additionalinfo: Use the "API Token (Recommended)" parameter instead.
-  display: API token (Deprecated)
-  name: APItoken
-  required: false
-  type: 4
-  defaultvalue:
-- display: Incident type
-  name: incidentType
-  required: false
-  type: 13
 - display: Fetch incidents
   name: isFetch
   required: false
   type: 8
+- defaultvalue: 'false'
+  display: Mirror incoming incidents
+  hidden: false
+  name: incoming_mirror
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- display: Use created field to fetch incidents
+  name: fetchByCreated
+  required: false
+  type: 8
+- display: Mirror outgoing incidents
+  hidden: false
+  name: outgoing_mirror
+  required: false
+  type: 8
+- additionalinfo: Choose the tag to add to an entry to mirror it as an attachment
+    in Jira.
+  defaultvalue: attachment
+  display: File entry tag
+  hidden: false
+  name: file_tag
+  required: false
+  type: 0
+- additionalinfo: Choose the tag to add to an entry to mirror it as a comment in Jira.
+  defaultvalue: comment
+  display: Comment entry tag
+  hidden: false
+  name: comment_tag
+  required: false
+  type: 0
+- additionalinfo: Fetch comments for Jira ticket.
+  display: Fetch comments
+  hidden: false
+  name: fetch_comments
+  required: false
+  type: 8
+- additionalinfo: Fetch attachments for Jira ticket.
+  display: Fetch attachments
+  hidden: false
+  name: fetch_attachments
+  required: false
+  type: 8
+- display: API token (Deprecated)
+  name: APItoken
+  required: false
+  type: 4
+  additionalinfo: Use the "API Token (Recommended)" parameter instead.
 description: Use the Jira integration to manage issues and create Cortex XSOAR incidents
   from the Jira projects. From Cortex XSOAR version 6.0 and above mirror issues to
   existing issue incidents in Cortex XSOAR.
@@ -217,8 +196,8 @@ script:
       secret: false
     - default: false
       predefined:
-        - 'true'
-        - 'false'
+          - 'true'
+          - 'false'
       defaultValue: 'false'
       description: if server is on prem and uses REST v2 API
       isArray: false
@@ -439,8 +418,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: A text field for describing the environment in which the issue
-        occurred (for example - environment="IE9 on Windows 7").
+      description: A text field for describing the environment in which the issue occurred (for example - environment="IE9 on Windows 7").
       isArray: false
       name: environment
       required: false
@@ -492,7 +470,6 @@ script:
     description: Uploads a file attachment to an issue.
     execution: false
     name: jira-issue-upload-file
-    outputs: []
   - arguments:
     - default: true
       description: The ID of the issue.
@@ -516,7 +493,6 @@ script:
     description: Adds a new comment to an existing Jira issue.
     execution: false
     name: jira-issue-add-comment
-    outputs: []
   - arguments:
     - default: false
       description: If a globalId is provided, and a remote issue link exists with
@@ -572,7 +548,6 @@ script:
     description: Creates (or updates) an issue link.
     execution: false
     name: jira-issue-add-link
-    outputs: []
   - arguments:
     - default: false
       description: The ID of the issue to edit.
@@ -644,8 +619,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: A text field for describing the environment in which the issue
-        occurred (for example - environment="IE9 on Windows 7").
+      description: A text field for describing the environment in which the issue occurred (for example - environment="IE9 on Windows 7").
       isArray: false
       name: environment
       required: false
@@ -717,7 +691,6 @@ script:
     description: Deletes an issue in Jira.
     execution: false
     name: jira-delete-issue
-    outputs: []
   - deprecated: false
     description: Returns the ID offset, for example, the first issue ID.
     execution: false
@@ -726,7 +699,6 @@ script:
     - contextPath: Ticket.idOffSet
       description: The ID offset.
       type: string
-    arguments: []
   - arguments:
     - default: false
       description: The remote incident ID (issue ID).
@@ -747,21 +719,16 @@ script:
       for debugging purposes and will not update the current incident.
     execution: false
     name: get-remote-data
-    outputs: []
   - deprecated: false
     description: Returns the fields to map. This method is only used for debugging
       purposes.
     execution: false
     name: get-mapping-fields
-    arguments: []
-    outputs: []
   - deprecated: false
     description: Gets incident changes. This method is only used for debugging purposes
       and will not update the current incident.
     execution: false
     name: update-remote-system
-    arguments: []
-    outputs: []
   - arguments:
     - default: false
       description: The ID of the issue.
@@ -786,8 +753,6 @@ script:
       for debugging purposes.
     execution: false
     name: get-modified-remote-data
-    arguments: []
-    outputs: []
   dockerimage: demisto/oauthlib:1.0.0.23674
   feed: false
   isfetch: true
