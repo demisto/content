@@ -1,0 +1,17 @@
+{
+    "name": "TPB",
+    "description": "test",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "test",
+    "url": "",
+    "email": "",
+    "created": "2022-01-03T09:14:11Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "barchen1"
+    ]
+}
