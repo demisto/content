@@ -4399,7 +4399,7 @@
             "timeout": 7000,
             "integrations": [
                 "EWS Mail Sender",
-                "EWS v2",
+                "EWSO365",
                 "Demisto REST API",
                 "Rasterize",
                 "VirusTotal (API v3)",
@@ -4407,7 +4407,6 @@
             ],
             "instance_names": [
                 "ews_mail_sender_srtest02",
-                "ewsv2_testbox",
                 "no_sync_long_timeout"
             ]
         },
