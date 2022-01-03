@@ -4713,6 +4713,17 @@ def prettify_query_fields(application: Optional[str] = None, category: Optional[
 
 
 def devices(targets=None, vsys_s=None):
+    """
+    This method is used to determine the target and vsys that should be used,
+    or iterate over all the connected target and vsys.
+    e.g. none of then in case of an FW instance.
+    Args:
+        targets(str): A list of all the serial number for the FW targets
+        vsys_s(str): A list of all the vsys names for the targets.
+
+    Yields:
+        target, vsys
+    """
     if VSYS:    # for FW intstances
         yield None, None
     elif targets and vsys_s:
@@ -4739,7 +4750,7 @@ def devices(targets=None, vsys_s=None):
                 yield device['serial'], vsys
 
 
-def format_eadable_security_policy_match_headers(hedear_name):
+def format_readable_security_policy_match_headers(hedear_name):
     formated_headers = {
         'From': 'From zone',
         'To': 'To zone',
@@ -4761,7 +4772,7 @@ def readable_security_policy_match_outputs(context_list):
 
         readable_list.append(tableToMarkdown(table_name, context['Rules'], removeNull=True,
                                              headers=['Name', 'Action', 'From', 'Source', 'To', 'Destination', 'Application'],
-                                             headerTransform=format_eadable_security_policy_match_headers))
+                                             headerTransform=format_readable_security_policy_match_headers))
 
     return '\n'.join(readable_list)
 
@@ -4778,6 +4789,7 @@ def panorama_security_policy_match_command(args: dict):
     source_user = args.get('source-user')
 
     context_list = []
+    raw_list = []
     for target, vsys in devices(targets=args.get('target'), vsys_s=args.get('vsys')):
         matching_rules = panorama_security_policy_match(application, category, destination, destination_port, from_, to_,
                                                         protocol, source, source_user, target, vsys)
@@ -4793,6 +4805,7 @@ def panorama_security_policy_match_command(args: dict):
             if target or vsys:
                 context['Device'] = {key: val for key, val in zip(['Serial', 'Vsys'], [target, vsys]) if val}
             context_list.append(context)
+            raw_list.extend(matching_rules) if isinstance(matching_rules, list) else raw_list.append(matching_rules)
     if not context_list:
         return_results('The query did not match a Security policy.')
     else:
@@ -4800,7 +4813,7 @@ def panorama_security_policy_match_command(args: dict):
 
         return_results(CommandResults(
             outputs_prefix='Panorama.SecurityPolicyMatch(val.Query == obj.Query && val.Device == obj.Device)',
-            outputs=context_list, readable_output=readable_output))
+            raw_response=raw_list, outputs=context_list, readable_output=readable_output))
 
 
 ''' Static Routes'''
