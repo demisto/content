@@ -528,31 +528,33 @@ Get all data of a given group
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | identifier | object uid or name | Required | 
-| session_id | Execute command with a specific session ID | Optional | 
+| session_id | Execute command with a specific session ID | Optional |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CheckPoint.Group.name | String | object name | 
-| CheckPoint.Group.uid | String | object uid | 
-| CheckPoint.Group.type | String | object type | 
-| CheckPoint.Group.domain-name | String | domain name | 
-| CheckPoint.Group.domain-uid | String | domain uid | 
-| CheckPoint.Group.domain-type | String | domain type | 
-| CheckPoint.Group.creator | String | indicates the creator of the object | 
-| CheckPoint.Group.last-modifier | String | indicates the last user modified the object | 
-| CheckPoint.Group.read-only | Boolean | indicates if the object is read only | 
-| CheckPoint.ApplicationSite.groups | Unknown | Collection of group identifiers |
-| CheckPoint.Group.members.member-ipv4-address | String | Group members IPv4 addresses |
-| CheckPoint.Group.members.member-ipv6-address | String | Group members IPv6 addresses |
-| CheckPoint.Group.members.member-name | String | Group members domain name | 
-| CheckPoint.Group.members.member-uid | String | Group members domain uid | 
-| CheckPoint.Group.members.member-type | String | Group members domain type | 
-| CheckPoint.Group.members.member-domain-name | String | Group members name | 
-| CheckPoint.Group.members.member-domain-uid | String | Group members uid | 
-| CheckPoint.Group.members.member-domain-type | String | Group members type | 
+| CheckPoint.Group.name | String | Object name. | 
+| CheckPoint.Group.uid | String | Object UID. | 
+| CheckPoint.Group.type | String | Object type. | 
+| CheckPoint.Group.domain-name | String | Domain name. | 
+| CheckPoint.Group.domain-uid | String | Domain UID. | 
+| CheckPoint.Group.domain-type | String | Domain type. | 
+| CheckPoint.Group.creator | String | The creator of the object. | 
+| CheckPoint.Group.last-modifier | String | The user that last modified the object. | 
+| CheckPoint.Group.read-only | Boolean | Indicates if the object is read-only. | 
+| CheckPoint.Group.ipv4-address | string | Group IPv4 addresses. | 
+| CheckPoint.Group.ipv6-address | string | Group IPv6 addresses. | 
+| CheckPoint.Group.groups | Unknown | Collection of group identifiers. | 
+| CheckPoint.Group.members.member-ipv4-address | string | Group members IPv4 addresses. | 
+| CheckPoint.Group.members.member-ipv6-address | string | Group members IPv6 addresses. | 
+| CheckPoint.Group.members.member-domain-name | string | Group members domain name. | 
+| CheckPoint.Group.members.member-domain-uid | string | Group members domain UID. | 
+| CheckPoint.Group.members.member-domain-type | string | Group members domain type. | 
+| CheckPoint.Group.members.member-name | string | Group member name. | 
+| CheckPoint.Group.members.member-uid | string | Group member UID. | 
+| CheckPoint.Group.members.member-type | string | Group member type. | 
 
 #### Command Example
 ```!checkpoint-group-get identifier=group_test```
