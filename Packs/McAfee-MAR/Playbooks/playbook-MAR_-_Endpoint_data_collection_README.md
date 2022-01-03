@@ -11,6 +11,7 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 * McAfee Active Response
+* McAfee ePO v2
 
 ### Scripts
 * Exists
@@ -18,6 +19,7 @@ This playbook does not use any sub-playbooks.
 
 ### Commands
 * mar-search-multiple
+* epo-find-system
 
 ## Playbook Inputs
 ---

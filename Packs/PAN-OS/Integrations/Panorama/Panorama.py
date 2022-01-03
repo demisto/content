@@ -86,6 +86,10 @@ class PAN_OS_Not_Found(Exception):
         pass
 
 
+class InvalidUrlLengthException(Exception):
+    pass
+
+
 def http_request(uri: str, method: str, headers: dict = {},
                  body: dict = {}, params: dict = {}, files: dict = None, is_pcap: bool = False) -> Any:
     """
@@ -119,15 +123,18 @@ def http_request(uri: str, method: str, headers: dict = {},
     # handle non success
     if json_result['response']['@status'] != 'success':
         if 'msg' in json_result['response'] and 'line' in json_result['response']['msg']:
+            response_msg = json_result['response']['msg']['line']
             # catch non existing object error and display a meaningful message
-            if json_result['response']['msg']['line'] == 'No such node':
+            if response_msg == 'No such node':
                 raise Exception(
                     'Object was not found, verify that the name is correct and that the instance was committed.')
 
             #  catch urlfiltering error and display a meaningful message
-            elif str(json_result['response']['msg']['line']).find('test -> url') != -1:
+            elif str(response_msg).find('test -> url') != -1:
                 if DEVICE_GROUP:
                     raise Exception('URL filtering commands are only available on Firewall devices.')
+                if 'Node can be at most 1278 characters' in response_msg:
+                    raise InvalidUrlLengthException('URL Node can be at most 1278 characters.')
                 raise Exception('The URL filtering license is either expired or not active.'
                                 ' Please contact your PAN-OS representative.')
 
@@ -2321,17 +2328,25 @@ def panorama_get_url_category_command(url_cmd: str, url: str, additional_suspici
     categories_dict_hr: Dict[str, list] = {}
     command_results: List[CommandResults] = []
     for url in urls:
-        category = panorama_get_url_category(url_cmd, url)
-        if category in categories_dict:
-            categories_dict[category].append(url)
-            categories_dict_hr[category].append(url)
-        else:
-            categories_dict[category] = [url]
-            categories_dict_hr[category] = [url]
-        context_urls = populate_url_filter_category_from_context(category)
-        categories_dict[category] = list((set(categories_dict[category])).union(set(context_urls)))
+        err_readable_output = None
+        try:
+            category = panorama_get_url_category(url_cmd, url)
+            if category in categories_dict:
+                categories_dict[category].append(url)
+                categories_dict_hr[category].append(url)
+            else:
+                categories_dict[category] = [url]
+                categories_dict_hr[category] = [url]
+            context_urls = populate_url_filter_category_from_context(category)
+            categories_dict[category] = list((set(categories_dict[category])).union(set(context_urls)))
 
-        score = calculate_dbot_score(category.lower(), additional_suspicious, additional_malicious)
+            score = calculate_dbot_score(category.lower(), additional_suspicious, additional_malicious)
+
+        except InvalidUrlLengthException as e:
+            score = 0
+            category = None
+            err_readable_output = str(e)
+
         dbot_score = Common.DBotScore(
             indicator=url,
             indicator_type=DBotScoreType.URL,
@@ -2343,9 +2358,10 @@ def panorama_get_url_category_command(url_cmd: str, url: str, additional_suspici
             dbot_score=dbot_score,
             category=category
         )
+        readable_output = err_readable_output or tableToMarkdown('URL', url_obj.to_context())
         command_results.append(CommandResults(
             indicator=url_obj,
-            readable_output=tableToMarkdown('URL', url_obj.to_context())
+            readable_output=readable_output
         ))
 
     url_category_output_hr = []
