@@ -21,17 +21,17 @@ import ipaddress
 urllib3.disable_warnings()
 
 ''' GLOBAL VARIABLES '''
-INTEGRATION_NAME: str = 'EDL'
+INTEGRATION_NAME: str = 'Generic Export Indicators service'
 PAGE_SIZE: int = 2000
 PAN_OS_MAX_URL_LEN = 255
 APP: Flask = Flask('demisto-edl')
-EDL_LIMIT_ERR_MSG: str = 'Please provide a valid integer for EDL Size'
+EDL_LIMIT_ERR_MSG: str = 'Please provide a valid integer for List Size'
 EDL_OFFSET_ERR_MSG: str = 'Please provide a valid integer for Starting Index'
-EDL_COLLAPSE_ERR_MSG: str = 'The Collapse parameter can only get the following: 0 - Dont Collapse, ' \
-                            '1 - Collapse to Ranges, 2 - Collapse to CIDRS'
+EDL_COLLAPSE_ERR_MSG: str = 'The Collapse parameter can only get the following: 0 - none, ' \
+                            '1 - range, 2 - CIDR'
 EDL_MISSING_REFRESH_ERR_MSG: str = 'Refresh Rate must be "number date_range_unit", examples: (2 hours, 4 minutes, ' \
                                    '6 months, 1 day, etc.)'
-EDL_FORMAT_ERR_MSG: str = 'Please provide a valid format from: text, json, json-seq, xsoar-json, csv, mgw and proxysg'
+EDL_FORMAT_ERR_MSG: str = 'Please provide a valid format from: text, json, csv, mgw and proxysg'
 EDL_MWG_TYPE_ERR_MSG: str = 'The McAFee Web Gateway type can only be one of the following: string,' \
                             ' applcontrol, dimension, category, ip, mediatype, number, regex'
 EDL_NO_URLS_IN_PROXYSG_FORMAT = 'ProxySG format only outputs URLs - no URLs found in the current query'
@@ -47,19 +47,19 @@ _URL_WITHOUT_PORT = r'\g<1>'
 _INVALID_TOKEN_REMOVAL = re.compile(r'(?:[^\./+=\?&]+\*[^\./+=\?&]*)|(?:[^\./+=\?&]*\*[^\./+=\?&]+)')
 _BROAD_PATTERN = re.compile(r'^(?:\*\.)+[a-zA-Z]+(?::[0-9]+)?$')
 
-DONT_COLLAPSE = "Don't Collapse"
-COLLAPSE_TO_CIDR = "To CIDRS"
-COLLAPSE_TO_RANGES = "To Ranges"
+DONT_COLLAPSE = "none"
+COLLAPSE_TO_CIDR = "CIDR"
+COLLAPSE_TO_RANGES = "range"
 
 MIMETYPE_JSON_SEQ: str = 'application/json-seq'
 MIMETYPE_JSON: str = 'application/json'
 MIMETYPE_CSV: str = 'text/csv'
 MIMETYPE_TEXT: str = 'text/plain'
 
-FORMAT_CSV: str = 'csv'
-FORMAT_TEXT: str = 'pan os (text)'
+FORMAT_CSV: str = 'CSV'
+FORMAT_TEXT: str = 'PAN-OS (text)'
 FORMAT_JSON_SEQ: str = 'json-seq'
-FORMAT_JSON: str = 'json'
+FORMAT_JSON: str = 'JSON'
 FORMAT_ARG_MWG = 'mwg'
 FORMAT_ARG_BLUECOAT = 'bluecoat'
 FORMAT_ARG_PROXYSG = 'proxysg'
@@ -69,9 +69,6 @@ FORMAT_XSOAR_JSON: str = 'XSOAR json'
 FORMAT_ARG_XSOAR_JSON: str = 'xsoar-json'
 FORMAT_XSOAR_JSON_SEQ: str = 'XSOAR json-seq'
 FORAMT_ARG_XSOAR_JSON_SEQ: str = 'xsoar-seq'
-
-SORT_ASCENDING = 'asc'
-SORT_DESCENDING = 'desc'
 
 MWG_TYPE_OPTIONS = ["string", "applcontrol", "dimension", "category", "ip", "mediatype", "number", "regex"]
 
@@ -93,8 +90,6 @@ class RequestArguments:
     CTX_CATEGORY_ATTRIBUTE = 'category_attribute'
     CTX_FIELDS_TO_PRESENT = 'fields_to_present'
     CTX_CSV_TEXT = 'csv_text'
-    CTX_SORT_FIELDS = 'sort_field'
-    CTX_SORT_ORDER = 'sort_order'
     CTX_PROTOCOL_STRIP_KEY = 'url_protocol_stripping'
     CTX_URL_TRUNCATE_KEY = 'url_truncate'
 
@@ -305,16 +300,14 @@ def get_indicators_to_format(indicator_searcher: IndicatorsSearcher, request_arg
             for ioc in fetched_iocs:
                 if request_args.out_format == FORMAT_PROXYSG:
                     files_by_category, return_indicator = create_proxysg_out_format(ioc, files_by_category,
-                                                                                    request_args.category_attribute,
-                                                                                    request_args.category_default)
+                                                                                    request_args)
 
                 if request_args.out_format == FORMAT_MWG:
-                    f.write(create_mwg_out_format(ioc, request_args.mwg_type, headers_was_writen))
+                    f.write(create_mwg_out_format(ioc, request_args, headers_was_writen))
                     headers_was_writen = True
 
-                if request_args.out_format in [FORMAT_JSON, FORMAT_XSOAR_JSON, FORMAT_JSON_SEQ, FORMAT_XSOAR_JSON_SEQ]:
-                    xsoar = True if request_args.out_format in [FORMAT_XSOAR_JSON, FORMAT_XSOAR_JSON_SEQ] else False
-                    f.write(create_json_out_format(list_fields, ioc, xsoar, headers_was_writen))
+                if request_args.out_format == FORMAT_JSON:
+                    f.write(create_json_out_format(list_fields, ioc, request_args, headers_was_writen))
                     headers_was_writen = True
 
                 if request_args.out_format == FORMAT_TEXT:
@@ -323,7 +316,7 @@ def get_indicators_to_format(indicator_searcher: IndicatorsSearcher, request_arg
                                             "indicator_type": ioc.get("indicator_type")})) + "\n")
 
                 if request_args.out_format == FORMAT_CSV:
-                    f.write(create_csv_out_format(headers_was_writen, list_fields, ioc, request_args.fields_to_present))
+                    f.write(create_csv_out_format(headers_was_writen, list_fields, ioc, request_args))
                     headers_was_writen = True
 
     except Exception as e:
@@ -336,7 +329,10 @@ def get_indicators_to_format(indicator_searcher: IndicatorsSearcher, request_arg
     return f
 
 
-def create_json_out_format(list_fields: List, indicator: Dict, xsoar_format=False, not_first_call=True) -> str:
+def create_json_out_format(list_fields: List, indicator: Dict, request_args: RequestArguments, not_first_call=True) -> str:
+    if indicator.get('indicator_type') == 'URL' and indicator.get('value'):
+        indicator['value'] = url_handler(indicator.get('value'), request_args.url_protocol_stripping,
+                                         request_args.url_port_stripping, request_args.url_truncate)
     filtered_json = {}
     if list_fields:
         for field in list_fields:
@@ -345,23 +341,16 @@ def create_json_out_format(list_fields: List, indicator: Dict, xsoar_format=Fals
                 value = indicator.get('CustomFields', {}).get(field)
             filtered_json[field] = value
         indicator = filtered_json
-    if not xsoar_format:
-        json_format_indicator = {
-            "indicator": indicator.get("value")
-        }
-        indicator.pop("value", None)
-        json_format_indicator["value"] = indicator
-        if not_first_call:
-            return ', ' + json.dumps(json_format_indicator)
-        return '[' + json.dumps(json_format_indicator)
     if not_first_call:
         return ', ' + json.dumps(indicator)
     return '[' + json.dumps(indicator)
 
 
-def create_mwg_out_format(indicator: dict, mwg_type: str, headers_was_writen: bool) -> str:
-    if not indicator.get('value'):
-        return ''
+def create_mwg_out_format(indicator: dict, request_args: RequestArguments, headers_was_writen: bool) -> str:
+    if indicator.get('indicator_type') == 'URL' and indicator.get('value'):
+        indicator['value'] = url_handler(indicator.get('value'), request_args.url_protocol_stripping,
+                                         request_args.url_port_stripping, request_args.url_truncate)
+
     value = "\"" + indicator.get('value', '') + "\""
     sources = indicator.get('sourceBrands')
     if sources:
@@ -370,6 +359,7 @@ def create_mwg_out_format(indicator: dict, mwg_type: str, headers_was_writen: bo
         sources_string = "\"from CORTEX XSOAR\""
 
     if not headers_was_writen:
+        mwg_type = request_args.mwg_type
         if isinstance(mwg_type, list):
             mwg_type = mwg_type[0]
         return "type=" + mwg_type + "\n" + value + " " + sources_string + '\n'
@@ -387,22 +377,23 @@ def create_proxysg_all_category_out_format(f: IO, files_by_categry: dict):
     return f
 
 
-def create_proxysg_out_format(indicator: dict, files_by_category: dict, category_attribute: list,
-                              category_default: str = 'bc_category'):
+def create_proxysg_out_format(indicator: dict, files_by_category: dict, request_args: RequestArguments):
     num_of_returned_indicators = 0
 
     if indicator.get('indicator_type') in ['URL', 'Domain', 'DomainGlob'] and indicator.get('value'):
-        stripped_indicator = _PROTOCOL_REMOVAL.sub('', indicator.get('value', ''))
+        stripped_indicator = url_handler(indicator.get('value', ''), True, request_args.url_port_stripping,
+                                         request_args.url_truncate)
         indicator_proxysg_category = indicator.get('CustomFields', {}).get('proxysgcategory')
         # if a ProxySG Category is set and it is in the category_attribute list or that the attribute list is empty
         # than list add the indicator to it's category list
         if indicator_proxysg_category is not None and \
-                (indicator_proxysg_category in category_attribute or len(category_attribute) == 0):
+                (indicator_proxysg_category in request_args.category_attribute or len(request_args.category_attribute) == 0):
             files_by_category = add_indicator_to_category(stripped_indicator, indicator_proxysg_category,
                                                           files_by_category)
         else:
             # if ProxySG Category is not set or does not exist in the category_attribute list
-            files_by_category = add_indicator_to_category(stripped_indicator, category_default, files_by_category)
+            files_by_category = add_indicator_to_category(stripped_indicator, request_args.category_default,
+                                                          files_by_category)
         num_of_returned_indicators = 1
 
     return files_by_category, num_of_returned_indicators
@@ -419,8 +410,11 @@ def add_indicator_to_category(indicator: str, category: str, files_by_category: 
     return files_by_category
 
 
-def create_csv_out_format(headers_was_writen: bool, list_fields: List, ioc, headers):
+def create_csv_out_format(headers_was_writen: bool, list_fields: List, ioc, request_args: RequestArguments):
     fields_value_list = []
+    if ioc.get('indicator_type') == 'URL' and ioc.get('value'):
+        ioc['value'] = url_handler(ioc.get('value'), request_args.url_protocol_stripping,
+                                   request_args.url_port_stripping, request_args.url_truncate)
     if not list_fields:
         values = list(ioc.values())
         if not headers_was_writen:
@@ -435,7 +429,7 @@ def create_csv_out_format(headers_was_writen: bool, list_fields: List, ioc, head
                 value = ioc.get('CustomFields', {}).get(field)
             fields_value_list.append(value)
         if not headers_was_writen:
-            headers_str = headers + '\n'
+            headers_str = request_args.fields_to_present + '\n'
             return headers_str + list_to_str(fields_value_list, map_func=lambda val: f'"{val}"') + "\n"
         return list_to_str(fields_value_list, map_func=lambda val: f'"{val}"') + "\n"
 
@@ -589,31 +583,16 @@ def create_text_out_format(iocs: IO, request_args: RequestArguments) -> Union[IO
 
         if ioc_type not in [FeedIndicatorType.IP, FeedIndicatorType.IPv6,
                             FeedIndicatorType.CIDR, FeedIndicatorType.IPv6CIDR]:
-            # protocol stripping
-            if request_args.url_protocol_stripping:
-                indicator = _PROTOCOL_REMOVAL.sub('', indicator)
 
-            indicator_without_port = _PORT_REMOVAL.sub(_URL_WITHOUT_PORT, indicator)
-            if request_args.url_port_stripping:
-                # remove port from indicator - from demisto.com:369/rest/of/path -> demisto.com/rest/of/path
-                indicator = indicator_without_port
-            # check if removing the port changed something about the indicator
-            elif indicator != indicator_without_port and request_args.drop_invalids:
-                # if port was in the indicator and url_port_stripping param not set - ignore the indicator
-                continue
+            indicator = url_handler(indicator, request_args.url_protocol_stripping,
+                                    request_args.url_port_stripping, request_args.url_truncate)
 
-            if request_args.url_truncate and ioc_type == FeedIndicatorType.URL and len(indicator) >= PAN_OS_MAX_URL_LEN:
-                indicator = indicator[0:254]
-
-            # Reformatting to PAN-OS URL format
-            with_invalid_tokens_indicator = indicator
-            # mix of text and wildcard in domain field handling
-            indicator = _INVALID_TOKEN_REMOVAL.sub('*', indicator)
-            # check if the indicator held invalid tokens
             if request_args.drop_invalids:
-                if with_invalid_tokens_indicator != indicator:
-                    # invalid tokens in indicator - ignore the indicator
+                if indicator != _PORT_REMOVAL.sub(_URL_WITHOUT_PORT, indicator) or\
+                        indicator != _INVALID_TOKEN_REMOVAL.sub('*', indicator):
+                    # check if the indicator held invalid tokens or port
                     continue
+
                 if ioc_type == FeedIndicatorType.URL and len(indicator) >= PAN_OS_MAX_URL_LEN:
                     # URL indicator exceeds allowed length - ignore the indicator
                     continue
@@ -622,17 +601,16 @@ def create_text_out_format(iocs: IO, request_args: RequestArguments) -> Union[IO
             # we should provide both
             # this could generate more than num entries according to PAGE_SIZE
             if indicator.startswith('*.'):
-                # formatted_indicators.add(indicator.lstrip('*.'))
                 formatted_indicators.write(str(indicator.lstrip('*.')) + '/n')
 
-        if request_args.collapse_ips != DONT_COLLAPSE and ioc_type in (FeedIndicatorType.IP, FeedIndicatorType.CIDR):
-            ipv4_formatted_indicators.add(indicator)
+            if request_args.collapse_ips != DONT_COLLAPSE and ioc_type in (FeedIndicatorType.IP, FeedIndicatorType.CIDR):
+                ipv4_formatted_indicators.add(indicator)
 
-        elif request_args.collapse_ips != DONT_COLLAPSE and ioc_type == FeedIndicatorType.IPv6:
-            ipv6_formatted_indicators.add(indicator)
+            elif request_args.collapse_ips != DONT_COLLAPSE and ioc_type == FeedIndicatorType.IPv6:
+                ipv6_formatted_indicators.add(indicator)
 
-        else:
-            formatted_indicators.write(str(indicator) + '\n')
+            else:
+                formatted_indicators.write(str(indicator) + '\n')
 
     if len(ipv4_formatted_indicators) > 0:
         ipv4_formatted_indicators = ips_to_ranges(ipv4_formatted_indicators, request_args.collapse_ips)
@@ -645,6 +623,28 @@ def create_text_out_format(iocs: IO, request_args: RequestArguments) -> Union[IO
             formatted_indicators.write(str(ip) + '\n')
 
     return formatted_indicators
+
+
+def url_handler(indicator: str, url_protocol_stripping: bool, url_port_stripping: bool, url_truncate: bool) -> str:
+    """
+     * URL:
+        1) if port_stripping, strip ports
+        2) if protocol_stripping, strip protocols
+        3) if url_truncate, truncate urls
+    """
+
+    # protocol stripping
+    if url_protocol_stripping:
+        indicator = _PROTOCOL_REMOVAL.sub('', indicator)
+
+    if url_port_stripping:
+        # remove port from indicator - from demisto.com:369/rest/of/path -> demisto.com/rest/of/path
+        indicator = _PORT_REMOVAL.sub(_URL_WITHOUT_PORT, indicator)
+
+    if url_truncate and len(indicator) >= PAN_OS_MAX_URL_LEN:
+        indicator = indicator[0:254]
+
+    return indicator
 
 
 def get_outbound_mimetype(request_args: RequestArguments) -> str:
