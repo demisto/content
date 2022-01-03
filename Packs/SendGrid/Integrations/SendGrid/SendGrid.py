@@ -751,7 +751,7 @@ def update_list_name(args: dict, sg):
             'EntryContext': ec
         }
     else:
-        return 'List name update has been failed: ' + str(response.body)
+        return 'Failed to update list name: ' + str(response.body)
 
 
 def delete_list(args: dict, sg):
