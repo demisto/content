@@ -192,7 +192,7 @@ def test_taxii20_status(mocker, taxii2_server_v20):
     mocker.patch('TAXII2Server.SERVER', taxii2_server_v20)
     with APP.test_client() as test_client:
         response = test_client.get('/threatintel/status/1223456/', headers=HEADERS)
-        assert response.status_code == 400
+        assert response.status_code == 404
 
 
 def test_taxii20_collections(mocker, taxii2_server_v20):
