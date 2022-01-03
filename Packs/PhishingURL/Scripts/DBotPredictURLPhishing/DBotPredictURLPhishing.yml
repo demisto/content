@@ -5,12 +5,31 @@ args:
   name: urls
   required: false
   secret: false
+- default: false
+  description: Body of the email for URLs extraction.
+  isArray: false
+  name: emailBody
+  required: false
+  secret: false
+- default: false
+  description: HTML of the email for URLs extraction.
+  isArray: false
+  name: emailHTML
+  required: false
+  secret: false
+- default: false
+  defaultValue: '3'
+  description: Maximum number of extracted URLs on which to run the model.
+  isArray: false
+  name: maxNumberOfURL
+  required: false
+  secret: false
 - auto: PREDEFINED
   default: false
   defaultValue: 'False'
   description: Whether to force the model to run in case the URL belongs to the whitelist.
     If True, the model will run in every case. If False, the model will run only if
-    the URL does not belongs to the whitelist.
+    the URL does not belong to the whitelist.
   isArray: false
   name: forceModel
   predefined:
@@ -40,25 +59,7 @@ args:
   - 'True'
   required: false
   secret: false
-- default: false
-  defaultValue: '3'
-  description: Maximum number of extracted URLs on which to run the model.
-  isArray: false
-  name: maxNumberOfURL
-  required: false
-  secret: false
-- default: false
-  description: Body of the email for URLs extraction.
-  isArray: false
-  name: emailBody
-  required: false
-  secret: false
-- default: false
-  description: HTML of the email for URLs extraction.
-  isArray: false
-  name: emailHTML
-  required: false
-  secret: false
+
 comment: Predict phishing URLs using pre-trained model.
 commonfields:
   id: DBotPredictURLPhishing
@@ -79,7 +80,7 @@ tags:
 - ''
 timeout: '0'
 type: python
-dockerimage: devdemisto/mlurlphishing:1.0.0.24208
+dockerimage: devdemisto/mlurlphishing:1.0.0.25597
 runas: DBotRole
 runonce: false
 tests:

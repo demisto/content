@@ -11,6 +11,7 @@ import copy
 import numpy as np
 from tldextract import TLDExtract
 from bs4 import BeautifulSoup
+
 requests.packages.urllib3.disable_warnings()
 
 dill.settings['recurse'] = True
@@ -87,7 +88,7 @@ KEY_CONTENT_URL_SCORE = "URLScore"
 KEY_CONTENT_SEO = "BadSEOQuality"
 KEY_CONTENT_AGE = "NewDomain"
 KEY_CONTENT_VERDICT = "FinalVerdict"
-KEY_CONTENT_IS_WHITELISTED = "topMajesticDomain"
+KEY_CONTENT_IS_WHITELISTED = "TopMajesticDomain"
 KEY_CONTENT_DBOT_SCORE = 'DBotScore'
 
 KEY_HR_DOMAIN = "Domain"
@@ -113,6 +114,7 @@ MAPPING_VERDICT_TO_DISPLAY_VERDICT = {
 }  # type: Dict
 
 TIMEOUT_REQUESTS = 5
+
 
 def get_model_data(model_name: str):
     """
@@ -182,17 +184,18 @@ def load_oob_model(path: str):
     return MSG_UPDATE_MODEL % (MAJOR_VERSION, MINOR_DEFAULT_VERSION)
 
 
-def oob_model_exists_and_updated() -> Tuple[bool, int, int]:
+def oob_model_exists_and_updated() -> Tuple[bool, int, int, str]:
     """
     Check is the model exist and is updated in demisto
     :return: book
     """
     res_model = demisto.executeCommand("getMLModel", {"modelName": URL_PHISHING_MODEL_NAME})[0]
     if is_error(res_model):
-        return False, -1, -1
+        return False, -1, -1, ''
+    model_data = res_model['Contents']['modelData']
     existing_model_version_major = res_model['Contents']['model']['extra'].get(OOB_MAJOR_VERSION_INFO_KEY, -1)
     existing_model_version_minor = res_model['Contents']['model']['extra'].get(OOB_MINOR_VERSION_INFO_KEY, -1)
-    return True, existing_model_version_major, existing_model_version_minor
+    return True, existing_model_version_major, existing_model_version_minor, model_data
 
 
 def image_from_base64_to_bytes(base64_message: str):
@@ -270,7 +273,7 @@ def prepend_protocol(url: str, protocol: str, www: bool = True) -> str:
     return p.geturl()
 
 
-def is_valid_url(url: str) -> Tuple[bool, str, str]:
+def is_valid_url(url: str) -> Tuple[bool, str, Union[str, int]]:
     """
     Check is an url is valid by requesting it using different protocol
     :param url: url
@@ -281,21 +284,25 @@ def is_valid_url(url: str) -> Tuple[bool, str, str]:
     except requests.exceptions.RequestException:
         prepend_url = prepend_protocol(url, 'http', True)
         try:
-            response = requests.get(prepend_url, verify=False, timeout=TIMEOUT_REQUESTS)  # nosec guardrails-disable-line
+            response = requests.get(prepend_url, verify=False,
+                                    timeout=TIMEOUT_REQUESTS)  # nosec guardrails-disable-line
         except requests.exceptions.RequestException:
             prepend_url = prepend_protocol(url, 'https', True)
             try:
-                response = requests.get(prepend_url, verify=False, timeout=TIMEOUT_REQUESTS)  # nosec guardrails-disable-line
+                response = requests.get(prepend_url, verify=False,
+                                        timeout=TIMEOUT_REQUESTS)  # nosec guardrails-disable-line
             except requests.exceptions.RequestException:
                 prepend_url = prepend_protocol(url, 'http', False)
                 try:
-                    response = requests.get(prepend_url, verify=False, timeout=TIMEOUT_REQUESTS)  # nosec guardrails-disable-line
+                    response = requests.get(prepend_url, verify=False,
+                                            timeout=TIMEOUT_REQUESTS)  # nosec guardrails-disable-line
                 except requests.exceptions.RequestException:
                     prepend_url = prepend_protocol(url, 'https', False)
                     try:
-                        response = requests.get(prepend_url, verify=False, timeout=TIMEOUT_REQUESTS)  # nosec guardrails-disable-line
+                        response = requests.get(prepend_url, verify=False,
+                                                timeout=TIMEOUT_REQUESTS)  # nosec guardrails-disable-line
                     except requests.exceptions.RequestException:
-                        return False, MSG_IMPOSSIBLE_CONNECTION, "Unknown"
+                        return False, MSG_IMPOSSIBLE_CONNECTION, UNKNOWN
     if response.status_code == 200:
         return True, EMPTY_STRING, response.status_code
     else:
@@ -329,7 +336,8 @@ def return_entry_summary(pred_json: Dict, url: str, whitelist: bool, output_rast
             url_score)
     else:
         url_score = round(pred_json[MODEL_KEY_URL_SCORE], 2)
-        url_score_colored = GREEN_COLOR % str(url_score) if url_score < SCORE_THRESHOLD else RED_COLOR % str(url_score)  # type: ignore
+        url_score_colored = GREEN_COLOR % str(url_score) if url_score < SCORE_THRESHOLD else RED_COLOR % str(
+            url_score)  # type: ignore
     if pred_json:
         pred_json_colored = get_colored_pred_json(pred_json)
     else:
@@ -363,13 +371,22 @@ def return_entry_summary(pred_json: Dict, url: str, whitelist: bool, output_rast
     }
     if pred_json and pred_json[DOMAIN_AGE_KEY] is not None:
         explain_hr[DOMAIN_AGE_KEY] = str(pred_json_colored[DOMAIN_AGE_KEY])
-    return_entry = {
-        "Type": entryTypes["note"],
-        "ContentsFormat": formats['json'],
-        "HumanReadable": tableToMarkdown("Phishing prediction evidence | %s" % domain, explain_hr),
-        "Contents": explain,
-        "EntryContext": {'DBotPredictURLPhishing': explain, KEY_CONTENT_DBOT_SCORE: context_DBot_score}
-    }
+    if verdict == BENIGN_VERDICT:
+        return_entry = {
+            "Type": entryTypes["note"],
+            "ContentsFormat": formats['json'],
+            "HumanReadable": tableToMarkdown("Phishing prediction evidence | %s" % domain, explain_hr),
+            "Contents": explain,
+            "EntryContext": {'DBotPredictURLPhishing': explain}
+        }
+    else:
+        return_entry = {
+            "Type": entryTypes["note"],
+            "ContentsFormat": formats['json'],
+            "HumanReadable": tableToMarkdown("Phishing prediction evidence | %s" % domain, explain_hr),
+            "Contents": explain,
+            "EntryContext": {'DBotPredictURLPhishing': explain, KEY_CONTENT_DBOT_SCORE: context_DBot_score}
+        }
     demisto.results(return_entry)
     # Get rasterize image or logo detection if logo was found
     if pred_json:
@@ -490,7 +507,8 @@ def get_prediction_single_url(model, url, force_model, debug):
     valid_url, error, status_code = is_valid_url(url)
 
     if not valid_url:
-        return create_dict_context(url, MSG_INVALID_URL % (error, status_code), {}, SCORE_INVALID_URL, is_white_listed, {})
+        return create_dict_context(url, MSG_INVALID_URL % (error, status_code), {}, SCORE_INVALID_URL, is_white_listed,
+                                   {})
 
     # Check domain age from WHOIS command
     domain = extract_domainv2(url)
@@ -502,7 +520,7 @@ def get_prediction_single_url(model, url, force_model, debug):
             return create_dict_context(url, BENIGN_VERDICT_WHITELIST, {}, SCORE_BENIGN, is_white_listed, {})
         else:
             is_white_listed = True
-    res = demisto.executeCommand('whois', {'query': domain, 'execution-timeout': 7
+    res = demisto.executeCommand('whois', {'query': domain, 'execution-timeout': 5
                                            })
     is_new_domain = extract_created_date(res)
     # Rasterize html and image
@@ -552,7 +570,7 @@ def return_general_summary(results, tag="Summary"):
         "HumanReadable": tableToMarkdown("Phishing prediction summary for URLs", df_summary_json,
                                          headers=['URL', KEY_FINAL_VERDICT]),
         "Contents": summary_context,
-        #"EntryContext": {'DBotPredictURLPhishing': context_dict}
+        # "EntryContext": {'DBotPredictURLPhishing': context_dict}
     }
     if tag is not None:
         return_entry["Tags"] = ['DBOT_URL_PHISHING_{}'.format(tag)]
@@ -606,6 +624,7 @@ def load_demisto_model():
     model = decode_model_data(model_64_str)
     return model
 
+
 def get_final_urls(urls, max_urls, model):
     final_url = []
     seen = []
@@ -620,7 +639,7 @@ def get_final_urls(urls, max_urls, model):
                 seen.append(extract_domainv2(url))
                 i += 1
     if len(final_url) < max_urls:
-        final_url = final_url + low_priority_urls[:min(len(low_priority_urls), max_urls-len(final_url))]
+        final_url = final_url + low_priority_urls[:min(len(low_priority_urls), max_urls - len(final_url))]
     return final_url
 
 
@@ -636,13 +655,13 @@ def extract_embedded_urls_from_html(html):
 
 def main():
     msg_list = []
-    exist, demisto_major_version, demisto_minor_version = oob_model_exists_and_updated()
+    exist, demisto_major_version, demisto_minor_version, model_data = oob_model_exists_and_updated()
     reset_model = demisto.args().get('resetModel', 'False') == 'True'
     debug = demisto.args().get('debug', 'False') == 'True'
     force_model = demisto.args().get('forceModel', 'False') == 'True'
-    email_body = demisto.args().get('emailBody',"")
+    email_body = demisto.args().get('emailBody', "")
     email_html = demisto.args().get('emailHTML', "")
-    max_urls= int(demisto.args().get('maxNumberOfURL', 5))
+    max_urls = int(demisto.args().get('maxNumberOfURL', 5))
     if debug:
         if exist:
             msg_list.append(MSG_MODEL_VERSION_IN_DEMISTO % (demisto_major_version, demisto_minor_version))
@@ -651,8 +670,11 @@ def main():
     if reset_model or not exist or (
             demisto_major_version < MAJOR_VERSION and demisto_minor_version == MINOR_DEFAULT_VERSION):
         msg_list.append(load_oob_model(OUT_OF_THE_BOX_MODEL_PATH))
+        model_64_str = get_model_data(URL_PHISHING_MODEL_NAME)[0]
+        model = decode_model_data(model_64_str)
 
     elif (demisto_major_version == MAJOR_VERSION):
+        model = decode_model_data(model_data)
         msg_list.append(MSG_NO_ACTION_ON_MODEL)
     elif (demisto_major_version < MAJOR_VERSION) and (demisto_minor_version > MINOR_DEFAULT_VERSION):
         model_docker = load_model_from_docker()
@@ -664,11 +686,12 @@ def main():
         model_docker.minor += 1
         save_model_in_demisto(model_docker)
         msg_list.append(MSG_UPDATE_LOGO % (MAJOR_VERSION, model_docker_minor, model.major, model.minor))
+        model_64_str = get_model_data(URL_PHISHING_MODEL_NAME)[0]
+        model = decode_model_data(model_64_str)
     else:
         msg_list.append(MSG_WRONG_CONFIG_MODEL)
         return_error(MSG_WRONG_CONFIG_MODEL)
-    model_64_str = get_model_data(URL_PHISHING_MODEL_NAME)[0]
-    model = decode_model_data(model_64_str)
+
     if email_body:
         urls_email_body = extract_urls(email_body)
     else:
@@ -688,7 +711,8 @@ def main():
     urls = urls_email_body + urls_only + urls_email_html
     if not urls:
         msg_list.append(MSG_NO_URL_GIVEN)
-        return_error(MSG_NO_URL_GIVEN)
+        demisto.results(MSG_NO_URL_GIVEN)
+        return
     urls = get_final_urls(urls, max_urls, model)
     urls = [demisto.executeCommand("UnEscapeURLs", {"input": x})[0]['Contents'] for x in urls]
     if debug:
