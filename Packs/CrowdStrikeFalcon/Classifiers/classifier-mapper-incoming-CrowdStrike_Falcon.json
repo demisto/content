@@ -1,0 +1,116 @@
+{
+	"brands": null,
+	"defaultIncidentType": "",
+	"definitionId": "incident",
+	"description": "",
+	"feed": false,
+	"fromServerVersion": "",
+	"id": "3a2952c3-26a4-4661-8479-c72098e93faa",
+	"incidentSamples": null,
+	"indicatorSamples": null,
+	"instanceIds": null,
+	"itemVersion": "",
+	"keyTypeMap": {},
+	"locked": false,
+	"logicalVersion": 0,
+	"mapping": {
+		"CrowdStrike Falcon Detection": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+				"Behaviour Objective": {
+					"complex": null,
+					"simple": "behaviors.objective"
+				},
+				"Behaviour Scenario": {
+					"complex": null,
+					"simple": "behaviors.scenario"
+				},
+				"Behaviour Tactic": {
+					"complex": null,
+					"simple": "behaviors.tactic"
+				},
+				"State": {
+					"complex": null,
+					"simple": "status"
+				},
+				"Technique": {
+					"complex": null,
+					"simple": "behaviors.technique"
+				},
+				"dbotMirrorDirection": {
+					"complex": null,
+					"simple": "mirror_direction"
+				},
+				"dbotMirrorId": {
+					"complex": null,
+					"simple": "detection_id"
+				},
+				"dbotMirrorInstance": {
+					"complex": null,
+					"simple": "mirror_instance"
+				},
+				"dbotMirrorTags": {
+					"complex": null,
+					"simple": "mirror_tags"
+				}
+			}
+		},
+		"CrowdStrike Falcon Incident": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+				"Objective": {
+					"complex": null,
+					"simple": "objectives"
+				},
+				"State": {
+					"complex": null,
+					"simple": "state"
+				},
+				"Tactic": {
+					"complex": null,
+					"simple": "tactics"
+				},
+				"Tags": {
+					"complex": null,
+					"simple": "tags"
+				},
+				"Technique": {
+					"complex": null,
+					"simple": "techniques"
+				},
+				"dbotMirrorDirection": {
+					"complex": null,
+					"simple": "mirror_direction"
+				},
+				"dbotMirrorId": {
+					"complex": null,
+					"simple": "incident_id"
+				},
+				"dbotMirrorInstance": {
+					"complex": null,
+					"simple": "mirror_instance"
+				},
+				"dbotMirrorTags": {
+					"complex": null,
+					"simple": "mirror_tags"
+				}
+			}
+		}
+	},
+	"name": "mapper-incoming-CrowdStrike_Falcon",
+	"nameRaw": "mapper-incoming-CrowdStrike_Falcon",
+	"packID": "",
+	"propagationLabels": [
+		"all"
+	],
+	"sourceClassifierId": "",
+	"system": false,
+	"toServerVersion": "",
+	"transformer": {
+		"complex": null,
+		"simple": ""
+	},
+	"type": "mapping-incoming",
+	"unclassifiedCases": null,
+	"version": -1
+}
