@@ -4747,6 +4747,7 @@ def devices(targets=None, vsys_s=None):
             else:
                 final_vsys_s = vsys_s
             for vsys in final_vsys_s:
+                demisto.error(f"{device['serial']=}\n{vsys=}")
                 yield device['serial'], vsys
 
 
@@ -4790,7 +4791,7 @@ def panorama_security_policy_match_command(args: dict):
 
     context_list = []
     raw_list = []
-    for target, vsys in devices(targets=args.get('target'), vsys_s=args.get('vsys')):
+    for target, vsys in devices(targets=argToList(args.get('target')), vsys_s=argToList(args.get('vsys'))):
         matching_rules = panorama_security_policy_match(application, category, destination, destination_port, from_, to_,
                                                         protocol, source, source_user, target, vsys)
         if matching_rules:
