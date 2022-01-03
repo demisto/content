@@ -8529,7 +8529,6 @@ def get_size_of_object(input_object):
     """
     # from collections import deque, Set, Mapping
     from collections import deque, Mapping
-    from typing import Set
     from numbers import Number
     # Python 3 also needs range
     # ZERO_DEPTH_BASES = (str, bytes, Number, range, bytearray)
@@ -8544,7 +8543,7 @@ def get_size_of_object(input_object):
         size = sys.getsizeof(obj)
         if isinstance(obj, ZERO_DEPTH_BASES):
             pass
-        elif isinstance(obj, (tuple, list, Set, deque)):
+        elif isinstance(obj, (tuple, list, set, deque)):
             size += sum(inner(i) for i in obj)
         elif isinstance(obj, Mapping):
             size += sum(inner(k) + inner(v) for k, v in getattr(obj, 'items')())
