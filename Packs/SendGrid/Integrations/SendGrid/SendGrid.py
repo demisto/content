@@ -776,7 +776,7 @@ def delete_list(args: dict, sg):
             'EntryContext': ec
         }
     elif response.status_code == 204:
-        return 'The delete has been successful '
+        return 'Deletion completed successfully'
     else:
         return 'Failed to delete list: ' + str(response.body)
 
