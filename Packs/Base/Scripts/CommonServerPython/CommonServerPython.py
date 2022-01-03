@@ -8537,8 +8537,8 @@ def get_size_of_object(input_object):
             pass
         if isinstance(obj, Number):
             pass
-        if isinstance(obj, range):
-            pass
+        # if isinstance(obj, range):
+        #     pass
         if isinstance(obj, bytearray):
             pass
       
