@@ -4,11 +4,20 @@
     "testInterval": 20,
     "tests": [
         {
-            "integrations": ["Generic Webhook", "VMware Carbon Black EDR v2"],
-            "instance_names": "Generic Webhook - testig",
+            "integrations": [
+                "Generic Webhook",
+                "VMware Carbon Black EDR v2"
+            ],
+            "instance_names": "Phising_input_y_tester",
             "playbookID": "pb_test",
-            "external_playbook_config": {"playbookID": "Isolate Endpoint - Generic V2",
-                                        "input_parameters":{"Endpoint_hostname": {"simple": "test"}}}
+            "external_playbook_config": {
+                "playbookID": "Isolate Endpoint - Generic V2",
+                "input_parameters": {
+                    "Endpoint_hostname": {
+                        "simple": "test"
+                    }
+                }
+            }
         },
         {
             "integrations": "LogRhythmRest V2",
