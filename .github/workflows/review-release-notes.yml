@@ -14,7 +14,7 @@ jobs:
         id: changed-files
         uses: tj-actions/changed-files@v2.0.0
         with:
-          separator: ';'
+          separator: " "
       - name: Setup Python
         uses: actions/setup-python@v2
         with:
@@ -28,7 +28,7 @@ jobs:
           overall_exit_code=0
           file_exit_code=0
           changed_files="${{ steps.changed-files.outputs.all_changed_files }}"
-          readarray -d : -t strarr <<< $changed_files
+          readarray -d ; -t strarr <<< $changed_files
           echo "new scripttt"
           for file in $strarr; do
             echo ""
