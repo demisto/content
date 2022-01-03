@@ -689,7 +689,7 @@ def get_list_by_id(args: dict, sg):
             'EntryContext': ec
         }
     else:
-        return 'Retrieving a list is failed: ' + str(response.body)
+        return 'Failed to retrieve list information: ' + str(response.body)
 
 
 def create_list(args: dict, sg):
