@@ -544,8 +544,15 @@ Get all data of a given group
 | CheckPoint.Group.creator | String | indicates the creator of the object | 
 | CheckPoint.Group.last-modifier | String | indicates the last user modified the object | 
 | CheckPoint.Group.read-only | Boolean | indicates if the object is read only | 
-| CheckPoint.Group.members.ipv4-address | String | Group members IPv4 addresses |
-| CheckPoint.Group.members.ipv6-address | String | Group members IPv6 addresses |
+| CheckPoint.ApplicationSite.groups | Unknown | Collection of group identifiers |
+| CheckPoint.Group.members.member-ipv4-address | String | Group members IPv4 addresses |
+| CheckPoint.Group.members.member-ipv6-address | String | Group members IPv6 addresses |
+| CheckPoint.Group.members.member-name | String | Group members domain name | 
+| CheckPoint.Group.members.member-uid | String | Group members domain uid | 
+| CheckPoint.Group.members.member-type | String | Group members domain type | 
+| CheckPoint.Group.members.member-domain-name | String | Group members name | 
+| CheckPoint.Group.members.member-domain-uid | String | Group members uid | 
+| CheckPoint.Group.members.member-domain-type | String | Group members type | 
 
 #### Command Example
 ```!checkpoint-group-get identifier=group_test```
@@ -1469,9 +1476,17 @@ Shows the entire Access Rules layer. This layer is divided into sections. An Acc
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CheckPoint.AccessRule.name | String | object name | 
-| CheckPoint.AccessRule.uid | String | object uid | 
-
+| CheckPoint.AccessRule.name | String | Object name. | 
+| CheckPoint.AccessRule.uid | String | Object UID. | 
+| CheckPoint.AccessRule.type | String | Object type. | 
+| CheckPoint.AccessRule.ipv4-address | String | IPv4 address of the specified object. | 
+| CheckPoint.AccessRule.ipv6-address | String | IPv6 address of the specified object. | 
+| CheckPoint.AccessRule.domain-name | String | Domain name. | 
+| CheckPoint.AccessRule.domain-uid | String | Domain UID. | 
+| CheckPoint.AccessRule.creator | String | The creator of the object. | 
+| CheckPoint.AccessRule.last-modifier | String | The user that last modified the object. | 
+| CheckPoint.AccessRule.read-only | Boolean | Indicates if the object is read-only. | 
+| CheckPoint.AccessRule.groups | Unknown | Collection of group identifiers. | 
 
 #### Command Example
 ```!checkpoint-access-rule-list identifier=Network limit=5```
@@ -2704,18 +2719,24 @@ Retrieve data about objects.
 | filter_search | Search expression to filter objects by. The provided text should be exactly the same as it would be given in Smart Console. The logical operators in the expression ('AND', 'OR') should be provided in capital letters. By default, the search involves both a textual search and a IP search. To use IP search only, set the "ip-only" parameter to true. | Optional | 
 | ip_only | If using "filter", use this field to search objects by their IP address only, without involving the textual search. | Optional | 
 | object_type | he objects' type, e.g.: host, service-tcp, network, address-range. Default value is object | Optional | 
-| session_id | Execute command with a specific session ID | Optional | 
+| session_id | Execute command with a specific session ID | Optional |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CheckPoint.Object.name | String | object name | 
-| CheckPoint.Object.uid | String | object uid | 
-| CheckPoint.Object.type | String | object type | 
-| CheckPoint.Object.ipv4 | String | IP-v4 address of a spesific object | 
-
+| CheckPoint.Objects.name | String | Object name. | 
+| CheckPoint.Objects.uid | String | Object UID. | 
+| CheckPoint.Objects.type | String | Object type. | 
+| CheckPoint.Objects.ipv4-address | String | IPv4 address of the specified object. | 
+| CheckPoint.Objects.ipv6-address | String | IPv6 address of the specified object. | 
+| CheckPoint.Objects.domain-name | String | Domain name. | 
+| CheckPoint.Objects.domain-uid | String | Domain UID. | 
+| CheckPoint.Objects.creator | String | The creator of the object. | 
+| CheckPoint.Objects.last-modifier | String | The user that last modified the object. | 
+| CheckPoint.Objects.read-only | Boolean | Indicates if the object is read-only. | 
+| CheckPoint.Objects.groups | Unknown | Collection of group identifiers. | 
 
 #### Command Example
 ```!checkpoint-show-objects limit=3 filter_search=1.2.3.4 ip_only=true```
