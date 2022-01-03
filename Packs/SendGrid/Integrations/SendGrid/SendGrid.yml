@@ -412,7 +412,7 @@ script:
       required: true
     - auto: PREDEFINED
       defaultValue: 'False'
-      description: 'Flag indicates that all contacts on the list are also to be deleted.  default:
+      description: 'Flag indicates that all contacts on the list are also to be deleted. default:
         False'
       name: delete_contacts
       predefined:
