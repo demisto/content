@@ -33,12 +33,12 @@
 </div>
 <div class="cl-preview-section">
 <ol>
-<li><a href="#get-a-sites-whitelist" target="_self">Get a site’s whitelist: sigsci-get-whitelist</a></li>
-<li><a href="#get-a-sites-blacklist-sigsci-get-blacklist" target="_self">Get a site’s blacklist: sigsci-get-blacklist</a></li>
-<li><a href="#add-an-ip-address-to-a-whitelist-sigsci-whitelist-add-ip" target="_self">Add an IP address to a whitelist: sigsci-whitelist-add-ip</a></li>
-<li><a href="#add-an-ip-address-to-a-blacklist-sigsci-blacklist-add-ip" target="_self">Add an IP address to a blacklist: sigsci-blacklist-add-ip</a></li>
-<li><a href="#remove-an-ip-address-from-a-whitelist-sigsci-whitelist-remove-ip" target="_self">Remove an IP address from a whitelist: sigsci-whitelist-remove-ip</a></li>
-<li><a href="#remove-an-ip-address-from-a-blacklist" target="_self">Remove an IP address from a blacklist: sigsci-blacklist-remove-ip</a></li>
+<li><a href="#get-a-sites-whitelist" target="_self">Get a site’s allow list: sigsci-get-whitelist</a></li>
+<li><a href="#get-a-sites-blacklist-sigsci-get-blacklist" target="_self">Get a site’s block list: sigsci-get-blacklist</a></li>
+<li><a href="#add-an-ip-address-to-a-whitelist-sigsci-whitelist-add-ip" target="_self">Add an IP address to an allow list: sigsci-whitelist-add-ip</a></li>
+<li><a href="#add-an-ip-address-to-a-blacklist-sigsci-blacklist-add-ip" target="_self">Add an IP address to a block list: sigsci-blacklist-add-ip</a></li>
+<li><a href="#remove-an-ip-address-from-a-whitelist-sigsci-whitelist-remove-ip" target="_self">Remove an IP address from an allow list: sigsci-whitelist-remove-ip</a></li>
+<li><a href="#remove-an-ip-address-from-a-blacklist" target="_self">Remove an IP address from a block list: sigsci-blacklist-remove-ip</a></li>
 <li><a href="#get-all-site-names" target="_self">Get all site names: sigsci-get-sites</a></li>
 <li><a href="#create-a-list-for-a-site" target="_self">Create a list for a site: sigsci-create-site-list</a></li>
 <li><a href="#get-information-for-a-site-list" target="_self">Get information for a site list: sigsci-get-site-list</a></li>
@@ -63,11 +63,11 @@
 </ol>
 </div>
 <div class="cl-preview-section">
-<h3 id="get-a-sites-whitelist">1. Get a site’s whitelist</h3>
+<h3 id="get-a-sites-whitelist">1. Get a site’s allow list</h3>
 </div>
 <div class="cl-preview-section"><hr></div>
 <div class="cl-preview-section">
-<p>Fetches a site’s whitelist, which resides on the Signal Sciences’ platform.</p>
+<p>Fetches a site’s allow list, which resides on the Signal Sciences’ platform.</p>
 </div>
 <div class="cl-preview-section">
 <h5 id="base-command">Base Command</h5>
@@ -91,7 +91,7 @@
 <tbody>
 <tr>
 <td style="width: 169px;">siteName</td>
-<td style="width: 473px;">The site that holds the whitelist you want to get.</td>
+<td style="width: 473px;">The site that holds the allow list you want to get.</td>
 <td style="width: 98px;">Required</td>
 </tr>
 </tbody>
@@ -121,7 +121,7 @@
 <tr>
 <td style="width: 377px;">SigSciences.Corp.Site.Whitelist.Source</td>
 <td style="width: 59px;">string</td>
-<td style="width: 304px;">IP Address present in the whitelist.</td>
+<td style="width: 304px;">IP Address present in the allow list.</td>
 </tr>
 <tr>
 <td style="width: 377px;">SigSciences.Corp.Site.Whitelist.ExpiryDate</td>
@@ -179,7 +179,7 @@
 <h3 id="signal-sciences---whitelist">Signal Sciences - Whitelist</h3>
 </div>
 <div class="cl-preview-section">
-<p>Number of IPs in the Whitelist 1</p>
+<p>Number of IPs in the allow list 1</p>
 </div>
 <div class="cl-preview-section">
 <div class="table-wrapper">
@@ -209,7 +209,7 @@
 </div>
 <div class="cl-preview-section"><hr></div>
 <div class="cl-preview-section">
-<p>Fetches a site’s blacklist, which resides on the Signal Sciences’ platform.</p>
+<p>Fetches a site’s block list, which resides on the Signal Sciences’ platform.</p>
 </div>
 <div class="cl-preview-section">
 <h5 id="base-command-1">Base Command</h5>
@@ -233,7 +233,7 @@
 <tbody>
 <tr>
 <td style="width: 172px;">siteName</td>
-<td style="width: 468px;">The site that holds the blacklist you wish to get</td>
+<td style="width: 468px;">The site that holds the block list you wish to get</td>
 <td style="width: 100px;">Required</td>
 </tr>
 </tbody>
@@ -321,7 +321,7 @@
 <h3 id="signal-sciences---blacklist">Signal Sciences - Blacklist</h3>
 </div>
 <div class="cl-preview-section">
-<p>Number of IPs in the Blacklist 1</p>
+<p>Number of IPs in the block list 1</p>
 </div>
 <div class="cl-preview-section">
 <div class="table-wrapper">
@@ -347,11 +347,11 @@
 </div>
 <p> </p>
 <div class="cl-preview-section">
-<h3 id="add-an-ip-address-to-a-whitelist-sigsci-whitelist-add-ip">3. Add an IP address to a whitelist: sigsci-whitelist-add-ip</h3>
+<h3 id="add-an-ip-address-to-a-whitelist-sigsci-whitelist-add-ip">3. Add an IP address to an allow list: sigsci-whitelist-add-ip</h3>
 </div>
 <div class="cl-preview-section"><hr></div>
 <div class="cl-preview-section">
-<p>Adds an IP address to a site’s whitelist, which resides the Signal Sciences’ platform.</p>
+<p>Adds an IP address to a site’s allow list, which resides the Signal Sciences’ platform.</p>
 </div>
 <div class="cl-preview-section">
 <h5 id="base-command-2">Base Command</h5>
@@ -375,12 +375,12 @@
 <tbody>
 <tr>
 <td style="width: 140px;">siteName</td>
-<td style="width: 529px;">The site that holds the whitelist you want to add an IP address to.</td>
+<td style="width: 529px;">The site that holds the allow list you want to add an IP address to.</td>
 <td style="width: 71px;">Required</td>
 </tr>
 <tr>
 <td style="width: 140px;">ip</td>
-<td style="width: 529px;">The IP address to add to the site’s whitelist.</td>
+<td style="width: 529px;">The IP address to add to the site’s allow list in CSV format.</td>
 <td style="width: 71px;">Required</td>
 </tr>
 <tr>
@@ -390,7 +390,7 @@
 </tr>
 <tr>
 <td style="width: 140px;">expires</td>
-<td style="width: 529px;">The datetime for the IP address to removed from the site’s whitelist (in RFC3339 format). To keep the IP address on the site’s whitelist indefinitely, do not specify this argument.</td>
+<td style="width: 529px;">The datetime for the IP address to removed from the site’s allow list (in RFC3339 format). To keep the IP address on the site’s allow list indefinitely, do not specify this argument.</td>
 <td style="width: 71px;">Optional</td>
 </tr>
 </tbody>
@@ -415,7 +415,7 @@
 <tr>
 <td style="width: 387px;">SigSciences.Corp.Site.Whitelist.Source</td>
 <td style="width: 57px;">string</td>
-<td style="width: 296px;">The IP address on the whitelist.</td>
+<td style="width: 296px;">The IP address on the allow list.</td>
 </tr>
 <tr>
 <td style="width: 387px;">SigSciences.Corp.Site.Whitelist.Note</td>
@@ -473,10 +473,10 @@
 <h5 id="human-readable-output-2">Human Readable Output</h5>
 </div>
 <div class="cl-preview-section">
-<h3 id="signal-sciences---adding-an-ip-to-whitelist">Signal Sciences - Adding an IP to Whitelist</h3>
+<h3 id="signal-sciences---adding-an-ip-to-whitelist">Signal Sciences - Adding an IP to allow list</h3>
 </div>
 <div class="cl-preview-section">
-<p>The IP 9.7.9.7 has been successfully added to whitelist.</p>
+<p>The IP 9.7.9.7 has been successfully added to allow list.</p>
 </div>
 <div class="cl-preview-section">
 <div class="table-wrapper">
@@ -500,11 +500,11 @@
 </div>
 <p> </p>
 <div class="cl-preview-section">
-<h3 id="add-an-ip-address-to-a-blacklist-sigsci-blacklist-add-ip">4. Add an IP address to a blacklist: sigsci-blacklist-add-ip</h3>
+<h3 id="add-an-ip-address-to-a-blacklist-sigsci-blacklist-add-ip">4. Add an IP address to a block list: sigsci-blacklist-add-ip</h3>
 </div>
 <div class="cl-preview-section"><hr></div>
 <div class="cl-preview-section">
-<p>Adds an IP to a site’s blacklist, which resides on the Signal Sciences’ platform.</p>
+<p>Adds an IP to a site’s block list, which resides on the Signal Sciences’ platform.</p>
 </div>
 <div class="cl-preview-section">
 <h5 id="base-command-3">Base Command</h5>
@@ -528,12 +528,12 @@
 <tbody>
 <tr>
 <td style="width: 141px;">siteName</td>
-<td style="width: 528px;">The site that holds the blacklist you wish to add to</td>
+<td style="width: 528px;">The site that holds the block list you wish to add to</td>
 <td style="width: 71px;">Required</td>
 </tr>
 <tr>
 <td style="width: 141px;">ip</td>
-<td style="width: 528px;">The IP address to add to the site’s blacklist.</td>
+<td style="width: 528px;">The IP address to add to the site’s block list in CSV format.</td>
 <td style="width: 71px;">Required</td>
 </tr>
 <tr>
@@ -543,7 +543,7 @@
 </tr>
 <tr>
 <td style="width: 141px;">expires</td>
-<td style="width: 528px;">The datetime for the IP address to removed from the site’s blacklist (in RFC3339 format). To keep the IP address on the site’s blacklist indefinitely, do not specify this argument.</td>
+<td style="width: 528px;">The datetime for the IP address to removed from the site’s block list (in RFC3339 format). To keep the IP address on the site’s block list indefinitely, do not specify this argument.</td>
 <td style="width: 71px;">Optional</td>
 </tr>
 </tbody>
@@ -626,10 +626,10 @@
 <h5 id="human-readable-output-3">Human Readable Output</h5>
 </div>
 <div class="cl-preview-section">
-<h3 id="signal-sciences---adding-an-ip-to-blacklist">Signal Sciences - Adding an IP to Blacklist</h3>
+<h3 id="signal-sciences---adding-an-ip-to-blacklist">Signal Sciences - Adding an IP to block list</h3>
 </div>
 <div class="cl-preview-section">
-<p>The IP 5.7.5.7 has been successfully added to blacklist.</p>
+<p>The IP 5.7.5.7 has been successfully added to block list.</p>
 </div>
 <div class="cl-preview-section">
 <div class="table-wrapper">
@@ -653,11 +653,11 @@
 </div>
 <p> </p>
 <div class="cl-preview-section">
-<h3 id="remove-an-ip-address-from-a-whitelist-sigsci-whitelist-remove-ip">5. Remove an IP address from a whitelist: sigsci-whitelist-remove-ip</h3>
+<h3 id="remove-an-ip-address-from-a-whitelist-sigsci-whitelist-remove-ip">5. Remove an IP address from an allow list: sigsci-whitelist-remove-ip</h3>
 </div>
 <div class="cl-preview-section"><hr></div>
 <div class="cl-preview-section">
-<p>Removes an IP address from a site’s whitelist, which resides on the Signal Sciences’ platform.</p>
+<p>Removes an IP address from a site’s allow list, which resides on the Signal Sciences’ platform.</p>
 </div>
 <div class="cl-preview-section">
 <h5 id="base-command-4">Base Command</h5>
@@ -681,7 +681,7 @@
 <tbody>
 <tr>
 <td style="width: 140px;">siteName</td>
-<td style="width: 528px;">The site that contains the whitelist you want to remove an IP address from.</td>
+<td style="width: 528px;">The site that contains the allow list you want to remove an IP address from.</td>
 <td style="width: 72px;">Required</td>
 </tr>
 <tr>
@@ -707,11 +707,11 @@
 <pre>!sigsci-whitelist-remove-ip IP=4.7.4.7 siteName=demisto</pre>
 </div>
 <div class="cl-preview-section">
-<h3 id="remove-an-ip-address-from-a-blacklist">6. Remove an IP address from a blacklist</h3>
+<h3 id="remove-an-ip-address-from-a-blacklist">6. Remove an IP address from a block list</h3>
 </div>
 <div class="cl-preview-section"><hr></div>
 <div class="cl-preview-section">
-<p>Removes an IP from a site’s blacklist, which resides on the Signal Sciences’ platform.</p>
+<p>Removes an IP from a site’s block list, which resides on the Signal Sciences’ platform.</p>
 </div>
 <div class="cl-preview-section">
 <h5 id="base-command-5">Base Command</h5>
@@ -735,7 +735,7 @@
 <tbody>
 <tr>
 <td style="width: 142px;">siteName</td>
-<td style="width: 526px;">The site that contains the blacklist you want to remove an IP address from.</td>
+<td style="width: 526px;">The site that contains the block list you want to remove an IP address from.</td>
 <td style="width: 72px;">Required</td>
 </tr>
 <tr>

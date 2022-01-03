@@ -1,7 +1,9 @@
 id: QRadarCorrelationLog
 version: -1
 name: QRadarCorrelationLog
-description: This playbook retrieves the correlation logs of multiple QIDs.
+deprecated: true
+description: Deprecated. Use the "QRadar - Get Offense Logs"\
+  \ playbook instead. This playbook retrieves the correlation logs of multiple QIDs.
 starttaskid: '0'
 tasks:
   '0':
@@ -284,4 +286,4 @@ outputs:
   type: unknown
 fromversion: 5.0.0
 tests:
-  - test playbook - QRadarCorreltaions
+- No test

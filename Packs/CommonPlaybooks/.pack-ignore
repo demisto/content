@@ -11,7 +11,7 @@ ignore=BA101
 ignore=BA101
 
 [file:playbook-Block_Account_-_Generic.yml]
-ignore=BA101
+ignore=BA101,PB107
 
 [file:playbook-Search_And_Delete_Emails_-_Generic.yml ]
 ignore=BA101
@@ -60,3 +60,5 @@ ignore=RM106
 
 [file:playbook-Block_Domain_-_Generic.yml]
 ignore=PB110
+[file:pack_metadata.json]
+ignore=PA129

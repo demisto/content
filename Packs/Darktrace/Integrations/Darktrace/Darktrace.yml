@@ -26,18 +26,18 @@ configuration:
   type: 13
 - additionalinfo: Public token obtained by creating an API token pair on the /config
     configuration page
-  display: Public API Token
-  hidden: false
-  name: public_api_token
-  required: true
-  type: 4
+  displaypassword: Public API Token (Recommended)
+  hiddenusername: true
+  name: public_creds
+  required: false
+  type: 9
 - additionalinfo: Private token obtained by creating an API token pair on the /config
     configuration page
-  display: Private API Token
-  hidden: false
-  name: private_api_token
-  required: true
-  type: 4
+  displaypassword: Private API Token (Recommended)
+  hiddenusername: true
+  name: private_creds
+  required: false
+  type: 9
 - additionalinfo: Minimum Darktrace score for fetched incidents (0-100)
   defaultvalue: '0'
   display: Minimum Score
@@ -61,6 +61,16 @@ configuration:
   name: first_fetch
   required: false
   type: 0
+- additionalinfo: Use the "Public API Token (Recommended)" parameter instead.
+  display: Public API Token (Deprecated)
+  name: public_api_token
+  required: false
+  type: 4
+- additionalinfo: Use the "Private API Token (Recommended)" parameter instead.
+  display: Private API Token (Deprecated)
+  name: private_api_token
+  required: false
+  type: 4
 description: Rapid detection of malicious behavior can make all the difference in
   the response to a security event. This pack includes configurations to combine the
   world-class threat detection of Darktrace with the synchrony and automation abilities
@@ -522,7 +532,7 @@ script:
         keys. It is recommended to run the command once to check the relevant outputs
         in context
       type: Unknown
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.9.8.24399
   feed: false
   isfetch: true
   longRunning: false

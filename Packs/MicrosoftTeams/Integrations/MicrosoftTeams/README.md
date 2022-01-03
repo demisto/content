@@ -2,7 +2,10 @@ Use the Microsoft Teams integration to send messages and notifications to your t
 This integration was integrated and tested with version 1.0 of Microsoft Teams.
 
 ## Integration Architecture
-Data is passed between Microsoft Teams and Cortex XSOAR through the bot that you will configure in Microsoft Teams. A webhook (which you will configure) receives the data from Teams and passes it to the messaging endpoint. The web server on which the integration runs in Cortex XSOAR listens to the messaging endpoint and processes the data from Teams. You can use an engine for communication between Teams and the Cortex XSOAR server. In order to mirror messages from Teams to Cortex XSOAR, the bot must be mentioned, using the @ symbol, in the message.
+Data is passed between Microsoft Teams and Cortex XSOAR through the bot that you will configure in Microsoft Teams. A webhook (that you will configure) receives the data from Teams and passes it to the messaging endpoint. The web server on which the integration runs in Cortex XSOAR listens to the messaging endpoint and processes the data from Teams. You can use an engine for communication between Teams and the Cortex XSOAR server. In order to mirror messages from Teams to Cortex XSOAR, the bot must be mentioned, using the @ symbol, in the message.
+- *Note* - In order to avoid mentioning the bot, if this was previously configured without adding the Bot ID, repeat the authentication flow and pay particular attention to the following steps:
+   * Step 14 in [Using the App Studio](#using-the-app-studio).
+   * Step 5 in [Using the Developer Portal](#using-the-developer-portal-1).
 
 The web server for the integration runs within a long-running Docker container. Cortex XSOAR maps the Docker port to which the server listens, to the host port (to which Teams posts messages). For more information, see [our documentation](https://xsoar.pan.dev/docs/integrations/long-running#invoking-http-integrations-via-cortex-xsoar-servers-route-handling) and [Docker documentation](https://docs.docker.com/config/containers/container-networking/).
 ### Protocol Diagram
@@ -30,7 +33,7 @@ The web server for the integration runs within a long-running Docker container. 
 ### 1. Using Cortex XSOAR rerouting
 In this configuration, we will use Cortex XSOAR functionality, which reroutes HTTPS requests that hit the default port (443) to the web server that the integration spins up.
 
-The messaging endpoint needs to be: `<CORTEX-XSOAR-URL>/instance/execute/<INTEGRATION-INSTANCE-NAME>`, e.g. `https://my.demisto.live/instance/execute/teams`
+The messaging endpoint needs to be: `<CORTEX-XSOAR-URL>/instance/execute/<INTEGRATION-INSTANCE-NAME>`, e.g., `https://my.demisto.live/instance/execute/teams`
 
 The integration instance name, `teams` in this example, needs to be configured in the [Configure Microsoft Teams on Cortex XSOAR](#configure-microsoft-teams-on-cortex-xsoar) step.
 
@@ -114,7 +117,7 @@ Before you can create an instance of the Microsoft Teams integration in Cortex X
 8. Click the app widget, and in the **Identification** section, click the **Generate** button to generate a unique App ID.  The following parameters are automatically populated in the ZIP file, use this information for reference.
   - **Short name**: Demisto Bot
   - **App ID**: the App ID for configuring in Cortex XSOAR.
-  - **Package name**: desmisto.bot (this is a unique identifier for the app in the Store)
+  - **Package name**: demisto.bot (this is a unique identifier for the app in the Store)
   - **Version**: 1.0.0 (this is a unique identifier for the app in the Store)
   - **Short description**: Mechanism for mirroring between Cortex XSOAR and Microsoft Teams.
   - **Long description**: Demisto Bot is the mechanism that enables messaging team members and channels, executing Cortex XSOAR commands directly from Teams, and mirroring investigation data between Cortex XSOAR and Microsoft Teams
@@ -129,9 +132,10 @@ Before you can create an instance of the Microsoft Teams integration in Cortex X
 12. Click **Generate new password**. Record the password, which you will need when configuring the integration in Cortex XSOAR.
 13. In the **Messaging endpoints** section, enter the URL to which messages will be sent (to the Demisto Bot).
   - To enable calling capabilities on the Bot enter the same URL to the **Calling endpoints** section.
-14. From the left-side navigation pane, under Finish, click **Test and distribute**.
-15. To download the new bot file, which now includes App Details, click **Download**.
-16. Navigate to Store, and click **Upload a custom app > Upload for ORGANIZATION-NAME**, and select the ZIP file you downloaded.
+14. In the **Domain and permissions** section, under **AAD App ID** enter the Bot ID.
+15. From the left-side navigation pane, under Finish, click **Test and distribute**.
+16. To download the new bot file, which now includes App Details, click **Download**.
+17. Navigate to Store, and click **Upload a custom app > Upload for ORGANIZATION-NAME**, and select the ZIP file you downloaded.
 
 #### Using the Developer Portal
 1. Navigate to the [Tools in the Microsoft Developer Portal](https://dev.teams.microsoft.com/tools).
@@ -191,7 +195,7 @@ Before you can create an instance of the Microsoft Teams integration in Cortex X
 
 ### Add the Demisto Bot to a Team
 
-  - Note: the following need to be done after configuring the integration on Cortex XSOAR (the previous step).
+- Note: the following need to be done after configuring the integration on Cortex XSOAR (the previous step).
 #### Using the App Studio
 1. In Microsoft Teams, access the Store.
 2. Search for **Demisto Bot** and click the Demisto Bot widget.
@@ -204,16 +208,17 @@ Before you can create an instance of the Microsoft Teams integration in Cortex X
 2. Uncompress the ZIP file. You should see 3 files (`manifest.json`, `color.png` and `outline.png`).
 3. Open the `manifest.json` file that was extracted from the ZIP file.
 4. In the `bots` list, replace the value of the `botId` attribute with the value of the *Bot ID* from step 5 of the **Create the Demisto Bot in Microsoft Teams section**.
-5. Compress the 3 files (the modified `manifest.json` file, `color.png` and `outline.png`).
-6. Navigate to [Manage Apps in the Microsoft Teams admin center](https://admin.teams.microsoft.com/policies/manage-apps).
-7. Click the **+Upload** button.
-8. In the pop-up window, click the **Upload** button.
-9. Browse for the ZIP file you created in step 5, open it, and wait a few seconds until it loads.
-10. Search for **Demisto Bot**.
-11. In the line where `Demisto Bot` shows under **Name**, tick the V on the left.
-12. Click the **Add to team** button.
-13. In the search box, type the name of the team to which you want to add the bot.
-14. Click the **Add** button on the wanted team and then click the **Apply** button.
+5. In the `webApplicationInfo`, replace the value of `id` attribute with the value of the *Bot ID* from step 5 of the **Create the Demisto Bot in Microsoft Teams section**.
+6. Compress the 3 files (the modified `manifest.json` file, `color.png` and `outline.png`).
+7. Navigate to [Manage Apps in the Microsoft Teams admin center](https://admin.teams.microsoft.com/policies/manage-apps).
+8. Click the **+Upload** button.
+9. In the pop-up window, click the **Upload** button.
+10. Browse for the ZIP file you created in step 5, open it, and wait a few seconds until it loads.
+11. Search for **Demisto Bot**.
+12. In the line where `Demisto Bot` shows under **Name**, tick the V on the left.
+13. Click the **Add to team** button.
+14. In the search box, type the name of the team to which you want to add the bot.
+15. Click the **Add** button on the wanted team and then click the **Apply** button.
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
@@ -496,6 +501,10 @@ You can run Cortex XSOAR commands, according to the user permissions, from Micro
 
 Note: Like every message in a mirrored channel, in order for it to be passed to the bot, the bot must be mentioned.
 
+In order to avoid mentioning the bot, if this was previously configured without adding the Bot ID, repeat the authentication flow and pay particular attention to the following steps:
+   * Step 14 in [Using the App Studio](#using-the-app-studio).
+   * Step 5 in [Using the Developer Portal](#using-the-developer-portal-1).
+
 For example, in order to check the reputation of the IP address 8.8.8.8, run the following: `@Demisto Bot !ip ip=8.8.8.8`
 
 ![image](https://raw.githubusercontent.com/demisto/content/c7d516e68459f04102fd31ebfadd6574d775f436/Packs/MicrosoftTeams/Integrations/MicrosoftTeams/doc_files/cmd.png)
@@ -545,4 +554,4 @@ You can send the message `help` in order to see the supported commands:
 
 ## Download Demisto Bot
 
-[Demisto Bot zip](https://github.com/demisto/content/raw/c00fdeee43717f3478d1471dfc547f8ca7dc09d0/Packs/MicrosoftTeams/Integrations/MicrosoftTeams/doc_files/DemistoBot.zip)
+[Demisto Bot zip](https://github.com/demisto/content/raw/2d9804da7ff94bc1243fe083f280e44602bd1738/Packs/MicrosoftTeams/Integrations/MicrosoftTeams/doc_files/DemistoBot.zip)

@@ -1,4 +1,4 @@
-Runs a QRadar query and return its results to the context.
+This playbook runs a QRadar query and return its results to the context.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -7,34 +7,36 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * GenericPolling
 
 ### Integrations
-This playbook does not use any integrations.
+* QRadar_v2
+* QRadar
+* QRadar_v3
 
 ### Scripts
 This playbook does not use any scripts.
 
 ### Commands
-* qradar-get-search-results
 * qradar-get-search
+* qradar-get-search-results
 * qradar-searches
 
 ## Playbook Inputs
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
-| --- | --- | --- | --- |  
-| timeout | The amount of time to wait before a timeout occurs (in minutes). | 600 | Optional |
-| interval | The polling frequency. How often the polling command should run (in minutes). | 1 |Optional |
-| query_expression | The query expressions in AQL. | - |Required |
-| range | The range of results to return. For example, 0-20. | - | Optional |
-| headers | The table headers. | - | Optional |
+| --- | --- | --- | --- |
+| timeout | How much time to wait before a timeout occurs \(minutes\) | 600 | Optional |
+| interval | Polling frequency - how often the polling command should run \(minutes\) | 1 | Optional |
+| query_expression | The query expressions in AQL |  | Required |
+| range | Range of results to return \(e.g. 0-20\) |  | Optional |
+| headers | Table headers |  | Optional |
 
 ## Playbook Outputs
 ---
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| QRadar.Search.Result | The results of the search. | unknown |
+| QRadar.Search.Result | The result of the search | unknown |
 
 ## Playbook Image
 ---
-![QRadarFullSearch](../doc_files/QRadarFullSearch.png)
+![QRadarFullSearch](https://raw.githubusercontent.com/demisto/content/master/Packs/QRadar/doc_files/QRadarFullSearch.png)

@@ -762,15 +762,11 @@ def find_indicators_loop(indicator_query: str):
         Indicator query results from Demisto.
     """
     iocs: List[dict] = []
-    total_fetched = 0
-    last_found_len = PAGE_SIZE
-    search_indicators = IndicatorsSearcher()
-
-    while last_found_len == PAGE_SIZE:
-        fetched_iocs = search_indicators.search_indicators_by_version(query=indicator_query, size=PAGE_SIZE).get('iocs')
+    search_indicators = IndicatorsSearcher(query=indicator_query, size=PAGE_SIZE)
+    for ioc_res in search_indicators:
+        fetched_iocs = ioc_res.get('iocs') or []
         iocs.extend(fetched_iocs)
-        last_found_len = len(fetched_iocs)
-        total_fetched += last_found_len
+
     return iocs
 
 

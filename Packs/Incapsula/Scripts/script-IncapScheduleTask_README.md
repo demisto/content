@@ -20,7 +20,7 @@ This script uses the following commands and scripts.
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| SSHValidationServer | The name of the non-whitelisted server RemoteAccess instance. |
+| SSHValidationServer | The name of the non-allow listed server RemoteAccess instance. |
 | cron | The interval between each check (in cron format). |
 | times | The number of times to execute the check. |
 

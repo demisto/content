@@ -27,7 +27,7 @@ type: python
 subtype: python2
 tags:
 - whitelist
-comment: Deprecated. Check whether the given item is in the whitelist
+comment: Deprecated. Check whether the given item is in the allow list
 system: true
 args:
 - name: item
@@ -36,10 +36,10 @@ args:
   description: Item to check
 - name: whitelistname
   defaultValue: Indicators Whitelist
-  description: Name of whitelist to check
+  description: Name of allow list to check
 outputs:
 - contextPath: WhitelistCheck
-  description: Returns a dictionary of indicators mapped to True if found in whitelist, or False otherwise.
+  description: Returns a dictionary of indicators mapped to True if found in allow list, or False otherwise.
 scripttarget: 0
 dependson: {}
 timeout: 0s

@@ -295,7 +295,7 @@ script:
       description: The policy name that was applied to the endpoint.
       type: String
   - deprecated: false
-    description: Returns all blacklisted endpoints.
+    description: Returns all block listed endpoints.
     execution: false
     name: cisco-ise-get-blacklist-endpoints
     outputs:
@@ -381,7 +381,7 @@ script:
     description: Queries an IP address and returns its session data from an active
       endpoint.
     name: cisco-ise-get-session-data-by-ip
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.9.8.24399
   isfetch: false
   runonce: false
   script: '-'

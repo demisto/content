@@ -18,5 +18,9 @@
     "keywords": [],
     "itemPrefix": [
         "Titan"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }

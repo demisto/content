@@ -28,7 +28,8 @@ def download_zip_file_from_gcp(current_feature_branch_zip_file_path, zip_destina
         The new path of the zip file.
     """
     file_path = os.environ.get('GCS_ARTIFACTS_KEY')
-    os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = file_path
+    if file_path:
+        os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = file_path
     storage_client = storage.Client()
 
     storage_bucket = storage_client.bucket(STORAGE_BUCKET_NAME)

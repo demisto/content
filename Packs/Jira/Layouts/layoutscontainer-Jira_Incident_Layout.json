@@ -71,7 +71,7 @@
                         "static": false,
                         "w": 1,
                         "x": 0,
-                        "y": 6
+                        "y": 8
                     },
                     {
                         "h": 4,
@@ -84,7 +84,7 @@
                         "type": "notes",
                         "w": 2,
                         "x": 0,
-                        "y": 2
+                        "y": 4
                     },
                     {
                         "displayType": "ROW",
@@ -98,7 +98,7 @@
                         "type": "workplan",
                         "w": 1,
                         "x": 2,
-                        "y": 6
+                        "y": 4
                     },
                     {
                         "displayType": "ROW",
@@ -113,7 +113,7 @@
                         "type": "linkedIncidents",
                         "w": 3,
                         "x": 0,
-                        "y": 8
+                        "y": 10
                     },
                     {
                         "displayType": "ROW",
@@ -220,7 +220,7 @@
                         "static": false,
                         "w": 1,
                         "x": 1,
-                        "y": 6
+                        "y": 8
                     },
                     {
                         "description": "",
@@ -346,33 +346,6 @@
                         "displayType": "ROW",
                         "h": 2,
                         "hideName": false,
-                        "i": "caseinfoid-1bc895c0-26b1-11ec-a10b-cd7294533e2a",
-                        "items": [
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "jiraattachments",
-                                "height": 53,
-                                "id": "401c0920-4ead-11eb-a3d0-ef4e96fe7991",
-                                "index": 0,
-                                "listId": "caseinfoid-38d36960-4ead-11eb-a3d0-ef4e96fe7991",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            }
-                        ],
-                        "maxW": 3,
-                        "minH": 1,
-                        "moved": false,
-                        "name": "Jira Attachments ",
-                        "static": false,
-                        "w": 1,
-                        "x": 2,
-                        "y": 4
-                    },
-                    {
-                        "displayType": "ROW",
-                        "h": 2,
-                        "hideName": false,
                         "i": "caseinfoid-3c28d340-26b4-11ec-a10b-cd7294533e2a",
                         "items": [
                             {
@@ -404,6 +377,34 @@
                         "w": 1,
                         "x": 1,
                         "y": 0
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "hideItemTitleOnlyOne": true,
+                        "i": "caseinfoid-a0e22d10-4791-11ec-a55a-e9e5e8e14e67",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "incident_attachment",
+                                "height": 53,
+                                "id": "a0e03140-4791-11ec-a55a-e9e5e8e14e67",
+                                "index": 0,
+                                "isVisible": true,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Attachments",
+                        "static": false,
+                        "type": "",
+                        "w": 1,
+                        "x": 0,
+                        "y": 2
                     }
                 ],
                 "type": "custom"
@@ -438,7 +439,7 @@
     "group": "incident",
     "id": "Jira Incident Layout",
     "name": "Jira Incident Layout",
-    "system": false,
+    "system": true,
     "version": -1,
     "fromVersion": "6.0.0",
     "description": ""

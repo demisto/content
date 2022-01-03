@@ -10,6 +10,10 @@
           "complex": null,
           "simple": "asset_name"
         },
+        "Saas Security Asset URL": {
+            "complex": null,
+            "simple": "asset_page_uri"
+        },
         "Saas Security Incident Id": {
           "complex": null,
           "simple": "incident_id"
