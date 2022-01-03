@@ -4341,6 +4341,13 @@
             ]
         },
         {
+            "playbookID": "Atlassian Confluence Cloud-Test",
+            "fromversion": "6.2.0",
+            "integrations": [
+                "Atlassian Confluence Cloud"
+            ]
+        },
+        {
             "playbookID": "CrowdStrike_Falcon_X_-Test-Detonate_URL",
             "fromversion": "5.0.0",
             "integrations": [
@@ -5039,8 +5046,6 @@
         "AutoFocus V2 test": "Issue 26464",
         "SplunkPy_KV_commands_default_handler": "Issue 41419",
         "LogRhythm REST test": "Issue 40654",
-        "Recorded Future Test": "Quota issue - will ve reverted un 1.1.22",
-        "RecordedFutureFeed - Test": "Quota issue - will ve reverted un 1.1.22",
         "Process Email - Generic - Test - Actual Incident": "Issue 45227"
     },
     "skipped_integrations": {
