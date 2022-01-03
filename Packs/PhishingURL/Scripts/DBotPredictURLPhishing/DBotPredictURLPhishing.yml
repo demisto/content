@@ -80,9 +80,10 @@ tags:
 - ''
 timeout: '0'
 type: python
-dockerimage: devdemisto/mlurlphishing:1.0.0.25597
+dockerimage: devdemisto/mlurlphishing:1.0.0.25530
 runas: DBotRole
 runonce: false
 tests:
 - No tests (auto formatted)
 fromversion: 5.5.0
+

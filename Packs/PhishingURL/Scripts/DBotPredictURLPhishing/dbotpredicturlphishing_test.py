@@ -35,9 +35,9 @@ def executeCommand(command, args=None):
 
     elif command == 'getMLModel':
         return [{'Contents':
-                    {'modelData': "ModelDataML", 'model':
-                        {'type': {'type': ''}, 'extra':
-                            {OOB_MAJOR_VERSION_INFO_KEY: 0, OOB_MINOR_VERSION_INFO_KEY: 0}}}, 'Type': 'note'}]
+                {'modelData': "ModelDataML", 'model':
+                    {'type': {'type': ''}, 'extra':
+                        {OOB_MAJOR_VERSION_INFO_KEY: 0, OOB_MINOR_VERSION_INFO_KEY: 0}}}, 'Type': 'note'}]
 
     elif command == 'createMLModel':
         return None
