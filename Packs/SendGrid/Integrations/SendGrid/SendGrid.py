@@ -665,7 +665,7 @@ def get_all_lists(args: dict, sg):
             'EntryContext': ec
         }
     else:
-        return 'All lists fetch failed: ' + str(response.body)
+        return 'Failed to fetch lists information: ' + str(response.body)
 
 
 def get_list_by_id(args: dict, sg):
