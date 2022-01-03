@@ -1,6 +1,6 @@
 {
-    "name": "FiltersAndTransformers",
-    "description": "FiltersAndTransformers",
+    "name": "Filters And Transformers",
+    "description": "Frequently used filters and transformers pack.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
