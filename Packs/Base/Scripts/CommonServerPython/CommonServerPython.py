@@ -8531,6 +8531,17 @@ def get_size_of_object(input_object):
         _seen_ids.add(obj_id)
         size = sys.getsizeof(obj)
         # if isinstance(obj, ZERO_DEPTH_BASES):
+        if isinstance(obj, str):
+            pass
+        if isinstance(obj, bytes):
+            pass
+        if isinstance(obj, Number):
+            pass
+        if isinstance(obj, range):
+            pass
+        if isinstance(obj, bytearray):
+            pass
+      
         if any(isinstance(obj, t) for t in ZERO_DEPTH_BASES_ARRAY):
             pass # bypass remaining control flow and return
         elif isinstance(obj, (tuple, list, Set, deque)):
