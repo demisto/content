@@ -338,7 +338,7 @@ def test_taxii20_objects(mocker, taxii2_server_v20):
         When
             Calling get objects api request for given collection
         Then
-            Validate that right manifest returned.
+            Validate that right objects are returned.
     """
     iocs = util_load_json('test_files/ip_iocs.json')
     objects = util_load_json('test_files/objects20.json')
@@ -369,7 +369,7 @@ def test_taxii21_objects(mocker, taxii2_server_v21, demisto_iocs_file, res_file,
         When
             Calling get objects api request for given collection
         Then
-            Validate that right manifest returned.
+            Validate that right objects are returned.
     """
     iocs = util_load_json(f'test_files/{demisto_iocs_file}.json')
     objects = util_load_json(f'test_files/{res_file}.json')
@@ -441,7 +441,7 @@ def test_taxii21_objects_filtered_params(mocker, taxii2_server_v21, res_file, fi
         When
             Calling get objects api request for given collection
         Then
-            Validate that right manifest returned.
+            Validate that right objects are returned.
     """
     iocs = util_load_json('test_files/file_iocs.json')
     objects = util_load_json(f'test_files/{res_file}.json')

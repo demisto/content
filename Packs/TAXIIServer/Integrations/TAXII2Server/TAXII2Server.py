@@ -424,7 +424,7 @@ def taxii_validate_url_param(f: Callable) -> Callable:
 def create_fields_list(fields: str) -> set:
     if not fields:
         return {'name', 'type'}
-    elif 'all' in fields.lower():
+    elif fields.lower() == 'all':
         return set()
     fields_list = argToList(fields)
     new_list = set()
