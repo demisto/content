@@ -21,6 +21,7 @@
     "unmapped": false,
     "unsearchable": true,
     "caseInsensitive": true,
+	"description": "Due date on the Wiz Issue, if set",
     "sla": 0,
     "threshold": 72,
     "fromVersion": "6.0.0"
