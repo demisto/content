@@ -4747,7 +4747,6 @@ def devices(targets=None, vsys_s=None):
             else:
                 final_vsys_s = vsys_s
             for vsys in final_vsys_s:
-                demisto.error(f"{device['serial']=}\n{vsys=}")
                 yield device['serial'], vsys
 
 
