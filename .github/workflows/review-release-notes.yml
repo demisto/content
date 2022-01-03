@@ -30,7 +30,7 @@ jobs:
           changed_files="${{ steps.changed-files.outputs.all_changed_files }}"
           readarray -d : -t strarr <<< $changed_files
           echo "new scripttt"
-          for file in strarr; do
+          for file in $strarr; do
             echo ""
             echo "  Checking File: $file"
             demisto-sdk doc-review --release-notes -i "$file" --known-words Tests/known_words.txt || file_exit_code=$?
