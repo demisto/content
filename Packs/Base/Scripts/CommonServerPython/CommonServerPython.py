@@ -8533,6 +8533,7 @@ def get_size_of_object(input_object):
     # ZERO_DEPTH_BASES = (str, bytes, Number, range, bytearray)
     ZERO_DEPTH_BASES = (str, bytes, Number, bytearray)
     _seen_ids = set()
+
     def inner(obj):
         obj_id = id(obj)
         if obj_id in _seen_ids:
@@ -8555,6 +8556,7 @@ def get_size_of_object(input_object):
         return size
     return inner(input_object)
 
+
 def get_message_global_vars():
     """
     A function that prints the global variables to log info
@@ -8566,11 +8568,11 @@ def get_message_global_vars():
     excluded_globals = ['__name__', '__doc__', '__package__', '__loader__',
                         '__spec__', '__annotations__', '__builtins__',
                         '__file__', '__cached__', '_Feature',
-                       ]
+                        ]
     excluded_types = [types.ModuleType, types.FunctionType,
-                   ]
-    excluded_types_names = ['MagicMock', # When running tests locally
-    ]
+                      ]
+    excluded_types_names = ['MagicMock',  # When running tests locally
+                            ]
 
     globals_dict = dict(globals())
     globals_dict_full = {}
@@ -8591,7 +8593,8 @@ def get_message_global_vars():
     globals_sorted_by_size = sorted(globals_dict_full.values(), key=lambda d: d['size'], reverse=True)
     ret_value += 'Size\t\tName\t\tValue\n'
     for current_global in globals_sorted_by_size[:PROFILING_DUMP_ROWS_LIMIT]:
-        ret_value += '{}\t\t{}\t\t{}\n'.format(current_global["size"], current_global["name"], shorten_string_for_printing(str(current_global["value"]), 64))
+        ret_value += '{}\t\t{}\t\t{}\n'.format(current_global["size"], current_global["name"],
+                                               shorten_string_for_printing(str(current_global["value"]), 64))
     ret_value += '\n--- End Top {} Globals by Size ---\n'.format(PROFILING_DUMP_ROWS_LIMIT)
 
     return ret_value
@@ -8665,12 +8668,12 @@ def shorten_string_for_printing(source_string, max_length):
     if max_length % 2 == 0:
         # even max_length. Start with one more char than at the beginning
         ret_value = source_string[:extremeties_length + 1] \
-          + '...' \
-          + source_string[-extremeties_length:]
+            + '...' \
+            + source_string[-extremeties_length:]
         return ret_value
     else:
         # odd max_length
         ret_value = source_string[:extremeties_length] \
-          + '...' \
-          + source_string[-extremeties_length:]
+            + '...' \
+            + source_string[-extremeties_length:]
         return ret_value
