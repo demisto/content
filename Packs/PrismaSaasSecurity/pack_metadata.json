@@ -14,5 +14,9 @@
     "keywords": [],
     "itemPrefix": [
         "Saas Security"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }
