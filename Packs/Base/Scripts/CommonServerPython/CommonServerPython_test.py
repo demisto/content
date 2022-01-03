@@ -5928,7 +5928,6 @@ def test_get_message_memory_dump():
     assert ' Globals by Size ' in result
     assert ' End Top ' in result
     assert ' End Variables Dump ' in result
-    assert '<class \'' in result
 
 
 def test_shorten_string_for_printing():
