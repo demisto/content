@@ -1,3 +1,4 @@
+
 {
     "testTimeout": 160,
     "testInterval": 20,
@@ -138,6 +139,26 @@
             "fromversion": "5.5.0",
             "memory_threshold": 300,
             "timeout": 1500
+        },
+        {
+            "integrations": "Azure Storage Container",
+            "playbookID": "playbook-AzureStorageContainer-Test",
+            "fromVersion": "6.0.0"
+        },
+        {
+            "integrations": "Azure Storage FileShare",
+            "playbookID": "playbook-AzureStorageFileShare-Test",
+            "fromVersion": "6.0.0"
+        },
+        {
+            "integrations": "Azure Storage Queue",
+            "playbookID": "playbook-AzureStorageQueue-Test",
+            "fromVersion": "6.0.0"
+        },
+        {
+            "integrations": "Azure Storage Table",
+            "playbookID": "playbook-AzureStorageTable-Test",
+            "fromVersion": "6.0.0"
         },
         {
             "integrations": "EwsExtension",
@@ -4320,6 +4341,13 @@
             ]
         },
         {
+            "playbookID": "Atlassian Confluence Cloud-Test",
+            "fromversion": "6.2.0",
+            "integrations": [
+                "Atlassian Confluence Cloud"
+            ]
+        },
+        {
             "playbookID": "CrowdStrike_Falcon_X_-Test-Detonate_URL",
             "fromversion": "5.0.0",
             "integrations": [
@@ -5018,8 +5046,6 @@
         "AutoFocus V2 test": "Issue 26464",
         "SplunkPy_KV_commands_default_handler": "Issue 41419",
         "LogRhythm REST test": "Issue 40654",
-        "Recorded Future Test": "Quota issue - will ve reverted un 1.1.22",
-        "RecordedFutureFeed - Test": "Quota issue - will ve reverted un 1.1.22",
         "Process Email - Generic - Test - Actual Incident": "Issue 45227"
     },
     "skipped_integrations": {
