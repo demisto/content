@@ -4341,6 +4341,13 @@
             ]
         },
         {
+            "playbookID": "Atlassian Confluence Cloud-Test",
+            "fromversion": "6.2.0",
+            "integrations": [
+                "Atlassian Confluence Cloud"
+            ]
+        },
+        {
             "playbookID": "CrowdStrike_Falcon_X_-Test-Detonate_URL",
             "fromversion": "5.0.0",
             "integrations": [
