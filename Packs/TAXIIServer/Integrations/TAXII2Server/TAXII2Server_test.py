@@ -457,10 +457,3 @@ def test_taxii21_objects_filtered_params(mocker, taxii2_server_v21, res_file, fi
         assert response.status_code == 200
         assert response.content_type == 'application/taxii+json;version=2.1'
         assert response.json == objects
-
-
-def create_json_output_file(result, file_name):
-    json_object = json.dumps(result, indent=4)
-    # Writing to sample.json
-    with open(f"test_files/{file_name}.json", "w") as outfile:
-        outfile.write(json_object)

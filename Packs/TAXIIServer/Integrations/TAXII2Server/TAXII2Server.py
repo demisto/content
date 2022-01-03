@@ -1,14 +1,12 @@
 import functools
 import uuid
 from typing import Callable
-
 from flask import Flask, request, make_response, jsonify, Response
 from urllib.parse import ParseResult, urlparse
 from secrets import compare_digest
 from dateutil.parser import parse
 from requests.utils import requote_uri
 from werkzeug.exceptions import RequestedRangeNotSatisfiable
-
 import demistomock as demisto
 from CommonServerPython import *
 
@@ -180,6 +178,8 @@ class TAXII2Server:
                 description = query_dict.get('description', '')
             else:
                 query = query_dict
+            if query is None:
+                raise Exception('Collection query is required.')
             collection_uuid = str(uuid.uuid5(self.namespace_uuid, 'Collection_' + name))
             collection = {
                 'id': collection_uuid,
@@ -443,7 +443,7 @@ def handle_long_running_error(error: str):
     Args:
         error: The error message.
     """
-    demisto.error(error)
+    demisto.error(traceback.format_exc())
     demisto.updateModuleHealth(error)
 
 
@@ -503,7 +503,7 @@ def create_query(query: str, types: list) -> str:
                     xsoar_type = t
                 xsoar_types.append(xsoar_type)
 
-        new_query = query + ' '
+        new_query = f'({query}) '
         new_query += ' or '.join([f'type:"{x}"' for x in xsoar_types])
 
         demisto.debug(f'new query: {new_query}')
@@ -871,9 +871,9 @@ def taxii2_status(api_root: str, status_id: str) -> Response:  # noqa: F841
 
     Returns: Error response.
     """
-    return handle_response(HTTP_400_BAD_REQUEST, {'title': 'Get Status not allowed.',
-                                                  'description': 'All collections are read-only. '
-                                                                 'Adding objects is not allowed.'})
+    return handle_response(HTTP_404_NOT_FOUND, {'title': 'Get Status not allowed.',
+                                                'description': 'Status ID is not found, or the client does not have '
+                                                               'access to the resource'})
 
 
 @APP.route('/<api_root>/collections/', methods=['GET'])

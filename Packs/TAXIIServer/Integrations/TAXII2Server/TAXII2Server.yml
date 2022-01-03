@@ -26,6 +26,7 @@ configuration:
   required: true
   type: 0
 - display: Username
+  additionalinfo: Credentials to use for the basic auth.
   hidden: false
   name: credentials
   required: false

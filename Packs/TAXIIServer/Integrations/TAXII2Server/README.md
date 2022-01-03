@@ -22,8 +22,8 @@ You can add collection description as it done in `collection1_name`, or enter on
 ## How to Access the TAXII2 Server
 
 Use one of the following options:
-- **https://*demisto_address*/instance/execute/*instance_name/{taxii2_api_endpoint}/*** 
-- **http://*demisto_address*:*listen_port/{taxii2_api_endpoint}/***
+- **https://*demisto_address*/instance/execute/*instance_name*/{taxii2_api_endpoint}/**
+- **http://*demisto_address*:*listen_port*/{taxii2_api_endpoint}/**
 
 ## Access the TAXII Service by Instance Name
 To access the TAXII service by instance name, make sure ***Instance execute external*** is enabled. 
@@ -109,7 +109,7 @@ TIM fields (System generated and custom). A general example of these two related
   "created": "<creation date>",
   "modified": "<modification date>",
   "created_by_ref": "identity--<UUID of creator>",
-  "schema": "https://github.com/demisto/content/tree/master/Packs/TAXIIServer/doc_files/XSOAR_indicator_schema.jso",
+  "schema": "https://github.com/demisto/content/blob/4265bd5c71913cd9d9ed47d9c37d0d4d3141c3eb/Packs/TAXIIServer/doc_files/XSOAR_indicator_schema.json",
   "version": "1.0",
   "extension_types": ["property-extension"]
 },

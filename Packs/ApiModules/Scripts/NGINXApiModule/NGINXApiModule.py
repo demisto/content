@@ -107,7 +107,7 @@ def create_nginx_server_conf(file_path: str, port: int, params: Dict):
     credentials = params.get('credentials') or {}
     if credentials.get('identifier'):
         extra_cache_keys.append("$http_authorization")
-    if INTEGRATION_NAME == 'TAXII2 Server':     # type: ignore[name-defined] # pylint: disable=E0602
+    if get_integration_name() == 'TAXII2 Server':
         extra_cache_keys.append("$http_accept")
         if params.get('version') == '2.0':
             proxy_set_range_header = 'proxy_set_header Range $http_range;'
