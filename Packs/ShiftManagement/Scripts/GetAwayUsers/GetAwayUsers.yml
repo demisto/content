@@ -26,7 +26,9 @@ outputs:
   type: String
 script: '-'
 system: false
-tags: []
+tags:
+- Shift Management
+- widget
 timeout: '0'
 type: python
 subtype: python3
