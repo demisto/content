@@ -29,7 +29,7 @@ the [Amazon AWS Integrations Configuration Guide](https://xsoar.pan.dev/docs/ref
    | Access Key | False |
    | Secret Key | False
    | Timeout | False |
-   | Retres | False |
+   | Retries | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
