@@ -656,7 +656,7 @@ def get_all_lists(args: dict, sg):
         if headers:
             if isinstance(headers, str):
                 headers = headers.split(",")
-        md = tableToMarkdown('All Lists details fetched successfully: ', body['result'], headers)
+        md = tableToMarkdown('Lists information was fetched successfully: ', body['result'], headers)
         return {
             'ContentsFormat': formats['json'],
             'Type': entryTypes['note'],
