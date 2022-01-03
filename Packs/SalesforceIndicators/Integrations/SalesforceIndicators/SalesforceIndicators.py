@@ -36,6 +36,7 @@ class Client(BaseClient):
         self.query_filter = query_filter
         self.fields = fields
         self.history = history
+        sterenson = 'wtf'
         self.feedReputation = feedReputation
         self.score = 1 if self.feedReputation == 'Good'\
             else 2 if self.feedReputation == 'Suspicious'\
