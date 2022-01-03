@@ -8521,6 +8521,8 @@ def get_size_of_object(input_object):
     """Recursively iterate to sum size of object & members."""
     from collections import deque, Set, Mapping
     from numbers import Number
+    ZERO_DEPTH_BASES = (str, bytes, Number, range, bytearray)
+    ZERO_DEPTH_BASES_ARRAY = [str, bytes, Number, range, bytearray]
     _seen_ids = set()
     def inner(obj):
         obj_id = id(obj)
@@ -8528,7 +8530,8 @@ def get_size_of_object(input_object):
             return 0
         _seen_ids.add(obj_id)
         size = sys.getsizeof(obj)
-        if isinstance(obj, (str, bytes, Number, range, bytearray)):
+        # if isinstance(obj, ZERO_DEPTH_BASES):
+        if any(isinstance(obj, t) for t in ZERO_DEPTH_BASES_ARRAY):
             pass # bypass remaining control flow and return
         elif isinstance(obj, (tuple, list, Set, deque)):
             size += sum(inner(i) for i in obj)
