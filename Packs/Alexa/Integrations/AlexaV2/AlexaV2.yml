@@ -3,16 +3,17 @@ commonfields:
   id: Alexa Rank Indicator v2
   version: -1
 configuration:
-- defaultvalue: 'https://awis.api.alexa.com/api'
+- defaultvalue: https://awis.api.alexa.com/api
   display: Base API URL
   name: base_url
   required: true
   type: 0
-- displaypassword: API Key
-  name: credentials
-  type: 9
-  required: true
+- display: ''
+  displaypassword: API Key
   hiddenusername: true
+  name: credentials
+  required: true
+  type: 9
 - display: Use system proxy settings
   name: proxy
   required: false
@@ -21,12 +22,16 @@ configuration:
   name: insecure
   required: false
   type: 8
-- additionalinfo: If the domain's Alexa rank is over this threshold, the domain is marked as suspicious. If the rank is between the threshold for suspicious domains and top domains, the domain is marked as unknown.
+- additionalinfo: If the domain's Alexa rank is over this threshold, the domain is
+    marked as suspicious. If the rank is between the threshold for suspicious domains
+    and top domains, the domain is marked as unknown.
   display: Rank Threshold For Suspicious Domain
   name: suspicious_domain_threshold
   required: false
   type: 0
-- additionalinfo: If the domain's Alexa rank is under this threshold, the domain is considered trusted and marked as good. If the rank is between the threshold for suspicious domains and top domains, the domain is marked as unknown.
+- additionalinfo: If the domain's Alexa rank is under this threshold, the domain is
+    considered trusted and marked as good. If the rank is between the threshold for
+    suspicious domains and top domains, the domain is marked as unknown.
   defaultvalue: '1000'
   display: Rank Threshold For Top Domains
   name: top_domain_threshold
@@ -46,6 +51,15 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ''
+    fromServerVersion: ''
+    itemVersion: ''
+    packID: 9917d19d-2f99-4c37-8082-30b839119f3d
+    propagationLabels:
+    - all
+    toServerVersion: ''
 description: Alexa provides website ranking information that can be useful when determining
   if a domain has a strong web presence.
 display: Alexa Rank Indicator v2
@@ -58,10 +72,7 @@ script:
       isArray: true
       name: domain
       required: true
-      secret: false
-    deprecated: false
     description: Provides an Alexa ranking of the domain.
-    execution: false
     name: domain
     outputs:
     - contextPath: Domain.Name
@@ -89,14 +100,7 @@ script:
       description: Alexa rank as determined by Amazon.
       type: String
   dockerimage: demisto/python3:3.9.9.25564
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
-  script: '-'
+  script: ''
   subtype: python3
   type: python
-tests:
-- AlexaV2 Test Playbook
-fromversion: 5.5.0
