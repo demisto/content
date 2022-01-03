@@ -111,12 +111,17 @@ ENDPOINT_KEY_MAP = {
     'status': 'Status',
 }
 
-MIRROR_DIRECTION = {
+MIRROR_DIRECTION_DICT = {
     'None': None,
     'Incoming': 'In',
     'Outgoing': 'Out',
     'Incoming And Outgoing': 'Both'
 }
+
+# mirroring params
+MIRROR_DIRECTION = MIRROR_DIRECTION_DICT.get(demisto.params().get('mirror_direction'))
+DETECTION_TAG = demisto.params().get('detection_tag')
+MIRROR_INSTANCE = demisto.integrationInstance()
 
 ''' SPLIT KEY DICTIONARY '''
 
@@ -304,6 +309,15 @@ def create_entry_object(contents: Union[List[Any], Dict[str, Any]] = {}, ec: Uni
     }
 
 
+def add_mirroring_fields(incident: Dict):
+    """
+        Updates the given incident to hold the needed mirroring fields.
+    """
+    incident['mirror_direction'] = MIRROR_DIRECTION
+    incident['mirror_tags'] = DETECTION_TAG
+    incident['mirror_instance'] = MIRROR_INSTANCE
+
+
 def detection_to_incident(detection):
     """
         Creates an incident of a detection.
@@ -314,6 +328,8 @@ def detection_to_incident(detection):
         :return: Incident representation of a detection
         :rtype ``dict``
     """
+    add_mirroring_fields(detection)
+
     incident = {
         'name': 'Detection ID: ' + str(detection.get('detection_id')),
         'occurred': str(detection.get('created_timestamp')),
@@ -333,6 +349,8 @@ def incident_to_incident_context(incident):
             :return: Incident context representation of a incident
             :rtype ``dict``
         """
+    add_mirroring_fields(incident)
+
     incident_id = str(incident.get('incident_id'))
     incident_context = {
         'name': f'Incident ID: {incident_id}',
@@ -1523,7 +1541,7 @@ def get_fetch_times_and_offset(incident_type):
     return last_fetch_time, offset, prev_fetch, last_fetch_timestamp
 
 
-def fetch_incidents(mirror_direction: str = None, detection_tag: str = None, mirror_instance: str = None):
+def fetch_incidents():
     incidents = []  # type:List
     current_fetch_info = demisto.getLastRun()
     fetch_incidents_or_detections = demisto.params().get('fetch_incidents_or_detections')
@@ -1560,11 +1578,6 @@ def fetch_incidents(mirror_direction: str = None, detection_tag: str = None, mir
                     if incident_date_timestamp > last_fetch_timestamp:
                         last_fetch_time = incident_date
                         last_fetch_timestamp = incident_date_timestamp
-
-                    # adding fields for mirroring
-                    incident['mirror_direction'] = mirror_direction
-                    incident['mirror_tags'] = [detection_tag]
-                    incident['mirror_instance'] = mirror_instance
 
                     incidents.append(incident)
 
@@ -2992,17 +3005,12 @@ LOG('Command being called is {}'.format(demisto.command()))
 def main():
     command = demisto.command()
     args = demisto.args()
-
-    mirror_direction = MIRROR_DIRECTION.get(demisto.params().get('mirror_direction'))
-    detection_tag = demisto.params().get('detection_tag')
-    mirror_instance = demisto.integrationInstance()
-
     try:
         if command == 'test-module':
             result = test_module()
             return_results(result)
         elif command == 'fetch-incidents':
-            demisto.incidents(fetch_incidents(mirror_direction, detection_tag, mirror_instance))
+            demisto.incidents(fetch_incidents())
 
         elif command in ('cs-device-ran-on', 'cs-falcon-device-ran-on'):
             return_results(get_indicator_device_id())
