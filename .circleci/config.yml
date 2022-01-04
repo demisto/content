@@ -418,9 +418,7 @@ workflows:
   commit:
     when:
       not:
-        or:
-          - << pipeline.parameters.demisto_sdk_nightly >>
-          - << pipeline.parameters.nightly >>
+        - << pipeline.parameters.nightly >>
     jobs:
       - Setup Environment
       - Run Unit Testing And Lint:
