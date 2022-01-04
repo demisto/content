@@ -63,7 +63,7 @@ def checkAPIerrors(query, variables):
         else:
             demisto.log("Retry")
 
-    return result
+    return result.json()
 
 
 def translate_severity(issue):
@@ -223,15 +223,13 @@ def fetch_issues(max_fetch):
         }
     }
 
-    response = checkAPIerrors(query, variables)
-    response_json = response.json()
+    response_json = checkAPIerrors(query, variables)
 
     issues = response_json['data']['issues']['nodes']
     while (response_json['data']['issues']['pageInfo']['hasNextPage']):
 
         variables['after'] = response_json['data']['issues']['pageInfo']['endCursor']
-        response = checkAPIerrors(query, variables)
-        response_json = response.json()
+        response_json = checkAPIerrors(query, variables)
         if response_json['data']['issues']['nodes'] != []:
             issues += (response_json['data']['issues']['nodes'])
 
@@ -399,8 +397,7 @@ def get_filtered_issues(issue_type, resource_id, severity, limit):
                 }
             }
         """)
-        graph_resource_response = checkAPIerrors(get_resource_graph_id_helper_query, get_resource_graph_id_helper_variables)
-        graph_resource_response_json = graph_resource_response.json()
+        graph_resource_response_json = checkAPIerrors(get_resource_graph_id_helper_query, get_resource_graph_id_helper_variables)
         if graph_resource_response_json['data']['graphSearch']['nodes'] != []:
             graph_resource_id = graph_resource_response_json['data']['graphSearch']['nodes'][0]['entities'][0]['id']
             variables = {"first": limit, "filterBy": {"status": ["OPEN", "IN_PROGRESS"], "relatedEntity": {"id":
@@ -426,8 +423,7 @@ def get_filtered_issues(issue_type, resource_id, severity, limit):
             return ("You should only use these severity types: CRITICAL, HIGH, MEDIUM, LOW or INFORMATIONAL in "
                     "upper or lower case.")
 
-    response = checkAPIerrors(query, variables)
-    response_json = response.json()
+    response_json = checkAPIerrors(query, variables)
 
     issues = dict()
     if response_json['data']['issues']['nodes'] != []:
@@ -435,8 +431,7 @@ def get_filtered_issues(issue_type, resource_id, severity, limit):
     while (response_json['data']['issues']['pageInfo']['hasNextPage']):
 
         variables['after'] = response_json['data']['issues']['pageInfo']['endCursor']
-        response = checkAPIerrors(query, variables)
-        response_json = response.json()
+        response_json = checkAPIerrors(query, variables)
         if response_json['data']['issues']['nodes'] != []:
             issues += (response_json['data']['issues']['nodes'])
 
@@ -562,12 +557,11 @@ def get_resource(resource_id):
     """)
 
     try:
-        response = checkAPIerrors(query, variables)
+        response_json = checkAPIerrors(query, variables)
     except DemistoException:
         demisto.debug(f"could not find resource with ID {resource_id}")
         return {}
 
-    response_json = response.json()
     if response_json['data']['graphSearch']['nodes'] is None:
         return "Resource Not Found"
     else:
