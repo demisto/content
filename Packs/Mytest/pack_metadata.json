@@ -1,0 +1,17 @@
+{
+    "name": "Mytest",
+    "description": "",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "MosheEichler",
+    "url": "",
+    "email": "",
+    "created": "2022-01-04T11:02:00Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "MosheEichler"
+    ]
+}
