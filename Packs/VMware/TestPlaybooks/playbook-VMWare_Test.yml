@@ -436,13 +436,13 @@ tasks:
       id: d8da27ae-f9e3-4060-8836-0e31803095c2
       version: -1
       name: 'Check if rebooted successfully '
-      description: |-
-        Verifies path in context:
-        - Verifies path existence
-        - If matching object is an array: verify fields exists in each of the objects in the array
-        - If matching object is not an array: verify fields exists in matching object
-        - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      scriptName: VerifyContext
+      description: This script checks that a context key exists (and contains data),
+        and optionally checks the value of the context key for a match against an
+        input value. If a regex is not supplied, the script checks that the key is
+        not empty. This script can be used with the "GenericPolling" playbook to poll
+        for field population or that a field contains a specific value. This scripts
+        does not support a context key which holds a list of values.
+      scriptName: CheckContextValue
       type: regular
       iscommand: false
       brand: ""
@@ -450,10 +450,7 @@ tasks:
       '#none#':
       - "8"
     scriptarguments:
-      expectedValue:
-        simple: HardRebooted
-      fields: {}
-      path:
+      key:
         complex:
           root: VMWare
           filters:
@@ -466,6 +463,8 @@ tasks:
                 value:
                   simple: test_vm_demo
           accessor: State
+      regex:
+        simple: HardRebooted
     separatecontext: false
     view: |-
       {
