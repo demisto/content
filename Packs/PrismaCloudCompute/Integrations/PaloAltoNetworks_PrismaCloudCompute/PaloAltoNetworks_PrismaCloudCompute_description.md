@@ -12,4 +12,4 @@ This integration provides the ability to import **Palo Alto Networks - Prisma Cl
 6. Click **Save** to save the alert profile.
 7. Make sure you configure the user role to be at least `auditor`, otherwise you will not be able to fetch the alerts.
 
-[Documentation](https://xsoar.pan.dev/docs/reference/integrations/palo-alto-networks-prisma-cloud-compute)
+[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/palo-alto-networks-prisma-cloud-compute)
