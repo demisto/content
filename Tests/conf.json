@@ -1,3 +1,4 @@
+
 {
     "testTimeout": 160,
     "testInterval": 20,
@@ -148,6 +149,26 @@
             "timeout": 1500
         },
         {
+            "integrations": "Azure Storage Container",
+            "playbookID": "playbook-AzureStorageContainer-Test",
+            "fromVersion": "6.0.0"
+        },
+        {
+            "integrations": "Azure Storage FileShare",
+            "playbookID": "playbook-AzureStorageFileShare-Test",
+            "fromVersion": "6.0.0"
+        },
+        {
+            "integrations": "Azure Storage Queue",
+            "playbookID": "playbook-AzureStorageQueue-Test",
+            "fromVersion": "6.0.0"
+        },
+        {
+            "integrations": "Azure Storage Table",
+            "playbookID": "playbook-AzureStorageTable-Test",
+            "fromVersion": "6.0.0"
+        },
+        {
             "integrations": "EwsExtension",
             "playbookID": "O365 - EWS - Extension - Test",
             "fromversion": "6.0.0",
@@ -252,6 +273,11 @@
             "integrations": "URLhaus",
             "playbookID": "Test_URLhaus",
             "timeout": 1000
+        },
+        {
+            "integrations": "AzureDevOps",
+            "playbookID": "playbook-AzureDevOps-Test",
+            "fromversion": "6.0.0"
         },
         {
             "integrations": "Microsoft Intune Feed",
@@ -1429,6 +1455,17 @@
             "playbookID": "EWS Mail Sender Test 2"
         },
         {
+            "integrations": [
+                "EWS Mail Sender",
+                "SMIME Messaging"
+            ],
+            "instance_names": [
+                "ews_mail_sender_labdemisto",
+                "SMIME Messaging"
+            ],
+            "playbookID": "EWS Mail Sender Test 3"
+        },
+        {
             "playbookID": "decodemimeheader_-_test"
         },
         {
@@ -1537,6 +1574,9 @@
             "fromversion": "6.0.0",
             "integrations": "Rasterize",
             "timeout": 240
+        },
+        {
+            "playbookID": "Process Email - Generic - Test - Actual Incident"
         },
         {
             "integrations": "CrowdstrikeFalcon",
@@ -2271,6 +2311,10 @@
             ],
             "memory_threshold": 160,
             "pid_threshold": 80
+        },
+        {
+            "playbookID": "Phishing - Core - Test - Actual Incident",
+            "fromversion": "6.0.0"
         },
         {
             "integrations": "duo",
@@ -4310,6 +4354,13 @@
             ]
         },
         {
+            "playbookID": "Atlassian Confluence Cloud-Test",
+            "fromversion": "6.2.0",
+            "integrations": [
+                "Atlassian Confluence Cloud"
+            ]
+        },
+        {
             "playbookID": "CrowdStrike_Falcon_X_-Test-Detonate_URL",
             "fromversion": "5.0.0",
             "integrations": [
@@ -4324,6 +4375,21 @@
             ]
         },
         {
+            "playbookID": "Phishing - Core - Test - Actual Incident",
+            "fromversion": "6.0.0",
+            "timeout": 4600,
+            "integrations": [
+                "EWS Mail Sender",
+                "Demisto REST API",
+                "Rasterize"
+            ],
+            "memory_threshold": 200
+        },
+        {
+            "playbookID": "Phishing v2 - Test - Actual Incident",
+            "fromversion": "6.0.0"
+        },
+        {
             "playbookID": "Phishing Investigation - Generic v2 - Campaign Test",
             "fromversion": "6.0.0",
             "timeout": 7000,
@@ -4336,7 +4402,9 @@
             "instance_names": [
                 "no_sync_long_timeout",
                 "ews_mail_sender_labdemisto"
-            ]
+            ],
+            "memory_threshold": 160,
+            "pid_threshold": 80
         },
         {
             "playbookID": "PCAP Search test",
@@ -4578,6 +4646,15 @@
             "fromversion": "5.0.0"
         },
         {
+            "playbookID": "Process Email - Generic - Test - Actual Incident",
+            "fromversion": "6.0.0",
+            "integrations": [
+                "XsoarPowershellTesting",
+                "Create-Mock-Feed-Relationships"
+            ],
+            "memory_threshold": 160
+        },
+        {
             "playbookID": "Analyst1 Integration Demonstration - Test",
             "fromversion": "5.0.0",
             "integrations": [
@@ -4804,6 +4881,13 @@
             "fromversion": "6.0.0"
         },
         {
+            "integrations": [
+                "Demisto REST API"
+            ],
+            "playbookID": "TestDemistoRestAPI",
+            "fromversion": "5.5.0"
+        },
+        {
             "scripts": [
                 "SplunkShowAsset",
                 "SplunkShowDrilldown",
@@ -4844,9 +4928,18 @@
         {
             "integrations": "KafkaV3",
             "playbookID": "KafkaV3 Test"
+        },
+        {
+            "integrations": "McAfee ePO v2",
+            "playbookID": "McAfee ePO v2 Test"
+        },
+        {
+            "playbookID": "Dedup - Generic v3",
+            "fromversion": "5.5.0"
         }
     ],
     "skipped_tests": {
+        "playbook-AzureDevOps-Test": "Issue with repetitive calls to Azure DevOps API",
         "MISP V2 Test": "The integration is deprecated as we released MISP V3",
         "Github IAM - Test Playbook": "Issue 32383",
         "O365-SecurityAndCompliance-ContextResults-Test": "Issue 38900",
@@ -4895,6 +4988,7 @@
         "JoeSecurityTestPlaybook": "Issue 25649",
         "Cortex Data Lake Test": "Issue 24346",
         "Phishing - Core - Test - Incident Starter": "Issue 26784",
+        "Phishing - Core - Test - Actual Incident": "Issue 45227",
         "Test Playbook McAfee ATD": "Issue 33409",
         "Detonate Remote File From URL -McAfee-ATD - Test": "Issue 33407",
         "Test Playbook McAfee ATD Upload File": "Issue 33408",
@@ -4966,8 +5060,7 @@
         "AutoFocus V2 test": "Issue 26464",
         "SplunkPy_KV_commands_default_handler": "Issue 41419",
         "LogRhythm REST test": "Issue 40654",
-        "Recorded Future Test": "Quota issue - will ve reverted un 1.1.22",
-        "RecordedFutureFeed - Test": "Quota issue - will ve reverted un 1.1.22"
+        "Process Email - Generic - Test - Actual Incident": "Issue 45227"
     },
     "skipped_integrations": {
         

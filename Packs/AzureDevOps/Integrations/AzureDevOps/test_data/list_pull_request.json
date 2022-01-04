@@ -1,0 +1,109 @@
+{
+  "value": [
+    {
+      "repository": {
+        "id": "XXXX",
+        "name": "xsoar",
+        "url": "https://dev.azure.com/xsoar/xsoar-project/_apis/git/repositories/XXXX",
+        "project": {
+          "id": "xsoar-project",
+          "name": "xsoar",
+          "state": "unchanged",
+          "visibility": "unchanged",
+          "lastUpdateTime": "0001-01-01T00:00:00"
+        }
+      },
+      "pullRequestId": 24,
+      "codeReviewId": 24,
+      "status": "active",
+      "createdBy": {
+        "displayName": "Xsoar Test",
+        "url": "https://spsprodweu5.vssps.visualstudio.com/A2dd9b443-d691-4c04-b9dc-07061750fa07/_apis/Identities/XXXX",
+        "_links": {
+          "avatar": {
+            "href": "https://dev.azure.com/xsoar/_apis/GraphProfile/MemberAvatars/aad.ZWFlMjk2ZGYtMzYwOS03YWY3LWFkNzMtYzNlYmRhZDM3ZmQ5"
+          }
+        },
+        "id": "XXXX",
+        "uniqueName": "test@xsoar.com",
+        "imageUrl": "https://dev.azure.com/xsoar/_api/_common/identityImage?id=XXXX",
+        "descriptor": "aad.ZWFlMjk2ZGYtMzYwOS03YWY3LWFkNzMtYzNlYmRhZDM3ZmQ5"
+      },
+      "creationDate": "2021-10-24T11:12:05.4599589Z",
+      "title": "test-2",
+      "sourceRefName": "refs/heads/qm3",
+      "targetRefName": "refs/heads/main",
+      "mergeStatus": "succeeded",
+      "isDraft": "False",
+      "mergeId": "46ddc2a6-a53e-4f6c-89f7-99cfe88201c7",
+      "lastMergeSourceCommit": {
+        "commitId": "fc506cf94d683baec0c9a460d18f6c8a07b2e593",
+        "url": "https://dev.azure.com/xsoar/xsoar-project/_apis/git/repositories/XXXX/commits/fc506cf94d683baec0c9a460d18f6c8a07b2e593"
+      },
+      "lastMergeTargetCommit": {
+        "commitId": "d44cbcddda038454199a78d4a757341caf2de7f7",
+        "url": "https://dev.azure.com/xsoar/xsoar-project/_apis/git/repositories/XXXX/commits/d44cbcddda038454199a78d4a757341caf2de7f7"
+      },
+      "lastMergeCommit": {
+        "commitId": "238346e48f251136d86a135e11afe6b69fdf062a",
+        "url": "https://dev.azure.com/xsoar/xsoar-project/_apis/git/repositories/XXXX/commits/238346e48f251136d86a135e11afe6b69fdf062a"
+      },
+      "reviewers": [],
+      "url": "https://dev.azure.com/xsoar/xsoar-project/_apis/git/repositories/XXXX/pullRequests/22",
+      "supportsIterations": "True"
+    },
+    {
+      "repository": {
+        "id": "XXXX",
+        "name": "xsoar",
+        "url": "https://dev.azure.com/xsoar/xsoar-project/_apis/git/repositories/XXXX",
+        "project": {
+          "id": "xsoar-project",
+          "name": "xsoar",
+          "state": "unchanged",
+          "visibility": "unchanged",
+          "lastUpdateTime": "0001-01-01T00:00:00"
+        }
+      },
+      "pullRequestId": 22,
+      "codeReviewId": 22,
+      "status": "active",
+      "createdBy": {
+        "displayName": "Xsoar Test",
+        "url": "https://spsprodweu5.vssps.visualstudio.com/A2dd9b443-d691-4c04-b9dc-07061750fa07/_apis/Identities/XXXX",
+        "_links": {
+          "avatar": {
+            "href": "https://dev.azure.com/xsoar/_apis/GraphProfile/MemberAvatars/aad.ZWFlMjk2ZGYtMzYwOS03YWY3LWFkNzMtYzNlYmRhZDM3ZmQ5"
+          }
+        },
+        "id": "XXXX",
+        "uniqueName": "test@xsoar.com",
+        "imageUrl": "https://dev.azure.com/xsoar/_api/_common/identityImage?id=XXXX",
+        "descriptor": "aad.ZWFlMjk2ZGYtMzYwOS03YWY3LWFkNzMtYzNlYmRhZDM3ZmQ5"
+      },
+      "creationDate": "2021-10-24T11:12:05.4599589Z",
+      "title": "test-2",
+      "sourceRefName": "refs/heads/qm3",
+      "targetRefName": "refs/heads/main",
+      "mergeStatus": "succeeded",
+      "isDraft": "False",
+      "mergeId": "46ddc2a6-a53e-4f6c-89f7-99cfe88201c7",
+      "lastMergeSourceCommit": {
+        "commitId": "fc506cf94d683baec0c9a460d18f6c8a07b2e593",
+        "url": "https://dev.azure.com/xsoar/xsoar-project/_apis/git/repositories/XXXX/commits/fc506cf94d683baec0c9a460d18f6c8a07b2e593"
+      },
+      "lastMergeTargetCommit": {
+        "commitId": "d44cbcddda038454199a78d4a757341caf2de7f7",
+        "url": "https://dev.azure.com/xsoar/xsoar-project/_apis/git/repositories/XXXX/commits/d44cbcddda038454199a78d4a757341caf2de7f7"
+      },
+      "lastMergeCommit": {
+        "commitId": "238346e48f251136d86a135e11afe6b69fdf062a",
+        "url": "https://dev.azure.com/xsoar/xsoar-project/_apis/git/repositories/XXXX/commits/238346e48f251136d86a135e11afe6b69fdf062a"
+      },
+      "reviewers": [],
+      "url": "https://dev.azure.com/xsoar/xsoar-project/_apis/git/repositories/XXXX/pullRequests/22",
+      "supportsIterations": "True"
+    }
+  ],
+  "count": 2
+}
