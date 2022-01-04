@@ -1081,6 +1081,12 @@ script:
       name: pr_number
       required: true
       secret: false
+    - default: false
+      description: Project ID.
+      isArray: false
+      name: project_id
+      required: true
+      secret: false
     description: Trigger a contribution build
     name: gitlab-trigger-contribution-build
     outputs:

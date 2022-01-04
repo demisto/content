@@ -142,12 +142,13 @@
         "web_url": "https://server_url/project/-/pipelines/1"
       },
     "expected_prefix": "GitLab.Pipeline",
-    "expected_url_mock_suffix": "projects/2596/trigger/pipeline",
+    "expected_url_mock_suffix": "projects/3/trigger/pipeline",
     "expected_key_field": "id",
     "args": {
       "base_branch": "base_test",
       "pr_number": 1,
-      "contrib_branch": "contrib_branch"
+      "contrib_branch": "contrib_branch",
+      "project_id": "3"
     }
   },
   "jobs": {

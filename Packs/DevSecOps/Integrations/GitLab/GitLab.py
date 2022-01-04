@@ -185,17 +185,17 @@ class Client(BaseClient):
         response = response.strip("'").strip('"')
         return response
 
-    def trigger_contrib_build(self, base_branch: str, contrib_branch: str, pr_number: int, token: str):
+    def trigger_contrib_build(self, base_branch: str, contrib_branch: str, pr_number: int, project_id: str):
         headers = self._headers
         data = {
-            'token': token,
+            'token': self.trigger_token,
             'ref': base_branch,
             'variables[CONTRIB_BRANCH]': contrib_branch,
             'variables[PULL_REQUEST_NUMBER]': pr_number,
             'variables[CI_COMMIT_BRANCH]': base_branch,
             'variables[CI_PIPELINE_SOURCE]': 'contrib'
         }
-        return self._http_request('post', url_suffix='projects/2596/trigger/pipeline', data=data, headers=headers)
+        return self._http_request('post', url_suffix=f'projects/{project_id}/trigger/pipeline', data=data, headers=headers)
 
 
 def get_projects_command(client, args):
@@ -695,10 +695,11 @@ def gitlab_trigger_contribution_build_command(client: Client, args: Dict[str, An
     base_branch = args.get('base_branch', '')
     contrib_branch = args.get('contrib_branch', '')
     pr_number = args.get('pr_number', '')
+    project_id = str(args.get('project_id', ''))
     if not client.trigger_token:
         return_error("A trigger token is required in the integration instance configuration")
 
-    response = client.trigger_contrib_build(base_branch, contrib_branch, pr_number, client.trigger_token)
+    response = client.trigger_contrib_build(base_branch, contrib_branch, pr_number, project_id)
 
     output = {k: v for k, v in response.items() if k in PIPELINE_FIELDS_TO_EXTRACT}
 
