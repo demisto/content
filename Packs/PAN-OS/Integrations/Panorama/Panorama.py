@@ -4680,13 +4680,15 @@ def prettify_matching_rule(matching_rule: dict):
     return pretty_matching_rule
 
 
-def prettify_matching_rules(matching_rules: Union[list, dict]):
+def prettify_matching_rules(matching_rules: Union[list, dict], device):
     if not isinstance(matching_rules, list):  # handle case of only one log that matched the query
         return prettify_matching_rule(matching_rules)
 
     pretty_matching_rules_arr = []
     for matching_rule in matching_rules:
         pretty_matching_rule = prettify_matching_rule(matching_rule)
+        if device:
+            pretty_matching_rule['Device'] = device
         pretty_matching_rules_arr.append(pretty_matching_rule)
 
     return pretty_matching_rules_arr
@@ -4794,16 +4796,17 @@ def panorama_security_policy_match_command(args: dict):
         matching_rules = panorama_security_policy_match(application, category, destination, destination_port, from_, to_,
                                                         protocol, source, source_user, target, vsys)
         if matching_rules:
+
+            device = {key: val for key, val in zip(['Serial', 'Vsys'], [target, vsys]) if val} if target or vsys else {}
             context = {
-                'Rules': prettify_matching_rules(matching_rules['rules']['entry']),
+                'Rules': prettify_matching_rules(matching_rules['rules']['entry'], device),
                 'QueryFields': prettify_query_fields(application, category, destination, destination_port, from_,
                                                      to_, protocol, source, source_user),
                 'Query': build_policy_match_query(application, category, destination, destination_port, from_,
-                                                  to_, protocol, source, source_user),
-                'Device': {'Serial': target}
+                                                  to_, protocol, source, source_user)
             }
-            if target or vsys:
-                context['Device'] = {key: val for key, val in zip(['Serial', 'Vsys'], [target, vsys]) if val}
+            if device:
+                context['Device'] = device
             context_list.append(context)
             raw_list.extend(matching_rules) if isinstance(matching_rules, list) else raw_list.append(matching_rules)
     if not context_list:
