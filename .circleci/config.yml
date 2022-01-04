@@ -329,6 +329,18 @@ references:
               SERVER_URL=$(jq -r 'select(.[].Role == "Server Master") | .[].InstanceDNS' $ENV_RESULTS_PATH)
               python3 ./Utils/comment_on_pr.py -p $PULL_REQUEST_NUMBER -c "Instance is ready. Server link: https://$SERVER_URL, Build link: $CIRCLE_BUILD_URL"
 
+  nightly_jobs: &nightly_jobs
+    - Setup Environment:
+        context: nightly_env
+    - Run Unit Testing And Lint:
+        context: nightly_env
+        requires:
+          - Setup Environment
+    - Run Validations:
+        requires:
+          - Setup Environment
+
+
 jobs:
   Setup Environment:
     <<: *container_config
