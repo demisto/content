@@ -13,14 +13,14 @@ configuration:
   display: Indicator Reputation
   name: feedReputation
   options:
-    - None
-    - Good
-    - Suspicious
-    - Bad
+  - None
+  - Good
+  - Suspicious
+  - Bad
   required: false
   type: 18
 - additionalinfo: Reliability of the source providing the intelligence data
-  defaultvalue: A - Completely reliable
+  defaultvalue: B - Usually reliable
   display: Source Reliability
   name: feedReliability
   options:
@@ -46,10 +46,10 @@ configuration:
 - display: ''
   name: feedExpirationPolicy
   options:
-    - never
-    - interval
-    - indicatorType
-    - suddenDeath
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
   required: false
   type: 17
 - display: ''
@@ -69,7 +69,7 @@ configuration:
 - additionalinfo: 'The indicators'' type to fetch. Indicator type might include the
     following: Domains, IPs, Files and URLs.'
   defaultvalue: Malware,Actors,Indicators
-  display: Indicator Type
+  display: Mandiant indicator type
   name: type
   options:
   - Malware
@@ -82,16 +82,10 @@ configuration:
   name: first_fetch
   required: false
   type: 0
+  additionalinfo: The maximum value allowed is 90 days.
 - defaultvalue: https://api.intelligence.fireeye.com
   display: Server URL (e.g. https://api.intelligence.fireeye.com)
   name: url
-  required: true
-  type: 0
-- additionalinfo: X-App-Name header is required for this API.
-  defaultvalue: content.xsoar.cortex.paloaltonetworks.v1.0
-  display: X-App-Name
-  hidden: false
-  name: xappname
   required: true
   type: 0
 - defaultvalue: '50'
@@ -124,13 +118,13 @@ configuration:
 - additionalinfo: Retrieve additional information for each indicator. Please note
     that this requires additional API calls.
   defaultvalue: 'false'
-  display: Retrieve Indicator Metadata
+  display: Retrieve indicator metadata
   name: indicatorMetadata
   required: false
   type: 8
 - additionalinfo: Please note that this requires additional API calls.
   defaultvalue: 'false'
-  display: Create Relationships.
+  display: Create relationships
   name: indicatorRelationships
   required: false
   type: 8
@@ -138,12 +132,18 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Mandiant Feed
-display: FeedMandiant
+description: Mandiant Feed Integration.
+display: Mandiant Feed
 name: FeedMandiant
 script:
   commands:
   - arguments:
+    - default: true
+      description: update context
+      isArray: false
+      name: update_context
+      required: false
+      secret: false
     - default: false
       description: number of indicators to fetch
       isArray: false
@@ -188,7 +188,7 @@ script:
     description: get mandiant indicators
     execution: false
     name: feed-mandiant-get-indicators
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.9.9.25564
   feed: true
   isfetch: false
   longRunning: false

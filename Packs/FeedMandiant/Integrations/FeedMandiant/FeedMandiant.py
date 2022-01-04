@@ -41,11 +41,11 @@ class MandiantClient(BaseClient):
     """
 
     def __init__(self, base_url: str, username: str, password: str, verify: bool, proxy: bool, timeout: int,
-                 x_app_name: str, first_fetch: str, limit: int, types: List,
+                 first_fetch: str, limit: int, types: List,
                  metadata: bool = False, enrichment: bool = False, tags: List = [], tlp_color: Optional[str] = None):
         super().__init__(base_url=base_url, auth=(username, password), verify=verify, proxy=proxy, ok_codes=[200])
         self._headers = {
-            'X-App-Name': x_app_name,
+            'X-App-Name': "content.xsoar.cortex.paloaltonetworks.v1.0",
             'Accept': 'application/json',
             'Authorization': f'Bearer {self._get_token()}'
         }
@@ -58,7 +58,6 @@ class MandiantClient(BaseClient):
         self.tags = tags
         self.enrichment = enrichment
 
-    @logger
     def _get_token(self) -> str:
         """
         Obtains token from integration context if available and still valid.
@@ -82,7 +81,6 @@ class MandiantClient(BaseClient):
 
         return token
 
-    @logger
     def _generate_token(self) -> str:
         """
         Generates new token.
@@ -119,6 +117,7 @@ class MandiantClient(BaseClient):
         if url[-1] == '/':
             url = url[:-1]
 
+        call_result = {}
         try:
             call_result = self._http_request(method="GET", url_suffix=url, timeout=self.timeout)
         except DemistoException as e:
@@ -134,7 +133,7 @@ class MandiantClient(BaseClient):
                 if isinstance(res, str) and res == 'redacted':
                     res = []  # type: ignore
                 elif res and isinstance(res, dict):
-                    res = list(res.values())
+                    res = list(res.values())  # type:ignore
             else:
                 res = call_result.get(info_type, [])
         return res
@@ -144,8 +143,6 @@ class MandiantClient(BaseClient):
         Get additional information for given indicator.
 
         Args:
-            identifier (str): Indicator's id.
-            info_type (str): Additional info type.
             indicator_type (str): The indicator type.
             params (Dict): HTTP call params
         Returns:
@@ -259,73 +256,35 @@ def get_verdict(mscore: Optional[str]) -> int:
         return Common.DBotScore.NONE
 
 
-def get_relationships_malware(raw_indicator: Dict) -> List:
+def get_indicator_relationships(raw_indicator: Dict, indicator_field: str, entity_a_field: str, entity_a_type: str,
+                                entity_b_field: str, entity_b_type: str, name: str, reverse_name: str):
     """
-    Creates relationships for the given indicator (Malware type)
+    Creates relationships for the given indicator
+
     Args:
         raw_indicator (Dict): indicator
+        indicator_field (str): indicator field that contains the entities list
+        entity_a_field (str): indicator field that contains the entity name
+        entity_a_type (str): indicator field that contains the entity type
+        entity_b_field (str): entity field that contains the entity name
+        entity_b_type (str): entity field that contains the entity type
+        name (str): the relationship name
+        reverse_name (str): the relationship reverse name
 
     Returns:
-        List: list of relationships
+
     """
+    entities_list = raw_indicator.get(indicator_field, [])
     relationships = []
-    actors_list = raw_indicator.get('actors', [])
-    if actors_list != 'redacted':
-        for actor in actors_list:
-            relationships.append(
-                EntityRelationship(entity_a=raw_indicator.get('name', ''),
-                                   entity_a_type=ThreatIntel.ObjectsNames.MALWARE,
-                                   name=EntityRelationship.Relationships.RELATED_TO,
-                                   entity_b=actor.get('name'),
-                                   entity_b_type=ThreatIntel.ObjectsNames.THREAT_ACTOR,
-                                   reverse_name=EntityRelationship.Relationships.RELATED_TO
-                                   ).to_indicator())
-    cve_list = raw_indicator.get('cve', [])
-    if cve_list != 'redacted':
-        for cve in cve_list:
-            relationships.append(
-                EntityRelationship(entity_a=raw_indicator.get('name', ''),
-                                   entity_a_type=ThreatIntel.ObjectsNames.MALWARE,
-                                   name=EntityRelationship.Relationships.RELATED_TO,
-                                   entity_b=cve.get('name'),
-                                   entity_b_type=FeedIndicatorType.CVE,
-                                   reverse_name=EntityRelationship.Relationships.RELATED_TO
-                                   ).to_indicator())
-    return relationships
-
-
-def get_relationships_actor(raw_indicator: Dict) -> List:
-    """
-    Creates relationships for the given indicator (actor type)
-    Args:
-        raw_indicator (Dict): indicator
-
-    Returns:
-        List: list of relationships
-    """
-    relationships = []
-    malware_list = raw_indicator.get('malware', [])
-    if malware_list != 'reducted':
-        for malware in malware_list:
-            relationships.append(
-                EntityRelationship(entity_a=raw_indicator.get('name', ''),
-                                   entity_a_type=ThreatIntel.ObjectsNames.THREAT_ACTOR,
-                                   name=EntityRelationship.Relationships.RELATED_TO,
-                                   entity_b=malware.get('name'),
-                                   entity_b_type=ThreatIntel.ObjectsNames.MALWARE,
-                                   reverse_name=EntityRelationship.Relationships.RELATED_TO
-                                   ).to_indicator())
-    cve_list = raw_indicator.get('cve', [])
-    if cve_list != 'redacted':
-        for cve in cve_list:
-            relationships.append(
-                EntityRelationship(entity_a=raw_indicator.get('name', ''),
-                                   entity_a_type=ThreatIntel.ObjectsNames.THREAT_ACTOR,
-                                   name=EntityRelationship.Relationships.TARGETS,
-                                   entity_b=cve.get('cve_id'),
-                                   entity_b_type=FeedIndicatorType.CVE,
-                                   reverse_name=EntityRelationship.Relationships.TARGETED_BY
-                                   ).to_indicator())
+    if entities_list != 'redacted':
+        relationships = [EntityRelationship(entity_a=raw_indicator.get(entity_a_field, ''),
+                                            entity_a_type=entity_a_type,
+                                            name=name,
+                                            entity_b=entity.get(entity_b_field, ''),
+                                            entity_b_type=entity_b_type,
+                                            reverse_name=reverse_name
+                                            )
+                         for entity in entities_list]
     return relationships
 
 
@@ -341,7 +300,7 @@ def create_malware_indicator(client: MandiantClient, raw_indicator: Dict) -> Dic
     fields = {'operatingsystemrefs': raw_indicator.get('operating_systems'),
               'aliases': raw_indicator.get('aliases'),
               'capabilities': raw_indicator.get('capabilities'),
-              'tags': [i.get('name', '') for i in   # type:ignore
+              'tags': [i.get('name', '') for i in  # type:ignore
                        argToList(raw_indicator.get('industries'))] + client.tags,  # type:ignore
               'mandiantdetections': raw_indicator.get('detections'),
               'yara': [(yara.get('name'), yara.get('id')) for yara in  # type: ignore
@@ -356,117 +315,25 @@ def create_malware_indicator(client: MandiantClient, raw_indicator: Dict) -> Dic
               }
 
     fields = {k: v for k, v in fields.items() if v and v != 'redacted'}  # filter none and redacted values
+
+    relationships = get_indicator_relationships(raw_indicator, 'actors', 'name', ThreatIntel.ObjectsNames.MALWARE,
+                                                'name',
+                                                ThreatIntel.ObjectsNames.THREAT_ACTOR,
+                                                EntityRelationship.Relationships.RELATED_TO,
+                                                EntityRelationship.Relationships.RELATED_TO)
+
+    relationships += get_indicator_relationships(raw_indicator, 'cve', 'name', ThreatIntel.ObjectsNames.MALWARE,
+                                                 'name',
+                                                 FeedIndicatorType.CVE,
+                                                 EntityRelationship.Relationships.RELATED_TO,
+                                                 EntityRelationship.Relationships.RELATED_TO)
     indicator_obj = {
         'value': raw_indicator.get('name'),
         'type': ThreatIntel.ObjectsNames.MALWARE,
         'rawJSON': raw_indicator,
         'score': get_verdict(raw_indicator.get('mscore')),
         'fields': fields,
-        'relationships': get_relationships_malware(raw_indicator)
-    }
-    return indicator_obj
-
-
-def create_report_indicator(client: MandiantClient, raw_indicator: Dict, entity_a: str, entity_a_type: str) -> Dict:
-    """
-      Creates a malware indicator
-      Args:
-        client (MandiantClient): client
-        raw_indicator (Dict): indicator
-        entity_a (str): entity_a name (for relationship)
-        entity_a_type (str): entity_a type (for relationship)
-      Returns:
-          Dict: report indicator
-    """
-    fields = {'mandiantreportid': raw_indicator.get('report_id'),
-              'tags': argToList(raw_indicator.get('intelligence_type')) + client.tags,
-              'stixid': raw_indicator.get('id'),
-              'title': raw_indicator.get('title'),
-              'published': raw_indicator.get('published_date'),
-              'mandiantversion': raw_indicator.get('version'),
-              'reporttype': raw_indicator.get('report_type'),
-              'trafficlightprotocol': client.tlp_color
-              }
-
-    fields = {k: v for k, v in fields.items() if v and v != 'redacted'}
-    indicator_obj = {
-        'value': raw_indicator.get('title'),
-        'type': ThreatIntel.ObjectsNames.REPORT,
-        'rawJSON': raw_indicator,
-        'fields': fields,
-        'score': get_verdict(raw_indicator.get('mscore')),
-        'relationships': [EntityRelationship(entity_a=entity_a,
-                                             entity_a_type=entity_a_type,
-                                             name=EntityRelationship.Relationships.RELATED_TO,
-                                             entity_b=raw_indicator.get('title'),
-                                             entity_b_type=ThreatIntel.ObjectsNames.REPORT,
-                                             reverse_name=EntityRelationship.Relationships.RELATED_TO
-                                             ).to_indicator()]
-    }
-    return indicator_obj
-
-
-def create_general_indicator(raw_indicator: Dict, entity_a: str, entity_a_type: str) -> Dict:
-    """
-      Creates a malware indicator
-      Args:
-        raw_indicator (Dict): indicator
-        entity_a (str): entity_a name (for relationship)
-        entity_a_type (str): entity_a type (for relationship)
-      Returns:
-          Dict: report indicator
-    """
-    indicator_obj = {
-        'value': raw_indicator.get('value'),
-        'type': MAP_INDICATORS_TYPE[raw_indicator.get('type', '')],
-        'rawJSON': raw_indicator,
-        'score': get_verdict(raw_indicator.get('mscore')),
-        'relationships': [EntityRelationship(entity_a=entity_a,
-                                             entity_a_type=entity_a_type,
-                                             name=EntityRelationship.Relationships.INDICATED_BY,
-                                             entity_b=raw_indicator.get('value'),
-                                             entity_b_type=MAP_INDICATORS_TYPE[raw_indicator.get('type', '')],
-                                             reverse_name=EntityRelationship.Relationships.INDICATOR_OF
-                                             ).to_indicator()]
-    }
-    return indicator_obj
-
-
-def create_attack_pattern_indicator(client: MandiantClient, raw_indicator: Dict, entity_a: str,
-                                    entity_a_type: str) -> Dict:
-    """
-        Creates a attack_pattern indicator
-        Args:
-          client (MandiantClient): client
-          raw_indicator (Dict): indicator
-          entity_a (str): entity_a name (for relationship)
-          entity_a_type (str): entity_a type (for relationship)
-        Returns:
-            Dict: attack_pattern indicator
-      """
-    fields = {'creationdate': raw_indicator.get('created'),
-              'name': raw_indicator.get('name'),
-              'aliases': raw_indicator.get('attack_pattern_identifier'),
-              'updateddate': raw_indicator.get('modified'),
-              'description': raw_indicator.get('description'),
-              'stixid': raw_indicator.get('id'),
-              'trafficlightprotocol': client.tlp_color
-              }
-
-    fields = {k: v for k, v in fields.items() if v and v != 'redacted'}
-    indicator_obj = {
-        'value': raw_indicator.get('title'),
-        'type': ThreatIntel.ObjectsNames.REPORT,
-        'rawJSON': raw_indicator,
-        'fields': fields,
-        'score': get_verdict(raw_indicator.get('mscore')),
-        'relationships': [EntityRelationship(entity_a=entity_a,
-                                             entity_a_type=entity_a_type,
-                                             name=EntityRelationship.Relationships.USES,
-                                             entity_b=raw_indicator.get('title'),
-                                             entity_b_type=ThreatIntel.ObjectsNames.ATTACK_PATTERN,
-                                             reverse_name=EntityRelationship.Relationships.USED_BY
-                                             ).to_indicator()]
+        'relationships': relationships
     }
     return indicator_obj
 
@@ -497,13 +364,26 @@ def create_actor_indicator(client: MandiantClient, raw_indicator: Dict) -> Dict:
               }
 
     fields = {k: v for k, v in fields.items() if v and v != 'redacted'}  # filter none and redacted values
+
+    relationships = get_indicator_relationships(raw_indicator, 'malware', 'name', ThreatIntel.ObjectsNames.THREAT_ACTOR,
+                                                'name',
+                                                ThreatIntel.ObjectsNames.MALWARE,
+                                                EntityRelationship.Relationships.RELATED_TO,
+                                                EntityRelationship.Relationships.RELATED_TO)
+
+    relationships += get_indicator_relationships(raw_indicator, 'cve', 'name', ThreatIntel.ObjectsNames.THREAT_ACTOR,
+                                                 'cve_id',
+                                                 FeedIndicatorType.CVE,
+                                                 EntityRelationship.Relationships.TARGETS,
+                                                 EntityRelationship.Relationships.TARGETED_BY)
+
     indicator_obj = {
         'value': raw_indicator.get('name'),
         'type': ThreatIntel.ObjectsNames.THREAT_ACTOR,
         'rawJSON': raw_indicator,
         'score': get_verdict(raw_indicator.get('mscore')),
         'fields': fields,
-        'relationships': get_relationships_actor(raw_indicator)
+        'relationships': relationships
     }
     return indicator_obj
 
@@ -569,7 +449,7 @@ def test_module(client: MandiantClient, args: Dict) -> str:
     return message
 
 
-def add_relationships(client: MandiantClient, indicators_list: List, indicator_type: str) -> List:
+def enrich_indicators(client: MandiantClient, indicators_list: List, indicator_type: str) -> None:
     """
     For each indicator in indicators_list create relationships and adding the relevant indicators
     Args:
@@ -580,36 +460,50 @@ def add_relationships(client: MandiantClient, indicators_list: List, indicator_t
     Returns:
         List of relevant indicators
     """
-    indicators: List[Dict] = []
     for indicator in indicators_list:
         indicator_id = indicator.get('fields', {}).get('stixid', '')
         indicator_name = indicator.get('fields', {}).get('name', '')
+
         reports_list = client.get_indicator_additional_info(indicator_type=indicator_type,
                                                             identifier=indicator_id,
                                                             info_type='reports')
 
-        reports = [create_report_indicator(client, report, indicator_name, MAP_NAME_TO_TYPE[indicator_type])
-                   for report in reports_list if report]
+        reports_relationships = [EntityRelationship(entity_a=indicator_name,
+                                                    entity_a_type=MAP_NAME_TO_TYPE[indicator_type],
+                                                    name=EntityRelationship.Relationships.RELATED_TO,
+                                                    entity_b=report.get('title'),
+                                                    entity_b_type=ThreatIntel.ObjectsNames.REPORT,
+                                                    reverse_name=EntityRelationship.Relationships.RELATED_TO
+                                                    )
+                                 for report in reports_list if report]
 
-        general_indicators_list = client.get_indicator_additional_info(indicator_type=indicator_type,
-                                                                       identifier=indicator_id,
-                                                                       info_type='indicators')
+        general_list = client.get_indicator_additional_info(indicator_type=indicator_type,
+                                                            identifier=indicator_id,
+                                                            info_type='indicators')
 
-        general_indicators = [create_general_indicator(general_indicator, indicator_name,
-                                                       MAP_NAME_TO_TYPE[indicator_type])
-                              for general_indicator in general_indicators_list if general_indicator]
+        general_relationships = [EntityRelationship(entity_a=indicator_name,
+                                                    entity_a_type=MAP_NAME_TO_TYPE[indicator_type],
+                                                    name=EntityRelationship.Relationships.INDICATED_BY,
+                                                    entity_b=general_indicator.get('value'),
+                                                    entity_b_type=MAP_INDICATORS_TYPE[
+                                                        general_indicator.get('type', '')],
+                                                    reverse_name=EntityRelationship.Relationships.INDICATOR_OF)
+                                 for general_indicator in general_list if general_indicator]
 
         attack_pattern_list = client.get_indicator_additional_info(indicator_type=indicator_type,
                                                                    identifier=indicator_id,
                                                                    info_type='attack-pattern')
 
-        attack_pattern = [create_attack_pattern_indicator(client, attack_pattern, indicator_name,
-                                                          MAP_NAME_TO_TYPE[indicator_type])
-                          for attack_pattern in attack_pattern_list if attack_pattern]
+        attack_pattern_relationships = [EntityRelationship(entity_a=indicator_name,
+                                                           entity_a_type=MAP_NAME_TO_TYPE[indicator_type],
+                                                           name=EntityRelationship.Relationships.USES,
+                                                           entity_b=attack_pattern.get('title'),
+                                                           entity_b_type=ThreatIntel.ObjectsNames.ATTACK_PATTERN,
+                                                           reverse_name=EntityRelationship.Relationships.USED_BY
+                                                           )
+                                        for attack_pattern in attack_pattern_list if attack_pattern]
 
-        indicators = indicators + reports + general_indicators + attack_pattern
-
-    return indicators
+        indicator['relationships'] += reports_relationships + general_relationships + attack_pattern_relationships
 
 
 def fetch_indicators(client: MandiantClient, args: Dict = {}, update_context: bool = True):
@@ -650,7 +544,8 @@ def fetch_indicators(client: MandiantClient, args: Dict = {}, update_context: bo
         indicators = [MAP_INDICATORS_FUNCTIONS[indicator_type](client, indicator) for indicator in indicators_list]
 
         if enrichment and indicator_type != 'Indicators':
-            indicators = add_relationships(client, indicators, indicator_type)
+            enrich_indicators(client, indicators, indicator_type)
+
         result += indicators
 
     return result
@@ -706,7 +601,6 @@ def main() -> None:
     password = auth.get('password', '')
     base_url = params.get('url', '')
     timeout = int(params.get('timeout', 60))
-    x_app_name = params.get('xappname')
     tlp_color = demisto.params().get('tlp_color')
     feedTags = argToList(demisto.params().get('feedTags'))
     first_fetch = params.get('first_fetch', '3 days ago')
@@ -724,7 +618,6 @@ def main() -> None:
             username=username,
             password=password,
             timeout=timeout,
-            x_app_name=x_app_name,
             tags=feedTags,
             tlp_color=tlp_color,
             first_fetch=first_fetch,
