@@ -11,5 +11,3 @@ This integration provides the ability to import **Palo Alto Networks - Prisma Cl
 5. On the right, select the alert triggers. Alert triggers specify which alerts are sent to Cortex XSOAR.
 6. Click **Save** to save the alert profile.
 7. Make sure you configure the user role to be at least `auditor`, otherwise you will not be able to fetch the alerts.
-
-[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/palo-alto-networks-prisma-cloud-compute)
