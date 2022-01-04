@@ -4659,7 +4659,7 @@ def panorama_security_policy_match(application: Optional[str] = None, category: 
     return result['response']['result']
 
 
-def prettify_matching_rule(matching_rule: dict):
+def prettify_matching_rule(matching_rule: dict, device: dict):
     pretty_matching_rule = {}
 
     if '@name' in matching_rule:
@@ -4676,19 +4676,19 @@ def prettify_matching_rule(matching_rule: dict):
         pretty_matching_rule['Category'] = matching_rule['category']
     if 'action' in matching_rule:
         pretty_matching_rule['Action'] = matching_rule['action']
+    if device:
+        pretty_matching_rule['Device'] = device
 
     return pretty_matching_rule
 
 
 def prettify_matching_rules(matching_rules: Union[list, dict], device):
     if not isinstance(matching_rules, list):  # handle case of only one log that matched the query
-        return prettify_matching_rule(matching_rules)
+        return prettify_matching_rule(matching_rules, device)
 
     pretty_matching_rules_arr = []
     for matching_rule in matching_rules:
-        pretty_matching_rule = prettify_matching_rule(matching_rule)
-        if device:
-            pretty_matching_rule['Device'] = device
+        pretty_matching_rule = prettify_matching_rule(matching_rule, device)
         pretty_matching_rules_arr.append(pretty_matching_rule)
 
     return pretty_matching_rules_arr
