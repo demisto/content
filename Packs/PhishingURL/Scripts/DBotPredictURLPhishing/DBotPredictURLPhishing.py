@@ -661,16 +661,35 @@ def extract_embedded_urls_from_html(html):
                 embedded_urls.append(a['href'])
     return embedded_urls
 
+def get_urls_to_run(email_body, email_html, urls_argument, max_urls, model, msg_list, debug):
+    if email_body:
+        urls_email_body = extract_urls(email_body)
+    else:
+        if (not email_body and email_html):
+            urls_email_body = extract_urls(BeautifulSoup(email_html).get_text())
+        else:
+            urls_email_body = []
+    if email_html:
+        urls_email_html = extract_embedded_urls_from_html(email_html)
+    else:
+        urls_email_html = []
+    if isinstance(urls_argument, list):
+        urls_only = urls_argument
+    else:
+        urls_only = [x.strip() for x in urls_argument.split(' ') if x]
+    urls = urls_email_body + urls_only + urls_email_html
+    if not urls:
+        msg_list.append(MSG_NO_URL_GIVEN)
+        demisto.results(MSG_NO_URL_GIVEN)
+        return
+    urls = get_final_urls(urls, max_urls, model)
+    urls = [demisto.executeCommand("UnEscapeURLs", {"input": x})[0]['Contents'] for x in urls]
+    if debug:
+        demisto.results(urls)
+    return urls, msg_list
 
-def main():
-    msg_list = []
-    exist, demisto_major_version, demisto_minor_version, model_data = oob_model_exists_and_updated()
-    reset_model = demisto.args().get('resetModel', 'False') == 'True'
-    debug = demisto.args().get('debug', 'False') == 'True'
-    force_model = demisto.args().get('forceModel', 'False') == 'True'
-    email_body = demisto.args().get('emailBody', "")
-    email_html = demisto.args().get('emailHTML', "")
-    max_urls = int(demisto.args().get('maxNumberOfURL', 5))
+
+def update_and_load_model(debug, exist, reset_model, msg_list, demisto_major_version, demisto_minor_version, model_data):
     if debug:
         if exist:
             msg_list.append(MSG_MODEL_VERSION_IN_DEMISTO % (demisto_major_version, demisto_minor_version))
@@ -682,7 +701,7 @@ def main():
         model_64_str = get_model_data(URL_PHISHING_MODEL_NAME)[0]
         model = decode_model_data(model_64_str)
 
-    elif (demisto_major_version == MAJOR_VERSION):
+    elif demisto_major_version == MAJOR_VERSION:
         model = decode_model_data(model_data)
         msg_list.append(MSG_NO_ACTION_ON_MODEL)
     elif (demisto_major_version < MAJOR_VERSION) and (demisto_minor_version > MINOR_DEFAULT_VERSION):
@@ -700,33 +719,31 @@ def main():
     else:
         msg_list.append(MSG_WRONG_CONFIG_MODEL)
         return_error(MSG_WRONG_CONFIG_MODEL)
+    return model, msg_list
 
-    if email_body:
-        urls_email_body = extract_urls(email_body)
-    else:
-        if (not email_body and email_html):
-            urls_email_body = extract_urls(BeautifulSoup(email_html).get_text())
-        else:
-            urls_email_body = []
-    if email_html:
-        urls_email_html = extract_embedded_urls_from_html(email_html)
-    else:
-        urls_email_html = []
+def main():
+    msg_list = []
+    exist, demisto_major_version, demisto_minor_version, model_data = oob_model_exists_and_updated()
+
+    #Load arguments
+    reset_model = demisto.args().get('resetModel', 'False') == 'True'
+    debug = demisto.args().get('debug', 'False') == 'True'
+    force_model = demisto.args().get('forceModel', 'False') == 'True'
+    email_body = demisto.args().get('emailBody', "")
+    email_html = demisto.args().get('emailHTML', "")
+    max_urls = int(demisto.args().get('maxNumberOfURL', 5))
     urls_argument = demisto.args().get('urls', '')
-    if isinstance(urls_argument, list):
-        urls_only = urls_argument
-    else:
-        urls_only = [x.strip() for x in demisto.args().get('urls', '').split(' ') if x]
-    urls = urls_email_body + urls_only + urls_email_html
-    if not urls:
-        msg_list.append(MSG_NO_URL_GIVEN)
-        demisto.results(MSG_NO_URL_GIVEN)
-        return
-    urls = get_final_urls(urls, max_urls, model)
-    urls = [demisto.executeCommand("UnEscapeURLs", {"input": x})[0]['Contents'] for x in urls]
-    if debug:
-        demisto.results(urls)
+
+    # Update model if necessary and load the model
+    model, msg_list = update_and_load_model(debug, exist, reset_model, msg_list, demisto_major_version, demisto_minor_version, model_data)
+
+    # Get all the URLs on which we will run the model
+    urls, msg_list = get_urls_to_run(email_body, email_html, urls_argument, max_urls, model, msg_list, debug)
+
+    #Run the model and get predictions
     results = [get_prediction_single_url(model, x, force_model, debug) for x in urls]
+
+    # Return outputs
     general_summary = return_general_summary(results)
     detailed_summary = return_detailed_summary(results)
     if debug:
