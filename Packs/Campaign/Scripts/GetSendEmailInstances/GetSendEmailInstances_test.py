@@ -1,14 +1,3 @@
-from GetCampaignIncidentsIdsAsOptions import *
-import GetCampaignIncidentsIdsAsOptions
-
-REQUIRED_KEYS = ['id', 'name', 'email_from', 'recipients', 'severity', 'status', 'created']
-STR_VAL_KEYS = ['name', 'email_from', 'recipients', 'created']
-
-NUM_OF_INCIDENTS = 5
-MOCKED_INCIDENTS = [
-    {key.replace('_', ''): f'test_{key}_{i}' if key in STR_VAL_KEYS else i for key in REQUIRED_KEYS}
-    for i in range(NUM_OF_INCIDENTS, 0, -1)
-]
 
 
 # def test_get_incident_ids_as_options_happy_path(mocker):

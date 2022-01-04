@@ -15,8 +15,9 @@ def main():
         if not emailto:
             return_error(INVALID_EMAIL_TO_MSG)
 
-        demisto.executeCommand("send-mail", {"to": emailto, "subject": subject, "body": email_body,
-                                             "using": instance_to_use})
+        res = demisto.executeCommand("send-mail", {"to": emailto, "subject": subject, "body": email_body,
+                                                   "using": instance_to_use})
+        return_results(res)
     except Exception as ex:
         return_error(f'Failed to execute SendEmailToCampaignRecipients. Error: {str(ex)}')
 

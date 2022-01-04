@@ -1,7 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-NO_SENDMAIL_INCTANCES_MSG = 'There is no enabled instances to send-mail'
+NO_SENDMAIL_INSTANCES_MSG = 'There is no enabled instances to send-mail'
 
 
 def get_sendmail_instances():
@@ -34,9 +34,14 @@ def get_sendmail_instances():
 
     integration_instances = integration_search['instances']
 
-    # todd: change to -> brand: [instances]
-    integration_instances_enabled = {integration['brand']: integration['name'] for integration in integration_instances
-                                     if integration['enabled'] == 'true'}
+    integration_instances_enabled: Dict[str, list] = dict()
+
+    for integration in integration_instances:
+        if integration['enabled'] == 'true':
+            if not integration_instances_enabled.get(integration['brand']):
+                integration_instances_enabled[integration['brand']] = []
+
+            integration_instances_enabled[integration['brand']].append(integration['name'])
 
     integrations_that_send_mail = []
 
@@ -47,47 +52,34 @@ def get_sendmail_instances():
         if 'commands' in integration:
             for command in integration['commands']:
 
-                command_name = command['name']
-                if command_name == 'send-mail':
-                    if integration_name in integration_instances_enabled:
-                        integrations_that_send_mail.append(integration_name)
+                if command['name'] == 'send-mail':
+                    if integration_name in integration_instances_enabled.keys():
+                        integrations_that_send_mail.extend(integration_instances_enabled[integration_name])
 
     if len(integrations_that_send_mail) == 0:
         return []
     else:
-        demisto.results(','.join(integrations_that_implement))
+        return integrations_that_send_mail
 
 
-def get_incident_ids_as_options(incidents):
+def get_enabled_instances():
     """
-        Collect the campaign incidents ids form the context and return them as options for MultiSelect field
-
-        :type incidents: ``list``
-        :param incidents: the campaign incidents to collect ids from
+        Collect the enabled instances that has send-mail command, for SingleSelect field
 
         :rtype: ``dict``
-        :return: dict with the ids as options for MultiSelect field e.g {"hidden": False, "options": ids}
+        :return: dict with the ids as options for SingleSelect field e.g
+        {"hidden": False, "options": send_mail_instances}
     """
-    return {"hidden": False, "options": ['4', '5', '6']}
+    send_mail_instances = get_sendmail_instances()
+    # send_mail_instances.insert(0, NO_SENDMAIL_INSTANCES_MSG)
+    return {"hidden": False, "options": send_mail_instances}
 
 
 def main():
 
     try:
-        # incidents = get_campaign_incidents()
-        # if incidents:
-        #     result = get_incident_ids_as_options(incidents)
-        # else:
-        #     result = NO_CAMPAIGN_INCIDENTS_MSG
-        #
-        result = get_sendmail_instances()
-        results = CommandResults(
-            readable_output='markdown',
-            outputs_prefix='TestGetSendEmail',
-            outputs_key_field='',
-            outputs=result
-        )
-        return_results(results)
+        result = get_enabled_instances()
+        return_results(result)
 
     except Exception as err:
         return_error(str(err), error=traceback.format_exc())
