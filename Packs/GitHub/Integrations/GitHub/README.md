@@ -1,27 +1,75 @@
-Integration to GitHub API.
+## Overview
+[GitHub](https://github.com/about) is a provider of Internet hosting for software development and version control using Git. It offers the distributed version control and source code management (SCM) functionality of Git, plus its own features. It provides access control and several collaboration features such as bug tracking, feature requests, task management, continuous integration and wikis for every project.
 
-## Configure GitHub on Cortex XSOAR
+## Use Cases
+Among other things, this integration enables you to:
+- Create, close, or update a GitHub issue.
+- Get a list of all GitHub issues you have access to.
+- Create a branch in GitHub.
+- Get a list of a GitHub issue's comments.
+- Create or update a GitHub pull request.
+- Search for a GitHub pull request.
+- Get a list of files for a GitHub pull request.
+- Get a list of inactive GitHub pull requests.
+- Get the contents of a file in GitHub.
+- Create a release.
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for GitHub.
-3. Click **Add instance** to create and configure a new integration instance.
+## Configuration
+You need to collect several pieces of information in order to configure the integration on Cortex XSOAR.
 
-    | **Parameter** | **Required** |
+#### Create a new GitHub App for XSOAR Or Personal Access Token
+ 
+Personal access tokens (PATs) are an alternative to using passwords for authentication to GitHub when using the GitHub API, please follow the below steps to generate a new Token:
+1. Navigate to the upper-right corner of any page and click your **profile photo**. 
+2. In the left sidebar, click **Developer settings**. 
+3. In the left sidebar, click **Personal access tokens** and click **Generate new token**. 
+4. Give your token a descriptive name. 
+5. To give your token an expiration, select the **Expiration drop-down** menu, then click a default or use the calendar picker. 
+6. Select the **scopes**, or **permissions**, you'd like to grant this token. Minimum is read-only on repo.
+7. Click **Generate token** and copy the token generated.
+
+Another authentication options is to create and register a GitHub App under your personal account or under any organization you have administrative access to.
+1. Navigate to the upper-right corner of any page and click your **profile photo**:
+   - In case of Personal Account owned App, then go to your **Account Settings**.
+   - In case of Organization owned App, click Your organizations. Then, to the right of the organization, click **Settings** 
+2. In the left sidebar, click **Developer settings**, from the sub-menu, click **GitHub Apps**.
+3. Click **New GitHub App**. 
+   - In **GitHub App name**, type the name of your app. 
+   - In **Homepage URL**, type in any URL as the field is required. example: https://xsoar.local
+   - Deselect the **Active** option under the **Webhook settings**
+   - In **Permissions**, choose the permissions your app will request. For each type of permission, use the drop-down menu and click Read-only, Read & write, or No access, minimum is read-only permissions for **Pull requests**, **Checks**, **Pull requests**, **Security events** and **Commit statuses**.
+   - Click **Create GitHub App**. 
+   - Click to generate a **private key** in order to install your GitHub App.
+4. Once you create a private GitHub App, you can install it on one of your org or user repositories.
+   - From the **GitHub Apps settings** page, select your app
+   - In the left sidebar, click **Install App**.
+   - Click **Install** next to the organization or user account containing the correct repository.
+   - Install the app on all repositories or select repositories. 
+   - Once installed, you will see configuration options for the app on your selected account. 
+5. Copy of the **private key** generated above to a new credentials object
+
+#### Configure integration parameters
+
+6. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+7. Search for GitHub.
+8. Click **Add instance** to create and configure a new integration instance.
+
+    | **Parameter**                                                                                                    | **Required** |
     | --- | --- |
-    | Fetch incidents | False |
-    | Select an Issue or Pull requests to Fetch | False |
-    | API Token | False |
-    | Credentials | False |
-    | Username of the repository owner, for example: github.com/repos/{_owner_}/{repo}/issues | False |
-    | The name of the requested repository | False |
-    | First fetch interval (in days) | False |
-    | Use system proxy settings | False |
-    | Trust any certificate (not secure) | False |
-    | Incident type | False |
-    | GitHub app integration ID | False |
-    | GitHub app installation ID | False |
+    | Fetch incidents                                                                                                  | False |
+    | Select an Issue or Pull requests to Fetch                                                                        | False |
+    | API Token, use ther personal token created above                                                                                                        | False |
+    | Credentials, use the credentials object created above                                                                                                     | False |
+    | Username of the repository owner or the ogranization name, for example: github.com/repos/{_owner_}/{repo}/issues | False |
+    | The name of the requested repository                                                                             | False |
+    | First fetch interval (in days)                                                                                   | False |
+    | Use system proxy settings                                                                                        | False |
+    | Trust any certificate (not secure)                                                                               | False |
+    | Incident type                                                                                                    | False |
+    | GitHub app integration ID                                                                                        | False |
+    | GitHub app installation ID                                                                                       | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
+9. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
