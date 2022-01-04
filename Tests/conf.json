@@ -4405,8 +4405,18 @@
                 "ews_mail_sender_srtest02",
                 "Generic Webhook - EWSv2 Phishing Mock"
             ],
-            "external_playbook_config": {"playbookID": "Phishing v3 - Generic",
-                "input_parameters":{"InternalDomains": {"simple": "demistodev.onmicrosoft.com"}}},
+            "external_playbook_config": {
+                "playbookID": "Phishing v3 - Generic",
+                "input_parameters":{
+                    "InternalDomains": {
+                        "simple": "demistodev.onmicrosoft.com"
+                    }
+                }
+            },
+            "incident_configuration":{
+                "classifier_id":"EWS v2",
+                "incoming_mapper_id":"EWS v2-mapper"
+            },
             "memory_threshold": 160,
             "pid_threshold": 80
         },
@@ -4426,7 +4436,9 @@
             "instance_names": [
                 "ews_mail_sender_srtest02"
             ],
-            "external_playbook_config": {"playbookID": "Phishing v3 - Generic",
+            "external_playbook_config": 
+            {
+                "playbookID": "Phishing v3 - Generic",
                 "input_parameters":
                 {
                     "SearchAndDelete": {"simple": "True"},
