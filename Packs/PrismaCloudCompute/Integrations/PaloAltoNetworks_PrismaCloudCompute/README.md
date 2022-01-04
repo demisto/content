@@ -42,7 +42,7 @@ To send alerts from Prisma Cloud Compute to Cortex XSOAR, you need to create an 
 * Without insufficient user roles, commands/fetching incidents might not work.
 * Administrator user role can access all the Prisma Cloud Compute resources.
 * See below the user roles and their descriptions.
-* Each command has in its description the minimum user role required to get/update the resource in Prisma Cloud Compute.
+* See 'Requires Role' section (each command requires a different type of role).
 
 1) Go to `Manage` -> `Authentication`.
 2) Choose the user that you want to edit roles -> `Actions` -> Press `...`.
@@ -61,12 +61,16 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 
 ### prisma-cloud-compute-profile-host-list
 ***
-Get information about the hosts and their profile events. This command supports asterisks which allows you to get host profiles by filtering its fields according to a specific substring. Minimum user role required to access this endpoint - devSecOps.
+Get information about the hosts and their profile events. This command supports asterisks which allows you to get host profiles by filtering its fields according to a specific substring.
 
 
 #### Base Command
 
 `prisma-cloud-compute-profile-host-list`
+
+#### Requires Role
+devSecOps
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -264,12 +268,14 @@ Get information about the hosts and their profile events. This command supports 
 
 ### prisma-cloud-compute-profile-container-list
 ***
-Get information about the containers and their profile events. This command supports asterisks which allows you to get container profiles by filtering its fields according to a specific substring. Minimum user role required to access this endpoint - devSecOps.
-
+Get information about the containers and their profile events. This command supports asterisks which allows you to get container profiles by filtering its fields according to a specific substring.
 
 #### Base Command
-
 `prisma-cloud-compute-profile-container-list`
+
+#### Requires Role
+devSecOps
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -529,12 +535,16 @@ Get information about the containers and their profile events. This command supp
 
 ### prisma-cloud-compute-profile-container-hosts-list
 ***
-Get the hosts where a specific container is running. Minimum user role required to access this endpoint - devSecOps.
+Get the hosts where a specific container is running.
 
 
 #### Base Command
 
 `prisma-cloud-compute-profile-container-hosts-list`
+
+#### Requires Role
+devSecOps
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -578,7 +588,7 @@ Get the hosts where a specific container is running. Minimum user role required 
 
 ### prisma-cloud-compute-profile-container-forensic-list
 ***
-Get runtime forensics data for a specific container on a specific host. Minimum user role required to access this endpoint - devSecOps.
+Get runtime forensics data for a specific container on a specific host.
 
 
 #### Base Command
@@ -677,12 +687,15 @@ Get runtime forensics data for a specific container on a specific host. Minimum 
 
 ### prisma-cloud-compute-host-forensic-list
 ***
-Get forensics on a specific host. Minimum user role required to access this endpoint - devSecOps.
+Get forensics on a specific host.
 
 
 #### Base Command
-
 `prisma-cloud-compute-host-forensic-list`
+
+#### Requires Role
+devSecOps
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -786,12 +799,15 @@ Get forensics on a specific host. Minimum user role required to access this endp
 
 ### prisma-cloud-compute-console-version-info
 ***
-Get the console version. Minimum user role required to access this endpoint - ci.
+Get the console version.
 
 
 #### Base Command
-
 `prisma-cloud-compute-console-version-info`
+
+#### Requires Role
+ci
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -828,12 +844,15 @@ Get the console version. Minimum user role required to access this endpoint - ci
 
 ### prisma-cloud-compute-custom-feeds-ip-list
 ***
-Get all the blacklisted IP addresses in the system. Minimum user role required to access this endpoint - auditor.
+Get all the blacklisted IP addresses in the system.
 
 
 #### Base Command
-
 `prisma-cloud-compute-custom-feeds-ip-list`
+
+#### Requires Role
+auditor
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -877,11 +896,14 @@ Get all the blacklisted IP addresses in the system. Minimum user role required t
 
 ### prisma-cloud-compute-custom-feeds-ip-add
 ***
-Add a list of banned IP addresses to be blocked by the system. Minimum user role required to access this endpoint - operator.
+Add a list of banned IP addresses to be blocked by the system.
 
-### Base Command
-
+#### Base Command
 `prisma-cloud-compute-custom-feeds-ip-add`
+
+#### Requires Role
+operator
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -901,12 +923,15 @@ There is no context output for this command.
 
 ### prisma-cloud-compute-custom-feeds-malware-list
 ***
-List all custom uploaded md5 malwares. Minimum user role required to access this endpoint - auditor.
+List all custom uploaded md5 malwares.
 
 
 #### Base Command
-
 `prisma-cloud-compute-custom-feeds-malware-list`
+
+#### Requires Role
+auditor
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -962,11 +987,14 @@ List all custom uploaded md5 malwares. Minimum user role required to access this
 
 ### prisma-cloud-compute-custom-feeds-malware-add
 ***
-Add custom md5 malware hashes. Minimum user role required to access this endpoint - operator.
+Add custom md5 malware hashes.
 
 #### Base Command
-
 `prisma-cloud-compute-custom-feeds-malware-add`
+
+#### Requires Role
+operator
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -988,12 +1016,15 @@ There is no context output for this command.
 
 ### cve
 ***
-Get information about the CVEs in the system. Will return a maximum of 50 records. It is possible to query for a partial CVE description such as cve-2020 or cve-2014 or by severity/distro/package. Minimum user role required to access this endpoint - devOps.
+Get information about the CVEs in the system. Will return a maximum of 50 records. It is possible to query for a partial CVE description such as cve-2020 or cve-2014 or by severity/distro/package.
 
 
 #### Base Command
-
 `cve`
+
+#### Requires Role
+devOps
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1065,11 +1096,14 @@ Get information about the CVEs in the system. Will return a maximum of 50 record
 
 ### prisma-cloud-compute-defenders-list
 ***
-Retrieve a list of defenders and their information. Minimum user role required to access this endpoint - vulnerabilityManager.
+Retrieve a list of defenders and their information.
 
 #### Base Command
-
 `prisma-cloud-compute-defenders-list`
+
+#### Requires Role
+vulnerabilityManager
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1223,12 +1257,15 @@ Retrieve a list of defenders and their information. Minimum user role required t
 
 ### prisma-cloud-compute-collections-list
 ***
-Retrieves a list of all collections. Minimum user role required to access this endpoint - auditor.
+Retrieves a list of all collections.
 
 
 #### Base Command
-
 `prisma-cloud-compute-collections-list`
+
+#### Requires Role
+auditor
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1319,12 +1356,16 @@ Retrieves a list of all collections. Minimum user role required to access this e
 
 ### prisma-cloud-compute-container-namespace-list
 ***
-Get the containers namespaces names. Minimum user role required to access this endpoint - devSecOps.
+Get the containers namespaces names.
 
 
 #### Base Command
 
 `prisma-cloud-compute-container-namespace-list`
+
+#### Requires Role
+devSecOps
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1368,12 +1409,15 @@ Get the containers namespaces names. Minimum user role required to access this e
 
 ### prisma-cloud-compute-images-scan-list
 ***
-Get images scan report. The report includes vulnerabilities, compliance issues, binaries, etc. Minimum user role required to access this endpoint - vulnerabilityManager.
+Get images scan report. The report includes vulnerabilities, compliance issues, binaries, etc.
 
 
 #### Base Command
-
 `prisma-cloud-compute-images-scan-list`
+
+#### Requires Role
+vulnerabilityManager
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1942,12 +1986,15 @@ Get images scan report. The report includes vulnerabilities, compliance issues, 
 
 ### prisma-cloud-compute-hosts-scan-list
 ***
-Get hosts scan report. The report includes vulnerabilities, compliance issues, binaries, etc. Minimum user role required to access this endpoint - vulnerabilityManager.
+Get hosts scan report. The report includes vulnerabilities, compliance issues, binaries, etc.
 
 
 #### Base Command
-
 `prisma-cloud-compute-hosts-scan-list`
+
+#### Requires Role
+vulnerabilityManager
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2442,12 +2489,15 @@ Get hosts scan report. The report includes vulnerabilities, compliance issues, b
 
 ### prisma-cloud-compute-vulnerabilities-impacted-resources-list
 ***
-Get the list of Prisma Cloud Compute vulnerabilities resources. Minimum user role required to access this endpoint - vulnerabilityManager.
+Get the list of Prisma Cloud Compute vulnerabilities resources.
 
 
 #### Base Command
-
 `prisma-cloud-compute-vulnerabilities-impacted-resources-list`
+
+#### Requires Role
+vulnerabilityManager
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
