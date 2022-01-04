@@ -3,16 +3,16 @@ Returns the email address of the user's manager of an email address or a usernam
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
-## Sub-playbooks
+#3# Sub-playbooks
 This playbook does not use any sub-playbooks.
 
-## Integrations
+### Integrations
 * Active Directory Query v2
 
-## Scripts
+### Scripts
 * Set
 
-## Commands
+### Commands
 * ad-get-user
 
 ## Playbook Inputs
