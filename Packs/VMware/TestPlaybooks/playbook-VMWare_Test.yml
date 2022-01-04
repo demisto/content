@@ -415,7 +415,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: ' test_vm_demo'
+                  simple: test_vm_demo
           accessor: State
       right:
         simple: poweredOff
@@ -845,7 +845,7 @@ tasks:
               right:
                 value:
                   simple: test_playbook_vm
-          accessor: UUID
+          accessor: Path
     separatecontext: false
     view: |-
       {
