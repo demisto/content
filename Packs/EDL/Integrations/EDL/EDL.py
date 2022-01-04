@@ -601,7 +601,7 @@ def create_text_out_format(iocs: IO, request_args: RequestArguments) -> Union[IO
             # we should provide both
             # this could generate more than num entries according to PAGE_SIZE
             if indicator.startswith('*.'):
-                formatted_indicators.write(str(indicator.lstrip('*.')) + '/n')
+                formatted_indicators.write(str(indicator.lstrip('*.')) + '\n')
 
             if request_args.collapse_ips != DONT_COLLAPSE and ioc_type in (FeedIndicatorType.IP, FeedIndicatorType.CIDR):
                 ipv4_formatted_indicators.add(indicator)
