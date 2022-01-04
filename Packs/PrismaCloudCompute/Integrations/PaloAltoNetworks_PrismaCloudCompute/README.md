@@ -15,6 +15,7 @@ To send alerts from Prisma Cloud Compute to Cortex XSOAR, you need to create an 
 4. On the left, select **Demisto** from the provider list.
 5. On the right, select the alert triggers. Alert triggers specify which alerts are sent to Cortex XSOAR.
 6. Click **Save** to save the alert profile.
+7. Make sure you configure the user role to be at least `auditor`
 
 ## Configure Prisma Cloud Compute on Cortex XSOAR
 
@@ -34,6 +35,17 @@ To send alerts from Prisma Cloud Compute to Cortex XSOAR, you need to create an 
    | **Prisma Cloud Compute CA Certificate** | CA Certificate used by Prisma Cloud Compute. Copy the certificate from the alert profile created in Prisma Cloud Compute. | N/A |
 4. Click **Test** to validate the integration.
 5. Click **Done** to save the integration.
+
+## Configure Prisma Cloud Compute User Roles 
+1) Go to `Manage` -> `Authentication`.
+2) Choose the user that you want to edit roles -> `Actions` -> Press `...`.
+3) Press on `Edit` -> Choose a Role in the `Role` section.
+4) Administrator user can access all the Prisma Cloud Compute resources.
+
+![User Roles Configuration](doc_images/user-roles-configuration.png)
+
+See the available user roles in Prisma Cloud Compute:
+![Available User Roles](doc_images/available-user-roles.png)
 
 
 Commands
