@@ -9,7 +9,7 @@ configuration:
   required: false
   type: 8
   hidden: true
-- display: TAXII 2 Server version
+- display: TAXII2 Server version
   hidden: false
   name: version
   defaultvalue: "2.1"
@@ -18,7 +18,7 @@ configuration:
   - "2.1"
   required: true
   type: 15
-- additionalinfo: Will run the TAXII2 server on this port from within Demisto. Requires
+- additionalinfo: Will run the TAXII2 server on this port from within Cortex XSOAR. Requires
     a unique port for each long-running integration instance. Do not use the same
     port for multiple instances.
   display: Listen Port
@@ -31,20 +31,20 @@ configuration:
   name: credentials
   required: false
   type: 9
-- additionalinfo: JSON string of indicator query collections - dictionary of the collection
+- additionalinfo: JSON string of indicator query collections. Dictionary of the collection
     name as the key and the query as the value.
   defaultvalue: |-
     {
        "Collection1": "type:SomeType and sourceBrands:\"Some Feed\"",
-        "Collection2": {"query": "type:SomeType", "description": "IP from XSOAR Threat Intel" }
+        "Collection2": {"query": "type:SomeType", "description": "IP from Cortex XSOAR Threat Intel" }
     }
   display: Collection JSON
   hidden: false
   name: collections
   required: true
   type: 12
-- additionalinfo: Comma seperated fields to return in the extention. Leave empty for no extention fields, 'All' for all exsisting fileds.
-  display: XSOAR Extension fields
+- additionalinfo: Comma-separated fields to return in the extension. Leave empty for no extension fields, 'All' for all existing fields.
+  display: Cortex XSOAR Extension fields
   name: fields_filter
   required: false
   type: 0
