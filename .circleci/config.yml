@@ -418,7 +418,8 @@ workflows:
   commit:
     when:
       not:
-        - << pipeline.parameters.nightly >>
+        or:
+          - << pipeline.parameters.nightly >>
     jobs:
       - Setup Environment
       - Run Unit Testing And Lint:
