@@ -4,7 +4,6 @@ commonfields:
 name: Blockade.io
 system: true
 display: Blockade.io (Deprecated)
-deprecated: true
 category: Data Enrichment & Threat Intelligence
 description: Deprecated. No available replacement.
 configuration:
@@ -34,7 +33,7 @@ script:
       description: Optional DB name in a multi-DB cloud node
     description: Lists all the indicators for Blockade to consume
   - name: blockade-add-indicators
-    deprecated: false
+    deprecated: true
     arguments:
     - name: indicators
       required: true
@@ -46,3 +45,4 @@ hidden: false
 tests:
 - No tests
 fromversion: 5.0.0
+deprecated: true
