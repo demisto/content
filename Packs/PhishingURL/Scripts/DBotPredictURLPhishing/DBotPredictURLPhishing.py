@@ -525,7 +525,7 @@ def get_prediction_single_url(model, url, force_model, debug):
     try:
         res = demisto.executeCommand('whois', {'query': domain, 'execution-timeout': 5
                                                })
-    except ValueError as e:
+    except ValueError:
         res = []
         demisto.results('Please enable whois integration for more accurate prediction')
     is_new_domain = extract_created_date(res)
@@ -661,6 +661,7 @@ def extract_embedded_urls_from_html(html):
                 embedded_urls.append(a['href'])
     return embedded_urls
 
+
 def get_urls_to_run(email_body, email_html, urls_argument, max_urls, model, msg_list, debug):
     if email_body:
         urls_email_body = extract_urls(email_body)
@@ -689,7 +690,8 @@ def get_urls_to_run(email_body, email_html, urls_argument, max_urls, model, msg_
     return urls, msg_list
 
 
-def update_and_load_model(debug, exist, reset_model, msg_list, demisto_major_version, demisto_minor_version, model_data):
+def update_and_load_model(debug, exist, reset_model, msg_list, demisto_major_version, demisto_minor_version,
+                          model_data):
     if debug:
         if exist:
             msg_list.append(MSG_MODEL_VERSION_IN_DEMISTO % (demisto_major_version, demisto_minor_version))
@@ -721,11 +723,14 @@ def update_and_load_model(debug, exist, reset_model, msg_list, demisto_major_ver
         return_error(MSG_WRONG_CONFIG_MODEL)
     return model, msg_list
 
+
 def main():
-    msg_list = []
+    msg_list = []  # type: List
+
+    # Check existing version of the model in demisto
     exist, demisto_major_version, demisto_minor_version, model_data = oob_model_exists_and_updated()
 
-    #Load arguments
+    # Load arguments
     reset_model = demisto.args().get('resetModel', 'False') == 'True'
     debug = demisto.args().get('debug', 'False') == 'True'
     force_model = demisto.args().get('forceModel', 'False') == 'True'
@@ -735,12 +740,13 @@ def main():
     urls_argument = demisto.args().get('urls', '')
 
     # Update model if necessary and load the model
-    model, msg_list = update_and_load_model(debug, exist, reset_model, msg_list, demisto_major_version, demisto_minor_version, model_data)
+    model, msg_list = update_and_load_model(debug, exist, reset_model, msg_list, demisto_major_version,
+                                            demisto_minor_version, model_data)
 
     # Get all the URLs on which we will run the model
     urls, msg_list = get_urls_to_run(email_body, email_html, urls_argument, max_urls, model, msg_list, debug)
 
-    #Run the model and get predictions
+    # Run the model and get predictions
     results = [get_prediction_single_url(model, x, force_model, debug) for x in urls]
 
     # Return outputs
