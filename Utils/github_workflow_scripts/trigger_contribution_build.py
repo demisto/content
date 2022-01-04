@@ -37,7 +37,8 @@ def trigger_generic_webhook(options):
     password = options.password
     body = {
         "name": "GenericWebhook_Secrets",
-        "raw_json": {"BaseBranch": base_branch, "PullRequestNumber": pr_number, "ContribBranch": contrib_branch},
+        "raw_json": {"BaseBranch": base_branch, "PullRequestNumber": pr_number, "ContribBranch": contrib_branch,
+                     "ProjectID": "2596"},
     }
     # post to Content Gold
     res = requests.post(CONTRIBUTION_BUILD_INSTANCE_URL, json=body, auth=(username, password))
