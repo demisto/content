@@ -25,7 +25,7 @@ There Are 2 integration flows:
     - Click "Test" button to make sure the Service Account ID/Secret is valid and then click the "Done" button
     
 - If Issue Streaming Type is "Wiz", return back to Wiz Portal and:
-    - Navigate to https://app.wiz.io/settings/automation/actions
+    - Navigate to [actions](https://app.wiz.io/settings/automation/actions)
     - Click "Add Action" 
     - Choose "Cortex XSOAR" in the Action drop down
     - Paste Cortex XSOAR host url (so Wiz will know to where to stream Issues)
