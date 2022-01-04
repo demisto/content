@@ -1,5 +1,5 @@
 {
-    "name": "Feed Mandiant",
+    "name": "FeedMandiant",
     "description": "Get Mandiant feed",
     "support": "xsoar",
     "currentVersion": "1.0.0",
