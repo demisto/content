@@ -16,8 +16,8 @@ The collections are defined by a JSON object in the following format:
   "collection2_name": "<Cortex XSOAR indicator query>"
 }
 ```
-You can add collection description as it done in `collection1_name`, or enter only collection query, as in `collection2_name`.
-
+You can add a collection description as is done in `collection1_name`, or enter only a collection query, as in `collection2_name`.
+a
 
 ## How to Access the TAXII2 Server
 
@@ -29,7 +29,7 @@ Use one of the following options:
 To access the TAXII service by instance name, make sure ***Instance execute external*** is enabled. 
 
 1. In Cortex XSOAR, go to **Settings > About > Troubleshooting**.
-2. In the **Server Configuration** section, verify that the ***instance.execute.external*** key is set to *true*. If this key does not exist, click **+ Add Server Configuration** and add the *instance.execute.external* and set the value to *true*.
+2. In the **Server Configuration** section, verify that the *instance.execute.external* key is set to *true*. If this key does not exist, click **+ Add Server Configuration** and add the *instance.execute.external* and set the value to *true*.
 
 ### How to use HTTPS
 To use HTTPS, a certificate and private key have to be supplied in the integration configuration. 
@@ -59,8 +59,8 @@ For more information, visit [TAXII2 Documentation](http://docs.oasis-open.org/ct
 | --- | --- | --- | --- |
 | /taxii2/ | GET | Server Discovery Information. | [Server Discovery](https://docs.oasis-open.org/cti/taxii/v2.1/os/taxii-v2.1-os.html#_Toc31107526) |
 | /{api_root}/ | GET | XSOAR API Root is `threatintel`. | [API Root Information](https://docs.oasis-open.org/cti/taxii/v2.1/os/taxii-v2.1-os.html#_Toc31107528) |
-| /{api_root}/collections/ | GET | All XSOAR collections that configure in Collection Json parameter. | [Collections Resource](https://docs.oasis-open.org/cti/taxii/v2.1/os/taxii-v2.1-os.html#_Toc31107533) |
-| /{api_root}/collections/{collection_id}/ | GET | XSOAR Collection with given `collection_id`. | [Collection Response](https://docs.oasis-open.org/cti/taxii/v2.1/os/taxii-v2.1-os.html#_Toc31107535) |
+| /{api_root}/collections/ | GET | All XSOAR collections that configure in Collection JSON parameter. | [Collections Resource](https://docs.oasis-open.org/cti/taxii/v2.1/os/taxii-v2.1-os.html#_Toc31107533) |
+| /{api_root}/collections/{collection_id}/ | GET | Cortex XSOAR Collection with given `collection_id`. | [Collection Response](https://docs.oasis-open.org/cti/taxii/v2.1/os/taxii-v2.1-os.html#_Toc31107535) |
 | /{api_root}/collections/{collection_id}/manifest/ | GET | Object manifests from the given collection. | [Objects Manifest Resource](https://docs.oasis-open.org/cti/taxii/v2.1/os/taxii-v2.1-os.html#_Toc31107537) |
 | /{api_root}/collections/{collection_id}/objects/ | GET | Objects (XSOAR Indicators) from the given collection. | [Object Resource](https://docs.oasis-open.org/cti/taxii/v2.1/os/taxii-v2.1-os.html#_Toc31107539) |
 
@@ -69,7 +69,7 @@ For more information, visit [TAXII2 Documentation](https://docs.oasis-open.org/c
 ## Known limitations
 - GET objects by ID is not allowed.
 - Filtering objects by ID or version not allowed.
-- POST and DELETE objects is not allowed. Can not add or delete indicators using TAXII2 Server. 
+- POST and DELETE objects is not allowed. Cannot add or delete indicators using TAXII2 Server. 
 
 
 ## How UUIDs work in TAXII2 XSOAR
@@ -80,8 +80,8 @@ All STIX SCOs UUIDs follow [STIX 2.1 guidelines](https://docs.oasis-open.org/cti
 (`00abedb4-aa42-466c-9c01-fed23315a9b7`). This is used so all SCOs created have persistent UUID across all producers.
 
 ### STIX Domain Objects (SDO)
-Unlike SCOs STIX 2.1 specs for SDOs require a UUID4. While this solution works if the UUID is part of the DB
-it is not the case in XSOAR. If the SDO already has a unique UUID stored it will use it, if it will generate a unique and **persistent** UUID using the following method.
+Unlike SCOs, STIX 2.1 specs for SDOs require a UUID4. While this solution works if the UUID is part of the database,
+it is not the case in Cortex XSOAR. If the SDO already has a unique UUID stored it will use it, if it will generate a unique and *persistent* UUID using the following method.
 
 A general UUID5 is created using the NameSpace_URL as follows:
 
@@ -91,20 +91,20 @@ The generated UUID is then used to create a unique UUID5 per customer:
 
 `UNIQUE_UUID = uuid.uuid5(PAWN_UUID, <UniqueCostumerString>)`
 
-we then use this UUID as a base `namespace` to generate UUIDs for SDOs following STIX 2.1 specs. Using this method
+We then use this UUID as a base `namespace` to generate UUIDs for SDOs following the STIX 2.1 specs. Using this method,
 we create unique and persistent UUIDs per customer.
 
 ## Cortex XSOAR TIM Extension Fields
 
 ---
-When selected in the integration settings (XSOAR Extension Fields) the TAXII 2 integration will generate an extension object and an extension attribute that holds XSOAR additinal
-TIM fields (System generated and custom). A general example of these two related objects will look as followed:
+When selected in the integration settings (Cortex XSOAR Extension Fields) the TAXII2 integration will generate an extension object and an extension attribute that holds Cortex XSOAR additional
+TIM fields (System generated and custom). A general example of these two related objects will look as follows:
 ```JSON
 {
   "id": "extension-definition--<UUID>",
   "type": "extension-definition",
   "spec_version": "2.1",
-  "name": "XSOAR TIM <XSOAR Type>",
+  "name": "XSOAR TIM <Cortex XSOAR Type>",
   "description": "This schema adds TIM data to the object",
   "created": "<creation date>",
   "modified": "<modification date>",
