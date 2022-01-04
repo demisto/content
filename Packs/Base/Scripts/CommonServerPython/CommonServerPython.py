@@ -1268,6 +1268,7 @@ class SmartGetDict(dict):
     :rtype: ``SmartGetDict``
 
     """
+
     def get(self, key, default=None):
         res = dict.get(self, key)
         if res is not None:
@@ -1815,6 +1816,7 @@ class JsonTransformer:
     :return: None
     :rtype: ``None``
     """
+
     def __init__(self, flatten=False, keys=None, is_nested=False, func=None):
         """
         Constructor for JsonTransformer
@@ -4476,6 +4478,7 @@ class Common(object):
             :return: None
             :rtype: ``None``
             """
+
             def __init__(
                 self,
                 gn=None,  # type: Optional[Common.GeneralName]
@@ -4515,6 +4518,7 @@ class Common(object):
             :return: None
             :rtype: ``None``
             """
+
             def __init__(
                 self,
                 issuer=None,  # type: Optional[List[Common.GeneralName]]
@@ -4558,6 +4562,7 @@ class Common(object):
             :return: None
             :rtype: ``None``
             """
+
             def __init__(
                 self,
                 full_name=None,  # type: Optional[List[Common.GeneralName]]
@@ -4597,6 +4602,7 @@ class Common(object):
             :return: None
             :rtype: ``None``
             """
+
             def __init__(
                 self,
                 policy_identifier,  # type: str
@@ -4629,6 +4635,7 @@ class Common(object):
             :return: None
             :rtype: ``None``
             """
+
             def __init__(
                 self,
                 access_method,  # type: str
@@ -4657,6 +4664,7 @@ class Common(object):
             :return: None
             :rtype: ``None``
             """
+
             def __init__(
                 self,
                 ca,  # type: bool
@@ -5350,6 +5358,7 @@ class IndicatorsTimeline:
     :return: None
     :rtype: ``None``
     """
+
     def __init__(self, indicators=None, category=None, message=None):
         # type: (list, str, str) -> None
         if indicators is None:
@@ -5382,7 +5391,6 @@ class IndicatorsTimeline:
 
 def arg_to_number(arg, arg_name=None, required=False):
     # type: (Any, Optional[str], bool) -> Optional[int]
-
     """Converts an XSOAR argument to a Python int
 
     This function is used to quickly validate an argument provided to XSOAR
@@ -5440,7 +5448,6 @@ def arg_to_number(arg, arg_name=None, required=False):
 
 def arg_to_datetime(arg, arg_name=None, is_utc=True, required=False, settings=None):
     # type: (Any, Optional[str], bool, bool, dict) -> Optional[datetime]
-
     """Converts an XSOAR argument to a datetime
 
     This function is used to quickly validate an argument provided to XSOAR
@@ -6386,7 +6393,7 @@ ipv4Regex = r'\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9
 ipv4cidrRegex = r'\b(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(?:\[\.\]|\.)){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(\/([0-9]|[1-2][0-9]|3[0-2]))\b'  # noqa: E501
 ipv6Regex = r'\b(?:(?:[0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,7}:|(?:[0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|(?:[0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|(?:[0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|(?:[0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:(?:(:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))\b'  # noqa: E501
 ipv6cidrRegex = r'\b(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))(\/(12[0-8]|1[0-1][0-9]|[1-9][0-9]|[0-9]))\b'  # noqa: E501
-emailRegex = r"\b[A-Za-z0-9.!#$%&'*+ /=?^_`{|}~\\p{L}-]{1, 64}(@|\[ @\])[A-Za-z0-9\p{L}.-]{1, 255}\.[A-Za-z]{2,}\b"
+emailRegex = r"\b[A-Za-z0-9.!#$%&'*+ /=?^_`{|}~\\p{L}-]{1, 64}(@|\[ @\])[A-Za-z0-9\\p{L}.-]{1, 255}\.[A-Za-z]{2,}\b"
 hashRegex = r'\b[0-9a-fA-F]+\b'
 urlRegex = r'(?:(?:https?|ftp|hxxps?):\/\/|www\[?\.\]?|ftp\[?\.\]?)(?:[-\w\d]+\[?\.\]?)+[-\w\d]+(?::\d+)?' \
            r'(?:(?:\/|\?)[-\w\d+&@#\/%=~_$?!\-:,.\(\);]*[\w\d+&@#\/%=~_$\(\);])?'
@@ -8254,6 +8261,7 @@ class AutoFocusKeyRetriever:
     :return: No data returned
     :rtype: ``None``
     """
+
     def __init__(self, api_key):
         # demisto.getAutoFocusApiKey() is available from version 6.2.0
         if not api_key:
