@@ -42,10 +42,10 @@ _MODULES_LINE_MAPPING = {
 
 def register_module_line(module_name, start_end, line, wrapper=0):
     """
-        Register a module in the line mapping for traceback line correction algorithm.
+        Register a module in the line mapping for the traceback line correction algorithm.
 
         :type module_name: ``str``
-        :param module_name: the name of the module. (required)
+        :param module_name: The name of the module. (required)
 
         :type start_end: ``str``
         :param start_end: Whether to register the line as the start or the end of the module.
@@ -55,7 +55,7 @@ def register_module_line(module_name, start_end, line, wrapper=0):
         :param line: the line number to record. (required)
 
         :type wrapper: ``int``
-        :param wrapper: wrapper size (used for inline replacements with headers like ApiModules). (optional)
+        :param wrapper: Wrapper size (used for inline replacements with headers such as ApiModules). (optional)
 
         :return: None
         :rtype: ``None``
