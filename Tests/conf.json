@@ -4941,7 +4941,16 @@
             "memory_threshold": 900,
             "pid_threshold": 12,
             "context_print_dt": "EDLHey"
+        },
+        {
+            "playbookID": "TAXII2 Indicator Performance Test",
+            "fromversion": "6.1.0"
+        },
+        {
+            "playbookID": "TAXII2 Performance Test - Concurrency",
+            "fromversion": "6.1.0"
         }
+
     ],
     "skipped_tests": {
         "playbook-AzureDevOps-Test": "Issue with repetitive calls to Azure DevOps API",
