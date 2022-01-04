@@ -20,9 +20,8 @@ from CommonServerUserPython import *  # noqa
 
 import requests
 import traceback
-from typing import Dict, Any
-
-from googleapiclient.discovery import build
+import httplib2
+from googleapiclient.discovery import build, Resource
 from google.oauth2 import service_account
 
 SERVICE_ACCOUNT_FILE = 'token.json'
@@ -36,154 +35,639 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
 
-def create_spread_sheet(service, args: dict):
+# HELPER FUNCTIONS
+
+def prepare_result(response: dict, args: dict) -> CommandResults:
+    """
+        This function is for the UPDATE command result formatting
+        echo_spreadsheat is false then the HR will be only success or failed,
+        and the output will be empty.
+        if echo_spreadsheet is true then we prepare the HR and substitute the response to the output
+
+        input:
+            response: the response from the google API
+            args: demisto.args
+        output: the command result of the function
+    """
+    markdown = '### Success\n'
+    outputs = None
+    if argToBoolean(args.get('echo_spreadsheet')):
+        # here will be the code that will prep the result if echo is mode is on
+        human_readable = {
+            'spreadsheet Id': response.get('spreadsheetId'),
+            'spreadsheet url': response.get('updatedSpreadsheet', {}).get('spreadsheetUrl')
+        }
+
+        table_title = response.get('updatedSpreadsheet', {}).get('properties', {}).get('title', '')
+        markdown += tableToMarkdown(table_title, human_readable,
+                                    headers=['spreadsheet Id', 'spreadsheet url'])
+        markdown += '\n'
+        sheets = response.get('updatedSpreadsheet', {}).get('sheets')  # this is an array of sheet dicts
+
+        markdown += tableToMarkdown('Content', create_list_id_title(sheets), headers=['SheetId', 'Sheet title'])
+        outputs = response
+
+    results = CommandResults(
+        readable_output=markdown,
+        outputs_prefix='Spreadsheet',
+        outputs_key_field='spreadsheetId',
+        outputs=outputs
+    )
+
+    return results
+
+
+def create_list_id_title(sheets: list) -> list:
+    """
+        input: this function gets a list of all the sheets of a spreadsheet
+                a sheet is represented as a dict format with the following fields
+                 "sheets" : [
+                  {
+                    "properties": {
+                      "sheetId": 0,
+                      "title": "Sheet1",
+                      "index": 0,
+                      "sheetType": "GRID",
+                      "gridProperties": {
+                        "rowCount": 1000,
+                        "columnCount": 26
+                      }
+                    }
+                  },
+                  ...
+                  ]
+
+        output :
+            the output of the function will be a list of dict in the format
+            [...{'sheetId' : 123 , 'sheet title': 'title'}...]
+    """
+    result = []
+    for sheet in sheets:
+        sheetId = sheet.get('properties').get('sheetId')
+        sheet_title = sheet.get('properties').get('title')
+        result.append({'SheetId': sheetId, 'Sheet title': sheet_title})
+    return result
+
+
+def handle_values_input(values: str) -> list:
+    """
+    input: a string representation of values in the form of "[1,2,3],[4,5,6]..."
+    output: a list of list of the values for this example [[1,2,3],[4,5,6]...]
+    """
+    # TODO check if this is none
+    split_by_brackets = re.findall("\[(.*?)\]", values)
+    res_for_values_req = []
+    # split each element by that was in the brackets by a comma
+    for element in split_by_brackets:
+        res_for_values_req.append(element.split(","))
+
+    return res_for_values_req
+
+
+def markdown_single_get(response: dict) -> str:
+    """
+        creates for a single spreadsheet a mark down with 2 tables
+        table 1: spreadsheet id and title
+        table 2: all the sheets under this spreadsheet id and title
+    """
+    human_readable = {
+        'spreadsheet Id': response.get('spreadsheetId', {}),
+        'spreadsheet url': response.get('spreadsheetUrl', {}),
+    }
+
+    markdown = tableToMarkdown(response.get('properties', {}).get('title', {}), human_readable,
+                               headers=['spreadsheet Id', 'spreadsheet url'])
+
+    markdown += '\n'
+    sheets = response.get('sheets', [])
+    sheets_titles = create_list_id_title(list(sheets))
+    markdown += tableToMarkdown('Content', sheets_titles, headers=['SheetId', 'Sheet title'])
+    return markdown
+
+
+def create_spreadsheet(service: Resource, args: dict) -> CommandResults:
+    '''
+        input: service - google-api discovery resource (google api client)
+                args - demisto.args() for the api call
+        output : command result
+        action : creats a new spreadsheet
+    '''
     # in this function I can set them to None and then remove them in
     # the next function, or I can set them manually to the default value.
+    rgb_format = argToList(args.get('cell_format_backgroundColor'))
+    rgb_format = [1, 1, 1, 1] if not rgb_format else rgb_format
     spreadsheet = {
         "properties": {
-            "title": demisto.args().get('title'),
-            "locale": "en" if args.get('locale') is None else args.get('locale'),
+            "title": args.get('title'),
+            "locale": args.get('locale', "en"),
             "defaultFormat": {
                 "numberFormat": {
-                    "type": 'TEXT' if args.get('cell_form_at_type') is None else args.get('cell_form_at_type')
+                    "type": args.get('cell_form_at_type', 'TEXT')
                 },
                 "backgroundColor": {
-                    "red": 1 if args.get('red') is None else args.get('red'),
-                    "green": 1 if args.get('green') is None else args.get('green'),
-                    "blue": 1 if args.get('blue') is None else args.get('blue'),
-                    "alpha": 1 if args.get('alpha') is None else args.get('alpha'),
+                    "red": rgb_format[0],
+                    "green": rgb_format[1],
+                    "blue": rgb_format[2],
+                    "alpha": rgb_format[3]
                 },
                 "textFormat": {
-                    "fontFamily": 'ariel' if args.get('cell_format_textformat_family') is None else args.get(
-                        'cell_format_textformat_family'),
-                    "fontSize": 11 if args.get('cell_format_textformat_font_size') is None else args.get(
-                        'cell_format_textformat_font_size')
+                    "fontFamily": args.get('cell_format_textformat_family', 'ariel'),
+                    "fontSize": args.get('cell_format_textformat_font_size', 11)
                 },
-                "textDirection": "LEFT_TO_RIGHT" if args.get('cell_format_text_direction') is None else args.get(
-                    'cell_format_text_direction')
+                "textDirection": args.get('cell_format_text_direction', 'LEFT_TO_RIGHT')
             }
         },
         "sheets": [
             {
                 "properties": {
                     "title": args.get('sheet_title'),
-                    "sheetType": "GRID" if args.get('sheet_type') is None else args.get('sheet_type')
+                    "sheetType": args.get('sheet_type', "GRID")
                 }
             }
         ]
     }
     # this removes all None values from the json in a recursive manner.
     spreadsheet = remove_empty_elements(spreadsheet)
-    spreadsheet = service.spreadsheets().create(body=spreadsheet, fields='spreadsheetId').execute()
-    print('Spreadsheet ID: {0}'.format(spreadsheet.get('spreadsheetId')))
-    return spreadsheet
+    response = service.spreadsheets().create(body=spreadsheet).execute()
+
+    human_readable = {
+        'spreadsheet Id': response.get('spreadsheetId'),
+        'spreadsheet title': response.get('properties').get('title')
+    }
+    markdown = tableToMarkdown('Success', human_readable, headers=['spreadsheet Id', 'spreadsheet title'])
+    results = CommandResults(
+        readable_output=markdown,
+        outputs_prefix='Spreadsheet',
+        outputs_key_field='spreadsheetId',
+        outputs=response
+    )
+    return results
 
 
-# TODO: understand better what is the type of the ranges and what is include grid data
-def get_spread_sheet(service, args: dict):
+def sheets_spreadsheet_update(service: Resource, args: dict) -> CommandResults:
+    '''
+       input: service - google-api discovery resource (google api client)
+               args - demisto.args() for the api call
+       output : command result
+       action : updates a spreadsheet by a user costume update request
+    '''
     spreadsheet_id = args.get('spreadsheet_id')
+    request_to_update = args.get('requests')
+    response = service.spreadsheets().batchUpdate(spreadsheetId=spreadsheet_id, body=request_to_update).execute()
+    return prepare_result(response, args)
 
+
+def get_spreadsheet(service: Resource, args: dict) -> CommandResults:
+    '''
+        input: service - google-api discovery resource (google api client)
+                args - demisto.args() for the api call
+        output : command result
+        action : gets a single or multiple spreadsheets
+    '''
+    spread_sheets_ids = argToList(args.get('spreadsheet_id'))
+    include_grid_data = args.get('include_grid_data', False)
     # The ranges to retrieve from the spreadsheet.
     ranges = args.get('ranges')
+    markdown = ""
+    if len(spread_sheets_ids) > 1:
+        for spreadsheet in spread_sheets_ids:
+            response = service.spreadsheets().get(spreadsheetId=spreadsheet).execute()
+            markdown += markdown_single_get(response)
+            markdown += '---\n'
+
+        markdown = '### Success\n' + markdown
+        return CommandResults(readable_output=markdown)
+
+    else:
+        request = service.spreadsheets().get(spreadsheetId=spread_sheets_ids[0], ranges=ranges,
+                                             includeGridData=include_grid_data)
+        response = request.execute()
+        markdown = markdown_single_get(response)
+        markdown = '### Success\n' + markdown
+
+        results = CommandResults(
+            readable_output=markdown,
+            outputs_prefix='Spreadsheet',
+            outputs_key_field='spreadsheetId',
+            outputs=response
+        )
+        return results
 
     # True if grid data should be returned.
     # This parameter is ignored if a field mask was set in the request.
-    include_grid_data = args.get('include_grid_data')
-
-    request = service.spreadsheets().get(spreadsheetId=spreadsheet_id, ranges=ranges, includeGridData=include_grid_data)
-    response = request.execute()
-    return response
 
 
-def sheet_create(service , args:dict):
-
+def sheet_create(service: Resource, args: dict) -> CommandResults:
+    '''
+        input: service - google-api discovery resource (google api client)
+                args - demisto.args() for the api call
+        output : command result
+        action: creates a new sheet in a spreadsheet
+    '''
     spreadsheet_id = args.get('spreadsheet_id')
-
+    rgb_format = argToList(args.get('tab_color'))
+    rgb_format = [1, 1, 1, 1] if not rgb_format else rgb_format
     request_to_update = {
         "requests": [
             {
                 "addSheet": {
                     "properties": {
-                        "title": "",
-                        "sheetType": "",
-                        "rightToLeft": False,
+                        "title": args.get('sheet_title', None),
+                        "index": args.get('sheet_index', None),
+                        "sheetType": args.get('sheet_type', "GRID"),
+                        "rightToLeft": args.get('right_to_left', None),
                         "tabColor": {
-                            "red": 0,
-                            "green": 0,
-                            "blue": 0,
-                            "alpha": 0
+                            "red": rgb_format[0],
+                            "green": rgb_format[1],
+                            "blue": rgb_format[2],
+                            "alpha": rgb_format[3]
                         },
-                        "hidden": False
+                        "hidden": args.get('hidden', False)
                     }
                 }
             }
         ],
-        "includeSpreadsheetInResponse": False
+        "includeSpreadsheetInResponse": args.get('echo_spreadsheet')
     }
-
+    request_to_update = remove_empty_elements(request_to_update)
     response = service.spreadsheets().batchUpdate(spreadsheetId=spreadsheet_id, body=request_to_update).execute()
-    # TO ACCEESS A SPECIFIC RESPONSE
-    # find_replace_response = response.get('replies')[1].get('findReplace')
-    # print('{0} replacements made.'.format(
-    #     find_replace_response.get('occurrencesChanged')))
-    return response
+    results = prepare_result(response, args)
+    return results
 
 
-def sheet_duplicatet(service , args:dict):
-
+def sheet_duplicate(service: Resource, args: dict) -> CommandResults:
+    '''
+        input: service - google-api discovery resource (google api client)
+                args - demisto.args() for the api call
+        output : the command result containing the duplicate spreadsheet sheet update api call
+        action : duplicates a sheet within a spreadsheet
+    '''
     spreadsheet_id = args.get('spreadsheet_id')
     request_to_update = {
         "requests": [
             {
                 "duplicateSheet": {
-                    "sourceSheetId": 0,
-                    "insertSheetIndex": 0,
-                    "newSheetName": ""
+                    "sourceSheetId": args.get('source_sheet_id'),
+                    "insertSheetIndex": args.get('new_sheet_index'),
+                    "newSheetName": args.get('new_sheet_name')
                 }
             }
         ],
-        "responseIncludeGridData": false
+        "includeSpreadsheetInResponse": args.get('echo_spreadsheet')
     }
+
     response = service.spreadsheets().batchUpdate(spreadsheetId=spreadsheet_id, body=request_to_update).execute()
-    return response
+    results = prepare_result(response, args)
+    return results
 
-''' COMMAND FUNCTIONS '''
+
+def sheet_copy_to(service: Resource, args: dict) -> CommandResults:
+    '''
+        input: service - google-api discovery resource (google api client)
+                args - demisto.args() for the api call
+        output : Command result with only readable output
+        action : copies a spreadsheet sheet from one spreadsheet to another
+    '''
+    spreadsheet_id_to_copy = args.get('source_spreadsheet_id')
+
+    # The ID of the sheet to copy.
+    sheet_id_to_copy = args.get('source_sheet_id')
+
+    copy_sheet_to_another_spreadsheet_request_body = {
+        # The ID of the spreadsheet to copy the sheet to.
+        'destination_spreadsheet_id': args.get('destination_spreadsheet_id')
+    }
+
+    request = service.spreadsheets().sheets().copyTo(spreadsheetId=spreadsheet_id_to_copy, sheetId=sheet_id_to_copy,
+                                                     body=copy_sheet_to_another_spreadsheet_request_body)
+    request.execute()  # we dont save the response because we dont need to add this to the context or the HR
+    results = CommandResults(
+        readable_output="### Success"
+    )
+
+    return results
 
 
-def test_module() -> str:
-    """Tests API connectivity and authentication'
+def sheet_delete(service: Resource, args: dict) -> CommandResults:
+    '''
+        input: service - google-api discovery resource (google api client)
+                args - demisto.args() for the api call
+        output : Command result
+        action : deletes a sheet from a spreadsheet
+    '''
+    spreadsheet_id = args.get('spreadsheet_id')
+    request_to_update = {
+        "requests": [
+            {
+                "deleteSheet": {
+                    "sheetId": args.get('sheet_id')
+                }
+            }
+        ],
+        "includeSpreadsheetInResponse": args.get('echo_spreadsheet')
+    }
 
-    Returning 'ok' indicates that the integration works like it is supposed to.
-    Connection to the service is successful.
-    Raises exceptions if something goes wrong.
+    response = service.spreadsheets().batchUpdate(spreadsheetId=spreadsheet_id, body=request_to_update).execute()
+    results = prepare_result(response, args)
+    return results
 
-    :type client: ``Client``
-    :param Client: client to use
 
-    :return: 'ok' if test passed, anything else will fail the test.
-    :rtype: ``str``
+def sheet_clear(service: Resource, args: dict) -> CommandResults:
+    '''
+         input: service - google-api discovery resource (google api client)
+                 args - demisto.args() for the api call
+         output : Command result
+         action : clears a sheet from a spreadsheet
+     '''
+    spreadsheet_id = args.get('spreadsheet_id')
+    ranges = args.get('range')
+
+    # the body of this reqeust needs to be empty
+    request = service.spreadsheets().values().clear(spreadsheetId=spreadsheet_id, range=ranges,
+                                                    body={})
+    request.execute()  # we don't save the response because there is no need for output or HR
+    results = CommandResults(
+        readable_output='### Success'
+    )
+    return results
+
+
+def sheet_dimension_delete(service: Resource, args: dict) -> CommandResults:
+    '''
+         input: service - google-api discovery resource (google api client)
+                 args - demisto.args() for the api call
+         output : Command result
+         action : deletes a specified dimension from a sheet in a specified spreadsheet
+     '''
+    spreadsheet_id = args.get('spreadsheet_id')
+
+    request_to_update = {
+        "requests": [
+            {
+                "deleteDimension": {
+                    "range": {
+                        "dimension": args.get('dimension_type'),
+                        "sheetId": args.get('sheet_id'),
+                        "startIndex": args.get('start_index'),
+                        "endIndex": args.get('end_index')
+                    }
+                }
+            }
+        ],
+        "includeSpreadsheetInResponse": args.get('echo_spreadsheet')
+    }
+    request_to_update = remove_empty_elements(request_to_update)
+    response = service.spreadsheets().batchUpdate(spreadsheetId=spreadsheet_id, body=request_to_update).execute()
+    results = prepare_result(response, args)
+    return results
+
+
+def sheet_range_delete(service: Resource, args: dict) -> CommandResults:
+    '''
+       input: service - google-api discovery resource (google api client)
+               args - demisto.args() for the api call
+       output : Command result
+       action : deletes a specified range from a sheet in a specified spreadsheet
+    '''
+    spreadsheet_id = args.get('spreadsheet_id')
+
+    request_to_update = {
+        "requests": [
+            {
+                "deleteRange": {
+                    "range": {
+                        "sheetId": args.get('sheet_id'),
+                        "startRowIndex": args.get('start_row_index'),
+                        "endRowIndex": args.get('end_row_index'),
+                        "startColumnIndex": args.get('start_column_index'),
+                        "endColumnIndex": args.get('end_column_index')
+                    },
+                    "shiftDimension": args.get('shift_dimension')
+                }
+            }
+        ],
+        "includeSpreadsheetInResponse": args.get('echo_spreadsheet')
+    }
+    request_to_update = remove_empty_elements(request_to_update)
+    response = service.spreadsheets().batchUpdate(spreadsheetId=spreadsheet_id, body=request_to_update).execute()
+    results = prepare_result(response, args)
+    return results
+
+
+def sheets_data_paste(service: Resource, args: dict) -> CommandResults:
+    '''
+       input: service - google-api discovery resource (google api client)
+               args - demisto.args() for the api call
+       output : Command result
+       action : inserts data into a spreadsheet sheet
+    '''
+    spreadsheet_id = args.get('spreadsheet_id')
+    request_to_update = {
+        "requests": [
+            {
+                "pasteData": {
+                    "coordinate": {
+                        "sheetId": args.get('sheet_id'),
+                        "rowIndex": args.get('row_index'),
+                        "columnIndex": args.get('column_index')
+                    },
+                    "data": args.get('data'),  # check here the data comes as an array how to handle
+                    "type": f"PASTE_{args.get('paste_type')}",  # add paste before the type
+                }
+            }
+        ],
+        "includeSpreadsheetInResponse": args.get('echo_spreadsheet')
+    }
+    request_to_update = remove_empty_elements(request_to_update)
+    response = service.spreadsheets().batchUpdate(spreadsheetId=spreadsheet_id, body=request_to_update).execute()
+    results = prepare_result(response, args)
+    return results
+
+
+def sheets_find_replace(service: Resource, args: dict) -> CommandResults:
+    '''
+       input: service - google-api discovery resource (google api client)
+               args - demisto.args() for the api call
+       output : Command result
+       action : finds a vaule in the spreadsheets sheet and replaces it.
+    '''
+    spreadsheet_id = args.get('spreadsheet_id')
+    request_to_update = {
+        "requests": [
+            {
+                "findReplace": {
+                    "find": args.get('find'),
+                    "replacement": args.get('replacement'),
+                    "sheetId": args.get('sheet_id'),
+                    "allSheets": args.get('all_sheets'),
+                    "matchCase": args.get('match_case'),
+                    "matchEntireCell": args.get('match_entire_cell'),
+                    "range": {
+                        "sheetId": args.get('range_sheet_id'),
+                        "startRowIndex": args.get('range_start_row_Index'),
+                        "endRowIndex": args.get('range_end_row_Index'),
+                        "startColumnIndex": args.get('range_start_column_Index'),
+                        "endColumnIndex": args.get('range_end_column_Index')
+                    }
+                }
+            }
+        ],
+        "includeSpreadsheetInResponse": args.get('echo_spreadsheet')
+    }
+
+    request_to_update = remove_empty_elements(request_to_update)
+    response = service.spreadsheets().batchUpdate(spreadsheetId=spreadsheet_id, body=request_to_update).execute()
+    results = prepare_result(response, args)
+    return results
+
+
+def sheets_value_update(service: Resource, args: dict) -> CommandResults:
+    '''
+       input: service - google-api discovery resource (google api client)
+               args - demisto.args() for the api call
+       output : Command result
+       action : updates values in the spreadsheets sheet
+    '''
+    spreadsheet_id = args.get('spreadsheet_id')
+    input_option = args.get('input_option')
+    ranges = args.get('range')
+    value_range_body = {
+        "majorDimension": args.get('major_dimension'),
+        "values": handle_values_input(str(args.get('values')))
+    }
+    request = service.spreadsheets().values().update(spreadsheetId=spreadsheet_id, range=ranges,
+                                                     valueInputOption=input_option, body=value_range_body)
+    request.execute()
+    markdown = '### Success\n'
+    return CommandResults(readable_output=markdown)
+
+
+def sheets_value_append(service: Resource, args: dict) -> CommandResults:
+    '''
+         input: service - google-api discovery resource (google api client)
+                 args - demisto.args() for the api call
+         output : Command result
+         action : appends values to a spreadsheets sheet
+      '''
+    spreadsheet_id = args.get('spreadsheet_id')
+    range_ = args.get('range')
+    input_option = args.get('input_option')
+    insert_option = args.get('insert_option')
+
+    value_range_body = {
+        "majorDimension": args.get('major_dimension'),
+        # TODO: check about the element types what how does it work
+        "values": handle_values_input(str(args.get("values")))
+    }
+    request = service.spreadsheets().values().append(spreadsheetId=spreadsheet_id, range=range_,
+                                                     valueInputOption=input_option,
+                                                     insertDataOption=insert_option, body=value_range_body)
+    request.execute()
+
+    markdown = '### Success\n'
+    return CommandResults(readable_output=markdown)
+
+
+def get_http_client_with_proxy(disable_ssl):
+    proxies = handle_proxy()
+    if not proxies.get('https', True):
+        raise Exception('https proxy value is empty. Check Demisto server configuration')
+    https_proxy = proxies['https']
+    if not https_proxy.startswith('https') and not https_proxy.startswith('http'):
+        https_proxy = 'https://' + https_proxy
+    parsed_proxy = urllib.parse.urlparse(https_proxy)
+    proxy_info = httplib2.ProxyInfo(
+        proxy_type=httplib2.socks.PROXY_TYPE_HTTP,  # disable-secrets-detection
+        proxy_host=parsed_proxy.hostname,
+        proxy_port=parsed_proxy.port,
+        proxy_user=parsed_proxy.username,
+        proxy_pass=parsed_proxy.password)
+    return httplib2.Http(proxy_info=proxy_info, disable_ssl_certificate_validation=disable_ssl)
+
+
+def build_and_authenticate(params):
     """
+    Return a service object via which can call GRM API.
 
-    message: str = ''
-    try:
-        # TODO: ADD HERE some code to test connectivity and authentication to your service.
-        # This  should validate all the inputs given in the integration configuration panel,
-        # either manually or by using an API that uses them.
-        message = 'ok'
-    except DemistoException as e:
-        if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
-            message = 'Authorization Error: make sure API Key is correctly set'
-        else:
-            raise e
-    return message
+    Use the service_account credential file generated in the Google Cloud
+    Platform to build the Google Resource Manager API Service object.
 
+    returns: service
+        Google Resource Manager API Service object via which commands in the
+        integration will make API calls
+    """
+    service_account_credentials = params.get('service_account_credentials', {})
+    # service_account_credentials = json.loads(service_account_credentials).get('password')
+    creds = service_account.ServiceAccountCredentials.from_json_keyfile_dict(service_account_credentials, scopes=SCOPES)
+    # creds = service_account.Credentials.from_service_account_info(service_account_credentials, scopes=SCOPES)
+
+    proxy = demisto.params().get('proxy', False)
+    disable_ssl = demisto.params().get('insecure', False)
+
+    if proxy or disable_ssl:
+        http_client = creds.authorize(get_http_client_with_proxy(disable_ssl))
+        return build('sheets', 'v4', http=http_client)
+    else:
+        handle_proxy()
+
+    return build('sheets', 'v4', credentials=creds)
+
+
+def connect_to_google_client(params: dict):
+    service_account_credentials = params.get('service_account_credentials', {})
+    return_error(service_account_credentials.get('password'))
+    service_account_credentials = json.loads(service_account_credentials).get('password')
+    creds = service_account.Credentials.from_service_account_info(service_account_credentials, scopes=SCOPES)
+    # creds = service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
+
+    return build('sheets', 'v4', credentials=creds)
+
+
+# def test_module() -> str:
+#     """Tests API connectivity and authentication'
+#
+#     Returning 'ok' indicates that the integration works like it is supposed to.
+#     Connection to the service is successful.
+#     Raises exceptions if something goes wrong.
+#
+#     :type client: ``Client``
+#     :param Client: client to use
+#
+#     :return: 'ok' if test passed, anything else will fail the test.
+#     :rtype: ``str``
+#     """
+#
+#     message: str = ''
+#     try:
+#         # TODO: ADD HERE some code to test connectivity and authentication to your service.
+#         # This  should validate all the inputs given in the integration configuration panel,
+#         # either manually or by using an API that uses them.
+#         message = 'ok'
+#     except DemistoException as e:
+#         if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
+#             message = 'Authorization Error: make sure API Key is correctly set'
+#         else:
+#             raise e
+#     return message
+#
+
+    #
+    # try:
+    #     service_account_credentials = demisto.params().get('service_account_credentials', {}).get('password')
+    #     service_account_credentials = json.loads(service_account_credentials)
+    #     creds = service_account.Credentials.from_service_account_info(service_account_credentials, scopes=SCOPES)
+    #     # creds = service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
+    #     service = build('sheets', 'v4', credentials=creds)
+    # except Exception as e:
+    #     return_error(f"Failed to connect to Google API client {e}")
+    #
+    #
 
 ''' MAIN FUNCTION '''
 
 
 def main() -> None:
     """main function, parses params and runs command functions
-
     :return:
     :rtype:
     """
@@ -197,66 +681,56 @@ def main() -> None:
     # if your Client class inherits from BaseClient, SSL verification is
     # handled out of the box by it, just pass ``verify_certificate`` to
     # the Client constructor
-    verify_certificate = not demisto.params().get('insecure', False)
+    # verify_certificate = not demisto.params().get('insecure', False)
 
     # if your Client class inherits from BaseClient, system proxy is handled
     # out of the box by it, just pass ``proxy`` to the Client constructor
     # proxy = demisto.params().get('proxy', False)
+    service = {}
 
     demisto.debug(f'Command being called is {demisto.command()}')
-    num = 5
     # TODO: Omer check where to put this. here i also need to add to take the credentials
-    try:
-        servie_account_credentials = demisto.params().get('service_account_credentials')
-        creds = service_account.Credentials.from_service_account_info(servie_account_credentials, scopes=SCOPES)
-        # creds = service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
-        service = build('sheets', 'v4', credentials=creds)
-    except Exception as e:
-        return_error(f"Failed to connect to Google API client {e}")
 
-    # if i got here then the Google API conneccted succssefuly and i can continue with the other commands.
     try:
         # TODO: Make sure you add the proper headers for authentication
         # (i.e. "Authorization": {api key})
-        headers: Dict = {}
-
+        # service = connect_to_google_client(demisto.params())
+        service = build_and_authenticate(demisto.params())
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
             # result = test_module()
             return_results("ok")
 
         elif demisto.command() == 'google-sheets-spreadsheet-create':
-            return_results(create_spread_sheet(service, demisto.args()))
+            return_results(create_spreadsheet(service, demisto.args()))
         elif demisto.command() == 'google-sheets-spreadsheet-get':
-            return_results(get_spread_sheet(service, demisto.args()))
+            return_results(get_spreadsheet(service, demisto.args()))
         elif demisto.command() == 'google-sheets-spreadsheet-update':
-            return_results(None)
+            return_results(sheets_spreadsheet_update(service, demisto.args()))
         elif demisto.command() == 'google-sheets-sheet-create':
-            return_results(sheet_create(service , demisto.args()))
+            return_results(sheet_create(service, demisto.args()))
         elif demisto.command() == 'google-sheets-sheet-duplicate':
-            return_results(None)
+            return_results(sheet_duplicate(service, demisto.args()))
         elif demisto.command() == 'google-sheets-sheet-copy-to':
-            return_results(None)
+            return_results(sheet_copy_to(service, demisto.args()))
         elif demisto.command() == 'google-sheets-sheet-delete':
-            return_results(None)
+            return_results(sheet_delete(service, demisto.args()))
         elif demisto.command() == 'google-sheets-sheet-clear':
-            return_results(None)
+            return_results(sheet_clear(service, demisto.args()))
         elif demisto.command() == 'google-sheets-dimension-delete':
-            return_results(None)
+            return_results(sheet_dimension_delete(service, demisto.args()))
         elif demisto.command() == 'google-sheets-range-delete':
-            return_results(None)
+            return_results(sheet_range_delete(service, demisto.args()))
         elif demisto.command() == 'google-sheets-data-paste':
-            return_results(None)
-        elif demisto.command() == 'google-sheets-cell-update':
-            return_results(None)
+            return_results(sheets_data_paste(service, demisto.args()))
         elif demisto.command() == 'google-sheets-find-replace':
-            return_results(None)
+            return_results(sheets_find_replace(service, demisto.args()))
         elif demisto.command() == 'google-sheets-value-update':
-            return_results(None)
+            return_results(sheets_value_update(service, demisto.args()))
         elif demisto.command() == 'google-sheets-value-append':
-            return_results(None)
-
-
+            return_results(sheets_value_append(service, demisto.args()))
+        else:
+            raise NotImplementedError('Command "{}" is not implemented.'.format(demisto.command()))
 
     # Log exceptions and return errors
     except Exception as e:

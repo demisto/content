@@ -3,54 +3,817 @@ commonfields:
   id: GoogleSheets
   version: -1
 configuration:
-- defaultvalue: https://example.com/
-  display: Your server URL
-  name: url
-  required: true
-  type: 0
-- displaypassword: API Key
-  additionalinfo: The API Key to use for connection
-  name: credentials
-  required: true
-  hiddenusername: true
-  type: 9
-- display: Trust any certificate (not secure)
-  name: insecure
-  required: false
-  type: 8
-- display: Use system proxy settings
-  name: proxy
-  required: false
-  type: 8
-description: '[Enter a comprehensive, yet concise, description of what the integration
-  does, what use cases it is designed for, etc.]'
+  - name: service_account_credentials
+    display: null
+    required: true
+    defaultvalue: null
+    type: 9
+    additionalinfo: A service Account Key from Google
+    displaypassword: Service Account Key
+    hiddenusername: true
+  - name: insecure
+    display: Trust any certificate (not secure)
+    required: false
+    defaultvalue: "true"
+    type: 8
+    additionalinfo: null
+  - name: proxy
+    display: Use system proxy settings
+    required: false
+    defaultvalue: "true"
+    type: 8
+    additionalinfo: null
+description: Google Sheets is a spreadsheet program part of free web-based
+  Google applications to create and format spreadsheets. Use this integration to
+  create and modify spreadsheets.
 display: GoogleSheets
 name: GoogleSheets
 script:
   commands:
-  - arguments:
-    - default: false
-      description: '[Enter a description of the argument, including any important
-        information users need to know, for example, default values.]'
-      isArray: false
-      name: dummy
-      required: true
-      secret: false
-    deprecated: false
-    description: '[Enter a description of the command, including any important information
-      users need to know, for example required permissions.]'
-    execution: false
-    name: baseintegration-dummy
-    outputs:
-    - contextPath: BaseIntegration.Output
-      description: '[Enter a description of the data returned in this output.]'
-      type: String
+    - arguments:
+        - default: false
+          description: The title of the Spreadsheet to create
+          isArray: false
+          name: title
+          required: true
+          secret: false
+        - default: true
+          defaultValue: en
+          description: The locale of the Spreadsheet to create
+          isArray: false
+          name: locale
+          required: false
+          secret: false
+        - auto: PREDEFINED
+          default: false
+          defaultValue: TEXT
+          description: "The type of the number format of the Spreadsheet to create "
+          isArray: false
+          name: cell_format_type
+          predefined:
+            - NUMBER
+            - TEXT
+            - PERCENT
+            - CURRENCY
+            - DATE
+            - TIME
+            - DATE_TIME
+            - SCIENTIFIC
+          required: false
+          secret: false
+        - name: cell_format_backgroundColor
+          description: "The cell background color in the Spreadsheet to create input
+            between 0-1 the follwing : red,blue,green,alpha"
+          required: false
+          isArray: true
+          defaultValue: ""
+          predefined:
+            - "The cell_format_backgroundColor will be inserted as array type in
+              the following order - "
+            - red,green,blue,alpha
+            - "All vaules between 0-1. If choosen you must specify all fields. "
+        - default: false
+          defaultValue: "11"
+          description: Cell font size in the Spreadsheet to create
+          isArray: false
+          name: cell_format_textformat_font_size
+          required: false
+          secret: false
+        - auto: PREDEFINED
+          default: false
+          defaultValue: LEFT_TO_RIGHT
+          description: Cell text direction in the Spreadsheet to create
+          isArray: false
+          name: cell_format_textformat_text_direction
+          predefined:
+            - LEFT_TO_RIGHT
+            - RIGHT_TO_LEFT
+          required: false
+          secret: false
+        - default: false
+          description: Sets the first sheet title in the Spreadsheet to create (set first
+            sheet only)
+          isArray: false
+          name: sheet_title
+          required: true
+          secret: false
+        - auto: PREDEFINED
+          default: false
+          defaultValue: GRID
+          description: Sets the first sheet type in the SpreadSheet to create
+          isArray: false
+          name: sheet_type
+          predefined:
+            - GRID
+            - OBJECT
+            - DATASOURCE
+          required: false
+          secret: false
+      deprecated: false
+      description: Create a new Spreadsheet
+      execution: false
+      name: google-sheets-spreadsheet-create
+      outputs:
+        - contextPath: Spreadsheet.properties.title
+          description: Spreadsheet title
+          type: Unknown
+        - contextPath: Spreadsheet.spreadsheetId
+          description: Spreadsheet Id
+          type: Unknown
+    - arguments:
+        - name: spreadsheet_id
+          description: Id of the Spreadsheet to get
+          required: true
+          isArray: true
+          defaultValue: ""
+        - default: true
+          defaultValue: "False"
+          description: True if grid data should be returned. This parameter is ignored if
+            a field mask was set in the request.
+          isArray: false
+          name: "include_grid_data  "
+          required: false
+          secret: false
+        - default: false
+          description: The ranges to retrieve from the spreadsheet, Ranges are specified
+            using A1 notation.
+          isArray: true
+          name: ranges
+          required: false
+          secret: false
+      deprecated: false
+      description: Returns the spreadsheet at the given ID
+      execution: false
+      name: google-sheets-spreadsheet-get
+      outputs:
+        - contextPath: Spreadsheet.properties.title
+          description: Spreadsheet title
+          type: Unknown
+        - contextPath: Spreadsheet.spreadsheetId
+          description: SpreadSheet Id
+          type: Unknown
+        - contextPath: Spreadsheet.spreadsheetUrl
+          description: Spreadsheet URL
+          type: Unknown
+    - arguments:
+        - default: false
+          description: Spreadsheet id to create a new sheet in it
+          isArray: false
+          name: spreadsheet_id
+          required: true
+          secret: false
+        - name: echo_spreadsheet
+          description: Include Spreadsheet in response
+          required: false
+          isArray: false
+          defaultValue: "false"
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+        - default: false
+          description: Sheet title to create
+          isArray: false
+          name: sheet_title
+          required: true
+          secret: false
+        - default: false
+          description: The index of the sheet within the spreadsheet
+          isArray: false
+          name: sheet_index
+          required: false
+          secret: false
+        - auto: PREDEFINED
+          default: true
+          defaultValue: GRID
+          description: Sheet type to create
+          isArray: false
+          name: sheet_type
+          predefined:
+            - GRID
+            - OBJECT
+            - DATA_SOURCE
+          required: false
+          secret: false
+        - default: false
+          description: True if the sheet is an RTL sheet instead of an LTR sheet.
+          isArray: false
+          name: right_to_left
+          auto: PREDEFINED
+          predefined:
+            - LEFT_TO_RIGHT
+            - RIGHT_TO_LEFT
+          required: false
+          secret: false
+        - name: tab_color
+          description: The color of the tab in the UI. - The tab color will be inserted as
+            array type in the following orger -  red,green,blue,alpha All vaules
+            between 0-1. If choosen you must specify all fields.
+          required: false
+          isArray: true
+          defaultValue: ""
+        - default: false
+          description: True if the sheet is hidden in the UI, false if it's visible.
+          isArray: false
+          name: hidden
+          required: false
+          secret: false
+      deprecated: false
+      description: Adds a new sheet. When a sheet is added at a given index, all
+        subsequent sheets' indexes are incremented
+      execution: false
+      name: google-sheets-sheet-create
+      outputs:
+        - contextPath: Spreadshet.propeties.title
+          description: Spreadsheet title
+          type: Unknown
+        - contextPath: Spreadsheet.spreadsheetId
+          description: SpreadSheet Id
+          type: Unknown
+        - contextPath: Spreadsheet.spreadsheetUrl
+          description: Spreadsheet URL
+          type: Unknown
+    - name: google-sheets-sheet-duplicate
+      description: Duplicates the contents of a sheet
+      deprecated: false
+      arguments:
+        - name: spreadsheet_id
+          description: Spreadsheet id you want to copy a sheet from.
+          required: true
+          isArray: false
+          defaultValue: ""
+        - name: echo_spreadsheet
+          description: "True - to add the spreadsheet to the output "
+          required: false
+          isArray: false
+          defaultValue: "false"
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+        - name: source_sheet_id
+          description: "The id of the sheet to copy "
+          required: true
+          isArray: false
+          defaultValue: ""
+        - name: new_sheet_index
+          description: If set, the ID of the new sheet. If not set, an ID is chosen. If
+            set, the ID must not conflict with any existing sheet ID. If set, it
+            must be non-negative.
+          required: false
+          isArray: false
+          defaultValue: ""
+          
+        - name: new_sheet_name
+          description: The name of the new sheet.
+          required: true
+          isArray: false
+          defaultValue: ""
+          
+      outputs:
+        - contextPath: Spreadshet.propeties.title
+          description: Spreadsheet title
+          type: String
+        - contextPath: Spreadsheet.spreadsheetId
+          description: "Spreadsheet Id "
+          type: String
+        - contextPath: Spreadsheet.spreadsheetUrl
+          description: Spreadsheet URL
+          type: Unknown
+        - contextPath: Spreadsheet.sheets.properties.sheetId
+          description: Sheets id
+          type: String
+        - contextPath: Spreadsheet.sheets.properties.title
+          description: Sheet title
+          type: String
+    - name: google-sheets-sheet-copy-to
+      description: Copies a single sheet from a spreadsheet to another spreadsheet
+      deprecated: false
+      arguments:
+        - name: source_spreadsheet_id
+          description: Spreadsheet id to copy from
+          required: true
+          isArray: false
+          defaultValue: ""
+          
+        - name: source_sheet_id
+          description: The ID of the sheet to copy
+          required: true
+          isArray: false
+          defaultValue: ""
+          
+        - name: destination_spreadsheet_id
+          description: The Id of the spreadsheet to copy the sheet to.
+          required: true
+          isArray: false
+          defaultValue: ""
+          
+      outputs: []
+    - name: google-sheets-sheet-delete
+      description: Delete a sheet from a spreadsheet by id
+      deprecated: false
+      arguments:
+        - name: spreadsheet_id
+          description: "Spread sheet to delete sheet from. "
+          required: true
+          isArray: false
+          defaultValue: ""
+          
+        - name: echo_spreadsheet
+          description: True - to add the spreadsheet to the output
+          required: false
+          isArray: false
+          defaultValue: "false"
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+        - name: sheet_id
+          description: Sheet id to delete
+          required: true
+          isArray: false
+          defaultValue: ""
+          
+      outputs:
+        - contextPath: Spreadshet.propeties.title
+          description: Spreadsheet title
+          type: String
+        - contextPath: Spreadsheet.spreadsheetId
+          description: "Spreadsheet Id "
+          type: String
+        - contextPath: Spreadsheet.spreadsheetUrl
+          description: Spreadsheet URL
+          type: Unknown
+        - contextPath: Spreadsheet.sheets.properties.sheetId
+          description: Sheets id
+          type: String
+        - contextPath: Spreadsheet.sheets.properties.title
+          description: Sheet title
+          type: String
+    - name: google-sheets-sheet-clear
+      description: Clears values from a spreadsheet. The caller must specify the
+        spreadsheet ID and range. Only values are cleared -- all other
+        properties of the cell (such as formatting, data validation, etc..) are
+        kept.
+      deprecated: false
+      arguments:
+        - name: spreadsheet_id
+          description: Spreadsheet Id to Update
+          required: true
+          isArray: false
+          defaultValue: ""
+          
+        - name: range
+          description: TA1 notation or R1C1 notation of the values to clear.
+          required: true
+          isArray: false
+          defaultValue: ""
+          
+      outputs:
+        - contextPath: Spreadshet.propeties.title
+          description: Spreadsheet title
+          type: String
+        - contextPath: Spreadsheet.spreadsheetId
+          description: "Spreadsheet Id "
+          type: String
+        - contextPath: Spreadsheet.spreadsheetUrl
+          description: Spreadsheet URL
+          type: Unknown
+        - contextPath: Spreadsheet.sheets.properties.sheetId
+          description: Sheets id
+          type: String
+        - contextPath: Spreadsheet.sheets.properties.title
+          description: Sheet title
+          type: String
+    - name: google-sheets-range-delete
+      description: Deletes a range of cells, shifting other cells into the deleted area.
+      deprecated: false
+      arguments:
+        - name: spreadsheet_id
+          description: Spreadsheet Id
+          required: true
+          isArray: false
+          defaultValue: ""
+          
+        - name: echo_spreadsheet
+          description: True - to add the spreadsheet to the output
+          required: false
+          isArray: false
+          defaultValue: "false"
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+        - name: sheet_id
+          description: The sheet this range is on.
+          required: true
+          isArray: false
+          defaultValue: ""
+          
+        - name: start_row_index
+          description: The start row (inclusive) of the range, or not set if unbounded.
+          required: true
+          isArray: false
+          defaultValue: ""
+          
+        - name: end_row_index
+          description: The end row (exclusive) of the range, or not set if unbounded.
+          required: true
+          isArray: false
+          defaultValue: ""
+          
+        - name: start_column_index
+          description: description
+          required: true
+          isArray: false
+          defaultValue: The start column (inclusive) of the range, or not set if unbounded.
+          
+        - name: end_column_index
+          description: The end column (exclusive) of the range, or not set if unbounded.
+          required: true
+          isArray: false
+          defaultValue: ""
+          
+        - name: shift_dimension
+          description: The dimension from which deleted cells will be replaced with. If
+            ROWS , existing cells will be shifted upward to replace the deleted
+            cells. If COLUMNS , existing cells will be shifted left to replace
+            the deleted cells.
+          required: true
+          isArray: false
+          defaultValue: ""
+          auto: PREDEFINED
+          predefined:
+            - ROWS
+            - COLUMNS
+      outputs:
+        - contextPath: Spreadshet.propeties.title
+          description: Spreadsheet title
+          type: String
+        - contextPath: Spreadsheet.spreadsheetId
+          description: "Spreadsheet Id "
+          type: String
+        - contextPath: Spreadsheet.spreadsheetUrl
+          description: Spreadsheet URL
+          type: Unknown
+        - contextPath: Spreadsheet.sheets.properties.sheetId
+          description: Sheets id
+          type: String
+        - contextPath: Spreadsheet.sheets.properties.title
+          description: Sheet title
+          type: String
+    - name: google-sheets-dimension-delete
+      description: Deletes the dimensions from the sheet. notice the indexing starts from 0
+      deprecated: false
+      arguments: []
+      outputs: []
+    - name: google-sheets-data-paste
+      description: Inserts data into the spreadsheet starting at the specified coordinate.
+      deprecated: false
+      arguments:
+        - name: spreadsheet_id
+          description: SpreadsheetId
+          required: true
+          isArray: false
+          defaultValue: ""
+          
+        - name: echo_spreadsheet
+          description: True - to add the spreadsheet to the output
+          required: false
+          isArray: false
+          defaultValue: "false"
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+        - name: sheet_id
+          description: The sheet this coordinate is on.
+          required: true
+          isArray: false
+          defaultValue: ""
+          
+        - name: row_index
+          description: The row index of the coordinate.
+          required: true
+          isArray: false
+          defaultValue: ""
+          
+        - name: column_index
+          description: The column index of the coordinate.
+          required: true
+          isArray: false
+          defaultValue: ""
+          
+        - name: data
+          description: The data to insert.
+          required: true
+          isArray: true
+          defaultValue: ""
+          
+        - name: data_kind
+          description: Union field kind . How to interpret the data, exactly one value
+            must be set. kind can be only one of the following
+          required: true
+          isArray: false
+          defaultValue: ""
+          auto: PREDEFINED
+          predefined:
+            - delimiter
+            - html
+        - name: paste_type
+          description: How the data should be pasted.
+          required: false
+          isArray: false
+          defaultValue: NORMAL
+          auto: PREDEFINED
+          predefined:
+            - NORMAL
+            - VALUES
+            - FORMAT
+            - NO_BORDERS
+            - FORMULA
+            - DATA_VALIDATION
+            - CONDITIONAL_FORMATTING
+      outputs:
+        - contextPath: Spreadshet.propeties.title
+          description: Spreadsheet title
+          type: String
+        - contextPath: Spreadsheet.spreadsheetId
+          description: "Spreadsheet Id "
+          type: String
+        - contextPath: Spreadsheet.spreadsheetUrl
+          description: Spreadsheet URL
+          type: Unknown
+        - contextPath: Spreadsheet.sheets.properties.sheetId
+          description: Sheets id
+          type: String
+        - contextPath: Spreadsheet.sheets.properties.title
+          description: Sheet title
+          type: String
+    - name: google-sheets-find-replace
+      description: Finds and replaces data in cells over a range, sheet, or all sheets.
+      deprecated: false
+      arguments:
+        - name: spreadsheet_id
+          description: "Spreadsheet Id "
+          required: true
+          isArray: false
+          defaultValue: ""
+          
+        - name: echo_spreadsheet
+          description: True - to add the spreadsheet to the output
+          required: false
+          isArray: false
+          defaultValue: "false"
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+        - name: find
+          description: Finds and replaces data in cells over a range, sheet, or all sheets.
+          required: true
+          isArray: false
+          defaultValue: ""
+          
+        - name: replacement
+          description: The value to use as the replacement.
+          required: true
+          isArray: false
+          defaultValue: ""
+          
+        - name: sheet_id
+          description: The sheet to find/replace over.
+          required: false
+          isArray: false
+          defaultValue: ""
+          
+        - name: all_sheets
+          description: True to find/replace over all sheets.
+          required: false
+          isArray: false
+          defaultValue: ""
+          auto: PREDEFINED
+          predefined:
+            - "True"
+            - "False"
+        - name: match_case
+          description: True if the search is case sensitive.
+          required: false
+          isArray: false
+          defaultValue: ""
+          auto: PREDEFINED
+          predefined:
+            - "True"
+            - "False"
+        - name: match_entire_cell
+          description: True if the find value should match the entire cell.
+          required: false
+          isArray: false
+          defaultValue: ""
+          auto: PREDEFINED
+          predefined:
+            - "True"
+            - "False"
+        - name: range_sheet_id
+          description: The sheet this range is on.
+          required: false
+          isArray: false
+          defaultValue: ""
+          
+        - name: range_start_row_Index
+          description: The start row (inclusive) of the range, or not set if unbounded.
+          required: false
+          isArray: false
+          defaultValue: ""
+          
+        - name: range_end_row_Index
+          description: The end row (exclusive) of the range, or not set if unbounded.
+          required: false
+          isArray: false
+          defaultValue: ""
+          
+        - name: range_start_column_Index
+          description: The start column (inclusive) of the range, or not set if unbounded.
+          required: false
+          isArray: false
+          defaultValue: ""
+          
+        - name: range_end_column_Index
+          description: The end column (exclusive) of the range, or not set if unbounded.
+          required: false
+          isArray: false
+          defaultValue: ""
+          
+      outputs:
+        - contextPath: Spreadshet.propeties.title
+          description: Spreadsheet title
+          type: String
+        - contextPath: Spreadsheet.spreadsheetId
+          description: "Spreadsheet Id "
+          type: String
+        - contextPath: Spreadsheet.spreadsheetUrl
+          description: Spreadsheet URL
+          type: Unknown
+        - contextPath: Spreadsheet.sheets.properties.sheetId
+          description: Sheets id
+          type: String
+        - contextPath: Spreadsheet.sheets.properties.title
+          description: Sheet title
+          type: String
+    - name: google-sheets-value-update
+      description: Sets values in a range of a spreadsheet. The caller must specify
+        the spreadsheet ID, range, and a valueInputOption.
+      deprecated: false
+      arguments:
+        - name: spreadsheet_id
+          description: Spreadsheet id
+          required: true
+          isArray: false
+          defaultValue: ""
+          
+        - name: range
+          description: The A1 notation of the values to update.
+          required: true
+          isArray: false
+          defaultValue: ""
+          
+        - name: input_option
+          description: Determines how input data should be interpreted.
+          required: true
+          isArray: false
+          defaultValue: ""
+          auto: PREDEFINED
+          predefined:
+            - RAW
+            - USER_ENTERED
+        - name: major_dimension
+          description: description
+          required: true
+          isArray: false
+          defaultValue: The major dimension of the values.
+          auto: PREDEFINED
+          predefined:
+            - ROWS
+            - COLUMNS
+        - name: values
+          description: The data that was read or to be written. This is an array of
+            arrays, the outer array representing all the data and each inner
+            array representing a major dimension. Each item in the inner array
+            corresponds with one cell.
+          required: true
+          isArray: false
+          defaultValue: ""
+          
+      outputs: []
+    - name: google-sheets-value-append
+      description: Appends values to a spreadsheet. The input range is used to search
+        for existing data and find a "table" within that range. Values will be
+        appended to the next row of the table, starting with the first column of
+        the table. See the guide and sample code for specific details of how
+        tables are detected and data is appended.  The caller must specify the
+        spreadsheet ID, range, and a valueInputOption. The valueInputOption only
+        controls how the input data will be added to the sheet (column-wise or
+        row-wise), it does not influence what cell the data starts being written
+        to.
+      deprecated: false
+      arguments:
+        - name: spreadsheet_id
+          description: Spreadsheet id
+          required: true
+          isArray: false
+          defaultValue: ""
+          
+        - name: range
+          description: The A1 notation of a range to search for a logical table of data.
+            Values are appended after the last row of the table.
+          required: true
+          isArray: false
+          defaultValue: ""
+          
+        - name: input_option
+          description: Determines how input data should be interpreted.
+          required: false
+          isArray: false
+          defaultValue: ""
+          auto: PREDEFINED
+          predefined:
+            - RAW
+            - USER_ENTERED
+        - name: insert_option
+          description: description
+          required: true
+          isArray: false
+          defaultValue: ""
+          auto: PREDEFINED
+          predefined:
+            - OVERWRITE
+            - INSERT_ROWS
+        - name: major_dimension
+          description: The major dimension of the values.
+          required: true
+          isArray: false
+          defaultValue: ""
+          auto: PREDEFINED
+          predefined:
+            - ROWS
+            - COLUMNS
+        - name: values
+          description: The data that was read or to be written
+          required: true
+          isArray: false
+          defaultValue: ""
+      outputs: []
+    - name: google-sheets-spreadsheet-update
+      description: Applies one or more updates to the spreadsheet.  Each request is
+        validated before being applied. If any request is not valid then the
+        entire request will fail and nothing will be applied.
+      deprecated: false
+      arguments:
+        - name: spreadsheet_id
+          description: "Spreadsheet Id "
+          required: true
+          isArray: false
+          defaultValue: ""
+        - name: echo_spreadsheet
+          description: True - to add the spreadsheet to the output
+          required: false
+          isArray: false
+          defaultValue: "False"
+          auto: PREDEFINED
+          predefined:
+            - "False "
+            - "True"
+        - name: requests
+          description: JSON Input according to the method documentation and object
+            documentation - for advanced users’ free use
+          required: true
+          isArray: false
+          defaultValue: ""
+      outputs:
+        - contextPath: Spreadshet.propeties.title
+          description: Spreadsheet title
+          type: String
+        - contextPath: Spreadsheet.spreadsheetId
+          description: "Spreadsheet Id "
+          type: String
+        - contextPath: Spreadsheet.spreadsheetUrl
+          description: Spreadsheet URL
+          type: Unknown
+        - contextPath: Spreadsheet.sheets.properties.sheetId
+          description: Sheets id
+          type: String
+        - contextPath: Spreadsheet.sheets.properties.title
+          description: Sheet title
+          type: String
+  dockerimage: demisto/googleapi-python3:1.0.0.25341
+  feed: false
   isfetch: false
+  longRunning: false
+  longRunningPort: false
   runonce: false
-  script: '-'
-  type: python
+  script: "-"
   subtype: python3
-  dockerimage: demisto/python3:3.9.7.24076
-fromversion: 6.1.0
+  type: python
 tests:
-- No tests (auto formatted)
+  - No tests (auto formatted)
+fromversion: 6.1.0
