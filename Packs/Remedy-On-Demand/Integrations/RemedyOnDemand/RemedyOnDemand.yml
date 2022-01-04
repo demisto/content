@@ -128,7 +128,7 @@ script:
       description: Ticket urgency
     - contextPath: Ticket.Type
       description: Ticket service type
-    description: Create new ticket incident
+    description: Create new ticket incident. Note - according to Remedy AR API documentation it is recommended to provide all of the non-custom arguments. However, there is no accurate specification, and it is possible to provide other fields using the custom-fields argument alone.
   - name: remedy-get-incident
     arguments:
     - name: ID
