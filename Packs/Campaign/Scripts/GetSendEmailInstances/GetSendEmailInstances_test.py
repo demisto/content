@@ -1,85 +1,50 @@
+from GetSendEmailInstances import *
+
+INTEGRATION_COMMANDS = [{'name': 'SendMailIntegration', 'commands': [{'name': 'send-mail'}, {'name': 'some-command'}]},
+                        {'name': 'NoMailIntegration', 'commands': [{'name': 'no-mail'}, {'name': 'some-command'}]},
+                        {'name': 'SomeIntegration', 'commands': [{'name': 'send-mail'}, {'name': 'some-command'}]}]
+INTEGRATION_INSTANCES = [{'name': 'SendMailIntegration_instance1',
+                          'brand': 'SendMailIntegration',
+                          'enabled': 'true'},
+                         {'name': 'SendMailIntegration_instance2',
+                          'brand': 'SendMailIntegration',
+                          'enabled': 'true'},
+                         {'name': 'SendMailIntegration_instance3',
+                          'brand': 'SendMailIntegration',
+                          'enabled': 'false'},
+                         {'name': 'NoMailIntegration_instance1',
+                          'brand': 'NoMailIntegration',
+                          'enabled': 'true'},
+                         {'name': 'NoMailIntegration_instance2',
+                          'brand': 'NoMailIntegration',
+                          'enabled': 'false'},
+                         {'name': 'SomeIntegration_instance1',
+                          'brand': 'SomeIntegration',
+                          'enabled': 'false'}
+                         ]
 
 
-# def test_get_incident_ids_as_options_happy_path(mocker):
-#     """
-#
-#     Given:
-#         - The "Select Incidents" multi select field try to populate the available ids
-#
-#     When:
-#         - Get the incident ids as option for info
-#
-#     Then:
-#         - Validate the ids returned as options format for multi select field and are sorted numerically
-#
-#     """
-#     # prepare
-#     mocker.patch.object(demisto, 'results')
-#     mocker.patch('GetCampaignIncidentsIdsAsOptions.get_campaign_incidents', return_value=MOCKED_INCIDENTS)
-#
-#     # run
-#     GetCampaignIncidentsIdsAsOptions.main()
-#
-#     # validate
-#     options_dict = demisto.results.call_args[0][0]
-#     ids = options_dict['options']
-#     hidden = options_dict['hidden']
-#
-#     MOCKED_INCIDENTS.sort(key=lambda incident: incident['id'])  # the original order was descending
-#
-#     assert hidden is False
-#     assert ids.pop(0) == ALL_OPTION
-#     for i in range(NUM_OF_INCIDENTS):
-#         incident_id = str(MOCKED_INCIDENTS[i]['id'])
-#         assert incident_id == ids[i]
-#
-#
-# def test_get_ids_where_no_campaign_incidents_exist(mocker):
-#     """
-#
-#     Given -
-#         There is no campaign in the context
-#
-#     When -
-#         Try to get the incident ids
-#
-#     Then -
-#         Validate the options in the result is empty
-#
-#     """
-#
-#     # prepare
-#     mocker.patch.object(demisto, 'results')
-#     mocker.patch.object(demisto, 'debug')
-#     mocker.patch('GetCampaignIncidentsIdsAsOptions.get_campaign_incidents', return_value={})
-#
-#     # run
-#     GetCampaignIncidentsIdsAsOptions.main()
-#
-#     # validate
-#     assert demisto.results.call_args[0][0] == NO_CAMPAIGN_INCIDENTS_MSG
-#
-#
-# def test_there_is_no_id_in_incident(mocker):
-#     """
-#     Given -
-#         Incident in campaign in context doesn't have id
-#
-#     When -
-#         Try to get the ids for the multi select field
-#
-#     Then -
-#         Validate the
-#
-#     """
-#
-#     # prepare
-#     mocker.patch.object(demisto, 'results')
-#     no_ids_incidents = [{'name': f'test_{i}' for i in range(NUM_OF_INCIDENTS)}]
-#     mocker.patch('GetCampaignIncidentsIdsAsOptions.get_campaign_incidents', return_value=no_ids_incidents)
-#
-#     # run
-#     try:
-#         GetCampaignIncidentsIdsAsOptions.main()
-#     except SystemExit:
-#         assert demisto.results.call_args[0][0]['Contents'] == NO_ID_IN_CONTEXT
+def test_get_enabled_instances(mocker):
+    """
+
+    Given:
+        - The "Email Sender Instance" single select field try to populate the available instances
+
+    When:
+        - Get the integration instances that can 'send-mail' as option
+
+    Then:
+        - Validate the instances returned as options format for single select field
+
+    """
+    mocker.patch.object(demisto, 'results')
+    mocker.patch('GetSendEmailInstances.get_all_integrations_commands', return_value=INTEGRATION_COMMANDS)
+    mocker.patch('GetSendEmailInstances.get_all_instances', return_value=INTEGRATION_INSTANCES)
+
+    result = get_enabled_instances()
+
+    instances = result['options']
+    hidden = result['hidden']
+
+    assert hidden is False
+    assert set(instances) == {'SendMailIntegration_instance1', 'SendMailIntegration_instance2'}
