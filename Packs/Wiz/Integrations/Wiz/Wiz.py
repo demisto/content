@@ -21,11 +21,14 @@ def get_token():
     """
     Retrieve the token using the credentials
     """
+    demisto_params = demisto.params()
+    said = demisto_params.get('credentials').get('identifier')
+    sasecret = demisto_params.get('credentials').get('password')
     auth_payload = parse.urlencode({
         'grant_type': 'client_credentials',
         'audience': 'beyond-api',
-        'client_id': demisto.getParam('said'),
-        'client_secret': demisto.getParam('sasecret')
+        'client_id': said,
+        'client_secret': sasecret
     })
     response = requests.post("https://auth.wiz.io/oauth/token", headers=HEADERS_AUTH, data=auth_payload)
 
