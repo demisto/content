@@ -760,7 +760,7 @@ def main():
             'gitlab-issue-edit': gitlab_edit_issue_command,
             'gitlab-group-projects-list': gitlab_group_projects_list_command,
             'gitlab-raw-file-get': gitlab_get_raw_file_command,
-            'gitlab-trigger-contribution-build': gitlab_trigger_contribution_build_command
+            'gitlab-trigger-contribution-build': gitlab_trigger_contribution_build_command,
         }
 
         if command == 'test-module':
