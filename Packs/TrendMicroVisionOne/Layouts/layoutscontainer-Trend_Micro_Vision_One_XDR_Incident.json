@@ -306,7 +306,7 @@
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "trendmicrov1investigationstatus",
+                                "fieldId": "incident_trendmicrov1investigationstatus",
                                 "height": 22,
                                 "id": "12a16920-31c1-11ec-8101-5fa2c0ed0e90",
                                 "index": 0,
@@ -315,7 +315,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "trendmicrov1workbenchid",
+                                "fieldId": "incident_trendmicrov1workbenchid",
                                 "height": 22,
                                 "id": "ee91fef0-31c0-11ec-8101-5fa2c0ed0e90",
                                 "index": 1,
@@ -324,7 +324,7 @@
                             },
                             {
                                 "endCol": 4,
-                                "fieldId": "trendmicrov1workbenchname",
+                                "fieldId": "incident_trendmicrov1workbenchname",
                                 "height": 22,
                                 "id": "fe424300-31c0-11ec-8101-5fa2c0ed0e90",
                                 "index": 2,
@@ -334,7 +334,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 4,
-                                "fieldId": "trendmicrov1workbenchlink",
+                                "fieldId": "incident_trendmicrov1workbenchlink",
                                 "height": 22,
                                 "id": "f0deae10-31c0-11ec-8101-5fa2c0ed0e90",
                                 "index": 3,
@@ -344,7 +344,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "trendmicrov1desktopcount",
+                                "fieldId": "incident_trendmicrov1desktopcount",
                                 "height": 22,
                                 "id": "31bea6b0-31c1-11ec-8101-5fa2c0ed0e90",
                                 "index": 4,
@@ -353,7 +353,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "trendmicrov1servercount",
+                                "fieldId": "incident_trendmicrov1servercount",
                                 "height": 22,
                                 "id": "37002bd0-31c1-11ec-8101-5fa2c0ed0e90",
                                 "index": 5,
@@ -363,7 +363,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 4,
-                                "fieldId": "trendmicrov1severity",
+                                "fieldId": "incident_trendmicrov1severity",
                                 "height": 22,
                                 "id": "f64d36a0-31c0-11ec-8101-5fa2c0ed0e90",
                                 "index": 0,
@@ -373,7 +373,7 @@
                             },
                             {
                                 "endCol": 4,
-                                "fieldId": "trendmicrov1priorityscore",
+                                "fieldId": "incident_trendmicrov1priorityscore",
                                 "height": 22,
                                 "id": "19dd37a0-31c1-11ec-8101-5fa2c0ed0e90",
                                 "index": 1,
@@ -382,7 +382,7 @@
                             },
                             {
                                 "endCol": 4,
-                                "fieldId": "trendmicrov1accountcount",
+                                "fieldId": "incident_trendmicrov1accountcount",
                                 "height": 22,
                                 "id": "3b800ea0-31c1-11ec-8101-5fa2c0ed0e90",
                                 "index": 4,
@@ -391,7 +391,7 @@
                             },
                             {
                                 "endCol": 4,
-                                "fieldId": "trendmicrov1emailaddresscount",
+                                "fieldId": "incident_trendmicrov1emailaddresscount",
                                 "height": 22,
                                 "id": "34fe4150-31c1-11ec-8101-5fa2c0ed0e90",
                                 "index": 5,
@@ -403,7 +403,7 @@
                         "minH": 1,
                         "minW": 1,
                         "moved": false,
-                        "name": "Vision One XDR Details",
+                        "name": "Trend Micro Vision One XDR Details",
                         "static": false,
                         "w": 2,
                         "x": 1,
