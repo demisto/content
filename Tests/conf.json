@@ -267,6 +267,11 @@
             "timeout": 1000
         },
         {
+            "integrations": "AzureDevOps",
+            "playbookID": "playbook-AzureDevOps-Test",
+            "fromversion": "6.0.0"
+        },
+        {
             "integrations": "Microsoft Intune Feed",
             "playbookID": "FeedMicrosoftIntune_Test",
             "fromversion": "5.5.0"
@@ -4926,6 +4931,7 @@
         }
     ],
     "skipped_tests": {
+        "playbook-AzureDevOps-Test": "Issue with repetitive calls to Azure DevOps API",
         "MISP V2 Test": "The integration is deprecated as we released MISP V3",
         "Github IAM - Test Playbook": "Issue 32383",
         "O365-SecurityAndCompliance-ContextResults-Test": "Issue 38900",
