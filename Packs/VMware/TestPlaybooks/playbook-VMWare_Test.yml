@@ -406,7 +406,7 @@ tasks:
     scriptarguments:
       left:
         complex:
-          root: VMWare.State
+          root: VMWare
           filters:
           - - operator: isEqualString
               left:
@@ -416,6 +416,7 @@ tasks:
               right:
                 value:
                   simple: ' test_vm_demo'
+          accessor: State
       right:
         simple: poweredOff
     results:
