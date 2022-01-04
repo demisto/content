@@ -168,20 +168,21 @@ def relationships_manager(client: Client, raw_response: dict, entity_a: str, ent
 
     if not client.create_relationships:
         return relationships
-        
-    relationships += create_relationships(client, dict_safe_get(raw_response, ['pulse_info', 'pulses', 'attack_ids'], ['']), entity_a, entity_a_type, 'display_name', 
-    FeedIndicatorType.indicator_type_by_server_version("STIX Attack Pattern"), EntityRelationship.Relationships.INDICATOR_OF)
+    relevant_field = dict_safe_get(raw_response, ['pulse_info', 'pulses'], [{}])
+    relationships += create_relationships(client, dict_safe_get(([{}] if relevant_field==[] else relevant_field)[0],['attack_ids'],['']),
+    entity_a, entity_a_type, 'display_name', FeedIndicatorType.indicator_type_by_server_version("STIX Attack Pattern"), EntityRelationship.Relationships.INDICATOR_OF)
+
     if client.max_indicator_relationships != 0:
         params = {'limit' : str(client.max_indicator_relationships)}
         _, _, urls_raw_response = alienvault_get_related_urls_by_indicator_command(client, indicator_type, indicator, params)
         relationships +=  create_relationships(client, dict_safe_get(urls_raw_response, ['url_list'], ['']), entity_a, entity_a_type, 'url', FeedIndicatorType.URL, EntityRelationship.Relationships.INDICATOR_OF)
-        
+
         _, _, hash_raw_response = alienvault_get_related_hashes_by_indicator_command(client, indicator_type, indicator, params)
         relationships +=  create_relationships(client, dict_safe_get(hash_raw_response, ['data'], ['']), entity_a, entity_a_type, 'hash', FeedIndicatorType.File, EntityRelationship.Relationships.INDICATOR_OF)
 
         _, _, passive_dns_raw_response = alienvault_get_passive_dns_data_by_indicator_command(client, indicator_type, indicator, params)
         if len(dict_safe_get(passive_dns_raw_response, ['passive_dns'], [''])) > client.max_indicator_relationships:
-            relationships +=  create_relationships(client, passive_dns_raw_response.get('passive_dns')[0:client.max_indicator_relationships], entity_a, entity_a_type, 'address', FeedIndicatorType.IP, EntityRelationship.Relationships.INDICATOR_OF)
+            relationships += create_relationships(client, passive_dns_raw_response.get('passive_dns')[0:client.max_indicator_relationships], entity_a, entity_a_type, 'address', FeedIndicatorType.IP, EntityRelationship.Relationships.INDICATOR_OF)
         relationships +=  create_relationships(client, dict_safe_get(passive_dns_raw_response, ['passive_dns'], ['']), entity_a, entity_a_type, 'address', FeedIndicatorType.IP, EntityRelationship.Relationships.INDICATOR_OF)
 
     return relationships 
@@ -190,7 +191,6 @@ def create_relationships(client: Client, relevant_field, entity_a: str, entity_a
     relationships: list = []
     if not client.create_relationships:
         return relationships
-    # pulse_info.pulses.[0].attack_ids.display_name - can contain a list of attack_ids
     if relevant_field and isinstance(relevant_field, list) and relevant_id in relevant_field[0]:
         display_names = [item.get(relevant_id) for item in relevant_field]
         if display_names:
@@ -372,7 +372,8 @@ def file_command(client: Client, file: str) -> List[CommandResults]:
                                             argument=hash_)
         if raw_response_analysis and raw_response_general and \
                 raw_response_general != 404 and raw_response_analysis != 404:
-            relationships = create_relationships(client, raw_response=dict_safe_get(raw_response_general, ['pulse_info', 'pulses', 'attack_ids'], ['']),
+            relevant_field = dict_safe_get(raw_response_general, ['pulse_info', 'pulses'], [{}])
+            relationships = create_relationships(client, relevant_field=dict_safe_get(([{}] if relevant_field==[] else relevant_field)[0],['attack_ids'],['']),
                                                                 entity_a=hash_, entity_a_type=FeedIndicatorType.File, relevant_id='display_name', 
                                                                 entity_b_type=FeedIndicatorType.indicator_type_by_server_version("STIX Attack Pattern"),relationship_type= EntityRelationship.Relationships.INDICATOR_OF)
 
@@ -447,9 +448,9 @@ def url_command(client: Client, url: str) -> List[CommandResults]:
 
                 relationships = []
                 if client.create_relationships:
-                    relationships = create_relationships(
-                        client, raw_response=dict_safe_get(raw_response, ['pulse_info', 'pulses', 'attack_ids'], ['']), entity_a=url, entity_a_type=FeedIndicatorType.URL, relevant_id='display_name',
-                        entity_b_type=FeedIndicatorType.indicator_type_by_server_version("STIX Attack Pattern"),relationship_type= EntityRelationship.Relationships.INDICATOR_OF)
+                    relevant_field = dict_safe_get(raw_response, ['pulse_info', 'pulses'], [{}])
+                    relationships = create_relationships(client, relevant_field=dict_safe_get(([{}] if relevant_field==[] else relevant_field)[0],['attack_ids'],['']),
+                    entity_a=url, entity_a_type=FeedIndicatorType.URL, relevant_id='display_name', entity_b_type=FeedIndicatorType.indicator_type_by_server_version("STIX Attack Pattern"),relationship_type= EntityRelationship.Relationships.INDICATOR_OF)
 
                     domain = raw_response.get('domain')
                     if domain:

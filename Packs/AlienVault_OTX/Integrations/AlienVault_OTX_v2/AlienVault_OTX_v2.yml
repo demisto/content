@@ -19,10 +19,11 @@ configuration:
   required: false
   type: 0
 - defaultvalue: '10'
-  display: integration param, Maximum number of relationships for indicators
+  display: Maximum number of relationships for indicators
   name: max_indicator_relationships
   required: false
   type: 0
+  additionalinfo: If not added, no relationships will be added.
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: C - Fairly reliable
   display: Source Reliability

@@ -475,6 +475,29 @@ IP_EC_WITH_RELATIONSHIPS = {
     'AlienVaultOTX.IP(val.IP && val.IP === obj.IP)': {'IP': {'Reputation': 0, 'IP': '98.136.103.23'}}
 }
 
+IP_URL_RAW_RESPONSE={'page_num': 1, 'limit': 10, 'paged': True, 'has_next': True, 'full_size': 7855, 'actual_size': 7855}
+
+IP_URL_RAW_RESPONSE_WITH_RELATIONSHIPS={'url_list': [{'url': 'https://mojorojorestaurante.com', 
+'date': '2022-01-03T08:21:31', 'domain': 'mojorojorestaurante.com', 'hostname': 'mojorojorestaurante.com', 
+'result': {'urlworker': {'ip': '8.8.8.8', 'http_code': 200}, 
+'safebrowsing': {'matches': []}}, 'httpcode': 200, 'gsb': [], 'encoded': 'https%3A//mojorojorestaurante.com'}], 
+'page_num': 1, 'limit': 10, 'paged': True, 'has_next': True, 'full_size': 7855, 'actual_size': 7855}
+
+IP_FILE_ANALYSIS_RAW_RESPONSE={'size': 2189582, 'count': 2189582}
+
+IP_FILE_ANALYSIS_RAW_RESPONSE_WITH_RELATIONSHIPS={'data': [{'datetime_int': 1508608939,
+    'hash': '0b4d4a7c35a185680bc5102bdd98218297e2cdf0a552bde10e377345f3622c1c', 'detections': {'avast': 'Win32:Sinowal-GB\\ [Trj]', 
+    'avg': None, 'clamav': 'Win.Downloader.50691-1', 'msdefender': 'Worm:Win32/VB'},
+    'date': '2017-10-21T18:02:19'}], 'size': 2189582, 'count': 2189582}
+
+IP_DNS_RAW_RESPONSE_WITH_RELATIONSHIPS = {'passive_dns': [{'address': '8.8.8.8',
+'first': '2022-01-04T08:25:39', 'last': '2022-01-04T08:25:39', 'hostname': 'nguyenhoangai-4g.xyz',
+'record_type': 'A', 'indicator_link': '/indicator/domain/nguyenhoangai-4g.xyz',
+'flag_url': 'assets/images/flags/us.png', 'flag_title': 'United States',
+'asset_type': 'domain', 'asn': 'AS15169 GOOGLE'}],'count': 1} 
+    
+IP_DNS_RAW_RESPONSE = {'count': 0}
+
 IP_RELATIONSHIPS = [
     {'name': 'indicator-of', 'reverseName': 'indicated-by', 'type': 'IndicatorToIndicator',
      'entityA': '98.136.103.23',
@@ -499,7 +522,11 @@ IP_RELATIONSHIPS = [
     {'name': 'indicator-of', 'reverseName': 'indicated-by', 'type': 'IndicatorToIndicator', 'entityA': '98.136.103.23',
      'entityAFamily': 'Indicator', 'entityAType': 'IP', 'entityB': 'T1071 - Application Layer Protocol',
      'entityBFamily': 'Indicator', 'entityBType': 'STIX Attack Pattern', 'fields': {}, 'reliability': 'C - Fairly reliable',
-     'brand': 'AlienVault OTX v2'}]
+     'brand': 'AlienVault OTX v2'},  
+
+{'Relationship': 'indicator-of', 'EntityA': '8.8.8.8', 'EntityAType': 'IPv4', 'EntityB': 'https://mojorojorestaurante.com', 'EntityBType': 'URL'},
+{'Relationship': 'indicator-of', 'EntityA': '8.8.8.8', 'EntityAType': 'IPv4', 'EntityB': '0b4d4a7c35a185680bc5102bdd98218297e2cdf0a552bde10e377345f3622c1c', 'EntityBType': 'File'},
+{'Relationship': 'indicator-of', 'EntityA': '8.8.8.8', 'EntityAType': 'IPv4', 'EntityB': '8.8.8.8', 'EntityBType': 'IP'},]
 
 INTEGRATION_NAME = 'AlienVault OTX v2'
 
@@ -509,6 +536,7 @@ client = Client(
     verify=False,
     proxy=False,
     default_threshold='2',
+    max_indicator_relationships=3,
     reliability=DBotScoreReliability.C,
     create_relationships=True
 )
@@ -638,11 +666,12 @@ def test_domain_command(mocker, raw_response, expected):
     assert expected == context
 
 
-@pytest.mark.parametrize('ip_,raw_response,expected_ec,expected_relationships', [
-    ('8.8.88.8', IP_RAW_RESPONSE, IP_EC, []),
-    ('98.136.103.23', IP_RAW_RESPONSE_WITH_RELATIONSHIPS, IP_EC_WITH_RELATIONSHIPS, IP_RELATIONSHIPS)
+@pytest.mark.parametrize('ip_,raw_response,url_raw_response,file_raw_response,dns_raw_response,expected_ec,expected_relationships', [
+    ('8.8.88.8', IP_RAW_RESPONSE, IP_URL_RAW_RESPONSE, IP_FILE_ANALYSIS_RAW_RESPONSE, IP_DNS_RAW_RESPONSE,IP_EC, []),
+    ('98.136.103.23', IP_RAW_RESPONSE_WITH_RELATIONSHIPS, IP_URL_RAW_RESPONSE_WITH_RELATIONSHIPS,
+    IP_FILE_ANALYSIS_RAW_RESPONSE_WITH_RELATIONSHIPS ,IP_DNS_RAW_RESPONSE_WITH_RELATIONSHIPS, IP_EC_WITH_RELATIONSHIPS, IP_RELATIONSHIPS)
 ])
-def test_ip_command(mocker, ip_, raw_response, expected_ec, expected_relationships):
+def test_ip_command(mocker, ip_, raw_response, url_raw_response, file_raw_response, dns_raw_response, expected_ec, expected_relationships):
     """
     Given
     - An IPv4 address.
@@ -654,7 +683,7 @@ def test_ip_command(mocker, ip_, raw_response, expected_ec, expected_relationshi
     - Validate that the IP and DBotScore entry context have the proper values.
     - Validate that relationships where created if available in the raw response.
     """
-    mocker.patch.object(client, 'query', side_effect=[raw_response])
+    mocker.patch.object(client, 'query', side_effect=[raw_response, url_raw_response, file_raw_response, dns_raw_response])
     command_results = ip_command(client, ip_, 'IPv4')
     # results is CommandResults list
     all_context = command_results[0].to_context()
