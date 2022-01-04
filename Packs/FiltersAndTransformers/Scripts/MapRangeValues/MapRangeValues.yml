@@ -7,16 +7,16 @@ type: python
 tags:
 - transformer
 comment: |-
-  This script converts the input value into another value using two lists. The input value or range is searched in the first list (map_from). 
-  If it exists, the value from the second list (map_to) at the same index is retutrned. If there is no match, the original value is returned.
+  This script converts an input value into another value using two lists. The input value or range is searched in the first list (map_from). 
+  If it exists, the value at the same index from the second list (map_to) is returned. If there is no match, the original value is returned.
 
-  Example:
+  Example 1:
 
   map_from = "1,2,3,4"
   map_to = "4,3,2,1"
   value = 3
 
-  Output would be "2"
+  Output is "2"
 
   Example 2:
 
@@ -24,23 +24,22 @@ comment: |-
   map_to = "5,1"
   value = 3
 
-  Output would be "5"
+  Output is "5"
 enabled: true
 args:
 - name: map_from
   required: true
   isArray: true
-  description: Comma-separated values to map from.
+  description: A comma-separated list of values to map from.
 - name: map_to
   required: true
   isArray: true
-  description: Comma-separated values to map to
+  description: A comma-separated list of values to map to.
 - name: sep
   required: true
   default: true
   defaultValue: '-'
-  description: The separator between the start and end of range values (default is
-    '-').
+  description: The separator between the start and end of range values.
 - name: value
   required: true
   description: the input value to map.
