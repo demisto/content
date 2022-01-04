@@ -259,7 +259,6 @@ def power_on(si, uuid):
     if vm.runtime.powerState == 'poweredOn':
         raise Exception('Virtual Machine is already powered on.')
     task = vm.PowerOn()
-    demisto.debug('Created task at VCenter to power on VM.')
     while task.info.state not in [vim.TaskInfo.State.success, vim.TaskInfo.State.error]:  # type: ignore
         time.sleep(1)
     if task.info.state == 'success':
@@ -286,7 +285,6 @@ def power_off(si, uuid):
     if vm.runtime.powerState == 'poweredOff':
         raise Exception('Virtual Machine is already powered off.')
     task = vm.PowerOff()
-    demisto.debug('Created task at VCenter to power off VM.')
     while task.info.state not in [vim.TaskInfo.State.success, vim.TaskInfo.State.error]:  # type: ignore
         time.sleep(1)
     if task.info.state == 'success':
@@ -313,7 +311,6 @@ def suspend(si, uuid):
     if vm.runtime.powerState == 'suspended':
         raise Exception('Virtual Machine is already suspended.')
     task = vm.Suspend()
-    demisto.debug('Created task at VCenter to suspend VM.')
     while task.info.state not in [vim.TaskInfo.State.success, vim.TaskInfo.State.error]:  # type: ignore
         time.sleep(1)
     if task.info.state == 'success':
@@ -338,7 +335,6 @@ def suspend(si, uuid):
 def hard_reboot(si, uuid):
     vm = get_vm(si, uuid)
     task = vm.ResetVM_Task()
-    demisto.debug('Created task at VCenter to hard reboot VM.')
     wait_for_tasks(si, [task])
     if task.info.state == 'success':
         ec = {
@@ -414,7 +410,6 @@ def create_snapshot(si, args):
         qui = False
     name = args.get('name', uuid + ' snapshot ' + d)
     desc = args.get('description', 'Snapshot of VM UUID ' + uuid + ' taken on ' + d)
-    demisto.debug('Created task at VCenter to create snapshot of VM.')
     pyVim.task.WaitForTask(vm.CreateSnapshot(name=name, description=desc, memory=mem, quiesce=qui))
     return 'Snapshot ' + name + ' completed.'
 
@@ -424,7 +419,6 @@ def revert_snapshot(si, name, uuid):
     snapObj = get_snapshots(vm.snapshot.rootSnapshotList, name)
     if len(snapObj) == 1:
         snapObj = snapObj[0].snapshot
-        demisto.debug('Created task at VCenter to revert snapshot of VM.')
         pyVim.task.WaitForTask(snapObj.RevertToSnapshot_Task())
         ec = {
             'VMWare(val.UUID && val.UUID === obj.UUID)': {
@@ -540,7 +534,6 @@ def change_nic_state(si, args):  # pragma: no cover
     spec = vim.vm.ConfigSpec()  # type: ignore
     spec.deviceChange = dev_changes
     task = vm.ReconfigVM_Task(spec=spec)
-    demisto.debug('Created task at VCenter to change NIC state.')
     wait_for_tasks(si, [task])
 
     res_new_nic_state = (new_nic_state + "ed").replace("eed", "ed")
@@ -601,7 +594,6 @@ def create_vm(si, args):
     spec = create_vm_config_creator(host, args)
 
     task = folder.CreateVM_Task(config=spec, pool=pool, host=host)
-    demisto.debug('Created task at VCenter to create VM.')
     wait_for_tasks(si, [task])
 
     if task.info.state == 'success':
@@ -664,7 +656,6 @@ def clone_vm(si, args):
 
     folder = search_for_obj(content, [vim.Folder], args.get('folder'))
     task = vm.CloneVM_Task(folder=folder, name=args.get('name'), spec=spec)
-    demisto.debug('Created task at VCenter to clone VM.')
     wait_for_tasks(si, [task])
 
     if task.info.state == 'success':
@@ -726,7 +717,6 @@ def relocate_vm(si, args):
         spec.datastore = datastore
         spec.disks = create_rellocation_locator_spec(vm, datastore)
     task = vm.RelocateVM_Task(spec, priority)
-    demisto.debug('Created task at VCenter to relocate VM.')
     wait_for_tasks(si, [task])
 
     if task.info.state == 'success':
@@ -747,7 +737,6 @@ def delete_vm(si, args):
     if vm.runtime.powerState == 'poweredOn':
         raise Exception("Virtual Machine should be powered off before deleting.")
     task = vm.Destroy_Task()
-    demisto.debug('Created task at VCenter to delete VM.')
     wait_for_tasks(si, [task])
     if task.info.state == 'success':
         data = {
@@ -777,7 +766,6 @@ def register_vm(si, args):
 
     task = folder.RegisterVM_Task(path=args.get('path'), name=args.get('name'),
                                   asTemplate=argToBoolean(args.get('as_template')), pool=pool, host=host)
-    demisto.debug('Created task at VCenter to register VM.')
     wait_for_tasks(si, [task])
     if task.info.state == 'success':
         return {
@@ -816,9 +804,7 @@ def main():  # pragma: no cover
     res = []
     si = None
     try:
-        demisto.debug('Command being called is ' + demisto.command())
         si, vsphere_client = login(demisto.params())
-
         if demisto.command() == 'test-module':
             result = test_module(si)
         if demisto.command() == 'vmware-get-vms':
@@ -868,7 +854,6 @@ def main():  # pragma: no cover
     try:
         logout(si)
     except Exception as ex:
-        demisto.error(traceback.format_exc())   # print the traceback
         res.append({  # type: ignore
             "Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": "Logout failed. " + str(ex)})
 
