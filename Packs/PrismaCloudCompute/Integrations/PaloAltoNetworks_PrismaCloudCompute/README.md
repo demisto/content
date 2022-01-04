@@ -40,7 +40,6 @@ To send alerts from Prisma Cloud Compute to Cortex XSOAR, you need to create an 
 
 * In order to access Prisma Cloud Compute resources, a user must be assigned with a role.
 * Without sufficient user roles, commands/fetching incidents might not work.
-* Administrator user role can access all the Prisma Cloud Compute resources.
 * See below the user roles and their descriptions.
 * See 'Requires Role' section (each command requires a different type of role).
 
@@ -59,6 +58,8 @@ In order to use the entire integration commands a user must have the permissions
 * operator
 * devOps
 * vulnerabilityManager
+
+The administrator user role can use the entire integration commands.
 
 See user roles descriptions in Prisma Cloud Compute:
 ![Available User Roles](doc_images/available-user-roles.png)
