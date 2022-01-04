@@ -1,0 +1,87 @@
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: a4a6069a-f6dc-4afc-80ff-f4f532963eed
+    propagationLabels:
+    - all
+    toServerVersion: ""
+id: 76ec59c9-6755-4040-877f-9e12a70ebb02
+inputs: []
+name: Mytest
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 33498349-c7a4-43c3-8635-4e52421cf0b0
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 33498349-c7a4-43c3-8635-4e52421cf0b0
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: TEST
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prints text to war room (Markdown supported)
+      id: 3125a067-077b-44c0-8e1d-24c02f6aeea8
+      iscommand: false
+      name: print test
+      scriptName: Print
+      type: regular
+      version: -1
+    taskid: 3125a067-077b-44c0-8e1d-24c02f6aeea8
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 275,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
