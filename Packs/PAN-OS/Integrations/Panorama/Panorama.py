@@ -4676,8 +4676,9 @@ def prettify_matching_rule(matching_rule: dict, device: dict):
         pretty_matching_rule['Category'] = matching_rule['category']
     if 'action' in matching_rule:
         pretty_matching_rule['Action'] = matching_rule['action']
-    if device:
-        pretty_matching_rule['Device'] = device
+
+    for key, val in device.items():
+        pretty_matching_rule[f'Device{key}'] = val
 
     return pretty_matching_rule
 
