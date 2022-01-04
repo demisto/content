@@ -22,7 +22,7 @@ def filter_OOO_users(get_users_response, ooo_list_name):
     away_users_response = demisto.executeCommand("GetAwayUsers", {})
     if is_error(away_users_response) or not away_users_response:
         return_error(f'Failed to get away users: {str(get_error(away_users_response))}')
-    away_users: List[Dict] = away_users_response[0]['Contents']
+    away_users: List[Dict] = away_users_response[0].get('EntryContext', {}).get('AwayUsers', [])
     away_users = away_users if away_users else []
 
     list_info = ooo_list[0].get('EntryContext').get('ShiftManagment.OOOUsers')
