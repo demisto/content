@@ -100,5 +100,5 @@ script:
   subtype: python3
   type: python
 tests:
-- No tests
+- TAXII2 Server Performance Test
 fromversion: 6.1.0

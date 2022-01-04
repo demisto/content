@@ -4928,6 +4928,19 @@
         {
             "playbookID": "Dedup - Generic v3",
             "fromversion": "5.5.0"
+        },
+        {
+            "playbookID": "TAXII2 Server Performance Test",
+            "instance_names": "taxii2server",
+            "integrations": [
+                "TAXII2 Server",
+                "Create-Mock-Feed-Relationships"
+            ],
+            "fromversion": "6.1.0",
+            "timeout": 3500,
+            "memory_threshold": 900,
+            "pid_threshold": 12,
+            "context_print_dt": "EDLHey"
         }
     ],
     "skipped_tests": {

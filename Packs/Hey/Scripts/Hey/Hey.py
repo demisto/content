@@ -73,7 +73,7 @@ def construct_hey_query(url: str,
         hey_query += ' -disable-redirects '
     if headers:
         for header_key, header_val in name_value_arg_to_dict(headers).items():
-            hey_query += f' -H "{header_key}: {header_val}"'
+            hey_query += f' -H {header_key}:{header_val} '
     hey_query += " ".join(f"-{k} {v}" for k, v in hey_map.items()) + f' {url}'
     hey_query = hey_query.replace("  ", " ")  # remove double spaces
     return hey_map, hey_query
@@ -183,11 +183,11 @@ def run_hey_test(url: str,
                                              proxy,
                                              enable_http2,
                                              disable_redirects)
-    result = subprocess.check_output(hey_query.split(), stderr=subprocess.STDOUT, text=True)
+    result = subprocess.check_output(hey_query, stderr=subprocess.STDOUT, text=True)
     return HeyPerformanceResult(result=result, results_map=results_map, **hey_map).to_results()
 
 
-def main() -> None:
+def main() -> None: # pragma: no cover
     args = demisto.args()
     try:
         return_results(run_hey_test(**args))

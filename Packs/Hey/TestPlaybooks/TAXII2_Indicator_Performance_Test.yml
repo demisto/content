@@ -1,0 +1,418 @@
+id: TAXII2 Indicator Performance Test
+version: 5
+vcShouldKeepItemLegacyProdMachine: false
+name: TAXII2 Indicator Performance Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: cbbe7cb2-a568-4128-833d-bce78016ba05
+    type: start
+    task:
+      id: cbbe7cb2-a568-4128-833d-bce78016ba05
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: dabec422-bd57-4002-8aa9-334795f029f0
+    type: regular
+    task:
+      id: dabec422-bd57-4002-8aa9-334795f029f0
+      version: -1
+      name: Hey edl IP
+      scriptName: Hey
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      c:
+        simple: ${inputs.c}
+      concurrency:
+        simple: ${inputs.c}
+      disable_compression:
+        simple: "true"
+      headers:
+        simple: Accept=*/*
+      "n":
+        simple: ${inputs.n}
+      o:
+        simple: csv
+      requests_number:
+        simple: ${inputs.n}
+      results_map:
+        simple: Type=IP
+      t:
+        simple: ${inputs.t}
+      timeout:
+        simple: ${inputs.t}
+      url:
+        complex:
+          root: inputs.url
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ?match[type]=ip
+      z:
+        simple: ${inputs.z}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: fa43139c-0a30-43c6-8890-401047f5228f
+    type: regular
+    task:
+      id: fa43139c-0a30-43c6-8890-401047f5228f
+      version: -1
+      name: Hey edl URL
+      scriptName: Hey
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      c:
+        simple: ${inputs.c}
+      concurrency:
+        simple: ${inputs.c}
+      disable_compression:
+        simple: "true"
+      headers:
+        simple: Accept=*/*
+      "n":
+        simple: ${inputs.n}
+      o:
+        simple: csv
+      requests_number:
+        simple: ${inputs.n}
+      results_map:
+        simple: Type=URL
+      t:
+        simple: ${inputs.t}
+      timeout:
+        simple: ${inputs.t}
+      url:
+        complex:
+          root: inputs.url
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ?match[type]=url
+      z:
+        simple: ${inputs.z}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 8b0cefe7-8123-4c85-80e4-a5f3b31e6b45
+    type: regular
+    task:
+      id: 8b0cefe7-8123-4c85-80e4-a5f3b31e6b45
+      version: -1
+      name: Hey edl Domain
+      scriptName: Hey
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      c:
+        simple: ${inputs.c}
+      concurrency:
+        simple: ${inputs.c}
+      disable_compression:
+        simple: "true"
+      headers:
+        simple: Accept=*/*
+      "n":
+        simple: ${inputs.n}
+      o:
+        simple: csv
+      requests_number:
+        simple: ${inputs.n}
+      results_map:
+        simple: Type=Domain
+      t:
+        simple: ${inputs.t}
+      timeout:
+        simple: ${inputs.t}
+      url:
+        complex:
+          root: inputs.url
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: '&match[type]=domain'
+      z:
+        simple: ${inputs.z}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: fe95e0c2-fb79-4f7b-8913-ae67949cfbe2
+    type: condition
+    task:
+      id: fe95e0c2-fb79-4f7b-8913-ae67949cfbe2
+      version: -1
+      name: Check First Result
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              simple: Hey.[0].Requests
+            iscontext: true
+          right:
+            value:
+              simple: Hey.[0].SuccessfulResponses
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: d41b8021-d74b-4d87-81e9-730e84b8671c
+    type: condition
+    task:
+      id: d41b8021-d74b-4d87-81e9-730e84b8671c
+      version: -1
+      name: Check Second Result
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              simple: Hey.[1].Requests
+            iscontext: true
+          right:
+            value:
+              simple: Hey.[1].SuccessfulResponses
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: cfbad056-e9a5-40c9-8f47-c8f71d2c1c53
+    type: condition
+    task:
+      id: cfbad056-e9a5-40c9-8f47-c8f71d2c1c53
+      version: -1
+      name: Check Third Result
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              simple: Hey.[2].Requests
+            iscontext: true
+          right:
+            value:
+              simple: Hey.[2].SuccessfulResponses
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 75f4a37f-c1b7-4024-88b5-bbea77d68a50
+    type: title
+    task:
+      id: 75f4a37f-c1b7-4024-88b5-bbea77d68a50
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1260,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: url
+  value: {}
+  required: false
+  description: The URL of the instance with with query in the end
+  playbookInputQuery: null
+- key: "n"
+  value: {}
+  required: false
+  description: ""
+  playbookInputQuery: null
+- key: t
+  value: {}
+  required: false
+  description: ""
+  playbookInputQuery: null
+- key: z
+  value: {}
+  required: false
+  description: ""
+  playbookInputQuery: null
+- key: results_map
+  value: {}
+  required: false
+  description: ""
+  playbookInputQuery: null
+- key: c
+  value: {}
+  required: false
+  description: Concurrent requests to be sent.
+  playbookInputQuery: null
+outputs:
+- contextPath: Hey
+  type: unknown

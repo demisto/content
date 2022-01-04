@@ -293,7 +293,7 @@ class TAXII2Server:
         }
 
         if self.version == TAXII_VER_2_1:
-            if len(iocs) > offset + limit:
+            if total > offset + limit:
                 response['more'] = True
                 response['next'] = str(limit + offset)
 
@@ -346,7 +346,7 @@ class TAXII2Server:
             response = {
                 'objects': objects,
             }
-            if len(iocs) > offset + limit:
+            if total > offset + limit:
                 response['more'] = True
                 response['next'] = str(limit + offset)
 
@@ -491,6 +491,7 @@ def create_query(query: str, types: list) -> str:
     Returns:
         New query with types params
     """
+    new_query = ''
     if types:
         xsoar_types: list = []
         if 'domain-name' in types:
@@ -503,7 +504,9 @@ def create_query(query: str, types: list) -> str:
                     xsoar_type = t
                 xsoar_types.append(xsoar_type)
 
-        new_query = f'({query}) '
+        if query.strip():
+            new_query = f'({query}) '
+
         new_query += ' or '.join([f'type:"{x}"' for x in xsoar_types])
 
         demisto.debug(f'new query: {new_query}')
@@ -525,7 +528,7 @@ def find_indicators(query: str, types: list, added_after, limit: int, offset: in
     Returns: Created indicators and its extensions.
     """
     new_query = create_query(query, types)
-    new_limit = offset + limit + 1  # helps to verify that there is more indicators
+    new_limit = offset + limit
     iocs = []
     extensions = []
     if is_manifest:
