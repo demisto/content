@@ -187,6 +187,12 @@ DOMAIN_RAW_RESPONSE = {
     "whois": "http://whois.domaintools.com/otx.alienvault.com"
 }
 
+DOMAIN_DNS_RAW_RESPONSE = {'passive_dns': [], 'count': 0}
+
+DOMAIN_HASH_RAW_RESPONSE =  {'data': [], 'size': 865426, 'count': 865426}
+
+DOMAIN_URL_RAW_RESPONSE = {'url_list': [], 'page_num': 1, 'limit': 10, 'paged': True, 'has_next': True, 'full_size': 5494039, 'actual_size': 5494039}
+
 DOMAIN_EC = {
     'Domain(val.Name && val.Name == obj.Name)': [{
         'Name': {'domain': 'otx.alienvault.com'}}],
@@ -501,32 +507,35 @@ IP_DNS_RAW_RESPONSE = {'count': 0}
 IP_RELATIONSHIPS = [
     {'name': 'indicator-of', 'reverseName': 'indicated-by', 'type': 'IndicatorToIndicator',
      'entityA': '98.136.103.23',
-     'entityAFamily': 'Indicator', 'entityAType': 'IP', 'entityB': 'T1140 - Deobfuscate/Decode Files or Information',
+     'entityAFamily': 'Indicator', 'entityAType': 'IPv4', 'entityB': 'T1140 - Deobfuscate/Decode Files or Information',
      'entityBFamily': 'Indicator', 'entityBType': 'STIX Attack Pattern', 'fields': {},
      'reliability': 'C - Fairly reliable',
-     'brand': 'AlienVault OTX v2'
-     },
-    {
-        'name': 'indicator-of', 'reverseName': 'indicated-by', 'type': 'IndicatorToIndicator',
-        'entityA': '98.136.103.23', 'entityAFamily': 'Indicator', 'entityAType': 'IP',
-        'entityB': 'T1040 - Network Sniffing', 'entityBFamily': 'Indicator', 'entityBType': 'STIX Attack Pattern',
-        'fields': {}, 'reliability': 'C - Fairly reliable', 'brand': 'AlienVault OTX v2'},
+     'brand': 'AlienVault OTX v2'},
+    {'name': 'indicator-of', 'reverseName': 'indicated-by', 'type': 'IndicatorToIndicator',
+    'entityA': '98.136.103.23', 'entityAFamily': 'Indicator', 'entityAType': 'IPv4',
+    'entityB': 'T1040 - Network Sniffing', 'entityBFamily': 'Indicator', 'entityBType': 'STIX Attack Pattern',
+    'fields': {}, 'reliability': 'C - Fairly reliable', 'brand': 'AlienVault OTX v2'},
     {'name': 'indicator-of', 'reverseName': 'indicated-by', 'type': 'IndicatorToIndicator', 'entityA': '98.136.103.23',
-     'entityAFamily': 'Indicator', 'entityAType': 'IP', 'entityB': 'T1053 - Scheduled Task/Job',
+     'entityAFamily': 'Indicator', 'entityAType': 'IPv4', 'entityB': 'T1053 - Scheduled Task/Job',
      'entityBFamily': 'Indicator', 'entityBType': 'STIX Attack Pattern', 'fields': {}, 'reliability': 'C - Fairly reliable',
      'brand': 'AlienVault OTX v2'},
     {'name': 'indicator-of', 'reverseName': 'indicated-by', 'type': 'IndicatorToIndicator', 'entityA': '98.136.103.23',
-     'entityAFamily': 'Indicator', 'entityAType': 'IP', 'entityB': 'T1060 - Registry Run Keys / Startup Folder',
+     'entityAFamily': 'Indicator', 'entityAType': 'IPv4', 'entityB': 'T1060 - Registry Run Keys / Startup Folder',
      'entityBFamily': 'Indicator', 'entityBType': 'STIX Attack Pattern', 'fields': {}, 'reliability': 'C - Fairly reliable',
      'brand': 'AlienVault OTX v2'},
     {'name': 'indicator-of', 'reverseName': 'indicated-by', 'type': 'IndicatorToIndicator', 'entityA': '98.136.103.23',
-     'entityAFamily': 'Indicator', 'entityAType': 'IP', 'entityB': 'T1071 - Application Layer Protocol',
+     'entityAFamily': 'Indicator', 'entityAType': 'IPv4', 'entityB': 'T1071 - Application Layer Protocol',
      'entityBFamily': 'Indicator', 'entityBType': 'STIX Attack Pattern', 'fields': {}, 'reliability': 'C - Fairly reliable',
-     'brand': 'AlienVault OTX v2'},  
-
-{'Relationship': 'indicator-of', 'EntityA': '8.8.8.8', 'EntityAType': 'IPv4', 'EntityB': 'https://mojorojorestaurante.com', 'EntityBType': 'URL'},
-{'Relationship': 'indicator-of', 'EntityA': '8.8.8.8', 'EntityAType': 'IPv4', 'EntityB': '0b4d4a7c35a185680bc5102bdd98218297e2cdf0a552bde10e377345f3622c1c', 'EntityBType': 'File'},
-{'Relationship': 'indicator-of', 'EntityA': '8.8.8.8', 'EntityAType': 'IPv4', 'EntityB': '8.8.8.8', 'EntityBType': 'IP'},]
+     'brand': 'AlienVault OTX v2'},
+     {'name': 'indicator-of', 'reverseName': 'indicated-by', 'type': 'IndicatorToIndicator', 'entityA': '98.136.103.23', 'entityAFamily': 'Indicator',
+        'entityAType': 'IPv4', 'entityB': 'https://mojorojorestaurante.com', 'entityBFamily': 'Indicator', 'entityBType': 'URL', 'fields': {}, 'reliability':
+        'C - Fairly reliable', 'brand': 'AlienVault OTX v2'}, {'name': 'indicator-of', 'reverseName': 'indicated-by', 'type': 'IndicatorToIndicator',
+        'entityA': '98.136.103.23', 'entityAFamily': 'Indicator', 'entityAType': 'IPv4', 'entityB':
+        '0b4d4a7c35a185680bc5102bdd98218297e2cdf0a552bde10e377345f3622c1c', 'entityBFamily': 'Indicator', 'entityBType': 'File', 'fields': {}, 'reliability':
+        'C - Fairly reliable', 'brand': 'AlienVault OTX v2'}, {'name': 'indicator-of', 'reverseName': 'indicated-by', 'type': 'IndicatorToIndicator',
+        'entityA': '98.136.103.23', 'entityAFamily': 'Indicator', 'entityAType': 'IPv4', 'entityB': '8.8.8.8', 'entityBFamily': 'Indicator', 'entityBType':
+        'IP', 'fields': {}, 'reliability': 'C - Fairly reliable', 'brand': 'AlienVault OTX v2'}
+    ]
 
 INTEGRATION_NAME = 'AlienVault OTX v2'
 
@@ -645,10 +654,10 @@ def test_url_command_uppercase_protocol(requests_mock):
     assert res[0].indicator.to_context()['URL(val.Data && val.Data == obj.Data)']['Data'] == 'https://www.google.com'
 
 
-@pytest.mark.parametrize('raw_response,expected', [
-    (DOMAIN_RAW_RESPONSE, DOMAIN_EC)
+@pytest.mark.parametrize('raw_response,url_raw_response,file_raw_response,dns_raw_response,expected', [
+    (DOMAIN_RAW_RESPONSE, DOMAIN_DNS_RAW_RESPONSE, DOMAIN_HASH_RAW_RESPONSE, DOMAIN_URL_RAW_RESPONSE, DOMAIN_EC)
 ])
-def test_domain_command(mocker, raw_response, expected):
+def test_domain_command(mocker, raw_response, url_raw_response, file_raw_response, dns_raw_response, expected):
     """
     Given
     - A domain name.
@@ -659,7 +668,7 @@ def test_domain_command(mocker, raw_response, expected):
     Then
     - Validate that the Domain and DBotScore entry context have the proper values.
     """
-    mocker.patch.object(client, 'query', side_effect=[raw_response])
+    mocker.patch.object(client, 'query', side_effect=[raw_response, url_raw_response, file_raw_response, dns_raw_response])
     command_results = domain_command(client, {'domain': 'otx.alienvault.com'})
     # results is CommandResults list
     context = command_results[0].to_context()['EntryContext']

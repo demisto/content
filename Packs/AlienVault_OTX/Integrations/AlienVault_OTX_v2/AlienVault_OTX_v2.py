@@ -176,15 +176,16 @@ def relationships_manager(client: Client, raw_response: dict, entity_a: str, ent
         params = {'limit' : str(client.max_indicator_relationships)}
         _, _, urls_raw_response = alienvault_get_related_urls_by_indicator_command(client, indicator_type, indicator, params)
         relationships +=  create_relationships(client, dict_safe_get(urls_raw_response, ['url_list'], ['']), entity_a, entity_a_type, 'url', FeedIndicatorType.URL, EntityRelationship.Relationships.INDICATOR_OF)
-
+        print(urls_raw_response)
         _, _, hash_raw_response = alienvault_get_related_hashes_by_indicator_command(client, indicator_type, indicator, params)
         relationships +=  create_relationships(client, dict_safe_get(hash_raw_response, ['data'], ['']), entity_a, entity_a_type, 'hash', FeedIndicatorType.File, EntityRelationship.Relationships.INDICATOR_OF)
-
+        print(hash_raw_response)
         _, _, passive_dns_raw_response = alienvault_get_passive_dns_data_by_indicator_command(client, indicator_type, indicator, params)
         if len(dict_safe_get(passive_dns_raw_response, ['passive_dns'], [''])) > client.max_indicator_relationships:
             relationships += create_relationships(client, passive_dns_raw_response.get('passive_dns')[0:client.max_indicator_relationships], entity_a, entity_a_type, 'address', FeedIndicatorType.IP, EntityRelationship.Relationships.INDICATOR_OF)
-        relationships +=  create_relationships(client, dict_safe_get(passive_dns_raw_response, ['passive_dns'], ['']), entity_a, entity_a_type, 'address', FeedIndicatorType.IP, EntityRelationship.Relationships.INDICATOR_OF)
-
+        else:
+            relationships +=  create_relationships(client, dict_safe_get(passive_dns_raw_response, ['passive_dns'], ['']), entity_a, entity_a_type, 'address', FeedIndicatorType.IP, EntityRelationship.Relationships.INDICATOR_OF)
+        print(passive_dns_raw_response)
     return relationships 
 
 def create_relationships(client: Client, relevant_field, entity_a: str, entity_a_type: str, relevant_id : str, entity_b_type: str, relationship_type):
