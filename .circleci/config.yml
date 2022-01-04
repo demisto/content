@@ -86,8 +86,6 @@ references:
       # is done in 'Setup Environment' step.
       PULL_REQUEST_NUMBER: << pipeline.parameters.pr_number >>
       NIGHTLY_PARAMETER: << pipeline.parameters.nightly >>
-      LEGACY_NIGHTLY_PARAMETER: << pipeline.parameters.legacy_nightly >>
-      DEMISTO_SDK_NIGHTLY_PARAMETER: << pipeline.parameters.demisto_sdk_nightly >>
 
   container_config: &container_config
     docker:
@@ -133,34 +131,6 @@ references:
         then
             echo 'export NIGHTLY=true' >> $BASH_ENV
         fi
-        if [ -n "${INSTANCE_TESTS_PARAMETER}" ];
-        then
-            echo 'export INSTANCE_TESTS=true' >> $BASH_ENV
-        fi
-        if [ -n "${DEMISTO_SDK_NIGHTLY_PARAMETER}" ];
-        then
-            echo 'export DEMISTO_SDK_NIGHTLY=true' >> $BASH_ENV
-        fi
-        if [ -n "${TIME_TO_LIVE_PARAMETER}" ];
-        then
-            echo "export TIME_TO_LIVE=$TIME_TO_LIVE_PARAMETER" >> $BASH_ENV
-        fi
-        if [ -n "${FORCE_PACK_UPLOAD_PARAMETER}" ];
-        then
-            echo "export FORCE_PACK_UPLOAD=$FORCE_PACK_UPLOAD_PARAMETER" >> $BASH_ENV
-        fi
-        if [ -n "${PACKS_TO_UPLOAD_PARAMETER}" ];
-        then
-            echo "export PACKS_TO_UPLOAD=$PACKS_TO_UPLOAD_PARAMETER" >> $BASH_ENV
-        fi
-        if [ -n "${BUCKET_UPLOAD_PARAMETER}" ];
-        then
-            echo "export BUCKET_UPLOAD=$BUCKET_UPLOAD_PARAMETER" >> $BASH_ENV
-        fi
-        if [ -n "${STORAGE_BASE_PATH_PAREMETER}" ];
-        then
-            echo "export STORAGE_BASE_PATH=$STORAGE_BASE_PATH_PAREMETER" >> $BASH_ENV
-        fi
 
         echo "=== sourcing $BASH_ENV ==="
         source $BASH_ENV
@@ -185,12 +155,8 @@ references:
         echo 'source /home/circleci/project/venv/bin/activate' >> $BASH_ENV
         git config diff.renameLimit 6000
 
-        if [ -n "${DEMISTO_SDK_NIGHTLY}" ]; then
-          pip3 install git+https://github.com/demisto/demisto-sdk.git@"$SDK_REF"
-        fi
-
         echo "========== Build Parameters =========="
-        set | grep -E "^NIGHTLY=|^INSTANCE_TESTS=|^NON_AMI_RUN=|^SERVER_BRANCH_NAME=|^ARTIFACT_BUILD_NUM=|^DEMISTO_SDK_NIGHTLY=|^TIME_TO_LIVE=|^CONTRIB_BRANCH=|^FORCE_PACK_UPLOAD=|^PACKS_TO_UPLOAD=|^BUCKET_UPLOAD=|^STORAGE_BASE_PATH=|^GCS_MARKET_BUCKET=|^SLACK_CHANNEL=|^SDK_REF"
+        set | grep -E "^NIGHTLY=|^CONTRIB_BRANCH=|^SDK_REF"
         python --version
         python3 --version
         node --version
