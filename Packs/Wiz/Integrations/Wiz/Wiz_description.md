@@ -10,7 +10,7 @@ There Are 2 integration flows:
 
 
 ## Steps to follow
-- Navigate to https://app.wiz.io/settings/service-accounts to create a Service Account
+- Navigate to [service accounts](https://app.wiz.io/settings/service-accounts) to create a Service Account
 - Click on Add Service Account
 - Scope the permissions to read:issues
 - In the Cortex XSOAR Integration instance configuration window:
