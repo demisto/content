@@ -528,6 +528,9 @@ tasks:
       File:
         complex:
           root: File
+      GetOriginalEmail:
+        complex:
+          root: inputs.GetOriginalEmail
       UserID:
         complex:
           root: ReporterAddress
@@ -2658,6 +2661,18 @@ inputs:
   required: false
   description: Optional - the name of a pre-trained phishing model to predict phishing
     type using machine learning.
+  playbookInputQuery:
+- key: GetOriginalEmail
+  value: { }
+  required: false
+  description: |-
+    Retrieves the original email in the thread.
+
+    You must have the necessary permissions in your email service to execute global search.
+
+    - For EWS: eDiscovery
+    - For Gmail: Google Apps Domain-Wide Delegation of Authority
+    - For MSGraph: As described in the [message-get API](https://docs.microsoft.com/en-us/graph/api/message-get) and the [user-list-messages API](https://docs.microsoft.com/en-us/graph/api/user-list-messages)
 outputs: []
 tests:
 - Phishing v2 - Test - Incident Starter
