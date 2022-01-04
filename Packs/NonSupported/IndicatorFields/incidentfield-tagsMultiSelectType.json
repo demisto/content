@@ -35,5 +35,6 @@
   "validationRegex": "",
   "sla": 0,
   "fromVersion": "5.0.0",
-  "toVersion": "5.4.9"
+  "toVersion": "5.4.9",
+  "openEnded": true
 }
