@@ -65,7 +65,7 @@ script:
   type: python
   commands:
   - name: prisma-cloud-compute-profile-host-list
-    description: Get information about the hosts and their profile events. This command supports asterisks which allows you to get host profiles by filtering its fields according to a specific substring.
+    description: Get information about the hosts and their profile events. This command supports asterisks which allows you to get host profiles by filtering its fields according to a specific substring. Minimum user role required to access this endpoint - devSecOps.
     deprecated: false
     arguments:
     - name: hostname
@@ -223,7 +223,7 @@ script:
       description: The last time any of the country IP addresses accessed the host console.
       type: Date
   - name: prisma-cloud-compute-profile-container-list
-    description: Get information about the containers and their profile events. This command supports asterisks which allows you to get container profiles by filtering its fields according to a specific substring.
+    description: Get information about the containers and their profile events. This command supports asterisks which allows you to get container profiles by filtering its fields according to a specific substring. Minimum user role required to access this endpoint - devSecOps.
     deprecated: false
     arguments:
     - name: cluster
@@ -531,7 +531,7 @@ script:
       description: The current state of the profile.
       type: String
   - name: prisma-cloud-compute-profile-container-hosts-list
-    description: Get the hosts where a specific container is running.
+    description: Get the hosts where a specific container is running. Minimum user role required to access this endpoint - devSecOps.
     deprecated: false
     arguments:
     - name: id
@@ -557,7 +557,7 @@ script:
       description: The list of hosts where this container is running.
       type: String
   - name: prisma-cloud-compute-profile-container-forensic-list
-    description: Get runtime forensics data for a specific container on a specific
+    description: Get runtime forensics data for a specific container on a specific. Minimum user role required to access this endpoint - devSecOps.
       host
     deprecated: false
     arguments:
@@ -672,7 +672,7 @@ script:
       description: The event user.
       type: String
   - name: prisma-cloud-compute-host-forensic-list
-    description: Get forensics on a specific host.
+    description: Get forensics on a specific host. Minimum user role required to access this endpoint - devSecOps.
     deprecated: false
     arguments:
     - name: id
@@ -762,7 +762,7 @@ script:
       description: The host ID that was analyzed.
       type: String
   - name: prisma-cloud-compute-console-version-info
-    description: Get the console version.
+    description: Get the console version. Minimum user role required to access this endpoint - ci.
     deprecated: false
     arguments: []
     outputs:
@@ -770,7 +770,7 @@ script:
       description: The console version.
       type: String
   - name: prisma-cloud-compute-custom-feeds-ip-list
-    description: Get all the blacklisted IP addresses in the system.
+    description: Get all the blacklisted IP addresses in the system. Minimum user role required to access this endpoint - auditor.
     deprecated: false
     arguments: []
     outputs:
@@ -784,7 +784,7 @@ script:
       description: The last time the custom feed was modified.
       type: Date
   - name: prisma-cloud-compute-custom-feeds-ip-add
-    description: Add a list of banned IP addresses to be blocked by the system.
+    description: Add a list of banned IP addresses to be blocked by the system. Minimum user role required to access this endpoint - operator.
     deprecated: false
     arguments:
     - name: ip
@@ -794,7 +794,7 @@ script:
       defaultValue: ""
     outputs: []
   - name: prisma-cloud-compute-custom-feeds-malware-list
-    description: List all custom uploaded md5 malwares.
+    description: List all custom uploaded md5 malwares. Minimum user role required to access this endpoint - auditor.
     deprecated: false
     arguments:
       - name: limit
@@ -819,7 +819,7 @@ script:
         description: The last time the custom feed was modified.
         type: Date
   - name: prisma-cloud-compute-custom-feeds-malware-add
-    description: Add custom MD5 malware hashes.
+    description: Add custom MD5 malware hashes. Minimum user role required to access this endpoint - operator.
     deprecated: false
     arguments:
     - name: name
@@ -836,7 +836,8 @@ script:
   - name: cve
     description: Get information about the CVEs in the system. Will return a maximum
       of 50 records. It is possible to query for a partial CVE description such
-      as cve-2020 or cve-2014 or by severity/distro/package.
+      as cve-2020 or cve-2014 or by severity/distro/package. Minimum user role
+      required to access this endpoint - devOps.
     deprecated: false
     arguments:
     - name: cve_id
@@ -871,7 +872,7 @@ script:
       description: The vendor reporting the score of the indicator.
       type: String
   - name: prisma-cloud-compute-defenders-list
-    description: Retrieve a list of defenders and their information.
+    description: Retrieve a list of defenders and their information. Minimum user role required to access this endpoint - vulnerabilityManager.
     deprecated: false
     arguments:
     - name: cluster
@@ -986,7 +987,7 @@ script:
       description: The agent version.
       type: String
   - name: prisma-cloud-compute-collections-list
-    description: Retrieves a list of all collections.
+    description: Retrieves a list of all collections. Minimum user role required to access this endpoint - auditor.
     deprecated: false
     arguments:
     - name: limit
@@ -1048,7 +1049,7 @@ script:
         system or by the user.
       type: Boolean
   - name: prisma-cloud-compute-container-namespace-list
-    description: Get the containers namespaces names.
+    description: Get the containers namespaces names. Minimum user role required to access this endpoint - devSecOps.
     deprecated: false
     arguments:
     - name: cluster
@@ -1072,7 +1073,7 @@ script:
       type: String
   - name: prisma-cloud-compute-images-scan-list
     description: Get images scan report. The report includes vulnerabilities,
-      compliance issues, binaries, etc.
+      compliance issues, binaries, etc. Minimum user role required to access this endpoint - vulnerabilityManager.
     deprecated: false
     arguments:
     - name: clusters
@@ -1325,8 +1326,8 @@ script:
       description: Number of compliance issues.
       type: Number
   - name: prisma-cloud-compute-hosts-scan-list
-    description: Get images scan report. The report includes vulnerabilities,
-      compliance issues, binaries, etc.
+    description: Get hosts scan report. The report includes vulnerabilities,
+      compliance issues, binaries, etc. Minimum user role required to access this endpoint - vulnerabilityManager.
     deprecated: false
     arguments:
     - name: clusters
@@ -1535,7 +1536,7 @@ script:
       description: Number of compliance issues.
       type: Unknown
   - name: prisma-cloud-compute-vulnerabilities-impacted-resources-list
-    description: Get the list of Prisma Cloud Compute vulnerabilities resources.
+    description: Get the list of Prisma Cloud Compute vulnerabilities resources. Minimum user role required to access this endpoint - vulnerabilityManager.
     deprecated: false
     arguments:
     - name: cve
