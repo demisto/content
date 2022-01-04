@@ -406,7 +406,7 @@ tasks:
     scriptarguments:
       left:
         complex:
-          root: VMWare.Name
+          root: VMWare.State
           filters:
           - - operator: isEqualString
               left:
