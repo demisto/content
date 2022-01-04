@@ -26,7 +26,7 @@ def pass_files_to_docs_review(files_for_review: List[str]):
         print(f'Checking file: {file_path}\n')
         doc_reviewer = DocReviewer(file_path=file_path,
                                    release_notes_only=True,
-                                   known_words_file_path='Tests/known_words.txt')  # TODO: need to check the path
+                                   known_words_file_path='Tests/known_words.txt')
 
         result = doc_reviewer.run_doc_review()
         if not result:
