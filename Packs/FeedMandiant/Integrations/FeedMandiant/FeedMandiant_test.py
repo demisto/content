@@ -209,4 +209,4 @@ def test_main(mocker, command):
     mocker.patch.object(MandiantClient, '_generate_token', return_value='token')
     mocker.patch.object(demisto, 'command', return_value=command)
     main()
-    assert 1 == 1
+
