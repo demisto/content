@@ -45,7 +45,8 @@ def trigger_generic_webhook(options):
 
     if res.status_code != 200:
         print(
-            f"Trigger Contribution Build playbook failed. Post request to Content Gold has status code of {res.status_code}")
+            f"Trigger Contribution Build playbook failed. Post request to Content"
+            f" Gold has status code of {res.status_code}")
         sys.exit(1)
 
 
