@@ -528,8 +528,6 @@ tasks:
       File:
         complex:
           root: File
-      GetOriginalEmail:
-        simple: "True"
       UserID:
         complex:
           root: ReporterAddress
@@ -1886,6 +1884,9 @@ tasks:
           accessor: Address
           transformers:
           - operator: uniq
+      InternalRange:
+        complex:
+          root: inputs.InternalRange
       InternalDomains:
         complex:
           root: inputs.InternalDomains
