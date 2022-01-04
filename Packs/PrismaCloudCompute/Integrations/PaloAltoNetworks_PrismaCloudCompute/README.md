@@ -44,7 +44,7 @@ To send alerts from Prisma Cloud Compute to Cortex XSOAR, you need to create an 
 
 ![User Roles Configuration](doc_images/user-roles-configuration.png)
 
-See the available user roles in Prisma Cloud Compute:
+See user roles descriptions in Prisma Cloud Compute:
 ![Available User Roles](doc_images/available-user-roles.png)
 
 
