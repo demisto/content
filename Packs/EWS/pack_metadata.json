@@ -16,5 +16,24 @@
     "marketplaces": [
         "xsoar",
         "marketplacev2"
+    ],
+    "dependencies": {
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
+        },
+        "CommonPlaybooks": {
+            "mandatory": true,
+            "display_name": "Common Playbooks"
+        },
+        "Phishing": {
+            "mandatory": false,
+            "display_name": "Phishing"
+        }
+    },
+    "displayedImages": [
+        "CommonScripts",
+        "CommonPlaybooks",
+        "Phishing"
     ]
 }

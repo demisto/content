@@ -60,6 +60,10 @@ while [[ "$#" -gt 0 ]]; do
     shift
     shift;;
 
+  -o|--override-all-packs) _override_all_packs=true
+    shift
+    shift;;
+
   -g|--gitlab) _gitlab=true
     shift
     shift;;
@@ -101,6 +105,10 @@ if [ -n "$_gitlab" ]; then
     _variables="variables[FORCE_BUCKET_UPLOAD]=true"
   fi
 
+  if [ -z "$_override_all_packs" ]; then
+    _override_all_packs=false
+  fi
+
   source Utils/gitlab_triggers/trigger_build_url.sh
 
   curl --request POST \
@@ -112,6 +120,7 @@ if [ -n "$_gitlab" ]; then
     --form "variables[GCS_MARKET_BUCKET]=${_bucket}" \
     --form "variables[IFRA_ENV_TYPE]=Bucket-Upload" \
     --form "variables[STORAGE_BASE_PATH]=${_storage_base_path}" \
+    --form "variables[OVERRIDE_ALL_PACKS]=${_override_all_packs}" \
     "$BUILD_TRIGGER_URL"
 
 else
