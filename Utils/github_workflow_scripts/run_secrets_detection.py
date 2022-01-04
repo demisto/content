@@ -36,8 +36,7 @@ def trigger_generic_webhook(options):
         "raw_json": {"BranchName": branch_name, "PullRequestNumber": pr_number},
     }
     # post to Content Gold
-
-    res = requests.post(SECRETS_INSTANCE_URL, json=body, auth=(username, password))
+    res = requests.post(SECRETS_INSTANCE_URL, json=body, auth=(username, password), verify=False)
 
     if res.status_code != 200:
         print(
