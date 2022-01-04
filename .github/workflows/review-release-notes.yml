@@ -26,5 +26,5 @@ jobs:
           changed_files="${{ steps.changed-files.outputs.all_changed_files }}"
           echo "Starting docs review"
           cd Utils/github_workflow_scripts
-          python ./run_docs_review.py --changed_files $changed_files
+          python ./run_docs_review.py --changed_files "$changed_files"
           echo "Finished docs review"
