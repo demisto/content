@@ -395,6 +395,8 @@ def return_entry_summary(pred_json: Dict, url: str, whitelist: bool, output_rast
             image = image_from_base64_to_bytes(output_rasterize.get('image_b64', None))
         res = fileResult(filename='Logo detection engine', data=image)
         res['Type'] = entryTypes['image']
+        if pred_json[MODEL_KEY_LOGO_FOUND]:
+            res["Tags"] = ['Logo_detected']
         demisto.results(res)
     return explain
 
@@ -520,8 +522,12 @@ def get_prediction_single_url(model, url, force_model, debug):
             return create_dict_context(url, BENIGN_VERDICT_WHITELIST, {}, SCORE_BENIGN, is_white_listed, {})
         else:
             is_white_listed = True
-    res = demisto.executeCommand('whois', {'query': domain, 'execution-timeout': 5
-                                           })
+    try:
+        res = demisto.executeCommand('whois', {'query': domain, 'execution-timeout': 5
+                                               })
+    except ValueError as e:
+        res = []
+        demisto.results('Please enable whois integration for more accurate prediction')
     is_new_domain = extract_created_date(res)
     # Rasterize html and image
     res = demisto.executeCommand('rasterize', {'type': 'json',
@@ -570,7 +576,7 @@ def return_general_summary(results, tag="Summary"):
         "HumanReadable": tableToMarkdown("Phishing prediction summary for URLs", df_summary_json,
                                          headers=['URL', KEY_FINAL_VERDICT]),
         "Contents": summary_context,
-        # "EntryContext": {'DBotPredictURLPhishing': context_dict}
+        "EntryContext": {'DBotPredictURLPhishing': summary_context}
     }
     if tag is not None:
         return_entry["Tags"] = ['DBOT_URL_PHISHING_{}'.format(tag)]
