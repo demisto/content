@@ -12,6 +12,7 @@ requests = "*"
 blessings = "*"
 dateparser = "*"
 slack_sdk = "*"
+demisto-sdk = "*"
 
 [requires]
 python_version = "3.9"
