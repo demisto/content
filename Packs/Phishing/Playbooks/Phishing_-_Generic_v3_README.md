@@ -86,7 +86,7 @@ This playbook does not use any integrations.
 | Role | The default role to assign the incident to. | Administrator | Required |
 | SearchAndDelete | Enables the Search and Delete capability.<br/>For a malicious email, the "Search and Delete" sub-playbook looks for other instances of the email and deletes them pending analyst approval. | False | Optional |
 | BlockIndicators | Enables the Block Indicators capability.<br/>For a malicious email, the "Block Indicators" sub-playbook blocks all malicious indicators in the relevant integrations. | False | Optional |
-| AuthenticateEmail | Determines whether the authenticity of the email should be verified using SPF, DKIM and DMARC. | False | Optional |
+| AuthenticateEmail | Determines whether the authenticity of the email should be verified using SPF, DKIM and DMARC. | True | Optional |
 | OnCall | Set to True to assign only the user that is currently on shift. | False | Optional |
 | SearchAndDeleteIntegration | Determines which product and playbook is used to search and delete the phishing email from the users' inboxes.<br/>  - Set this to "O365" to use the "O365 - Security And Compliance - Search And Delete" playbook.<br/>  - Set this to "EWS" to use the "Search And Delete Emails - EWS" playbook.<br/>  - Set this to "Gmail" to use the "Search And Delete - Gmail" playbook. | EWS | Optional |
 | O365DeleteType | Sets the method to delete emails in the "O365 - Security And Compliance - Search And Delete" playbook. Can be "Soft" \(recoverable\), or "Hard" \(unrecoverable\). Leave empty to decide manually for each email incident.<br/>This is only applicable if the SearchAndDeleteIntegration input is set to O365. | Soft | Optional |
@@ -98,6 +98,7 @@ This playbook does not use any integrations.
 | DetonateURL | Determines whether to use the "URL Detonation" playbook. Detonating a URL may take a few minutes. | False | Optional |
 | InternalRange | This input is used in the task "Entity Enrichment - Phishing v2" playbook.<br/>A list of internal IP ranges to check IP addresses against. The list should be provided in CIDR notation, separated by commas. An example of a list of ranges is: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" \(without quotes\). If a list is not provided, uses the default list provided in the IsIPInRanges script \(the known IPv4 private address ranges\). |  | Optional |
 | PhishingModelName | Optional - the name of a pre-trained phishing model to predict phishing type using machine learning. | phishing_model | Optional |
+| GetOriginalEmail | Retrieves the original email in the thread.<br/><br/>You must have the necessary permissions in your email service to execute global search.<br/><br/>- For EWS: eDiscovery<br/>- For Gmail: Google Apps Domain-Wide Delegation of Authority<br/>- For MSGraph: As described in the \[message-get API\]\(https://docs.microsoft.com/en-us/graph/api/message-get\) and the \[user-list-messages API\]\(https://docs.microsoft.com/en-us/graph/api/user-list-messages\) |  | Optional |
 
 ## Playbook Outputs
 ---
