@@ -4659,7 +4659,7 @@ def panorama_security_policy_match(application: Optional[str] = None, category: 
     return result['response']['result']
 
 
-def prettify_matching_rule(matching_rule: dict, device: dict):
+def prettify_matching_rule(matching_rule: dict, device: dict = {}):
     pretty_matching_rule = {}
 
     if '@name' in matching_rule:
