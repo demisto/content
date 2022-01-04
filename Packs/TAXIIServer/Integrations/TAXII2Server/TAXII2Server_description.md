@@ -16,7 +16,7 @@ The collections are defined by a JSON object in the following format:
   "collection2_name": "<Cortex XSOAR indicator query>"
 }
 ```
-You can add collection description as it done in `collection1_name`, or enter only collection query, as in `collection2_name`.
+You can add a collection description as is doen in `collection1_name`, or enter only a collection query, as in `collection2_name`.
 
 
 ## How to Access the TAXII Service
@@ -26,10 +26,10 @@ Use one of the following options:
 - **http://*demisto_address*:*listen_port/{taxii2_api_endpoint}/***
 
 ## Access the TAXII Service by Instance Name
-To access the TAXII service by instance name, make sure ***Instance execute external*** is enabled. 
+To access the TAXII service by instance name, make sure *Instance execute external* is enabled. 
 
 1. In Cortex XSOAR, go to **Settings > About > Troubleshooting**.
-2. In the **Server Configuration** section, verify that the ***instance.execute.external*** key is set to *true*. If this key does not exist, click **+ Add Server Configuration** and add the *instance.execute.external* and set the value to *true*.
+2. In the **Server Configuration** section, verify that the *instance.execute.external* key is set to *true*. If this key does not exist, click **+ Add Server Configuration** and add the *instance.execute.external* and set the value to *true*.
 
 ## How to use HTTPS
 To use HTTPS, a certificate and private key have to be supplied in the integration configuration. 
