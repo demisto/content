@@ -126,13 +126,13 @@ script:
       type: Date
   - arguments:
     - default: false
-      description: 'Filters the lower time bound of the log events in the Internet Date/Time Format profile of ISO 8601. An example: 2017-05-03T16:22:18Z'
+      description: 'Filters the lower time bound of the log events in the Internet Date/Time Format profile of ISO 8601. For example: 2017-05-03T16:22:18Z'
       isArray: false
       name: since
       required: false
       secret: false
     - default: false
-      description: 'Filters the upper time bound of the log events in the Internet Date/Time Format profile of ISO 8601. An example: 2017-05-03T16:22:18Z'
+      description: 'Filters the upper time bound of the log events in the Internet Date/Time Format profile of ISO 8601. For example: 2017-05-03T16:22:18Z'
       isArray: false
       name: until
       required: false
@@ -140,7 +140,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: ASCENDING
-      description: The order of the returned events. Can be "ASCENDING" or "DESCENDING". The default is "ASCENDING".
+      description: The order of the returned events.
       isArray: false
       name: sortOrder
       predefined:
