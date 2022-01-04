@@ -96,10 +96,13 @@ def build_incidents(issue):
     }
 
 
-def fetch_issues():
+def fetch_issues(max_fetch):
     """
     Fetch all Issues (OOB XSOAR Fetch)
     """
+
+    if max_fetch > 500:
+        max_fetch = 500
 
     last_run = demisto.getLastRun().get('time')
     if not last_run:  # first time fetch
@@ -199,7 +202,7 @@ def fetch_issues():
         }
     """)
     variables = {
-        "first": 500,
+        "first": max_fetch,
         "filterBy": {
             "status": [
                 "OPEN",
@@ -582,7 +585,10 @@ def main():
             demisto.results('ok')
 
         elif command == 'fetch-incidents':
-            fetch_issues()
+            max_fetch = int(demisto.params().get('max_fetch'))
+            fetch_issues(
+                max_fetch=max_fetch
+            )
 
         elif command == 'wiz-get-issues':
             demisto_args = demisto.args()
