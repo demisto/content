@@ -64,6 +64,7 @@ tasks:
       version: -1
       name: Symantec block Email
       playbookName: Symantec block Email
+
       type: playbook
       iscommand: false
       brand: ""

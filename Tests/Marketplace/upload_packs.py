@@ -740,7 +740,7 @@ Total number of packs: {len(successful_packs + skipped_packs + failed_packs)}
                      f'Browse to the build bucket with this address:\n{bucket_path}'
 
         add_pr_comment(pr_comment)
-
+#CH
 
 def option_handler():
     """Validates and parses script arguments.
