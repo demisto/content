@@ -10,13 +10,9 @@ configuration:
   defaultvalue: Wiz Issue
   type: 13
 - display: Service Account ID
-  name: said
+  name: credentials
+  type: 9
   required: true
-  type: 0
-- display: Service Account Secret
-  name: sasecret
-  required: true
-  type: 4
 - display: API Endpoint
   name: api_endpoint
   required: false
