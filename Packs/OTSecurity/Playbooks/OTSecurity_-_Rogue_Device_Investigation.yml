@@ -476,8 +476,8 @@ tasks:
       methods:
       - email
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -487,9 +487,10 @@ tasks:
       - id: "0"
         label: ""
         labelarg:
-          simple: "Are you aware about a device with Following Information connected
-            to Substation ${incident.otsecuritysubstationname}:\n\n- MAC Address: ${incident.macaddress}\n-
-            IP Address: ${Nozomi.Query.Result.[0].ip.[0]}\n "
+          simple: "Are you aware about a device with Following Information connected\
+            \ to Substation ${incident.otsecuritysubstationname}:\n\n- MAC Address:\
+            \ ${incident.macaddress}\n- IP Address: ${Nozomi.Query.Result.[0].ip.[0]}\n\
+            \ "
         required: false
         gridcolumns: []
         defaultrows: []
@@ -683,7 +684,7 @@ inputs:
   value: {}
   required: false
   description: Sub-Stations List
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: Account.Email.Address
   description: The email address object associated with the Account
@@ -744,4 +745,5 @@ outputs:
 - contextPath: Endpoint.Domain
   description: Endpoint domain name
   type: string
-sourceplaybookid: access_investigation_-_generic
+tests:
+- No tests (auto formatted)

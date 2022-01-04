@@ -213,10 +213,12 @@ inputs:
   value: {}
   required: false
   description: MAC address to block
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: PolicyName
   value: {}
   required: false
   description: The policy name to use to block the MAC address
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
+tests:
+- No tests (auto formatted)
