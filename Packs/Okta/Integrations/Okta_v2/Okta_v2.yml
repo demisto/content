@@ -93,7 +93,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Lists users in your organization.
+  - description: Lists users in your organization.
     execution: false
     name: okta-list-users
     outputs:
@@ -124,7 +124,7 @@ script:
     - contextPath: Account.PasswordChanged
       description: Timestamp for when the user's password was last changed.
       type: Date
-  - arguments:
+    arguments:
     - default: false
       description: 'Filters the lower time bound of the log events in the Internet Date/Time Format profile of ISO 8601. For example: 2017-05-03T16:22:18Z'
       isArray: false
