@@ -84,7 +84,7 @@ KEY_CONTENT_DOMAIN = "Domain"
 KEY_CONTENT_URL = "URL"
 KEY_CONTENT_LOGO = "UseOfSuspiciousLogo"
 KEY_CONTENT_LOGIN = "HasLoginForm"
-KEY_CONTENT_URL_SCORE = "URLScore"
+KEY_CONTENT_URL_SCORE = "URLStaticScore"
 KEY_CONTENT_SEO = "BadSEOQuality"
 KEY_CONTENT_AGE = "NewDomain"
 KEY_CONTENT_VERDICT = "FinalVerdict"
@@ -351,7 +351,7 @@ def return_entry_summary(pred_json: Dict, url: str, whitelist: bool, output_rast
         KEY_CONTENT_URL_SCORE: url_score,
         KEY_CONTENT_SEO: str(pred_json.get(MODEL_KEY_SEO, UNKNOWN)),
         KEY_CONTENT_VERDICT: verdict,
-        KEY_CONTENT_IS_WHITELISTED: whitelist
+        KEY_CONTENT_IS_WHITELISTED: str(whitelist)
     }
     context_DBot_score = {
         'Indicator': url,
@@ -565,10 +565,13 @@ def return_general_summary(results, tag="Summary"):
     df_summary[KEY_FINAL_VERDICT] = [MAPPING_VERDICT_COLOR[x.get('verdict')] % x.get('verdict')
                                      if x.get('verdict') in MAPPING_VERDICT_COLOR.keys()
                                      else VERDICT_ERROR_COLOR % x.get('verdict') for x in results]
-    summary_context = {
-        KEY_CONTENT_SUMMARY_URL: [x.get('url') for x in results],
-        KEY_CONTENT_SUMMARY_FINAL_VERDICT: [x.get('verdict') for x in results]
-    }
+    summary_context = [{KEY_CONTENT_SUMMARY_URL: x.get('url'), KEY_CONTENT_SUMMARY_FINAL_VERDICT: BENIGN_VERDICT,
+                        KEY_CONTENT_IS_WHITELISTED: 'True'} for x in results if x.get('is_white_listed')]
+
+    # summary_context = {
+    #     KEY_CONTENT_SUMMARY_URL: [x.get('url') for x in results],
+    #     KEY_CONTENT_SUMMARY_FINAL_VERDICT: [x.get('verdict') for x in results]
+    # }
     df_summary_json = df_summary.to_dict(orient='records')
     return_entry = {
         "Type": entryTypes["note"],

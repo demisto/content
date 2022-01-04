@@ -73,19 +73,33 @@ outputs:
   description: Final verdict of the URL.
   type: String
 - contextPath: DBotPredictURLPhishing.UseOfSuspiciousLogo
-  type: Unknown
+  description: 'Whether a logo (from our list of top most use company for phishing)
+    has been fraudulently used. Our predefined list of logos is: Paypal, iInstagram,
+    Gmail, Outlook, Linkedin, Facebook, Ebay, amazon, Google, Microsoft.'
+  type: String
 - contextPath: DBotPredictURLPhishing.HasLoginForm
-  type: Unknown
-- contextPath: DBotPredictURLPhishing.URLScore
-  type: Unknown
+  description: Whether there is a login form in the html. Usually phishing attacks
+    aim to steal credentials from the victim and attackers use login form to retrieve
+    this information.
+  type: String
+- contextPath: DBotPredictURLPhishing.URLStaticScore
+  description: Probability for the URL to be malicious based only on the URL syntax.
+  type: Number
 - contextPath: DBotPredictURLPhishing.BadSEOQuality
-  type: Unknown
+  description: Whether the domain has good search engine optimisation. Malicious domains
+    tend to have poor SEO.
+  type: String
 - contextPath: DBotPredictURLPhishing.NewDomain
-  type: Unknown
+  description: 'Whether the domain is younger than 6 months. New domain tends to be
+    malicious. '
+  type: String
 - contextPath: DBotPredictURLPhishing.TopMajesticDomain
-  type: Unknown
+  description: Whether the domain belongs to the top Majestic domain list. In that
+    case we will always consider this domain as benign.
+  type: String
 - contextPath: DBotScore.Score
-  type: Unknown
+  description: Severity score
+  type: Number
 script: '-'
 subtype: python3
 system: false
