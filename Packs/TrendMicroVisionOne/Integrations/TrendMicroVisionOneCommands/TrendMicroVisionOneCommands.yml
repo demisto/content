@@ -30,8 +30,7 @@ script:
     arguments:
     - name: value_type
       required: true
-      description: 'The type of object you would like to add
-      to the block list: "file_sha1", "ip", "domain", "url" or "mailbox"'
+      description: 'The type of object you would like to add to the block list: "file_sha1", "ip", "domain", "url" or "mailbox"'
     - name: target_value
       required: true
       description: The object you would like to add that matches the value-type
@@ -54,9 +53,7 @@ script:
     arguments:
     - name: value_type
       required: true
-      description: 'The type of object you would like to remove
-      from the block list: "file_sha1", "ip", "domain", "url" 
-      or "mailbox"'
+      description: 'The type of object you would like to remove from the block list: "file_sha1", "ip", "domain", "url" or "mailbox"'
     - name: target_value
       required: true
       description: The object you would like to add that matches the value-type

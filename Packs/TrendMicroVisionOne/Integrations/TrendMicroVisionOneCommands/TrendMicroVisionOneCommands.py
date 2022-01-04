@@ -191,13 +191,13 @@ class Client(BaseClient):
             else:
                 return response
 
-    def status_check(self, data: Dict[str, Any]) -> str:
+    def status_check(self, data: Dict[str, Any]) -> Any:
         """
         Check the status of particular task.
         :type data: ``dict``
         :param method: Response data to received from the end point.
         :return: task status response data.
-        :rtype: ``dict``
+        :rtype: ``Any``
         """
         task_id = data.get('actionId', {})
         params = {'actionId': task_id}
@@ -210,7 +210,7 @@ class Client(BaseClient):
             elif task_status in ("success", "failed", "timeout"):
                 return task_status
 
-    def get_computer_id(self, field: str, value: str) -> str:
+    def get_computer_id(self, field: Any, value: Any) -> str:
         """
         Fetch particular computer id using hostname, macaddress or ip.
         :type field: ``str``
@@ -258,7 +258,7 @@ class Client(BaseClient):
         return exception_count
 
 
-def test_module(client: Client) -> Dict[str, Any]:
+def test_module(client: Client) -> Any:
     """
     Performs basic get request to get item samples.
     :type client: ``Client``
@@ -764,7 +764,7 @@ def get_file_analysis_report(client: Client, args: Dict[str, Any]) -> Union[str,
             'data': []
         }
         if len(response.get('data', [])) > 0:
-            for data in response.get('data'):
+            for data in response.get('data', {}):
                 data_value = {
                     'type': data.get("type", ""),
                     'value': data.get("value", ""),
@@ -773,7 +773,7 @@ def get_file_analysis_report(client: Client, args: Dict[str, Any]) -> Union[str,
                     'expired_time': data.get("expiredTime", ""),
                     'root_file_sha1': data.get("rootFileSha1", "")
                 }
-                message.get('data').append(data_value)
+                message.get('data', {}).append(data_value)
         results = CommandResults(
             readable_output=tableToMarkdown(TABLE_GET_FILE_ANALYSIS_REPORT, message),
             outputs_prefix='VisionOne.File_Analysis_Report',
@@ -877,7 +877,7 @@ def submit_file_to_sandbox(client: Client, args: Dict[str, Any]) -> Union[str, C
     :rtype: ``dict`
     """
     data = {}
-    params = {}
+    params: Dict[Any, Any] = {}
     file_url = args.get(FILE_URL)
     file_name = args.get(FILE_NAME)
     document_pass = args.get(DOCUMENT_PASSWORD)
@@ -888,7 +888,7 @@ def submit_file_to_sandbox(client: Client, args: Dict[str, Any]) -> Union[str, C
         data['archivePassword'] = base64.b64encode(archive_pass.encode(ASCII)).decode(ASCII)
     headers = {AUTHORIZATION: f'{BEARER}{client.api_key}'}
     try:
-        file_content = requests.get(file_url, allow_redirects=True)
+        file_content = requests.get(file_url, allow_redirects=True)  # type: ignore
         files = {'file': (file_name, file_content.content, 'application/x-zip-compressed')}
         result = requests.post(f'{client.base_url}{SUBMIT_FILE_TO_SANDBOX}', params=params,
                                headers=headers, data=data, files=files)

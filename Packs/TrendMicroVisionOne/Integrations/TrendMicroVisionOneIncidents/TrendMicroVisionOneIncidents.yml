@@ -21,7 +21,7 @@ configuration:
   name: first_fetch
   required: true
   type: 0
-- defaultvalue: "100"
+- defaultvalue: "0"
   display: Maximum Number of Workbenches To Retrieve
   name: max_fetch
   required: false
