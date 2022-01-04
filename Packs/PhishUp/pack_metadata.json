@@ -1,0 +1,21 @@
+{
+    "name": "PhishUp",
+    "description": "PhishUp prevents phishing attacks, protects your staff and your brand with AI",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "Mehmet Cagri Caliskan",
+    "url": "",
+    "email": "osman@diatics.com",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "devEmail": [
+        "osman@diatics.com"
+    ],
+    "githubUser": [
+        "diCagri"
+    ]
+}
