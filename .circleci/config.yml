@@ -486,10 +486,3 @@ workflows:
     jobs:
       *nightly_jobs
 
-  legacy_nightly_trigger:
-    # considered legacy since we now run the nightly (test playbooks against live xsoar instances) in gitlab
-    # use to trigger a fullblown nightly in circle including the jobs to test against xsoar instances
-    # will initiate when using the trigger script with the appropriate option.
-    when: << pipeline.parameters.legacy_nightly >>
-    jobs:
-      *legacy_nightly_jobs
