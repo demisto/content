@@ -557,27 +557,5 @@ outputs:
   description: The names of the tasks that were found and completed.
   type: unknown
 tests:
-- Calculate Severity - Generic v2 - Test
-- Test Convert file hash to corresponding hashes
-- Detonate URL - Generic Test
-- Block IP - Generic V3_Test
-- Detonate File - Generic Test
-- test-domain-indicator
-- Account Enrichment - Generic v2.1 - Test
-- Generic Polling Test
-- URL Enrichment - Generic v2 - Test
-- Send Investigation Summary Reports - Test
-- Isolate and unisolate endpoint - test
-- Endpoint Enrichment - Generic v2.1 - Test
-- Wait Until Datetime - Test
-- Detonate File - No Files test
-- Domain Enrichment - Generic v2 - Test
-- Calculate Severity - Standard - Test
-- Retrieve File from Endpoint - Generic V2 Test
-- Extract Indicators From File - Generic v2 - Test
-- Field polling test
-- Email Address Enrichment - Generic v2.1 - Test
-- File Enrichment - Generic v2 - Test
-- IP Enrichment - Generic v2 - Test
-- Get endpoint details - Generic - test
+- no tests
 fromversion: 6.0.0
