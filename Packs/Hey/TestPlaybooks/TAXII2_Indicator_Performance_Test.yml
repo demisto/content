@@ -1,6 +1,5 @@
 id: TAXII2 Indicator Performance Test
-version: 5
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: TAXII2 Indicator Performance Test
 starttaskid: "0"
 tasks:
@@ -14,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -77,7 +77,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: ?match[type]=ip
+                  simple: '&match[type]=ip'
       z:
         simple: ${inputs.z}
     separatecontext: false
@@ -140,7 +140,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: ?match[type]=url
+                  simple: '&match[type]=url'
       z:
         simple: ${inputs.z}
     separatecontext: false
@@ -355,6 +355,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -387,32 +388,34 @@ inputs:
   value: {}
   required: false
   description: The URL of the instance with with query in the end
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: "n"
   value: {}
   required: false
   description: ""
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: t
   value: {}
   required: false
   description: ""
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: z
   value: {}
   required: false
   description: ""
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: results_map
   value: {}
   required: false
   description: ""
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: c
   value: {}
   required: false
   description: Concurrent requests to be sent.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: Hey
   type: unknown
+fromversion: 6.1.0
+description: test playbook
