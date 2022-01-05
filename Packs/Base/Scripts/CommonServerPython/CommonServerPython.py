@@ -23,9 +23,116 @@ from datetime import datetime, timedelta
 from abc import abstractmethod
 from distutils.version import LooseVersion
 from threading import Lock
+from inspect import currentframe
 
 import demistomock as demisto
 import warnings
+
+
+def __line__():
+    cf = currentframe()
+    return cf.f_back.f_lineno
+
+
+# 39 - the line offset from the beggining of the file.
+_MODULES_LINE_MAPPING = {
+    'CommonServerPython': {'start': __line__() - 39, 'end': float('inf')},
+}
+
+
+def register_module_line(module_name, start_end, line, wrapper=0):
+    """
+        Register a module in the line mapping for the traceback line correction algorithm.
+
+        :type module_name: ``str``
+        :param module_name: The name of the module. (required)
+
+        :type start_end: ``str``
+        :param start_end: Whether to register the line as the start or the end of the module.
+            Possible values: start, end. (required)
+
+        :type line: ``int``
+        :param line: the line number to record. (required)
+
+        :type wrapper: ``int``
+        :param wrapper: Wrapper size (used for inline replacements with headers such as ApiModules). (optional)
+
+        :return: None
+        :rtype: ``None``
+    """
+    global _MODULES_LINE_MAPPING
+    default_module_info = {'start': 0, 'start_wrapper': 0, 'end': float('inf'), 'end_wrapper': float('inf')}
+    try:
+        if start_end not in ('start', 'end'):
+            raise ValueError('Invalid start_end argument. Acceptable values are: start, end.')
+        if not isinstance(line, int) or line < 0:
+            raise ValueError('Invalid line argument. Expected non-negative integer, '
+                             'got {}({})'.format(type(line), line))
+
+        _MODULES_LINE_MAPPING.setdefault(module_name, default_module_info).update(
+            {start_end: line, '{}_wrapper'.format(start_end): line + wrapper}
+        )
+    except Exception as exc:
+        demisto.info(
+            'failed to register module line. '
+            'module: "{}" start_end: "{}" line: "{}".\nError: {}'.format(module_name, start_end, line, exc))
+
+
+def _find_relevant_module(line):
+    """
+    Find which module contains the given line number.
+
+    :type line: ``int``
+    :param trace_str: Line number to search. (required)
+
+    :return: The name of the module.
+    :rtype: ``str``
+    """
+    global _MODULES_LINE_MAPPING
+
+    relevant_module = ''
+    for module, info in _MODULES_LINE_MAPPING.items():
+        if info['start'] <= line <= info['end']:
+            if not relevant_module:
+                relevant_module = module
+            elif info['start'] > _MODULES_LINE_MAPPING[relevant_module]['start']:
+                relevant_module = module
+
+    return relevant_module
+
+
+def fix_traceback_line_numbers(trace_str):
+    """
+    Fixes the given traceback line numbers.
+
+    :type trace_str: ``str``
+    :param trace_str: The traceback string to edit. (required)
+
+    :return: The new formated traceback.
+    :rtype: ``str``
+    """
+    for number in re.findall('line (\d+)', trace_str):
+        line_num = int(number)
+        module = _find_relevant_module(line_num)
+        if module:
+            module_start_line = _MODULES_LINE_MAPPING.get(module, {'start': 0})['start']
+            actual_number = line_num - module_start_line
+
+            # in case of ApiModule injections, adjust the line numbers of the code after the injection.
+            for module_info in _MODULES_LINE_MAPPING.values():
+                block_start = module_info.get('start_wrapper', module_info['start'])
+                block_end = module_info.get('end_wrapper', module_info['end'])
+                if block_start > module_start_line and block_end < line_num:
+                    actual_number -= block_end - block_start
+
+            # a traceback line is of the form: File "<string>", line 8853, in func5
+            trace_str = trace_str.replace(
+                'File "<string>", line {},'.format(number),
+                'File "<{}>", line {},'.format(module, actual_number)
+            )
+
+    return trace_str
+
 
 OS_LINUX = False
 OS_MAC = False
@@ -6187,7 +6294,7 @@ def return_error(message, error='', outputs=None):
                                                              'long-running-execution',
                                                              'fetch-indicators')
     if is_debug_mode() and not is_server_handled and any(sys.exc_info()):  # Checking that an exception occurred
-        message = "{}\n\n{}".format(message, traceback.format_exc())
+        message = "{}\n\n{}".format(message, fix_traceback_line_numbers(traceback.format_exc()))
 
     message = LOG(message)
     if error:
@@ -8678,3 +8785,9 @@ def shorten_string_for_printing(source_string, max_length):
             + '...' \
             + source_string[-extremeties_length:]
         return ret_value
+
+###########################################
+#     DO NOT ADD LINES AFTER THIS ONE     #
+###########################################
+register_module_line('CommonServerPython', 'end', __line__())
+register_module_line('CustomScriptIntegration', 'start', __line__())
