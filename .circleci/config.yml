@@ -190,10 +190,6 @@ references:
       name: Validate Files and Yaml
       when: always
       command: |
-#        if [[ "$(echo "$GCS_MARKET_BUCKET" | tr '[:upper:]' '[:lower:]')" != "marketplace-dist" ]]; then
-#          echo "Skipping the -Validate Files and Yaml- step when uploading to a test bucket."
-#          exit 0
-#        fi
         ./Tests/scripts/linters_runner.sh
         ./Tests/scripts/validate.sh
 
