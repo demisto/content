@@ -1,18 +1,8 @@
 {
-	"brands": null,
-	"defaultIncidentType": "",
-	"definitionId": "incident",
-	"description": "",
+	"description": "CrowdStrike Falcon mirror in mapper.",
 	"feed": false,
 	"fromServerVersion": "",
-	"id": "3a2952c3-26a4-4661-8479-c72098e93faa",
-	"incidentSamples": null,
-	"indicatorSamples": null,
-	"instanceIds": null,
-	"itemVersion": "",
-	"keyTypeMap": {},
-	"locked": false,
-	"logicalVersion": 0,
+	"id": "CrowdStrike Falcon - Incoming Mapper",
 	"mapping": {
 		"CrowdStrike Falcon Detection": {
 			"dontMapEventToLabels": true,
@@ -97,20 +87,9 @@
 			}
 		}
 	},
-	"name": "mapper-incoming-CrowdStrike_Falcon",
-	"nameRaw": "mapper-incoming-CrowdStrike_Falcon",
-	"packID": "",
-	"propagationLabels": [
-		"all"
-	],
-	"sourceClassifierId": "",
-	"system": false,
+	"name": "CrowdStrike Falcon - Incoming Mapper",
 	"toServerVersion": "",
-	"transformer": {
-		"complex": null,
-		"simple": ""
-	},
 	"type": "mapping-incoming",
-	"unclassifiedCases": null,
-	"version": -1
+	"version": -1,
+	"fromVersion": "6.0.0"
 }

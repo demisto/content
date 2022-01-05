@@ -2973,4 +2973,7 @@ script:
   type: python
 tests:
 - Test - CrowdStrike Falcon
+defaultclassifier: CrowdStrike Falcon
+defaultmapperin: CrowdStrike Falcon - Incoming Mapper
+defaultmapperout: CrowdStrike Falcon - Outgoing Mapper
 fromversion: 5.0.0
