@@ -194,7 +194,6 @@ references:
 #          echo "Skipping the -Validate Files and Yaml- step when uploading to a test bucket."
 #          exit 0
 #        fi
-
         ./Tests/scripts/linters_runner.sh
         ./Tests/scripts/validate.sh
 
