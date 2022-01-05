@@ -296,7 +296,7 @@ def is_valid_url(url: str) -> Tuple[bool, str, Union[str, int]]:
                 except requests.exceptions.RequestException:
                     prepend_url = prepend_protocol(url, 'https', False)
                     try:
-                        response = requests.get(prepend_url, verify=False,
+                        response = requests.get(prepend_url, verify=True,
                                                 timeout=TIMEOUT_REQUESTS)  # nosec guardrails-disable-line
                     except requests.exceptions.RequestException:
                         return False, MSG_IMPOSSIBLE_CONNECTION, UNKNOWN
