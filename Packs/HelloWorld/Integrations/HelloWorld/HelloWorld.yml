@@ -25,15 +25,17 @@ configuration:
   name: apikey
   required: true
   type: 4
-- defaultvalue: '65'
+- additionalinfo: Set this to determine the HelloWorld score that will determine if
+    an IP is malicious (0-100)
+  defaultvalue: '65'
   display: Score threshold for IP reputation command
-  additionalinfo: Set this to determine the HelloWorld score that will determine if an IP is malicious (0-100)
   name: threshold_ip
   required: false
   type: 0
-- defaultvalue: '65'
+- additionalinfo: Set this to determine the HelloWorld score that will determine if
+    a domain is malicious (0-100)
+  defaultvalue: '65'
   display: Score threshold for domain reputation command
-  additionalinfo: Set this to determine the HelloWorld score that will determine if a domain is malicious (0-100)
   name: threshold_domain
   required: false
   type: 0
@@ -45,12 +47,13 @@ configuration:
   - CLOSED
   required: false
   type: 15
-- display: Fetch alerts with type
-  additionalinfo: Comma-separated list of types of alerts to fetch. Types might change over time. Some examples are 'Bug' and 'Vulnerability'
+- additionalinfo: Comma-separated list of types of alerts to fetch. Types might change
+    over time. Some examples are 'Bug' and 'Vulnerability'
+  display: Fetch alerts with type
   name: alert_type
   required: false
   type: 0
-- defaultvalue: 'Low'
+- defaultvalue: Low
   display: Minimum severity of alerts to fetch
   name: min_severity
   options:
@@ -73,64 +76,51 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: This is the Hello World integration for getting started.
+- defaultvalue: '1'
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ''
+    fromServerVersion: ''
+    itemVersion: ''
+    packID: 0879ad09-2170-485e-81b9-410aa17337b2
+    propagationLabels:
+    - all
+    toServerVersion: ''
+description: This is the COPY Hello World integration for getting started.
 display: HelloWorld
 name: HelloWorld
 script:
   commands:
   - arguments:
-    - default: false
-      description: The name of whom you want to say hello to.
-      isArray: false
+    - description: The name of whom you want to say hello to.
       name: name
-      required: false
-      secret: false
-    deprecated: false
     description: Hello command - prints hello to anyone.
-    execution: false
     name: helloworld-say-hello
     outputs:
     - contextPath: hello
       description: Should be Hello **something** here.
       type: String
   - arguments:
-    - default: false
-      description: Filter by alert severity. Comma-separated value (Low,Medium,High,Critical)
-      isArray: false
+    - description: Filter by alert severity. Comma-separated value (Low,Medium,High,Critical)
       name: severity
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Filter by alert status.
-      isArray: false
       name: status
       predefined:
       - ACTIVE
       - CLOSED
-      required: false
-      secret: false
-    - default: false
-      description: Filter by alert type
-      isArray: false
+    - description: Filter by alert type
       name: alert_type
-      required: false
-      secret: false
-    - default: false
-      description: Maximum results to return.
-      isArray: false
+    - description: Maximum results to return.
       name: max_results
-      required: false
-      secret: false
-    - default: false
-      description: "Filter by start time. \nExamples:\n  \"3 days ago\"\n  \"1 month\"\n  \"2019-10-10T12:22:00\"\n  \"2019-10-10\""
-      isArray: false
+    - description: "Filter by start time. \nExamples:\n  \"3 days ago\"\n  \"1 month\"\
+        \n  \"2019-10-10T12:22:00\"\n  \"2019-10-10\""
       name: start_time
-      required: false
-      secret: false
-    deprecated: false
     description: Search HelloWorld Alerts.
-    execution: false
     name: helloworld-search-alerts
     outputs:
     - contextPath: HelloWorld.Alert.alert_id
@@ -152,15 +142,10 @@ script:
       description: Alert severity. Can be 'Low', 'Medium', 'High' or 'Critical'.
       type: String
   - arguments:
-    - default: false
-      description: Alert ID.
-      isArray: false
+    - description: Alert ID.
       name: alert_id
       required: true
-      secret: false
-    deprecated: false
     description: Retrieve alert extra data by ID.
-    execution: false
     name: helloworld-get-alert
     outputs:
     - contextPath: HelloWorld.Alert.alert_id
@@ -185,25 +170,17 @@ script:
       description: User involved in the alert.
       type: String
   - arguments:
-    - default: false
-      description: Alert ID to update.
-      isArray: false
+    - description: Alert ID to update.
       name: alert_id
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: New status of the alert.
-      isArray: false
       name: status
       predefined:
       - ACTIVE
       - CLOSED
       required: true
-      secret: false
-    deprecated: false
     description: Update the status for an alert.
-    execution: false
     name: helloworld-update-alert-status
     outputs:
     - contextPath: HelloWorld.Alert.alert_id
@@ -215,15 +192,18 @@ script:
     - contextPath: HelloWorld.Alert.alert_status
       description: Alert status. Can be 'ACTIVE' or 'CLOSED'.
       type: String
-  - name: ip
-    arguments:
-    - name: ip
-      default: true
+  - arguments:
+    - default: true
       description: List of IPs.
       isArray: true
-    - name: threshold
-      description: If the IP has reputation above the threshold then the IP defined as malicious. If threshold not set, then threshold from instance configuration is used.
-      defaultValue: 65
+      name: ip
+    - defaultValue: '65'
+      description: If the IP has reputation above the threshold then the IP defined
+        as malicious. If threshold not set, then threshold from instance configuration
+        is used.
+      name: threshold
+    description: Return IP information and reputation
+    name: ip
     outputs:
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -325,7 +305,8 @@ script:
       description: Additional raw data for the IP address.
       type: Unknown
     - contextPath: HelloWorld.IP.score
-      description: Reputation score from HelloWorld for this IP (0 to 100, where higher is worse).
+      description: Reputation score from HelloWorld for this IP (0 to 100, where higher
+        is worse).
       type: Number
     - contextPath: IP.Address
       description: IP address.
@@ -354,16 +335,18 @@ script:
     - contextPath: IP.Relationships.EntityBType
       description: The type of the destination of the relationship.
       type: string
-    description: Return IP information and reputation
-  - name: domain
-    arguments:
-    - name: domain
-      default: true
+  - arguments:
+    - default: true
       description: List of Domains.
       isArray: true
-    - name: threshold
-      description: If the domain has reputation above the threshold then the domain defined as malicious. If threshold not set, then threshold from instance configuration is used.
-      defaultValue: 65
+      name: domain
+    - defaultValue: '65'
+      description: If the domain has reputation above the threshold then the domain
+        defined as malicious. If threshold not set, then threshold from instance configuration
+        is used.
+      name: threshold
+    description: Returns Domain information and reputation.
+    name: domain
     outputs:
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -402,7 +385,8 @@ script:
       description: The expiration date of the domain. Format is ISO8601 (i.e. '2020-04-30T10:35:00.000Z').
       type: Date
     - contextPath: Domain.UpdatedDate
-      description: The date when the domain was last updated. Format is ISO8601 (i.e. '2020-04-30T10:35:00.000Z').
+      description: The date when the domain was last updated. Format is ISO8601 (i.e.
+        '2020-04-30T10:35:00.000Z').
       type: Date
     - contextPath: Domain.NameServers
       description: Name servers of the domain.
@@ -414,7 +398,8 @@ script:
       description: The creation date of the domain. Format is ISO8601 (i.e. '2020-04-30T10:35:00.000Z').
       type: Date
     - contextPath: Domain.WHOIS.UpdatedDate
-      description: The date when the domain was last updated. Format is ISO8601 (i.e. '2020-04-30T10:35:00.000Z').
+      description: The date when the domain was last updated. Format is ISO8601 (i.e.
+        '2020-04-30T10:35:00.000Z').
       type: Date
     - contextPath: Domain.WHOIS.ExpirationDate
       description: The expiration date of the domain.
@@ -468,7 +453,8 @@ script:
       description: Domain registrar.
       type: String
     - contextPath: HelloWorld.Domain.score
-      description: Reputation score from HelloWorld for this domain (0 to 100, where higher is worse).
+      description: Reputation score from HelloWorld for this domain (0 to 100, where
+        higher is worse).
       type: Number
     - contextPath: HelloWorld.Domain.state
       description: Domain admin state.
@@ -485,17 +471,11 @@ script:
     - contextPath: HelloWorld.Domain.zipcode
       description: Domain admin zipcode.
       type: Unknown
-    description: Returns Domain information and reputation.
   - arguments:
-    - default: false
-      description: Asset to start the scan against.
-      isArray: false
+    - description: Asset to start the scan against.
       name: hostname
       required: true
-      secret: false
-    deprecated: false
     description: Start scan on an asset.
-    execution: false
     name: helloworld-scan-start
     outputs:
     - contextPath: HelloWorld.Scan.scan_id
@@ -508,15 +488,11 @@ script:
       description: The hostname the scan is run against.
       type: string
   - arguments:
-    - default: false
-      description: List of Scan IDs. helloworld-scan-start returns "scan_id".
+    - description: List of Scan IDs. helloworld-scan-start returns "scan_id".
       isArray: true
       name: scan_id
       required: true
-      secret: false
-    deprecated: false
     description: Retrieve scan status for one or more scan IDs.
-    execution: false
     name: helloworld-scan-status
     outputs:
     - contextPath: HelloWorld.Scan.scan_id
@@ -527,25 +503,17 @@ script:
       type: string
   - arguments:
     - auto: PREDEFINED
-      default: false
       defaultValue: file
       description: Results format (file or JSON).
-      isArray: false
       name: format
       predefined:
       - json
       - file
       required: true
-      secret: false
-    - default: false
-      description: Unique ID of the scan.
-      isArray: false
+    - description: Unique ID of the scan.
       name: scan_id
       required: true
-      secret: false
-    deprecated: false
     description: Retrieve scan status in Context or as a File (default) for a Scan.
-    execution: false
     name: helloworld-scan-results
     outputs:
     - contextPath: HelloWorld.Scan.entities.entity-id
@@ -592,12 +560,7 @@ script:
       type: string
   dockerimage: demisto/python3:3.9.8.24399
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
-  script: '-'
+  script: ''
   subtype: python3
   type: python
-defaultclassifier: HelloWorld
-defaultmapperin: HelloWorld-mapper
-fromversion: 5.0.0

@@ -1,26 +1,34 @@
 args:
-- default: false
-  description: 'Hello command - prints hello to anyone.'
-  isArray: false
+- description: Hello command - prints hello to anyone.
   name: name
-  required: false
-  secret: false
-comment: Hello World Script
+comment: COPY Hello World Script
 commonfields:
   id: HelloWorldScript
   version: -1
-enabled: false
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ''
+    fromServerVersion: ''
+    itemVersion: ''
+    packID: 0879ad09-2170-485e-81b9-410aa17337b2
+    propagationLabels:
+    - all
+    toServerVersion: ''
+dockerimage: demisto/python3:3.9.7.24076
+enabled: true
+engineinfo: {}
+mainengineinfo: {}
 name: HelloWorldScript
 outputs:
 - contextPath: HelloWorld.hello
   description: Should be Hello **something** here.
   type: String
-script: '-'
-system: false
+pswd: ''
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
 tags:
 - helloworld
-timeout: '0'
 type: python
-subtype: python3
-dockerimage: demisto/python3:3.9.7.24076
-fromversion: 5.0.0
