@@ -312,7 +312,6 @@ def test_oproxy_use_resource(mocker):
     assert resource == mocked_post.call_args_list[0][1]['json']['resource']
 
 
-
 @pytest.mark.parametrize('resource', ['https://resource1.com', 'https://resource2.com'])
 def test_self_deployed_multi_resource(requests_mock, resource):
     """
@@ -331,8 +330,8 @@ def test_self_deployed_multi_resource(requests_mock, resource):
     req_res = client._get_self_deployed_token()
     assert req_res == ('', 3600, '')
     assert client.resource_to_access_token[resource] == TOKEN
-    
-    
+
+
 @pytest.mark.parametrize('endpoint', ['com', 'gcc-high', 'dod', 'de', 'cn'])
 def test_national_endpoints(mocker, endpoint):
     """
@@ -355,4 +354,3 @@ def test_national_endpoints(mocker, endpoint):
 
     assert client.azure_ad_endpoint == TOKEN_RETRIEVAL_ENDPOINTS[endpoint]
     assert client.scope == f'{GRAPH_ENDPOINTS[endpoint]}/.default'
-
