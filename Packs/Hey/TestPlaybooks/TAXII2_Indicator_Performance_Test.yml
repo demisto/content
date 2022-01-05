@@ -395,7 +395,8 @@ inputs:
   description: ""
   playbookInputQuery:
 - key: t
-  value: {}
+  value:
+    simple: "0"
   required: false
   description: ""
   playbookInputQuery:
