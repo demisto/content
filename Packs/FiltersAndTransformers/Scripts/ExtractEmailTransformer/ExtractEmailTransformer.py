@@ -1,4 +1,3 @@
-from typing import Text
 import demistomock as demisto
 from CommonServerPython import *
 
