@@ -14,7 +14,7 @@ inputs:
   playbookInputQuery: null
   required: true
   value:
-    simple: "20"
+    simple: "365"
 - description: |-
     Integration SourceBrand Name that is being leveraged for SSO in XSOAR environment. If none leave empty
     (i.e Okta V2)
