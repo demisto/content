@@ -2666,7 +2666,7 @@ inputs:
   value: { }
   required: false
   description: |-
-    Retrieves the original email in the thread.
+    For forwarded emails. When equals "True" it will retrieve the original email in the thread.
 
     You must have the necessary permissions in your email service to execute global search.
 
