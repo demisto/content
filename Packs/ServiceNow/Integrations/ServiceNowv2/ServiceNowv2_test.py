@@ -214,9 +214,9 @@ def test_commands(command, args, response, expected_result, expected_auto_extrac
     - create the context
     validate the entry context
     """
-    client = Client('server_url', 'sc_server_url', 'username', 'password', 'verify', 'fetch_time',
-                    'sysparm_query', 'sysparm_limit', 'timestamp_field', 'ticket_type', 'get_attachments',
-                    'incident_name')
+    client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password',
+                    'verify', 'fetch_time', 'sysparm_query', 'sysparm_limit', 'timestamp_field',
+                    'ticket_type', 'get_attachments', 'incident_name')
     mocker.patch.object(client, 'send_request', return_value=response)
     result = command(client, args)
     assert expected_result == result[1]  # entry context is found in the 2nd place in the result of the command
@@ -244,9 +244,9 @@ def test_no_ec_commands(command, args, response, expected_hr, expected_auto_extr
     - create the context
     validate the human readable
     """
-    client = Client('server_url', 'sc_server_url', 'username', 'password', 'verify', 'fetch_time',
-                    'sysparm_query', 'sysparm_limit', 'timestamp_field', 'ticket_type', 'get_attachments',
-                    'incident_name')
+    client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password',
+                    'verify', 'fetch_time', 'sysparm_query', 'sysparm_limit', 'timestamp_field',
+                    'ticket_type', 'get_attachments', 'incident_name')
     mocker.patch.object(client, 'send_request', return_value=response)
     result = command(client, args)
     assert expected_hr in result[0]  # HR is found in the 1st place in the result of the command
@@ -267,9 +267,9 @@ def test_fetch_incidents(mocker):
     Validate The length of the results.
     """
     mocker.patch('ServiceNowv2.parse_date_range', return_value=("2019-02-23 08:14:21", 'never mind'))
-    client = Client('server_url', 'sc_server_url', 'username', 'password', 'verify', 'fetch_time',
-                    'sysparm_query', sysparm_limit=10, timestamp_field='opened_at',
-                    ticket_type='incident', get_attachments=False, incident_name='number')
+    client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password',
+                    'verify', 'fetch_time', 'sysparm_query', sysparm_limit=10,
+                    timestamp_field='opened_at', ticket_type='incident', get_attachments=False, incident_name='number')
     mocker.patch.object(client, 'send_request', return_value=RESPONSE_FETCH)
     incidents = fetch_incidents(client)
     assert len(incidents) == 2
@@ -291,9 +291,10 @@ def test_fetch_incidents_with_attachments(mocker):
     Validate The length of the results and the attachment content.
     """
     mocker.patch('ServiceNowv2.parse_date_range', return_value=("2016-10-10 15:19:57", 'never mind'))
-    client = Client('server_url', 'sc_server_url', 'username', 'password', 'verify', 'fetch_time',
-                    'sysparm_query', sysparm_limit=10, timestamp_field='opened_at',
-                    ticket_type='incident', get_attachments=True, incident_name='number')
+    client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password',
+                    'verify', 'fetch_time', 'sysparm_query', sysparm_limit=10,
+                    timestamp_field='opened_at', ticket_type='incident', get_attachments=True,
+                    incident_name='number')
     mocker.patch.object(client, 'send_request', return_value=RESPONSE_FETCH_ATTACHMENTS_TICKET)
     mocker.patch.object(client, 'get_ticket_attachment_entries', return_value=RESPONSE_FETCH_ATTACHMENTS_FILE)
 
@@ -318,9 +319,10 @@ def test_fetch_incidents_with_incident_name(mocker):
     Validate The length of the results.
     """
     mocker.patch('ServiceNowv2.parse_date_range', return_value=("2019-02-23 08:14:21", 'never mind'))
-    client = Client('server_url', 'sc_server_url', 'username', 'password', 'verify', 'fetch_time',
-                    'sysparm_query', sysparm_limit=10, timestamp_field='opened_at',
-                    ticket_type='incident', get_attachments=False, incident_name='description')
+    client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password',
+                    'verify', 'fetch_time', 'sysparm_query', sysparm_limit=10,
+                    timestamp_field='opened_at', ticket_type='incident',
+                    get_attachments=False, incident_name='description')
     mocker.patch.object(client, 'send_request', return_value=RESPONSE_FETCH)
     incidents = fetch_incidents(client)
     assert incidents[0].get('name') == 'ServiceNow Incident Unable to access Oregon mail server. Is it down?'
@@ -383,9 +385,9 @@ def test_not_authenticated_retry_positive(requests_mock, mocker):
     - Ensure the send_request function runs successfully without exceptions
     """
     mocker.patch.object(demisto, 'debug')
-    client = Client('http://server_url', 'sc_server_url', 'username', 'password', 'verify', 'fetch_time',
-                    'sysparm_query', 'sysparm_limit', 'timestamp_field', 'ticket_type', 'get_attachments',
-                    'incident_name')
+    client = Client('http://server_url', 'sc_server_url', 'cr_server_url', 'username', 'password',
+                    'verify', 'fetch_time', 'sysparm_query', 'sysparm_limit', 'timestamp_field',
+                    'ticket_type', 'get_attachments', 'incident_name')
     requests_mock.get('http://server_url', [
         {
             'status_code': 401,
@@ -428,9 +430,9 @@ def test_not_authenticated_retry_negative(requests_mock, mocker):
     - Ensure the send_request function fails and raises expected error message
     """
     mocker.patch.object(demisto, 'debug')
-    client = Client('http://server_url', 'sc_server_url', 'username', 'password', 'verify', 'fetch_time',
-                    'sysparm_query', 'sysparm_limit', 'timestamp_field', 'ticket_type', 'get_attachments',
-                    'incident_name')
+    client = Client('http://server_url', 'sc_server_url', 'cr_server_url', 'username', 'password',
+                    'verify', 'fetch_time', 'sysparm_query', 'sysparm_limit', 'timestamp_field',
+                    'ticket_type', 'get_attachments', 'incident_name')
     requests_mock.get('http://server_url', [
         {
             'status_code': 401,
@@ -529,14 +531,14 @@ def test_test_module(mocker):
         Validate that an error is returned, indicating that the `Test` button can't be used when using OAuth 2.0.
     """
     mocker.patch('ServiceNowv2.parse_date_range', return_value=("2019-02-23 08:14:21", 'never mind'))
-    client = Client('server_url', 'sc_server_url', 'username', 'password', 'verify', 'fetch_time',
+    client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password', 'verify', 'fetch_time',
                     'sysparm_query', sysparm_limit=10, timestamp_field='opened_at',
                     ticket_type='incident', get_attachments=False, incident_name='description')
     mocker.patch.object(client, 'send_request', return_value=RESPONSE_FETCH)
     result = module(client)
     assert result[0] == 'ok'
 
-    client = Client('server_url', 'sc_server_url', 'username', 'password', 'verify', 'fetch_time',
+    client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password', 'verify', 'fetch_time',
                     'sysparm_query', sysparm_limit=10, timestamp_field='opened_at', ticket_type='incident',
                     get_attachments=False, incident_name='description', oauth_params=OAUTH_PARAMS)
 
@@ -561,7 +563,7 @@ def test_oauth_test_module(mocker):
     - (b) Validate that the instance was configured successfully.
     """
     mocker.patch('ServiceNowv2.parse_date_range', return_value=("2019-02-23 08:14:21", 'never mind'))
-    client = Client('server_url', 'sc_server_url', 'username', 'password', 'verify', 'fetch_time',
+    client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password', 'verify', 'fetch_time',
                     'sysparm_query', sysparm_limit=10, timestamp_field='opened_at', ticket_type='incident',
                     get_attachments=False, incident_name='description')
     try:
@@ -569,7 +571,7 @@ def test_oauth_test_module(mocker):
     except Exception as e:
         assert 'command should be used only when using OAuth 2.0 authorization.' in e.args[0]
 
-    client = Client('server_url', 'sc_server_url', 'username', 'password', 'verify', 'fetch_time',
+    client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password', 'verify', 'fetch_time',
                     'sysparm_query', sysparm_limit=10, timestamp_field='opened_at', ticket_type='incident',
                     get_attachments=False, incident_name='description', oauth_params=OAUTH_PARAMS)
     mocker.patch.object(client, 'send_request', return_value=RESPONSE_FETCH)
@@ -591,7 +593,7 @@ def test_oauth_login_command(mocker):
     - (b) Validate that the login was successful.
     """
     mocker.patch('ServiceNowv2.ServiceNowClient.login')
-    client = Client('server_url', 'sc_server_url', 'username', 'password', 'verify', 'fetch_time',
+    client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password', 'verify', 'fetch_time',
                     'sysparm_query', sysparm_limit=10, timestamp_field='opened_at', ticket_type='incident',
                     get_attachments=False, incident_name='description')
     try:
@@ -599,7 +601,7 @@ def test_oauth_login_command(mocker):
     except Exception as e:
         assert '!servicenow-oauth-login command can be used only when using OAuth 2.0 authorization' in e.args[0]
 
-    client = Client('server_url', 'sc_server_url', 'username', 'password', 'verify', 'fetch_time',
+    client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password', 'verify', 'fetch_time',
                     'sysparm_query', sysparm_limit=10, timestamp_field='opened_at', ticket_type='incident',
                     get_attachments=False, incident_name='description', oauth_params=OAUTH_PARAMS)
     mocker.patch.object(client, 'send_request', return_value=RESPONSE_FETCH)
@@ -620,8 +622,8 @@ def test_sysparm_input_display_value(mocker, requests_mock):
     Validate that the sysparm_input_display_value parameter has the correct value
     """
 
-    client = Client(server_url='https://server_url.com/', sc_server_url='sc_server_url', username='username',
-                    password='password', verify=False, fetch_time='fetch_time',
+    client = Client(server_url='https://server_url.com/', sc_server_url='sc_server_url', cr_server_url='cr_server_url',
+                    username='username', password='password', verify=False, fetch_time='fetch_time',
                     sysparm_query='sysparm_query', sysparm_limit=10, timestamp_field='opened_at',
                     ticket_type='incident', get_attachments=False, incident_name='description')
 
@@ -656,8 +658,8 @@ def test_get_mapping_fields():
     Then
         - the result fits the expected mapping.
     """
-    client = Client(server_url='https://server_url.com/', sc_server_url='sc_server_url', username='username',
-                    password='password', verify=False, fetch_time='fetch_time',
+    client = Client(server_url='https://server_url.com/', sc_server_url='sc_server_url', cr_server_url='cr_server_url',
+                    username='username', password='password', verify=False, fetch_time='fetch_time',
                     sysparm_query='sysparm_query', sysparm_limit=10, timestamp_field='opened_at',
                     ticket_type='incident', get_attachments=False, incident_name='description')
     res = get_mapping_fields_command(client)
@@ -676,7 +678,8 @@ def test_get_remote_data(mocker):
         - The ticket was updated with the entries.
     """
 
-    client = Client(server_url='https://server_url.com/', sc_server_url='sc_server_url', username='username',
+    client = Client(server_url='https://server_url.com/', sc_server_url='sc_server_url',
+                    cr_server_url='cr_server_url', username='username',
                     password='password', verify=False, fetch_time='fetch_time',
                     sysparm_query='sysparm_query', sysparm_limit=10, timestamp_field='opened_at',
                     ticket_type='incident', get_attachments=False, incident_name='description')
@@ -711,7 +714,8 @@ def test_get_remote_data_closing_incident(mocker):
         - Closed notes exists.
     """
 
-    client = Client(server_url='https://server_url.com/', sc_server_url='sc_server_url', username='username',
+    client = Client(server_url='https://server_url.com/', sc_server_url='sc_server_url',
+                    cr_server_url="cr_server_url", username='username',
                     password='password', verify=False, fetch_time='fetch_time',
                     sysparm_query='sysparm_query', sysparm_limit=10, timestamp_field='opened_at',
                     ticket_type='sc_task', get_attachments=False, incident_name='description')
@@ -739,7 +743,8 @@ def test_get_remote_data_no_attachment(mocker):
         - The ticket was updated with no attachment.
     """
 
-    client = Client(server_url='https://server_url.com/', sc_server_url='sc_server_url', username='username',
+    client = Client(server_url='https://server_url.com/', sc_server_url='sc_server_url',
+                    cr_server_url="cr_server_url", username='username',
                     password='password', verify=False, fetch_time='fetch_time',
                     sysparm_query='sysparm_query', sysparm_limit=10, timestamp_field='opened_at',
                     ticket_type='incident', get_attachments=False, incident_name='description')
@@ -770,7 +775,8 @@ def test_get_remote_data_no_entries(mocker):
         - The checked entries was not returned.
     """
 
-    client = Client(server_url='https://server_url.com/', sc_server_url='sc_server_url', username='username',
+    client = Client(server_url='https://server_url.com/', sc_server_url='sc_server_url',
+                    cr_server_url='cr_server_url', username='username',
                     password='password', verify=False, fetch_time='fetch_time',
                     sysparm_query='sysparm_query', sysparm_limit=10, timestamp_field='opened_at',
                     ticket_type='incident', get_attachments=False, incident_name='description')
@@ -808,7 +814,8 @@ def test_upload_entries_update_remote_system_command(mocker, mirror_entries):
     Then
         - The checked entries was sent as expected with suffix.
     """
-    client = Client(server_url='https://server_url.com/', sc_server_url='sc_server_url', username='username',
+    client = Client(server_url='https://server_url.com/', sc_server_url='sc_server_url',
+                    cr_server_url='cr_server_url', username='username',
                     password='password', verify=False, fetch_time='fetch_time',
                     sysparm_query='sysparm_query', sysparm_limit=10, timestamp_field='opened_at',
                     ticket_type='incident', get_attachments=False, incident_name='description')
@@ -862,7 +869,8 @@ def test_update_remote_data_sc_task_sc_req_item(mocker, ticket_type):
         - The state is changed to 3 (closed) after update for sc_task and sc_req_item.
         - The state is changed to 7 (closed) after update for incident.
     """
-    client = Client(server_url='https://server_url.com/', sc_server_url='sc_server_url', username='username',
+    client = Client(server_url='https://server_url.com/', sc_server_url='sc_server_url',
+                    cr_server_url='cr_server_url', username='username',
                     password='password', verify=False, fetch_time='fetch_time',
                     sysparm_query='sysparm_query', sysparm_limit=10, timestamp_field='opened_at',
                     ticket_type=ticket_type, get_attachments=False, incident_name='description')
@@ -912,9 +920,9 @@ def test_multiple_query_params(requests_mock, command, args):
      - Verify the right request is called with '&' distinguishing different arguments.
     """
     url = 'https://test.service-now.com/api/now/v2/'
-    client = Client(url, 'sc_server_url', 'username', 'password', 'verify', 'fetch_time',
-                    'sysparm_query', 'sysparm_limit', 'timestamp_field', 'ticket_type', 'get_attachments',
-                    'incident_name')
+    client = Client(url, 'sc_server_url', 'cr_server_url', 'username', 'password',
+                    'verify', 'fetch_time', 'sysparm_query', 'sysparm_limit', 'timestamp_field',
+                    'ticket_type', 'get_attachments', 'incident_name')
     requests_mock.request('GET', f'{url}table/sc_task?sysparm_limit=50&sysparm_offset=0&'
                                  'sysparm_query=assigned_to%3D123&sysparm_query=active%3Dtrue',
                           json=RESPONSE_TICKET_ASSIGNED)
@@ -942,7 +950,7 @@ def test_get_modified_remote_data(requests_mock, mocker, api_response):
     """
     mocker.patch.object(demisto, 'debug')
     url = 'https://test.service-now.com/api/now/v2/'
-    client = Client(url, 'sc_server_url', 'username', 'password', 'verify', 'fetch_time',
+    client = Client(url, 'sc_server_url', 'cr_server_url', 'username', 'password', 'verify', 'fetch_time',
                     'sysparm_query', 'sysparm_limit', 'timestamp_field', 'ticket_type', 'get_attachments',
                     'incident_name')
     last_update = '2020-11-18T13:16:52.005381+02:00'
@@ -982,7 +990,7 @@ def test_get_ticket_attachments(mocker, sys_created_on, expected):
         - Case A+B: Ensure that the query parameters do not include ^sys_created_on>
         - Case C: Ensure that the query parameters include ^sys_created_on>
     """
-    client = Client("url", 'sc_server_url', 'username', 'password', 'verify', 'fetch_time',
+    client = Client("url", 'sc_server_url', 'cr_server_url', 'username', 'password', 'verify', 'fetch_time',
                     'sysparm_query', 'sysparm_limit', 'timestamp_field', 'ticket_type', 'get_attachments',
                     'incident_name')
     mocker.patch.object(client, 'send_request', return_value=[])
@@ -1020,7 +1028,7 @@ def test_query_table_with_fields(mocker):
     """
 
     # prepare
-    client = Client('server_url', 'sc_server_url', 'username', 'password', 'verify', 'fetch_time',
+    client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password', 'verify', 'fetch_time',
                     'sysparm_query', 'sysparm_limit', 'timestamp_field', 'ticket_type', 'get_attachments',
                     'incident_name')
 
