@@ -169,8 +169,8 @@ def run_hey_test(url: str,
                  body: Optional[str] = None,
                  proxy: Optional[str] = None,
                  enable_http2: Optional[str] = None,
-                 disable_redirects: Optional[str] = None
-                 ) -> CommandResults:
+                 disable_redirects: Optional[str] = None,
+                 *args, **kwargs) -> CommandResults:
     hey_map, hey_query = construct_hey_query(url,
                                              requests_number,
                                              timeout,

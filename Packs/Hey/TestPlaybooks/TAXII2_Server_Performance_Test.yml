@@ -125,7 +125,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: threatintel/collections/2eb7bfae-7739-5863-9b00-1681309c3d8c/objects/
+                  simple: threatintel/collections/2eb7bfae-7739-5863-9b00-1681309c3d8c/objects/?limit=10000
       z:
         simple: ${inputs.z}
     separatecontext: false
@@ -174,7 +174,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: threatintel/collections/2eb7bfae-7739-5863-9b00-1681309c3d8c/objects/
+                  simple: threatintel/collections/2eb7bfae-7739-5863-9b00-1681309c3d8c/objects/?limit=50000
     separatecontext: false
     loop:
       iscommand: false
@@ -281,7 +281,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: threatintel/collections/2eb7bfae-7739-5863-9b00-1681309c3d8c/objects/
+                  simple: threatintel/collections/2eb7bfae-7739-5863-9b00-1681309c3d8c/objects/?limit=100000
     separatecontext: false
     loop:
       iscommand: false
@@ -1089,7 +1089,7 @@ tasks:
       - "30"
     scriptarguments:
       headers:
-        simple: Accept:*/*,Range:items 0-10000
+        simple: Accept:*/*
       method:
         simple: GET
       url:
@@ -1101,7 +1101,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: threatintel/collections/2eb7bfae-7739-5863-9b00-1681309c3d8c/objects/?match[type]=url
+                  simple: threatintel/collections/2eb7bfae-7739-5863-9b00-1681309c3d8c/objects/?limit=10000&match[type]=url
     separatecontext: false
     view: |-
       {
@@ -1179,7 +1179,7 @@ tasks:
       - "32"
     scriptarguments:
       headers:
-        simple: Accept:*/*,Range:items 0-10000
+        simple: Accept:*/*
       method:
         simple: GET
       url:
@@ -1191,7 +1191,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: threatintel/collections/2eb7bfae-7739-5863-9b00-1681309c3d8c/objects/?match[type]=ip
+                  simple: threatintel/collections/2eb7bfae-7739-5863-9b00-1681309c3d8c/objects/?limit=10000&match[type]=ip
     separatecontext: false
     view: |-
       {
@@ -1343,7 +1343,7 @@ tasks:
       - "36"
     scriptarguments:
       headers:
-        simple: Accept:*/*,Range:items 0-10000
+        simple: Accept:*/*
       method:
         simple: GET
       url:
@@ -1355,7 +1355,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: threatintel/collections/2eb7bfae-7739-5863-9b00-1681309c3d8c/objects/?match[type]=domain-name
+                  simple: threatintel/collections/2eb7bfae-7739-5863-9b00-1681309c3d8c/objects/?limit=10000&match[type]=domain-name
     separatecontext: false
     view: |-
       {
@@ -1433,7 +1433,7 @@ tasks:
       - "39"
     scriptarguments:
       headers:
-        simple: Accept:*/*,Range:items 0-50000
+        simple: Accept:*/*
       method:
         simple: GET
       url:
@@ -1445,7 +1445,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: threatintel/collections/2eb7bfae-7739-5863-9b00-1681309c3d8c/objects/?match[type]=url
+                  simple: threatintel/collections/2eb7bfae-7739-5863-9b00-1681309c3d8c/objects/?limit=50000&match[type]=url
     separatecontext: false
     view: |-
       {
@@ -1560,7 +1560,7 @@ tasks:
       - "42"
     scriptarguments:
       headers:
-        simple: Accept:*/*,Range:items 0-50000
+        simple: Accept:*/*
       method:
         simple: GET
       url:
@@ -1572,7 +1572,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: threatintel/collections/2eb7bfae-7739-5863-9b00-1681309c3d8c/objects/?match[type]=ip
+                  simple: threatintel/collections/2eb7bfae-7739-5863-9b00-1681309c3d8c/objects/?limit=50000&match[type]=ip
     separatecontext: false
     view: |-
       {
@@ -1687,7 +1687,7 @@ tasks:
       - "45"
     scriptarguments:
       headers:
-        simple: Accept:*/*,Range:items 0-50000
+        simple: Accept:*/*
       method:
         simple: GET
       url:
@@ -1699,7 +1699,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: threatintel/collections/2eb7bfae-7739-5863-9b00-1681309c3d8c/objects/?match[type]=domain-name
+                  simple: threatintel/collections/2eb7bfae-7739-5863-9b00-1681309c3d8c/objects/?limit=50000&match[type]=domain-name
     separatecontext: false
     view: |-
       {
@@ -1777,7 +1777,7 @@ tasks:
       - "49"
     scriptarguments:
       headers:
-        simple: Accept:*/*,Range:items 0-100000
+        simple: Accept:*/*
       method:
         simple: GET
       url:
@@ -1789,7 +1789,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: threatintel/collections/2eb7bfae-7739-5863-9b00-1681309c3d8c/objects/?match[type]=url
+                  simple: threatintel/collections/2eb7bfae-7739-5863-9b00-1681309c3d8c/objects/?limit=100000&match[type]=url
     separatecontext: false
     view: |-
       {
@@ -1904,7 +1904,7 @@ tasks:
       - "52"
     scriptarguments:
       headers:
-        simple: Accept:*/*,Range:items 0-100000
+        simple: Accept:*/*
       method:
         simple: GET
       url:
@@ -1916,7 +1916,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: threatintel/collections/2eb7bfae-7739-5863-9b00-1681309c3d8c/objects/?match[type]=ip
+                  simple: threatintel/collections/2eb7bfae-7739-5863-9b00-1681309c3d8c/objects/?limit=100000&match[type]=ip
     separatecontext: false
     view: |-
       {
@@ -2031,7 +2031,7 @@ tasks:
       - "55"
     scriptarguments:
       headers:
-        simple: Accept:*/*,Range:items 0-100000
+        simple: Accept:*/*
       method:
         simple: GET
       url:
@@ -2043,7 +2043,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: threatintel/collections/2eb7bfae-7739-5863-9b00-1681309c3d8c/objects/?match[type]=domain-name
+                  simple: threatintel/collections/2eb7bfae-7739-5863-9b00-1681309c3d8c/objects/?limit=100000&match[type]=domain-name
     separatecontext: false
     view: |-
       {
