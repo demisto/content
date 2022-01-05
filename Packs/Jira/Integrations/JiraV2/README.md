@@ -1,6 +1,6 @@
 Use the Atlassian Jira v2 integration to manage Jira issues and create Cortex XSOAR incidents from Jira projects.
 
-This integration was integrated and tested with version 1001.0.0-SNAPSHOT of Jira.
+This integration was integrated and tested with: Jira Cloud, Jira v8.19.1.
 For more information about JQL syntax, go to https://www.atlassian.com/software/jira/guides/expand-jira/jql.
 
 ## Use Cases
