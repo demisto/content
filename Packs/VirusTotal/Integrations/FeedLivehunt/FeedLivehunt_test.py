@@ -141,7 +141,7 @@ def test_fetch_indicators_command(mocker):
     client = Client('https://fake')
     mocker.patch.object(
         client,
-        'list_notifications_files',
+        'get_api_indicators',
         return_value=MOCK_VT_RESPONSE
     )
 
@@ -172,7 +172,7 @@ def test_get_indicators_command(mocker):
     client = Client('https://fake')
     mocker.patch.object(
         client,
-        'list_notifications_files',
+        'get_api_indicators',
         return_value=MOCK_VT_RESPONSE
     )
 
@@ -206,13 +206,13 @@ def test_main_manual_command(mocker):
     mocker.patch.object(demisto, 'params', return_value=params)
     mocker.patch.object(demisto, 'command', return_value='vt-livehunt-get-indicators')
     mocker.patch.object(demisto, 'args', return_value=args)
-    list_notifications_files_mock = mocker.patch.object(Client,
-                                                        'list_notifications_files',
-                                                        return_value=MOCK_VT_RESPONSE)
+    get_api_indicators_mock = mocker.patch.object(Client,
+                                                  'get_api_indicators',
+                                                  return_value=MOCK_VT_RESPONSE)
 
     main()
 
-    assert list_notifications_files_mock.call_args == call(7, 'Wannacry')
+    assert get_api_indicators_mock.call_args == call('tag:"Wannacry"', 7)
 
 
 def test_main_default_command(mocker):
@@ -226,13 +226,13 @@ def test_main_default_command(mocker):
 
     mocker.patch.object(demisto, 'params', return_value=params)
     mocker.patch.object(demisto, 'command', return_value='fetch-indicators')
-    list_notifications_files_mock = mocker.patch.object(Client,
-                                                        'list_notifications_files',
-                                                        return_value=MOCK_VT_RESPONSE)
+    get_api_indicators_mock = mocker.patch.object(Client,
+                                                  'get_api_indicators',
+                                                  return_value=MOCK_VT_RESPONSE)
 
     main()
 
-    assert list_notifications_files_mock.call_args == call(7, 'Wannacry')
+    assert get_api_indicators_mock.call_args == call(f'tag:"Wannacry" {Client.get_last_run()}', 7)
 
 
 def test_main_test_command(mocker):
@@ -242,10 +242,10 @@ def test_main_test_command(mocker):
 
     mocker.patch.object(demisto, 'params', return_value=params)
     mocker.patch.object(demisto, 'command', return_value='test-module')
-    list_notifications_files_mock = mocker.patch.object(Client,
-                                                        'list_notifications_files',
-                                                        return_value=MOCK_VT_RESPONSE)
+    get_api_indicators_mock = mocker.patch.object(Client,
+                                                  'get_api_indicators',
+                                                  return_value=MOCK_VT_RESPONSE)
 
     main()
 
-    assert list_notifications_files_mock.call_count == 1
+    assert get_api_indicators_mock.call_count == 1

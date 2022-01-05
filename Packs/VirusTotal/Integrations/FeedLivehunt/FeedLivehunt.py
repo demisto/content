@@ -3,6 +3,8 @@ import urllib3
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
+from datetime import datetime
+
 # Disable insecure warnings
 urllib3.disable_warnings()
 
@@ -23,16 +25,37 @@ class DetectionRatio:
 
 
 class Client(BaseClient):
-    def build_iterator(self, limit: Optional[int] = 10,
-                       filter_: Optional[str] = None) -> List:
+    def get_api_indicators(self,
+                           query_filter: Optional[str] = None,
+                           limit: Optional[int] = 10):
+        return self._http_request(
+            'GET',
+            'intelligence/hunting_notification_files',
+            params=assign_params(
+                filter=query_filter,
+                limit=max(limit, 40),
+            )
+        )
+
+    def fetch_indicators(self,
+                         limit: Optional[int] = 10,
+                         filter_tag: Optional[str] = None,
+                         fetch_command: bool = False) -> List:
         """Retrieves all entries from the feed.
         Returns:
             A list of objects, containing the indicators.
         """
-
         result = []
+        query_filter = ''
 
-        response = self.list_notifications_files(limit, filter_)
+        if isinstance(filter_tag, str):
+            query_filter = f'tag:"{filter_tag}"'
+
+        if fetch_command:
+            if last_run := self.get_last_run():
+                query_filter = f'{query_filter} {last_run}'
+
+        response = self.get_api_indicators(query_filter, limit)
 
         try:
             for indicator in response.get('data', []):
@@ -44,27 +67,40 @@ class Client(BaseClient):
         except ValueError as err:
             demisto.debug(str(err))
             raise ValueError(f'Could not parse returned data as indicator. \n\nError message: {err}')
+
+        self.set_last_run()
         return result
 
-    def list_notifications_files(
-            self,
-            limit: Optional[int] = 10,
-            filter_: Optional[str] = None
-    ) -> dict:
-        """Retrieve VT Hunting Livehunt notifications files.
+    @staticmethod
+    def set_last_run():
         """
-        return self._http_request(
-            'GET',
-            'intelligence/hunting_notification_files',
-            params=assign_params(
-                filter=filter_,
-                limit=max(limit, 40),
-            )
-        )
+        Returns: Current timestamp
+        """
+        current_time = datetime.now()
+        current_timestamp = datetime.timestamp(current_time)
+        timestamp = str(int(current_timestamp))
+        demisto.setIntegrationContext({'last_run': timestamp})
+
+    @staticmethod
+    def get_last_run() -> str:
+        """ Gets last run time in timestamp
+        Returns:
+            last run in timestamp, or '' if no last run
+        """
+        if last_run := demisto.getIntegrationContext().get('last_run'):
+            demisto.info(f'get last_run: {last_run}')
+            params = f'date:{last_run}+'
+        else:
+            params = ''
+        return params
 
 
 def test_module(client: Client, args: dict) -> str:
-    client.list_notifications_files()
+    try:
+        client.fetch_indicators()
+    except Exception:
+        raise Exception("Could not fetch VT livehunt Feed\n"
+                        "\nCheck your API key and your connection to VirusTotal.")
     return 'ok'
 
 
@@ -72,24 +108,25 @@ def fetch_indicators_command(client: Client,
                              tlp_color: Optional[str] = None,
                              feed_tags: List = [],
                              limit: Optional[int] = 10,
-                             filter_: Optional[str] = None) -> List[Dict]:
+                             filter_tag: Optional[str] = None,
+                             fetch_command: bool = False) -> List[Dict]:
     """Retrieves indicators from the feed
     Args:
         client (Client): Client object with request
         tlp_color (str): Traffic Light Protocol color
         feed_tags (list): tags to assign fetched indicators
         limit (int): limit the results
-        filter_ (string): filter response by ruleset name
+        filter_tag (string): filter response by ruleset name
     Returns:
         Indicators.
     """
-    iterator = client.build_iterator(limit, filter_)
     indicators = []
-    if limit and limit > 0:
-        iterator = iterator[:limit]
+
+    raw_indicators = client.fetch_indicators(limit, filter_tag,
+                                             fetch_command=fetch_command)
 
     # extract values from iterator
-    for item in iterator:
+    for item in raw_indicators:
         value_ = item.get('data')
         type_ = FeedIndicatorType.File
         attributes = value_.get('attributes', {})
@@ -170,11 +207,11 @@ def get_indicators_command(client: Client,
         Outputs.
     """
     limit = int(args.get('limit', 10))
-    filter_ = args.get('filter')
+    filter_tag = args.get('filter')
     tlp_color = params.get('tlp_color')
     feed_tags = argToList(params.get('feedTags', ''))
     indicators = fetch_indicators_command(client, tlp_color,
-                                          feed_tags, limit, filter_)
+                                          feed_tags, limit, filter_tag)
 
     human_readable = tableToMarkdown('Indicators from VirusTotal Livehunt Feed:',
                                      indicators,
@@ -195,6 +232,14 @@ def get_indicators_command(client: Client,
     )
 
 
+def reset_last_run():
+    """
+    Reset the last run from the integration context
+    """
+    demisto.setIntegrationContext({})
+    return CommandResults(readable_output='Fetch history deleted successfully')
+
+
 def main():
     """
     main function, parses params and runs command functions
@@ -204,7 +249,7 @@ def main():
     feed_tags = argToList(params.get('feedTags'))
     tlp_color = params.get('tlp_color')
     limit = int(params.get('limit', 10))
-    filter_ = params.get('filter')
+    filter_tag = params.get('filter')
 
     # If your Client class inherits from BaseClient, SSL verification is
     # handled out of the box by it, just pass ``verify_certificate`` to
@@ -239,6 +284,9 @@ def main():
             # from the feed source and displays them in the war room.
             return_results(get_indicators_command(client, params, demisto.args()))
 
+        elif command == "vt-reset-fetch-indicators":
+            return_results(reset_last_run())
+
         elif command == 'fetch-indicators':
             # This is the command that initiates a request to the feed endpoint
             # and create new indicators objects from the data fetched. If the
@@ -249,7 +297,8 @@ def main():
                                                   tlp_color,
                                                   feed_tags,
                                                   limit,
-                                                  filter_)
+                                                  filter_tag,
+                                                  fetch_command=True)
             for iter_ in batch(indicators, batch_size=2000):
                 demisto.createIndicators(iter_)
 
