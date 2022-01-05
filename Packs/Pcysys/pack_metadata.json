@@ -7,10 +7,16 @@
     "url": "https://pentera.io",
     "email": "support@pentera.io",
     "created": "2020-03-10T08:37:18Z",
-    "categories": [],
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
     "tags": [],
     "useCases": [],
     "keywords": [],
     "certification": "certified",
-    "authorImage": "content/Packs/Pcysys/Integrations/Pcysys/Pcysys_image.png"
+    "authorImage": "content/Packs/Pcysys/Integrations/Pcysys/Pcysys_image.png",
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

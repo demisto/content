@@ -18,4 +18,4 @@ type: python
 fromversion: 6.0.0
 comment: Automation to display drilldown search results from Splunk. 
 tests:
-- No tests (auto formatted)
+- SplunkShowEnrichment

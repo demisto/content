@@ -204,8 +204,11 @@ def create_ticket_context(data: dict, additional_fields: list = None) -> Any:
     }
     if additional_fields:
         for additional_field in additional_fields:
-            if additional_field in data.keys() and camelize_string(additional_field) not in context.keys():
-                context[additional_field] = data.get(additional_field)
+            if camelize_string(additional_field) not in context.keys():
+                # in case of a nested additional field (in the form of field1.field2)
+                nested_additional_field_list = additional_field.split('.')
+                if value := dict_safe_get(data, nested_additional_field_list):
+                    context[additional_field] = value
 
     # These fields refer to records in the database, the value is their system ID.
     closed_by = data.get('closed_by')
@@ -331,7 +334,9 @@ def get_ticket_human_readable(tickets, ticket_type: str, additional_fields: list
 
         if additional_fields:
             for additional_field in additional_fields:
-                hr[additional_field] = ticket.get(additional_field)
+                # in case of a nested additional field (in the form of field1.field2)
+                nested_additional_field_list = additional_field.split('.')
+                hr[additional_field] = dict_safe_get(ticket, nested_additional_field_list)
         result.append(hr)
 
     return result
@@ -361,11 +366,18 @@ def get_ticket_fields(args: dict, template_name: dict = {}, ticket_type: str = '
     inv_states = {v: k for k, v in states.items()} if states else {}
     approval = TICKET_APPROVAL.get(ticket_type)
     inv_approval = {v: k for k, v in approval.items()} if approval else {}
+    fields_to_clear = argToList(args.get('clear_fields', []))  # This argument will contain fields to allow their value empty
 
     ticket_fields = {}
     for arg in SNOW_ARGS:
         input_arg = args.get(arg)
-        if input_arg:
+
+        if arg in fields_to_clear:
+            if input_arg:
+                raise DemistoException(f"Could not set a value for the argument '{arg}' and add it to the clear_fields. \
+                You can either set or clear the field value.")
+            ticket_fields[arg] = ""
+        elif input_arg:
             if arg in ['impact', 'urgency', 'severity']:
                 ticket_fields[arg] = inv_severity.get(input_arg, input_arg)
             elif arg == 'priority':
@@ -454,6 +466,17 @@ def build_query_for_request_params(query):
         return query_params
     else:
         return query
+
+
+def parse_build_query(sys_param_query, parse_amp=True):
+    """
+      Used to parse build the query parameters or ignore parsing.
+    """
+
+    if sys_param_query:
+        if parse_amp:
+            return build_query_for_request_params(sys_param_query)
+    return sys_param_query
 
 
 class Client(BaseClient):
@@ -830,7 +853,7 @@ class Client(BaseClient):
         return self.send_request('/table/label_entry', 'POST', body=body)
 
     def query(self, table_name: str, sys_param_limit: str, sys_param_offset: str, sys_param_query: str,
-              system_params: dict = {}, sysparm_fields: Optional[str] = None) -> dict:
+              system_params: dict = {}, sysparm_fields: Optional[str] = None, parse_amp: bool = True) -> dict:
         """Query records by sending a GET request.
 
         Args:
@@ -840,6 +863,7 @@ class Client(BaseClient):
         sys_param_query: the query
         system_params: system parameters
         sysparm_fields: Comma-separated list of field names to return in the response.
+        parse_amp: when querying fields you may want not to parse &'s.
 
         Returns:
             Response from API.
@@ -847,7 +871,7 @@ class Client(BaseClient):
 
         query_params = {'sysparm_limit': sys_param_limit, 'sysparm_offset': sys_param_offset}
         if sys_param_query:
-            query_params['sysparm_query'] = build_query_for_request_params(sys_param_query)
+            query_params['sysparm_query'] = parse_build_query(sys_param_query, parse_amp)
         if system_params:
             query_params.update(system_params)
         if sysparm_fields:
@@ -1468,19 +1492,19 @@ def query_table_command(client: Client, args: dict) -> Tuple[str, Dict, Dict, bo
     system_params = split_fields(args.get('system_params', ''))
     sys_param_offset = args.get('offset', client.sys_param_offset)
     fields = args.get('fields')
+    if fields and 'sys_id' not in fields:
+        fields = f'{fields},sys_id'  # ID is added by default
 
-    result = client.query(table_name, sys_param_limit, sys_param_offset, sys_param_query, system_params)
+    result = client.query(table_name, sys_param_limit, sys_param_offset, sys_param_query, system_params,
+                          sysparm_fields=fields)
     if not result or 'result' not in result or len(result['result']) == 0:
         return 'No results found', {}, {}, False
     table_entries = result.get('result', {})
 
     if fields:
         fields = argToList(fields)
-        if 'sys_id' not in fields:
-            # ID is added by default
-            fields.append('sys_id')
         # Filter the records according to the given fields
-        records = [dict([kv_pair for kv_pair in iter(r.items()) if kv_pair[0] in fields]) for r in table_entries]
+        records = [{k.replace('.', '_'): v for k, v in r.items() if k in fields} for r in table_entries]
         for record in records:
             record['ID'] = record.pop('sys_id')
             for k, v in record.items():
@@ -1592,7 +1616,7 @@ def query_groups_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, Any
     else:
         if group_name:
             group_query = f'name={group_name}'
-        result = client.query(table_name, limit, offset, group_query)
+        result = client.query(table_name, limit, offset, group_query, parse_amp=False)
 
     if not result or 'result' not in result:
         return 'No groups found.', {}, {}, False

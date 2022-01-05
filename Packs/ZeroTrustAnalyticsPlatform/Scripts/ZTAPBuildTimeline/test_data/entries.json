@@ -1,0 +1,55 @@
+[
+    {
+        "ContentsFormat": "json",
+        "Contents": {
+            "occurred": "2021-07-01T00:00:00Z",
+            "contents": "Already marked as evidence.",
+            "type": "log"
+        },
+        "Evidence": true,
+        "ID": "1@100",
+        "Tags": ["ztap"]
+    },
+    {
+        "ContentsFormat": "json",
+        "Contents": {
+            "occurred": "2021-07-01T00:00:01Z",
+            "contents": "1 events added to incident.",
+            "type": "log"
+        },
+        "Evidence": false,
+        "ID": "2@100",
+        "Tags": ["ztap"]
+    },
+    {
+        "ContentsFormat": "json",
+        "Contents": {
+            "occurred": "2021-07-01T00:00:02Z",
+            "contents": "Escalating alert.\nMore information.",
+            "type": "comment"
+        },
+        "Evidence": false,
+        "ID": "3@100",
+        "Tags": ["ztap"]
+    },
+    {
+        "ContentsFormat": "json",
+        "Contents": {
+            "occurred": "2021-07-01T00:00:03Z",
+            "contents": "Uploaded a file.\nMore information.",
+            "type": "comment",
+            "files": ["uploaded_file.png"]
+        },
+        "Evidence": false,
+        "ID": "4@100",
+        "Tags": ["ztap"]
+    },
+    {
+        "ContentsFormat": "file",
+        "Contents": null,
+        "Evidence": false,
+        "File": "uploaded_file.png",
+        "ID": "5@100",
+        "Tags": ["ztap"]
+    }
+]

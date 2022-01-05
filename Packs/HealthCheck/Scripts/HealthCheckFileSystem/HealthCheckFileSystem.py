@@ -12,10 +12,16 @@ UNITS = {'B': 1, 'K': 10**3, 'M': 10**6, 'G': 10**9, 'T': 10**12}
 
 
 def count_partitions(filesystem):
+    partitionscounter = 0
     if filesystem:
         for path in filesystem:
             if '/data/partitionsData' in path:
-                return len(filesystem[path]) - 2
+                for file in filesystem[path]:
+                    name = file.get('name')
+                    regx = re.search("demisto_\d{6}\.db", name)
+                    if regx:
+                        partitionscounter += 1
+        return partitionscounter
 
 
 def parse_size(size):

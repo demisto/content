@@ -2,14 +2,10 @@ commonfields:
   id: MITRE ATT&CK
   version: -1
 name: MITRE ATT&CK
-display: MITRE ATT&CK Feed
+deprecated: true
+display: MITRE ATT&CK Feed (Deprecated)
 category: Data Enrichment & Threat Intelligence
-description: Use the MITRE ATT&CK® feed to fetch MITRE’s Adversarial Tactics, Techniques,
-  and Common Knowledge (ATT&CK®) content. MITRE ATT&CK® is a globally-accessible knowledge
-  base of adversary tactics and techniques based on real-world observations. The ATT&CK
-  knowledge base is used as a foundation for the development of specific threat models
-  and methodologies in the private sector, in government, and in the cybersecurity
-  product and service community.
+description: Deprecated. Use MITRE ATT&CK Feed v2 instead.
 configuration:
 - display: Include external actor references as indicators
   name: includeAPT

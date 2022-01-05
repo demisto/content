@@ -488,7 +488,7 @@ Retrieves a list of offense closing reasons.
 
 ### qradar-offense-notes-list
 ***
-Creates a note on an offense.
+Retrieves a list of notes for an offense.
 
 
 #### Base Command
@@ -551,7 +551,7 @@ Creates a note on an offense.
 
 ### qradar-offense-note-create
 ***
-Retrieves a list of notes for an offense.
+Creates a note on an offense.
 
 
 #### Base Command
@@ -2337,7 +2337,7 @@ Retrieves a list of event regex properties.
 ### qradar-reset-last-run
 ***
 Resets the fetch incidents last run value, which resets the fetch to its initial fetch state. (Will try to fetch the first available offense).
-
+**Please Note**: It is recommended to *disable* and then *enable* the QRadar instance for the reset to take effect immediately.
 
 #### Base Command
 

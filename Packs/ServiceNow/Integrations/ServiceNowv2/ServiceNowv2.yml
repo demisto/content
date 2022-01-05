@@ -1346,6 +1346,12 @@ script:
       name: fields_delimiter
       required: false
       secret: false
+    - default: false
+      description: A comma-separated list of fields to clear.
+      isArray: true
+      name: clear_fields
+      required: false
+      secret: false
     deprecated: false
     description: Updates the specified ticket.
     execution: false
@@ -1415,7 +1421,7 @@ script:
       secret: false
     - default: false
       description: Additional fields to present in the War Room entry and incident
-        context.
+        context. Can be nested (in the form of field1.field2).
       isArray: true
       name: additional_fields
       required: false
@@ -1825,6 +1831,12 @@ script:
         in an argument for this command. Default is ';'.
       isArray: false
       name: fields_delimiter
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of fields to clear.
+      isArray: true
+      name: clear_fields
       required: false
       secret: false
     deprecated: false
@@ -2407,7 +2419,7 @@ script:
       is used as part of a Mirroring feature, which is available from version 6.1.
     execution: false
     name: get-modified-remote-data
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.9.8.24399
   feed: false
   isfetch: true
   longRunning: false

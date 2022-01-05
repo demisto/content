@@ -13,6 +13,7 @@ BLOCK_ACCOUNT_JSON = '{"accountEnabled": false}'
 UNBLOCK_ACCOUNT_JSON = '{"accountEnabled": true}'
 NO_OUTPUTS: dict = {}
 APP_NAME = 'ms-graph-user'
+INVALID_USER_CHARS_REGEX = re.compile(r'[%&*+/=?`{|}]')
 
 
 def camel_case_to_readable(text):
@@ -48,6 +49,15 @@ def parse_outputs(users_data):
         return user_readable, user_outputs
 
 
+def get_unsupported_chars_in_user(user: Optional[str]) -> set:
+    """
+    Extracts the invalid user characters found in the provided string.
+    """
+    if not user:
+        return set([])
+    return set(INVALID_USER_CHARS_REGEX.findall(user))
+
+
 class MsGraphClient:
     """
     Microsoft Graph Mail Client enables authorized access to a user's Office 365 mail data in a personal account.
@@ -64,7 +74,7 @@ class MsGraphClient:
 
     #  If successful, this method returns 204 No Content response code.
     #  Using resp_type=text to avoid parsing error.
-    def terminate_user_session(self, user):
+    def disable_user_account_session(self, user):
         self.ms_client.http_request(
             method='PATCH',
             url_suffix=f'users/{quote(user)}',
@@ -185,6 +195,15 @@ class MsGraphClient:
             resp_type="text"
         )
 
+    #  If successful, this method returns 204 No Content response code.
+    #  Using resp_type=text to avoid parsing error.
+    def revoke_user_session(self, user):
+        self.ms_client.http_request(
+            method='POST',
+            url_suffix=f'users/{quote(user)}/revokeSignInSessions',
+            resp_type="text"
+        )
+
 
 def test_function(client, _):
     """
@@ -206,10 +225,10 @@ def test_function(client, _):
     return response, None, None
 
 
-def terminate_user_session_command(client: MsGraphClient, args: Dict):
+def disable_user_account_command(client: MsGraphClient, args: Dict):
     user = args.get('user')
-    client.terminate_user_session(user)
-    human_readable = f'user: "{user}" session has been terminated successfully'
+    client.disable_user_account_session(user)
+    human_readable = f'user: "{user}" account has been disabled successfully.'
     return human_readable, None, None
 
 
@@ -224,7 +243,7 @@ def unblock_user_command(client: MsGraphClient, args: Dict):
 def delete_user_command(client: MsGraphClient, args: Dict):
     user = args.get('user')
     client.delete_user(user)
-    human_readable = f'user: "{user}" was deleted successfully'
+    human_readable = f'user: "{user}" was deleted successfully.'
     return human_readable, None, None
 
 
@@ -293,7 +312,15 @@ def get_delta_command(client: MsGraphClient, args: Dict):
 def get_user_command(client: MsGraphClient, args: Dict):
     user = args.get('user')
     properties = args.get('properties', '*')
-    user_data = client.get_user(user, properties)
+    try:
+        user_data = client.get_user(user, properties)
+    except DemistoException as e:
+        if 'Bad request. Please fix the request before retrying' in e.args[0]:
+            invalid_chars = get_unsupported_chars_in_user(user)
+            if len(invalid_chars) > 0:
+                error = f'Request failed because the user contains unsupported characters: {invalid_chars}\n{str(e)}'
+                return error, {}, error
+        raise e
 
     # In case the request returned a 404 error display a proper message to the war room
     if user_data.get('NotFound', ''):
@@ -366,6 +393,13 @@ def assign_manager_command(client: MsGraphClient, args: Dict):
     return human_readable, None, None
 
 
+def revoke_user_session_command(client: MsGraphClient, args: Dict):
+    user = args.get('user')
+    client.revoke_user_session(user)
+    human_readable = f'User: "{user}" sessions have been revoked successfully.'
+    return human_readable, None, None
+
+
 def main():
     params: dict = demisto.params()
     url = params.get('host', '').rstrip('/') + '/v1.0/'
@@ -382,7 +416,8 @@ def main():
         'msgraph-user-test': test_function,
         'test-module': test_function,
         'msgraph-user-unblock': unblock_user_command,
-        'msgraph-user-terminate-session': terminate_user_session_command,
+        'msgraph-user-terminate-session': disable_user_account_command,
+        'msgraph-user-account-disable': disable_user_account_command,
         'msgraph-user-update': update_user_command,
         'msgraph-user-change-password': change_password_user_command,
         'msgraph-user-delete': delete_user_command,
@@ -392,7 +427,8 @@ def main():
         'msgraph-user-list': list_users_command,
         'msgraph-direct-reports': get_direct_reports_command,
         'msgraph-user-get-manager': get_manager_command,
-        'msgraph-user-assign-manager': assign_manager_command
+        'msgraph-user-assign-manager': assign_manager_command,
+        'msgraph-user-session-revoke': revoke_user_session_command,
     }
     command = demisto.command()
     LOG(f'Command being called is {command}')

@@ -2,7 +2,7 @@
     "name": "Microsoft Teams",
     "description": "Send messages and notifications to your team members.",
     "support": "xsoar",
-    "currentVersion": "1.1.18",
+    "currentVersion": "1.1.19",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -12,5 +12,9 @@
     "tags": [],
     "created": "2020-04-14T00:00:00Z",
     "useCases": [],
-    "keywords": []
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

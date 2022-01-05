@@ -447,27 +447,27 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoIOS.IosFacts.ansible_net_gather_subset | unknown | The list of fact subsets collected from the device | 
-| CiscoIOS.IosFacts.ansible_net_gather_network_resources | unknown | The list of fact for network resource subsets collected from the device | 
-| CiscoIOS.IosFacts.ansible_net_model | string | The model name returned from the device | 
-| CiscoIOS.IosFacts.ansible_net_serialnum | string | The serial number of the remote device | 
-| CiscoIOS.IosFacts.ansible_net_version | string | The operating system version running on the remote device | 
-| CiscoIOS.IosFacts.ansible_net_iostype | string | The operating system type \(IOS or IOS-XE\) running on the remote device | 
-| CiscoIOS.IosFacts.ansible_net_hostname | string | The configured hostname of the device | 
-| CiscoIOS.IosFacts.ansible_net_image | string | The image file the device is running | 
-| CiscoIOS.IosFacts.ansible_net_stacked_models | unknown | The model names of each device in the stack | 
-| CiscoIOS.IosFacts.ansible_net_stacked_serialnums | unknown | The serial numbers of each device in the stack | 
-| CiscoIOS.IosFacts.ansible_net_api | string | The name of the transport | 
-| CiscoIOS.IosFacts.ansible_net_python_version | string | The Python version Ansible controller is using | 
-| CiscoIOS.IosFacts.ansible_net_filesystems | unknown | All file system names available on the device | 
-| CiscoIOS.IosFacts.ansible_net_filesystems_info | unknown | A hash of all file systems containing info about each file system \(e.g. free and total space\) | 
-| CiscoIOS.IosFacts.ansible_net_memfree_mb | number | The available free memory on the remote device in Mb | 
-| CiscoIOS.IosFacts.ansible_net_memtotal_mb | number | The total memory on the remote device in Mb | 
-| CiscoIOS.IosFacts.ansible_net_config | string | The current active config from the device | 
-| CiscoIOS.IosFacts.ansible_net_all_ipv4_addresses | unknown | All IPv4 addresses configured on the device | 
-| CiscoIOS.IosFacts.ansible_net_all_ipv6_addresses | unknown | All IPv6 addresses configured on the device | 
-| CiscoIOS.IosFacts.ansible_net_interfaces | unknown | A hash of all interfaces running on the system | 
-| CiscoIOS.IosFacts.ansible_net_neighbors | unknown | The list of CDP and LLDP neighbors from the remote device. If both, CDP and LLDP neighbor data is present on one port, CDP is preferred. | 
+| CiscoIOS.IosFacts.net_gather_subset | unknown | The list of fact subsets collected from the device | 
+| CiscoIOS.IosFacts.net_gather_network_resources | unknown | The list of fact for network resource subsets collected from the device | 
+| CiscoIOS.IosFacts.net_model | string | The model name returned from the device | 
+| CiscoIOS.IosFacts.net_serialnum | string | The serial number of the remote device | 
+| CiscoIOS.IosFacts.net_version | string | The operating system version running on the remote device | 
+| CiscoIOS.IosFacts.net_iostype | string | The operating system type \(IOS or IOS-XE\) running on the remote device | 
+| CiscoIOS.IosFacts.net_hostname | string | The configured hostname of the device | 
+| CiscoIOS.IosFacts.net_image | string | The image file the device is running | 
+| CiscoIOS.IosFacts.net_stacked_models | unknown | The model names of each device in the stack | 
+| CiscoIOS.IosFacts.net_stacked_serialnums | unknown | The serial numbers of each device in the stack | 
+| CiscoIOS.IosFacts.net_api | string | The name of the transport | 
+| CiscoIOS.IosFacts.net_python_version | string | The Python version Ansible controller is using | 
+| CiscoIOS.IosFacts.net_filesystems | unknown | All file system names available on the device | 
+| CiscoIOS.IosFacts.net_filesystems_info | unknown | A hash of all file systems containing info about each file system \(e.g. free and total space\) | 
+| CiscoIOS.IosFacts.net_memfree_mb | number | The available free memory on the remote device in Mb | 
+| CiscoIOS.IosFacts.net_memtotal_mb | number | The total memory on the remote device in Mb | 
+| CiscoIOS.IosFacts.net_config | string | The current active config from the device | 
+| CiscoIOS.IosFacts.net_all_ipv4_addresses | unknown | All IPv4 addresses configured on the device | 
+| CiscoIOS.IosFacts.net_all_ipv6_addresses | unknown | All IPv6 addresses configured on the device | 
+| CiscoIOS.IosFacts.net_interfaces | unknown | A hash of all interfaces running on the system | 
+| CiscoIOS.IosFacts.net_neighbors | unknown | The list of CDP and LLDP neighbors from the remote device. If both, CDP and LLDP neighbor data is present on one port, CDP is preferred. | 
 
 
 #### Command Example

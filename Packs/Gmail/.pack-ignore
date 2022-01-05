@@ -2,7 +2,7 @@
 ignore=IN126
 
 [file:README.md]
-ignore=RM106
+ignore=RM106,RM104
 
 [file:classifier-mapper-incoming-Gsuite-gmail.json]
 ignore=BA101

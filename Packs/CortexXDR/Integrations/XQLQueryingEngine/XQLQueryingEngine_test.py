@@ -376,27 +376,28 @@ def test_get_process_causality_network_activity_query():
 
 @pytest.mark.parametrize(
     'time_to_convert,expected',
-    [("3 seconds", 3000),
-     ("7 minutes", 420000),
-     ("5 hours", 18000000),
-     ("7 months", 18316800000),
-     ("2 years", 63158400000),
+    [("3 seconds", {'relativeTime': 3000}),
+     ("7 minutes", {'relativeTime': 420000}),
+     ("5 hours", {'relativeTime': 18000000}),
+     ("7 months", {'relativeTime': 18316800000}),
+     ("2 years", {'relativeTime': 63158400000}),
+     ("between 2021-01-01 00:00:00Z and 2021-02-01 12:34:56Z", {'from': 1609459200000, 'to': 1612182896000}),
      ]
 )
 @freeze_time('2021-08-26')
-def test_convert_relative_time_to_milliseconds(time_to_convert, expected):
+def test_convert_timeframe_string_to_json(time_to_convert, expected):
     """
     Given:
-    - A relative time to convert.
+    - A relative time or time range to convert.
 
     When:
-    - Calling convert_relative_time_to_milliseconds function.
+    - Calling convert_timeframe_string_to_json function.
 
     Then:
     - Ensure the returned timestamp is correct.
     """
 
-    response = XQLQueryingEngine.convert_relative_time_to_milliseconds(time_to_convert=time_to_convert)
+    response = XQLQueryingEngine.convert_timeframe_string_to_json(time_to_convert=time_to_convert)
 
     assert response == expected
 
@@ -419,27 +420,6 @@ def test_start_xql_query_valid(mocker):
     mocker.patch.object(CLIENT, 'start_xql_query', return_value='execution_id')
     response = XQLQueryingEngine.start_xql_query(CLIENT, args=args)
     assert response == 'execution_id'
-
-
-def test_start_xql_query_invalid(mocker):
-    """
-    Given:
-    - An invalid query to search.
-
-    When:
-    - Calling start_xql_query function.
-
-    Then:
-    - Ensure an error is returned.
-    """
-    args = {
-        'query': 'test_query // Some Note',
-        'time_frame': '1 year'
-    }
-    mocker.patch.object(CLIENT, 'start_xql_query', return_value='execution_id')
-    with pytest.raises(Exception) as exc:
-        XQLQueryingEngine.start_xql_query(CLIENT, args=args)
-    assert str(exc.value) == 'Please remove notes (//) from query'
 
 
 def test_get_xql_query_results_success_under_1000(mocker):

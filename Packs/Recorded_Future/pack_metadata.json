@@ -2,7 +2,7 @@
     "name": "Recorded Future",
     "description": "Unique threat intel technology that automatically serves up relevant insights in real time.",
     "support": "xsoar",
-    "currentVersion": "1.1.2",
+    "currentVersion": "1.1.3",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -12,5 +12,9 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": []
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

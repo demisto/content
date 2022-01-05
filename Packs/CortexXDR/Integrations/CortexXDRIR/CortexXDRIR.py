@@ -25,7 +25,7 @@ INTEGRATION_NAME = 'Cortex XDR - IR'
 
 XDR_INCIDENT_FIELDS = {
     "status": {"description": "Current status of the incident: \"new\",\"under_"
-                              "investigation\",\"resolved_threat_handled\",\"resolved_known_issue\","
+                              "investigation\",\"resolved_known_issue\","
                               "\"resolved_duplicate\",\"resolved_false_positive\","
                               "\"resolved_true_positive\",\"resolved_security_testing\",\"resolved_other\"",
                "xsoar_field_name": 'xdrstatusv2'},
@@ -41,7 +41,6 @@ XDR_INCIDENT_FIELDS = {
 }
 
 XDR_RESOLVED_STATUS_TO_XSOAR = {
-    'resolved_threat_handled': 'Resolved',
     'resolved_known_issue': 'Other',
     'resolved_duplicate': 'Duplicate',
     'resolved_false_positive': 'False Positive',
@@ -1671,8 +1670,8 @@ def check_if_incident_was_modified_in_xdr(incident_id, last_mirrored_in_time_tim
         if incident_modification_time_in_xdr > last_mirrored_in_time_timestamp:  # need to update this incident
             demisto.info(f"Incident '{incident_id}' was modified. performing extra-data request.")
             return True
-    else:  # the incident was not modified
-        return False
+    # the incident was not modified
+    return False
 
 
 def get_last_mirrored_in_time(args):
@@ -2790,9 +2789,13 @@ def get_remote_data_command(client, args):
 
     incident_data = {}
     try:
+        # when Demisto version is 6.1.0 and above, this command will only be automatically executed on incidents
+        # returned from get_modified_remote_data_command so we want to perform extra-data request on those incidents.
+        return_only_updated_incident = not is_demisto_version_ge('6.1.0')  # True if version is below 6.1 else False
+
         incident_data = get_incident_extra_data_command(client, {"incident_id": remote_args.remote_incident_id,
                                                                  "alerts_limit": 1000,
-                                                                 "return_only_updated_incident": True,
+                                                                 "return_only_updated_incident": return_only_updated_incident,
                                                                  "last_update": remote_args.last_update})
         if 'The incident was not modified' not in incident_data[0]:
             demisto.debug(f"Updating XDR incident {remote_args.remote_incident_id}")
@@ -2980,7 +2983,7 @@ def fetch_incidents(client, first_fetch_time, integration_instance, last_run: di
             description = raw_incident.get('description')
             occurred = timestamp_to_datestring(raw_incident['creation_time'], TIME_FORMAT + 'Z')
             incident = {
-                'name': f'#{incident_id} - {description}',
+                'name': f'XDR Incident {incident_id} - {description}',
                 'occurred': occurred,
                 'rawJSON': json.dumps(incident_data),
             }

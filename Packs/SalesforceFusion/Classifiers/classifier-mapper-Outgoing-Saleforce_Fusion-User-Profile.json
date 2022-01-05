@@ -38,11 +38,49 @@
 					"complex": null,
 					"simple": "location"
 				},
-				"Name": {
-					"complex": null,
-					"simple": "displayname"
+								"Name": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "${givenname}",
+						"transformers": [
+							{
+								"args": {
+									"prefix": {
+										"isContext": false,
+										"value": null
+									},
+									"suffix": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": " "
+										}
+									}
+								},
+								"operator": "concat"
+							},
+							{
+								"args": {
+									"prefix": {
+										"isContext": false,
+										"value": null
+									},
+									"suffix": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "${surname}"
+										}
+									}
+								},
+								"operator": "concat"
+							}
+						]
+					},
+					"simple": ""
 				}
-			}
+            }
 		},
 		"User Profile - Update": {
 			"dontMapEventToLabels": true,
@@ -79,11 +117,49 @@
 					"complex": null,
 					"simple": "location"
 				},
-				"Name": {
-					"complex": null,
-					"simple": "displayname"
+								"Name": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "${givenname}",
+						"transformers": [
+							{
+								"args": {
+									"prefix": {
+										"isContext": false,
+										"value": null
+									},
+									"suffix": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": " "
+										}
+									}
+								},
+								"operator": "concat"
+							},
+							{
+								"args": {
+									"prefix": {
+										"isContext": false,
+										"value": null
+									},
+									"suffix": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "${surname}"
+										}
+									}
+								},
+								"operator": "concat"
+							}
+						]
+					},
+					"simple": ""
 				}
-			}
+            }
 		}
 	},
 	"name": "User Profile - Salesforce Fusion (Outgoing)",

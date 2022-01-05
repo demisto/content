@@ -331,7 +331,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: A list of trusted IP addresses that have been whitelisted for secure
+    description: A list of trusted IP addresses on allow list for secure
       communication with AWS infrastructure and applications.
     execution: false
     name: aws-gd-create-ip-set

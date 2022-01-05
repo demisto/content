@@ -4,8 +4,8 @@ Top Use-Cases:
 - [Get event details (from specified incident)](#info-example)
 - [Quarantine File](#quarantine-example)
 - Isolate and contain endpoints
-- Update Indicators (Network, hashes, etc.) by policy (can be block, monitor) – Black list
-- White list indicators
+- Update Indicators (Network, hashes, etc.) by policy (can be block, monitor) – Block list
+- Add indicators to allow list
 - Search for indicators in the system (Seen indicators and related incidents/events)
 - Download file (based on hash, path)
 - Trigger scans on specified hosts

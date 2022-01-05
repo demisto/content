@@ -168,7 +168,7 @@ tasks:
       id: 1cb68a93-131c-4a6e-8c33-62a8121e3cc3
       version: -1
       name: extrahop-whitelist-retrieve
-      description: Retrieve whitelist from ExtraHop
+      description: Retrieve allow list from ExtraHop
       script: ExtraHop|||extrahop-whitelist-retrieve
       type: regular
       iscommand: true
@@ -195,7 +195,7 @@ tasks:
       description: ""
       id: 917cd0cb-926b-4ecd-8604-6eda883196e0
       version: -1
-      name: Verify device on whitelist
+      name: Verify device on allow list
       type: condition
       iscommand: false
       brand: ""
@@ -229,7 +229,7 @@ tasks:
       id: bcd391dd-96e2-4b83-82b2-60ad30a990dd
       version: -1
       name: extrahop-whitelist-modify
-      description: Modify whitelist from ExtraHop
+      description: Modify allow list from ExtraHop
       script: ExtraHop|||extrahop-whitelist-modify
       type: regular
       iscommand: true
@@ -260,7 +260,7 @@ tasks:
       id: e3e45302-979d-464f-89e3-a88e1848f3df
       version: -1
       name: extrahop-whitelist-modify
-      description: Modify whitelist from ExtraHop
+      description: Modify allow list from ExtraHop
       script: ExtraHop|||extrahop-whitelist-modify
       type: regular
       iscommand: true

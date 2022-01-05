@@ -1,0 +1,49 @@
+[
+    {
+        "product": "xdr",
+        "ata_trigger": true,
+        "links": [
+            {
+                "tooltip": "VirusTotal",
+                "url": "https://www.virustotal.com/latest-scan/a81733d4ce409e76a03271b33ed4b1a52b6e2143f3cd5a6278fb41780a5a243e",
+                "text": "VirusTotal",
+                "type": "tap",
+                "icon": "fa-chevron-circle-right"
+            },
+            {
+                "tooltip": "Palo Alto Cortex XDR Incident Pivot",
+                "url": "https://example.paloaltonetworks.com/incident-view/122",
+                "text": "",
+                "type": "external",
+                "icon": "fa-external-link"
+            },
+            {
+                "tooltip": "Palo Alto Cortex XDR Alert Pivot",
+                "url": "https://example.paloaltonetworks.com/alerts/123",
+                "text": "",
+                "type": "external",
+                "icon": "fa-tachometer"
+            },
+            {
+                "tooltip": "Palo Alto Cortex XDR BIOC Pivot",
+                "url": "https://example.paloaltonetworks.com/rules/bioc/124/view/",
+                "text": "",
+                "type": "external",
+                "icon": "fa-clipboard-list"
+            }
+        ]
+    },
+    {
+        "product": "xdr",
+        "ata_trigger": false,
+        "links": [
+            {
+                "tooltip": "VirusTotal",
+                "url": "https://www.virustotal.com/latest-scan/c876f04651300e942fd0374cb39a712fc9326bcdcd9f598006c7e8b78f291e3c",
+                "text": "VirusTotal",
+                "type": "external",
+                "icon": "fa-chevron-circle-right"
+            }
+        ]
+    }
+]

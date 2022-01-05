@@ -24,6 +24,8 @@ ioc2 = {
     },
 }
 
+search_indicators_side_effect = [{'iocs': [ioc1, ioc2]}, StopIteration]
+
 
 def get_args():
     args = {}
@@ -56,13 +58,9 @@ def get_args_with_unpopulate():
     return args
 
 
-def search_indicators(query=None, page=None, size=None, fromDate=None, toDate=None, value=None):
-    return {'iocs': [ioc1, ioc2]}
-
-
 def test_main(mocker):
     mocker.patch.object(demisto, 'args', side_effect=get_args)
-    mocker.patch.object(demisto, 'searchIndicators', side_effect=search_indicators)
+    mocker.patch('CommonServerPython.IndicatorsSearcher.__next__', side_effect=search_indicators_side_effect)
 
     entry = main()
     indicators = entry['Contents']
@@ -73,7 +71,7 @@ def test_main(mocker):
 
 def test_main_with_hashing(mocker):
     mocker.patch.object(demisto, 'args', side_effect=get_args_with_hashing)
-    mocker.patch.object(demisto, 'searchIndicators', side_effect=search_indicators)
+    mocker.patch('CommonServerPython.IndicatorsSearcher.__next__', side_effect=search_indicators_side_effect)
 
     entry = main()
     indicators = entry['Contents']
@@ -84,7 +82,7 @@ def test_main_with_hashing(mocker):
 
 def test_main_populate(mocker):
     mocker.patch.object(demisto, 'args', side_effect=get_args_with_populate)
-    mocker.patch.object(demisto, 'searchIndicators', side_effect=search_indicators)
+    mocker.patch('CommonServerPython.IndicatorsSearcher.__next__', side_effect=search_indicators_side_effect)
 
     entry = main()
     indicators = entry['Contents']
@@ -94,7 +92,7 @@ def test_main_populate(mocker):
 
 def test_main_unpopulate(mocker):
     mocker.patch.object(demisto, 'args', side_effect=get_args_with_unpopulate)
-    mocker.patch.object(demisto, 'searchIndicators', side_effect=search_indicators)
+    mocker.patch('CommonServerPython.IndicatorsSearcher.__next__', side_effect=search_indicators_side_effect)
     entry = main()
     indicators = entry['Contents']
     assert len(indicators) == 2

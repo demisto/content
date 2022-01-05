@@ -32,7 +32,7 @@ FIELD_TYPE_DICT = {
 
 ACCOUNT_STATUS_DICT = {1: 'Active', 2: 'Inactive', 3: 'Locked'}
 
-API_ENDPOINT = demisto.params().get('api_endpoint', 'rsaarcher/api').lower().replace('rsaarcher', '')
+API_ENDPOINT = demisto.params().get('api_endpoint', 'api')
 
 
 def parser(date_str, date_formats=None, languages=None, locales=None, region=None, settings=None) -> datetime:
@@ -273,12 +273,12 @@ class Client(BaseClient):
             self.update_session()
 
         res = self._http_request(method, url_suffix, headers=REQUEST_HEADERS, json_data=data, params=params,
-                                 resp_type='response', ok_codes=(200, 401), timeout=20)
+                                 resp_type='response', ok_codes=(200, 401), timeout=200)
 
         if res.status_code == 401:
             self.update_session()
             res = self._http_request(method, url_suffix, headers=REQUEST_HEADERS, json_data=data,
-                                     resp_type='response', ok_codes=(200, 401))
+                                     resp_type='response', ok_codes=(200, 401), timeout=200)
 
         return res.json()
 
@@ -290,7 +290,7 @@ class Client(BaseClient):
             'Password': self.password
         }
         try:
-            res = self._http_request('POST', f'{API_ENDPOINT}/core/security/login', json_data=body, timeout=20)
+            res = self._http_request('POST', f'{API_ENDPOINT}/core/security/login', json_data=body, timeout=200)
         except DemistoException as e:
             if '<html>' in str(e):
                 raise DemistoException(f"Check the given URL, it can be a redirect issue. Failed with error: {str(e)}")
@@ -654,11 +654,11 @@ def generate_field_value(client, field_name, field_data, field_val):
         if not isinstance(field_val, list):
             field_val = [field_val]
         for item in field_val:
-            tmp_id = next(f for f in field_data['ValuesList'] if f['Name'] == item)
+            tmp_id = next((f for f in field_data['ValuesList'] if f['Name'] == item), None)
             if tmp_id:
                 list_ids.append(tmp_id['Id'])
             else:
-                raise Exception(f'Failed to create field {field_name} with the value {field_data}')
+                raise Exception(f'Failed to create the field: {field_name} with the value: {item}')
         return 'Value', {'ValuesListIds': list_ids}
 
     # when field type is External Links
@@ -734,7 +734,6 @@ def test_module(client: Client, params: dict) -> str:
                 client, {}, params['applicationId'], params['applicationDateField']
             )}
         fetch_incidents_command(client, params, last_run)
-
         return 'ok'
 
     return 'ok' if client.do_request('GET', f'{API_ENDPOINT}/core/system/application') else 'Connection failed.'
@@ -1033,7 +1032,6 @@ def list_users_command(client: Client, args: Dict[str, str]):
 
     if isinstance(res, dict):
         res = [res]
-
     users = []
     for user in res:
         if user.get('RequestedObject') and user.get('IsSuccessful'):
@@ -1259,12 +1257,6 @@ def main():
     params = demisto.params()
     credentials = params.get('credentials')
     base_url = params.get('url').strip('/')
-
-    compiled = re.compile(re.escape('rsaarcher'), re.IGNORECASE)
-    base_url = compiled.sub("", base_url)
-    api_endpoint = params.get('api_endpoint', 'rsaarcher/api').lower()
-    if 'rsaarcher' in api_endpoint:
-        base_url = urljoin(base_url, 'rsaarcher')
 
     cache = get_integration_context()
     if not cache.get('fieldValueList'):

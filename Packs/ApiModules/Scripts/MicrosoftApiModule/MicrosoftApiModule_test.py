@@ -312,6 +312,7 @@ def test_oproxy_use_resource(mocker):
     assert resource == mocked_post.call_args_list[0][1]['json']['resource']
 
 
+
 @pytest.mark.parametrize('resource', ['https://resource1.com', 'https://resource2.com'])
 def test_self_deployed_multi_resource(requests_mock, resource):
     """
@@ -330,3 +331,28 @@ def test_self_deployed_multi_resource(requests_mock, resource):
     req_res = client._get_self_deployed_token()
     assert req_res == ('', 3600, '')
     assert client.resource_to_access_token[resource] == TOKEN
+    
+    
+@pytest.mark.parametrize('endpoint', ['com', 'gcc-high', 'dod', 'de', 'cn'])
+def test_national_endpoints(mocker, endpoint):
+    """
+    Given:
+        self-deployed client
+    When:
+        Configuring the client with different national endpoints
+    Then:
+        Verify that the token_retrieval_url and the scope are set correctly
+    """
+    tenant_id = TENANT
+    auth_id = f'{AUTH_ID}@{TOKEN_URL}'
+    enc_key = ENC_KEY
+    app_name = APP_NAME
+    base_url = BASE_URL
+    ok_codes = OK_CODES
+    client = MicrosoftClient(self_deployed=True, auth_id=auth_id, enc_key=enc_key, app_name=app_name,
+                             tenant_id=tenant_id, base_url=base_url, verify=True, proxy=False, ok_codes=ok_codes,
+                             endpoint=endpoint)
+
+    assert client.azure_ad_endpoint == TOKEN_RETRIEVAL_ENDPOINTS[endpoint]
+    assert client.scope == f'{GRAPH_ENDPOINTS[endpoint]}/.default'
+

@@ -2,7 +2,7 @@
     "name": "MITRE ATT&CK",
     "description": "Fetches indicators from MITRE ATT&CK.",
     "support": "xsoar",
-    "currentVersion": "1.1.17",
+    "currentVersion": "1.2.0",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -22,5 +22,9 @@
             "mandatory": true,
             "display_name": "Common Types"
         }
-    }
+    },
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }
