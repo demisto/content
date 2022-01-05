@@ -37,6 +37,7 @@ def main(args):
         'from': prev_month.strftime('%Y-%m-%d'),
         'to': current_month.strftime('%Y-%m-%d'),
         'table_result': 'true',
+        'ignore_deprecated': 'true'
     })
 
     incidentsbiggerthan1mb = []

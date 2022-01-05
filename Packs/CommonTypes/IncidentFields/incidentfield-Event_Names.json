@@ -1,7 +1,8 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "Qradar Generic"
+        "Qradar Generic",
+        "CrowdStrike Falcon Detection"
     ],
     "breachScript": "",
     "caseInsensitive": true,
@@ -43,5 +44,6 @@
     "useAsKpi": false,
     "validationRegex": "",
     "version": -1,
-    "fromVersion": "6.0.0"
+    "fromVersion": "6.0.0",
+    "openEnded": true
 }

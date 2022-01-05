@@ -105,9 +105,11 @@ configuration:
   required: true
   type: 16
 - additionalinfo: |-
-    Limit the indicators list to a specific risk rule. To see available
-    risk rules run the rf-feed-get-risk-rules command. This parameter will only be
-    used for the 'connectApi' service.
+    A comma-separated list of risk rules which limits the indicators list to a specific risk rule.
+    For example: 'dhsAis,phishingUrl'.
+    If more than one risk rule is set, the indicators fetching and the 'rf-feed-get-indicators' command will be executed for each risk rule.
+    To see available risk rules run the rf-feed-get-risk-rules command.
+    This parameter will only be used for the 'connectApi' service.
     Using the 'large' risk rule is not recommended.
   display: Risk Rule
   hidden: false
@@ -201,7 +203,7 @@ script:
     - contextPath: RecordedFutureFeed.RiskRule.Criticality
       description: The risk rule criticality.
       type: String
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.9.9.25564
   feed: true
   isfetch: false
   longRunning: false

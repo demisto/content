@@ -625,16 +625,37 @@ class TestCommands:
 
     def test_sync(self, mocker):
         http_request = mocker.patch.object(Client, 'http_request')
-        iocs, data = TestCreateFile.get_all_iocs(TestCreateFile.data_test_create_file_sync, 'txt')
+        iocs, _ = TestCreateFile.get_all_iocs(TestCreateFile.data_test_create_file_sync, 'txt')
         mocker.patch.object(demisto, 'searchIndicators', returnvalue=iocs)
         mocker.patch('XDR_iocs.return_outputs')
         sync(client)
         assert http_request.call_args.args[0] == 'sync_tim_iocs', 'sync command url changed'
 
+    def test_get_sync_file(self, mocker):
+        iocs, _ = TestCreateFile.get_all_iocs(TestCreateFile.data_test_create_file_sync, 'txt')
+        mocker.patch.object(demisto, 'searchIndicators', returnvalue=iocs)
+        return_results_mock = mocker.patch('XDR_iocs.return_results')
+        get_sync_file()
+        assert return_results_mock.call_args[0][0]['File'] == 'xdr-sync-file'
+
+    def test_set_sync_time(self, mocker):
+        mocker_reurn_results = mocker.patch('XDR_iocs.return_results')
+        mocker_set_context = mocker.patch.object(demisto, 'setIntegrationContext')
+        set_sync_time('2021-11-25T00:00:00')
+        mocker_reurn_results.assert_called_once_with('set sync time to 2021-11-25T00:00:00 seccedded.')
+        call_args = mocker_set_context.call_args[0][0]
+        assert call_args['ts'] == 1637798400000
+        assert call_args['time'] == '2021-11-25T00:00:00Z'
+        assert call_args['iocs_to_keep_time']
+
+    def test_set_sync_time_with_invalid_time(self):
+        with pytest.raises(ValueError, match='invalid time format.'):
+            set_sync_time('test')
+
     @freeze_time('2020-06-03T02:00:00Z')
     def test_iocs_to_keep(self, mocker):
         http_request = mocker.patch.object(Client, 'http_request')
-        iocs, data = TestCreateFile.get_all_iocs(TestCreateFile.data_test_create_file_iocs_to_keep, 'txt')
+        iocs, _ = TestCreateFile.get_all_iocs(TestCreateFile.data_test_create_file_iocs_to_keep, 'txt')
         mocker.patch.object(demisto, 'searchIndicators', returnvalue=iocs)
         mocker.patch('XDR_iocs.return_outputs')
         iocs_to_keep(client)
@@ -710,3 +731,39 @@ class TestParams:
         output = outputs.call_args.args[0]
         assert output[0]['fields']['tags'] == expected_tags
         assert output[0]['fields'].get('trafficlightprotocol') == expected_tlp_color
+
+
+def test_file_deleted_for_create_file_sync(mocker):
+    file_path = 'test'
+    mocker.patch('XDR_iocs.get_temp_file', return_value=file_path)
+    open(file_path, 'w').close()
+
+    def raise_function(*_args, **_kwargs):
+        raise DemistoException(file_path)
+
+    mocker.patch('XDR_iocs.create_file_sync', new=raise_function)
+    with pytest.raises(DemistoException):
+        get_sync_file()
+    assert os.path.exists(file_path) is False
+
+
+data_test_test_file_deleted = [
+    (sync, 'create_file_sync'),
+    (iocs_to_keep, 'create_file_iocs_to_keep'),
+]
+
+
+@pytest.mark.parametrize('method_to_test,iner_method', data_test_test_file_deleted)
+@freeze_time('2020-06-03T02:00:00Z')
+def test_file_deleted(mocker, method_to_test, iner_method):
+    file_path = 'test'
+    mocker.patch('XDR_iocs.get_temp_file', return_value=file_path)
+    open(file_path, 'w').close()
+
+    def raise_function(*_args, **_kwargs):
+        raise DemistoException(file_path)
+
+    mocker.patch(f'XDR_iocs.{iner_method}', new=raise_function)
+    with pytest.raises(DemistoException):
+        method_to_test(None)
+    assert os.path.exists(file_path) is False

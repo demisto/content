@@ -88,7 +88,7 @@ configuration:
   type: 8
 description: The WebEx IP Address and Domain web site provided by Cisco to document
   IPs and Domains used by WebEx. The WebEx Feed integration fetches indicators from
-  the web page, with which you can create a list (whitelist, blacklist, EDL, etc.)
+  the web page, with which you can create a list (allow list, block list, EDL, etc.)
   for your SIEM or firewall service to ingest and apply to its policy rules.
 display: Cisco WebEx Feed
 name: Cisco WebEx Feed

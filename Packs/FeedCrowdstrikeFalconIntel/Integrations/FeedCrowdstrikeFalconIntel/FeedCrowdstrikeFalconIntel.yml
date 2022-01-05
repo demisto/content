@@ -109,15 +109,15 @@ configuration:
   name: client_secret
   required: true
   type: 4
-- additionalinfo: "A comma-separated list of the threat actor's target industries.
-    For example: Aerospace,Academic."
+- additionalinfo: "A comma-separated list of the threat actor's target industries.\
+    \ For example: Aerospace,Academic."
   display: Filter by the threat actor's target industries.
   hidden: false
   name: target_industries
   required: false
   type: 0
-- additionalinfo: "A comma-separated list of the threat actor's target countries.
-    For example: united states,canada."
+- additionalinfo: "A comma-separated list of the threat actor's target countries.\
+    \ For example: united states,canada."
   display: Filter by threat actor's target countries.
   hidden: false
   name: target_countries
@@ -180,7 +180,7 @@ script:
     description: Gets indicators from CrowdStrike Falcon Intel Feed.
     execution: false
     name: crowdstrike-falcon-intel-get-indicators
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.9.8.24399
   feed: true
   isfetch: false
   longRunning: false

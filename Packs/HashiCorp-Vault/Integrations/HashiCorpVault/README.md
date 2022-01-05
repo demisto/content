@@ -30,6 +30,7 @@ For more details, see the <a href="https://www.vaultproject.io/docs/auth/approle
 <li>
 <strong>Fetches credentials</strong> - If set, the integration will fetch credentials from Vault to Cortex XSOAR.</li>
 <li><strong>CSV list of secrets engine types to fetch secrets from</strong></li>
+<li><strong>Concat username to credential object name</strong></li>
 </ul>
 </li>
 <li>Click <strong>Test</strong> to validate the URLs, token, and connection.</li>
@@ -960,6 +961,11 @@ For more details, see the <a href="https://www.vaultproject.io/docs/auth/approle
 <tr>
 <td style="width: 175px;">version</td>
 <td style="width: 532px;">The engine version (for KV engines); "1" or "2"</td>
+<td style="width: 33px;">Optional</td>
+</tr>
+<tr>
+<td style="width: 175px;">folder</td>
+<td style="width: 532px;">Specific folder to fetch secrets from, e.g., "secret-folder/". (Supported only for engine type KV2)</td>
 <td style="width: 33px;">Optional</td>
 </tr>
 </tbody>

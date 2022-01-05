@@ -2,7 +2,7 @@
     "name": "Genians",
     "description": "Use the Genian NAC integration to block IP addresses using the assign tag.",
     "support": "partner",
-    "currentVersion": "1.0.6",
+    "currentVersion": "1.0.7",
     "author": "Genians",
     "url": "https://www.genians.com/resources-overview/",
     "email": "integration@genians.com",
@@ -14,5 +14,9 @@
     "useCases": [],
     "keywords": [],
     "githubUser": "genians-rnd",
-    "certification": "certified"
+    "certification": "certified",
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

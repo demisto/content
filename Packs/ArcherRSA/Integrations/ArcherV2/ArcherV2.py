@@ -654,11 +654,11 @@ def generate_field_value(client, field_name, field_data, field_val):
         if not isinstance(field_val, list):
             field_val = [field_val]
         for item in field_val:
-            tmp_id = next(f for f in field_data['ValuesList'] if f['Name'] == item)
+            tmp_id = next((f for f in field_data['ValuesList'] if f['Name'] == item), None)
             if tmp_id:
                 list_ids.append(tmp_id['Id'])
             else:
-                raise Exception(f'Failed to create field {field_name} with the value {field_data}')
+                raise Exception(f'Failed to create the field: {field_name} with the value: {item}')
         return 'Value', {'ValuesListIds': list_ids}
 
     # when field type is External Links

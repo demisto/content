@@ -1,0 +1,495 @@
+versionedfields: {}
+commonfields:
+  id: Cisco Spark
+  version: -1
+name: Cisco Spark
+display: Cisco Webex Teams
+category: Messaging
+description: Send messages, create rooms and more, via the Cisco Spark API.
+configuration:
+- display: Server URL (e.g. https://192.168.0.1)
+  name: server
+  defaultvalue: https://api.ciscospark.com
+  type: 0
+  required: true
+- display: API Key
+  name: apiKey
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+script:
+  script: ''
+  type: javascript
+  commands:
+  - name: cisco-spark-list-people
+    arguments:
+    - name: email
+      description: List people with this email address. For non-admin requests, either
+        this or displayName are required.
+    - name: displayName
+      description: List people whose name starts with this string. For non-admin requests,
+        either this or email are required.
+    - name: orgId
+      description: List people in this organization. Only admin users of another organization
+        (such as partners) may use this parameter.
+    - name: max
+      description: Limit the maximum number of people in the response.
+    outputs:
+    - contextPath: CiscoSpark.People
+      description: The list of people.
+    description: List people
+  - name: cisco-spark-create-person
+    arguments:
+    - name: emails
+      description: Email addresses of the person (comma separated)
+      isArray: true
+    - name: displayName
+      description: Full name of the person
+    - name: firstName
+      description: First name of the person
+    - name: lastName
+      description: Last name of the person
+    - name: avatar
+      description: URL to the person's avatar in PNG format
+    - name: orgId
+      description: ID of the organization to which this person belongs
+    - name: roles
+      description: Roles of the person (comma separated)
+      isArray: true
+    - name: licenses
+      description: Licenses allocated to the person
+      isArray: true
+    description: Create a new user account for a given organization. Only an admin
+      can create a new user account.
+  - name: cisco-spark-get-person-details
+    arguments:
+    - name: personId
+      required: true
+      description: The person ID
+    description: Shows details for a person, by ID.
+  - name: cisco-spark-update-person
+    arguments:
+    - name: emails
+      description: Email addresses of the person (comma separated)
+      isArray: true
+    - name: displayName
+      description: Full name of the person
+    - name: firstName
+      description: First name of the person
+    - name: lastName
+      description: Last name of the person
+    - name: avatar
+      description: URL to the person's avatar in PNG format
+    - name: orgId
+      description: ID of the organization to which this person belongs
+    - name: roles
+      description: Roles of the person (comma separated)
+      isArray: true
+    - name: licenses
+      description: Licenses allocated to the person (comma separated)
+      isArray: true
+    - name: personId
+      required: true
+      description: The person ID
+    description: Update details for a person, by ID. Only an admin can update a person
+      details.
+  - name: cisco-spark-delete-person
+    arguments:
+    - name: personId
+      required: true
+      description: The person ID
+    description: Remove a person from the system. Only an admin can remove a person.
+  - name: cisco-spark-get-own-details
+    arguments: []
+    description: Show the profile for the authenticated user.
+  - name: cisco-spark-list-rooms
+    arguments:
+    - name: teamId
+      description: Limit the rooms to those associatedwith a team, by ID.
+    - name: max
+      description: Limit the maximum number of rooms in the response.
+    - name: type
+      auto: PREDEFINED
+      predefined:
+      - direct
+      - group
+      description: 'Available values: direct and group. direct returns all 1-to-1
+        rooms. group returns all group rooms. If not specified or values not matched,
+        will return all room types.'
+    outputs:
+    - contextPath: CiscoSpark.Rooms
+      description: The list of rooms.
+    description: List rooms.
+  - name: cisco-spark-create-room
+    arguments:
+    - name: title
+      required: true
+      description: A user-friendly name for the room.
+    - name: teamId
+      description: The ID for the team with which this room is associated.
+    description: Creates a room.
+  - name: cisco-spark-get-room-details
+    arguments:
+    - name: roomId
+      required: true
+      description: The room ID.
+    description: Shows details for a room, by ID.
+  - name: cisco-spark-update-room
+    arguments:
+    - name: roomId
+      required: true
+      description: The room ID.
+    - name: title
+      required: true
+      description: A user-friendly name for the room.
+    description: ' Updates details for a room, by ID.'
+  - name: cisco-spark-delete-room
+    arguments:
+    - name: roomId
+      required: true
+      description: The room ID.
+    description: Deletes a room, by ID. Deleted rooms cannot be recovered.
+  - name: cisco-spark-list-memberships
+    arguments:
+    - name: roomId
+      description: Limit results to a specific room, by ID.
+    - name: personId
+      description: Limit results to a specific person, by ID.
+    - name: personEmail
+      description: Limit results to a specific person, by email address.
+    - name: max
+      description: Limit the maximum number of items in the response.
+    outputs:
+    - contextPath: CiscoSpark.Memberships
+      description: List of memberships.
+    description: Lists all room memberships. Use either personId or personEmail to
+      filter the results.
+  - name: cisco-spark-create-membership
+    arguments:
+    - name: roomId
+      required: true
+      description: The room ID.
+    - name: personId
+      description: The person ID.
+    - name: personEmail
+      description: The email address of the person.
+    - name: isModerator
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Set to true to make the person a room moderator.
+    description: Add someone to a room by Person ID or email address; optionally making
+      them a moderator.
+  - name: cisco-spark-get-membership-details
+    arguments:
+    - name: membershipId
+      required: true
+      description: The membership ID.
+    description: Get details for a membership by ID.
+  - name: cisco-spark-update-membership
+    arguments:
+    - name: membershipId
+      required: true
+      description: The membership ID.
+    - name: isModerator
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Set to true to make the person a room moderator.
+    description: Updates properties for a membership by ID.
+  - name: cisco-spark-delete-membership
+    arguments:
+    - name: membershipId
+      required: true
+      description: The membership ID.
+    description: Deletes a membership by ID.
+  - name: cisco-spark-list-messages
+    arguments:
+    - name: roomId
+      required: true
+      description: List messages for a room, by ID.
+    - name: mentionedPeople
+      description: List messages where the caller is mentioned by specifying "me"
+        or the caller personId.
+    - name: before
+      description: List messages sent before a date and time, in ISO8601 format.
+    - name: beforeMessage
+      description: List messages sent before a message, by ID.
+    - name: max
+      description: Limit the maximum number of messages in the response.
+    outputs:
+    - contextPath: CiscoSpark.Messages
+      description: List of messages, by roomId.
+    description: Lists all messages in a room.
+  - name: cisco-spark-create-message
+    arguments:
+    - name: roomId
+      description: The room ID.
+    - name: toPersonId
+      description: The ID of the recipient when sending a private 1:1 message.
+    - name: toPersonEmail
+      description: The email address of the recipient when sending a private 1:1 message.
+    - name: text
+      description: The message, in plain text. If markdown is specified this parameter
+        may be optionally used to provide alternate text forUI clients that do not
+        support rich text.
+    - name: markdown
+      description: The message, in markdown format.
+    - name: files
+      description: The public URL to a binary file to be posted into the room. Only
+        one file is allowed per message. Uploaded files are automatically converted
+        into a format that all Spark clients can render. For the supported media types
+        and the behavior of uploads, see the Message AttachmentsGuide.
+    description: Posts a plain text message, and optionally, a media content attachment,
+      to a room.
+  - name: cisco-spark-get-message-details
+    arguments:
+    - name: messageId
+      required: true
+      description: The message ID.
+    description: Shows details for a message, by message ID.
+  - name: cisco-spark-delete-message
+    arguments:
+    - name: messageId
+      required: true
+      description: The message ID.
+    description: Deletes a message, by message ID.
+  - name: cisco-spark-list-teams
+    arguments:
+    - name: max
+      description: Limit the maximum number of teams in the response.
+    outputs:
+    - contextPath: CiscoSpark.Teams
+      description: List of teams.
+    description: Lists teams to which the authenticated user belongs.
+  - name: cisco-spark-create-team
+    arguments:
+    - name: name
+      required: true
+      description: A user-friendly name for the team.
+    description: Creates a team. The authenticated user is automatically added as
+      a member of the team.
+  - name: cisco-spark-get-team-details
+    arguments:
+    - name: teamId
+      required: true
+      description: The team ID.
+    description: Shows details for a team, by ID.
+  - name: cisco-spark-update-team
+    arguments:
+    - name: teamId
+      required: true
+      description: The team ID.
+    - name: name
+      required: true
+      description: A user-friendly name for the team.
+    description: Updates details for a team, by ID.
+  - name: cisco-spark-delete-team
+    arguments:
+    - name: teamId
+      required: true
+      description: The team ID.
+    description: Deletes a team, by ID.
+  - name: cisco-spark-list-team-memberships
+    arguments:
+    - name: teamId
+      required: true
+      description: List team memberships for a team, by ID.
+    - name: max
+      description: Limit the maximum number of items in the response.
+    outputs:
+    - contextPath: CiscoSpark.TeamMemberships
+      description: List of team memberships.
+    description: Lists all team memberships for a given team, specified by the teamId
+      query parameter.
+  - name: cisco-spark-create-team-membership
+    arguments:
+    - name: teamId
+      required: true
+      description: The team ID.
+    - name: personId
+      description: The person ID.
+    - name: personEmail
+      description: The email address of the person.
+    - name: isModerator
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Set to true to make the person a team moderator
+    description: Add someone to a team by Person ID or email address; optionally making
+      them a moderator.
+  - name: cisco-spark-get-team-membership-details
+    arguments:
+    - name: membershipId
+      required: true
+      description: The membership ID.
+    description: Shows details for a team membership, by ID.
+  - name: cisco-spark-update-team-membership
+    arguments:
+    - name: membershipId
+      required: true
+      description: The membership ID.
+    - name: isModerator
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Set to true to make the person a team moderator
+    description: Updates a team membership, by ID.
+  - name: cisco-spark-delete-team-membership
+    arguments:
+    - name: membershipId
+      required: true
+      description: The membership ID.
+    description: Deletes a team membership, by ID.
+  - name: cisco-spark-list-webhooks
+    arguments:
+    - name: max
+      description: Limit the maximum number of webhooks in the response. Setting this
+        to greater than 100 will return an error.
+    outputs:
+    - contextPath: CiscoSpark.Webhooks
+      description: List of webhooks.
+    description: Lists all of your webhooks.
+  - name: cisco-spark-create-webhook
+    arguments:
+    - name: name
+      required: true
+      description: A user-friendly name for this webhook.
+    - name: targetUrl
+      required: true
+      description: The URL that receives POST requests for each event.
+    - name: resource
+      required: true
+      description: The resource type for the webhook. Creating a webhook requires
+        'read' scope on the resource the webhook is for.
+    - name: event
+      required: true
+      description: The event type for the webhook.
+    - name: filter
+      description: The filter that defines the webhook scope.
+    - name: secret
+      description: Secret used to generate payload signature
+    description: Creates a webhook.
+  - name: cisco-spark-get-webhook-details
+    arguments:
+    - name: webhookId
+      required: true
+      description: The webhook ID.
+    description: Shows details for a webhook, by ID.
+  - name: cisco-spark-update-webhook
+    arguments:
+    - name: webhookId
+      required: true
+      description: The webhook ID.
+    - name: name
+      required: true
+      description: A user-friendly name for this webhook.
+    - name: targetUrl
+      required: true
+      description: The URL that receives POST requests for each event.
+    description: Updates a webhook, by ID.
+  - name: cisco-spark-delete-webhook
+    arguments:
+    - name: webhookId
+      required: true
+      description: The webhook ID.
+    description: Deletes a webhook, by ID.
+  - name: cisco-spark-list-organizations
+    arguments:
+    - name: max
+      description: Limit the maximum number of entries in the response.
+    outputs:
+    - contextPath: CiscoSpark.Organizations
+      description: List of organizations.
+    description: List all organizations visible by your account.
+  - name: cisco-spark-get-organization-details
+    arguments:
+    - name: orgId
+      required: true
+      description: The organization ID.
+    description: Shows details for an organization, by ID.
+  - name: cisco-spark-list-licenses
+    arguments:
+    - name: orgId
+      description: Specify the organization.
+    - name: max
+      description: Limit the maximum number of entries in the response.
+    outputs:
+    - contextPath: CiscoSpark.Licenses
+      description: List of licenses.
+    description: List all licenses for a given organization. If no orgId is specified,
+      the default is the organization of the authenticated user.
+  - name: cisco-spark-get-license-details
+    arguments:
+    - name: licenseId
+      required: true
+      description: The license ID.
+    description: Shows details for a license, by ID.
+  - name: cisco-spark-list-roles
+    arguments:
+    - name: max
+      description: Limit the maximum number of entries in the response.
+    outputs:
+    - contextPath: CiscoSpark.Roles
+      description: List of roles.
+    description: List all roles.
+  - name: cisco-spark-get-role-details
+    arguments:
+    - name: roleId
+      required: true
+      description: The role ID.
+    description: Shows details for a role, by ID.
+  - name: cisco-spark-send-message-to-person
+    arguments:
+    - name: toPersonEmail
+      description: Email address of the recipient.
+    - name: toPersonId
+      description: The personId of the recipient.
+    - name: text
+      description: The message, in plain text. If markdown is specified this parameter
+        may be optionally used to provide alternate text forUI clients that do not
+        support rich text.
+    - name: markdown
+      description: The message, in markdown format.
+    - name: files
+      description: The public URL to a binary file to be posted into the room. Only
+        one file is allowed per message. Uploaded files are automatically converted
+        into a format that all Spark clients can render. For the supported media types
+        and the behavior of uploads, see the Message AttachmentsGuide.
+    description: Sends a message to a person, by email or person ID.
+  - name: cisco-spark-send-message-to-room
+    arguments:
+    - name: toRoomName
+      description: The room name.
+    - name: roomId
+      description: The room ID.
+    - name: text
+      description: The message, in plain text. If markdown is specified this parameter
+        may be optionally used to provide alternate text forUI clients that do not
+        support rich text.
+    - name: markdown
+      description: The message, in markdown format.
+    - name: files
+      description: The public URL to a binary file to be posted into the room. Only
+        one file is allowed per message. Uploaded files are automatically converted
+        into a format that all Spark clients can render. For the supported media types
+        and the behavior of uploads, see the Message AttachmentsGuide.
+    description: Sends a message to a room, by name or room ID.
+hidden: false
+fromversion: 5.0.0

@@ -21,10 +21,10 @@ This playbook does not use any scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| ArcSightBlackListDomainActiveListID | ID of the black list Domain Active List resource as it appears in ArcSight. |  | Optional |
-| ArcsightBlackDomainValueFieldName | The name of the black list Active List field to insert the Domain value to. |  | Optional |
-| ArcSightWhiteListDomainActiveListID | ID of the white list Domain Active List resource as appears in ArcSight. |  | Optional |
-| ArcsightWhiteListDomainValueFieldName | The name of the white list Active List field to insert the Domain value to. |  | Optional |
+| ArcSightBlackListDomainActiveListID | ID of the block list Domain Active List resource as it appears in ArcSight. |  | Optional |
+| ArcsightBlackDomainValueFieldName | The name of the block list Active List field to insert the Domain value to. |  | Optional |
+| ArcSightWhiteListDomainActiveListID | ID of the allow list Domain Active List resource as appears in ArcSight. |  | Optional |
+| ArcsightWhiteListDomainValueFieldName | The name of the allow list Active List field to insert the Domain value to. |  | Optional |
 | ArcSightWatchListDomainActiveListID | ID of the watch list Domain Active List resource as appears in ArcSight. |  | Optional |
 | ArcsightWatchListDomainValueFieldName | The name of the watch list Active List field to insert the Domain value to. |  | Optional |
 

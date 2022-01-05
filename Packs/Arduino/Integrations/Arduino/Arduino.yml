@@ -123,7 +123,7 @@ script:
     - contextPath: Arduino.DataSend.Received
       description: The data received
       type: string
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.9.8.24399
   runonce: false
   script: ''
   subtype: python3

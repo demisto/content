@@ -3,7 +3,7 @@ Once a security incident is detected by the SCADAfence Platform, an alert is rai
 
 ##### What does this pack do?
 The pack implements the integration with the SCADAfence Platform: it enablies importing the asset inventory, related network traffic and real time alerts of incidents and anomalies.
-The playbook included demonstrates the capability to trigger a playbook upon detecting a potential infection in an OT related asset. The SCADAfence Platform provides rich information to enable risk analysis - full asset details, communications to other devices and alerts on suspicious behavior. This information is then used to calculate the probablity of infection and enable the SOC operator to take informed manual action to mitigate the threat (such as blacklisting the infected IP). 
+The playbook included demonstrates the capability to trigger a playbook upon detecting a potential infection in an OT related asset. The SCADAfence Platform provides rich information to enable risk analysis - full asset details, communications to other devices and alerts on suspicious behavior. This information is then used to calculate the probablity of infection and enable the SOC operator to take informed manual action to mitigate the threat (such as block listing the infected IP). 
 
 
 

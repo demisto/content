@@ -140,7 +140,7 @@ tasks:
     task:
       id: 82787948-b0b0-4e15-832a-8cc1665f4b30
       version: -1
-      name: Add domains to QRadar black list domain reference set
+      name: Add domains to QRadar block list domain reference set
       description: Add or update a value in a reference set.
       script: '|||qradar-update-reference-set-value'
       type: regular
@@ -202,7 +202,7 @@ tasks:
     task:
       id: c7040c61-80b1-44c7-84ab-61b37d22bb70
       version: -1
-      name: Is there a Qradar black list Domain Reference Set and values?
+      name: Is there a Qradar block list Domain Reference Set and values?
       type: condition
       iscommand: false
       brand: ""
@@ -264,7 +264,7 @@ tasks:
     task:
       id: bbbe1a64-75a9-4e65-8f86-a801c37b0059
       version: -1
-      name: Is there a Qradar white list Domain Reference Set and values?
+      name: Is there a Qradar allow list Domain Reference Set and values?
       type: condition
       iscommand: false
       brand: ""
@@ -326,7 +326,7 @@ tasks:
     task:
       id: bfba8fd4-c4ee-40de-8a26-4a2505b61558
       version: -1
-      name: Add domains to QRadar white list domain reference set
+      name: Add domains to QRadar allow list domain reference set
       description: Add or update a value in a reference set.
       script: '|||qradar-update-reference-set-value'
       type: regular
@@ -864,7 +864,7 @@ inputs:
 - key: QRadarBlackListDomainReferenceSetName
   value: {}
   required: false
-  description: The name of the QRadar black list Domain reference set to insert the
+  description: The name of the QRadar block list Domain reference set to insert the
     data to.
   playbookInputQuery: null
 - key: ""
@@ -890,7 +890,7 @@ inputs:
 - key: QRadarWhiteListDomainReferenceSetName
   value: {}
   required: false
-  description: The name of the QRadar white list Domain reference set to insert the
+  description: The name of the QRadar allow list Domain reference set to insert the
     data in to.
   playbookInputQuery: null
 - key: QRadarWatchListDomainReferenceSetName

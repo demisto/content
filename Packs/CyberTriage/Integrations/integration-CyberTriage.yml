@@ -291,7 +291,7 @@ script:
       type: string
     description: initiates a cyber triage collection on an endpoint
   runonce: false
-  dockerimage: demisto/python:2.7.18.24066
+  dockerimage: demisto/python:2.7.18.24398
 tests:
 - No test - no instance
 fromversion: 5.0.0

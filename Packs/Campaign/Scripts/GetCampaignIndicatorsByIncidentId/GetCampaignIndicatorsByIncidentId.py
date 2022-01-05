@@ -1,5 +1,5 @@
 import pandas as pd
-
+from typing import List, Dict
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
@@ -20,7 +20,7 @@ def get_incidents_ids_from_context() -> list:
     return ids
 
 
-def get_indicatos_from_incidents(incident_ids: list) -> list:
+def get_indicatos_from_incidents(incident_ids: List) -> List:
     """
     Gets the campaign indicators by the incident ids.
 
@@ -33,15 +33,10 @@ def get_indicatos_from_incidents(incident_ids: list) -> list:
     indicators_query = 'investigationIDs:({})'.format(' '.join('"{}"'.format(id_) for id_ in incident_ids))
     fields = ['id', 'indicator_type', 'investigationIDs', 'relatedIncCount', 'score', 'value']
     indicators_args = {'query': indicators_query, 'limit': '150', 'populateFields': ','.join(fields)}
-    res = demisto.executeCommand('GetIndicatorsByQuery', args=indicators_args)
-
-    if isError(res):
-        return_error(get_error(res))
-
-    return res[0].get('Contents', [])
+    return execute_command('GetIndicatorsByQuery', args=indicators_args)
 
 
-def format_results(indicators: list, incident_ids) -> str:
+def format_results(indicators: List, incident_ids: List):
     """
     Format the indicators result to a readable markdown table.
 
@@ -65,24 +60,35 @@ def format_results(indicators: list, incident_ids) -> str:
     if len(indicators_df) == 0:
         return 'No mutual indicators were found.'
 
+    associate_to_current_incident(indicators)
     indicators_df['Id'] = indicators_df['id'].apply(lambda x: "[%s](#/indicator/%s)" % (x, x))
     indicators_df = indicators_df.sort_values(['score', 'Involved Incidents Count'], ascending=False)
     indicators_df['Reputation'] = indicators_df['score'].apply(scoreToReputation)
     indicators_df.rename({'value': 'Value', 'indicator_type': 'Type'}, axis=1, inplace=True)
     indicators_headers = ['Id', 'Value', 'Type', 'Reputation', 'Involved Incidents Count']
 
-    table_result = tableToMarkdown('', indicators_df.to_dict(orient='records'), headers=indicators_headers)
-    demisto.executeCommand('setIncident', {'campaignmutualindicators': table_result})
-    return table_result
+    return tableToMarkdown('', indicators_df.to_dict(orient='records'), headers=indicators_headers)
 
 
-def main():
+def associate_to_current_incident(indicators: List[Dict[str, str]]):
+    incident_id = demisto.incident()['id']
+    execute_command(
+        'associateIndicatorsToIncident',
+        {
+            'incidentId': incident_id,
+            'indicatorsValues': list(map(lambda x: x['value'], indicators))
+        }
+    )
+
+
+def main():  # pragma: no cover
     """ This script should run from a campaign incident, and expect to have incidents
     to get indicators from."""
     try:
         incident_ids = get_incidents_ids_from_context()
         indicators = get_indicatos_from_incidents(incident_ids)
-        format_results(indicators, incident_ids)
+        formated_results = format_results(indicators, incident_ids)
+        execute_command('setIncident', {'campaignmutualindicators': formated_results})
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute BaseScript. Error: {str(ex)}')

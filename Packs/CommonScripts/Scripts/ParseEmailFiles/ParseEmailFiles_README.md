@@ -40,5 +40,9 @@ Parses an email from an eml or msg file and populate all relevant context data t
 | Email.HeadersMap.Reply-To | The email's address for return mail. | String |
 | Email.HeadersMap.Received | A list of all the servers/computers through which the message traveled. | String |
 | Email.HeadersMap.Message-ID | A unique string assigned by the mail system when the message is first created. These can easily be forged. For example, 5c530c1b.1c69fb81.bd826.0eff@mx.google.com | String |
+| Email.AttachmentsData.Name | The name of the attachment | String |
+| Email.AttachmentsData.Content-ID | The content-id of the attachment | String |
+| Email.AttachmentsData.Content-Disposition | The content-disposition of the attachment | String |
+| Email.AttachmentsData.FilePath | the location of the attachment, on the XSOAR server | String |
 | Email.AttachmentNames | The list of attachment names in the email. | string |
 | Email.Format | The format of the email if available. | string |

@@ -589,7 +589,7 @@
 <tr>
 <td style="width: 288px;">ATD.ListAnalyzerProfiles.LocalBlackList</td>
 <td style="width: 62px;">boolean</td>
-<td style="width: 358px;">Whether the Analyzer's profile has access to the local black list</td>
+<td style="width: 358px;">Whether the Analyzer's profile has access to the local block list</td>
 </tr>
 </tbody>
 </table>
