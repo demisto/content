@@ -2,7 +2,11 @@
     "name": "Common Scripts",
     "description": "Frequently used scripts pack.",
     "support": "xsoar",
+<<<<<<< HEAD
     "currentVersion": "1.6.15",
+=======
+    "currentVersion": "1.6.19",
+>>>>>>> master
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
