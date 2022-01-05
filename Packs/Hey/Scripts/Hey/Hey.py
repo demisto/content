@@ -187,7 +187,7 @@ def run_hey_test(url: str,
     return HeyPerformanceResult(result=result, results_map=results_map, **hey_map).to_results()
 
 
-def main() -> None: # pragma: no cover
+def main() -> None:  # pragma: no cover
     args = demisto.args()
     try:
         return_results(run_hey_test(**args))
