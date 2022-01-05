@@ -124,7 +124,7 @@ def get_model_data(model_name: str):
     """
     res_model = demisto.executeCommand("getMLModel", {"modelName": model_name})[0]
     if is_error(res_model):
-        return_error("Error reading model %s from Demisto" % model_name)
+        raise DemistoException("Error reading model %s from Demisto" % model_name)
     else:
         model_data = res_model['Contents']['modelData']
         try:
@@ -168,7 +168,7 @@ def load_oob_model(path: str):
     try:
         encoded_model = load_oob(path)
     except Exception:
-        return_error(traceback.format_exc())
+        raise DemistoException(traceback.format_exc())
     res = demisto.executeCommand('createMLModel', {'modelData': encoded_model.decode('utf-8'),
                                                    'modelName': URL_PHISHING_MODEL_NAME,
                                                    'modelLabels': [MALICIOUS_VERDICT, BENIGN_VERDICT,
@@ -180,7 +180,7 @@ def load_oob_model(path: str):
                                                        OOB_MAJOR_VERSION_INFO_KEY: MAJOR_VERSION,
                                                        OOB_MINOR_VERSION_INFO_KEY: MINOR_DEFAULT_VERSION}})
     if is_error(res):
-        return_error(get_error(res))
+        raise DemistoException(get_error(res))
     return MSG_UPDATE_MODEL % (MAJOR_VERSION, MINOR_DEFAULT_VERSION)
 
 
@@ -221,10 +221,7 @@ def in_white_list(model, url: str) -> bool:
     :param url: url to check
     :return:
     """
-    if (extract_domainv2(url) in model.top_domains):
-        return True
-    else:
-        return False
+    return extract_domainv2(url) in model.top_domains
 
 
 def get_colored_pred_json(pred_json: Dict) -> Dict:
@@ -387,7 +384,7 @@ def return_entry_summary(pred_json: Dict, url: str, whitelist: bool, output_rast
             "Contents": explain,
             "EntryContext": {'DBotPredictURLPhishing': explain, KEY_CONTENT_DBOT_SCORE: context_DBot_score}
         }
-    demisto.results(return_entry)
+    return_results(return_entry)
     # Get rasterize image or logo detection if logo was found
     if pred_json:
         image = pred_json[MODEL_KEY_LOGO_IMAGE_BYTES]
@@ -397,7 +394,7 @@ def return_entry_summary(pred_json: Dict, url: str, whitelist: bool, output_rast
         res['Type'] = entryTypes['image']
         if pred_json[MODEL_KEY_LOGO_FOUND]:
             res["Tags"] = ['Logo_detected']
-        demisto.results(res)
+        return_results(res)
     return explain
 
 
@@ -435,7 +432,7 @@ def return_entry_white_list(url):
         "Contents": explain,
         "EntryContext": {'DBotPredictURLPhishing': explain}
     }
-    demisto.results(return_entry)
+    return_results(return_entry)
 
 
 def get_score(pred_json):
@@ -527,30 +524,30 @@ def get_prediction_single_url(model, url, force_model, debug):
                                                })
     except ValueError:
         res = []
-        demisto.results('Please enable whois integration for more accurate prediction')
+        return_results('Please enable whois integration for more accurate prediction')
     is_new_domain = extract_created_date(res)
     # Rasterize html and image
     res = demisto.executeCommand('rasterize', {'type': 'json',
                                                'url': url,
                                                })
     if 'image_b64' not in res[0]['Contents'].keys() or 'html' not in res[0]['Contents'].keys():
-        return_error(MSG_NEED_TO_UPDATE_RASTERIZE)
+        raise DemistoException(MSG_NEED_TO_UPDATE_RASTERIZE)
     if len(res) > 0:
         output_rasterize = res[0]['Contents']
     else:
-        return_error(MSG_FAILED_RASTERIZE)
+        raise DemistoException(MSG_FAILED_RASTERIZE)
 
     # Create X_pred
     if isinstance(output_rasterize, str):
-        return_error(MSG_FAILED_RASTERIZE)
+        raise DemistoException(MSG_FAILED_RASTERIZE)
     X_pred = create_X_pred(output_rasterize, url)
 
     pred_json = model.predict(X_pred)
     if debug:
-        demisto.results(pred_json['debug_top_words'])
-        demisto.results(pred_json['debug_found_domains_list'])
-        demisto.results(pred_json['seo'])
-        demisto.results(pred_json['debug_image'])
+        return_results(pred_json['debug_top_words'])
+        return_results(pred_json['debug_found_domains_list'])
+        return_results(pred_json['seo'])
+        return_results(pred_json['debug_image'])
 
     pred_json[DOMAIN_AGE_KEY] = is_new_domain
 
@@ -583,7 +580,7 @@ def return_general_summary(results, tag="Summary"):
     }
     if tag is not None:
         return_entry["Tags"] = ['DBOT_URL_PHISHING_{}'.format(tag)]
-    demisto.results(return_entry)
+    return_results(return_entry)
     return df_summary_json
 
 
@@ -618,13 +615,13 @@ def save_model_in_demisto(model):
                                                        OOB_MAJOR_VERSION_INFO_KEY: model.major,
                                                        OOB_MINOR_VERSION_INFO_KEY: model.minor}})
     if is_error(res):
-        return_error(get_error(res))
+        raise DemistoException(get_error(res))
 
 
 def extract_urls(text):
     res = demisto.executeCommand("extractIndicators", {"text": text})
     if is_error(res):
-        return_error(get_error(res))
+        raise DemistoException(get_error(res))
     return list(set(json.loads(res[0]["Contents"]).get("URL", [])))
 
 
@@ -681,12 +678,12 @@ def get_urls_to_run(email_body, email_html, urls_argument, max_urls, model, msg_
     urls = urls_email_body + urls_only + urls_email_html
     if not urls:
         msg_list.append(MSG_NO_URL_GIVEN)
-        demisto.results(MSG_NO_URL_GIVEN)
+        return_results(MSG_NO_URL_GIVEN)
         return
     urls = get_final_urls(urls, max_urls, model)
     urls = [demisto.executeCommand("UnEscapeURLs", {"input": x})[0]['Contents'] for x in urls]
     if debug:
-        demisto.results(urls)
+        return_results(urls)
     return urls, msg_list
 
 
@@ -720,41 +717,45 @@ def update_and_load_model(debug, exist, reset_model, msg_list, demisto_major_ver
         model = decode_model_data(model_64_str)
     else:
         msg_list.append(MSG_WRONG_CONFIG_MODEL)
-        return_error(MSG_WRONG_CONFIG_MODEL)
+        raise DemistoException(MSG_WRONG_CONFIG_MODEL)
     return model, msg_list
 
 
 def main():
-    msg_list = []  # type: List
+    try:
+        msg_list = []  # type: List
 
-    # Check existing version of the model in demisto
-    exist, demisto_major_version, demisto_minor_version, model_data = oob_model_exists_and_updated()
+        # Check existing version of the model in demisto
+        exist, demisto_major_version, demisto_minor_version, model_data = oob_model_exists_and_updated()
 
-    # Load arguments
-    reset_model = demisto.args().get('resetModel', 'False') == 'True'
-    debug = demisto.args().get('debug', 'False') == 'True'
-    force_model = demisto.args().get('forceModel', 'False') == 'True'
-    email_body = demisto.args().get('emailBody', "")
-    email_html = demisto.args().get('emailHTML', "")
-    max_urls = int(demisto.args().get('maxNumberOfURL', 5))
-    urls_argument = demisto.args().get('urls', '')
+        # Load arguments
+        reset_model = demisto.args().get('resetModel', 'False') == 'True'
+        debug = demisto.args().get('debug', 'False') == 'True'
+        force_model = demisto.args().get('forceModel', 'False') == 'True'
+        email_body = demisto.args().get('emailBody', "")
+        email_html = demisto.args().get('emailHTML', "")
+        max_urls = int(demisto.args().get('maxNumberOfURL', 5))
+        urls_argument = demisto.args().get('urls', '')
 
-    # Update model if necessary and load the model
-    model, msg_list = update_and_load_model(debug, exist, reset_model, msg_list, demisto_major_version,
-                                            demisto_minor_version, model_data)
+        # Update model if necessary and load the model
+        model, msg_list = update_and_load_model(debug, exist, reset_model, msg_list, demisto_major_version,
+                                                demisto_minor_version, model_data)
 
-    # Get all the URLs on which we will run the model
-    urls, msg_list = get_urls_to_run(email_body, email_html, urls_argument, max_urls, model, msg_list, debug)
+        # Get all the URLs on which we will run the model
+        urls, msg_list = get_urls_to_run(email_body, email_html, urls_argument, max_urls, model, msg_list, debug)
 
-    # Run the model and get predictions
-    results = [get_prediction_single_url(model, x, force_model, debug) for x in urls]
+        # Run the model and get predictions
+        results = [get_prediction_single_url(model, x, force_model, debug) for x in urls]
 
-    # Return outputs
-    general_summary = return_general_summary(results)
-    detailed_summary = return_detailed_summary(results)
-    if debug:
-        demisto.results(msg_list)
-    return general_summary, detailed_summary, msg_list
+        # Return outputs
+        general_summary = return_general_summary(results)
+        detailed_summary = return_detailed_summary(results)
+        if debug:
+            return_results(msg_list)
+        return general_summary, detailed_summary, msg_list
+    except Exception as ex:
+        demisto.error(traceback.format_exc())  # print the traceback
+        return_error(f'Failed to execute URL Phishing script. Error: {str(ex)}')
 
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:

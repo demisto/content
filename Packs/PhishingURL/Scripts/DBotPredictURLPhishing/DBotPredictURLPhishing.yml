@@ -112,4 +112,4 @@ runas: DBotRole
 runonce: false
 tests:
 - DBotPredictURLPhishing_test
-fromversion: 5.5.0
+fromversion: 6.0.0

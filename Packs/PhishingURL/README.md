@@ -5,5 +5,3 @@ The Packs aims to detect URLs phishing attacks automatically using machine learn
 
 - Load a pretrained model that aims to detect URL Phishing attacks.
 - Enriched the logo detection engine by adding new logo
-
-_For more information, visit our [Cortex XSOAR Developer Docs](doc)._
