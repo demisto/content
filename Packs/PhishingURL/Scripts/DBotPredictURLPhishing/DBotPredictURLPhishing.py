@@ -564,11 +564,6 @@ def return_general_summary(results, tag="Summary"):
                                      else VERDICT_ERROR_COLOR % x.get('verdict') for x in results]
     summary_context = [{KEY_CONTENT_SUMMARY_URL: x.get('url'), KEY_CONTENT_SUMMARY_FINAL_VERDICT: BENIGN_VERDICT,
                         KEY_CONTENT_IS_WHITELISTED: 'True'} for x in results if x.get('is_white_listed')]
-
-    # summary_context = {
-    #     KEY_CONTENT_SUMMARY_URL: [x.get('url') for x in results],
-    #     KEY_CONTENT_SUMMARY_FINAL_VERDICT: [x.get('verdict') for x in results]
-    # }
     df_summary_json = df_summary.to_dict(orient='records')
     return_entry = {
         "Type": entryTypes["note"],
