@@ -245,7 +245,7 @@ tasks:
     nexttasks:
       '#default#':
       - '5'
-      yes:
+      'yes':
       - '25'
     separatecontext: false
     conditions:
@@ -276,7 +276,7 @@ tasks:
     nexttasks:
       '#default#':
       - '29'
-      yes:
+      'yes':
       - '26'
     separatecontext: false
     conditions:
@@ -307,7 +307,7 @@ tasks:
     nexttasks:
       '#default#':
       - '9'
-      yes:
+      'yes':
       - '4'
       - '5'
     separatecontext: false
@@ -453,7 +453,7 @@ tasks:
     nexttasks:
       '#default#':
       - '8'
-      yes:
+      'yes':
       - '29'
     separatecontext: false
     conditions:
@@ -486,7 +486,7 @@ tasks:
     nexttasks:
       '#default#':
       - '3'
-      yes:
+      'yes':
       - '5'
     separatecontext: false
     conditions:
@@ -641,7 +641,7 @@ tasks:
     nexttasks:
       '#default#':
       - '9'
-      yes:
+      'yes':
       - '28'
     separatecontext: false
     conditions:

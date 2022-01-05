@@ -106,7 +106,7 @@ tasks:
       brand: ''
       description: ''
     nexttasks:
-      yes:
+      'yes':
       - '1'
     separatecontext: false
     conditions:
@@ -139,7 +139,7 @@ tasks:
       brand: ''
       description: ''
     nexttasks:
-      yes:
+      'yes':
       - '5'
     separatecontext: false
     conditions:
