@@ -1,4 +1,5 @@
- ### Authorize Cortex XSOAR for Azure Key Vault (self-deployed configuration)
+Note: this integration supports self-deployed configuration only.
+### Authorize Cortex XSOAR for Azure Key Vault (self-deployed configuration)
 #### Follow these steps for a self-deployed configuration.
 
 1. To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal. To add the registration, refer to the following [Azure app registration article](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app)
