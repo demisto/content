@@ -7,3 +7,7 @@ To get an API key, go to: [AWIS API](https://awis.alexa.com/)
 3. Register your Alexa API account or log in to an existing Alexa API account.
 2. Log in to [Alexa Web Information Service](https://awis.alexa.com/)
 3. Copy the API Key.
+
+
+---
+[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/alexa-rank-indicator-v2)
