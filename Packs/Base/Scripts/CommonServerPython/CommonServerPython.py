@@ -8786,6 +8786,7 @@ def shorten_string_for_printing(source_string, max_length):
             + source_string[-extremeties_length:]
         return ret_value
 
+
 ###########################################
 #     DO NOT ADD LINES AFTER THIS ONE     #
 ###########################################
