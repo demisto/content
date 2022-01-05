@@ -1,0 +1,28 @@
+{
+    "description": "Maps incoming Hello World alert fields.",
+    "feed": false,
+    "id": "Hello World - Incoming Mapper",
+    "mapping": {
+        "Hello World Alert": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Hello World ID": {
+                    "simple": "alert_id"
+                },
+                "Hello World Status": {
+                    "simple": "alert_status"
+                },
+                "Hello World Type": {
+                    "simple": "alert_type"
+                },
+                "details": {
+                    "simple": "name"
+                }
+            }
+        }
+    },
+    "name": "Hello World - Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}
