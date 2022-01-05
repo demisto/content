@@ -13,6 +13,6 @@ data_test_main = [
 def test_main(args, command_outputs, mocker):
     mocker.patch.object(demisto, 'args', return_value=args)
     mocker.patch('ExtractEmailTransformer.execute_command', return_value=command_outputs)
-    results_mocker = mocker.patch.object('ExtractEmailTransformer.return_results')
+    results_mocker = mocker.patch('ExtractEmailTransformer.return_results')
     main()
     results_mocker.args[0] == command_outputs
