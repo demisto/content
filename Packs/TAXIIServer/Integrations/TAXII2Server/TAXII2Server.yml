@@ -85,8 +85,7 @@ configuration:
   name: nginx_server_conf
   required: false
   type: 12
-description: This integration provides TAXII2 Services for system indicators (Outbound
-  feed).
+description: This integration provides TAXII2 Services for system indicators (Outbound feed).
 display: TAXII2 Server
 name: TAXII2 Server
 script:
