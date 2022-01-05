@@ -393,7 +393,7 @@ def return_entry_summary(pred_json: Dict, url: str, whitelist: bool, output_rast
         res = fileResult(filename='Logo detection engine', data=image)
         res['Type'] = entryTypes['image']
         if pred_json[MODEL_KEY_LOGO_FOUND]:
-            res["Tags"] = ['Logo_detected']
+            res["Tags"] = ['DBotPredictURLPhishing_logo_detected']
         return_results(res)
     return explain
 
@@ -676,6 +676,7 @@ def get_urls_to_run(email_body, email_html, urls_argument, max_urls, model, msg_
     else:
         urls_only = [x.strip() for x in urls_argument.split(' ') if x]
     urls = urls_email_body + urls_only + urls_email_html
+    urls = list(set(urls))
     if not urls:
         msg_list.append(MSG_NO_URL_GIVEN)
         return_results(MSG_NO_URL_GIVEN)
