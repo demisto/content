@@ -837,7 +837,6 @@ script:
     description: Get information about the CVEs in the system. Will return a maximum
       of 50 records. It is possible to query for a partial CVE description such
       as cve-2020 or cve-2014 or by severity/distro/package.
-      required to access this endpoint - devOps.
     deprecated: false
     arguments:
     - name: cve_id
