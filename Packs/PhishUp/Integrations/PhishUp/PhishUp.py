@@ -53,6 +53,18 @@ class Client(BaseClient):
             demisto.log(f"""http request error: {e}""")
             return "Error"
 
+    def check_api_key_test_module_http_request(self, apikey):
+        try:
+            data = self._http_request(
+                method='POST',
+                url_suffix="/sherlock/ValidateApiKey?apikey=" + apikey,
+                timeout=20
+            )
+            return data
+        except Exception as e:
+            demisto.log(f"""http request error: {e}""")
+            return "Error"
+
     def list_incidents(self):
         """
         returns dummy incident data, just for the example.
@@ -173,10 +185,11 @@ def test_module(client):
         'ok' if test passed, anything else will fail the test.
     """
 
-    # if True:
-    return 'ok'
-    # else:
-    #     return 'Test failed because ......'
+    result = client.check_api_key_test_module_http_request(demisto.params().get("apikey"))
+    if result["Status"] == "Success":
+        return 'ok'
+    else:
+        return result["Status"]
 
 
 def main():
