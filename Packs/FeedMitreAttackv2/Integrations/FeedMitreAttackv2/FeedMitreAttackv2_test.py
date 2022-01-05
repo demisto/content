@@ -192,3 +192,10 @@ def test_publication_link_not_none():
 
     res = map_fields_by_type('Malware', indicator)
     assert res['publications'][0]['link'] is not None
+
+
+def test_create_relationships_invalid():
+    from FeedMitreAttackv2 import create_relationship
+    item_json = {'source_ref': '',
+                 'target_ref': ''}
+    assert create_relationship(item_json, {}) is None
