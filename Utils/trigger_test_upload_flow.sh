@@ -61,7 +61,6 @@ while [[ "$#" -gt 0 ]]; do
     shift;;
 
   -o|--override-all-packs) _override_all_packs=true
-    shift
     shift;;
 
   -g|--gitlab) _gitlab=true
@@ -107,6 +106,8 @@ if [ -n "$_gitlab" ]; then
 
   if [ -z "$_override_all_packs" ]; then
     _override_all_packs=false
+  else
+    _override_all_packs=true
   fi
 
   source Utils/gitlab_triggers/trigger_build_url.sh
