@@ -38,7 +38,7 @@ USERS_ON_CALL_RESULTS = [
 
 GetUsersOOO_RESULT = [{'Type': 1, 'EntryContext': {'ShiftManagment.OOOUsers': [{'username': 'brucewaine'}]}}]
 
-AWAY_USERS = [{'Type': 1, 'Contents': [{'username': 'batman'}]}]
+AWAY_USERS = [{'Type': 1, 'EntryContext': {'AwayUsers': [{'username': 'batman'}]}}]
 
 
 def execute_command(name, args=None):
