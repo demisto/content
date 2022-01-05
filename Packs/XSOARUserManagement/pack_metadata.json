@@ -1,0 +1,17 @@
+{
+    "name": "XSOAR User Management",
+    "description": "Use this pack to mange user and roles in XSOAR.\nCan be used in in conjunction with Integrations utilizing Single-Sign-On.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "",
+    "email": "",
+    "created": "2022-01-05T22:21:55Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "synth-humbert"
+    ]
+}

@@ -1,0 +1,29 @@
+args:
+- description: Number of days since user last logged into XSOAR. (example, inactive_days=7
+    will return users that have been inactive for at least 7 days.)
+  name: inactive_days
+  required: true
+comment: 'Get all inactive XSOAR users based on the number of days passed to the automation. '
+commonfields:
+  id: 3b2c2acb-7608-4dda-83ff-9b2376157929
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: c1dbfd18-728d-4adc-8131-8936051a8859
+    propagationLabels:
+    - all
+    toServerVersion: ""
+dockerimage: demisto/python3:3.9.5.21272
+enabled: true
+engineinfo: {}
+name: GetInactiveUsers
+pswd: ""
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python

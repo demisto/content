@@ -1,0 +1,516 @@
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: c1dbfd18-728d-4adc-8131-8936051a8859
+    propagationLabels:
+    - all
+    toServerVersion: ""
+id: 31f06993-e286-4368-8ffb-bc360a3c8353
+inputs:
+- description: Number of days since user last logged into XSOAR. (example, inactive_days=7
+    will return users that have been inactive for at least 7 days.)
+  key: DaysSinceLastActive
+  playbookInputQuery: null
+  required: true
+  value:
+    simple: "20"
+- description: |-
+    Integration SourceBrand Name that is being leveraged for SSO in XSOAR environment. If none leave empty
+    (i.e Okta V2)
+  key: SourceBrand
+  playbookInputQuery: null
+  required: false
+  value: {}
+- description: |-
+    Comma separated list of individuals emails to be notified which Users need to be removed from AD.
+    Note: This is only if SSO is enabled.
+  key: EmailAddress
+  playbookInputQuery: null
+  required: false
+  value: {}
+- description: |-
+    Delete users from XSOAR automatically
+    (i.e true/false)
+    Note: This is only if SSO is NOT enabled.
+  key: autoDelete
+  playbookInputQuery: null
+  required: true
+  value:
+    simple: "true"
+name: User Management - Inactive Users
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 1cc5e12d-d4ff-40d4-8fd4-0380e53217f5
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 1cc5e12d-d4ff-40d4-8fd4-0380e53217f5
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": -210
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    results:
+    - GetInactiveUsers
+    scriptarguments:
+      inactive_days:
+        simple: ${inputs.DaysSinceLastActive}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: 'Get all inactive XSOAR users based on the number of days passed
+        to the automation. '
+      id: 0ec957a5-6f11-47a0-8df2-0d51286c47e6
+      iscommand: false
+      name: Get Inactive Users
+      scriptName: GetInactiveUsers
+      type: regular
+      version: -1
+    taskid: 0ec957a5-6f11-47a0-8df2-0d51286c47e6
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": -55
+        }
+      }
+  "2":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: brand
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      iscontext: true
+                      value:
+                        simple: inputs.SourceBrand
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: "yes"
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "4"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: efa5496f-1c13-43f8-8f96-1b812c480bb5
+      iscommand: false
+      name: SSO Enabled?
+      type: condition
+      version: -1
+    taskid: efa5496f-1c13-43f8-8f96-1b812c480bb5
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -20,
+          "y": 360
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 2
+    scriptarguments:
+      body:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: GetInactiveUsers.UserData.UserName
+              operator: isNotEqualString
+              right:
+                value:
+                  simple: admin
+          root: GetInactiveUsers.UserData
+          transformers:
+          - args:
+              dt:
+                value:
+                  simple: .= val.UserName + " has been inactive since " + val.LastLogin
+            operator: DT
+          - args:
+              separator:
+                value:
+                  simple: |2+
+
+            operator: join
+          - args:
+              prefix:
+                value:
+                  simple: |
+                    Please remove the following users from group:
+              suffix:
+                value:
+                  simple: |2-
+
+                    Unless they are removed they will continue to sync to XSOAR
+
+                    -----------------
+                    This is an automated Cortex XSOAR message.
+            operator: concat
+      subject:
+        complex:
+          root: inputs.DaysSinceLastActive
+          transformers:
+          - args:
+              prefix:
+                value:
+                  simple: 'Action: Remove XSOAR Users - inactive for at least '
+              suffix:
+                value:
+                  simple: ' days'
+            operator: concat
+      to:
+        simple: ${inputs.EmailAddress}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Sends an email using Microsoft Graph.
+      id: 895aec22-4031-4b31-8263-92ea048a939a
+      iscommand: true
+      name: Send Email
+      script: '|||send-mail'
+      type: regular
+      version: -1
+    taskid: 895aec22-4031-4b31-8263-92ea048a939a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1010
+        }
+      }
+  "5":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: brand
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Demisto REST API
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: "yes"
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "6"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 8d3b5521-0588-4fb2-8fcf-de4c8402a7aa
+      iscommand: false
+      name: Is Demisto Rest API  Enabled
+      type: condition
+      version: -1
+    taskid: 8d3b5521-0588-4fb2-8fcf-de4c8402a7aa
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -400,
+          "y": 820
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      body:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: GetInactiveUsers.UserData.UserName
+              operator: isNotEqualString
+              right:
+                value:
+                  simple: admin
+          root: GetInactiveUsers.UserData.UserName
+          transformers:
+          - args:
+              prefix:
+                value:
+                  simple: '"'
+              suffix:
+                value:
+                  simple: '"'
+            operator: concat
+          - args:
+              separator:
+                value:
+                  simple: ','
+            operator: join
+          - args:
+              prefix:
+                value:
+                  simple: '{ "ids" : ['
+              suffix:
+                value:
+                  simple: '] }'
+            operator: concat
+          - operator: Stringify
+      uri:
+        simple: /users/delete
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: send HTTP POST request
+      id: 2ba6daaa-85fe-4095-8f8d-6f8596ab0ab8
+      iscommand: true
+      name: Delete Inactive Users
+      script: '|||demisto-api-post'
+      type: regular
+      version: -1
+    taskid: 2ba6daaa-85fe-4095-8f8d-6f8596ab0ab8
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -530,
+          "y": 1010
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 59b5f34f-0f5e-408b-8718-1044ea72545c
+      iscommand: false
+      name: Complete
+      type: title
+      version: -1
+    taskid: 59b5f34f-0f5e-408b-8718-1044ea72545c
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": 1290
+        }
+      }
+  "8":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: GetInactiveUsers.UserData.UserName
+                    operator: isNotEqualString
+                    right:
+                      value:
+                        simple: admin
+                root: GetInactiveUsers.UserData
+                transformers:
+                - operator: count
+          operator: greaterThan
+          right:
+            value:
+              simple: "0"
+      label: "yes"
+    id: "8"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "2"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 914b22c2-9be7-4d89-8c5e-fad0aa62d6f5
+      iscommand: false
+      name: Inactive Users Found
+      type: condition
+      version: -1
+    taskid: 914b22c2-9be7-4d89-8c5e-fad0aa62d6f5
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 120
+        }
+      }
+  "9":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.autoDelete
+          operator: isEqualString
+          right:
+            value:
+              simple: "true"
+      label: "yes"
+    id: "9"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "5"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: b8335bdc-7907-417e-8bba-5962730f05b1
+      iscommand: false
+      name: Auto Delete Inactive Users
+      type: condition
+      version: -1
+    taskid: b8335bdc-7907-417e-8bba-5962730f05b1
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -217.5,
+          "y": 590
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "5_6_yes": 0.89
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1565,
+        "width": 1190,
+        "x": -530,
+        "y": -210
+      }
+    }
+  }
