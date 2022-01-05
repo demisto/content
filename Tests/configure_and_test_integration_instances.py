@@ -363,7 +363,7 @@ def get_new_and_modified_integration_files(branch_name):
     # get changed yaml files (filter only added and modified files)
     file_validator = ValidateManager(skip_dependencies=True)
     file_validator.branch_name = branch_name
-    modified_files, added_files, _, _ = file_validator.get_changed_files_from_git()
+    modified_files, added_files, _, _, _ = file_validator.get_changed_files_from_git()
 
     new_integration_files = [
         file_path for file_path in added_files if
