@@ -4928,6 +4928,9 @@
         {
             "playbookID": "Dedup - Generic v3",
             "fromversion": "5.5.0"
+        },
+        {
+            "playbookID": "DBotPredictURLPhishing_test"
         }
     ],
     "skipped_tests": {
