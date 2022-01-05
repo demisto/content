@@ -48,3 +48,35 @@ def test_get_enabled_instances(mocker):
 
     assert hidden is False
     assert set(instances) == {'SendMailIntegration_instance1', 'SendMailIntegration_instance2'}
+
+
+def test_get_all_integrations_commands_failure(mocker):
+    """
+    Given:
+        - The "Email Sender Instance" single select field try to populate the available instances
+
+    When:
+        - Get the integration commands
+
+    Then:
+        - Validate that when no results, empty list returned
+
+    """
+    mocker.patch.object(demisto, 'executeCommand', return_value=[{}])
+    assert get_all_integrations_commands() == []
+
+
+def test_get_all_instances_failure(mocker):
+    """
+    Given:
+        - The "Email Sender Instance" single select field try to populate the available instances
+
+    When:
+        - Get the integrations instances
+
+    Then:
+        - Validate that when no results, empty list returned
+
+    """
+    mocker.patch.object(demisto, 'executeCommand', return_value=[{}])
+    assert get_all_instances() == []

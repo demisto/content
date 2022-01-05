@@ -81,7 +81,7 @@ def get_enabled_instances():
     return {"hidden": False, "options": send_mail_instances}
 
 
-def main():     # pragma: no cover
+def main():
 
     try:
         result = get_enabled_instances()

@@ -208,7 +208,7 @@
                         "y": 4
                     },
                     {
-                        "description": "The information displayed in the different sections updates dynamically. Changes are expected as incidents progress.",
+                        "description": "The information displayed in the different sections is updating dynamically, so changes are expected as incidents progress.",
                         "h": 1,
                         "hideName": true,
                         "i": "qpnefeci5o-a34a1b00-56a8-11ec-a307-6b5fd18fa121",
@@ -309,8 +309,9 @@
                     {
                         "description": "The following incidents were detected as part of the same campaign by the FindEmailCampaign script. With default configuration - all similar incidents are also linked to the campaign, but you can always change this using the Incident Actions section below.",
                         "h": 3,
-                        "i": "qpnefeci5o-pfjeh5flj3-qpnefeci5o-pfjeh5flj3-7641f640-b7da-11eb-98eb-1965d2f9391a",
+                        "i": "qpnefeci5o-pfjeh5flj3-field-changed-pfjeh5flj3-qpnefeci5o-pfjeh5flj3-qpnefeci5o-pfjeh5flj3-7641f640-b7da-11eb-98eb-1965d2f9391a",
                         "items": [],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "minW": 3,
@@ -329,7 +330,7 @@
                         "displayType": "CARD",
                         "h": 3,
                         "hideName": false,
-                        "i": "qpnefeci5o-pfjeh5flj3-qpnefeci5o-pfjeh5flj3-b3a487f0-b7da-11eb-98eb-1965d2f9391a",
+                        "i": "qpnefeci5o-pfjeh5flj3-field-changed-pfjeh5flj3-qpnefeci5o-pfjeh5flj3-qpnefeci5o-pfjeh5flj3-b3a487f0-b7da-11eb-98eb-1965d2f9391a",
                         "items": [
                             {
                                 "endCol": 2,
@@ -374,6 +375,7 @@
                                 "startCol": 0
                             }
                         ],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "minW": 1,
@@ -389,7 +391,7 @@
                         "displayType": "ROW",
                         "h": 3,
                         "hideName": false,
-                        "i": "qpnefeci5o-pfjeh5flj3-qpnefeci5o-pfjeh5flj3-5bc36bf0-bcad-11eb-98fe-53f79cf41cac",
+                        "i": "qpnefeci5o-pfjeh5flj3-field-changed-pfjeh5flj3-qpnefeci5o-pfjeh5flj3-qpnefeci5o-pfjeh5flj3-5bc36bf0-bcad-11eb-98fe-53f79cf41cac",
                         "items": [
                             {
                                 "endCol": 4,
@@ -430,32 +432,16 @@
                                 "startCol": 0
                             },
                             {
-                                "args": {
-                                    "body": {
-                                        "complex": {
-                                            "accessor": "campaignemailbody",
-                                            "filters": [],
-                                            "root": "incident",
-                                            "transformers": []
-                                        }
-                                    },
-                                    "subject": {
-                                        "complex": {
-                                            "accessor": "campaignemailsubject",
-                                            "filters": [],
-                                            "root": "incident",
-                                            "transformers": []
-                                        }
-                                    },
-                                    "to": {
-                                        "complex": {
-                                            "accessor": "campaignemailto",
-                                            "filters": [],
-                                            "root": "incident",
-                                            "transformers": []
-                                        }
-                                    }
-                                },
+                                "endCol": 2,
+                                "fieldId": "emailsenderinstance",
+                                "height": 22,
+                                "id": "2d20bc00-6e03-11ec-8818-73c00a708d03",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {},
                                 "dropEffect": "move",
                                 "endCol": 3,
                                 "fieldId": "",
@@ -464,11 +450,12 @@
                                 "index": 4,
                                 "listId": "pfjeh5flj3-5bc36bf0-bcad-11eb-98fe-53f79cf41cac",
                                 "name": "Send Email",
-                                "scriptId": "EWS Mail Sender|||send-mail",
+                                "scriptId": "SendEmailToCampaignRecipients",
                                 "sectionItemType": "button",
                                 "startCol": 1
                             }
                         ],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "minW": 2,
