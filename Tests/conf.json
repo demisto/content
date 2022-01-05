@@ -2023,6 +2023,7 @@
         {
             "integrations": "VMware",
             "playbookID": "VMWare Test",
+            "memory_threshold": 300,
             "timeout": 1000
         },
         {
