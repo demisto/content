@@ -18,6 +18,7 @@ API_TYPE_MAP = {
         "list_url": "pub/v4.0/device/list",
         "single_asset_url": "pub/v4.0/device",
         "context_path": "PanwIot3rdParty.Devices",
+        "test": "test",
     },
     "alert": {
         "list_url": "pub/v4.0/alert/list",
