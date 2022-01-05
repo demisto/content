@@ -33,7 +33,7 @@ class Client(BaseClient):
             'intelligence/hunting_notification_files',
             params=assign_params(
                 filter=query_filter,
-                limit=max(limit, 40),
+                limit=min(limit, 40),
             )
         )
 
