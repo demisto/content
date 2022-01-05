@@ -277,21 +277,21 @@ def is_valid_url(url: str) -> Tuple[bool, str, Union[str, int]]:
     :return: bool
     """
     try:
-        response = requests.get(url, verify=False, timeout=TIMEOUT_REQUESTS)  # nosec  guardrails-disable-line
+        response = requests.get(url, verify=True, timeout=TIMEOUT_REQUESTS)  # nosec  guardrails-disable-line
     except requests.exceptions.RequestException:
         prepend_url = prepend_protocol(url, 'http', True)
         try:
-            response = requests.get(prepend_url, verify=False,
+            response = requests.get(prepend_url, verify=True,
                                     timeout=TIMEOUT_REQUESTS)  # nosec guardrails-disable-line
         except requests.exceptions.RequestException:
             prepend_url = prepend_protocol(url, 'https', True)
             try:
-                response = requests.get(prepend_url, verify=False,
+                response = requests.get(prepend_url, verify=True,
                                         timeout=TIMEOUT_REQUESTS)  # nosec guardrails-disable-line
             except requests.exceptions.RequestException:
                 prepend_url = prepend_protocol(url, 'http', False)
                 try:
-                    response = requests.get(prepend_url, verify=False,
+                    response = requests.get(prepend_url, verify=True,
                                             timeout=TIMEOUT_REQUESTS)  # nosec guardrails-disable-line
                 except requests.exceptions.RequestException:
                     prepend_url = prepend_protocol(url, 'https', False)
