@@ -48,6 +48,3 @@ def test_get_enabled_instances(mocker):
 
     assert hidden is False
     assert set(instances) == {'SendMailIntegration_instance1', 'SendMailIntegration_instance2'}
-
-
-def test_get_all_integrations_commands():

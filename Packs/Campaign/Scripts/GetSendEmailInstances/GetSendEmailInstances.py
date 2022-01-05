@@ -5,26 +5,24 @@ NO_SENDMAIL_INSTANCES_MSG = 'There is no enabled instances to send-mail'
 
 
 def get_all_integrations_commands():
-    integration_commands_args = {"uri": "/settings/integration-commands"}
-    integration_commands_res = demisto.executeCommand("demisto-api-get", integration_commands_args)
+    """ Send API request with demisto rest api, to get all integration instances configured in the demisto. """
+    integration_commands_res = demisto.executeCommand("demisto-api-get", {"uri": "/settings/integration-commands"})
     try:
-        integration_commands = integration_commands_res[0]['Contents']['response']
-        return integration_commands
+        return integration_commands_res[0]['Contents']['response']
     except KeyError:
         demisto.debug('Did not receive expected response from Demisto API: /settings/integration-commands')
         return []
 
 
 def get_all_instances():
-    integration_search_args = {
+    """ Send API request with demisto rest api, to get all integration instances configured in the demisto."""
+    integration_search_res = demisto.executeCommand("demisto-api-post", {
         "uri": "/settings/integration/search",
         "body": {"size": 1000}
-    }
-    integration_search_res = demisto.executeCommand("demisto-api-post", integration_search_args)
+    })
     try:
         integration_search = integration_search_res[0]['Contents']['response']
-        integration_instances = integration_search['instances']
-        return integration_instances
+        return integration_search['instances']
     except KeyError:
         demisto.debug('Did not receive expected response from Demisto API: /settings/integration/search')
         return []
