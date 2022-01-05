@@ -26,8 +26,6 @@ trigger-private-build:
 run-unittests-and-lint:
   extends:
     - .run-unittests-and-lint
-  rules:
-    - if: '$NIGHTLY'
 
 
 # runs in circle for the on-push flow (because we need to run it there for contributors anyways)
@@ -87,7 +85,7 @@ create-instances:
     - section_end "Prepare Content Packs for Testing"
     - section_start "Create Instances"
     - |
-      [ -n "${TIME_TO_LIVE}" ] && TTL=${TIME_TO_LIVE} || TTL=480
+      [ -n "${TIME_TO_LIVE}" ] && TTL=${TIME_TO_LIVE} || TTL=300
       python3 ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType "$IFRA_ENV_TYPE" -timetolive $TTL -outfile "$ARTIFACTS_FOLDER/env_results.json"
     - section_end "Create Instances"
     - section_start "Upload Artifacts to GCP"

@@ -20,5 +20,9 @@
     "githubUser": [
         "sahilgoyaldruva"
     ],
-    "certification": "certified"
+    "certification": "certified",
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }
