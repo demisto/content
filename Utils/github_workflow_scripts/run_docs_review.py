@@ -7,7 +7,7 @@ from demisto_sdk.commands.doc_reviewer.doc_reviewer import DocReviewer
 from typing import List
 
 import urllib3
-from Utils.github_workflow_scripts.utils import timestamped_print
+from utils import timestamped_print
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 print = timestamped_print
