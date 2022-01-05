@@ -49,7 +49,7 @@ tasks:
     continueonerror: true
     separatecontext: false
     conditions:
-    - label: yes
+    - label: 'yes'
       condition:
       - - operator: isNotEmpty
           left:
@@ -86,7 +86,7 @@ tasks:
     continueonerror: true
     separatecontext: false
     conditions:
-    - label: yes
+    - label: 'yes'
       condition:
       - - operator: isNotEmpty
           left:
@@ -181,7 +181,7 @@ tasks:
                   simple: active
     separatecontext: false
     conditions:
-    - label: yes
+    - label: 'yes'
       condition:
       - - operator: isExists
           left:

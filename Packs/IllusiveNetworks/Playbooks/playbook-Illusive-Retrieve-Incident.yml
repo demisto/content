@@ -78,7 +78,7 @@ tasks:
       - '3'
     separatecontext: false
     conditions:
-    - label: yes
+    - label: 'yes'
       condition:
       - - operator: isEqualString
           left:

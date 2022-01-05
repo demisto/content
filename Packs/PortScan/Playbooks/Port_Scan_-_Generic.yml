@@ -88,7 +88,7 @@ tasks:
       - '63'
     separatecontext: false
     conditions:
-    - label: yes
+    - label: 'yes'
       condition:
       - - operator: isNotEmpty
           left:
@@ -139,7 +139,7 @@ tasks:
       - '64'
     separatecontext: false
     conditions:
-    - label: yes
+    - label: 'yes'
       condition:
       - - operator: isEqualNumber
           left:
@@ -1263,7 +1263,7 @@ tasks:
       - '113'
     separatecontext: false
     conditions:
-    - label: yes
+    - label: 'yes'
       condition:
       - - operator: greaterThanOrEqual
           left:
@@ -1686,7 +1686,7 @@ tasks:
       - '112'
     separatecontext: false
     conditions:
-    - label: yes
+    - label: 'yes'
       condition:
       - - operator: isNotEmpty
           left:

@@ -541,7 +541,7 @@ tasks:
       - '17'
     separatecontext: false
     conditions:
-    - label: yes
+    - label: 'yes'
       condition:
       - - operator: isExists
           left:

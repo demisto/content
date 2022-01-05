@@ -88,7 +88,7 @@ tasks:
       - '1'
     separatecontext: false
     conditions:
-    - label: yes
+    - label: 'yes'
       condition:
       - - operator: greaterThan
           left:
