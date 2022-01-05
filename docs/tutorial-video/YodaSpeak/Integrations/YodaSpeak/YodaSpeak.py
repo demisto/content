@@ -3,7 +3,7 @@
 # from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 # from CommonServerUserPython import *  # noqa
 
-TRANSLATE_OUTPUT_PREFIX = 'TheForce'
+TRANSLATE_OUTPUT_PREFIX = 'Phrase'
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
