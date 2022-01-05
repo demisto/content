@@ -291,7 +291,7 @@ def main():
             # This is the command that initiates a request to the feed endpoint
             # and create new indicators objects from the data fetched. If the
             # integration instance is configured to fetch indicators, then this
-            # is the commandthat will be executed at the specified feed fetch
+            # is the command that will be executed at the specified feed fetch
             # interval.
             indicators = fetch_indicators_command(client,
                                                   tlp_color,
