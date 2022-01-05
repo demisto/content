@@ -35,6 +35,7 @@ variables:
   GCS_PRODUCTION_V2_BUCKET: "marketplace-dist"  # TODO: update once v2 bucket has the info
   DEMISTO_CONNECTION_POOL_MAXSIZE: "180" # see this issue for more info https://github.com/demisto/etc/issues/36886
   SDK_REF: "master" # The default sdk branch to use
+  OVERRIDE_ALL_PACKS: "false"
 
 
 include:
