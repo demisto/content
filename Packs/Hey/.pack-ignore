@@ -7,5 +7,5 @@ ignore=auto-test
 [file:TAXII2_Indicator_Performance_Test.yml]
 ignore=auto-test
 
-[file:Taxii2_Performance_Test_Concurrency.yml]
+[file:TAXII2_Performance_Test_-_Concurrency.yml]
 ignore=auto-test
