@@ -23,9 +23,116 @@ from datetime import datetime, timedelta
 from abc import abstractmethod
 from distutils.version import LooseVersion
 from threading import Lock
+from inspect import currentframe
 
 import demistomock as demisto
 import warnings
+
+
+def __line__():
+    cf = currentframe()
+    return cf.f_back.f_lineno
+
+
+# 39 - the line offset from the beggining of the file.
+_MODULES_LINE_MAPPING = {
+    'CommonServerPython': {'start': __line__() - 39, 'end': float('inf')},
+}
+
+
+def register_module_line(module_name, start_end, line, wrapper=0):
+    """
+        Register a module in the line mapping for the traceback line correction algorithm.
+
+        :type module_name: ``str``
+        :param module_name: The name of the module. (required)
+
+        :type start_end: ``str``
+        :param start_end: Whether to register the line as the start or the end of the module.
+            Possible values: start, end. (required)
+
+        :type line: ``int``
+        :param line: the line number to record. (required)
+
+        :type wrapper: ``int``
+        :param wrapper: Wrapper size (used for inline replacements with headers such as ApiModules). (optional)
+
+        :return: None
+        :rtype: ``None``
+    """
+    global _MODULES_LINE_MAPPING
+    default_module_info = {'start': 0, 'start_wrapper': 0, 'end': float('inf'), 'end_wrapper': float('inf')}
+    try:
+        if start_end not in ('start', 'end'):
+            raise ValueError('Invalid start_end argument. Acceptable values are: start, end.')
+        if not isinstance(line, int) or line < 0:
+            raise ValueError('Invalid line argument. Expected non-negative integer, '
+                             'got {}({})'.format(type(line), line))
+
+        _MODULES_LINE_MAPPING.setdefault(module_name, default_module_info).update(
+            {start_end: line, '{}_wrapper'.format(start_end): line + wrapper}
+        )
+    except Exception as exc:
+        demisto.info(
+            'failed to register module line. '
+            'module: "{}" start_end: "{}" line: "{}".\nError: {}'.format(module_name, start_end, line, exc))
+
+
+def _find_relevant_module(line):
+    """
+    Find which module contains the given line number.
+
+    :type line: ``int``
+    :param trace_str: Line number to search. (required)
+
+    :return: The name of the module.
+    :rtype: ``str``
+    """
+    global _MODULES_LINE_MAPPING
+
+    relevant_module = ''
+    for module, info in _MODULES_LINE_MAPPING.items():
+        if info['start'] <= line <= info['end']:
+            if not relevant_module:
+                relevant_module = module
+            elif info['start'] > _MODULES_LINE_MAPPING[relevant_module]['start']:
+                relevant_module = module
+
+    return relevant_module
+
+
+def fix_traceback_line_numbers(trace_str):
+    """
+    Fixes the given traceback line numbers.
+
+    :type trace_str: ``str``
+    :param trace_str: The traceback string to edit. (required)
+
+    :return: The new formated traceback.
+    :rtype: ``str``
+    """
+    for number in re.findall('line (\d+)', trace_str):
+        line_num = int(number)
+        module = _find_relevant_module(line_num)
+        if module:
+            module_start_line = _MODULES_LINE_MAPPING.get(module, {'start': 0})['start']
+            actual_number = line_num - module_start_line
+
+            # in case of ApiModule injections, adjust the line numbers of the code after the injection.
+            for module_info in _MODULES_LINE_MAPPING.values():
+                block_start = module_info.get('start_wrapper', module_info['start'])
+                block_end = module_info.get('end_wrapper', module_info['end'])
+                if block_start > module_start_line and block_end < line_num:
+                    actual_number -= block_end - block_start
+
+            # a traceback line is of the form: File "<string>", line 8853, in func5
+            trace_str = trace_str.replace(
+                'File "<string>", line {},'.format(number),
+                'File "<{}>", line {},'.format(module, actual_number)
+            )
+
+    return trace_str
+
 
 OS_LINUX = False
 OS_MAC = False
@@ -2530,7 +2637,16 @@ def get_integration_name():
     :return: Calling integration's name
     :rtype: ``str``
     """
-    return demisto.callingContext.get('context', '').get('IntegrationBrand')
+    return demisto.callingContext.get('context', {}).get('IntegrationBrand', '')
+
+
+def get_script_name():
+    """
+    Getting calling script name
+    :return: Calling script name
+    :rtype: ``str``
+    """
+    return demisto.callingContext.get('context', {}).get('ScriptName', '')
 
 
 class Common(object):
@@ -6178,7 +6294,7 @@ def return_error(message, error='', outputs=None):
                                                              'long-running-execution',
                                                              'fetch-indicators')
     if is_debug_mode() and not is_server_handled and any(sys.exc_info()):  # Checking that an exception occurred
-        message = "{}\n\n{}".format(message, traceback.format_exc())
+        message = "{}\n\n{}".format(message, fix_traceback_line_numbers(traceback.format_exc()))
 
     message = LOG(message)
     if error:
@@ -7081,7 +7197,18 @@ if 'requests' in sys.modules:
         :rtype: ``None``
         """
 
-        def __init__(self, base_url, verify=True, proxy=False, ok_codes=tuple(), headers=None, auth=None):
+        REQUESTS_TIMEOUT = 60
+
+        def __init__(
+            self,
+            base_url,
+            verify=True,
+            proxy=False,
+            ok_codes=tuple(),
+            headers=None,
+            auth=None,
+            timeout=REQUESTS_TIMEOUT,
+        ):
             self._base_url = base_url
             self._verify = verify
             self._ok_codes = ok_codes
@@ -7095,6 +7222,11 @@ if 'requests' in sys.modules:
 
             if not verify:
                 skip_cert_verification()
+
+            # removing trailing = char from env var value added by the server
+            entity_timeout = os.getenv('REQUESTS_TIMEOUT.' + (get_integration_name() or get_script_name()), '')
+            system_timeout = os.getenv('REQUESTS_TIMEOUT', '')
+            self.timeout = float(entity_timeout or system_timeout or timeout)
 
         def __del__(self):
             try:
@@ -7170,7 +7302,7 @@ if 'requests' in sys.modules:
                 pass
 
         def _http_request(self, method, url_suffix='', full_url=None, headers=None, auth=None, json_data=None,
-                          params=None, data=None, files=None, timeout=10, resp_type='json', ok_codes=None,
+                          params=None, data=None, files=None, timeout=None, resp_type='json', ok_codes=None,
                           return_empty_response=False, retries=0, status_list_to_retry=None,
                           backoff_factor=5, raise_on_redirect=False, raise_on_status=False,
                           error_handler=None, empty_valid_codes=None, **kwargs):
@@ -7277,6 +7409,9 @@ if 'requests' in sys.modules:
                 auth = auth if auth else self._auth
                 if retries:
                     self._implement_retry(retries, status_list_to_retry, backoff_factor, raise_on_redirect, raise_on_status)
+                if not timeout:
+                    timeout = self.timeout
+
                 # Execute
                 res = self._session.request(
                     method,
@@ -8273,6 +8408,34 @@ def set_feed_last_run(last_run_indicators):
         demisto.setIntegrationContext(last_run_indicators)
 
 
+def set_last_mirror_run(last_mirror_run):  # type: (Dict[Any, Any]) -> None
+    """
+    This function sets the last run of the mirror, from XSOAR version 6.6.0, by using `demisto.setLastMirrorRun()`.
+    Before XSOAR version 6.6.0, we don't set the given data and an exception will be raised.
+    :type last_mirror_run: ``dict``
+    :param last_mirror_run: Data to save in the "LastMirrorRun" object.
+    :rtype: ``None``
+    :return: None
+    """
+    if is_demisto_version_ge('6.6.0'):
+        demisto.setLastMirrorRun(last_mirror_run)
+    else:
+        raise DemistoException("You cannot use setLastMirrorRun as your version is below 6.6.0")
+
+
+def get_last_mirror_run():  # type: () -> Optional[Dict[Any, Any]]
+    """
+    This function gets the last run of the mirror, from XSOAR version 6.6.0, using `demisto.getLastMirrorRun()`.
+    Before XSOAR version 6.6.0, the given data is not returned and an exception will be raised.
+    :rtype: ``dict``
+    :return: A dictionary representation of the data that was already set in the previous runs (or an empty dict if
+     we did not set anything yet).
+    """
+    if is_demisto_version_ge('6.6.0'):
+        return demisto.getLastMirrorRun() or {}
+    raise DemistoException("You cannot use getLastMirrorRun as your version is below 6.6.0")
+
+
 def support_multithreading():
     """Adds lock on the calls to the Cortex XSOAR server from the Demisto object to support integration which use multithreading.
 
@@ -8530,3 +8693,10 @@ def register_signal_handler_profiling_dump(signal_type=None, profiling_dump_rows
         signal.signal(requested_signal, signal_handler_profiling_dump)
     else:
         demisto.info('Not a Linux or Mac OS, profiling using a signal is not supported.')
+
+
+###########################################
+#     DO NOT ADD LINES AFTER THIS ONE     #
+###########################################
+register_module_line('CommonServerPython', 'end', __line__())
+register_module_line('CustomScriptIntegration', 'start', __line__())

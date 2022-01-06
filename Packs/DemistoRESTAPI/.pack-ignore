@@ -1,4 +1,4 @@
-[file:integration-DemistoRESTAPI.yml]
+[file:DemistoRESTAPI.yml]
 ignore=IN139,DS107,IN145
 
 [file:DemistoUploadFileV2.yml]
@@ -10,25 +10,7 @@ ignore=SC105
 [file:script-DemistoUploadFileToIncident.yml]
 ignore=SC105
 
-[file:script-DemistoGetIncidentTasksByState.yml]
-ignore=SC105
-
-[file:script-DemistoCreateList_README.md]
-ignore=RM106
-
-[file:script-DemistoLeaveAllInvestigations_README.md]
-ignore=RM106
-
-[file:script-DemistoLinkIncidents_README.md]
-ignore=RM106
-
-[file:script-DemistoLogsBundle_README.md]
-ignore=RM106
-
-[file:script-DemistoSendInvite_README.md]
-ignore=RM106
-
-[file:script-DemistoUploadFile_README.md]
+[file:README.md]
 ignore=RM106
 
 [file:script-DemistoUploadFileToIncident_README.md]
