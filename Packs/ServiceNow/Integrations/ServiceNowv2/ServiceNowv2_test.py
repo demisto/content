@@ -1,4 +1,7 @@
 import pytest
+import json
+import io
+import ServiceNowv2
 from CommonServerPython import DemistoException
 from ServiceNowv2 import get_server_url, get_ticket_context, get_ticket_human_readable, \
     generate_body, split_fields, Client, update_ticket_command, create_ticket_command, delete_ticket_command, \
@@ -30,9 +33,16 @@ from test_data.result_constants import EXPECTED_TICKET_CONTEXT, EXPECTED_MULTIPL
     EXPECTED_CREATE_ITEM_ORDER, EXPECTED_DOCUMENT_ROUTE, EXPECTED_MAPPING, \
     EXPECTED_TICKET_CONTEXT_WITH_ADDITIONAL_FIELDS, EXPECTED_QUERY_TICKETS_EXCLUDE_REFERENCE_LINK, \
     EXPECTED_TICKET_CONTEXT_WITH_NESTED_ADDITIONAL_FIELDS
+from test_data.created_ticket_context import CREATED_TICKET_CONTEXT_CREATE_CO_FROM_TEMPLATE_COMMAND, \
+    CREATED_TICKET_CONTEXT_GET_TASKS_FOR_CO_COMMAND
 
 import demistomock as demisto
 from urllib.parse import urlencode
+
+
+def util_load_json(path):
+    with io.open(path, mode='r', encoding='utf-8') as f:
+        return json.loads(f.read())
 
 
 def test_get_server_url():
@@ -1052,3 +1062,58 @@ def test_query_table_with_fields(mocker):
     assert client.send_request.call_args[1]['params']['sysparm_fields'] == fields_with_sys_id
     # validate that the '.' in the key was replaced to '_'
     assert result[1]['ServiceNow.Record(val.ID===obj.ID)'][0]['opened_by_name'] == 'test_opened_name'
+
+
+def test_create_co_from_template_command(mocker):
+    """
+    Given:
+        - template to create change request from it.
+
+    When:
+        - Using servicenow-create-co-from-template command.
+
+    Then:
+        - Validate the output is correct.
+    """
+    client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password', 'verify', 'fetch_time',
+                    'sysparm_query', 'sysparm_limit', 'timestamp_field', 'ticket_type', 'get_attachments',
+                    'incident_name')
+
+    args = {"template": "Add network switch to datacenter cabinet"}
+    mocker.patch.object(client,
+                        'send_request',
+                        return_value=util_load_json('test_data/create_co_from_template_result.json'))
+    result = ServiceNowv2.create_co_from_template_command(client, args)
+    assert result.outputs_prefix == "ServiceNow.Ticket"
+    assert result.outputs == {
+        'Ticket(val.ID===obj.ID)': CREATED_TICKET_CONTEXT_CREATE_CO_FROM_TEMPLATE_COMMAND,
+        'ServiceNow.Ticket(val.ID===obj.ID)': CREATED_TICKET_CONTEXT_CREATE_CO_FROM_TEMPLATE_COMMAND
+    }
+    assert result.raw_response == util_load_json('test_data/create_co_from_template_result.json')
+
+
+def test_get_tasks_for_co_command(mocker):
+    """
+    Given:
+        - id to get tasks from it.
+
+    When:
+        - Using servicenow-get-tasks-for-co command.
+
+    Then:
+        - Validate the output is correct.
+    """
+    client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password', 'verify', 'fetch_time',
+                    'sysparm_query', 'sysparm_limit', 'timestamp_field', 'ticket_type', 'get_attachments',
+                    'incident_name')
+
+    args = {"id": "a9e9c33dc61122760072455df62663d2"}
+    mocker.patch.object(client,
+                        'send_request',
+                        return_value=util_load_json('test_data/get_tasks_for_co_command.json'))
+    result = ServiceNowv2.get_tasks_for_co_command(client, args)
+    assert result.outputs_prefix == "ServiceNow.Tasks"
+    assert result.outputs == {
+        'ServiceNow.Tasks(val.ID===obj.ID)': CREATED_TICKET_CONTEXT_GET_TASKS_FOR_CO_COMMAND
+    }
+    assert result.raw_response == util_load_json('test_data/get_tasks_for_co_command.json')

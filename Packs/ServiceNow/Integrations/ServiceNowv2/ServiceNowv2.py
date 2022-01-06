@@ -960,7 +960,7 @@ class Client(BaseClient):
         return self.send_request(f'change/standard/{template}', 'POST', body={},
                                  cr_api=True)
 
-    def get_co_tasks(self, id_: str) -> dict:
+    def get_co_tasks(self, sys_id: str) -> dict:
         """Get item details from service catalog by sending a GET request to the Change Request REST API.
 
         Args:
@@ -969,7 +969,7 @@ class Client(BaseClient):
         Returns:
             Response from API.
         """
-        return self.send_request(f'change/{id}/task', 'GET', cr_api=True)
+        return self.send_request(f'change/{sys_id}/task', 'GET', cr_api=True)
 
 
 def get_ticket_command(client: Client, args: dict):
@@ -2392,7 +2392,7 @@ def get_tasks_from_co_human_readable(data: dict) -> dict:
     return item
 
 
-def get_tasks_for_co_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, Any], Dict[Any, Any], bool]:
+def get_tasks_for_co_command(client: Client, args: dict) -> CommandResults:
     """Get tasks for a change request
 
     Args:
@@ -2402,17 +2402,25 @@ def get_tasks_for_co_command(client: Client, args: dict) -> Tuple[Any, Dict[Any,
     Returns:
         Demisto Outputs.
     """
-    id = str(args.get('id', ''))
-    result = client.get_co_tasks(id)
+    sys_id = str(args.get('id', ''))
+    result = client.get_co_tasks(sys_id)
     if not result or 'result' not in result:
-        return 'Item was not found.', {}, {}, True
+        return CommandResults(
+            outputs_prefix="ServiceNow.Tasks",
+            readable_output='Item was not found.',
+            raw_response=result
+        )
     items = result.get('result', {})
     if not isinstance(items, list):
         items_list = [items]
     else:
         items_list = items
     if len(items_list) == 0:
-        return 'No items were found.', {}, {}, True
+        return CommandResults(
+            outputs_prefix="ServiceNow.Tasks",
+            readable_output='No items were found.',
+            raw_response=result
+        )
 
     mapped_items = []
     for item in items_list:
@@ -2423,10 +2431,15 @@ def get_tasks_for_co_command(client: Client, args: dict) -> Tuple[Any, Dict[Any,
                                      removeNull=True, headerTransform=pascalToSpace)
     entry_context = {'ServiceNow.Tasks(val.ID===obj.ID)': createContext(mapped_items, removeNull=True)}
 
-    return human_readable, entry_context, result, True
+    return CommandResults(
+        outputs_prefix="ServiceNow.Tasks",
+        outputs=entry_context,
+        readable_output=human_readable,
+        raw_response=result
+    )
 
 
-def create_co_from_template_command(client: Client, args: dict) -> Tuple[str, Dict, Dict, bool]:
+def create_co_from_template_command(client: Client, args: dict) -> CommandResults:
     """Create a change request from a template.
 
     Args:
@@ -2453,7 +2466,12 @@ def create_co_from_template_command(client: Client, args: dict) -> Tuple[str, Di
         'Ticket(val.ID===obj.ID)': created_ticket_context,
         'ServiceNow.Ticket(val.ID===obj.ID)': created_ticket_context
     }
-    return human_readable, entry_context, result, True
+    return CommandResults(
+        outputs_prefix="ServiceNow.Ticket",
+        outputs=entry_context,
+        readable_output=human_readable,
+        raw_response=result
+    )
 
 
 def get_co_human_readable(tickets, ticket_type: str, additional_fields: list = None) -> list:
