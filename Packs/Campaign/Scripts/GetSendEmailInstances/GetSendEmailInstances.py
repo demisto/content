@@ -38,32 +38,16 @@ def get_sendmail_instances():
     # if we only want to search enabled integrations, we must fetch that list from another API
     integration_instances = get_all_instances()
 
-    integration_instances_enabled: Dict[str, list] = dict()
+    send_mail_integrations = [integration['name'] for integration in integration_commands if 'send-mail' in
+                              [cmd['name'] for cmd in integration.get('commands')]]
 
-    for integration in integration_instances:
-        if integration['enabled'] == 'true':
-            if not integration_instances_enabled.get(integration['brand']):
-                integration_instances_enabled[integration['brand']] = []
+    integration_instances_enabled = [instance for instance in integration_instances
+                                     if instance['enabled'] == 'true']
 
-            integration_instances_enabled[integration['brand']].append(integration['name'])
+    relevant_instances = [instance['name'] for instance in integration_instances_enabled
+                          if instance['brand'] in send_mail_integrations]
 
-    integrations_that_send_mail = []
-
-    for integration in integration_commands:
-
-        integration_name = integration['name']  # integration brand name
-
-        if 'commands' in integration:
-            for command in integration['commands']:
-
-                if command['name'] == 'send-mail':
-                    if integration_name in integration_instances_enabled.keys():
-                        integrations_that_send_mail.extend(integration_instances_enabled[integration_name])
-
-    if len(integrations_that_send_mail) == 0:
-        return []
-    else:
-        return integrations_that_send_mail
+    return relevant_instances
 
 
 def get_enabled_instances():
