@@ -86,6 +86,7 @@ references:
       # is done in 'Setup Environment' step.
       PULL_REQUEST_NUMBER: << pipeline.parameters.pr_number >>
       NIGHTLY_PARAMETER: << pipeline.parameters.nightly >>
+      GCS_MARKET_BUCKET: << pipeline.parameters.gcs_market_bucket >>
 
   container_config: &container_config
     docker:
@@ -419,7 +420,12 @@ workflows:
     when:
       not:
         or:
+          - << pipeline.parameters.force_pack_upload >>
+          - << pipeline.parameters.bucket_upload >>
+          - << pipeline.parameters.demisto_sdk_nightly >>
+          - << pipeline.parameters.legacy_nightly >>
           - << pipeline.parameters.nightly >>
+          - << pipeline.parameters.instance_tests >>
     jobs:
       - Setup Environment
       - Run Unit Testing And Lint:
@@ -428,6 +434,38 @@ workflows:
       - Run Validations:
           requires:
             - Setup Environment
+
+  force_pack_upload:
+    when: << pipeline.parameters.force_pack_upload >>
+    jobs:
+      - Setup Environment:
+          context: bucket_upload_env
+      - Create Instances:
+          context: bucket_upload_env
+          requires:
+            - Setup Environment
+      - Force Upload Packs To Marketplace:
+          context: bucket_upload_env
+          requires:
+            - Create Instances
+
+  instances_testing:
+    # for details of triggered builds see https://circleci.com/docs/2.0/workflows/#nightly-example
+    # for details of cron syntax see https://www.unix.com/man-page/POSIX/1posix/crontab/ disable-secrets-detection
+    triggers:
+      - schedule:
+          # should trigger every day at 2 AM UTC (5 AM Israel Time)
+          cron: "0 2 * * *"
+          filters:
+            branches:
+              only:
+                - master
+    jobs:
+      *instance_tests_jobs
+  instances_testing_trigger:
+    when: << pipeline.parameters.instance_tests >>
+    jobs:
+      *instance_tests_jobs
 
   nightly:
     triggers:
@@ -447,3 +485,16 @@ workflows:
     jobs:
       *nightly_jobs
 
+  legacy_nightly_trigger:
+    # considered legacy since we now run the nightly (test playbooks against live xsoar instances) in gitlab
+    # use to trigger a fullblown nightly in circle including the jobs to test against xsoar instances
+    # will initiate when using the trigger script with the appropriate option.
+    when: << pipeline.parameters.legacy_nightly >>
+    jobs:
+      *legacy_nightly_jobs
+
+  bucket_upload_trigger:
+    # will initiate when using the trigger script.
+    when: << pipeline.parameters.bucket_upload>>
+    jobs:
+      *bucket_upload_jobs
