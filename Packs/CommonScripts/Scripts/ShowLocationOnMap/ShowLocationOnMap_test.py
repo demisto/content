@@ -27,7 +27,8 @@ def test_valid_loc(loc, mocker):
     if 'ShowLocationOnMap' in sys.modules:
         del (sys.modules['ShowLocationOnMap'])
     import ShowLocationOnMap
-    lat, lng = loc.split(',')
+    splitter = ',' if ',' in loc else ':'
+    lat, lng = loc.split(splitter)
     expected_lat = float(lat)
     expected_lng = float(lng)
     results = return_results_mock.call_args[0][0]
@@ -35,7 +36,7 @@ def test_valid_loc(loc, mocker):
     assert results['Contents']['lng'] == expected_lng
 
 
-INVALID_LOC = ['unknown,unknown2', '123saas4as']
+INVALID_LOC = ['unknown,unknown2', '123saas4as', '41.40338,41.40338,41.40338']
 
 
 def return_error_called():
