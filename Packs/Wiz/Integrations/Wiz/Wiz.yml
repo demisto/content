@@ -56,19 +56,40 @@ script:
       name: resource_id
       required: false
       secret: false
-    - default: false
+    - name: severity
+      auto: PREDEFINED
+      predefined:
+      - CRITICAL
+      - HIGH
+      - MEDIUM
+      - LOW
+      - INFORMATIONAL
       description: Get Issues of a specific severity and above
-      isArray: false
-      name: severity
-      required: false
-      secret: false
     deprecated: false
     description: Get the Issues on cloud resources
     execution: false
     name: wiz-get-issues
     outputs:
-    - contextPath: Wiz.Manager.Issues
-      description: All Issues
+    - contextPath: Wiz.Manager.Issues.entitySnapshot
+      description: All resource details
+      type: String
+    - contextPath: Wiz.Manager.Issues.createdAt
+      description: Issue created at
+      type: String
+    - contextPath: Wiz.Manager.Issues.id
+      description: Wiz Issue ID
+      type: String
+    - contextPath: Wiz.Manager.Issues.control
+      description: Control details, that created this Issue
+      type: String
+    - contextPath: Wiz.Manager.Issues.severity
+      description: Wiz Issue severity
+      type: String
+    - contextPath: Wiz.Manager.Issues.status
+      description: Wia Issue status (open, resolved, rejected)
+      type: String
+    - contextPath: Wiz.Manager.Issues.note
+      description: Wiz Issue note
       type: String
   - arguments:
     - default: false
@@ -82,8 +103,23 @@ script:
     execution: false
     name: wiz-get-resource
     outputs:
-    - contextPath: Wiz.Manager.Resource
-      description: Resource details
+    - contextPath: Wiz.Manager.Resource.id
+      description: Resource ID in Wiz
+      type: String
+    - contextPath: Wiz.Manager.Resource.name
+      description: Resource name
+      type: String
+    - contextPath: Wiz.Manager.Resource.properties
+      description: Resource properties
+      type: String
+    - contextPath: Wiz.Manager.Resource.publicExposures
+      description: Calculated public exposure for resource
+      type: String
+    - contextPath: Wiz.Manager.Resource.type
+      description: Resource type
+      type: String
+    - contextPath: Wiz.Manager.Resource.userMetadata
+      description: User metadata for the resource
       type: String
   dockerimage: demisto/python3:3.9.9.25564
   feed: false
