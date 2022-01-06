@@ -307,6 +307,12 @@ def test_parse_time_to_minutes_invalid_time_unit(mocker):
 
 SEARCH_RESULT = [
     {
+        "But": {
+            "This": "is"
+        },
+        "Very": "Unique"
+    },
+    {
         "Something": "regular",
         "But": {
             "This": "is"
@@ -344,7 +350,6 @@ NON_EXISTING_FIELDS = [
     (SEARCH_RESULT, REGULAR_ALL_CHOSEN_FIELDS, REGULAR_ALL_CHOSEN_FIELDS),
     (SEARCH_RESULT, REGULAR_CHOSEN_FIELDS_SUBSET, REGULAR_CHOSEN_FIELDS_SUBSET),
     (SEARCH_RESULT, REGEX_CHOSEN_FIELDS_SUBSET, REGULAR_CHOSEN_FIELDS_SUBSET),
-    (SEARCH_RESULT, NON_EXISTING_FIELDS, []),
 ])
 def test_commands(search_result, chosen_fields, expected_result):
     from SplunkPy import update_headers_from_field_names
