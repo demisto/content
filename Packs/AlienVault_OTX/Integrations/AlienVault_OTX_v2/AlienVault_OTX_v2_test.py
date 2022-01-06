@@ -11,16 +11,17 @@ import demistomock as demisto
 # DBot calculation Test
 arg_names_dbot = "pulse, score"
 
+
 arg_values_dbot = [
+    ({'false_positive': [{"assessment": "accepted", "assessment_date":"2021-04-01"}]}, 1),
     ({}, 0),
-    ({'count': -1}, 0),
-    ({'count': 0}, 0),
-    ({'count': 1}, 2),
-    ({'count': 2}, 3),
-    ({'count': 1000}, 3),
-    ({'count': 10}, 3),
-    ({'count': 10}, 3),
+    ({"validation": [1]}, 2),
+    ({'pulse_info': {'count': 5}, 'false_positive': [{"assessment": "pending", "assessment_date":"2021-04-01"}]},3),
+    ({'pulse_info': {'count': 1}}, 2),
+    ({'false_positive': [{"assessment": "pending", "assessment_date":"2021-04-01"}], 
+    'pulse_info': {'count': 0}}, 0)
 ]
+
 
 FILE_GENERAL_RAW_RESPONSE = {'indicator': '6c5360d41bd2b14b1565f5b18e5c203cf512e493',
                              'sections': ['general', 'analysis'],
@@ -193,17 +194,12 @@ DOMAIN_HASH_RAW_RESPONSE =  {'data': [], 'size': 865426, 'count': 865426}
 
 DOMAIN_URL_RAW_RESPONSE = {'url_list': [], 'page_num': 1, 'limit': 10, 'paged': True, 'has_next': True, 'full_size': 5494039, 'actual_size': 5494039}
 
-DOMAIN_EC = {
-    'Domain(val.Name && val.Name == obj.Name)': [{
-        'Name': {'domain': 'otx.alienvault.com'}}],
-    'DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor &&'
-    ' val.Type == obj.Type)': [{
-        'Indicator': {'domain': 'otx.alienvault.com'}, 'Type': 'domain', 'Vendor': 'AlienVault OTX v2', 'Score': 0,
-        'Reliability': 'C - Fairly reliable'}],
-    'AlienVaultOTX.Domain(val.Alexa && val.Alexa === obj.Alexa && val.Whois && val.Whois === obj.Whois)': {
-        'Name': 'otx.alienvault.com', 'Alexa': 'http://www.alexa.com/siteinfo/otx.alienvault.com',
-        'Whois': 'http://whois.domaintools.com/otx.alienvault.com'}
-}
+DOMAIN_EC = {'Domain(val.Name && val.Name == obj.Name)': [{'Name': {'domain': 'otx.alienvault.com'}}],
+'DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)': [{'Indicator': {'domain': 'otx.alienvault.com'}, 'Type': 'domain', 'Vendor':
+        'AlienVault OTX v2', 'Score': 1, 'Reliability': 'C - Fairly reliable'}], 
+        'AlienVaultOTX.Domain(val.Alexa && val.Alexa === obj.Alexa && val.Whois && val.Whois === obj.Whois)': 
+            {'Name': 'otx.alienvault.com', 'Alexa': 'http://www.alexa.com/siteinfo/otx.alienvault.com', 'Whois':'http://whois.domaintools.com/otx.alienvault.com'}}
+
 IP_404_RAW_RESPONSE = 404
 
 IP_RAW_RESPONSE = {
@@ -553,6 +549,16 @@ client = Client(
 
 @pytest.mark.parametrize(argnames=arg_names_dbot, argvalues=arg_values_dbot)
 def test_dbot_score(pulse: dict, score: int):
+    """
+    Given:
+        - Raw Response with fields relevant for Dbot score calculation
+
+    When:
+        - Running the calculate dbot score command
+
+    Then:
+        - Ensure the score is calculated correctly
+    """
     assert calculate_dbot_score(client, pulse) == score, f"Error calculate DBot Score {pulse.get('count')}"
 
 
