@@ -431,7 +431,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "emailsenderinstance",
+                                "fieldId": "campaignemailsenderinstance",
                                 "height": 22,
                                 "id": "2d20bc00-6e03-11ec-8818-73c00a708d03",
                                 "index": 4,
