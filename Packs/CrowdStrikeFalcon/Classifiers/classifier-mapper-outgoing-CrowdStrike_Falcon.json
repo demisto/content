@@ -1,0 +1,35 @@
+{
+	"description": "",
+	"feed": false,
+	"fromServerVersion": "",
+	"id": "CrowdStrike Falcon - Outgoing Mapper",
+	"mapping": {
+		"CrowdStrike Falcon Detection": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+				"status": {
+					"complex": null,
+					"simple": "labels.status"
+				}
+			}
+		},
+		"CrowdStrike Falcon Incident": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+				"status": {
+					"complex": null,
+					"simple": "labels.state"
+				},
+				"tag": {
+					"complex": null,
+					"simple": "labels.tags"
+				}
+			}
+		}
+	},
+	"name": "CrowdStrike Falcon - Outgoing Mapper",
+	"toServerVersion": "",
+	"type": "mapping-outgoing",
+	"version": -1,
+	"fromVersion": "6.0.0"
+}

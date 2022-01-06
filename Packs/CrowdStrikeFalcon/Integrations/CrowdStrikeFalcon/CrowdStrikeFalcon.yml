@@ -2959,6 +2959,11 @@ script:
     description: Resolve incidents.
     execution: false
     name: cs-falcon-resolve-incident
+  - deprecated: false
+    description: Returns the list of fields to map in outgoing mirroring.
+      This command is only used for debugging purposes.
+    execution: false
+    name: get-mapping-fields
   dockerimage: demisto/python3:3.9.9.25564
   feed: false
   isfetch: true
