@@ -32,7 +32,8 @@ Dst
 Kubernetes
 unquotes
 unescapes
-URLs.
+UR
+Ls
 Proofpoint
 ATP
 regex
