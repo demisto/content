@@ -521,5 +521,6 @@ script:
 defaultmapperin: Saas Security - Incoming Mapper
 defaultmapperout: Saas Security - Outgoing Mapper
 fromversion: 6.0.0
+beta: true
 tests:
 - SaasSecurity-Test
