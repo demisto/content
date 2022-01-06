@@ -1,0 +1,72 @@
+{
+	"brands": null,
+	"cacheVersn": 0,
+	"defaultIncidentType": "",
+	"definitionId": "",
+	"description": "Classifies Hello World alerts.",
+	"feed": false,
+	"fromServerVersion": "6.0.0",
+	"id": "8936c6c6-e42b-47d9-82d1-303350d9eecf",
+	"incidentSamples": null,
+	"indicatorSamples": null,
+	"instanceIds": null,
+	"itemVersion": "",
+	"keyTypeMap": {
+		"Hello World Alert": "Hello World Alert"
+	},
+	"locked": false,
+	"logicalVersion": 0,
+	"mapping": null,
+	"name": "Hello World - Classification_copy",
+	"nameRaw": "Hello World - Classification_copy",
+	"packID": "0879ad09-2170-485e-81b9-410aa17337b2",
+	"propagationLabels": [
+		"all"
+	],
+	"sourceClassifierId": "HelloWorld",
+	"system": false,
+	"toServerVersion": "",
+	"transformer": {
+		"complex": {
+			"filters": [
+				[
+					{
+						"left": {
+							"isContext": true,
+							"value": {
+								"simple": "name"
+							}
+						},
+						"operator": "startWith",
+						"right": {
+							"value": {
+								"simple": "Hello World Alert"
+							}
+						}
+					}
+				]
+			],
+			"root": "name",
+			"transformers": [
+				{
+					"args": {
+						"from": {
+							"value": {
+								"simple": "0"
+							}
+						},
+						"to": {
+							"value": {
+								"simple": "17"
+							}
+						}
+					},
+					"operator": "substring"
+				}
+			]
+		}
+	},
+	"type": "classification",
+	"unclassifiedCases": null,
+	"version": -1
+}

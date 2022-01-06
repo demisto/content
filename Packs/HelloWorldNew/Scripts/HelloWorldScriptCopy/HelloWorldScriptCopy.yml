@@ -1,0 +1,34 @@
+args:
+- description: Hello command - prints hello to anyone.
+  name: name
+comment: COPY Hello World Script
+commonfields:
+  id: b1b38514-ec47-489a-8ff8-8fc32dace750
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 0879ad09-2170-485e-81b9-410aa17337b2
+    propagationLabels:
+    - all
+    toServerVersion: ""
+dockerimage: demisto/python3:3.9.7.24076
+enabled: true
+engineinfo: {}
+mainengineinfo: {}
+name: HelloWorldScript_copy
+outputs:
+- contextPath: HelloWorld.hello
+  description: Should be Hello **something** here.
+  type: String
+pswd: ""
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- helloworld
+type: python
