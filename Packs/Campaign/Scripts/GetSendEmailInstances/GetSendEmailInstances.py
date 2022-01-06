@@ -1,8 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-NO_SENDMAIL_INSTANCES_MSG = 'There is no enabled instances to send-mail'
-
 
 def get_all_integrations_commands():
     """ Send API request with demisto rest api, to get all integration instances configured in the demisto. """
@@ -77,7 +75,6 @@ def get_enabled_instances():
         {"hidden": False, "options": send_mail_instances}
     """
     send_mail_instances = get_sendmail_instances()
-    # send_mail_instances.insert(0, NO_SENDMAIL_INSTANCES_MSG)   # todo: maybe need this?
     return {"hidden": False, "options": send_mail_instances}
 
 
