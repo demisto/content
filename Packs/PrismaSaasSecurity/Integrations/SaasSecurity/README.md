@@ -1,6 +1,6 @@
 Use the SaaS Security integration to protect against cloud‑based threats by scanning and analyzing all your assets; applying Security policy to identify exposures, external collaborators, risky user behavior, and sensitive documents; and identifying the potential risks associated with each asset.
 
-## Configure SaaSSecurity on Cortex XSOAR
+## Configure SaaS Security on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for **SaaS Security**.

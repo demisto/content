@@ -62,6 +62,14 @@
           "complex": null,
           "simple": "asset_sha256"
         },
+        "SaaS Security Asset Owner": {
+          "complex": null,
+          "simple": "asset_owner_name"
+        },
+        "SaaS Security Asset Owner Email": {
+          "complex": null,
+          "simple": "asset_owner_email"
+        },
         "State": {
           "complex": null,
           "simple": "state"
