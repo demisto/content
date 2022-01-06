@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 637a7c4c-9fcd-442e-8c42-cce076e126f9
+    taskid: a75f4c6c-f28f-435d-8e91-8dcebb1d46fe
     type: start
     task:
-      id: 637a7c4c-9fcd-442e-8c42-cce076e126f9
+      id: a75f4c6c-f28f-435d-8e91-8dcebb1d46fe
       version: -1
       name: ""
       iscommand: false
@@ -34,10 +34,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 0659dfab-124f-446f-860b-8fc91b700074
+    taskid: 4ad665f9-4afe-4d7a-8988-a61166497596
     type: regular
     task:
-      id: 0659dfab-124f-446f-860b-8fc91b700074
+      id: 4ad665f9-4afe-4d7a-8988-a61166497596
       version: -1
       name: DeleteContext
       script: DeleteContext
@@ -67,10 +67,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 16194870-ff41-4c27-8b35-3c9d1474ae0e
+    taskid: 75b5a1b3-af14-4631-86ad-e2cdc25679e8
     type: regular
     task:
-      id: 16194870-ff41-4c27-8b35-3c9d1474ae0e
+      id: 75b5a1b3-af14-4631-86ad-e2cdc25679e8
       version: -1
       name: yoda-speak-translate
       script: YodaSpeak|||yoda-speak-translate
@@ -100,10 +100,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 4e93960e-8e8d-44ac-823f-36e046cd8282
+    taskid: 8955faea-67e1-4565-8692-40929436ae2e
     type: condition
     task:
-      id: 4e93960e-8e8d-44ac-823f-36e046cd8282
+      id: 8955faea-67e1-4565-8692-40929436ae2e
       version: -1
       name: Verify Outputs
       type: condition
@@ -120,7 +120,7 @@ tasks:
           left:
             value:
               complex:
-                root: YodaSpeak
+                root: YodaSpeak.Phrase
                 accessor: Original
             iscontext: true
           right:
@@ -130,7 +130,7 @@ tasks:
           left:
             value:
               complex:
-                root: YodaSpeak
+                root: YodaSpeak.Phrase
                 accessor: Translation
             iscontext: true
           right:
@@ -152,10 +152,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 08bedbb7-056c-4564-8228-44ab0e4f0b81
+    taskid: 3e932d9f-7c5c-4770-8975-d84458000bec
     type: title
     task:
-      id: 08bedbb7-056c-4564-8228-44ab0e4f0b81
+      id: 3e932d9f-7c5c-4770-8975-d84458000bec
       version: -1
       name: Test Done
       type: title

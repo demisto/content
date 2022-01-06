@@ -39,10 +39,10 @@ script:
     execution: false
     name: yoda-speak-translate
     outputs:
-    - contextPath: YodaSpeak.TheForce.Translation
+    - contextPath: YodaSpeak.Phrase.Translation
       description: The translated text, in Yodish.
       type: String
-    - contextPath: YodaSpeak.TheForce.Original
+    - contextPath: YodaSpeak.Phrase.Original
       description: The original (English) text we translated.
       type: String
   isfetch: false
@@ -50,7 +50,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.9.9.25564
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
