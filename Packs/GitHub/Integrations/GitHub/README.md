@@ -35,7 +35,7 @@ Another authentication options is to create and register a GitHub App under your
 2. In the left sidebar, click **Developer settings**, from the sub-menu, click **GitHub Apps**.
 3. Click **New GitHub App**. 
    - In **GitHub App name**, type the name of your app. 
-   - In **Homepage URL**, type in any URL as the field is required. example: https://xsoar.local
+   - In **Homepage URL**, type in any URL as the field is required.
    - Deselect the **Active** option under the **Webhook settings**
    - In **Permissions**, choose the permissions your app will request. For each type of permission, use the drop-down menu and click Read-only, Read & write, or No access, minimum is read-only permissions for **Pull requests**, **Checks**, **Pull requests**, **Security events** and **Commit statuses**.
    - Click **Create GitHub App**. 
