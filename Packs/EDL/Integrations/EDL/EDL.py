@@ -569,7 +569,7 @@ def initialize_edl_context(params: dict):
 
 def main():
     """
-    Main
+    Main bla bla
     """
     global PAGE_SIZE, EDL_FILTER_FIELDS
     params = demisto.params()
