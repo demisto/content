@@ -30,4 +30,3 @@ Subdomains
 Dsts
 Dst
 Kubernetes
-SplunkPy
