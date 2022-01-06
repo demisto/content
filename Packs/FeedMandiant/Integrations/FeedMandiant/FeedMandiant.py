@@ -58,6 +58,8 @@ class MandiantClient(BaseClient):
         self.tags = tags
         self.enrichment = enrichment
 
+        LOG.add_replace_strs(self._get_token())
+
     def _get_token(self) -> str:
         """
         Obtains token from integration context if available and still valid.
