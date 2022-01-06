@@ -26,7 +26,7 @@ def test_valid_loc(loc, mocker):
     # This will trigger the script
     if 'ShowLocationOnMap' in sys.modules:
         del (sys.modules['ShowLocationOnMap'])
-    import ShowLocationOnMap
+    import ShowLocationOnMap  # noqa: F401
     splitter = ',' if ',' in loc else ':'
     lat, lng = loc.split(splitter)
     expected_lat = float(lat)
@@ -36,7 +36,7 @@ def test_valid_loc(loc, mocker):
     assert results['Contents']['lng'] == expected_lng
 
 
-INVALID_LOC = ['unknown,unknown2', '123saas4as', '41.40338,41.40338,41.40338']
+INVALID_LOC = ['unknown,unknown2', '123saas4as', '41.40338,41.40338,41.40338', '']
 
 
 def return_error_called():
@@ -62,4 +62,4 @@ def test_invalid_loc(loc, mocker):
     if 'ShowLocationOnMap' in sys.modules:
         del (sys.modules['ShowLocationOnMap'])
     with pytest.raises(Exception, match='return_error_called'):
-        import ShowLocationOnMap
+        import ShowLocationOnMap  # noqa: F401

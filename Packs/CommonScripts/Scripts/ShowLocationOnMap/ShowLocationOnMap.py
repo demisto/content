@@ -11,11 +11,7 @@ if not long_lat_regex.search(loc):
 try:
     lat, lng = loc.split(',')
 except ValueError:
-    a = 2
-    # Try by : if , didn't work
-    try:
-        lat, lng = loc.split(':')
-    except ValueError:
-        return_error(err_msg)
+    # Try by : if , didn't work. Safe to not wrap with try catch because regex above is protecting us
+    lat, lng = loc.split(':')
 demisto.results(
     {'ContentsFormat': formats['json'], 'Type': entryTypes['map'], 'Contents': {"lat": float(lat), "lng": float(lng)}})
