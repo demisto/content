@@ -259,6 +259,8 @@ Searches Splunk for events.
 ##### Command Example
 ```!splunk-search query="* | head 3" earliest_time="-1000d"```
 
+_Note: To display all empty columns as well, the following should be added to the query: "**| fillnull value=**"_
+
 ##### Human Readable Output
 ### Splunk Search results for query: * | head 3
 |_bkt|_cd|_indextime|_kv|_raw|_serial|_si|_sourcetype|_time|host|index|linecount|source|sourcetype|splunk_server|
