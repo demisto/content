@@ -95,6 +95,7 @@ def main():
                 break
         else:
             # did not find a relevant campaign
+
             readable = "No campaign has found"
 
         return CommandResults(readable_output=readable, outputs={"ExistingCampaignID": campaign_id})
