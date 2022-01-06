@@ -1,11 +1,19 @@
 {
-    "description": "",
+    "description": "Maps incoming Trend Micro Vision One alerts.",
     "feed": false,
     "id": "Trend Micro Vision One XDR - Incoming Mapper",
     "mapping": {
         "Trend Micro Vision One XDR Incident": {
             "dontMapEventToLabels": true,
             "internalMapping": {
+                "Alert Name": {
+                    "complex": null,
+                    "simple": "workbenchName"
+                },
+                "Trend Micro Vision One Test - DELETE": {
+                    "complex": null,
+                    "simple": "workbenchName"
+                },
                 "Trend Micro Vision One XDR Account Count": {
                     "complex": null,
                     "simple": "impactScope.accountCount"
@@ -44,6 +52,407 @@
                 "Trend Micro Vision One XDR Email Address Count": {
                     "complex": null,
                     "simple": "impactScope.emailAddressCount"
+                },
+                "Trend Micro Vision One XDR Impact Scope": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "impactScope",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "headers": {
+                                        "isContext": false,
+                                        "value": null
+                                    },
+                                    "is_auto_json_transform": {
+                                        "isContext": false,
+                                        "value": null
+                                    },
+                                    "json_transform_properties": {
+                                        "isContext": false,
+                                        "value": null
+                                    },
+                                    "title": {
+                                        "isContext": false,
+                                        "value": null
+                                    }
+                                },
+                                "operator": "JsonToTable"
+                            },
+                            {
+                                "args": {
+                                    "limit": {
+                                        "isContext": false,
+                                        "value": null
+                                    },
+                                    "replaceWith": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "Account Count"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "accountCount"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {
+                                        "isContext": false,
+                                        "value": null
+                                    },
+                                    "replaceWith": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "Desktop Count"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "desktopCount"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {
+                                        "isContext": false,
+                                        "value": null
+                                    },
+                                    "replaceWith": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "Email Address Count"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "emailAddressCount"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {
+                                        "isContext": false,
+                                        "value": null
+                                    },
+                                    "replaceWith": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "Server Count"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "serverCount"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Trend Micro Vision One XDR Impacted Entities": {
+                    "complex": {
+                        "accessor": "impactScope",
+                        "filters": [],
+                        "root": "detail",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "headers": {
+                                        "isContext": false,
+                                        "value": null
+                                    },
+                                    "is_auto_json_transform": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "true"
+                                        }
+                                    },
+                                    "json_transform_properties": {
+                                        "isContext": false,
+                                        "value": null
+                                    },
+                                    "title": {
+                                        "isContext": false,
+                                        "value": null
+                                    }
+                                },
+                                "operator": "JsonToTable"
+                            },
+                            {
+                                "args": {
+                                    "limit": {
+                                        "isContext": false,
+                                        "value": null
+                                    },
+                                    "replaceWith": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "Entity ID"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "entityId"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {
+                                        "isContext": false,
+                                        "value": null
+                                    },
+                                    "replaceWith": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "Type"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "entityType"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {
+                                        "isContext": false,
+                                        "value": null
+                                    },
+                                    "replaceWith": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "Value"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "entityValue"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {
+                                        "isContext": false,
+                                        "value": null
+                                    },
+                                    "replaceWith": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "Related Entities"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "relatedEntities"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {
+                                        "isContext": false,
+                                        "value": null
+                                    },
+                                    "replaceWith": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "Related Indicators"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "relatedIndicators"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Trend Micro Vision One XDR Indicators": {
+                    "complex": {
+                        "accessor": "indicators",
+                        "filters": [],
+                        "root": "detail",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "headers": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "id, objectType, objectValue, relatedEntities"
+                                        }
+                                    },
+                                    "is_auto_json_transform": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "true"
+                                        }
+                                    },
+                                    "json_transform_properties": {
+                                        "isContext": false,
+                                        "value": null
+                                    },
+                                    "title": {
+                                        "isContext": false,
+                                        "value": null
+                                    }
+                                },
+                                "operator": "JsonToTable"
+                            },
+                            {
+                                "args": {
+                                    "limit": {
+                                        "isContext": false,
+                                        "value": null
+                                    },
+                                    "replaceWith": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "Indicator ID"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "id"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {
+                                        "isContext": false,
+                                        "value": null
+                                    },
+                                    "replaceWith": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "Type"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "objectType"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {
+                                        "isContext": false,
+                                        "value": null
+                                    },
+                                    "replaceWith": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "Value"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "objectValue"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {
+                                        "isContext": false,
+                                        "value": null
+                                    },
+                                    "replaceWith": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "Related Entities"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "relatedEntities"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            }
+                        ]
+                    },
+                    "simple": ""
                 },
                 "Trend Micro Vision One XDR Investigation Status": {
                     "complex": null,

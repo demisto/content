@@ -1,0 +1,16 @@
+{
+    "description": "Classifies Trend Micro Vision One alerts",
+    "feed": false,
+    "id": "Trend Micro Vision One XDR - Classifier",
+    "keyTypeMap": {
+        "SAE": "Trend Micro Vision One XDR Incident"
+    },
+    "name": "Trend Micro Vision One XDR - Classifier",
+    "transformer": {
+        "complex": null,
+        "simple": "detail.alertProvider"
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

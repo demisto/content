@@ -6,6 +6,7 @@ from CommonServerUserPython import *  # noqa: F401
 import base64
 import json
 import requests
+from datetime import datetime, timezone, timedelta
 from typing import Any, Dict, Union
 from requests.models import HTTPError
 
@@ -68,6 +69,7 @@ GET_FILE_REPORT = '/v2.0/xdr/sandbox/reports/{reportId}'
 COLLECT_FORENSIC_FILE = '/v2.0/xdr/response/collectFile'
 DOWNLOAD_INFORMATION_COLLECTED_FILE = '/v2.0/xdr/response/downloadInfo'
 SUBMIT_FILE_TO_SANDBOX = '/v2.0/xdr/sandbox/file'
+WORKBENCH_HISTORIES = '/v2.0/xdr/workbench/workbenchHistories'
 # Error Messages
 RESPONSE_ERROR = 'Error in API call: [%d] - %s'
 RETRY_ERROR = 'The max tries exceeded [%d] - %s'
@@ -116,6 +118,7 @@ GET_FILE_ANALYSIS_REPORT = 'trendmicro-visionone-get-file-analysis-report'
 COLLECT_FILE = 'trendmicro-visionone-collect-forensic-file'
 DOWNLOAD_COLLECTED_FILE = 'trendmicro-visionone-download-information-for-collected-forensic-file'
 FILE_TO_SANDBOX = 'trendmicro-visionone-submit-file-to-sandbox'
+FETCH_INCIDENTS = 'fetch-incidents'
 
 table_name = {
     ADD_BLOCKLIST_COMMAND: TABLE_ADD_TO_BLOCKLIST,
@@ -131,6 +134,10 @@ table_name = {
 }
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
+
+
+def check_datetime_aware(d):
+    return (d.tzinfo is not None) and (d.tzinfo.utcoffset(d) is not None)
 
 
 class Client(BaseClient):
@@ -257,6 +264,25 @@ class Client(BaseClient):
         exception_count = len(list_of_exception)
         return exception_count
 
+    def get_workbench_histories(self, start, end, offset=None, size=None) -> str:
+        if not check_datetime_aware(start):
+            start = start.astimezone()
+        if not check_datetime_aware(end):
+            end = end.astimezone()
+        start = start.astimezone(timezone.utc)
+        end = end.astimezone(timezone.utc)
+        start = start.isoformat(timespec='milliseconds').replace('+00:00', 'Z')
+        end = end.isoformat(timespec='milliseconds').replace('+00:00', 'Z')
+
+        params = dict([('startTime', start),
+                       ('endTime', end),
+                       ('sortBy', 'createdTime')]
+                      + ([('offset', offset)] if offset is not None else [])
+                      + ([('limit', size)] if size is not None else []))
+
+        response = self.http_request(GET, WORKBENCH_HISTORIES, params=params)['data']['workbenchRecords']
+        return response
+
 
 def test_module(client: Client) -> Any:
     """
@@ -308,6 +334,56 @@ def remove_block_list_mapping(task_status: str, data: Dict[str, Any]) -> Dict[st
         'action_id': action_id,
         'task_status': task_status
     }
+
+
+def fetch_incidents(client: Client):
+    """
+    This function do the loop to get all workbench alerts by changing
+    the parameters of both 'offset' and 'size'.
+    """
+    offset = 0
+    size = demisto.params().get('max_fetch')
+    end = datetime.now(timezone.utc)
+    days = int(demisto.params().get('first_fetch'))
+
+    last_run = demisto.getLastRun()
+    if last_run and 'start_time' in last_run:
+        start = datetime.fromisoformat(last_run.get('start_time'))
+    else:
+        start = end + timedelta(days=-days)
+
+    alerts = []
+    while True:
+        gotten = client.get_workbench_histories(start, end, offset, size)
+        if not gotten:
+            break
+        alerts.extend(gotten)
+        offset = len(alerts)
+
+    incidents = []
+    if alerts:
+        for record in alerts:
+            incident = {
+                'product': 'TrendMicroVisionOne',
+                'name': record['workbenchName'],
+                'occurred': record['createdTime'],
+                'rawJSON': json.dumps(record)
+            }
+            incidents.append(incident)
+            last_event = datetime.strptime(record['createdTime'], "%Y-%m-%dT%H:%M:%SZ")
+
+        next_search = last_event + timedelta(0, 1)
+
+        demisto.setLastRun({
+            'start_time': next_search.isoformat()
+        })
+
+    if incidents:
+        demisto.incidents(incidents)
+    else:
+        demisto.incidents([])
+
+    return incidents
 
 
 def add_or_remove_from_block_list(client: Client, command: str, args: Dict[str, Any]) -> Union[str, CommandResults]:
@@ -933,6 +1009,9 @@ def main():
 
         if command == 'test-module':
             return_results(test_module(client))
+
+        elif command == 'fetch-incidents':
+            return_results(fetch_incidents(client))
 
         elif command in (ADD_BLOCKLIST_COMMAND, REMOVE_BLOCKLIST_COMMAND):
             return_results(add_or_remove_from_block_list(client, command, args))

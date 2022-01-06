@@ -1,3 +1,7 @@
+#### Integration Author: Trend Micro
+Support and maintenance for this integration are provided by the author. Please use the following contact details:
+- **Email**: [integrations@trendmicro.com](mailto:integrations@trendmicro.com)
+***
 Trend Micro Vision One is a purpose-built threat defense platform that provides added value and new benefits beyond XDR solutions, allowing you to see more and respond faster. Providing deep and broad extended detection and response (XDR) capabilities that collect and automatically correlate data across multiple security layers—email, endpoints, servers, cloud workloads, and networks—Trend Micro Vision One prevents the majority of attacks with automated protection.
 
 ## Configure Vision One on Cortex XSOAR
@@ -323,3 +327,6 @@ Note: The URL received from the 'trendmicro-visionone-download-information-for-c
 | VisionOne.Submit_File_to_Sandbox.code | String | Code status of the sandbox file |
 | VisionOne.Submit_File_to_Sandbox.task_id | String | Task ID of the running task |
 | VisionOne.Submit_File_to_Sandbox.digest | Object | Sha value of the file |
+
+---
+[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/trend-micro-vision-one)

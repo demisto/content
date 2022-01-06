@@ -3,14 +3,14 @@
     "associatedTypes": [
         "Trend Micro Vision One XDR Incident"
     ],
-    "caseInsensitive": true,
-    "cliName": "trendmicrov1severity",
+    "caseInsensitive": false,
+    "cliName": "trendmicrovisiononexdrseverity",
     "closeForm": false,
     "content": true,
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_trendmicrov1severity",
+    "id": "incident_trendmicrovisiononexdrseverity",
     "isReadOnly": false,
     "locked": false,
     "name": "Trend Micro Vision One XDR Severity",
@@ -18,10 +18,11 @@
     "ownerOnly": false,
     "required": false,
     "selectValues": [
-        "Critical",
-        "High",
+        "Unassigned",
+        "Low",
         "Medium",
-        "Low"
+        "High",
+        "Critical"
     ],
     "sla": 0,
     "system": false,
