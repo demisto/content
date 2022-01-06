@@ -156,6 +156,7 @@ class Client(BaseClient):
         super().__init__(base_url=base_url)
         self.base_url = base_url
         self.api_key = api_key
+        self.status = None
 
     def http_request(self, method: str, url_suffix: str, json_data=None, params=None, data=None) -> Any:
         """
@@ -352,7 +353,7 @@ def fetch_incidents(client: Client):
     else:
         start = end + timedelta(days=-days)
 
-    alerts = []
+    alerts: List[Any] = []
     while True:
         gotten = client.get_workbench_histories(start, end, offset, size)
         if not gotten:
@@ -364,7 +365,6 @@ def fetch_incidents(client: Client):
     if alerts:
         for record in alerts:
             incident = {
-                'product': 'TrendMicroVisionOne',
                 'name': record['workbenchName'],
                 'occurred': record['createdTime'],
                 'rawJSON': json.dumps(record)

@@ -4,16 +4,21 @@
     "support": "partner",
     "currentVersion": "1.0.0",
     "author": "Trend Micro",
-    "url": "",
+    "url": "https://success.trendmicro.com",
     "email": "integrations@trendmicro.com",
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
     "tags": [],
+    "created": "2022-01-06T09:00:00Z",
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "xdr"
+    ],
     "devEmail": [
         "integrations@trendmicro.com"
     ],
-    "githubUser": []
+    "githubUser": [
+        "mikedgibson"
+    ]
 }
