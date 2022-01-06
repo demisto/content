@@ -4922,12 +4922,29 @@
             "playbookID": "KafkaV3 Test"
         },
         {
+            "playbookID": "Grafana-Test",
+            "fromversion": "6.0.0",
+            "integrations": [
+                "Grafana",
+                "Demisto REST API"
+            ],
+            "is_mockable": false,
+            "timeout": 2400
+        },
+        {
             "integrations": "McAfee ePO v2",
             "playbookID": "McAfee ePO v2 Test"
         },
         {
             "playbookID": "Dedup - Generic v3",
             "fromversion": "5.5.0"
+        },
+        {
+            "playbookID": "DBotPredictURLPhishing_test",
+            "integrations": [
+                "Whois",
+                "Rasterize"
+            ]
         }
     ],
     "skipped_tests": {
