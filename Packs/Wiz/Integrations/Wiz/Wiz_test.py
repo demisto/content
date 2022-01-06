@@ -50,7 +50,7 @@ def test_fetch_incidents(mocker):
                     }
                 ],
                 "pageInfo": {
-                    "hasNextPage": True,
+                    "hasNextPage": False,
                     "endCursor": "eyJQcmltYXJ5Ijp7IkZpZWxkIjoiU2V2ZXJpdHkiLCJWYWx1"
                 }
             }
