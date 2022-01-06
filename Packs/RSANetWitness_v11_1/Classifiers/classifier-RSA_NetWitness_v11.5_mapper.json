@@ -1,0 +1,115 @@
+{
+	"brands": null,
+	"defaultIncidentType": "",
+	"description": "",
+	"feed": false,
+	"fromServerVersion": "",
+	"id": "RSA NetWitness v11.5 mapper",
+	"incidentSamples": null,
+	"indicatorSamples": null,
+	"instanceIds": null,
+	"itemVersion": "",
+	"keyTypeMap": {},
+	"locked": false,
+	"logicalVersion": 7,
+	"mapping": {
+		"NetWitness Incident": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+				" RSA NetWitness Rule Id ": {
+					"complex": null,
+					"simple": "ruleId"
+				},
+				" RSA Rule Id ": {
+					"complex": null,
+					"simple": "ruleId"
+				},
+				"Assigned User": {
+					"complex": null,
+					"simple": "assignee"
+				},
+				"Description": {
+					"complex": null,
+					"simple": "summary"
+				},
+				"Destination IP": {
+					"complex": null,
+					"simple": "alertMeta.DestinationIp.[]"
+				},
+				"First Seen": {
+					"complex": null,
+					"simple": "firstAlertTime"
+				},
+				"Incident Link": {
+					"complex": null,
+					"simple": "incident_url"
+				},
+				"Last Modified By": {
+					"complex": null,
+					"simple": "lastUpdatedBy"
+				},
+				"Last Modified On": {
+					"complex": null,
+					"simple": "lastUpdated"
+				},
+				"RSA Alert Count": {
+					"complex": null,
+					"simple": "alertCount"
+				},
+				"RSA Event Count": {
+					"complex": null,
+					"simple": "eventCount"
+				},
+				"RSA Id": {
+					"complex": null,
+					"simple": "id"
+				},
+				"Risk Score": {
+					"complex": null,
+					"simple": "riskScore"
+				},
+				"Source Category": {
+					"complex": null,
+					"simple": "categories.[].name"
+				},
+				"Source Created By": {
+					"complex": null,
+					"simple": "createdBy"
+				},
+				"Source IP": {
+					"complex": null,
+					"simple": "alertMeta.SourceIp.[]"
+				},
+				"Source Status": {
+					"complex": null,
+					"simple": "status"
+				},
+				"occurred": {
+					"complex": null,
+					"simple": "created"
+				},
+				"severity": {
+					"complex": null,
+					"simple": "priority"
+				}
+			}
+		},
+		"dbot_classification_incident_type_all": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {}
+		}
+	},
+	"name": "RSA NetWitness v11.5 mapper",
+	"nameRaw": "RSA NetWitness v11.5 mapper",
+	"packID": "",
+	"sourceClassifierId": "",
+	"system": false,
+	"toServerVersion": "",
+	"transformer": {
+		"complex": null,
+		"simple": ""
+	},
+	"type": "mapping-incoming",
+	"unclassifiedCases": null,
+	"version": -1
+}

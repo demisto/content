@@ -1,5 +1,5 @@
 {
-    "name": "RSA NetWitness v11.1",
+    "name": "RSA NetWitness",
     "description": "RSA NetWitness Platform provides systems Logs, Network, and endpoint visibility for real-time collection, detection, and automated response with the Demisto Enterprise platform. Providing full session analysis, customers can extract critical data and effectively operate security operations automated playbook.",
     "support": "xsoar",
     "currentVersion": "1.0.5",
