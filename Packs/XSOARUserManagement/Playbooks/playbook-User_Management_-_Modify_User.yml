@@ -1,0 +1,118 @@
+id: 60455d7b-8989-4504-8604-20f023f704b3
+version: 6
+vcShouldKeepItemLegacyProdMachine: false
+name: User Management - Modify User
+description: "Subplaybook used by \"User Management - Assign User Roles\" \nTo be
+  used in a loop, to iterate through payload for each user and update"
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 329ef457-6da7-423f-8b5f-cacf38c8bde6
+    type: start
+    task:
+      id: 329ef457-6da7-423f-8b5f-cacf38c8bde6
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: b9a845ae-ad15-4275-80bf-2459376e8ec4
+    type: title
+    task:
+      id: b9a845ae-ad15-4275-80bf-2459376e8ec4
+      version: -1
+      name: Return to Parent
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 596a682f-bbfb-4721-8438-872985c0ab3c
+    type: regular
+    task:
+      id: 596a682f-bbfb-4721-8438-872985c0ab3c
+      version: -1
+      name: Delete Inactive Users
+      description: send HTTP POST request
+      script: '|||demisto-api-post'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      body:
+        complex:
+          root: inputs.requestPayload
+      uri:
+        simple: /users/update
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 385,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: requestPayload
+  value: {}
+  required: false
+  description: Body uri is expecting to complete command
+  playbookInputQuery: null
+outputs: []
