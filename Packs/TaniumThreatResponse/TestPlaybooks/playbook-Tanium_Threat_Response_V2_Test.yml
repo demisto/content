@@ -2341,6 +2341,8 @@ tasks:
                 value:
                   simple: connected
           accessor: id
+          transformers:
+          - operator: FirstArrayElement
       ptid:
         complex:
           root: Tanium.ProcessParent
@@ -2755,6 +2757,8 @@ tasks:
                 value:
                   simple: connected
           accessor: id
+          transformers:
+          - operator: FirstArrayElement
       hostname:
         complex:
           root: Tanium.Connection

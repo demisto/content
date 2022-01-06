@@ -391,7 +391,7 @@ def search_with_paging(search_filter, search_base, attributes=None, page_size=10
 
         entries_left_to_fetch -= len(conn.entries)
         total_entries += len(conn.entries)
-        cookie = conn.result['controls']['1.2.840.113556.1.4.319']['value']['cookie']
+        cookie = dict_safe_get(conn.result, ['controls', '1.2.840.113556.1.4.319', 'value', 'cookie'])
         time_diff = (start - datetime.now()).seconds
 
         entries.extend(conn.entries)
@@ -1152,6 +1152,26 @@ def update_user(default_base_dn):
     demisto.results(demisto_entry)
 
 
+def update_group(default_base_dn):
+    args = demisto.args()
+
+    sam_account_name = args.get('groupname')
+    attribute_name = args.get('attributename')
+    attribute_value = args.get('attributevalue')
+    search_base = args.get('basedn') or default_base_dn
+    dn = group_dn(sam_account_name, search_base)
+
+    modification = {attribute_name: [('MODIFY_REPLACE', attribute_value)]}
+    modify_object(dn, modification)
+
+    demisto_entry = {
+        'ContentsFormat': formats['text'],
+        'Type': entryTypes['note'],
+        'Contents': f"Updated group's {attribute_name} to {attribute_value} "
+    }
+    demisto.results(demisto_entry)
+
+
 def update_contact():
     args = demisto.args()
 
@@ -1642,6 +1662,9 @@ def main():
 
         if command == 'ad-update-user':
             update_user(DEFAULT_BASE_DN)
+
+        if command == 'ad-update-group':
+            update_group(DEFAULT_BASE_DN)
 
         if command == 'ad-modify-computer-ou':
             modify_computer_ou(DEFAULT_BASE_DN)
