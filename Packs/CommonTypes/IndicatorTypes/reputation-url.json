@@ -22,7 +22,7 @@
   "file": false,
   "updateAfter": 0,
   "mergeContext": false,
-  "formatScript": "ExtractURL",
+  "formatScript": "FormatURL",
   "contextPath": "URL(val.Data \u0026\u0026 val.Data === obj.Data)",
   "contextValue": "Data",
   "excludedBrands": [],

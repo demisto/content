@@ -1,11 +1,11 @@
 args:
 - default: false
-  description: URL inputs. Comma separated list.
+  description: A comma-separated list of URL inputs.
   isArray: true
   name: input
   required: true
   secret: false
-comment: "Formats URL to indicator: extracts redirect URL from Proof Point or ATP URLs. Strips and unquotes and unescapes URLs"
+comment: "Strips, unquotes and unescapes URLs. If the URL is a Proofpoint or ATP URL, extracts its redirect URL."
 commonfields:
   id: FormatURL
   version: -1

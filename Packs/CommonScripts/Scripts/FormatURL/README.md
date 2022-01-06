@@ -1,4 +1,4 @@
-Formats URL to indicator: extracts redirect URL from Proof Point or ATP URLs. Strips and unquotes and unescapes URLs
+Strips, unquotes and unescapes URLs. If the URL is a Proofpoint or ATP URL, extracts its redirect URL.
 
 ## Script Data
 ---
@@ -14,7 +14,7 @@ Formats URL to indicator: extracts redirect URL from Proof Point or ATP URLs. St
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| input | URL inputs. Comma separated list. |
+| input | A comma-separated list of URL inputs. |
 
 ## Outputs
 ---

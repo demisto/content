@@ -4922,9 +4922,9 @@
             "playbookID": "KafkaV3 Test"
         },
         {
-<<<<<<< HEAD
             "playbookID": "FormatURL-Test"
-=======
+        },
+        {
             "playbookID": "Grafana-Test",
             "fromversion": "6.0.0",
             "integrations": [
@@ -4941,7 +4941,13 @@
         {
             "playbookID": "Dedup - Generic v3",
             "fromversion": "5.5.0"
->>>>>>> master
+        },
+        {
+            "playbookID": "DBotPredictURLPhishing_test",
+            "integrations": [
+                "Whois",
+                "Rasterize"
+            ]
         }
     ],
     "skipped_tests": {
