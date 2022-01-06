@@ -1,0 +1,21 @@
+{
+    "name": "HelloWorldNew",
+    "description": "Test",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "MosheEichler",
+    "url": "",
+    "email": "",
+    "created": "2022-01-06T08:30:04Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "MosheEichler"
+    ]
+}

@@ -1,0 +1,55 @@
+{
+    "description": "Classifies Hello World alerts.",
+    "feed": false,
+    "id": "8936c6c6-e42b-47d9-82d1-303350d9eecf",
+    "keyTypeMap": {
+        "Hello World Alert": "Hello World Alert"
+    },
+    "name": "Hello World - Classification_copy",
+    "propagationLabels": [
+        "all"
+    ],
+    "transformer": {
+        "complex": {
+            "filters": [
+                [
+                    {
+                        "left": {
+                            "isContext": true,
+                            "value": {
+                                "simple": "name"
+                            }
+                        },
+                        "operator": "startWith",
+                        "right": {
+                            "value": {
+                                "simple": "Hello World Alert"
+                            }
+                        }
+                    }
+                ]
+            ],
+            "root": "name",
+            "transformers": [
+                {
+                    "args": {
+                        "from": {
+                            "value": {
+                                "simple": "0"
+                            }
+                        },
+                        "to": {
+                            "value": {
+                                "simple": "17"
+                            }
+                        }
+                    },
+                    "operator": "substring"
+                }
+            ]
+        }
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}
