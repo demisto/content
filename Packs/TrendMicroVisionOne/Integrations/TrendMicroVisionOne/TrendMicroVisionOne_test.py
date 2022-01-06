@@ -11,7 +11,7 @@ from TrendMicroVisionOne import (
     get_file_analysis_report,
     collect_file,
     download_information_collected_file,
-    # submit_file_to_sandbox,
+    submit_file_to_sandbox
 )
 
 
@@ -558,3 +558,77 @@ def mock_submit_file_to_sandbox_reponse(*args, **kwargs):
 
 
 # Test cases for submit file to sandbox.
+# Mock response for submit file to sandbox.
+def mocked_requests_get(*args, **kwargs):
+    class MockResponse:
+        def __init__(self, json_data, status_code, content):
+            self.json_data = json_data
+            self.status_code = status_code
+            self.content = content
+
+        def json(self):
+            return self.json_data
+
+    if args[0] == 'http://someurl.com/test.json':
+        return MockResponse({"key1": "value1"}, 200, "response")
+    elif args[0] == 'http://someotherurl.com/anothertest.json':
+        return MockResponse({"key2": "value2"}, 200, "response")
+
+    return MockResponse(None, 404, None)
+
+
+# Mock response for submit file to sandbox.
+def mocked_requests_post(*args, **kwargs):
+    class MockResponse:
+        def __init__(self, json_data, status_code, content):
+            self.json_data = json_data
+            self.status_code = status_code
+            self.content = content
+
+        def json(self):
+            return {
+                "code": "Success",
+                "message": "Success",
+                "data": {
+                    "taskId": "012e4eac-9bd9-4e89-95db-77e02f75a6f3",
+                    "digest": {
+                        "md5": "4ac174730d4143a119037d9fda81c7a9",
+                        "sha1": "fb5608fa03de204a12fe1e9e5275e4a682107471",
+                        "sha256": (
+                            "65b0f656e79ab84ca17807158e3ea",
+                            "c206bd58be6689ddeb95956a48748d138f9"
+                        )
+                    },
+                },
+            }
+
+        def raise_for_status(self):
+            return True
+
+    if args[0] == 'http://someurl.com/test.json':
+        return MockResponse({"key1": "value1"}, 200, "response")
+    elif args[0] == 'http://someotherurl.com/anothertest.json':
+        return MockResponse({"key2": "value2"}, 200, "response")
+
+    return MockResponse(None, 404, None)
+
+
+def test_submit_file_to_sandbox(mocker):
+    mocker.patch(
+        "TrendMicroVisionOne.requests.get",
+        mocked_requests_get
+    )
+    mocker.patch(
+        "TrendMicroVisionOne.requests.post",
+        mocked_requests_post
+    )
+    args = {
+        "fileUrl": "http://adsd.com",
+        "fileName": "XDR_ResponseApp_CollectFile_ID00000700_20211206T134158Z.7z",
+        "archivePassword": "6hn467c8",
+        "documentPassword": ""
+    }
+    client = Client("https://api.xdr.trendmicro.com", api_key)
+    result = submit_file_to_sandbox(client, args)
+    assert result.outputs["message"] == "Success"
+    assert result.outputs["code"] == "Success"
