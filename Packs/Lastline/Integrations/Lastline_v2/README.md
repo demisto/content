@@ -196,7 +196,7 @@ Submission Time: 2020-02-24 07:05:33
 ### Upload a file for analysis
 ---
 Submits a file for analysis.\
-note: Due to a limitation of Lastline's API, csv files are not supported.
+Note: Due to a limitation in Lastline's API, CSV files are not supported.
 ##### Base Command
 
 `lastline-upload-file`
