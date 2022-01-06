@@ -122,7 +122,7 @@ script:
       required: true
       description: 'Enables you to define search criteria in the Query Active Directory
         using Active Directory syntax. For example, the following query searches for
-        all user objects except Andy: "(&(objectCategory=person)(objectClass=user)(!(cn=andy)))". 
+        all user objects except Andy: "(&(objectCategory=person)(objectClass=user)(!(cn=andy)))".
         Note: If you have special characters such as "*","(",or "\" the character must
         be preceded by two backslashes "\\". For example, to use "*", type "\\*".
         For more information about search filters, see syntax: https://docs.microsoft.com/en-us/windows/win32/adsi/search-filter-syntax'
@@ -193,7 +193,7 @@ script:
         mail, and so on.
     - name: attribute-value
       required: true
-      description: "The value of the user attribute to change."
+      description: The value to change the attribute to.
     - name: base-dn
       description: Root. For example, DC=domain,DC=com. By default, the Base DN configured
         for the instance is used.
@@ -342,41 +342,41 @@ script:
       description: Groups in which the user is a member.
       type: string
     - contextPath: ActiveDirectory.Users.userAccountControlFields.SCRIPT
-      description: Whether the login script is run.
+      description: Whether the login script is run. Works for *Windows Server 2012 R2*.
       type: bool
     - contextPath: ActiveDirectory.Users.userAccountControlFields.ACCOUNTDISABLE
-      description: Whether the user account is disabled.
+      description: Whether the user account is disabled. Works for *Windows Server 2012 R2*.
       type: bool
     - contextPath: ActiveDirectory.Users.userAccountControlFields.HOMEDIR_REQUIRED
-      description: Whether the home folder is required.
+      description: Whether the home folder is required. Works for *Windows Server 2012 R2*.
       type: bool
     - contextPath: ActiveDirectory.Users.userAccountControlFields.LOCKOUT
-      description: Whether the user is locked out.
+      description: Whether the user is locked out. Works for *Windows Server 2012 R2*.
       type: bool
     - contextPath: ActiveDirectory.Users.userAccountControlFields.PASSWD_NOTREQD
-      description: Whether the password is required.
+      description: Whether the password is required. Works for *Windows Server 2012 R2*.
       type: bool
     - contextPath: ActiveDirectory.Users.userAccountControlFields.PASSWD_CANT_CHANGE
-      description: Whether the user can change the password.
+      description: Whether the user can change the password. Works for *Windows Server 2012 R2*.
       type: bool
     - contextPath: ActiveDirectory.Users.userAccountControlFields.ENCRYPTED_TEXT_PWD_ALLOWED
-      description: Whether the user can send an encrypted password.
+      description: Whether the user can send an encrypted password. Works for *Windows Server 2012 R2*.
       type: bool
     - contextPath: ActiveDirectory.Users.userAccountControlFields.TEMP_DUPLICATE_ACCOUNT
-      description: Whether this is an account for users whose primary account is in another domain.
+      description: Whether this is an account for users whose primary account is in another domain. Works for *Windows Server 2012 R2*.
       type: bool
     - contextPath: ActiveDirectory.Users.userAccountControlFields.NORMAL_ACCOUNT
-      description: Whether this is a default account type that represents a typical user.
+      description: Whether this is a default account type that represents a typical user. Works for *Windows Server 2012 R2*.
       type: bool
     - contextPath: ActiveDirectory.Users.userAccountControlFields.INTERDOMAIN_TRUST_ACCOUNT
-      description: Whether the account is permitted to trust a system domain that trusts other domains.
+      description: Whether the account is permitted to trust a system domain that trusts other domains. Works for *Windows Server 2012 R2*.
       type: bool
     - contextPath: ActiveDirectory.Users.userAccountControlFields.WORKSTATION_TRUST_ACCOUNT
       description: Whether this is a computer account for a computer running Microsoft Windows NT 4.0 Workstation, Microsoft Windows NT 4.0 Server,
         Microsoft Windows 2000 Professional, or Windows 2000 Server and is a member of this domain.
       type: bool
     - contextPath: ActiveDirectory.Users.userAccountControlFields.SERVER_TRUST_ACCOUNT
-      description: Whether this is a computer account for a domain controller that is a member of this domain.
+      description: Whether this is a computer account for a domain controller that is a member of this domain. Works for *Windows Server 2012 R2*.
       type: bool
     - contextPath: ActiveDirectory.Users.userAccountControlFields.DONT_EXPIRE_PASSWORD
       description: Whether to never expire the password on the account.
@@ -434,7 +434,7 @@ script:
     - name: dn
       description: The computer's DN.
     - name: name
-      description: The name of the computer to return information to.
+      description: The name of the computer to return information about.
     - name: attributes
       description: Adds AD attributes of the resulting objects to the default attributes.
     - name: custom-field-data
