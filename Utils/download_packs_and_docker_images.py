@@ -2,7 +2,7 @@
 #
 # 1. Python 3.8+
 # 2. requests python lib should be installed (can be installed by running "pip install requests" or "pip3 install requests")
-# 3. docker is installed (if not, you can still use the `-sd` option)
+# 3. docker is installed (if docker is not install, you can skip docker download using the `-sd` option)
 # 4. docker python is installed (install it by running "pip install docker" or "pip3 install docker" or use the `-sd` option)
 
 
