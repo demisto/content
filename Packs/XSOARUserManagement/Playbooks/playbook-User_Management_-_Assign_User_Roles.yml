@@ -1,0 +1,553 @@
+id: e88d799f-4b64-4205-869e-563f0b317071
+version: 20
+vcShouldKeepItemLegacyProdMachine: false
+name: User Management - Assign User Roles
+description: Use to add or remove roles to user, must list all roles that should be
+  on the user at that moment in time.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 1cc5e12d-d4ff-40d4-8fd4-0380e53217f5
+    type: start
+    task:
+      id: 1cc5e12d-d4ff-40d4-8fd4-0380e53217f5
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 895aec22-4031-4b31-8263-92ea048a939a
+    type: regular
+    task:
+      id: 895aec22-4031-4b31-8263-92ea048a939a
+      version: -1
+      name: Send Email
+      description: Sends an email using Microsoft Graph.
+      script: '|||send-mail'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      body:
+        complex:
+          root: GetInactiveUsers.UserData
+          filters:
+          - - operator: isNotEqualString
+              left:
+                value:
+                  simple: GetInactiveUsers.UserData.UserName
+                iscontext: true
+              right:
+                value:
+                  simple: admin
+          transformers:
+          - operator: DT
+            args:
+              dt:
+                value:
+                  simple: .= val.UserName + " has been inactive since " + val.LastLogin
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: |2+
+
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: |
+                    Please remove the following users from group:
+              suffix:
+                value:
+                  simple: |2-
+
+                    Unless they are removed they will continue to sync to XSOAR
+
+                    -----------------
+                    This is an automated Cortex XSOAR message.
+      subject:
+        complex:
+          root: inputs.DaysSinceLastActive
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'Action: Remove XSOAR Users - inactive for at least '
+              suffix:
+                value:
+                  simple: ' days'
+      to:
+        simple: ${inputs.EmailAddress}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 810,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: e5879f8c-bf33-4a9f-8fde-9282560b2e1a
+    type: condition
+    task:
+      id: e5879f8c-bf33-4a9f-8fde-9282560b2e1a
+      version: -1
+      name: Is Demisto Rest API  Enabled
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Demisto REST API
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 39a24052-e97b-4a43-8411-3ee32dbe1723
+    type: title
+    task:
+      id: 39a24052-e97b-4a43-8411-3ee32dbe1723
+      version: -1
+      name: Return to Parent
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 1530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: ca778b9b-107a-4e64-8c3c-9dab36d64f48
+    type: condition
+    task:
+      id: ca778b9b-107a-4e64-8c3c-9dab36d64f48
+      version: -1
+      name: User IDs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: greaterThan
+          left:
+            value:
+              complex:
+                root: inputs.usersToModify
+                filters:
+                - - operator: isNotEqualString
+                    left:
+                      value:
+                        simple: inputs.usersToModify
+                      iscontext: true
+                    right:
+                      value:
+                        simple: admin
+                - - operator: isExists
+                    left:
+                      value:
+                        simple: inputs.usersToModify
+                      iscontext: true
+                transformers:
+                - operator: count
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 45fce5f1-5efa-4586-8e64-3c52404da414
+    type: regular
+    task:
+      id: 45fce5f1-5efa-4586-8e64-3c52404da414
+      version: -1
+      name: Create Roles String
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      key:
+        simple: assignedRoles
+      stringify:
+        simple: "true"
+      value:
+        complex:
+          root: inputs.assignedRoles
+          transformers:
+          - operator: splitAndTrim
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: '"'
+              suffix:
+                value:
+                  simple: '"'
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: '"roles" : ['
+              suffix:
+                value:
+                  simple: '] , '
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -130,
+          "y": 820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 4007a6d2-7931-4455-8c00-1e7d4f82102c
+    type: regular
+    task:
+      id: 4007a6d2-7931-4455-8c00-1e7d4f82102c
+      version: -1
+      name: Create Default Admin String
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      key:
+        simple: defaultAdmin
+      stringify:
+        simple: "true"
+      value:
+        complex:
+          root: inputs.defaultAdmin
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: '"defaultAdmin" : '
+              suffix: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 4ecfd0d8-2a8d-4c7a-88d9-a669c190a2c8
+    type: title
+    task:
+      id: 4ecfd0d8-2a8d-4c7a-88d9-a669c190a2c8
+      version: -1
+      name: Build Body
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+      - "11"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 615
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: b83c1795-6485-4ba5-8c40-620c10368af7
+    type: title
+    task:
+      id: b83c1795-6485-4ba5-8c40-620c10368af7
+      version: -1
+      name: Send Request Payload - Loop
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 1050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 2f03c322-9e0f-404d-8233-eb82b7056b26
+    type: playbook
+    task:
+      id: 2f03c322-9e0f-404d-8233-eb82b7056b26
+      version: -1
+      name: User Management - Modify User
+      playbookName: User Management - Modify User
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      requestPayload:
+        complex:
+          root: inputs.usersToModify
+          transformers:
+          - operator: splitAndTrim
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: '"id" : "'
+              suffix:
+                value:
+                  simple: '", "roles" : { '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: assignedRoles
+                iscontext: true
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: defaultAdmin
+                iscontext: true
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: '{ '
+              suffix:
+                value:
+                  simple: ' }}'
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+      forEach: true
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 1190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1545,
+        "width": 1320,
+        "x": -130,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: usersToModify
+  value:
+    simple: shumber, shumbert
+  required: true
+  description: |-
+    Comma separated list of users to be modified.
+    Supply user's ids
+  playbookInputQuery: null
+- key: EmailAddress
+  value:
+    simple: shumbert@paloaltonetworks.com
+  required: true
+  description: |-
+    Comma separated list of individuals emails to be notified which Users need to be removed from AD.
+    Note: This is only if SSO is enabled.
+  playbookInputQuery: null
+- key: assignedRoles
+  value:
+    simple: Analyst
+  required: true
+  description: Comma separated list of roles to be added to supplied users
+  playbookInputQuery: null
+- key: defaultAdmin
+  value:
+    simple: "false"
+  required: false
+  description: Should users be default admin (i.e true/false)
+  playbookInputQuery: null
+outputs: []
+sourceplaybookid: 31f06993-e286-4368-8ffb-bc360a3c8353
