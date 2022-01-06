@@ -9,7 +9,7 @@ from tld import get_tld
 # Retrieve demisto args
 args = demisto.args()
 blog_url = args.get("url")
-page = requests.get(blog_url)
+page = requests.get(blog_url, verify=False)
 exclusionList = argToList(args.get("exclude_indicators"))
 TLDExclusion = argToList(args.get("exclude_TLD"))
 unescapeDomain = args.get("unescape_domain")
