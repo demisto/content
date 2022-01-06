@@ -1,6 +1,6 @@
-This playbook will use an object group in order to block IPs.
-The playbook receives malicious IP addresses as inputs, checks if the object group exists (and if not will create one), and will append the related IPs in that object.
-Please remember to assign the appended group to a rule in your FW policy. If not, you can use the `rule_name` and the playbook will create for this one.
+This playbook uses an object group in order to block IPs.
+The playbook receives malicious IP addresses as inputs, checks if the object group exists (if not, the object group is created), and  appends the related IPs to that object.
+If you have not assigned the appended group to a rule in your firewall policy, you can use `rule_name` and the playbook creates a new rule.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -32,15 +32,15 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| IP | An array of malicious IPs to block \(Can be also provided as a context path. e.g. $\{IP\} \).<br/>Example:     1.1.1.1,2.2.2.2 |  | Required |
-| install_policy | Input True / False for playbook to continue install policy process for checkpoint Firewall. | False | Required |
+| IP | An array of malicious IPs to block \(Can also be provided as a context path. e.g. $\{IP\} \).<br/>Example:     1.1.1.1,2.2.2.2 |  | Required |
+| install_policy | Whether the playbook should continue install policy process for Check Point Firewall.<br/>Values can be "True" or "False". | False | Required |
 | policy_package | The name of the policy package to be installed. | Standard | Required |
-| block_IP_error_handling | In case one of the actions for block IP playbook fails due to issues on the Checkpoint side, This input will determine whether the playbook will continue or stop for manual review. Also, in case of Continue the session id will logout and all changes will discard.<br/>Values can be "Continue" or "Stop".<br/>The default value will be "Stop". | Stop | Optional |
-| checkpoint_error_handling | In case one of the actions for publish/install policy fails due to issues on the Checkpoint side, This input will determine whether the playbook will continue or stop for manual review. Also, in case of Continue the session id will logout and all changes will discard.<br/>Values can be "Continue" or "Stop".<br/>The default value will be "Stop". | Stop | Required |
-| group_name | Provide the group name to be appended with the provided IPs. <br/>The group will be created in case it did not exist before. |  | Required |
-| rule_name | This input determines whether the Checkpoint firewall rule name is used. With this name - a new blocking rule, with mentioned the group,  will be created  |  | Optional |
-| rule_layer | This input determines whether the Checkpoint firewall rule layer is used.<br/>By default, we use the "Network" layer, but can be changed. | Network | Optional |
-| rule_position | This input determines whether the Checkpoint firewall rule position is used.<br/>By default, we are using the "top" position but can be changed. | top | Optional |
+| block_IP_error_handling | If one of the actions for the block IP playbook fails due to issues on the Check Point Firewall, this input determines whether the playbook continues or stops for manual review. If the playbook continues, the session ID logs out and all Check Point changes are discarded.<br/>Values can be "Continue" or "Stop".<br/>The default value is "Stop". | Stop | Optional |
+| checkpoint_error_handling | If one of the actions for publish/install policy fails due to issues on the Check Point side, this input determines whether the playbook continues or stops for manual review. If the playbook continues, the session ID logs out and all Check Point changes are discarded.<br/>Values can be "Continue" or "Stop".<br/>The default value is "Stop". | Stop | Required |
+| group_name | The group name to be appended with the provided IPs. <br/>The group is created if it does not already exist. |  | Required |
+| rule_name | Creates a new blocking rule using this Check Point Firewall group. Use this option if you have not assigned the appended group to a rule in your firewall policy.  |  | Optional |
+| rule_layer | Determines which Check Point Firewall rule layer is used.<br/>By default, the "Network" layer is used, but this can be changed. | Network | Optional |
+| rule_position | Determines which Check Point Firewall rule position is used.<br/>By default, the "top" position is used, but this can be changed. | top | Optional |
 
 ## Playbook Outputs
 ---
