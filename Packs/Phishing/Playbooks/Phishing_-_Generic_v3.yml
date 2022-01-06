@@ -2835,7 +2835,7 @@ inputs:
   description: |-
     When "True" the playbook will run the machine learning based "DBotPredictURLPhishing" automation (available when "Phishing URL" pack is installed).
     This automation will run several checks in order to determine the score of the URLs found in the email and will set a verdict for URLs which were found as "Suspicious" or "Malicious" and will add these URLs as indicators. Based on the verdict, the incident severity will be set (Medium severity for "Suspicious" and High severity for "Malicious").
-    The default number of extracted URLs is 3. In order to set a different number, please set the "DBotPredictURLPhishingURLsNumber" input.
+    The default number of extracted URLs is 3. In order to set a different number, please set the "DBotPredictURLPhishingURLsNumber" input. Default value is "False".
     Please note:
     - False/True positives are possible.
     - This automation may take a few minutes.
@@ -2846,7 +2846,7 @@ inputs:
     simple: "3"
   required: false
   description: The number of URLs to be extracted from the email html which will be
-    analyzed in the "DBotPredictURLPhishing" automation.
+    analyzed in the "DBotPredictURLPhishing" automation. Default value is 3.
   playbookInputQuery:
 outputs: []
 tests:
