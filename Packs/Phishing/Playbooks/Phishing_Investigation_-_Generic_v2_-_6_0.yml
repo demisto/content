@@ -36,6 +36,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
     taskid: b8fe1f1e-c1ae-499e-83d7-f466009b5790
@@ -74,6 +76,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "7":
     id: "7"
     taskid: d6dfa5b6-7756-4f6f-8e97-c9c7bcd67ad7
@@ -103,6 +107,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "8":
     id: "8"
     taskid: 11da73b5-8815-42ea-89e6-d17ed25787d9
@@ -133,6 +139,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "11":
     id: "11"
     taskid: 61327623-b9c8-4683-892e-82ed6a2005f7
@@ -161,6 +169,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "12":
     id: "12"
     taskid: eda53266-2df9-40a6-8f16-bc4bf3bb8e76
@@ -179,10 +189,8 @@ tasks:
       - "53"
       - "85"
     scriptarguments:
-      append: {}
       key:
         simple: ReporterAddress
-      stringify: {}
       value:
         complex:
           root: ExtractedIndicators.Email
@@ -201,6 +209,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "13":
     id: "13"
     taskid: 09a01f5c-142b-48cf-8c92-4205ca9a6d42
@@ -247,6 +257,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "15":
     id: "15"
     taskid: 64bf93c6-6ceb-4d1b-8f21-8fbfb1f046c8
@@ -288,6 +300,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "16":
     id: "16"
     taskid: 511c7226-fa33-4a95-88b7-709566ab4f90
@@ -334,6 +348,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "17":
     id: "17"
     taskid: f9a62c93-67f8-41f2-8cd5-6a6a700ed9b4
@@ -378,6 +394,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "18":
     id: "18"
     taskid: dda5420c-7de7-4f2d-8da5-09f3ed8a12b9
@@ -406,6 +424,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "22":
     id: "22"
     taskid: be406ffc-c93b-4890-830c-2536ffbedc6e
@@ -435,6 +455,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "26":
     id: "26"
     taskid: 151f9ed5-3b43-4380-8ced-9892eb91104d
@@ -466,6 +488,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "27":
     id: "27"
     taskid: 421eef34-f338-4c46-89cf-844afa2a2e48
@@ -498,6 +522,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "28":
     id: "28"
     taskid: 6838736c-c177-4b2a-883e-43e36cc896bb
@@ -569,6 +595,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "29":
     id: "29"
     taskid: fc429ec3-8231-46f6-8b25-2c7a06d2f005
@@ -594,6 +622,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "30":
     id: "30"
     taskid: c2119cb4-091b-433a-8aeb-dac70d4a296e
@@ -622,6 +652,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "31":
     id: "31"
     taskid: d560749b-2218-466f-856e-18986e9a1885
@@ -650,6 +682,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "33":
     id: "33"
     taskid: 231bb05f-9f96-4a43-82a4-70b3ef434bf8
@@ -680,6 +714,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "34":
     id: "34"
     taskid: 945915a4-395f-444f-8500-c80791cddcfd
@@ -711,6 +747,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "36":
     id: "36"
     taskid: 7047c1ab-98bf-4a58-805b-7788d6e8a96a
@@ -753,6 +791,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "37":
     id: "37"
     taskid: d8d3a1c3-6d94-4359-8bda-0e0be77c2f71
@@ -802,6 +842,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "39":
     id: "39"
     taskid: 151326c6-7adc-48bf-8710-6b0b01d86f48
@@ -833,6 +875,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "43":
     id: "43"
     taskid: 17f9d1ad-24e9-4ddc-813f-15ff190032a1
@@ -863,6 +907,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "52":
     id: "52"
     taskid: 29d97b94-fad1-490d-8ddb-b0e16c107da8
@@ -891,6 +937,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "53":
     id: "53"
     taskid: 9efe139c-3485-464d-8122-1a3bc8587888
@@ -933,6 +981,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "55":
     id: "55"
     taskid: 675eab21-6e48-46f8-8c48-831d694b90bc
@@ -962,6 +1012,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "56":
     id: "56"
     taskid: 54dab694-bd86-4fb5-8c85-b01dfd91a15d
@@ -992,6 +1044,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "79":
     id: "79"
     taskid: d18654f5-16fd-441e-8db0-4e55f0df0f43
@@ -1043,6 +1097,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "80":
     id: "80"
     taskid: 254b1455-3c72-4a76-85ef-603e9cd4cda4
@@ -1071,6 +1127,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "82":
     id: "82"
     taskid: 0f654686-0911-450d-86e6-0689df621d61
@@ -1109,6 +1167,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "83":
     id: "83"
     taskid: 3056d685-6aaf-4d07-879e-48c2bb841b19
@@ -1182,6 +1242,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "84":
     id: "84"
     taskid: 32673e2e-72fc-4a00-8054-7e0f357a6981
@@ -1211,6 +1273,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "85":
     id: "85"
     taskid: c325df0c-5e0f-4ba9-8863-0b0c18410025
@@ -1246,12 +1310,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "87":
     id: "87"
-    taskid: bf7ea13b-64cd-46fb-8563-825432a1c808
+    taskid: ecf8ed98-3577-455c-813a-ddcab5b2bd2b
     type: regular
     task:
-      id: bf7ea13b-64cd-46fb-8563-825432a1c808
+      id: ecf8ed98-3577-455c-813a-ddcab5b2bd2b
       version: -1
       name: Predict phishing type using pre-trained phishing model
       description: Predicts the specific type of phishing mail using a pre-trained
@@ -1284,7 +1350,8 @@ tasks:
           transformers:
           - operator: uniq
       modelName:
-        simple: phishing_model
+        complex:
+          root: inputs.PhishingModelName
       returnError:
         simple: "false"
     reputationcalc: 1
@@ -1302,6 +1369,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "88":
     id: "88"
     taskid: 601d6fe6-08ac-42f0-8ce1-cf65cd4fe1d1
@@ -1330,6 +1399,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "89":
     id: "89"
     taskid: 40fe8e89-4a2c-470f-8bd6-6bae51b4794e
@@ -1380,6 +1451,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "90":
     id: "90"
     taskid: 585dd252-1010-44ae-8c8d-1331c6d907ab
@@ -1434,6 +1507,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "91":
     id: "91"
     taskid: 76349d16-d4f2-4fc4-8ce6-a122526fe168
@@ -1658,6 +1733,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "92":
     id: "92"
     taskid: 93c79a23-70e3-4eb2-87b4-fb3609ebb4e4
@@ -1703,6 +1780,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "97":
     id: "97"
     taskid: 646e672b-9f6c-4147-8e4b-4afc3b57321b
@@ -1731,6 +1810,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "98":
     id: "98"
     taskid: a443be1b-8b73-4645-8aa1-acc53fcbf525
@@ -1759,6 +1840,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "99":
     id: "99"
     taskid: 49efbf61-f01f-4883-8be2-eab322544851
@@ -1787,6 +1870,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "101":
     id: "101"
     taskid: 569afb39-ee93-47c7-8af6-9ad7ec7488d1
@@ -1815,6 +1900,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "123":
     id: "123"
     taskid: 164f85dc-16f8-4ee8-8ced-20b4d0b4a401
@@ -1855,6 +1942,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "126":
     id: "126"
     taskid: 7f39b05d-3937-4df7-8993-d3469af016d5
@@ -1897,6 +1986,8 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "130":
     id: "130"
     taskid: fd39af07-3674-4de7-8d83-3fb41a3d2055
@@ -1941,6 +2032,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "131":
     id: "131"
     taskid: b4505dbf-4de5-4de9-893f-379efc7a6f43
@@ -1969,6 +2062,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "132":
     id: "132"
     taskid: bf3eb3d0-9df6-4aff-8731-b5a108227b76
@@ -1977,10 +2072,10 @@ tasks:
       id: bf3eb3d0-9df6-4aff-8731-b5a108227b76
       version: -1
       name: Check Microsoft's Headers?
+      description: "Determines whether Microsoft email headers should be validated."
       type: condition
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#default#':
       - "84"
@@ -2010,6 +2105,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "133":
     id: "133"
     taskid: ce12dc0c-dd63-47d6-8933-5f58797eb00b
@@ -2054,6 +2151,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "134":
     id: "134"
     taskid: bfac256a-f19f-45b2-8982-9e36d827438d
@@ -2071,9 +2170,6 @@ tasks:
       '#none#':
       - "12"
     scriptarguments:
-      entryID: {}
-      filePath: {}
-      investigationID: {}
       text:
         complex:
           root: incident.labels
@@ -2091,6 +2187,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 system: true
 view: |-
   {
@@ -2139,7 +2237,7 @@ inputs:
   playbookInputQuery:
 - key: AuthenticateEmail
   value:
-    simple: "False"
+    simple: "True"
   required: false
   description: Whether the authenticity of the email should be verified, using SPF,
     DKIM and DMARC.
@@ -2202,6 +2300,13 @@ inputs:
   required: false
   description: Check Microsoft's headers for BCL/PCL/SCL scores and set the "Severity"
     and "Email Classification" accordingly.
+  playbookInputQuery:
+- key: PhishingModelName
+  value:
+    simple: phishing_model
+  required: false
+  description: Optional - the name of a pre-trained phishing model to use for phishing
+    type prediction using machine learning.
   playbookInputQuery:
 outputs: []
 tests:

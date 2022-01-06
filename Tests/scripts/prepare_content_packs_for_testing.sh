@@ -83,7 +83,6 @@ else
     # In case of a regular upload flow, the upload_packs script will decide which pack to upload or not, thus it is
     # given with all the packs, we don't override packs to not force upload a pack
     echo "Updating all content packs for upload packs to production..."
-    OVERRIDE_ALL_PACKS=false
     PACKS_LIST="all"
     IS_FORCE_UPLOAD=false
   fi

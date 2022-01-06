@@ -1,0 +1,63 @@
+{
+    "data": {
+        "page_number": 1,
+        "results": [
+            {
+                "begin_time": "2021-11-14T13:09:19.469060624Z",
+                "destination_port": 0,
+                "end_time": "2021-11-14T13:09:42.545561819Z",
+                "id": 4521499,
+                "l1_category_name": "Attack Scenario",
+                "scenario_details": [
+                    {
+                        "action_id": 12757,
+                        "action_name": "Execute Encrypted Shellcode by using Shellter Tool",
+                        "end": "2021-11-14T13:09:42.54556219Z",
+                        "id": 1915820,
+                        "process_results": null,
+                        "result": "NotCompleted",
+                        "technique_id": "T1027"
+                    }
+                ],
+                "source_port": 0,
+                "string": "Secure",
+                "threat_id": 723488,
+                "threat_name": "Shellcode Execution via Shellter Tool",
+                "trusted": "Win10-Det1",
+                "untrusted": "Picus_Attacker_3",
+                "variant": "HTTP"
+            }
+        ],
+        "search_parameters": {
+            "IsInternalRequest": false,
+            "attack_result": "secure",
+            "begin_date": "2021-11-11",
+            "console_output_info": false,
+            "end_date": "2021-11-18",
+            "from_time": "",
+            "page": 1,
+            "size": 50,
+            "threat_parameters": {
+                "begin_date": "",
+                "categories": null,
+                "cve": "",
+                "end_date": "",
+                "kill_chains": null,
+                "md5": "",
+                "method": "",
+                "severity": "",
+                "sha256": "",
+                "threat_id": 0
+            },
+            "vectors": [
+                {
+                    "trusted": "Win10-Det1",
+                    "untrusted": "Picus_Attacker_3"
+                }
+            ]
+        },
+        "size": 50,
+        "total_count": 1
+    },
+    "success": true
+}
