@@ -1,0 +1,42 @@
+args:
+- default: false
+  description: URL of the logo image. Usually the URL ends with the extension of the
+    image.
+  isArray: false
+  name: logoImageURL
+  required: false
+  secret: false
+- default: false
+  description: Name of the logo. The name won't impact the model.
+  isArray: false
+  name: logoName
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'False'
+  description: Whether to enter debug mode.
+  isArray: false
+  name: debug
+  predefined:
+  - 'False'
+  - 'True'
+  required: false
+  secret: false
+comment: Add new logo to the phishing URL model.
+commonfields:
+  id: DBotUpdateLogoURLPhishing
+  version: -1
+enabled: true
+name: DBotUpdateLogoURLPhishing
+script: '-'
+subtype: python3
+system: false
+timeout: '0'
+type: python
+dockerimage: emisto/mlurlphishing:1.0.0.25671
+runas: DBotWeakRole
+runonce: false
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
