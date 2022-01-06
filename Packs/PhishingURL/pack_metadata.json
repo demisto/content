@@ -9,8 +9,12 @@
     "categories": [
         "Utilities"
     ],
-    "tags": ["Machine Learning"],
+    "tags": [
+        "Machine Learning"
+    ],
     "useCases": [],
-    "keywords": ["ml",
-        "machine learning"]
+    "keywords": [
+        "ml",
+        "machine learning"
+    ]
 }
