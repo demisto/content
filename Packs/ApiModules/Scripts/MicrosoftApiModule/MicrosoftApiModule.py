@@ -117,7 +117,7 @@ class MicrosoftClient(BaseClient):
         self.auth_type = SELF_DEPLOYED_AUTH_TYPE if self_deployed else OPROXY_AUTH_TYPE
         self.verify = verify
         self.azure_ad_endpoint = azure_ad_endpoint.format(endpoint=TOKEN_RETRIEVAL_ENDPOINTS[self.endpoint])
-        self.timeout = timeout
+        self.timeout = timeout  # type: ignore
 
         self.multi_resource = multi_resource
         if self.multi_resource:

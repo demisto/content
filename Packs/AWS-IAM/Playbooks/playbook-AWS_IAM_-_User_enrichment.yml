@@ -154,7 +154,29 @@ inputs:
   required: false
   description: Name of the AWS IAM user to enrich.
   playbookInputQuery:
-outputs: []
+outputs:
+- contextPath: AWS.IAM.Users.UserName
+  description: The friendly name identifying the user.
+- contextPath: AWS.IAM.Users.UserId
+  description: The stable and unique string identifying the user.
+- contextPath: AWS.IAM.Users.Arn
+  description: The Amazon Resource Name (ARN) that identifies the user.
+- contextPath: AWS.IAM.Users.CreateDate
+  description: The date and time when the user was created.
+- contextPath: AWS.IAM.Users.Path
+  description: The path to the user.
+- contextPath: AWS.IAM.Users.PasswordLastUsed
+  description: The date and time,  when the user's password was last used to sign
+    in to an AWS website.
+- contextPath: AWS.IAM.Users.AccessKeys.AccessKeyId
+  description: The ID for this access key.
+- contextPath: AWS.IAM.Users.AccessKeys.Status
+  description: The status of the access key. Active means the key is valid for API
+    calls; Inactive means it is not.
+- contextPath: AWS.IAM.Users.AccessKeys.CreateDate
+  description: The date when the access key was created.
+- contextPath: AWS.IAM.Users.AccessKeys.UserName
+  description: The name of the IAM user that the key is associated with.
 tests:
 - No tests
 fromversion: 5.5.0

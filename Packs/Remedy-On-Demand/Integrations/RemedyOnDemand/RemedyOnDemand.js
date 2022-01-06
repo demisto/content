@@ -127,16 +127,18 @@ var createIncident = function(firstName, lastName, description, status, source, 
     var body = {
        "values" : {
            "z1D_Action" : "CREATE",
-           "First_Name" : firstName,
-           "Last_Name" : lastName,
-           "Description" : description,
-           "Status" : status,
-           "Reported Source": source,
-           "Service_Type" : serviceType,
-           "Impact" : impact,
-           "Urgency" : urgency
      }
     };
+
+    if (firstName) { body.values['First_Name'] = firstName; }
+    if (lastName) { body.values['Last_Name'] = lastName; }
+    if (description) { body.values['Description'] = description; }
+    if (status) { body.values['Status'] = status; }
+    if (source) { body.values['Reported Source'] = source; }
+    if (serviceType) { body.values['Service_Type'] = serviceType; }
+    if (impact) { body.values['Impact'] = impact; }
+    if (urgency) { body.values['Urgency'] = urgency; }
+
     if (customFields) {
         var customFieldsArr = customFields.split(',');
         for (var i = 0; i < customFieldsArr.length; i++) {
