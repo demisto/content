@@ -44,7 +44,6 @@ description: Trend Micro Vision One is a purpose-built threat defense platform t
   security layers—email, endpoints, servers, cloud workloads, and networks—Trend Micro
   Vision One prevents the majority of attacks with automated protection.
 display: Trend Micro Vision One
-defaultclassifier: Trend Micro Vision One XDR - Classifier
 defaultmapperin: Trend Micro Vision One XDR - Incoming Mapper
 name: Trend Micro Vision One
 script:

@@ -291,15 +291,8 @@ def test_module(client: Client) -> Any:
     :type client: ``Client``
     :param client: client object to use http_request.
     """
-    try:
-        response = client.http_request('GET', '/v2.0/xdr/threatintel/suspiciousObjects/exceptions')
-        demisto.info(SUCCESS_TEST)
-        return response
-    except DemistoException as e:
-        if 'Forbidden' in str(e):
-            demisto.error(AUTHORIZATION_ERROR.format(error=e))
-        else:
-            demisto.error(e)
+    client.http_request('GET', '/v2.0/xdr/threatintel/suspiciousObjects/exceptions')
+    return 'ok'
 
 
 def add_block_list_mapping(task_status: str, data: Dict[str, Any]) -> Dict[str, Any]:

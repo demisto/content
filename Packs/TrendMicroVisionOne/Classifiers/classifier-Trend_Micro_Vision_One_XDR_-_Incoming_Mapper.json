@@ -10,10 +10,6 @@
                     "complex": null,
                     "simple": "workbenchName"
                 },
-                "Trend Micro Vision One Test - DELETE": {
-                    "complex": null,
-                    "simple": "workbenchName"
-                },
                 "Trend Micro Vision One XDR Account Count": {
                     "complex": null,
                     "simple": "impactScope.accountCount"

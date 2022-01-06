@@ -14,6 +14,7 @@ Trend Micro Vision One is a purpose-built threat defense platform that provides 
 | --- | --- | --- |
 | Name | Unique name for this Vision One instance | True |
 | Fetch Incidents | Choose if the integration should sync incidents | True |
+| Incident Type | Choose the "Trend Micro Vision One XDR Incident" type | True |
 | API URL | Base URL for Vision One API | True |
 | API Key | API token for authentication  | True |
 | Incidents Fetch Interval (minutes) | How often do you want to check for new incidents | False |
