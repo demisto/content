@@ -13,14 +13,12 @@ arg_names_dbot = "pulse, score"
 
 
 arg_values_dbot = [
-    ({'false_positive': [{"assessment": "accepted", "assessment_date":"2021-04-01"}]}, 1),
+    ({'false_positive': [{"assessment": "accepted", "assessment_date": "2021-04-01"}]}, 1),
     ({}, 0),
     ({"validation": [1]}, 2),
-    ({'pulse_info': {'count': 5}, 'false_positive': [{"assessment": "pending", "assessment_date":"2021-04-01"}]},3),
+    ({'pulse_info': {'count': 5}, 'false_positive': [{"assessment": "pending", "assessment_date": "2021-04-01"}]},3),
     ({'pulse_info': {'count': 1}}, 2),
-    ({'false_positive': [{"assessment": "pending", "assessment_date":"2021-04-01"}], 
-    'pulse_info': {'count': 0}}, 0)
-]
+    ({'false_positive': [{"assessment": "pending", "assessment_date": "2021-04-01"}], 'pulse_info': {'count': 0}}, 0)]
 
 
 FILE_GENERAL_RAW_RESPONSE = {'indicator': '6c5360d41bd2b14b1565f5b18e5c203cf512e493',
@@ -190,15 +188,17 @@ DOMAIN_RAW_RESPONSE = {
 
 DOMAIN_DNS_RAW_RESPONSE = {'passive_dns': [], 'count': 0}
 
-DOMAIN_HASH_RAW_RESPONSE =  {'data': [], 'size': 865426, 'count': 865426}
+DOMAIN_HASH_RAW_RESPONSE = {'data': [], 'size': 865426, 'count': 865426}
 
 DOMAIN_URL_RAW_RESPONSE = {'url_list': [], 'page_num': 1, 'limit': 10, 'paged': True, 'has_next': True, 'full_size': 5494039, 'actual_size': 5494039}
 
 DOMAIN_EC = {'Domain(val.Name && val.Name == obj.Name)': [{'Name': {'domain': 'otx.alienvault.com'}}],
-'DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)': [{'Indicator': {'domain': 'otx.alienvault.com'}, 'Type': 'domain', 'Vendor':
-        'AlienVault OTX v2', 'Score': 1, 'Reliability': 'C - Fairly reliable'}], 
-        'AlienVaultOTX.Domain(val.Alexa && val.Alexa === obj.Alexa && val.Whois && val.Whois === obj.Whois)': 
-            {'Name': 'otx.alienvault.com', 'Alexa': 'http://www.alexa.com/siteinfo/otx.alienvault.com', 'Whois':'http://whois.domaintools.com/otx.alienvault.com'}}
+             'DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)':
+             [{'Indicator': {'domain': 'otx.alienvault.com'}, 'Type': 'domain', 'Vendor': 'AlienVault OTX v2', 'Score': 1,
+             'Reliability': 'C - Fairly reliable'}],
+             'AlienVaultOTX.Domain(val.Alexa && val.Alexa === obj.Alexa && val.Whois && val.Whois === obj.Whois)': 
+             {'Name': 'otx.alienvault.com', 'Alexa': 'http://www.alexa.com/siteinfo/otx.alienvault.com',
+             'Whois':'http://whois.domaintools.com/otx.alienvault.com'}}
 
 IP_404_RAW_RESPONSE = 404
 
@@ -479,11 +479,12 @@ IP_EC_WITH_RELATIONSHIPS = {
 
 IP_URL_RAW_RESPONSE={'page_num': 1, 'limit': 10, 'paged': True, 'has_next': True, 'full_size': 7855, 'actual_size': 7855}
 
-IP_URL_RAW_RESPONSE_WITH_RELATIONSHIPS={'url_list': [{'url': 'https://mojorojorestaurante.com', 
-'date': '2022-01-03T08:21:31', 'domain': 'mojorojorestaurante.com', 'hostname': 'mojorojorestaurante.com', 
-'result': {'urlworker': {'ip': '8.8.8.8', 'http_code': 200}, 
-'safebrowsing': {'matches': []}}, 'httpcode': 200, 'gsb': [], 'encoded': 'https%3A//mojorojorestaurante.com'}], 
-'page_num': 1, 'limit': 10, 'paged': True, 'has_next': True, 'full_size': 7855, 'actual_size': 7855}
+IP_URL_RAW_RESPONSE_WITH_RELATIONSHIPS={'url_list': [{'url': 'https://mojorojorestaurante.com', 'date': '2022-01-03T08:21:31',
+                                        'domain': 'mojorojorestaurante.com', 'hostname': 'mojorojorestaurante.com',
+                                        'result': {'urlworker': {'ip': '8.8.8.8', 'http_code': 200},
+                                        'safebrowsing': {'matches': []}}, 'httpcode': 200, 'gsb': [],
+                                        'encoded': 'https%3A//mojorojorestaurante.com'}], 'page_num': 1, 'limit': 10,
+                                        'paged': True, 'has_next': True, 'full_size': 7855, 'actual_size': 7855}
 
 IP_FILE_ANALYSIS_RAW_RESPONSE={'size': 2189582, 'count': 2189582}
 
@@ -492,12 +493,12 @@ IP_FILE_ANALYSIS_RAW_RESPONSE_WITH_RELATIONSHIPS={'data': [{'datetime_int': 1508
     'avg': None, 'clamav': 'Win.Downloader.50691-1', 'msdefender': 'Worm:Win32/VB'},
     'date': '2017-10-21T18:02:19'}], 'size': 2189582, 'count': 2189582}
 
-IP_DNS_RAW_RESPONSE_WITH_RELATIONSHIPS = {'passive_dns': [{'address': '8.8.8.8',
-'first': '2022-01-04T08:25:39', 'last': '2022-01-04T08:25:39', 'hostname': 'nguyenhoangai-4g.xyz',
-'record_type': 'A', 'indicator_link': '/indicator/domain/nguyenhoangai-4g.xyz',
-'flag_url': 'assets/images/flags/us.png', 'flag_title': 'United States',
-'asset_type': 'domain', 'asn': 'AS15169 GOOGLE'}],'count': 1} 
-    
+IP_DNS_RAW_RESPONSE_WITH_RELATIONSHIPS = {'passive_dns': [{'address': '8.8.8.8', 'first': '2022-01-04T08:25:39',
+                                          'last': '2022-01-04T08:25:39', 'hostname': 'nguyenhoangai-4g.xyz', 'record_type': 'A',
+                                          'indicator_link': '/indicator/domain/nguyenhoangai-4g.xyz',
+                                          'flag_url': 'assets/images/flags/us.png', 'flag_title': 'United States',
+                                          'asset_type': 'domain', 'asn': 'AS15169 GOOGLE'}],'count': 1}
+
 IP_DNS_RAW_RESPONSE = {'count': 0}
 
 IP_RELATIONSHIPS = [
@@ -508,9 +509,9 @@ IP_RELATIONSHIPS = [
      'reliability': 'C - Fairly reliable',
      'brand': 'AlienVault OTX v2'},
     {'name': 'indicator-of', 'reverseName': 'indicated-by', 'type': 'IndicatorToIndicator',
-    'entityA': '98.136.103.23', 'entityAFamily': 'Indicator', 'entityAType': 'IPv4',
-    'entityB': 'T1040 - Network Sniffing', 'entityBFamily': 'Indicator', 'entityBType': 'STIX Attack Pattern',
-    'fields': {}, 'reliability': 'C - Fairly reliable', 'brand': 'AlienVault OTX v2'},
+     'entityA': '98.136.103.23', 'entityAFamily': 'Indicator', 'entityAType': 'IPv4',
+     'entityB': 'T1040 - Network Sniffing', 'entityBFamily': 'Indicator', 'entityBType': 'STIX Attack Pattern',
+     'fields': {}, 'reliability': 'C - Fairly reliable', 'brand': 'AlienVault OTX v2'},
     {'name': 'indicator-of', 'reverseName': 'indicated-by', 'type': 'IndicatorToIndicator', 'entityA': '98.136.103.23',
      'entityAFamily': 'Indicator', 'entityAType': 'IPv4', 'entityB': 'T1053 - Scheduled Task/Job',
      'entityBFamily': 'Indicator', 'entityBType': 'STIX Attack Pattern', 'fields': {}, 'reliability': 'C - Fairly reliable',
@@ -523,15 +524,17 @@ IP_RELATIONSHIPS = [
      'entityAFamily': 'Indicator', 'entityAType': 'IPv4', 'entityB': 'T1071 - Application Layer Protocol',
      'entityBFamily': 'Indicator', 'entityBType': 'STIX Attack Pattern', 'fields': {}, 'reliability': 'C - Fairly reliable',
      'brand': 'AlienVault OTX v2'},
-     {'name': 'indicator-of', 'reverseName': 'indicated-by', 'type': 'IndicatorToIndicator', 'entityA': '98.136.103.23', 'entityAFamily': 'Indicator',
-        'entityAType': 'IPv4', 'entityB': 'https://mojorojorestaurante.com', 'entityBFamily': 'Indicator', 'entityBType': 'URL', 'fields': {}, 'reliability':
-        'C - Fairly reliable', 'brand': 'AlienVault OTX v2'}, {'name': 'indicator-of', 'reverseName': 'indicated-by', 'type': 'IndicatorToIndicator',
-        'entityA': '98.136.103.23', 'entityAFamily': 'Indicator', 'entityAType': 'IPv4', 'entityB':
-        '0b4d4a7c35a185680bc5102bdd98218297e2cdf0a552bde10e377345f3622c1c', 'entityBFamily': 'Indicator', 'entityBType': 'File', 'fields': {}, 'reliability':
-        'C - Fairly reliable', 'brand': 'AlienVault OTX v2'}, {'name': 'indicator-of', 'reverseName': 'indicated-by', 'type': 'IndicatorToIndicator',
-        'entityA': '98.136.103.23', 'entityAFamily': 'Indicator', 'entityAType': 'IPv4', 'entityB': '8.8.8.8', 'entityBFamily': 'Indicator', 'entityBType':
-        'IP', 'fields': {}, 'reliability': 'C - Fairly reliable', 'brand': 'AlienVault OTX v2'}
-    ]
+    {'name': 'indicator-of', 'reverseName': 'indicated-by', 'type': 'IndicatorToIndicator', 'entityA': '98.136.103.23',
+     'entityAFamily': 'Indicator', 'entityAType': 'IPv4', 'entityB': 'https://mojorojorestaurante.com',
+     'entityBFamily': 'Indicator', 'entityBType': 'URL', 'fields': {}, 'reliability': 'C - Fairly reliable',
+     'brand': 'AlienVault OTX v2'},
+    {'name': 'indicator-of', 'reverseName': 'indicated-by', 'type': 'IndicatorToIndicator', 'entityA': '98.136.103.23',
+     'entityAFamily': 'Indicator', 'entityAType': 'IPv4',
+     'entityB': '0b4d4a7c35a185680bc5102bdd98218297e2cdf0a552bde10e377345f3622c1c', 'entityBFamily': 'Indicator',
+     'entityBType': 'File', 'fields': {}, 'reliability': 'C - Fairly reliable', 'brand': 'AlienVault OTX v2'},
+    {'name': 'indicator-of', 'reverseName': 'indicated-by', 'type': 'IndicatorToIndicator', 'entityA': '98.136.103.23',
+     'entityAFamily': 'Indicator', 'entityAType': 'IPv4', 'entityB': '8.8.8.8', 'entityBFamily': 'Indicator',
+     'entityBType': 'IP', 'fields': {}, 'reliability': 'C - Fairly reliable', 'brand': 'AlienVault OTX v2'}]
 
 INTEGRATION_NAME = 'AlienVault OTX v2'
 
@@ -680,13 +683,14 @@ def test_domain_command(mocker, raw_response, url_raw_response, file_raw_respons
     context = command_results[0].to_context()['EntryContext']
     assert expected == context
 
-
-@pytest.mark.parametrize('ip_,raw_response,url_raw_response,file_raw_response,dns_raw_response,expected_ec,expected_relationships', [
-    ('8.8.88.8', IP_RAW_RESPONSE, IP_URL_RAW_RESPONSE, IP_FILE_ANALYSIS_RAW_RESPONSE, IP_DNS_RAW_RESPONSE,IP_EC, []),
-    ('98.136.103.23', IP_RAW_RESPONSE_WITH_RELATIONSHIPS, IP_URL_RAW_RESPONSE_WITH_RELATIONSHIPS,
-    IP_FILE_ANALYSIS_RAW_RESPONSE_WITH_RELATIONSHIPS ,IP_DNS_RAW_RESPONSE_WITH_RELATIONSHIPS, IP_EC_WITH_RELATIONSHIPS, IP_RELATIONSHIPS)
-])
-def test_ip_command(mocker, ip_, raw_response, url_raw_response, file_raw_response, dns_raw_response, expected_ec, expected_relationships):
+test_ip_command_input_string='ip_,raw_response,url_raw_response,file_raw_response,dns_raw_response,expected_ec,expected_relationships'
+@pytest.mark.parametrize(test_ip_command_input_string, [('8.8.88.8', IP_RAW_RESPONSE, IP_URL_RAW_RESPONSE,
+                        IP_FILE_ANALYSIS_RAW_RESPONSE, IP_DNS_RAW_RESPONSE,IP_EC, []), ('98.136.103.23',
+                        IP_RAW_RESPONSE_WITH_RELATIONSHIPS, IP_URL_RAW_RESPONSE_WITH_RELATIONSHIPS,
+                        IP_FILE_ANALYSIS_RAW_RESPONSE_WITH_RELATIONSHIPS, IP_DNS_RAW_RESPONSE_WITH_RELATIONSHIPS,
+                        IP_EC_WITH_RELATIONSHIPS, IP_RELATIONSHIPS)])
+def test_ip_command(mocker, ip_, raw_response, url_raw_response, file_raw_response, dns_raw_response,
+                   expected_ec, expected_relationships):
     """
     Given
     - An IPv4 address.
