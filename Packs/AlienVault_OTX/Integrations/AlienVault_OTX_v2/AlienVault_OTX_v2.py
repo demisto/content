@@ -26,7 +26,7 @@ INTEGRATION_CONTEXT_NAME = 'AlienVaultOTX'
 
 class Client(BaseClient):
     def __init__(self, base_url, headers, verify, proxy, default_threshold, max_indicator_relationships,
-                reliability, create_relationships=True):
+                 reliability, create_relationships=True):
 
         BaseClient.__init__(self, base_url=base_url, headers=headers, verify=verify, proxy=proxy, )
 
@@ -102,14 +102,16 @@ def calculate_dbot_score(client: Client, raw_response: Union[dict, None]) -> flo
     """
     default_threshold = int(client.default_threshold)
     false_Positive = {}
+    validation = []
+    pulse_info = {}
     if isinstance(raw_response, dict):
         false_Positive = raw_response.get('false_positive', {})
+        validation = raw_response.get("validation", [])
+        pulse_info = raw_response.get('pulse_info', {})
     if false_Positive and false_Positive[0].get("assessment") == "accepted":
         return Common.DBotScore.GOOD
     else:
-        validation = raw_response.get("validation", [])
         if not validation:
-            pulse_info = raw_response.get('pulse_info', {})
             if pulse_info:
                 count = int(pulse_info.get('count', '0'))
                 if count >= default_threshold:
@@ -203,26 +205,27 @@ def relationships_manager(client: Client, entity_a: str, entity_a_type: str, ind
     if client.max_indicator_relationships != 0:
         params = {'limit': str(client.max_indicator_relationships)}
         _, _, urls_raw_response = alienvault_get_related_urls_by_indicator_command(client, indicator_type, indicator, params)
-        relationships+=create_relationships(client, dict_safe_get(urls_raw_response, ['url_list'], ['']), entity_a,
-                                           entity_a_type, 'url', FeedIndicatorType.URL)
-        
+        relationships += create_relationships(client, dict_safe_get(urls_raw_response, ['url_list'], ['']), entity_a,
+                                              entity_a_type, 'url', FeedIndicatorType.URL)
+
         _, _, hash_raw_response = alienvault_get_related_hashes_by_indicator_command(client, indicator_type, indicator, params)
-        relationships+=create_relationships(client, dict_safe_get(hash_raw_response, ['data'], ['']), entity_a,
+        relationships += create_relationships(client, dict_safe_get(hash_raw_response, ['data'], ['']), entity_a,
                                               entity_a_type, 'hash', FeedIndicatorType.File)
-        
-        _, _, passive_dns_raw_response = alienvault_get_passive_dns_data_by_indicator_command(client, indicator_type, indicator, params)
+
+        _, _, passive_dns_raw_response = alienvault_get_passive_dns_data_by_indicator_command(client, indicator_type,
+                                                                                              indicator, params)
         if len(dict_safe_get(passive_dns_raw_response, ['passive_dns'], [''])) > client.max_indicator_relationships:
-            relationships+=create_relationships(client, 
-                                               passive_dns_raw_response.get('passive_dns')[0:client.max_indicator_relationships],
-                                               entity_a, entity_a_type, 'address', FeedIndicatorType.IP)
+            passive_dns_raw_response = passive_dns_raw_response.get('passive_dns')[0:client.max_indicator_relationships]
+            relationships = create_relationships(client, passive_dns_raw_response, entity_a,
+                                                 entity_a_type, 'address', FeedIndicatorType.IP)
         else:
-            relationships+=create_relationships(client, dict_safe_get(passive_dns_raw_response, ['passive_dns'], ['']),
-                                               entity_a, entity_a_type, 'address', FeedIndicatorType.IP)
+            relationships += create_relationships(client, dict_safe_get(passive_dns_raw_response, ['passive_dns'], ['']),
+                                                  entity_a, entity_a_type, 'address', FeedIndicatorType.IP)
     return relationships
 
 
-def create_relationships(client: Client, relevant_field: dict, entity_a: str, 
-                        entity_a_type: str, relevant_id: str, entity_b_type: str):
+def create_relationships(client: Client, relevant_field: dict, entity_a: str,
+                         entity_a_type: str, relevant_id: str, entity_b_type: str):
     """
     create relationships list for the given fields
 
@@ -306,8 +309,8 @@ def ip_command(client: Client, ip_address: str, ip_version: str) -> List[Command
             ip_version = 'IPv4' if ip_version == 'IPv4' else FeedIndicatorType.IPv6
             relationships = create_relationships(client, extract_attack_ids(raw_response), ip_, ip_version, 'display_name',
                                                  FeedIndicatorType.indicator_type_by_server_version("STIX Attack Pattern"))
-            relationships+=relationships_manager(client, entity_a=ip_, entity_a_type=ip_version,
-                                                indicator_type=ip_version, indicator=ip_)
+            relationships += relationships_manager(client, entity_a=ip_, entity_a_type=ip_version,
+                                                   indicator_type=ip_version, indicator=ip_)
 
             dbot_score = Common.DBotScore(indicator=ip_, indicator_type=DBotScoreType.IP,
                                           integration_name=INTEGRATION_NAME,
@@ -368,8 +371,8 @@ def domain_command(client: Client, domain: str) -> List[CommandResults]:
             relationships = create_relationships(client, extract_attack_ids(raw_response), domain,
                                                  FeedIndicatorType.Domain, 'display_name',
                                                  FeedIndicatorType.indicator_type_by_server_version("STIX Attack Pattern"))
-            relationships+=relationships_manager(client, entity_a=domain, indicator_type= 'domain',
-                                                entity_a_type=FeedIndicatorType.Domain, indicator=domain)
+            relationships += relationships_manager(client, entity_a=domain, indicator_type='domain',
+                                                   entity_a_type=FeedIndicatorType.Domain, indicator=domain)
 
             dbot_score = Common.DBotScore(indicator=domain, indicator_type=DBotScoreType.DOMAIN,
                                           integration_name=INTEGRATION_NAME,
@@ -501,9 +504,9 @@ def url_command(client: Client, url: str) -> List[CommandResults]:
 
                 relationships = []
                 if client.create_relationships:
+                    indicator = FeedIndicatorType.indicator_type_by_server_version("STIX Attack Pattern")
                     relationships = create_relationships(client, extract_attack_ids(raw_response), url,
-                                                         FeedIndicatorType.URL, 'display_name',
-                                                         FeedIndicatorType.indicator_type_by_server_version("STIX Attack Pattern"))
+                                                         FeedIndicatorType.URL, 'display_name', indicator)
 
                     domain = raw_response.get('domain')
                     if domain:
@@ -686,8 +689,8 @@ def alienvault_get_related_hashes_by_indicator_command(client: Client, indicator
 
 
 @logger
-def alienvault_get_passive_dns_data_by_indicator_command(client: Client, indicator_type: str, indicator: str, 
-                                                        params: dict = None) -> Tuple[str, Dict, Dict]:
+def alienvault_get_passive_dns_data_by_indicator_command(client: Client, indicator_type: str, indicator: str,
+                                                         params: dict = None) -> Tuple[str, Dict, Dict]:
     """Get related file hashes by indicator (IPv4,IPv6,domain,hostname)
 
        Args:
