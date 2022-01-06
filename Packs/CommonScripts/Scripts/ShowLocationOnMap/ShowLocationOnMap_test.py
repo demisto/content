@@ -26,6 +26,7 @@ def test_valid_loc(loc, mocker):
     # This will trigger the script
     if 'ShowLocationOnMap' in sys.modules:
         del (sys.modules['ShowLocationOnMap'])
+    import ShowLocationOnMap
     lat, lng = loc.split(',')
     expected_lat = float(lat)
     expected_lng = float(lng)
@@ -60,4 +61,4 @@ def test_invalid_loc(loc, mocker):
     if 'ShowLocationOnMap' in sys.modules:
         del (sys.modules['ShowLocationOnMap'])
     with pytest.raises(Exception, match='return_error_called'):
-        pass
+        import ShowLocationOnMap
