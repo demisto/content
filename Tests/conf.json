@@ -4940,6 +4940,13 @@
             "fromversion": "5.5.0"
         },
         {
+            "playbookID": "DBotPredictURLPhishing_test",
+            "integrations": [
+                "Whois",
+                "Rasterize"
+            ]
+        },
+        {
             "playbookID": "TAXII2 Server Performance Test",
             "instance_names": "taxii2server",
             "integrations": [
@@ -4960,7 +4967,6 @@
             "playbookID": "TAXII2 Performance Test - Concurrency",
             "fromversion": "6.1.0"
         }
-
     ],
     "skipped_tests": {
         "playbook-AzureDevOps-Test": "Issue with repetitive calls to Azure DevOps API",
