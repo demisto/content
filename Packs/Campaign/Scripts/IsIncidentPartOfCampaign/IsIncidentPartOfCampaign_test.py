@@ -128,10 +128,10 @@ def test_where_no_campaign_ids(mocker):
     import IsIncidentPartOfCampaign
 
     mocker.patch.object(demisto, 'args', return_value={})
-    mocker.patch.object(IsIncidentPartOfCampaign, 'get_incidents_ids_by_type', return_value=[1,2,3])
+    mocker.patch.object(IsIncidentPartOfCampaign, 'get_incidents_ids_by_type', return_value=[1, 2, 3])
     mocker.patch.object(IsIncidentPartOfCampaign, 'check_incidents_ids_in_campaign', return_value=False)
 
     command_results = main()
 
     assert command_results.readable_output == "No campaign has found"
-    assert command_results.outputs['ExistingCampaignID'] == None
+    assert command_results.outputs['ExistingCampaignID'] is None
