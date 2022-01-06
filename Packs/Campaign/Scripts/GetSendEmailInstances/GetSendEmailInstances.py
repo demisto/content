@@ -4,26 +4,21 @@ from CommonServerPython import *  # noqa: F401
 
 def get_all_integrations_commands():
     """ Send API request with demisto rest api, to get all integration instances configured in the demisto. """
-    integration_commands_res = demisto.executeCommand("demisto-api-get", {"uri": "/settings/integration-commands"})
-    try:
-        return integration_commands_res[0]['Contents']['response']
-    except KeyError:
-        demisto.debug('Did not receive expected response from Demisto API: /settings/integration-commands')
-        return []
+    integration_commands_res = demisto.internalHttpRequest('GET', '/settings/integration-commands')
+    if integration_commands_res and integration_commands_res['statusCode'] == 200:
+        return json.loads(integration_commands_res.get('body', '{}'))
+    demisto.debug('Did not receive expected response from Demisto API: /settings/integration-commands')
+    return []
 
 
 def get_all_instances():
     """ Send API request with demisto rest api, to get all integration instances configured in the demisto."""
-    integration_search_res = demisto.executeCommand("demisto-api-post", {
-        "uri": "/settings/integration/search",
-        "body": {"size": 1000}
-    })
-    try:
-        integration_search = integration_search_res[0]['Contents']['response']
+    integration_search_res = demisto.internalHttpRequest('POST', '/settings/integration/search', '{\"size\":1000}')
+    if integration_search_res and integration_search_res['statusCode'] == 200:
+        integration_search = json.loads(integration_search_res.get('body', '{}'))
         return integration_search['instances']
-    except KeyError:
-        demisto.debug('Did not receive expected response from Demisto API: /settings/integration/search')
-        return []
+    demisto.debug('Did not receive expected response from Demisto API: /settings/integration/search')
+    return []
 
 
 def get_sendmail_instances():
@@ -39,7 +34,7 @@ def get_sendmail_instances():
     integration_instances = get_all_instances()
 
     send_mail_integrations = [integration['name'] for integration in integration_commands if 'send-mail' in
-                              [cmd['name'] for cmd in integration.get('commands')]]
+                              [cmd['name'] for cmd in integration.get('commands', [])]]
 
     integration_instances_enabled = [instance for instance in integration_instances
                                      if instance['enabled'] == 'true']

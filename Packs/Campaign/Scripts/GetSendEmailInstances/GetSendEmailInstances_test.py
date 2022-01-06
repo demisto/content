@@ -62,7 +62,7 @@ def test_get_all_integrations_commands_failure(mocker):
         - Validate that when no results, empty list returned
 
     """
-    mocker.patch.object(demisto, 'executeCommand', return_value=[{}])
+    mocker.patch.object(demisto, 'internalHttpRequest', return_value={'statusCode': 400})
     assert get_all_integrations_commands() == []
 
 
@@ -78,5 +78,5 @@ def test_get_all_instances_failure(mocker):
         - Validate that when no results, empty list returned
 
     """
-    mocker.patch.object(demisto, 'executeCommand', return_value=[{}])
+    mocker.patch.object(demisto, 'internalHttpRequest', return_value={'statusCode': 400})
     assert get_all_instances() == []
