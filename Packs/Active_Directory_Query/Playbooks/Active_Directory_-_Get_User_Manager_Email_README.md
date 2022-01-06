@@ -3,7 +3,7 @@ Returns the email address of the user's manager of an email address or a usernam
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
-#3# Sub-playbooks
+### Sub-playbooks
 This playbook does not use any sub-playbooks.
 
 ### Integrations
