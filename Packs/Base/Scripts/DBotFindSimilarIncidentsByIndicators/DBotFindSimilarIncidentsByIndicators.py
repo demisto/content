@@ -524,7 +524,7 @@ def return_outputs_tagged(similar_incidents: pd.DataFrame, context: Dict, tag: O
         "HumanReadable": readable_output,
         "ContentsFormat": formats['json'],
         "Contents": similar_incidents.to_dict(orient='records'),
-        "EntryContext": {'DBotFindSimilarIncidents': context},
+        "EntryContext": {'DBotFindSimilarIncidentsByIndicators': context},
     }
     if tag is not None:
         return_entry["Tags"] = [tag]
