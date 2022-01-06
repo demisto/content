@@ -4940,7 +4940,11 @@
             "fromversion": "5.5.0"
         },
         {
-            "playbookID": "DBotPredictURLPhishing_test"
+            "playbookID": "DBotPredictURLPhishing_test",
+            "integrations": [
+                "Whois",
+                "Rasterize"
+            ]
         }
     ],
     "skipped_tests": {
