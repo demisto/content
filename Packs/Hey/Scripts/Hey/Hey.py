@@ -170,7 +170,7 @@ def run_hey_test(url: str,
                  proxy: Optional[str] = None,
                  enable_http2: Optional[str] = None,
                  disable_redirects: Optional[str] = None,
-                 *args, **kwargs) -> CommandResults:  # pylint: disable=unused-argument
+                 *_args, **_kwargs) -> CommandResults:
     hey_map, hey_query = construct_hey_query(url,
                                              requests_number,
                                              timeout,
