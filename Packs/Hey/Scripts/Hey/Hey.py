@@ -183,7 +183,7 @@ def run_hey_test(url: str,
                                              proxy,
                                              enable_http2,
                                              disable_redirects)
-    result = subprocess.check_output(hey_query, stderr=subprocess.STDOUT, text=True)
+    result = subprocess.check_output(hey_query.split(), stderr=subprocess.STDOUT, text=True)
     return HeyPerformanceResult(result=result, results_map=results_map, **hey_map).to_results()
 
 
