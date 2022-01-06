@@ -8570,6 +8570,7 @@ def get_message_memory_dump(_sig, _frame):
     ret_value = '\n\n--- Start Variables Dump ---\n'
     ret_value += get_message_local_vars()
     ret_value += get_message_global_vars()
+    ret_value += get_message_modules_sizes()
     ret_value += '\n--- End Variables Dump ---\n\n'
 
     return ret_value
@@ -8577,7 +8578,7 @@ def get_message_memory_dump(_sig, _frame):
 
 def get_message_classes_dump(classes_as_list):
     """
-    A function that prints the memory dump to log info
+    A function that returns the printable message about classes dump
 
     :type classes_as_list: ``list``
     :param classes_as_list: The classes to print to the log
@@ -8609,7 +8610,7 @@ def get_message_classes_dump(classes_as_list):
 
 def get_message_local_vars():
     """
-    A function that prints the local variables to log info
+    A function that returns the printable message about local variables
 
     :return: Message to print.
     :rtype: ``str``
@@ -8665,22 +8666,22 @@ def get_size_of_object(input_object):
     return inner(input_object)
 
 
+import types
+excluded_globals = ['__name__', '__doc__', '__package__', '__loader__',
+                    '__spec__', '__annotations__', '__builtins__',
+                    '__file__', '__cached__', '_Feature',
+                    ]
+excluded_types_names = ['MagicMock',  # When running tests locally
+                        ]
 def get_message_global_vars():
     """
-    A function that prints the global variables to log info
+    A function that returns the printable message about global variables
 
     :return: Message to print.
     :rtype: ``str``
     """
-    import types
-    excluded_globals = ['__name__', '__doc__', '__package__', '__loader__',
-                        '__spec__', '__annotations__', '__builtins__',
-                        '__file__', '__cached__', '_Feature',
-                        ]
     excluded_types = [types.ModuleType, types.FunctionType,
                       ]
-    excluded_types_names = ['MagicMock',  # When running tests locally
-                            ]
 
     globals_dict = dict(globals())
     globals_dict_full = {}
@@ -8704,6 +8705,39 @@ def get_message_global_vars():
         ret_value += '{}\t\t{}\t\t{}\n'.format(current_global["size"], current_global["name"],
                                                shorten_string_for_printing(str(current_global["value"]), 64))
     ret_value += '\n--- End Top {} Globals by Size ---\n'.format(PROFILING_DUMP_ROWS_LIMIT)
+
+    return ret_value
+
+
+def get_message_modules_sizes():
+    """
+    A function that returns the printable message about the loaded modules by size
+
+    :return: Message to print.
+    :rtype: ``str``
+    """
+    globals_dict = dict(globals())
+    globals_dict_full = {}
+    for current_key in globals_dict.keys():
+        current_value = globals_dict[current_key]
+        # TODO Split to ModuleTypes sizes with isinstance(current_value, ModuleType)
+        if type(current_value) == types.ModuleType \
+                and current_key not in excluded_globals \
+                and type(current_value).__name__ not in excluded_types_names:
+            globals_dict_full[current_key] = {
+                'name': current_key,
+                'value': current_value,
+                # Deep calculation. Better than sys.getsizeof(current_value)
+                'size': get_size_of_object(current_value)
+            }
+
+    ret_value = '\n\n--- Start Top {} Modules by Size ---\n'.format(PROFILING_DUMP_ROWS_LIMIT)
+    globals_sorted_by_size = sorted(globals_dict_full.values(), key=lambda d: d['size'], reverse=True)
+    ret_value += 'Size\t\tName\t\tValue\n'
+    for current_global in globals_sorted_by_size[:PROFILING_DUMP_ROWS_LIMIT]:
+        ret_value += '{}\t\t{}\t\t{}\n'.format(current_global["size"], current_global["name"],
+                                               shorten_string_for_printing(str(current_global["value"]), 64))
+    ret_value += '\n--- End Top {} Modules by Size ---\n'.format(PROFILING_DUMP_ROWS_LIMIT)
 
     return ret_value
 
