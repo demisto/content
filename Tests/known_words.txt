@@ -30,3 +30,9 @@ Subdomains
 Dsts
 Dst
 Kubernetes
+unquotes
+unescapes
+URLs
+Proofpoint
+ATP
+regex
