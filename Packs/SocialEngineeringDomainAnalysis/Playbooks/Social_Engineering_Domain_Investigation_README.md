@@ -28,7 +28,3 @@ This playbook does not use any integrations.
 ## Playbook Outputs
 ---
 There are no outputs for this playbook.
-
-## Playbook Image
----
-![Social Engineering Domain Investigation](Insert the link to your image here)
