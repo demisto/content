@@ -36,3 +36,11 @@ URLs
 Proofpoint
 ATP
 regex
+Bambenek
+csv
+Cloudflare
+DShield
+Feodo
+Blocklist
+Spamhaus
+SSL
