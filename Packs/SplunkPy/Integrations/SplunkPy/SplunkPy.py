@@ -9,10 +9,10 @@ import json
 from datetime import timedelta, datetime
 import pytz
 import dateparser
-import urllib2
+# import urllib2
 import hashlib
 import ssl
-from StringIO import StringIO
+# from StringIO import StringIO
 import requests
 import urllib3
 import io
@@ -21,8 +21,8 @@ import re
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 # Define utf8 as default encoding
-reload(sys)
-sys.setdefaultencoding('utf8')  # pylint: disable=maybe-no-member
+# reload(sys)
+# sys.setdefaultencoding('utf8')  # pylint: disable=maybe-no-member
 params = demisto.params()
 SPLUNK_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 VERIFY_CERTIFICATE = not bool(params.get('unsecure'))

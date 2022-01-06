@@ -341,11 +341,17 @@ REGEX_CHOSEN_FIELDS_SUBSET = [
     "Very"
 ]
 
+NON_EXISTING_FIELDS = [
+    "SDFAFSD",
+    "ASBLFKDJK"
+]
+
 
 @pytest.mark.parametrize('search_result, chosen_fields, expected_result', [
     (SEARCH_RESULT, REGULAR_ALL_CHOSEN_FIELDS, REGULAR_ALL_CHOSEN_FIELDS),
     (SEARCH_RESULT, REGULAR_CHOSEN_FIELDS_SUBSET, REGULAR_CHOSEN_FIELDS_SUBSET),
     (SEARCH_RESULT, REGEX_CHOSEN_FIELDS_SUBSET, REGULAR_CHOSEN_FIELDS_SUBSET),
+    (SEARCH_RESULT, NON_EXISTING_FIELDS, []),
 ])
 def test_commands(search_result, chosen_fields, expected_result):
     from SplunkPy import update_headers_from_field_names
