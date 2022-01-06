@@ -7,14 +7,18 @@ Trend Micro Vision One is a purpose-built threat defense platform that provides 
 ## Configure Vision One on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for vision_one.
+2. Search for Trend Micro Vision One.
 3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Name | Unique name for this Vision One instance | True |
+| Fetch Incidents | Choose if the integration should sync incidents | True |
 | API URL | Base URL for Vision One API | True |
 | API Key | API token for authentication  | True |
+| Incidents Fetch Interval (minutes) | How often do you want to check for new incidents | False |
+| Sync On First Run (days) | How many days to go back during first sync | False |
+| Max Incidents | Maximum Number of Workbenches to Retrieve | False |
 4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands

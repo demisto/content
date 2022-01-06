@@ -19,7 +19,7 @@ configuration:
   required: false
   type: 8
 - defaultvalue: "5"
-  display: Incidents Fetch Interval
+  display: Incidents Fetch Interval (minutes)
   name: incidentFetchInterval
   required: false
   type: 0
@@ -28,12 +28,12 @@ configuration:
   required: false
   type: 13
 - defaultvalue: "30"
-  display: Days To Sync On First Run
+  display: Sync On First Run (days)
   name: first_fetch
   required: false
   type: 0
 - defaultvalue: "50"
-  display: Maximum Number of Workbenches To Retrieve
+  display: Max Incidents
   name: max_fetch
   required: false
   type: 0
