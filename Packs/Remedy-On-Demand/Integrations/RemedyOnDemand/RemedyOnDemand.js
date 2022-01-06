@@ -210,13 +210,15 @@ var updateIncident = function(incID, updateObject) {
 
 var fetchIncidentsToDemisto = function() {
     var lastRun = getLastRun();
+    nowDate = new Date();
+    var now = nowDate.toISOString();
     if (!lastRun || !lastRun.value) {
         lastRun = {
-            value: (new Date(new Date().getTime() - 10*60*1000)).toISOString()
+            value: (new Date(nowDate.getTime() - 10*60*1000)).toISOString()
         };
     }
     logDebug("Last run value before starting to fetch: "+lastRun.value);
-    var query =  '\'Create Date\'>' + '\"' + lastRun.value + '\"';
+    var query =  "'Submit Date'>" + '"' + lastRun.value + '"';
     var url = baseUrl + '/api/arsys/v1/entry/HPD:IncidentInterface/' + '?q=' + encodeURIComponent(query);
     logDebug("This is the URL with the query for fetching the incidents: "+url);
     var token = login();
