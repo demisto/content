@@ -340,10 +340,6 @@ REGEX_CHOSEN_FIELDS_SUBSET = [
     "Some*",
     "Very"
 ]
-NON_EXISTING_FIELDS = [
-    "SDFAFSD",
-    "ASBLFKDJK"
-]
 
 
 @pytest.mark.parametrize('search_result, chosen_fields, expected_result', [

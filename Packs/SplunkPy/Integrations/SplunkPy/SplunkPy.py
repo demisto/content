@@ -1750,15 +1750,18 @@ def build_search_human_readable(args, parsed_search_results):
 
 def update_headers_from_field_names(search_result, chosen_fields):
     headers = []
-    search_result_keys = search_result[0].keys()
+    result_keys = set()
+    for search_result_keys in search_result:
+        result_keys = set(search_result_keys.keys())
+    # search_result_keys = search_result[0].keys()
     for field in chosen_fields:
         if field[-1] == '*':
             temp_field = field.replace('*', '.*')
-            for key in search_result_keys:
+            for key in result_keys:
                 if re.search(temp_field, key):
                     headers.append(key)
 
-        elif field in search_result_keys:
+        elif field in result_keys:
             headers.append(field)
 
     return headers
