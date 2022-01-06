@@ -1,0 +1,17 @@
+{
+    "name": "At-Risk-Incidents-Notification",
+    "description": "This script will be used with the playbook \"JOB-Get At Risk Incidents\" playbook. This will be used to segregate all the incident whose sla is on risk. We have created 4 buckets of 15 minutes (Red,Orange,Purple,Blue) used to track risk incident on the basis of time left in sla breached. SLA field involved is contain sla and resolution sla. \n",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Shubham Agarwal",
+    "url": "",
+    "email": "",
+    "created": "2022-01-06T17:18:22Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "shubgwal1029"
+    ]
+}

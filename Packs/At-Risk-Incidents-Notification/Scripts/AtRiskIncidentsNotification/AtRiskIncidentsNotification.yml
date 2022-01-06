@@ -1,0 +1,28 @@
+commonfields:
+  id: fbeb69d7-1142-4f06-8e2e-3504d6c84695
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: ffce2cfa-ad38-454d-82a3-b5ca5a86aefc
+    propagationLabels:
+    - all
+    toServerVersion: ""
+dockerimage: demisto/python3:3.9.6.22912
+enabled: true
+engineinfo: {}
+name: At-Risk-Incidents-Notification
+outputs:
+- contextPath: Notification_bucket
+  description: Gives a Dictionary of buckets, by color, of incidents at risk. Red
+    is <10 minutes, etc
+  type: unknown
+pswd: ""
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
