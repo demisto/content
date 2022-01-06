@@ -298,7 +298,7 @@ def ip_command(client: Client, ip_address: str, ip_version: str) -> List[Command
             ip_version = 'IPv4' if ip_version == 'IPv4' else FeedIndicatorType.IPv6
             relationships = create_relationships(client, extract_attack_ids(raw_response), ip_, ip_version, 
             'display_name', FeedIndicatorType.indicator_type_by_server_version("STIX Attack Pattern"))
-            relationships += relationships_manager(client=client, raw_response=raw_response, entity_a=ip_, entity_a_type=ip_version, 
+            relationships += relationships_manager(client=client, entity_a=ip_, entity_a_type=ip_version, 
                                                 indicator_type= ip_version, indicator=ip_)
 
             dbot_score = Common.DBotScore(indicator=ip_, indicator_type=DBotScoreType.IP,
@@ -359,7 +359,7 @@ def domain_command(client: Client, domain: str) -> List[CommandResults]:
         if raw_response and raw_response != 404:
             relationships = create_relationships(client, extract_attack_ids(raw_response), domain, FeedIndicatorType.Domain, 
             'display_name', FeedIndicatorType.indicator_type_by_server_version("STIX Attack Pattern"))
-            relationships += relationships_manager(client, raw_response=raw_response, entity_a=domain, indicator_type= 'domain',
+            relationships += relationships_manager(client, entity_a=domain, indicator_type= 'domain',
                                                   entity_a_type=FeedIndicatorType.Domain, indicator=domain)
 
             dbot_score = Common.DBotScore(indicator=domain, indicator_type=DBotScoreType.DOMAIN,
