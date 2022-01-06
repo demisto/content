@@ -51,32 +51,33 @@ The investigation is triggered by an email sent or forwarded to a designated phi
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Email Address Enrichment - Generic v2.1
-* Detect & Manage Phishing Campaigns
-* Block Indicators - Generic v2
-* Process Email - Generic v2
 * Detonate File - Generic
-* Extract Indicators From File - Generic v2
-* Entity Enrichment - Phishing v2
-* Process Microsoft's Anti-Spam Headers
-* Calculate Severity - Generic v2
-* Search And Delete Emails - Generic v2
+* Process Email - Generic v2
 * Detonate URL - Generic
+* Detect & Manage Phishing Campaigns
+* Email Address Enrichment - Generic v2.1
+* Calculate Severity - Generic v2
+* Block Indicators - Generic v2
+* Entity Enrichment - Phishing v2
+* Search And Delete Emails - Generic v2
+* Extract Indicators From File - Generic v2
+* Process Microsoft's Anti-Spam Headers
 
 ### Integrations
 This playbook does not use any integrations.
 
 ### Scripts
 * DBotPredictPhishingWords
-* Set
 * AssignAnalystToIncident
+* Set
+* DBotPredictURLPhishing
 * CheckEmailAuthenticity
 
 ### Commands
-* setIncident
-* extractIndicators
 * send-mail
 * closeInvestigation
+* extractIndicators
+* setIncident
 
 ## Playbook Inputs
 ---
@@ -99,6 +100,8 @@ This playbook does not use any integrations.
 | InternalRange | This input is used in the task "Entity Enrichment - Phishing v2" playbook.<br/>A list of internal IP ranges to check IP addresses against. The list should be provided in CIDR notation, separated by commas. An example of a list of ranges is: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" \(without quotes\). If a list is not provided, uses the default list provided in the IsIPInRanges script \(the known IPv4 private address ranges\). |  | Optional |
 | PhishingModelName | Optional - the name of a pre-trained phishing model to predict phishing type using machine learning. | phishing_model | Optional |
 | GetOriginalEmail | For forwarded emails. When equals "True" it will retrieve the original email in the thread.<br/><br/>You must have the necessary permissions in your email service to execute global search.<br/><br/>- For EWS: eDiscovery<br/>- For Gmail: Google Apps Domain-Wide Delegation of Authority<br/>- For MSGraph: As described in these links<br/>https://docs.microsoft.com/en-us/graph/api/message-get <br/> https://docs.microsoft.com/en-us/graph/api/user-list-messages |  | Optional |
+| DBotPredictURLPhishing | When "True" the playbook will run the machine learning based "DBotPredictURLPhishing" automation \(available when "Phishing URL" pack is installed\).<br/>This automation will run several checks in order to determine the score of the URLs found in the email and will set a verdict for URLs which were found as "Suspicious" or "Malicious" and will add these URLs as indicators. Based on the verdict, the incident severity will be set \(Medium severity for "Suspicious" and High severity for "Malicious"\).<br/>The default number of extracted URLs is 3. In order to set a different number, please set the "DBotPredictURLPhishingURLsNumber" input.<br/>Please note:<br/>- False/True positives are possible.<br/>- This automation may take a few minutes.</br>- In order to get more accurate results you may want to install and enable the "Whois" pack (optional). | False | Optional |
+| DBotPredictURLPhishingURLsNumber | The number of URLs to be extracted from the email html which will be analyzed in the "DBotPredictURLPhishing" automation. | 3 | Optional |
 
 ## Playbook Outputs
 ---

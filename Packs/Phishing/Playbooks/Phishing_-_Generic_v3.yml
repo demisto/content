@@ -2830,7 +2830,7 @@ inputs:
   playbookInputQuery:
 - key: DBotPredictURLPhishing
   value:
-    simple: "True"
+    simple: "False"
   required: false
   description: |-
     When "True" the playbook will run the machine learning based "DBotPredictURLPhishing" automation (available when "Phishing URL" pack is installed).
@@ -2839,6 +2839,7 @@ inputs:
     Please note:
     - False/True positives are possible.
     - This automation may take a few minutes.
+    - In order to get more accurate results you may want to install and enable the "Whois" pack (optional).
   playbookInputQuery:
 - key: DBotPredictURLPhishingURLsNumber
   value:
