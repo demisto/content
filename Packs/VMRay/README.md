@@ -1,3 +1,5 @@
+*Note: Support for this pack moved to the Partner on December, 21, 2021. Please contact the Partner directly via the support link on the right.*
+
 VMRay Analyzer is a breakthrough solution for dynamic analysis of advanced threats, including zero day and targeted attacks. By surmounting inherent flaws that plague other products, VMRay Analyzer has become the gold standard for malware sandboxing among leading DFIR teams worldwide.
 
 ## Core Capabilities and Advanced Features
