@@ -1,8 +1,4 @@
-## BaseIntegration Help
+## YodaSpeak Help section.
 
-Markdown file for integration configuration  help snippet. In this file add:
-- Brief information about how to retrieve the API key of your product
-- Other useful information on how to configure your integration in XSOAR
-
-Since this is a Markdown file, we encourage you to use MD formatting for sections, sub-sections, lists, etc.
-
+Markdown file for integration configuration help snippet. 
+- To get an API key (for making more than 5 API calls per hour), visit the [FunTranslations subscription details page](https://funtranslations.com/api/yoda#subscribe) 
