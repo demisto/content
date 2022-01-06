@@ -1752,7 +1752,7 @@ def update_headers_from_field_names(search_result, chosen_fields):
     headers = []
     result_keys = set()
     for search_result_keys in search_result:
-        result_keys = set(search_result_keys.keys())
+        result_keys.update(search_result_keys.keys())
     for field in chosen_fields:
         if field[-1] == '*':
             temp_field = field.replace('*', '.*')
