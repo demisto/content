@@ -267,6 +267,11 @@
             "timeout": 1000
         },
         {
+            "integrations": "AzureDevOps",
+            "playbookID": "playbook-AzureDevOps-Test",
+            "fromversion": "6.0.0"
+        },
+        {
             "integrations": "Microsoft Intune Feed",
             "playbookID": "FeedMicrosoftIntune_Test",
             "fromversion": "5.5.0"
@@ -4917,15 +4922,33 @@
             "playbookID": "KafkaV3 Test"
         },
         {
+            "playbookID": "Grafana-Test",
+            "fromversion": "6.0.0",
+            "integrations": [
+                "Grafana",
+                "Demisto REST API"
+            ],
+            "is_mockable": false,
+            "timeout": 2400
+        },
+        {
             "integrations": "McAfee ePO v2",
             "playbookID": "McAfee ePO v2 Test"
         },
         {
             "playbookID": "Dedup - Generic v3",
             "fromversion": "5.5.0"
+        },
+        {
+            "playbookID": "DBotPredictURLPhishing_test",
+            "integrations": [
+                "Whois",
+                "Rasterize"
+            ]
         }
     ],
     "skipped_tests": {
+        "playbook-AzureDevOps-Test": "Issue with repetitive calls to Azure DevOps API",
         "MISP V2 Test": "The integration is deprecated as we released MISP V3",
         "Github IAM - Test Playbook": "Issue 32383",
         "O365-SecurityAndCompliance-ContextResults-Test": "Issue 38900",
