@@ -1,52 +1,51 @@
+category: IT Services
 commonfields:
   id: CheckPointFirewall_v2
   version: -1
-name: CheckPointFirewall_v2
-display: CheckPoint Firewall v2
-category: IT Services
-description: Use this integration to read information and send commands to the Check
-  Point Firewall server.
 configuration:
 - display: Server URL (e.g. example.net or 8.8.8.8)
   name: server
-  type: 0
   required: true
-- display: Server Port (e.g. 4434)
+  type: 0
+- defaultvalue: '4434'
+  display: Server Port (e.g. 4434)
   name: port
-  defaultvalue: "4434"
-  type: 0
   required: true
+  type: 0
 - display: Domain (used in Multi Domain Server)
   name: domain
-  type: 0
   required: false
+  type: 0
 - display: Username
   name: username
-  type: 9
   required: true
+  type: 9
 - display: Trust any certificate (not secure)
   name: insecure
-  type: 8
   required: false
+  type: 8
 - display: Use system proxy settings
   name: proxy
-  type: 8
   required: false
+  type: 8
+description: Use this integration to read information and send commands to the Check
+  Point Firewall server.
+display: CheckPoint Firewall v2
+name: CheckPointFirewall_v2
 script:
-  script: ''
-  type: python
   commands:
-  - name: checkpoint-host-list
-    arguments:
-    - name: limit
+  - arguments:
+    - defaultValue: '50'
       description: The maximum number of results to return. Default is 50.
-      defaultValue: "50"
-    - name: offset
+      name: limit
+    - defaultValue: '0'
       description: Number of results to initially skip. Default is 0.
-      defaultValue: "0"
-    - name: session_id
+      name: offset
+    - defaultValue: None
       description: Executes the command with the specified session ID.
-      defaultValue: None
+      name: session_id
+    description: Returns all host objects.
+    name: checkpoint-host-list
     outputs:
     - contextPath: CheckPoint.Host.name
       description: Object name.
@@ -63,15 +62,15 @@ script:
     - contextPath: CheckPoint.Host.ipv6
       description: IPv6 address of the specifie host.
       type: string
-    description: Returns all host objects.
-  - name: checkpoint-host-get
-    arguments:
-    - name: identifier
+  - arguments:
+    - description: Object unique identifier (UID) or name for which to get data.
+      name: identifier
       required: true
-      description: Object unique identifier (UID) or name for which to get data.
-    - name: session_id
+    - defaultValue: None
       description: Executes the command with the specified session ID.
-      defaultValue: None
+      name: session_id
+    description: Gets full data for the specified host.
+    name: checkpoint-host-get
     outputs:
     - contextPath: CheckPoint.Host.name
       description: Host name.
@@ -109,38 +108,38 @@ script:
     - contextPath: CheckPoint.Host.groups-uid
       description: The UID of the group object linked to the current host object.
       type: Unknown
-    description: Gets full data for the specified host.
-  - name: checkpoint-host-add
-    arguments:
-    - name: name
-      required: true
-      description: The name of the new host.
+  - arguments:
+    - description: The name of the new host.
       isArray: true
-    - name: ip_address
+      name: name
       required: true
-      description: The IP address of the new host.
+    - description: The IP address of the new host.
       isArray: true
-    - name: groups
-      description: Collection of group identifiers.
-      isArray: true
-    - name: session_id
+      name: ip_address
       required: true
+    - description: Collection of group identifiers.
+      isArray: true
+      name: groups
+    - defaultValue: None
       description: Executes the command with the specified session ID.
-      defaultValue: None
-    - name: ignore_warnings
-      auto: PREDEFINED
-      predefined:
-      - "true"
-      - "false"
+      name: session_id
+      required: true
+    - auto: PREDEFINED
+      defaultValue: 'false'
       description: Whether to ignore warnings when adding a host.
-      defaultValue: "false"
-    - name: ignore_errors
-      auto: PREDEFINED
+      name: ignore_warnings
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      defaultValue: 'false'
       description: Whether to ignore errors when adding a host.
-      defaultValue: "false"
+      name: ignore_errors
+      predefined:
+      - 'true'
+      - 'false'
+    description: Adds a new host.
+    name: checkpoint-host-add
     outputs:
     - contextPath: CheckPoint.Host.name
       description: Object name.
@@ -178,41 +177,41 @@ script:
     - contextPath: CheckPoint.Host.groups
       description: Collection of group identifiers.
       type: String
-    description: Adds a new host.
-  - name: checkpoint-host-update
-    arguments:
-    - name: identifier
+  - arguments:
+    - description: Object unique identifier (UID) or name.
+      name: identifier
       required: true
-      description: Object unique identifier (UID) or name.
-    - name: ip_address
-      description: IPv4 or IPv6 address.
-    - name: new_name
-      description: New name of the object.
-    - name: comments
-      description: Comments string.
-    - name: ignore_warnings
-      auto: PREDEFINED
-      predefined:
-      - "true"
-      - "false"
+    - description: IPv4 or IPv6 address.
+      name: ip_address
+    - description: New name of the object.
+      name: new_name
+    - description: Comments string.
+      name: comments
+    - auto: PREDEFINED
+      defaultValue: 'false'
       description: Whether to ignore warnings when applying the updates. Can be "True"
         or "False". Default is "False".
-      defaultValue: "false"
-    - name: ignore_errors
-      auto: PREDEFINED
+      name: ignore_warnings
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      defaultValue: 'false'
       description: Whether to ignore errors when applying the updates. Can be "True"
         or "False". Default is "False".
-      defaultValue: "false"
-    - name: groups
-      description: Collection of group identifiers.
+      name: ignore_errors
+      predefined:
+      - 'true'
+      - 'false'
+    - description: Collection of group identifiers.
       isArray: true
-    - name: session_id
-      required: true
+      name: groups
+    - defaultValue: None
       description: Executes the command with the specified session ID.
-      defaultValue: None
+      name: session_id
+      required: true
+    description: Updates the specified host.
+    name: checkpoint-host-update
     outputs:
     - contextPath: CheckPoint.Host.name
       description: Object name.
@@ -250,47 +249,47 @@ script:
     - contextPath: CheckPoint.Host.group-uid
       description: The UID of the group object linked to the host.
       type: String
-    description: Updates the specified host.
-  - name: checkpoint-host-delete
-    arguments:
-    - name: identifier
-      required: true
-      description: Object unique identifier (UID) or name.
+  - arguments:
+    - description: Object unique identifier (UID) or name.
       isArray: true
-    - name: session_id
+      name: identifier
       required: true
+    - defaultValue: None
       description: Executes the command with the specified session ID.
-      defaultValue: None
-    - name: ignore_warnings
-      auto: PREDEFINED
-      predefined:
-      - "true"
-      - "false"
+      name: session_id
+      required: true
+    - auto: PREDEFINED
+      defaultValue: 'false'
       description: Whether to ignore warnings when deleting a host.
-      defaultValue: "false"
-    - name: ignore_errors
-      auto: PREDEFINED
+      name: ignore_warnings
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      defaultValue: 'false'
       description: Whether to ignore errors when deleting a host.
-      defaultValue: "false"
+      name: ignore_errors
+      predefined:
+      - 'true'
+      - 'false'
+    description: Deletes the specified host.
+    name: checkpoint-host-delete
     outputs:
     - contextPath: CheckPoint.Host.message
       description: Status of the delete operation.
       type: String
-    description: Deletes the specified host.
-  - name: checkpoint-group-list
-    arguments:
-    - name: limit
+  - arguments:
+    - defaultValue: '50'
       description: The maximum number of results to return. Default is 50.
-      defaultValue: "50"
-    - name: offset
+      name: limit
+    - defaultValue: '0'
       description: Number of results to initially skip. Default is 0.
-      defaultValue: "0"
-    - name: session_id
+      name: offset
+    - defaultValue: None
       description: Executes the command with the specified session ID.
-      defaultValue: None
+      name: session_id
+    description: Gets a list of all groups.
+    name: checkpoint-group-list
     outputs:
     - contextPath: CheckPoint.Group.name
       description: Object name.
@@ -301,15 +300,15 @@ script:
     - contextPath: CheckPoint.Group.type
       description: Object type.
       type: String
-    description: Gets a list of all groups.
-  - name: checkpoint-group-get
-    arguments:
-    - name: identifier
+  - arguments:
+    - description: Object unique identifier (UID) or name.
+      name: identifier
       required: true
-      description: Object unique identifier (UID) or name.
-    - name: session_id
+    - defaultValue: None
       description: Executes the command with the specified session ID.
-      defaultValue: None
+      name: session_id
+    description: Gets full data for the specified group.
+    name: checkpoint-group-get
     outputs:
     - contextPath: CheckPoint.Group.name
       description: Object name.
@@ -338,23 +337,50 @@ script:
     - contextPath: CheckPoint.Group.read-only
       description: Indicates if the object is read-only.
       type: Boolean
-    - contextPath: CheckPoint.Group.members.ipv4-address
+    - contextPath: CheckPoint.Group.ipv4-address
+      description: Group IPv4 addresses.
+      type: string
+    - contextPath: CheckPoint.Group.ipv6-address
+      description: Group IPv6 addresses.
+      type: string
+    - contextPath: CheckPoint.Group.groups
+      description: Collection of group identifiers.
+      type: Unknown
+    - contextPath: CheckPoint.Group.members.member-ipv4-address
       description: Group members IPv4 addresses.
       type: string
-    - contextPath: CheckPoint.Group.members.ipv6-address
+    - contextPath: CheckPoint.Group.members.member-ipv6-address
       description: Group members IPv6 addresses.
       type: string
-    description: Gets full data for the specified group.
-  - name: checkpoint-group-add
-    arguments:
-    - name: name
-      required: true
-      description: Object name. Must be unique in the domain.
+    - contextPath: CheckPoint.Group.members.member-domain-name
+      description: Group members domain name.
+      type: string
+    - contextPath: CheckPoint.Group.members.member-domain-uid
+      description: Group members domain UID.
+      type: string
+    - contextPath: CheckPoint.Group.members.member-domain-type
+      description: Group members domain type.
+      type: string
+    - contextPath: CheckPoint.Group.members.member-name
+      description: Group member name.
+      type: string
+    - contextPath: CheckPoint.Group.members.member-uid
+      description: Group member UID.
+      type: string
+    - contextPath: CheckPoint.Group.members.member-type
+      description: Group member type.
+      type: string
+  - arguments:
+    - description: Object name. Must be unique in the domain.
       isArray: true
-    - name: session_id
+      name: name
       required: true
+    - defaultValue: None
       description: Executes the command with the specified session ID.
-      defaultValue: None
+      name: session_id
+      required: true
+    description: Adds a group.
+    name: checkpoint-group-add
     outputs:
     - contextPath: CheckPoint.Group.name
       description: Object name.
@@ -386,41 +412,49 @@ script:
     - contextPath: CheckPoint.Group.groups-name
       description: Groups name.
       type: Unknown
-    description: Adds a group.
-  - name: checkpoint-group-update
-    arguments:
-    - name: identifier
+  - arguments:
+    - description: Object unique identifier (UID) or name.
+      name: identifier
       required: true
-      description: Object unique identifier (UID) or name.
-    - name: new_name
-      description: New name of the group object.
-    - name: comments
-      description: Comments for the group object.
-    - name: ignore_warnings
-      auto: PREDEFINED
-      predefined:
-      - "true"
-      - "false"
+    - description: New name of the group object.
+      name: new_name
+    - description: Comments for the group object.
+      name: comments
+    - auto: PREDEFINED
+      defaultValue: 'true'
       description: Whether to ignore warnings when applying the updates. Can be "True"
         or "False". Default is "True".
-      defaultValue: "true"
-    - name: ignore_errors
-      auto: PREDEFINED
+      name: ignore_warnings
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      defaultValue: 'false'
       description: |-
         Whether to ignore errors when applying the updates. Can be "True" or "False". Default is "False".
         Note: you won't be able to publish such these changes.
         If the ignore-warnings flag was omitted, warnings will also be ignored.
-      defaultValue: "false"
-    - name: session_id
-      required: true
+      name: ignore_errors
+      predefined:
+      - 'true'
+      - 'false'
+    - defaultValue: None
       description: Executes the command with the specified session ID.
-      defaultValue: None
-    - name: members
-      description: Collection of network objects identified by the name or UID.
+      name: session_id
+      required: true
+    - description: Collection of network objects identified by the name or UID.
       isArray: true
+      name: members
+    - auto: PREDEFINED
+      defaultValue: 'modify'
+      description: The action that should be taken towards the values.
+      name: action
+      predefined:
+      - 'add'
+      - 'remove'
+      - 'modify'
+    description: Updates the specified group object.
+    name: checkpoint-group-update
     outputs:
     - contextPath: CheckPoint.Group.name
       description: Object name.
@@ -449,33 +483,33 @@ script:
     - contextPath: CheckPoint.Group.read-only
       description: Indicates if the object is read-only.
       type: Boolean
-    description: Updates the specified group object.
-  - name: checkpoint-group-delete
-    arguments:
-    - name: identifier
-      required: true
-      description: Object unique identifier (UID) or name.
+  - arguments:
+    - description: Object unique identifier (UID) or name.
       isArray: true
-    - name: session_id
+      name: identifier
       required: true
+    - defaultValue: None
       description: Executes the command with the specified session ID.
-      defaultValue: None
+      name: session_id
+      required: true
+    description: Deletes the specified group object.
+    name: checkpoint-group-delete
     outputs:
     - contextPath: CheckPoint.Group.message
       description: Operation messege.
       type: String
-    description: Deletes the specified group object.
-  - name: checkpoint-address-range-list
-    arguments:
-    - name: limit
+  - arguments:
+    - defaultValue: '50'
       description: The maximum number of results to return. Default is 50.
-      defaultValue: "50"
-    - name: offset
+      name: limit
+    - defaultValue: '0'
       description: Number of results to initially skip. Default is 0.
-      defaultValue: "0"
-    - name: session_id
+      name: offset
+    - defaultValue: None
       description: Executes the command with the specified session ID.
-      defaultValue: None
+      name: session_id
+    description: Gets a list all address range objects.
+    name: checkpoint-address-range-list
     outputs:
     - contextPath: CheckPoint.AddressRange.name
       description: Object name.
@@ -486,51 +520,51 @@ script:
     - contextPath: CheckPoint.AddressRange.type
       description: Object type.
       type: String
-    description: Gets a list all address range objects.
-  - name: checkpoint-address-range-add
-    arguments:
-    - name: name
+  - arguments:
+    - description: Name for the new address range object.
+      name: name
       required: true
-      description: Name for the new address range object.
-    - name: ip_address_first
+    - description: First IP address in the range.
+      name: ip_address_first
       required: true
-      description: First IP address in the range.
-    - name: ip_address_last
+    - description: Last IP address in the range.
+      name: ip_address_last
       required: true
-      description: Last IP address in the range.
-    - name: set_if_exists
-      auto: PREDEFINED
-      predefined:
-      - "true"
-      - "false"
+    - auto: PREDEFINED
+      defaultValue: 'false'
       description: Whether to update objects with the same identifier. Can be "true"
         or "false". Default is "false".
-      defaultValue: "false"
-    - name: ignore_warnings
-      auto: PREDEFINED
+      name: set_if_exists
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      defaultValue: 'true'
       description: Whether to ignore warnings when applying the updates. Can be "True"
         or "False". Default is "True".
-      defaultValue: "true"
-    - name: ignore_errors
-      auto: PREDEFINED
+      name: ignore_warnings
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      defaultValue: 'false'
       description: |-
         Whether to ignore errors when applying the updates. Can be "True" or "False". Default is "False".
         Note: you won't be able to publish such these changes.
         If the ignore-warnings flag was omitted, warnings will also be ignored.
-      defaultValue: "false"
-    - name: session_id
-      required: true
+      name: ignore_errors
+      predefined:
+      - 'true'
+      - 'false'
+    - defaultValue: None
       description: Executes the command with the specified session ID.
-      defaultValue: None
-    - name: groups
-      description: Collection of group identifiers.
+      name: session_id
+      required: true
+    - description: Collection of group identifiers.
       isArray: true
+      name: groups
+    description: Adds an address range object.
+    name: checkpoint-address-range-add
     outputs:
     - contextPath: CheckPoint.AddressRange.name
       description: Object name.
@@ -574,45 +608,45 @@ script:
     - contextPath: CheckPoint.AddressRange.groups
       description: Name of the group object.
       type: String
-    description: Adds an address range object.
-  - name: checkpoint-address-range-update
-    arguments:
-    - name: identifier
+  - arguments:
+    - description: Name for the new address range object.
+      name: identifier
       required: true
-      description: Name for the new address range object.
-    - name: ip_address_first
-      description: First IP address in the range. Can be an IPv4 or IPv6 address.
-    - name: ip_address_last
-      description: Last IP address in the range. Can be an IPv4 or IPv6 address.
-    - name: new_name
-      description: New name of the object.
-    - name: comments
-      description: Comments for the object.
-    - name: ignore_warnings
-      auto: PREDEFINED
-      predefined:
-      - "true"
-      - "false"
+    - description: First IP address in the range. Can be an IPv4 or IPv6 address.
+      name: ip_address_first
+    - description: Last IP address in the range. Can be an IPv4 or IPv6 address.
+      name: ip_address_last
+    - description: New name of the object.
+      name: new_name
+    - description: Comments for the object.
+      name: comments
+    - auto: PREDEFINED
+      defaultValue: 'true'
       description: Whether to ignore warnings when applying the updates. Can be "True"
         or "False". Default is "True".
-      defaultValue: "true"
-    - name: ignore_errors
-      auto: PREDEFINED
+      name: ignore_warnings
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      defaultValue: 'false'
       description: |-
         Whether to ignore errors when applying the updates. Can be "True" or "False". Default is "False".
         Note: you won't be able to publish such these changes.
         If the ignore-warnings flag was omitted, warnings will also be ignored.
-      defaultValue: "false"
-    - name: groups
-      description: Collection of group identifiers.
+      name: ignore_errors
+      predefined:
+      - 'true'
+      - 'false'
+    - description: Collection of group identifiers.
       isArray: true
-    - name: session_id
-      required: true
+      name: groups
+    - defaultValue: None
       description: Executes the command with the specified session ID.
-      defaultValue: None
+      name: session_id
+      required: true
+    description: Updates the specified address range object.
+    name: checkpoint-address-range-update
     outputs:
     - contextPath: CheckPoint.AddressRange.name
       description: Object name.
@@ -650,33 +684,33 @@ script:
     - contextPath: CheckPoint.AddressRange.groups
       description: List of all groups the address range is linked to.
       type: String
-    description: Updates the specified address range object.
-  - name: checkpoint-address-range-delete
-    arguments:
-    - name: identifier
-      required: true
-      description: Name for the new address range object.
+  - arguments:
+    - description: Name for the new address range object.
       isArray: true
-    - name: session_id
+      name: identifier
       required: true
+    - defaultValue: None
       description: Executes the command with the specified session ID.
-      defaultValue: None
+      name: session_id
+      required: true
+    description: Deletes the specified address range.
+    name: checkpoint-address-range-delete
     outputs:
     - contextPath: CheckPoint.AddressRange.message
       description: Status of the operation.
       type: String
-    description: Deletes the specified address range.
-  - name: checkpoint-threat-indicator-list
-    arguments:
-    - name: limit
+  - arguments:
+    - defaultValue: '50'
       description: The maximum number of results to return.
-      defaultValue: "50"
-    - name: offset
+      name: limit
+    - defaultValue: '0'
       description: Number of results to initially skip. Default is 0.
-      defaultValue: "0"
-    - name: session_id
+      name: offset
+    - defaultValue: None
       description: Executes the command with the specified session ID.
-      defaultValue: None
+      name: session_id
+    description: Gets a list of all threat indicators.
+    name: checkpoint-threat-indicator-list
     outputs:
     - contextPath: CheckPoint.ThreatIndicator.name
       description: Object name.
@@ -687,15 +721,15 @@ script:
     - contextPath: CheckPoint.ThreatIndicator.type
       description: Object type.
       type: String
-    description: Gets a list of all threat indicators.
-  - name: checkpoint-threat-indicator-get
-    arguments:
-    - name: identifier
+  - arguments:
+    - description: Object unique identifier (UID) or name.
+      name: identifier
       required: true
-      description: Object unique identifier (UID) or name.
-    - name: session_id
+    - defaultValue: None
       description: Executes the command with the specified session ID.
-      defaultValue: None
+      name: session_id
+    description: Gets data for the specified list indicator.
+    name: checkpoint-threat-indicator-get
     outputs:
     - contextPath: CheckPoint.ThreatIndicator.name
       description: Object name.
@@ -724,48 +758,48 @@ script:
     - contextPath: CheckPoint.ThreatIndicator.read-only
       description: Indicates if the object is read-only.
       type: Boolean
-    description: Gets data for the specified list indicator.
-  - name: checkpoint-threat-indicator-add
-    arguments:
-    - name: name
+  - arguments:
+    - description: Name for the new threat indicator.
+      name: name
       required: true
-      description: Name for the new threat indicator.
-    - name: observables
-      required: true
-      description: The indicator's observable or the contents of a file containing
+    - description: The indicator's observable or the contents of a file containing
         the indicator's observables.
       isArray: true
-    - name: session_id
+      name: observables
       required: true
+    - defaultValue: None
       description: Executes the command with the specified session ID.
-      defaultValue: None
+      name: session_id
+      required: true
+    description: Adds a threat indicator.
+    name: checkpoint-threat-indicator-add
     outputs:
     - contextPath: CheckPoint.ThreatIndicator.task-id
       description: Asynchronous task unique identifier.
       type: String
-    description: Adds a threat indicator.
-  - name: checkpoint-threat-indicator-update
-    arguments:
-    - name: identifier
+  - arguments:
+    - description: Object unique identifier (UID) or name.
+      name: identifier
       required: true
-      description: Object unique identifier (UID) or name.
-    - name: action
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      defaultValue: Prevent
+      description: The action to set for the indicator.
+      name: action
       predefined:
       - Inactive
       - Ask
       - Prevent
       - Detect
-      description: The action to set for the indicator.
-      defaultValue: Prevent
-    - name: new_name
-      description: New name of the object.
-    - name: comments
-      description: Comments for the object.
-    - name: session_id
-      required: true
+    - description: New name of the object.
+      name: new_name
+    - description: Comments for the object.
+      name: comments
+    - defaultValue: None
       description: Executes the command with the specified session ID.
-      defaultValue: None
+      name: session_id
+      required: true
+    description: Updates the specified indicator.
+    name: checkpoint-threat-indicator-update
     outputs:
     - contextPath: CheckPoint.ThreatIndicator.name
       description: Object name.
@@ -797,15 +831,15 @@ script:
     - contextPath: CheckPoint.ThreatIndicator.read-only
       description: Indicates if the object is read-only.
       type: Boolean
-    description: Updates the specified indicator.
-  - name: checkpoint-address-range-get
-    arguments:
-    - name: identifier
+  - arguments:
+    - description: Object unique identifier (UID) or name.
+      name: identifier
       required: true
-      description: Object unique identifier (UID) or name.
-    - name: session_id
+    - defaultValue: None
       description: Executes the command with the specified session ID.
-      defaultValue: None
+      name: session_id
+    description: Gets full data for the specified address range object.
+    name: checkpoint-address-range-get
     outputs:
     - contextPath: CheckPoint.AddressRange.name
       description: Object name.
@@ -831,36 +865,36 @@ script:
     - contextPath: CheckPoint.AddressRange.groups-uid
       description: The UID of the group object linked to current host object.
       type: String
-    description: Gets full data for the specified address range object.
-  - name: checkpoint-threat-indicator-delete
-    arguments:
-    - name: identifier
-      required: true
-      description: Object unique identifier (UID) or name.
+  - arguments:
+    - description: Object unique identifier (UID) or name.
       isArray: true
-    - name: session_id
+      name: identifier
       required: true
+    - defaultValue: None
       description: Executes the command with the specified session ID.
-      defaultValue: None
+      name: session_id
+      required: true
+    description: Deletes the specified threat indicator.
+    name: checkpoint-threat-indicator-delete
     outputs:
     - contextPath: CheckPoint.ThreatIndicator.message
       description: Status of the delete operation.
       type: String
-    description: Deletes the specified threat indicator.
-  - name: checkpoint-access-rule-list
-    arguments:
-    - name: identifier
+  - arguments:
+    - description: Object unique identifier (UID) or name.
+      name: identifier
       required: true
-      description: Object unique identifier (UID) or name.
-    - name: limit
+    - defaultValue: '50'
       description: The maximum number of results to return. Default is 50.
-      defaultValue: "50"
-    - name: offset
+      name: limit
+    - defaultValue: '0'
       description: Number of results to initially skip. Default is 0.
-      defaultValue: "0"
-    - name: session_id
+      name: offset
+    - defaultValue: None
       description: Executes the command with the specified session ID.
-      defaultValue: None
+      name: session_id
+    description: Returns the entire Access Rules layer.
+    name: checkpoint-access-rule-list
     outputs:
     - contextPath: CheckPoint.AccessRule.name
       description: Object name.
@@ -868,44 +902,71 @@ script:
     - contextPath: CheckPoint.AccessRule.uid
       description: Object UID.
       type: String
-    description: Returns the entire Access Rules layer.
-  - name: checkpoint-access-rule-add
-    arguments:
-    - name: layer
+    - contextPath: CheckPoint.AccessRule.type
+      description: Object type.
+      type: String
+    - contextPath: CheckPoint.AccessRule.ipv4-address
+      description: IPv4 address of the specified object.
+      type: String
+    - contextPath: CheckPoint.AccessRule.ipv6-address
+      description: IPv6 address of the specified object.
+      type: String
+    - contextPath: CheckPoint.AccessRule.domain-name
+      description: Domain name.
+      type: String
+    - contextPath: CheckPoint.AccessRule.domain-uid
+      description: Domain UID.
+      type: String
+    - contextPath: CheckPoint.AccessRule.creator
+      description: The creator of the object.
+      type: String
+    - contextPath: CheckPoint.AccessRule.last-modifier
+      description: The user that last modified the object.
+      type: String
+    - contextPath: CheckPoint.AccessRule.read-only
+      description: Indicates if the object is read-only.
+      type: Boolean
+    - contextPath: CheckPoint.AccessRule.groups
+      description: Collection of group identifiers.
+      type: Unknown
+  - arguments:
+    - description: Layer to which to assign the rule, identified by the name or UID.
+      name: layer
       required: true
-      description: Layer to which to assign the rule, identified by the name or UID.
-    - name: position
+    - description: Position in the rulebase.
+      name: position
       required: true
-      description: Position in the rulebase.
-    - name: name
-      description: Rule name.
-    - name: action
-      auto: PREDEFINED
+    - description: Rule name.
+      name: name
+    - auto: PREDEFINED
+      defaultValue: Drop
+      description: 'Action settings. Valid values are: Accept, Drop, Apply Layer,
+        Ask and Info. Default value is Drop.'
+      name: action
       predefined:
       - Accept
       - Drop
       - Apply Layer
       - Ask
       - Info
-      description: 'Action settings. Valid values are: Accept, Drop, Apply Layer,
-        Ask and Info. Default value is Drop.'
-      defaultValue: Drop
-    - name: vpn
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      description: 'Communities or Directional. Valid values: Any or All_GwToGw.'
+      name: vpn
       predefined:
       - Any
       - All_GwToGw
-      description: 'Communities or Directional. Valid values: Any or All_GwToGw.'
-    - name: destination
-      description: Collection of network objects identified by the name or UID.
-    - name: service
-      description: Collection of network objects identified by the name or UID.
-    - name: source
-      description: Collection of network objects identified by the name or UID.
-    - name: session_id
-      required: true
+    - description: Collection of network objects identified by the name or UID.
+      name: destination
+    - description: Collection of network objects identified by the name or UID.
+      name: service
+    - description: Collection of network objects identified by the name or UID.
+      name: source
+    - defaultValue: None
       description: Executes the command with the specified session ID.
-      defaultValue: None
+      name: session_id
+      required: true
+    description: Creates a new access rule.
+    name: checkpoint-access-rule-add
     outputs:
     - contextPath: CheckPoint.AccessRule.name
       description: Object name.
@@ -938,59 +999,59 @@ script:
     - contextPath: CheckPoint.AccessRule.last-modifier
       description: The user that last modofied the object.
       type: String
-    description: Creates a new access rule.
-  - name: checkpoint-access-rule-update
-    arguments:
-    - name: identifier
+  - arguments:
+    - description: Object unique identifier (UID), rule name, or rule number.
+      name: identifier
       required: true
-      description: Object unique identifier (UID), rule name, or rule number.
-    - name: layer
+    - description: Layer to which the rule belongs, identified by the name or UID.
+      name: layer
       required: true
-      description: Layer to which the rule belongs, identified by the name or UID.
-    - name: action
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      description: Action to be taken on the rule.
+      name: action
       predefined:
       - Accept
       - Drop
       - Apply Layer
       - Ask
       - Info
-      description: Action to be taken on the rule.
-    - name: enabled
-      auto: PREDEFINED
-      predefined:
-      - "true"
-      - "false"
+    - auto: PREDEFINED
+      defaultValue: 'true'
       description: If "true", the rule is enabled. Default is "true".
-      defaultValue: "true"
-    - name: new_name
-      description: New name of the object.
-      defaultValue: None
-    - name: new_position
-      description: New position in the rulebase. Value can be "int" to set a specific
-        position, or str- 'top' or 'bottom'.
-    - name: ignore_warnings
-      auto: PREDEFINED
+      name: enabled
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
+    - defaultValue: None
+      description: New name of the object.
+      name: new_name
+    - description: New position in the rulebase. Value can be "int" to set a specific
+        position, or str- 'top' or 'bottom'.
+      name: new_position
+    - auto: PREDEFINED
+      defaultValue: 'true'
       description: Whether to ignore warnings when applying the updates. Can be "True"
         or "False". Default is "True".
-      defaultValue: "true"
-    - name: ignore_errors
-      auto: PREDEFINED
+      name: ignore_warnings
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      defaultValue: 'false'
       description: |-
         Whether to ignore errors when applying the updates. Can be "True" or "False". Default is "False".
         Note: you won't be able to publish such these changes.
         If the ignore-warnings flag was omitted, warnings will also be ignored.
-      defaultValue: "false"
-    - name: session_id
-      required: true
+      name: ignore_errors
+      predefined:
+      - 'true'
+      - 'false'
+    - defaultValue: None
       description: Executes the command with the specified session ID.
-      defaultValue: None
+      name: session_id
+      required: true
+    description: Modifies an existing access rule, using object name or UID.
+    name: checkpoint-access-rule-update
     outputs:
     - contextPath: CheckPoint.AccessRule.name
       description: Object name.
@@ -1037,36 +1098,36 @@ script:
     - contextPath: CheckPoint.AccessRule.last-modifier
       description: The user that last modified the object.
       type: String
-    description: Modifies an existing access rule, using object name or UID.
-  - name: checkpoint-access-rule-delete
-    arguments:
-    - name: identifier
-      required: true
-      description: Object unique identifier (UID), rule name, or rule number.
+  - arguments:
+    - description: Object unique identifier (UID), rule name, or rule number.
       isArray: true
-    - name: layer
+      name: identifier
       required: true
-      description: Layer to which the rule belongs, identified by the name or UID.
-    - name: session_id
+    - description: Layer to which the rule belongs, identified by the name or UID.
+      name: layer
       required: true
+    - defaultValue: None
       description: Executes the command with the specified session ID.
-      defaultValue: None
+      name: session_id
+      required: true
+    description: Deletes the specified access rule.
+    name: checkpoint-access-rule-delete
     outputs:
     - contextPath: CheckPoint.AccessRule.message
       description: Status of the delete operation.
       type: String
-    description: Deletes the specified access rule.
-  - name: checkpoint-application-site-list
-    arguments:
-    - name: limit
+  - arguments:
+    - defaultValue: '50'
       description: The maximum number of results to return. Default is 50.
-      defaultValue: "50"
-    - name: offset
+      name: limit
+    - defaultValue: '0'
       description: Number of results to initially skip. Default is 0.
-      defaultValue: "0"
-    - name: session_id
+      name: offset
+    - defaultValue: None
       description: Executes the command with the specified session ID.
-      defaultValue: None
+      name: session_id
+    description: Retrieves all objects.
+    name: checkpoint-application-site-list
     outputs:
     - contextPath: CheckPoint.ApplicationSite.name
       description: Object names.
@@ -1077,30 +1138,30 @@ script:
     - contextPath: CheckPoint.ApplicationSite.type
       description: Object types.
       type: String
-    description: Retrieves all objects.
-  - name: checkpoint-application-site-add
-    arguments:
-    - name: name
+  - arguments:
+    - description: Object name. Must be unique in the domain
+      name: name
       required: true
-      description: Object name. Must be unique in the domain
-    - name: primary_category
-      required: true
-      description: Each application is assigned to one primary category based on its
+    - description: Each application is assigned to one primary category based on its
         most defining aspect.
-    - name: identifier
+      name: primary_category
       required: true
-      description: |-
+    - description: |-
         Can be:
           url-list(str): URLs that determine this particular application.
           application-signature(str): Application signature generated by Signature Tool.
       isArray: true
-    - name: session_id
+      name: identifier
       required: true
+    - defaultValue: None
       description: Executes the command with the specified session ID.
-      defaultValue: None
-    - name: groups
-      description: Collection of group identifiers.
+      name: session_id
+      required: true
+    - description: Collection of group identifiers.
       isArray: true
+      name: groups
+    description: Adds an application site.
+    name: checkpoint-application-site-add
     outputs:
     - contextPath: CheckPoint.ApplicationSite.name
       description: Object name.
@@ -1138,47 +1199,49 @@ script:
     - contextPath: CheckPoint.ApplicationSite.groups
       description: Collection of group identifiers.
       type: Unknown
-    description: Adds an application site.
-  - name: checkpoint-application-site-update
-    arguments:
-    - name: identifier
+  - arguments:
+    - description: Object unique identifier (UID) or name.
+      name: identifier
       required: true
-      description: Object unique identifier (UID) or name.
-    - name: description
-      description: A description of the application.
-    - name: primary_category
-      description: Each application is assigned to one primary category based on its
+    - description: A description of the application.
+      name: description
+    - description: Each application is assigned to one primary category based on its
         most defining aspect.
-    - name: application_signature
-      description: Application signature generated by Signature Tool.
+      name: primary_category
+    - description: Application signature generated by Signature Tool.
       isArray: true
-    - name: new_name
-      description: New name of the object.
-    - name: urls_defined_as_regular_expression
-      auto: PREDEFINED
-      predefined:
-      - "true"
-      - "false"
+      name: application_signature
+    - description: New name of the object.
+      name: new_name
+    - auto: PREDEFINED
+      defaultValue: 'true'
       description: If "True", the URL is defined as a Regular Expression. Default
         is "True".
-      defaultValue: "true"
-    - name: url_list
-      description: URLs that determine this particular application. This will replace
+      name: urls_defined_as_regular_expression
+      predefined:
+      - 'true'
+      - 'false'
+    - description: URLs that determine this particular application. This will replace
         the current url collection.
       isArray: true
-    - name: url_list_to_add
-      description: Adds to collection of URLs.
+      name: url_list
+    - description: Adds to collection of URLs.
       isArray: true
-    - name: url_list_to_remove
-      description: Removes from collection of URLs.
+      name: url_list_to_add
+    - description: Removes from collection of URLs.
       isArray: true
-    - name: groups
-      description: Collection of group identifiers. Can be a single group or a list
+      name: url_list_to_remove
+    - description: Collection of group identifiers. Can be a single group or a list
         of groups.
       isArray: true
-    - name: session_id
+      name: groups
+    - description: Executes the command with the specified session ID.
+      name: session_id
       required: true
-      description: Executes the command with the specified session ID.
+    description: "Edits an existing application using the object name or UID. \nIt's\
+      \ impossible to set 'application-signature' when the application was initialized\
+      \ with 'url-list' and vice-versa."
+    name: checkpoint-application-site-update
     outputs:
     - contextPath: CheckPoint.ApplicationSite.name
       description: Object name.
@@ -1213,83 +1276,81 @@ script:
     - contextPath: CheckPoint.ApplicationSite.primary-category
       description: Objects primary category.
       type: String
-    description: "Edits an existing application using the object name or UID. \nIt's\
-      \ impossible to set 'application-signature' when the application was initialized\
-      \ with 'url-list' and vice-versa."
-  - name: checkpoint-application-site-delete
-    arguments:
-    - name: identifier
-      required: true
-      description: Object unique identifier (UID) or name.
+  - arguments:
+    - description: Object unique identifier (UID) or name.
       isArray: true
-    - name: session_id
+      name: identifier
       required: true
+    - defaultValue: None
       description: Executes the command with the specified session ID.
-      defaultValue: None
+      name: session_id
+      required: true
+    description: Deletes an existing application site object using the object name
+      or UID.
+    name: checkpoint-application-site-delete
     outputs:
     - contextPath: CheckPoint.ApplicationSite.message
       description: Status of the delete operation.
       type: String
-    description: Deletes an existing application site object using the object name
-      or UID.
-  - name: checkpoint-publish
-    arguments:
-    - name: session_id
-      required: true
+  - arguments:
+    - defaultValue: None
       description: Executes the command with the specified session ID.
-      defaultValue: None
+      name: session_id
+      required: true
+    description: Publishes changes.
+    name: checkpoint-publish
     outputs:
     - contextPath: CheckPoint.Publish.task-id
       description: Task id of the publish command.
       type: String
-    description: Publishes changes.
-  - name: checkpoint-install-policy
-    arguments:
-    - name: policy_package
+  - arguments:
+    - description: The name of the Policy Package to install.
+      name: policy_package
       required: true
-      description: The name of the Policy Package to install.
-    - name: targets
-      required: true
-      description: The targets on which to execute this command. Targets can be identified
+    - description: The targets on which to execute this command. Targets can be identified
         by their name, or object unique identifier.
-    - name: access
-      auto: PREDEFINED
-      predefined:
-      - "true"
-      - "false"
-      description: If "True", will install the Access Control policy.
-      defaultValue: "true"
-    - name: session_id
+      name: targets
       required: true
+    - auto: PREDEFINED
+      defaultValue: 'true'
+      description: If "True", will install the Access Control policy.
+      name: access
+      predefined:
+      - 'true'
+      - 'false'
+    - defaultValue: None
       description: Executes the command with the specified session ID.
-      defaultValue: None
+      name: session_id
+      required: true
+    description: Intsalls an Access Control policy.
+    name: checkpoint-install-policy
     outputs:
     - contextPath: CheckPoint.InstallPolicy.task-id
       description: Operation task ID.
       type: String
-    description: Intsalls an Access Control policy.
-  - name: checkpoint-verify-policy
-    arguments:
-    - name: policy_package
+  - arguments:
+    - description: The name of the Policy Package to verify.
+      name: policy_package
       required: true
-      description: The name of the Policy Package to verify.
-    - name: session_id
-      required: true
+    - defaultValue: None
       description: Executes the command with the specified session ID.
-      defaultValue: None
+      name: session_id
+      required: true
+    description: Verifies the policy of the selected package.
+    name: checkpoint-verify-policy
     outputs:
     - contextPath: CheckPoint.VerifyPolicy.task-id
       description: Operation task ID.
       type: String
-    description: Verifies the policy of the selected package.
-  - name: checkpoint-show-task
-    arguments:
-    - name: task_id
+  - arguments:
+    - description: Unique identifier of one or more tasks.
+      name: task_id
       required: true
-      description: Unique identifier of one or more tasks.
-    - name: session_id
+    - defaultValue: None
       description: Executes the command with the specified session ID.
-      defaultValue: None
+      name: session_id
+    description: Show task progress and details.
+    name: checkpoint-show-task
     outputs:
     - contextPath: CheckPoint.ShowTask.task-id
       description: Task ID.
@@ -1306,37 +1367,37 @@ script:
     - contextPath: CheckPoint.ShowTask.suppressed
       description: Indicates if the task is suppressed.
       type: Boolean
-    description: Show task progress and details.
-  - name: checkpoint-login-and-get-session-id
-    arguments:
-    - name: session_timeout
+  - arguments:
+    - defaultValue: '600'
       description: Session expiration timeout in seconds. Default is 600 seconds.
         Session timeout range is between 600 to 3600 seconds.
-      defaultValue: "600"
-    - name: domain
-      description: Optional domain to start session in, for use with MDS login only.
+      name: session_timeout
+    - description: Optional domain to start session in, for use with MDS login only.
+      name: domain
+    description: Log in to CheckPoint and get the session ID.
+    name: checkpoint-login-and-get-session-id
     outputs:
     - contextPath: CheckPoint.Login.session-id
       description: Session ID.
       type: String
-    description: Log in to CheckPoint and get the session ID.
-  - name: checkpoint-logout
-    arguments:
-    - name: session_id
+  - arguments:
+    - description: Session ID to log out from.
+      name: session_id
       required: true
-      description: Session ID to log out from.
     description: Log out from a given session.
-  - name: checkpoint-packages-list
-    arguments:
-    - name: limit
+    name: checkpoint-logout
+  - arguments:
+    - defaultValue: '50'
       description: The maximum number of results to return. Default is 50.
-      defaultValue: "50"
-    - name: offset
+      name: limit
+    - defaultValue: '0'
       description: Number of the results to initially skip. Default is 0.
-      defaultValue: "0"
-    - name: session_id
+      name: offset
+    - defaultValue: None
       description: Executes the command with the specified session ID.
-      defaultValue: None
+      name: session_id
+    description: List all packages.
+    name: checkpoint-packages-list
     outputs:
     - contextPath: CheckPoint.Packages.name
       description: Name of the package.
@@ -1356,18 +1417,18 @@ script:
     - contextPath: CheckPoint.Packages.domain-type
       description: Domain type.
       type: String
-    description: List all packages.
-  - name: checkpoint-gateways-list
-    arguments:
-    - name: limit
+  - arguments:
+    - defaultValue: '50'
       description: The maximum number of results to return. Default is 50.
-      defaultValue: "50"
-    - name: offset
+      name: limit
+    - defaultValue: '0'
       description: Number of the results to initially skip. Default is 0.
-      defaultValue: "0"
-    - name: session_id
+      name: offset
+    - defaultValue: None
       description: Executes the command with the specified session ID.
-      defaultValue: None
+      name: session_id
+    description: Retrieve all gateways and servers.
+    name: checkpoint-gateways-list
     outputs:
     - contextPath: CheckPoint.Gateways.name
       description: Gateway name.
@@ -1396,18 +1457,18 @@ script:
     - contextPath: CheckPoint.Gateways.domain-type
       description: Domain type.
       type: String
-    description: Retrieve all gateways and servers.
-  - name: checkpoint-application-site-category-list
-    arguments:
-    - name: limit
+  - arguments:
+    - defaultValue: '50'
       description: The maximum number of results to return. Default is 50.
-      defaultValue: "50"
-    - name: offset
+      name: limit
+    - defaultValue: '0'
       description: Number of the results to initially skip. Default is 0.
-      defaultValue: "0"
-    - name: session_id
+      name: offset
+    - defaultValue: None
       description: Executes the command with the specified session ID.
-      defaultValue: None
+      name: session_id
+    description: Retrieve all application site category.
+    name: checkpoint-application-site-category-list
     outputs:
     - contextPath: CheckPoint.ApplicationSiteCategory.name
       description: Name of the package.
@@ -1427,19 +1488,19 @@ script:
     - contextPath: CheckPoint.ApplicationSiteCategory.domain-type
       description: Domain type.
       type: String
-    description: Retrieve all application site category.
-  - name: checkpoint-application-site-category-add
-    arguments:
-    - name: identifier
-      required: true
-      description: Object name or uid. Must be unique in the domain.
+  - arguments:
+    - description: Object name or uid. Must be unique in the domain.
       isArray: true
-    - name: groups
-      description: Collection of group identifiers.
-      isArray: true
-    - name: session_id
+      name: identifier
       required: true
-      description: Executes the command with the specified session ID.
+    - description: Collection of group identifiers.
+      isArray: true
+      name: groups
+    - description: Executes the command with the specified session ID.
+      name: session_id
+      required: true
+    description: Adds new application site category.
+    name: checkpoint-application-site-category-add
     outputs:
     - contextPath: CheckPoint.ApplicationSiteCategory.name
       description: Object name.
@@ -1471,15 +1532,15 @@ script:
     - contextPath: CheckPoint.ApplicationSiteCategory.groups
       description: Collection of group identifiers.
       type: Unknown
-    description: Adds new application site category.
-  - name: checkpoint-application-site-category-get
-    arguments:
-    - name: identifier
+  - arguments:
+    - description: application site category object name or UID.
+      name: identifier
       required: true
-      description: application site category object name or UID.
-    - name: session_id
+    - defaultValue: None
       description: Executes the command with the specified session ID.
-      defaultValue: None
+      name: session_id
+    description: Retrieve application site category object using object name or UID.
+    name: checkpoint-application-site-category-get
     outputs:
     - contextPath: CheckPoint.ApplicationSiteCategory.name
       description: Host name.
@@ -1505,59 +1566,80 @@ script:
     - contextPath: CheckPoint.ApplicationSiteCategory.last-modifier
       description: Indicates the last user modified the object.
       type: String
-    description: Retrieve application site category object using object name or UID.
-  - name: checkpoint-show-objects
-    arguments:
-    - name: limit
+  - arguments:
+    - defaultValue: '50'
       description: The maximum number of results to return. Default is 50.
-      defaultValue: "50"
-    - name: offset
+      name: limit
+    - defaultValue: '0'
       description: Number of the results to initially skip. Default is 0.
-      defaultValue: "0"
-    - name: filter_search
+      name: offset
+    - defaultValue: None
       description: Search expression to filter objects by. The provided text should
         be exactly the same as it would be given in Smart Console. The logical operators
         in the expression ('AND', 'OR') should be provided in capital letters. By
         default, the search involves both a textual search and a IP search. To use
         IP search only, set the "ip-only" parameter to true.
-      defaultValue: None
-    - name: ip_only
-      auto: PREDEFINED
-      predefined:
-      - "true"
-      - "false"
+      name: filter_search
+    - auto: PREDEFINED
+      defaultValue: 'false'
       description: If using "filter", use this field to search objects by their IP
         address only, without involving the textual search.
-      defaultValue: "false"
-    - name: object_type
+      name: ip_only
+      predefined:
+      - 'true'
+      - 'false'
+    - defaultValue: object
       description: 'The object type, e.g.: host, service-tcp, network, address-range.
         Default value is object.'
-      defaultValue: object
-    - name: session_id
+      name: object_type
+    - defaultValue: None
       description: Executes the command with the specified session ID.
-      defaultValue: None
+      name: session_id
+    description: Retrieve data about objects.
+    name: checkpoint-show-objects
     outputs:
-    - contextPath: CheckPoint.Object.name
+    - contextPath: CheckPoint.Objects.name
       description: Object name.
       type: String
-    - contextPath: CheckPoint.Object.uid
+    - contextPath: CheckPoint.Objects.uid
       description: Object UID.
       type: String
-    - contextPath: CheckPoint.Object.type
+    - contextPath: CheckPoint.Objects.type
       description: Object type.
       type: String
-    - contextPath: CheckPoint.Object.ipv4
+    - contextPath: CheckPoint.Objects.ipv4-address
       description: IPv4 address of the specified object.
       type: String
-    description: Retrieve data about objects.
-  - name: checkpoint-package-list
-    arguments:
-    - name: identifier
+    - contextPath: CheckPoint.Objects.ipv6-address
+      description: IPv6 address of the specified object.
+      type: String
+    - contextPath: CheckPoint.Objects.domain-name
+      description: Domain name.
+      type: String
+    - contextPath: CheckPoint.Objects.domain-uid
+      description: Domain UID.
+      type: String
+    - contextPath: CheckPoint.Objects.creator
+      description: The creator of the object.
+      type: String
+    - contextPath: CheckPoint.Objects.last-modifier
+      description: The user that last modified the object.
+      type: String
+    - contextPath: CheckPoint.Objects.read-only
+      description: Indicates if the object is read-only.
+      type: Boolean
+    - contextPath: CheckPoint.Objects.groups
+      description: Collection of group identifiers.
+      type: Unknown
+  - arguments:
+    - description: The object unique identifier or name.
+      name: identifier
       required: true
-      description: The object unique identifier or name.
-    - name: session_id
+    - defaultValue: None
       description: The session ID used to execute the command.
-      defaultValue: None
+      name: session_id
+    description: Retrieve the details of Checkpoint packages.
+    name: checkpoint-package-list
     outputs:
     - contextPath: CheckPoint.Package.name
       description: The name of the package.
@@ -1583,10 +1665,55 @@ script:
     - contextPath: CheckPoint.Package.revision.uid
       description: The UID of the revision.
       type: String
-    description: Retrieve the details of Checkpoint packages.
-  dockerimage: demisto/python3:3.9.8.24399
+  - arguments:
+    - description: Executes the command with the specified session ID.
+      name: session_id
+      required: true
+    - defaultValue: host
+      description: Type of objects to be created.
+      name: object_type
+      required: true
+    - description: ip addresses to be added
+      isArray: true
+      name: ipaddress
+      required: true
+    - description: names of the ip objects to be added
+      isArray: true
+      name: name
+      required: true
+    description: 'Creates new objects in batch. To achieve optimum performance when
+      adding more than one object, use this API. Note: Errors and warnings are ignored
+      when using this API, operation will apply changes while ignoring errors. It
+      is not possible to publish changes that contain validations errors.'
+    name: checkpoint-add-objects-batch
+    outputs:
+    - contextPath: CheckPoint.AddObjectBatch.task-id
+      description: Task id of the add-objects-batch command.
+      type: string
+  - arguments:
+    - description: Executes the command with the specified session ID.
+      name: session_id
+      required: true
+    - description: a comma separated list of names of the ip objects to be deleted.
+      name: name
+      isArray: true
+      required: true
+    - defaultValue: host
+      description: Type of objects to be deleted.
+      name: object_type
+      required: true
+    description: Deletes existing objects in batch using object name or uid. To achieve
+      optimum performance when deleting more than one object, use this API.
+    name: checkpoint-delete-objects-batch
+    outputs:
+    - contextPath: CheckPoint.DeleteObjectsBatch.task-id
+      description: Task id of the delete-objects-batch command.
+      type: string
+  dockerimage: demisto/python3:3.9.9.25564
   runonce: false
+  script: ''
   subtype: python3
+  type: python
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)

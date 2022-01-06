@@ -2703,7 +2703,7 @@ class Message(object):
     def _get_attachments_names(self):
         names = []
         for attachment in self.attachments:
-            names.append(attachment.DisplayName)
+            names.append(attachment.DisplayName or attachment.Filename)
 
         return names
 
@@ -3468,7 +3468,7 @@ def handle_msg(file_path, file_name, parse_only_headers=False, max_depth=3):
         'Text': msg_dict['Text'],
         'Headers': headers,
         'HeadersMap': headers_map,
-        'Attachments': '',
+        'Attachments': msg_dict.get('Attachments'),
         'Format': mail_format_type,
         'Depth': MAX_DEPTH_CONST - max_depth
     }

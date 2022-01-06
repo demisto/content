@@ -159,7 +159,7 @@ Returns a list of incidents, which you can filter by a list of incident IDs (max
 | sort_by_creation_time | Sorts returned incidents by the date/time that the incident was created ("asc" - ascending, "desc" - descending). | Optional | 
 | page | Page number (for pagination). The default is 0 (the first page). | Optional | 
 | limit | Maximum number of incidents to return per page. The default and maximum is 100. | Optional | 
-| status | Filters only incidents in the specified status. The options are: new, under_investigation, resolved_threat_handled, resolved_known_issue, resolved_false_positive, resolved_true_positive, resolved_security_testing, resolved_other, resolved_auto | Optional |
+| status | Filters only incidents in the specified status. The options are: new, under_investigation, resolved_known_issue, resolved_false_positive, resolved_true_positive, resolved_security_testing, resolved_other, resolved_auto | Optional |
 
 
 ##### Context Output
@@ -179,7 +179,7 @@ Returns a list of incidents, which you can filter by a list of incident IDs (max
 | PaloAltoNetworksXDR.Incident.user_count | number | Number of users involved in the incident. | 
 | PaloAltoNetworksXDR.Incident.severity | String | Calculated severity of the incident. Can be "low", "medium", or "high". | 
 | PaloAltoNetworksXDR.Incident.low_severity_alert_count | String | Number of alerts with the severity LOW. | 
-| PaloAltoNetworksXDR.Incident.status | String | Current status of the incident. Can be "new", "under_investigation", "resolved_threat_handled", "resolved_known_issue", "resolved_duplicate", "resolved_false_positive", "resolved_true_positive", "resolved_security_testing", or "resolved_other". | 
+| PaloAltoNetworksXDR.Incident.status | String | Current status of the incident. Can be "new", "under_investigation", "resolved_known_issue", "resolved_duplicate", "resolved_false_positive", "resolved_true_positive", "resolved_security_testing", or "resolved_other". | 
 | PaloAltoNetworksXDR.Incident.description | String | Dynamic calculated description of the incident. | 
 | PaloAltoNetworksXDR.Incident.resolve_comment | String | Comments entered by the user when the incident was resolved. | 
 | PaloAltoNetworksXDR.Incident.notes | String | Comments entered by the user regarding the incident. | 
@@ -301,7 +301,7 @@ Returns additional data for the specified incident, for example, related alerts,
 | PaloAltoNetworksXDR.Incident.modification_time | Date | Date and time that the incident was last modified. |
 | PaloAltoNetworksXDR.Incident.detection_time | Date | Date and time that the first alert occurred in the incident. |
 | PaloAltoNetworksXDR.Incident.status | String | Current status of the incident. Valid values are:
-"new","under_investigation","resolved_threat_handled","resolved_known_issue","resolved_duplicate","resolved_false_positive","resolved_true_positive","resolved_security_testing","resolved_other" |
+"new","under_investigation","resolved_known_issue","resolved_duplicate","resolved_false_positive","resolved_true_positive","resolved_security_testing","resolved_other" |
 | PaloAltoNetworksXDR.Incident.severity | String | Calculated severity of the incident. Valid values are: "low","medium","high" |
 | PaloAltoNetworksXDR.Incident.description | String | Dynamic calculated description of the incident. |
 | PaloAltoNetworksXDR.Incident.assigned_user_mail | String | Email address of the assigned user. |
@@ -734,7 +734,7 @@ Updates one or more fields of a specified incident. Missing fields will be ignor
 | manual_severity | Severity to assign to the incident (LOW, MEDIUM, or HIGH). | Optional | 
 | assigned_user_mail | Email address of the user to assigned to the incident. | Optional | 
 | assigned_user_pretty_name | Full name of the user assigned to the incident. | Optional | 
-| status | Status of the incident (NEW, UNDER_INVESTIGATION, RESOLVED_THREAT_HANDLED, RESOLVED_KNOWN_ISSUE, RESOLVED_DUPLICATE, RESOLVED_FALSE_POSITIVE, RESOLVED_TRUE_POSITIVE, RESOLVED_SECURITY_TESTING, RESOLVED_OTHER, RESOLVED_SECURITY_TESTING, RESOLVED_TRUE_POSSITIVE). | Optional | 
+| status | Status of the incident (NEW, UNDER_INVESTIGATION, RESOLVED_KNOWN_ISSUE, RESOLVED_DUPLICATE, RESOLVED_FALSE_POSITIVE, RESOLVED_TRUE_POSITIVE, RESOLVED_SECURITY_TESTING, RESOLVED_OTHER, RESOLVED_SECURITY_TESTING, RESOLVED_TRUE_POSSITIVE). | Optional | 
 | resolve_comment | Comment explaining why the incident was resolved. This should be set when the incident is resolved. | Optional | 
 | unassign_user | If true, will remove all assigned users from the incident. | Optional | 
 
