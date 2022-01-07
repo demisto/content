@@ -1,0 +1,225 @@
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 69f03f42-dc5f-4fcb-8dd5-1064061c9aa6
+    propagationLabels:
+    - all
+    toServerVersion: ""
+id: a867a6c3-2f36-4e76-8697-888c4a2dc2bd
+inputs: []
+name: JOB-Get At Risk Incidents
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 2b9cb2e8-51c8-4053-8720-123ab8bebfff
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 2b9cb2e8-51c8-4053-8720-123ab8bebfff
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 65
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      query:
+        simple: (containsla.slaStatus:risk and -containsla.runStatus:ended and status:Active)
+          or (-containsla.runStatus:ended and containsla.dueDate:>"now" and containsla.dueDate:<="in
+          60 minutes" and status:Active) or (resolutionsla.slaStatus:risk and -resolutionsla.runStatus:ended
+          and status:Active) or (-resolutionsla.runStatus:ended and resolutionsla.dueDate:>"now"
+          and resolutionsla.dueDate:<="in 60 minutes" and status:Active)
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Searches Demisto incidents
+      id: 74f856df-bb8e-4860-8890-489466057288
+      iscommand: false
+      name: Search at risk incidents
+      scriptName: SearchIncidentsV2
+      type: regular
+      version: -1
+    taskid: 74f856df-bb8e-4860-8890-489466057288
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 225
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: e65bafcc-53cb-4765-8056-ea00e4052d76
+      iscommand: false
+      name: End Playbook
+      type: title
+      version: -1
+    taskid: e65bafcc-53cb-4765-8056-ea00e4052d76
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 925
+        }
+      }
+  "3":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: foundIncidents
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: foundIncidents
+          operator: isNotEmpty
+      label: "yes"
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "4"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: daa85ade-5f9d-4db6-894f-9cbb66c8ada8
+      iscommand: false
+      name: Did search Incidents return anything?
+      type: condition
+      version: -1
+    taskid: daa85ade-5f9d-4db6-894f-9cbb66c8ada8
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 400
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    results:
+    - html1
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: b327276c-ba59-45ab-84a5-bf5c94d54ad7
+      iscommand: false
+      name: Sort At Risk Incidents
+      scriptName: At-Risk-Incidents-Notification
+      type: regular
+      version: -1
+    taskid: b327276c-ba59-45ab-84a5-bf5c94d54ad7
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 575
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Sends an email using EWS.
+      id: e03cd0fd-0230-4682-8d7a-102d10bc443d
+      iscommand: false
+      name: Send Mail
+      type: regular
+      version: -1
+    taskid: e03cd0fd-0230-4682-8d7a-102d10bc443d
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 750
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 925,
+        "width": 492.5,
+        "x": 50,
+        "y": 65
+      }
+    }
+  }

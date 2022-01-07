@@ -1,0 +1,17 @@
+{
+    "name": "JOB-Get At Risk Incidents",
+    "description": "This playbook will be used as Job together with automation script \"DateTime_to_AD_Time\" for sending notification of the incidents which are in risk state and sla is going to breach soon. \nThis will used to track incidents by the analyst on a daily basis. ",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Shubham Agarwal",
+    "url": "",
+    "email": "",
+    "created": "2022-01-07T02:48:34Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "shubgwal1029"
+    ]
+}
