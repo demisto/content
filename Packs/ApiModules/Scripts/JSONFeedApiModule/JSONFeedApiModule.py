@@ -109,16 +109,18 @@ class Client:
     def build_iterator(self, feed: dict, feed_name: str, **kwargs) -> Tuple[List, bool]:
         url = feed.get('url', self.url)
 
-        # Set the If-None-Match and If-Modified-Since headers if we have etag or last_modified values in the context.
-        last_run = demisto.getLastRun()
-        etag = demisto.get(last_run, f'{feed_name}.etag')
-        last_modified = demisto.get(last_run, f'{feed_name}.last_modified')
+        if is_demisto_version_ge('6.5.0'):
+            # Set the If-None-Match and If-Modified-Since headers
+            # if we have etag or last_modified values in the context, with server version higher than 6.5.0.
+            last_run = demisto.getLastRun()
+            etag = demisto.get(last_run, f'{feed_name}.etag')
+            last_modified = demisto.get(last_run, f'{feed_name}.last_modified')
 
-        if etag:
-            self.headers['If-None-Match'] = etag
+            if etag:
+                self.headers['If-None-Match'] = etag
 
-        if last_modified:
-            self.headers['If-Modified-Since'] = last_modified
+            if last_modified:
+                self.headers['If-Modified-Since'] = last_modified
 
         result = []
         if not self.post_data:
@@ -149,8 +151,9 @@ class Client:
 
         except ValueError as VE:
             raise ValueError(f'Could not parse returned data to Json. \n\nError massage: {VE}')
-
-        return result, get_no_update_value(r, feed_name)
+        if is_demisto_version_ge('6.5.0'):
+            return result, get_no_update_value(r, feed_name)
+        return result, True
 
 
 def get_no_update_value(response: requests.Response, feed_name: str) -> bool:
