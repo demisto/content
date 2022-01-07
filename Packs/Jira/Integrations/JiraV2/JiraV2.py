@@ -129,8 +129,33 @@ def get_auth():
         '- Personal Access Tokens requires AccessToken'
     )
 
+def get_custom_field_names():
+    """
+    This function returns all custom fields.
+    :return: dict of custom fields: id as key and description as value.
+    """
+    custom_id_name_mapping = {}
+    HEADERS['Accept'] = "application/json"
+    try:
+        res = requests.request(
+            method='GET',
+            url=BASE_URL + 'rest/api/latest/field',
+            headers=HEADERS,
+            verify=USE_SSL,
+            auth=get_auth(),
+        )
+    except Exception as e:
+        demisto.error(f'Could not get custom fields because got the next exception: {e}')
+    else:
+        if res.status_code == 200:
+            custom_fields_list = res.json()
+            custom_id_name_mapping = {field.get('id'): field.get('name') for field in custom_fields_list}
+        else:
+            demisto.error(f'Could not get custom fields. status code: {res.status_code}. reason: {res.reason}')
+    finally:
+        return custom_id_name_mapping
 
-def run_query(query, start_at='', max_results=None):
+def run_query(query, start_at='', max_results=None,extra_fields=None):
     # EXAMPLE
     """
     request = {
@@ -151,7 +176,10 @@ def run_query(query, start_at='', max_results=None):
         "startAt": start_at,
         "maxResults": max_results,
     }
-
+    if extra_fields:
+        fields = extra_fields.split(",")
+        fields_mapping_name_id = get_custom_field_names()
+        query_params['fields'] = [ k for k,v in fields_mapping_name_id.items() for y in fields if v.lower() == y.lower()]
     try:
         result = requests.get(
             url=url,
@@ -301,6 +329,13 @@ def generate_md_context_get_issue(data):
         context_obj['ProjectName'] = md_obj['project'] = demisto.get(element, 'fields.project.name')
         context_obj['DueDate'] = md_obj['duedate'] = demisto.get(element, 'fields.duedate')
         context_obj['Created'] = md_obj['created'] = demisto.get(element, 'fields.created')
+        # Parse custom fields into their original names
+        custom_fields = [i for i in demisto.get(element, "fields") if "custom" in i]
+        if custom_fields:
+            field_mappings = get_custom_field_names()
+            for field in custom_fields:
+                readable_field_name = field_mappings[field]
+                context_obj[readable_field_name] = md_obj[readable_field_name] = demisto.get(element, f"fields.{field}")
 
         assignee = demisto.get(element, 'fields.assignee')
         context_obj['Assignee'] = md_obj['assignee'] = "{name}({email})".format(
@@ -618,8 +653,8 @@ def get_issue(issue_id, headers=None, expand_links=False, is_update=False, get_a
     return human_readable, outputs, contents
 
 
-def issue_query_command(query, start_at='', max_results=None, headers=''):
-    j_res = run_query(query, start_at, max_results)
+def issue_query_command(query, start_at='', max_results=None, headers='',extra_fields=None):
+    j_res = run_query(query, start_at, max_results,extra_fields)
     if not j_res:
         outputs = contents = {}
         human_readable = 'No issues matched the query.'
