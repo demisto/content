@@ -648,8 +648,6 @@ tasks:
       SearchAndDeleteIntegration:
         complex:
           root: inputs.SearchAndDeleteIntegration
-      SearchThisWeek:
-        simple: "true"
       Subject:
         complex:
           root: incident
