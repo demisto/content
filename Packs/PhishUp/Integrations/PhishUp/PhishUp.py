@@ -86,7 +86,8 @@ class Client(BaseClient):
 def investigate_url_command(client: Client, args, params):
     result = client.investigate_url_http_request(params.get("apikey"), args.get("Url"))
 
-    if result != "Error":
+    demisto.log(f"Testing result single: {result}")
+    if result != "Error" and "Url" in result:
         return (
             f"PhishUp Result: {result}",  # readable_output,
             {
@@ -137,8 +138,8 @@ def investigate_bulk_url_command(client: Client, args, params):
 
     demisto.log(f"""Data: {args.get("Urls")}, Tip: {type(args.get("Urls"))}""")
     result = client.investigate_bulk_url_http_request(params.get("apikey"), urls)
-
-    if result != "Error":
+    demisto.log(f"Testing result bulk: {result}")
+    if result != "Error" and "Results" in result and result["Results"] is not None:
         any_phish = "Clean"
         for r in result["Results"]:
             if r["PhishUpStatus"] == "Phish":
@@ -164,7 +165,7 @@ def investigate_bulk_url_command(client: Client, args, params):
         )
 
 
-def get_chosen_phishup_action_command(client: Client, params):
+def get_chosen_phishup_action_command(params):
     return (
         f"""Chosen Action: {params.get("phishup-playbook-action")}""",  # readable_output,
         {
@@ -219,7 +220,7 @@ def main():
         elif demisto.command() == 'phishup-investigate-bulk-url':
             return_outputs(*investigate_bulk_url_command(client, demisto.args(), demisto.params()))
         elif demisto.command() == 'phishup-get-chosen-action':
-            return_outputs(*get_chosen_phishup_action_command(client, demisto.params()))
+            return_outputs(*get_chosen_phishup_action_command(demisto.params()))
 
     # Log exceptions
     except Exception as e:

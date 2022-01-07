@@ -19,24 +19,65 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-# TODO: REMOVE the following dummy unit test function
-def test_baseintegration_dummy():
-    """Tests helloworld-say-hello command function.
+def test_investigate_url_command():
 
-    Checks the output of the command function with the expected output.
+    from PhishUp import Client, investigate_url_command
 
-    No mock is needed here because the say_hello_command does not call
-    any external API.
-    """
-    from BaseIntegration import Client, baseintegration_dummy_command
+    base_url = "https://apiv2.phishup.co"
 
-    client = Client(base_url='some_mock_url', verify=False)
+    client = Client(
+        base_url=base_url,
+        verify=False)
+
     args = {
-        'dummy': 'this is a dummy response'
+        "apikey": "not"
     }
-    response = baseintegration_dummy_command(client, args)
 
-    mock_response = util_load_json('test_data/baseintegration-dummy.json')
+    params = {
+        "Url": "https://www.paloaltonetworks.com/"
+    }
 
-    assert response.outputs == mock_response
-# TODO: ADD HERE unit tests for every command
+    response = investigate_url_command(client, args, params)
+
+    mock_response = util_load_json('test_data/error.json')
+
+    assert mock_response == list(response)
+
+
+def test_investigate_bulk_url_command():
+
+    from PhishUp import Client, investigate_bulk_url_command
+
+    base_url = "https://apiv2.phishup.co"
+
+    client = Client(
+        base_url=base_url,
+        verify=False)
+
+    args = {
+        "Urls": []
+    }
+
+    params = {
+        "apikey": "not"
+    }
+
+    response = investigate_bulk_url_command(client, args, params)
+
+    mock_response = util_load_json('test_data/bulk-empty-url.json')
+
+    assert mock_response == list(response)
+
+
+def test_get_chosen_phishup_action_command():
+
+    from PhishUp import get_chosen_phishup_action_command
+
+    params = {
+        "phishup-playbook-action": "Nothing"
+    }
+
+    result = get_chosen_phishup_action_command(params)
+
+    assert list(result)[1]["PhishUp.Action"] == "Nothing"
+
