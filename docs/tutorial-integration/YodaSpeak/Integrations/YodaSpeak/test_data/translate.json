@@ -1,0 +1,10 @@
+{
+  "success": {
+    "total": 1
+  },
+  "contents": {
+    "translated": "Some sentence for translation, this is.",
+    "text": "this is some sentence for translation.",
+    "translation": "yoda"
+  }
+}
