@@ -333,9 +333,9 @@ def generate_md_context_get_issue(data):
         custom_fields = [i for i in demisto.get(element, "fields") if "custom" in i]
         if custom_fields:
             field_mappings = get_custom_field_names()
-            for field in custom_fields:
-                readable_field_name = field_mappings[field]
-                context_obj[readable_field_name] = md_obj[readable_field_name] = demisto.get(element, f"fields.{field}")
+            for field_returned in custom_fields:
+                readable_field_name = field_mappings[field_returned]
+                context_obj[readable_field_name] = md_obj[readable_field_name] = demisto.get(element, f"fields.{field_returned}")
 
         assignee = demisto.get(element, 'fields.assignee')
         context_obj['Assignee'] = md_obj['assignee'] = "{name}({email})".format(
