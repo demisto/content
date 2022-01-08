@@ -1,6 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from parse_emails.parse_emails import ParseEmails
+from parse_emails.parse_emails import EmailParser
 
 
 def recursive_convert_to_unicode(replace_to_utf):
@@ -85,26 +85,50 @@ def main():
                 entry_id, str(ex) + "\n\nTrace:\n" + traceback.format_exc()))
 
     try:
-        email_parser = ParseEmails(file_path=file_path, max_depth=max_depth, parse_only_headers=parse_only_headers,
+        email_parser = EmailParser(file_path=file_path, max_depth=max_depth, parse_only_headers=parse_only_headers,
                                    file_info=file_type)
-        output = email_parser.parse_emails()
+        output = email_parser.parse()
+        resultss = []
 
-        results = []
         if isinstance(output, list) and len(output) > 0:
             for email in output:
-                results.append(CommandResults(outputs_prefix='Email',
-                               outputs=email,
-                               readable_output=data_to_md(email, file_name, print_only_headers=parse_only_headers),
-                               raw_response=email,
-                               entry_type=EntryType.NOTE))
+                if email.get('AttachmentsData'):
+                    for attachment in email.get('AttachmentsData'):
+                        if attachment.get('Name') and attachment.get('FileData'):
+                            if isinstance(attachment.get('FileData'), dict):
+                                content = attachment.get('FileData').get('file_content').decode("utf-8")
+                                attachment.get('FileData')['file_content'] = content
+                            else:
+                                content = attachment.get('FileData').decode("utf-8")
+                                attachment['FileData'] = content
+
+                            name = attachment.get('Name')
+                            demisto.results(fileResult(name, content))
+                resultss.append(CommandResults(outputs_prefix='Email',
+                                outputs=email,
+                                readable_output=data_to_md(email, file_name, print_only_headers=parse_only_headers),
+                                raw_response=email,
+                                entry_type=EntryType.NOTE))
+
         if isinstance(output, dict):
-            results.append(CommandResults(outputs_prefix='Email',
-                                          outputs=output,
-                                          readable_output=data_to_md(output, file_name,
-                                                                     print_only_headers=parse_only_headers),
-                                          raw_response=output,
-                                          entry_type=EntryType.NOTE))
-        return_results(results)
+            if output.get('AttachmentsData'):
+                for attachment in output.get('AttachmentsData'):
+                    if attachment.get('Name') and attachment.get('FileData'):
+                        if isinstance(attachment.get('FileData'), dict):
+                            content = attachment.get('FileData').get('file_content').decode("utf-8")
+                            attachment.get('FileData')['file_content'] = content
+                        else:
+                            content = attachment.get('FileData').decode("utf-8")
+                            attachment['FileData'] = content
+                        name = attachment.get('Name')
+                        demisto.results(fileResult(name, content))
+                        resultss.append(CommandResults(outputs_prefix='Email',
+                                        outputs=output,
+                                        readable_output=data_to_md(output, file_name,
+                                                                   print_only_headers=parse_only_headers),
+                                        raw_response=output,
+                                        entry_type=EntryType.NOTE))
+        return_results(resultss)
 
     except Exception as e:
         demisto.error(str(e) + "\n\nTrace:\n" + traceback.format_exc())
