@@ -99,8 +99,8 @@ def main():
     if not token:
         # If token is empty when test-module is running, return a more readable output to the user.
         if command == 'test-module':
-            return_error('Authorization Error: It\'s seems that the token is empty and you have not a TIM license '
-                         'that is up-to-date, Please fill the token or update your TIM license and try again.')
+            return_error('Authorization Error: It seems that the token is empty and you have not a TIM license '
+                         'that is up-to-date. Please fill the token or update your TIM license and try again.')
         else:
             return_results({
                 'status': 'error',

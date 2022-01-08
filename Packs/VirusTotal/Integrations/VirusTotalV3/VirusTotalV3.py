@@ -646,7 +646,7 @@ class ScoreCalculator:
                 self.logs.append('Indicator is good by popularity ranks.')
                 return True
             else:
-                self.logs.append('Indicator might not be good by it\'s popularity ranks.')
+                self.logs.append('Indicator might not be good by its popularity ranks.')
                 return False
         self.logs.append('Could not determine rank by popularity, No popularity ranks data.')
         return None
