@@ -90,6 +90,9 @@ script:
       name: from_address
       required: false
       secret: false
+    - name: raw_message
+      description: Raw email message from MimeContent type.
+      required: false
     description: Sends an email using EWS.
   - name: reply-mail
     arguments:
