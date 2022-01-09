@@ -8638,7 +8638,6 @@ def get_size_of_object(input_object):
     :return: Size of input_object in bytes.
     :rtype: ``int``
     """
-    # from collections import deque, Set, Mapping
     from collections import deque, Mapping
     from numbers import Number
     # Python 3 also needs range
@@ -8726,7 +8725,6 @@ def get_message_modules_sizes():
     globals_dict_full = {}
     for current_key in globals_dict.keys():
         current_value = globals_dict[current_key]
-        # if type(current_value) == types.ModuleType \
         if isinstance(current_value, types.ModuleType) \
                 and current_key not in excluded_globals \
                 and type(current_value).__name__ not in excluded_types_names:
