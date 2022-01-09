@@ -1184,6 +1184,12 @@ script:
       name: raw_message
       required: false
       secret: false
+    - default: false
+      description: The email address from which to reply.
+      isArray: false
+      name: from_address
+      required: false
+      secret: false
     deprecated: false
     description: Sends an email.
     execution: false
