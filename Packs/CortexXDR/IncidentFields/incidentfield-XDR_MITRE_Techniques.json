@@ -30,6 +30,5 @@
     "useAsKpi": true,
     "version": -1,
     "fromVersion": "5.0.0",
-    "openEnded": true,
-    "XSIAMFields": "mitre_technique_id_and_name"
+    "openEnded": true
 }
