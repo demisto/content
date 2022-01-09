@@ -449,6 +449,22 @@ class Client(BaseClient):
             )
         return self.get_paged_results(uri)
 
+    def list_users(self, args):
+        # Base url - if none of the above specified - returns all the users (default 200 items)
+        uri = "users"
+        query_params = {}
+        for key, value in args.items():
+            if key == 'query':
+                key = 'q'
+            query_params[key] = encode_string_results(value)
+        if args.get('limit'):
+            return self._http_request(
+                method='GET',
+                url_suffix=uri,
+                params=query_params
+            )
+        return self.get_paged_results(uri, query_params)
+
     def list_groups(self, args):
         # Base url - if none of the the above specified - returns all the groups (default 200 items)
         uri = "groups"
@@ -849,6 +865,27 @@ def get_group_members_command(client, args):
     )
 
 
+def list_users_command(client, args):
+    raw_response = client.list_users(args)
+    verbose = args.get('verbose')
+    users = client.get_readable_users(raw_response, verbose)
+    user_context = client.get_users_context(raw_response)
+    context = createContext(user_context, removeNull=True)
+    outputs = {
+        'Account(val.ID && val.ID == obj.ID)': context
+    }
+    if verbose == 'true':
+        readable_output = f"### Okta users found:\n {users}"
+    else:
+        readable_output = f"### Okta users found:\n {tableToMarkdown('Users', users)} "
+
+    return(
+        readable_output,
+        outputs,
+        raw_response
+    )
+
+
 def list_groups_command(client, args):
     raw_response = client.list_groups(args)
     groups = client.get_readable_groups(raw_response)
@@ -1090,6 +1127,7 @@ def main():
         'okta-create-user': create_user_command,
         'okta-update-user': update_user_command,
         'okta-get-group-members': get_group_members_command,
+        'okta-list-users': list_users_command,
         'okta-list-groups': list_groups_command,
         'okta-get-logs': get_logs_command,
         'okta-get-failed-logins': get_failed_login_command,
