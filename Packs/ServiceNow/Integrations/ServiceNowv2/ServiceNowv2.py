@@ -2474,7 +2474,7 @@ def create_co_from_template_command(client: Client, args: dict) -> CommandResult
     )
 
 
-def get_co_human_readable(ticket:dict, ticket_type: str, additional_fields: list = None) -> list:
+def get_co_human_readable(ticket: dict, ticket_type: str, additional_fields: list = None) -> dict:
     """Get co human readable.
 
     Args:
@@ -2488,7 +2488,7 @@ def get_co_human_readable(ticket:dict, ticket_type: str, additional_fields: list
 
     states = TICKET_STATES.get(ticket_type, {})
     state = ticket.get('state', {}).get('value', '')
-    priority = ticket.get('priority').get('value', '')
+    priority = ticket.get('priority', {}).get('value', '')
 
     item = {
         'System ID': ticket.get('sys_id', {}).get('value', ''),
