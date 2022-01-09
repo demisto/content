@@ -106,8 +106,7 @@ tags:
 - ''
 timeout: '0'
 type: python
-dockerimage: demisto/mlurlphishing:1.0.0.25671
-runas: DBotRole
+dockerimage: demisto/mlurlphishing:1.0.0.25708
 runonce: false
 tests:
 - DBotPredictURLPhishing_test
