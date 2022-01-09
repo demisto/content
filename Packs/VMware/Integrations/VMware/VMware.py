@@ -797,8 +797,8 @@ def test_module(si):
     try:
         x= get_vms(si, {'limit': '1'})
     except Exception as e:
-        demisto.debug("eeeeeeeeeeee" + e)
-    demisto.debug("returned___________________________" + x)
+        demisto.debug("eeeeeeeeeeee" + str(e))
+    demisto.debug("returned___________________________" + str(x))
     return 'ok'
 
 
@@ -810,7 +810,7 @@ def main():  # pragma: no cover
     try:
         si, vsphere_client = login(demisto.params())
         if demisto.command() == 'test-module':
-            demisto.debug("**********************" + demisto.params() + "**********************")
+            demisto.debug("**********************" + str(demisto.params()) + "**********************")
             result = test_module(si)
         if demisto.command() == 'vmware-get-vms':
             result = get_vms(si, demisto.args())
