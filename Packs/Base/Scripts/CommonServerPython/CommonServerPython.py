@@ -8656,13 +8656,9 @@ def get_size_of_object(input_object):
             size += sum(inner(i) for i in obj)
         elif isinstance(obj, Mapping):
             size += sum(inner(k) + inner(v) for k, v in getattr(obj, 'items')())
-        # elif hasattr(obj, 'items'):
-        #     size += sum(inner(k) + inner(v) for k, v in getattr(obj, 'items')())
         # Check for custom object instances - may subclass above too
         if hasattr(obj, '__dict__'):
             size += inner(vars(obj))
-        # if hasattr(obj, '__slots__'): # can have __slots__ with __dict__
-        #     size += sum(inner(getattr(obj, s)) for s in obj.__slots__ if hasattr(obj, s))
         return size
     return inner(input_object)
 
@@ -8688,7 +8684,6 @@ def get_message_global_vars():
     globals_dict_full = {}
     for current_key in globals_dict.keys():
         current_value = globals_dict[current_key]
-        # TODO Split to ModuleTypes sizes with isinstance(current_value, ModuleType)
         if not type(current_value) in excluded_types \
                 and current_key not in excluded_globals \
                 and type(current_value).__name__ not in excluded_types_names:
@@ -8721,7 +8716,6 @@ def get_message_modules_sizes():
     globals_dict_full = {}
     for current_key in globals_dict.keys():
         current_value = globals_dict[current_key]
-        # TODO Split to ModuleTypes sizes with isinstance(current_value, ModuleType)
         if type(current_value) == types.ModuleType \
                 and current_key not in excluded_globals \
                 and type(current_value).__name__ not in excluded_types_names:
@@ -8764,9 +8758,16 @@ def signal_handler_profiling_dump(_sig, _frame):
     LOG.print_log()
 
 
-def register_signal_handler_profiling_dump(signal_type=None, profiling_dump_rows_limit=PROFILING_DUMP_ROWS_LIMIT):
+def register_signal_handler_profiling_dump(
+        signal_type=None,
+        profiling_dump_rows_limit=PROFILING_DUMP_ROWS_LIMIT,
+        profiling_dump_variables_value_length=PROFILING_DUMP_VARIABLES_VALUE_LENGTH
+        ):
     """
     Function that registers the threads and memory dump signal listener
+
+    :type profiling_dump_rows_limit: ``int``
+    :param profiling_dump_rows_limit: The max number of profiling related rows to print to the log
 
     :type profiling_dump_rows_limit: ``int``
     :param profiling_dump_rows_limit: The max number of profiling related rows to print to the log
