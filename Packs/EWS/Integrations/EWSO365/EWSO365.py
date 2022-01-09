@@ -610,6 +610,8 @@ def prepare_args(args):
     args = dict((k.replace("-", "_"), v) for k, v in list(args.items()))
     if "is_public" in args:
         args["is_public"] = args["is_public"] == "True"
+    if "from" in args:
+        args['from_address'] = args.get('from')
     return args
 
 

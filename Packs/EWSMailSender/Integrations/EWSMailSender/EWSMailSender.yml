@@ -90,7 +90,7 @@ script:
     - default: false
       description: The email address from which to reply.
       isArray: false
-      name: from_address
+      name: from
       required: false
       secret: false
     description: Sends an email using EWS.

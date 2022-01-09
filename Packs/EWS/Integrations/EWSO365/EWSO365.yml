@@ -1187,14 +1187,14 @@ script:
     - default: false
       description: The email address from which to reply.
       isArray: false
-      name: from_address
+      name: from
       required: false
       secret: false
     deprecated: false
     description: Sends an email.
     execution: false
     name: send-mail
-  dockerimage: demisto/py3ews:1.0.0.23229
+  dockerimage: demisto/py3ews:1.0.0.24751
   feed: false
   isfetch: true
   longRunning: false
