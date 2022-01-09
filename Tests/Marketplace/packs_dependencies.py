@@ -10,7 +10,8 @@ from typing import Tuple, Iterable, List, Callable
 from Tests.Marketplace.marketplace_constants import GCPConfig, PACKS_FOLDER, PACKS_FULL_PATH, IGNORED_FILES
 from Tests.scripts.utils.log_util import install_logging
 from Tests.scripts.utils import logging_wrapper as logging
-from demisto_sdk.commands.find_dependencies.find_dependencies import PackDependencies, parse_for_pack_metadata, calculate_single_pack_dependencies
+from demisto_sdk.commands.find_dependencies.find_dependencies import PackDependencies, \
+    calculate_single_pack_dependencies
 from pebble import ProcessPool, ProcessFuture
 
 
