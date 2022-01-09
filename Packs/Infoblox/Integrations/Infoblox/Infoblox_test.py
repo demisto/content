@@ -1,7 +1,6 @@
 from Infoblox import Client
 import demistomock as demisto
 import json
-
 from CommonServerPython import DemistoException
 
 BASE_URL = 'https://example.com/v1/'
@@ -84,13 +83,9 @@ class TestZonesOperations:
     def test_create_response_policy_zone_command(self, mocker, requests_mock):
         from Infoblox import create_response_policy_zone_command
         mocker.patch.object(demisto, 'params', return_value={})
-        requests_mock.post(
-            f'{BASE_URL}zone_rp{REQUEST_PARAM_ZONE}',
-            json=POST_NEW_ZONE_RESPONSE)
-        args = {
-            "FQDN": "test.com", "rpz_policy": "GIVEN", "rpz_severity": "WARNING", "substitute_name": "", "rpz_type": ""
-        }
-        human_readable, context, raw_response = create_response_policy_zone_command(client, args)
+        requests_mock.post(f'{BASE_URL}zone_rp{REQUEST_PARAM_ZONE}', json=POST_NEW_ZONE_RESPONSE)
+        human_readable, context, raw_response = create_response_policy_zone_command(
+            client, POST_NEW_ZONE_RESPONSE.get("result"))
         assert human_readable == "### Infoblox Integration - Response Policy Zone: test.com has been created\n" \
                                  "|Disable|FQDN|Reference ID|Rpz Policy|Rpz Severity|Rpz Type|View|\n" \
                                  "|---|---|---|---|---|---|---|\n" \
@@ -117,4 +112,39 @@ class TestZonesOperations:
                 'view': 'default'
             }}
 
-    # def test_delete_response_policy_zone_command(self, mocker, requests_mock):
+
+class TestHostOperations:
+    def test_list_records(self, mocker):
+        from Infoblox import list_records_command
+        mocker.patch.object(client, '_http_request', return_value={})
+        args = {"zone": "foo.com"}
+        human_readable, context, raw_response = list_records_command(client, args)
+        assert human_readable == "### Infoblox Integration - Response Policy Zone: test.com has been created\n" \
+                                 "|Disable|FQDN|Reference ID|Rpz Policy|Rpz Severity|Rpz Type|View|\n" \
+                                 "|---|---|---|---|---|---|---|\n" \
+                                 "| false | test.com | zone_rp/ZG5zLnpvbmUkLl9kZWZhdWx0LmNvbS50ZXN0:test.com/default " \
+                                 "| GIVEN | WARNING | LOCAL | default |\n"
+        assert context == {
+            'Infoblox.ResponsePolicyZones(val.FQDN && val.FQDN === obj.FQDN)': {
+                'ReferenceID': 'zone_rp/ZG5zLnpvbmUkLl9kZWZhdWx0LmNvbS50ZXN0:test.com/default',
+                'Disable': False,
+                'FQDN': 'test.com',
+                'RpzPolicy': 'GIVEN',
+                'RpzSeverity': 'WARNING',
+                'RpzType': 'LOCAL',
+                'View': 'default'
+            }}
+        assert raw_response == {
+            'result': {
+                '_ref': 'zone_rp/ZG5zLnpvbmUkLl9kZWZhdWx0LmNvbS50ZXN0:test.com/default',
+                'disable': False,
+                'fqdn': 'test.com',
+                'rpz_policy': 'GIVEN',
+                'rpz_severity': 'WARNING',
+                'rpz_type': 'LOCAL',
+                'view': 'default'
+            }}
+
+
+class TestARecordsOperations:
+    pass

@@ -1019,6 +1019,13 @@ script:
     description: List all host records in all zones
     execution: false
     name: infoblox-list-hosts
+    outputs:
+    - contextPath: Infoblox.RecordHost.ReferenceID
+      description: Record reference ID
+      type: String
+    - contextPath: Infoblox.RecordHost.IPv4Addresses
+      description: List of IPv4 adresses related to host
+      type: Unknown
   - arguments:
     - default: false
       description: Record's name
@@ -1030,6 +1037,16 @@ script:
     description: Search for a host record by name
     execution: false
     name: infoblox-search-host-record
+    outputs:
+    - contextPath: Infoblox.RecordHost.ReferenceID
+      description: Record reference ID
+      type: String
+    - contextPath: Infoblox.RecordHost.IPv4Addresses
+      description: List of IPv4 adresses related to host
+      type: Unknown
+    - contextPath: Infoblox.RecordHost.Name
+      description: Name of record
+      type: String
   - arguments:
     - default: false
       description: Zone's name
@@ -1041,6 +1058,25 @@ script:
     description: List all records of a given zone
     execution: false
     name: infoblox-list-records
+    outputs:
+    - contextPath: Infoblox.Record.ReferenceID
+      description: Record's reference ID
+      type: String
+    - contextPath: Infoblox.Record.Comment
+      description: User's comment
+      type: String
+    - contextPath: Infoblox.Record.Name
+      description: Record's name
+      type: String
+    - contextPath: Infoblox.Record.Type
+      description: Record's type
+      type: String
+    - contextPath: Infoblox.Record.View
+      description: Record's view
+      type: Unknown
+    - contextPath: Infoblox.Record.Zone
+      description: Zone name
+      type: String
   - arguments:
     - default: false
       description: 'Record''s full name: <record_name>.<zone_name>'
@@ -1063,7 +1099,14 @@ script:
     deprecated: false
     description: Create a new record
     execution: false
-    name: infoblox-create-record
+    name: infoblox-create-a-record
+    outputs:
+    - contextPath: Infoblox.RecordA.Name
+      description: Record's name
+      type: String
+    - contextPath: Infoblox.RecordA.IPv4Addr
+      description: Record's IP address
+      type: Unknown
   - arguments:
     - default: false
       description: FQDN to change
@@ -1079,7 +1122,14 @@ script:
       secret: false
     deprecated: false
     execution: false
-    name: infoblox-add-host
+    name: infoblox-add-host-record
+    outputs:
+    - contextPath: Infoblox.RecordHost.Name
+      description: Host's name
+      type: String
+    - contextPath: Infoblox.RecordHost.IPv4Addresses
+      description: IP Adresses
+      type: Unknown
   - arguments:
     - auto: PREDEFINED
       default: false
@@ -1095,6 +1145,13 @@ script:
     description: Update an IP of a host
     execution: false
     name: infoblox-update-host-ip
+    outputs:
+    - contextPath: Infoblox.RecordHost.ReferenceID
+      description: Host record reference ID
+      type: Unknown
+    - contextPath: Infoblox.RecordHost.IPv4Address
+      description: Record's IP Address
+      type: Unknown
   - arguments:
     - default: false
       description: object reference to update
@@ -1105,7 +1162,7 @@ script:
     deprecated: false
     description: Delete a host record
     execution: false
-    name: infoblox-delete-host
+    name: infoblox-delete-host-record
   - arguments:
     - default: false
       description: record reference
@@ -1135,6 +1192,19 @@ script:
     description: Update a-record
     execution: false
     name: infoblox-update-a-record
+    outputs:
+    - contextPath: Infoblox.RecordA.ReferenceID
+      description: Record's reference ID
+      type: Unknown
+    - contextPath: Infoblox.RecordA.IPv4Address
+      description: Record's IP address
+      type: Unknown
+    - contextPath: Infoblox.RecordA.Name
+      description: Record's name
+      type: Unknown
+    - contextPath: Infoblox.RecordA.Comment
+      description: User Comment
+      type: Unknown
   dockerimage: demisto/python3:3.9.8.24399
   feed: false
   isfetch: false

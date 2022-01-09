@@ -117,7 +117,7 @@ class Client(BaseClient):
         request_params.update(REQUEST_PARAM_ZONE)
         return self._http_request('GET', suffix, params=request_params)
 
-    def get_ip(self, ip: Optional[str]) -> Dict:
+    def get_ip(self, ip: str) -> Dict:
         """Get ip information.
         Args:
             ip: ip to retrieve.
@@ -133,7 +133,7 @@ class Client(BaseClient):
         request_params.update(REQUEST_PARAM_EXTRA_ATTRIBUTES)
         return self._http_request('GET', suffix, params=request_params)
 
-    def search_related_objects_by_ip(self, ip: Optional[str], max_results: Optional[str]) -> Dict:
+    def search_related_objects_by_ip(self, ip: str, max_results: Optional[str]) -> Dict:
         """Search ip related objects.
         Args:
             ip: ip to retrieve.
@@ -149,7 +149,7 @@ class Client(BaseClient):
         request_params = assign_params(address=ip, _max_results=max_results)
         return self._http_request('GET', suffix, params=request_params)
 
-    def list_response_policy_zone_rules(self, zone: Optional[str], view: Optional[str], max_results: Optional[str],
+    def list_response_policy_zone_rules(self, zone: str, view: Optional[str], max_results: Optional[str],
                                         next_page_id: Optional[str]) -> Dict:
         """List response policy zones rules by a given zone name.
         Args:
@@ -589,7 +589,7 @@ def create_response_policy_zone_command(client: Client, args: Dict) -> Tuple[str
     Returns:
         Outputs
     """
-    fqdn = args.get('FQDN')
+    fqdn = args.get('fqdn')
     rpz_policy = args.get('rpz_policy')
     rpz_severity = args.get('rpz_severity')
     substitute_name = args.get('substitute_name')
