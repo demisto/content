@@ -604,10 +604,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: 6ad41556-9fe2-467c-8610-fc701343246b
+    taskid: 299c0d36-dbc1-4dff-8cfd-028c4103dc7f
     type: playbook
     task:
-      id: 6ad41556-9fe2-467c-8610-fc701343246b
+      id: 299c0d36-dbc1-4dff-8cfd-028c4103dc7f
       version: -1
       name: Search And Delete Emails - Generic v2
       description: 'This playbook searches and deletes emails with similar attributes
@@ -628,11 +628,9 @@ tasks:
       From:
         complex:
           root: PhishingSender
-      O365AllowNotFoundExchangeLocations:
-        complex:
-          root: inputs.O365AllowNotFoundSearchLocations
-          transformers:
-          - operator: toLowerCase
+      ? |
+        O365AllowNotFoundExchangeLocations
+      : simple: "false"
       O365DeleteType:
         complex:
           root: inputs.O365DeleteType
@@ -1100,6 +1098,7 @@ tasks:
     nexttasks:
       '#none#':
       - "52"
+      - "143"
     separatecontext: true
     view: |-
       {
@@ -1459,8 +1458,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1222.5,
-          "y": 690
+          "x": -1912.5,
+          "y": 720
         }
       }
     note: false
@@ -1542,8 +1541,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1222.5,
-          "y": 1060
+          "x": -1912.5,
+          "y": 1090
         }
       }
     note: false
@@ -1598,8 +1597,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1222.5,
-          "y": 870
+          "x": -1912.5,
+          "y": 905
         }
       }
     note: false
@@ -2530,10 +2529,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "140":
     id: "140"
-    taskid: a959faa3-e688-4136-8837-ea51777b21b4
+    taskid: 755a3f56-8f52-48c3-8934-22dad15ac630
     type: regular
     task:
-      id: a959faa3-e688-4136-8837-ea51777b21b4
+      id: 755a3f56-8f52-48c3-8934-22dad15ac630
       version: -1
       name: Predict Phishing URLs
       description: Predict phishing URLs using a pre-trained model.
@@ -2552,13 +2551,17 @@ tasks:
       maxNumberOfURL:
         complex:
           root: inputs.DBotPredictURLPhishingURLsNumber
+      urls:
+        complex:
+          root: URL
+          accessor: Data
     reputationcalc: 2
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": -1860,
-          "y": 995
+          "x": -1210,
+          "y": 985
         }
       }
     note: false
@@ -2601,8 +2604,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1860,
-          "y": 775
+          "x": -1210,
+          "y": 765
         }
       }
     note: false
@@ -2631,8 +2634,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1222.5,
-          "y": 550
+          "x": -1912.5,
+          "y": 580
         }
       }
     note: false
@@ -2661,8 +2664,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1860,
-          "y": 550
+          "x": -1210,
+          "y": 580
         }
       }
     note: false
@@ -2678,7 +2681,7 @@ view: |-
     "linkLabelsPosition": {
       "137_135_yes": 0.54,
       "141_140_yes": 0.54,
-      "141_56_#default#": 0.17,
+      "141_56_#default#": 0.34,
       "15_31_#default#": 0.6,
       "33_16_No": 0.64,
       "36_43_#default#": 0.57,
@@ -2691,8 +2694,8 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 5840,
-        "width": 3390,
-        "x": -1860,
+        "width": 3442.5,
+        "x": -1912.5,
         "y": -630
       }
     }
