@@ -3,6 +3,7 @@ This script will be appended to each server script before being executed.
 Please notice that to add custom common code, add it to the CommonServerUserPython script.
 Note that adding code to CommonServerUserPython can override functions in CommonServerPython
 """
+# If you change this section, make sure you update the line offset magic number
 from __future__ import print_function
 
 import base64
@@ -35,9 +36,9 @@ def __line__():
     return cf.f_back.f_lineno
 
 
-# 39 - the line offset from the beggining of the file.
+# 41 - The line offset from the beggining of the file.
 _MODULES_LINE_MAPPING = {
-    'CommonServerPython': {'start': __line__() - 39, 'end': float('inf')},
+    'CommonServerPython': {'start': __line__() - 41, 'end': float('inf')},
 }
 
 
