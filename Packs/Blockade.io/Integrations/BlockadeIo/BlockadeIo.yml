@@ -3,11 +3,9 @@ commonfields:
   version: -1
 name: Blockade.io
 system: true
-display: Blockade.io
+display: Blockade.io (Deprecated)
 category: Data Enrichment & Threat Intelligence
-description: Blockade brings antivirus-like capabilities to users who run the Chrome
-  browser. Built as an extension, Blockade blocks malicious resources from being viewed
-  or loaded inside of the browser.
+description: Deprecated. No available replacement.
 configuration:
 - display: Email
   name: email
@@ -35,7 +33,7 @@ script:
       description: Optional DB name in a multi-DB cloud node
     description: Lists all the indicators for Blockade to consume
   - name: blockade-add-indicators
-    deprecated: false
+    deprecated: true
     arguments:
     - name: indicators
       required: true
@@ -47,3 +45,4 @@ hidden: false
 tests:
 - No tests
 fromversion: 5.0.0
+deprecated: true
