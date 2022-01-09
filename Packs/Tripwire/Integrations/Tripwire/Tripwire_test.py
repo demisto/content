@@ -18,7 +18,7 @@ def test_first_fetch(mocker):
         Then
         - run the fetch incidents command using the Client
         Validate The length of the results.
-        Validate that the first run of fetch incidents runs correctly using the occured time.
+        Validate that the first run of fetch incidents runs correctly using the occurred time.
         """
     mocker.patch.object(Client, 'get_session_token')
     mocker.patch.object(Client, 'get_versions', return_value=VERSIONS_RAW_RESPONSE)
@@ -95,7 +95,7 @@ def test_prepare_fetch(mocker):
             - the prepare fetch function is activated.
         Then
         - run the prepare fetch helper function.
-        Validate the rule_id, node_id and rnge time to detect is in the expected string.
+        Validate the rule_id, node_id and range time to detect is in the expected string.
         """
     params = {'rule_oids': '-1:1', 'node_oids': '-1:2'}
     mocker.patch.object(demisto, 'getLastRun', return_value={"lastRun": "2018-10-24T14:13:20Z"})
