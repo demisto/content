@@ -22,7 +22,8 @@ import requests
 import traceback
 import httplib2
 from googleapiclient.discovery import build, Resource
-from google.oauth2 import service_account
+#from google.oauth2 import service_account
+from oauth2client import service_account
 
 # This is a message in the oath2client branch
 SERVICE_ACCOUNT_FILE = 'token.json'
@@ -578,8 +579,8 @@ def sheets_value_append(service: Resource, args: dict) -> CommandResults:
     return CommandResults(readable_output=markdown)
 
 
-def get_http_client_with_proxy(disable_ssl):
-    proxies = handle_proxy()
+def get_http_client_with_proxy(disable_ssl, handle_proxy_func=handle_proxy):
+    proxies = handle_proxy_func()
     if not proxies.get('https', True):
         raise Exception('https proxy value is empty. Check Demisto server configuration')
     https_proxy = proxies['https']
@@ -607,20 +608,20 @@ def build_and_authenticate(params):
         integration will make API calls
     """
     service_account_credentials = params.get('service_account_credentials', {})
-    # service_account_credentials = json.loads(service_account_credentials).get('password')
-    creds = service_account.ServiceAccountCredentials.from_json_keyfile_dict(service_account_credentials, scopes=SCOPES)
-    # creds = service_account.Credentials.from_service_account_info(service_account_credentials, scopes=SCOPES)
+    service_account_credentials = json.loads(service_account_credentials.get('password'))
+    credentials = service_account.ServiceAccountCredentials.from_json_keyfile_dict(service_account_credentials,
+                                                                                   scopes=SCOPES)
 
-    proxy = demisto.params().get('proxy', False)
-    disable_ssl = demisto.params().get('insecure', False)
+    proxy = params.get('proxy', False)
+    disable_ssl = params.get('insecure', False)
 
     if proxy or disable_ssl:
-        http_client = creds.authorize(get_http_client_with_proxy(disable_ssl))
+        http_client = credentials.authorize(get_http_client_with_proxy(disable_ssl))
         return build('sheets', 'v4', http=http_client)
     else:
         handle_proxy()
 
-    return build('sheets', 'v4', credentials=creds)
+    return build('sheets', 'v4', credentials=credentials)
 
 
 def connect_to_google_client(params: dict):
@@ -703,8 +704,8 @@ def main() -> None:
     try:
         # TODO: Make sure you add the proper headers for authentication
         # (i.e. "Authorization": {api key})
-        service = connect_to_google_client(demisto.params())
-        # service = build_and_authenticate(demisto.params())
+        # service = connect_to_google_client(demisto.params())
+        service = build_and_authenticate(demisto.params())
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
             # result = test_module()

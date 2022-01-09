@@ -4,6 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
+google-api-python-client = "*"
 
 [dev-packages]
 flake8 = "==3.9.2"
