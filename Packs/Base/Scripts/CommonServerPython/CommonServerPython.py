@@ -15,6 +15,7 @@ import socket
 import sys
 import time
 import traceback
+import types
 import urllib
 from random import randint
 import xml.etree.cElementTree as ET
@@ -8648,7 +8649,7 @@ def get_size_of_object(input_object):
     def inner(obj, level):
         if level == MAX_LEVEL:
             # Stop at MAX_LEVEL
-            return  sys.getsizeof(obj)
+            return sys.getsizeof(obj)
         obj_id = id(obj)
         if obj_id in _seen_ids:
             return 0
@@ -8670,13 +8671,14 @@ def get_size_of_object(input_object):
     return inner(input_object, 0)
 
 
-import types
 excluded_globals = ['__name__', '__doc__', '__package__', '__loader__',
                     '__spec__', '__annotations__', '__builtins__',
                     '__file__', '__cached__', '_Feature',
                     ]
 excluded_types_names = ['MagicMock',  # When running tests locally
                         ]
+
+
 def get_message_global_vars():
     """
     A function that returns the printable message about global variables
@@ -8723,7 +8725,8 @@ def get_message_modules_sizes():
     globals_dict_full = {}
     for current_key in globals_dict.keys():
         current_value = globals_dict[current_key]
-        if type(current_value) == types.ModuleType \
+        # if type(current_value) == types.ModuleType \
+        if isinstance(current_value, types.ModuleType) \
                 and current_key not in excluded_globals \
                 and type(current_value).__name__ not in excluded_types_names:
             globals_dict_full[current_key] = {
