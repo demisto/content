@@ -268,6 +268,9 @@ def create_new_edl(request_args: RequestArguments) -> str:
 
 
 def replace_field_name_to_output_format(fields: str):
+    """
+     convert from the request name field to the name in the response from the server
+    """
     fields_list = argToList(fields)
     new_list = []
     for field in fields_list:
@@ -282,13 +285,13 @@ def replace_field_name_to_output_format(fields: str):
 def get_indicators_to_format(indicator_searcher: IndicatorsSearcher, request_args: RequestArguments) ->\
         Union[IO, IO[str]]:
     """
-    Finds indicators using while loop with demisto.searchIndicators, and returns result and last page
+    Finds indicators demisto.searchIndicators, and returns the indicators in file writen in requested format
 
     Parameters:
         indicator_searcher (IndicatorsSearcher): The indicator searcher used to look for indicators
         request_args (RequestArguments)
     Returns:
-        (list): List of Indicators dict with value,indicator_type keys
+        (IO): indicators in file writen in requested format
     """
     f = tempfile.TemporaryFile(mode='w+t')
     list_fields = replace_field_name_to_output_format(request_args.fields_to_present)
@@ -299,8 +302,7 @@ def get_indicators_to_format(indicator_searcher: IndicatorsSearcher, request_arg
             fetched_iocs = ioc_res.get('iocs') or []
             for ioc in fetched_iocs:
                 if request_args.out_format == FORMAT_PROXYSG:
-                    files_by_category, return_indicator = create_proxysg_out_format(ioc, files_by_category,
-                                                                                    request_args)
+                    files_by_category = create_proxysg_out_format(ioc, files_by_category, request_args)
 
                 if request_args.out_format == FORMAT_MWG:
                     f.write(create_mwg_out_format(ioc, request_args, headers_was_writen))
@@ -330,6 +332,17 @@ def get_indicators_to_format(indicator_searcher: IndicatorsSearcher, request_arg
 
 
 def create_json_out_format(list_fields: List, indicator: Dict, request_args: RequestArguments, not_first_call=True) -> str:
+    """format the indicator to json format.
+
+    Args:
+        not_first_call (bool): .
+        list_fields (list): the fields to return.
+        indicator (dict): the indicator info
+        request_args (RequestArguments):
+
+    Returns:
+        a one indicator to add to the file in json format.
+    """
     if indicator.get('indicator_type') == 'URL' and indicator.get('value'):
         indicator['value'] = url_handler(indicator.get('value'), request_args.url_protocol_stripping,
                                          request_args.url_port_stripping, request_args.url_truncate)
@@ -347,6 +360,16 @@ def create_json_out_format(list_fields: List, indicator: Dict, request_args: Req
 
 
 def create_mwg_out_format(indicator: dict, request_args: RequestArguments, headers_was_writen: bool) -> str:
+    """format the indicator to mwg format.
+
+    Args:
+        headers_was_writen (bool): .
+        indicator (dict): the indicator info
+        request_args (RequestArguments):
+
+    Returns:
+        a one indicator to add to the file in mwg format.
+    """
     if indicator.get('indicator_type') == 'URL' and indicator.get('value'):
         indicator['value'] = url_handler(indicator.get('value'), request_args.url_protocol_stripping,
                                          request_args.url_port_stripping, request_args.url_truncate)
@@ -366,19 +389,37 @@ def create_mwg_out_format(indicator: dict, request_args: RequestArguments, heade
     return value + " " + sources_string + '\n'
 
 
-def create_proxysg_all_category_out_format(f: IO, files_by_categry: dict):
-    for category, category_file in files_by_categry.items():
-        f.write(f"define category {category}\n")
+def create_proxysg_all_category_out_format(indicators_file: IO, files_by_category: dict):
+    """write all indicators to file in proxysg format.
+
+    Args:
+        indicators_file (IO): the fields to return.
+        files_by_category (dict): all indicators by category
+
+    Returns:
+        a file in proxysg format.
+    """
+    for category, category_file in files_by_category.items():
+        indicators_file.write(f"define category {category}\n")
         category_file.seek(0)
-        f.write(category_file.read())
+        indicators_file.write(category_file.read())
         category_file.close()
-        f.write("end\n")
+        indicators_file.write("end\n")
 
-    return f
+    return indicators_file
 
 
-def create_proxysg_out_format(indicator: dict, files_by_category: dict, request_args: RequestArguments):
-    num_of_returned_indicators = 0
+def create_proxysg_out_format(indicator: dict, files_by_category: dict, request_args: RequestArguments) -> dict:
+    """format the indicator to proxysg.
+
+    Args:
+        files_by_category (list): a dict of the formatted indicators by category.
+        indicator (dict): the indicator info
+        request_args (RequestArguments):
+
+    Returns:
+        a dict of the formatted indicators by category.
+    """
 
     if indicator.get('indicator_type') in ['URL', 'Domain', 'DomainGlob'] and indicator.get('value'):
         stripped_indicator = url_handler(indicator.get('value', ''), True, request_args.url_port_stripping,
@@ -394,9 +435,7 @@ def create_proxysg_out_format(indicator: dict, files_by_category: dict, request_
             # if ProxySG Category is not set or does not exist in the category_attribute list
             files_by_category = add_indicator_to_category(stripped_indicator, request_args.category_default,
                                                           files_by_category)
-        num_of_returned_indicators = 1
-
-    return files_by_category, num_of_returned_indicators
+    return files_by_category
 
 
 def add_indicator_to_category(indicator: str, category: str, files_by_category: Dict):
@@ -411,6 +450,17 @@ def add_indicator_to_category(indicator: str, category: str, files_by_category: 
 
 
 def create_csv_out_format(headers_was_writen: bool, list_fields: List, ioc, request_args: RequestArguments):
+    """format the ioc to csv format.
+
+    Args:
+        headers_was_writen (bool): .
+        list_fields (list): the fields to return.
+        ioc (dict): the indicator info
+        request_args (RequestArguments):
+
+    Returns:
+        a one indicator to add to the file in csv format.
+    """
     fields_value_list = []
     if ioc.get('indicator_type') == 'URL' and ioc.get('value'):
         ioc['value'] = url_handler(ioc.get('value'), request_args.url_protocol_stripping,
@@ -770,19 +820,19 @@ def get_request_args(request_args: dict, params: dict) -> RequestArguments:
     """
     limit = try_parse_integer(request_args.get('n', params.get('edl_size') or 10000), EDL_LIMIT_ERR_MSG)
     offset = try_parse_integer(request_args.get('s', 0), EDL_OFFSET_ERR_MSG)
-    out_format = request.args.get('v', params.get('format', FORMAT_TEXT))
+    out_format = request_args.get('v', params.get('format', FORMAT_TEXT))
     query = request_args.get('q', params.get('indicators_query') or '')
-    mwg_type = request.args.get('t', params.get('mwg_type', "string"))
+    mwg_type = request_args.get('t', params.get('mwg_type', "string"))
     strip_port = request_args.get('sp', params.get('url_port_stripping') or False)
     strip_protocol = request_args.get('pr', params.get('url_protocol_stripping') or False)
     drop_invalids = request_args.get('di', params.get('drop_invalids') or False)
-    category_default = request.args.get('cd', params.get('category_default', 'bc_category'))
-    category_attribute = request.args.get('ca', params.get('category_attribute', ''))
+    category_default = request_args.get('cd', params.get('category_default', 'bc_category'))
+    category_attribute = request_args.get('ca', params.get('category_attribute', ''))
     collapse_ips = request_args.get('tr', params.get('collapse_ips', DONT_COLLAPSE))
-    csv_text = request.args.get('tx', params.get('csv_text', False))
+    csv_text = request_args.get('tx', params.get('csv_text', False))
     add_comment_if_empty = request_args.get('ce', params.get('add_comment_if_empty', True))
-    fields_to_present = request.args.get('fi', params.get('fields_filter', ''))
-    url_truncate = request.args.get('ut', params.get('url_truncate', ''))
+    fields_to_present = request_args.get('fi', params.get('fields_filter', ''))
+    url_truncate = request_args.get('ut', params.get('url_truncate', ''))
 
     # handle flags
     if drop_invalids == '':
