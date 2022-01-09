@@ -53,7 +53,7 @@ function UpdateIntegrationContext([OAuth2DeviceCodeClient]$client){
         "AccessTokenCreationTime" = $client.access_token_creation_time
     }
 
-    $Demisto.setIntegrationContext($integration_context)
+    SetIntegrationContext $integration_context
     <#
         .DESCRIPTION
         Update integration context from OAuth2DeviceCodeClient client
@@ -215,7 +215,7 @@ class OAuth2DeviceCodeClient {
     }
 
     static [OAuth2DeviceCodeClient]CreateClientFromIntegrationContext([bool]$insecure, [bool]$proxy){
-        $ic = $script:Demisto.getIntegrationContext()
+        $ic = GetIntegrationContext
         $client = [OAuth2DeviceCodeClient]::new(
                 $ic.DeviceCode, $ic.DeviceCodeExpiresIn, $ic.DeviceCodeCreationTime, $ic.AccessToken, $ic.RefreshToken,
                 $ic.AccessTokenExpiresIn, $ic.AccessTokenCreationTime, $insecure, $proxy
@@ -809,16 +809,14 @@ class ExchangeOnlineClient {
     }
 
     [PSObject]
-    GetUrlTrace([hashtable]$kwargs)
+    GetDetailReport([hashtable]$kwargs)
     {
         try
         {
-            $cmd_args = @{ }
-            if ($kwargs.start_date)
-            {
-                $cmd_args.StartDate = $kwargs.start_date
-                $cmd_args.EndDate = $kwargs.end_date
-            }
+            $cmd_args = @{
+                "StartDate" = $kwargs.start_date
+                "EndDate" = $kwargs.end_date
+                }
             if ($kwargs.click_id)
             {
                 $cmd_args.ClickId = $kwargs.click_id
@@ -827,18 +825,22 @@ class ExchangeOnlineClient {
             {
                 $cmd_args.RecipientAddress = EncloseArgWithQuotes($kwargs.recipient_address)
             }
-            if ($kwargs.url_or_domain)
+            if ($kwargs.domain)
             {
-                $cmd_args.UrlOrDomain = $kwargs.url_or_domain
+                $cmd_args.Domain = $kwargs.domain
+            }
+            if ($kwargs.app_names)
+            {
+                $cmd_args.AppNameList = EncloseArgWithQuotes($kwargs.app_names)
             }
             if ($kwargs.page)
             {
-                $cmd_args.Page = $kwargs.page
+                $cmd_args.Page = [int]$kwargs.page
             }
             $this.CreateSession()
-            Import-PSSession -Session $this.session -CommandName Get-UrlTrace -AllowClobber
+            Import-PSSession -Session $this.session -CommandName Get-SafeLinksDetailReport -AllowClobber
 
-            $results = Get-UrlTrace @cmd_args
+            $results = Get-SafeLinksDetailReport @cmd_args
 
             return $results
         }
@@ -1009,17 +1011,14 @@ function CreateUpdateRuleCommand {
     return $human_readable, $entry_context, $raw_response
 }
 
-function GetURLTraceCommand {
+function GetDetailReportCommand {
     [CmdletBinding()]
     [OutputType([System.Object[]])]
     Param (
         [Parameter(Mandatory)][ExchangeOnlineClient]$client,
         [hashtable]$kwargs
     )
-    if ($kwargs.start_date -and !$kwargs.end_date){
-        $end_date = Get-Date
-    }
-    $raw_response = $client.GetUrlTrace($kwargs)
+    $raw_response = $client.GetDetailReport($kwargs)
     if (!$raw_response){
         return "#### No URL trace report found for the given criteria.", @{}, @{}
     }
@@ -1123,8 +1122,8 @@ function Main {
             "$script:COMMAND_PREFIX-rule-update" {
                 ($human_readable, $entry_context, $raw_response) = CreateUpdateRuleCommand -client $exo_client -command_type "update" -kwargs $command_arguments
             }
-            "$script:COMMAND_PREFIX-urltrace-get" {
-                ($human_readable, $entry_context, $raw_response) = GetURLTraceCommand -client $exo_client -kwargs $command_arguments
+            "$script:COMMAND_PREFIX-detail-report-get" {
+                ($human_readable, $entry_context, $raw_response) = GetDetailReportCommand -client $exo_client -kwargs $command_arguments
             }
 
             default {

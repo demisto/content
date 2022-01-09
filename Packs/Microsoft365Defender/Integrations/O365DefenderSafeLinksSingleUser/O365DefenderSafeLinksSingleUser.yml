@@ -857,13 +857,13 @@ script:
         - contextPath: O365Defender.SafeLinks.Rule.WhenChanged
           description: 'The date and time the rule was modified. Time format: YYYY-MM-DDThh:mm:ss+00:00.'
           type: Date
-    - name: o365-defender-safelinks-urltrace-get
-      description: View the results of Safe Links actions in your cloud-based organization. Currently, the date range can't be more than seven days.
+    - name: o365-defender-safelinks-detail-report-get
+      description: Get detailed information about Safe Links results for the last 7 days. Yesterday is the most recent date that you can specify.. Currently, the date range can't be more than seven days.
       deprecated: false
       arguments:
         - name: start_date
           description: |-
-            The start date of the date range. Currently, the date range can't be more than seven days due to a Microsoft limitation.
+            The start date of the date range, Yesterday is the most recent date that you can specify. Currently, the date range can't be more than seven days due to a Microsoft limitation.
             Time format: mm/dd/yyyy
           required: true
           isArray: false
@@ -871,11 +871,35 @@ script:
           description: |-
             The end date of the date range. Currently, the date range can't be more than seven days due to a Microsoft limitation. if no value was provided, the end date will be set to the time of the command execution.
             Time format: mm/dd/yyyy.
+          required: true
+          isArray: false
+        - name: action
+          description: Filters the results by action. You can specify multiple values separated by commas.
           required: false
           isArray: false
-        - name: click_id
-          description: The ClickId parameter filters the results by the URL that was scanned
-            in the message. Each URL is represented as a GUID value.
+          auto: PREDEFINED
+          predefined:
+            - 'Allowed'
+            - 'Blocked'
+            - 'ClickedEvenBlocked'
+            - 'ClickedDuringScan'
+        - name: app_names
+          description: Filters the results by the app where the link was found. You can specify multiple values separated by commas.
+          required: false
+          isArray: false
+          auto: PREDEFINED
+          predefined:
+            - 'Email Client'
+            - 'Excel'
+            - 'OneNote'
+            - 'Others'
+            - 'Outlook'
+            - 'PowerPoint'
+            - 'Teams'
+            - 'Visio'
+            - 'Word'
+        - name: domain
+          description: Filter the results by the specified domain in the URL. You can specify multiple values separated by commas.
           required: false
           isArray: false
         - name: recipient_address
@@ -883,13 +907,8 @@ script:
             email address. You can specify multiple values separated by commas.
           required: false
           isArray: false
-        - name: url_or_domain
-          description: Filter the results by the specified
-            URL or domain value.
-          required: false
-          isArray: true
         - name: page
-          description: specifies the page number of the results you want to view. Valid input is a number between 1 and 1000. The default value is 1.
+          description: Specifies the page number of the results you want to view. Valid input is a number between 1 and 1000. The default value is 1.
           required: false
           isArray: false
       outputs:
