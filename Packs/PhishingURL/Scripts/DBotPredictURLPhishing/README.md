@@ -29,7 +29,7 @@ Predict phishing URLs using a pre-trained model.
 | --- | --- | --- |
 | DBotPredictURLPhishing.URL | URL on which the model ran. | String |
 | DBotPredictURLPhishing.FinalVerdict | Final verdict of the URL. | String |
-| DBotPredictURLPhishing.UseOfSuspiciousLogo | Whether a logo \(from our list of top most use company for phishing\) has been fraudulently used. Our predefined list of logos is: Paypal, iInstagram, Gmail, Outlook, Linkedin, Facebook, Ebay, amazon, Google, Microsoft. | String |
+| DBotPredictURLPhishing.UseOfSuspiciousLogo | Whether a logo \(from our list of top most use company for phishing\) has been fraudulently used. Our predefined list of logos is: Paypal, Instagram, Gmail, Outlook, Linkedin, Facebook, Ebay, amazon, Google, Microsoft. | String |
 | DBotPredictURLPhishing.HasLoginForm | Whether there is a login form in the HTML. Usually phishing attacks aim to steal credentials from the victim and attackers using login forms to retrieve this information. | String |
 | DBotPredictURLPhishing.URLStaticScore | Probability for the URL to be malicious based only on the URL syntax. | Number |
 | DBotPredictURLPhishing.BadSEOQuality | Whether the domain has a good search engine optimization. Malicious domains tend to have a poor SEO. | String |
