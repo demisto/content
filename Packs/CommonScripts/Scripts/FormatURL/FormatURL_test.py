@@ -7,7 +7,6 @@ TEST_URL_HTTP = 'http://www.test.com'
 TEST_URL_HTTPS = 'https://www.test.com'
 
 NOT_FORMAT_TO_FORMAT = [  # Start of http:/ replacements.
-    ('(http://www.foo.bar/taz?())', 'http://www.foo.bar/taz?()'),
     ('http:/www.test.com', TEST_URL_HTTP),
     ('https:/www.test.com', TEST_URL_HTTPS),
     ('http:\\\\www.test.com', TEST_URL_HTTP),
