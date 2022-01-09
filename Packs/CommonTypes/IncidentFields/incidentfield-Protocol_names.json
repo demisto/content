@@ -3,7 +3,7 @@
 	"associatedTypes": null,
 	"breachScript": "",
 	"caseInsensitive": true,
-	"cliName": "servicesprotocols",
+	"cliName": "protocolnames",
 	"closeForm": false,
 	"columns": null,
 	"content": false,
@@ -15,12 +15,12 @@
 	"fromServerVersion": "",
 	"group": 0,
 	"hidden": false,
-	"id": "incident_servicesprotocols",
+	"id": "incident_protocolnames",
 	"isReadOnly": false,
 	"itemVersion": "",
 	"locked": false,
 	"mergeStrategy": "",
-	"name": "Services / Protocols",
+	"name": "Protocol names",
 	"neverSetAsRequired": false,
 	"openEnded": true,
 	"ownerOnly": false,
@@ -45,5 +45,6 @@
 	"useAsKpi": false,
 	"validatedError": "",
 	"validationRegex": "",
-	"version": -1
+	"version": -1,
+	"XSIAMFields": "fw_app_id"
 }

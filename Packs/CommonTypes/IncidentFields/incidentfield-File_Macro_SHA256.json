@@ -45,5 +45,6 @@
 	"useAsKpi": false,
 	"validatedError": "",
 	"validationRegex": "",
-	"version": -1
+	"version": -1,
+	"XSIAMFields": "action_file_macro_sha256"
 }
