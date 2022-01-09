@@ -8570,8 +8570,9 @@ def get_message_memory_dump(_sig, _frame):
     ret_value = '\n\n--- Start Variables Dump ---\n'
     ret_value += get_message_local_vars()
     ret_value += get_message_global_vars()
-    ret_value += get_message_modules_sizes()
     ret_value += '\n--- End Variables Dump ---\n\n'
+
+    ret_value += get_message_modules_sizes()
 
     return ret_value
 
