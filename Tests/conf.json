@@ -4922,6 +4922,9 @@
             "playbookID": "KafkaV3 Test"
         },
         {
+            "playbookID": "FormatURL-Test"
+        },
+        {
             "playbookID": "Grafana-Test",
             "fromversion": "6.0.0",
             "integrations": [
