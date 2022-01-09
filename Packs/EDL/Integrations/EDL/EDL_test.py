@@ -160,16 +160,23 @@ class TestHelperFunctions:
         f = tempfile.TemporaryFile(mode='w+t')
         f.write('{"value": "https://google.com", "indicator_type": "URL"}\n'
                 '{"value": "demisto.com:7000", "indicator_type": "URL"}\n'
-                '{"value": "demisto.com/qwertqwertyuioplkjhgfdsazxqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopyuioplkjhgfdsazxqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiop", "indicator_type": "URL"}\n'
+                '{"value": "demisto.com/qwertqwertyuioplkjhgfdsazxqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyu'
+                'iopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopyuioplkjhgfdsa'
+                'zxqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwert'
+                'yuiopqwertyuiopqwertyuiopqwertyuiop", "indicator_type": "URL"}\n'
                 '{"value": "demisto.com", "indicator_type": "URL"}')
         mocker.patch.object(edl, 'get_indicators_to_format', return_value=f)
-        request_args = edl.RequestArguments(query='', limit=3, url_port_stripping=True, url_protocol_stripping=True, url_truncate=True)
+        request_args = edl.RequestArguments(query='', limit=3, url_port_stripping=True, url_protocol_stripping=True,
+                                            url_truncate=True)
         edl_vals = edl.create_new_edl(request_args)
 
-        assert edl_vals == 'google.com\ndemisto.com\ndemisto.com/qwertqwertyuioplkjhgfdsazxqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopyuioplkjhgfdsazxqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiop\n'
+        assert edl_vals == 'google.com\ndemisto.com\ndemisto.com/qwertqwertyuioplkjhgfdsazxqwertyuiopqwertyuiopq' \
+                           'wertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwert' \
+                           'yuiopqwertyuiopqwertyuiopyuioplkjhgfdsazxqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwe' \
+                           'rtyuiopqwertyuiopqwertyuiop\n'
 
     def test_create_json_out_format(self):
-        from EDL import create_json_out_format, RequestArguments, COLLAPSE_TO_RANGES
+        from EDL import create_json_out_format, RequestArguments
         returned_output = []
         with open('EDL_test/TestHelperFunctions/demisto_url_iocs.json', 'r') as iocs_json_f:
             iocs_json = json.loads(iocs_json_f.read())
@@ -179,8 +186,8 @@ class TestHelperFunctions:
             for ioc in iocs_json:
                 returned_output.append(create_json_out_format(['value', 'indicator_type'], ioc, request_args, True))
             assert returned_output == [', {"value": "1.2.3.4/wget", "indicator_type": "URL"}',
-             ', {"value": "https://www.demisto.com/cool", "indicator_type": "URL"}',
-             ', {"value": "https://www.demisto.com/*cool", "indicator_type": "URL"}']
+                                       ', {"value": "https://www.demisto.com/cool", "indicator_type": "URL"}',
+                                       ', {"value": "https://www.demisto.com/*cool", "indicator_type": "URL"}']
             returned_output = ''
             not_first_call = False
             for ioc in iocs_json:
@@ -193,17 +200,20 @@ class TestHelperFunctions:
         from EDL import create_csv_out_format, RequestArguments
         with open('EDL_test/TestHelperFunctions/demisto_url_iocs.json', 'r') as iocs_json_f:
             iocs_json = json.loads(iocs_json_f.read())
-            request_args = RequestArguments(query='', drop_invalids=True, url_port_stripping=True, url_protocol_stripping=True)
+            request_args = RequestArguments(query='', drop_invalids=True, url_port_stripping=True,
+                                            url_protocol_stripping=True)
             returned_output = ''
             not_first_call = False
             for ioc in iocs_json:
-                returned_output += (create_csv_out_format(not_first_call, ['value', 'indicator_type'], ioc, request_args))
+                returned_output += (create_csv_out_format(not_first_call, ['value', 'indicator_type'], ioc,
+                                                          request_args))
                 not_first_call = True
 
-            assert returned_output == 'name,type\n"1.2.3.4/wget","URL"\n"www.demisto.com/cool","URL"\n"www.demisto.com/*cool","URL"\n'
+            assert returned_output == 'name,type\n"1.2.3.4/wget","URL"\n"www.demisto.com/cool","URL"\n' \
+                                      '"www.demisto.com/*cool","URL"\n'
 
     def test_create_mwg_out_format(self):
-        from EDL import create_mwg_out_format, RequestArguments, COLLAPSE_TO_RANGES
+        from EDL import create_mwg_out_format, RequestArguments
         with open('EDL_test/TestHelperFunctions/demisto_url_iocs.json', 'r') as iocs_json_f:
             iocs_json = json.loads(iocs_json_f.read())
             request_args = RequestArguments(query='', drop_invalids=True, url_port_stripping=True,
@@ -215,7 +225,9 @@ class TestHelperFunctions:
                     create_mwg_out_format(ioc, request_args, not_first_call))
                 not_first_call = True
 
-            assert returned_output == 'type=string\n"1.2.3.4/wget" "AutoFocus Feed"\n"www.demisto.com/cool" "AutoFocus V2,VirusTotal,Alien Vault OTX TAXII Feed"\n"www.demisto.com/*cool" "AutoFocus V2,VirusTotal,Alien Vault OTX TAXII Feed"\n'
+            assert returned_output == 'type=string\n"1.2.3.4/wget" "AutoFocus Feed"\n"www.demisto.com/cool" ' \
+                                      '"AutoFocus V2,VirusTotal,Alien Vault OTX TAXII Feed"\n"www.demisto.com/*cool" ' \
+                                      '"AutoFocus V2,VirusTotal,Alien Vault OTX TAXII Feed"\n'
 
     def test_validate_basic_authentication(self):
         """Test Authentication"""

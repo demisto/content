@@ -107,9 +107,9 @@ configuration:
   hidden: false
   name: collapse_ips
   options:
-  - none
-  - CIDR
-  - range
+  - Don't Collapse
+  - To CIDRS
+  - To Ranges
   required: false
   type: 15
 - additionalinfo: For use with PAN-OS (Text) format - if selected, any URL entry that is not compliant with PAN-OS URL format is dropped instead of being rewritten.
@@ -287,9 +287,9 @@ script:
       isArray: false
       name: collapse_ips
       predefined:
-      - none
-      - CIDR
-      - range
+      - Don't Collapse
+      - To CIDRS
+      - To Ranges
       required: false
       secret: false
     - default: false

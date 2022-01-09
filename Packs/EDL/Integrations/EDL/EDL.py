@@ -47,9 +47,9 @@ _URL_WITHOUT_PORT = r'\g<1>'
 _INVALID_TOKEN_REMOVAL = re.compile(r'(?:[^\./+=\?&]+\*[^\./+=\?&]*)|(?:[^\./+=\?&]*\*[^\./+=\?&]+)')
 _BROAD_PATTERN = re.compile(r'^(?:\*\.)+[a-zA-Z]+(?::[0-9]+)?$')
 
-DONT_COLLAPSE = "none"
-COLLAPSE_TO_CIDR = "CIDR"
-COLLAPSE_TO_RANGES = "range"
+DONT_COLLAPSE = "Don't Collapse"
+COLLAPSE_TO_CIDR = "To CIDRS"
+COLLAPSE_TO_RANGES = "To Ranges"
 
 MIMETYPE_JSON_SEQ: str = 'application/json-seq'
 MIMETYPE_JSON: str = 'application/json'
@@ -344,7 +344,7 @@ def create_json_out_format(list_fields: List, indicator: Dict, request_args: Req
         a one indicator to add to the file in json format.
     """
     if indicator.get('indicator_type') == 'URL' and indicator.get('value'):
-        indicator['value'] = url_handler(indicator.get('value'), request_args.url_protocol_stripping,
+        indicator['value'] = url_handler(indicator.get('value', ''), request_args.url_protocol_stripping,
                                          request_args.url_port_stripping, request_args.url_truncate)
     filtered_json = {}
     if list_fields:
