@@ -349,10 +349,11 @@ def create_corepacks_config(storage_bucket: Any, build_number: str, index_folder
         storage_base_path (str): the source path of the core packs in the target bucket.
 
     """
+    marketplace_core_packs = GCPConfig.CORE_PACKS_LIST
     core_packs_public_urls = []
     found_core_packs = set()
     for pack in os.scandir(index_folder_path):
-        if pack.is_dir() and pack.name in GCPConfig.CORE_PACKS_LIST:
+        if pack.is_dir() and pack.name in marketplace_core_packs:
             pack_metadata_path = os.path.join(index_folder_path, pack.name, Pack.METADATA)
 
             if not os.path.exists(pack_metadata_path):
@@ -374,9 +375,9 @@ def create_corepacks_config(storage_bucket: Any, build_number: str, index_folder
             core_packs_public_urls.append(core_pack_public_url)
             found_core_packs.add(pack.name)
 
-    if len(found_core_packs) != len(GCPConfig.CORE_PACKS_LIST):
-        missing_core_packs = set(GCPConfig.CORE_PACKS_LIST) ^ found_core_packs
-        logging.critical(f"Number of defined core packs are: {len(GCPConfig.CORE_PACKS_LIST)}")
+    if len(found_core_packs) != len(marketplace_core_packs):
+        missing_core_packs = set(marketplace_core_packs) ^ found_core_packs
+        logging.critical(f"Number of defined core packs are: {len(marketplace_core_packs)}")
         logging.critical(f"Actual number of found core packs are: {len(found_core_packs)}")
         logging.critical(f"Missing core packs are: {missing_core_packs}")
         sys.exit(1)
@@ -782,6 +783,7 @@ def option_handler():
     parser.add_argument('-pb', '--private_bucket_name', help="Private storage bucket name", required=False)
     parser.add_argument('-c', '--ci_branch', help="CI branch of current build", required=True)
     parser.add_argument('-f', '--force_upload', help="is force upload build?", type=str2bool, required=True)
+    parser.add_argument('-mp', '--marketplace', help="marketplace version", default='xsoar')
     # disable-secrets-detection-end
     return parser.parse_args()
 
@@ -928,6 +930,7 @@ def main():
     private_bucket_name = option.private_bucket_name
     ci_branch = option.ci_branch
     force_upload = option.force_upload
+    marketplace = option.marketplace
 
     # google cloud storage client initialized
     storage_client = init_storage_client(service_account)
@@ -974,9 +977,14 @@ def main():
 
     # starting iteration over packs
     for pack in packs_list:
-        task_status = pack.load_user_metadata()
+        task_status = pack.load_user_metadata(marketplace)
         if not task_status:
             pack.status = PackStatus.FAILED_LOADING_USER_METADATA.value
+            pack.cleanup()
+            continue
+
+        if not pack.should_upload_to_market_place:
+            logging.warning(f"Skipping {pack.name} pack as it is not supported in the current marketplace.")
             pack.cleanup()
             continue
 

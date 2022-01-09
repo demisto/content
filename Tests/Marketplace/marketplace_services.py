@@ -105,6 +105,7 @@ class Pack(object):
         self._contains_transformer = False  # initialized in collect_content_items function
         self._contains_filter = False  # initialized in collect_content_items function
         self._is_missing_dependencies = False  # a flag that specifies if pack is missing dependencies
+        self.should_upload_to_market_place = True  # initialized in load_user_metadata function
 
     @property
     def name(self):
@@ -985,6 +986,10 @@ class Pack(object):
         """
         task_status = True
 
+        # if not self._should_upload_to_market_place:
+        #     logging.warning(f"Skipping {self._pack_name} pack as it is not supported in the current marketplace.")
+        #     return task_status, False, None
+
         try:
             version_pack_path = os.path.join(storage_base_path, self._pack_name, latest_version)
             existing_files = [f.name for f in storage_bucket.list_blobs(prefix=version_pack_path)]
@@ -1056,6 +1061,9 @@ class Pack(object):
              otherwise returned False.
 
         """
+        # if not self._should_upload_to_market_place:
+        #     logging.warning(f"Skipping {self._pack_name} pack as it is not supported in the current marketplace.")
+
         pack_not_uploaded_in_prepare_content = self._pack_name not in successful_packs_dict
         if pack_not_uploaded_in_prepare_content:
             logging.warning("The following packs already exist at storage.")
@@ -1719,7 +1727,7 @@ class Pack(object):
             self._content_items = content_items_result
             return task_status
 
-    def load_user_metadata(self):
+    def load_user_metadata(self, marketplace='xsoar'):
         """ Loads user defined metadata and stores part of it's data in defined properties fields.
 
         Returns:
@@ -1747,6 +1755,7 @@ class Pack(object):
             self.display_name = user_metadata.get(Metadata.NAME, '')  # type: ignore[misc]
             self._user_metadata = user_metadata
             self.eula_link = user_metadata.get(Metadata.EULA_LINK, Metadata.EULA_URL)
+            self.should_upload_to_market_place = marketplace in user_metadata.get('marketplaces', ['xsoar'])
 
             logging.info(f"Finished loading {self._pack_name} pack user metadata")
             task_status = True
@@ -1960,12 +1969,14 @@ class Pack(object):
         if Metadata.DEPENDENCIES not in self.user_metadata and self._user_metadata:
             self._user_metadata[Metadata.DEPENDENCIES] = {}
 
+        core_packs = GCPConfig.CORE_PACKS_LIST
+
         # If it is a core pack, check that no new mandatory packs (that are not core packs) were added
         # They can be overridden in the user metadata to be not mandatory so we need to check there as well
-        if self._pack_name in GCPConfig.CORE_PACKS_LIST:
+        if self._pack_name in core_packs:
             mandatory_dependencies = [k for k, v in pack_dependencies.items()
                                       if v.get(Metadata.MANDATORY, False) is True
-                                      and k not in GCPConfig.CORE_PACKS_LIST
+                                      and k not in core_packs
                                       and k not in self.user_metadata[Metadata.DEPENDENCIES].keys()]
             if mandatory_dependencies:
                 raise Exception(f'New mandatory dependencies {mandatory_dependencies} were '
