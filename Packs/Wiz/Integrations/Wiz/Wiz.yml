@@ -86,7 +86,7 @@ script:
       description: Wiz Issue severity
       type: String
     - contextPath: Wiz.Manager.Issues.status
-      description: Wia Issue status (open, resolved, rejected)
+      description: Wiz Issue status (open, resolved, rejected)
       type: String
     - contextPath: Wiz.Manager.Issues.note
       description: Wiz Issue note

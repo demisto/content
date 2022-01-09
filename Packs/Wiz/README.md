@@ -1,4 +1,4 @@
-The Wiz Inc. Cortex XSOAR content pack featuress the contextual toxic combination risk analysis findings of Wiz with the Cortex XSOAR analytics.
+The Wiz Inc. Cortex XSOAR content pack features the contextual toxic combination risk analysis findings of Wiz with the Cortex XSOAR analytics.
 Use this Content Pack to prioritize risks that span your entire cloud estate and act upon them. 
 
 ##### What does this pack do?
