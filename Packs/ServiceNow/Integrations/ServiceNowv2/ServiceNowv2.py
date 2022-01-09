@@ -2455,7 +2455,7 @@ def create_co_from_template_command(client: Client, args: dict) -> CommandResult
     if not result or 'result' not in result:
         raise Exception('Unable to retrieve response.')
     ticket = result['result']
-    human_readable_table = get_co_human_readable(tickets=ticket, ticket_type='change_request')
+    human_readable_table = get_co_human_readable(ticket=ticket, ticket_type='change_request')
     headers = ['System ID', 'Number', 'Impact', 'Urgency', 'Severity', 'Priority', 'State', 'Approval',
                'Created On', 'Created By', 'Active', 'Close Notes', 'Close Code', 'Description', 'Opened At',
                'Due Date', 'Resolved By', 'Resolved At', 'SLA Due', 'Short Description', 'Additional Comments']
@@ -2474,53 +2474,47 @@ def create_co_from_template_command(client: Client, args: dict) -> CommandResult
     )
 
 
-def get_co_human_readable(tickets, ticket_type: str, additional_fields: list = None) -> list:
+def get_co_human_readable(ticket:dict, ticket_type: str, additional_fields: list = None) -> list:
     """Get co human readable.
 
     Args:
-        tickets: tickets data. in the form of a dict or a list of dict.
+        ticket: tickets data. in the form of a dict.
         ticket_type: ticket type.
         additional_fields: additional fields to extract from the ticket
 
     Returns:
         ticket human readable.
     """
-    if not isinstance(tickets, list):
-        tickets = [tickets]
 
-    items = []
-    for ticket in tickets:
+    states = TICKET_STATES.get(ticket_type, {})
+    state = ticket.get('state', {}).get('value', '')
+    priority = ticket.get('priority').get('value', '')
 
-        states = TICKET_STATES.get(ticket_type, {})
-        state = ticket.get('state', {}).get('value', '')
-        priority = ticket.get('priority').get('value', '')
+    item = {
+        'System ID': ticket.get('sys_id', {}).get('value', ''),
+        'Number': ticket.get('number', {}).get('value', ''),
+        'Impact': TICKET_IMPACT.get(str(int(ticket.get('impact', {}).get('value', ''))), ''),
+        'Urgency': ticket.get('urgency', {}).get('display_value', ''),
+        'Severity': ticket.get('severity', {}).get('value', ''),
+        'Priority': TICKET_PRIORITY.get(str(int(priority)), str(int(priority))),
+        'State': states.get(str(int(state)), str(int(state))),
+        'Approval': ticket.get('approval_history', {}).get('value', ''),
+        'Created On': ticket.get('sys_created_on', {}).get('value', ''),
+        'Created By': ticket.get('sys_created_by', {}).get('value', ''),
+        'Active': ticket.get('active', {}).get('value', ''),
+        'Close Notes': ticket.get('close_notes', {}).get('value', ''),
+        'Close Code': ticket.get('close_code', {}).get('value', ''),
+        'Description': ticket.get('description', {}).get('value', ''),
+        'Opened At': ticket.get('opened_at', {}).get('value', ''),
+        'Due Date': ticket.get('due_date', {}).get('value', ''),
+        'Resolved By': ticket.get('closed_by', {}).get('value', ''),
+        'Resolved At': ticket.get('closed_at', {}).get('value', ''),
+        'SLA Due': ticket.get('sla_due', {}).get('value', ''),
+        'Short Description': ticket.get('short_description', {}).get('value', ''),
+        'Additional Comments': ticket.get('comments', {}).get('value', '')
+    }
 
-        item = {
-            'System ID': ticket.get('sys_id', {}).get('value', ''),
-            'Number': ticket.get('number', {}).get('value', ''),
-            'Impact': TICKET_IMPACT.get(str(int(ticket.get('impact', {}).get('value', ''))), ''),
-            'Urgency': ticket.get('urgency', {}).get('display_value', ''),
-            'Severity': ticket.get('severity', {}).get('value', ''),
-            'Priority': TICKET_PRIORITY.get(str(int(priority)), str(int(priority))),
-            'State': states.get(str(int(state)), str(int(state))),
-            'Approval': ticket.get('approval_history', {}).get('value', ''),
-            'Created On': ticket.get('sys_created_on', {}).get('value', ''),
-            'Created By': ticket.get('sys_created_by', {}).get('value', ''),
-            'Active': ticket.get('active', {}).get('value', ''),
-            'Close Notes': ticket.get('close_notes', {}).get('value', ''),
-            'Close Code': ticket.get('close_code', {}).get('value', ''),
-            'Description': ticket.get('description', {}).get('value', ''),
-            'Opened At': ticket.get('opened_at', {}).get('value', ''),
-            'Due Date': ticket.get('due_date', {}).get('value', ''),
-            'Resolved By': ticket.get('closed_by', {}).get('value', ''),
-            'Resolved At': ticket.get('closed_at', {}).get('value', ''),
-            'SLA Due': ticket.get('sla_due', {}).get('value', ''),
-            'Short Description': ticket.get('short_description', {}).get('value', ''),
-            'Additional Comments': ticket.get('comments', {}).get('value', '')
-        }
-
-        items.append(item)
-    return items
+    return item
 
 
 def main():
