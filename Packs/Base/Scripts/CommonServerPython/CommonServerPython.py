@@ -8642,9 +8642,13 @@ def get_size_of_object(input_object):
     # Python 3 also needs range
     # ZERO_DEPTH_BASES = (str, bytes, Number, range, bytearray)
     ZERO_DEPTH_BASES = (str, bytes, Number, bytearray)
+    MAX_LEVEL = 20
     _seen_ids = set()
 
-    def inner(obj):
+    def inner(obj, level):
+        if level == MAX_LEVEL:
+            # Stop at MAX_LEVEL
+            return  sys.getsizeof(obj)
         obj_id = id(obj)
         if obj_id in _seen_ids:
             return 0
@@ -8653,14 +8657,17 @@ def get_size_of_object(input_object):
         if isinstance(obj, ZERO_DEPTH_BASES):
             pass
         elif isinstance(obj, (tuple, list, set, deque)):
-            size += sum(inner(i) for i in obj)
+            size += sum(inner(i, level + 1) for i in obj)
         elif isinstance(obj, Mapping):
-            size += sum(inner(k) + inner(v) for k, v in getattr(obj, 'items')())
+            mapping_items_keys = list(getattr(obj, 'keys')())
+            for current_key in mapping_items_keys:
+                if current_key in obj:
+                    size += (inner(current_key, level + 1) + inner(obj[current_key], level + 1))
         # Check for custom object instances - may subclass above too
         if hasattr(obj, '__dict__'):
-            size += inner(vars(obj))
+            size += inner(vars(obj), level + 1)
         return size
-    return inner(input_object)
+    return inner(input_object, 0)
 
 
 import types
