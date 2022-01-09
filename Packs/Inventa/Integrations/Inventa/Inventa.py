@@ -336,7 +336,7 @@ def get_dsar_databases_command(client: Client, ticket_id: int) -> CommandResults
                               outputs_prefix="Inventa.Dsar.Databases",
                               outputs_key_field="id")
     else:
-        return CommandResults(outputs={"databases": "None"},
+        return CommandResults(outputs={"databases": [empty_database]},
                               outputs_prefix="Inventa.Dsar.Databases",
                               outputs_key_field="id")
 
@@ -370,7 +370,7 @@ def get_dsar_dataassets_command(client: Client, ticket_id: int) -> CommandResult
                               outputs_prefix="Inventa.Dsar.DataAssets",
                               outputs_key_field="id")
     else:
-        return CommandResults(outputs={"dataAssets": "None"},
+        return CommandResults(outputs={"dataAssets": [empty_dataasset]},
                               outputs_prefix="Inventa.Dsar.DataAssets",
                               outputs_key_field="id")
 
