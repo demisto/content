@@ -1,16 +1,3 @@
-"""Base Script for Cortex XSOAR (aka Demisto)
-
-This is an empty script with some basic structure according
-to the code conventions.
-
-MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
-
-Developer Documentation: https://xsoar.pan.dev/docs/welcome
-Code Conventions: https://xsoar.pan.dev/docs/integrations/code-conventions
-Linting: https://xsoar.pan.dev/docs/integrations/linting
-
-"""
-
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -18,45 +5,49 @@ from CommonServerUserPython import *
 from typing import Dict, Any
 import traceback
 
+POSSIBLE_STATES = ['New', 'InProgress', 'Completed', 'Waiting', 'Error', 'Skipped', 'Blocked']
 
 ''' STANDALONE FUNCTION '''
 
 
-# TODO: REMOVE the following dummy function:
-def basescript_dummy(dummy: str) -> Dict[str, str]:
-    """Returns a simple python dict with the information provided
-    in the input (dummy).
-
-    :type dummy: ``str``
-    :param dummy: string to add in the dummy dict that is returned
-
-    :return: dict as {"dummy": dummy}
-    :rtype: ``str``
-    """
-
-    return {"dummy": dummy}
-# TODO: ADD HERE THE FUNCTIONS TO INTERACT WITH YOUR PRODUCT API
+def get_incident_tasks_by_state(incident_id, task_states):
+    args = {
+        'incidentId': incident_id
+    }
+    # leave states empty to get all tasks
+    if task_states:
+        args['states'] = task_states
+    try:
+        return demisto.executeCommand('DemistoGetIncidentTasksByState', args=args)
+    except Exception as e:
+        demisto.debug(f'Failed to excexute script: DemistoGetIncidentTasksByState. Error: {e}')
+        return []
 
 
 ''' COMMAND FUNCTION '''
 
 
-# TODO: REMOVE the following dummy command function
-def basescript_dummy_command(args: Dict[str, Any]) -> CommandResults:
+def wait_and_complete_task_command(args: Dict[str, Any]) -> CommandResults:
+    incident = demisto.incidents()[0]
+    task_states = argToList(args.get('task_states'))
+    # todo: how to check if all states are valid
+    if not task_states in POSSIBLE_STATES:
+        raise Exception('states are bad')
 
-    dummy = args.get('dummy', None)
-    if not dummy:
-        raise ValueError('dummy not specified')
+    complete_option = args.get('complete_option')
+    incident_id = args.get('incident_id')
+    if not incident_id:
+        incident_id = incident.get('id')
+    task_name = args.get('task_name')
+    complete_task = argToBoolean(args.get('complete_task'))
 
-    # Call the standalone function and get the raw response
-    result = basescript_dummy(dummy)
+    tasks_by_states = get_incident_tasks_by_state(incident_id, task_states)
 
     return CommandResults(
         outputs_prefix='WaitAndCompleteTask',
         outputs_key_field='',
         outputs=result,
     )
-# TODO: ADD additional command functions that translate XSOAR inputs/outputs
 
 
 ''' MAIN FUNCTION '''
@@ -64,15 +55,13 @@ def basescript_dummy_command(args: Dict[str, Any]) -> CommandResults:
 
 def main():
     try:
-        # TODO: replace the invoked command function with yours
-        return_results(basescript_dummy_command(demisto.args()))
+        return_results(wait_and_complete_task_command(demisto.args()))
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute WaitAndCompleteTask. Error: {str(ex)}')
 
 
 ''' ENTRY POINT '''
-
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()

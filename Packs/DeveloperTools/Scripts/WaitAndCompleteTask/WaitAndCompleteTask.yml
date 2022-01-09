@@ -14,7 +14,7 @@ args:
 - default: false
   description: 'The ID of the incident where the task should be completed. Leave empty to use current incident id.'
   isArray: false
-  name: incidents_id
+  name: incident_id
   required: false
   secret: false
 - default: false
@@ -32,7 +32,7 @@ args:
   predefined:
   - 'true'
   - 'false'
-  required: false
+  required: true
   secret: false
 comment: 'Wait and complete tasks by given status. Used for test playbooks.'
 commonfields:
@@ -41,9 +41,11 @@ commonfields:
 enabled: false
 name: WaitAndCompleteTask
 outputs:
-- contextPath: BaseScript.Output
-  description: '[Enter a description of the data returned in this output.]'
+- contextPath: WaitAndCompleteTask.CompletedTask
+  description: 'Task name that was completed by script.'
   type: String
+- contextPath: WaitAndCompleteTask.FoundTasks
+  description: 'Tasks that were found by script.'
 script: '-'
 system: false
 tags:
