@@ -165,7 +165,8 @@ def format_urls(non_formatted_urls: List[str]) -> List[Dict]:
     return [{
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
-        'Contents': urls
+        'Contents': urls,
+        'EntryContext': {'URL': urls} if urls else {}
     } for urls in formatted_urls_groups]
 
 
