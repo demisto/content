@@ -863,7 +863,7 @@ script:
       arguments:
         - name: start_date
           description: |-
-            The start date of the date range, Yesterday is the most recent date that you can specify. Currently, the date range can't be more than seven days due to a Microsoft limitation.
+            The start date of the date range, Yesterday is the most recent date that you can specify, and the start date can't be older than 10 days from today. Currently, the date range can't be more than seven days due to a Microsoft limitation.
             Time format: mm/dd/yyyy
           required: true
           isArray: false
@@ -912,29 +912,29 @@ script:
           required: false
           isArray: false
       outputs:
-      - contextPath: O365SafeLinksStats.URLTrace.ClickedTime
+      - contextPath: O365SafeLinksStats.DetailReport.ClickedTime
         description: Time when link was clicked.
         type: date
-      - contextPath: O365SafeLinksStats.URLTrace.Recipient
+      - contextPath: O365SafeLinksStats.DetailReport.Recipient
         description: Recipient that had received the link.
         type: string
-      - contextPath: O365SafeLinksStats.URLTrace.URL
+      - contextPath: O365SafeLinksStats.DetailReport.URL
         description: URL that was clicked.
         type: string
-      - contextPath: O365SafeLinksStats.URLTrace.UrlBlocked
+      - contextPath: O365SafeLinksStats.DetailReport.UrlBlocked
         description: The URL was detected as malicious by Safe Links (only the initial
           block, not subsequent clicks), or the user clicked the URL while the scan
           in progress (users are taken to a notification page that asks them to try
           again after the scan is complete).
         type: string
-      - contextPath: O365SafeLinksStats.URLTrace.UrlClicked
+      - contextPath: O365SafeLinksStats.DetailReport.UrlClicked
         description: The URL is blocked, but the applicable Safe Links policy has the
           DoNotAllowClickThrough parameter value $false (click through is allowed).
           Updated policies aren't applied to existing messages that have already been
           scanned. New or updated policies are applied to new messages that were received
           after the policy is applied to the mailbox.
         type: string
-      - contextPath: O365SafeLinksStats.URLTrace.ClickAction
+      - contextPath: O365SafeLinksStats.DetailReport.ClickAction
         description: 'Click Action: The action of a specific click. Possible values
           are: • None: We were unable to capture the verdict for the URL. The user might
           have clicked through the URL. • Allowed: The user was allowed to navigate
@@ -948,10 +948,10 @@ script:
           There was unknown exception while capturing the verdict. The user might have
           clicked through the URL.'
         type: string
-      - contextPath: O365SafeLinksStats.URLTrace.Workload
+      - contextPath: O365SafeLinksStats.DetailReport.Workload
         description: Workload of the link being delivered.
         type: string
-      - contextPath: O365SafeLinksStats.URLTrace.AppName
+      - contextPath: O365SafeLinksStats.DetailReport.AppName
         description: Application Name.
         type: string
   isfetch: false

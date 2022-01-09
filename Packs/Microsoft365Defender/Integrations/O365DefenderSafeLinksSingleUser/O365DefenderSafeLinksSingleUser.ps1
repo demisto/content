@@ -1020,11 +1020,11 @@ function GetDetailReportCommand {
     )
     $raw_response = $client.GetDetailReport($kwargs)
     if (!$raw_response){
-        return "#### No URL trace report found for the given criteria.", @{}, @{}
+        return "#### No detailed information about Safe Links results found for the given criteria.", @{}, @{}
     }
 
     $human_readable = TableToMarkdown $raw_response "Results of $command"
-    $entry_context = @{ "$script:INTEGRATION_ENTRY_CONTEXT.URLTrace(obj.Url === val.Url)" = $raw_response }
+    $entry_context = @{ "$script:INTEGRATION_ENTRY_CONTEXT.DetailReport(obj.Url === val.Url)" = $raw_response }
     return $human_readable, $entry_context, $raw_response
 }
 
