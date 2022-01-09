@@ -4955,9 +4955,8 @@
             ],
             "fromversion": "6.1.0",
             "timeout": 6000,
-            "memory_threshold": 900,
-            "pid_threshold": 12,
-            "context_print_dt": "EDLHey"
+            "memory_threshold": 1000,
+            "pid_threshold": 12
         },
         {
             "playbookID": "TAXII2 Indicator Performance Test",
