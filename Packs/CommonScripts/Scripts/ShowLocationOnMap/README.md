@@ -8,7 +8,7 @@ You need to [Setup Google Maps](https://xsoar.pan.dev/docs/reference/articles) t
 | **Name** | **Description** |
 | --- | --- |
 | Script Type | python |
-| Tags | dynamic script |
+| Tags | dynamic-indicator-section |
 
 
 ## Inputs
