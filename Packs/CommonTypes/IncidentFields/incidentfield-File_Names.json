@@ -27,5 +27,5 @@
     "version": -1,
     "fromVersion": "5.5.0",
     "openEnded": true,
-     "XSIAMFields": "action_file_md5"
+    "XSIAMFields": "action_file_name"
 }
