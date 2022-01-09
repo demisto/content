@@ -19,7 +19,7 @@ PREFIX_CHANGES: List[Tuple[str, Optional[str], str]] = [
     ('https:\\', 'https:\\\\', 'https://'),
     ('http:\\', 'http:\\\\', 'http://'),
     ('https:\\\\', None, 'https://'),
-    ('http:\\\\', None, 'http://')
+    ('http:\\\\', None, 'http://'),
 ]
 
 
@@ -94,6 +94,10 @@ def replace_protocol(url_: str) -> str:
         if lowercase_url.startswith(starts_with) and (
                 not does_not_start_with or not lowercase_url.startswith(does_not_start_with)):
             url_ = url_.replace(starts_with, to_replace)
+    if url_.startswith('http:') and not url_.startswith('http:/'):
+        url_ = url_.replace('http:', 'http://')
+    if url_.startswith('https:') and not url_.startswith('https:/'):
+        url_ = url_.replace('https:', 'https://')
     return url_
 
 
