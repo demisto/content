@@ -61,3 +61,5 @@ ignore=SC106
 [file:DBotClosedIncidentsPercentage.yml]
 ignore=SC106
 
+[file:DeleteContext.yml]
+ignore=SC106
