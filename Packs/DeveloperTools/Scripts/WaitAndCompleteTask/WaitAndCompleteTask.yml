@@ -1,0 +1,55 @@
+args:
+- default: false
+  description: 'Comma separated list of states. Possible values: New, InProgress, Completed, Waiting, Error, Skipped, Blocked (leave empty to get all tasks)'
+  isArray: true
+  name: task_states
+  required: false
+  secret: false
+- default: false
+  description: 'The path to take in conditional tasks. For example, if your conditional task has "Yes" or "No", a possible value here may be "Yes".'
+  isArray: false
+  name: complete_option
+  required: false
+  secret: false
+- default: false
+  description: 'The ID of the incident where the task should be completed. Leave empty to use current incident id.'
+  isArray: false
+  name: incidents_id
+  required: false
+  secret: false
+- default: false
+  description: 'The name of the task that should be completed. If no task name entered, will complete all tasks which state is `task_state`.'
+  isArray: false
+  name: task_name
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'true'
+  description: "Whether to also complete the task, or just check if it's completed. Can be True or False."
+  isArray: false
+  name: complete_task
+  predefined:
+  - 'true'
+  - 'false'
+  required: false
+  secret: false
+comment: 'Wait and complete tasks by given status. Used for test playbooks.'
+commonfields:
+  id: WaitAndCompleteTask
+  version: -1
+enabled: false
+name: WaitAndCompleteTask
+outputs:
+- contextPath: BaseScript.Output
+  description: '[Enter a description of the data returned in this output.]'
+  type: String
+script: '-'
+system: false
+tags:
+- basescript
+timeout: '0'
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.9.7.24076
+fromversion: 6.1.0
