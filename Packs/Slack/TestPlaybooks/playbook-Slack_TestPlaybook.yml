@@ -1,6 +1,5 @@
 id: Slack Test Playbook
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: Slack Test Playbook
 starttaskid: "0"
 tasks:
@@ -865,3 +864,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0
