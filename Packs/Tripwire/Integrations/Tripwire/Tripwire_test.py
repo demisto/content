@@ -89,18 +89,18 @@ def test_empty_fetch(mocker):
 def test_prepare_fetch(mocker):
     """Unit test
         Given
-        - fetch params - rule oids , node oids and fetch time
-        - expected returned string.
+            - fetch params - rule oids , node oids and fetch time
+            - expected returned string.
         When
             - the prepare fetch function is activated.
         Then
-        - run the prepare fetch helper function.
-        Validate the rule_id, node_id and range time to detect is in the expected string.
+            - run the prepare fetch helper function.
+            - Validate the rule_id, node_id and range time to detect is in the filters string.
         """
     params = {'rule_oids': '-1:1', 'node_oids': '-1:2'}
     mocker.patch.object(demisto, 'getLastRun', return_value={"lastRun": "2018-10-24T14:13:20Z"})
     params, fetch_filter, _ = prepare_fetch(params, '1 day ago')
-    expected_filter = 'ruleId=-1:1&nodeId=-1:2&timeDetectedRange=2018-10-24T14:13:20Z'
+    expected_filter = 'ruleId=-1:1&nodeId=-1:2&timeDetectedRange=2018-10-24T14:13:20Z,'
     assert expected_filter in fetch_filter
 
 
