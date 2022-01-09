@@ -23,6 +23,7 @@ API_TYPE_MAP = {
         "list_url": "pub/v4.0/alert/list",
         "single_asset_url": "pub/v4.0/alert",
         "context_path": "PanwIot3rdParty.Alerts",
+        "test": "test",
     },
     "vulnerability": {
         "list_url": "pub/v4.0/vulnerability/list",
