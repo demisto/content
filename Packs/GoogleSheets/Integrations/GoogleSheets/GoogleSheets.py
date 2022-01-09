@@ -24,6 +24,7 @@ import httplib2
 from googleapiclient.discovery import build, Resource
 from google.oauth2 import service_account
 
+
 SERVICE_ACCOUNT_FILE = 'token.json'
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 
@@ -212,7 +213,7 @@ def sheets_spreadsheet_update(service: Resource, args: dict) -> CommandResults:
        action : updates a spreadsheet by a user costume update request
     '''
     spreadsheet_id = args.get('spreadsheet_id')
-    request_to_update = args.get('requests')
+    request_to_update = safe_load_json(args.get('requests'))
     response = service.spreadsheets().batchUpdate(spreadsheetId=spreadsheet_id, body=request_to_update).execute()
     return prepare_result(response, args)
 
@@ -272,6 +273,7 @@ def sheet_create(service: Resource, args: dict) -> CommandResults:
             {
                 "addSheet": {
                     "properties": {
+                        "sheetId": args.get('sheet_id', None),
                         "title": args.get('sheet_title', None),
                         "index": args.get('sheet_index', None),
                         "sheetType": args.get('sheet_type', "GRID"),
@@ -478,6 +480,14 @@ def sheets_data_paste(service: Resource, args: dict) -> CommandResults:
         ],
         "includeSpreadsheetInResponse": args.get('echo_spreadsheet')
     }
+
+    kind = args.get('data_kind')
+    data_paste_req = request_to_update.get('requests')[0].get('pasteData')
+    if kind == 'delimiter':
+        data_paste_req[kind] = ','
+    else:
+        data_paste_req[kind] = "true"
+
     request_to_update = remove_empty_elements(request_to_update)
     response = service.spreadsheets().batchUpdate(spreadsheetId=spreadsheet_id, body=request_to_update).execute()
     results = prepare_result(response, args)
@@ -615,9 +625,8 @@ def build_and_authenticate(params):
 
 def connect_to_google_client(params: dict):
     service_account_credentials = params.get('service_account_credentials', {})
-    return_error(service_account_credentials.get('password'))
-    service_account_credentials = json.loads(service_account_credentials).get('password')
-    creds = service_account.Credentials.from_service_account_info(service_account_credentials, scopes=SCOPES)
+    service_account_credentials = service_account_credentials.get('password')
+    creds = service_account.Credentials.from_service_account_info(json.loads(service_account_credentials), scopes=SCOPES)
     # creds = service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
 
     return build('sheets', 'v4', credentials=creds)
@@ -694,8 +703,8 @@ def main() -> None:
     try:
         # TODO: Make sure you add the proper headers for authentication
         # (i.e. "Authorization": {api key})
-        # service = connect_to_google_client(demisto.params())
-        service = build_and_authenticate(demisto.params())
+        service = connect_to_google_client(demisto.params())
+        # service = build_and_authenticate(demisto.params())
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
             # result = test_module()
