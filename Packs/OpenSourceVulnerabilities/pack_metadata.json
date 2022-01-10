@@ -1,0 +1,17 @@
+{
+    "name": "Open Source Vulnerabilities",
+    "description": "OSV is a vulnerability database and triage infrastructure for open source projects aimed at helping both open source maintainers and consumers of open source.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Anil Agrawal",
+    "url": "",
+    "email": "",
+    "created": "2022-01-10T21:39:32Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "anilagr"
+    ]
+}
