@@ -509,7 +509,7 @@ Visible fields in response: id, dynamicName, phoneNumber, mobileNumber, fax, ema
 | start | The offset at which to start listing the persons at. Must be greater or equal to 0, default is 0. | Optional | 
 | page_size | The amount of persons to be returned per request. Must be between 1 and 100, default is 10. | Optional | 
 | query | A FIQL search expression to filter the result. (e.g. manager.name==Alice) Available from Supporting-Files-API version 1.38.0. The FIQL query syntax is documented in the TOPdesk tutorial. | Optional | 
-| fields | Only include these specific fields (comma seperated) in the response. (default = all) | Optional |
+| fields | A comma-separated list of which fields should be included. By default all fields will be included. | Optional |
 
 
 #### Context Output
