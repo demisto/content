@@ -1542,6 +1542,93 @@ def delete_host_groups(host_group_ids: List[str]) -> Dict:
 ''' MIRRORING COMMANDS '''
 
 
+def get_remote_data_command(args: Dict[str, Any]):
+    """
+    get-remote-data command: Returns an updated remote incident or detection.
+    Args:
+        args:
+            id: incident or detection id to retrieve.
+            lastUpdate: when was the last time we retrieved data.
+
+    Returns:
+        GetRemoteDataResponse object, which contain the incident or detection data to update.
+    """
+    remote_args = GetRemoteDataArgs(args)
+
+    mirrored_data = {}
+    try:
+        demisto.debug(f'Performing get-remote-data command with incident or detection id: {remote_args.remote_incident_id} '
+                      f'and last_update: {remote_args.last_update}')
+
+        # updating remote incident
+        if remote_args.remote_incident_id[0:3] == 'inc':
+            mirrored_data = get_incidents_entities(remote_args.remote_incident_id)
+            delta = {field: mirrored_data.get(field) for field in CS_FALCON_INCIDENT_INCOMING_ARGS if mirrored_data.get(field)}
+
+        # updating remote detection
+        elif remote_args.remote_incident_id[0:3] == 'ldt':
+            mirrored_data = get_detections_entities(remote_args.remote_incident_id)
+            delta = {field: mirrored_data.get(field) for field in CS_FALCON_DETECTION_INCOMING_ARGS if mirrored_data.get(field)}
+
+        else:
+            raise Exception(f'Executed get-remote-data command with undefined id: {remote_args.remote_incident_id}')
+
+        entries = []
+
+        if delta:
+            # 'state' field indicates whether the incident is closed
+            if delta.get('state') == 'closed':
+                demisto.debug(f'Incident is closed: {remote_args.remote_incident_id}')
+                entries.append({
+                    'Type': EntryType.NOTE,
+                    'Contents': {
+                        'dbotIncidentClose': True,
+                        'closeReason': 'Incident was closed on CrowdStrike Falcon'
+                    },
+                    'ContentsFormat': EntryFormat.JSON
+                })
+
+            # 'status' field indicates whether the detection is closed
+            elif delta.get('status') == 'closed':
+                demisto.debug(f'Detection is closed: {remote_args.remote_incident_id}')
+                entries.append({
+                    'Type': EntryType.NOTE,
+                    'Contents': {
+                        'dbotIncidentClose': True,
+                        'closeReason': 'Detection was closed on CrowdStrike Falcon'
+                    },
+                    'ContentsFormat': EntryFormat.JSON
+                })
+
+            demisto.debug(f"Update incident or detection {remote_args.remote_incident_id} with fields: {delta}")
+        else:
+            demisto.debug("No delta was found for incident or detection.")
+
+        return GetRemoteDataResponse(mirrored_object=delta, entries=entries)
+
+    except Exception as e:
+        demisto.debug(f"Error in CrowdStrike Falcon incoming mirror for incident or detection: {remote_args.remote_incident_id}\n"
+                      f"Error message: {str(e)}")
+
+        if mirrored_data:
+            mirrored_data['in_mirror_error'] = str(e)
+        else:
+            mirrored_data = {
+                'id': remote_args.remote_incident_id,
+                'in_mirror_error': str(e)
+            }
+
+        return GetRemoteDataResponse(mirrored_object=mirrored_data, entries=[])
+
+
+def get_modified_remote_data_command(args):
+    pass
+
+
+def update_remote_system_command(args: Dict[str, Any]) -> str:
+    pass
+
+
 def get_mapping_fields_command() -> GetMappingFieldsResponse:
     """
         Returns the list of fields to map in outgoing mirroring, for incidents and detections.
@@ -3150,6 +3237,8 @@ def main():
         elif command == 'cs-falcon-resolve-incident':
             return_results(resolve_incident_command(status=args.get('status'),
                                                     ids=argToList(args.get('ids'))))
+        elif command == 'get-remote-data':
+            return_results(get_remote_data_command(args))
         elif demisto.command() == 'get-mapping-fields':
             return_results(get_mapping_fields_command())
         else:
