@@ -1,3 +1,4 @@
+import pytest
 
 users_list_mock = [
     {
@@ -64,7 +65,7 @@ def test_get_user_command_404_response(mocker):
     from requests.models import Response
 
     client = MsGraphClient('tenant_id', 'auth_id', 'enc_key', 'app_name', 'base_url', 'verify', 'proxy',
-                           'self_deployed', 'redirect_uri', 'auth_code')
+                           'self_deployed', 'redirect_uri', 'auth_code', endpoint='com')
     error_404 = Response()
     error_404._content = b'{"error": {"code": "Request_ResourceNotFound", "message": "Resource ' \
                          b'"NotExistingUser does not exist."}}'
@@ -89,7 +90,7 @@ def test_get_user_command_url_saved_chars(mocker):
 
     user_name = "dbot^"
     client = MsGraphClient('tenant_id', 'auth_id', 'enc_key', 'app_name', 'http://base_url', 'verify', 'proxy',
-                           'self_deployed', 'redirect_uri', 'auth_code')
+                           'self_deployed', 'redirect_uri', 'auth_code', endpoint='com')
     http_mock = mocker.patch.object(BaseClient, '_http_request')
     mocker.patch.object(MicrosoftClient, 'get_access_token')
     hr, _, _ = get_user_command(client, {'user': user_name})
@@ -110,3 +111,21 @@ def test_get_unsupported_chars_in_user():
     invalid_user = f'demi{invalid_chars}sto'
 
     assert len(get_unsupported_chars_in_user(invalid_user).difference(set(invalid_chars))) == 0
+
+
+@pytest.mark.parametrize('host_url, expected_endpoint', [('https://graph.microsoft.us', 'gcc-high'),
+                                                         ('https://dod-graph.microsoft.us', 'dod'),
+                                                         ('https://graph.microsoft.de', 'de'),
+                                                         ('https://microsoftgraph.chinacloudapi.cn', 'cn')])
+def test_host_to_endpoint(host_url, expected_endpoint):
+    """
+    Given:
+        - Host address for national endpoints
+    When:
+        - Creating a new MsGraphClient
+    Then:
+        - Verify that the host address is translated to the correct endpoint code, i.e. com/gcc-high/dod/de/cn
+    """
+    from MicrosoftGraphUser import GRAPH_BASE_ENDPOINTS
+
+    assert GRAPH_BASE_ENDPOINTS[host_url] == expected_endpoint
