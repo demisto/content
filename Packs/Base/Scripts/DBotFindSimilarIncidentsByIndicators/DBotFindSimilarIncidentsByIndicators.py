@@ -239,7 +239,7 @@ def match_indicators_incident(indicators: List[Dict], incident_ids: List[str]) -
     return d
 
 
-def enriched_incidents(df, fields_incident_to_display, from_date: str):
+def enriched_incidents(df, fields_incident_to_display, from_date: str, query_sup = ""):
     """
     Enriched incidents with data
     :param df: Incidents dataFrame
@@ -255,6 +255,8 @@ def enriched_incidents(df, fields_incident_to_display, from_date: str):
     for id_ in ids:
         ids_string.append('id: "%s"' % id_)
     query = " OR ".join(ids_string)
+    if query_sup:
+        query += " %s" % query_sup
     res = demisto.executeCommand('GetIncidentsByQuery', {
         'query': query,
         'populateFields': ' , '.join(fields_incident_to_display),
@@ -545,6 +547,7 @@ def main():
     fields_incident_to_display = [x.strip() for x in fields_incident_to_display if x]
     fields_incident_to_display = list(set(['created', 'name'] + fields_incident_to_display))
     from_date = demisto.args().get('fromDate')
+    query = demisto.args().get('query')
 
     # load the Dcurrent incident
     incident_id = demisto.args().get('incidentId')
@@ -584,7 +587,7 @@ def main():
     # Display and enriched incidents data
     current_incident_df = organize_current_incident(current_incident_df, indicators_map)
     similar_incidents = organize_data(similar_incidents, indicators_map, threshold, max_incidents_to_display)
-    similar_incidents = enriched_incidents(similar_incidents, fields_incident_to_display, from_date)
+    similar_incidents = enriched_incidents(similar_incidents, fields_incident_to_display, from_date, query)
 
     incident_found_bool = (len(similar_incidents) > 0)
 
