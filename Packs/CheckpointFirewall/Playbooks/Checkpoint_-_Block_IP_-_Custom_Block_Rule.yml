@@ -1,9 +1,9 @@
 id: Checkpoint - Block IP - Custom Block Rule
 version: -1
 name: Checkpoint - Block IP - Custom Block Rule
-description: "This playbook blocks IP addresses using Custom Block Rules in Checkpoint\
+description: "This playbook blocks IP addresses using Custom Block Rules in Check Point\
   \ Firewall.\nThe playbook receives malicious IP addresses as inputs, creates a custom\
-  \ bi-directional rule to block them, and publish the configuration."
+  \ bi-directional rule to block them, and publishes the configuration."
 starttaskid: '0'
 tasks:
   '0':
@@ -42,8 +42,8 @@ tasks:
     task:
       id: c97b7d87-db79-4e01-8831-545456462909
       version: -1
-      name: Is Checkpoint firewall enabled?
-      description: Is Checkpoint firewall enabled
+      name: Is Check Point Firewall enabled?
+      description: Is Check Point Firewall enabled
       type: condition
       iscommand: false
       brand: ''
@@ -120,8 +120,8 @@ tasks:
     task:
       id: 04b33257-ce71-4520-84d8-edb86361883f
       version: -1
-      name: Is there already exists  IP object in Checkpoint?
-      description: Validate if there is IP object already in Checkpoint.
+      name: Does the IP object already exist in Check Point?
+      description: Validate if the IP object is already in Check Point.
       type: condition
       iscommand: false
       brand: ''
@@ -173,8 +173,8 @@ tasks:
     task:
       id: fc1ac496-a113-43c3-8f9e-ffb71d0d3066
       version: -1
-      name: Checkpoint add a host (from Inputs)
-      description: Add host object to Checkpoint Firewall.
+      name: Add a host to Check Point Firewall (from Inputs)
+      description: Add host object to Check Point Firewall.
       script: '|||checkpoint-host-add'
       type: regular
       iscommand: true
@@ -228,8 +228,8 @@ tasks:
     task:
       id: dc0c9f6f-469d-42fb-84c7-81288ef8ba3e
       version: -1
-      name: Checkpoint login and get session id
-      description: Login to Checkpoint to get uniq session id.
+      name: Log in to Check Point and get session ID
+      description: Log in to Check Point to get unique session ID.
       script: '|||checkpoint-login-and-get-session-id'
       type: regular
       iscommand: true
@@ -259,8 +259,8 @@ tasks:
     task:
       id: f00d4842-88c9-40db-8126-c2004cd7096e
       version: -1
-      name: Checkpoint access rule add
-      description: Add access rule to Checkpoint firewall.
+      name: Add Check Point access rule
+      description: Add access rule to Check Point Firewall.
       script: '|||checkpoint-access-rule-add'
       type: regular
       iscommand: true
@@ -305,8 +305,7 @@ tasks:
       id: f7944d23-cc81-4753-8c14-6c77e3ac41d6
       version: -1
       name: Checkpoint - Publish&Install configuration
-      description: "Publish the Checkpoint Firewall configuration, also, install policy\
-        \ over all the gateways are available  .\n"
+      description: Publish the Check Point Firewall configuration and install policy on all available gateways.
       playbookName: Checkpoint - Publish&Install configuration
       type: playbook
       iscommand: false
@@ -354,8 +353,8 @@ tasks:
     task:
       id: 14891e0f-33e6-4ba7-8faa-e8ab79c5a889
       version: -1
-      name: Was the access rule added successfully on Checkpoint?
-      description: Check if the access rule was added properly
+      name: Was the access rule added successfully on Check Point?
+      description: Check if the access rule was added correctly.
       type: condition
       iscommand: false
       brand: ''
@@ -398,7 +397,7 @@ tasks:
       id: 617247cb-84ae-4ef0-8834-5b8310b6607d
       version: -1
       name: checkpoint-access-rule-list
-      description: Get rule list from checkpoint FW
+      description: Get rule list from Check Point Firewall
       script: '|||checkpoint-access-rule-list'
       type: regular
       iscommand: true
@@ -434,8 +433,8 @@ tasks:
     task:
       id: ea9ccc02-67ef-4924-8380-3e0ba3a03d6c
       version: -1
-      name: Checkpoint logout
-      description: Logout with specific SID from Checkpoint firewall.
+      name: Check Point logout
+      description: Log ut with specific session ID from Check Point Firewall.
       script: '|||checkpoint-logout'
       type: regular
       iscommand: true
@@ -469,7 +468,7 @@ tasks:
       id: dec826c9-0de7-4e01-87aa-7a83f14c0b64
       version: -1
       name: Print access rule add error
-      description: Prints text to war room (Markdown supported)
+      description: Prints text to war room (Markdown supported).
       scriptName: Print
       type: regular
       iscommand: false
@@ -479,7 +478,7 @@ tasks:
       - "21"
     scriptarguments:
       value:
-        simple: There was problem to add access rule.
+        simple: There was a problem adding the access rule.
     continueonerror: true
     separatecontext: false
     view: |-
@@ -503,8 +502,8 @@ tasks:
     task:
       id: ba25527b-75e8-4a5b-827f-0504cf07e4d0
       version: -1
-      name: Was the access rule added?
-      description: Validate if access rule was  added.
+      name: Was the access rule added successfully on Check Point?
+      description: Validate if access rule was added.
       type: condition
       iscommand: false
       brand: ''
@@ -543,7 +542,7 @@ tasks:
     task:
       id: 2065aef3-9908-4087-848e-9d4a4af622d1
       version: -1
-      name: Was host object added successfully ?
+      name: Was the host object added successfully?
       description: Validate host object added successfully.
       type: condition
       iscommand: false
@@ -586,7 +585,7 @@ tasks:
       id: 6eb870df-6055-46f3-8162-590b10fcc4a4
       version: -1
       name: Print host object added error
-      description: Prints text to war room (Markdown supported)
+      description: Prints text to war room (Markdown supported).
       scriptName: Print
       type: regular
       iscommand: false
@@ -596,7 +595,7 @@ tasks:
       - "21"
     scriptarguments:
       value:
-        simple: There was problem to add object host.
+        simple: There was a problem adding object host.
     continueonerror: true
     separatecontext: false
     view: |-
@@ -620,8 +619,8 @@ tasks:
     task:
       id: 015dc9bf-3a9a-4399-8f7a-9987fb218556
       version: -1
-      name: Checkpoint show object
-      description: Get host object to check if IP already exist.
+      name: Check Point show object
+      description: Get host object to check if IP already exists.
       script: '|||checkpoint-show-objects'
       type: regular
       iscommand: true
@@ -666,8 +665,8 @@ tasks:
     task:
       id: d6d93fc2-b5f8-41e0-84b6-d39d51039f37
       version: -1
-      name: Print access rule was not added to Checkpoint successfully
-      description: Prints text to war room (Markdown supported)
+      name: Print access rule was not added to Check Point successfully
+      description: Prints text to war room (Markdown supported).
       scriptName: Print
       type: regular
       iscommand: false
@@ -702,8 +701,7 @@ tasks:
       id: e418b023-1569-4098-883d-2644e655811f
       version: -1
       name: Checkpoint - Publish&Install configuration
-      description: "Publish the Checkpoint Firewall configuration, also, install policy\
-        \ over all the gateways are available  .\n"
+      description: Publish the Check Point Firewall configuration and install policy on all available gateways.
       playbookName: Checkpoint - Publish&Install configuration
       type: playbook
       iscommand: false
@@ -751,7 +749,7 @@ tasks:
     task:
       id: 1160b925-6034-4829-816c-9a4d57bcb229
       version: -1
-      name: Checkpoint show object
+      name: Check Point show object
       description: Get host object to check if IP already exist.
       script: '|||checkpoint-show-objects'
       type: regular
@@ -797,8 +795,7 @@ tasks:
       id: fb571b4b-09de-44eb-8382-758633671f4c
       version: -1
       name: Is action manual handling enabled?
-      description: if action manual handling enable, the Playbook will stop in favor
-        of further manual handling.
+      description: If action manual handling is enabled, the playbook will pause and wait for manual review.
       type: condition
       iscommand: false
       brand: ''
@@ -850,7 +847,7 @@ tasks:
       id: b2bfee2e-854f-4f48-8e56-dfe26e9ceea7
       version: -1
       name: Fix error and publish manually
-      description: User manually add resolve .
+      description: User manually publishes on Check Point Firwall console.
       type: regular
       iscommand: false
       brand: ''
@@ -879,8 +876,8 @@ tasks:
     task:
       id: 657229a0-62d9-4c72-844f-768dea837582
       version: -1
-      name: Compare between Inputs IPs and the returned CP objects
-      description: Compare  two lists and put the differences in context.
+      name: Compare between Inputs IPs and the returned Check Point objects
+      description: Compare two lists and put the differences in context.
       scriptName: CompareLists
       type: regular
       iscommand: false
@@ -923,7 +920,7 @@ tasks:
       id: c856d307-d035-4a15-8e11-dcee37e6599b
       version: -1
       name: Are there any diffs?
-      description: Check if there is an IP without an object in the FW
+      description: Check if there is an IP without an object in the Firewall.
       type: condition
       iscommand: false
       brand: ""
@@ -962,8 +959,8 @@ tasks:
     task:
       id: 0ccc3589-1788-4672-8c04-dabe9a6b1677
       version: -1
-      name: Checkpoint add a host (From the Diff)
-      description: Add host object to Checkpoint Firewall.
+      name: Add a host to Check Point Firewall (from the diff)
+      description: Add host object to Check Point Firewall.
       script: '|||checkpoint-host-add'
       type: regular
       iscommand: true
@@ -1003,7 +1000,7 @@ tasks:
     task:
       id: 0b63ce54-9db6-4396-8074-a3fc0437185b
       version: -1
-      name: Create object group in FW
+      name: Create object group in Firewall
       description: Adds a group.
       script: '|||checkpoint-group-add'
       type: regular
@@ -1105,8 +1102,7 @@ inputs:
   value:
     simple: 'False'
   required: true
-  description: Input True / False for playbook to continue install policy process
-    for checkpoint Firewall.
+  description: Whether the playbook should continue install policy process for Check Point Firewall.
   playbookInputQuery:
 - key: policy_package
   value:
@@ -1118,41 +1114,42 @@ inputs:
   value:
     simple: Stop
   required: false
-  description: "In case one of the actions for block IP playbook fails due to issues\
-    \ on the Checkpoint side, This input will determine whether the playbook will\
-    \ continue or stop for manual review. Also, in case of Continue the session id\
-    \ will logout and all changes will discard.\nValues can be \"Continue\" or \"\
-    Stop\".\nThe default value will be \"Stop\"."
+  description: "If one of the actions for the block IP playbook fails due to issues\
+    \ on the Check Point Firewall, this input determines whether the playbook continues\
+    \ or stops for manual review. If the playbook continues, the session ID logs out\
+    \ and all Check Point changes are discarded.\nValues are \"Continue\" or \"\
+    Stop\".\nThe default value is \"Stop\"."
   playbookInputQuery:
 - key: checkpoint_error_handling
   value:
     simple: Stop
   required: true
-  description: "In case one of the actions for publish/install policy fails due to\
-    \ issues on the Checkpoint side, This input will determine whether the playbook\
-    \ will continue or stop for manual review. Also, in case of Continue the session\
-    \ id will logout and all changes will discard.\nValues can be \"Continue\" or\
-    \ \"Stop\".\nThe default value will be \"Stop\"."
+  description: "If one of the actions for publish/install policy fails due to issues\
+    \ on the Check Point side, this input determines whether the playbook\
+    \ continues or stops for manual review. If the playbook continues, the session\
+    \ ID logs out and all Check Point changes are discarded.\nValues are \"Continue\" or\
+    \ \"Stop\".\nThe default value is \"Stop\"."
   playbookInputQuery:
 - key: rule_layer
   value:
     simple: Network
   required: true
-  description: "This input determines whether Checkpoint firewall rule layer  are\
-    \ used.\nBy default we using \"Network\" layer, but can be changed."
+  description: "Determines which Check Point Firewall rule layer is used.\
+    \nBy default, the  \"Network\" layer is used, but this can be changed."
   playbookInputQuery:
 - key: rule_position
   value:
     simple: top
   required: true
-  description: "This input determines whether Checkpoint firewall rule position  are\
-    \ used.\nBy default we using \"top\" position, but can be changed."
+  description: "Determines which Check Point Firewall rule position is used.\
+    \nBy default, the \"top\" position is used, but this can be changed."
   playbookInputQuery:
 - key: rule_name
   value:
     simple: XSOAR - ${incident.id}
   required: true
-  description: This input determines whether Checkpoint firewall rule name are used.
+  description: "Creates a new blocking rule using this Check Point Firewall group.\ 
+    \nUse this option if you have not assigned the appended group to a rule in your firewall policy."
   playbookInputQuery:
 outputs: []
 fromversion: 5.0.0
