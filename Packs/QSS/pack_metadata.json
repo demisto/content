@@ -2,17 +2,21 @@
     "name": "Quantum Security Systems",
     "description": "Use SOC Case Management Platform (SCMP) solution to manage and automated SOC activities in an efficient way",
     "support": "partner",
-    "currentVersion": "1.0.3",
+    "currentVersion": "1.0.4",
     "author": "Quantum Security Systems",
     "url": "https://www.qss.com.sa",
     "email": "dev@qss.com.sa",
     "created": "2020-12-17T10:44:19Z",
     "categories": [
-    	"Case Management",
-    	"SOC Management",
-    	"Incident Response"
+        "Case Management",
+        "SOC Management",
+        "Incident Response"
     ],
     "tags": [],
     "useCases": [],
-    "keywords": []
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

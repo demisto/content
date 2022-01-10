@@ -2,7 +2,7 @@
     "name": "Saas Security (Prisma)",
     "description": "Provides unparalleled visibility and precise control of SaaS applications using an extensive library of application signatures.",
     "support": "xsoar",
-    "currentVersion": "1.2.2",
+    "currentVersion": "1.2.3",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -14,5 +14,9 @@
     "keywords": [],
     "itemPrefix": [
         "Saas Security"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }

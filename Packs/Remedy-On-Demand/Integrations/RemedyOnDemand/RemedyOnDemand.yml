@@ -45,16 +45,16 @@ script:
   - name: remedy-incident-create
     arguments:
     - name: first-name
-      required: true
+      required: false
       description: costumer's first name (make sure costumer already exists)
     - name: last-name
-      required: true
+      required: false
       description: costumer's first name (make sure costumer already exists)
     - name: description
-      required: true
+      required: false
       description: Incident description
     - name: status
-      required: true
+      required: false
       auto: PREDEFINED
       predefined:
       - New
@@ -66,7 +66,7 @@ script:
       - Cancelled
       description: Incident status
     - name: source
-      required: true
+      required: false
       auto: PREDEFINED
       predefined:
       - Direct Input
@@ -82,7 +82,7 @@ script:
       - Other
       description: Incident source
     - name: service-type
-      required: true
+      required: false
       auto: PREDEFINED
       predefined:
       - User Service Restoration
@@ -91,7 +91,7 @@ script:
       - Infrastructure Restoration
       description: Incident service-type
     - name: impact
-      required: true
+      required: false
       auto: PREDEFINED
       predefined:
       - 1-Extensive/Widespread
@@ -100,7 +100,7 @@ script:
       - 4-Minor/Localized
       description: Incident impact
     - name: urgency
-      required: true
+      required: false
       auto: PREDEFINED
       predefined:
       - 1-Critical
@@ -128,7 +128,7 @@ script:
       description: Ticket urgency
     - contextPath: Ticket.Type
       description: Ticket service type
-    description: Create new ticket incident
+    description: Create new ticket incident. Note - according to Remedy AR API documentation it is recommended to provide all of the non-custom arguments. However, there is no accurate specification, and it is possible to provide other fields using the custom-fields argument alone.
   - name: remedy-get-incident
     arguments:
     - name: ID
