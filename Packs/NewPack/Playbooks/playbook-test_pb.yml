@@ -1,0 +1,89 @@
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: aa32e140-f786-4f6c-8643-f9c6b616bbd4
+    propagationLabels:
+    - all
+    toServerVersion: ""
+id: 0167b83b-5fb1-4e45-859d-613e308c27f1
+inputs: []
+name: test_pb
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 5f574be1-e34f-4c8f-8a76-e66fd84013eb
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 5f574be1-e34f-4c8f-8a76-e66fd84013eb
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      id: a1434596-ac3a-4689-8173-175bc164e214
+      iscommand: false
+      name: Delete
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: a1434596-ac3a-4689-8173-175bc164e214
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 170
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 215,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
