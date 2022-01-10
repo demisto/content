@@ -611,6 +611,8 @@ def build_and_authenticate(params):
     credentials = service_account.ServiceAccountCredentials.from_json_keyfile_dict(service_account_credentials,
                                                                                    scopes=SCOPES)
 
+    hello = 'hello'
+
     proxy = params.get('proxy', False)
     disable_ssl = params.get('insecure', False)
 
