@@ -360,5 +360,5 @@ def test_duplicated_indicator_in_the_same_batch(mocker):
 
     assert len(client_outputs) == 2
     indicators_occurrences = collections.Counter(indicators_values)
-    assert indicators_occurrences.get('http://www.hadiahgratisdarigarena2022.duckdns.org/') == 1
-    assert indicators_occurrences.get('http://www.hadiahgratisdarigarena2022.duckdns.ORG/') == 1
+    assert indicators_occurrences.get('http://www.test.duckdns.org/') == 1
+    assert indicators_occurrences.get('http://www.test.duckdns.ORG/') == 1
