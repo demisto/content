@@ -70,6 +70,12 @@ args:
   name: fromDate
   required: false
   secret: false
+- default: false
+  description: Argument for the query of similar incidents.
+  isArray: false
+  name: query
+  required: false
+  secret: false
 comment: Finds similar incidents based on indicators' similarity. Indicators' contribution
   to the final score is based on their scarcity.
 commonfields:
