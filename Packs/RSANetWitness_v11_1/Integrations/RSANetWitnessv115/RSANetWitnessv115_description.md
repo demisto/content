@@ -24,3 +24,4 @@ You can either give the desired user one of these roles, or create a new role an
 5. In the Permissions section cilk the arrows until you find the **Integration-Server** and choose the **integration-server.api.access** permission.
 
 see full RSA NetWitness documentation for user management and permissions [here](https://community.rsa.com/t5/netwitness-platform-online/system-security-and-user-management-guide-11-5/ta-p/572690).
+Note: This is a beta Integration, which lets you implement and test pre-release software. Since the integration is beta, it might contain bugs. Updates to the integration during the beta phase might include non-backward compatible features. We appreciate your feedback on the quality and usability of the integration to help us identify issues, fix them, and continually improve.

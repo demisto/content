@@ -1,8 +1,16 @@
 import json
 import io
 import pytest
+import demistomock as demisto
 
-from RSANetWitnessv115 import *
+from CommonServerPython import CommandResults, DemistoException
+from RSANetWitnessv115 import Client, list_incidents_command, update_incident_command, remove_incident_command, \
+    incident_add_journal_entry_command, incident_list_alerts_command, services_list_command, hosts_list_command, \
+    snapshots_list_for_host_command, snapshot_details_get_command, files_list_command, scan_request_command, \
+    host_alerts_list_command, file_alerts_list_command, file_download_command, mft_download_request_command, \
+    system_dump_download_request_command, process_dump_download_request_command, endpoint_isolate_from_network_command, \
+    endpoint_update_exclusions_command, endpoint_isolation_remove_command, endpoint_command, create_time, create_filter, \
+    create_exclusions_list, remove_duplicates_in_items, remove_duplicates_for_fetch, fetch_incidents, paging_command
 
 
 def util_load_json(path):
@@ -79,8 +87,6 @@ def test_commands(mocker, function_to_mock, function_to_test, args, http_respons
 
     command_result: CommandResults = function_to_test(client, args)
     assert command_result.outputs == expected_command_results
-    # command_results[expected_command_results_key] = command_result.outputs
-    # write_to_json('test_data/command_results.json', command_results)
 
 
 def test_hosts_command_bad_filter(mocker):

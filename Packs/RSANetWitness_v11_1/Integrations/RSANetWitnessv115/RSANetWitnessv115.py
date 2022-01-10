@@ -608,7 +608,7 @@ def snapshot_details_get_command(client: Client, args: Dict[str, Any]) -> Comman
 
     results = response[offset:offset + limit]
     humanReadable = tableToMarkdown(f'Snapshot details for agent id {agent_id}-'
-                                    f' \nshowing {limit} results out of {len(response)}',
+                                    f' \nshowing {len(results)} results out of {len(response)}',
                                     results, ['hostName', 'agentId', 'scanStartTime', 'directory', 'fileName'])
     command_results = CommandResults(
         outputs_prefix='RSANetWitness115.SnapshotDetailsGet',

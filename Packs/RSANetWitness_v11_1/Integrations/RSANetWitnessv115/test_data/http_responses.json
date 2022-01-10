@@ -282,10 +282,10 @@
                         "111::111:11:111:11"
                     ],
                     "networkIdv6": [
-                        "111::"
+                        "111"
                     ],
                     "gateway": [
-                        "111.11.1.1"
+                        "1.1.1.1"
                     ],
                     "dns": [
                         "1.1.1.1"
@@ -315,7 +315,7 @@
         "machineOsType": "windows",
         "hostName": "host_name",
         "agentId": "1",
-        "agentVersion": "11.5.0.0",
+        "agentVersion": "1",
         "scanStartTime": "2021-10-19T06:49:37.712Z",
         "directory": "",
         "fileName": "dll",
@@ -426,7 +426,7 @@
         "machineOsType": "windows",
         "hostName": "host_name",
         "agentId": "1",
-        "agentVersion": "11.5.0.0",
+        "agentVersion": "1",
         "scanStartTime": "2021-10-19T06:49:37.712Z",
         "directory": "",
         "fileName": "SystemEventsBrokerServer.dll",

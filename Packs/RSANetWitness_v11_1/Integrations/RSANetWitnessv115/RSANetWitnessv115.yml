@@ -11,7 +11,7 @@ configuration:
   name: credentials
   required: true
   type: 9
-- additionalinfo: The service id that will be automaticly used in every command where
+- additionalinfo: The service id that will be automatically used in every command where
     service id is required. retrieve all service id's with rsa-nw-services-list command.
     to overwrite with another service id use the command argument 'service_id'.
   display: Service Id
@@ -52,22 +52,21 @@ configuration:
   type: 8
 description: RSA NetWitness Platform provides systems Logs, Network, and endpoint
   visibility for real-time collection, detection, and automated response with the
-  Demisto Enterprise platform. note - This is a beta Integration, which lets you implement
-  and test pre-release software.
+  Demisto Enterprise platform.
 display: RSA NetWitness v11.5 (Beta)
 name: RSANetWitnessv115
 script:
   commands:
   - arguments:
     - default: false
-      description: A timestamp in the followin format 2020-01-18T14:00:00.000Z. Retrieve
+      description: A timestamp in the following format 2020-01-18T14:00:00.000Z. Retrieve
         incidents created on and before this timestamp.
       isArray: false
       name: until
       required: false
       secret: false
     - default: false
-      description: A timestamp in the followin format 2020-01-18T14:00:00.000Z. Retrieve
+      description: A timestamp in the following format 2020-01-18T14:00:00.000Z. Retrieve
         incidents created on and after this timestamp.
       isArray: false
       name: since
@@ -75,13 +74,13 @@ script:
       secret: false
     - default: false
       description: The maximum number of items to return in a single page. cannot
-        be supllied with the limit argument.
+        be supplied with the limit argument.
       isArray: false
       name: page_size
       required: false
       secret: false
     - default: false
-      description: The requested page number, first page is 0. cannot be supllied
+      description: The requested page number, first page is 0. cannot be supplied
         with the limit argument.
       isArray: false
       name: page_number
@@ -89,7 +88,7 @@ script:
       secret: false
     - default: false
       description: Maximum number of results to be returned, if not set the first
-        50 results will be returned. cannot be supllied with a page_size/page_number
+        50 results will be returned. cannot be supplied with a page_size/page_number
         arguments.
       isArray: false
       name: limit
@@ -449,7 +448,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The requested page number, first page is 0. cannot be supllied
+      description: The requested page number, first page is 0. cannot be supplied
         with the limit argument.
       isArray: false
       name: page_number
@@ -457,21 +456,21 @@ script:
       secret: false
     - default: false
       description: The maximum number of items to return in a single page. cannot
-        be supllied with the limit argument.
+        be supplied with the limit argument.
       isArray: false
       name: page_size
       required: false
       secret: false
     - default: false
       description: Maximum number of results to be returned, if not set the first
-        50 results will be returned. cannot be supllied with a page_size/page_number
+        50 results will be returned. cannot be supplied with a page_size/page_number
         arguments.
       isArray: false
       name: limit
       required: false
       secret: false
     deprecated: false
-    description: Retrive all the alerts that are associated with an incident based
+    description: Retrieve all the alerts that are associated with an incident based
       on the incident's id. you can limit the results using the limit argument or
       the page size argument. the default is 50 results.
     execution: false
@@ -621,7 +620,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The requested page number, first page is 0. cannot be supllied
+      description: The requested page number, first page is 0. cannot be supplied
         with the limit argument.
       isArray: false
       name: page_number
@@ -629,21 +628,21 @@ script:
       secret: false
     - default: false
       description: The maximum number of items to return in a single page. cannot
-        be supllied with the limit argument.
+        be supplied with the limit argument.
       isArray: false
       name: page_size
       required: false
       secret: false
     - default: false
       description: Maximum number of results to be returned, if not set the first
-        50 results will be returned.  cannot be supllied with a page_size/page_number
+        50 results will be returned.  cannot be supplied with a page_size/page_number
         arguments.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
-      description: Agent ID of the host. can be supllied as a list of agent ids.
+      description: Agent ID of the host. can be supplied as a list of agent ids.
       isArray: true
       name: agent_id
       required: false
@@ -1597,7 +1596,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The requested page number, first page is number 0. cannot be supllied
+      description: The requested page number, first page is number 0. cannot be supplied
         with the limit argument.
       isArray: false
       name: page_number
@@ -1605,14 +1604,14 @@ script:
       secret: false
     - default: false
       description: The maximum number of items to return in a single page. cannot
-        be supllied with the limit argument.
+        be supplied with the limit argument.
       isArray: false
       name: page_size
       required: false
       secret: false
     - default: false
       description: Maximum number of results to be returned, if not set the first
-        10 results will be returned.  cannot be supllied with a page_size/page_number
+        10 results will be returned.  cannot be supplied with a page_size/page_number
         arguments.
       isArray: false
       name: limit
@@ -2479,7 +2478,7 @@ script:
   subtype: python3
   type: python
 tests:
-- No tests (auto formatted)
+- RSANetWitnessv115-Test
 defaultmapperin: RSA NetWitness v11.5 mapper
 fromversion: 5.5.0
 beta: true
