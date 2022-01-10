@@ -610,8 +610,8 @@ def build_and_authenticate(params):
     service_account_credentials = json.loads(service_account_credentials.get('password'))
     credentials = service_account.ServiceAccountCredentials.from_json_keyfile_dict(service_account_credentials,
                                                                                    scopes=SCOPES)
-
-    hello = 'hello'
+    if params.get('user_id', None) is not None:
+        credentials = credentials.create_delegated(params.get('user_id'))
 
     proxy = params.get('proxy', False)
     disable_ssl = params.get('insecure', False)
