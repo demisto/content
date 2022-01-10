@@ -1,5 +1,11 @@
 #!/usr/bin/env bash
 
+# For this script to work you will need to use a trigger token (see here for more about that: https://code.pan.run/help/ci/triggers/README#trigger-token)  # disable-secrets-detection
+
+# This script requires the gitlab-ci trigger token. The branch to run against is an optional second parameter (the default is the current branch). The slack channel to send messages to is an optional third parameter (the default is the 'dmst-content-team')
+
+
+
 if [ "$#" -lt "1" ]; then
   echo "Usage:
   $0 -ct <token>
@@ -11,6 +17,8 @@ if [ "$#" -lt "1" ]; then
   [-p, --packs]               CSV list of pack IDs. Mandatory when the --force flag is on.
   [-ch, --slack-channel]      A slack channel to send notifications to. Default is dmst-bucket-upload.
   "
+
+  echo "Get the trigger token from here https://vault.paloaltonetworks.local/home#R2VuZXJpY1NlY3JldERldGFpbHM6RGF0YVZhdWx0OmIyMzJiNDU0LWEzOWMtNGY5YS1hMTY1LTQ4YjRlYzM1OTUxMzpSZWNvcmRJbmRleDowOklzVHJ1bmNhdGVk" # disable-secrets-detection
   exit 1
 fi
 
@@ -56,6 +64,8 @@ done
 
 if [ -z "$_ci_token" ]; then
     echo "You must provide a ci token."
+    echo "Get the trigger token from here https://vault.paloaltonetworks.local/home#R2VuZXJpY1NlY3JldERldGFpbHM6RGF0YVZhdWx0OmIyMzJiNDU0LWEzOWMtNGY5YS1hMTY1LTQ4YjRlYzM1OTUxMzpSZWNvcmRJbmRleDowOklzVHJ1bmNhdGVk" # disable-secrets-detection
+
     exit 1
 fi
 

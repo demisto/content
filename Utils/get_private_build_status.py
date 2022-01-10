@@ -8,7 +8,7 @@ from typing import Tuple
 import requests
 from Tests.scripts.utils.log_util import install_logging
 from Tests.scripts.utils import logging_wrapper as logging
-from Utils.trigger_private_build import GET_WORKFLOW_URL, PRIVATE_REPO_WORKFLOW_ID_FILE, \
+from Utils.github_triggers.trigger_private_build import GET_WORKFLOW_URL, PRIVATE_REPO_WORKFLOW_ID_FILE, \
     GET_WORKFLOWS_TIMEOUT_THRESHOLD, WORKFLOW_HTML_URL
 
 # disable insecure warnings

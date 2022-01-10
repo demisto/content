@@ -1,4 +1,4 @@
-from Utils.trigger_private_build import GET_WORKFLOW_URL, branch_has_private_build_infra_change, get_modified_files
+from Utils.github_triggers.trigger_private_build import GET_WORKFLOW_URL, branch_has_private_build_infra_change, get_modified_files
 from Utils.get_private_build_status import get_workflow_status
 
 
