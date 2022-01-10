@@ -397,7 +397,7 @@ tasks:
     task:
       id: 617247cb-84ae-4ef0-8834-5b8310b6607d
       version: -1
-      name: checkpoint-access-rule-list
+      name: Get rule list from Check Point Firewall
       description: Get rule list from Check Point Firewall
       script: '|||checkpoint-access-rule-list'
       type: regular
