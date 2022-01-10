@@ -1,0 +1,4 @@
+Name, Risk, RiskString, EvidenceDetails
+http://www.hadiahgratisdarigarena2022.duckdns.org/, 72, 4/24, {'EvidenceDetails': []}
+http://www.hadiahgratisdarigarena2022.duckdns.ORG/,72, 4/24, {'EvidenceDetails': []}
+http://www.hadiahgratisdarigarena2022.duckdns.org/, 72, 4/24, {'EvidenceDetails': []}
