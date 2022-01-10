@@ -2,7 +2,8 @@ id: Checkpoint - Publish&Install configuration
 version: -1
 fromversion: 5.0.0
 name: Checkpoint - Publish&Install configuration
-description: Publish the Check Point Firewall configuration and install policy on all available gateways.
+description: "Publish the Check Point Firewall configuration and install policy on\
+  \ all available gateways."
 starttaskid: '0'
 tasks:
   '0':
@@ -13,9 +14,9 @@ tasks:
       id: 354c2814-999f-4177-8206-adb0b43e98e1
       version: -1
       name: ''
+      description: ''
       iscommand: false
       brand: ''
-      description: ''
     nexttasks:
       '#none#':
       - '2'
@@ -747,7 +748,8 @@ tasks:
       id: ff470de6-f208-4c38-8dea-a19b0319fdb6
       version: -1
       name: Is action manual handling enabled?
-      description: If action manual handling is enabled, the playbook will pause and wait for manual review.
+      description: If action manual handling is enabled, the playbook will pause and
+        wait for manual review.
       type: condition
       iscommand: false
       brand: ''
@@ -899,15 +901,16 @@ inputs:
 - key: sid
   value: {}
   required: true
-  description: SID - Session unique identifier as returned by the login request
-    required for publish /install changes. Change configuration is seen by all users only after 
+  description: SID - Session unique identifier as returned by the login request required
+    for publish /install changes. Change configuration is seen by all users only after
     publishing and policy install is complete.
   playbookInputQuery:
 - key: install_policy
   value:
     simple: 'False'
   required: true
-  description: Whether the playbook should continue install policy process for Check Point Firewall.
+  description: Whether the playbook should continue install policy process for Check
+    Point Firewall.
   playbookInputQuery:
 - key: policy_package
   value:
@@ -919,8 +922,8 @@ inputs:
   value:
     simple: 'True'
   required: true
-  description: If one of the actions for the publish/install policy fails due to 
-    a problem or error, the playbook will pause for manual review.
+  description: If one of the actions for the publish/install policy fails due to a
+    problem or error, the playbook will pause for manual review.
   playbookInputQuery:
 outputs: []
 tests:

@@ -1,9 +1,9 @@
 id: Checkpoint - Block IP - Custom Block Rule
 version: -1
 name: Checkpoint - Block IP - Custom Block Rule
-description: "This playbook blocks IP addresses using Custom Block Rules in Check Point\
-  \ Firewall.\nThe playbook receives malicious IP addresses as inputs, creates a custom\
-  \ bi-directional rule to block them, and publishes the configuration."
+description: "This playbook blocks IP addresses using Custom Block Rules in Check\
+  \ Point Firewall.\nThe playbook receives malicious IP addresses as inputs, creates\
+  \ a custom bi-directional rule to block them, and publishes the configuration."
 starttaskid: '0'
 tasks:
   '0':
@@ -305,7 +305,8 @@ tasks:
       id: f7944d23-cc81-4753-8c14-6c77e3ac41d6
       version: -1
       name: Checkpoint - Publish&Install configuration
-      description: Publish the Check Point Firewall configuration and install policy on all available gateways.
+      description: Publish the Check Point Firewall configuration and install policy
+        on all available gateways.
       playbookName: Checkpoint - Publish&Install configuration
       type: playbook
       iscommand: false
@@ -701,7 +702,8 @@ tasks:
       id: e418b023-1569-4098-883d-2644e655811f
       version: -1
       name: Checkpoint - Publish&Install configuration
-      description: Publish the Check Point Firewall configuration and install policy on all available gateways.
+      description: Publish the Check Point Firewall configuration and install policy
+        on all available gateways.
       playbookName: Checkpoint - Publish&Install configuration
       type: playbook
       iscommand: false
@@ -795,7 +797,8 @@ tasks:
       id: fb571b4b-09de-44eb-8382-758633671f4c
       version: -1
       name: Is action manual handling enabled?
-      description: If action manual handling is enabled, the playbook will pause and wait for manual review.
+      description: If action manual handling is enabled, the playbook will pause and
+        wait for manual review.
       type: condition
       iscommand: false
       brand: ''
@@ -1102,7 +1105,8 @@ inputs:
   value:
     simple: 'False'
   required: true
-  description: Whether the playbook should continue install policy process for Check Point Firewall.
+  description: Whether the playbook should continue install policy process for Check
+    Point Firewall.
   playbookInputQuery:
 - key: policy_package
   value:
@@ -1117,39 +1121,40 @@ inputs:
   description: "If one of the actions for the block IP playbook fails due to issues\
     \ on the Check Point Firewall, this input determines whether the playbook continues\
     \ or stops for manual review. If the playbook continues, the session ID logs out\
-    \ and all Check Point changes are discarded.\nValues are \"Continue\" or \"\
-    Stop\".\nThe default value is \"Stop\"."
+    \ and all Check Point changes are discarded.\nValues are \"Continue\" or \"Stop\"\
+    .\nThe default value is \"Stop\"."
   playbookInputQuery:
 - key: checkpoint_error_handling
   value:
     simple: Stop
   required: true
   description: "If one of the actions for publish/install policy fails due to issues\
-    \ on the Check Point side, this input determines whether the playbook\
-    \ continues or stops for manual review. If the playbook continues, the session\
-    \ ID logs out and all Check Point changes are discarded.\nValues are \"Continue\" or\
-    \ \"Stop\".\nThe default value is \"Stop\"."
+    \ on the Check Point side, this input determines whether the playbook continues\
+    \ or stops for manual review. If the playbook continues, the session ID logs out\
+    \ and all Check Point changes are discarded.\nValues are \"Continue\" or \"Stop\"\
+    .\nThe default value is \"Stop\"."
   playbookInputQuery:
 - key: rule_layer
   value:
     simple: Network
   required: true
-  description: "Determines which Check Point Firewall rule layer is used.\
-    \nBy default, the  \"Network\" layer is used, but this can be changed."
+  description: "Determines which Check Point Firewall rule layer is used.\nBy default,\
+    \ the  \"Network\" layer is used, but this can be changed."
   playbookInputQuery:
 - key: rule_position
   value:
     simple: top
   required: true
-  description: "Determines which Check Point Firewall rule position is used.\
-    \nBy default, the \"top\" position is used, but this can be changed."
+  description: "Determines which Check Point Firewall rule position is used.\nBy default,\
+    \ the \"top\" position is used, but this can be changed."
   playbookInputQuery:
 - key: rule_name
   value:
     simple: XSOAR - ${incident.id}
   required: true
-  description: "Creates a new blocking rule using this Check Point Firewall group.\ 
-    \nUse this option if you have not assigned the appended group to a rule in your firewall policy."
+  description: "Creates a new blocking rule using this Check Point Firewall group.\
+    \  \nUse this option if you have not assigned the appended group to a rule in\
+    \ your firewall policy."
   playbookInputQuery:
 outputs: []
 fromversion: 5.0.0

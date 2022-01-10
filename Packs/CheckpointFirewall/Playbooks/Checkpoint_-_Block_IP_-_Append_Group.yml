@@ -3,9 +3,10 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Checkpoint - Block IP - Append Group
-description: |-
-The playbook receives malicious IP addresses as inputs, checks if the object group exists (if not, the object group is created), and  appends the related IPs to that object.
-If you have not assigned the appended group to a rule in your firewall policy, you can use `rule_name` and the playbook creates a new rule.
+description: "The playbook receives malicious IP addresses as inputs, checks if the\
+  \ object group exists (if not, the object group is created), and  appends the related\
+  \ IPs to that object. If you have not assigned the appended group to a rule in your\
+  \ firewall policy, you can use `rule_name` and the playbook creates a new rule."
 starttaskid: "0"
 tasks:
   "0":
@@ -423,8 +424,8 @@ tasks:
       version: -1
       name: Was there an error when appending?
       description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
-        to check the previous task entries. If array is provided, return yes
-        if one of the entries returns an error.
+        to check the previous task entries. If array is provided, return yes if one
+        of the entries returns an error.
       scriptName: isError
       type: condition
       iscommand: false
@@ -668,7 +669,8 @@ tasks:
       id: fb571b4b-09de-44eb-8382-758633671f4c
       version: -1
       name: Is action manual handling enabled?
-      description: If action manual handling is enabled, the playbook will pause and wait for manual review.
+      description: If action manual handling is enabled, the playbook will pause and
+        wait for manual review.
       type: condition
       iscommand: false
       brand: ""
@@ -968,8 +970,8 @@ tasks:
       version: -1
       name: Check if the group was not found
       description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
-        to check the previous task entries. If array is provided, return yes
-        if one of the entries returns an error.
+        to check the previous task entries. If array is provided, return yes if one
+        of the entries returns an error.
       scriptName: isError
       type: condition
       iscommand: false
@@ -1356,7 +1358,8 @@ inputs:
   value:
     simple: "False"
   required: true
-  description: Whether the playbook should continue install policy process for Check Point Firewall.
+  description: Whether the playbook should continue install policy process for Check
+    Point Firewall.
   playbookInputQuery:
 - key: policy_package
   value:
@@ -1391,7 +1394,9 @@ inputs:
 - key: rule_name
   value: {}
   required: false
-  description: 'Creates a new blocking rule using this Check Point Firewall group. Use this option if you have not assigned the appended group to a rule in your firewall policy.'
+  description: 'Creates a new blocking rule using this Check Point Firewall group.
+    Use this option if you have not assigned the appended group to a rule in your
+    firewall policy.'
   playbookInputQuery:
 - key: rule_layer
   value:

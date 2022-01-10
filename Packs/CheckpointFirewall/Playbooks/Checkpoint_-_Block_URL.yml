@@ -1,8 +1,8 @@
 id: Checkpoint - Block URL
 version: -1
 name: Checkpoint - Block URL
-description: "This playbook blocks URLs using Check Point Firewall through Custom URL\
-  \ Categories.\nThe playbook checks whether the input URL category already exists,\
+description: "This playbook blocks URLs using Check Point Firewall through Custom\
+  \ URL Categories.\nThe playbook checks whether the input URL category already exists,\
   \ and if the URLs are a part of this category. Otherwise, it creates the category,\
   \ blocks the URLs, and publishes the configuration."
 starttaskid: '0'
@@ -606,7 +606,8 @@ tasks:
       id: 5a2510e1-95ab-46ce-8d66-19129a2849f6
       version: -1
       name: Is action manual handling enabled?
-      description: If action manual handling is enabled, the playbook will pause and wait for manual review.
+      description: If action manual handling is enabled, the playbook will pause and
+        wait for manual review.
       type: condition
       iscommand: false
       brand: ''
@@ -680,8 +681,8 @@ tasks:
       version: -1
       name: 'Update Existing Application Site'
       description: "Edits an existing application using the object name or UID. \n\
-        It is not possible to set 'application-signature' when the application was initialized\
-        \ with 'url-list' and vice-versa."
+        It is not possible to set 'application-signature' when the application was\
+        \ initialized with 'url-list' and vice-versa."
       script: '|||checkpoint-application-site-update'
       type: regular
       iscommand: true
@@ -782,7 +783,8 @@ inputs:
   value:
     simple: 'True'
   required: true
-  description: Whether the playbook should continue install policy process for Check Point Firewall.
+  description: Whether the playbook should continue install policy process for Check
+    Point Firewall.
   playbookInputQuery:
 - key: URL
   value: {}
@@ -810,18 +812,18 @@ inputs:
   description: "If one of the actions for the block IP playbook fails due to issues\
     \ on the Check Point Firewall, this input determines whether the playbook continues\
     \ or stops for manual review. If the playbook continues, the session ID logs out\
-    \ and all Check Point changes are discarded.\nValues are \"Continue\" or\
-    \ \"Stop\".\nThe default value is \"Stop\"."
+    \ and all Check Point changes are discarded.\nValues are \"Continue\" or \"Stop\"\
+    .\nThe default value is \"Stop\"."
   playbookInputQuery:
 - key: block_URL_error_handling
   value:
     simple: Stop
   required: true
-  description: "If one of the actions for block URL playbook fails due to issues\
-    \ on the Check Point Firewall, this input determines whether the playbook continues\
-    \ or stops for manual review. If the playbook continues, session ID logs out\
-    \ and all Check Point changes are discarded.\nValues can be \"Continue\" or \"\
-    Stop\".\nThe default value will be \"Stop\"."
+  description: "If one of the actions for block URL playbook fails due to issues on\
+    \ the Check Point Firewall, this input determines whether the playbook continues\
+    \ or stops for manual review. If the playbook continues, session ID logs out and\
+    \ all Check Point changes are discarded.\nValues can be \"Continue\" or \"Stop\"\
+    .\nThe default value will be \"Stop\"."
   playbookInputQuery:
 - key: application_site_name
   value:
