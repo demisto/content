@@ -111,10 +111,18 @@ ENDPOINT_KEY_MAP = {
     'status': 'Status',
 }
 
-CS_FALCON_DETECTION_ARGS = {'status': 'Updated detection status, one of new/in_progress/true_positive/false_positive/ignored'}
+''' MIRRORING DICTIONARIES & PARAMS '''
 
-CS_FALCON_INCIDENT_ARGS = {'tag': 'A tag that have been added or removed from the incident',
-                           'status': 'Updated incident status, one of New/Reopened/In Progress/Closed'}
+CS_FALCON_DETECTION_OUTGOING_ARGS = {'status':
+                                     'Updated detection status, one of new/in_progress/true_positive/false_positive/ignored'}
+
+CS_FALCON_INCIDENT_OUTGOING_ARGS = {'tag': 'A tag that have been added or removed from the incident',
+                                    'status': 'Updated incident status, one of New/Reopened/In Progress/Closed'}
+
+CS_FALCON_DETECTION_INCOMING_ARGS = ['status', 'severity', 'behaviors.tactic', 'behaviors.scenario', 'behaviors.objective',
+                                     'behaviors.technique', 'device.hostname']
+
+CS_FALCON_INCIDENT_INCOMING_ARGS = ['state', 'tactics', 'techniques', 'objectives', 'tags', 'hosts.hostname']
 
 MIRROR_DIRECTION_DICT = {
     'None': None,
@@ -123,9 +131,8 @@ MIRROR_DIRECTION_DICT = {
     'Incoming And Outgoing': 'Both'
 }
 
-# mirroring params
 MIRROR_DIRECTION = MIRROR_DIRECTION_DICT.get(demisto.params().get('mirror_direction'))
-DETECTION_TAG = demisto.params().get('detection_tag')
+INCIDENT_TAG = demisto.params().get('incident_tag')
 MIRROR_INSTANCE = demisto.integrationInstance()
 
 ''' SPLIT KEY DICTIONARY '''
@@ -319,7 +326,7 @@ def add_mirroring_fields(incident: Dict):
         Updates the given incident to hold the needed mirroring fields.
     """
     incident['mirror_direction'] = MIRROR_DIRECTION
-    incident['mirror_tags'] = DETECTION_TAG
+    incident['mirror_tags'] = INCIDENT_TAG
     incident['mirror_instance'] = MIRROR_INSTANCE
 
 
@@ -1537,17 +1544,17 @@ def delete_host_groups(host_group_ids: List[str]) -> Dict:
 
 def get_mapping_fields_command() -> GetMappingFieldsResponse:
     """
-    Returns the list of fields to map in outgoing mirroring, for incidents and detections.
+        Returns the list of fields to map in outgoing mirroring, for incidents and detections.
     """
     mapping_response = GetMappingFieldsResponse()
 
     incident_type_scheme = SchemeTypeMapping(type_name='CrowdStrike Falcon Incident')
-    for argument, description in CS_FALCON_INCIDENT_ARGS.items():
+    for argument, description in CS_FALCON_INCIDENT_OUTGOING_ARGS.items():
         incident_type_scheme.add_field(name=argument, description=description)
     mapping_response.add_scheme_type(incident_type_scheme)
 
     detection_type_scheme = SchemeTypeMapping(type_name='CrowdStrike Falcon Detection')
-    for argument, description in CS_FALCON_DETECTION_ARGS.items():
+    for argument, description in CS_FALCON_DETECTION_OUTGOING_ARGS.items():
         detection_type_scheme.add_field(name=argument, description=description)
     mapping_response.add_scheme_type(detection_type_scheme)
 

@@ -74,11 +74,11 @@ configuration:
   - Incidents
   required: false
   type: 16
-- additionalinfo: A tag to add to mirrored out detection entries.
+- additionalinfo: A tag to add to mirrored out incident entries.
   defaultvalue: tag
-  display: Detection entry tag
+  display: Incident entry tag
   hidden: false
-  name: detection_tag
+  name: incident_tag
   required: false
   type: 0
 description: The CrowdStrike Falcon OAuth 2 API (formerly the Falcon Firehose API),
