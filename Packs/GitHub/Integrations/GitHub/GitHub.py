@@ -884,8 +884,10 @@ def list_pr_review_comments_command():
     return_outputs(readable_output=human_readable, outputs=ec, raw_response=response)
 
 
-def list_issue_comments(issue_number: Union[int, str]) -> list:
+def list_issue_comments(issue_number: Union[int, str], since_date: Optional[str]) -> list:
     suffix = ISSUE_SUFFIX + f'/{issue_number}/comments'
+    if since_date:
+        suffix += f'?since={since_date}'
     response = http_request('GET', url_suffix=suffix)
     return response
 
@@ -893,7 +895,8 @@ def list_issue_comments(issue_number: Union[int, str]) -> list:
 def list_issue_comments_command():
     args = demisto.args()
     issue_number = args.get('issue_number')
-    response = list_issue_comments(issue_number)
+    since_date = args.get('since', None)
+    response = list_issue_comments(issue_number, since_date)
 
     ec_object = [format_comment_outputs(comment, issue_number) for comment in response]
     ec = {
