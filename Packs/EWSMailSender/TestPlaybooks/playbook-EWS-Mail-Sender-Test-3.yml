@@ -88,8 +88,6 @@ tasks:
         simple: ${SMIME.Encrypted.Message}
       subject:
         simple: EWS Mail Sender Test 3
-      from:
-        simple: testbox@demistodev.onmicrosoft.com
       to:
         simple: buildtests@demisto.int
     separatecontext: false
