@@ -2984,6 +2984,20 @@ script:
      the current incident or detection, and should be used for debugging purposes only.
     execution: false
     name: get-remote-data
+  - arguments:
+    - default: false
+      description: Date string representing the local time. The incident or detection is only returned
+        if it was modified after the last update time.
+      isArray: false
+      name: lastUpdate
+      required: false
+      secret: false
+    deprecated: false
+    description: Get the list of incidents and detections that were modified since the last update time.
+      Note that this method is used for debugging purposes. The get-modified-remote-data command
+      is used as part of a Mirroring feature, which is available since version 6.1.
+    execution: false
+    name: get-modified-remote-data
   dockerimage: demisto/python3:3.9.9.25564
   feed: false
   isfetch: true

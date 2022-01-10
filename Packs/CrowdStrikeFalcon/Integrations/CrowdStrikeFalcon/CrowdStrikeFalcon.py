@@ -1621,8 +1621,33 @@ def get_remote_data_command(args: Dict[str, Any]):
         return GetRemoteDataResponse(mirrored_object=mirrored_data, entries=[])
 
 
-def get_modified_remote_data_command(args):
-    pass
+def get_modified_remote_data_command(args: Dict[str, Any]):
+    """
+    Gets the modified remote incident IDs.
+    Args:
+        args:
+            last_update: the last time we retrieved modified incidents and detections.
+
+    Returns:
+        GetModifiedRemoteDataResponse object, which contains a list of the retrieved incident and detections IDs.
+    """
+    remote_args = GetModifiedRemoteDataArgs(args)
+
+    last_update_utc = dateparser.parse(remote_args.last_update, settings={'TIMEZONE': 'UTC'})  # convert to utc format
+    last_update_utc = last_update_utc.strftime('%Y-%m-%dT%H:%M:%SZ')
+    demisto.debug(f'last_update in UTC is {last_update_utc}')
+
+    modified_ids_to_mirror = list()
+
+    raw_incidents = get_incidents_ids(last_created_timestamp=last_update_utc).get('resources', [])
+    for incident_id in raw_incidents:
+        modified_ids_to_mirror.append(str(incident_id))
+
+    raw_detections = get_fetch_detections(last_created_timestamp=last_update_utc).get('resources', [])
+    for detection_id in raw_detections:
+        modified_ids_to_mirror.append(str(detection_id))
+
+    return GetModifiedRemoteDataResponse(modified_ids_to_mirror)
 
 
 def update_remote_system_command(args: Dict[str, Any]) -> str:
@@ -3239,6 +3264,8 @@ def main():
                                                     ids=argToList(args.get('ids'))))
         elif command == 'get-remote-data':
             return_results(get_remote_data_command(args))
+        elif demisto.command() == 'get-modified-remote-data':
+            return_results(get_modified_remote_data_command(args))
         elif demisto.command() == 'get-mapping-fields':
             return_results(get_mapping_fields_command())
         else:
