@@ -22,7 +22,6 @@ import requests
 import traceback
 import httplib2
 from googleapiclient.discovery import build, Resource
-#from google.oauth2 import service_account
 from oauth2client import service_account
 
 # This is a message in the oath2client branch
@@ -559,7 +558,7 @@ def sheets_value_append(service: Resource, args: dict) -> CommandResults:
                  args - demisto.args() for the api call
          output : Command result
          action : appends values to a spreadsheets sheet
-      '''
+    '''
     spreadsheet_id = args.get('spreadsheet_id')
     range_ = args.get('range')
     input_option = args.get('input_option')
@@ -579,8 +578,8 @@ def sheets_value_append(service: Resource, args: dict) -> CommandResults:
     return CommandResults(readable_output=markdown)
 
 
-def get_http_client_with_proxy(disable_ssl, handle_proxy_func=handle_proxy):
-    proxies = handle_proxy_func()
+def get_http_client_with_proxy(disable_ssl):
+    proxies = handle_proxy()
     if not proxies.get('https', True):
         raise Exception('https proxy value is empty. Check Demisto server configuration')
     https_proxy = proxies['https']
