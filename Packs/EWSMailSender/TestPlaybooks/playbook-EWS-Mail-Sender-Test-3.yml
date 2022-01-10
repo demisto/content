@@ -89,7 +89,7 @@ tasks:
       subject:
         simple: EWS Mail Sender Test 3
       from:
-        simple: buildtests@demisto.int
+        simple: testbox@demistodev.onmicrosoft.com
       to:
         simple: buildtests@demisto.int
     separatecontext: false
