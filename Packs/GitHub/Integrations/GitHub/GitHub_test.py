@@ -369,4 +369,4 @@ def test_list_issue_comments_since(mocker):
     since_date = '2022-10-01'
     list_issue_comments(issue_number, since_date)
     request_args = patched_request.call_args
-    assert 'since' in request_args.kwargs['url_suffix']
+    assert 'since' in request_args.kwargs['params']
