@@ -13,7 +13,7 @@
     "id": "indicator_feedmandiantversion",
     "isReadOnly": false,
     "locked": false,
-    "name": "Feed Mandiant Version",
+    "name": "FeedMandiant Version",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "required": false,
