@@ -824,6 +824,7 @@ def get_offense_types(client: Client, offenses: List[Dict]) -> Dict:
     offense_types_ids = {offense.get('offense_type') for offense in offenses if offense.get('offense_type') is not None}
     if not offense_types_ids:
         return dict()
+    # TODO: add try/except request handling
     offense_types = client.offense_types(filter_=f'''id in ({','.join(map(str, offense_types_ids))})''',
                                          fields='id,name')
     return {offense_type.get('id'): offense_type.get('name') for offense_type in offense_types}
@@ -844,6 +845,7 @@ def get_offense_closing_reasons(client: Client, offenses: List[Dict]) -> Dict:
                           if offense.get('closing_reason_id') is not None}
     if not closing_reason_ids:
         return dict()
+    # TODO: add try/except request handling
     closing_reasons = client.closing_reasons_list(filter_=f'''id in ({','.join(map(str, closing_reason_ids))})''',
                                                   fields='id,text')
     return {closing_reason.get('id'): closing_reason.get('text') for closing_reason in closing_reasons}
@@ -863,6 +865,7 @@ def get_domain_names(client: Client, outputs: List[Dict]) -> Dict:
     domain_ids = {offense.get('domain_id') for offense in outputs if offense.get('domain_id') is not None}
     if not domain_ids:
         return dict()
+    # TODO: add try/except request handling
     domains_info = client.domains_list(filter_=f'''id in ({','.join(map(str, domain_ids))})''', fields='id,name')
     return {domain_info.get('id'): domain_info.get('name') for domain_info in domains_info}
 
@@ -881,6 +884,7 @@ def get_rules_names(client: Client, offenses: List[Dict]) -> Dict:
     rules_ids = {rule.get('id') for offense in offenses for rule in offense.get('rules', [])}
     if not rules_ids:
         return dict()
+    # TODO: add try/except request handling
     rules = client.rules_list(None, None, f'''id in ({','.join(map(str, rules_ids))})''', 'id,name')
     return {rule.get('id'): rule.get('name') for rule in rules}
 
@@ -903,6 +907,7 @@ def get_offense_addresses(client: Client, offenses: List[Dict], is_destination_a
     url_suffix = f'{address_type}_addresses'
 
     def get_addresses_for_batch(b: List):
+        # TODO: add try/except request handling# TODO: add try/except request handling
         return client.get_addresses(url_suffix, f'''id in ({','.join(map(str, b))})''', f'id,{address_field}')
 
     addresses_ids = [address_id for offense in offenses
@@ -953,6 +958,7 @@ def enrich_offense_with_assets(client: Client, offense_ips: List[str]) -> List[D
 
     def get_assets_for_ips_batch(b: List):
         filter_query = ' or '.join([f'interfaces contains ip_addresses contains value="{ip}"' for ip in b])
+        # TODO: add try/except request handling
         return client.assets_list(filter_=filter_query)
 
     offense_ips = [offense_ip for offense_ip in offense_ips if is_valid_ip(offense_ip)]
@@ -1530,6 +1536,7 @@ def get_incidents_long_running_execution(client: Client, offenses_per_fetch: int
     range_max = offenses_per_fetch - 1 if offenses_per_fetch else MAXIMUM_OFFENSES_PER_FETCH - 1
     range_ = f'items=0-{range_max}'
 
+    # if fails here we can't recover, retry again later
     raw_offenses = client.offenses_list(range_, filter_=filter_fetch_query, sort=ASCENDING_ID_ORDER)
     if raw_offenses:
         raw_offenses_len = len(raw_offenses)
@@ -1869,6 +1876,7 @@ def qradar_offenses_list_command(client: Client, args: Dict) -> CommandResults:
     fields = args.get('fields')
     ip_enrich, asset_enrich = get_offense_enrichment(args.get('enrichment', 'None'))
 
+    # if this call fails raise an error and stop command execution
     response = client.offenses_list(range_, offense_id, filter_, fields)
     enriched_outputs = enrich_offenses_result(client, response, ip_enrich, asset_enrich)
     final_outputs = sanitize_outputs(enriched_outputs, OFFENSE_OLD_NEW_NAMES_MAP)
@@ -1919,6 +1927,7 @@ def qradar_offense_update_command(client: Client, args: Dict) -> CommandResults:
         )
 
     if closing_reason_name:
+        # if this call fails raise an error and stop command execution
         closing_reasons_list = client.closing_reasons_list(include_deleted=True, include_reserved=True)
         for closing_reason in closing_reasons_list:
             if closing_reason.get('text') == closing_reason_name:
@@ -1932,6 +1941,7 @@ def qradar_offense_update_command(client: Client, args: Dict) -> CommandResults:
     fields = args.get('fields')
     ip_enrich, asset_enrich = get_offense_enrichment(args.get('enrichment', 'None'))
 
+    # if this call fails raise an error and stop command execution
     response = client.offense_update(offense_id, protected, follow_up, status, closing_reason_id, assigned_to,
                                      fields)
 
@@ -1975,6 +1985,7 @@ def qradar_closing_reasons_list_command(client: Client, args: Dict) -> CommandRe
     filter_ = args.get('filter')
     fields = args.get('fields')
 
+    # if this call fails raise an error and stop command execution
     response = client.closing_reasons_list(closing_reason_id, include_reserved, include_deleted, range_, filter_,
                                            fields)
     outputs = sanitize_outputs(response, CLOSING_REASONS_OLD_NEW_MAP)
@@ -2015,6 +2026,7 @@ def qradar_offense_notes_list_command(client: Client, args: Dict) -> CommandResu
     filter_ = args.get('filter')
     fields = args.get('fields')
 
+    # if this call fails raise an error and stop command execution
     response = client.offense_notes_list(offense_id, range_, note_id, filter_, fields)
     outputs = sanitize_outputs(response, NOTES_OLD_NEW_MAP)
     headers = build_headers(['ID', 'Text', 'CreatedBy', 'CreateTime'], set(NOTES_OLD_NEW_MAP.values()))
@@ -2050,6 +2062,7 @@ def qradar_offense_notes_create_command(client: Client, args: Dict) -> CommandRe
     note_text: str = args.get('note_text', '')
     fields = args.get('fields')
 
+    # if this call fails raise an error and stop command execution
     response = client.offense_notes_create(offense_id, note_text, fields)
     outputs = sanitize_outputs(response, NOTES_OLD_NEW_MAP)
     headers = build_headers(['ID', 'Text', 'CreatedBy', 'CreateTime'], set(NOTES_OLD_NEW_MAP.values()))
@@ -2092,6 +2105,7 @@ def qradar_rules_list_command(client: Client, args: Dict) -> CommandResults:
     if not filter_ and rule_type:
         filter_ = f'type={rule_type}'
 
+    # if this call fails raise an error and stop command execution
     response = client.rules_list(rule_id, range_, filter_, fields)
     outputs = sanitize_outputs(response, RULES_OLD_NEW_MAP)
     headers = build_headers(['ID', 'Name', 'Type'], set(RULES_OLD_NEW_MAP.values()))
@@ -2129,6 +2143,7 @@ def qradar_rule_groups_list_command(client: Client, args: Dict) -> CommandResult
     filter_ = args.get('filter')
     fields = args.get('fields')
 
+    # if this call fails raise an error and stop command execution
     response = client.rule_groups_list(range_, rule_group_id, filter_, fields)
     outputs = sanitize_outputs(response, RULES_GROUP_OLD_NEW_MAP)
     headers = build_headers(['ID', 'Name', 'Description', 'Owner'], set(RULES_GROUP_OLD_NEW_MAP.values()))
@@ -2172,6 +2187,7 @@ def qradar_assets_list_command(client: Client, args: Dict) -> CommandResults:
 
     full_enrichment = True if asset_id else False
 
+    # if this call fails raise an error and stop command execution
     response = client.assets_list(range_, filter_, fields)
     enriched_outputs = enrich_assets_results(client, response, full_enrichment)
     assets_results = dict()
@@ -2226,6 +2242,7 @@ def qradar_saved_searches_list_command(client: Client, args: Dict) -> CommandRes
     filter_ = args.get('filter')
     fields = args.get('fields')
 
+    # if this call fails raise an error and stop command execution
     response = client.saved_searches_list(range_, timeout, saved_search_id, filter_, fields)
     outputs = sanitize_outputs(response, SAVED_SEARCH_OLD_NEW_MAP)
     headers = build_headers(['ID', 'Name', 'Description'], set(SAVED_SEARCH_OLD_NEW_MAP.values()))
@@ -2257,6 +2274,7 @@ def qradar_searches_list_command(client: Client, args: Dict) -> CommandResults:
     range_ = f'''items={args.get('range', DEFAULT_RANGE_VALUE)}'''
     filter_ = args.get('filter')
 
+    # if this call fails raise an error and stop command execution
     response = client.searches_list(range_, filter_)
     outputs = [{'SearchID': search_id} for search_id in response]
 
@@ -2285,6 +2303,7 @@ def qradar_search_create_command(client: Client, args: Dict) -> CommandResults:
     query_expression = args.get('query_expression')
     saved_search_id = args.get('saved_search_id')
 
+    # if this call fails raise an error and stop command execution
     response = client.search_create(query_expression, saved_search_id)
     outputs = sanitize_outputs(response, SEARCH_OLD_NEW_MAP)
 
@@ -2311,6 +2330,7 @@ def qradar_search_status_get_command(client: Client, args: Dict) -> CommandResul
     """
     search_id: str = args.get('search_id', '')
 
+    # if this call fails raise an error and stop command execution
     response = client.search_status_get(search_id)
     outputs = sanitize_outputs(response, SEARCH_OLD_NEW_MAP)
 
@@ -2342,6 +2362,7 @@ def qradar_search_results_get_command(client: Client, args: Dict) -> CommandResu
     # Using or instead of default value for QRadarFullSearch backward compatibility
     range_ = f'''items={args.get('range') or DEFAULT_RANGE_VALUE}'''
 
+    # if this call fails raise an error and stop command execution
     response = client.search_results_get(search_id, range_)
     if not response:
         raise DemistoException('Unexpected response from QRadar service.')
@@ -2383,6 +2404,7 @@ def qradar_reference_sets_list_command(client: Client, args: Dict) -> CommandRes
     filter_ = args.get('filter')
     fields = args.get('fields')
 
+    # if this call fails raise an error and stop command execution
     response = client.reference_sets_list(range_, ref_name, filter_, fields)
     if ref_name:
         outputs = dict(response)
@@ -2433,6 +2455,7 @@ def qradar_reference_set_create_command(client: Client, args: Dict) -> CommandRe
     time_to_live = args.get('time_to_live')
     fields = args.get('fields')
 
+    # if this call fails raise an error and stop command execution
     response = client.reference_set_create(ref_name, element_type, timeout_type, time_to_live, fields)
     outputs = sanitize_outputs(response, REFERENCE_SETS_OLD_NEW_MAP)
     headers = build_headers(['Name', 'ElementType', 'Data', 'TimeToLive', 'TimeoutType'],
@@ -2470,6 +2493,7 @@ def qradar_reference_set_delete_command(client: Client, args: Dict) -> CommandRe
     purge_only = args.get('purge_only')
     fields = args.get('fields')
 
+    # if this call fails raise an error and stop command execution
     response = client.reference_set_delete(ref_name, purge_only, fields)
     return CommandResults(
         raw_response=response,
@@ -2507,6 +2531,7 @@ def qradar_reference_set_value_upsert_command(client: Client, args: Dict) -> Com
     if date_value:
         values = [get_time_parameter(value, epoch_format=True) for value in values]
 
+    # if one of these calls fail raise an error and stop command execution
     if len(values) == 1:
         response = client.reference_set_value_upsert(ref_name, values[0], source, fields)
 
@@ -2549,6 +2574,7 @@ def qradar_reference_set_value_delete_command(client: Client, args: Dict) -> Com
     if date_value:
         value = get_time_parameter(original_value, epoch_format=True)
 
+    # if this call fails raise an error and stop command execution
     response = client.reference_set_value_delete(ref_name, value)
     human_readable = f'### value: {original_value} of reference: {ref_name} was deleted successfully'
 
@@ -2586,6 +2612,7 @@ def qradar_domains_list_command(client: Client, args: Dict) -> CommandResults:
     filter_ = args.get('filter')
     fields = args.get('fields')
 
+    # if this call fails raise an error and stop command execution
     response = client.domains_list(domain_id, range_, filter_, fields)
     outputs = sanitize_outputs(response, DOMAIN_OLD_NEW_MAP)
 
@@ -2631,6 +2658,7 @@ def qradar_indicators_upload_command(client: Client, args: Dict) -> CommandResul
     except DemistoException as e:
         # Create reference set if does not exist
         if e.message and f'{ref_name} does not exist' in e.message:
+            # if this call fails raise an error and stop command execution
             client.reference_set_create(ref_name, element_type, timeout_type, time_to_live)
         else:
             raise e
@@ -2646,6 +2674,7 @@ def qradar_indicators_upload_command(client: Client, args: Dict) -> CommandResul
             readable_output=f'No indicators were found for reference set {ref_name}'
         )
 
+    # if this call fails raise an error and stop command execution
     response = client.indicators_upload(ref_name, indicator_values, fields)
     outputs = sanitize_outputs(response)
 
@@ -2697,6 +2726,7 @@ def qradar_geolocations_for_ip_command(client: Client, args: Dict) -> CommandRes
     filter_ = f'''ip_address IN ({','.join(map(lambda ip: f'"{str(ip)}"', ips))})'''
     fields = args.get('fields')
 
+    # if this call fails raise an error and stop command execution
     response = client.geolocations_for_ip(filter_, fields)
     outputs = []
     for output in response:
@@ -2764,6 +2794,7 @@ def qradar_log_sources_list_command(client: Client, args: Dict) -> CommandResult
     filter_ = args.get('filter')
     fields = args.get('fields')
 
+    # if this call fails raise an error and stop command execution
     response = client.log_sources_list(qrd_encryption_algorithm, qrd_encryption_password, range_, filter_, fields)
     outputs = sanitize_outputs(response, LOG_SOURCES_OLD_NEW_MAP)
     headers = build_headers(['ID', 'Name', 'Description'], set(LOG_SOURCES_OLD_NEW_MAP.values()))
@@ -2812,6 +2843,7 @@ def qradar_get_custom_properties_command(client: Client, args: Dict) -> CommandR
         if like_names:
             filter_ += ' or '.join(map(lambda like: f' name ILIKE "%{like}%"', like_names))
 
+    # if this call fails raise an error and stop command execution
     response = client.custom_properties(range_, filter_, fields)
     outputs = sanitize_outputs(response)
 
@@ -2850,6 +2882,7 @@ def perform_ips_command_request(client: Client, args: Dict[str, Any], is_destina
         filter_ = ' OR '.join([f'{ips_arg_name}="{ip_}"' for ip_ in ips])
     url_suffix = f'{address_type}_addresses'
 
+    # if this call fails raise an error and stop command execution
     response = client.get_addresses(url_suffix, filter_, fields, range_)
 
     return response
@@ -3033,6 +3066,7 @@ def qradar_get_mapping_fields_command(client: Client) -> Dict:
             'domain_name': 'str'
         }
     }
+    # TODO: Discuss further (with Anar)
     custom_fields = {
         'events': {field.get('name'): field.get('property_type')
                    for field in client.custom_properties()
@@ -3213,6 +3247,7 @@ def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) 
     remote_args = GetRemoteDataArgs(args)
     ip_enrich, asset_enrich = get_offense_enrichment(params.get('enrichment', 'IPs And Assets'))
     offense_id = remote_args.remote_incident_id
+    # if this call fails raise an error and stop command execution
     offense = client.offenses_list(offense_id=offense_id)
     offense_last_update = get_time_parameter(offense.get('last_persisted_time'))
     mirror_options = params.get('mirror_options')
@@ -3232,21 +3267,25 @@ def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) 
     entries = []
     if offense.get('status') == 'CLOSED' and argToBoolean(params.get('close_incident', False)):
         demisto.debug(f'Offense is closed: {offense}')
-        if closing_reason := offense.get('closing_reason_id', ''):
-            closing_reason = client.closing_reasons_list(closing_reason).get('text')
-        offense_close_time = offense.get('close_time', '')
-        closed_offense_notes = client.offense_notes_list(offense_id, f'items={DEFAULT_RANGE_VALUE}',
-                                                         filter_=f'create_time >= {offense_close_time}')
-        # In QRadar UI, when you close a reason, a note is added with the reason and more details. Try to get note
-        # if exists, else fallback to closing reason only, as closing QRadar through an API call does not create a note.
-        close_reason_with_note = next((note.get('note_text') for note in closed_offense_notes if
-                                       note.get('note_text').startswith('This offense was closed with reason:')),
-                                      closing_reason)
-        if not close_reason_with_note:
-            print_debug_msg(f'Could not find closing reason or closing note for offense with offense id {offense_id}')
+        try:
+            if closing_reason := offense.get('closing_reason_id', ''):
+                closing_reason = client.closing_reasons_list(closing_reason).get('text')
+            offense_close_time = offense.get('close_time', '')
+            closed_offense_notes = client.offense_notes_list(offense_id, f'items={DEFAULT_RANGE_VALUE}',
+                                                             filter_=f'create_time >= {offense_close_time}')
+            # In QRadar UI, when you close a reason, a note is added with the reason and more details. Try to get note
+            # if exists, else fallback to closing reason only, as closing QRadar through an API call does not create a note.
+            close_reason_with_note = next((note.get('note_text') for note in closed_offense_notes if
+                                           note.get('note_text').startswith('This offense was closed with reason:')),
+                                          closing_reason)
+            if not close_reason_with_note:
+                print_debug_msg(f'Could not find closing reason or closing note for offense with offense id {offense_id}')
+                close_reason_with_note = 'Unknown closing reason from QRadar'
+            else:
+                close_reason_with_note = f'From QRadar: {close_reason_with_note}'
+        except Exception as e:
+            print_debug_msg(f'Failed to get closing reason with error: {e}')
             close_reason_with_note = 'Unknown closing reason from QRadar'
-        else:
-            close_reason_with_note = f'From QRadar: {close_reason_with_note}'
 
         entries.append({
             'Type': EntryType.NOTE,
@@ -3384,6 +3423,7 @@ def get_modified_remote_data_command(client: Client, params: Dict[str, str],
     if not last_update_time:
         last_update_time = remote_args.last_update
     last_update = get_time_parameter(last_update_time, epoch_format=True)
+    # if this call fails raise an error and stop command execution
     offenses = client.offenses_list(range_=range_,
                                     filter_=f'id <= {highest_fetched_id} AND last_persisted_time > {last_update}',
                                     sort='+last_persisted_time',
