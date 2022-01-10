@@ -822,14 +822,13 @@ def list_operators_command(client: Client, args: Dict[str, Any]) -> CommandResul
         client: The client to preform command on.
         args: The arguments of the operators command.
 
-    Return CommadResults of list of operators.
+    Return CommandResults of list of operators.
     """
 
     operators = client.get_list_with_query(list_type="operators",
                                            start=args.get('start', None),
                                            page_size=args.get('page_size', None),
-                                           query=args.get('query', None),
-                                           fields=args.get('fields', None))
+                                           query=args.get('query', None))
     if len(operators) == 0:
         return CommandResults(readable_output='No operators found')
 
