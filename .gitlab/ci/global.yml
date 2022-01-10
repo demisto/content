@@ -37,8 +37,10 @@
 .clone_and_export_variables: &clone_and_export_variables
   - source .gitlab/helper_functions.sh
   - section_start "Git - Job Start Actions" --collapsed
+  - git fetch --all
   - git checkout -B $CI_COMMIT_BRANCH $CI_COMMIT_SHA
   - git config diff.renameLimit 6000
+  - git branch --set-upstream-to=origin/$CI_COMMIT_BRANCH $CI_COMMIT_BRANCH
   - section_end "Git - Job Start Actions"
   - mkdir -p -m 777 $ARTIFACTS_FOLDER/
   - |
