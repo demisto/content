@@ -378,7 +378,7 @@ def test_wrong_connection():
 
     """
 
-    from iDefense_v2 import test_module
+    from ACTI_Indicator_Query import test_module
     with requests_mock.Mocker() as m:
         mock_address = 'https://test.com/rest/threatindicator/v0/'
         m.get(mock_address, status_code=401, json={})
@@ -387,27 +387,6 @@ def test_wrong_connection():
             test_module(client)
         except DemistoException as err:
             assert 'Error in API call - check the input parameters' in str(err)
-
-
-def _test_connection():
-    """
-    Given:
-        - an api token
-
-    When:
-        - checking api access
-
-    Then:
-        - ok if there is access
-
-    """
-
-    from iDefense_v2 import test_module
-    with requests_mock.Mocker() as m:
-        mock_address = 'https://test.com/rest/threatindicator/v0/'
-        m.get(mock_address, status_code=200, json={})
-        client = Client(API_URL, 'api_token', True, False, '/rest/threatindicator/v0')
-        assert test_module(client) in "ok"
 
 
 def test_url_command():
