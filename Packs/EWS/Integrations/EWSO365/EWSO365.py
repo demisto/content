@@ -611,7 +611,7 @@ def prepare_args(args):
     if "is_public" in args:
         args["is_public"] = args["is_public"] == "True"
     if "from" in args:
-        args['from_address'] = args.get('from')
+        args['from_address'] = args.pop('from')
     return args
 
 

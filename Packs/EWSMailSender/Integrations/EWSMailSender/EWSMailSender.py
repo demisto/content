@@ -327,7 +327,7 @@ def prepare():
 
 def prepare_args(d):
     if "from" in d:
-        d['from_address'] = d.get('from')
+        d['from_address'] = d.pop('from')
     return dict((k.replace("-", "_"), v) for k, v in d.items())
 
 
