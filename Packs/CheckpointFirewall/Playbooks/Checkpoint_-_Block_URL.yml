@@ -1,10 +1,10 @@
 id: Checkpoint - Block URL
 version: -1
 name: Checkpoint - Block URL
-description: "This playbook blocks URLs using Checkpoint Firewall through Custom URL\
+description: "This playbook blocks URLs using Check Point Firewall through Custom URL\
   \ Categories.\nThe playbook checks whether the input URL category already exists,\
-  \ and if the URLs are a part of this category. Otherwise, it will create the category,\
-  \ block the URLs, and publish the configuration."
+  \ and if the URLs are a part of this category. Otherwise, it creates the category,\
+  \ blocks the URLs, and publishes the configuration."
 starttaskid: '0'
 tasks:
   '0':
@@ -44,8 +44,8 @@ tasks:
       id: 637bf853-b339-434f-82f5-ad53762b2e89
       version: -1
       name: Checkpoint - Publish&Install configuration
-      description: "Publish the Checkpoint Firewall configuration, also, install policy\
-        \ over all the gateways are available  .\n"
+      description: "Publish the Check Point Firewall configuration and install policy\
+        \  on all available gateways.\n"
       playbookName: Checkpoint - Publish&Install configuration
       type: playbook
       iscommand: false
@@ -120,8 +120,8 @@ tasks:
     task:
       id: 6de4c75e-2094-4333-878b-169f73a7d3bf
       version: -1
-      name: Checkpoint application site append URLs
-      description: Added the URL as  application site in Checkpoint firewall.
+      name: Append URL as application site in Check Point Firewall
+      description: Add the URL as application site in Check Point Firewall.
       script: '|||checkpoint-application-site-add'
       type: regular
       iscommand: true
@@ -168,8 +168,8 @@ tasks:
     task:
       id: a25d05d5-5d23-4d8b-856d-015b3bd5862d
       version: -1
-      name: Checkpoint login and get session id
-      description: Login to Checkpoint to get uniq session id.
+      name: Log in to Check Point and get session ID
+      description: Log in to Check Point to get unique session ID.
       script: '|||checkpoint-login-and-get-session-id'
       type: regular
       iscommand: true
@@ -199,7 +199,7 @@ tasks:
     task:
       id: d3b456a4-5da6-441d-897a-5dbe043fbf67
       version: -1
-      name: Is Checkpoint firewall enabled?
+      name: Is Check Point Firewall enabled?
       description: Is Checkpoint firewall enabled
       type: condition
       iscommand: false
@@ -250,8 +250,8 @@ tasks:
     task:
       id: 6284f556-ab72-4787-8586-a79422d3d4b1
       version: -1
-      name: Checkpoint logout
-      description: Logout with specific SID from Checkpoint firewall.
+      name: Check Point logout
+      description: Log out with specific session ID from Checkpoint firewall.
       script: '|||checkpoint-logout'
       type: regular
       iscommand: true
@@ -327,7 +327,7 @@ tasks:
       id: 0ee35904-5636-4247-84dd-788fcc94df9e
       version: -1
       name: Print added URL error
-      description: Prints text to war room (Markdown supported)
+      description: Prints text to war room (Markdown supported).
       scriptName: Print
       type: regular
       iscommand: false
@@ -337,7 +337,7 @@ tasks:
       - "15"
     scriptarguments:
       value:
-        simple: 'The URL was not added to application site during error. '
+        simple: 'The URL was not added to application site due to error. '
     continueonerror: true
     separatecontext: false
     view: |-
@@ -361,8 +361,8 @@ tasks:
     task:
       id: 739a1d5a-d361-47a9-8869-2ac6e480eb64
       version: -1
-      name: Is the URL application site category exist?
-      description: Validate if URL application site category is exists.
+      name: Does the URL application site category exist?
+      description: Validate if URL application site category exists.
       type: condition
       iscommand: false
       brand: ''
@@ -406,8 +406,8 @@ tasks:
       id: aabcbca8-e6ab-4e1b-8dc9-55027b523d19
       version: -1
       name: Checkpoint - Publish&Install configuration
-      description: "Publish the Checkpoint Firewall configuration, also, install policy\
-        \ over all the gateways are available  .\n"
+      description: "Publish the Check Point Firewall configuration and install policy\
+        \  on all available gateways.\n"
       playbookName: Checkpoint - Publish&Install configuration
       type: playbook
       iscommand: false
@@ -456,7 +456,7 @@ tasks:
       id: 03dc594c-c844-4fa4-8b0f-01788a808b3f
       version: -1
       name: Add URL category
-      description: Add URL application site category in Checkpoint firewall.
+      description: Add URL application site category in Check Point Firewall.
       script: '|||checkpoint-application-site-category-add'
       type: regular
       iscommand: true
@@ -492,9 +492,9 @@ tasks:
     task:
       id: cf5f8fb4-12b4-4940-8814-b787d76eb876
       version: -1
-      name: Checkpoint app site category
-      description: Get application site category  to check if the category already
-        exist.
+      name: Check Point app site category
+      description: Get application site category to check if the category already
+        exists.
       script: '|||checkpoint-application-site-category-get'
       type: regular
       iscommand: true
@@ -531,7 +531,7 @@ tasks:
       id: fa43eea8-11cd-44d5-8929-326f1ca64434
       version: -1
       name: Print added URL Category error
-      description: Prints text to war room (Markdown supported)
+      description: Prints text to war room (Markdown supported).
       scriptName: Print
       type: regular
       iscommand: false
@@ -541,7 +541,7 @@ tasks:
       - "15"
     scriptarguments:
       value:
-        simple: There was a problem to add the URL Category.
+        simple: There was a problem adding the URL Category.
     continueonerror: true
     separatecontext: false
     view: |-
@@ -566,7 +566,7 @@ tasks:
       id: f08aa17b-4127-4aa2-8702-129292de3973
       version: -1
       name: Was URL category added successfully?
-      description: Validate if URL was added successfully in Checkpoint firewall.
+      description: Validate if URL was added successfully in Check Point Firewall.
       type: condition
       iscommand: false
       brand: ''
@@ -606,8 +606,7 @@ tasks:
       id: 5a2510e1-95ab-46ce-8d66-19129a2849f6
       version: -1
       name: Is action manual handling enabled?
-      description: if action manual handling enable, the Playbook will stop in favor
-        of further manual handling.
+      description: If action manual handling is enabled, the playbook will pause and wait for manual review.
       type: condition
       iscommand: false
       brand: ''
@@ -650,7 +649,7 @@ tasks:
       id: e56d12bd-27a4-4c85-8b16-f4096daa642e
       version: -1
       name: Fix error and publish manually
-      description: User manually add resolve .
+      description: User manually publishes on Check Point Firwall console.
       type: regular
       iscommand: false
       brand: ''
@@ -679,9 +678,9 @@ tasks:
     task:
       id: 28beae0e-0e08-4fcb-8490-bf56b83f8566
       version: -1
-      name: 'Update Existing Application Site '
+      name: 'Update Existing Application Site'
       description: "Edits an existing application using the object name or UID. \n\
-        It's impossible to set 'application-signature' when the application was initialized\
+        It is not possible to set 'application-signature' when the application was initialized\
         \ with 'url-list' and vice-versa."
       script: '|||checkpoint-application-site-update'
       type: regular
@@ -729,7 +728,7 @@ tasks:
     task:
       id: 492d875a-b6d8-4b18-85b0-12477df2de55
       version: -1
-      name: Was the application site URL append?
+      name: Was the application site URL appended?
       description: Validate if URL was added to application site successfully.
       type: condition
       iscommand: false
@@ -783,15 +782,14 @@ inputs:
   value:
     simple: 'True'
   required: true
-  description: Input True / False for playbook to continue install policy process
-    for checkpoint Firewall.
+  description: Whether the playbook should continue install policy process for Check Point Firewall.
   playbookInputQuery:
 - key: URL
   value: {}
   required: true
   description: |-
     An array of URLs to block.
-    Example: ababab.com,babababa.org
+    Example: example.com,example.org
   playbookInputQuery:
 - key: policy_package
   value:
@@ -803,26 +801,26 @@ inputs:
   value:
     simple: Suspicious
   required: true
-  description: URL category object name.  The category to add URL into.
+  description: URL category object name.  The category to add URL to.
   playbookInputQuery:
 - key: checkpoint_error_handling
   value:
     simple: Stop
   required: true
-  description: "In case one of the actions for publish/install policy fails due to\
-    \ issues on the Checkpoint side, This input will determine whether the playbook\
-    \ will continue or stop for manual review. Also, in case of Continue the session\
-    \ id will logout and all changes will discard.\nValues can be \"Continue\" or\
-    \ \"Stop\".\nThe default value will be \"Stop\"."
+  description: "If one of the actions for the block IP playbook fails due to issues\
+    \ on the Check Point Firewall, this input determines whether the playbook continues\
+    \ or stops for manual review. If the playbook continues, the session ID logs out\
+    \ and all Check Point changes are discarded.\nValues are \"Continue\" or\
+    \ \"Stop\".\nThe default value is \"Stop\"."
   playbookInputQuery:
 - key: block_URL_error_handling
   value:
     simple: Stop
   required: true
-  description: "In case one of the actions for block URL playbook fails due to issues\
-    \ on the Checkpoint side, This input will determine whether the playbook will\
-    \ continue or stop for manual review. Also, in case of Continue the session id\
-    \ will logout and all changes will discard.\nValues can be \"Continue\" or \"\
+  description: "If one of the actions for block URL playbook fails due to issues\
+    \ on the Check Point Firewall, this input determines whether the playbook continues\
+    \ or stops for manual review. If the playbook continues, session ID logs out\
+    \ and all Check Point changes are discarded.\nValues can be \"Continue\" or \"\
     Stop\".\nThe default value will be \"Stop\"."
   playbookInputQuery:
 - key: application_site_name
