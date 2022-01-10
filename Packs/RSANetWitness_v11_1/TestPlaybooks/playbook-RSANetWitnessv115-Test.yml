@@ -717,7 +717,7 @@ tasks:
       brand: ""
     nexttasks:
       "Yes":
-      - "22"
+      - "24"
     separatecontext: false
     conditions:
     - label: "Yes"
@@ -732,72 +732,6 @@ tasks:
         "position": {
           "x": 50,
           "y": 4200
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "22":
-    id: "22"
-    taskid: 4891347c-bcb1-491c-89fa-2a46c11dc472
-    type: regular
-    task:
-      id: 4891347c-bcb1-491c-89fa-2a46c11dc472
-      version: -1
-      name: rsa-nw-scan-request
-      script: RSANetWitnessv115|||rsa-nw-scan-request
-      type: regular
-      iscommand: true
-      brand: RSANetWitnessv115
-    nexttasks:
-      '#none#':
-      - "23"
-    scriptarguments:
-      agent_id:
-        simple: ${Endpoint.ID}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 4400
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "23":
-    id: "23"
-    taskid: 8c2e3434-0ee3-4d2c-8823-0f53590cf40e
-    type: regular
-    task:
-      id: 8c2e3434-0ee3-4d2c-8823-0f53590cf40e
-      version: -1
-      name: rsa-nw-scan-stop-request
-      script: RSANetWitnessv115|||rsa-nw-scan-stop-request
-      type: regular
-      iscommand: true
-      brand: RSANetWitnessv115
-    nexttasks:
-      '#none#':
-      - "24"
-    scriptarguments:
-      agent_id:
-        simple: ${RSANetWitness115.HostsList.agentId}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 4600
         }
       }
     note: false
@@ -923,7 +857,7 @@ tasks:
       brand: ""
     nexttasks:
       "Yes":
-      - "28"
+      - "35"
     separatecontext: false
     conditions:
     - label: "Yes"
@@ -938,150 +872,6 @@ tasks:
         "position": {
           "x": 50,
           "y": 5400
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "28":
-    id: "28"
-    taskid: 0edff0f9-716a-454c-85db-31415e20ddea
-    type: regular
-    task:
-      id: 0edff0f9-716a-454c-85db-31415e20ddea
-      version: -1
-      name: rsa-nw-file-download
-      script: RSANetWitnessv115|||rsa-nw-file-download
-      type: regular
-      iscommand: true
-      brand: RSANetWitnessv115
-    nexttasks:
-      '#none#':
-      - "29"
-    scriptarguments:
-      agent_id:
-        simple: ${RSANetWitness115.HostsList.agentId}
-      path:
-        simple: ${RSANetWitness115.SnapshotDetailsGet.directory}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 5600
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "29":
-    id: "29"
-    taskid: e3ffe0f5-e9d4-43d5-8b61-1836d06c984e
-    type: regular
-    task:
-      id: e3ffe0f5-e9d4-43d5-8b61-1836d06c984e
-      version: -1
-      name: rsa-nw-mft-download-request
-      script: RSANetWitnessv115|||rsa-nw-mft-download-request
-      type: regular
-      iscommand: true
-      brand: RSANetWitnessv115
-    nexttasks:
-      '#none#':
-      - "30"
-    scriptarguments:
-      agent_id:
-        simple: ${RSANetWitness115.HostsList.agentId}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 5800
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "30":
-    id: "30"
-    taskid: 20b6e0b1-4a38-400b-8cb1-d165498d5c44
-    type: regular
-    task:
-      id: 20b6e0b1-4a38-400b-8cb1-d165498d5c44
-      version: -1
-      name: rsa-nw-system-dump-download-request
-      script: RSANetWitnessv115|||rsa-nw-system-dump-download-request
-      type: regular
-      iscommand: true
-      brand: RSANetWitnessv115
-    nexttasks:
-      '#none#':
-      - "31"
-    scriptarguments:
-      agent_id:
-        simple: ${RSANetWitness115.HostsList.agentId}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 6000
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "31":
-    id: "31"
-    taskid: 4ba5b204-cc5b-42c4-8588-f73458b070bc
-    type: regular
-    task:
-      id: 4ba5b204-cc5b-42c4-8588-f73458b070bc
-      version: -1
-      name: rsa-nw-process-dump-download-request
-      script: RSANetWitnessv115|||rsa-nw-process-dump-download-request
-      type: regular
-      iscommand: true
-      brand: RSANetWitnessv115
-    nexttasks:
-      '#none#':
-      - "35"
-    scriptarguments:
-      agent_id:
-        simple: ${RSANetWitness115.HostsList.agentId}
-      eprocess:
-        simple: ${RSANetWitness115.SnapshotDetailsGet.windows.processes.eprocess}
-      file_name:
-        simple: ${RSANetWitness115.SnapshotDetailsGet.fileName}
-      hash:
-        simple: ${RSANetWitness115.SnapshotDetailsGet.fileProperties.checksumMd5}
-      process_create_utctime:
-        simple: ${RSANetWitness115.SnapshotDetailsGet.windows.processes.createUtcTime}
-      process_id:
-        simple: ${RSANetWitness115.SnapshotDetailsGet.windows.processes.pid}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 6200
         }
       }
     note: false
@@ -1107,8 +897,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 6400
+          "x": 60,
+          "y": 5810
         }
       }
     note: false
@@ -1123,8 +913,8 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 6415,
-        "width": 380,
+        "height": 5825,
+        "width": 390,
         "x": 50,
         "y": 50
       }
