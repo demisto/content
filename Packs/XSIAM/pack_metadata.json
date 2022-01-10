@@ -1,0 +1,82 @@
+{
+    "name": "Palo Alto Networks XSIAM - Investigation and Response",
+    "description": "Automates XSIAM incident response, and includes custom XSIAM incident views and layouts to aid analyst investigations.",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2022-01-09T13:16:53Z",
+    "categories": [
+        "Endpoint",
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [
+        "Incident Mirroring"
+    ],
+    "useCases": [
+        "Malware"
+    ],
+    "keywords": [
+        "adaptive cyber protection",
+        "apt"
+    ],
+    "dependencies": {
+        "PANWComprehensiveInvestigation": {
+            "mandatory": false,
+            "display_name": "PANW Comprehensive Investigation"
+        },
+        "CommonPlaybooks": {
+            "mandatory": true,
+            "display_name": "Common Playbooks"
+        },
+        "AutoFocus": {
+            "mandatory": false,
+            "display_name": "AutoFocus"
+        },
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
+        },
+        "MicrosoftGraphListener": {
+            "mandatory": false,
+            "display_name": "Microsoft Graph Mail Single User"
+        },
+        "EWS": {
+            "mandatory": false,
+            "display_name": "EWS"
+        },
+        "MicrosoftGraphMail": {
+            "mandatory": false,
+            "display_name": "Microsoft Graph Mail"
+        },
+        "CommonTypes": {
+            "mandatory": true,
+            "display_name": "Common Types"
+        },
+        "GmailSingleUser": {
+            "mandatory": false,
+            "display_name": "Gmail Single User (Beta)"
+        },
+        "Active_Directory_Query": {
+            "mandatory": false,
+            "display_name": "Active Directory Query"
+        },
+        "MailSenderNew": {
+            "mandatory": false,
+            "display_name": "Mail Sender (New)"
+        },
+        "EWSMailSender": {
+            "mandatory": false,
+            "display_name": "EWS Mail Sender"
+        },
+        "Gmail": {
+            "mandatory": false,
+            "display_name": "Gmail"
+        }
+    },
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}
