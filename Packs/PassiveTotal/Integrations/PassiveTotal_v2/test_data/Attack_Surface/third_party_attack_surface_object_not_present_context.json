@@ -1,0 +1,21 @@
+{
+  "PassiveTotal.ThirdParty(val.id == obj.id)": [
+    {
+      "id": 88256,
+      "name": "RiskIQ, Inc.",
+      "priority": {
+        "medium": {
+          "observationCount": 4,
+          "link": "https://api.pt.net/pt/v2/attack-surface/priority/medium"
+        },
+        "low": {
+          "observationCount": 133,
+          "link": "https://api.pt.net/pt/v2/attack-surface/priority/low"
+        }
+      }
+    }
+  ],
+  "PassiveTotal.Summary.ThirdPartyASI(val.name == obj.name)": {
+    "name": "pt-list-third-party-attack-surface"
+  }
+}

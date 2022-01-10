@@ -28,7 +28,7 @@ configuration:
   required: false
   type: 8
 description: Deploy and manage storage accounts and blob services.
-display: Azure Storage
+display: Azure Storage Management
 name: Azure Storage
 script:
   commands:
@@ -1053,7 +1053,7 @@ script:
     description: Run this command to delete a specific blob container.
     execution: false
     name: azure-storage-blob-container-delete
-  dockerimage: demisto/crypto:1.0.0.24037
+  dockerimage: demisto/crypto:1.0.0.24380
   feed: false
   isfetch: false
   longRunning: false

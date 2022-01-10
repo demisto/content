@@ -1,0 +1,30 @@
+{
+    "id": "incident_actionsonlowsimilarityincidents",
+    "version": -1,
+    "modified": "2021-09-05T09:31:07.58270829Z",
+    "name": "Actions On Low Similarity Incidents",
+    "ownerOnly": false,
+    "cliName": "actionsonlowsimilarityincidents",
+    "type": "singleSelect",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "selectValues": [
+        "Add To Campaign"
+    ],
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedToAll": true,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "5.5.0"
+}

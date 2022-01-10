@@ -2,7 +2,7 @@
     "name": "Tenable.io",
     "description": "A comprehensive asset centric solution to accurately track\u00a0resources while accommodating\u00a0dynamic assets such as cloud, mobile devices, containers and web applications.",
     "support": "xsoar",
-    "currentVersion": "1.1.3",
+    "currentVersion": "1.1.6",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -12,5 +12,9 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": []
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

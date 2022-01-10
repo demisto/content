@@ -11,6 +11,7 @@ if [ "$#" -lt "1" ]; then
   [-p, --packs]               CSV list of pack IDs. Mandatory when the --force flag is on.
   [-ch, --slack-channel]      A slack channel to send notifications to. Default is dmst-bucket-upload.
   [-g, --gitlab]              Flag indicating to trigger the flow in GitLab.
+  [-sbp, --storage-base-path] A path to copy from in this current upload, and to be used as a target destination. This path should look like base path should look like upload-flow/builds/branch_name/build_number/content.
   "
   exit 1
 fi
@@ -19,6 +20,7 @@ _branch="$(git branch  --show-current)"
 _bucket="marketplace-dist-dev"
 _bucket_upload="true"
 _slack_channel="dmst-bucket-upload"
+_storage_base_path=""
 
 # Parsing the user inputs.
 
@@ -54,6 +56,13 @@ while [[ "$#" -gt 0 ]]; do
     shift
     shift;;
 
+  -sbp|--storage-base-path) _storage_base_path="$2"
+    shift
+    shift;;
+
+  -o|--override-all-packs) _override_all_packs=true
+    shift;;
+
   -g|--gitlab) _gitlab=true
     shift
     shift;;
@@ -74,11 +83,31 @@ if [ -n "$_force" ] && [ -z "$_packs" ]; then
     exit 1
 fi
 
+if [ -n "$_force" ] && [ -n "$_storage_base_path"]; then
+    echo "Can not force upload while using a storage base path."
+    exit 1
+fi
+if [[ -n "$_storage_base_path" ]] && [ "$_storage_base_path" != *content ]; then
+  echo "The given storage base path should look like upload-flow/builds/branch_name/build_number/content."
+  exit 1
+fi
+
+if [[ -n "$_storage_base_path" ]] && [ "$_storage_base_path" != upload-flow* ]; then
+  echo "The given storage base path should look like upload-flow/builds/branch_name/build_number/content."
+  exit 1
+fi
+
 if [ -n "$_gitlab" ]; then
 
   _variables="variables[BUCKET_UPLOAD]=true"
   if [ -n "$_force" ]; then
     _variables="variables[FORCE_BUCKET_UPLOAD]=true"
+  fi
+
+  if [ -z "$_override_all_packs" ]; then
+    _override_all_packs=false
+  else
+    _override_all_packs=true
   fi
 
   source Utils/gitlab_triggers/trigger_build_url.sh
@@ -91,6 +120,8 @@ if [ -n "$_gitlab" ]; then
     --form "variables[PACKS_TO_UPLOAD]=${_packs}" \
     --form "variables[GCS_MARKET_BUCKET]=${_bucket}" \
     --form "variables[IFRA_ENV_TYPE]=Bucket-Upload" \
+    --form "variables[STORAGE_BASE_PATH]=${_storage_base_path}" \
+    --form "variables[OVERRIDE_ALL_PACKS]=${_override_all_packs}" \
     "$BUILD_TRIGGER_URL"
 
 else
@@ -105,7 +136,8 @@ else
       "bucket_upload": "${_bucket_upload}",
       "force_pack_upload": "${_force}",
       "packs_to_upload": "${_packs}",
-      "slack_channel": "${_slack_channel}"
+      "slack_channel": "${_slack_channel}",
+      "storage_base_path": "${_storage_base_path}"
     }
   }
   EOF

@@ -2,7 +2,7 @@
     "name": "Gophish",
     "description": "Gophish is a powerful, open-source phishing framework that makes it easy to test your organization's exposure to phishing.",
     "support": "community",
-    "currentVersion": "1.0.1",
+    "currentVersion": "1.0.2",
     "author": "Harri Ruuttila",
     "url": "",
     "email": "harri@ruuttila.com",
@@ -13,5 +13,9 @@
     "tags": [],
     "useCases": [],
     "keywords": [],
-    "githubUser": []
+    "githubUser": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

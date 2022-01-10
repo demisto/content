@@ -1,0 +1,207 @@
+id: FireMon Pre Change Assessment
+version: -1
+description: Validates and Return Pre Changes Assessment on Rules added as Requirement.
+fromversion: 6.0.0
+name: FireMon Pre Change Assessment
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 211b5cba-bca3-48b8-8488-2d27f6c5dcda
+    type: start
+    task:
+      id: 211b5cba-bca3-48b8-8488-2d27f6c5dcda
+      description: Starts the playbook.
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: fd4a6a7b-6c45-4ab5-891b-4be842775762
+    type: title
+    task:
+      id: fd4a6a7b-6c45-4ab5-891b-4be842775762
+      description: Closes the playbook.
+      version: -1
+      name: Close
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: c0306ee1-d5a4-4cda-816b-7343eb39b397
+    type: regular
+    task:
+      id: c0306ee1-d5a4-4cda-816b-7343eb39b397
+      version: -1
+      name: pca
+      description: "PCA- Pre-Change Assessment is process of showing impact of created
+        devices changes in early stages before implementing changes to devices. \nWe
+        can check the PCA table in Review stage of Policy planner ticket."
+      script: '|||firemon-pca'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      action:
+        simple: ${incident.action}
+      destinations:
+        simple: ${incident.destination}
+      device_group_id:
+        simple: ${incident.devicegroupid}
+      domain_id:
+        simple: ${incident.domainid}
+      services:
+        simple: ${incident.service}
+      sources:
+        simple: ${incident.source}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: f40194c2-33e7-474c-8b77-1b14b31ea436
+    type: condition
+    task:
+      id: f40194c2-33e7-474c-8b77-1b14b31ea436
+      version: -1
+      name: Is Firemon Integration Available
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "2"
+      "yes":
+      - "3"
+    scriptarguments:
+      brandname:
+        simple: FireMonSecurityManager
+    results:
+    - brandInstances
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "4_2_no": 0.61,
+      "4_3_yes": 0.57
+    },
+    "paper": {
+      "dimensions": {
+        "height": 560,
+        "width": 492.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: domain_id
+  value:
+    complex:
+      root: incident
+      accessor: domainid
+  required: true
+  description: Enter Domain Id (Integer)
+  playbookInputQuery: null
+- key: device_group_id
+  value:
+    complex:
+      root: incident
+      accessor: devicegroupid
+  required: true
+  description: Enter Device Group Id (Integer)
+  playbookInputQuery: null
+- key: destinations
+  value:
+    complex:
+      root: incident
+      accessor: destination
+  required: true
+  description: Enter List of Destinations
+  playbookInputQuery: null
+- key: sources
+  value:
+    complex:
+      root: incident
+      accessor: source
+  required: true
+  description: Enter List of Sources
+  playbookInputQuery: null
+- key: services
+  value:
+    complex:
+      root: incident
+      accessor: service
+  required: true
+  description: Enter List of Services
+  playbookInputQuery: null
+- key: action
+  value:
+    complex:
+      root: incident
+      accessor: action
+  required: true
+  description: Select an Action
+  playbookInputQuery: null
+outputs: []
+tests:
+- No tests (auto formatted)

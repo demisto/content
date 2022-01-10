@@ -189,13 +189,6 @@ tasks:
                 root: MsGraphFiles
                 accessor: UploadedFiles.ID
             iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: MsGraphFiles
-                accessor: UploadedFiles.LastModifiedBy.Type
-            iscontext: true
     view: |-
       {
         "position": {
@@ -1126,13 +1119,6 @@ tasks:
               complex:
                 root: MsGraphFiles
                 accessor: ListChildren.Children.Value.[0].ID
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: MsGraphFiles
-                accessor: ListChildren.Children.Value.[1].LastModifiedBy.DisplayName
             iscontext: true
     view: |-
       {

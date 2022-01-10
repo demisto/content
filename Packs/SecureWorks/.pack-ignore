@@ -1,2 +1,5 @@
-[file:integration-SecureWorks.yml]
-ignore=IN126,IN135
+[file:SecureWorks.yml]
+ignore=IN126
+
+[file:README.md]
+ignore=RM104

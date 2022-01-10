@@ -1085,20 +1085,20 @@ script:
       isArray: true
       name: host
       required: true
-    - description: Name of kernel module to black- or whitelist.
+    - description: Name of kernel module to block list or add to allow list.
       name: name
       required: true
     - auto: PREDEFINED
       default: false
       defaultValue: present
-      description: Whether the module should be present in the blacklist or absent.
+      description: Whether the module should be present in the block list or absent.
       name: state
       predefined:
       - absent
       - present
-    - description: If specified, use this blacklist file instead of `/etc/modprobe.d/blacklist-ansible.conf`.
+    - description: If specified, use this block list file instead of `/etc/modprobe.d/blacklist-ansible.conf`.
       name: blacklist_file
-    description: Blacklist kernel modules
+    description: Block list kernel modules
     name: linux-kernel-blacklist
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified

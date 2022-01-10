@@ -11,17 +11,22 @@ args:
   description: The name of the configured PANW IoT 3rd Party instance.
   name: panw_iot_3rd_party_instance
   required: true
-comment: This script takes (as a required argument) custom attributes from PANW IoT cloud and creates or updates endpoints in ISE with the input custom attributes.
+comment: |-
+  This script takes (as a required argument) custom attributes from PANW IoT cloud
+  and creates or updates endpoints in ISE with the input custom attributes.
+
+  This automation runs using the default Limited User role, unless you explicitly change the permissions.
+  For more information, see the section about permissions here:
+  https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
 commonfields:
   id: SendPANWIoTDevicesToCiscoISE
   version: -1
-dockerimage: demisto/python3:3.9.1.15759
+dockerimage: demisto/python3:3.9.8.24399
 enabled: true
 name: SendPANWIoTDevicesToCiscoISE
 outputs:
 - contextPath: PaloAltoIoTIntegrationBase.Status
   description: Total number of devices updated or created on ISE.
-runas: DBotRole
 runonce: true
 script: ''
 scripttarget: 0

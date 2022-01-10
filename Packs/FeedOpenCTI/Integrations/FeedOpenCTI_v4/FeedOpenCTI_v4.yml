@@ -191,7 +191,7 @@ script:
     description: Gets indicators from the feed.
     execution: false
     name: opencti-get-indicators
-  dockerimage: demisto/opencti-v4:1.0.0.19143
+  dockerimage: demisto/opencti-v4:1.0.0.23290
   feed: true
   isfetch: false
   longRunning: false

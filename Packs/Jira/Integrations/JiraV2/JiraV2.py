@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Union, Optional
 
 from requests_oauthlib import OAuth1
 from dateparser import parse
@@ -9,7 +9,7 @@ requests.packages.urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 BASE_URL = demisto.getParam('url').rstrip('/') + '/'
-API_TOKEN = demisto.getParam('APItoken')
+API_TOKEN = demisto.getParam('APItoken') or (demisto.getParam('credentials') or {}).get('password')
 USERNAME = demisto.getParam('username')
 PASSWORD = demisto.getParam('password')
 COMMAND_NOT_IMPELEMENTED_MSG = 'Command not implemented'
@@ -45,14 +45,17 @@ def jira_req(
         files: Optional[dict] = None
 ):
     url = resource_url if link else (BASE_URL + resource_url)
+    AUTH = get_auth()
+    if headers and HEADERS.get('Authorization'):
+        headers['Authorization'] = HEADERS.get('Authorization')
     try:
         result = requests.request(
             method=method,
             url=url,
             data=body,
-            headers=headers or HEADERS,
+            auth=AUTH,
+            headers=headers if headers else HEADERS,
             verify=USE_SSL,
-            auth=get_auth(),
             files=files
         )
     except ValueError:
@@ -102,8 +105,10 @@ def generate_basic_oauth():
 
 
 def get_auth():
+    access_token = demisto.getParam('accessToken')
     is_basic = USERNAME and (PASSWORD or API_TOKEN)
-    is_oauth1 = demisto.getParam('consumerKey') and demisto.getParam('accessToken') and demisto.getParam('privateKey')
+    is_oauth1 = demisto.getParam('consumerKey') and access_token and demisto.getParam('privateKey')
+    is_bearer = access_token and not is_oauth1
 
     if is_basic:
         return generate_basic_oauth()
@@ -112,10 +117,16 @@ def get_auth():
         HEADERS.update({'X-Atlassian-Token': 'nocheck'})
         return generate_oauth1()
 
+    elif is_bearer:
+        # Personal Access Token Authentication
+        HEADERS.update({'Authorization': f'Bearer {access_token}'})
+        return
+
     return_error(
         'Please provide the required Authorization information:'
         '- Basic Authentication requires user name and password or API token'
         '- OAuth 1.0 requires ConsumerKey, AccessToken and PrivateKey'
+        '- Personal Access Tokens requires AccessToken'
     )
 
 
@@ -226,33 +237,59 @@ def expand_urls(data, depth=0):
                     return expand_urls(value, depth + 1)
 
 
-def search_user(query: str, max_results: str = '50'):
+def search_user(query: str, max_results: str = '50', is_jirav2api: bool = False):
     """
         Search for user by name or email address.
     Args:
         query: A query string that is matched against user attributes ( displayName, and emailAddress) to find relevant users.
         max_results (str): The maximum number of items to return. default by the server: 50
+        is_jirav2api (bool): if the instance is connecting to a Jira Server that supports only the v2 REST API. default as False
+
 
     Returns:
         List of users.
     """
-    url = f"rest/api/latest/user/search?query={query}&maxResults={max_results}"
+
+    if is_jirav2api:
+        """
+        override user identifier for Jira v2 API
+        https://docs.atlassian.com/software/jira/docs/api/REST/8.13.15/#user-findUsers
+        """
+        url = f"rest/api/latest/user/search?username={query}&maxResults={max_results}"
+    else:
+        url = f"rest/api/latest/user/search?query={query}&maxResults={max_results}"
+
     res = jira_req('GET', url, resp_type='json')
     return res
 
 
-def get_account_id_from_attribute(attribute: str, max_results: str = '50') -> Union[CommandResults, str]:
+def get_account_id_from_attribute(
+        attribute: str,
+        max_results: str = '50',
+        is_jirav2api: str = 'false') -> Union[CommandResults, str]:
     """
     https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-user-search/#api-rest-api-3-user-search-get
 
     Args:
         attribute (str): Username or Email address of a user.
         max_results (str): The maximum number of items to return. default by the server: 50
+        is_jirav2api (str): if the instance is connecting to a Jira Server that supports only the v2 REST API. default as false
     """
-    users = search_user(attribute, max_results)
-    account_ids = {
-        user.get('accountId') for user in users if (attribute.lower() in [user.get('displayName', '').lower(),
-                                                                          user.get('emailAddress', '').lower()])}
+
+    if is_jirav2api == 'true':
+        """
+        override user identifier for Jira v2 API
+        https://docs.atlassian.com/software/jira/docs/api/REST/8.13.15/#user-findUsers
+        """
+        users = search_user(attribute, max_results, is_jirav2api=True)
+        account_ids = {
+            user.get('name') for user in users if (attribute.lower() in [user.get('displayName', '').lower(),
+                                                                         user.get('emailAddress', '').lower()])}
+    else:
+        users = search_user(attribute, max_results)
+        account_ids = {
+            user.get('accountId') for user in users if (attribute.lower() in [user.get('displayName', '').lower(),
+                                                                              user.get('emailAddress', '').lower()])}
 
     if not account_ids:
         return f'No Account ID was found for attribute: {attribute}.'
@@ -286,6 +323,10 @@ def generate_md_context_get_issue(data):
         context_obj['Key'] = md_obj['key'] = demisto.get(element, 'key')
         context_obj['Summary'] = md_obj['summary'] = demisto.get(element, 'fields.summary')
         context_obj['Status'] = md_obj['status'] = demisto.get(element, 'fields.status.name')
+        context_obj['Priority'] = md_obj['priority'] = demisto.get(element, 'fields.priority.name')
+        context_obj['ProjectName'] = md_obj['project'] = demisto.get(element, 'fields.project.name')
+        context_obj['DueDate'] = md_obj['duedate'] = demisto.get(element, 'fields.duedate')
+        context_obj['Created'] = md_obj['created'] = demisto.get(element, 'fields.created')
 
         assignee = demisto.get(element, 'fields.assignee')
         context_obj['Assignee'] = md_obj['assignee'] = "{name}({email})".format(
@@ -305,15 +346,16 @@ def generate_md_context_get_issue(data):
             email=reporter.get('emailAddress', 'null')
         ) if reporter else 'null(null)'
 
+        context_obj.update({
+            'LastSeen': demisto.get(element, 'fields.lastViewed'),
+            'LastUpdate': demisto.get(element, 'fields.updated'),
+        })
+
         md_obj.update({
             'issueType': demisto.get(element, 'fields.issuetype.description'),
-            'priority': demisto.get(element, 'fields.priority.name'),
-            'project': demisto.get(element, 'fields.project.name'),
             'labels': demisto.get(element, 'fields.labels'),
             'description': demisto.get(element, 'fields.description'),
-            'duedate': demisto.get(element, 'fields.duedate'),
             'ticket_link': demisto.get(element, 'self'),
-            'created': demisto.get(element, 'fields.created'),
         })
         attachments = demisto.get(element, 'fields.attachment')
         if isinstance(attachments, list):
@@ -580,6 +622,9 @@ def get_issue(issue_id, headers=None, expand_links=False, is_update=False, get_a
     # handle issues were we allowed incorrect values of true
     if get_attachments == "true" or get_attachments == "\"true\"":
         get_attachments = True
+    else:
+        get_attachments = False
+
     if get_attachments and attachments:
         attachment_urls = [attachment['content'] for attachment in attachments]
         for attachment_url in attachment_urls:

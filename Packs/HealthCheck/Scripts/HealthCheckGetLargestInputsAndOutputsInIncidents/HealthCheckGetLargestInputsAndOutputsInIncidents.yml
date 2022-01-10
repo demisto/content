@@ -6,7 +6,7 @@ comment: Returns inputs and outputs larger than 1 MB from all Cortex XSOAR inves
 commonfields:
   id: HealthCheckGetLargestInputsAndOutputsInIncidents
   version: -1
-dockerimage: demisto/python3:3.9.6.24019
+dockerimage: demisto/python3:3.9.8.24399
 enabled: true
 name: HealthCheckGetLargestInputsAndOutputsInIncidents
 runas: DBotWeakRole

@@ -1,0 +1,17 @@
+args: []
+comment: Adds unmarked log/comment notes as evidence in the timeline.
+commonfields:
+  id: ZTAPBuildTimeline
+  version: -1
+enabled: false
+name: ZTAPBuildTimeline
+script: ''
+subtype: python3
+tags:
+- ztap
+type: python
+runas: DBotWeakRole
+dockerimage: demisto/python3:3.9.7.24076
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

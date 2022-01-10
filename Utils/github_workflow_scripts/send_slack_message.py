@@ -7,7 +7,7 @@ from blessings import Terminal
 from utils import get_env_var
 import json
 import requests
-from github import Github, PaginatedList, File, PullRequest
+from github import Github, File, PullRequest
 import urllib3
 from pprint import pformat
 
@@ -17,7 +17,7 @@ GREEN_COLOR = "#6eb788"
 SLACK_CHANNEL_TO_SEND_PR_TO = 'contribution-reviews'
 
 
-def get_metadata_file(file: File) -> dict:
+def get_metadata_file(file: File.File) -> dict:
     """Perform a GET request to receive a given file content
 
     Args:
@@ -30,7 +30,7 @@ def get_metadata_file(file: File) -> dict:
     try:
         response_json = requests.get(raw_url, verify=False).json()
     except ValueError:
-        raise Exception(f'{file.filename} is not a well-formatted metadata.json file')
+        raise Exception(f'{file.filename} is not a well-formatted metadata.json file')  # pylint: disable=W0707
     return response_json
 
 
@@ -89,9 +89,9 @@ def create_individual_pack_segment(metadata_obj: dict) -> List[dict]:
         Returns:
             (List): List of slack blocks representing the pack information
     """
-    pack_name = metadata_obj.get('name')
-    version = metadata_obj.get('currentVersion')
-    support = metadata_obj.get('support')
+    pack_name: str = metadata_obj.get('name', '')
+    version: str = metadata_obj.get('currentVersion', '')
+    support: str = metadata_obj.get('support', '')
 
     pack_details = [
         create_slack_section('Pack Name', pack_name),
@@ -104,11 +104,11 @@ def create_individual_pack_segment(metadata_obj: dict) -> List[dict]:
     return pack_details
 
 
-def create_packs_segment(metadata_files: PaginatedList) -> List[dict]:
+def create_packs_segment(metadata_files: list) -> List[dict]:
     """Aggregate the pack information segments of the message
 
         Args:
-            metadata_files (PaginatedList): List of File objects representing metadata files
+            metadata_files (List): List of File objects representing metadata files
 
         Returns:
             (List): List of slack blocks representing all packs information
@@ -121,7 +121,7 @@ def create_packs_segment(metadata_files: PaginatedList) -> List[dict]:
     return all_packs
 
 
-def create_pull_request_segment(pr: PullRequest) -> List[dict]:
+def create_pull_request_segment(pr: PullRequest.PullRequest) -> List[dict]:
     """Create the pull request information segment of the message
 
         Args:
@@ -143,7 +143,7 @@ def create_pull_request_segment(pr: PullRequest) -> List[dict]:
     return [pr_info_segment, {'text': create_slack_markdown(f'*URL:* `{pr.html_url}`'), 'type': 'section'}]
 
 
-def create_pr_title(pr: PullRequest) -> List[dict]:
+def create_pr_title(pr: PullRequest.PullRequest) -> List[dict]:
     """Create the message title
 
         Args:

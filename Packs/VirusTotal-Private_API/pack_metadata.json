@@ -1,16 +1,20 @@
 {
     "name": "VirusTotal - Private API",
     "description": "Analyze suspicious hashes, URLs, domains and IP addresses",
-    "support": "xsoar",
-    "currentVersion": "1.0.11",
-    "author": "Cortex XSOAR",
-    "url": "https://www.paloaltonetworks.com/cortex",
-    "email": "",
+    "support": "partner",
+    "currentVersion": "1.0.13",
+    "author": "VirusTotal",
+    "url": "https://www.virustotal.com",
+    "email": "contact@virustotal.com",
     "created": "2020-04-14T00:00:00Z",
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
     "tags": [],
     "useCases": [],
-    "keywords": []
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

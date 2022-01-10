@@ -1,0 +1,114 @@
+{
+  "totalCount": 1,
+  "results": [
+    {
+      "id": "fin7",
+      "title": "FIN7",
+      "link": "https://community.pt.com/intel-profiles/fin7",
+      "osintIndicatorsCount": 1842,
+      "riskIqIndicatorsCount": 229,
+      "indicators": "https://api.pt.net/pt/v2/intel-profiles/fin7/indicators",
+      "aliases": [
+        "Anurak",
+        "Carbanak",
+        "CarbonSpider",
+        "Navigator Group",
+        "Gold Niagra"
+      ],
+      "tags": [
+        {
+          "label": "Crime",
+          "countryCode": "us"
+        },
+        {
+          "label": "Espionage",
+          "countryCode": null
+        },
+        {
+          "label": "Windows",
+          "countryCode": null
+        },
+        {
+          "label": "Linux",
+          "countryCode": null
+        },
+        {
+          "label": "Mac",
+          "countryCode": null
+        },
+        {
+          "label": "Point of Sale",
+          "countryCode": null
+        },
+        {
+          "label": "Financial",
+          "countryCode": null
+        },
+        {
+          "label": "Telecommunications",
+          "countryCode": null
+        },
+        {
+          "label": "Restaurant",
+          "countryCode": null
+        },
+        {
+          "label": "Retail",
+          "countryCode": null
+        },
+        {
+          "label": "Hospitality",
+          "countryCode": null
+        },
+        {
+          "label": "Transportation",
+          "countryCode": null
+        },
+        {
+          "label": "Electronics",
+          "countryCode": null
+        },
+        {
+          "label": "Education",
+          "countryCode": null
+        },
+        {
+          "label": "IT Services",
+          "countryCode": null
+        },
+        {
+          "label": "Casino/Gaming",
+          "countryCode": null
+        },
+        {
+          "label": "Marketing/PR",
+          "countryCode": null
+        },
+        {
+          "label": "Agriculture",
+          "countryCode": null
+        },
+        {
+          "label": "Biotechnology",
+          "countryCode": null
+        },
+        {
+          "label": "Logistics",
+          "countryCode": null
+        },
+        {
+          "label": "Utilities",
+          "countryCode": null
+        },
+        {
+          "label": "Government",
+          "countryCode": null
+        },
+        {
+          "label": "Global",
+          "countryCode": null
+        }
+      ]
+    }
+  ]
+}

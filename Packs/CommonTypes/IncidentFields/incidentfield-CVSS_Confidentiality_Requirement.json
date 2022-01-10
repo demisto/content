@@ -31,9 +31,7 @@
     ],
     "required": false,
     "script": "",
-    "selectValues": [
-        ""
-    ],
+    "selectValues": [],
     "sla": 0,
     "system": false,
     "systemAssociatedTypes": null,
@@ -45,5 +43,6 @@
     "useAsKpi": false,
     "validationRegex": "",
     "version": -1,
-    "fromVersion": "6.0.0"
+    "fromVersion": "6.0.0",
+    "openEnded": true
 }

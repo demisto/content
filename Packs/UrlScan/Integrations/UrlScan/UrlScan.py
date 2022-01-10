@@ -193,6 +193,12 @@ def urlscan_submit_url(client):
             submission_dict['visibility'] = 'public'
 
     submission_dict['url'] = demisto.args().get('url')
+
+    if demisto.args().get('useragent'):
+        submission_dict['customagent'] = demisto.args().get('useragent')
+    elif demisto.params().get('useragent'):
+        submission_dict['customagent'] = demisto.params().get('useragent')
+
     sub_json = json.dumps(submission_dict)
     wait = int(demisto.args().get('wait', 5))
     retries = int(demisto.args().get('retries', 0))

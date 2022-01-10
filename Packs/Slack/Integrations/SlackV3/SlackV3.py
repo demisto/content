@@ -1,23 +1,22 @@
+import asyncio
+import concurrent
+import ssl
+import threading
+from distutils.util import strtobool
 from typing import Tuple
+
+import aiohttp
+import slack_sdk
+from slack_sdk.errors import SlackApiError
+from slack_sdk.socket_mode.aiohttp import SocketModeClient
+from slack_sdk.socket_mode.request import SocketModeRequest
+from slack_sdk.socket_mode.response import SocketModeResponse
+from slack_sdk.web.async_client import AsyncWebClient
+from slack_sdk.web.slack_response import SlackResponse
 
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
-import ssl
-import asyncio
-import concurrent
-import slack_sdk
-import threading
-import aiohttp
-
-from distutils.util import strtobool
-from slack_sdk.web.async_client import AsyncWebClient
-from slack_sdk.socket_mode.aiohttp import SocketModeClient
-from slack_sdk.errors import SlackApiError
-from slack_sdk.web.slack_response import SlackResponse
-from slack_sdk.socket_mode.response import SocketModeResponse
-from slack_sdk.socket_mode.request import SocketModeRequest
-
 
 ''' CONSTANTS '''
 
@@ -53,6 +52,7 @@ OBJECTS_TO_KEYS = {
     'users': 'id'
 }
 SYNC_CONTEXT = True
+PROFILING_DUMP_ROWS_LIMIT = 20
 
 ''' GLOBALS '''
 
@@ -64,7 +64,6 @@ DEDICATED_CHANNEL: str
 ASYNC_CLIENT: slack_sdk.web.async_client.AsyncWebClient
 CLIENT: slack_sdk.WebClient
 ALLOW_INCIDENTS: bool
-NOTIFY_INCIDENTS: bool
 INCIDENT_TYPE: str
 SEVERITY_THRESHOLD: int
 VERIFY_CERT: bool
@@ -75,6 +74,7 @@ BOT_ICON_URL: str
 MAX_LIMIT_TIME: int
 PAGINATED_COUNT: int
 ENABLE_DM: bool
+PERMITTED_NOTIFICATION_TYPES: List[str]
 
 
 ''' HELPER FUNCTIONS '''
@@ -95,14 +95,18 @@ def test_module():
     """
     Sends a test message to the dedicated slack channel.
     """
-    if not DEDICATED_CHANNEL:
-        return_error('A dedicated slack channel must be provided.')
-    channel = get_conversation_by_name(DEDICATED_CHANNEL)
-    if not channel:
-        return_error('Dedicated channel not found.')
-    message = 'Hi there! This is a test message.'
+    if not DEDICATED_CHANNEL and len(PERMITTED_NOTIFICATION_TYPES) > 0:
+        return_error(
+            "When 'Types of Notifications to Send' is populated, a dedicated channel is required.")
+    elif not DEDICATED_CHANNEL and len(PERMITTED_NOTIFICATION_TYPES) == 0:
+        CLIENT.auth_test()  # type: ignore
+    else:
+        channel = get_conversation_by_name(DEDICATED_CHANNEL)
+        if not channel:
+            return_error('Dedicated channel not found.')
+        message = 'Hi there! This is a test message.'
 
-    CLIENT.chat_postMessage(channel=channel.get('id'), text=message)  # type: ignore
+        CLIENT.chat_postMessage(channel=channel.get('id'), text=message)  # type: ignore
 
     demisto.results('ok')
 
@@ -569,11 +573,6 @@ def mirror_investigation():
     set_to_integration_context_with_retries({'mirrors': mirrors, 'conversations': conversations}, OBJECTS_TO_KEYS,
                                             SYNC_CONTEXT)
 
-    if kick_admin:
-        body = {
-            'channel': conversation_id
-        }
-        send_slack_request_sync(CLIENT, 'conversations.leave', body=body)
     if send_first_message:
         server_links = demisto.demistoUrls()
         server_link = server_links.get('server')
@@ -586,6 +585,12 @@ def mirror_investigation():
 
         send_slack_request_sync(CLIENT, 'chat.postMessage', body=body)
 
+    if kick_admin:
+        body = {
+            'channel': conversation_id
+        }
+        send_slack_request_sync(CLIENT, 'conversations.leave', body=body)
+
     demisto.results(f'Investigation mirrored successfully, channel: {conversation_name}')
 
 
@@ -595,6 +600,7 @@ async def long_running_loop():
         try:
             check_for_mirrors()
             check_for_unanswered_questions()
+            await asyncio.sleep(15)
         except requests.exceptions.ConnectionError as e:
             error = f'Could not connect to the Slack endpoint: {str(e)}'
         except Exception as e:
@@ -816,6 +822,7 @@ class SlackLogger:
 
 
 async def slack_loop():
+    exception_await_seconds = 1
     while True:
         # SocketModeClient does not respect environment variables for ssl verification.
         # Instead we use a custom session.
@@ -824,15 +831,27 @@ async def slack_loop():
         client = SocketModeClient(
             app_token=APP_TOKEN,
             web_client=ASYNC_CLIENT,
-            logger=slack_logger  # type: ignore
+            logger=slack_logger,  # type: ignore
+            auto_reconnect_enabled=False
         )
         client.aiohttp_client_session = session
         client.socket_mode_request_listeners.append(listen)  # type: ignore
         try:
             await client.connect()
+            demisto.debug("Socket is connected")
+            # After successful connection, we reset the backoff time.
+            exception_await_seconds = 1
+            demisto.debug(f"Resetting exception wait time to {exception_await_seconds}")
             await asyncio.sleep(float("inf"))
         except Exception as e:
-            await handle_listen_error(f"An error occurred {str(e)}")
+            demisto.debug(f"Exception in long running loop, waiting {exception_await_seconds} - {e}")
+            await asyncio.sleep(exception_await_seconds)
+            exception_await_seconds *= 2
+        finally:
+            try:
+                await client.disconnect()
+            except Exception as e:
+                demisto.debug(f"Failed to close client. - {e}")
 
 
 async def handle_listen_error(error: str):
@@ -850,9 +869,8 @@ async def start_listening():
     """
     Starts a Slack SocketMode client and checks for mirrored incidents.
     """
-    await slack_loop()
-    long_loop_task = asyncio.create_task(long_running_loop(), name="Unanswered loop")
-    await asyncio.gather(long_loop_task)
+    tasks = [asyncio.ensure_future(slack_loop()), asyncio.ensure_future(long_running_loop())]
+    await asyncio.gather(*tasks)
 
 
 async def handle_dm(user: dict, text: str, client: AsyncWebClient):
@@ -1009,6 +1027,17 @@ async def create_incidents(incidents: list, user_name: str, user_email: str, use
     return data
 
 
+async def get_bot_id_async() -> str:
+    """
+    Gets the app bot ID
+
+    Returns:
+        The app bot ID
+    """
+    response = await ASYNC_CLIENT.auth_test()
+    return response.get('bot_id')
+
+
 async def listen(client: SocketModeClient, req: SocketModeRequest):
     demisto.info("Handling request")
     if req.envelope_id:
@@ -1033,17 +1062,32 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
         message_bot_id = data.get('bot_id', '')
         thread = event.get('thread_ts', None)
         message = data.get('message', {})
+        entitlement_reply = None
         # Check if slash command received. If so, ignore for now.
         if data.get('command', None):
             demisto.debug("Slash command event received. Ignoring.")
             return
 
         actions = data.get('actions', [])
+        integration_context = get_integration_context(SYNC_CONTEXT)
         if subtype == 'bot_message' or message_bot_id or message.get('subtype') == 'bot_message' \
                 or \
                 event.get('bot_id', None):
-            if len(actions) == 0:
+
+            if integration_context.get('bot_user_id'):
+                bot_id = integration_context['bot_user_id']
+                if bot_id == 'null' or bot_id is None:
+                    # In some cases the bot_id can be stored as a string 'null', this handles this edge case.
+                    bot_id = await get_bot_id_async()
+                    set_to_integration_context_with_retries({'bot_user_id': bot_id}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
+            else:
+                bot_id = await get_bot_id_async()
+                set_to_integration_context_with_retries({'bot_user_id': bot_id}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
+            if event.get('subtype') == 'bot_message':
                 demisto.debug("Received bot_message event type. Ignoring.")
+                return
+            if event.get('bot_id', '') == bot_id:
+                demisto.debug("Received bot message from the current bot. Ignoring.")
                 return
         if event.get('subtype') == 'message_changed':
             demisto.debug("Received message_changed event type. Ignoring.")
@@ -1060,8 +1104,10 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
             answer_question(action_text, entitlement_string, user.get('profile', {}).get('email'))
 
         else:
-            user = await get_user_by_id_async(ASYNC_CLIENT, user_id)  # type: ignore
-            entitlement_reply = await check_and_handle_entitlement(text, user, thread)  # type: ignore
+            if user_id != '':
+                # User ID is returned as an empty string
+                user = await get_user_by_id_async(ASYNC_CLIENT, user_id)  # type: ignore
+                entitlement_reply = await check_and_handle_entitlement(text, user, thread)  # type: ignore
 
         if entitlement_reply:
             await send_slack_request_async(client=ASYNC_CLIENT, method='chat.postMessage',
@@ -1076,7 +1122,7 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
             await handle_dm(user, text, ASYNC_CLIENT)  # type: ignore
         else:
             channel_id = channel
-            integration_context = get_integration_context(SYNC_CONTEXT)
+
             if not integration_context or 'mirrors' not in integration_context:
                 return
 
@@ -1298,6 +1344,11 @@ def slack_send():
     entry_object = args.get('entryObject')  # From server, available from demisto v6.1 and above
     entitlement = ''
 
+    if message_type and (message_type not in PERMITTED_NOTIFICATION_TYPES):
+        if message_type != MIRROR_TYPE:
+            demisto.info(f"Message type is not in permitted options. Received: {message_type}")
+            return
+
     if message_type == MIRROR_TYPE and original_message.find(MESSAGE_FOOTER) != -1:
         # return so there will not be a loop of messages
         return
@@ -1330,7 +1381,7 @@ def slack_send():
 
     if (channel == DEDICATED_CHANNEL and original_channel == INCIDENT_NOTIFICATION_CHANNEL
             and ((severity is not None and severity < SEVERITY_THRESHOLD)
-                 or not NOTIFY_INCIDENTS)):
+                 or not (len(PERMITTED_NOTIFICATION_TYPES) > 0))):
         channel = None
 
     if not (to or group or channel):
@@ -1457,15 +1508,14 @@ def handle_tags_in_message_sync(message: str) -> str:
     Returns:
         The tagged slack message
     """
-    matches = re.findall(USER_TAG_EXPRESSION, message)
-    message = re.sub(USER_TAG_EXPRESSION, r'\1', message)
+    matches = re.finditer(USER_TAG_EXPRESSION, message)
     for match in matches:
-        slack_user = get_user_by_name(match)
+        slack_user = get_user_by_name(match.group(1))
         if slack_user:
-            message = message.replace(match, f"<@{slack_user.get('id')}>")
-
+            message = message.replace(match.group(0), f"<@{slack_user.get('id')}>")
+        else:
+            message = re.sub(USER_TAG_EXPRESSION, r'\1', message)
     resolved_message = re.sub(URL_EXPRESSION, r'\1', message)
-
     return resolved_message
 
 
@@ -2036,8 +2086,9 @@ def init_globals(command_name: str = ''):
     Initializes global variables according to the integration parameters
     """
     global BOT_TOKEN, PROXY_URL, PROXIES, DEDICATED_CHANNEL, CLIENT
-    global SEVERITY_THRESHOLD, ALLOW_INCIDENTS, NOTIFY_INCIDENTS, INCIDENT_TYPE, VERIFY_CERT, ENABLE_DM
+    global SEVERITY_THRESHOLD, ALLOW_INCIDENTS, INCIDENT_TYPE, VERIFY_CERT, ENABLE_DM
     global BOT_NAME, BOT_ICON_URL, MAX_LIMIT_TIME, PAGINATED_COUNT, SSL_CONTEXT, APP_TOKEN, ASYNC_CLIENT
+    global PERMITTED_NOTIFICATION_TYPES
 
     VERIFY_CERT = not demisto.params().get('unsecure', False)
     if not VERIFY_CERT:
@@ -2058,18 +2109,18 @@ def init_globals(command_name: str = ''):
     APP_TOKEN = demisto.params().get('app_token', {}).get('password', '')
     PROXIES = handle_proxy()
     PROXY_URL = PROXIES.get('http')  # aiohttp only supports http proxy
-    DEDICATED_CHANNEL = demisto.params().get('incidentNotificationChannel')
+    DEDICATED_CHANNEL = demisto.params().get('incidentNotificationChannel', None)
     ASYNC_CLIENT = AsyncWebClient(token=BOT_TOKEN, ssl=SSL_CONTEXT, proxy=PROXY_URL)
     CLIENT = slack_sdk.WebClient(token=BOT_TOKEN, proxy=PROXY_URL, ssl=SSL_CONTEXT)
     SEVERITY_THRESHOLD = SEVERITY_DICT.get(demisto.params().get('min_severity', 'Low'), 1)
     ALLOW_INCIDENTS = demisto.params().get('allow_incidents', False)
-    NOTIFY_INCIDENTS = demisto.params().get('notify_incidents', True)
     INCIDENT_TYPE = demisto.params().get('incidentType')
     BOT_NAME = demisto.params().get('bot_name')  # Bot default name defined by the slack plugin (3-rd party)
     BOT_ICON_URL = demisto.params().get('bot_icon')  # Bot default icon url defined by the slack plugin (3-rd party)
     MAX_LIMIT_TIME = int(demisto.params().get('max_limit_time', '60'))
     PAGINATED_COUNT = int(demisto.params().get('paginated_count', '200'))
     ENABLE_DM = demisto.params().get('enable_dm', True)
+    PERMITTED_NOTIFICATION_TYPES = demisto.params().get('permitted_notifications', [])
 
 
 def print_thread_dump():
@@ -2141,4 +2192,5 @@ def main() -> None:
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
+    register_signal_handler_profiling_dump(profiling_dump_rows_limit=PROFILING_DUMP_ROWS_LIMIT)
     main()

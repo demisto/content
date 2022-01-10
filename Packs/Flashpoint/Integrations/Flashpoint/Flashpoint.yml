@@ -4,9 +4,18 @@ commonfields:
 name: Flashpoint
 display: Flashpoint
 category: Data Enrichment & Threat Intelligence
-description: Use the Flashpoint integration to reduce business risk.
+description: Use the Flashpoint integration to reduce business risk. Flashpoint allows users to ingest alerts and compromised credentials as incident alerts and executes commands such as search intelligence report, ip, url, get events, and more.
 configuration:
-- display: URL
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- display: Server URL
+  additionalinfo: Server URL to connect to Flashpoint.
   name: url
   defaultvalue: "https://fp.tools"
   type: 0
@@ -16,6 +25,41 @@ configuration:
   defaultvalue: ""
   type: 4
   required: true
+- additionalinfo: The maximum limit is 100 for alerts and 1000 for compromised credentials.
+  defaultvalue: '15'
+  display: Maximum number of incidents per fetch
+  hidden: false
+  name: max_fetch
+  required: false
+  type: 0
+- additionalinfo: 'Date or relative timestamp to start fetching the incidents from.
+    (Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd,
+    yyyy-mm-ddTHH:MM:SSZ, etc).'
+  defaultvalue: 3 days
+  display: First fetch time interval
+  hidden: false
+  name: first_fetch
+  required: false
+  type: 0
+- additionalinfo: Whether to fetch the Flashpoint alerts or the compromised credentials.
+    Would choose "Compromised Credentials" if nothing selected.
+  defaultvalue: Compromised Credentials
+  display: Fetch Type
+  hidden: false
+  name: fetch_type
+  options:
+  - 'Compromised Credentials'
+  - 'Alerts'
+  required: false
+  type: 15
+- additionalinfo: Adds the 'is_fresh' flag to compromised credential queries so it
+    only ingests username/password combinations if they haven't been seen before.
+  defaultvalue: 'true'
+  display: Fetch fresh compromised credentials alerts
+  hidden: false
+  name: is_fresh_compromised_credentials
+  required: false
+  type: 8
 - display: Trust any certificate (not secure)
   name: insecure
   defaultvalue: ""
@@ -499,6 +543,9 @@ script:
     - contextPath: Flashpoint.Event.Href
       description: The display event reference.
       type: string
+    - contextPath: Flashpoint.Event.MalwareDescription
+      description: The description of the malware.
+      type: string
     - contextPath: Flashpoint.Event.Tags
       description: The display event tags.
     - contextPath: Flashpoint.Event.EventId
@@ -647,7 +694,418 @@ script:
     - contextPath: Flashpoint.Forum.Post
       description: A list of forum posts based on the search keyword.
     description: Search forum posts using a keyword
-  dockerimage: demisto/python3:3.9.7.24076
+  - arguments:
+    - default: false
+      description: |-
+        Filters the alerts based on the earliest date when the alerts were created.
+
+        Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.
+      isArray: false
+      name: since
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Filters the alerts based on the latest date when the alerts were created.
+
+        Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.
+      isArray: false
+      name: until
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Retrieves the next batch of alerts.
+
+        Note: User can get the "scroll_id" from the HR of the same command "flashpoint-alert-list".
+      isArray: false
+      name: scroll_id
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: Number of alerts to retrieve in the response. (Maximum allowed
+        size is 100).
+      isArray: false
+      name: size
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves an alert or a list of alerts based on the filter values provided in the command arguments. Yields the alerts from Flashpoint collected sources and the alerts from data exposure.
+    execution: false
+    name: flashpoint-alert-list
+    outputs:
+    - contextPath: Flashpoint.Alerts.alert_id
+      description: The ID of the alert.
+      type: String
+    - contextPath: Flashpoint.Alerts.fpid
+      description: The ID of the resource that triggered the alert.
+      type: String
+    - contextPath: Flashpoint.Alerts.keyword.keyword_id
+      description: The ID of the keyword.
+      type: String
+    - contextPath: Flashpoint.Alerts.keyword.keyword_text
+      description: The value of the keyword.
+      type: String
+    - contextPath: Flashpoint.Alerts.highlights
+      description: Snippets of the resource with the keywords highlighted.
+      type: Unknown
+    - contextPath: Flashpoint.Alerts.basetypes
+      description: The data types of the resource.
+      type: Unknown
+    - contextPath: Flashpoint.Alerts.ts
+      description: The timestamp of when the alert was created.
+      type: Number
+    - contextPath: Flashpoint.Alerts.tags.archived
+      description: Whether the alert was archived or not.
+      type: Boolean
+    - contextPath: Flashpoint.Alerts.tags.flagged
+      description: Whether the alert was starred or not.
+      type: Boolean
+    - contextPath: Flashpoint.Alerts.source.basetypes
+      description: The data types of the resource.
+      type: Unknown
+    - contextPath: Flashpoint.Alerts.source.body.text/plain
+      description: The body of the alert in text/plain format.
+      type: String
+    - contextPath: Flashpoint.Alerts.source.container.basetypes
+      description: The data types for the thread or channel in which the content was
+        posted.
+      type: Unknown
+    - contextPath: Flashpoint.Alerts.source.container.container.title
+      description: The title of the container.
+      type: String
+    - contextPath: Flashpoint.Alerts.source.container.container.name
+      description: The name of the container.
+      type: String
+    - contextPath: Flashpoint.Alerts.source.container.fpid
+      description: The ID of the thread or channel in which the content was posted.
+      type: String
+    - contextPath: Flashpoint.Alerts.source.container.title
+      description: The title of the thread or channel in which the content was posted.
+      type: String
+    - contextPath: Flashpoint.Alerts.source.created_at.date-time
+      description: When the content was originally posted by its author.
+      type: Date
+    - contextPath: Flashpoint.Alerts.source.created_at.raw
+      description: When the content was originally posted by its author, as raw format.
+      type: String
+    - contextPath: Flashpoint.Alerts.source.created_at.timestamp
+      description: When the content was originally posted by its author, as a timestamp.
+      type: Number
+    - contextPath: Flashpoint.Alerts.source.first_observed_at.date-time
+      description: The first time this piece of data was observed by Flashpoint.
+      type: Date
+    - contextPath: Flashpoint.Alerts.source.first_observed_at.raw
+      description: The first time this piece of data was observed by Flashpoint, as
+        raw format.
+      type: String
+    - contextPath: Flashpoint.Alerts.source.first_observed_at.timestamp
+      description: The first time this piece of data was observed by Flashpoint, as
+        a timestamp.
+      type: Number
+    - contextPath: Flashpoint.Alerts.source.fpid
+      description: The ID of the resource.
+      type: String
+    - contextPath: Flashpoint.Alerts.source.last_observed_at.date-time
+      description: The last time this piece of data was observed by Flashpoint.
+      type: Date
+    - contextPath: Flashpoint.Alerts.source.last_observed_at.raw
+      description: The last time this piece of data was observed by Flashpoint, as
+        raw format.
+      type: String
+    - contextPath: Flashpoint.Alerts.source.last_observed_at.timestamp
+      description: The last time this piece of data was observed by Flashpoint, as
+        a timestamp.
+      type: Number
+    - contextPath: Flashpoint.Alerts.source.native_id
+      description: The ID used by the original site for the resource.
+      type: String
+    - contextPath: Flashpoint.Alerts.source.parent_message._schema
+      description: The schema of the parent of this resource.
+      type: String
+    - contextPath: Flashpoint.Alerts.source.parent_message.basetypes
+      description: The data types of the parent of this resource.
+      type: Unknown
+    - contextPath: Flashpoint.Alerts.source.parent_message.fpid
+      description: The ID of the parent of this resource.
+      type: String
+    - contextPath: Flashpoint.Alerts.source.parent_message.native_id
+      description: The ID used by the original site for the parent of this resource.
+      type: String
+    - contextPath: Flashpoint.Alerts.source.parent_message.type
+      description: The type of the parent of this resource.
+      type: String
+    - contextPath: Flashpoint.Alerts.source.site.title
+      description: The original site or platform where the resource was published.
+      type: String
+    - contextPath: Flashpoint.Alerts.source.site_actor.names.aliases
+      description: The alias of the user who created the message, authored the blog
+        post, or posted a product for sale.
+      type: Unknown
+    - contextPath: Flashpoint.Alerts.source.site_actor.names.handle
+      description: The handle of the user who created the message, authored the blog
+        post, or posted a product for sale.
+      type: String
+    - contextPath: Flashpoint.Alerts.source.sort_date
+      description: Sort date of the alert.
+      type: Date
+    - contextPath: Flashpoint.Alerts.source.title
+      description: The title of the alert.
+      type: String
+    - contextPath: Flashpoint.Alerts.source.file
+      description: File name for the matched alert.
+      type: String
+    - contextPath: Flashpoint.Alerts.source.owner
+      description: Author of the repo.
+      type: String
+    - contextPath: Flashpoint.Alerts.source.repo
+      description: Repository name.
+      type: String
+    - contextPath: Flashpoint.Alerts.source.snippet
+      description: Small blob of code/text that matched the keyword.
+      type: String
+    - contextPath: Flashpoint.Alerts.source.source
+      description: Code repository platform.
+      type: String
+    - contextPath: Flashpoint.Alerts.source.url
+      description: Link to the alerted source.
+      type: String
+    - contextPath: Flashpoint.PageToken.Alert.scroll_id
+      description: The scroll_id for the next page.
+      type: String
+    - contextPath: Flashpoint.PageToken.Alert.size
+      description: The size for the next page.
+      type: String
+    - contextPath: Flashpoint.PageToken.Alert.since
+      description: The since date for the next page.
+      type: String
+    - contextPath: Flashpoint.PageToken.Alert.until
+      description: The until date for the next page.
+      type: String
+    - contextPath: Flashpoint.PageToken.Alert.name
+      description: The command name.
+      type: String
+  - arguments:
+    - default: false
+      description: |-
+        Filters the data based on the start date of the breach (UTC). Note: Will consider current time as default for end_date if start_date is initialized.
+
+        Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.
+      isArray: false
+      name: start_date
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Filters the data based on the end date of the breach (UTC). Note: Requires start_date along with the given argument.
+
+        Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.
+      isArray: false
+      name: end_date
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: |-
+        Filters the compromised credential's breach data by either created or first observed date.
+        Note: Requires the argument value for at least 'start_date' and 'end_date'.
+      isArray: false
+      name: filter_date
+      predefined:
+      - created_at
+      - first_observed_at
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: 'The maximum number of result objects to return per page. Note:
+        The maximum value is 1,000.'
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '1'
+      description: 'Specify a page number to retrieve the compromised credentials.
+        Note: The multiplication of page_size and page_number parameters cannot exceed
+        10,000.'
+      isArray: false
+      name: page_number
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Sort the compromised credential''s breach data by either created
+        or first observed date. Note: Will consider ascending as default for sort_order
+        if sort_date is initialized.'
+      isArray: false
+      name: sort_date
+      predefined:
+      - created_at
+      - first_observed_at
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Specify the order to sort the data in. Note: Requires sort_date
+        along with the given argument.'
+      isArray: false
+      name: sort_order
+      predefined:
+      - asc
+      - desc
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Whether to fetch the fresh compromised credentials or not. Possible
+        values are: true, false.'
+      isArray: false
+      name: is_fresh
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves the compromised credentials based on the filter values
+      provided in the command arguments.
+    execution: false
+    name: flashpoint-compromised-credentials-list
+    outputs:
+    - contextPath: Flashpoint.CompromisedCredential._id
+      description: ID of the IoC.
+      type: String
+    - contextPath: Flashpoint.CompromisedCredential._source.affected_domain
+      description: Affected domain of the IoC.
+      type: String
+    - contextPath: Flashpoint.CompromisedCredential._source.basetypes
+      description: The array contains the underlying type of the credentials object,
+        in this case  ["credential-sighting"].
+      type: Unknown
+    - contextPath: Flashpoint.CompromisedCredential._source.body.raw
+      description: This is the raw content captured from the breach Flashpoint discovered.
+      type: String
+    - contextPath: Flashpoint.CompromisedCredential._source.breach._header
+      description: This is the breach header object.
+      type: String
+    - contextPath: Flashpoint.CompromisedCredential._source.breach.basetypes
+      description: Array containing underlying base type of breach object, i.e. ["breach"].
+      type: Unknown
+    - contextPath: Flashpoint.CompromisedCredential._source.breach.breach_type
+      description: Constant for future use.
+      type: String
+    - contextPath: Flashpoint.CompromisedCredential._source.breach.created_at.date-time
+      description: Datetime object formatted as YYYY-mm-ddTHH:MM:SSZ.
+      type: Date
+    - contextPath: Flashpoint.CompromisedCredential._source.breach.created_at.timestamp
+      description: UNIX timestamp.
+      type: Number
+    - contextPath: Flashpoint.CompromisedCredential._source.breach.first_observed_at.date-time
+      description: Datetime object formatted as YYYY-mm-ddTHH:MM:SSZ.
+      type: Date
+    - contextPath: Flashpoint.CompromisedCredential._source.breach.first_observed_at.timestamp
+      description: UNIX timestamp.
+      type: Number
+    - contextPath: Flashpoint.CompromisedCredential._source.breach.fpid
+      description: Flashpoint ID of the breach.
+      type: String
+    - contextPath: Flashpoint.CompromisedCredential._source.breach.source
+      description: Data source of breach (i.e. Analyst Research, CredentialStealer,
+        etc.).
+      type: String
+    - contextPath: Flashpoint.CompromisedCredential._source.breach.source_type
+      description: Type of source of the breach.
+      type: String
+    - contextPath: Flashpoint.CompromisedCredential._source.breach.title
+      description: Title of breach.
+      type: String
+    - contextPath: Flashpoint.CompromisedCredential._source.breach.victim
+      description: Victim of the breach.
+      type: String
+    - contextPath: Flashpoint.CompromisedCredential._source.credential_record_fpid
+      description: This is the Flashpoint ID of the associated record object. This
+        is used to retrieve sightings for a credential.
+      type: String
+    - contextPath: Flashpoint.CompromisedCredential._source.customer_id
+      description: Customer ID of the IoC.
+      type: String
+    - contextPath: Flashpoint.CompromisedCredential._source.domain
+      description: This is the domain object extracted off of the email address.
+      type: String
+    - contextPath: Flashpoint.CompromisedCredential._source.email
+      description: The email address for the compromised credential.
+      type: String
+    - contextPath: Flashpoint.CompromisedCredential._source.extraction_id
+      description: Extraction ID of the IoC.
+      type: String
+    - contextPath: Flashpoint.CompromisedCredential._source.extraction_record_id
+      description: Extraction record ID of the IoC.
+      type: String
+    - contextPath: Flashpoint.CompromisedCredential._source.fpid
+      description: The Flashpoint ID of this credentials object.
+      type: String
+    - contextPath: Flashpoint.CompromisedCredential._source.header_.indexed_at
+      description: Timestamp for when this document was indexed into the Flashpoint
+        database.
+      type: String
+    - contextPath: Flashpoint.CompromisedCredential._source.header_.pipeline_duration
+      description: Pipeline duration header information of the IoC.
+      type: String
+    - contextPath: Flashpoint.CompromisedCredential._source.is_fresh
+      description: This will be "true" if the credential has not been seen before,
+        and it hasn't been marked "not fresh" by an analyst. (Historical breaches
+        are not "fresh".).
+      type: Boolean
+    - contextPath: Flashpoint.CompromisedCredential._source.last_observed_at.date-time
+      description: If exists, time object for when the credential was previously observed.
+        Datetime object formatted as YYYY-mm-ddTHH:MM:SSZ.
+      type: Date
+    - contextPath: Flashpoint.CompromisedCredential._source.last_observed_at.timestamp
+      description: UNIX timestamp.
+      type: Number
+    - contextPath: Flashpoint.CompromisedCredential._source.password
+      description: The password for the credential (in plain text, if possible).
+      type: String
+    - contextPath: Flashpoint.CompromisedCredential._source.password_complexity.has_lowercase
+      description: Boolean true/false if lowercase letters are present.
+      type: Boolean
+    - contextPath: Flashpoint.CompromisedCredential._source.password_complexity.has_number
+      description: Boolean true/false if numbers are present.
+      type: Boolean
+    - contextPath: Flashpoint.CompromisedCredential._source.password_complexity.has_symbol
+      description: Boolean true/false if symbols are present.
+      type: Boolean
+    - contextPath: Flashpoint.CompromisedCredential._source.password_complexity.has_uppercase
+      description: Boolean true/false if uppercase letters are present.
+      type: Boolean
+    - contextPath: Flashpoint.CompromisedCredential._source.password_complexity.length
+      description: Integer value that represents number of characters in password.
+      type: Number
+    - contextPath: Flashpoint.CompromisedCredential._source.password_complexity.probable_hash_algorithms
+      description: List of possible hash algorithms suspected based on textpattern
+        of the password (May include values like "MD5", "SHA-1", "SHA-256", "bcrypt",
+        etc.)
+      type: Unknown
+    - contextPath: Flashpoint.CompromisedCredential._source.times_seen
+      description: Integer representing the number of times the credential has been
+        seen at Flashpoint.
+      type: Number
+    - contextPath: Flashpoint.CompromisedCredential._type
+      description: Type of the IoC.
+      type: String
+    - contextPath: Flashpoint.CompromisedCredential.matched_queries
+      description: Matching queries of the IoC.
+      type: Unknown
+    - contextPath: Flashpoint.CompromisedCredential.sort
+      description: Sort value of the IoC.
+      type: Unknown
+  dockerimage: demisto/python3:3.9.8.24399
+  feed: false
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
   runonce: false
   subtype: python3
 tests:

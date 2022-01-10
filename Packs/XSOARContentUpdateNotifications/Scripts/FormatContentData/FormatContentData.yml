@@ -5,7 +5,7 @@ args:
 commonfields:
   id: FormatContentData
   version: -1
-dockerimage: demisto/python3:3.9.5.21272
+dockerimage: demisto/python3:3.9.8.24399
 enabled: true
 name: FormatContentData
 runas: DBotWeakRole

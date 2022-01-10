@@ -266,7 +266,8 @@ def convert_incident_to_readable(raw_incident: Dict) -> Dict:
         raw_incident = {}
 
     incident_meta_data = _get_meta_data_for_incident(raw_incident)
-    device_groups = {device.get('device name') for device in incident_meta_data.get('Devices', [])}
+    device_groups = {device.get('device name') for device in incident_meta_data.get('Devices', [])
+                     if device.get('device name')}
     return {
         'Incident name': raw_incident.get('incidentName'),
         'Tags': ', '.join(raw_incident.get('tags', [])),
@@ -529,12 +530,12 @@ def main() -> None:
     # if your Client class inherits from BaseClient, system proxy is handled
     # out of the box by it, just pass ``proxy`` to the Client constructor
     proxy = params.get('proxy', False)
-    app_id = params.get('app_id')
+    app_id = params.get('app_id') or params.get('_app_id')
     base_url = params.get('base_url')
 
-    tenant_id = params.get('tenant_id')
+    tenant_id = params.get('tenant_id') or params.get('_tenant_id')
     client_credentials = params.get('client_credentials', False)
-    enc_key = params.get('enc_key')
+    enc_key = params.get('enc_key') or (params.get('credentials') or {}).get('password')
 
     first_fetch_time = params.get('first_fetch', '3 days').strip()
     fetch_limit = arg_to_number(params.get('max_fetch', 10))
@@ -545,6 +546,9 @@ def main() -> None:
     args = demisto.args()
 
     try:
+        if not app_id:
+            raise Exception('Application ID must be provided.')
+
         client = Client(
             app_id=app_id,
             verify=verify_certificate,

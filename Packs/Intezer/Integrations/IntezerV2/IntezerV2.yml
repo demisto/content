@@ -257,7 +257,7 @@ script:
         - contextPath: Intezer.Analysis.SubAnalyses.Metadata
           description: A Sub Analysis metadata
           type: Unknown
-  dockerimage: demisto/intezer:1.0.0.24037
+  dockerimage: demisto/intezer:1.0.0.24078
   isfetch: false
   runonce: false
   script: '-'

@@ -10,7 +10,7 @@ comment: Recursively extracts specified fields from provided list of assets for 
 commonfields:
   id: PrismaCloudAttribution
   version: -1
-dockerimage: demisto/python3:3.9.5.21272
+dockerimage: demisto/python3:3.9.7.24076
 enabled: true
 name: PrismaCloudAttribution
 outputs:

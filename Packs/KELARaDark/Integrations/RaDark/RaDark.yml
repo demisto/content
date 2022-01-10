@@ -1,0 +1,227 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: RaDark
+  version: -1
+configuration:
+- additionalinfo: API Key generated from RaDark by your user.
+  display: API Key
+  name: api_key
+  required: true
+  type: 4
+- additionalinfo: Start fetching incidents from the specified time.
+  defaultvalue: 45 days
+  display: First time fetching
+  name: first_fetch
+  required: false
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- additionalinfo: Set your monitor ID in RaDark.
+  display: Monitor ID
+  name: monitor_id
+  required: true
+  type: 0
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- defaultvalue: "1"
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- additionalinfo: 'Maximum supported: 1000'
+  defaultvalue: "10"
+  display: Max incidents to fetch each fetching
+  name: max_fetch
+  required: false
+  type: 0
+- additionalinfo: Set which incident types to fetch from RaDark.
+  defaultvalue: Leaked Credentials,Compromised Accounts,Intelligence Reports,Network
+    Vulnerabilities,Credit Cards,Hacking Discussions
+  display: Incident types to fetch
+  name: incident_types
+  options:
+  - Leaked Credentials
+  - Compromised Accounts
+  - Intelligence Reports
+  - Network Vulnerabilities
+  - Credit Cards
+  - Hacking Discussions
+  required: true
+  type: 16
+description: This integration enables you to fetch incidents and manage your RaDark
+  monitor from Cortex XSOAR.
+display: RaDark
+name: RaDark
+script:
+  commands:
+  - arguments:
+    - description: The unique ID of an incident that requires enrichment.
+      name: incident_id
+      required: true
+    description: Fetch all items for an incident by the given incident ID.
+    name: radark-incident-get-items
+    outputs:
+    - contextPath: Radark.itemDetails.items.item_id
+      description: The ID of the item on RaDark.
+      type: string
+    - contextPath: Radark.itemDetails.items.email
+      description: The email of the item.
+      type: string
+    - contextPath: Radark.itemDetails.items.domain
+      description: The domain of the item.
+      type: string
+    - contextPath: Radark.itemDetails.items.password
+      description: The password of the item.
+      type: string
+    - contextPath: Radark.itemDetails.items.password_type
+      description: The password type of the item.
+      type: string
+    - contextPath: Radark.itemDetails.items.source
+      description: The source of the item.
+      type: string
+    - contextPath: Radark.itemDetails.items.service
+      description: The service of the item.
+      type: string
+    - contextPath: Radark.itemDetails.items.dump_post_date
+      description: The dump post date of the item.
+      type: string
+    - contextPath: Radark.itemDetails.items.compromised_website
+      description: The compromised website of the item.
+      type: string
+    - contextPath: Radark.itemDetails.items.bot_id
+      description: The bot ID of the item.
+      type: string
+    - contextPath: Radark.itemDetails.items.resource
+      description: The resource of the item.
+      type: string
+    - contextPath: Radark.itemDetails.items.country
+      description: The country of the item.
+      type: string
+    - contextPath: Radark.itemDetails.items.source_ip
+      description: The source IP of the item.
+      type: string
+    - contextPath: Radark.itemDetails.items.infection_type
+      description: The infection type of the item.
+      type: string
+    - contextPath: Radark.itemDetails.items.updated_date
+      description: The updated date of the item.
+      type: string
+    - contextPath: Radark.itemDetails.items.username
+      description: The username of the item.
+      type: string
+    - contextPath: Radark.itemDetails.items.additional_data
+      description: The additional data of the item.
+      type: string
+    - contextPath: Radark.itemDetails.items.price
+      description: The price of the item.
+      type: string
+    - contextPath: Radark.itemDetails.items.isp
+      description: The ISP of the item.
+      type: string
+    - contextPath: Radark.itemDetails.items.ip
+      description: The IP of the item.
+      type: string
+    - contextPath: Radark.itemDetails.items.hostname
+      description: The hostname of the item.
+      type: string
+    - contextPath: Radark.itemDetails.items.port
+      description: The port of the item.
+      type: string
+    - contextPath: Radark.itemDetails.items.technology
+      description: The technology of the item.
+      type: string
+    - contextPath: Radark.itemDetails.items.cve_details
+      description: The CVE details of the item.
+      type: string
+    - contextPath: Radark.itemDetails.items.details
+      description: The details of the item.
+      type: string
+    - contextPath: Radark.itemDetails.items.type
+      description: The type of the item.
+      type: string
+    - contextPath: Radark.itemDetails.items.description
+      description: The description of the item.
+      type: string
+    - contextPath: Radark.itemDetails.items.date
+      description: The date of the item.
+      type: string
+    - contextPath: Radark.itemDetails.items.bin
+      description: The bin of the item.
+      type: string
+    - contextPath: Radark.itemDetails.items.number
+      description: The number of the item.
+      type: string
+    - contextPath: Radark.itemDetails.items.tags
+      description: The tags of the item.
+      type: string
+    - contextPath: Radark.itemDetails.items.link
+      description: The link of the item.
+      type: string
+    - contextPath: Radark.itemDetails.items.context
+      description: The context of the item.
+      type: string
+    - contextPath: Radark.itemDetails.details
+      description: General details of the incident.
+      type: string
+  - arguments:
+    - description: The email address tested for leaked credentials.
+      name: email
+      required: true
+    description: Search a specific email address to get all exposed leaked credentials
+      collected by RaDark.
+    name: radark-email-enrich
+    outputs:
+    - contextPath: Radark.emailDetails.emails.email
+      description: The email to enrich from RaDark.
+      type: string
+    - contextPath: Radark.emailDetails.emails.domain
+      description: The domain of the email.
+      type: string
+    - contextPath: Radark.emailDetails.emails.password_type
+      description: The password type of the email.
+      type: string
+    - contextPath: Radark.emailDetails.emails.password
+      description: The password of the email.
+      type: string
+    - contextPath: Radark.emailDetails.emails.service
+      description: The service of the email.
+      type: string
+    - contextPath: Radark.emailDetails.emails.source
+      description: The source of the email.
+      type: string
+    - contextPath: Radark.emailDetails.emails.source
+      description: The posted date of the email.
+      type: string
+  - arguments:
+    - description: The unique ID of an item that should be marked as handled on RaDark.
+      name: item_id
+      required: true
+    description: Mark item as handled on RaDark.
+    name: radark-item-handle
+  - arguments:
+    - description: The unique ID of an item that should requires purchase.
+      name: item_id
+      required: true
+    description: Request to purchase an item offered for sale on an automated store.
+    name: radark-item-purchase
+  dockerimage: demisto/python3:3.9.8.24399
+  isfetch: true
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

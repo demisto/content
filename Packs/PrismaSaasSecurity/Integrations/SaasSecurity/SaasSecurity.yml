@@ -26,12 +26,28 @@ configuration:
   name: incidentType
   type: 13
   required: false
+- additionalinfo: 'Choose the direction to mirror the incident: Incoming (from SaasSecurity
+    to Cortex XSOAR), Outgoing (from Cortex XSOAR to SaasSecurity), Incoming And Outgoing
+    (from/to Cortex XSOAR and SaasSecurity), or None. Note that Outgoing mirrors out
+    the status only for closed Cortex XSOAR incidents, because the API limitation
+    does not allow updating the status for open incidents.'
+  defaultvalue: None
+  display: Incident Mirroring Direction
+  hidden: false
+  name: mirror_direction
+  options:
+  - None
+  - Incoming
+  - Outgoing
+  - Incoming And Outgoing
+  required: false
+  type: 15
 - display: Number of incidents per fetch
   name: max_fetch
   defaultvalue: "20"
   type: 0
   required: true
-  additionalinfo: Minimum is 10.
+  additionalinfo: Minimum is 10. Maximum is 1000.
 - display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
   defaultvalue: 3 days
@@ -77,6 +93,14 @@ configuration:
   required: false
   additionalinfo: Comma-separated list of Application IDs. Run the 'saas-security-get-apps'
     command to return the Application ID, Name, and Type for all applications.
+- additionalinfo: When selected, closing the SaasSecurity incident is mirrored in
+    Cortex XSOAR.
+  defaultvalue: 'false'
+  display: Close Mirrored XSOAR Incident
+  hidden: false
+  name: close_incident
+  required: false
+  type: 8
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -101,11 +125,11 @@ script:
         minimum is 10.
       defaultValue: "50"
     - name: from
-      description: The start time of the query, filtered by the date the incident was updated,\
-        \ e.g., `2021-08-23T09:26:25.872Z`.
+      description: The start time of the query, filtered by the date the incident
+        was updated,\ \ e.g., `2021-08-23T09:26:25.872Z`.
     - name: to
-      description: The end time of the query, filtered by the date the incident was updated,
-        e.g., `2021-08-23T09:26:25.872Z`.
+      description: The end time of the query, filtered by the date the incident was
+        updated, e.g., `2021-08-23T09:26:25.872Z`.
     - name: app_ids
       description: Comma-separated list of application IDs. Run the 'saas-security-get-apps'
         command to return the Application ID, Name, and Type for all applications.
@@ -116,17 +140,19 @@ script:
       - All
       - Open
       - Closed
-      description: 'The state of the incidents. If empty, retrieves all states. Possible values: "All", "Open", and "Closed".'
+      description: 'The state of the incidents. If empty, retrieves all states. Possible
+        values: "All", "Open", and "Closed".'
       defaultValue: open
     - name: severity
       auto: PREDEFINED
       predefined:
-        - '1'
-        - '2'
-        - '3'
-        - '4'
-        - '5'
-      description: 'The severity of the incidents. In none is selected, all severities will be pulled. Possible values: "1", "2", "3", "4", and "5".'
+      - '1'
+      - '2'
+      - '3'
+      - '4'
+      - '5'
+      description: 'The severity of the incidents. In none is selected, all severities
+        will be pulled. Possible values: "1", "2", "3", "4", and "5".'
     - name: status
       auto: PREDEFINED
       predefined:
@@ -140,7 +166,9 @@ script:
       - In The Cloud
       - Dismiss
       isArray: true
-      description: 'The status of the incidents. Possible values:"New", "Assigned", " In Progress", "Pending", "No Reason", "Business Justified", "Misidentified", "In The Cloud", and "Dismiss".' 
+      description: 'The status of the incidents. Possible values:"New", "Assigned",
+        " In Progress", "Pending", "No Reason", "Business Justified", "Misidentified",
+        "In The Cloud", and "Dismiss".'
     - name: next_page
       description: Get the next batch of incidents. No other argument is needed when
         providing this.
@@ -331,7 +359,8 @@ script:
       required: true
       description: The incident ID.
     - name: category
-      description: 'Reason for closing the incident. Possible values: "Misidentified", "No Reason", and "Business Justified".'
+      description: 'Reason for closing the incident. Possible values: "Misidentified",
+        "No Reason", and "Business Justified".'
       required: true
       auto: PREDEFINED
       predefined:
@@ -381,14 +410,16 @@ script:
       - Remove public sharing
       - Quarantine
       - Restore
-      description: 'The remediation action to take. Possible values: "Remove public sharing", "Quarantine", and "Restore".'
+      description: 'The remediation action to take. Possible values: "Remove public
+        sharing", "Quarantine", and "Restore".'
     - name: remove_inherited_sharing
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
-      description: 'Used when the remediation type is “Remove public sharing”. When set
-        to true, all the parent folders with a shared URL will be removed. Possible values: "True" and "False"'
+      description: 'Used when the remediation type is “Remove public sharing”. When
+        set to true, all the parent folders with a shared URL will be removed. Possible
+        values: "True" and "False"'
       defaultValue: "false"
     outputs:
     - contextPath: SaasSecurity.Remediation.asset_id
@@ -414,7 +445,8 @@ script:
       - Remove public sharing
       - Quarantine
       - Restore
-      description: 'The remediation action that was taken. Possible values: "Remove public sharing", "Quarantine", and "Restore".'
+      description: 'The remediation action that was taken. Possible values: "Remove
+        public sharing", "Quarantine", and "Restore".'
     outputs:
     - contextPath: SaasSecurity.Remediation.asset_id
       description: Asset ID.
@@ -434,12 +466,60 @@ script:
     - contextPath: SaasSecurity.Remediation.status
       description: Remediation action status.
       type: String
+  - name: get-remote-data
+    arguments:
+    - default: false
+      description: The remote incident ID.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: UTC timestamp in seconds. The incident is only updated if it was
+        modified after the last update time.
+      isArray: false
+      name: lastUpdate
+      required: false
+      secret: false
+    deprecated: false
+    description: Get remote data from a remote incident. Note that this method will
+      not update the current incident. It's used for debugging purposes.
+    execution: false
+  - deprecated: false
+    description: Returns the list of fields for an incident type.
+    execution: false
+    name: get-mapping-fields
+  - arguments:
+    - default: false
+      description: Date string representing the local time. The incident is only returned
+        if it was modified after the last update time.
+      isArray: false
+      name: lastUpdate
+      required: false
+      secret: false
+    deprecated: false
+    description: Get the list of incidents that were modified since the last update.
+      Note that this method is used for debugging purposes. get-modified-remote-data
+      is used as part of a Mirroring feature, which is available since version 6.1.
+    execution: false
+    name: get-modified-remote-data
+  - deprecated: false
+    description: Updates local incident changes in the remote incident. This method
+      is only used for debugging purposes and will not update the current incident.
+    execution: false
+    name: update-remote-system
   isfetch: true
+  ismappable: true
+  isremotesyncin: true
+  isremotesyncout: true
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.9.6.24019
+  dockerimage: demisto/python3:3.9.9.25564
+defaultmapperin: Saas Security - Incoming Mapper
+defaultmapperout: Saas Security - Outgoing Mapper
 fromversion: 6.0.0
 tests:
 - SaasSecurity-Test

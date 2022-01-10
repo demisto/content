@@ -994,7 +994,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 10490
+          "y": 10870
         }
       }
     note: false
@@ -2310,6 +2310,14 @@ tasks:
           right:
             value:
               simple: PENDING
+        - operator: isEqualString
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.ScriptStatus.general_status
+            iscontext: true
+          right:
+            value:
+              simple: IN_PROGRESS
     view: |-
       {
         "position": {
@@ -2384,6 +2392,14 @@ tasks:
           right:
             value:
               simple: PENDING
+        - operator: isEqualString
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.ScriptResult.results.execution_status
+            iscontext: true
+          right:
+            value:
+              simple: IN_PROGRESS
     view: |-
       {
         "position": {
@@ -2552,9 +2568,10 @@ tasks:
     task:
       id: 2e087af1-2953-447a-8fa6-8f22c263ef8b
       version: -1
-      name: Blacklist file that have already been added to the allow or block list
-      description: Blacklists requested files which have not already been blacklisted
-        or whitelisted.
+      name: Adds requested files to block list if they are not already added to the block list
+        or allow list
+      description: Adds requested files to block list if they are not already added to the block list
+        or allow list.
       script: '|||xdr-blacklist-files'
       type: regular
       iscommand: true
@@ -2593,7 +2610,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "25"
+      - "75"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -2620,15 +2637,94 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "75":
+    id: "75"
+    taskid: 51d5e9e6-59db-41c5-8dea-c94f67b56b57
+    type: regular
+    task:
+      id: 51d5e9e6-59db-41c5-8dea-c94f67b56b57
+      version: -1
+      name: xdr-get-endpoints-by-status
+      description: Returns the number of the connected\disconnected endpoints.
+      script: '|||xdr-get-endpoints-by-status'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "76"
+    scriptarguments:
+      status:
+        simple: connected
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 10500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "76":
+    id: "76"
+    taskid: 4622ccf6-11e3-490c-8d92-5b6b58b802ea
+    type: condition
+    task:
+      id: 4622ccf6-11e3-490c-8d92-5b6b58b802ea
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "25"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.EndpointsStatus.status
+            iscontext: true
+          right:
+            value:
+              simple: connected
+      - - operator: isExists
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.EndpointsStatus.count
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 10675
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 10505,
+        "height": 10865,
         "width": 922.5,
         "x": 50,
-        "y": 50
+        "y": 70
       }
     }
   }

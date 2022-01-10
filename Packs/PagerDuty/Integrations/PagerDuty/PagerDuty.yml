@@ -256,11 +256,17 @@ script:
     - contextPath: PagerDuty.Incidents.assignment.assignee
       description: The name of the assignee to the incident
       type: string
+    - contextPath: PagerDuty.Incidents.assignment.assigneeId
+      description: The ID of the assignee to the incident
+      type: string
     - contextPath: PagerDuty.Incidents.acknowledgement.time
       description: The time of the acknowledgement to the incident
       type: date
     - contextPath: PagerDuty.Incidents.acknowledgement.acknowledger
       description: The name of the acknowledger to the incident
+      type: string
+    - contextPath: PagerDuty.Incidents.acknowledgement.acknowledgerId
+      description: The ID of the acknowledger to the incident
       type: string
     - contextPath: PagerDuty.Incidents.incident_key
       description: The incident's de-duplication key
@@ -516,11 +522,17 @@ script:
     - contextPath: PagerDuty.Incidents.assignment.assignee
       description: The name of the assignee to the incident
       type: string
+    - contextPath: PagerDuty.Incidents.assignment.assigneeId
+      description: The ID of the assignee to the incident
+      type: string
     - contextPath: PagerDuty.Incidents.acknowledgement.time
       description: The time of the acknowledgement to the incident
       type: date
     - contextPath: PagerDuty.Incidents.acknowledgement.acknowledger
       description: The name of the acknowledger to the incident
+      type: string
+    - contextPath: PagerDuty.Incidents.acknowledgement.acknowledgerId
+      description: The ID of the acknowledger to the incident
       type: string
     - contextPath: PagerDuty.Incidents.incident_key
       description: The incident's de-duplication key
@@ -562,7 +574,7 @@ script:
   script: '-'
   subtype: python2
   type: python
-  dockerimage: demisto/python:2.7.18.24066
+  dockerimage: demisto/python:2.7.18.24398
 tests:
 - PagerDuty Test
 fromversion: 5.0.0

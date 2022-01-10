@@ -1,0 +1,75 @@
+category: Vulnerability Management
+commonfields:
+  id: ShiftLeft CORE
+  version: -1
+configuration:
+- display: ShiftLeft Organization Id
+  name: org_id
+  type: 0
+  required: true
+  additionalinfo: You can find this under Account Settings -> Org ID
+- display: ShiftLeft Access Token
+  name: access_token
+  type: 4
+  required: true
+  additionalinfo: You can find this under Account Settings -> Access Token
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Integrate ShiftLeft CORE code analysis platform with Cortex XSOAR.
+display: ShiftLeft CORE
+name: ShiftLeft CORE
+script:
+  script: "-"
+  type: python
+  commands:
+  - name: shiftleft-list-apps
+    description: Return list of apps.
+  - name: shiftleft-list-app-findings
+    arguments:
+    - name: app_name
+      required: true
+      default: true
+      description: App name.
+    - name: severity
+      auto: PREDEFINED
+      predefined:
+      - critical
+      - moderate
+      - info
+      description: Severity of findings.
+      isArray: true
+      defaultValue: critical
+    - name: type
+      auto: PREDEFINED
+      predefined:
+      - vuln
+      - secret
+      - insight
+      - extscan
+      - oss_vuln
+      description: Findings Type.
+      isArray: true
+      defaultValue: vuln
+    - name: version
+      description: App version.
+    description: Return list of app findings.
+  - name: shiftleft-list-app-secrets
+    arguments:
+    - name: app_name
+      required: true
+      default: true
+      description: App name.
+    - name: version
+      description: App version.
+    - name: entropy
+      description: Entropy.
+    description: Return list of app secrets.
+  dockerimage: demisto/python3:3.9.8.24399
+  isfetch: false
+  runonce: false
+  subtype: python3
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

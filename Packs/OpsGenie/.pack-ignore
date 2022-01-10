@@ -1,2 +1,5 @@
 [file:integration-OpsGenie_README.md]
 ignore=RM106
+
+[file:integration-OpsGenie.yml]
+ignore=IN145

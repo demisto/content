@@ -185,7 +185,7 @@ Runs reputation on email addresses.
 | IPQualityScore.Email.generic | Boolean | Is this email suspected as being a catch all or shared email for a domain? \("admin@", "webmaster@", "newsletter@", "sales@", "contact@", etc.\) | 
 | IPQualityScore.Email.common | Boolean | Is this email from a common email provider? \("gmail.com", "yahoo.com", "hotmail.com", etc.\) | 
 | IPQualityScore.Email.dns_valid | Boolean | Does the email's hostname have valid DNS entries? Partial indication of a valid email. | 
-| IPQualityScore.Email.honeypot | Boolean | Is this email believed to be a "honeypot" or "SPAM trap"? Bulk mail sent to these emails increases your risk of being blacklisted by large ISPs &amp; ending up in the spam folder. | 
+| IPQualityScore.Email.honeypot | Boolean | Is this email believed to be a "honeypot" or "SPAM trap"? Bulk mail sent to these emails increases your risk of being added to block lists by large ISPs &amp; ending up in the spam folder. | 
 | IPQualityScore.Email.deliverability | String | How likely is this email to be delivered to the user and land in their mailbox. Values can be "high", "medium", or "low".	 | 
 | IPQualityScore.Email.frequent_complainer | Boolean | Indicates if this email frequently unsubscribes from marketing lists or reports email as SPAM. | 
 | IPQualityScore.Email.spam_trap_score | String | Confidence level of the email address being an active SPAM trap. Values can be "high", "medium", "low", or "none". We recommend scrubbing emails with "high" or "medium" statuses. Avoid "low" emails whenever possible for any promotional mailings. | 

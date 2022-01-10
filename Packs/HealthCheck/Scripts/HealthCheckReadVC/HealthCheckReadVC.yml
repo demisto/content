@@ -7,7 +7,7 @@ comment: Read the version_control.log file extracted from the log bundle
 commonfields:
   id: HealthCheckReadVC
   version: -1
-dockerimage: demisto/python3:3.9.6.24019
+dockerimage: demisto/python3:3.9.7.24076
 enabled: true
 name: HealthCheckReadVC
 outputs:

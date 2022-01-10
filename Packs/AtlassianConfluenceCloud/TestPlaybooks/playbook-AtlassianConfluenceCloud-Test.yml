@@ -1,0 +1,698 @@
+id: Atlassian Confluence Cloud-Test
+version: -1
+name: Atlassian Confluence Cloud-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 266ba32d-22a0-4128-8c62-e78f68a09517
+    type: start
+    task:
+      id: 266ba32d-22a0-4128-8c62-e78f68a09517
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "22"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 7b09dd02-f106-480a-83bb-2dbfd2c4d173
+    type: regular
+    task:
+      id: 7b09dd02-f106-480a-83bb-2dbfd2c4d173
+      version: -1
+      name: confluence-cloud-space-list
+      script: '|||confluence-cloud-space-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 28b3a212-b57d-41e1-8c31-6a00d3695016
+    type: condition
+    task:
+      id: 28b3a212-b57d-41e1-8c31-6a00d3695016
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ConfluenceCloud.Space.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ConfluenceCloud.Space.key
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ConfluenceCloud.Space.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ConfluenceCloud.Space.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ConfluenceCloud.Space.status
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: faf225cf-5301-477d-8055-2f6b4284b55e
+    type: regular
+    task:
+      id: faf225cf-5301-477d-8055-2f6b4284b55e
+      version: -1
+      name: confluence-cloud-content-list
+      script: '|||confluence-cloud-content-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: b0d1149f-2d87-4f52-86a4-45b9249ce36d
+    type: condition
+    task:
+      id: b0d1149f-2d87-4f52-86a4-45b9249ce36d
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "24"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ConfluenceCloud.Content.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ConfluenceCloud.Content.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ConfluenceCloud.Content.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ConfluenceCloud.Content.title
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ConfluenceCloud.Content._links.webui
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ConfluenceCloud.Content._links.self
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ConfluenceCloud.Content._links.tinyui
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 62f5bcc0-6ce9-402c-84fd-139d099f0211
+    type: regular
+    task:
+      id: 62f5bcc0-6ce9-402c-84fd-139d099f0211
+      version: -1
+      name: confluence-cloud-content-search
+      script: '|||confluence-cloud-content-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      query:
+        simple: type=page
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 7eb3a59d-285d-42b8-8386-df60aa4fa7a5
+    type: condition
+    task:
+      id: 7eb3a59d-285d-42b8-8386-df60aa4fa7a5
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "25"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ConfluenceCloud.Content.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ConfluenceCloud.Content.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ConfluenceCloud.Content.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ConfluenceCloud.Content.title
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: 15c8b968-b26d-4d1c-8c39-dc53337f002d
+    type: regular
+    task:
+      id: 15c8b968-b26d-4d1c-8c39-dc53337f002d
+      version: -1
+      name: confluence-cloud-user-list
+      script: '|||confluence-cloud-user-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: b8832091-9b90-4312-8ce3-19830a9c6f81
+    type: condition
+    task:
+      id: b8832091-9b90-4312-8ce3-19830a9c6f81
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "26"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ConfluenceCloud.User.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ConfluenceCloud.User.accountId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ConfluenceCloud.User.publicName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ConfluenceCloud.User.profilePicture.path
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ConfluenceCloud.User.profilePicture.width
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ConfluenceCloud.User.profilePicture.height
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ConfluenceCloud.User.displayName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ConfluenceCloud.User._links.self
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: f66a5c9d-96e8-4beb-81da-fbe160fef916
+    type: regular
+    task:
+      id: f66a5c9d-96e8-4beb-81da-fbe160fef916
+      version: -1
+      name: confluence-cloud-group-list
+      script: '|||confluence-cloud-group-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: 1ffed2bd-cc0c-4e9d-8ddc-def000f7583a
+    type: condition
+    task:
+      id: 1ffed2bd-cc0c-4e9d-8ddc-def000f7583a
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "27"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ConfluenceCloud.Group.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ConfluenceCloud.Group.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ConfluenceCloud.Group.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ConfluenceCloud.Group._links.self
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: 4b51aa1e-43ee-4bb1-843e-fd07386bcee7
+    type: title
+    task:
+      id: 4b51aa1e-43ee-4bb1-843e-fd07386bcee7
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: f3e2945d-f150-44b0-8eb7-77690c197535
+    type: regular
+    task:
+      id: f3e2945d-f150-44b0-8eb7-77690c197535
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: 38b4f833-6b53-4d8d-86a5-06b871637d31
+    type: regular
+    task:
+      id: 38b4f833-6b53-4d8d-86a5-06b871637d31
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: e25efc26-d696-4533-8f83-7836918ecf0c
+    type: regular
+    task:
+      id: e25efc26-d696-4533-8f83-7836918ecf0c
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: 539a1c69-5478-4f6d-8518-11c20b012daa
+    type: regular
+    task:
+      id: 539a1c69-5478-4f6d-8518-11c20b012daa
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: 303ea433-fe11-48b7-83e4-22a02de8fb26
+    type: regular
+    task:
+      id: 303ea433-fe11-48b7-83e4-22a02de8fb26
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: 08c62cd6-4ac7-41dc-877b-acb6ad356c66
+    type: regular
+    task:
+      id: 08c62cd6-4ac7-41dc-877b-acb6ad356c66
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3010,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.2.0
+description: This playbook uses the Atlassian Confluence Cloud integration and tests all the commands of the integration.

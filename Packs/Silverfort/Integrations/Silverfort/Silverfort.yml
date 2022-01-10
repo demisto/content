@@ -196,7 +196,7 @@ script:
     description: Update the resource entity risk.
     execution: false
     name: silverfort-update-resource-risk
-  dockerimage: demisto/python3:3.9.5.21272
+  dockerimage: demisto/python3:3.9.8.24399
   feed: false
   isfetch: false
   longRunning: false

@@ -7,7 +7,7 @@ comment: Read docker log file
 commonfields:
   id: HealthCheckDockerLog
   version: -1
-dockerimage: demisto/python3:3.9.6.24019
+dockerimage: demisto/python3:3.9.7.24076
 enabled: true
 name: HealthCheckDockerLog
 runas: DBotWeakRole

@@ -62,7 +62,8 @@ class Client(BaseClient):
             api_key: unit42 API Key.
             verify: boolean, if *false* feed HTTPS server certificate is verified. Default: *false*
         """
-        super().__init__(base_url='https://stix2.unit42.org/taxii', verify=verify)
+        super().__init__(base_url='https://stix2.unit42.org/taxii', verify=verify,
+                         proxy=argToBoolean(demisto.params().get('proxy') or 'false'))
         self._api_key = api_key
         self._proxies = handle_proxy()
         self.objects_data = {}
@@ -71,12 +72,12 @@ class Client(BaseClient):
         for type_ in items_types:
             self.fetch_stix_objects_from_api(test, type=type_)
 
-    def fetch_stix_objects_from_api(self, test: bool = False, **kwargs):
+    def fetch_stix_objects_from_api(self, test: bool = False, limit: int = -1, **kwargs):
         """Retrieves all entries from the feed.
 
         Args:
             test: Whether it was called during clicking the test button or not - designed to save time.
-
+            limit: number of indicators for get command
         """
         data = []
 
@@ -87,9 +88,11 @@ class Client(BaseClient):
             for collection in api_root.collections:
                 for bundle in as_pages(collection.get_objects, per_request=100, **kwargs):
                     data.extend(bundle.get('objects'))
-                    if test:
+                    if test and limit < len(data):
                         return data
 
+        if test:
+            return data
         self.objects_data[kwargs.get('type')] = data
 
 
@@ -645,7 +648,7 @@ def get_indicators_command(client: Client, args: Dict[str, str], feed_tags: list
     """
     limit = int(args.get('limit', '10'))
 
-    indicators = client.fetch_stix_objects_from_api(test=True, type='indicator')
+    indicators = client.fetch_stix_objects_from_api(test=True, type='indicator', limit=limit)
 
     indicators = parse_indicators(indicators, feed_tags, tlp_color)
     limited_indicators = indicators[:limit]

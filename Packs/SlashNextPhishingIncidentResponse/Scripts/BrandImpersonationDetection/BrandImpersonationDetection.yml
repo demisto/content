@@ -8,7 +8,7 @@ comment: Analyzes the forensic data to detect brand impersonation attacks.
 commonfields:
   id: BrandImpersonationDetection
   version: -1
-dockerimage: demisto/python3:3.9.5.20070
+dockerimage: demisto/python3:3.9.7.24076
 enabled: true
 name: BrandImpersonationDetection
 outputs:

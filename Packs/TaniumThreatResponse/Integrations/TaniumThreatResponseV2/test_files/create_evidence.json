@@ -1,0 +1,23 @@
+[
+    {
+        "create_time": "2021-06-16 07:20:07.130",
+        "end_time": "2021-06-16 07:21:07.204",
+        "exit_code": 0,
+        "pid": 2,
+        "process_path": "C:\\File.exe",
+        "id": "2",
+        "process_table_id": "2",
+        "parent_process_table_id": "1",
+        "parent_pid": 1,
+        "user_name": "ADMIN",
+        "group_name": "ADMIN",
+        "hash_type_name": "MD5",
+        "hash": "1234567890",
+        "process_command_line": null,
+        "parent_path": "<Pruned Process>",
+        "parent_command_line": "<Pruned Process>",
+        "parent_hash": null,
+        "create_time_raw": 1623828007130,
+        "end_time_raw": 1623828067204
+    }
+]

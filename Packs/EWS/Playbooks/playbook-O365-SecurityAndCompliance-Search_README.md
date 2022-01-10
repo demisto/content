@@ -9,8 +9,8 @@ This playbook performs the following steps:
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
+* GenericPolling
 * O365 - Security And Compliance - Search Action - Preview
-* Waiting for the compliance search to complete.
 
 ### Integrations
 * SecurityAndCompliance
@@ -19,10 +19,10 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * PrintErrorEntry
 
 ### Commands
-* o365-sc-remove-search
+* o365-sc-get-search
 * o365-sc-new-search
 * o365-sc-start-search
-* o365-sc-get-search
+* o365-sc-remove-search
 
 ## Playbook Inputs
 ---
@@ -41,6 +41,8 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | public_folder_location | Comma-separated list of public folders to include, or use the value "All" to include all. |  | Optional |
 | share_point_location | Comma-separated list of SharePoint online sites to include. You can identify the sites by their URL value, or use the value "All" to include all sites. |  | Optional |
 | share_point_location_exclusion | Comma-separated list of SharePoint online sites to exclude when you use the value "All" for the share_point_location argument. You can identify the sites by their URL value. |  | Optional |
+| polling_interval | Compliance search polling interval | 3 | Optional |
+| polling_timeout | Compliance search polling timeout. | 45 | Optional |
 
 ## Playbook Outputs
 ---

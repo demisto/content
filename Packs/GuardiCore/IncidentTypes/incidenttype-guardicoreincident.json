@@ -1,0 +1,32 @@
+{
+    "id": "Guardicore Incident",
+    "version": -1,
+    "sortValues": null,
+    "fromVersion": "6.0.0",
+    "vcShouldIgnore": false,
+    "locked": false,
+    "name": "Guardicore Incident",
+    "prevName": "Guardicore Incident",
+    "color": "#bb4cf2",
+    "hours": 0,
+    "days": 0,
+    "weeks": 0,
+    "hoursR": 0,
+    "daysR": 0,
+    "weeksR": 0,
+    "system": false,
+    "readonly": false,
+    "default": false,
+    "autorun": false,
+    "preProcessingScript": "",
+    "closureScript": "",
+    "disabled": false,
+    "reputationCalc": 0,
+    "onChangeRepAlg": 0,
+    "layout": "GuardiCore Layout",
+    "detached": false,
+    "extractSettings": {
+        "mode": "Specific",
+        "fieldCliNameToExtractSettings": {}
+    }
+}

@@ -28,7 +28,8 @@
 	"selectValues": [
         "new",
         "under_investigation",
-		"resolved_threat_handled",
+		"resolved_true_positive",
+		"resolved_security_testing",
 		"resolved_known_issue",
 		"resolved_duplicate",
 		"resolved_false_positive",

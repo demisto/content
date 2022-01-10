@@ -284,7 +284,7 @@ script:
   isfetch: true
   runonce: false
   subtype: python2
-  dockerimage: demisto/python:2.7.18.20958
+  dockerimage: demisto/python:2.7.18.24398
 tests:
 - No Test
 

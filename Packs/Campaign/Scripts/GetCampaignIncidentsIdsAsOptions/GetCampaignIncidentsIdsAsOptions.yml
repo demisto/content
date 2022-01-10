@@ -1,7 +1,7 @@
 commonfields:
   id: GetCampaignIncidentsIdsAsOptions
   version: -1
-dockerimage: demisto/python3:3.9.5.20070
+dockerimage: demisto/python3:3.9.8.24399
 enabled: true
 name: GetCampaignIncidentsIdsAsOptions
 runas: DBotWeakRole

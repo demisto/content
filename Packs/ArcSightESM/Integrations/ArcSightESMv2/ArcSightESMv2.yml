@@ -448,7 +448,7 @@ script:
   runonce: false
   script: '-'
   subtype: python2
-  dockerimage: demisto/python:2.7.18.24019
+  dockerimage: demisto/python:2.7.18.24398
   type: python
 tests:
 - ArcSight ESM v2 Test
