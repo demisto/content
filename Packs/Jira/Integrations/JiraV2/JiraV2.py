@@ -147,7 +147,7 @@ def get_custom_field_names():
     except Exception as e:
         demisto.error(f'Could not get custom fields because got the next exception: {e}')
     else:
-        if res.status_code == 200:
+        if res.ok:
             custom_fields_list = res.json()
             custom_id_name_mapping = {field.get('id'): field.get('name') for field in custom_fields_list}
         else:
