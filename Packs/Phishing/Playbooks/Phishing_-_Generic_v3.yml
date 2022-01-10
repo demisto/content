@@ -221,7 +221,7 @@ tasks:
       version: -1
       name: Acknowledge incident was received
       description: |
-        Send an auto-response to user that reported the incident, informing them the incident was received and is being handled.
+        Sends an auto-response to the user reporting the incident that the incident was received and is being handled.
       script: '|||send-mail'
       type: regular
       iscommand: true
@@ -804,7 +804,7 @@ tasks:
       description: "To manually remediate a phishing incident you need to:\n1. Search\
         \ for and delete similar emails.\n2. Inform the organization about the threat.\n\
         3. Hunt relevant IOCs.\n4. Update proxies and firewalls as necessary.\n5.\
-        \ Block the malicious sender/ domain in the mail-gateway. "
+        \ Block the malicious sender/domain in the mail-gateway. "
       type: regular
       iscommand: false
       brand: ""
@@ -1154,7 +1154,7 @@ tasks:
       id: d18654f5-16fd-441e-8db0-4e55f0df0f43
       version: -1
       name: Should the email be authenticated?
-      description: Checks whether the email should be authenticated using DKIM, SPF
+      description: Checks whether the email should be authenticated using DKIM, SPF,
         and DMARC. This checks if "AuthenticateEmail" output is set to "True" and
         if there are headers from an email to authenticate.
       type: condition
@@ -2535,7 +2535,7 @@ tasks:
       id: 755a3f56-8f52-48c3-8934-22dad15ac630
       version: -1
       name: Predict Phishing URLs
-      description: Predict phishing URLs using a pre-trained model.
+      description: Predicts phishing URLs using a pre-trained model.
       scriptName: DBotPredictURLPhishing
       type: regular
       iscommand: false
@@ -2728,7 +2728,7 @@ inputs:
     simple: "True"
   required: false
   description: Determines whether the authenticity of the email should be verified
-    using SPF, DKIM and DMARC.
+    using SPF, DKIM, and DMARC.
   playbookInputQuery:
 - key: OnCall
   value:
@@ -2741,7 +2741,7 @@ inputs:
     simple: EWS
   required: false
   description: |-
-    Determines which product and playbook is used to search and delete the phishing email from the users' inboxes.
+    Determines which product and playbook is used to search and delete the phishing email from user inboxes.
       - Set this to "O365" to use the "O365 - Security And Compliance - Search And Delete" playbook.
       - Set this to "EWS" to use the "Search And Delete Emails - EWS" playbook.
       - Set this to "Gmail" to use the "Search And Delete - Gmail" playbook.
@@ -2752,7 +2752,7 @@ inputs:
   required: false
   description: |-
     Sets the method to delete emails in the "O365 - Security And Compliance - Search And Delete" playbook. Can be "Soft" (recoverable), or "Hard" (unrecoverable). Leave empty to decide manually for each email incident.
-    This is only applicable if the SearchAndDeleteIntegration input is set to O365.
+    This is only applicable if the SearchAndDeleteIntegration input is set to "O365".
   playbookInputQuery:
 - key: O365ExchangeLocation
   value:
@@ -2764,7 +2764,7 @@ inputs:
     using O365 playbooks. Use the value "All" to search all mailboxes, or use ${incident.emailto}
     to search and delete the email only from the recipient's inbox. Note - Searching
     all mailboxes may take a significant amount of time. - This input is used only
-    when searching and deleting emails in O365. - This input is only applicable if
+    when searching and deleting emails in O365 and only applies if
     the SearchAndDeleteIntegration input is set to O365.
   playbookInputQuery:
 - key: O365AllowNotFoundSearchLocations
@@ -2785,7 +2785,7 @@ inputs:
   value:
     simple: "True"
   required: false
-  description: Check Microsoft's headers for BCL/PCL/SCL scores and set the "Severity"
+  description: Whether to check Microsoft headers for BCL/PCL/SCL scores and set the "Severity"
     and "Email Classification" accordingly.
   playbookInputQuery:
 - key: InternalDomains
@@ -2805,7 +2805,7 @@ inputs:
   value: {}
   required: false
   description: |-
-    This input is used in the task "Entity Enrichment - Phishing v2" playbook.
+    This input is used in the "Entity Enrichment - Phishing v2" playbook.
     A list of internal IP ranges to check IP addresses against. The list should be provided in CIDR notation, separated by commas. An example of a list of ranges is: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes). If a list is not provided, uses the default list provided in the IsIPInRanges script (the known IPv4 private address ranges).
   playbookInputQuery:
 - key: PhishingModelName
@@ -2819,7 +2819,7 @@ inputs:
   value: {}
   required: false
   description: |-
-    For forwarded emails. When equals "True" it will retrieve the original email in the thread.
+    For forwarded emails. When "True", retrieves the original email in the thread.
 
     You must have the necessary permissions in your email service to execute global search.
 
@@ -2834,20 +2834,20 @@ inputs:
     simple: "False"
   required: false
   description: |-
-    When "True" the playbook will run the machine learning based "DBotPredictURLPhishing" automation (available when "Phishing URL" pack is installed).
-    This automation will run several checks in order to determine the score of the URLs found in the email and will set a verdict for URLs which were found as "Suspicious" or "Malicious" and will add these URLs as indicators. Based on the verdict, the incident severity will be set (Medium severity for "Suspicious" and High severity for "Malicious").
-    The default number of extracted URLs is 3. In order to set a different number, please set the "DBotPredictURLPhishingURLsNumber" input. Default value is "False".
-    Please note:
+    When "True", the playbook runs the machine learning based "DBotPredictURLPhishing" automation (available when the "Phishing URL" pack is installed).
+    This automation runs several checks to determine the score of the URLs found in the email, sets a verdict for URLs found as "Suspicious" or "Malicious", and adds these URLs as indicators. Based on the verdict, the incident severity is set (Medium for "Suspicious" and High for "Malicious").
+    The default number of extracted URLs is 3. To set a different number, change the "DBotPredictURLPhishingURLsNumber" input value.
+    Note:
     - False/True positives are possible.
-    - This automation may take a few minutes.
-    - In order to get more accurate results you may want to install and enable the "Whois" pack (optional).
+    - This automation may take a few minutes to run.
+    - To increase result accuracy, it is recommended to install and enable the "Whois" pack (optional).
   playbookInputQuery:
 - key: DBotPredictURLPhishingURLsNumber
   value:
     simple: "3"
   required: false
-  description: The number of URLs to be extracted from the email html which will be
-    analyzed in the "DBotPredictURLPhishing" automation. Default value is 3.
+  description: The number of URLs to extract from the email HTML and 
+    analyze in the "DBotPredictURLPhishing" automation.
   playbookInputQuery:
 outputs: []
 tests:
