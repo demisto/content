@@ -1,3 +1,4 @@
+from time import sleep
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -10,7 +11,16 @@ POSSIBLE_STATES = ['New', 'InProgress', 'Completed', 'Waiting', 'Error', 'Skippe
 ''' STANDALONE FUNCTION '''
 
 
-def get_incident_tasks_by_state(incident_id, task_states):
+def get_incident_tasks_by_state(incident_id: int, task_states: Optional[list] = None) -> list:
+    """
+
+    Args:
+        incident_id: Incident id to pull its tasks.
+        task_states: States to get. None to get all tasks with all tasks.
+
+    Returns:
+        Tasks with given states related to given incident.
+    """
     args = {
         'incidentId': incident_id
     }
@@ -18,21 +28,57 @@ def get_incident_tasks_by_state(incident_id, task_states):
     if task_states:
         args['states'] = task_states
     try:
-        return demisto.executeCommand('DemistoGetIncidentTasksByState', args=args)
+        raw_response = demisto.executeCommand('DemistoGetIncidentTasksByState', args=args)
+        return raw_response[0].get("Contents")
     except Exception as e:
-        demisto.debug(f'Failed to excexute script: DemistoGetIncidentTasksByState. Error: {e}')
+        demisto.debug(f'Failed to execute script: DemistoGetIncidentTasksByState. Error: {e}')
         return []
+
+
+def complete_task_by_id(task_id, task_parent_id, incident_id, complete_option=None) -> str:
+    """
+
+    Args:
+        task_id: task's id to complete
+        task_parent_id: parent playbook task id to complete
+        incident_id: relevant incident
+        complete_option: path option to choose
+
+    Returns:
+        taskComplete automation result
+    """
+    args = assign_params(
+        id=task_id,
+        parentPlaybookID=task_parent_id,
+        incidentId=incident_id,
+        input=complete_option
+    )
+    try:
+        raw_response = demisto.executeCommand('taskComplete', args=args)
+        return raw_response[0].get("Contents")
+    except Exception as e:
+        demisto.debug(f'Failed to execute script: taskComplete. Error: {e}')
+        return ''
 
 
 ''' COMMAND FUNCTION '''
 
 
 def wait_and_complete_task_command(args: Dict[str, Any]) -> CommandResults:
+    """
+
+    Args:
+        args: Script arguments
+
+    Returns:
+        CompletedTask - Tasks that was completed by script
+        FoundTasks - Tasks that was found by script, and already completed, not by this script
+
+    """
     incident = demisto.incidents()[0]
     task_states = argToList(args.get('task_states'))
-    # todo: how to check if all states are valid
-    if not task_states in POSSIBLE_STATES:
-        raise Exception('states are bad')
+    if not all(state in POSSIBLE_STATES for state in task_states):
+        raise Exception(f'task_states are bad. Possible values: {POSSIBLE_STATES}')
 
     complete_option = args.get('complete_option')
     incident_id = args.get('incident_id')
@@ -40,13 +86,67 @@ def wait_and_complete_task_command(args: Dict[str, Any]) -> CommandResults:
         incident_id = incident.get('id')
     task_name = args.get('task_name')
     complete_task = argToBoolean(args.get('complete_task'))
+    max_iterations = arg_to_number(args.get('max_iterations'))
 
-    tasks_by_states = get_incident_tasks_by_state(incident_id, task_states)
+    completed_tasks = []
+    found_tasks = []
+
+    for _ in range(max_iterations):
+
+        tasks_by_states = get_incident_tasks_by_state(incident_id, task_states)
+        requested_task = None
+
+        # find task to complete if was given task name
+        if task_name:
+            for task in tasks_by_states:
+                if task['name'] == task_name:
+                    requested_task = task
+                    break
+
+        if requested_task and complete_task:
+            # complete the requested task
+            complete_task_by_id(
+                requested_task.get('id'),
+                requested_task.get('parentPlaybookID'),
+                incident_id,
+                complete_option
+            )
+            completed_tasks.append(requested_task.get('name'))
+            break
+
+        elif requested_task:
+            # just validate that task was found and not complete it
+            found_tasks.append(requested_task.get('name'))
+            break
+
+        elif not task_name and tasks_by_states and complete_task:
+            # complete all tasks, which state is task_states
+            for task in tasks_by_states:
+                complete_res = complete_task_by_id(
+                    task.get('id'),
+                    task.get('parentPlaybookID'),
+                    incident_id,
+                    complete_option
+                )
+                if 'Task is completed already' in complete_res:
+                    found_tasks.append(task.get('name'))
+                else:
+                    completed_tasks.append(task.get('name'))
+
+            break
+
+        elif not task_name and tasks_by_states:
+            # just validate that task was found and not complete it
+            found_tasks.extend(task.get('name') for task in tasks_by_states)
+            break
+
+        sleep(2)
 
     return CommandResults(
         outputs_prefix='WaitAndCompleteTask',
         outputs_key_field='',
-        outputs=result,
+        outputs={'CompletedTask': completed_tasks,
+                 'FoundTasks': found_tasks},
     )
 
 
