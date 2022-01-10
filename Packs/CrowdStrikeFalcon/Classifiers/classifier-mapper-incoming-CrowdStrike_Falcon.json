@@ -19,6 +19,10 @@
 					"complex": null,
 					"simple": "behaviors.tactic"
 				},
+				"Hostnames": {
+					"complex": null,
+					"simple": "device.hostname"
+				},
 				"State": {
 					"complex": null,
 					"simple": "status"
@@ -48,6 +52,10 @@
 		"CrowdStrike Falcon Incident": {
 			"dontMapEventToLabels": true,
 			"internalMapping": {
+				"Hostnames": {
+					"complex": null,
+					"simple": "hosts.hostname"
+				},
 				"Objective": {
 					"complex": null,
 					"simple": "objectives"
