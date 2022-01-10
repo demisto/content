@@ -2,8 +2,7 @@ id: Checkpoint - Publish&Install configuration
 version: -1
 fromversion: 5.0.0
 name: Checkpoint - Publish&Install configuration
-description: Publish the Checkpoint Firewall configuration and install policy over
-  all the gateways that are available.
+description: Publish the Check Point Firewall configuration and install policy on all available gateways.
 starttaskid: '0'
 tasks:
   '0':
@@ -36,8 +35,8 @@ tasks:
     task:
       id: 411552f6-ea1e-4b43-89db-9f07b8b3312e
       version: -1
-      name: Is Checkpoint firewall enabled?
-      description: Verify that there is a valid instance of Checkpoint firewall enabled.
+      name: Is Check Point Firewall enabled?
+      description: Verify that there is a valid instance of Check Point Firewall enabled.
       type: condition
       iscommand: false
       brand: ''
@@ -116,8 +115,8 @@ tasks:
     task:
       id: 3b8cb003-7a6e-44ad-80bf-cfdefa542db7
       version: -1
-      name: Checkpoint publish
-      description: Publish changes to Checkpoint firewall.
+      name: Check Point publish
+      description: Publish changes to Check Point Firewall.
       script: '|||checkpoint-publish'
       type: regular
       iscommand: true
@@ -153,7 +152,7 @@ tasks:
       version: -1
       name: Is there policy to install?
       description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
+        of the arguments is missing, no is returned.
       type: condition
       iscommand: false
       brand: ''
@@ -207,7 +206,7 @@ tasks:
       id: eeeb629e-05e9-4c50-8963-bce68bf91046
       version: -1
       name: Checkpoint install policy
-      description: Install Policy  Changes to Checkpoint gateways. Default is "Standard".
+      description: Install policy changes to Check Point gateways. Default is "Standard".
       script: '|||checkpoint-install-policy'
       type: regular
       iscommand: true
@@ -247,8 +246,8 @@ tasks:
     task:
       id: 865a33dd-11cf-4391-88de-9dc111827f12
       version: -1
-      name: Checkpoint show packages
-      description: List all Checkpoint available packages.
+      name: Check Point show packages
+      description: List all Check Point available packages.
       script: '|||checkpoint-packages-list'
       type: regular
       iscommand: true
@@ -281,8 +280,8 @@ tasks:
     task:
       id: 7775d6f5-83b4-46ba-83e2-562e496320cf
       version: -1
-      name: Checkpoint show gateways and servers command
-      description: List of all gateways and server available in Checkpoint device.
+      name: Check Point show gateways and servers command
+      description: List of all gateways and server available in Check Point device.
         .
       script: '|||checkpoint-gateways-list'
       type: regular
@@ -429,7 +428,7 @@ tasks:
     task:
       id: 369c8b3d-cd68-427f-820a-50f9ff0983b7
       version: -1
-      name: Get Checkpoint publish status
+      name: Get Check Point publish status
       description: Get TaskID status for publish.
       script: '|||checkpoint-show-task'
       type: regular
@@ -467,8 +466,8 @@ tasks:
     task:
       id: 4e93f348-cadd-43e0-8c05-fd89ae1d1461
       version: -1
-      name: Was Checkpoint publish successful?
-      description: Filter if Checkpoint publish successful.
+      name: Was Check Point publish successful?
+      description: Filter if Check Point publish successful.
       type: condition
       iscommand: false
       brand: ''
@@ -523,7 +522,7 @@ tasks:
       - "25"
     scriptarguments:
       message:
-        simple: Checkpoint publish failed
+        simple: Check Point publish failed
     separatecontext: false
     view: |-
       {
@@ -546,7 +545,7 @@ tasks:
     task:
       id: eb9fa156-bd82-47e9-88b5-95ad7fba8745
       version: -1
-      name: Get Checkpoint install policy status
+      name: Get Check Point install policy status
       description: Get TaskID status for Install policy.
       script: '|||checkpoint-show-task'
       type: regular
@@ -595,7 +594,7 @@ tasks:
       - "25"
     scriptarguments:
       message:
-        simple: Checkpoint Install policy failed
+        simple: Check Point Install policy failed
     separatecontext: false
     view: |-
       {
@@ -618,8 +617,8 @@ tasks:
     task:
       id: bc0da2d7-6e70-4591-8f34-8b0f09451afc
       version: -1
-      name: Was Checkpoint Install policy successful?
-      description: Filter if Checkpoint install policy successful.
+      name: Was Check Point Install policy successful?
+      description: Filter if Check Point install policy successful.
       type: condition
       iscommand: false
       brand: ''
@@ -664,7 +663,7 @@ tasks:
       id: 96046025-a88e-41e4-8d5f-4b9b4fb4e175
       version: -1
       name: Filter TaskID
-      description: Filter TaskID to validate only new push configuration TaskID.
+      description: Retrieve TaskID for GenericPolling.
       type: condition
       iscommand: false
       brand: ''
@@ -706,7 +705,7 @@ tasks:
       id: d43932f9-a32a-454c-8183-0982b2b748cd
       version: -1
       name: Filter TaskID
-      description: Filter TaskID to validate only new push configuration TaskID.
+      description: Retrieve TaskID for GenericPolling.
       type: condition
       iscommand: false
       brand: ''
@@ -748,8 +747,7 @@ tasks:
       id: ff470de6-f208-4c38-8dea-a19b0319fdb6
       version: -1
       name: Is action manual handling enabled?
-      description: if action manual handling enable, the Playbook will stop in favor
-        of further manual handling.
+      description: If action manual handling is enabled, the playbook will pause and wait for manual review.
       type: condition
       iscommand: false
       brand: ''
@@ -827,7 +825,7 @@ tasks:
       id: 59866ff6-88f8-48ff-8f13-2ec742022e13
       version: -1
       name: Fix error and publish manually
-      description: User manually add resolve.
+      description: User manually publishes on Check Point Firwall console.
       type: regular
       iscommand: false
       brand: ''
@@ -867,7 +865,7 @@ tasks:
       - "25"
     scriptarguments:
       message:
-        simple: Checkpoint install policy  failed.
+        simple: Check Point install policy failed.
     separatecontext: false
     view: |-
       {
@@ -901,16 +899,15 @@ inputs:
 - key: sid
   value: {}
   required: true
-  description: SID - Session unique identifier as it returned by the login request
-    required for publish /install changes. Change configuration  will be seen by all
-    users only after publish is called and finish with the specific SID.
+  description: SID - Session unique identifier as returned by the login request
+    required for publish /install changes. Change configuration is seen by all users only after 
+    publishing and policy install is complete.
   playbookInputQuery:
 - key: install_policy
   value:
     simple: 'False'
   required: true
-  description: Input True / False for playbook to continue install policy process
-    for checkpoint Firewall.
+  description: Whether the playbook should continue install policy process for Check Point Firewall.
   playbookInputQuery:
 - key: policy_package
   value:
@@ -922,9 +919,8 @@ inputs:
   value:
     simple: 'True'
   required: true
-  description: Input True / False. When one of the actions publish/install policy
-    stops due to problem or error, the Playbook will stop in favor of further manual
-    handling.
+  description: If one of the actions for the publish/install policy fails due to 
+    a problem or error, the playbook will pause for manual review.
   playbookInputQuery:
 outputs: []
 tests:
