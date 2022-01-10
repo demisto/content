@@ -872,6 +872,7 @@ function TestModuleCommand {
 }
 
 function StartAuthCommand {
+    [OutputType([System.Object[]])]
     [CmdletBinding()]
     Param(
         [OAuth2DeviceCodeClient]$client
@@ -887,7 +888,7 @@ function StartAuthCommand {
 }
 
 function CompleteAuthCommand {
-    [OutputType([PSObject])]
+    [OutputType([System.Object[]])]
     [CmdletBinding()]
     Param(
         [OAuth2DeviceCodeClient]$client
@@ -1025,25 +1026,6 @@ function GetDetailReportCommand {
 
     $human_readable = TableToMarkdown $raw_response "Results of $command"
     $entry_context = @{ "$script:INTEGRATION_ENTRY_CONTEXT.DetailReport(obj.Url === val.Url)" = $raw_response }
-    return $human_readable, $entry_context, $raw_response
-}
-
-
-function TestModuleCommand {
-    [CmdletBinding()]
-    Param(
-        [ExchangeOnlineClient]$client
-    )
-    try {
-        $client.CreateSession()
-    }
-    finally {
-        $client.CloseSession()
-    }
-    $raw_response = $null
-    $human_readable = "ok"
-    $entry_context = $null
-
     return $human_readable, $entry_context, $raw_response
 }
 
