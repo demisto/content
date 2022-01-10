@@ -371,7 +371,7 @@ def create_mwg_out_format(indicator: dict, request_args: RequestArguments, heade
         a one indicator to add to the file in mwg format.
     """
     if indicator.get('indicator_type') == 'URL' and indicator.get('value'):
-        indicator['value'] = url_handler(indicator.get('value'), request_args.url_protocol_stripping,
+        indicator['value'] = url_handler(indicator.get('value', ''), request_args.url_protocol_stripping,
                                          request_args.url_port_stripping, request_args.url_truncate)
 
     value = "\"" + indicator.get('value', '') + "\""
