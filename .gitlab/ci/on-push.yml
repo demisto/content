@@ -27,7 +27,7 @@ run-unittests-and-lint:
   extends:
     - .run-unittests-and-lint
   rules:
-    - if: '-n $BUCKET_UPLOAD'
+    - if: '$BUCKET_UPLOAD == false'
 
 
 # runs in circle for the on-push flow (because we need to run it there for contributors anyways)
