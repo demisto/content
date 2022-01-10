@@ -160,10 +160,13 @@ def fetch_incidents(aws_client, aws_queue_url, max_fetch):
                 WaitTimeSeconds=5,
             )
 
-            if "Messages" not in messages.keys() and len(incidents) == 0:
-                if demisto.command() == 'fetch-incidents':
-                    demisto.incidents([])
-                return messages, incidents, receipt_handles
+            if "Messages" not in messages.keys():
+                if len(incidents) == 0:
+                    if demisto.command() == 'fetch-incidents':
+                        demisto.incidents([])
+                    return messages, incidents, receipt_handles
+                else:
+                    break
 
             for message in messages["Messages"]:
                 receipt_handles.append(message['ReceiptHandle'])
