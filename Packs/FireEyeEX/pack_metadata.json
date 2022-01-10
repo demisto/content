@@ -3,7 +3,7 @@
     "description": "FireEye Email Security series protects against breaches caused by advanced email attacks.",
     "support": "xsoar",
     "serverMinVersion": "6.0.0",
-    "currentVersion": "2.0.3",
+    "currentVersion": "2.0.4",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -18,5 +18,9 @@
             "mandatory": true,
             "display_name": "FireEye Common Fields"
         }
-    }
+    },
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

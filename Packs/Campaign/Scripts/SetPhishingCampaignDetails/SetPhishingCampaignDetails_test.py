@@ -78,9 +78,9 @@ def test_copy_campaign_data_to_incident(context_mock, expected_results):
     """
 
     def _validate_execute_command_set(cmd, args):
-        assert cmd == 'SetByIncidentId'
-        assert args.get('key') == expected_results.get('key')
-        assert args.get('value') == expected_results.get('value')
+        assert cmd == 'executeCommandAt'
+        assert args['arguments'].get('key') == expected_results.get('key')
+        assert args['arguments'].get('value') == expected_results.get('value')
 
     test_obj = SetPhishingCampaignDetails()
     test_obj.execute_command = _validate_execute_command_set
@@ -241,7 +241,8 @@ COMPLETE_FLOW_CASES = [
          {'emailfrom': 'examplesupport@example2.com', 'emailfromdomain': 'example.com', 'id': '4',
           'name': 'Verify your example account 798', 'occurred': '2021-11-21T16:00:00.119800133Z',
           'recipients': ['victim-test6@demistodev.onmicrosoft.com'], 'recipientsdomain': ['onmicrosoft.com'],
-          'severity': 0, 'similarity': 1, 'status': 1}]  # expected same campaign with new similarities and one more incident.
+          'severity': 0, 'similarity': 1, 'status': 1}]
+        # expected same campaign with new similarities and one more incident.
     ),
     (
         '1', '5',  # case new (empty campaign) with a new incident.
@@ -260,7 +261,8 @@ COMPLETE_FLOW_CASES = [
          {'emailfrom': 'examplesupport@example2.com', 'emailfromdomain': 'example.com', 'id': '3',
           'name': 'Verify your example account 798', 'occurred': '2021-11-21T15:00:07.425185504Z',
           'recipients': ['victim-test7@demistodev.onmicrosoft.com'], 'recipientsdomain': ['onmicrosoft.com'],
-          'severity': 3, 'similarity': 0.85, 'status': 1}]  # expected, all incidents and similarity found in incident '5'
+          'severity': 3, 'similarity': 0.85, 'status': 1}]
+        # expected, all incidents and similarity found in incident '5'
     )
 
 ]
@@ -271,15 +273,21 @@ def test_run_flow(mocker, campaign_id, incident_to_add_id, expected):
     """
     Given:  An existing/new campaign's data and a new incident date (the current incident we are running on)
     When:   Adding the new incident to an existing/new campaign as part of the Phishing playbook
-    Then:   Validate the flow itself of the context merge of incident and campaign.
+    Then:   Validate the flow itself of the context merge of incident and campaign,
+            and makes sure the execute command is called with correct arguments
     """
-    test_obj = SetPhishingCampaignDetails(execute_command=lambda x, y: (x, y))
+
+    def _validate_execute_command_set(cmd, args):
+        assert cmd == 'executeCommandAt'
+        assert args['arguments'].get('key') == EMAIL_CAMPAIGN_KEY
+        assert args['incidents'] == campaign_id
+        assert args['command'] == 'Set'
+        assert args['arguments']['value']['incidents'] == expected
+
+    test_obj = SetPhishingCampaignDetails(execute_command=_validate_execute_command_set)
     mocker.patch.object(SetPhishingCampaignDetails, 'get_campaign_context_from_incident',
                         side_effect=lambda x: INCIDENTS_BY_ID[x].get(EMAIL_CAMPAIGN_KEY))
     mocker.patch.object(SetPhishingCampaignDetails, 'get_current_incident_campaign_data',
                         return_value=INCIDENTS_BY_ID[incident_to_add_id].get(EMAIL_CAMPAIGN_KEY))
     mocker.patch.object(demisto, 'incident', return_value={'id': incident_to_add_id})
-    res = test_obj.run(campaign_id, False)
-    assert res[0] == 'SetByIncidentId'
-    assert res[1]['key'] == EMAIL_CAMPAIGN_KEY
-    assert res[1]['value']['incidents'] == expected
+    test_obj.run(campaign_id, False)

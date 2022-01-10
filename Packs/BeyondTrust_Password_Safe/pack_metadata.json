@@ -2,7 +2,7 @@
     "name": "BeyondTrust Password Safe",
     "description": "Unified password and session management for seamless accountability and control over privileged accounts.",
     "support": "xsoar",
-    "currentVersion": "1.0.9",
+    "currentVersion": "1.0.10",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -12,5 +12,9 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": []
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

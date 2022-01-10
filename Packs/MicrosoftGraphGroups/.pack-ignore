@@ -5,4 +5,4 @@ ignore=auto-test
 ignore=RM106
 
 [file:MicrosoftGraphGroups.yml]
-ignore=DS107,IN145
+ignore=DS107,IN145,IN124

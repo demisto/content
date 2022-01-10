@@ -1,0 +1,14 @@
+[
+  {
+    "Indicator": "mock_domain.com",
+    "Indicator Type": "Domain",
+    "rawJSON": {
+      "value": "mock_domain.com",
+      "type": "Domain"
+    },
+    "First Seen Date": "1453-05-29T09:05:00Z",
+    "Last Seen Date": "1923-10-29T09:05:00Z",
+    "Feed Maintainer Name": "MockMaintainerName",
+    "Seen Count": 1
+  }
+]
