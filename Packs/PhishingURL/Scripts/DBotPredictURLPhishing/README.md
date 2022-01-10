@@ -35,7 +35,7 @@ Predict phishing URLs using a pre-trained model.
 | DBotPredictURLPhishing.BadSEOQuality | Whether the domain has a good search engine optimization. Malicious domains tend to have a poor SEO. | String |
 | DBotPredictURLPhishing.NewDomain | Whether the domain is younger than 6 months. New domains tend to be malicious. | String |
 | DBotPredictURLPhishing.TopMajesticDomain | Whether the domain belongs to the top Majestic domain list. If it does, we will always consider this domain as benign. | String |
-| DBotScore.Score | Severity score | Number |
+| DBotScore.Score | Severity score. | Number |
 
 
 ## Script Examples
