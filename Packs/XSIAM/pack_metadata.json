@@ -1,6 +1,6 @@
 {
-    "name": "Palo Alto Networks XSIAM - Investigation and Response",
-    "description": "Automates XSIAM incident response, and includes custom XSIAM incident views and layouts to aid analyst investigations.",
+    "name": "Palo Alto Networks Cortex XSIAM - Investigation and Response",
+    "description": "Automates Cortex XSIAM incident response, and includes custom Cortex XSIAM incident views and layouts to aid analyst investigations.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
