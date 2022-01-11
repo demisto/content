@@ -1,8 +1,8 @@
-id: Carbon Black Edr - Test
+id: Phising_input_y
 version: -1
 contentitemexportablefields:
   contentitemfields: {}
-name: Carbon Black Edr - Test
+name: Phising_input_y
 starttaskid: "0"
 tasks:
   "0":

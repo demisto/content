@@ -4,6 +4,17 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Generic Webhook",
+            "playbookID": "Phising_input_y",
+            "memory_threshold": 500,
+            "instance_configuration": {
+                "incident_type": "Hello World Alert",
+                "classifier_id":"EWS v2",
+                "incoming_mapper_id":"EWS v2-mapper"
+            }
+
+        },
+        {
             "integrations": "LogRhythmRest V2",
             "playbookID": "LogRhythmRestV2-test"
         },
