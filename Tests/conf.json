@@ -9,8 +9,8 @@
             "memory_threshold": 500,
             "instance_configuration": {
                 "incident_type": "Hello World Alert",
-                "classifier_id":"EWS v2",
-                "incoming_mapper_id":"EWS v2-mapper"
+                "classifier_id":"HelloWorld",
+                "incoming_mapper_id":"HelloWorld-mapper"
             }
 
         },
