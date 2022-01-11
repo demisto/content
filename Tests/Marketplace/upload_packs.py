@@ -838,11 +838,22 @@ def get_packs_summary(packs_list):
     Returns: 3 lists of packs - successful_packs, skipped_packs & failed_packs
 
     """
-    successful_packs = [pack for pack in packs_list if pack.status == PackStatus.SUCCESS.name]
-    skipped_packs = [pack for pack in packs_list if
-                     pack.status == PackStatus.PACK_ALREADY_EXISTS.name
-                     or pack.status == PackStatus.PACK_IS_NOT_UPDATED_IN_RUNNING_BUILD.name]
-    failed_packs = [pack for pack in packs_list if pack not in successful_packs and pack not in skipped_packs]
+    skipped_status_codes = {
+        PackStatus.PACK_ALREADY_EXISTS.name,
+        PackStatus.PACK_IS_NOT_UPDATED_IN_RUNNING_BUILD.name,
+        PackStatus.NOT_RELEVANT_FOR_MARKETPLACE.name,
+    }
+
+    successful_packs = []
+    skipped_packs = []
+    failed_packs = []
+    for pack in packs_list:
+        if pack.status == PackStatus.SUCCESS.name:
+            successful_packs.append(pack)
+        elif pack.status in skipped_status_codes:
+            skipped_packs.append(pack)
+        else:
+            failed_packs.append(pack)
 
     return successful_packs, skipped_packs, failed_packs
 
@@ -985,6 +996,7 @@ def main():
 
         if not pack.should_upload_to_market_place:
             logging.warning(f"Skipping {pack.name} pack as it is not supported in the current marketplace.")
+            pack.status = PackStatus.NOT_RELEVANT_FOR_MARKETPLACE.name
             pack.cleanup()
             continue
 
