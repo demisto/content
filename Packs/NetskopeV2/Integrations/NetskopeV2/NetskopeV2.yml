@@ -1,6 +1,6 @@
 category: Utilities
 commonfields:
-  id: Netskope v2_for contribution to marketplace
+  id: Netskope (API v2)
   version: -1
 configuration:
 - display: URL of Netskope Tenant (e.g. https://tenant.goskope.com)
@@ -20,8 +20,8 @@ configuration:
   required: false
   type: 8
 description: Block URLs, domains and file hashes.
-display: Netskope v2_for contribution to marketplace
-name: Netskope v2_for contribution to marketplace
+display: Netskope (API v2)
+name: Netskope (API v2)
 script:
   commands:
   - arguments:

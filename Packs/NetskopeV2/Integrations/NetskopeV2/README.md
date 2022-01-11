@@ -1,10 +1,10 @@
 Block URLs, domains and file hashes.
-This integration was integrated and tested with version 91.0.6.575 of Netskope_v2 for contribution to marketplace
+This integration was integrated and tested with version 91.0.6.575 of Netskope (API v2) for contribution to marketplace
 
-## Configure Netskope v2_for contribution to marketplace on Cortex XSOAR
+## Configure Netskope (API v2) for contribution to marketplace on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Netskope_v2 for contribution to marketplace.
+2. Search for Netskope (API v2).
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Required** |
