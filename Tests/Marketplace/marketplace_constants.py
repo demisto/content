@@ -230,7 +230,7 @@ class PackStatus(enum.Enum):
     FAILED_DECRYPT_PACK = "Failed to decrypt pack: a premium pack," \
                           " which should be encrypted, seems not to be encrypted."
     FAILED_METADATA_REFORMATING = "Failed to reparse and create metadata.json when missing dependencies"
-    NOT_RELEVANT_FOR_MARKETPLACE = "Pack is not relevant for current pack."
+    NOT_RELEVANT_FOR_MARKETPLACE = "Pack is not relevant for current marketplace."
 
 
 class Changelog(object):
