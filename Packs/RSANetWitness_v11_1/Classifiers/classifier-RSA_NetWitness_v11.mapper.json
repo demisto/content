@@ -1,12 +1,12 @@
 {
     "description": "",
     "feed": false,
-    "id": "RSA NetWitness v11.5 classifier",
+    "id": "RSA NetWitness v11.5 mapper",
     "mapping": {
         "NetWitness Incident": {
             "dontMapEventToLabels": true,
             "internalMapping": {
-                "RSA Rule Id ": {
+                "RSA Rule Id": {
                     "complex": null,
                     "simple": "ruleId"
                 },
@@ -85,7 +85,7 @@
             "internalMapping": {}
         }
     },
-    "name": "RSA NetWitness v11.5 classifier",
+    "name": "RSA NetWitness v11.5 mapper",
     "type": "mapping-incoming",
     "version": -1,
     "fromVersion": "6.0.0"

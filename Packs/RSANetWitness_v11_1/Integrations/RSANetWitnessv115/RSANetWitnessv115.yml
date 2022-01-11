@@ -2477,6 +2477,6 @@ script:
   type: python
 tests:
 - RSANetWitnessv115-Test
-defaultmapperin: RSA NetWitness v11.5 classifier
+defaultmapperin: RSA NetWitness v11.5 mapper
 fromversion: 5.5.0
 beta: true
