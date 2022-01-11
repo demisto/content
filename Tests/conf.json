@@ -2025,7 +2025,7 @@
             "playbookID": "VMWare Test",
             "memory_threshold": 300,
             "timeout": 1000,
-            "is_mockable": false
+            "validate_test": false
         },
         {
             "integrations": "carbonblack-v2",
@@ -5192,7 +5192,6 @@
         "VulnDB"
     ],
     "unmockable_integrations": {
-        "VMware": "test",
         "NetscoutArborSightline": "Uses timestamp",
         "Cylance Protect v2": "uses time-based JWT token",
         "EwsExtension": "Powershell does not support proxy",
