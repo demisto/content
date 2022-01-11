@@ -3088,7 +3088,7 @@ def qradar_get_mapping_fields_command(client: Client) -> Dict:
             'domain_name': 'str'
         }
     }
-    # TODO: Discuss further (with Anar)
+    # if this call fails raise an error and stop command execution
     custom_fields = {
         'events': {field.get('name'): field.get('property_type')
                    for field in client.custom_properties()
