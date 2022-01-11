@@ -21,7 +21,7 @@ def get_incident_tasks_by_state(incident_id: int, task_states: Optional[list] = 
     Returns:
         Tasks with given states related to given incident.
     """
-    args = {
+    args: Dict[str, Any] = {
         'incidentId': incident_id
     }
     # leave states empty to get all tasks
@@ -75,7 +75,6 @@ def wait_and_complete_task_command(args: Dict[str, Any]) -> CommandResults:
         FoundTasks - Tasks that was found by script, and already completed, not by this script
 
     """
-    incident = demisto.incidents()[0]
     task_states = argToList(args.get('task_states'))
     if not all(state in POSSIBLE_STATES for state in task_states):
         raise Exception(f'task_states are bad. Possible values: {POSSIBLE_STATES}')
@@ -83,15 +82,19 @@ def wait_and_complete_task_command(args: Dict[str, Any]) -> CommandResults:
     complete_option = args.get('complete_option')
     incident_id = args.get('incident_id')
     if not incident_id:
+        incident = demisto.incidents()[0]
         incident_id = incident.get('id')
     task_name = args.get('task_name')
-    complete_task = argToBoolean(args.get('complete_task'))
-    max_iterations = arg_to_number(args.get('max_iterations'))
+    complete_task = argToBoolean(args.get('complete_task', 'true'))
+    max_timeout = arg_to_number(args.get('max_timeout', 60))
+    sleep_time = arg_to_number(args.get('sleep_time', 3))
 
     completed_tasks = []
     found_tasks = []
 
-    for _ in range(max_iterations):
+    start_time = time.time()
+
+    while True:
 
         tasks_by_states = get_incident_tasks_by_state(incident_id, task_states)
         requested_task = None
@@ -140,7 +143,20 @@ def wait_and_complete_task_command(args: Dict[str, Any]) -> CommandResults:
             found_tasks.extend(task.get('name') for task in tasks_by_states)
             break
 
-        sleep(2)
+        if time.time() - start_time > max_timeout:  # type: ignore[operator]
+            break
+
+        sleep(float(sleep_time))    # type: ignore[arg-type]
+
+    if not completed_tasks and not found_tasks:
+        if task_name and task_states:
+            raise Exception(f'The task "{task_name}" did not reach the {" or ".join(task_states)} state.')
+        elif task_name:
+            raise Exception(f'The task "{task_name}" was not found by script.')
+        elif task_states:
+            raise Exception(f'None of the tasks reached the {" or ".join(task_states)} state.')
+        else:
+            raise Exception('No tasks were found.')
 
     return CommandResults(
         outputs_prefix='WaitAndCompleteTask',
@@ -153,7 +169,7 @@ def wait_and_complete_task_command(args: Dict[str, Any]) -> CommandResults:
 ''' MAIN FUNCTION '''
 
 
-def main():
+def main():  # pragma: no cover
     try:
         return_results(wait_and_complete_task_command(demisto.args()))
     except Exception as ex:

@@ -24,11 +24,19 @@ args:
   required: false
   secret: false
 - default: false
-  description: 'The script will try to complete tasks. The loop will run max_iterations times, and sleep 2 seconds between each iteration.'
+  description: 'Timeout time in seconds, that the script will try to complete tasks.'
   isArray: false
-  name: max_iterations
+  name: max_timeout
+  defaultValue: '60'
   required: true
   secret: false
+- default: false
+  description: 'Time (seconds) to sleep between each check iteration. '
+  isArray: false
+  name: sleep_time
+  required: false
+  secret: false
+  defaultValue: '3'
 - auto: PREDEFINED
   default: false
   defaultValue: 'true'
