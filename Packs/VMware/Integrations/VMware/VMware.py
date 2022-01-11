@@ -409,6 +409,7 @@ try:
 except Exception as ex:
     res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": str(ex)})  # type: ignore
 
+
 try:
     logout(si)
 except Exception as ex:

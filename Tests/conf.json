@@ -5072,7 +5072,6 @@
         "RedCanaryTest": "Issue 43818",
         "MailListener-POP3 - Test": "Issue 44199",
         "MicrosoftManagementActivity - Test": "Issue 43922",
-        "VMWare Test": "Issue 43823",
         "Google-Vault-Generic-Test": "Issue 24347",
         "Google_Vault-Search_And_Display_Results_test": "Issue 24348",
         "Tenable.io Scan Test": "Issue 26728",
