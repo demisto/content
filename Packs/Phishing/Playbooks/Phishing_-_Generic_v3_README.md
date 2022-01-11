@@ -1,5 +1,51 @@
-This playbook investigates and remediates a potential phishing incident. It engages with the user that triggered the incident while investigating the incident itself.
-Note: Final remediation tasks are always decided by a human analyst. 
+This playbook investigates and remediates a potential phishing incident. It engages with the user that triggered the incident while investigating the incident itself.<br/>
+For the **Phishing Alerts** use case, see the [Phishing Alerts Investigation playbook](https://xsoar.pan.dev/docs/reference/playbooks/phishing-alerts-investigation).
+
+Note: 
+Final remediation tasks are always decided by a human analyst.
+
+v3 includes:
+- Changing all labels to incident fields.
+- **Process Email - Generic v2** playbook (replaces the older version), which includes:
+    - Changing all labels to incident fields.
+    - Better handling for forwarded emails.
+    - Support for the new "Phishing Alerts" pack.
+- New **Detonate URL - Generic** playbook.
+- New playbook inputs (see their descriptions in the table at the bottom of this page): 
+    - InternalDomains
+    - DetonateURL
+    - InternalRange
+    - PhishingModelName
+- Inline field extraction, which requires the **On field change** configuration to be set to "inline" in the **Phishing** incident type. This enables extracting indicators whenever an incident field is changed (available for Cortex XSOAR from version 6.1).
+
+##### Triggers
+The investigation is triggered by an email sent or forwarded to a designated phishing inbox. One of the following mail listener integrations creates a phishing incident in Cortex XSOAR from every received email.
+- EWS v2
+- Gmail
+- Microsoft Mail Graph
+- Mail Listener (does not support retrieving original emails when the suspected emails are not attached)
+
+##### Configuration
+- Create an email inbox for phishing reports. Make sure the user in control of that inbox has the permissions required by your integration (EWS v2, Gmail, or MSGraph).
+- Configure the main **Phishing - Generic v3** playbook inputs.
+- Optional: Configure the Active Directory critical asset names inputs in the **Calculate Severity - Generic v2** playbook or leave them empty.
+- Optional: Configure the *InternalRange* and *ResolveIP* inputs in the **IP Enrichment - External - Generic v2** playbook.
+- Optional: Configure the *Rasterize* and *VerifyURL* inputs in the **URL Enrichment - Generic v2** playbook.
+- Optional: Personalize the user engagement messages sent throughout the investigation in the **Phishing - Generic v3** playbook under the following tasks: 
+    - **Acknowledge incident was received** (task #13)
+    - **Update the user that the reported email is safe** (task #16)
+    - **Update the user that the reported email is malicious** (task #17)
+    - **Update the user that the email is a malicious campaign** (task #130)
+- Optional: Configure the *ExchangeLocation* input in the **Search And Delete Emails - Generic v2** playbook.
+- Optional: Configure the *SearchAndDeleteIntegration* input in the **Search And Delete Emails - Generic v2** playbook.
+- Optional: Personalize the inputs in the **Detect & Manage Phishing Campaigns** playbook.
+- Optional: Configure the minimum severity for PCL, SCL, and BCL score in the **Process Microsoft's Anti-Spam Headers** playbook.
+- Optional: Configure the *EmailBrand* input in the **Process Email - Generic v2** playbook.
+
+##### Best Practices & Suggestions
+- The email received in the designated phishing inbox should contain the potential phishing email as a file attachment so the headers of the original suspected email are retained. If the email is not attached, the original email with its headers is retrieved only if the required permissions are configured and the *GetOriginalEmail* input is set to True in the **Process Email - Generic v2** playbook.
+- Gmail or EWS v2 works best with the use case.
+- Configuring the optional configurations can significantly optimize the investigation. 
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
