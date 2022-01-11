@@ -8537,5 +8537,4 @@ def main():
 
 # python2 uses __builtin__ python3 uses builtins
 if __name__ == "__builtin__" or __name__ == "builtins":
-    print('something')
     main()
