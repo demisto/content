@@ -269,7 +269,7 @@
         {
             "integrations": "AzureDevOps",
             "playbookID": "playbook-AzureDevOps-Test",
-            "fromversion": "6.0.0"
+            "fromversion": "6.1.0"
         },
         {
             "integrations": "Microsoft Intune Feed",
