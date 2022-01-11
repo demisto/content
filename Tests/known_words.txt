@@ -46,3 +46,6 @@ Blocklist
 Spamhaus
 SSL
 Prisma
+AlienVault
+BitcoinAbuse
+BruteForceBlocker
