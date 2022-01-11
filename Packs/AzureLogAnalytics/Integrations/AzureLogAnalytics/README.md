@@ -5,6 +5,14 @@ This integration was integrated and tested with version ***2021-06-01*** of Azur
 
 You need to grant Cortex XSOAR authorization to access Azure Log Analytics.
 
+**Note**: The Azure account must have permission to manage applications in Azure Active Directory (Azure AD). Any of the following Azure AD roles include the required permissions:
+
+- Application administrator
+- Application developer
+- Cloud application administrator
+
+And assigned the "Log Anayitics Reader" role to the user that granted the authorization
+
 1. Access the [authorization flow](https://oproxy.demisto.ninja/ms-azure-log-analytics). 
 2. Click the **Start Authorization Process** button and you will be prompted to grant Cortex XSOAR permissions for your Azure Service Management. 
 3. Click the **Accept** button and you will receive your ID, token, and key. You will need to enter these when you configure the Azure Log Analytics integration instance in Cortex XSOAR.
