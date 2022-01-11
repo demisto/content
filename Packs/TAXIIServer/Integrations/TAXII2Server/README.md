@@ -127,3 +127,14 @@ TIM fields (System generated and custom). A general example of these two related
         }
     }
 }
+```
+
+## TAXII2 Performance Benchmark
+
+TAXII2 Server using NGINX to get better performance. 
+
+| **Indicators Amount** | **Request time** |
+| --- | --- |
+| 10,000 Indicators | 5-10 sec | 
+| 50,000 Indicators | 30-40 sec |
+| 100,000 Indicators | 50-90 sec |
