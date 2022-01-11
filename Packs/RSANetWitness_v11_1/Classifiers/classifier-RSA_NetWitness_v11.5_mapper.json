@@ -6,10 +6,6 @@
         "NetWitness Incident": {
             "dontMapEventToLabels": true,
             "internalMapping": {
-                " RSA NetWitness Rule Id ": {
-                    "complex": null,
-                    "simple": "ruleId"
-                },
                 " RSA Rule Id ": {
                     "complex": null,
                     "simple": "ruleId"
