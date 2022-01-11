@@ -152,12 +152,12 @@ tasks:
   "7":
     id: "7"
     taskid: b2731cdd-ec5e-4015-891e-bb785ac16f53
-    description: Create a filter to export data.
     type: regular
     task:
       id: b2731cdd-ec5e-4015-891e-bb785ac16f53
       version: -1
       name: Create Filter
+      description: Create a filter to export data.
       script: AccessData|||accessdata-api-create-filter
       type: regular
       iscommand: true
@@ -190,12 +190,12 @@ tasks:
   "13":
     id: "13"
     taskid: f861bbf2-e122-42a3-8c6e-3dfe3417098b
-    description: Is Complete.
     type: title
     task:
       id: f861bbf2-e122-42a3-8c6e-3dfe3417098b
       version: -1
       name: Done
+      description: Is Complete.
       type: title
       iscommand: false
       brand: ""
