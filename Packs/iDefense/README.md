@@ -1,9 +1,11 @@
-# **iDefense (_A part of Accenture Security_)**
+# **Accenture CTI** \*
 
 This pack is integrated with our IntelGraph Intelligence Portal to provide threat intelligence. 
 Moreover this pack has 2 sub-packs named:
 - Accenture CTI
 - ACTI Feed
+
+*_formerly iDefense_
 _____
 
 <p>&nbsp;</p>
