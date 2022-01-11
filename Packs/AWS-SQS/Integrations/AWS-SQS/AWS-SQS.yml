@@ -61,7 +61,7 @@ configuration:
   name: isFetch
   type: 8
   required: false
-- defaultvalue: '50'
+- defaultvalue: '10'
   display: 'Maximum incidents for one fetch'
   name: max_fetch
   required: false

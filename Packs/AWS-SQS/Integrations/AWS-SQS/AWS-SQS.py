@@ -152,10 +152,11 @@ def fetch_incidents(aws_client, aws_queue_url, max_fetch):
         client = aws_client.aws_session(service='sqs')
         receipt_handles = []  # type: list
         incidents = []  # type: list
+        max_number_of_messages = min(max_fetch, 10)
         while len(incidents) < max_fetch:
             messages = client.receive_message(
                 QueueUrl=aws_queue_url,
-                MaxNumberOfMessages=10,
+                MaxNumberOfMessages=max_number_of_messages,
                 VisibilityTimeout=5,
                 WaitTimeSeconds=5,
             )
@@ -206,7 +207,13 @@ def main():
     timeout = params.get('timeout')
     retries = params.get('retries') or 5
     aws_queue_url = params.get('queueUrl')
-    max_fetch = params.get('max_fetch')
+    max_fetch_param = params.get('max_fetch', 10)
+    if max_fetch_param < 1:
+        max_fetch = 1
+    elif max_fetch_param > 100:
+        max_fetch = 100
+    else:
+        max_fetch = max_fetch_param
 
     commands = {
         'aws-sqs-get-queue-url': get_queue_url,
