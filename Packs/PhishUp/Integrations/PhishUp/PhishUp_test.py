@@ -9,7 +9,7 @@ def util_load_json(path):
 
 def test_investigate_url_command():
     from PhishUp import Client, investigate_url_command
-
+    
     base_url = "https://apiv2.phishup.co"
     client = Client(
         base_url=base_url,
@@ -78,7 +78,7 @@ def test_investigate_url_http_request(mocker):
     assert r == "Error"
 
 
-def test_investigate_url_http_request(mocker):
+def test_investigate_bulk_url_http_request(mocker):
     from PhishUp import Client
     patcher = mocker.patch("PhishUp.Client.investigate_bulk_url_http_request", return_value="Error")
     patcher.start()
@@ -107,13 +107,6 @@ def test_check_api_key_test_module_http_request(mocker):
     client = Client(
         base_url=base_url,
         verify=False)
-
-    args = {
-        "apikey": "not"
-    }
-    params = {
-        "Url": "https://www.paloaltonetworks.com/"
-    }
 
     r = test_module(client)
     assert r == "ok"
