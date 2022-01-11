@@ -330,7 +330,7 @@ tasks:
       subject:
         simple: 'Re: Phishing Investigation - ${incident.name}'
       to:
-        simple: $ReporterAddress}
+        simple: ${ReporterAddress}
     reputationcalc: 1
     separatecontext: false
     view: |-
@@ -2551,8 +2551,7 @@ tasks:
           root: inputs.DBotPredictURLPhishingURLsNumber
       urls:
         complex:
-          root: URL
-          accessor: Data
+          root: ExtractedURLsFromFiles
     reputationcalc: 2
     separatecontext: false
     view: |-
