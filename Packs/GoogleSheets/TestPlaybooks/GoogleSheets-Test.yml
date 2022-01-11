@@ -1,8 +1,8 @@
 id: GoogleSheets-Test
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: GoogleSheets-Test
-description: Test play book for all the GoogleSheets commands - Notice the last task is from Google Drive integration to delete the created file
+description: Test play book for all the GoogleSheets commands - Notice the last task
+  is from Google Drive integration to delete the created file
 starttaskid: "0"
 tasks:
   "0":
@@ -15,6 +15,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"

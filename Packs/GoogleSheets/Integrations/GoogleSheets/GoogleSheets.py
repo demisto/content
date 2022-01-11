@@ -579,7 +579,7 @@ def sheets_value_append(service: Resource, args: dict) -> CommandResults:
 
 
 # disable-secrets-detection-start
-#@staticmethod
+# @staticmethod
 def get_http_client_with_proxy(proxy, insecure):
     """
     Create an http client with proxy with whom to use when using a proxy.
@@ -638,7 +638,6 @@ def build_and_authenticate(params: dict):
 
 def test_module() -> str:
     return "ok"
-
 
 
 ''' MAIN FUNCTION '''
