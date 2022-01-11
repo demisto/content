@@ -821,13 +821,16 @@ def get_offense_types(client: Client, offenses: List[Dict]) -> Dict:
     Returns:
         (Dict): Dictionary of {offense_type_id: offense_type_name}
     """
-    offense_types_ids = {offense.get('offense_type') for offense in offenses if offense.get('offense_type') is not None}
-    if not offense_types_ids:
-        return dict()
-    # TODO: add try/except request handling
-    offense_types = client.offense_types(filter_=f'''id in ({','.join(map(str, offense_types_ids))})''',
-                                         fields='id,name')
-    return {offense_type.get('id'): offense_type.get('name') for offense_type in offense_types}
+    try:
+        offense_types_ids = {offense.get('offense_type') for offense in offenses if offense.get('offense_type') is not None}
+        if not offense_types_ids:
+            return dict()
+        offense_types = client.offense_types(filter_=f'''id in ({','.join(map(str, offense_types_ids))})''',
+                                             fields='id,name')
+        return {offense_type.get('id'): offense_type.get('name') for offense_type in offense_types}
+    except Exception as e:
+        print_debug_msg(f"Encountered an issue while getting offense type: {e}")
+        return {}
 
 
 def get_offense_closing_reasons(client: Client, offenses: List[Dict]) -> Dict:
@@ -841,14 +844,17 @@ def get_offense_closing_reasons(client: Client, offenses: List[Dict]) -> Dict:
     Returns:
         (Dict): Dictionary of {closing_reason_id: closing_reason_name}
     """
-    closing_reason_ids = {offense.get('closing_reason_id') for offense in offenses
-                          if offense.get('closing_reason_id') is not None}
-    if not closing_reason_ids:
-        return dict()
-    # TODO: add try/except request handling
-    closing_reasons = client.closing_reasons_list(filter_=f'''id in ({','.join(map(str, closing_reason_ids))})''',
-                                                  fields='id,text')
-    return {closing_reason.get('id'): closing_reason.get('text') for closing_reason in closing_reasons}
+    try:
+        closing_reason_ids = {offense.get('closing_reason_id') for offense in offenses
+                              if offense.get('closing_reason_id') is not None}
+        if not closing_reason_ids:
+            return dict()
+        closing_reasons = client.closing_reasons_list(filter_=f'''id in ({','.join(map(str, closing_reason_ids))})''',
+                                                      fields='id,text')
+        return {closing_reason.get('id'): closing_reason.get('text') for closing_reason in closing_reasons}
+    except Exception as e:
+        print_debug_msg(f"Encountered an issue while getting offense closing reasons: {e}")
+        return {}
 
 
 def get_domain_names(client: Client, outputs: List[Dict]) -> Dict:
@@ -862,12 +868,15 @@ def get_domain_names(client: Client, outputs: List[Dict]) -> Dict:
     Returns:
         (Dict): Dictionary of {domain_id: domain_name}
     """
-    domain_ids = {offense.get('domain_id') for offense in outputs if offense.get('domain_id') is not None}
-    if not domain_ids:
-        return dict()
-    # TODO: add try/except request handling
-    domains_info = client.domains_list(filter_=f'''id in ({','.join(map(str, domain_ids))})''', fields='id,name')
-    return {domain_info.get('id'): domain_info.get('name') for domain_info in domains_info}
+    try:
+        domain_ids = {offense.get('domain_id') for offense in outputs if offense.get('domain_id') is not None}
+        if not domain_ids:
+            return dict()
+        domains_info = client.domains_list(filter_=f'''id in ({','.join(map(str, domain_ids))})''', fields='id,name')
+        return {domain_info.get('id'): domain_info.get('name') for domain_info in domains_info}
+    except Exception as e:
+        print_debug_msg(f"Encountered an issue while getting offense domain names: {e}")
+        return {}
 
 
 def get_rules_names(client: Client, offenses: List[Dict]) -> Dict:
@@ -881,12 +890,15 @@ def get_rules_names(client: Client, offenses: List[Dict]) -> Dict:
     Returns:
         (Dict): Dictionary of {rule_id: rule_name}
     """
-    rules_ids = {rule.get('id') for offense in offenses for rule in offense.get('rules', [])}
-    if not rules_ids:
-        return dict()
-    # TODO: add try/except request handling
-    rules = client.rules_list(None, None, f'''id in ({','.join(map(str, rules_ids))})''', 'id,name')
-    return {rule.get('id'): rule.get('name') for rule in rules}
+    try:
+        rules_ids = {rule.get('id') for offense in offenses for rule in offense.get('rules', [])}
+        if not rules_ids:
+            return dict()
+        rules = client.rules_list(None, None, f'''id in ({','.join(map(str, rules_ids))})''', 'id,name')
+        return {rule.get('id'): rule.get('name') for rule in rules}
+    except Exception as e:
+        print_debug_msg(f"Encountered an issue while getting offenses rules: {e}")
+        return {}
 
 
 def get_offense_addresses(client: Client, offenses: List[Dict], is_destination_addresses: bool) -> Dict:
@@ -907,8 +919,11 @@ def get_offense_addresses(client: Client, offenses: List[Dict], is_destination_a
     url_suffix = f'{address_type}_addresses'
 
     def get_addresses_for_batch(b: List):
-        # TODO: add try/except request handling# TODO: add try/except request handling
-        return client.get_addresses(url_suffix, f'''id in ({','.join(map(str, b))})''', f'id,{address_field}')
+        try:
+            return client.get_addresses(url_suffix, f'''id in ({','.join(map(str, b))})''', f'id,{address_field}')
+        except Exception as e:
+            print_debug_msg(f'Failed getting address barch with error: {e}')
+            return []
 
     addresses_ids = [address_id for offense in offenses
                      for address_id in offense.get(address_list_field, [])]
@@ -958,8 +973,10 @@ def enrich_offense_with_assets(client: Client, offense_ips: List[str]) -> List[D
 
     def get_assets_for_ips_batch(b: List):
         filter_query = ' or '.join([f'interfaces contains ip_addresses contains value="{ip}"' for ip in b])
-        # TODO: add try/except request handling
-        return client.assets_list(filter_=filter_query)
+        try:
+            return client.assets_list(filter_=filter_query)
+        except Exception as e:
+            print_debug_msg(f'Failed getting assets for filter_query: {filter_query}. {e}')
 
     offense_ips = [offense_ip for offense_ip in offense_ips if is_valid_ip(offense_ip)]
     # Submit addresses in batches to avoid overloading QRadar service
@@ -1003,21 +1020,24 @@ def enrich_offenses_result(client: Client, offenses: Any, enrich_ip_addresses: b
     def create_enriched_offense(offense: Dict) -> Dict:
         link_to_offense_suffix = '/console/do/sem/offensesummary?appName=Sem&pageId=OffenseSummary&summaryId' \
                                  f'''={offense.get('id')}'''
+        offense_type = offense.get('offense_type')
+        closing_reason_id = offense.get('closing_reason_id')
+        domain_id = offense.get('domain_id')
         basic_enriches = {
-            'offense_type': offense_types_id_name_dict.get(offense.get('offense_type')),
-            'closing_reason_id': closing_reasons_id_name_dict.get(offense.get('closing_reason_id')),
+            'offense_type': offense_types_id_name_dict.get(offense_type, offense_type),
+            'closing_reason_id': closing_reasons_id_name_dict.get(closing_reason_id, closing_reason_id),
             'LinkToOffense': urljoin(client.server, link_to_offense_suffix),
         }
 
         domain_enrich = {
-            'domain_name': domain_id_name_dict.get(offense.get('domain_id'))
-        } if DOMAIN_ENRCH_FLG.lower() == 'true' and domain_id_name_dict.get(offense.get('domain_id')) else dict()
+            'domain_name': domain_id_name_dict.get(domain_id, domain_id)
+        } if DOMAIN_ENRCH_FLG.lower() == 'true' and domain_id_name_dict.get(domain_id, domain_id) else dict()
 
         rules_enrich = {
             'rules': [{
                 'id': rule.get('id'),
                 'type': rule.get('type'),
-                'name': rules_id_name_dict.get(rule.get('id'))
+                'name': rules_id_name_dict.get(rule.get('id'), rule.get('id'))
             } for rule in offense.get('rules', [])] if RULES_ENRCH_FLG.lower() == 'true' else dict()
         }
 
@@ -1136,7 +1156,8 @@ def enrich_assets_results(client: Client, assets: Any, full_enrichment: bool) ->
                            interface.get('mac_address')]
         } if full_enrichment else dict()
 
-        domains_enrichment = {'Domain': domain_id_name_dict.get(domain_id)} if full_enrichment and domain_id else dict()
+        domains_enrichment = {'Domain': domain_id_name_dict.get(domain_id, domain_id)} if full_enrichment and \
+                                                                                          domain_id else dict()
 
         basic_properties_enrichment = enrich_asset_properties(properties, ASSET_PROPERTIES_NAME_MAP)
         full_properties_enrichment = enrich_asset_properties(properties,
@@ -1781,6 +1802,7 @@ def perform_long_running_loop(client: Client, offenses_per_fetch: int, fetch_mod
             print_debug_msg(f'Saving New Highest ID: {new_highest_id}')
             context_data.update({'samples': incident_batch_for_sample, LAST_FETCH_KEY: int(new_highest_id)})
 
+        # if incident creation fails, it'll drop the data and try again in the next iteration
         demisto.createIncidents(incidents)
 
     new_context_data = move_updated_offenses(context_data=ctx, version=ctx_version,
