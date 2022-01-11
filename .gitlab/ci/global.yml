@@ -175,7 +175,6 @@
         echo "Skipping validations when uploading to a test bucket."
         echo ""
       else
-        echo ""
         echo "demisto-sdk version: $(demisto-sdk --version)"
         echo "mypy version: $(mypy --version)"
         echo "flake8 py2 version: $(python2 -m flake8 --version)"
