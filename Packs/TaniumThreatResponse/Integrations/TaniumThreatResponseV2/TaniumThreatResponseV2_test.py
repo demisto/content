@@ -440,6 +440,11 @@ def test_start_quick_scan(mocker, requests_mock):
     assert 'Quick Scan started' in human_readable
     assert outputs.get('Tanium.QuickScan(val.ID && val.ID === obj.ID)', {}).get('IntelDocId') == 431
     assert outputs.get('Tanium.QuickScan(val.ID && val.ID === obj.ID)', {}).get('ComputerGroupId') == 1
+    assert outputs.get('Tanium.QuickScan(val.ID && val.ID === obj.ID)', {}).get('ID') == 1000239
+    assert outputs.get('Tanium.QuickScan(val.ID && val.ID === obj.ID)', {}).get('AlertCount') == 0
+    assert outputs.get('Tanium.QuickScan(val.ID && val.ID === obj.ID)', {}).get('CreatedAt') == "2022-01-05T19:53:43.049Z"
+    assert outputs.get('Tanium.QuickScan(val.ID && val.ID === obj.ID)', {}).get('UserId') == 64
+    assert outputs.get('Tanium.QuickScan(val.ID && val.ID === obj.ID)', {}).get('QuestionId') == 2025697
 
 
 def test_deploy_intel(requests_mock):
