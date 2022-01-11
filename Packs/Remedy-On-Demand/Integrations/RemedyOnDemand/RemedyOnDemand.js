@@ -243,7 +243,7 @@ var fetchIncidentsToDemisto = function() {
         });
     });
     var now = new Date().toISOString();
-    logDebug("Last run is set to: " + now);
+    logDebug("Last run is set to now: " + now);
     setLastRun({value: now});
     return JSON.stringify(incidents);
 };
