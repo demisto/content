@@ -124,6 +124,7 @@ def test_issue_query_command_with_results(mocker):
     _, outputs, _ = issue_query_command("status!=Open", max_results=1)
     assert outputs == QUERY_ISSUE_RESULT
 
+
 def test_issue_query_command_with_custom_fields_with_results(mocker):
     """
     Given
@@ -143,6 +144,7 @@ def test_issue_query_command_with_custom_fields_with_results(mocker):
     mocker.patch("JiraV2.run_query", return_value=QUERY_ISSUE_RESPONSE)
     _, outputs, _ = issue_query_command("status!=Open", extra_fields="owner", max_results=1)
     assert outputs == QUERY_ISSUE_RESULT_WITH_CUSTOM_FIELDS
+
 
 def test_fetch_incidents_no_incidents(mocker):
     """

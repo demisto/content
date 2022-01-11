@@ -129,6 +129,7 @@ def get_auth():
         '- Personal Access Tokens requires AccessToken'
     )
 
+
 def get_custom_field_names():
     """
     This function returns all custom fields.
@@ -155,7 +156,8 @@ def get_custom_field_names():
     finally:
         return custom_id_name_mapping
 
-def  run_query(query, start_at='', max_results=None, extra_fields=None):
+
+def run_query(query, start_at='', max_results=None, extra_fields=None):
     # EXAMPLE
     """
     request = {
@@ -339,7 +341,7 @@ def get_account_id_from_attribute(
     )
 
 
-def generate_md_context_get_issue(data,customfields=None):
+def generate_md_context_get_issue(data, customfields=None):
     get_issue_obj: dict = {"md": [], "context": []}
     if not isinstance(data, list):
         data = [data]
