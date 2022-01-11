@@ -1,0 +1,160 @@
+{
+    "autorun": true,
+    "color": "#2A4AA8",
+    "days": 0,
+    "daysR": 0,
+    "default": false,
+    "detached": false,
+    "disabled": false,
+    "extractSettings": {
+        "fieldCliNameToExtractSettings": {
+            "city": {
+                "extractAsIsIndicatorTypeId": "",
+                "extractIndicatorTypesIDs": [],
+                "isExtractingAllIndicatorTypes": false
+            },
+            "country": {
+                "extractAsIsIndicatorTypeId": "",
+                "extractIndicatorTypesIDs": [],
+                "isExtractingAllIndicatorTypes": false
+            },
+            "description": {
+                "extractAsIsIndicatorTypeId": "",
+                "extractIndicatorTypesIDs": [],
+                "isExtractingAllIndicatorTypes": false
+            },
+            "details": {
+                "extractAsIsIndicatorTypeId": "",
+                "extractIndicatorTypesIDs": [],
+                "isExtractingAllIndicatorTypes": false
+            },
+            "firstname": {
+                "extractAsIsIndicatorTypeId": "",
+                "extractIndicatorTypesIDs": [],
+                "isExtractingAllIndicatorTypes": false
+            },
+            "givenname": {
+                "extractAsIsIndicatorTypeId": "",
+                "extractIndicatorTypesIDs": [],
+                "isExtractingAllIndicatorTypes": false
+            },
+            "inventabirthday": {
+                "extractAsIsIndicatorTypeId": "",
+                "extractIndicatorTypesIDs": [],
+                "isExtractingAllIndicatorTypes": false
+            },
+            "inventacreditcardnumber": {
+                "extractAsIsIndicatorTypeId": "",
+                "extractIndicatorTypesIDs": [],
+                "isExtractingAllIndicatorTypes": false
+            },
+            "inventadatasubjectaddress": {
+                "extractAsIsIndicatorTypeId": "",
+                "extractIndicatorTypesIDs": [],
+                "isExtractingAllIndicatorTypes": false
+            },
+            "inventadatasubjectemail": {
+                "extractAsIsIndicatorTypeId": "",
+                "extractIndicatorTypesIDs": [],
+                "isExtractingAllIndicatorTypes": false
+            },
+            "inventadatasubjectfullname": {
+                "extractAsIsIndicatorTypeId": "",
+                "extractIndicatorTypesIDs": [],
+                "isExtractingAllIndicatorTypes": false
+            },
+            "inventadatasubjectphonenumber": {
+                "extractAsIsIndicatorTypeId": "",
+                "extractIndicatorTypesIDs": [],
+                "isExtractingAllIndicatorTypes": false
+            },
+            "inventadriverlicense": {
+                "extractAsIsIndicatorTypeId": "",
+                "extractIndicatorTypesIDs": [],
+                "isExtractingAllIndicatorTypes": false
+            },
+            "inventadsardatasubjectid": {
+                "extractAsIsIndicatorTypeId": "",
+                "extractIndicatorTypesIDs": [],
+                "isExtractingAllIndicatorTypes": false
+            },
+            "inventadsarinventaticket": {
+                "extractAsIsIndicatorTypeId": "",
+                "extractIndicatorTypesIDs": [],
+                "isExtractingAllIndicatorTypes": false
+            },
+            "inventadsarreportreason": {
+                "extractAsIsIndicatorTypeId": "",
+                "extractIndicatorTypesIDs": [],
+                "isExtractingAllIndicatorTypes": false
+            },
+            "inventafullname": {
+                "extractAsIsIndicatorTypeId": "",
+                "extractIndicatorTypesIDs": [],
+                "isExtractingAllIndicatorTypes": false
+            },
+            "inventanationalid": {
+                "extractAsIsIndicatorTypeId": "",
+                "extractIndicatorTypesIDs": [],
+                "isExtractingAllIndicatorTypes": false
+            },
+            "inventapassportnumber": {
+                "extractAsIsIndicatorTypeId": "",
+                "extractIndicatorTypesIDs": [],
+                "isExtractingAllIndicatorTypes": false
+            },
+            "inventataxid": {
+                "extractAsIsIndicatorTypeId": "",
+                "extractIndicatorTypesIDs": [],
+                "isExtractingAllIndicatorTypes": false
+            },
+            "inventaticketnumber": {
+                "extractAsIsIndicatorTypeId": "",
+                "extractIndicatorTypesIDs": [],
+                "isExtractingAllIndicatorTypes": false
+            },
+            "inventavehiclenumber": {
+                "extractAsIsIndicatorTypeId": "",
+                "extractIndicatorTypesIDs": [],
+                "isExtractingAllIndicatorTypes": false
+            },
+            "lastname": {
+                "extractAsIsIndicatorTypeId": "",
+                "extractIndicatorTypesIDs": [],
+                "isExtractingAllIndicatorTypes": false
+            },
+            "phonenumber": {
+                "extractAsIsIndicatorTypeId": "",
+                "extractIndicatorTypesIDs": [],
+                "isExtractingAllIndicatorTypes": false
+            },
+            "streetaddress": {
+                "extractAsIsIndicatorTypeId": "",
+                "extractIndicatorTypesIDs": [],
+                "isExtractingAllIndicatorTypes": false
+            },
+            "surname": {
+                "extractAsIsIndicatorTypeId": "",
+                "extractIndicatorTypesIDs": [],
+                "isExtractingAllIndicatorTypes": false
+            }
+        },
+        "mode": "All"
+    },
+    "hours": 0,
+    "hoursR": 0,
+    "id": "iDSAR",
+    "layout": "Inventa DSAR Layout",
+    "locked": false,
+    "name": "iDSAR",
+    "onChangeRepAlg": 0,
+    "playbookId": "DSAR Inventa Handler",
+    "readonly": false,
+    "reputationCalc": 0,
+    "sla": 672,
+    "system": false,
+    "version": -1,
+    "weeks": 4,
+    "weeksR": 0,
+    "fromVersion": "6.0.0"
+}
