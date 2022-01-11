@@ -2294,7 +2294,7 @@ script:
       isArray: false
       name: computer_group_name
       required: true
-      secret:false
+      secret: false
     outputs:
     - contextPath: Tanium.QuickScan.IntelDocId
       description: The unique identifier for this intel in this instance of the system.
