@@ -1,0 +1,21 @@
+{
+    "name": "PHash",
+    "description": "A wrapper for https://pypi.org/project/ImageHash/ to create a Perceptual hashing of images within the Context data",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Joerg Stephan",
+    "url": "",
+    "email": "",
+    "created": "2021-12-09T11:41:07Z",
+    "categories": ["Utilities"],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "johestephan"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}

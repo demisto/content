@@ -14,6 +14,7 @@ pytest-asyncio = "*"
 google-api-python-client = "*"
 httplib2 = "*"
 dateparser = "*"
+pytest-mock = "*"
 
 [requires]
 python_version = "3.7"
