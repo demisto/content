@@ -1579,11 +1579,10 @@ tasks:
       version: -1
       name: Set ExtractedURLsFromFiles
       description: |-
-        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+        Store all of the extracted URLs under the "ExtractedURLsFromFiles" key.
+        This key will be returned in the playbook's output so parent playbooks
+        could indicate which URLs were extracted from the files processed in
+        this playbook.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
