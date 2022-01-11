@@ -9,7 +9,7 @@ from GitLab import Client, gitlab_pipelines_schedules_list_command, gitlab_pipel
     gitlab_jobs_list_command, gitlab_artifact_get_command, gitlab_merge_requests_list_command, \
     gitlab_issues_list_command, gitlab_edit_issue_command, gitlab_group_projects_list_command, \
     gitlab_get_merge_request_command, gitlab_create_issue_command, gitlab_get_raw_file_command, \
-    gitlab_trigger_contribution_build_command
+    gitlab_trigger_build_command
 
 BASE_URL = 'https://gitlab.com/api/v4'
 mock_client = Client(BASE_URL, verify=False, proxy=False, headers=dict(), trigger_token='token')
@@ -33,7 +33,7 @@ TEST_GITLAB_COMMANDS_DATA = [(gitlab_pipelines_schedules_list_command, command_t
                              (gitlab_create_issue_command, command_test_data['create-issue']),
                              (gitlab_get_raw_file_command, command_test_data['get-raw-file']),
                              (gitlab_group_projects_list_command, command_test_data['group-projects-list']),
-                             (gitlab_trigger_contribution_build_command, command_test_data['contrib_pipeline'])]
+                             (gitlab_trigger_build_command, command_test_data['trigger_pipeline'])]
 
 
 @pytest.mark.parametrize('command_func, test_data', TEST_GITLAB_COMMANDS_DATA)
