@@ -444,7 +444,7 @@ function trigger_circle_ci {
 # :packs: CSV list of pack IDs.
 # :slack_channel: A slack channel to send notifications to.
 function trigger_gitlab_ci {
-  git push https://code.pan.run/xsoar/content.git "${new_content_branch}" # disable-secrets-detection
+  git push git@code.pan.run:xsoar/content.git "${new_content_branch}" # disable-secrets-detection
   sleep 60
   trigger_build_url="https://code.pan.run/api/v4/projects/2596/trigger/pipeline"  # disable-secrets-detection
 
@@ -569,7 +569,7 @@ content_hash=$(git rev-parse --short origin/${content_branch_name})
 if [ -n "$sdk_branch_name" ]; then
   sdk_hash=$(git rev-parse --short origin/${sdk_branch_name})
 else
-  sdk_hash="sdk_release"
+  sdk_hash="latest_sdk_release"
 fi
 new_content_branch="${sdk_hash}_${content_hash}_UploadFlow_test"
 
