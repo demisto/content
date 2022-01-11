@@ -246,7 +246,7 @@ script:
       type: string
     description: Combines 2 internal filters together enforcing either.
 
-  dockerimage: devdemisto/accessdata:1.0.0.25422
+  dockerimage: demisto/accessdata:1.1.0.25771
   runonce: false
   script: '-'
   type: python
