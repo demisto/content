@@ -4972,7 +4972,6 @@
         }
     ],
     "skipped_tests": {
-        "playbook-AzureDevOps-Test": "Issue with repetitive calls to Azure DevOps API",
         "MISP V2 Test": "The integration is deprecated as we released MISP V3",
         "Github IAM - Test Playbook": "Issue 32383",
         "O365-SecurityAndCompliance-ContextResults-Test": "Issue 38900",
