@@ -577,22 +577,35 @@ def sheets_value_append(service: Resource, args: dict) -> CommandResults:
     markdown = '### Success\n'
     return CommandResults(readable_output=markdown)
 
+# disable-secrets-detection-start
 
-def get_http_client_with_proxy(disable_ssl):
-    proxies = handle_proxy()
-    if not proxies.get('https', True):
-        raise Exception('https proxy value is empty. Check Demisto server configuration')
-    https_proxy = proxies['https']
-    if not https_proxy.startswith('https') and not https_proxy.startswith('http'):
-        https_proxy = 'https://' + https_proxy
-    parsed_proxy = urllib.parse.urlparse(https_proxy)
-    proxy_info = httplib2.ProxyInfo(
-        proxy_type=httplib2.socks.PROXY_TYPE_HTTP,  # disable-secrets-detection
-        proxy_host=parsed_proxy.hostname,
-        proxy_port=parsed_proxy.port,
-        proxy_user=parsed_proxy.username,
-        proxy_pass=parsed_proxy.password)
-    return httplib2.Http(proxy_info=proxy_info, disable_ssl_certificate_validation=disable_ssl)
+
+#@staticmethod
+def get_http_client_with_proxy(proxy, insecure):
+    """
+    Create an http client with proxy with whom to use when using a proxy.
+    :param proxy: Whether to use a proxy.
+    :param insecure: Whether to disable ssl and use an insecure connection.
+    :return:
+    """
+    if proxy:
+        proxies = handle_proxy()
+        https_proxy = proxies.get('https')
+        http_proxy = proxies.get('http')
+        proxy_conf = https_proxy if https_proxy else http_proxy
+        # if no proxy_conf - ignore proxy
+        if proxy_conf:
+            if not proxy_conf.startswith('https') and not proxy_conf.startswith('http'):
+                proxy_conf = 'https://' + proxy_conf
+            parsed_proxy = urllib.parse.urlparse(proxy_conf)
+            proxy_info = httplib2.ProxyInfo(
+                proxy_type=httplib2.socks.PROXY_TYPE_HTTP,
+                proxy_host=parsed_proxy.hostname,
+                proxy_port=parsed_proxy.port,
+                proxy_user=parsed_proxy.username,
+                proxy_pass=parsed_proxy.password)
+            return httplib2.Http(proxy_info=proxy_info, disable_ssl_certificate_validation=insecure)
+    return httplib2.Http(disable_ssl_certificate_validation=insecure)
 
 
 def build_and_authenticate(params):
@@ -610,6 +623,7 @@ def build_and_authenticate(params):
     service_account_credentials = json.loads(service_account_credentials.get('password'))
     credentials = service_account.ServiceAccountCredentials.from_json_keyfile_dict(service_account_credentials,
                                                                                    scopes=SCOPES)
+    # add delegation to help manage the UI to a google-account
     if params.get('user_id', None) is not None:
         credentials = credentials.create_delegated(params.get('user_id'))
 
@@ -617,12 +631,10 @@ def build_and_authenticate(params):
     disable_ssl = params.get('insecure', False)
 
     if proxy or disable_ssl:
-        http_client = credentials.authorize(get_http_client_with_proxy(disable_ssl))
+        http_client = credentials.authorize(get_http_client_with_proxy(proxy, disable_ssl))
         return build('sheets', 'v4', http=http_client)
     else:
-        handle_proxy()
-
-    return build('sheets', 'v4', credentials=credentials)
+        return build('sheets', 'v4', credentials=credentials)
 
 
 def connect_to_google_client(params: dict):
@@ -634,19 +646,9 @@ def connect_to_google_client(params: dict):
     return build('sheets', 'v4', credentials=creds)
 
 
-# def test_module() -> str:
-#     """Tests API connectivity and authentication'
-#
-#     Returning 'ok' indicates that the integration works like it is supposed to.
-#     Connection to the service is successful.
-#     Raises exceptions if something goes wrong.
-#
-#     :type client: ``Client``
-#     :param Client: client to use
-#
-#     :return: 'ok' if test passed, anything else will fail the test.
-#     :rtype: ``str``
-#     """
+def test_module() -> str:
+    return "ok"
+
 #
 #     message: str = ''
 #     try:
@@ -673,6 +675,7 @@ def connect_to_google_client(params: dict):
     #     return_error(f"Failed to connect to Google API client {e}")
     #
     #
+
 
 ''' MAIN FUNCTION '''
 
@@ -705,13 +708,11 @@ def main() -> None:
     try:
         # TODO: Make sure you add the proper headers for authentication
         # (i.e. "Authorization": {api key})
-        # service = connect_to_google_client(demisto.params())
+        #service = connect_to_google_client(demisto.params())
         service = build_and_authenticate(demisto.params())
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
-            # result = test_module()
-            return_results("ok")
-
+            return_results(test_module())
         elif demisto.command() == 'google-sheets-spreadsheet-create':
             return_results(create_spreadsheet(service, demisto.args()))
         elif demisto.command() == 'google-sheets-spreadsheet-get':
