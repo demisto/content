@@ -1,12 +1,6 @@
 id: 6434bfb8-0349-4d1c-8116-06636bdb65d5
-version: 55
-contentitemexportablefields:
-  contentitemfields:
-    packID: ""
-    itemVersion: 2.0.0
-    fromServerVersion: 5.0.0
-    toServerVersion: ""
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
+fromversion: 6.0.0
 name: 'AccessData: Job Polling'
 description: |-
   Use this playbook as a sub-playbook to block execution of the master playbook until a job task is complete.

@@ -1,6 +1,6 @@
 id: AccessDataProcessEvidenceAndExport
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
+fromversion: 6.0.0
 name: 'AccessData: Process Evidence and Export'
 description: Creates a new case and processes targetted evidence.
 starttaskid: "0"
@@ -152,6 +152,7 @@ tasks:
   "7":
     id: "7"
     taskid: b2731cdd-ec5e-4015-891e-bb785ac16f53
+    description: Create a filter to export data.
     type: regular
     task:
       id: b2731cdd-ec5e-4015-891e-bb785ac16f53
@@ -189,6 +190,7 @@ tasks:
   "13":
     id: "13"
     taskid: f861bbf2-e122-42a3-8c6e-3dfe3417098b
+    description: Is Complete.
     type: title
     task:
       id: f861bbf2-e122-42a3-8c6e-3dfe3417098b
