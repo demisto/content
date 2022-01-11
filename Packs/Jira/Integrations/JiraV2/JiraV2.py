@@ -155,7 +155,7 @@ def get_custom_field_names():
     finally:
         return custom_id_name_mapping
 
-def run_query(query, start_at='', max_results=None,extra_fields=None):
+def  run_query(query, start_at='', max_results=None, extra_fields=None):
     # EXAMPLE
     """
     request = {
@@ -179,7 +179,7 @@ def run_query(query, start_at='', max_results=None,extra_fields=None):
     if extra_fields:
         fields = extra_fields.split(",")
         fields_mapping_name_id = get_custom_field_names()
-        query_params['fields'] = [ k for k,v in fields_mapping_name_id.items() for y in fields if v.lower() == y.lower()]
+        query_params['fields'] = [k for k, v in fields_mapping_name_id.items() for y in fields if v.lower() == y.lower()]
     try:
         result = requests.get(
             url=url,
@@ -680,14 +680,14 @@ def get_issue(issue_id, headers=None, expand_links=False, is_update=False, get_a
     return human_readable, outputs, contents
 
 
-def issue_query_command(query, start_at='', max_results=None, headers='',extra_fields=None):
-    j_res = run_query(query, start_at, max_results,extra_fields)
+def issue_query_command(query, start_at='', max_results=None, headers='', extra_fields=None):
+    j_res = run_query(query, start_at, max_results, extra_fields)
     if not j_res:
         outputs = contents = {}
         human_readable = 'No issues matched the query.'
     else:
         issues = demisto.get(j_res, 'issues')
-        md_and_context = generate_md_context_get_issue(issues,extra_fields)
+        md_and_context = generate_md_context_get_issue(issues, extra_fields)
         human_readable = tableToMarkdown(demisto.command(), t=md_and_context['md'], headers=argToList(headers))
         contents = j_res
         outputs = {'Ticket(val.Id == obj.Id)': md_and_context['context']}
