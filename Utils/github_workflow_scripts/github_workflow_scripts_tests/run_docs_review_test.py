@@ -13,7 +13,7 @@ class TestsRunDocsReview:
                 - Verify the doc reviewer gets the file name with the apostrophe correctly.
                 - Verify that the output is as expected.
         """
-        file_name = "Process_Microsoft's_Anti-Spam_Headers.yml"  # name includes apostrophe
+        file_name = "Packs/Phishing/Playbooks/Process_Microsoft's_Anti-Spam_Headers.yml"  # name includes apostrophe
         sdk_docs_reviewer_starting_string = '================= Starting Doc Review ================='
         expected_exit_code_of_run_docs_review = 0
 
@@ -31,9 +31,10 @@ class TestsRunDocsReview:
                 - Running pass_files_to_docs_review function of the run_docs_review github workflow script.
             Then:
                 - Verify the doc reviewer gets the file name correctly.
-                - Verify the doc reviewer started running and that the output is as expected.
+                - Verify the doc reviewer started running and checked spelling of the RN file.
+                - Verify that the output is as expected.
         """
-        file_name = "1_0_18.md"  # name includes apostrophe
+        file_name = "Packs/Phishing/ReleaseNotes/3_0_1.md"  # name includes apostrophe
         sdk_docs_reviewer_starting_string = '================= Starting Doc Review ================='
         expected_exit_code_of_run_docs_review = 0
 
@@ -41,4 +42,5 @@ class TestsRunDocsReview:
         captured = capsys.readouterr()
         assert sdk_docs_reviewer_starting_string in captured.out
         assert file_name in captured.out
+        assert f'Checking spelling on {file_name}' in captured.out
         assert result == expected_exit_code_of_run_docs_review
