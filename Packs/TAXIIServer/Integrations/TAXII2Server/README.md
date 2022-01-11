@@ -127,3 +127,13 @@ TIM fields (System generated and custom). A general example of these two related
         }
     }
 }
+```
+
+## Performance Benchmark
+
+
+| **Indicators Amount** | **Request time (seconds)** |
+| --- | --- |
+| 10,000 | 5-10 | 
+| 50,000 | 30-40 |
+| 100,000 | 50-90 |
