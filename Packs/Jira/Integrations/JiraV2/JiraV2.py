@@ -339,7 +339,7 @@ def get_account_id_from_attribute(
     )
 
 
-def generate_md_context_get_issue(data):
+def generate_md_context_get_issue(data,customfields=None):
     get_issue_obj: dict = {"md": [], "context": []}
     if not isinstance(data, list):
         data = [data]
@@ -357,7 +357,7 @@ def generate_md_context_get_issue(data):
         context_obj['Created'] = md_obj['created'] = demisto.get(element, 'fields.created')
         # Parse custom fields into their original names
         custom_fields = [i for i in demisto.get(element, "fields") if "custom" in i]
-        if custom_fields:
+        if custom_fields and customfields:
             field_mappings = get_custom_field_names()
             for field_returned in custom_fields:
                 readable_field_name = field_mappings.get(field_returned)
@@ -687,7 +687,7 @@ def issue_query_command(query, start_at='', max_results=None, headers='',extra_f
         human_readable = 'No issues matched the query.'
     else:
         issues = demisto.get(j_res, 'issues')
-        md_and_context = generate_md_context_get_issue(issues)
+        md_and_context = generate_md_context_get_issue(issues,extra_fields)
         human_readable = tableToMarkdown(demisto.command(), t=md_and_context['md'], headers=argToList(headers))
         contents = j_res
         outputs = {'Ticket(val.Id == obj.Id)': md_and_context['context']}
