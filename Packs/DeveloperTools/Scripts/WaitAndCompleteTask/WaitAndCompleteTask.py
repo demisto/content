@@ -87,7 +87,7 @@ def wait_and_complete_task_command(args: Dict[str, Any]) -> CommandResults:
     task_name = args.get('task_name')
     complete_task = argToBoolean(args.get('complete_task', 'true'))
     max_timeout = arg_to_number(args.get('max_timeout', 60))
-    sleep_time = arg_to_number(args.get('sleep_time', 3))
+    interval_between_tries = arg_to_number(args.get('interval_between_tries', 3))
 
     completed_tasks = []
     found_tasks = []
@@ -146,7 +146,7 @@ def wait_and_complete_task_command(args: Dict[str, Any]) -> CommandResults:
         if time.time() - start_time > max_timeout:  # type: ignore[operator]
             break
 
-        sleep(float(sleep_time))    # type: ignore[arg-type]
+        sleep(float(interval_between_tries))    # type: ignore[arg-type]
 
     if not completed_tasks and not found_tasks:
         if task_name and task_states:

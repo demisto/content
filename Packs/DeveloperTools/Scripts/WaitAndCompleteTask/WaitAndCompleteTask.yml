@@ -37,7 +37,7 @@ args:
 - default: false
   description: 'Time (seconds) to sleep between each check iteration. '
   isArray: false
-  name: sleep_time
+  name: interval_between_tries
   required: false
   secret: false
   defaultValue: '3'

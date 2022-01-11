@@ -95,27 +95,27 @@ def test_wait_and_complete_task_command(mocker, args, tasks_ret_value, complete_
     ({'incident_id': 1,
       'task_states': 'Waiting',
       'task_name': 'conditional task 1',
-      'sleep_time': '1',
+      'interval_between_tries': '1',
       'max_timeout': '1'
       },
      'The task "conditional task 1" did not reach the Waiting state'
      ),
     ({'incident_id': 1,
       'task_name': 'conditional task 1',
-      'sleep_time': '1',
+      'interval_between_tries': '1',
       'max_timeout': '1'
       },
      'The task "conditional task 1" was not found by script'
      ),
     ({'incident_id': 1,
       'task_states': 'Waiting,Completed',
-      'sleep_time': '1',
+      'interval_between_tries': '1',
       'max_timeout': '1'
       },
      'None of the tasks reached the Waiting or Completed'
      ),
     ({'incident_id': 1,
-      'sleep_time': '1',
+      'interval_between_tries': '1',
       'max_timeout': '1'
       },
      'No tasks were found'
