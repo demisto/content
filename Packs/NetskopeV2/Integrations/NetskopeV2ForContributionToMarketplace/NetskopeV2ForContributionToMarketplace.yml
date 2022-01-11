@@ -1,0 +1,137 @@
+category: Utilities
+commonfields:
+  id: Netskope v2_for contribution to marketplace
+  version: -1
+configuration:
+- display: URL of Netskope Tenant (e.g. https://tenant.goskope.com)
+  name: url
+  required: true
+  type: 0
+- display: API Key
+  name: api_key
+  required: true
+  type: 4
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 6b70ebe5-ab08-448a-827d-66cb14e3ed81
+    propagationLabels:
+    - all
+    toServerVersion: ""
+description: Block URLs, domains and file hashes.
+display: Netskope v2_for contribution to marketplace
+name: Netskope v2_for contribution to marketplace
+script:
+  commands:
+  - arguments:
+    - description: Name of the URL list
+      name: list_name
+      required: true
+    - description: URLs to add to the list
+      isArray: true
+      name: url
+      required: true
+    description: Add URLs to the Netskope URL block list
+    name: netskopev2-add-url
+    outputs:
+    - contextPath: Netskope.URLList.id
+      type: number
+    - contextPath: Netskope.URLList.name
+      type: string
+    - contextPath: Netskope.URLList.data
+    - contextPath: Netskope.URLList.data.urls
+    - contextPath: Netskope.URLList.data.type
+      type: string
+    - contextPath: Netskope.URLList.modify_by
+      type: string
+    - contextPath: Netskope.URLList.modify_time
+      type: date
+    - contextPath: Netskope.URLList.modify_type
+      type: string
+    - contextPath: Netskope.URLList.pending
+      type: number
+  - arguments:
+    - description: Name of the URL list
+      name: list_name
+      required: true
+    - description: URLs to remove from the list
+      isArray: true
+      name: url
+      required: true
+    description: Remove URLs from the Netskope URL block list
+    name: netskopev2-remove-url
+    outputs:
+    - contextPath: Netskope.URLList.id
+      type: number
+    - contextPath: Netskope.URLList.name
+      type: string
+    - contextPath: Netskope.URLList.data
+    - contextPath: Netskope.URLList.data.urls
+    - contextPath: Netskope.URLList.data.type
+      type: string
+    - contextPath: Netskope.URLList.modify_by
+      type: string
+    - contextPath: Netskope.URLList.modify_time
+      type: date
+    - contextPath: Netskope.URLList.modify_type
+      type: string
+    - contextPath: Netskope.URLList.pending
+      type: number
+  - arguments: []
+    description: Get all applied and pending URL lists
+    name: netskopev2-get-lists
+    outputs:
+    - contextPath: Netskope.List.id
+      type: number
+    - contextPath: Netskope.List.name
+      type: string
+    - contextPath: Netskope.List.data
+    - contextPath: Netskope.List.data.urls
+    - contextPath: Netskope.List.data.type
+      type: string
+    - contextPath: Netskope.List.modify_by
+      type: string
+    - contextPath: Netskope.List.modify_time
+      type: date
+    - contextPath: Netskope.List.modify_type
+      type: string
+    - contextPath: Netskope.List.pending
+      type: number
+  - arguments:
+    - description: Name of the URL list
+      name: list_name
+      required: true
+    description: Get URL list by ID
+    name: netskopev2-get-list
+    outputs:
+    - contextPath: Netskope.List.id
+      type: number
+    - contextPath: Netskope.List.name
+      type: string
+    - contextPath: Netskope.List.data
+    - contextPath: Netskope.List.data.urls
+    - contextPath: Netskope.List.data.type
+      type: string
+    - contextPath: Netskope.List.modify_by
+      type: string
+    - contextPath: Netskope.List.modify_time
+      type: date
+    - contextPath: Netskope.List.modify_type
+      type: string
+    - contextPath: Netskope.List.pending
+      type: number
+  dockerimage: demisto/python3:3.9.8.24399
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+sourcemoduleid: SCE - Netskope
