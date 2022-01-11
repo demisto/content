@@ -186,14 +186,14 @@ Checks the reputation of the given URL.
 >| 50 | 2 | 2020-09-16 20:29:35 | http://example.com | Cyber Crime | MALWARE_C2 |
 
 
-### idefense-get-ioc-by-uuid
+### acti-get-ioc-by-uuid
 ***
 Get specific indicator reputation
 
 
 #### Base Command
 
-`idefense-get-ioc-by-uuid`
+`acti-get-ioc-by-uuid`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -222,7 +222,7 @@ Get specific indicator reputation
 
 
 #### Command Example
-```!idefense-get-ioc-by-uuid uuid=xxxx```
+```!acti-get-ioc-by-uuid uuid=xxxx```
 
 #### Context Example
 ```json

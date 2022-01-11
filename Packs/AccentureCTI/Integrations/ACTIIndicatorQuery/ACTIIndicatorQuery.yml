@@ -138,7 +138,7 @@ script:
       description: The actual score.
       type: Number
     description: Checks the reputation of the given URL.
-  - name: idefense-get-ioc-by-uuid
+  - name: acti-get-ioc-by-uuid
     arguments:
     - name: uuid
       required: true
