@@ -409,7 +409,7 @@ def get_indicators_command(client, args: dict, tags: Optional[List[str]] = None)
     return hr, {}, indicators_list
 
 
-def feed_main(feed_name, params=None, prefix=''):
+def feed_main(feed_name, params=None, prefix=''):   # pragma: no cover
     if not params:
         params = {k: v for k, v in demisto.params().items() if v is not None}
     handle_proxy()
