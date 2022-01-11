@@ -68,7 +68,7 @@ tasks:
         complex:
           root: inputs.emailSubject
       execution-timeout:
-        simple: "7200"
+        simple: "9000"
       existingIncidentsLookback:
         complex:
           root: inputs.existingIncidentsLookback
@@ -925,7 +925,7 @@ tasks:
       - "1"
     scriptarguments:
       execution-timeout:
-        simple: "7200"
+        simple: "9000"
       info:
         simple: Locks phishing incidents before searching campaigns to prevent them
           from all being unable to find an existing campaign at the same time, and
@@ -933,7 +933,7 @@ tasks:
       name:
         simple: Phishing - Campaign Detection
       timeout:
-        simple: "7200"
+        simple: "9000"
     separatecontext: false
     view: |-
       {

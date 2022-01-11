@@ -1,0 +1,19 @@
+commonfields:
+  id: VerifyHumanReadableContains
+  version: -1
+name: VerifyHumanReadableContains
+script: ''
+type: javascript
+tags: []
+enabled: true
+comment: Verify given entry contains a string
+args:
+- name: humanReadableEntryId
+  required: true
+  default: true
+  description: Entry ID of the last task.
+- name: substring
+  required: true
+  description: The substring to look for.
+scripttarget: 0
+fromversion: 5.0.0
