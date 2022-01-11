@@ -1,4 +1,4 @@
-from ACTI_Indicator_Feed import custom_build_iterator
+from ACTIIndicatorFeed import custom_build_iterator
 import requests_mock
 import pytest
 
