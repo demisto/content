@@ -38,17 +38,20 @@ def pass_files_to_docs_review(files_for_review: List[str]) -> int:
 
 def parse_changed_files_names_to_list() -> List[str]:
     """
-    Run_doc_review script gets the file that was changed in the PR as a string (delimiter is ' ').
+    Run_doc_review script gets the files that were changed in the PR as a string (default delimiter is ';').
     This function is in charge of parsing the info and separate the files names.
 
     Returns: a list contains the changed files names.
     """
     parser = argparse.ArgumentParser(description='Parse the changed files names.')
-    parser.add_argument('-c', '--changed_files', help="The files that are passed to docs review (passed as one string,"
-                                                      " delimiter is ' '")
+    parser.add_argument('-c', '--changed_files',
+                        help="The files that are passed to docs review (passed as one string).")
+    parser.add_argument('-d', '--delimiter', help="the delimiter that separates the changed files names (determined in"
+                                                  " the call to tj-actions/changed-files@v2.0.0 in "
+                                                  "review_release_notes script).")
     args = parser.parse_args()
 
-    return args.changed_files.split()
+    return args.changed_files.split(args.delimiter)
 
 
 def main():
