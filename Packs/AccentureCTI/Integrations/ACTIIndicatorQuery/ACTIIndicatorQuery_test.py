@@ -378,7 +378,7 @@ def test_wrong_connection():
 
     """
 
-    from ACTI_Indicator_Query import test_module
+    from ACTIIndicatorQuery import test_module
     with requests_mock.Mocker() as m:
         mock_address = 'https://test.com/rest/threatindicator/v0/'
         m.get(mock_address, status_code=401, json={})
