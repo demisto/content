@@ -577,9 +577,8 @@ def sheets_value_append(service: Resource, args: dict) -> CommandResults:
     markdown = '### Success\n'
     return CommandResults(readable_output=markdown)
 
+
 # disable-secrets-detection-start
-
-
 #@staticmethod
 def get_http_client_with_proxy(proxy, insecure):
     """
@@ -608,7 +607,7 @@ def get_http_client_with_proxy(proxy, insecure):
     return httplib2.Http(disable_ssl_certificate_validation=insecure)
 
 
-def build_and_authenticate(params):
+def build_and_authenticate(params: dict):
     """
     Return a service object via which can call GRM API.
 
@@ -623,7 +622,7 @@ def build_and_authenticate(params):
     service_account_credentials = json.loads(service_account_credentials.get('password'))
     credentials = service_account.ServiceAccountCredentials.from_json_keyfile_dict(service_account_credentials,
                                                                                    scopes=SCOPES)
-    # add delegation to help manage the UI to a google-account
+    # add delegation to help manage the UI - link to a google-account
     if params.get('user_id', None) is not None:
         credentials = credentials.create_delegated(params.get('user_id'))
 
@@ -637,44 +636,9 @@ def build_and_authenticate(params):
         return build('sheets', 'v4', credentials=credentials)
 
 
-def connect_to_google_client(params: dict):
-    service_account_credentials = params.get('service_account_credentials', {})
-    service_account_credentials = service_account_credentials.get('password')
-    creds = service_account.Credentials.from_service_account_info(json.loads(service_account_credentials), scopes=SCOPES)
-    # creds = service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
-
-    return build('sheets', 'v4', credentials=creds)
-
-
 def test_module() -> str:
     return "ok"
 
-#
-#     message: str = ''
-#     try:
-#         # TODO: ADD HERE some code to test connectivity and authentication to your service.
-#         # This  should validate all the inputs given in the integration configuration panel,
-#         # either manually or by using an API that uses them.
-#         message = 'ok'
-#     except DemistoException as e:
-#         if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
-#             message = 'Authorization Error: make sure API Key is correctly set'
-#         else:
-#             raise e
-#     return message
-#
-
-    #
-    # try:
-    #     service_account_credentials = demisto.params().get('service_account_credentials', {}).get('password')
-    #     service_account_credentials = json.loads(service_account_credentials)
-    #     creds = service_account.Credentials.from_service_account_info(service_account_credentials, scopes=SCOPES)
-    #     # creds = service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
-    #     service = build('sheets', 'v4', credentials=creds)
-    # except Exception as e:
-    #     return_error(f"Failed to connect to Google API client {e}")
-    #
-    #
 
 
 ''' MAIN FUNCTION '''
@@ -686,32 +650,11 @@ def main() -> None:
     :rtype:
     """
 
-    # TODO: make sure you properly handle authentication
-    # api_key = demisto.params().get('credentials', {}).get('password')
-
-    # get the service API url
-    # base_url = urljoin(demisto.params()['url'], '/api/v1')
-
-    # if your Client class inherits from BaseClient, SSL verification is
-    # handled out of the box by it, just pass ``verify_certificate`` to
-    # the Client constructor
-    # verify_certificate = not demisto.params().get('insecure', False)
-
-    # if your Client class inherits from BaseClient, system proxy is handled
-    # out of the box by it, just pass ``proxy`` to the Client constructor
-    # proxy = demisto.params().get('proxy', False)
-    service = {}
-
     demisto.debug(f'Command being called is {demisto.command()}')
-    # TODO: Omer check where to put this. here i also need to add to take the credentials
 
     try:
-        # TODO: Make sure you add the proper headers for authentication
-        # (i.e. "Authorization": {api key})
-        #service = connect_to_google_client(demisto.params())
         service = build_and_authenticate(demisto.params())
         if demisto.command() == 'test-module':
-            # This is the call made when pressing the integration Test button.
             return_results(test_module())
         elif demisto.command() == 'google-sheets-spreadsheet-create':
             return_results(create_spreadsheet(service, demisto.args()))
