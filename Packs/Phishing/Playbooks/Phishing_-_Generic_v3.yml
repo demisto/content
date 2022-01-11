@@ -2787,6 +2787,7 @@ inputs:
     The number of URLs to extract from the email HTML and analyze in the "DBotPredictURLPhishing" automation.
     This automation runs several checks to determine the score of the URLs found in the email, sets a verdict for URLs found as "Suspicious" or "Malicious", and adds these URLs as indicators. Based on the verdict, the incident severity is set (Medium for "Suspicious" and High for "Malicious").
     Note:
+    - Please install the "Phishing URL" pack in order to use it.
     - False/True positives are possible.
     - This automation may take a few minutes to run.
     - To increase result accuracy, it is recommended to install and enable the "Whois" pack (optional).
