@@ -2293,16 +2293,16 @@ tasks:
         \ to the associated incident fields (Phishing SCL Score, Phishing PCL Score,\
         \ and Phishing BCL Score).\nIt also does the following:\n1) Sets the email\
         \ classification to \"spam\" if the SCL score is equal to or greater than\
-        \ 5.\n2) Set the incident severity according to the playbook inputs (default\
+        \ 5.\n2) Sets the incident severity according to the playbook inputs (default\
         \ is: PCL/BCL - Medium, SCL - Low). The severity of the incident is set only\
         \ when one (or more) of the following occurs:\n  - PCL (Phishing Confidence\
-        \ Level) For a score between and including 4-8: The message content is likely\
+        \ Level) score between and including 4-8: The message content is likely\
         \ to be phishing.\n  - [BCL](https://docs.microsoft.com/en-us/microsoft-365/security/office-365-security/bulk-complaint-level-values?view=o365-worldwide)\
-        \ (Bulk Complaint Level) For a score between and including 4-7: The message\
+        \ (Bulk Complaint Level) score between and including 4-7: The message\
         \ is from a bulk sender that generates a mixed number of complaints. \n  \
         \  For a score between and including 8-9: The message is from a bulk sender\
         \ that generates a high number of complaints.\n  - [SCL](https://docs.microsoft.com/en-us/microsoft-365/security/office-365-security/spam-confidence-levels?view=o365-worldwide)\
-        \ (Spam Confidence Level) For a score between and including 5-6: Spam filtering\
+        \ (Spam Confidence Level) score between and including 5-6: Spam filtering\
         \ marks the message as spam. \n    For a score of 9: Spam filtering marks\
         \ the message as high confidence spam. See [anti-spam stamps](https://docs.microsoft.com/en-us/exchange/antispam-and-antimalware/antispam-protection/antispam-stamps?view=exchserver-2019)."
       playbookName: Process Microsoft's Anti-Spam Headers
@@ -2787,7 +2787,7 @@ inputs:
     The number of URLs to extract from the email HTML and analyze in the "DBotPredictURLPhishing" automation.
     This automation runs several checks to determine the score of the URLs found in the email, sets a verdict for URLs found as "Suspicious" or "Malicious", and adds these URLs as indicators. Based on the verdict, the incident severity is set (Medium for "Suspicious" and High for "Malicious").
     Note:
-    - Please install the "Phishing URL" pack in order to use it.
+    - You need to install the "Phishing URL" pack to use this automation.
     - False/True positives are possible.
     - This automation may take a few minutes to run.
     - To increase result accuracy, it is recommended to install and enable the "Whois" pack (optional).
