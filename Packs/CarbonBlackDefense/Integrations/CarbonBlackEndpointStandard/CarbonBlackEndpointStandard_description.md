@@ -38,3 +38,5 @@ In this integration we use 2 rest API's with 2 different permissions. One for th
 
 Carbon Black Cloud Endpoint Standard uses Advanced Search Queries to query for events and processes. Click [here](https://developer.carbonblack.com/resources/query_overview.pdf) for more information
 about Advanced Search Queries.
+
+### Some small change
