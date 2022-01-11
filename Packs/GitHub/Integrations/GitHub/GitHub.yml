@@ -668,6 +668,12 @@ script:
       name: issue_number
       required: true
       secret: false
+    - default: false
+      description: 'Only show notifications updated after the given time. This is a timestamp in ISO 8601 format: YYYY-MM-DDTHH:MM:SSZ.'
+      isArray: false
+      name: since
+      required: false
+      secret: false
     deprecated: false
     description: Lists comments on an issue.
     execution: false
