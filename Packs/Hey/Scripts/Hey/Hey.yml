@@ -87,7 +87,7 @@ outputs:
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: demisto/rakyll-hey:1.0.0.21598
+dockerimage: demisto/rakyll-hey:1.0.0.24037
 runas: DBotWeakRole
 tests:
 - No test
