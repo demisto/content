@@ -456,7 +456,7 @@ function trigger_gitlab_ci {
 
   curl --request POST \
     --form token="${gitlab_token}" \
-    --form ref="$1" \
+    --form ="$1" \
     --form "${variables}" \
     --form "variables[SLACK_CHANNEL]=${slack_channel}" \
     --form "variables[PACKS_TO_UPLOAD]=${packs}" \
@@ -570,7 +570,7 @@ content_hash=$(git rev-parse --short origin/${content_branch_name})
 if [ -n "$sdk_branch_name" ]; then
   sdk_hash=$(git rev-parse --short origin/${sdk_branch_name})
 else
-  sdk_hash="sdk_release"
+  sdk_hash="latest_sdk_release"
 fi
 new_content_branch="${sdk_hash}_${content_hash}_UploadFlow_test"
 
