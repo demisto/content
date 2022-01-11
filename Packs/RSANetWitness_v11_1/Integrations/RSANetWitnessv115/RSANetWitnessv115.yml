@@ -50,9 +50,7 @@ configuration:
   name: isFetch
   required: false
   type: 8
-description: RSA NetWitness Platform provides systems Logs, Network, and endpoint
-  visibility for real-time collection, detection, and automated response with the
-  Demisto Enterprise platform.
+description: RSA NetWitness Platform provides systems Logs, Network, and endpoint visibility for real-time collection, detection, and automated response with the Demisto Enterprise platform. Providing full session analysis, customers can extract critical data and effectively operate security operations automated playbook.
 display: RSA NetWitness v11.5 (Beta)
 name: RSANetWitnessv115
 script:
@@ -2479,6 +2477,6 @@ script:
   type: python
 tests:
 - RSANetWitnessv115-Test
-defaultmapperin: RSA NetWitness v11.5 mapper
+defaultmapperin: RSA NetWitness v11.5 classifier
 fromversion: 5.5.0
 beta: true
