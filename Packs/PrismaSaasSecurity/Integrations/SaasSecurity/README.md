@@ -1,6 +1,6 @@
 Use the SaaS Security integration to protect against cloud‑based threats by scanning and analyzing all your assets; applying Security policy to identify exposures, external collaborators, risky user behavior, and sensitive documents; and identifying the potential risks associated with each asset.
 
-## Configure SaaSSecurity on Cortex XSOAR
+## Configure SaaS Security on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for **SaaS Security**.
@@ -8,27 +8,26 @@ Use the SaaS Security integration to protect against cloud‑based threats by sc
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Server URL | https://api.aperture.paloaltonetworks.com (US)<br/>https://api.aperture-eu.paloaltonetworks.com (EU)<br/>https://api.aperture-apac.paloaltonetworks.com (APAC) | True |
-    | Client ID | Saas Security Client ID | True |
-    | Client Secret | Saas Security Client Secret | True |
-    | Fetch incidents | Whether to fetch incidents from the SaaS Security platform | False |
-    | Incidents Fetch Interval |  | False |
-    | Incident type |  | False |
+    | Server URL | The instance configuration URL based on the server location: https://api.aperture.paloaltonetworks.com (US)<br/>https://api.aperture-eu.paloaltonetworks.com (EU)<br/>https://api.aperture-apac.paloaltonetworks.com (APAC) | True |
+    | Client ID | Saas Security Client ID. See instructions below. | True |
+    | Client Secret | Saas Security Client Secret. See See instructions below. | True |
+    | Fetch incidents | If selected, fetches incidents from SaaS Security. | False |
+    | Incidents Fetch Interval | Frequency (in hours and minutes) by which XSOAR fetches incidents from SaaS Security when **Fetch Incidents** is selected. | False |
+    | Incident type | Incident type will be set by this field if a **Classifier** does not exist. If a **Classifier** is selected, it will take precedence.  | False |
     | Number of incidents per fetch | Minimum is 10. Maximum is 1000. | True |
     | First fetch timestamp | (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | False |
-    | Fetch only incidents with matching state |  | False |
-    | Fetch only incidents with matching severity | If nothing is selected, all severities will be used. | False |
-    | Fetch only incidents with matching status | If nothing is selected, all statuses will be used. | False |
-    | Fetch only incidents with matching App IDs | Comma-separated list of Application IDs. Run the 'saas-security-get-apps'
-    command to return the Application ID, Name, and Type for all applications. | False |
-    | Incident Mirroring Direction | Select in which direction the incidents should be mirrored. You can mirror Incoming only (from SaasSecurity to Cortex XSOAR), Outgoing only (from Cortex XSOAR to SaasSecurity), or both Incoming And Outgoing. | False | 
-    | Close Mirrored XSOAR Incident | If selected, when closing the SaasSecurity incident it is mirrored in Cortex XSOAR. | False |
-    | Trust any certificate (not secure) |  | False |
+    | Fetch only incidents with matching state | Fetches only incidents with matching **All**, **Closed**, or **Open** state. If nothing is selected, **All** states will be used. | False |
+    | Fetch only incidents with matching severity | If nothing is selected, **All** severities will be used. | False |
+    | Fetch only incidents with matching status | If nothing is selected, **All** statuses will be used. | False |
+    | Fetch only incidents with matching App IDs | Comma-separated list of Application IDs. Run the 'saas-security-get-apps' command to return the **Application ID**, **Name**, and **Type** for all applications. | False |
+    | Incident Mirroring Direction | Select in which direction you want the incidents mirrored. You can mirror Incoming only (from Saas Security to Cortex XSOAR), **Outgoing** only (from Cortex XSOAR to Saas Security), or both **Incoming And Outgoing**. | False | 
+    | Close Mirrored XSOAR Incident | If selected, when the incident closes on Saas Security, the incident is mirrored (closes) in Cortex XSOAR. | False |
+    | Trust any certificate (not secure) | By default, SSL verification is enabled. If selected, connection isn’t secure and all requests return an SSL error because the certificate cannot be verified. | False |
     | Use system proxy settings |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
-## SaaS Security Incident Mirroring
+## Configure SaaS Security Incident Mirroring
 **Note this feature is available from Cortex XSOAR version 6.0.0**
 
 You can enable incident mirroring between Cortex XSOAR incidents and SaaS Security notables.
@@ -36,31 +35,44 @@ To set up mirroring, follow these instructions:
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
 2. Search for SaaS Security and select your integration instance.
 3. Enable **Fetches incidents**.
-4. In the *Incident Mirroring Direction* integration parameter, select in which direction the incidents should be mirrored:
-    - Incoming - Any changes in the following SaaS Security incidents fields (*state*, *category*, *status*, *assigned_to*, *resolved_by*, *asset_sha256*) will be reflected in Cortex XSOAR incidents.
-    - Outgoing - Any changes in the following Cortex XSOAR incidents fields (*state*, *category*) will be reflected in SaaS Security incidents.
-    - Incoming And Outgoing - Changes in Cortex XSOAR incidents and SaaS Security incidents will be reflected in both directions.
-    - None - Turns off incident mirroring.
-5. Optional: Check the *Close Mirrored XSOAR Incident* integration parameter to close the Cortex XSOAR incident when the corresponding incident is closed on SaaS Security side.
-    - Note that we don't have a closing parameter for the opposite direction (to close incident in SaaS Security which were closed in XSOAR) as this is the only use case we have in the mirror out, when we update the state and category.
-Newly fetched incidents will be mirrored in the chosen direction.
-Note: This will not effect existing incidents.
+4. In the *Incident Mirroring Direction* integration parameter, select in which direction you want the incidents to be mirrored:
+    - Incoming — Any changes in the following SaaS Security incidents fields (*state*, *category*, *status*, *assigned_to*, *resolved_by*, *asset_sha256*) will be reflected in Cortex XSOAR incidents.
+    - Outgoing — Any changes in the following Cortex XSOAR incidents fields (*state*, *category*) will be reflected in SaaS Security incidents.
+    - (Recommended) Incoming And Outgoing — Changes in Cortex XSOAR incidents and SaaS Security incidents will be reflected in both directions.
+    - None — Turns off incident mirroring.
+5. (Recommended) Select the *Close Mirrored XSOAR Incident* integration parameter to close the Cortex XSOAR incident when the corresponding incident is closed on SaaS Security.
+    - There is no closing parameter for the opposite direction (to close incidents in SaaS Security when they are closed in XSOAR). *Close Mirrored XSOAR Incident* is the only use case availabe for *mirrored out*, when the state and category are updated.
+Newly fetched incidents will be mirrored in the direction you select. However, this selection does not affect existing incidents.
    
 **Important Notes** 
  - For the mirroring to work, the *Incident Mirroring Direction* parameter needs to be set before the incident is fetched.
- - To ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and SaaS Security. 
- - The only fields that can be mirrored in from SaaS Security to Cortex XSOAR are:
+ - To ensure the mirroring works as expected, mappers are required, both for **Incoming** and **Outgoing**, to map the expected fields in Cortex XSOAR and SaaS Security. 
+ - The only fields that can be *mirrored in* from SaaS Security to Cortex XSOAR are:
     - *state*
     - *category* 
     - *status*
     - *assigned_to*
     - *resolved_by*
     - *asset_sha256*
- - The only fields that can be mirror out from XSOAR to SaaS Security are:
+ - The only fields that can be *mirrored out* from XSOAR to SaaS Security are:
     - *state*
     - *category*
 
-**Note that the categories that can be mirrored out are only for closed incident due to an API limitation.**
+**Note that the categories that can be mirrored out are only for closed incidents due to an API limitation.**
+
+## Create the Client ID and Client Secret on SaaS Security
+In the SaaS Security UI, do the following:
+Note: For more information see [SaaS Security Administrator's Guide|https://docs.paloaltonetworks.com/saas-security/saas-security-admin/saas-security-api/syslog-and-api-integration/api-client-integration/add-your-api-client-app.html]
+1. Navigate to **Settings** > **External Service**.
+2. Click **Add API Client**.
+3. Specify a unique name for the API client.
+4. Authorize the API client for the required scopes. You use these scopes in the POST request to the /oauth/token endpoint. The Required Scopes are: 
+    - Log access — Access log files. You can either provide this API client log access or add a syslog receiver for this purpose.
+    - Incident management — Retrieve and change the incident status.
+    - Quarantine management — Quarantine assets and restore quarantined assets.
+6. Copy the Client ID and Client Secret.
+Tip: Record your API client secret somewhere safe. For security purposes, it’s only shown when you create or reset the API client. If you lose your secret, you must reset it, which removes access for any integrations that still use the previous secret.
+6. Add the **Client ID** and **Client Secret** to Cortex XSOAR.
 
 
 ## Commands
@@ -69,7 +81,6 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### saas-security-incidents-get
 ***
 Retrieve incidents from the SaaS Security platform.
-
 
 #### Base Command
 
