@@ -1,0 +1,107 @@
+args:
+- description: Specify where the request should be sent. Include the URI scheme ('http'
+    or 'https').
+  name: url
+  required: true
+- auto: PREDEFINED
+  description: Specify the HTTP method to use
+  name: method
+  predefined:
+  - GET
+  - POST
+  - PUT
+  - PATCH
+  - DELETE
+  - HEAD
+  required: true
+- description: Specify a hash of headers to send with the request
+  name: headers
+  type: keyValue
+- description: body
+  name: body
+  type: textArea
+- auto: PREDEFINED
+  description: Specify the content type to use with the request
+  name: request_content_type
+  predefined:
+  - json
+  - xml
+  - form
+  - data
+- defaultValue: "10"
+  description: Specify the timeout of the HTTP request in seconds. Defaults to 10
+    seconds.
+  name: timeout
+- defaultValue: "False"
+  description: enable_redirect
+  name: enable_redirect
+- description: retry_on_status
+  isArray: true
+  name: retry_on_status
+- defaultValue: "3"
+  description: retry_count
+  name: retry_count
+- description: log_error_on_status
+  name: log_error_on_status
+- description: 'Choose how responses are converted into event data, the default is
+    to infer this from the response''s Content-type header. '
+  name: response_content_type
+- description: username
+  name: username
+- description: password
+  name: password
+- auto: PREDEFINED
+  defaultValue: "no"
+  description: save_as_file
+  name: save_as_file
+  predefined:
+  - "yes"
+  - "no"
+- defaultValue: http-file
+  description: filename
+  name: filename
+- auto: PREDEFINED
+  description: Trust any certificate (not secure)
+  name: unsecure
+  predefined:
+  - "true"
+  - "false"
+- auto: PREDEFINED
+  defaultValue: "false"
+  description: Use system proxy settings
+  name: proxy
+  predefined:
+  - "true"
+  - "false"
+comment: '[Enter a description of the script, including what function it performs
+  and any important information users need to know, for example required permissions.]'
+commonfields:
+  id: HttpV2
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 0ecf5b59-e903-416f-8202-724f5254a238
+    propagationLabels:
+    - all
+    toServerVersion: ""
+dockerimage: demisto/python3:3.9.7.24076
+enabled: true
+engineinfo: {}
+mainengineinfo: {}
+name: HttpV2
+outputs:
+- contextPath: Http.File
+  description: '[Enter a description of the data returned in this output.]'
+  type: String
+pswd: ""
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- basescript
+type: python
