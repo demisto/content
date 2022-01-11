@@ -36,7 +36,7 @@ def trigger_generic_webhook(options):
     username = options.username
     password = options.password
     body = {
-        "name": "GenericWebhook_Secrets",
+        "name": "Generic Webhook_trigger_contribution_build",
         "raw_json": {"BaseBranch": base_branch, "PullRequestNumber": pr_number, "ContribBranch": contrib_branch,
                      "ProjectID": "2596"},
     }

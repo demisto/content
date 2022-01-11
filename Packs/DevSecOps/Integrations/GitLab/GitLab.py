@@ -185,16 +185,16 @@ class Client(BaseClient):
         response = response.strip("'").strip('"')
         return response
 
-    def trigger_contrib_build(self, base_branch: str, contrib_branch: str, pr_number: int, project_id: str):
+    def trigger_build(self, base_branch: str, variables: dict, project_id: str):
         headers = self._headers
+        variables = json.loads(variables)
         data = {
             'token': self.trigger_token,
             'ref': base_branch,
-            'variables[CONTRIB_BRANCH]': contrib_branch,
-            'variables[PULL_REQUEST_NUMBER]': pr_number,
-            'variables[CI_COMMIT_BRANCH]': base_branch,
-            'variables[CI_PIPELINE_SOURCE]': 'contrib'
         }
+        for key, value in variables.items():
+            data[f'variables[{key}]'] = value
+
         return self._http_request('post', url_suffix=f'projects/{project_id}/trigger/pipeline', data=data, headers=headers)
 
 
@@ -678,7 +678,7 @@ def gitlab_get_raw_file_command(client: Client, args: Dict[str, Any]) -> Union[C
     )
 
 
-def gitlab_trigger_contribution_build_command(client: Client, args: Dict[str, Any]) -> Union[CommandResults, Dict]:
+def gitlab_trigger_build_command(client: Client, args: Dict[str, Any]) -> Union[CommandResults, Dict]:
     """
     Returns triggered pipeline for contribution build.
     Args:
@@ -692,14 +692,13 @@ def gitlab_trigger_contribution_build_command(client: Client, args: Dict[str, An
     Returns:
         (CommandResults).
     """
-    base_branch = args.get('base_branch', '')
-    contrib_branch = args.get('contrib_branch', '')
-    pr_number = args.get('pr_number', '')
+    base_branch = args.get('ref_branch', '')
     project_id = str(args.get('project_id', ''))
+    variables = args.get('trigger_variables', {})
     if not client.trigger_token:
         return_error("A trigger token is required in the integration instance configuration")
 
-    response = client.trigger_contrib_build(base_branch, contrib_branch, pr_number, project_id)
+    response = client.trigger_build(base_branch, variables, project_id)
 
     output = {k: v for k, v in response.items() if k in PIPELINE_FIELDS_TO_EXTRACT}
 
@@ -759,7 +758,7 @@ def main():
             'gitlab-issue-edit': gitlab_edit_issue_command,
             'gitlab-group-projects-list': gitlab_group_projects_list_command,
             'gitlab-raw-file-get': gitlab_get_raw_file_command,
-            'gitlab-trigger-contribution-build': gitlab_trigger_contribution_build_command,
+            'gitlab-trigger-build': gitlab_trigger_build_command,
         }
 
         if command == 'test-module':
