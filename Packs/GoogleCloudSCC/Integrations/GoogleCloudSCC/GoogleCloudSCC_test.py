@@ -1018,3 +1018,54 @@ def test_validate_with_regex():
         validate_with_regex("validation error", r"^\d{1,4}$", "12345")
 
     assert str(e.value) == "validation error"
+
+
+def test_finding_state_update_command(client):
+    """
+    Scenario: Validates command result for update-finding command.
+
+    Given:
+    - command arguments given for update finding command
+
+    Then:
+    - Ensure command should return proper outputs.
+    """
+    from GoogleCloudSCC import finding_state_update_command
+    with open('TestData/update_finding_response.json') as file:
+        mock_data = json.load(file)
+    with open('./TestData/update_finding_ec.json') as f:
+        finding_ec = json.load(f)
+    client.update_state = Mock(return_value=mock_data)
+
+    arguments = {
+        "state": "ACTIVE",
+        "name": "name"
+    }
+    command_output = finding_state_update_command(client, arguments)
+
+    assert command_output.outputs_key_field == "name"
+    assert command_output.raw_response == mock_data
+    assert command_output.to_context()["EntryContext"] == finding_ec
+
+
+def test_finding_state_update_command_invalid_args(client):
+    """
+    Scenario: Validates command result for update-finding command.
+
+    Given:
+    - command arguments given for update finding command
+
+    Then:
+    - Ensure command should return proper outputs.
+    """
+    from GoogleCloudSCC import finding_state_update_command
+
+    arguments = {
+        "state": "dummy",
+        "name": "name"
+    }
+
+    with pytest.raises(ValueError) as err:
+        finding_state_update_command(client, arguments)
+
+    assert str(err.value) == ERROR_MESSAGES["INVALID_STATE_ERROR"]
