@@ -637,7 +637,8 @@ List comments on an issue
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| issue_number | The number of the issue to list comments for. | Required | 
+| issue_number | The number of the issue to list comments for. | Required |
+| since | Only show notifications updated after the given time. This is a timestamp in ISO 8601 format: YYYY-MM-DDTHH:MM:SSZ. | Optional |
 
 #### Context Output
 
