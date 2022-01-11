@@ -26,8 +26,6 @@ trigger-private-build:
 run-unittests-and-lint:
   extends:
     - .run-unittests-and-lint
-  rules:
-    - if: '$NIGHTLY'
 
 
 # runs in circle for the on-push flow (because we need to run it there for contributors anyways)
@@ -123,6 +121,10 @@ create-instances:
     - |
       if [[ -f ./Tests/failed_tests.txt ]]; then
         cp ./Tests/failed_tests.txt $ARTIFACTS_FOLDER/failed_tests.txt
+      fi
+    - |
+      if [[ -f ./Tests/succeeded_tests.txt ]]; then
+        cp ./Tests/succeeded_tests.txt $ARTIFACTS_FOLDER/succeeded_tests.txt
       fi
     - |
       if [ -z "${TIME_TO_LIVE}" -a "$CI_PIPELINE_SOURCE" = "contrib" ]; then

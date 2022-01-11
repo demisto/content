@@ -1,6 +1,6 @@
 Use the Atlassian Jira v2 integration to manage Jira issues and create Cortex XSOAR incidents from Jira projects.
 
-This integration was integrated and tested with version 1001.0.0-SNAPSHOT of Jira.
+This integration was integrated and tested with: Jira Cloud, Jira v8.19.1.
 For more information about JQL syntax, go to https://www.atlassian.com/software/jira/guides/expand-jira/jql.
 
 ## Use Cases
@@ -548,7 +548,8 @@ Gets the Account ID for a given user's attribute.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | attribute | The user's attribute value. Can be Username or Email address. | Required | 
-| max_results | The maximum number of users to pull when searching for a matching user (default is 50). The maximum allowed value is dictated by the JIRA property 'jira.search.views.default.max'. If you specify a value that is higher than this number, your search results will be truncated. | Optional | 
+| max_results | The maximum number of users to pull when searching for a matching user (default is 50). The maximum allowed value is dictated by the JIRA property 'jira.search.views.default.max'. If you specify a value that is higher than this number, your search results will be truncated. | Optional |
+| is_jirav2api | Whether the server is on prem and uses the REST v2 API. | Optional |
 
 
 #### Context Output
