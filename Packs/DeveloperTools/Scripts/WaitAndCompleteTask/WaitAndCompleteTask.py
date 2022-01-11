@@ -26,7 +26,7 @@ def get_incident_tasks_by_state(incident_id: int, task_states: Optional[list] = 
     }
     # leave states empty to get all tasks
     if task_states:
-        args['states'] = task_states
+        args['states'] = ','.join(task_states)
     try:
         raw_response = demisto.executeCommand('DemistoGetIncidentTasksByState', args=args)
         return raw_response[0].get("Contents")
