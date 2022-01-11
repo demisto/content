@@ -97,6 +97,7 @@ tasks:
     scriptarguments:
       indicator:
         simple: exit.com
+    reputationcalc: 2
     separatecontext: false
     view: |-
       {
