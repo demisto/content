@@ -3257,7 +3257,7 @@ script:
       description: Email of the user to reactivate
     description: Reactivate user
     execution: true
-  dockerimage: demisto/python3:3.9.9.25564
+  dockerimage: demisto/python3:3.10.1.25933
   isfetch: true
   runonce: false
   longRunning: true

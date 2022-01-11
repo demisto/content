@@ -2,10 +2,10 @@
     "name": "Bitglass",
     "description": "Bitglass integration and playbooks",
     "support": "partner",
-    "currentVersion": "1.0.13",
+    "currentVersion": "1.0.0",
     "author": "alexeiyur@gmail.com",
     "url": "https://bitglass.com",
-    "email": "",
+    "email": "support@bitglass.com",
     "categories": [
         "Analytics & SIEM"
     ],

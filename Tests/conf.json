@@ -4805,9 +4805,6 @@
         {
             "integrations": "KafkaV3",
             "playbookID": "KafkaV3 Test"
-        },
-        {
-            "playbookID": "Bitglass_App-Test"
         }
     ],
     "skipped_tests": {
