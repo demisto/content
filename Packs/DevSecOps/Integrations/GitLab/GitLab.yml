@@ -1133,7 +1133,7 @@ script:
     - contextPath: GitLab.Pipeline.user.web_url
       description: Web URL of the user who triggered the pipeline.
       type: String
-  dockerimage: demisto/python3:3.9.9.25564
+  dockerimage: demisto/python3:3.10.1.25933
   feed: false
   isfetch: false
   longRunning: false
