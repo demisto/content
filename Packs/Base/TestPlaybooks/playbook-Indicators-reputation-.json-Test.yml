@@ -218,7 +218,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: foo@test.com
+              simple: foo[@]test.com
       - - operator: containsGeneral
           left:
             value:
