@@ -1,3 +1,4 @@
+id: Phishing - Core - Test - Actual Incident
 version: -1
 name: Phishing - Core - Test - Actual Incident
 description: This playbooks runs on an incident of type Phishing.
@@ -109,7 +110,7 @@ tasks:
     nexttasks:
       '#none#':
       - "24"
-      - "25"
+      - "39"
     scriptarguments:
       filename:
         simple: attachment.eml
@@ -250,118 +251,6 @@ tasks:
         "position": {
           "x": 640,
           "y": 860
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "25":
-    id: "25"
-    taskid: 8992ff65-c24a-47ed-8bdd-23dd7ec8020e
-    type: playbook
-    task:
-      id: 8992ff65-c24a-47ed-8bdd-23dd7ec8020e
-      version: -1
-      name: Complete manual remediation
-      description: Waits for a certain task status, and/or completes the task.
-      playbookName: Wait And Complete Task By Status
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "26"
-    scriptarguments:
-      CompleteTask:
-        simple: "True"
-      IncidentID:
-        complex:
-          root: incident
-          accessor: id
-      TaskName:
-        simple: Manually remediate the incident
-      TaskStates:
-        simple: Waiting
-    separatecontext: true
-    loop:
-      iscommand: false
-      builtincondition:
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: FoundTaskNames
-            iscontext: true
-          right:
-            value:
-              simple: Manually remediate the incident
-      exitCondition: ""
-      wait: 8
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": -30,
-          "y": 730
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "26":
-    id: "26"
-    taskid: a3ecdcf6-6bd0-4101-8a07-0c46fa3d2413
-    type: playbook
-    task:
-      id: a3ecdcf6-6bd0-4101-8a07-0c46fa3d2413
-      version: -1
-      name: Wait for incident to close
-      description: Waits for a certain task status, and/or completes the task.
-      playbookName: Wait And Complete Task By Status
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "27"
-    scriptarguments:
-      CompleteTask:
-        simple: "False"
-      IncidentID:
-        complex:
-          root: incident
-          accessor: id
-      TaskName:
-        simple: Close investigation
-      TaskStates:
-        simple: Completed
-    separatecontext: true
-    loop:
-      iscommand: false
-      builtincondition:
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: FoundTaskNames
-            iscontext: true
-          right:
-            value:
-              simple: Close investigation
-      exitCondition: ""
-      wait: 3
-      max: 20
-    view: |-
-      {
-        "position": {
-          "x": -30,
-          "y": 910
         }
       }
     note: false
@@ -830,6 +719,98 @@ tasks:
         "position": {
           "x": -1400,
           "y": 1710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: b5d766e6-8270-4eb4-82ae-7b331756e0af
+    type: regular
+    task:
+      id: b5d766e6-8270-4eb4-82ae-7b331756e0af
+      version: -1
+      name: Complete manual remediation
+      description: Wait and complete tasks by given status. Used for test playbooks.
+      scriptName: WaitAndCompleteTask
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "40"
+    scriptarguments:
+      complete_task:
+        simple: "true"
+      incident_id:
+        complex:
+          root: incident
+          accessor: id
+      interval_between_tries:
+        simple: "10"
+      max_timeout:
+        simple: "1000"
+      task_name:
+        simple: Manually remediate the incident
+      task_states:
+        simple: Waiting
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -30,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: 8dda29b3-d92c-4ca5-8e70-785ada2eac4b
+    type: regular
+    task:
+      id: 8dda29b3-d92c-4ca5-8e70-785ada2eac4b
+      version: -1
+      name: Wait for incident to close
+      description: Wait and complete tasks by given status. Used for test playbooks.
+      scriptName: WaitAndCompleteTask
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      complete_task:
+        simple: "false"
+      incident_id:
+        complex:
+          root: incident
+          accessor: id
+      interval_between_tries:
+        simple: "3"
+      max_timeout:
+        simple: "60"
+      task_name:
+        simple: Close investigation
+      task_states:
+        simple: Completed
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -30,
+          "y": 900
         }
       }
     note: false
