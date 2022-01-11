@@ -1,15 +1,16 @@
 import os
 import shutil
-import dateparser
+from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 from urllib import parse
-from typing import List, Tuple, Dict, Callable, Any, Union, Optional
 
-from CommonServerPython import *
+import dateparser
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
-
+# TEST
 COMMAND_NOT_IMPLEMENTED_MSG = 'Command not implemented'
 
 TICKET_STATES = {
