@@ -46,3 +46,4 @@ Blocklist
 Spamhaus
 SSL
 Prisma
+Gitlab
