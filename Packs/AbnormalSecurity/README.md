@@ -7,4 +7,4 @@ The integration pack allows:
 • Retrieving email threat campaign data using Cortex XSOAR
 • Retrieving email anomaly cases using Cortex XSOAR
 
-For more information on Abnormal Security, please visit www.abnormalsecurity.com
+For more information on Abnormal Security, please visit www.abnormalsecurity.com.
