@@ -8,3 +8,6 @@ ignore=RM106
 ignore=auto-test
 [file:1_0_1.md]
 ignore=RM104
+
+[file:1_0_1.md]
+ignore=RM104
