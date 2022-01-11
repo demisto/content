@@ -20,7 +20,6 @@
         "andrew-expanse"
     ],
     "marketplaces": [
-        "xsoar",
-        "marketplacev2"
+        "xsoar"
     ]
 }
