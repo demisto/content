@@ -7,7 +7,16 @@ QUERY_ISSUE_RESULT = {'Ticket(val.Id == obj.Id)':
         }
     ]
 }
-
+QUERY_ISSUE_RESULT_WITH_CUSTOM_FIELDS = {'Ticket(val.Id == obj.Id)':
+    [
+        {
+            'Id': '12652', 'Key': 'VIK-3', 'Summary': 'JiraTestMohitM', 'Status': 'To Do', 'Assignee': 'null(null)',
+            'Creator': 'jon doe(admin@demistodev.com)', 'Priority': 'High', 'ProjectName': 'VikTest', 'DueDate': None,
+            'Created': '2019-05-04T00:44:31.743+0300', 'LastSeen': None, 'LastUpdate': '2019-05-15T21:24:07.222+0300',
+            'Owner': 'John Doe'
+        }
+    ]
+}
 GET_ISSUE_OUTPUTS_RESULT = {'Ticket(val.Id == obj.Id)':
     [
         {

@@ -124,6 +124,25 @@ def test_issue_query_command_with_results(mocker):
     _, outputs, _ = issue_query_command("status!=Open", max_results=1)
     assert outputs == QUERY_ISSUE_RESULT
 
+def test_issue_query_command_with_custom_fields_with_results(mocker):
+    """
+    Given
+    - Jira issue query command and extraFields parameters
+
+    When
+    - Sending HTTP request and getting one issues from the query
+
+    Then
+    - Verify outputs
+    """
+    from JiraV2 import issue_query_command
+    from test_data.raw_response import QUERY_ISSUE_RESPONSE, FIELDS_RESPONSE
+    from test_data.expected_results import QUERY_ISSUE_RESULT_WITH_CUSTOM_FIELDS
+
+    mocker.patch("JiraV2.get_custom_field_names", return_value=FIELDS_RESPONSE)
+    mocker.patch("JiraV2.run_query", return_value=QUERY_ISSUE_RESPONSE)
+    _, outputs, _ = issue_query_command("status!=Open", extra_fields="owner", max_results=1)
+    assert outputs == QUERY_ISSUE_RESULT_WITH_CUSTOM_FIELDS
 
 def test_fetch_incidents_no_incidents(mocker):
     """

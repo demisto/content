@@ -132,7 +132,7 @@ def get_auth():
 def get_custom_field_names():
     """
     This function returns all custom fields.
-    :return: dict of custom fields: id as key and description as value.
+    :return: dict of custom fields: id as key and name as value.
     """
     custom_id_name_mapping = {}
     HEADERS['Accept'] = "application/json"

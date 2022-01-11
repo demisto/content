@@ -30,7 +30,7 @@ QUERY_ISSUE_RESPONSE = {
                     "timeZone": "Asia"
                 },
                 "customfield_10000": "{}",
-                "customfield_10001": None,
+                "customfield_10001": "John Doe",
                 "customfield_10002": None,
                 "customfield_10003": None,
                 "customfield_10004": None,
@@ -258,4 +258,8 @@ GET_ISSUE_RESPONSE = {
                     "timeZone": "Asia"
                 }
     }
+}
+
+FIELDS_RESPONSE = {
+    'customfield_10001':"Owner"
 }
