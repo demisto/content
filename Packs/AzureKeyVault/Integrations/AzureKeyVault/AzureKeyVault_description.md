@@ -1,4 +1,4 @@
-Note: this integration supports self-deployed configuration only.
+#### Note: This integration supports self-deployed configuration only.
 ### Authorize Cortex XSOAR for Azure Key Vault (self-deployed configuration)
 #### Follow these steps for a self-deployed configuration.
 
