@@ -934,27 +934,27 @@ Get detailed information about Safe Links results for the last 7 days. Yesterday
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| start_date | The start date of the date range, Yesterday is the most recent date that you can specify, and the start date can't be older than 10 days from today. Currently, the date range can't be more than seven days due to a Microsoft limitation.<br/>Time format: mm/dd/yyyy. | Required | 
-| end_date | The end date of the date range. Currently, the date range can't be more than seven days due to a Microsoft limitation. if no value was provided, the end date will be set to the time of the command execution.<br/>Time format: mm/dd/yyyy. | Required | 
-| action | Filters the results by action. You can specify multiple values separated by commas. Possible values are: Allowed, Blocked, ClickedEvenBlocked, ClickedDuringScan. | Optional | 
-| app_names | Filters the results by the app where the link was found. You can specify multiple values separated by commas. Possible values are: Email Client, Excel, OneNote, Others, Outlook, PowerPoint, Teams, Visio, Word. | Optional | 
-| domain | Filter the results by the specified domain in the URL. You can specify multiple values separated by commas. | Optional | 
+| start_date | The start date of the date range. Yesterday is the most recent date you can specify, and the start date can't be earlier than 10 days before today. Currently, the date range can't be more than seven days.<br/>Date format: mm/dd/yyyy. | Required | 
+| end_date | The end date of the date range. Currently, the date range can't be more than seven days. If no value was provided, the end date is set to the date of the command execution.<br/>Date format: mm/dd/yyyy. | Required | 
+| action | Filters the results by action. You can specify multiple values separated by commas. Can be "Allowed", "Blocked", "ClickedEvenBlocked", or "ClickedDuringScan". Possible values are: Allowed, Blocked, ClickedEvenBlocked, ClickedDuringScan. | Optional | 
+| app_names | Filters the results by the app where the link was found. You can specify multiple values separated by commas. Can be "Email Client", "Excel", "OneNote", "Others", "Outlook", "PowerPoint", "Teams", "Visio", or "Word". Possible values are: Email Client, Excel, OneNote, Others, Outlook, PowerPoint, Teams, Visio, Word. | Optional | 
+| domain | Filters the results by the specified domain in the URL. You can specify multiple values separated by commas. | Optional | 
 | recipient_address | Filters the results by the given recipient's email address. You can specify multiple values separated by commas. | Optional | 
-| page | Specifies the page number of the results you want to view. Valid input is a number between 1 and 1000. The default value is 1. | Optional | 
+| page | Sets the page number of the results you want to view. Valid input is a number between 1 and 1000. The default value is 1. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| O365SafeLinksStats.DetailReport.ClickedTime | date | Time when link was clicked. | 
-| O365SafeLinksStats.DetailReport.Recipient | string | Recipient that had received the link. | 
-| O365SafeLinksStats.DetailReport.URL | string | URL that was clicked. | 
-| O365SafeLinksStats.DetailReport.UrlBlocked | string | The URL was detected as malicious by Safe Links \(only the initial block, not subsequent clicks\), or the user clicked the URL while the scan in progress \(users are taken to a notification page that asks them to try again after the scan is complete\). | 
-| O365SafeLinksStats.DetailReport.UrlClicked | string | The URL is blocked, but the applicable Safe Links policy has the DoNotAllowClickThrough parameter value $false \(click through is allowed\). Updated policies aren't applied to existing messages that have already been scanned. New or updated policies are applied to new messages that were received after the policy is applied to the mailbox. | 
-| O365SafeLinksStats.DetailReport.ClickAction | string | Click Action: The action of a specific click. Possible values are: • None: We were unable to capture the verdict for the URL. The user might have clicked through the URL. • Allowed: The user was allowed to navigate to the URL. • Blocked: The User was blocked from navigating to the URL. • Pending verdict: The user was presented with the detonation pending page. • Blocked overridden: The user was blocked from navigating to the URL; however, the user overrode the block to navigate to the URL. • Pending verdict bypassed: The user presented with the detonation page; however, the user overrode the page to navigate to the URL. • Error: The user was presented with the error page. This can also mean there was an error in capturing the verdict. • Failure: There was unknown exception while capturing the verdict. The user might have clicked through the URL. | 
-| O365SafeLinksStats.DetailReport.Workload | string | Workload of the link being delivered. | 
-| O365SafeLinksStats.DetailReport.AppName | string | Application Name. | 
+| O365SafeLinksStats.DetailReport.ClickedTime | date | The date the link was clicked. | 
+| O365SafeLinksStats.DetailReport.Recipient | string | The recipient that received the link. | 
+| O365SafeLinksStats.DetailReport.URL | string | The URL that was clicked. | 
+| O365SafeLinksStats.DetailReport.UrlBlocked | string | The URL was detected as malicious by Safe Links \(only the initial block, not subsequent clicks\), or the user clicked the URL while the scan was in progress \(users are taken to a notification page that asks them to try again after the scan is complete\). | 
+| O365SafeLinksStats.DetailReport.UrlClicked | string | The URL is blocked, but the applicable Safe Links policy has the DoNotAllowClickThrough parameter value set to false \(click through is allowed\). Updated policies aren't applied to existing messages that have already been scanned. New or updated policies are applied to new messages that are received after the policy is applied to the mailbox. | 
+| O365SafeLinksStats.DetailReport.ClickAction | string | The action of a specific click. Possible values are: • None: Unable to capture the verdict for the URL. The user may have clicked through the URL. • Allowed: The user was allowed to navigate to the URL. • Blocked: The user was blocked from navigating to the URL. • Pending verdict: The user was presented with the detonation pending page. • Blocked overridden: The user was blocked from navigating to the URL; however, the user overrode the block to navigate to the URL. • Pending verdict bypassed: The user was presented with the detonation page; however, the user overrode the page to navigate to the URL. • Error: The user was presented with the error page. This can also mean there was an error in capturing the verdict. • Failure: There was an unknown exception while capturing the verdict. The user may have clicked through the URL. | 
+| O365SafeLinksStats.DetailReport.Workload | string | The workload of the delivered link. | 
+| O365SafeLinksStats.DetailReport.AppName | string | The application name. | 
 
 Known Limitations
 ----

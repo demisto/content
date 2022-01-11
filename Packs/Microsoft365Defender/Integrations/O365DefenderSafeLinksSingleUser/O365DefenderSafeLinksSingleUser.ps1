@@ -385,7 +385,7 @@ class OAuth2DeviceCodeClient {
 
         <#
             .DESCRIPTION
-            Check if device-code expired.
+            Check if device-code expired with offset of 30 seconds.
 
             .EXAMPLE
             $client.IsDeviceCodeExpired()
@@ -408,7 +408,7 @@ class OAuth2DeviceCodeClient {
         return $current_time -gt $valid_until
         <#
             .DESCRIPTION
-            Check if access-token expired.
+            Check if access-token expired with offset of 30 seconds.
 
             .EXAMPLE
             $client.IsAccessTokenExpired()

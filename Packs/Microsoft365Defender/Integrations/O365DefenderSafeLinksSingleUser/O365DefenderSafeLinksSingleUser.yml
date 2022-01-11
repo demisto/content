@@ -17,7 +17,7 @@ configuration:
   name: insecure
   type: 8
   required: false
-description: Provides URL scanning and rewriting of inbound email messages in mail flow, and time-of-click verification of URLs and links in email messages and other locations.
+description: Enables URL scanning, rewriting inbound email messages in the mail flow, time-of-click URL verification, and links in email messages and other locations.
 display: O365 Defender SafeLinks - Single User
 name: O365 Defender SafeLinks - Single User
 script:
@@ -908,7 +908,7 @@ script:
           required: false
           isArray: false
         - name: page
-          description: Sets the number of pages of results you want to view. Valid input is a number between 1 and 1000.
+          description: Sets the page number of the results you want to view. Valid input is a number between 1 and 1000. The default value is 1.
           required: false
           isArray: false
       outputs:
