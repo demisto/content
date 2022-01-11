@@ -21,6 +21,7 @@ from CommonServerUserPython import *  # noqa
 import requests
 import traceback
 import httplib2
+import urllib.parse
 from googleapiclient.discovery import build, Resource
 from oauth2client import service_account
 
@@ -478,9 +479,9 @@ def sheets_data_paste(service: Resource, args: dict) -> CommandResults:
                 }
             }
         ],
-        "includeSpreadsheetInResponse": args.get('echo_spreadsheet')
+        "includeSpreadsheetInResponse": args.get('echo_spreadsheet', None)
     }
-
+    request_to_update = remove_empty_elements(request_to_update)
     kind = args.get('data_kind')
     data_paste_req = request_to_update.get('requests')[0].get('pasteData')
     if kind == 'delimiter':
@@ -580,7 +581,7 @@ def sheets_value_append(service: Resource, args: dict) -> CommandResults:
 
 # disable-secrets-detection-start
 # @staticmethod
-def get_http_client_with_proxy(proxy, insecure):
+def get_http_client_with_proxy(proxy: bool, insecure: bool):
     """
     Create an http client with proxy with whom to use when using a proxy.
     :param proxy: Whether to use a proxy.
