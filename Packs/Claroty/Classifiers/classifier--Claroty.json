@@ -1,0 +1,134 @@
+{
+    "description": "Maps incoming Claroty incident fields.",
+    "feed": false,
+    "id": "Claroty - Incoming Mapper",
+    "mapping": {
+        "Claroty IT Incident": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Claroty Alert Resolved": {
+                    "simple": "Resolved"
+                },
+                "Claroty Alert Type": {
+                    "simple": "AlertType"
+                },
+                "Claroty Category": {
+                    "simple": "Category"
+                },
+                "Claroty Network ID": {
+                    "simple": "NetworkID"
+                },
+                "Claroty Related Assets": {
+                    "complex": {
+                        "filters": [],
+                        "root": "RelatedAssets",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "dt": {
+                                        "value": {
+                                            "simple": ".=foo(val);function foo(aa) { return { \"assetid\": aa.AssetID, \"name\": aa.Name, \"assettype\": aa.AssetType, \"vendor\": aa.Vendor};}"
+                                        }
+                                    }
+                                },
+                                "operator": "DT"
+                            }
+                        ]
+                    }
+                },
+                "Claroty Resource ID": {
+                    "simple": "ResourceID"
+                },
+                "details": {
+                    "simple": "Description"
+                }
+            }
+        },
+        "Claroty Integrity Incident": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Claroty Alert Resolved": {
+                    "simple": "Resolved"
+                },
+                "Claroty Alert Type": {
+                    "simple": "AlertType"
+                },
+                "Claroty Category": {
+                    "simple": "Category"
+                },
+                "Claroty Network ID": {
+                    "simple": "NetworkID"
+                },
+                "Claroty Related Assets": {
+                    "complex": {
+                        "filters": [],
+                        "root": "RelatedAssets",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "dt": {
+                                        "value": {
+                                            "simple": ".=foo(val);function foo(aa) { return { \"assetid\": aa.AssetID, \"name\": aa.Name, \"assettype\": aa.AssetType, \"vendor\": aa.Vendor};}"
+                                        }
+                                    }
+                                },
+                                "operator": "DT"
+                            }
+                        ]
+                    }
+                },
+                "Claroty Resource ID": {
+                    "simple": "ResourceID"
+                },
+                "details": {
+                    "simple": "Description"
+                }
+            }
+        },
+        "Claroty Security Incident": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Claroty Alert Resolved": {
+                    "simple": "Resolved"
+                },
+                "Claroty Alert Type": {
+                    "simple": "AlertType"
+                },
+                "Claroty Category": {
+                    "simple": "Category"
+                },
+                "Claroty Network ID": {
+                    "simple": "NetworkID"
+                },
+                "Claroty Related Assets": {
+                    "complex": {
+                        "filters": [],
+                        "root": "RelatedAssets",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "dt": {
+                                        "value": {
+                                            "simple": ".=foo(val);function foo(aa) { return { \"assetid\": aa.AssetID, \"name\": aa.Name, \"assettype\": aa.AssetType, \"vendor\": aa.Vendor};}"
+                                        }
+                                    }
+                                },
+                                "operator": "DT"
+                            }
+                        ]
+                    }
+                },
+                "Claroty Resource ID": {
+                    "simple": "ResourceID"
+                },
+                "details": {
+                    "simple": "Description"
+                }
+            }
+        }
+    },
+    "name": "Claroty - Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}
