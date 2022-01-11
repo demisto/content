@@ -91,28 +91,6 @@ def test_get_new_indicators(mocker, indicator_type, result):
     assert res == result
 
 
-def test_get_indicator_list():
-    """
-        Given -
-           client
-        When -
-            getting new indicators
-        Then -
-            receive list of indicators
-    """
-    import FeedMandiant
-
-    client = mock_client()
-    res_indicators = util_load_json('./test_data/result_indicators.json')
-
-    def get_new_indicators_mock(a, b, c, d):
-        return res_indicators['new_indicators']
-
-    FeedMandiant.get_new_indicators = get_new_indicators_mock
-    res = FeedMandiant.get_indicator_list(client, 2, '90 days ago', 'Indicators')
-    assert res == res_indicators['new_indicators']
-
-
 @pytest.mark.parametrize('mscore, res', [(None, 0), ('1', 1), ('22', 0), ('52', 2), ('82', 3), ('101', 0)])
 def test_get_verdict(mscore, res):
     """
@@ -209,3 +187,25 @@ def test_main(mocker, command):
     mocker.patch.object(MandiantClient, '_generate_token', return_value='token')
     mocker.patch.object(demisto, 'command', return_value=command)
     main()
+
+
+def test_get_indicator_list():
+    """
+        Given -
+           client
+        When -
+            getting new indicators
+        Then -
+            receive list of indicators
+    """
+    import FeedMandiant
+
+    client = mock_client()
+    res_indicators = util_load_json('./test_data/result_indicators.json')
+
+    def get_new_indicators_mock(a, b, c, d):
+        return res_indicators['new_indicators']
+
+    FeedMandiant.get_new_indicators = get_new_indicators_mock
+    res = FeedMandiant.get_indicator_list(client, 2, '90 days ago', 'Indicators')
+    assert res == res_indicators['new_indicators']

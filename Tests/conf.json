@@ -6,7 +6,7 @@
         {
             "integrations": ["FeedMandiant", "Demisto REST API"],
             "playbookID": "Fetch Indicators Test",
-            "fromversion": "6.0.0",
+            "fromversion": "6.1.0",
             "is_mockable": false,
             "instance_names": "FeedMandiant",
             "timeout": 2400

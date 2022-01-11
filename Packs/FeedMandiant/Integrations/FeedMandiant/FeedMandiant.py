@@ -220,7 +220,6 @@ def get_indicator_list(client: MandiantClient, limit: int, first_fetch: str, ind
 
     if indicators_list:
         new_indicators_list = indicators_list[:limit]
-
         
         last_run_dict[indicator_type + 'List'] = indicators_list[limit:]
         date_key = 'last_seen' if indicator_type == 'Indicators' else 'last_updated'
@@ -634,7 +633,7 @@ def main() -> None:
             return_results(result)
 
         elif command == 'feed-mandiant-get-indicators':
-            return_results(get_indicators_command(client, args))
+            return_results(fetch_indicators(client, args))
 
         elif command == 'fetch-indicators':
             indicators = fetch_indicators(client)
