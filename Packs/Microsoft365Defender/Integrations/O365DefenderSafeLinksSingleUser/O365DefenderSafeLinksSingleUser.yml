@@ -858,23 +858,23 @@ script:
           description: 'The date and time the rule was modified. Time format: YYYY-MM-DDThh:mm:ss+00:00.'
           type: Date
     - name: o365-defender-safelinks-detail-report-get
-      description: Get detailed information about Safe Links results for the last 7 days. Yesterday is the most recent date that you can specify.. Currently, the date range can't be more than seven days.
+      description: Gets detailed information about Safe Links results for the last 7 days. Yesterday is the most recent date you can specify. Currently, the date range can't be more than seven days.
       deprecated: false
       arguments:
         - name: start_date
           description: |-
-            The start date of the date range, Yesterday is the most recent date that you can specify, and the start date can't be older than 10 days from today. Currently, the date range can't be more than seven days due to a Microsoft limitation.
-            Time format: mm/dd/yyyy
+            The start date of the date range. Yesterday is the most recent date you can specify, and the start date can't be earlier than 10 days before today. Currently, the date range can't be more than seven days.
+            Date format: mm/dd/yyyy
           required: true
           isArray: false
         - name: end_date
           description: |-
-            The end date of the date range. Currently, the date range can't be more than seven days due to a Microsoft limitation. if no value was provided, the end date will be set to the time of the command execution.
-            Time format: mm/dd/yyyy.
+            The end date of the date range. Currently, the date range can't be more than seven days. If no value was provided, the end date is set to the date of the command execution.
+            Date format: mm/dd/yyyy.
           required: true
           isArray: false
         - name: action
-          description: Filters the results by action. You can specify multiple values separated by commas.
+          description: Filters the results by action. You can specify multiple values separated by commas. Can be "Allowed", "Blocked", "ClickedEvenBlocked", or "ClickedDuringScan".
           required: false
           isArray: false
           auto: PREDEFINED
@@ -884,7 +884,7 @@ script:
             - 'ClickedEvenBlocked'
             - 'ClickedDuringScan'
         - name: app_names
-          description: Filters the results by the app where the link was found. You can specify multiple values separated by commas.
+          description: Filters the results by the app where the link was found. You can specify multiple values separated by commas. Can be "Email Client", "Excel", "OneNote", "Others", "Outlook", "PowerPoint", "Teams", "Visio", or "Word".
           required: false
           isArray: false
           auto: PREDEFINED
@@ -899,7 +899,7 @@ script:
             - 'Visio'
             - 'Word'
         - name: domain
-          description: Filter the results by the specified domain in the URL. You can specify multiple values separated by commas.
+          description: Filters the results by the specified domain in the URL. You can specify multiple values separated by commas.
           required: false
           isArray: false
         - name: recipient_address
@@ -908,51 +908,51 @@ script:
           required: false
           isArray: false
         - name: page
-          description: Specifies the page number of the results you want to view. Valid input is a number between 1 and 1000. The default value is 1.
+          description: Sets the number of pages of results you want to view. Valid input is a number between 1 and 1000.
           required: false
           isArray: false
       outputs:
       - contextPath: O365SafeLinksStats.DetailReport.ClickedTime
-        description: Time when link was clicked.
+        description: The date the link was clicked.
         type: date
       - contextPath: O365SafeLinksStats.DetailReport.Recipient
-        description: Recipient that had received the link.
+        description: The recipient that received the link.
         type: string
       - contextPath: O365SafeLinksStats.DetailReport.URL
-        description: URL that was clicked.
+        description: The URL that was clicked.
         type: string
       - contextPath: O365SafeLinksStats.DetailReport.UrlBlocked
         description: The URL was detected as malicious by Safe Links (only the initial
-          block, not subsequent clicks), or the user clicked the URL while the scan
+          block, not subsequent clicks), or the user clicked the URL while the scan was
           in progress (users are taken to a notification page that asks them to try
           again after the scan is complete).
         type: string
       - contextPath: O365SafeLinksStats.DetailReport.UrlClicked
         description: The URL is blocked, but the applicable Safe Links policy has the
-          DoNotAllowClickThrough parameter value $false (click through is allowed).
+          DoNotAllowClickThrough parameter value set to false (click through is allowed).
           Updated policies aren't applied to existing messages that have already been
-          scanned. New or updated policies are applied to new messages that were received
+          scanned. New or updated policies are applied to new messages that are received
           after the policy is applied to the mailbox.
         type: string
       - contextPath: O365SafeLinksStats.DetailReport.ClickAction
-        description: 'Click Action: The action of a specific click. Possible values
-          are: • None: We were unable to capture the verdict for the URL. The user might
+        description: 'The action of a specific click. Possible values
+          are: • None: Unable to capture the verdict for the URL. The user may
           have clicked through the URL. • Allowed: The user was allowed to navigate
-          to the URL. • Blocked: The User was blocked from navigating to the URL. •
+          to the URL. • Blocked: The user was blocked from navigating to the URL. •
           Pending verdict: The user was presented with the detonation pending page.
           • Blocked overridden: The user was blocked from navigating to the URL; however,
           the user overrode the block to navigate to the URL. • Pending verdict bypassed:
-          The user presented with the detonation page; however, the user overrode the
+          The user was presented with the detonation page; however, the user overrode the
           page to navigate to the URL. • Error: The user was presented with the error
           page. This can also mean there was an error in capturing the verdict. • Failure:
-          There was unknown exception while capturing the verdict. The user might have
+          There was an unknown exception while capturing the verdict. The user may have
           clicked through the URL.'
         type: string
       - contextPath: O365SafeLinksStats.DetailReport.Workload
-        description: Workload of the link being delivered.
+        description: The workload of the delivered link.
         type: string
       - contextPath: O365SafeLinksStats.DetailReport.AppName
-        description: Application Name.
+        description: The application name.
         type: string
   isfetch: false
   runonce: false
