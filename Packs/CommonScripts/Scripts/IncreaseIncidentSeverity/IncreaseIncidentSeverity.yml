@@ -1,6 +1,7 @@
 commonfields:
   id: IncreaseIncidentSeverity
   version: -1
+  id_x2: IncreaseAlertSeverity
 name: IncreaseIncidentSeverity
 script: ''
 type: javascript
@@ -30,4 +31,6 @@ runonce: false
 runas: DBotWeakRole
 fromversion: 5.0.0
 tests:
-  - IncreaseIncidentSeverity-Test
+- IncreaseIncidentSeverity-Test
+name_x2: IncreaseAlertSeverity
+comment_x2: Optionally increases the alert severity to the new value if it is greater than the existing severity.

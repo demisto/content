@@ -1,6 +1,7 @@
 commonfields:
   id: hideFieldsOnNewIncident
   version: -1
+  id_x2: hideFieldsOnNewAlert
 name: hideFieldsOnNewIncident
 fromversion: 5.0.0
 script: >
@@ -42,3 +43,5 @@ runonce: false
 dockerimage: demisto/python:2.7.18.24066
 tests:
 - No tests (auto formatted)
+name_x2: hideFieldsOnNewAlert
+comment_x2: When you apply this script to an alert field, that alert field is hidden for new alerts, and it displays in edit mode.

@@ -1,6 +1,7 @@
 commonfields:
   id: DemistoLinkIncidents
   version: -1
+  id_x2: DemistoLinkAlerts
 name: DemistoLinkIncidents
 script: ''
 type: javascript
@@ -30,3 +31,5 @@ dependson:
 fromversion: 5.0.0
 tests:
 - no test
+name_x2: DemistoLinkAlerts
+comment_x2: Link two or more alerts

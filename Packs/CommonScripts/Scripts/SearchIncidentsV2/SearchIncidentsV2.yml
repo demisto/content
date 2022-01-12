@@ -12,22 +12,19 @@ args:
   required: false
   secret: false
 - default: false
-  description: 'A comma-separated list of incident statuses by which to filter the
-    results. For example: assigned.'
+  description: 'A comma-separated list of incident statuses by which to filter the results. For example: assigned.'
   isArray: true
   name: status
   required: false
   secret: false
 - default: false
-  description: 'A comma-separated list of incident statuses to exclude from the results.  For
-    example: assigned.'
+  description: 'A comma-separated list of incident statuses to exclude from the results.  For example: assigned.'
   isArray: true
   name: notstatus
   required: false
   secret: false
 - default: false
-  description: A comma-separated list of incident close reasons by which to filter
-    the results.
+  description: A comma-separated list of incident close reasons by which to filter the results.
   isArray: true
   name: reason
   required: false
@@ -93,8 +90,7 @@ args:
   required: false
   secret: false
 - default: false
-  description: Use free form query (use Lucene syntax) as filter. All other filters
-    will be ignored when this filter is used.
+  description: Use free form query (use Lucene syntax) as filter. All other filters will be ignored when this filter is used.
   isArray: false
   name: query
   required: false
@@ -126,6 +122,7 @@ comment: |-
 commonfields:
   id: SearchIncidentsV2
   version: -1
+  id_x2: SearchAlertsV2
 enabled: true
 name: SearchIncidentsV2
 outputs:
@@ -174,3 +171,10 @@ timeout: '0'
 type: python
 dockerimage: demisto/python3:3.9.8.24399
 fromversion: 5.0.0
+name_x2: SearchAlertsV2
+comment_x2: |-
+  Searches Demisto alerts.
+
+  This automation runs using the default Limited User role, unless you explicitly change the permissions.
+  For more information, see the section about permissions here:
+  https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html

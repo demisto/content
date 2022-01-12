@@ -1,6 +1,7 @@
 commonfields:
   id: CreateIncidentsForEvaluateMLModllAtProduction
   version: -1
+  id_x2: CreateAlertsForEvaluateMLModllAtProduction
 name: CreateIncidentsForEvaluateMLModllAtProduction
 comment: |-
   Artificially create incident to test model in production
@@ -85,3 +86,6 @@ runonce: false
 dockerimage: demisto/python:2.7.18.10627
 runas: DBotWeakRole
 fromversion: 5.0.0
+name_x2: CreateAlertsForEvaluateMLModllAtProduction
+comment_x2: |-
+  Artificially create alert to test model in production

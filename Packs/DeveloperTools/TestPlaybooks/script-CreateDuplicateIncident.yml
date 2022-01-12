@@ -1,6 +1,7 @@
 commonfields:
   id: CreateDuplicateIncident
   version: -1
+  id_x2: CreateDuplicateAlert
 name: CreateDuplicateIncident
 script: >
   import json
@@ -41,3 +42,5 @@ enabled: true
 scripttarget: 0
 dockerimage: demisto/dateutil
 fromversion: 5.0.0
+name_x2: CreateDuplicateAlert
+comment_x2: Create duplicate alert to the current alert.

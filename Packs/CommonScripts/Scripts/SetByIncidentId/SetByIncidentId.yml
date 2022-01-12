@@ -1,6 +1,7 @@
 commonfields:
   id: SetByIncidentId
   version: -1
+  id_x2: SetByAlertId
 name: SetByIncidentId
 script: ''
 type: python
@@ -30,8 +31,7 @@ args:
   predefined:
   - "true"
   - "false"
-  description: If false then the context key will be overwritten. If set to true then
-    the script will append to existing context key
+  description: If false then the context key will be overwritten. If set to true then the script will append to existing context key
   defaultValue: "false"
 - name: errorUnfinished
   auto: PREDEFINED
@@ -46,3 +46,11 @@ tests:
 - No test
 fromversion: 5.0.0
 dockerimage: demisto/python3:3.9.8.24399
+name_x2: SetByAlertId
+comment_x2: |-
+  Works the same as the 'Set' command, but can work across alerts by specifying 'id' as an argument.
+  Sets a value into the context with the given context key. Doesn't append by default.
+
+  This automation runs using the default Limited User role, unless you explicitly change the permissions.
+  For more information, see the section about permissions here:
+  https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html

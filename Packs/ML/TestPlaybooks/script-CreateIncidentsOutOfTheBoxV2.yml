@@ -1,6 +1,7 @@
 commonfields:
   id: CreateIncidentsOutOfTheBoxV2
   version: -1
+  id_x2: CreateAlertsOutOfTheBoxV2
 vcShouldKeepItemLegacyProdMachine: false
 name: CreateIncidentsOutOfTheBoxV2
 script: |2+
@@ -108,3 +109,5 @@ dockerimage: demisto/python3:3.9.5.20070
 runas: DBotWeakRole
 fromversion: 5.5.0
 
+name_x2: CreateAlertsOutOfTheBoxV2
+comment_x2: ''

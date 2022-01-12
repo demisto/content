@@ -20,6 +20,7 @@ comment: |-
 commonfields:
   id: CompareIncidentsLabels
   version: -1
+  id_x2: CompareAlertsLabels
 enabled: true
 name: CompareIncidentsLabels
 script: '-'
@@ -34,3 +35,10 @@ fromversion: 5.0.0
 dockerimage: demisto/python:2.7.18.24398
 tests:
 - CompareIncidentsLabels-test-playbook
+name_x2: CompareAlertsLabels
+comment_x2: |-
+  Compares the labels of two alerts. Returns the labels that are unique to each alert.
+
+  This automation runs using the default Limited User role, unless you explicitly change the permissions.
+  For more information, see the section about permissions here:
+  https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html

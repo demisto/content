@@ -1,6 +1,7 @@
 commonfields:
   id: ExposeIncidentOwner
   version: -1
+  id_x2: ExposeAlertOwner
 name: ExposeIncidentOwner
 script: ''
 type: javascript
@@ -19,3 +20,5 @@ outputs:
   description: Incident owner roles
 scripttarget: 0
 fromversion: 5.0.0
+name_x2: ExposeAlertOwner
+comment_x2: Expose the alert owner into AlertOwner context key

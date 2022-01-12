@@ -1,6 +1,7 @@
 commonfields:
   id: MarkRelatedIncidents
   version: -1
+  id_x2: MarkRelatedAlerts
 name: MarkRelatedIncidents
 script: ''
 type: javascript
@@ -24,3 +25,10 @@ scripttarget: 0
 tests:
 - No tests (auto formatted)
 fromversion: 5.0.0
+name_x2: MarkRelatedAlerts
+comment_x2: |-
+  Marks given alerts as related to current alert.
+
+  This automation runs using the default Limited User role, unless you explicitly change the permissions.
+  For more information, see the section about permissions here:
+  https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html

@@ -106,6 +106,7 @@ comment: |-
 commonfields:
   id: HashIncidentsFields
   version: -1
+  id_x2: HashAlertsFields
 enabled: false
 name: HashIncidentsFields
 outputs:
@@ -127,3 +128,7 @@ dockerimage: demisto/python3:3.9.8.24399
 tests:
 - hashIncidentFields-test
 fromversion: 5.0.0
+name_x2: HashAlertsFields
+comment_x2: |-
+  Hash fields from the alert list.
+  Search for alerts by arguments with an option to hash some of its fields.

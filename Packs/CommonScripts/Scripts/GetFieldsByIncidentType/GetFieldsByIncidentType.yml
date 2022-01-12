@@ -1,6 +1,7 @@
 commonfields:
   id: GetFieldsByIncidentType
   version: -1
+  id_x2: GetFieldsByAlertType
 name: GetFieldsByIncidentType
 script: ''
 type: python
@@ -50,3 +51,5 @@ runas: DBotWeakRole
 tests:
 - No test - unit test
 fromversion: 5.0.0
+name_x2: GetFieldsByAlertType
+comment_x2: Returns the alert field names associated to the specified alert type.

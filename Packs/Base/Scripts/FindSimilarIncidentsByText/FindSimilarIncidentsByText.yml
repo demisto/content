@@ -86,6 +86,7 @@ comment: |-
 commonfields:
   id: FindSimilarIncidentsByText
   version: -1
+  id_x2: FindSimilarAlertsByText
 enabled: true
 name: FindSimilarIncidentsByText
 outputs:
@@ -116,3 +117,12 @@ runonce: true
 tests:
 - No test
 fromversion: 5.0.0
+name_x2: FindSimilarAlertsByText
+comment_x2: |-
+  Find similar alerts by text comparison - the algorithm based on TF-IDF method.
+  To read more about this method: https://en.wikipedia.org/wiki/Tf%E2%80%93idf
+
+  This automation runs using the default Limited User role, unless you explicitly
+  change the permissions.
+  For more information, see the section about permissions here:
+  https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html

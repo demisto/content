@@ -1,21 +1,18 @@
 args:
 - default: false
-  description: Incident ID of the incident with which to update the canvas. If not
-    specified, updates the current incident.
+  description: Incident ID of the incident with which to update the canvas. If not specified, updates the current incident.
   isArray: false
   name: incidentID
   required: false
   secret: false
 - default: false
-  description: Incident IDs to draw on the canvas and relate to the main incident.
-    The format can be a list of IDs or comma-separated values.
+  description: Incident IDs to draw on the canvas and relate to the main incident. The format can be a list of IDs or comma-separated values.
   isArray: true
   name: relatedIncidentsIDs
   required: false
   secret: false
 - default: false
-  description: Indicators to draw on the canvas. The format is a list of indicator
-    objects.
+  description: Indicators to draw on the canvas. The format is a list of indicator objects.
   isArray: true
   name: indicators
   required: false
@@ -23,8 +20,7 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: multipartite
-  description: The canvas layout. Can be "multipartite", "shell", "spring", "kamada_kawai",
-    or "circular".
+  description: The canvas layout. Can be "multipartite", "shell", "spring", "kamada_kawai", or "circular".
   isArray: false
   name: layout
   predefined:
@@ -50,6 +46,7 @@ comment: Draw incidents and indicators on the canvas to map and visualize their 
 commonfields:
   id: DrawRelatedIncidentsCanvas
   version: -1
+  id_x2: DrawRelatedAlertsCanvas
 enabled: true
 name: DrawRelatedIncidentsCanvas
 script: '-'
@@ -67,3 +64,5 @@ contentitemexportablefields:
   contentitemfields:
     fromServerVersion: 6.1.0
 
+name_x2: DrawRelatedAlertsCanvas
+comment_x2: Draw alerts and indicators on the canvas to map and visualize their connections.

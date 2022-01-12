@@ -1,8 +1,7 @@
 args:
 - name: linkedIncidentIDs
   required: true
-  description: Incident ID to link to, or a comma separated list of related Incident
-    IDs.
+  description: Incident ID to link to, or a comma separated list of related Incident IDs.
 - name: action
   required: true
   auto: PREDEFINED
@@ -15,6 +14,7 @@ comment: |
 commonfields:
   id: LinkIncidentsButton
   version: -1
+  id_x2: LinkAlertsButton
 dockerimage: demisto/python3:3.9.8.24399
 enabled: true
 name: LinkIncidentsButton
@@ -29,3 +29,6 @@ type: python
 fromversion: 5.0.0
 tests:
 - No test
+name_x2: LinkAlertsButton
+comment_x2: |
+  Alert action button script to link or unlink Alerts from an Alert

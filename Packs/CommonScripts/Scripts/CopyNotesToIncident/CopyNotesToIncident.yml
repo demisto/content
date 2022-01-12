@@ -9,6 +9,7 @@ comment: Copy all entries marked as notes from current incident to another incid
 commonfields:
   id: CopyNotesToIncident
   version: -1
+  id_x2: CopyNotesToAlert
 dockerimage: demisto/python3:3.9.8.24399
 enabled: true
 name: CopyNotesToIncident
@@ -23,3 +24,5 @@ type: python
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)
+name_x2: CopyNotesToAlert
+comment_x2: Copy all entries marked as notes from current alert to another alert.

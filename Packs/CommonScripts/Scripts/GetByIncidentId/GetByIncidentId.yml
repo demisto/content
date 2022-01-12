@@ -1,6 +1,7 @@
 commonfields:
   id: GetByIncidentId
   version: -1
+  id_x2: GetByAlertId
 name: GetByIncidentId
 script: '-'
 type: python
@@ -24,3 +25,5 @@ runas: DBotWeakRole
 tests:
 - No test - tested with unittest
 fromversion: 5.0.0
+name_x2: GetByAlertId
+comment_x2: Gets a value from the specified alert's context.
