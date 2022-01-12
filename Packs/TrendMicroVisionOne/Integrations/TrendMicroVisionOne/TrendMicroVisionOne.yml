@@ -485,13 +485,13 @@ script:
       type: string
     - contextPath: VisionOne.Submit_File_to_Sandbox.digest
       description: The hash value of the file
-  dockerimage: demisto/python3:3.10.1.25933
+  dockerimage: demisto/python3:3.9.9.25564
   isFetchSamples: true
   isfetch: true
   runonce: false
   script: ''
   subtype: python3
   type: python
-fromversion: 6.0.0
+fromversion: 6.2.0
 tests:
 - No tests (auto formatted)

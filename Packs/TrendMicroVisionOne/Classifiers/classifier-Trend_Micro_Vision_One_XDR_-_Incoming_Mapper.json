@@ -458,10 +458,6 @@
                     "complex": null,
                     "simple": "impactScope.serverCount"
                 },
-                "Trend Micro Vision One XDR Severity": {
-                    "complex": null,
-                    "simple": "severity"
-                },
                 "Trend Micro Vision One XDR Workbench ID": {
                     "complex": null,
                     "simple": "workbenchId"
@@ -480,5 +476,5 @@
     "name": "Trend Micro Vision One XDR - Incoming Mapper",
     "type": "mapping-incoming",
     "version": -1,
-    "fromVersion": "6.0.0"
+    "fromVersion": "6.2.0"
 }
