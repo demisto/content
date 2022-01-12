@@ -2024,8 +2024,7 @@
             "integrations": "VMware",
             "playbookID": "VMWare Test",
             "memory_threshold": 300,
-            "timeout": 1000,
-            "validate_test": false
+            "timeout": 1000
         },
         {
             "integrations": "carbonblack-v2",
