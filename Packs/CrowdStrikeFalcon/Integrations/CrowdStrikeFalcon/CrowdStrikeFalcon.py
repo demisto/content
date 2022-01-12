@@ -1623,19 +1623,19 @@ def get_remote_data_command(args: Dict[str, Any]):
 
 def get_modified_remote_data_command(args: Dict[str, Any]):
     """
-    Gets the modified remote incident IDs.
+    Gets the modified remote incidents and detections IDs.
     Args:
         args:
             last_update: the last time we retrieved modified incidents and detections.
 
     Returns:
-        GetModifiedRemoteDataResponse object, which contains a list of the retrieved incident and detections IDs.
+        GetModifiedRemoteDataResponse object, which contains a list of the retrieved incidents and detections IDs.
     """
     remote_args = GetModifiedRemoteDataArgs(args)
 
     last_update_utc = dateparser.parse(remote_args.last_update, settings={'TIMEZONE': 'UTC'})  # convert to utc format
     last_update_utc = last_update_utc.strftime('%Y-%m-%dT%H:%M:%SZ')
-    demisto.debug(f'last_update in UTC is {last_update_utc}')
+    demisto.debug(f'Remote arguments last_update in UTC is {last_update_utc}')
 
     modified_ids_to_mirror = list()
 
