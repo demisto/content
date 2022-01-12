@@ -1,12 +1,15 @@
-import demistomock as demisto
-from CommonServerPython import *
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 """ IMPORTS """
-from distutils.util import strtobool
-from typing import List, Tuple, Dict, Any, Union
 import json
-import requests
+from distutils.util import strtobool
+from typing import Any, Dict, List, Tuple, Union
+
 import dateparser
+import requests
+
+# one
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
