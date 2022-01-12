@@ -108,6 +108,4 @@ runonce: false
 dockerimage: demisto/python3:3.9.5.20070
 runas: DBotWeakRole
 fromversion: 5.5.0
-
 name_x2: CreateAlertsOutOfTheBoxV2
-comment_x2: ''

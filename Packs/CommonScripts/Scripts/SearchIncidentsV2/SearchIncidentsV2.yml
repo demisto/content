@@ -171,9 +171,9 @@ timeout: '0'
 type: python
 dockerimage: demisto/python3:3.9.8.24399
 fromversion: 5.0.0
-name_x2: SearchAlertsV2
+name_x2: SearchAlerts
 comment_x2: |-
-  Searches Demisto alerts.
+  Searches alerts.
 
   This automation runs using the default Limited User role, unless you explicitly change the permissions.
   For more information, see the section about permissions here:
