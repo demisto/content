@@ -662,11 +662,11 @@ def get_indicators_command(client: Client, args: Dict[str, str], feed_tags: Opti
     Returns:
         Demisto Outputs.
     """
-    limit = arg_to_number(args.get('limit', '10'))
+    limit = arg_to_number(args.get('limit')) or 10
     if not feed_tags:
         feed_tags = []
 
-    indicators = client.fetch_stix_objects_from_api(test=True, type='indicator', limit=limit or 10)
+    indicators = client.fetch_stix_objects_from_api(test=True, type='indicator', limit=limit)
 
     indicators = parse_indicators(indicators, feed_tags, tlp_color)
     limited_indicators = indicators[:limit]
