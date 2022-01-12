@@ -13,6 +13,7 @@ This is an empty structure file. Check an example at;
 https://github.com/demisto/content/blob/master/Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py
 
 """
+import json
 
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
@@ -620,7 +621,11 @@ def build_and_authenticate(params: dict):
         integration will make API calls
     """
     service_account_credentials = params.get('service_account_credentials', {})
-    service_account_credentials = json.loads(service_account_credentials.get('password'))
+    if isinstance(service_account_credentials, str):
+        service_account_credentials = json.loads(service_account_credentials)
+    else:
+        service_account_credentials = json.loads(service_account_credentials.get('password'))
+
     credentials = service_account.ServiceAccountCredentials.from_json_keyfile_dict(service_account_credentials,
                                                                                    scopes=SCOPES)
     # add delegation to help manage the UI - link to a google-account
