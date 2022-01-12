@@ -1,9 +1,18 @@
 args:
-- default: false
-  description: 'Comma separated list of states. Possible values: New, InProgress,
-    Completed, Waiting, Error, Skipped, Blocked (leave empty to get all tasks)'
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'false'
+  description: 'Comma separated list of states. Possible values: New, InProgress, Completed, Waiting, Error, Skipped, Blocked (leave empty to get all tasks)'
   isArray: true
   name: task_states
+  predefined:
+  - 'New'
+  - 'InProgress'
+  - 'Completed'
+  - 'Waiting'
+  - 'Error'
+  - 'Skipped'
+  - 'Blocked'
   required: false
   secret: false
 - default: false
@@ -32,7 +41,7 @@ args:
   isArray: false
   name: max_timeout
   defaultValue: '60'
-  required: true
+  required: false
   secret: false
 - default: false
   description: 'Time (seconds) to sleep between each check iteration. '
@@ -43,7 +52,7 @@ args:
   defaultValue: '3'
 - auto: PREDEFINED
   default: false
-  defaultValue: 'true'
+  defaultValue: 'false'
   description: "Whether to also complete the task, or just check if it's completed.\
     \ Can be True or False."
   isArray: false
