@@ -113,7 +113,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: http://www.txttesturl.com
+              simple: www.txttesturl.com
       - - operator: containsGeneral
           left:
             value:
