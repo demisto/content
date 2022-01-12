@@ -1,0 +1,482 @@
+{
+    "iocs": [
+        {
+            "CustomFields": {
+                "service": "Daily Threat Feed"
+            },
+            "aggregatedReliability": "A - Completely reliable",
+            "calculatedTime": "2021-12-08T09:32:24.104143+02:00",
+            "comments": [
+                {
+                    "category": "Sighting",
+                    "content": "Sighted",
+                    "created": "2021-12-08T12:05:28.570995+02:00",
+                    "entryId": "",
+                    "id": "f814296f-6dca-4c88-86ad-68fd3871ecfa",
+                    "modified": "0001-01-01T00:00:00Z",
+                    "sortValues": null,
+                    "source": "Some Feed.Some Feed_instance_1",
+                    "type": "IndicatorCommentTimeLine",
+                    "user": "@DBot",
+                    "version": 0
+                }
+            ],
+            "expiration": "2021-12-15T12:05:31.570698+02:00",
+            "expirationSource": {
+                "brand": "Some Feed",
+                "expirationInterval": 10080,
+                "expirationPolicy": "indicatorType",
+                "instance": "Some Feed_instance_1",
+                "moduleId": "fd8269e7-5ffa-4888-8ca8-bfe5eae78e15",
+                "setTime": "2021-12-08T12:05:28.570985+02:00",
+                "source": "indicatorType",
+                "user": ""
+            },
+            "expirationStatus": "active",
+            "firstSeen": "0001-01-01T00:00:00Z",
+            "firstSeenEntryID": "API",
+            "id": "5188347",
+            "indicator_type": "IP",
+            "lastSeen": "0001-01-01T00:00:00Z",
+            "lastSeenEntryID": "API",
+            "modified": "2021-12-08T12:05:28.617414+02:00",
+            "modifiedTime": "2021-12-08T12:05:11+02:00",
+            "moduleToFeedMap": {
+                "fd8269e7-5ffa-4888-8ca8-bfe5eae78e15": {
+                    "ExpirationSource": {
+                        "brand": "Some Feed",
+                        "expirationInterval": 10080,
+                        "expirationPolicy": "indicatorType",
+                        "instance": "Some Feed_instance_1",
+                        "moduleId": "fd8269e7-5ffa-4888-8ca8-bfe5eae78e15",
+                        "setTime": "2021-12-08T12:05:28.570985+02:00",
+                        "source": "indicatorType",
+                        "user": ""
+                    },
+                    "bypassExclusionList": false,
+                    "classifierId": "",
+                    "classifierVersion": 0,
+                    "expirationInterval": 20160,
+                    "expirationPolicy": "indicatorType",
+                    "fetchTime": "2021-12-08T12:05:11+02:00",
+                    "fields": {
+                        "service": "Daily Threat Feed"
+                    },
+                    "isEnrichment": false,
+                    "mapperId": "",
+                    "mapperVersion": 0,
+                    "modifiedTime": "2021-12-08T12:05:11+02:00",
+                    "moduleId": "fd8269e7-5ffa-4888-8ca8-bfe5eae78e15",
+                    "rawJSON": null,
+                    "reliability": "A - Completely reliable",
+                    "score": 3,
+                    "sourceBrand": "Some Feed",
+                    "sourceInstance": "Some Feed_instance_1",
+                    "timestamp": "0001-01-01T00:00:00Z",
+                    "type": "IP",
+                    "value": "8.8.8.8"
+                }
+            },
+            "score": 3,
+            "sortValues": [
+                " \u0001\u0016_-f0\u000b\u0019Q\u0018",
+                "5188347"
+            ],
+            "sourceBrands": [
+                "Some Feed"
+            ],
+            "sourceInstances": [
+                "Some Feed_instance_1"
+            ],
+            "timestamp": "2021-12-08T09:32:24.104143+02:00",
+            "value": "8.8.8.8",
+            "version": 15
+        },
+        {
+            "CustomFields": {
+                "service": "Daily Threat Feed"
+            },
+            "aggregatedReliability": "A - Completely reliable",
+            "calculatedTime": "2021-12-08T09:32:24.102219+02:00",
+            "comments": [
+                {
+                    "category": "Sighting",
+                    "content": "Sighted",
+                    "created": "2021-12-08T12:05:28.566272+02:00",
+                    "entryId": "",
+                    "id": "ed12a2bf-8aea-4492-8181-975f456d303f",
+                    "modified": "0001-01-01T00:00:00Z",
+                    "sortValues": null,
+                    "source": "Some Feed.Some Feed_instance_1",
+                    "type": "IndicatorCommentTimeLine",
+                    "user": "@DBot",
+                    "version": 0
+                }
+            ],
+            "expiration": "2021-12-15T12:05:31.570698+02:00",
+            "expirationSource": {
+                "brand": "Some Feed",
+                "expirationInterval": 10080,
+                "expirationPolicy": "indicatorType",
+                "instance": "Some Feed_instance_1",
+                "moduleId": "fd8269e7-5ffa-4888-8ca8-bfe5eae78e15",
+                "setTime": "2021-12-08T12:05:28.566261+02:00",
+                "source": "indicatorType",
+                "user": ""
+            },
+            "expirationStatus": "active",
+            "firstSeen": "0001-01-01T00:00:00Z",
+            "firstSeenEntryID": "API",
+            "id": "5188266",
+            "indicator_type": "IP",
+            "lastSeen": "0001-01-01T00:00:00Z",
+            "lastSeenEntryID": "API",
+            "modified": "2021-12-08T12:05:28.615431+02:00",
+            "modifiedTime": "2021-12-08T12:05:11+02:00",
+            "moduleToFeedMap": {
+                "fd8269e7-5ffa-4888-8ca8-bfe5eae78e15": {
+                    "ExpirationSource": {
+                        "brand": "Some Feed",
+                        "expirationInterval": 10080,
+                        "expirationPolicy": "indicatorType",
+                        "instance": "Some Feed_instance_1",
+                        "moduleId": "fd8269e7-5ffa-4888-8ca8-bfe5eae78e15",
+                        "setTime": "2021-12-08T12:05:28.566261+02:00",
+                        "source": "indicatorType",
+                        "user": ""
+                    },
+                    "bypassExclusionList": false,
+                    "classifierId": "",
+                    "classifierVersion": 0,
+                    "expirationInterval": 20160,
+                    "expirationPolicy": "indicatorType",
+                    "fetchTime": "2021-12-08T12:05:11+02:00",
+                    "fields": {
+                        "service": "Daily Threat Feed"
+                    },
+                    "isEnrichment": false,
+                    "mapperId": "",
+                    "mapperVersion": 0,
+                    "modifiedTime": "2021-12-08T12:05:11+02:00",
+                    "moduleId": "fd8269e7-5ffa-4888-8ca8-bfe5eae78e15",
+                    "rawJSON": null,
+                    "reliability": "A - Completely reliable",
+                    "score": 3,
+                    "sourceBrand": "Some Feed",
+                    "sourceInstance": "Some Feed_instance_1",
+                    "timestamp": "0001-01-01T00:00:00Z",
+                    "type": "IP",
+                    "value": "1.1.1.1"
+                }
+            },
+            "score": 3,
+            "sortValues": [
+                " \u0001\u0016_-f0\n$\u0019x",
+                "5188266"
+            ],
+            "sourceBrands": [
+                "Some Feed"
+            ],
+            "sourceInstances": [
+                "Some Feed_instance_1"
+            ],
+            "timestamp": "2021-12-08T09:32:24.102219+02:00",
+            "value": "1.1.1.1",
+            "version": 15
+        },
+        {
+            "CustomFields": {
+                "service": "Daily Threat Feed"
+            },
+            "aggregatedReliability": "A - Completely reliable",
+            "calculatedTime": "2021-12-08T09:32:24.09701+02:00",
+            "comments": [
+                {
+                    "category": "Sighting",
+                    "content": "Sighted",
+                    "created": "2021-12-08T12:05:28.576529+02:00",
+                    "entryId": "",
+                    "id": "d49d7881-106c-4b99-8312-8c7e7b55bd1b",
+                    "modified": "0001-01-01T00:00:00Z",
+                    "sortValues": null,
+                    "source": "Some Feed.Some Feed_instance_1",
+                    "type": "IndicatorCommentTimeLine",
+                    "user": "@DBot",
+                    "version": 0
+                }
+            ],
+            "expiration": "2021-12-15T12:05:31.570698+02:00",
+            "expirationSource": {
+                "brand": "Some Feed",
+                "expirationInterval": 10080,
+                "expirationPolicy": "indicatorType",
+                "instance": "Some Feed_instance_1",
+                "moduleId": "fd8269e7-5ffa-4888-8ca8-bfe5eae78e15",
+                "setTime": "2021-12-08T12:05:28.57652+02:00",
+                "source": "indicatorType",
+                "user": ""
+            },
+            "expirationStatus": "active",
+            "firstSeen": "0001-01-01T00:00:00Z",
+            "firstSeenEntryID": "API",
+            "id": "5188074",
+            "indicator_type": "IP",
+            "lastSeen": "0001-01-01T00:00:00Z",
+            "lastSeenEntryID": "API",
+            "modified": "2021-12-08T12:05:28.639252+02:00",
+            "modifiedTime": "2021-12-08T12:05:11+02:00",
+            "moduleToFeedMap": {
+                "fd8269e7-5ffa-4888-8ca8-bfe5eae78e15": {
+                    "ExpirationSource": {
+                        "brand": "Some Feed",
+                        "expirationInterval": 10080,
+                        "expirationPolicy": "indicatorType",
+                        "instance": "Some Feed_instance_1",
+                        "moduleId": "fd8269e7-5ffa-4888-8ca8-bfe5eae78e15",
+                        "setTime": "2021-12-08T12:05:28.57652+02:00",
+                        "source": "indicatorType",
+                        "user": ""
+                    },
+                    "bypassExclusionList": false,
+                    "classifierId": "",
+                    "classifierVersion": 0,
+                    "expirationInterval": 20160,
+                    "expirationPolicy": "indicatorType",
+                    "fetchTime": "2021-12-08T12:05:11+02:00",
+                    "fields": {
+                        "service": "Daily Threat Feed"
+                    },
+                    "isEnrichment": false,
+                    "mapperId": "",
+                    "mapperVersion": 0,
+                    "modifiedTime": "2021-12-08T12:05:11+02:00",
+                    "moduleId": "fd8269e7-5ffa-4888-8ca8-bfe5eae78e15",
+                    "rawJSON": null,
+                    "reliability": "A - Completely reliable",
+                    "score": 3,
+                    "sourceBrand": "Some Feed",
+                    "sourceInstance": "Some Feed_instance_1",
+                    "timestamp": "0001-01-01T00:00:00Z",
+                    "type": "IP",
+                    "value": "1.2.3.4"
+                }
+            },
+            "score": 3,
+            "sortValues": [
+                " \u0001\u0016_-f0\u0007f\"P",
+                "5188074"
+            ],
+            "sourceBrands": [
+                "Some Feed"
+            ],
+            "sourceInstances": [
+                "Some Feed_instance_1"
+            ],
+            "timestamp": "2021-12-08T09:32:24.09701+02:00",
+            "value": "1.2.3.4",
+            "version": 15
+        },
+        {
+            "CustomFields": {
+                "service": "Daily Threat Feed"
+            },
+            "aggregatedReliability": "A - Completely reliable",
+            "calculatedTime": "2021-12-08T09:32:24.095029+02:00",
+            "comments": [
+                {
+                    "category": "Sighting",
+                    "content": "Sighted",
+                    "created": "2021-12-08T12:05:28.580909+02:00",
+                    "entryId": "",
+                    "id": "fb66515c-9e3f-4cbe-8aaf-7709f5281ff2",
+                    "modified": "0001-01-01T00:00:00Z",
+                    "sortValues": null,
+                    "source": "Some Feed.Some Feed_instance_1",
+                    "type": "IndicatorCommentTimeLine",
+                    "user": "@DBot",
+                    "version": 0
+                }
+            ],
+            "expiration": "2021-12-15T12:05:31.570698+02:00",
+            "expirationSource": {
+                "brand": "Some Feed",
+                "expirationInterval": 10080,
+                "expirationPolicy": "indicatorType",
+                "instance": "Some Feed_instance_1",
+                "moduleId": "fd8269e7-5ffa-4888-8ca8-bfe5eae78e15",
+                "setTime": "2021-12-08T12:05:28.5809+02:00",
+                "source": "indicatorType",
+                "user": ""
+            },
+            "expirationStatus": "active",
+            "firstSeen": "0001-01-01T00:00:00Z",
+            "firstSeenEntryID": "API",
+            "id": "5188005",
+            "indicator_type": "IP",
+            "lastSeen": "0001-01-01T00:00:00Z",
+            "lastSeenEntryID": "API",
+            "modified": "2021-12-08T12:05:28.633781+02:00",
+            "modifiedTime": "2021-12-08T12:05:11+02:00",
+            "moduleToFeedMap": {
+                "fd8269e7-5ffa-4888-8ca8-bfe5eae78e15": {
+                    "ExpirationSource": {
+                        "brand": "Some Feed",
+                        "expirationInterval": 10080,
+                        "expirationPolicy": "indicatorType",
+                        "instance": "Some Feed_instance_1",
+                        "moduleId": "fd8269e7-5ffa-4888-8ca8-bfe5eae78e15",
+                        "setTime": "2021-12-08T12:05:28.5809+02:00",
+                        "source": "indicatorType",
+                        "user": ""
+                    },
+                    "bypassExclusionList": false,
+                    "classifierId": "",
+                    "classifierVersion": 0,
+                    "expirationInterval": 20160,
+                    "expirationPolicy": "indicatorType",
+                    "fetchTime": "2021-12-08T12:05:11+02:00",
+                    "fields": {
+                        "service": "Daily Threat Feed"
+                    },
+                    "isEnrichment": false,
+                    "mapperId": "",
+                    "mapperVersion": 0,
+                    "modifiedTime": "2021-12-08T12:05:11+02:00",
+                    "moduleId": "fd8269e7-5ffa-4888-8ca8-bfe5eae78e15",
+                    "rawJSON": null,
+                    "reliability": "A - Completely reliable",
+                    "score": 3,
+                    "sourceBrand": "Some Feed",
+                    "sourceInstance": "Some Feed_instance_1",
+                    "timestamp": "0001-01-01T00:00:00Z",
+                    "type": "IP",
+                    "value": "2.2.2.2"
+                }
+            },
+            "score": 3,
+            "sortValues": [
+                " \u0001\u0016_-f0\u0006m.\b",
+                "5188005"
+            ],
+            "sourceBrands": [
+                "Some Feed"
+            ],
+            "sourceInstances": [
+                "Some Feed_instance_1"
+            ],
+            "timestamp": "2021-12-08T09:32:24.095029+02:00",
+            "value": "2.2.2.2",
+            "version": 15
+        },
+        {
+            "CustomFields": {
+                "service": "Daily Threat Feed"
+            },
+            "aggregatedReliability": "A - Completely reliable",
+            "calculatedTime": "2021-12-08T09:32:21.397301+02:00",
+            "comments": [
+                {
+                    "category": "Sighting",
+                    "content": "Sighted",
+                    "created": "2021-12-08T11:54:21.090653+02:00",
+                    "entryId": "",
+                    "id": "91c21410-0464-4c02-82ff-4fb4382fdcc1",
+                    "modified": "0001-01-01T00:00:00Z",
+                    "sortValues": null,
+                    "source": "Some Feed.Some Feed_instance_1",
+                    "type": "IndicatorCommentTimeLine",
+                    "user": "@DBot",
+                    "version": 0
+                },
+                {
+                    "category": "Sighting",
+                    "content": "Sighted",
+                    "created": "2021-12-08T12:05:22.526996+02:00",
+                    "entryId": "",
+                    "id": "f5edb95a-097f-4f52-80ed-7796120c3211",
+                    "modified": "0001-01-01T00:00:00Z",
+                    "sortValues": null,
+                    "source": "Some Feed.Some Feed_instance_1",
+                    "type": "IndicatorCommentTimeLine",
+                    "user": "@DBot",
+                    "version": 0
+                }
+            ],
+            "expiration": "2021-12-15T12:05:31.570698+02:00",
+            "expirationSource": {
+                "brand": "Some Feed",
+                "expirationInterval": 10080,
+                "expirationPolicy": "indicatorType",
+                "instance": "Some Feed_instance_1",
+                "moduleId": "fd8269e7-5ffa-4888-8ca8-bfe5eae78e15",
+                "setTime": "2021-12-08T12:05:22.526981+02:00",
+                "source": "indicatorType",
+                "user": ""
+            },
+            "expirationStatus": "active",
+            "firstSeen": "0001-01-01T00:00:00Z",
+            "firstSeenEntryID": "API",
+            "id": "5186665",
+            "indicator_type": "IP",
+            "lastSeen": "0001-01-01T00:00:00Z",
+            "lastSeenEntryID": "API",
+            "modified": "2021-12-08T12:05:22.632169+02:00",
+            "modifiedTime": "2021-12-08T12:05:11+02:00",
+            "moduleToFeedMap": {
+                "fd8269e7-5ffa-4888-8ca8-bfe5eae78e15": {
+                    "ExpirationSource": {
+                        "brand": "Some Feed",
+                        "expirationInterval": 10080,
+                        "expirationPolicy": "indicatorType",
+                        "instance": "Some Feed_instance_1",
+                        "moduleId": "fd8269e7-5ffa-4888-8ca8-bfe5eae78e15",
+                        "setTime": "2021-12-08T12:05:22.526981+02:00",
+                        "source": "indicatorType",
+                        "user": ""
+                    },
+                    "bypassExclusionList": false,
+                    "classifierId": "",
+                    "classifierVersion": 0,
+                    "expirationInterval": 20160,
+                    "expirationPolicy": "indicatorType",
+                    "fetchTime": "2021-12-08T12:05:11+02:00",
+                    "fields": {
+                        "service": "Daily Threat Feed"
+                    },
+                    "isEnrichment": false,
+                    "mapperId": "",
+                    "mapperVersion": 0,
+                    "modifiedTime": "2021-12-08T12:05:11+02:00",
+                    "moduleId": "fd8269e7-5ffa-4888-8ca8-bfe5eae78e15",
+                    "rawJSON": null,
+                    "reliability": "A - Completely reliable",
+                    "score": 3,
+                    "sourceBrand": "Some Feed",
+                    "sourceInstance": "Some Feed_instance_1",
+                    "timestamp": "0001-01-01T00:00:00Z",
+                    "type": "IP",
+                    "value": "3.3.3.3"
+                }
+            },
+            "score": 3,
+            "sortValues": [
+                " \u0001\u0016_-f&\u0000=\u000e\b",
+                "5186665"
+            ],
+            "sourceBrands": [
+                "Some Feed"
+            ],
+            "sourceInstances": [
+                "Some Feed_instance_1"
+            ],
+            "timestamp": "2021-12-08T09:32:21.397301+02:00",
+            "value": "3.3.3.3",
+            "version": 15
+        }
+    ],
+    "searchAfter": [
+        " \u0001\u0016^><zHx\\x",
+        "5183977"
+    ],
+    "total": 5
+}
