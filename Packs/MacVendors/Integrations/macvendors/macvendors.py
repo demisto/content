@@ -1,8 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
-
-from typing import Dict, Any, List
+from typing import Dict, Any
 import urllib.parse
 
 
@@ -22,19 +21,15 @@ DEFAULT_LIMIT = 100
 
 
 def test_module(client: BaseClient, params: Dict[str, Any]):
-
-    api_key = params.get('apiKey')
     try:
         test_mac = urllib.parse.quote("00:0c:29:00:00:00")
-        client._http_request(url_suffix=f'query/{test_mac}')
+        client._http_request('GET', url_suffix=f'query/{test_mac}')
         return_results('ok')
     except Exception as err:
         raise DemistoException(err)
 
 
-def lookup_mac_command(client: BaseClient, params: Dict[str, Any], args: Dcit[str, Any]):
-    command = demisto.command()
-    api_key = params.get('apiKey')
+def lookup_mac_command(client: BaseClient, params: Dict[str, Any], args: Dict[str, Any]):
     mac_address = urllib.parse.quote(args.get('mac'))
     res = client._http_request('GET', url_suffix=f"query/{mac_address}", timeout=300)
     return_error(res)
@@ -59,7 +54,7 @@ def main() -> None:
     base_url = "https://api.macvendors.com"
     verify_cert = not params.get('insecure', False)
     proxy = params.get('proxy', False)
-    command = demisto.command()
+    command: str=demisto.command()
     demisto.debug(f'Command being called is {command}')
     try:
         client = BaseClient(
