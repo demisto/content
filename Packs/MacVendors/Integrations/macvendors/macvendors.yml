@@ -3,54 +3,52 @@ commonfields:
   id: macvendors
   version: -1
 configuration:
-- defaultvalue: https://example.com/
-  display: Your server URL
-  name: url
-  required: true
-  type: 0
-- displaypassword: API Key
-  additionalinfo: The API Key to use for connection
-  name: credentials
-  required: true
-  hiddenusername: true
-  type: 9
-- display: Trust any certificate (not secure)
-  name: insecure
-  required: false
-  type: 8
-- display: Use system proxy settings
-  name: proxy
-  required: false
-  type: 8
-description: '[Enter a comprehensive, yet concise, description of what the integration
-  does, what use cases it is designed for, etc.]'
+  - name: apiKey
+    display: API Key
+    required: false
+    defaultvalue: null
+    type: 4
+    additionalinfo: No API key is required for up to 1,000 requests per day at 1
+      request per second. For higher limits, please use an API key.
+  - name: insecure
+    display: Trust any certificate (not secure)
+    required: false
+    defaultvalue: "true"
+    type: 8
+    additionalinfo: null
+  - name: proxy
+    display: Use system proxy settings
+    required: false
+    defaultvalue: "true"
+    type: 8
+    additionalinfo: null
+description: >
+  Query MAC Vendors for vendor names when providing a MAC address.
+
+
+  MAC Vendors maintains a list of vendors provided directly from the IEEE Standards Association and is updated multiple times each day. The IEEE is the registration authority and provides data on over 16,500 registered vendors.
 display: macvendors
-name: macvendors
+name: MAC Vendors
 script:
   commands:
-  - arguments:
-    - default: false
-      description: '[Enter a description of the argument, including any important
-        information users need to know, for example, default values.]'
-      isArray: false
-      name: dummy
-      required: true
-      secret: false
-    deprecated: false
-    description: '[Enter a description of the command, including any important information
-      users need to know, for example required permissions.]'
-    execution: false
-    name: baseintegration-dummy
-    outputs:
-    - contextPath: BaseIntegration.Output
-      description: '[Enter a description of the data returned in this output.]'
-      type: String
+    - name: macvendors-lookup-mac
+      description: Resolves a MAC address to a vendor name.
+      deprecated: false
+      arguments: []
+      outputs:
+        - contextPath: MACVendor.macaddress
+          description: MAC Address
+          type: String
+        - contextPath: MACVendor.vendor
+          description: Vendor Name
+          type: Unknown
   isfetch: false
   runonce: false
-  script: '-'
+  script: "-"
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.9.8.24399
-fromversion: '6.0'
+  dockerimage: demisto/python3:3.10.1.25933
+  feed: false
+fromversion: "6.0"
 tests:
-- No tests (auto formatted)
+  - No tests (auto formatted)
