@@ -1,8 +1,8 @@
-## BaseIntegration Help
+## MAC Vendors
 
-Markdown file for integration configuration  help snippet. In this file add:
-- Brief information about how to retrieve the API key of your product
-- Other useful information on how to configure your integration in XSOAR
+  ### Overview
+  Find MAC Address Vendors
 
-Since this is a Markdown file, we encourage you to use MD formatting for sections, sub-sections, lists, etc.
-
+  ### API Keys
+  API Keys are not required but are limited to 1,000 queries per day (at 2 requests per second).
+  API Keys can be purchased from https://macvendors.com/plans
