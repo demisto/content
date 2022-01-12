@@ -150,7 +150,7 @@ def test_investigate_bulk_url_http_request(mocker):
     assert r == "Error"
 
 
-def test_check_api_key_test_module_http_request(mocker):
+def test_auth_success_test_module(mocker):
     from PhishUp import Client, test_module
     patcher = mocker.patch("PhishUp.Client.check_api_key_test_module_http_request", return_value={"Status": "Success"})
     patcher.start()
@@ -160,3 +160,15 @@ def test_check_api_key_test_module_http_request(mocker):
         verify=False)
     r = test_module(client)
     assert r == "ok"
+
+
+def test_auth_error_test_module(mocker):
+    from PhishUp import Client, test_module
+    patcher = mocker.patch("PhishUp.Client.check_api_key_test_module_http_request", return_value={"Status": "Authentication Error"})
+    patcher.start()
+    base_url = "https://apiv2.phishup.co"
+    client = Client(
+        base_url=base_url,
+        verify=False)
+    r = test_module(client)
+    assert r == "Authentication Error"
