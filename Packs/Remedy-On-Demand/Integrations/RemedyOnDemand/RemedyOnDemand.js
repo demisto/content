@@ -222,7 +222,7 @@ var fetchIncidentsToDemisto = function() {
     logDebug("Last run value before starting to fetch: " + lastRun.value);
     var query =  "'Submit Date'>" + '"' + lastRun.value + '"';
     var url = baseUrl + '/api/arsys/v1/entry/HPD:IncidentInterface/' + '?q=' + encodeURIComponent(query);
-    logDebug("This is the URL with the query for fetching the incidents3: " + url);
+    logDebug("This is the URL with the query for fetching the incidents4: " + url);
     var token = login();
     var res = sendRequest(url, token);
     logout(token);
