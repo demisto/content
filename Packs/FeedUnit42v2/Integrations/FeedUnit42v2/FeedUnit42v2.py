@@ -666,7 +666,7 @@ def get_indicators_command(client: Client, args: Dict[str, str], feed_tags: Opti
     if not feed_tags:
         feed_tags = []
 
-    indicators = client.fetch_stix_objects_from_api(test=True, type='indicator', limit=limit if limit else -1)
+    indicators = client.fetch_stix_objects_from_api(test=True, type='indicator', limit=limit or 10)
 
     indicators = parse_indicators(indicators, feed_tags, tlp_color)
     limited_indicators = indicators[:limit]
