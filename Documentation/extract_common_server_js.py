@@ -1,5 +1,4 @@
 import sys
-import yaml
 
 
 def readFile(filepath):
