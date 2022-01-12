@@ -74,10 +74,8 @@ class GCPConfig(object):
     def get_core_packs(cls, marketplace):
         mapping = {
             'xsoar': cls.CORE_PACKS_LIST,
-            'marketplace_v2': cls.CORE_PACKS_MPV2_LIST,
+            'marketplacev2': cls.CORE_PACKS_MPV2_LIST,
         }
-        core_packs = mapping.get(marketplace, GCPConfig.CORE_PACKS_LIST)
-        print(f'\n\n\n chosen core packs by {marketplace} are {core_packs}\n\n\n')
         return mapping.get(marketplace, GCPConfig.CORE_PACKS_LIST)
 
 
