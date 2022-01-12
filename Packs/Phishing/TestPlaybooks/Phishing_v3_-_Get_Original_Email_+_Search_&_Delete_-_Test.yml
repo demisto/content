@@ -110,126 +110,6 @@ tasks:
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
-  "5":
-    id: "5"
-    taskid: f337fd03-43e1-4ca8-8d35-abb04366e98d
-    type: playbook
-    task:
-      id: f337fd03-43e1-4ca8-8d35-abb04366e98d
-      version: -1
-      name: Wait and manually remediate
-      description: Waits for a certain task status, and/or completes the task.
-      playbookName: Wait And Complete Task By Status
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "6"
-    scriptarguments:
-      CompleteTask:
-        simple: "True"
-      IncidentID:
-        complex:
-          root: FoundID
-          transformers:
-          - operator: uniq
-      TaskName:
-        simple: Manually remediate  the incident
-      TaskStates:
-        simple: Waiting
-    separatecontext: true
-    loop:
-      iscommand: false
-      builtincondition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: FoundTaskNames
-            iscontext: true
-          right:
-            value:
-              simple: Manually remediate  the incident
-      exitCondition: ""
-      wait: 10
-      max: 300
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 1160
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 2
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "6":
-    id: "6"
-    taskid: b4d51c47-81c3-40af-89ba-99738529b096
-    type: playbook
-    task:
-      id: b4d51c47-81c3-40af-89ba-99738529b096
-      version: -1
-      name: Wait for incident to close
-      description: Waits for a certain task status, and/or completes the task.
-      playbookName: Wait And Complete Task By Status
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "7"
-      - "17"
-      - "24"
-      - "32"
-      - "34"
-    scriptarguments:
-      CompleteTask:
-        simple: "False"
-      IncidentID:
-        complex:
-          root: FoundID
-          transformers:
-          - operator: uniq
-      TaskName:
-        simple: Close investigation
-      TaskStates:
-        simple: Completed
-    separatecontext: true
-    loop:
-      iscommand: false
-      builtincondition:
-      - - operator: containsGeneral
-          left:
-            value:
-              complex:
-                root: FoundTaskNames
-            iscontext: true
-          right:
-            value:
-              simple: Close investigation
-      exitCondition: ""
-      wait: 20
-      max: 150
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 1340
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "7":
     id: "7"
     taskid: 9e2298a7-6495-417b-89ef-e17d902d4d5c
@@ -581,70 +461,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "18"
       - "25"
+      - "39"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 2650,
           "y": 1780
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "18":
-    id: "18"
-    taskid: 571c6962-951f-4e2e-8836-4e20e18b3a79
-    type: playbook
-    task:
-      id: 571c6962-951f-4e2e-8836-4e20e18b3a79
-      version: -1
-      name: Check that URL screenshot was taken
-      description: Waits for a certain task status, and/or completes the task.
-      playbookName: Wait And Complete Task By Status
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "14"
-    scriptarguments:
-      CompleteTask:
-        simple: "False"
-      IncidentID:
-        complex:
-          root: FoundID
-      TaskName:
-        simple: Get URL screenshot
-      TaskStates:
-        simple: Completed
-    separatecontext: true
-    loop:
-      iscommand: false
-      builtincondition:
-      - - operator: containsGeneral
-          left:
-            value:
-              complex:
-                root: FoundTaskNames
-            iscontext: true
-          right:
-            value:
-              simple: Get URL screenshot
-      exitCondition: ""
-      wait: 10
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": 2360,
-          "y": 1920
         }
       }
     note: false
@@ -832,7 +656,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "5"
+      - "37"
     scriptarguments:
       key:
         simple: FoundID
@@ -911,77 +735,13 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "27"
+      - "40"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 2920,
           "y": 1920
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "27":
-    id: "27"
-    taskid: 121109a0-a6ea-4819-8085-470af88bf0e8
-    type: playbook
-    task:
-      id: 121109a0-a6ea-4819-8085-470af88bf0e8
-      version: -1
-      name: Check that soft delete was performed
-      description: Waits for a certain task status, and/or completes the task.
-      playbookName: Wait And Complete Task By Status
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "14"
-    scriptarguments:
-      CompleteTask:
-        simple: "False"
-      IncidentID:
-        complex:
-          root: FoundID
-      TaskName:
-        simple: Search action - Soft delete.
-      TaskStates:
-        simple: Completed
-    separatecontext: true
-    loop:
-      iscommand: false
-      scriptArguments:
-        CompleteTask:
-          simple: "False"
-        IncidentID:
-          complex:
-            root: HttpRequest.Response
-            accessor: Body
-            transformers:
-            - operator: ParseJSON
-            - operator: getField
-              args:
-                field:
-                  value:
-                    simple: id
-        TaskName:
-          simple: Get URL screenshot
-        TaskStates:
-          simple: Completed
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": 2920,
-          "y": 2050
         }
       }
     note: false
@@ -1359,6 +1119,189 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: bb2f1540-2021-475d-861e-5c426952dcc1
+    type: regular
+    task:
+      id: bb2f1540-2021-475d-861e-5c426952dcc1
+      version: -1
+      name: Wait and manually remediate
+      description: Wait and complete tasks by given status. Used for test playbooks.
+      scriptName: WaitAndCompleteTask
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      complete_task:
+        simple: "true"
+      incident_id:
+        simple: "9"
+      interval_between_tries:
+        simple: "15"
+      max_timeout:
+        simple: "700"
+      task_name:
+        simple: Manually remediate  the incident
+      task_states:
+        simple: Waiting
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: f2e5d811-a798-40d1-82ae-cb05edf6ab9a
+    type: regular
+    task:
+      id: f2e5d811-a798-40d1-82ae-cb05edf6ab9a
+      version: -1
+      name: Wait for incident to close
+      description: Wait and complete tasks by given status. Used for test playbooks.
+      scriptName: WaitAndCompleteTask
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+      - "7"
+      - "32"
+      - "34"
+      - "17"
+    scriptarguments:
+      complete_task:
+        simple: "false"
+      incident_id:
+        simple: "9"
+      interval_between_tries:
+        simple: "10"
+      max_timeout:
+        simple: "100"
+      task_name:
+        simple: Close investigation
+      task_states:
+        simple: Completed
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: 4fa3559d-334c-45e5-8742-d626e1dcedb5
+    type: regular
+    task:
+      id: 4fa3559d-334c-45e5-8742-d626e1dcedb5
+      version: -1
+      name: Check that URL screenshot was taken
+      description: Wait and complete tasks by given status. Used for test playbooks.
+      scriptName: WaitAndCompleteTask
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      complete_task:
+        simple: "false"
+      incident_id:
+        complex:
+          root: FoundID
+      interval_between_tries:
+        simple: "10"
+      max_timeout:
+        simple: "1000"
+      task_name:
+        simple: Get URL screenshot
+      task_states:
+        simple: Completed
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2410,
+          "y": 1940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: 80520488-a502-4d4b-8432-f3da43463f40
+    type: regular
+    task:
+      id: 80520488-a502-4d4b-8432-f3da43463f40
+      version: -1
+      name: Check that soft delete was performed
+      description: Wait and complete tasks by given status. Used for test playbooks.
+      scriptName: WaitAndCompleteTask
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      complete_task:
+        simple: "false"
+      incident_id:
+        complex:
+          root: FoundID
+      interval_between_tries:
+        simple: "10"
+      max_timeout:
+        simple: "1000"
+      task_name:
+        simple: Search action - Soft delete.
+      task_states:
+        simple: Completed
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2920,
+          "y": 2050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -1376,4 +1319,4 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: 6.1.0
+fromversion: 6.0.0
