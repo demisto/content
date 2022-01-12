@@ -1,0 +1,169 @@
+args:
+- default: false
+  description: Specify where the request should be sent. Include the URI scheme ('http'
+    or 'https').
+  isArray: false
+  name: url
+  required: true
+  secret: false
+- auto: PREDEFINED
+  default: false
+  description: Specify the HTTP method to use.
+  isArray: false
+  name: method
+  predefined:
+  - GET
+  - POST
+  - PUT
+  - PATCH
+  - DELETE
+  - HEAD
+  required: true
+  secret: false
+- default: false
+  description: Specify a hash of headers to send with the request.
+  isArray: false
+  name: headers
+  required: false
+  secret: false
+- default: false
+  description: Specify the body of the request.
+  isArray: false
+  name: body
+  required: false
+  secret: false
+- default: false
+  description: Specify the content type to use with the request.
+  isArray: false
+  name: request_content_type
+  predefined:
+  - ''
+  required: false
+  secret: false
+- default: false
+  description: Choose how responses are converted into event data.
+  isArray: false
+  name: response_content_type
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: raw response
+  description: Specify how you would like to parse the response.
+  isArray: false
+  name: parse_response_as
+  predefined:
+  - text
+  - json
+  - xml
+  - raw response
+  required: false
+  secret: false
+- default: false
+  defaultValue: '10'
+  description: Specify the timeout of the HTTP request in seconds. Defaults to 10
+    seconds.
+  isArray: false
+  name: timeout
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'False'
+  description: enable_redirect
+  isArray: false
+  name: enable_redirect
+  predefined:
+  - 'True'
+  - 'False'
+  required: false
+  secret: false
+- default: false
+  description: ' Specify the array of status codes that should cause a retry. '
+  isArray: false
+  name: retry_on_status
+  required: false
+  secret: false
+- default: false
+  defaultValue: '3'
+  description: How many retries should be made in case of a failure.
+  isArray: false
+  name: retry_count
+  required: false
+  secret: false
+- default: false
+  description: username
+  isArray: false
+  name: username
+  required: false
+  secret: false
+- default: false
+  description: password
+  isArray: false
+  name: password
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'no'
+  description: save_as_file
+  isArray: false
+  name: save_as_file
+  predefined:
+  - 'yes'
+  - 'no'
+  required: false
+  secret: false
+- default: false
+  defaultValue: http-file
+  description: filename
+  isArray: false
+  name: filename
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  description: Trust any certificate (not secure)
+  isArray: false
+  name: unsecure
+  predefined:
+  - 'True'
+  - 'False'
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'False'
+  description: Use system proxy settings
+  isArray: false
+  name: proxy
+  predefined:
+  - 'True'
+  - 'False'
+  required: false
+  secret: false
+- default: false
+  description: 'The request authorization, for example: (username, password)'
+  isArray: false
+  name: basic_auth
+  required: false
+  secret: false
+comment: Sends http request
+commonfields:
+  id: HttpV2
+  version: -1
+enabled: false
+name: HttpV2
+outputs:
+- contextPath: Http.File
+  description: '[Enter a description of the data returned in this output.]'
+  type: String
+script: '-'
+subtype: python3
+system: false
+tags:
+- basescript
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.9.7.24076
+fromversion: 6.0.0
