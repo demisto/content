@@ -1,0 +1,101 @@
+args:
+- description: The application name.
+  name: application
+- description: The category name.
+  name: category
+- description: The destination IP address.
+  name: destinations
+  required: true
+  isArray: true
+- description: The from zone.
+  name: from
+- description: The to zone.
+  name: to
+- description: The IP protocol value.
+  name: protocol
+  required: true
+- description: The source IP addresses.
+  name: sources
+  required: true
+  isArray: true
+- description: Target number of the firewall. Use only on a Panorama instance.
+  name: target
+  isArray: true
+- description: Target vsys of the firewall. Use only on a Panorama instance.
+  name: vsys
+  isArray: true
+- description: The source user.
+  name: source_user
+- description: The destination port.
+  name: destination_port
+comment: 'Wrapper script for the panorama-security-policy-match command that receives
+  multiple values (array) in the DST and SRC arguments and preforms the policy match
+  on each of the values.'
+commonfields:
+  id: PanoramaSecurityPolicyMatchWrapper
+  version: -1
+enabled: false
+name: PanoramaSecurityPolicyMatchWrapper
+outputs:
+- contextPath: Panorama.SecurityPolicyMatch.Query
+  description: Query for the session to test.
+  type: String
+- contextPath: Panorama.SecurityPolicyMatch.Rules.Name
+  description: The matching rule name.
+  type: String
+- contextPath: Panorama.SecurityPolicyMatch.Rules.Action
+  description: The matching rule action.
+  type: String
+- contextPath: Panorama.SecurityPolicyMatch.Rules.Category
+  description: The matching rule category.
+  type: String
+- contextPath: Panorama.SecurityPolicyMatch.Rules.Destination
+  description: The matching rule destination.
+  type: String
+- contextPath: Panorama.SecurityPolicyMatch.Rules.From
+  description: The matching rule from zone.
+  type: String
+- contextPath: Panorama.SecurityPolicyMatch.Rules.Source
+  description: The matching rule source.
+  type: String
+- contextPath: Panorama.SecurityPolicyMatch.Rules.To
+  description: The matching rule to zone.
+  type: String
+- contextPath: Panorama.SecurityPolicyMatch.QueryFields.Application
+  description: The application name.
+  type: String
+- contextPath: Panorama.SecurityPolicyMatch.QueryFields.Category
+  description: The category name.
+  type: String
+- contextPath: Panorama.SecurityPolicyMatch.QueryFields.Destination
+  description: The destination IP address.
+  type: String
+- contextPath: Panorama.SecurityPolicyMatch.QueryFields.DestinationPort
+  description: The destination port.
+  type: Number
+- contextPath: Panorama.SecurityPolicyMatch.QueryFields.From
+  description: The query fields from zone.
+  type: String
+- contextPath: Panorama.SecurityPolicyMatch.QueryFields.To
+  description: The query fields to zone.
+  type: String
+- contextPath: Panorama.SecurityPolicyMatch.QueryFields.Protocol
+  description: The IP protocol value.
+  type: String
+- contextPath: Panorama.SecurityPolicyMatch.QueryFields.Source
+  description: The destination IP address.
+  type: String
+- contextPath: Panorama.SecurityPolicyMatch.QueryFields.SourceUser
+  description: The source user.
+  type: String
+script: '-'
+system: false
+tags:
+- basescript
+timeout: '0'
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.10.1.25933
+fromversion: 6.1.0
+tests:
+- No tests (auto formatted)
