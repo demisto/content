@@ -58,8 +58,10 @@ def test_empty_urls_list_in_investigate_bulk_url_command():
         "apikey": "not"
     }
     response = investigate_bulk_url_command(client, args, params)
-    mock_response = util_load_json('test_data/bulk-empty-url.json')
-    assert mock_response == list(response)
+    assert response[0] == "Empty Urls List"
+    assert response[1]["PhishUp.AverageResult"] == "Error"
+    assert response[1]["PhishUp.Results"] == "Error"
+    assert response[2] == "Empty Urls List"
 
 
 def test_get_chosen_phishup_action_command():
