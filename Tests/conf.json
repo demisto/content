@@ -5421,6 +5421,9 @@
             },
             "demisto/flask-nginx": {
                 "pid_threshold": 11
+            },
+            "demisto/py3-tools": {
+                "memory_threshold": 105
             }
         }
     }
