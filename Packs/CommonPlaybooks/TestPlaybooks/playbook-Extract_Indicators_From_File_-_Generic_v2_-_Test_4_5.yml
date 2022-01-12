@@ -108,8 +108,8 @@ tasks:
           left:
             value:
               complex:
-                root: URL
-                accessor: Data
+                root: Domain
+                accessor: Name
             iscontext: true
           right:
             value:
