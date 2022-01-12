@@ -7,8 +7,10 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-def test_investigate_url_command():
+def test_error_investigate_url_command(mocker):
     from PhishUp import Client, investigate_url_command
+    patcher = mocker.patch("PhishUp.Client.investigate_url_http_request", return_value="Error")
+    patcher.start()
     base_url = "https://apiv2.phishup.co"
     client = Client(
         base_url=base_url,
@@ -24,7 +26,26 @@ def test_investigate_url_command():
     assert mock_response == list(response)
 
 
-def test_investigate_bulk_url_command():
+def test_error_investigate_bulk_url_command(mocker):
+    from PhishUp import Client, investigate_bulk_url_command
+    patcher = mocker.patch("PhishUp.Client.investigate_bulk_url_http_request", return_value="Error")
+    patcher.start()
+    base_url = "https://apiv2.phishup.co"
+    client = Client(
+        base_url=base_url,
+        verify=False)
+    args = {
+        "Urls": ["https://www.paloaltonetworks.com/"]
+    }
+    params = {
+        "apikey": "not"
+    }
+    response = investigate_bulk_url_command(client, args, params)
+    mock_response = util_load_json('test_data/bulk-error-url.json')
+    assert mock_response == list(response)
+
+
+def test_empty_urls_list_in_investigate_bulk_url_command():
     from PhishUp import Client, investigate_bulk_url_command
     base_url = "https://apiv2.phishup.co"
     client = Client(

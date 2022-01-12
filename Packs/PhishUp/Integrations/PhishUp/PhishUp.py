@@ -86,7 +86,6 @@ class Client(BaseClient):
 def investigate_url_command(client: Client, args, params):
     result = client.investigate_url_http_request(params.get("apikey"), args.get("Url"))
 
-    demisto.log(f"Testing result single: {result}")
     if result != "Error" and "Url" in result:
         return (
             f"PhishUp Result: {result}",  # readable_output,
@@ -136,9 +135,8 @@ def investigate_bulk_url_command(client: Client, args, params):
             "Empty Urls List"  # raw response - the original response
         )
 
-    demisto.log(f"""Data: {args.get("Urls")}, Tip: {type(args.get("Urls"))}""")
     result = client.investigate_bulk_url_http_request(params.get("apikey"), urls)
-    demisto.log(f"Testing result bulk: {result}")
+
     if result != "Error" and "Results" in result and result["Results"] is not None:
         any_phish = "Clean"
         for r in result["Results"]:
