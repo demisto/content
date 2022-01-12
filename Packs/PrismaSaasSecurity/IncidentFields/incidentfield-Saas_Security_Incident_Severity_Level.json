@@ -1,5 +1,6 @@
 {
     "id": "incident_saassecurityincidentseveritylevel",
+    "description": "Severity that you specified in that policy rule on SaaS Security.",
     "version": -1,
     "modified": "2021-10-27T23:00:55.750509079Z",
     "fromVersion": "6.0.0",
