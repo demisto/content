@@ -44,7 +44,7 @@ def channels_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     response = client.channels_request()
     command_results = CommandResults(
         outputs_prefix='Camlytics.Channels',
-        outputs_key_field='',
+        outputs_key_field='channel_id',
         outputs=response,
         raw_response=response
     )
@@ -99,7 +99,7 @@ def events_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     response = client.events_request(channelid, sinceid, sincetime, untilid, untiltime, limit, order, timeout)
     command_results = CommandResults(
         outputs_prefix='Camlytics.Events',
-        outputs_key_field='',
+        outputs_key_field='event_id',
         outputs=response,
         raw_response=response
     )
@@ -108,7 +108,7 @@ def events_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
 
 def test_module(client: Client) -> None:
-    # Test functions here
+    client.channels_request()
     return_results('ok')
 
 
