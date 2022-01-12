@@ -73,7 +73,7 @@ def test_fetch_indicators_command(mocker):
     assert DUMMY_INDICATOR_WITH_RELATIONSHIP_LIST in indicators
 
 
-def test_get_attack_id_and_value_from_name_on_invalid_indicator():
+def test_get_attack_id_and_value_from_name_on_invalid_indicator_fails():
     """
     Given
         - Invalid attack indicator structure
@@ -82,10 +82,11 @@ def test_get_attack_id_and_value_from_name_on_invalid_indicator():
         - parsing the the indicator name.
 
     Then
-        - DemistoException is raised.
+        - ValueError is raised and the test fails
     """
-    with pytest.raises(DemistoException):
-        get_attack_id_and_value_from_name({"name": "test"})
+    indicator_id, indicator_value = get_attack_id_and_value_from_name({"name": "test"})
+    assert indicator_id
+    assert indicator_value
 
 
 def test_feed_tags_param(mocker):

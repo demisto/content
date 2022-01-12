@@ -321,13 +321,7 @@ def get_attack_id_and_value_from_name(attack_indicator):
     indicator value = 'Redundant Access'.
     """
     ind_name = attack_indicator.get('name')
-    separator = ':'
-    try:
-        idx = ind_name.index(separator)
-    except ValueError as err:
-        error_msg = f"Could not find separator {separator} in attack indicator {ind_name}, error: {err}"
-        demisto.debug(error_msg)
-        raise DemistoException(error_msg)
+    idx = ind_name.index(':')
     ind_id = ind_name[:idx]
     value = ind_name[idx + 2:]
 

@@ -42,6 +42,7 @@ INDICATORS_DATA = [
      "type": "indicator", "valid_from": "2019-05-06T14:12:22.757Z"}
 ]
 
+
 ATTACK_PATTERN_DATA = [
     {"created": "2018-08-03T19:54:02.821Z", "created_by_ref": "identity--c78cb6e5-0c4b-4611-8297-d1b8b55e40b5",
      "description": "Windows Management",
@@ -74,7 +75,7 @@ ATTACK_PATTERN_DATA = [
      "id": "attack-pattern--01a5a209-b94c-450b-b7f9-946497d91055",
      "kill_chain_phases": [{"kill_chain_name": "lockheed", "phase_name": "installation"},
                            {"kill_chain_name": "mitre-attack", "phase_name": "execution"}],
-     "modified": "2020-05-12T13:02:30.000000Z", "name": "T1047: Windows Management Instrumentation",
+     "modified": "2020-05-12T13:02:30.000000Z", "name": "T1047 Windows Management Instrumentation",
      "object_marking_refs": ["marking-definition--fa42a846-8d90-4e51-bc29-71d5b4802168"], "type": "attack-pattern",
      "x_mitre_data_sources": ["Authentication logs", "Netflow/Enclave netflow", "Process command-line parameters",
                               "Process monitoring"], "x_mitre_detection": [
