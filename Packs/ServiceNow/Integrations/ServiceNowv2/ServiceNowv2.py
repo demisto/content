@@ -586,7 +586,7 @@ class Client(BaseClient):
         while num_of_tries < max_retries:
             if file:
                 # Not supported in v2
-                url = url.replace('v2', 'v1')
+                url = url.replace('/v2', '/v1')
                 try:
                     file_entry = file['id']
                     file_name = file['name']
