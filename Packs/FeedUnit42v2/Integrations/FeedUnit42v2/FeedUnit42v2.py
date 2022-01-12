@@ -83,8 +83,7 @@ class Client(BaseClient):
             test: Whether it was called during clicking the test button or not - designed to save time.
             limit: number of indicators for get command
         """
-        data = []
-
+        data: list = []
         for api_root in self.server.api_roots:
             for collection in api_root.collections:
                 for bundle in as_pages(collection.get_objects, per_request=100, **kwargs):
