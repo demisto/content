@@ -794,7 +794,6 @@ def unregister_vm(si, args):
 
 
 def test_module(si):
-    get_vms(si, {'limit': '1'})
     return 'ok'
 
 
