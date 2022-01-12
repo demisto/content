@@ -267,6 +267,11 @@
             "timeout": 1000
         },
         {
+            "integrations": "AzureDevOps",
+            "playbookID": "playbook-AzureDevOps-Test",
+            "fromversion": "6.2.0"
+        },
+        {
             "integrations": "Microsoft Intune Feed",
             "playbookID": "FeedMicrosoftIntune_Test",
             "fromversion": "5.5.0"
@@ -4973,12 +4978,53 @@
             "playbookID": "KafkaV3 Test"
         },
         {
+            "playbookID": "FormatURL-Test"
+        },
+        {
+            "playbookID": "Grafana-Test",
+            "fromversion": "6.0.0",
+            "integrations": [
+                "Grafana",
+                "Demisto REST API"
+            ],
+            "is_mockable": false,
+            "timeout": 2400
+        },
+        {
             "integrations": "McAfee ePO v2",
             "playbookID": "McAfee ePO v2 Test"
         },
         {
             "playbookID": "Dedup - Generic v3",
             "fromversion": "5.5.0"
+        },
+        {
+            "playbookID": "DBotPredictURLPhishing_test",
+            "integrations": [
+                "Whois",
+                "Rasterize"
+            ]
+        },
+        {
+            "playbookID": "TAXII2 Server Performance Test",
+            "instance_names": "taxii2server",
+            "integrations": [
+                "TAXII2 Server",
+                "Create-Mock-Feed-Relationships"
+            ],
+            "fromversion": "6.2.0",
+            "timeout": 6000,
+            "memory_threshold": 900,
+            "pid_threshold": 12,
+            "is_mockable": false
+        },
+        {
+            "playbookID": "TAXII2 Indicator Performance Test",
+            "fromversion": "6.1.0"
+        },
+        {
+            "playbookID": "TAXII2 Performance Test - Concurrency",
+            "fromversion": "6.1.0"
         }
     ],
     "skipped_tests": {
