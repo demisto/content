@@ -502,7 +502,8 @@ class TestHelperFunctions:
         os.mkdir('Tests/Marketplace/Tests/test_data/pack_to_test/TestPlaybooks')
         os.mkdir('Tests/Marketplace/Tests/test_data/pack_to_test/Integrations')
         os.mkdir('Tests/Marketplace/Tests/test_data/pack_to_test/TestPlaybooks/NonCircleTests')
-        test_pack = Pack(pack_name="pack_to_test", pack_path='Tests/Marketplace/Tests/test_data/pack_to_test', marketplace="xsoar")
+        test_pack = Pack(pack_name="pack_to_test", pack_path='Tests/Marketplace/Tests/test_data/pack_to_test',
+                         marketplace="xsoar")
         test_pack.remove_unwanted_files()
         assert not os.path.isdir('Tests/Marketplace/Tests/test_data/pack_to_test/TestPlaybooks')
         assert os.path.isdir('Tests/Marketplace/Tests/test_data/pack_to_test/Integrations')
