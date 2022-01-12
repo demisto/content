@@ -1,16 +1,17 @@
 import os
 import shutil
-import dateparser
+from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 from urllib import parse
-from typing import List, Tuple, Dict, Callable, Any, Union, Optional
 
-from CommonServerPython import *
+import dateparser
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
 
-COMMAND_NOT_IMPLEMENTED_MSG = 'Command not implemented'
+COMMAND_NOT_IMPLEMENTED_MSG = 'Command not implemented TEST'
 
 TICKET_STATES = {
     'incident': {
@@ -70,14 +71,6 @@ TICKET_PRIORITY = {
     '3': '3 - Moderate',
     '4': '4 - Low',
     '5': '5 - Planning'
-}
-
-TICKET_IMPACT = {
-    '1': '1 - Enterprise',
-    '2': '2 - Region / Market',
-    '3': '3 - Ministry',
-    '4': '4 - Department / Function',
-    '5': '5 - Caregiver'
 }
 
 SNOW_ARGS = ['active', 'activity_due', 'opened_at', 'short_description', 'additional_assignee_list', 'approval_history',
@@ -243,10 +236,7 @@ def create_ticket_context(data: dict, additional_fields: list = None) -> Any:
     # Try to map fields
     priority = data.get('priority')
     if priority:
-        if isinstance(priority, dict):
-            context['Priority'] = TICKET_PRIORITY.get(str(int(priority.get('value', ''))), str(int(priority.get('value', '')))),
-        else:
-            context['Priority'] = TICKET_PRIORITY.get(priority, priority)
+        context['Priority'] = TICKET_PRIORITY.get(priority, priority)
     state = data.get('state')
     if state:
         context['State'] = state
@@ -377,18 +367,11 @@ def get_ticket_fields(args: dict, template_name: dict = {}, ticket_type: str = '
     inv_states = {v: k for k, v in states.items()} if states else {}
     approval = TICKET_APPROVAL.get(ticket_type)
     inv_approval = {v: k for k, v in approval.items()} if approval else {}
-    fields_to_clear = argToList(args.get('clear_fields', []))  # This argument will contain fields to allow their value empty
 
     ticket_fields = {}
     for arg in SNOW_ARGS:
         input_arg = args.get(arg)
-
-        if arg in fields_to_clear:
-            if input_arg:
-                raise DemistoException(f"Could not set a value for the argument '{arg}' and add it to the clear_fields. \
-                You can either set or clear the field value.")
-            ticket_fields[arg] = ""
-        elif input_arg:
+        if input_arg:
             if arg in ['impact', 'urgency', 'severity']:
                 ticket_fields[arg] = inv_severity.get(input_arg, input_arg)
             elif arg == 'priority':
@@ -495,16 +478,14 @@ class Client(BaseClient):
     Client to use in the ServiceNow integration. Overrides BaseClient.
     """
 
-    def __init__(self, server_url: str, sc_server_url: str, cr_server_url: str, username: str,
-                 password: str, verify: bool, fetch_time: str, sysparm_query: str,
-                 sysparm_limit: int, timestamp_field: str, ticket_type: str, get_attachments: bool,
+    def __init__(self, server_url: str, sc_server_url: str, username: str, password: str, verify: bool, fetch_time: str,
+                 sysparm_query: str, sysparm_limit: int, timestamp_field: str, ticket_type: str, get_attachments: bool,
                  incident_name: str, oauth_params: dict = None, version: str = None):
         """
 
         Args:
             server_url: SNOW server url
             sc_server_url: SNOW Service Catalog url
-            cr_server_url: SNOW Change Management url
             username: SNOW username
             password: SNOW password
             oauth_params: (optional) the parameters for the ServiceNowClient that should be used to create an
@@ -521,7 +502,6 @@ class Client(BaseClient):
         oauth_params = oauth_params if oauth_params else {}
         self._base_url = server_url
         self._sc_server_url = sc_server_url
-        self._cr_server_url = cr_server_url
         self._version = version
         self._verify = verify
         self._username = username
@@ -550,7 +530,7 @@ class Client(BaseClient):
             self._auth = (self._username, self._password)
 
     def send_request(self, path: str, method: str = 'GET', body: dict = None, params: dict = None,
-                     headers: dict = None, file=None, sc_api: bool = False, cr_api: bool = False):
+                     headers: dict = None, file=None, sc_api: bool = False):
         """Generic request to ServiceNow.
 
         Args:
@@ -560,21 +540,15 @@ class Client(BaseClient):
             params: request params
             headers: request headers
             file: request  file
-            sc_api: Whether to send the request to the Service Catalog API
-            cr_api: Whether to send the request to the Change Request REST API
+            sc_api: Whether to send the request to the SC API
 
         Returns:
             response from API
         """
         body = body if body is not None else {}
         params = params if params is not None else {}
-
-        if sc_api:
-            url = f'{self._sc_server_url}{path}'
-        elif cr_api:
-            url = f'{self._cr_server_url}{path}'
-        else:
-            url = f'{self._base_url}{path}'
+        # if sc_api is set to true, then sending the request to the 'Service Catalog' instead of the 'now' API.
+        url = f'{self._base_url}{path}' if not sc_api else f'{self._sc_server_url}{path}'
 
         if not headers:
             headers = {
@@ -948,28 +922,6 @@ class Client(BaseClient):
         """
         body = {'document_sys_id': document_id, 'document_table': document_table}
         return self.send_request(f'awa/queues/{queue_id}/work_item', 'POST', body=body)
-
-    def create_co_from_template(self, template: str):
-        """Creates a standard change request from template by sending a POST request.
-
-        Args:
-        fields: fields to update
-        Returns:
-            Response from API.
-        """
-        return self.send_request(f'change/standard/{template}', 'POST', body={},
-                                 cr_api=True)
-
-    def get_co_tasks(self, sys_id: str) -> dict:
-        """Get item details from service catalog by sending a GET request to the Change Request REST API.
-
-        Args:
-        id: item id
-
-        Returns:
-            Response from API.
-        """
-        return self.send_request(f'change/{sys_id}/task', 'GET', cr_api=True)
 
 
 def get_ticket_command(client: Client, args: dict):
@@ -1534,19 +1486,19 @@ def query_table_command(client: Client, args: dict) -> Tuple[str, Dict, Dict, bo
     system_params = split_fields(args.get('system_params', ''))
     sys_param_offset = args.get('offset', client.sys_param_offset)
     fields = args.get('fields')
-    if fields and 'sys_id' not in fields:
-        fields = f'{fields},sys_id'  # ID is added by default
 
-    result = client.query(table_name, sys_param_limit, sys_param_offset, sys_param_query, system_params,
-                          sysparm_fields=fields)
+    result = client.query(table_name, sys_param_limit, sys_param_offset, sys_param_query, system_params)
     if not result or 'result' not in result or len(result['result']) == 0:
         return 'No results found', {}, {}, False
     table_entries = result.get('result', {})
 
     if fields:
         fields = argToList(fields)
+        if 'sys_id' not in fields:
+            # ID is added by default
+            fields.append('sys_id')
         # Filter the records according to the given fields
-        records = [{k.replace('.', '_'): v for k, v in r.items() if k in fields} for r in table_entries]
+        records = [dict([kv_pair for kv_pair in iter(r.items()) if kv_pair[0] in fields]) for r in table_entries]
         for record in records:
             record['ID'] = record.pop('sys_id')
             for k, v in record.items():
@@ -2360,163 +2312,6 @@ def add_custom_fields(params):
     SNOW_ARGS += custom_fields
 
 
-def get_tasks_from_co_human_readable(data: dict) -> dict:
-    """Get item human readable.
-
-    Args:
-        data: item data.
-
-    Returns:
-        item human readable.
-    """
-    states = TICKET_STATES.get("sc_task", {})
-    state = data.get('state', {}).get('value')
-    item = {
-        'ID': data.get('sys_id', {}).get('value', ''),
-        'Name': data.get('number', {}).get('value', ''),
-        'Description': data.get('short_description', {}).get('value', ''),
-        'State': states.get(str(int(state)), str(int(state))),
-        'Variables': []
-    }
-    variables = data.get('variables')
-    if variables and isinstance(variables, list):
-        for var in variables:
-            if var:
-                pretty_variables = {
-                    'Question': var.get('label', ''),
-                    'Type': var.get('display_type', ''),
-                    'Name': var.get('name', ''),
-                    'Mandatory': var.get('mandatory', '')
-                }
-                item['Variables'].append(pretty_variables)
-    return item
-
-
-def get_tasks_for_co_command(client: Client, args: dict) -> CommandResults:
-    """Get tasks for a change request
-
-    Args:
-        client: Client object with request.
-        args: Usually demisto.args()
-
-    Returns:
-        Demisto Outputs.
-    """
-    sys_id = str(args.get('id', ''))
-    result = client.get_co_tasks(sys_id)
-    if not result or 'result' not in result:
-        return CommandResults(
-            outputs_prefix="ServiceNow.Tasks",
-            readable_output='Item was not found.',
-            raw_response=result
-        )
-    items = result.get('result', {})
-    if not isinstance(items, list):
-        items_list = [items]
-    else:
-        items_list = items
-    if len(items_list) == 0:
-        return CommandResults(
-            outputs_prefix="ServiceNow.Tasks",
-            readable_output='No items were found.',
-            raw_response=result
-        )
-
-    mapped_items = []
-    for item in items_list:
-        mapped_items.append(get_tasks_from_co_human_readable(item))
-
-    headers = ['ID', 'Name', 'State', 'Description']
-    human_readable = tableToMarkdown('ServiceNow Catalog Items', mapped_items, headers=headers,
-                                     removeNull=True, headerTransform=pascalToSpace)
-    entry_context = {'ServiceNow.Tasks(val.ID===obj.ID)': createContext(mapped_items, removeNull=True)}
-
-    return CommandResults(
-        outputs_prefix="ServiceNow.Tasks",
-        outputs=entry_context,
-        readable_output=human_readable,
-        raw_response=result
-    )
-
-
-def create_co_from_template_command(client: Client, args: dict) -> CommandResults:
-    """Create a change request from a template.
-
-    Args:
-        client: Client object with request.
-        args: Usually demisto.args()
-
-    Returns:
-        Demisto Outputs.
-    """
-
-    template = args.get('template', "")
-    result = client.create_co_from_template(template)
-    if not result or 'result' not in result:
-        raise Exception('Unable to retrieve response.')
-    ticket = result['result']
-    human_readable_table = get_co_human_readable(ticket=ticket, ticket_type='change_request')
-    headers = ['System ID', 'Number', 'Impact', 'Urgency', 'Severity', 'Priority', 'State', 'Approval',
-               'Created On', 'Created By', 'Active', 'Close Notes', 'Close Code', 'Description', 'Opened At',
-               'Due Date', 'Resolved By', 'Resolved At', 'SLA Due', 'Short Description', 'Additional Comments']
-    human_readable = tableToMarkdown('ServiceNow ticket was created successfully.', t=human_readable_table,
-                                     headers=headers, removeNull=True)
-    created_ticket_context = get_ticket_context(ticket)
-    entry_context = {
-        'Ticket(val.ID===obj.ID)': created_ticket_context,
-        'ServiceNow.Ticket(val.ID===obj.ID)': created_ticket_context
-    }
-    return CommandResults(
-        outputs_prefix="ServiceNow.Ticket",
-        outputs=entry_context,
-        readable_output=human_readable,
-        raw_response=result
-    )
-
-
-def get_co_human_readable(ticket: dict, ticket_type: str, additional_fields: list = None) -> dict:
-    """Get co human readable.
-
-    Args:
-        ticket: tickets data. in the form of a dict.
-        ticket_type: ticket type.
-        additional_fields: additional fields to extract from the ticket
-
-    Returns:
-        ticket human readable.
-    """
-
-    states = TICKET_STATES.get(ticket_type, {})
-    state = ticket.get('state', {}).get('value', '')
-    priority = ticket.get('priority', {}).get('value', '')
-
-    item = {
-        'System ID': ticket.get('sys_id', {}).get('value', ''),
-        'Number': ticket.get('number', {}).get('value', ''),
-        'Impact': TICKET_IMPACT.get(str(int(ticket.get('impact', {}).get('value', ''))), ''),
-        'Urgency': ticket.get('urgency', {}).get('display_value', ''),
-        'Severity': ticket.get('severity', {}).get('value', ''),
-        'Priority': TICKET_PRIORITY.get(str(int(priority)), str(int(priority))),
-        'State': states.get(str(int(state)), str(int(state))),
-        'Approval': ticket.get('approval_history', {}).get('value', ''),
-        'Created On': ticket.get('sys_created_on', {}).get('value', ''),
-        'Created By': ticket.get('sys_created_by', {}).get('value', ''),
-        'Active': ticket.get('active', {}).get('value', ''),
-        'Close Notes': ticket.get('close_notes', {}).get('value', ''),
-        'Close Code': ticket.get('close_code', {}).get('value', ''),
-        'Description': ticket.get('description', {}).get('value', ''),
-        'Opened At': ticket.get('opened_at', {}).get('value', ''),
-        'Due Date': ticket.get('due_date', {}).get('value', ''),
-        'Resolved By': ticket.get('closed_by', {}).get('value', ''),
-        'Resolved At': ticket.get('closed_at', {}).get('value', ''),
-        'SLA Due': ticket.get('sla_due', {}).get('value', ''),
-        'Short Description': ticket.get('short_description', {}).get('value', ''),
-        'Additional Comments': ticket.get('comments', {}).get('value', '')
-    }
-
-    return item
-
-
 def main():
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
@@ -2561,10 +2356,8 @@ def main():
     else:
         api = '/api/now/'
         sc_api = '/api/sn_sc/'
-        cr_api = '/api/sn_chg_rest/'
     server_url = params.get('url')
     sc_server_url = f'{get_server_url(server_url)}{sc_api}'
-    cr_server_url = f'{get_server_url(server_url)}{cr_api}'
     server_url = f'{get_server_url(server_url)}{api}'
 
     fetch_time = params.get('fetch_time', '10 minutes').strip()
@@ -2580,9 +2373,8 @@ def main():
 
     raise_exception = False
     try:
-        client = Client(server_url=server_url, sc_server_url=sc_server_url, cr_server_url=cr_server_url,
-                        username=username, password=password, verify=verify, fetch_time=fetch_time,
-                        sysparm_query=sysparm_query, sysparm_limit=sysparm_limit,
+        client = Client(server_url=server_url, sc_server_url=sc_server_url, username=username, password=password,
+                        verify=verify, fetch_time=fetch_time, sysparm_query=sysparm_query, sysparm_limit=sysparm_limit,
                         timestamp_field=timestamp_field, ticket_type=ticket_type, get_attachments=get_attachments,
                         incident_name=incident_name, oauth_params=oauth_params, version=version)
         commands: Dict[str, Callable[[Client, Dict[str, str]], Tuple[str, Dict[Any, Any], Dict[Any, Any], bool]]] = {
@@ -2628,10 +2420,6 @@ def main():
             return_results(get_mapping_fields_command(client))
         elif demisto.command() == 'get-modified-remote-data':
             return_results(get_modified_remote_data_command(client, args, update_timestamp_field, mirror_limit))
-        elif demisto.command() == 'servicenow-create-co-from-template':
-            return_results(create_co_from_template_command(client, demisto.args()))
-        elif demisto.command() == 'servicenow-get-tasks-for-co':
-            return_results(get_tasks_for_co_command(client, demisto.args()))
         elif command in commands:
             md_, ec_, raw_response, ignore_auto_extract = commands[command](client, args)
             return_outputs(md_, ec_, raw_response, ignore_auto_extract=ignore_auto_extract)
@@ -2648,7 +2436,174 @@ def main():
             raise
 
 
-from ServiceNowApiModule import *  # noqa: E402
+### GENERATED CODE ###
+# This code was inserted in place of an API module.
+
+
+OAUTH_URL = '/oauth_token.do'
+
+
+class ServiceNowClient(BaseClient):
+
+    def __init__(self, credentials: dict, use_oauth: bool = False, client_id: str = '', client_secret: str = '',
+                 url: str = '', verify: bool = False, proxy: bool = False, headers: dict = None):
+        """
+        ServiceNow Client class. The class can use either basic authorization with username and password, or OAuth2.
+        Args:
+            - credentials: the username and password given by the user.
+            - client_id: the client id of the application of the user.
+            - client_secret - the client secret of the application of the user.
+            - url: the instance url of the user, i.e: https://<instance>.service-now.com.
+                   NOTE - url should be given without an API specific suffix as it is also used for the OAuth process.
+            - verify: Whether the request should verify the SSL certificate.
+            - proxy: Whether to run the integration using the system proxy.
+            - headers: The request headers, for example: {'Accept`: `application/json`}. Can be None.
+            - use_oauth: a flag indicating whether the user wants to use OAuth 2.0 or basic authorization.
+        """
+        self.auth = None
+        self.use_oauth = use_oauth
+        if self.use_oauth:  # if user selected the `Use OAuth` box use OAuth authorization, else use basic authorization
+            self.client_id = client_id
+            self.client_secret = client_secret
+        else:
+            self.username = credentials.get('identifier')
+            self.password = credentials.get('password')
+            self.auth = (self.username, self.password)
+
+        self.base_url = url
+        super().__init__(base_url=self.base_url, verify=verify, proxy=proxy, headers=headers, auth=self.auth)  # type
+        # : ignore[misc]
+
+    def http_request(self, method, url_suffix, full_url=None, headers=None, json_data=None, params=None, data=None,
+                     files=None, return_empty_response=False, auth=None):
+        ok_codes = (200, 201, 401)  # includes responses that are ok (200) and error responses that should be
+        # handled by the client and not in the BaseClient
+        try:
+            if self.use_oauth:  # add a valid access token to the headers when using OAuth
+                access_token = self.get_access_token()
+                self._headers.update({
+                    'Authorization': 'Bearer ' + access_token
+                })
+            res = super()._http_request(method=method, url_suffix=url_suffix, full_url=full_url, resp_type='response',
+                                        headers=headers, json_data=json_data, params=params, data=data, files=files,
+                                        ok_codes=ok_codes, return_empty_response=return_empty_response, auth=auth)
+            if res.status_code in [200, 201]:
+                try:
+                    return res.json()
+                except ValueError as exception:
+                    raise DemistoException('Failed to parse json object from response: {}'
+                                           .format(res.content), exception)
+
+            if res.status_code in [401]:
+                if self.use_oauth:
+                    if demisto.getIntegrationContext().get('expiry_time', 0) <= date_to_timestamp(datetime.now()):
+                        access_token = self.get_access_token()
+                        self._headers.update({
+                            'Authorization': 'Bearer ' + access_token
+                        })
+                        return self.http_request(method, url_suffix, full_url=full_url, params=params)
+                    try:
+                        err_msg = f'Unauthorized request: \n{str(res.json())}'
+                    except ValueError:
+                        err_msg = f'Unauthorized request: \n{str(res)}'
+                    raise DemistoException(err_msg)
+                else:
+                    raise Exception(f'Authorization failed. Please verify that the username and password are correct.'
+                                    f'\n{res}')
+
+        except Exception as e:
+            if self._verify and 'SSL Certificate Verification Failed' in e.args[0]:
+                return_error('SSL Certificate Verification Failed - try selecting \'Trust any certificate\' '
+                             'checkbox in the integration configuration.')
+            raise DemistoException(e.args[0])
+
+    def login(self, username: str, password: str):
+        """
+        Generate a refresh token using the given client credentials and save it in the integration context.
+        """
+        data = {
+            'client_id': self.client_id,
+            'client_secret': self.client_secret,
+            'username': username,
+            'password': password,
+            'grant_type': 'password'
+        }
+        try:
+            headers = {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+            res = super()._http_request(method='POST', url_suffix=OAUTH_URL, resp_type='response', headers=headers,
+                                        data=data)
+            try:
+                res = res.json()
+            except ValueError as exception:
+                raise DemistoException('Failed to parse json object from response: {}'.format(res.content), exception)
+            if 'error' in res:
+                return_error(
+                    f'Error occurred while creating an access token. Please check the Client ID, Client Secret '
+                    f'and that the given username and password are correct.\n{res}')
+            if res.get('refresh_token'):
+                refresh_token = {
+                    'refresh_token': res.get('refresh_token')
+                }
+                set_integration_context(refresh_token)
+        except Exception as e:
+            return_error(f'Login failed. Please check the instance configuration and the given username and password.\n'
+                         f'{e.args[0]}')
+
+    def get_access_token(self):
+        """
+        Get an access token that was previously created if it is still valid, else, generate a new access token from
+        the client id, client secret and refresh token.
+        """
+        ok_codes = (200, 201, 401)
+        previous_token = get_integration_context()
+
+        # Check if there is an existing valid access token
+        if previous_token.get('access_token') and previous_token.get('expiry_time') > date_to_timestamp(datetime.now()):
+            return previous_token.get('access_token')
+        else:
+            data = {'client_id': self.client_id,
+                    'client_secret': self.client_secret}
+
+            # Check if a refresh token exists. If not, raise an exception indicating to call the login function first.
+            if previous_token.get('refresh_token'):
+                data['refresh_token'] = previous_token.get('refresh_token')
+                data['grant_type'] = 'refresh_token'
+            else:
+                raise Exception('Could not create an access token. User might be not logged in. Try running the'
+                                ' oauth-login command first.')
+
+            try:
+                headers = {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+                res = super()._http_request(method='POST', url_suffix=OAUTH_URL, resp_type='response', headers=headers,
+                                            data=data, ok_codes=ok_codes)
+                try:
+                    res = res.json()
+                except ValueError as exception:
+                    raise DemistoException('Failed to parse json object from response: {}'.format(res.content),
+                                           exception)
+                if 'error' in res:
+                    return_error(
+                        f'Error occurred while creating an access token. Please check the Client ID, Client Secret '
+                        f'and try to run again the login command to generate a new refresh token as it '
+                        f'might have expired.\n{res}')
+                if res.get('access_token'):
+                    expiry_time = date_to_timestamp(datetime.now(), date_format='%Y-%m-%dT%H:%M:%S')
+                    expiry_time += res.get('expires_in', 0) * 1000 - 10
+                    new_token = {
+                        'access_token': res.get('access_token'),
+                        'refresh_token': res.get('refresh_token'),
+                        'expiry_time': expiry_time
+                    }
+                    set_integration_context(new_token)
+                    return res.get('access_token')
+            except Exception as e:
+                return_error(f'Error occurred while creating an access token. Please check the instance configuration.'
+                             f'\n\n{e.args[0]}')
+
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
