@@ -1,3 +1,5 @@
+import datetime
+
 import pytest
 from FeedUnit42v2 import Client, fetch_indicators, get_indicators_command, handle_multiple_dates_in_one_field, \
     get_indicator_publication, get_attack_id_and_value_from_name, parse_indicators, parse_campaigns, \
@@ -94,7 +96,7 @@ def test_fetch_indicators_fails_on_invalid_attack_pattern_structure(mocker):
     client = Client(api_key='1234', verify=False)
     mocker.patch.object(client, 'fetch_stix_objects_from_api', side_effect=mock_get_stix_objects)
 
-    with pytest.raises(DemistoException):
+    with pytest.raises(DemistoException, match=r"substring not found"):
         fetch_indicators(client, create_relationships=True)
 
 
@@ -109,7 +111,7 @@ def test_get_attack_id_and_value_from_name_on_invalid_indicator():
     Then
         - DemistoException is raised.
     """
-    with pytest.raises(DemistoException):
+    with pytest.raises(DemistoException, match=r"substring not found"):
         get_attack_id_and_value_from_name({"name": "test"})
 
 

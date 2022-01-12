@@ -88,7 +88,7 @@ class Client(BaseClient):
         for api_root in self.server.api_roots:
             for collection in api_root.collections:
                 for bundle in as_pages(collection.get_objects, per_request=100, **kwargs):
-                    data.extend(bundle.get('objects', []))
+                    data.extend(bundle.get('objects') or [])
                     if test and limit < len(data):
                         return data
 
@@ -125,7 +125,7 @@ def parse_indicators(indicator_objects: list, feed_tags: Optional[list] = None, 
     indicators = []
     if indicator_objects:
         for indicator_object in indicator_objects:
-            pattern = indicator_object.get('pattern', '')
+            pattern = indicator_object.get('pattern') or ''
             for key in UNIT42_TYPES_TO_DEMISTO_TYPES.keys():
                 if pattern.startswith(f'[{key}'):  # retrieve only Demisto indicator types
                     indicator_obj = {
@@ -719,7 +719,7 @@ def main():
 
     except Exception as err:
         demisto.error(traceback.format_exc())  # print the traceback
-        if 'attack indicator' in str(err):
+        if 'substring not found' in str(err):
             return_error("Failed parsing fetch-indicators response")
         else:
             return_error(str(err))
