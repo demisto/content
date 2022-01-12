@@ -82,10 +82,11 @@ def test_success_investigate_bulk_url_command(mocker):
         "apikey": "not"
     }
     response = investigate_bulk_url_command(client, args, params)
-    # print([type(i) for i in response], response)
     for index, r in enumerate(response[0]["Results"]):
         assert r["IncomingUrl"] == args["Urls"][index]
-    # assert mock_response == list(response)
+        assert r["PhishUpStatus"] in ["Clean", "Phish"]
+        assert r["IsRouted"] in [False, True]
+    assert response[1]["PhishUp.AverageResult"] in ["Clean", "Phish"]
 
 
 def test_empty_urls_list_in_investigate_bulk_url_command():
