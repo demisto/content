@@ -126,7 +126,7 @@ def search_records_by_report_soap_request(token, report_guid):
 
 def search_records_soap_request(
         token, app_id, display_fields, field_id, field_name, search_value, date_operator='',
-        numeric_operator='', max_results=10,
+        numeric_operator='', max_results=10, level_id='',
         sort_type: str = 'Ascending'
 ):
     request_body = '<?xml version="1.0" encoding="UTF-8"?>' + \
@@ -163,11 +163,19 @@ def search_records_soap_request(
                             f'        <Value>{search_value}</Value>' + \
                             '</NumericFilterCondition >'
         else:
-            request_body += '<TextFilterCondition>' + \
-                            '        <Operator>Contains</Operator>' + \
-                            f'        <Field name="{field_name}">{field_id}</Field>' + \
-                            f'        <Value>{search_value}</Value>' + \
-                            '</TextFilterCondition >'
+
+            if 'id' in field_name.lower():
+                request_body += '<ContentFilterCondition>' + \
+                                f'        <Level>{level_id}</Level>' + \
+                                '        <Operator>Equals</Operator>' + \
+                                f'        <Values><Value>{search_value}</Value></Values>' + \
+                                '</ContentFilterCondition>'
+            else:
+                request_body += '<TextFilterCondition>' + \
+                                '        <Operator>Contains</Operator>' + \
+                                f'        <Field name="{field_name}">{field_id}</Field>' + \
+                                f'        <Value>{search_value}</Value>' + \
+                                '</TextFilterCondition >'
 
         request_body += '</Conditions></Filter>'
 
@@ -470,11 +478,12 @@ class Client(BaseClient):
         search_field_name = ''
         search_field_id = ''
         fields_mapping = level_data['mapping']
+        level_id = level_data['level']
         for field in fields_mapping.keys():
             field_name = fields_mapping[field]['Name']
             if field_name in fields_to_display:
                 fields_xml += f'<DisplayField name="{field_name}">{field}</DisplayField>'
-            if field_name == field_to_search:
+            if field_to_search and field_name.lower() == field_to_search.lower():
                 search_field_name = field_name
                 search_field_id = field
 
@@ -486,6 +495,7 @@ class Client(BaseClient):
             date_operator=date_operator, search_value=search_value,
             max_results=max_results,
             sort_type=sort_type,
+            level_id=level_id
         )
 
         if not res:
