@@ -26,6 +26,28 @@ def test_error_investigate_url_command(mocker):
     assert mock_response == list(response)
 
 
+def test_success_investigate_url_command(mocker):
+    from PhishUp import Client, investigate_url_command
+    patcher = mocker.patch("PhishUp.Client.investigate_url_http_request",
+                           return_value={"IncomingUrl": "https://www.paloaltonetworks.com/cortex/xsoar",
+                                         "Url": "www.paloaltonetworks.com",
+                                         "IsRouted": False, "PhishUpStatus": "Clean", "PhishUpScore": "1.00"})
+    patcher.start()
+    base_url = "https://apiv2.phishup.co"
+    client = Client(
+        base_url=base_url,
+        verify=False)
+    args = {
+        "apikey": "not"
+    }
+    params = {
+        "Url": "https://www.paloaltonetworks.com/"
+    }
+    response = investigate_url_command(client, args, params)
+    assert response[1]["Result"] in ["Clean", "Phish", "Error"]
+    assert 0 <= float(response[1]["Score"]) <= 1
+
+
 def test_error_investigate_bulk_url_command(mocker):
     from PhishUp import Client, investigate_bulk_url_command
     patcher = mocker.patch("PhishUp.Client.investigate_bulk_url_http_request", return_value="Error")
@@ -58,10 +80,8 @@ def test_empty_urls_list_in_investigate_bulk_url_command():
         "apikey": "not"
     }
     response = investigate_bulk_url_command(client, args, params)
-    assert response[0] == "Empty Urls List"
-    assert response[1]["PhishUp.AverageResult"] == "Error"
-    assert response[1]["PhishUp.Results"] == "Error"
-    assert response[2] == "Empty Urls List"
+    mock_response = util_load_json('test_data/bulk-empty-url.json')
+    assert mock_response == list(response)
 
 
 def test_get_chosen_phishup_action_command():
