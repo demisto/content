@@ -88,7 +88,16 @@ def test_fetch_indicators_command(mocker):
 
 
 def test_fetch_indicators_fails_on_invalid_attack_pattern_structure(mocker):
+    """
+    Given
+        - Invalid attack pattern indicator structure
 
+    When
+        - fetching indicators
+
+    Then
+        - DemistoException is raised.
+    """
     def mock_get_stix_objects(test, **kwargs):
         type_ = kwargs.get('type')
         client.objects_data[type_] = TYPE_TO_RESPONSE_WIITH_INVALID_ATTACK_PATTERN_DATA[type_]
@@ -96,7 +105,7 @@ def test_fetch_indicators_fails_on_invalid_attack_pattern_structure(mocker):
     client = Client(api_key='1234', verify=False)
     mocker.patch.object(client, 'fetch_stix_objects_from_api', side_effect=mock_get_stix_objects)
 
-    with pytest.raises(DemistoException, match=r"substring not found"):
+    with pytest.raises(DemistoException, match=r"attack indicator"):
         fetch_indicators(client, create_relationships=True)
 
 
@@ -111,7 +120,7 @@ def test_get_attack_id_and_value_from_name_on_invalid_indicator():
     Then
         - DemistoException is raised.
     """
-    with pytest.raises(DemistoException, match=r"substring not found"):
+    with pytest.raises(DemistoException, match=r"attack indicator"):
         get_attack_id_and_value_from_name({"name": "test"})
 
 
