@@ -8,7 +8,8 @@ from FeedUnit42v2 import Client, fetch_indicators, get_indicators_command, handl
 from test_data.feed_data import INDICATORS_DATA, ATTACK_PATTERN_DATA, MALWARE_DATA, RELATIONSHIP_DATA, REPORTS_DATA, \
     REPORTS_INDICATORS, ID_TO_OBJECT, INDICATORS_RESULT, CAMPAIGN_RESPONSE, CAMPAIGN_INDICATOR, COURSE_OF_ACTION_DATA, \
     PUBLICATIONS, ATTACK_PATTERN_INDICATOR, COURSE_OF_ACTION_INDICATORS, RELATIONSHIP_OBJECTS, INTRUSION_SET_DATA, \
-    DUMMY_INDICATOR_WITH_RELATIONSHIP_LIST, STIX_ATTACK_PATTERN_INDICATOR, SUB_TECHNIQUE_INDICATOR, SUB_TECHNIQUE_DATA
+    DUMMY_INDICATOR_WITH_RELATIONSHIP_LIST, STIX_ATTACK_PATTERN_INDICATOR, SUB_TECHNIQUE_INDICATOR, \
+    SUB_TECHNIQUE_DATA, INVALID_ATTACK_PATTERN_STRUCTURE
 
 
 @pytest.mark.parametrize('command, args, response, length', [
@@ -46,6 +47,17 @@ TYPE_TO_RESPONSE = {
     'intrusion-set': INTRUSION_SET_DATA
 }
 
+TYPE_TO_RESPONSE_WIITH_INVALID_ATTACK_PATTERN_DATA = {
+    'indicator': INDICATORS_DATA,
+    'report': REPORTS_DATA,
+    'attack-pattern': INVALID_ATTACK_PATTERN_STRUCTURE,
+    'malware': MALWARE_DATA,
+    'campaign': CAMPAIGN_RESPONSE,
+    'relationship': RELATIONSHIP_DATA,
+    'course-of-action': COURSE_OF_ACTION_DATA,
+    'intrusion-set': INTRUSION_SET_DATA
+}
+
 
 def test_fetch_indicators_command(mocker):
     """
@@ -73,7 +85,20 @@ def test_fetch_indicators_command(mocker):
     assert DUMMY_INDICATOR_WITH_RELATIONSHIP_LIST in indicators
 
 
-def test_get_attack_id_and_value_from_name_on_invalid_indicator_fails():
+def test_fetch_indicators_fails_on_invalid_attack_pattern_structure(mocker):
+
+    def mock_get_stix_objects(test, **kwargs):
+        type_ = kwargs.get('type')
+        client.objects_data[type_] = TYPE_TO_RESPONSE_WIITH_INVALID_ATTACK_PATTERN_DATA[type_]
+
+    client = Client(api_key='1234', verify=False)
+    mocker.patch.object(client, 'fetch_stix_objects_from_api', side_effect=mock_get_stix_objects)
+
+    with pytest.raises(DemistoException):
+        fetch_indicators(client, create_relationships=True)
+
+
+def test_get_attack_id_and_value_from_name_on_invalid_indicator():
     """
     Given
         - Invalid attack indicator structure
@@ -82,11 +107,10 @@ def test_get_attack_id_and_value_from_name_on_invalid_indicator_fails():
         - parsing the the indicator name.
 
     Then
-        - ValueError is raised and the test fails
+        - DemistoException is raised.
     """
-    indicator_id, indicator_value = get_attack_id_and_value_from_name({"name": "test"})
-    assert indicator_id
-    assert indicator_value
+    with pytest.raises(DemistoException):
+        get_attack_id_and_value_from_name({"name": "test"})
 
 
 def test_feed_tags_param(mocker):
