@@ -71,7 +71,7 @@ def test_success_investigate_bulk_url_command(mocker):
     mock_request_response = json.load(open("test_data/bulk-investigate-success.json"))
     patcher = mocker.patch("PhishUp.Client.investigate_bulk_url_http_request", return_value=mock_request_response)
     patcher.start()
-    base_url = "https://apiv2.phishup.co"
+    base_url = "https://test.com/api/v1"
     client = Client(
         base_url=base_url,
         verify=False)
@@ -106,13 +106,31 @@ def test_empty_urls_list_in_investigate_bulk_url_command():
     assert mock_response == list(response)
 
 
-def test_get_chosen_phishup_action_command():
+def test_get_chosen_delete_mail_phishup_action_command():
+    from PhishUp import get_chosen_phishup_action_command
+    params = {
+        "phishup-playbook-action": "Delete Mail"
+    }
+    result = get_chosen_phishup_action_command(params)
+    assert list(result)[1]["PhishUp.Action"] == "Delete Mail"
+
+
+def test_get_chosen_nothing_phishup_action_command():
     from PhishUp import get_chosen_phishup_action_command
     params = {
         "phishup-playbook-action": "Nothing"
     }
     result = get_chosen_phishup_action_command(params)
     assert list(result)[1]["PhishUp.Action"] == "Nothing"
+
+
+def test_get_chosen_move_to_spam_phishup_action_command():
+    from PhishUp import get_chosen_phishup_action_command
+    params = {
+        "phishup-playbook-action": "Move to SPAM"
+    }
+    result = get_chosen_phishup_action_command(params)
+    assert list(result)[1]["PhishUp.Action"] == "Move to SPAM"
 
 
 def test_investigate_url_http_request(mocker):
