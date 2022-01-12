@@ -183,7 +183,8 @@ def test_auth_success_test_module(mocker):
 
 def test_auth_error_test_module(mocker):
     from PhishUp import Client, test_module
-    patcher = mocker.patch("PhishUp.Client.check_api_key_test_module_http_request", return_value={"Status": "Authentication Error"})
+    patcher = mocker.patch("PhishUp.Client.check_api_key_test_module_http_request",
+                           return_value={"Status": "Authentication Error"})
     patcher.start()
     base_url = "https://apiv2.phishup.co"
     client = Client(
