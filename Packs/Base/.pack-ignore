@@ -8,7 +8,7 @@ ignore=BA101
 ignore=SC105
 
 [file:DBotFindSimilarIncidentsByIndicators.yml]
-ignore=SC105,BA109,CJ105
+ignore=SC105,BA109
 
 [file:DBotFindSimilarIncidents.yml]
 ignore=SC105,BA109
