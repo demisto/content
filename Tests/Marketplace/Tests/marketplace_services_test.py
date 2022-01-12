@@ -2083,7 +2083,7 @@ class TestStoreInCircleCIArtifacts:
     def get_successful_packs():
         successful_packs = [
             Pack(pack_name='TestPack1', pack_path='.', marketplace='xsoar'),
-            Pack(pack_name='TestPack2', pack_path='.'marketplace='xsoar'),
+            Pack(pack_name='TestPack2', pack_path='.', marketplace='xsoar'),
         ]
         for pack in successful_packs:
             pack._status = PackStatus.SUCCESS.name
@@ -2095,8 +2095,8 @@ class TestStoreInCircleCIArtifacts:
     @staticmethod
     def get_failed_packs():
         failed_packs = [
-            Pack(pack_name='TestPack3', pack_path='.'marketplace='xsoar'),
-            Pack(pack_name='TestPack4', pack_path='.'marketplace='xsoar'),
+            Pack(pack_name='TestPack3', pack_path='.', marketplace='xsoar'),
+            Pack(pack_name='TestPack4', pack_path='.', marketplace='xsoar'),
         ]
         for pack in failed_packs:
             pack._status = PackStatus.FAILED_UPLOADING_PACK.name
