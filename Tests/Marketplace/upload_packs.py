@@ -336,7 +336,7 @@ def upload_index_to_storage(index_folder_path: str, extract_destination_path: st
 
 
 def create_corepacks_config(storage_bucket: Any, build_number: str, index_folder_path: str,
-                            artifacts_dir: str, storage_base_path: str):
+                            artifacts_dir: str, storage_base_path: str, marketplace: str):
     """Create corepacks.json file and stores it in the artifacts dir. This files contains all of the server's core packs, under
     the key corepacks, and specifies which core packs should be upgraded upon XSOAR upgrade, under the key upgradeCorePacks.
 
@@ -347,9 +347,10 @@ def create_corepacks_config(storage_bucket: Any, build_number: str, index_folder
         index_folder_path (str): The index folder path.
         artifacts_dir (str): The CI artifacts directory to upload the corepacks.json to.
         storage_base_path (str): the source path of the core packs in the target bucket.
+        marketplace (str): the marketplace type of the bucket. possible options: xsoar, marketplace_v2
 
     """
-    marketplace_core_packs = GCPConfig.CORE_PACKS_LIST
+    marketplace_core_packs = GCPConfig.get_core_packs(marketplace)
     core_packs_public_urls = []
     found_core_packs = set()
     for pack in os.scandir(index_folder_path):
@@ -1137,7 +1138,7 @@ def main():
 
     # upload core packs json to bucket
     create_corepacks_config(storage_bucket, build_number, index_folder_path,
-                            os.path.dirname(packs_artifacts_path), storage_base_path)
+                            os.path.dirname(packs_artifacts_path), storage_base_path, marketplace)
 
     # finished iteration over content packs
     upload_index_to_storage(index_folder_path=index_folder_path, extract_destination_path=extract_destination_path,

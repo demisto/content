@@ -55,9 +55,10 @@ class Pack(object):
     EXCLUDE_DIRECTORIES = [PackFolders.TEST_PLAYBOOKS.value]
     RELEASE_NOTES = "ReleaseNotes"
 
-    def __init__(self, pack_name, pack_path):
+    def __init__(self, pack_name, pack_path, marketplace):
         self._pack_name = pack_name
         self._pack_path = pack_path
+        self._marketplace = marketplace
         self._status = None
         self._public_storage_path = ""
         self._remove_files_list = []  # tracking temporary files, in order to delete in later step
@@ -1969,7 +1970,7 @@ class Pack(object):
         if Metadata.DEPENDENCIES not in self.user_metadata and self._user_metadata:
             self._user_metadata[Metadata.DEPENDENCIES] = {}
 
-        core_packs = GCPConfig.CORE_PACKS_LIST
+        core_packs = GCPConfig.get_core_packs(self._marketplace)
 
         # If it is a core pack, check that no new mandatory packs (that are not core packs) were added
         # They can be overridden in the user metadata to be not mandatory so we need to check there as well
