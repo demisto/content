@@ -1,5 +1,3 @@
-echo this is the CIRCLE_BUILD_NUM "$CIRCLE_BUILD_NUM"
-
 echo 'export CI_BUILD_ID="$CIRCLE_BUILD_NUM"' >> $BASH_ENV
 echo 'export CI_PIPELINE_ID="$CIRCLE_WORKFLOW_ID"' >> $BASH_ENV
 echo 'export CI_COMMIT_BRANCH="$CIRCLE_BRANCH"' >> $BASH_ENV
