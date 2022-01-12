@@ -114,7 +114,7 @@ def test_get_attack_id_and_value_from_name_on_invalid_indicator():
         - Invalid attack indicator structure
 
     When
-        - parsing the the indicator name.
+        - parsing the indicator name.
 
     Then
         - DemistoException is raised.
