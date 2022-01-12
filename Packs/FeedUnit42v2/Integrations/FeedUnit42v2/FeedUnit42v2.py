@@ -323,9 +323,8 @@ def get_attack_id_and_value_from_name(attack_indicator):
     separator = ':'
     try:
         idx = ind_name.index(separator)
-    except ValueError as err:
-        error_msg = f"Could not find separator {separator} in attack indicator {ind_name}, error: {err}"
-        raise DemistoException(error_msg)
+    except ValueError:
+        raise DemistoException(f"Failed parsing attack indicator {ind_name}")
     ind_id = ind_name[:idx]
     value = ind_name[idx + 2:]
 
@@ -717,8 +716,7 @@ def main():
 
     except Exception as err:
         demisto.error(traceback.format_exc())  # print the traceback
-        err_msg = str(err)
-        return_error("Failed parsing fetch-indicators response" if "attack indicator" in err_msg else err_msg)
+        return_error(str(err))
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
