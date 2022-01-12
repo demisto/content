@@ -1,8 +1,8 @@
 {
     "name": "Google Cloud SCC",
     "description": "Take control of your security with this content pack! This pack provides a unified set of capabilities that enables you consistent and continuous organization-wide detection and response by leveraging the best of Google Cloud Security.",
-    "support": "xsoar",
-    "currentVersion": "1.1.3",
+    "support": "partner",
+    "currentVersion": "2.0.0",
     "author": "GoogleCloudSCC",
     "url": "https://cloud.google.com/security-command-center",
     "email": "",
