@@ -65,23 +65,6 @@ class Client(BaseClient):
             demisto.log(f"""http request error: {e}""")
             return "Error"
 
-    def list_incidents(self):
-        """
-        returns dummy incident data, just for the example.
-        """
-        return [
-            {
-                'incident_id': 1,
-                'description': 'Hello incident 1',
-                'created_time': datetime.utcnow().strftime(DATE_FORMAT)
-            },
-            {
-                'incident_id': 2,
-                'description': 'Hello incident 2',
-                'created_time': datetime.utcnow().strftime(DATE_FORMAT)
-            }
-        ]
-
 
 def investigate_url_command(client: Client, args, params):
     result = client.investigate_url_http_request(params.get("apikey"), args.get("Url"))
