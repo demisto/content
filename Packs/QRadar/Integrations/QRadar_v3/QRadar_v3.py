@@ -1156,8 +1156,8 @@ def enrich_assets_results(client: Client, assets: Any, full_enrichment: bool) ->
                            interface.get('mac_address')]
         } if full_enrichment else dict()
 
-        domains_enrichment = {'Domain': domain_id_name_dict.get(domain_id, domain_id)} if full_enrichment and \
-                                                                                          domain_id else dict()
+        domains_enrichment = {'Domain': domain_id_name_dict.get(domain_id, domain_id)} \
+            if full_enrichment and domain_id else dict()
 
         basic_properties_enrichment = enrich_asset_properties(properties, ASSET_PROPERTIES_NAME_MAP)
         full_properties_enrichment = enrich_asset_properties(properties,
