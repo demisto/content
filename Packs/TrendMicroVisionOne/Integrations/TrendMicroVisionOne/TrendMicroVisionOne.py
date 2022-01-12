@@ -207,12 +207,19 @@ class Client(BaseClient):
         :return: task status response data.
         :rtype: ``Any``
         """
-        task_id = data.get('actionId', {})
-        params = {'actionId': task_id}
+        task_id = data.get("actionId", {})
+        params = {"actionId": task_id}
         flag = True
         while flag:
-            response = self.http_request(GET, TASK_DETAIL_ENDPOINT, params=params)
-            task_status = response.get("data", None).get("taskStatus", None)
+            scheduled_command = ScheduledCommand(
+                command=self.http_request(
+                    GET, TASK_DETAIL_ENDPOINT, params=params
+                ), next_run_in_seconds=30, timeout_in_seconds=600
+            )
+            task_status = scheduled_command.to_results().get(
+                "PollingCommand", {}).get(
+                    "data", {}).get(
+                        "taskStatus", None)
             if task_status in ("pending", "ongoing"):
                 continue
             elif task_status in ("success", "failed", "timeout"):
@@ -239,7 +246,6 @@ class Client(BaseClient):
         if response["status"] == 'FAIL':
             return_error("kindly provide valid field value")
         computer_id = response.get("result").get("computerId")
-        demisto.results(computer_id)
         return computer_id
 
     def exception_list_count(self) -> int:
@@ -347,12 +353,7 @@ def fetch_incidents(client: Client):
         start = end + timedelta(days=-days)
 
     alerts: List[Any] = []
-    while True:
-        gotten = client.get_workbench_histories(start, end, offset, size)
-        if not gotten:
-            break
-        alerts.extend(gotten)
-        offset = len(alerts)
+    alerts.extend(client.get_workbench_histories(start, end, offset, size))
 
     incidents = []
     if alerts:
@@ -559,7 +560,7 @@ def isolate_or_restore_connection(client: Client, command: str, args: Dict[str, 
     if not description:
         description = EMPTY_STRING
     computer_id = client.get_computer_id(field, value)    # type: ignore
-    demisto.results(computer_id)
+
     body = {
         'computerId': computer_id,
         'productId': product_id,
@@ -602,7 +603,6 @@ def terminate_process(client: Client, args: Dict[str, Any]) -> Union[str, Comman
     if not description:
         description = EMPTY_STRING
     computer_id = client.get_computer_id(field, value)    # type: ignore
-    demisto.results(computer_id)
     file_sha1 = args.get(FILESHA)
     filename = args.get(FILENAME)
     if filename:
@@ -852,9 +852,9 @@ def get_file_analysis_report(client: Client, args: Dict[str, Any]) -> Union[str,
     elif response.headers.get('Content-Type', '') == 'binary/octet-stream':
         data = response.content
         if types == 'vaReport':
-            results = fileResult('Sandbox_Analysis_Report.pdf', data, file_type=EntryType.FILE)
+            results = fileResult('Sandbox_Analysis_Report.pdf', data, file_type=EntryType.ENTRY_INFO_FILE)
         else:
-            results = fileResult('Sandbox_Investigation_Package.zip', data, file_type=EntryType.FILE)
+            results = fileResult('Sandbox_Investigation_Package.zip', data, file_type=EntryType.ENTRY_INFO_FILE)
     return results
 
 
@@ -875,7 +875,6 @@ def collect_file(client: Client, args: Dict[str, Any]) -> Union[str, CommandResu
     if not description:
         description = EMPTY_STRING
     computer_id = client.get_computer_id(field, value)    # type: ignore
-    demisto.results(computer_id)
     file_path = args.get(FILE_PATH)
     os = args.get(OS_TYPE)
     body = {
@@ -979,7 +978,7 @@ def submit_file_to_sandbox(client: Client, args: Dict[str, Any]) -> Union[str, C
     }
     results = CommandResults(
         readable_output=tableToMarkdown(TABLE_SUBMIT_FILE_TO_SANDBOX, message),
-        outputs_prefix='VisionOne.SUbmit_File_to_Sandbox',
+        outputs_prefix='VisionOne.Submit_File_to_Sandbox',
         outputs_key_field='message',
         outputs=message
     )
@@ -992,7 +991,7 @@ def main():
         params = demisto.params()
 
         base_url = params.get(URL)
-        api_key = params.get(API_TOKEN)
+        api_key = params.get(API_TOKEN).get('password')
 
         client = Client(base_url, api_key)
 

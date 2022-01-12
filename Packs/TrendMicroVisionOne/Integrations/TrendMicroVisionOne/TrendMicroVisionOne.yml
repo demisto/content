@@ -10,10 +10,11 @@ configuration:
   required: true
   type: 0
 - additionalinfo: The API token to access data
-  display: API Key
+  displaypassword: API Key
   name: apikey
   required: true
-  type: 4
+  type: 9
+  hiddenusername: true
 - display: Fetch incidents
   name: isFetch
   required: false
@@ -484,7 +485,7 @@ script:
       type: string
     - contextPath: VisionOne.Submit_File_to_Sandbox.digest
       description: The hash value of the file
-  dockerimage: demisto/python3:3.9.9.25564
+  dockerimage: demisto/python3:3.10.1.25933
   isFetchSamples: true
   isfetch: true
   runonce: false

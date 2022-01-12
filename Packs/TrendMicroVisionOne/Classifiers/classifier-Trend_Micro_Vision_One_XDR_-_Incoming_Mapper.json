@@ -14,10 +14,6 @@
                     "complex": null,
                     "simple": "impactScope.accountCount"
                 },
-                "Trend Micro Vision One XDR Created Time": {
-                    "complex": null,
-                    "simple": "createdTime"
-                },
                 "Trend Micro Vision One XDR Desktop Count": {
                     "complex": null,
                     "simple": "impactScope.desktopCount"
@@ -466,10 +462,6 @@
                     "complex": null,
                     "simple": "severity"
                 },
-                "Trend Micro Vision One XDR Updated Time": {
-                    "complex": null,
-                    "simple": "updatedTime"
-                },
                 "Trend Micro Vision One XDR Workbench ID": {
                     "complex": null,
                     "simple": "workbenchId"
@@ -477,10 +469,6 @@
                 "Trend Micro Vision One XDR Workbench Link": {
                     "complex": null,
                     "simple": "workbenchLink"
-                },
-                "Trend Micro Vision One XDR Workbench Name": {
-                    "complex": null,
-                    "simple": "workbenchName"
                 },
                 "severity": {
                     "complex": null,

@@ -367,18 +367,18 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "trendmicrovisiononexdrcreatedtime",
+                                "fieldId": "occurred",
                                 "height": 22,
-                                "id": "b9ab71b0-6dbd-11ec-9c6c-458673da1192",
+                                "id": "b7431e70-7306-11ec-baea-bf8198da32cb",
                                 "index": 2,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
-                                "endCol": 3,
-                                "fieldId": "trendmicrovisiononexdrseverity",
+                                "endCol": 2,
+                                "fieldId": "severity",
                                 "height": 22,
-                                "id": "c70c4780-6dbd-11ec-9c6c-458673da1192",
+                                "id": "a2951500-7306-11ec-baea-bf8198da32cb",
                                 "index": 3,
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -398,7 +398,7 @@
                                 "fieldId": "trendmicrovisiononexdrimpactedentities",
                                 "height": 44,
                                 "id": "b6888dc0-6e34-11ec-800b-5b78fe23e766",
-                                "index": 6,
+                                "index": 5,
                                 "listId": "caseinfoid-ea41a760-6da7-11ec-8dff-a790ce76a80f",
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -409,28 +409,17 @@
                                 "fieldId": "trendmicrovisiononexdrindicators",
                                 "height": 44,
                                 "id": "c00db000-6e34-11ec-800b-5b78fe23e766",
-                                "index": 7,
+                                "index": 6,
                                 "listId": "caseinfoid-ea41a760-6da7-11ec-8dff-a790ce76a80f",
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
-                                "dropEffect": "move",
                                 "endCol": 6,
-                                "fieldId": "trendmicrovisiononexdrworkbenchname",
+                                "fieldId": "alertname",
                                 "height": 22,
-                                "id": "9e35b850-6dbd-11ec-9c6c-458673da1192",
+                                "id": "41d77f90-7307-11ec-baea-bf8198da32cb",
                                 "index": 1,
-                                "listId": "caseinfoid-ea41a760-6da7-11ec-8dff-a790ce76a80f",
-                                "sectionItemType": "field",
-                                "startCol": 2
-                            },
-                            {
-                                "endCol": 4,
-                                "fieldId": "trendmicrovisiononexdrupdatedtime",
-                                "height": 22,
-                                "id": "bcd4c530-6dbd-11ec-9c6c-458673da1192",
-                                "index": 2,
                                 "sectionItemType": "field",
                                 "startCol": 2
                             }

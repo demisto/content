@@ -41,7 +41,7 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VisionOne.BlockList.action_-_id | String | The action id | 
+| VisionOne.BlockList.action_id | String | The action id | 
 | VisionOne.BlockList.task_status | String | Status of existing task |
 
 2. `trendmicro-visionone-remove-from-block-list`
