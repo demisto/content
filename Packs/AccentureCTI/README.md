@@ -1,4 +1,4 @@
-# **Accenture CTI v1.1**
+# **Accenture CTI v2**
  
 This pack has 2 sub-packs namely:
 - ACTI Indicator Query
