@@ -1,28 +1,26 @@
 Provides URL scanning and rewriting of inbound email messages in mail flow, and time-of-click verification of URLs and links in email messages and other locations.
-This integration was integrated and tested with Exchange Online PowerShell V2 module, and [Defender for Office 365](https://docs.microsoft.com/en-us/powershell/module/exchange/?view=exchange-ps#defender-for-office-365). 
+This integration was integrated and tested with Exchange Online PowerShell V1 module, and [Defender for Office 365](https://docs.microsoft.com/en-us/powershell/module/exchange/?view=exchange-ps#defender-for-office-365). 
 
 [The Safe Links Product overview](https://docs.microsoft.com/en-us/microsoft-365/security/office-365-security/safe-links?view=o365-worldwide)
 
 ### Required Permissions
 ___
-* In the Azure Application, give the following application permission:
-    * Office 365 Exchange Online -> Exchange.ManageAsApp - Application
 * To create, modify, and delete Safe Links policies, you need to be a member of the `Organization Management` or `Security Administrator` role groups.
 * To manage permissions in the Microsoft 365 Defender portal, go to `Permissions & roles` or https://security.microsoft.com/securitypermissions. You need to be a global administrator or a member of the Organization Management role group in the Microsoft 365 Defender portal. Specifically, the Role Management role allows users to view, create, and modify role groups in the Microsoft 365 Defender portal, and by default, that role is assigned only to the Organization Management role group. See [Permissions in the Microsoft 365 Defender portal](https://docs.microsoft.com/en-us/microsoft-365/security/office-365-security/permissions-microsoft-365-security-center?view=o365-worldwide)
 
 
-## Configure O365 Defender SafeLinks on Cortex XSOAR
+## Configure O365 Defender SafeLinks - Single User on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for O365 Defender SafeLinks.
+2. Search for O365 Defender SafeLinks - Single User.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Certificate | A pfx certificate encoded in Base64. | True |
-    | Password - Used to generate the certificate |  | True |
-    | Organization | The organization used in app-only authentication. | True |
-    | The application ID from the Azure portal |  | True |
+    | **Parameter** | **Required** |
+    | --- | --- |
+    | Exchange Online URL | True |
+    | Email / User Principal Name (Required) | False |
+    | Password (Required for Basic authentication only) | False |
+    | Trust any certificate (not secure) | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
@@ -42,6 +40,82 @@ In Exchange Online PowerShell or standalone EOP PowerShell, you manage the polic
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
+
+### o365-sc-auth-start
+***
+OAuth2.0 - Start authorization.
+
+
+#### Base Command
+
+`o365-sc-auth-start`
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```!o365-sc-auth-start```
+
+#### Human Readable Output
+
+>## Security And Compliance - Authorize instructions
+>1. To sign in, use a web browser to open the page [https://microsoft.com/devicelogin](https://microsoft.com/devicelogin) and enter the code **XXXXXXX** to authenticate.
+>2. Run the ***!o365-sc-auth-complete*** command in the War Room.
+
+
+### o365-sc-auth-complete
+***
+OAuth2.0 - Complete authorization.
+
+
+#### Base Command
+
+`o365-sc-auth-complete`
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```!o365-sc-auth-complete```
+
+#### Human Readable Output
+
+>Your account **successfully** authorized!
+
+
+
+### o365-defender-safelinks-auth-test
+***
+OAuth2.0 - Test authorization.
+
+
+#### Base Command
+
+`o365-defender-safelinks-auth-test`
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```!o365-defender-safelinks-auth-test```
+
+#### Human Readable Output
+
+>**Test ok!**
+
 
 ### o365-defender-safelinks-policy-list
 ***
@@ -848,6 +922,40 @@ Update a given Safe Links rule.
 >| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | ---
 >| Changed recipients | "Microsoft.Exchange.MessagingPolicies.Rules.Tasks.SentToPredicate" | If the message: Is sent to 'xsoartest@xsoar.onmicrosoft.com'\ Take the following actions: Apply safe links policy "XSOAR Policy".\  | CN=XSOAR Policy,CN=SafeLinksVersioned,CN=Rules,CN=Transport Settings,CN=Configuration,CN=xsoartest.onmicrosoft.com,CN=ConfigurationUnits,DC=EURPR07A123,DC=PROD,DC=OUTLOOK,DC=COM |  |  |  |  | 0.1 (8.0.535.0) | {"value":"e5764de3-5495-4512-93f5-fe96d579fbd9","Guid":"e5764de3-5495-4512-93f5-fe96d579fbd9"} | XSOAR Policy | {"value":"e5764de3-5495-4512-93f5-fe96d579fbd9","Guid":"e5764de3-5495-4512-93f5-fe96d579fbd9"} | true | XSOAR Policy | Unchanged | EURPR07A123.PROD.OUTLOOK.COM/Microsoft Exchange Hosted Organizations/xsoartest.onmicrosoft.com - EURPR07A123.PROD.OUTLOOK.COM/ConfigurationUnits/xsoartest.onmicrosoft.com/Configuration | 2 | outlook.office365.com | false |  | {"Major":14,"Minor":0,"Build":0,"Revision":0,"MajorRevision":0,"MinorRevision":0} | {"value":"72b57693-0ddb-45b0-a44f-4d722a352635","Guid":"72b57693-0ddb-45b0-a44f-4d722a352635"} | XSOAR Policy | "xsoartest@xsoar.onmicrosoft.com" |  | Enabled | {"value":"2021-10-21T12:49:40+00:00","DateTime":"Thursday, October 21, 2021 12:49:40 PM"}
 
+### o365-defender-safelinks-detail-report-get
+***
+Get detailed information about Safe Links results for the last 7 days. Yesterday is the most recent date that you can specify.. Currently, the date range can't be more than seven days.
+
+
+#### Base Command
+
+`o365-defender-safelinks-detail-report-get`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| start_date | The start date of the date range. Yesterday is the most recent date you can specify, and the start date can't be earlier than 10 days before today. Currently, the date range can't be more than seven days.<br/>Date format: mm/dd/yyyy. | Required | 
+| end_date | The end date of the date range. Currently, the date range can't be more than seven days. If no value was provided, the end date is set to the date of the command execution.<br/>Date format: mm/dd/yyyy. | Required | 
+| action | Filters the results by action. You can specify multiple values separated by commas. Can be "Allowed", "Blocked", "ClickedEvenBlocked", or "ClickedDuringScan". Possible values are: Allowed, Blocked, ClickedEvenBlocked, ClickedDuringScan. | Optional | 
+| app_names | Filters the results by the app where the link was found. You can specify multiple values separated by commas. Can be "Email Client", "Excel", "OneNote", "Others", "Outlook", "PowerPoint", "Teams", "Visio", or "Word". Possible values are: Email Client, Excel, OneNote, Others, Outlook, PowerPoint, Teams, Visio, Word. | Optional | 
+| domain | Filters the results by the specified domain in the URL. You can specify multiple values separated by commas. | Optional | 
+| recipient_address | Filters the results by the given recipient's email address. You can specify multiple values separated by commas. | Optional | 
+| page | Sets the page number of the results you want to view. Valid input is a number between 1 and 1000. The default value is 1. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| O365SafeLinksStats.DetailReport.ClickedTime | date | The date the link was clicked. | 
+| O365SafeLinksStats.DetailReport.Recipient | string | The recipient that received the link. | 
+| O365SafeLinksStats.DetailReport.URL | string | The URL that was clicked. | 
+| O365SafeLinksStats.DetailReport.UrlBlocked | string | The URL was detected as malicious by Safe Links \(only the initial block, not subsequent clicks\), or the user clicked the URL while the scan was in progress \(users are taken to a notification page that asks them to try again after the scan is complete\). | 
+| O365SafeLinksStats.DetailReport.UrlClicked | string | The URL is blocked, but the applicable Safe Links policy has the DoNotAllowClickThrough parameter value set to false \(click through is allowed\). Updated policies aren't applied to existing messages that have already been scanned. New or updated policies are applied to new messages that are received after the policy is applied to the mailbox. | 
+| O365SafeLinksStats.DetailReport.ClickAction | string | The action of a specific click. Possible values are: • None: Unable to capture the verdict for the URL. The user may have clicked through the URL. • Allowed: The user was allowed to navigate to the URL. • Blocked: The user was blocked from navigating to the URL. • Pending verdict: The user was presented with the detonation pending page. • Blocked overridden: The user was blocked from navigating to the URL; however, the user overrode the block to navigate to the URL. • Pending verdict bypassed: The user was presented with the detonation page; however, the user overrode the page to navigate to the URL. • Error: The user was presented with the error page. This can also mean there was an error in capturing the verdict. • Failure: There was an unknown exception while capturing the verdict. The user may have clicked through the URL. | 
+| O365SafeLinksStats.DetailReport.Workload | string | The workload of the delivered link. | 
+| O365SafeLinksStats.DetailReport.AppName | string | The application name. | 
+
 Known Limitations
 ----
 
@@ -857,5 +965,7 @@ Known Limitations
     * Microsoft Teams: Safe Links protection for links in Teams conversations, group chats, or from channels is also controlled by Safe Links policies. There is no default Safe Links policy, so to get the protection of Safe Links in Teams, you need to create one or more Safe Links policies.
     * Email messages: Safe Links protection for links in email messages is controlled by Safe Links policies. There is no default Safe Links policy, so to get the protection of Safe Links in email messages, you need to create one or more Safe Links policies.
 * Allow up to 30 minutes for a new or updated policy to be applied.
-* Organization - be sure to use an `.onmicrosoft.com` domain in the Organization parameter value. Otherwise, you might encounter cryptic permission issues when you run commands in the app context.
-
+* When using the `o365-defender-safelinks-detail-report-get` command, note the following:
+  * The date range can't be more than seven days.   
+  * Yesterday is the most recent date that you can specify.
+  * The start date can't be older than 10 days from today.
