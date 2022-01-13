@@ -1,7 +1,7 @@
 # **Accenture CTI v2**
  
 This pack has 1 sub-pack/integration namely:
-- ACTI Indicator Query 
+- ACTI Indicator Query
 _____
 
 <p>&nbsp;</p>
