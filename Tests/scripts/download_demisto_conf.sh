@@ -2,7 +2,7 @@
 set +e
 
 # replace slashes ('/') in the branch name, if exist, with underscores ('_')
-UNDERSCORE_BRANCH=${CI_COMMIT_BRANCH}
+UNDERSCORE_BRANCH=${CI_COMMIT_BRANCH//\//_}
 
 #download awsinstancetool
 echo "Getting conf from branch $UNDERSCORE_BRANCH (fallback to master)"
