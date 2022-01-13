@@ -783,6 +783,8 @@ def option_handler():
     parser.add_argument('-pb', '--private_bucket_name', help="Private storage bucket name", required=False)
     parser.add_argument('-c', '--ci_branch', help="CI branch of current build", required=True)
     parser.add_argument('-f', '--force_upload', help="is force upload build?", type=str2bool, required=True)
+    parser.add_argument('-do', '--packs_dependencies_on', help="Full path to pack dependencies on json file",
+                        required=False)
     parser.add_argument('-dz', '--create_dependencies_zip', help="Upload packs with dependencies zip", type=str2bool,
                         required=False)
     # disable-secrets-detection-end
@@ -1053,6 +1055,7 @@ def main():
     override_all_packs = option.override_all_packs
     signature_key = option.key_string
     packs_dependencies_mapping = load_json(option.pack_dependencies) if option.pack_dependencies else {}
+    packs_dependencies_on = load_json(option.packs_dependencies_on) if option.packs_dependencies_on else {}
     storage_base_path = option.storage_base_path
     remove_test_playbooks = option.remove_test_playbooks
     is_bucket_upload_flow = option.bucket_upload
