@@ -180,7 +180,7 @@ def run_query(query, start_at='', max_results=None, extra_fields=None, nofields=
     }
     if extra_fields:
         fields = extra_fields.split(",")
-        fields_mapping_name_id = {k.lower():v.lower() for k,v in get_custom_field_names().items()}
+        fields_mapping_name_id = {k.lower(): v.lower() for k, v in get_custom_field_names().items()}
         query_params['fields'] = [k for y in fields for k, v in fields_mapping_name_id.items() if v == y.lower()]
         nofields.update({fieldextra for fieldextra in fields if fieldextra not in fields_mapping_name_id.values()})
     if nofields:
@@ -691,7 +691,7 @@ def get_issue(issue_id, headers=None, expand_links=False, is_update=False, get_a
 
 def issue_query_command(query, start_at='', max_results=None, headers='', extra_fields=None):
     nofields = set()
-    j_res = run_query(query, start_at, max_results, extra_fields,nofields)
+    j_res = run_query(query, start_at, max_results, extra_fields, nofields)
     if not j_res:
         outputs = contents = {}
         human_readable = 'No issues matched the query.'
