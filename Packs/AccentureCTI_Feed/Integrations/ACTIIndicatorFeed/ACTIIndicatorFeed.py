@@ -139,7 +139,7 @@ def main():
     params['headers'] = {"Content-Type": "application/json",
                          'auth-token': parameters.get('api_token').get("password")}
 
-    feed_main(params, 'iDefense Feed', 'idefense')
+    feed_main(params, 'ACTI Indicator Feed', 'acti')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
