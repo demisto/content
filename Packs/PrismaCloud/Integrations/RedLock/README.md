@@ -1041,7 +1041,7 @@ Search events on the Prisma Cloud (RedLock) platform using RQL language.
 
 
 #### Command Example
-```!redlock-search-event query=`event from cloud.audit_logs where ip EXISTS AND ip IN (12.3.149.46)` time-range-date-from=10/29/2021 time-range-date-to=10/30/2021```
+```!redlock-search-event query=`event from cloud.audit_logs where ip EXISTS AND ip IN (172.31.34.235)` time-range-date-from=10/29/2021 time-range-date-to=10/30/2021```
 
 #### Context Example
 ```json
@@ -1057,7 +1057,7 @@ Search events on the Prisma Cloud (RedLock) platform using RQL language.
                 "source": "s3.amazonaws.com",
                 "name": "CreateBucket",
                 "id": 2557671673,
-                "ip": "12.3.149.46",
+                "ip": "172.31.34.235",
                 "accessKeyUsed": false,
                 "cityId": -4,
                 "cityName": "Private",
@@ -1083,7 +1083,7 @@ Search events on the Prisma Cloud (RedLock) platform using RQL language.
                 "source": "s3.amazonaws.com",
                 "name": "CreateBucket",
                 "id": 2557671674,
-                "ip": "12.3.149.46",
+                "ip": "172.31.34.235",
                 "accessKeyUsed": false,
                 "cityId": -4,
                 "cityName": "Private",
@@ -1108,8 +1108,8 @@ Search events on the Prisma Cloud (RedLock) platform using RQL language.
 >### Event Details
 >|accessKeyUsed|account|accountName|cityId|cityLatitude|cityLongitude|cityName|countryId|countryName|dynamicData|eventTs|id|internal|ip|location|name|regionId|regionName|source|stateId|stateName|subject|success|type|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| false | 712829893241 | aws-emea-tac | -4 | -1.0 | -1.0 | Private | -4 | Private |  | 1642051938000 | 2557671539 | false | 12.3.149.46 | Private | CreateBucket | 4 | AWS Oregon | s3.amazonaws.com | -4 | Private | ejb-iam-cloudops | false | CREATE |
->| false | 712829893241 | aws-emea-tac | -4 | -1.0 | -1.0 | Private | -4 | Private |  | 1642051938000 | 2557671540 | false | 12.3.149.46 | Private | CreateBucket | 4 | AWS Oregon | s3.amazonaws.com | -4 | Private | ejb-iam-cloudops | false | CREATE |
+>| false | 712829893241 | aws-emea-tac | -4 | -1.0 | -1.0 | Private | -4 | Private |  | 1642051938000 | 2557671539 | false | 172.31.34.235 | Private | CreateBucket | 4 | AWS Oregon | s3.amazonaws.com | -4 | Private | ejb-iam-cloudops | false | CREATE |
+>| false | 712829893241 | aws-emea-tac | -4 | -1.0 | -1.0 | Private | -4 | Private |  | 1642051938000 | 2557671540 | false | 172.31.34.235 | Private | CreateBucket | 4 | AWS Oregon | s3.amazonaws.com | -4 | Private | ejb-iam-cloudops | false | CREATE |
 
 
 ### redlock-search-network
@@ -1151,7 +1151,7 @@ Search networks on the Prisma Cloud (RedLock) platform using RQL language.
               {
                 "id": 1422407688,
                 "name": "aqwe",
-                "ipAddr": "172.31.28.187",
+                "ipAddr": "172.31.34.235",
                 "grouped": false,
                 "suspicious": false,
                 "vulnerable": true,
@@ -1170,8 +1170,8 @@ Search networks on the Prisma Cloud (RedLock) platform using RQL language.
                         "vpc-ddf45bb4"
                     ],
                     "ip_addresses": [
-                        "172.31.28.187",
-                        "3.140.41.118"
+                        "172.31.34.235",
+                        "35.180.1.1"
                     ],
                     "inspector_rba_count": 0,
                     "region_id": [
@@ -1218,7 +1218,7 @@ Search networks on the Prisma Cloud (RedLock) platform using RQL language.
             {
                 "id": 1411487329,
                 "name": "gke-oldtac-nopublicclust-default-pool-f08b69f0-6g3n",
-                "ipAddr": "10.128.15.240",
+                "ipAddr": "172.31.34.235",
                 "grouped": false,
                 "suspicious": false,
                 "vulnerable": true,
@@ -1234,7 +1234,7 @@ Search networks on the Prisma Cloud (RedLock) platform using RQL language.
                         "https://www.googleapis.com/compute/v1/projects/tac-prisma-cloud-and-compute/global/networks/us-central1"
                     ],
                     "ip_addresses": [
-                        "10.128.15.240"
+                        "172.31.34.235"
                     ],
                     "inspector_rba_count": 0,
                     "secgroup_ids": [
@@ -1317,7 +1317,7 @@ Search networks on the Prisma Cloud (RedLock) platform using RQL language.
 >### Nodes
 >|grouped|id|ipAddr|metadata|name|suspicious|vulnerable|
 >|---|---|---|---|---|---|---|
->| false | 1411487329 | 10.128.15.240 | redlock_alert_count: 5<br>vpc_name: {'id': 'https://www.googleapis.com/compute/v1/projects/tac-prisma-cloud-and-compute/global/networks/us-central1', 'name': 'us-central1'}<br>vpc_id: https://www.googleapis.com/compute/v1/projects/tac-prisma-cloud-and-compute/global/networks/us-central1<br>ip_addresses: 10.128.15.240<br>inspector_rba_count: 0<br>secgroup_ids: 7466735050281694697,<br>5386953130680217005<br>guard_duty_iam_count: 0<br>asset_role: VM Instance<br>account_name: gcp-emea-tac<br>region_name: GCP Iowa<br>compliance_count: 0<br>host_vulnerability_count: 0<br>initial: true<br>region_id: us-central1<br>net_iface_id: gke-oldtac-nopublicclust-default-pool-f08b69f0-6g3n#nic0<br>guard_duty_host_count: 0<br>tags: {'name': 'gke-oldtac-nopublicclusterhere-fc43a760-node', 'values': ['']},<br>{'name': 'goog-gke-node', 'values': ['']}<br>rrn: rrn::instance:us-central1:tac-prisma-cloud-and-compute:7040cac26d62fa19dea22bcb6cd52dba6c213212:1397701696990493277<br>security_groups: {'id': '7466735050281694697', 'name': 'allow-ingress-from-iap-tac'},<br>{'id': '5386953130680217005', 'name': 'gke-oldtac-nopublicclusterhere-fc43a760-all'}<br>serverless_vulnerability_count: 0<br>instance_id: 1397701696990493277<br>account_id: tac-prisma-cloud-and-compute<br>cloud_type: gcp<br>resource_id: 1397701696990493277<br>inspector_sbp_count: 0 | gke-oldtac-nopublicclust-default-pool-f08b69f0-6g3n | false | true |
+>| false | 1411487329 | 172.31.34.235 | redlock_alert_count: 5<br>vpc_name: {'id': 'https://www.googleapis.com/compute/v1/projects/tac-prisma-cloud-and-compute/global/networks/us-central1', 'name': 'us-central1'}<br>vpc_id: https://www.googleapis.com/compute/v1/projects/tac-prisma-cloud-and-compute/global/networks/us-central1<br>ip_addresses: 172.31.34.235<br>inspector_rba_count: 0<br>secgroup_ids: 7466735050281694697,<br>5386953130680217005<br>guard_duty_iam_count: 0<br>asset_role: VM Instance<br>account_name: gcp-emea-tac<br>region_name: GCP Iowa<br>compliance_count: 0<br>host_vulnerability_count: 0<br>initial: true<br>region_id: us-central1<br>net_iface_id: gke-oldtac-nopublicclust-default-pool-f08b69f0-6g3n#nic0<br>guard_duty_host_count: 0<br>tags: {'name': 'gke-oldtac-nopublicclusterhere-fc43a760-node', 'values': ['']},<br>{'name': 'goog-gke-node', 'values': ['']}<br>rrn: rrn::instance:us-central1:tac-prisma-cloud-and-compute:7040cac26d62fa19dea22bcb6cd52dba6c213212:1397701696990493277<br>security_groups: {'id': '7466735050281694697', 'name': 'allow-ingress-from-iap-tac'},<br>{'id': '5386953130680217005', 'name': 'gke-oldtac-nopublicclusterhere-fc43a760-all'}<br>serverless_vulnerability_count: 0<br>instance_id: 1397701696990493277<br>account_id: tac-prisma-cloud-and-compute<br>cloud_type: gcp<br>resource_id: 1397701696990493277<br>inspector_sbp_count: 0 | gke-oldtac-nopublicclust-default-pool-f08b69f0-6g3n | false | true |
 >### Connections
 >|from|label|metadata|suspicious|to|
 >|---|---|---|---|---|
