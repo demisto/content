@@ -2021,7 +2021,9 @@
         },
         {
             "integrations": "VMware",
-            "playbookID": "VMWare Test"
+            "playbookID": "VMWare Test",
+            "memory_threshold": 300,
+            "timeout": 1000
         },
         {
             "integrations": "carbonblack-v2",
@@ -5077,7 +5079,6 @@
         "RedCanaryTest": "Issue 43818",
         "MailListener-POP3 - Test": "Issue 44199",
         "MicrosoftManagementActivity - Test": "Issue 43922",
-        "VMWare Test": "Issue 43823",
         "Google-Vault-Generic-Test": "Issue 24347",
         "Google_Vault-Search_And_Display_Results_test": "Issue 24348",
         "Tenable.io Scan Test": "Issue 26728",
@@ -5093,7 +5094,6 @@
         "Cofense Intelligence v2 test": "Issue 44499",
         "Endpoint Malware Investigation - Generic - Test": "Issue 44779",
         "Mimecast test": "Issue 26906",
-        "RedLockTest": "Issue 24600",
         "AutoFocus V2 test": "Issue 26464",
         "SplunkPy_KV_commands_default_handler": "Issue 41419",
         "LogRhythm REST test": "Issue 40654",
@@ -5421,6 +5421,9 @@
             },
             "demisto/flask-nginx": {
                 "pid_threshold": 11
+            },
+            "demisto/py3-tools": {
+                "memory_threshold": 105
             }
         }
     }
