@@ -1,0 +1,205 @@
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 6c1fcb83-8126-429b-88bb-fcc9185a3c41
+    propagationLabels:
+    - all
+    toServerVersion: ""
+description: 'Sub-Playbook to check and cleanup the CRLF issue of "forwarded as attachment:
+  emails from Microsoft Outlook.'
+id: 881ef468-43d7-4d04-80de-ade8299561af
+inputs:
+- description: ""
+  key: File
+  playbookInputQuery: null
+  required: false
+  value: {}
+name: CRLF_cleanup
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 36f0d34b-a62d-4978-81f1-5e83d6c1b60b
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 36f0d34b-a62d-4978-81f1-5e83d6c1b60b
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.File.Extension
+          operator: isEqualString
+          right:
+            value:
+              simple: eml
+      label: "yes"
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "2"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: b68c1f2d-31c4-4869-8d92-5f1f010922fe
+      iscommand: false
+      name: Is EML file ?
+      type: condition
+      version: -1
+    taskid: b68c1f2d-31c4-4869-8d92-5f1f010922fe
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "2":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.File.Type
+          operator: containsString
+          right:
+            value:
+              simple: CRLF
+      label: "yes"
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 772d9b0c-5eca-409a-833a-83773844bf3d
+      iscommand: false
+      name: Is possible broken EML file?
+      type: condition
+      version: -1
+    taskid: 772d9b0c-5eca-409a-833a-83773844bf3d
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      EntryID:
+        simple: ${inputs.File.EntryID}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 4f00027a-87ed-462a-89bc-62f584880d90
+      iscommand: false
+      name: Fix EML file
+      scriptName: CRLFcleaner
+      type: regular
+      version: -1
+    taskid: 4f00027a-87ed-462a-89bc-62f584880d90
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 545
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 879b8a9e-4065-433d-8bbe-1d3392f3f338
+      iscommand: false
+      name: End
+      type: title
+      version: -1
+    taskid: 879b8a9e-4065-433d-8bbe-1d3392f3f338
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 605,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }

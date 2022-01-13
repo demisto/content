@@ -1,0 +1,30 @@
+args:
+- description: eml File Entry ID
+  name: EntryID
+  required: true
+comment: Script which restores broken .eml files. EML file appears to be broken after
+  being forwarded as attachment from Microsoft Outlook, due to the wrapping of long
+  lines using CRLF.
+commonfields:
+  id: 2cedfee2-f835-41de-8e24-09d655c71d17
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 6c1fcb83-8126-429b-88bb-fcc9185a3c41
+    propagationLabels:
+    - all
+    toServerVersion: ""
+dockerimage: python3:latest
+enabled: true
+engineinfo: {}
+name: CRLFcleaner
+pswd: ""
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python

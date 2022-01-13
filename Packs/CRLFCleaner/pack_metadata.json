@@ -1,0 +1,17 @@
+{
+    "name": "CRLF Cleaner",
+    "description": "In case of very long lines in .eml files, which have been forwarded as attachment by Microsoft Outlook/Exchange the lines get wrapped at 76 chars. This pack is meant to restore those eml files and enable better parsing for indicators.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Joerg Stephan",
+    "url": "",
+    "email": "",
+    "created": "2022-01-13T13:59:51Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "johestephan"
+    ]
+}
