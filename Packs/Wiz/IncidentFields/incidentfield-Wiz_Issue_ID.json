@@ -1,22 +1,16 @@
 {
-    "id": "incident_configurationsetup_custompackssource",
+    "id": "incident_wizissueid",
     "version": -1,
-    "name": "Custom Packs Source",
+    "modified": "2021-12-30T16:28:53.738615368Z",
+    "name": "Wiz Issue ID",
     "ownerOnly": false,
-    "description": "The source of the custom packs.",
-    "cliName": "custompackssource",
-    "type": "singleSelect",
+    "cliName": "wizissueid",
+    "type": "shortText",
     "closeForm": false,
     "editForm": true,
     "required": false,
     "neverSetAsRequired": false,
     "isReadOnly": false,
-    "selectValues": [
-        "Attachments",
-        "Google Cloud Storage",
-        "AWS S3",
-        "HTTP request"
-    ],
     "useAsKpi": false,
     "locked": false,
     "system": false,
@@ -24,12 +18,13 @@
     "group": 0,
     "hidden": false,
     "associatedTypes": [
-        "Configuration Setup"
+        "Wiz Issue"
     ],
     "associatedToAll": false,
     "unmapped": false,
-    "unsearchable": false,
+    "unsearchable": true,
     "caseInsensitive": true,
+    "description": "Wiz Issue ID",
     "sla": 0,
     "threshold": 72,
     "fromVersion": "6.0.0"
