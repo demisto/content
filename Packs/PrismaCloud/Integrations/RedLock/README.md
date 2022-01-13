@@ -783,7 +783,7 @@ Run RQL query on Prisma Cloud
                     "RegionId": "eu-west-1",
                     "RegionName": "AWS Ireland",
                     "ResourceType": "Instance",
-                    "Rrn": "rrn:somthing"
+                    "Rrn": "rrn:somthing",
                     "Service": "Amazon EC2",
                     "StateId": "asdfghjklkjhgfdssaa"
                 }
@@ -1011,6 +1011,317 @@ Search configuration inventory on the Prisma Cloud (RedLock) platform using RQL 
 >|---|---|---|---|---|
 >| Felix - AWS - pan-lab | false | AWS Virginia | tl-console | Amazon EC2 |
 
+
+
+### redlock-search-event
+***
+Search events on the Prisma Cloud (RedLock) platform using RQL language.
+
+
+#### Base Command
+
+`redlock-search-event`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| time-range-date-from | Start time for the search, in the following string format -  MM/DD/YYYY. | Optional | 
+| time-range-date-to | End time for the search, in the following format -  MM/DD/YYYY. | Optional | 
+| time-range-value | The number of time range value units for the search. For example, 3 days, 5 weeks, etc. | Optional | 
+| time-range-unit | The search unit. Possible values are: "hour", "week", "month", "year", "login", or "epoch". The "login" and "epoch" options are only available if timeRangeValue<br/>is not provided. Possible values are: hour, day, week, month, year, login, epoch. | Optional | 
+| query | Query to run in Prisma Cloud search API using RQL language. | Required | 
+| limit | Maximum number of entries to return. Default is 100. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Redlock.Event | Unknown | Cloud Audit Events | 
+
+
+#### Command Example
+```!redlock-search-event query=`event from cloud.audit_logs where ip EXISTS AND ip IN (12.3.149.46)` time-range-date-from=10/29/2021 time-range-date-to=10/30/2021```
+
+#### Context Example
+```json
+{
+    "Redlock": {
+        "Event": [
+            {
+                "account": "712829893241",
+                "regionId": 4,
+                "eventTs": 1642051966000,
+                "subject": "ejb-iam-cloudops",
+                "type": "CREATE",
+                "source": "s3.amazonaws.com",
+                "name": "CreateBucket",
+                "id": 2557671673,
+                "ip": "12.3.149.46",
+                "accessKeyUsed": false,
+                "cityId": -4,
+                "cityName": "Private",
+                "stateId": -4,
+                "stateName": "Private",
+                "countryId": -4,
+                "countryName": "Private",
+                "cityLatitude": -1.0,
+                "cityLongitude": -1.0,
+                "success": false,
+                "internal": false,
+                "location": "Private",
+                "accountName": "aws-emea-tac",
+                "regionName": "AWS Oregon",
+                "dynamicData": {}
+            },
+            {
+                "account": "712829893241",
+                "regionId": 4,
+                "eventTs": 1642051966000,
+                "subject": "ejb-iam-cloudops",
+                "type": "CREATE",
+                "source": "s3.amazonaws.com",
+                "name": "CreateBucket",
+                "id": 2557671674,
+                "ip": "12.3.149.46",
+                "accessKeyUsed": false,
+                "cityId": -4,
+                "cityName": "Private",
+                "stateId": -4,
+                "stateName": "Private",
+                "countryId": -4,
+                "countryName": "Private",
+                "cityLatitude": -1.0,
+                "cityLongitude": -1.0,
+                "success": false,
+                "internal": false,
+                "location": "Private",
+                "accountName": "aws-emea-tac",
+                "regionName": "AWS Oregon",
+                "dynamicData": {}
+            }
+        ]
+    }
+}
+```
+#### Human Readable Output
+>### Event Details
+>|accessKeyUsed|account|accountName|cityId|cityLatitude|cityLongitude|cityName|countryId|countryName|dynamicData|eventTs|id|internal|ip|location|name|regionId|regionName|source|stateId|stateName|subject|success|type|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| false | 712829893241 | aws-emea-tac | -4 | -1.0 | -1.0 | Private | -4 | Private |  | 1642051938000 | 2557671539 | false | 12.3.149.46 | Private | CreateBucket | 4 | AWS Oregon | s3.amazonaws.com | -4 | Private | ejb-iam-cloudops | false | CREATE |
+>| false | 712829893241 | aws-emea-tac | -4 | -1.0 | -1.0 | Private | -4 | Private |  | 1642051938000 | 2557671540 | false | 12.3.149.46 | Private | CreateBucket | 4 | AWS Oregon | s3.amazonaws.com | -4 | Private | ejb-iam-cloudops | false | CREATE |
+
+
+### redlock-search-network
+***
+Search networks on the Prisma Cloud (RedLock) platform using RQL language.
+
+
+#### Base Command
+
+`redlock-search-network`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| time-range-date-from | Start time for the search, in the following string format -  MM/DD/YYYY. | Optional | 
+| time-range-date-to | End time for the search, in the following format -  MM/DD/YYYY. | Optional | 
+| time-range-value | The number of time range value units for the search. For example, 3 days, 5 weeks, etc. | Optional | 
+| time-range-unit | The search unit. Possible values are: "hour", "week", "month", "year", "login", or "epoch". The "login" and "epoch" options are only available if timeRangeValue<br/>is not provided. Possible values are: hour, day, week, month, year, login, epoch. | Optional | 
+| query | Query to run in Prisma Cloud search API using RQL language. | Required | 
+| cloud-type | The cloud in which the network should be searched. Possible values are: aws, azure, gcp, alibaba_cloud, oci. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Redlock.Network.Node | Unknown | Cloud Network Node | 
+| Redlock.Network.Connection | Unknown | Cloud Network Connection | 
+
+
+#### Command Example
+```!redlock-search-network query="network from vpc.flow_record where bytes > 0" time-range-unit=hour time-range-value=2```
+
+#### Context Example
+```json
+{
+    "Redlock": {
+        "Nodes": [
+              {
+                "id": 1422407688,
+                "name": "aqwe",
+                "ipAddr": "172.31.28.187",
+                "grouped": false,
+                "suspicious": false,
+                "vulnerable": true,
+                "iconId": "web_server",
+                "metadata": {
+                    "redlock_alert_count": 16,
+                    "host_vulnerability_count": 0,
+                    "vpc_name": [
+                        {
+                            "id": "vpc-ddf45bb4",
+                            "name": "defaultwala"
+                        }
+                    ],
+                    "initial": true,
+                    "vpc_id": [
+                        "vpc-ddf45bb4"
+                    ],
+                    "ip_addresses": [
+                        "172.31.28.187",
+                        "3.140.41.118"
+                    ],
+                    "inspector_rba_count": 0,
+                    "region_id": [
+                        "us-east-2"
+                    ],
+                    "guard_duty_iam_count": 0,
+                    "net_iface_id": [
+                        "eni-04fec4df10974b6fe"
+                    ],
+                    "guard_duty_host_count": 0,
+                    "tags": [
+                        "None"
+                    ],
+                    "rrn": "rrn::managedLb:us-east-2:274307705868:393ffce52a85f09fef1be815f4fe9ca3186b4540:arn%3Aaws%3Aelasticloadbalancing%3Aus-east-2%3A274307705868%3Aloadbalancer%2Fnet%2Faqwe%2Ffb23c6bcbaee17a1",
+                    "security_groups": [
+                        "Unavailable"
+                    ],
+                    "serverless_vulnerability_count": 0,
+                    "instance_id": [
+                        "N/A"
+                    ],
+                    "account_id": [
+                        "274307705868"
+                    ],
+                    "cloud_type": [
+                        "aws"
+                    ],
+                    "asset_role": [
+                        "Web Server"
+                    ],
+                    "account_name": [
+                        "RedlockSandbox"
+                    ],
+                    "resource_id": [
+                        "arn:aws:elasticloadbalancing:us-east-2:274307705868:loadbalancer/net/aqwe/fb23c6bcbaee17a1"
+                    ],
+                    "inspector_sbp_count": 0,
+                    "region_name": [
+                        "AWS Ohio"
+                    ],
+                    "compliance_count": 0
+                }
+            },
+            {
+                "id": 1411487329,
+                "name": "gke-oldtac-nopublicclust-default-pool-f08b69f0-6g3n",
+                "ipAddr": "10.128.15.240",
+                "grouped": false,
+                "suspicious": false,
+                "vulnerable": true,
+                "metadata": {
+                    "redlock_alert_count": 5,
+                    "vpc_name": [
+                        {
+                            "id": "https://www.googleapis.com/compute/v1/projects/tac-prisma-cloud-and-compute/global/networks/us-central1",
+                            "name": "us-central1"
+                        }
+                    ],
+                    "vpc_id": [
+                        "https://www.googleapis.com/compute/v1/projects/tac-prisma-cloud-and-compute/global/networks/us-central1"
+                    ],
+                    "ip_addresses": [
+                        "10.128.15.240"
+                    ],
+                    "inspector_rba_count": 0,
+                    "secgroup_ids": [
+                        "7466735050281694697",
+                        "5386953130680217005"
+                    ],
+                    "guard_duty_iam_count": 0,
+                    "asset_role": [
+                        "VM Instance"
+                    ],
+                    "account_name": [
+                        "gcp-emea-tac"
+                    ],
+                    "region_name": [
+                        "GCP Iowa"
+                    ],
+                    "compliance_count": 0,
+                    "host_vulnerability_count": 0,
+                    "initial": true,
+                    "region_id": [
+                        "us-central1"
+                    ],
+                    "net_iface_id": [
+                        "gke-oldtac-nopublicclust-default-pool-f08b69f0-6g3n#nic0"
+                    ],
+                    "guard_duty_host_count": 0,
+                    "tags": [
+                        {
+                            "name": "gke-oldtac-nopublicclusterhere-fc43a760-node",
+                            "values": [
+                                ""
+                            ]
+                        },
+                        {
+                            "name": "goog-gke-node",
+                            "values": [
+                                ""
+                            ]
+                        }
+                    ],
+                    "rrn": "rrn::instance:us-central1:tac-prisma-cloud-and-compute:7040cac26d62fa19dea22bcb6cd52dba6c213212:1397701696990493277",
+                    "security_groups": [
+                        {
+                            "id": "7466735050281694697",
+                            "name": "allow-ingress-from-iap-tac"
+                        },
+                        {
+                            "id": "5386953130680217005",
+                            "name": "gke-oldtac-nopublicclusterhere-fc43a760-all"
+                        },
+                        {
+                            "id": "6289343630928735661",
+                            "name": "gke-oldtac-nopublicclusterhere-fc43a760-master"
+                        }
+                    ],
+                    "serverless_vulnerability_count": 0,
+                    "instance_id": [
+                        "1397701696990493277"
+                    ],
+                    "account_id": [
+                        "tac-prisma-cloud-and-compute"
+                    ],
+                    "cloud_type": [
+                        "gcp"
+                    ],
+                    "resource_id": [
+                        "1397701696990493277"
+                    ],
+                    "inspector_sbp_count": 0
+                }
+            }
+        ],
+        "Connections": []
+    }
+}
+```
+
+#### Human Readable Output
+>## Network Details
+>### Nodes
+>|grouped|id|ipAddr|metadata|name|suspicious|vulnerable|
+>|---|---|---|---|---|---|---|
+>| false | 1411487329 | 10.128.15.240 | redlock_alert_count: 5<br>vpc_name: {'id': 'https://www.googleapis.com/compute/v1/projects/tac-prisma-cloud-and-compute/global/networks/us-central1', 'name': 'us-central1'}<br>vpc_id: https://www.googleapis.com/compute/v1/projects/tac-prisma-cloud-and-compute/global/networks/us-central1<br>ip_addresses: 10.128.15.240<br>inspector_rba_count: 0<br>secgroup_ids: 7466735050281694697,<br>5386953130680217005<br>guard_duty_iam_count: 0<br>asset_role: VM Instance<br>account_name: gcp-emea-tac<br>region_name: GCP Iowa<br>compliance_count: 0<br>host_vulnerability_count: 0<br>initial: true<br>region_id: us-central1<br>net_iface_id: gke-oldtac-nopublicclust-default-pool-f08b69f0-6g3n#nic0<br>guard_duty_host_count: 0<br>tags: {'name': 'gke-oldtac-nopublicclusterhere-fc43a760-node', 'values': ['']},<br>{'name': 'goog-gke-node', 'values': ['']}<br>rrn: rrn::instance:us-central1:tac-prisma-cloud-and-compute:7040cac26d62fa19dea22bcb6cd52dba6c213212:1397701696990493277<br>security_groups: {'id': '7466735050281694697', 'name': 'allow-ingress-from-iap-tac'},<br>{'id': '5386953130680217005', 'name': 'gke-oldtac-nopublicclusterhere-fc43a760-all'}<br>serverless_vulnerability_count: 0<br>instance_id: 1397701696990493277<br>account_id: tac-prisma-cloud-and-compute<br>cloud_type: gcp<br>resource_id: 1397701696990493277<br>inspector_sbp_count: 0 | gke-oldtac-nopublicclust-default-pool-f08b69f0-6g3n | false | true |
+>### Connections
+>|from|label|metadata|suspicious|to|
+>|---|---|---|---|---|
+>| 1418600304 | Web | bytes_attempted: 1473<br>connection_overview_table: {'port': 'Web (443)', 'traffic_volume': 43694, 'accepted': 'yes'},<br>{'port': 'Web (443)', 'traffic_volume': 1473, 'accepted': 'no'}<br>region_id: us-central1<br>countries: N/A<br>to_ip_addresses: 0.0.0.0<br>flow_class: Web (443)<br>states: N/A<br>account_id: tac-prisma-cloud-and-compute<br>cloud_type: gcp<br>asset_role: Internet IPs<br>bytes_accepted: 43694<br>isps: N/A<br>from_ip_addresses: 10.128.0.5<br>bytes_rejected: 0 | false | -1977384788 |
 
 ### redlock-list-scans
 ***
