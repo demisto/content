@@ -26,16 +26,6 @@ trigger-private-build:
 run-unittests-and-lint:
   extends:
     - .run-unittests-and-lint
-  script:
-    - echo "This is the CI_JOB_ID $CI_JOB_ID"
-    - echo "Save the CI_JOB_ID to build_env"
-    - echo "UT_JOB_ID=$CI_JOB_ID" >> build.env
-    - echo "This is printed UT_JOB_ID $(cat build.env | xargs)"
-    - export $(cat build.env | xargs)
-    - echo "This is the UT_JOB_ID $UT_JOB_ID"
-  artifacts:
-    reports:
-      dotenv: build.env
 
 
 # runs in circle for the on-push flow (because we need to run it there for contributors anyways)
