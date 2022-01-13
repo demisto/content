@@ -15,16 +15,19 @@ class TestsRunDocsReview:
                 - Verify the doc reviewer gets the file name with the apostrophe correctly.
                 - Verify that the output is as expected.
         """
-        file_name = "Packs/UnRealPack/Apostrophe's_Test.yml"  # name includes an apostrophe
+        file_name_with_apostrophe = "Packs/UnRealPack/Apostrophe's_Test.yml"
+        file_name = 'Packs/UnRealPack/UnRealFile.yml'
         delimiter = ';'
+        files_names = f'{file_name_with_apostrophe}{delimiter}{file_name}'
         sdk_docs_reviewer_starting_string = '================= Starting Doc Review ================='
         expected_exit_code_of_run_docs_review = 0
 
-        args = Namespace(changed_files=file_name, delimiter=delimiter)
+        args = Namespace(changed_files=files_names, delimiter=delimiter)
         mocker.patch('Utils.github_workflow_scripts.run_docs_review.parse_changed_files_names', return_value=args)
 
         result = run_docs_review()
         captured = capsys.readouterr()
         assert sdk_docs_reviewer_starting_string in captured.out
+        assert file_name_with_apostrophe in captured.out
         assert file_name in captured.out
         assert result == expected_exit_code_of_run_docs_review
