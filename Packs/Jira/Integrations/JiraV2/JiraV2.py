@@ -1,4 +1,4 @@
-from typing import Union, Optional
+from typing import Union, Optional, Set
 
 from requests_oauthlib import OAuth1
 from dateparser import parse
@@ -690,7 +690,8 @@ def get_issue(issue_id, headers=None, expand_links=False, is_update=False, get_a
 
 
 def issue_query_command(query, start_at='', max_results=None, headers='', extra_fields=None):
-    nofields = set()
+    nofields: set = set()
+
     j_res = run_query(query, start_at, max_results, extra_fields, nofields)
     if not j_res:
         outputs = contents = {}
