@@ -23,16 +23,15 @@ def pass_files_to_docs_review(files_for_review: List[str]) -> int:
     Returns: the exit code according to the docs reviewer result.
     """
     exit_code = 0
-    for file_path in files_for_review:
-        click.secho(f'Checking file: {file_path}\n', fg="yellow")
-        doc_reviewer = DocReviewer(file_path=file_path,
-                                   release_notes_only=True,
-                                   known_words_file_path='Tests/known_words.txt')
+    doc_reviewer = DocReviewer(file_paths=files_for_review,
+                               release_notes_only=True,
+                               known_words_file_paths=['Tests/known_words.txt'],
+                               load_known_words_from_pack=True)
 
-        result = doc_reviewer.run_doc_review()
-        if not result:
-            click.secho('Docs review resulted in failure, the exact logs can be found above.', fg="red")
-            exit_code = 1
+    result = doc_reviewer.run_doc_review()
+    if not result:
+        click.secho('Docs review resulted in failure, the exact logs can be found above.', fg="red")
+        exit_code = 1
 
     return exit_code
 
