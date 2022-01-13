@@ -1,4 +1,4 @@
-from typing import Union, Optional, Set
+from typing import Union, Optional
 
 from requests_oauthlib import OAuth1
 from dateparser import parse
