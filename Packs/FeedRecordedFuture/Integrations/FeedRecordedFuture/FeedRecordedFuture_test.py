@@ -307,6 +307,7 @@ def test_duplicated_indicators_in_different_batches(mocker):
                        'http://michosalementres.test.zapto.org/vg,72,4/24,{"EvidenceDetails": [{"Rule": "test"}]}\n' \
                        'http://michosalementres.test.zapto.org/VG,72,4/24,{"EvidenceDetails": [{"Rule": "test1"}]}\n' \
                        'http://michosalementres.test.zapto.org/vg,72,4/24,{"EvidenceDetails": [{"Rule": "test"}]}\n'
+
     with open('response.txt', 'w') as f:
         f.write(response_content)
     mocker.patch('FeedRecordedFuture.Client.build_iterator')
