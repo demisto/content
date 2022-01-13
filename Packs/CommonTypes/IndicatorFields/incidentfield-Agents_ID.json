@@ -1,16 +1,16 @@
 {
     "associatedToAll": true,
     "caseInsensitive": true,
-    "cliName": "objective",
+    "cliName": "agentsid",
     "closeForm": false,
     "content": true,
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_objective",
+    "id": "incident_agentsid",
     "isReadOnly": false,
     "locked": false,
-    "name": "Objective",
+    "name": "Agents ID",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "propagationLabels": [
@@ -26,5 +26,6 @@
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "5.5.0",
-    "openEnded": true
+    "openEnded": true,
+    "x2_fields": "agent_id"
 }

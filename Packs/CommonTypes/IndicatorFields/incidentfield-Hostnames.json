@@ -1,22 +1,21 @@
 {
     "associatedToAll": true,
     "caseInsensitive": true,
-    "cliName": "objective",
+    "cliName": "hostnames",
     "closeForm": false,
     "content": true,
+    "description": "The hostname in the event.",
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_objective",
+    "id": "incident_hostnames",
     "isReadOnly": false,
     "locked": false,
-    "name": "Objective",
+    "name": "Hostnames",
     "neverSetAsRequired": false,
     "ownerOnly": false,
-    "propagationLabels": [
-        "all"
-    ],
     "required": false,
+    "selectValues": [],
     "sla": 0,
     "system": false,
     "threshold": 72,
@@ -25,6 +24,6 @@
     "unsearchable": false,
     "useAsKpi": false,
     "version": -1,
-    "fromVersion": "5.5.0",
+    "fromVersion": "5.0.0",
     "openEnded": true
 }

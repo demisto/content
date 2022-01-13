@@ -1,22 +1,24 @@
 {
     "associatedToAll": true,
     "caseInsensitive": true,
-    "cliName": "objective",
+    "cliName": "dsts",
     "closeForm": false,
     "content": true,
+    "description": "The destination values.",
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_objective",
+    "id": "incident_dsts",
     "isReadOnly": false,
     "locked": false,
-    "name": "Objective",
+    "name": "Dsts",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "propagationLabels": [
         "all"
     ],
     "required": false,
+    "selectValues": [],
     "sla": 0,
     "system": false,
     "threshold": 72,
@@ -25,6 +27,6 @@
     "unsearchable": false,
     "useAsKpi": false,
     "version": -1,
-    "fromVersion": "5.5.0",
+    "fromVersion": "6.0.0",
     "openEnded": true
 }

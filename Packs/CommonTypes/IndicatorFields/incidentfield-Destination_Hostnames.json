@@ -1,17 +1,18 @@
 {
     "associatedToAll": true,
     "caseInsensitive": true,
-    "cliName": "objective",
+    "cliName": "destinationhostnames",
     "closeForm": false,
     "content": true,
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_objective",
+    "id": "incident_destinationhostnames",
     "isReadOnly": false,
     "locked": false,
-    "name": "Objective",
+    "name": "Destination Hostnames",
     "neverSetAsRequired": false,
+    "openEnded": true,
     "ownerOnly": false,
     "propagationLabels": [
         "all"
@@ -22,9 +23,9 @@
     "threshold": 72,
     "type": "multiSelect",
     "unmapped": false,
-    "unsearchable": false,
+    "unsearchable": true,
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "5.5.0",
-    "openEnded": true
+	"x2_fields": "action_external_hostname"
 }
