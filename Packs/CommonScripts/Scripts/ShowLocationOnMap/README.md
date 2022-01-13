@@ -1,4 +1,4 @@
-Displays a geographical location in the indicator layout (the **geolocation** field).
+Displays a geographical location on a map in the indicator layout (using the **Geo Location** field).
 
 You need to set up Google Maps to use this automation in Cortex XSOAR. To view the map, edit the indicator layout, add a **General Purpose Dynamic Section**, and select the **ShowLocationOnMap** automation. After making those changes, you can see the location in the edited indicator layout.
 
@@ -7,7 +7,7 @@ You need to set up Google Maps to use this automation in Cortex XSOAR. To view t
 
 | **Name** | **Description** |
 | --- | --- |
-| Script Type | python |
+| Script Type | python3 |
 | Tags | dynamic-indicator-section |
 
 
