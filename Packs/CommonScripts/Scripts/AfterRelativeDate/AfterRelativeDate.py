@@ -2,7 +2,7 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 import dateparser
-#### CHANGE IN PACK
+
 
 def check_date(value, relative_date):
     v = dateparser.parse(value)
