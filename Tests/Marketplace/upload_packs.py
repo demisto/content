@@ -1,5 +1,6 @@
 import json
 import os
+import subprocess
 import sys
 import argparse
 import shutil
@@ -984,9 +985,29 @@ def prepare_and_zip_pack(pack, signature_key, delete_test_playbooks=True):
     return True
 
 
+def get_packs_depends_on(packs_list):
+    query_list = [
+        'demisto-sdk',
+        'find-dependencies',
+        '-o',
+        '$ARTIFACTS_FOLDER/packs_dependent_on.json',
+        '-idp',
+        '$ARTIFACTS_FOLDER/id_set.json']
+    query_list.extend([pack_tuple_item for pack in packs_list for pack_tuple_item in ('--get-dependent-on', pack)])
+    subprocess.check_call(query_list, stderr=subprocess.STDOUT)
+    packs_dependent_on_path = subprocess.check_output(['echo', '$ARTIFACTS_FOLDER/packs_dependent_on.json'])
+    with open(packs_dependent_on_path) as f:
+        result = json.load(f)
+        # TODO: remove, inteneded for dev purposes
+        logging.info(json.dumps(result, indent=4))
+    return []
+
+
 def upload_packs_with_dependencies_zip(extract_destination_path, packs_dependencies_mapping, packs_list, signature_key,
                                        storage_bucket, storage_base_path):
     logging.info("Starting to collect pack with dependencies zips")
+    # add depends on packs
+    packs_list.extend(get_packs_depends_on(packs_list))
     full_deps_graph = {}
     packs_dict = {pack.name: pack for pack in packs_list}
     try:
