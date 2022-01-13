@@ -2553,7 +2553,7 @@ def qradar_reference_set_value_upsert_command(client: Client, args: Dict) -> Com
     if date_value:
         values = [get_time_parameter(value, epoch_format=True) for value in values]
 
-    # if one of these calls fail raise an error and stop command execution
+    # if one of these calls fail, raise an error and stop command execution
     if len(values) == 1:
         response = client.reference_set_value_upsert(ref_name, values[0], source, fields)
 
