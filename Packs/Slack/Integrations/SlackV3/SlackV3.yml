@@ -1,7 +1,7 @@
 beta: false
 category: Messaging
 commonfields:
-  id: SlackV3
+  id: SlackV3_Fix
   version: -1
 configuration:
 - display: ""
@@ -103,7 +103,7 @@ configuration:
   type: 8
 description: Send messages and notifications to your Slack team.
 display: Slack v3
-name: SlackV3
+name: SlackV3_Fix
 script:
   commands:
   - arguments:

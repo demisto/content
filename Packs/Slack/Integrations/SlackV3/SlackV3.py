@@ -1054,6 +1054,9 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
         return
     try:
         data: dict = req.payload
+        demisto.info("#Hey this is slack log start _ new#\n")
+        demisto.info(f"{data}\n")
+        demisto.info("#Hey this is slack log end _ new#\n")
         event: dict = data.get('event', {})
         subtype = data.get('subtype', '')
         text = event.get('text', '')
