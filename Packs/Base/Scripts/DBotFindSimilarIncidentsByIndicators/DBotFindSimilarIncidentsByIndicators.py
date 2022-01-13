@@ -457,7 +457,7 @@ def load_indicators_for_current_incident(incident_id: str, indicators_types: Lis
     return indicators, indicators_map, False
 
 
-def get_incidents_ids_related_to_indicators(indicators):
+def get_incidents_ids_related_to_indicators(indicators, query):
     """
     Return incident ids from a list of indicators
     :param indicators: List of indicators
@@ -468,11 +468,32 @@ def get_incidents_ids_related_to_indicators(indicators):
     incident_ids = flatten_list(incident_ids)
     p = re.compile(PLAYGROUND_PATTERN)
     incident_ids = [x for x in incident_ids if not p.match(x)]
+    incident_ids = get_incidents_filtered_from_query(incident_ids, query)
     if not incident_ids:
         return_no_mututal_indicators_found_entry()
         return_no_similar_incident_found_entry()
         return [], True
     return incident_ids, False
+
+
+def get_incidents_filtered_from_query(incident_ids, query):
+    if incident_ids:
+        ids_condition = "(" + " OR ".join(incident_ids) + ")"
+    else:
+        ids_condition = ""
+    query += " AND %s" % ids_condition
+    res = demisto.executeCommand('GetIncidentsByQuery', {
+        'query': query,
+        'populateFields': 'id'
+    })
+    if is_error(res):
+        get_error(res)
+    if not json.loads(res[0]['Contents']):
+        return []
+    else:
+        filtered_incidents_dict = json.loads(res[0]['Contents'])
+    filtered_incidents = [incident['id'] for incident in filtered_incidents_dict]
+    return filtered_incidents
 
 
 def get_related_incidents_with_indicators(incident_ids: List[str], indicators_types: List[str],
@@ -545,6 +566,7 @@ def main():
     fields_incident_to_display = [x.strip() for x in fields_incident_to_display if x]
     fields_incident_to_display = list(set(['created', 'name'] + fields_incident_to_display))
     from_date = demisto.args().get('fromDate')
+    query = demisto.args().get('query', "")
 
     # load the Dcurrent incident
     incident_id = demisto.args().get('incidentId')
@@ -560,7 +582,7 @@ def main():
         return
 
     # Get the Investigation IDs related to the indicators if the incidents
-    incident_ids, early_exit = get_incidents_ids_related_to_indicators(indicators)
+    incident_ids, early_exit = get_incidents_ids_related_to_indicators(indicators, query)
     if early_exit:
         return
 
