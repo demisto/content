@@ -136,12 +136,16 @@ def test_auth_success_test_module(requests_mock):
     assert r == "ok"
 
 
-def test_auth_error_test_module(requests_mock):
-    from PhishUp import Client, test_module
+def test_auth_error_test_module(requests_mock, mocker):
+    from PhishUp import Client, test_module, main
+    patcher = mocker.patch("demistomock.command", return_value="test-module")
+    patcher_mock_params = mocker.patch("demistomock.params", return_value=MOCK_PARAMS)
+    patcher_mock_params.start()
+    patcher.start()
     requests_mock.post(f'{BASE_URL}/sherlock/ValidateApiKey?apikey={MOCK_APIKEY}',
                        json={"Status": "Authentication Error"})
     client = Client(
         base_url=BASE_URL,
         verify=False)
-    r = test_module(client, MOCK_PARAMS)
-    assert r == "Authentication Error"
+    response = main()
+    assert response is None
