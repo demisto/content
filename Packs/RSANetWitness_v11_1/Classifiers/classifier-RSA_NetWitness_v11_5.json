@@ -1,7 +1,7 @@
 {
     "description": "",
     "feed": false,
-    "id": "RSA NetWitness v11.5 mapper",
+    "id": "RSA NetWitness v11.5 - incoming mapper",
     "mapping": {
         "NetWitness Incident": {
             "dontMapEventToLabels": true,
@@ -85,7 +85,7 @@
             "internalMapping": {}
         }
     },
-    "name": "RSA NetWitness v11.5 mapper",
+    "name": "RSA NetWitness v11.5 - incoming mapper",
     "type": "mapping-incoming",
     "version": -1,
     "fromVersion": "6.0.0"

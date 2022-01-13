@@ -100,14 +100,9 @@ def test_hosts_command_bad_filter(mocker):
         Then:
          Value Error is raised.
     """
-    try:
-        mocker.patch.object(client, 'hosts_list_request', return_value={})
+    mocker.patch.object(client, 'hosts_list_request', return_value={})
+    with pytest.raises(DemistoException, match="filter structure is invalid"):
         hosts_list_command(client, {"filter": 'bad:filter'})
-    except DemistoException:
-        assert True
-        return
-
-    assert False
 
 
 def test_endpoint_command_service_id_error(mocker):
@@ -123,14 +118,11 @@ def test_endpoint_command_service_id_error(mocker):
     """
     no_service_id_client = Client(server_url='http://test.com', verify=False, proxy=False, headers={}, service_id=None,
                                   fetch_time='1 year', fetch_limit='100', cred={})
-    try:
-        mocker.patch.object(no_service_id_client, 'hosts_list_request', return_value={})
-        endpoint_command(no_service_id_client, {})
-    except DemistoException:
-        assert True
-        return
 
-    assert False
+    mocker.patch.object(no_service_id_client, 'hosts_list_request', return_value={})
+    with pytest.raises(DemistoException, match="No Service Id provided - To use endpoint command via RSA NetWitness"
+                                               " service id must be set in the integration configuration."):
+        endpoint_command(no_service_id_client, {})
 
 
 def test_endpoint_command(mocker):
@@ -208,7 +200,7 @@ def test_create_exclusions_list():
 def test_remove_duplicates_in_items():
     """
         Given:
-        - List of incident's
+        - List of incident's id duplicate items
 
         When:
          Calling the remove_duplicates_in_items

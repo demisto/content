@@ -1766,3 +1766,133 @@ restore the network connection and removes IP addresses added to the exclusion l
 #### Context Output
 
 There is no context output for this command.
+
+# Create a filter for hosts-list command
+You can create a custom filter for the ras-nw-hosts-list command, here is a short explanation.
+The basic filter that can be used is of this format - 
+
+    '{
+
+    "criteria": {
+
+            "criteriaList": [
+            {
+            "expressionList": [{ "propertyName": "agentId", "restrictionType":
+                                "EQUAL","propertyValues": [{"value": "2F53FC2C-A737-B34B-6813-12E48379C15D"}]}]
+    } ]
+
+    }'
+
+The following are the supported 'restrictionType' 
+
+• Operators that require no value: IS_NULL, IS_NOT_NULL. 
+
+• Operators that require one value: LIKE, NOT_LIKE, EQUAL, NOT_EQUAL, LESS_THAN,LESS_THAN_OR_EQUAL_TO, GREATER_THAN, GREATER_THAN_OR_EQUAL_TO.
+
+• Operators that require two value: BETWEEN, NOT_BETWEEN.
+
+• Operators that uses multiple value: IN, NOT_IN.
+
+The following are the supported 'predicateType' - AND, OR, NOT.
+
+a more complex example -
+
+    {
+
+    "criteria": {
+
+        "criteriaList": [
+    
+          {
+    
+            "criteriaList": [],
+    
+            "expressionList": [
+    
+              {
+    
+                "propertyName": "hostName",
+    
+                "restrictionType": "LIKE",
+    
+                "propertyValues": [
+    
+                  {
+    
+                    "value": "WIN-854PACLCQ07-VC",
+    
+                    "relative": false
+    
+                  }
+    
+                ]
+    
+              }
+    
+            ],
+    
+            "predicateType": "AND"
+    
+          },
+    
+          {
+    
+            "criteriaList": [],
+    
+            "expressionList": [
+    
+              {
+    
+                "propertyName": "riskScore",
+    
+                "restrictionType": "BETWEEN",
+    
+                "propertyValues": [
+    
+                  {
+    
+                    "value": 0,
+    
+                    "relative": false
+    
+                  },
+    
+                  {
+    
+                    "value": 100,
+    
+                    "relative": false
+    
+                  }
+    
+                ]
+    
+              }
+    
+            ],
+    
+            "predicateType": "OR"
+    
+          }
+    
+        ],
+    
+        "expressionList": [],
+    
+        "predicateType": "AND"
+    
+        },
+    
+        "sort": {
+    
+        "keys": [
+    
+          "riskScore"
+    
+        ],
+    
+        "descending": true
+    
+        }
+
+    }
