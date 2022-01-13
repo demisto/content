@@ -621,11 +621,7 @@ def build_and_authenticate(params: dict):
         integration will make API calls
     """
     service_account_credentials = params.get('service_account_credentials', {})
-    if isinstance(service_account_credentials, str):
-        service_account_credentials = json.loads(service_account_credentials)
-    else:
-        service_account_credentials = json.loads(service_account_credentials.get('password'))
-
+    service_account_credentials = json.loads(service_account_credentials.get('password'))
     credentials = service_account.ServiceAccountCredentials.from_json_keyfile_dict(service_account_credentials,
                                                                                    scopes=SCOPES)
     # add delegation to help manage the UI - link to a google-account
