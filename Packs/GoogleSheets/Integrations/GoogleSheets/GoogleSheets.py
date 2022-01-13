@@ -648,6 +648,7 @@ def test_module() -> str:
 
 ''' MAIN FUNCTION '''
 
+# adding comment for the build
 
 def main() -> None:
     """main function, parses params and runs command functions
