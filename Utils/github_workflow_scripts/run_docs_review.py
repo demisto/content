@@ -3,6 +3,7 @@
 import argparse
 import sys
 
+import click
 from demisto_sdk.commands.doc_reviewer.doc_reviewer import DocReviewer
 from typing import List
 
@@ -23,25 +24,25 @@ def pass_files_to_docs_review(files_for_review: List[str]) -> int:
     """
     exit_code = 0
     for file_path in files_for_review:
-        print(f'Checking file: {file_path}\n')
+        click.secho(f'Checking file: {file_path}\n', fg="yellow")
         doc_reviewer = DocReviewer(file_path=file_path,
                                    release_notes_only=True,
                                    known_words_file_path='Tests/known_words.txt')
 
         result = doc_reviewer.run_doc_review()
         if not result:
-            print('Setting Overall Exit Code to 1')
+            click.secho('Docs review resulted in failure, the exact logs can be found above.', fg="red")
             exit_code = 1
 
     return exit_code
 
 
-def parse_changed_files_names_to_list() -> List[str]:
+def parse_changed_files_names() -> argparse.Namespace:
     """
     Run_doc_review script gets the files that were changed in the PR as a string (default delimiter is ';').
     This function is in charge of parsing the info and separate the files names.
 
-    Returns: a list contains the changed files names.
+    Returns: an argparse.Namespace object which includes the changed files names and the delimiter argument.
     """
     parser = argparse.ArgumentParser(description='Parse the changed files names.')
     parser.add_argument('-c', '--changed_files',
@@ -51,17 +52,18 @@ def parse_changed_files_names_to_list() -> List[str]:
                                                   "review_release_notes script).")
     args = parser.parse_args()
 
-    return args.changed_files.split(args.delimiter)
+    return args
 
 
-def main():
+def run_docs_review():
     """
     Parse the changed files names and passes them to demisto-sdk docs review.
     """
-    changed_files_list = parse_changed_files_names_to_list()
+    parser_args = parse_changed_files_names()
+    changed_files_list = parser_args.changed_files.split(parser_args.delimiter)
     exit_code = pass_files_to_docs_review(files_for_review=changed_files_list)
-    sys.exit(exit_code)
+    return exit_code
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(run_docs_review())
