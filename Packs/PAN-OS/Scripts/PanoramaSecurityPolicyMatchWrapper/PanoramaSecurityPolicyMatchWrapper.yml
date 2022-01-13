@@ -3,8 +3,8 @@ args:
   name: application
 - description: The category name.
   name: category
-- description: The destination IP address.
-  name: destinations
+- description: Comma seperated destination IP addresses.
+  name: destination
   required: true
   isArray: true
 - description: The from zone.
@@ -14,8 +14,8 @@ args:
 - description: The IP protocol value.
   name: protocol
   required: true
-- description: The source IP addresses.
-  name: sources
+- description: Comma seperated source IP addresses.
+  name: source
   required: true
   isArray: true
 - description: Target number of the firewall. Use only on a Panorama instance.
