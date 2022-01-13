@@ -142,6 +142,7 @@
   artifacts:
     reports:
       cobertura: /builds/xsoar/content/artifacts/coverage_report/coverage.xml
+      dotenv: job.env
     expire_in: 30 days
     paths:
       - /builds/xsoar/content/unit-tests
@@ -171,6 +172,9 @@
     - section_end "Test Infrastructure"
     - section_start "Run Unit Testing and Lint"
     - |
+      echo "Saving the Job Id to UT_JOB_ID1"
+      echo "UT_JOB_ID=$CI_JOB_ID" >> job.env
+      export UTT_JOB_ID=$CI_JOB_ID
       if [[ -n $FORCE_BUCKET_UPLOAD || -n $BUCKET_UPLOAD ]] && [[ "$(echo "$GCS_MARKET_BUCKET" | tr '[:upper:]' '[:lower:]')" != "marketplace-dist" ]] && [[ $CI_COMMIT_BRANCH != "master" ]]; then
         echo "Skipping validations when uploading to a test bucket."
       else
@@ -191,6 +195,9 @@
           demisto-sdk lint -p 8 -g -v --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER --coverage-report $ARTIFACTS_FOLDER/coverage_report
         fi
         if [[ -f $ARTIFACTS_FOLDER/coverage_report/.coverage ]]; then
+          echo "Saving the Job Id to UT_JOB_ID2"
+          echo "UT_JOB_ID=$CI_JOB_ID" >> job.env
+          export UTT_JOB_ID=$CI_JOB_ID
           if [[ "$CI_PIPELINE_SOURCE" == "schedule" ||  -n "${NIGHTLY}" || -n "${BUCKET_UPLOAD}" || -n "${DEMISTO_SDK_NIGHTLY}" ]]; then
             demisto-sdk coverage-analyze -i $ARTIFACTS_FOLDER/coverage_report/.coverage --report-dir $ARTIFACTS_FOLDER/coverage_report --report-type all --allowed-coverage-degradation-percentage 100
             if [[ -n "${NIGHTLY}" && "$CI_COMMIT_BRANCH" == "master" ]]; then
