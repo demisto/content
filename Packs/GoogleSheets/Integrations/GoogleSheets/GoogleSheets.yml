@@ -735,6 +735,8 @@ script:
       description: The data that was read or to be written. This is an array of arrays,
         the outer array representing all the data and each inner array representing
         a major dimension. Each item in the inner array corresponds with one cell.
+        to be intered in the following way [1,2,3],[4,5,6] - where each bracket will 
+        the row or columen, and each value inside will corresponde with a cell. 
       required: true
       isArray: false
       defaultValue: ""
@@ -789,7 +791,11 @@ script:
       - ROWS
       - COLUMNS
     - name: values
-      description: The data that was read or to be written
+      description: The data that was read or to be written. This is an array of arrays,
+        the outer array representing all the data and each inner array representing
+        a major dimension. Each item in the inner array corresponds with one cell.
+        to be intered in the following way [1,2,3],[4,5,6] - where each bracket will 
+        the row or columen, and each value inside will corresponde with a cell. 
       required: true
       isArray: false
       defaultValue: ""
