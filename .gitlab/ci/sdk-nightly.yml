@@ -111,7 +111,6 @@ demisto-sdk-nightly:run-commands-against-instance:
     INSTANCE_ROLE: "Server Master"
   stage: run-instances
   script:
-    - !reference [.open-ssh-tunnel]
     - python3 ./Tests/scripts/wait_until_server_ready.py "$INSTANCE_ROLE"
     - !reference [.download-demisto-conf]
     - |

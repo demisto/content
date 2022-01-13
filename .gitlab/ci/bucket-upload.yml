@@ -76,7 +76,6 @@ create-instances-upload-flow:
     - section_start "Download configuration"
     - ./Tests/scripts/download_demisto_conf.sh  >> $ARTIFACTS_FOLDER/logs/installations.log
     - section_end "Download configuration"
-    - !reference [.open-ssh-tunnel]
     - section_start "Get Instance Variables"
     - echo INSTANCE_ROLE="$INSTANCE_ROLE"
     - echo INSTANCE_CREATED="$INSTANCE_CREATED"
@@ -130,7 +129,6 @@ upload-packs-to-marketplace:
     - .bucket-upload-rule
     - .default-job-settings
   script:
-    - !reference [.open-ssh-tunnel]
     - *check_user_permissions_to_upload_packs
     - section_start "Upload Packs To Marketplace Storage"
     - |
