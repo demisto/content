@@ -1,10 +1,10 @@
 {
-    "id": "incident_wizresourceid",
+    "id": "incident_wizresourcecloudid",
     "version": -1,
     "modified": "2021-12-30T16:28:54.982420965Z",
-    "name": "Wiz Resource ID",
+    "name": "Wiz Resource Cloud ID",
     "ownerOnly": false,
-    "cliName": "wizresourceid",
+    "cliName": "wizresourcecloudid",
     "type": "shortText",
     "closeForm": false,
     "editForm": true,
@@ -24,7 +24,7 @@
     "unmapped": false,
     "unsearchable": true,
     "caseInsensitive": true,
-    "description": "Unique Wiz resource ID",
+    "description": "Unique (provider) cloud resource ID",
     "sla": 0,
     "threshold": 72,
     "fromVersion": "6.0.0"
