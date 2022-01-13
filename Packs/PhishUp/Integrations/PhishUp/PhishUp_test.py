@@ -1,50 +1,47 @@
 import json
 import io
 
+MOCK_APIKEY = "not"
+MOCK_PARAMS = {
+    "apikey": MOCK_APIKEY
+}
+
+BASE_URL = "https://apiv2.phishup.co"
+
 
 def util_load_json(path):
     with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
 
-def test_error_investigate_url_command(mocker):
+def test_error_investigate_url_command(requests_mock):
     from PhishUp import Client, investigate_url_command
-    patcher = mocker.patch("PhishUp.Client.investigate_url_http_request", return_value="Error")
-    patcher.start()
-    base_url = "https://apiv2.phishup.co"
+    requests_mock.post(f'{BASE_URL}/sherlock/investigate?apikey={MOCK_APIKEY}', json=util_load_json("test_data/mock_service_error.json"))
     client = Client(
-        base_url=base_url,
+        base_url=BASE_URL,
         verify=False)
     args = {
-        "apikey": "not"
-    }
-    params = {
         "Url": "https://www.paloaltonetworks.com/"
     }
-    response = investigate_url_command(client, args, params)
+    response = investigate_url_command(client, args, MOCK_PARAMS)
     mock_response = util_load_json('test_data/error.json')
     assert mock_response == list(response)
 
 
-def test_success_investigate_url_command(mocker):
+def test_success_investigate_url_command(requests_mock):
     from PhishUp import Client, investigate_url_command
-    mock_request_response = json.load(open("test_data/investigate-success.json"))
-    patcher = mocker.patch("PhishUp.Client.investigate_url_http_request",
-                           return_value=mock_request_response)
-    patcher.start()
-    base_url = "https://apiv2.phishup.co"
+
+    requests_mock.post(f'{BASE_URL}/sherlock/investigate?apikey={MOCK_APIKEY}',
+                       json=util_load_json("test_data/investigate-url-api-response.json"))
     client = Client(
-        base_url=base_url,
+        base_url=BASE_URL,
         verify=False)
     args = {
-        "apikey": "not"
-    }
-    params = {
         "Url": "https://www.paloaltonetworks.com/"
     }
-    response = investigate_url_command(client, args, params)
-    assert response[1]["Result"] in ["Clean", "Phish", "Error"]
-    assert 0 <= float(response[1]["Score"]) <= 1
+    response = investigate_url_command(client, args, MOCK_PARAMS)
+    # json.dump(response, open("test_data/investigate-success.json", "w"))
+    assert list(response) == util_load_json("test_data/investigate-success.json")
 
 
 def test_error_investigate_bulk_url_command(mocker):
@@ -106,15 +103,6 @@ def test_empty_urls_list_in_investigate_bulk_url_command():
     assert mock_response == list(response)
 
 
-def test_get_chosen_delete_mail_phishup_action_command():
-    from PhishUp import get_chosen_phishup_action_command
-    params = {
-        "phishup-playbook-action": "Delete Mail"
-    }
-    result = get_chosen_phishup_action_command(params)
-    assert list(result)[1]["PhishUp.Action"] == "Delete Mail"
-
-
 def test_get_chosen_nothing_phishup_action_command():
     from PhishUp import get_chosen_phishup_action_command
     params = {
@@ -124,16 +112,7 @@ def test_get_chosen_nothing_phishup_action_command():
     assert list(result)[1]["PhishUp.Action"] == "Nothing"
 
 
-def test_get_chosen_move_to_spam_phishup_action_command():
-    from PhishUp import get_chosen_phishup_action_command
-    params = {
-        "phishup-playbook-action": "Move to SPAM"
-    }
-    result = get_chosen_phishup_action_command(params)
-    assert list(result)[1]["PhishUp.Action"] == "Move to SPAM"
-
-
-def test_investigate_url_http_request(mocker):
+def test_error_investigate_url_http_request(mocker):
     from PhishUp import Client
     patcher = mocker.patch("PhishUp.Client.investigate_url_http_request", return_value="Error")
     patcher.start()
@@ -151,7 +130,25 @@ def test_investigate_url_http_request(mocker):
     assert r == "Error"
 
 
-def test_investigate_bulk_url_http_request(mocker):
+def test_success_investigate_url_http_request(mocker):
+    from PhishUp import Client
+    patcher = mocker.patch("PhishUp.Client.investigate_url_http_request", return_value="Error")
+    patcher.start()
+    base_url = "https://apiv2.phishup.co"
+    client = Client(
+        base_url=base_url,
+        verify=False)
+    args = {
+        "apikey": "not"
+    }
+    params = {
+        "Url": "https://www.paloaltonetworks.com/"
+    }
+    r = client.investigate_url_http_request(client, args, params)
+    assert r == "Error"
+
+
+def test_error_investigate_bulk_url_http_request(mocker):
     from PhishUp import Client
     patcher = mocker.patch("PhishUp.Client.investigate_bulk_url_http_request", return_value="Error")
     patcher.start()
