@@ -109,7 +109,7 @@ create-instances:
   extends:
     - .default-job-settings
     - .push-rule
-  needs: ["create-instances", "run-unittests-and-lint"]
+  needs: ["create-instances"]
   stage: run-instances
   script:
     - EXIT_CODE=0
@@ -154,6 +154,8 @@ server_6_1:
   script:
     - export $(cat build.env | xargs)
     - echo "This is the UT_JOB_ID $UT_JOB_ID"
+  dependencies:
+    - run-unittests-and-lint
 
 
 server_6_2:
@@ -166,6 +168,9 @@ server_6_2:
   script:
     - export $(cat build.env | xargs)
     - echo "This is the UT_JOB_ID $UT_JOB_ID"
+  dependencies:
+    - run-unittests-and-lint
+
 
 server_master:
   extends:
@@ -180,6 +185,9 @@ server_master:
   script:
     - export $(cat build.env | xargs)
     - echo "This is the UT_JOB_ID $UT_JOB_ID"
+  dependencies:
+    - run-unittests-and-lint
+
 
 fan-in-nightly:
   tags:
