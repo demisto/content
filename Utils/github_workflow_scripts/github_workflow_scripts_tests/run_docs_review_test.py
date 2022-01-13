@@ -28,6 +28,4 @@ class TestsRunDocsReview:
         result = run_docs_review()
         captured = capsys.readouterr()
         assert sdk_docs_reviewer_starting_string in captured.out
-        assert file_name_with_apostrophe in captured.out
-        assert file_name in captured.out
         assert result == expected_exit_code_of_run_docs_review
