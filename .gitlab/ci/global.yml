@@ -142,7 +142,6 @@
   artifacts:
     reports:
       cobertura: /builds/xsoar/content/artifacts/coverage_report/coverage.xml
-      dotenv: job.env
     expire_in: 30 days
     paths:
       - /builds/xsoar/content/unit-tests
