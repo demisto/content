@@ -315,3 +315,5 @@ description: Generic pooling playbook to launch a specific job template. Returns
   status when the job finishes running.
 tests:
  -  No tests
+marketplaces:
+  - xsoar
