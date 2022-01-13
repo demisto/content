@@ -156,18 +156,8 @@ def get_chosen_phishup_action_command(params):
     )
 
 
-def test_module(client):
-    """
-    Returning 'ok' indicates that the integration works like it is supposed to. Connection to the service is successful.
-
-    Args:
-        client: HelloWorld client
-
-    Returns:
-        'ok' if test passed, anything else will fail the test.
-    """
-
-    result = client.check_api_key_test_module_http_request(demisto.params().get("apikey"))
+def test_module(client, params):
+    result = client.check_api_key_test_module_http_request(params.get("apikey"))
     if result["Status"] == "Success":
         return 'ok'
     else:
@@ -193,7 +183,7 @@ def main():
 
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
-            result = test_module(client)
+            result = test_module(client, demisto.params())
             demisto.results(result)
 
         elif demisto.command() == 'phishup-investigate-url':
