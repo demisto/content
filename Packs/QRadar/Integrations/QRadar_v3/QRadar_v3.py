@@ -1557,7 +1557,7 @@ def get_incidents_long_running_execution(client: Client, offenses_per_fetch: int
     range_max = offenses_per_fetch - 1 if offenses_per_fetch else MAXIMUM_OFFENSES_PER_FETCH - 1
     range_ = f'items=0-{range_max}'
 
-    # if fails here we can't recover, retry again later
+    # if it fails here we can't recover, retry again later
     raw_offenses = client.offenses_list(range_, filter_=filter_fetch_query, sort=ASCENDING_ID_ORDER)
     if raw_offenses:
         raw_offenses_len = len(raw_offenses)
@@ -1898,7 +1898,7 @@ def qradar_offenses_list_command(client: Client, args: Dict) -> CommandResults:
     fields = args.get('fields')
     ip_enrich, asset_enrich = get_offense_enrichment(args.get('enrichment', 'None'))
 
-    # if this call fails raise an error and stop command execution
+    # if this call fails, raise an error and stop command execution
     response = client.offenses_list(range_, offense_id, filter_, fields)
     enriched_outputs = enrich_offenses_result(client, response, ip_enrich, asset_enrich)
     final_outputs = sanitize_outputs(enriched_outputs, OFFENSE_OLD_NEW_NAMES_MAP)
@@ -1949,7 +1949,7 @@ def qradar_offense_update_command(client: Client, args: Dict) -> CommandResults:
         )
 
     if closing_reason_name:
-        # if this call fails raise an error and stop command execution
+        # if this call fails, raise an error and stop command execution
         closing_reasons_list = client.closing_reasons_list(include_deleted=True, include_reserved=True)
         for closing_reason in closing_reasons_list:
             if closing_reason.get('text') == closing_reason_name:
@@ -1963,7 +1963,7 @@ def qradar_offense_update_command(client: Client, args: Dict) -> CommandResults:
     fields = args.get('fields')
     ip_enrich, asset_enrich = get_offense_enrichment(args.get('enrichment', 'None'))
 
-    # if this call fails raise an error and stop command execution
+    # if this call fails, raise an error and stop command execution
     response = client.offense_update(offense_id, protected, follow_up, status, closing_reason_id, assigned_to,
                                      fields)
 
