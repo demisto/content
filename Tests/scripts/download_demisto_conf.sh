@@ -2,7 +2,7 @@
 set +e
 
 # replace slashes ('/') in the branch name, if exist, with underscores ('_')
-UNDERSCORE_BRANCH=${CI_COMMIT_BRANCH//\//_}
+UNDERSCORE_BRANCH=${CI_COMMIT_BRANCH}
 
 #download awsinstancetool
 echo "Getting conf from branch $UNDERSCORE_BRANCH (fallback to master)"
@@ -24,6 +24,7 @@ if [ "$?" != "0" ]; then
     git clone --depth=1 https://gitlab-ci-token:${CI_JOB_TOKEN}@code.pan.run/xsoar/content-test-conf.git
 fi
 cp -r ./content-test-conf/awsinstancetool ./Tests/scripts/awsinstancetool
+cp -r ./content-test-conf/awsinstancetool ./Tests/scripts/gcp_instance_tool
 cp -r ./content-test-conf/demisto.lic $DEMISTO_LIC_PATH
 cp -r ./content-test-conf/conf.json $SECRET_CONF_PATH
 cp -r ./content-test-conf/signDirectory $DEMISTO_PACK_SIGNATURE_UTIL_PATH
