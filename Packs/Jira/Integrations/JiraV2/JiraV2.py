@@ -157,7 +157,7 @@ def get_custom_field_names():
         return custom_id_name_mapping
 
 
-def run_query(query, start_at='', max_results=None, extra_fields=None):
+def run_query(query, start_at='', max_results=None, extra_fields=None, nofields=None):
     # EXAMPLE
     """
     request = {
@@ -180,8 +180,14 @@ def run_query(query, start_at='', max_results=None, extra_fields=None):
     }
     if extra_fields:
         fields = extra_fields.split(",")
-        fields_mapping_name_id = get_custom_field_names()
-        query_params['fields'] = [k for k, v in fields_mapping_name_id.items() for y in fields if v.lower() == y.lower()]
+        fields_mapping_name_id = {k.lower():v.lower() for k,v in get_custom_field_names().items()}
+        query_params['fields'] = [k for y in fields for k, v in fields_mapping_name_id.items() if v == y.lower()]
+        nofields.update({fieldextra for fieldextra in fields if fieldextra not in fields_mapping_name_id.values()})
+    if nofields:
+        if len(nofields) > 1:
+            return_warning(f'{",".join(nofields)} do not exist')
+        else:
+            return_warning(f'{",".join(nofields)} does not exist')
     try:
         result = requests.get(
             url=url,
@@ -341,7 +347,7 @@ def get_account_id_from_attribute(
     )
 
 
-def generate_md_context_get_issue(data, customfields=None):
+def generate_md_context_get_issue(data, customfields=None, nofields=None):
     get_issue_obj: dict = {"md": [], "context": []}
     if not isinstance(data, list):
         data = [data]
@@ -359,7 +365,7 @@ def generate_md_context_get_issue(data, customfields=None):
         context_obj['Created'] = md_obj['created'] = demisto.get(element, 'fields.created')
         # Parse custom fields into their original names
         custom_fields = [i for i in demisto.get(element, "fields") if "custom" in i]
-        if custom_fields and customfields:
+        if custom_fields and customfields and not nofields:
             field_mappings = get_custom_field_names()
             for field_returned in custom_fields:
                 readable_field_name = field_mappings.get(field_returned)
@@ -684,13 +690,14 @@ def get_issue(issue_id, headers=None, expand_links=False, is_update=False, get_a
 
 
 def issue_query_command(query, start_at='', max_results=None, headers='', extra_fields=None):
-    j_res = run_query(query, start_at, max_results, extra_fields)
+    nofields = set()
+    j_res = run_query(query, start_at, max_results, extra_fields,nofields)
     if not j_res:
         outputs = contents = {}
         human_readable = 'No issues matched the query.'
     else:
         issues = demisto.get(j_res, 'issues')
-        md_and_context = generate_md_context_get_issue(issues, extra_fields)
+        md_and_context = generate_md_context_get_issue(issues, extra_fields, nofields)
         human_readable = tableToMarkdown(demisto.command(), t=md_and_context['md'], headers=argToList(headers))
         contents = j_res
         outputs = {'Ticket(val.Id == obj.Id)': md_and_context['context']}
