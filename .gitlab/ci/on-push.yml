@@ -87,6 +87,7 @@ create-instances:
     - |
       [ -n "${TIME_TO_LIVE}" ] && TTL=${TIME_TO_LIVE} || TTL=300
       python3 ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType "$IFRA_ENV_TYPE" -timetolive $TTL -outfile "$ARTIFACTS_FOLDER/env_results.json"
+      gcloud auth activate-service-account --key-file="$GCP_COMPUTE_KEY"
       python3 ./Tests/scripts/gcp_instance_tool/gcp_instance_tool.py -envType "$IFRA_ENV_TYPE" -timetolive $TTL -outfile "$ARTIFACTS_FOLDER/env_results.json"
     - section_end "Create Instances"
     - section_start "Upload Artifacts to GCP"
