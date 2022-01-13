@@ -269,7 +269,7 @@
         {
             "integrations": "AzureDevOps",
             "playbookID": "playbook-AzureDevOps-Test",
-            "fromversion": "6.0.0"
+            "fromversion": "6.2.0"
         },
         {
             "integrations": "Microsoft Intune Feed",
@@ -4972,7 +4972,6 @@
         }
     ],
     "skipped_tests": {
-        "playbook-AzureDevOps-Test": "Issue with repetitive calls to Azure DevOps API",
         "MISP V2 Test": "The integration is deprecated as we released MISP V3",
         "Github IAM - Test Playbook": "Issue 32383",
         "O365-SecurityAndCompliance-ContextResults-Test": "Issue 38900",
@@ -5089,7 +5088,6 @@
         "Cofense Intelligence v2 test": "Issue 44499",
         "Endpoint Malware Investigation - Generic - Test": "Issue 44779",
         "Mimecast test": "Issue 26906",
-        "RedLockTest": "Issue 24600",
         "AutoFocus V2 test": "Issue 26464",
         "SplunkPy_KV_commands_default_handler": "Issue 41419",
         "LogRhythm REST test": "Issue 40654",
@@ -5422,6 +5420,9 @@
             },
             "demisto/flask-nginx": {
                 "pid_threshold": 11
+            },
+            "demisto/py3-tools": {
+                "memory_threshold": 105
             }
         }
     }

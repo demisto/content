@@ -70,7 +70,7 @@ tasks:
     task:
       id: c62d4496-3f83-4efe-847c-0d4d4083d396
       version: -1
-      name: Retrieve All Alerts from Last 1 year
+      name: Retrieve All Alerts from Last 1 week
       description: Search alerts on the RedLock platform
       script: '|||redlock-search-alerts'
       type: regular
@@ -83,7 +83,7 @@ tasks:
       alert-status:
         simple: resolved
       time-range-unit:
-        simple: year
+        simple: week
       time-range-value:
         simple: "1"
     separatecontext: false
