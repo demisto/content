@@ -98,7 +98,7 @@ def create_fetch_configuration(indicators_type: list, filters: dict, params: dic
             'severity': 'sourceoriginalseverity'}
     }
 
-    url_by_type = {"IP": 'https://api.intelgraph.idefense.com/rest/threatindicator/v0/ip',                                                                                                                                                     # pragma: no cover
+    url_by_type = {"IP": 'https://api.intelgraph.idefense.com/rest/threatindicator/v0/ip',                    # pragma: no cover
                    "Domain": 'https://api.intelgraph.idefense.com/rest/threatindicator/v0/domain',
                    "URL": 'https://api.intelgraph.idefense.com/rest/threatindicator/v0/url'}
 
