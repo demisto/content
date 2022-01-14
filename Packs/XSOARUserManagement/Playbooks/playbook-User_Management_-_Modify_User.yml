@@ -1,5 +1,5 @@
 id: 60455d7b-8989-4504-8604-20f023f704b3
-version: 6
+version: 7
 vcShouldKeepItemLegacyProdMachine: false
 name: User Management - Modify User
 description: "Subplaybook used by \"User Management - Assign User Roles\" \nTo be
@@ -62,12 +62,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 596a682f-bbfb-4721-8438-872985c0ab3c
+    taskid: b593eb45-cc71-4b51-83bc-d36585fe2ed1
     type: regular
     task:
-      id: 596a682f-bbfb-4721-8438-872985c0ab3c
+      id: b593eb45-cc71-4b51-83bc-d36585fe2ed1
       version: -1
-      name: Delete Inactive Users
+      name: Update Users
       description: send HTTP POST request
       script: '|||demisto-api-post'
       type: regular
