@@ -1,5 +1,5 @@
 id: e88d799f-4b64-4205-869e-563f0b317071
-version: 20
+version: 24
 vcShouldKeepItemLegacyProdMachine: false
 name: User Management - Assign User Roles
 description: Use to add or remove roles to user, must list all roles that should be
@@ -36,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 895aec22-4031-4b31-8263-92ea048a939a
+    taskid: 790ef76f-0a4b-4d91-8fbe-714d1c59ad91
     type: regular
     task:
-      id: 895aec22-4031-4b31-8263-92ea048a939a
+      id: 790ef76f-0a4b-4d91-8fbe-714d1c59ad91
       version: -1
       name: Send Email
       description: Sends an email using Microsoft Graph.
@@ -53,22 +53,8 @@ tasks:
     scriptarguments:
       body:
         complex:
-          root: GetInactiveUsers.UserData
-          filters:
-          - - operator: isNotEqualString
-              left:
-                value:
-                  simple: GetInactiveUsers.UserData.UserName
-                iscontext: true
-              right:
-                value:
-                  simple: admin
+          root: inputs.usersToModify
           transformers:
-          - operator: DT
-            args:
-              dt:
-                value:
-                  simple: .= val.UserName + " has been inactive since " + val.LastLogin
           - operator: join
             args:
               separator:
@@ -80,27 +66,42 @@ tasks:
               prefix:
                 value:
                   simple: |
-                    Please remove the following users from group:
+                    Please alter the following Users Permissions:
               suffix:
                 value:
                   simple: |2-
 
-                    Unless they are removed they will continue to sync to XSOAR
-
+                    Please set permissions to the following:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: inputs.assignedRoles
+                iscontext: true
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: Set users to default admin?
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: inputs.defaultAdmin
+                iscontext: true
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: |-
                     -----------------
                     This is an automated Cortex XSOAR message.
       subject:
-        complex:
-          root: inputs.DaysSinceLastActive
-          transformers:
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: 'Action: Remove XSOAR Users - inactive for at least '
-              suffix:
-                value:
-                  simple: ' days'
+        simple: 'Action: Manually Modify Roles for XSOAR Users'
       to:
         simple: ${inputs.EmailAddress}
     separatecontext: false
@@ -120,10 +121,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: e5879f8c-bf33-4a9f-8fde-9282560b2e1a
+    taskid: 63e05c17-5bac-4fc4-8c43-9f1bb13a110c
     type: condition
     task:
-      id: e5879f8c-bf33-4a9f-8fde-9282560b2e1a
+      id: 63e05c17-5bac-4fc4-8c43-9f1bb13a110c
       version: -1
       name: Is Demisto Rest API  Enabled
       type: condition
@@ -522,26 +523,23 @@ view: |-
   }
 inputs:
 - key: usersToModify
-  value:
-    simple: shumber, shumbert
+  value: {}
   required: true
   description: |-
     Comma separated list of users to be modified.
     Supply user's ids
   playbookInputQuery: null
 - key: EmailAddress
-  value:
-    simple: shumbert@paloaltonetworks.com
+  value: {}
   required: true
   description: |-
     Comma separated list of individuals emails to be notified which Users need to be removed from AD.
     Note: This is only if SSO is enabled.
   playbookInputQuery: null
 - key: assignedRoles
-  value:
-    simple: Analyst
+  value: {}
   required: true
-  description: Comma separated list of roles to be added to supplied users
+  description: Comma separated list of roles to be set as the supplied users roles
   playbookInputQuery: null
 - key: defaultAdmin
   value:
