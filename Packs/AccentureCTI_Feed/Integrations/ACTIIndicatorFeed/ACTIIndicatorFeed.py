@@ -22,7 +22,7 @@ def custom_build_iterator(client: Client, feed: Dict, limit, **kwargs) -> List:
     integration_context = get_integration_context()
     last_fetch = integration_context.get(f'{current_indicator_type}_fetch_time')
     if last_fetch:
-        start_date = last_fetch
+        start_date = last_fetch     # pragma: no cover
     page_number = 1
     params['end_date'] = end_date
     params['start_date'] = start_date
