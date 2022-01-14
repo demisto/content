@@ -230,6 +230,8 @@ def test_main_default_command(mocker):
                                                   'get_api_indicators',
                                                   return_value=MOCK_VT_RESPONSE)
 
+    Client.set_last_run() #  Emulate previous execution with saving last run
+
     main()
 
     assert get_api_indicators_mock.call_args == call(f'tag:"Wannacry" {Client.get_last_run()}', 7)

@@ -55,7 +55,7 @@ class Client(BaseClient):
             if last_run := self.get_last_run():
                 query_filter = f'{query_filter} {last_run}'
 
-        response = self.get_api_indicators(query_filter, limit)
+        response = self.get_api_indicators(query_filter.strip(), limit)
 
         try:
             for indicator in response.get('data', []):
@@ -68,7 +68,9 @@ class Client(BaseClient):
             demisto.debug(str(err))
             raise ValueError(f'Could not parse returned data as indicator. \n\nError message: {err}')
 
-        self.set_last_run()
+        if fetch_command:
+            self.set_last_run()
+
         return result
 
     @staticmethod
