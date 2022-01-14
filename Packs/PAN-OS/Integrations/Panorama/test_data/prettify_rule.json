@@ -1,0 +1,18 @@
+{
+    "Name": "dc_c_dce_prd_13",
+    "Action": "allow",
+    "Location": "enterprise_zone_c",
+    "CustomUrlCategory": "url_azure_scm_repos_shrd",
+    "Application": "ms-ds-smb",
+    "Destination": [
+        "destination_example",
+        "destination_example"
+    ],
+    "From": "dc_c_gen_app_p",
+    "Service": "application-default",
+    "To": "dc_c_nprd_bztalk_app",
+    "Source": [
+        "azure_ir_nodes_nprd_grp_shrd",
+        "azure_ir_nodes_prd_grp_shrd"
+    ]
+}

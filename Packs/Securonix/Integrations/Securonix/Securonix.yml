@@ -592,7 +592,7 @@ script:
       description: User assigned to the incident.
       type: String
     - contextPath: Securonix.Incidents.IsWhitelisted
-      description: Whether the incident is whitelisted.
+      description: Whether the incident is added to allow list.
       type: Boolean
   - arguments:
     - default: false
@@ -649,7 +649,7 @@ script:
       description: User assigned to the incident.
       type: String
     - contextPath: Securonix.Incidents.IsWhitelisted
-      description: Whether the incident is whitelisted.
+      description: Whether the incident is added to allow list.
       type: Boolean
   - arguments:
     - default: false
@@ -1011,9 +1011,9 @@ script:
       description: The user assigned to the incident.
       type: String
     - contextPath: Securonix.Incidents.IsWhitelisted
-      description: Whether the incident is whitelisted.
+      description: Whether the incident is added to allow list.
       type: Boolean
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.9.8.24399
   feed: false
   isfetch: true
   longRunning: false

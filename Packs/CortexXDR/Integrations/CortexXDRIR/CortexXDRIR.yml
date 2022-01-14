@@ -82,7 +82,6 @@ configuration:
   options:
   - new
   - under_investigation
-  - resolved_threat_handled
   - resolved_known_issue
   - resolved_false_positive
   - resolved_true_positive
@@ -185,7 +184,7 @@ script:
       secret: false
     - default: false
       description: 'Filters only incidents in the specified status. The options are:
-        new, under_investigation, resolved_threat_handled, resolved_known_issue, resolved_false_positive, resolved_true_positive
+        new, under_investigation, resolved_known_issue, resolved_false_positive, resolved_true_positive
         resolved_security_testing, resolved_other, resolved_auto'
       isArray: false
       name: status
@@ -242,7 +241,7 @@ script:
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.status
       description: |
-        Current status of the incident. Valid values are: "new","under_investigation","resolved_threat_handled","resolved_known_issue","resolved_duplicate","resolved_false_positive","resolved_true_positive","resolved_security_testing" or "resolved_other".
+        Current status of the incident. Valid values are: "new","under_investigation","resolved_known_issue","resolved_duplicate","resolved_false_positive","resolved_true_positive","resolved_security_testing" or "resolved_other".
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.description
       description: Dynamic calculated description of the incident.
@@ -306,7 +305,7 @@ script:
     - contextPath: PaloAltoNetworksXDR.Incident.status
       description: |-
         Current status of the incident. Valid values are:
-        "new","under_investigation","resolved_threat_handled","resolved_known_issue","resolved_duplicate","resolved_false_positive","resolved_true_positive","resolved_security_testing","resolved_other"
+        "new","under_investigation","resolved_known_issue","resolved_duplicate","resolved_false_positive","resolved_true_positive","resolved_security_testing","resolved_other"
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.severity
       description: 'Calculated severity of the incident. Valid values are: "low","medium","high"'
@@ -505,7 +504,7 @@ script:
       description: Firewall app id.
       type: Unknown
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.is_whitelisted
-      description: 'Is the alert whitelisted. Valid values are: "Yes" "No"'
+      description: 'Is the alert on allow list. Valid values are: "Yes" "No"'
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.starred
       description: Alert starred.
@@ -650,14 +649,13 @@ script:
     - auto: PREDEFINED
       default: false
       description: 'Status of the incident. Valid values are: NEW, UNDER_INVESTIGATION,
-       RESOLVED_THREAT_HANDLED, RESOLVED_KNOWN_ISSUE, RESOLVED_DUPLICATE, RESOLVED_FALSE_POSITIVE,
+       RESOLVED_KNOWN_ISSUE, RESOLVED_DUPLICATE, RESOLVED_FALSE_POSITIVE,
        RESOLVED_TRUE_POSITIVE, RESOLVED_SECURITY_TESTING, RESOLVED_OTHER.'
       isArray: false
       name: status
       predefined:
       - NEW
       - UNDER_INVESTIGATION
-      - RESOLVED_THREAT_HANDLED
       - RESOLVED_KNOWN_ISSUE
       - RESOLVED_DUPLICATE
       - RESOLVED_FALSE_POSITIVE
@@ -1613,7 +1611,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: String that represents a list of hashed files you want to blacklist.
+      description: String that represents a list of hashed files you want to block list.
         Must be a valid SHA256 hash.
       isArray: true
       name: hash_list
@@ -1626,8 +1624,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Blacklists requested files which have not already been blacklisted
-      or whitelisted.
+    description: Block lists requested files which have not already been block listed
+      or added to allow list.
     execution: false
     name: xdr-blacklist-files
   - arguments:
@@ -1638,7 +1636,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: String that represents a list of hashed files you want to whitelist.
+      description: String that represents a list of hashed files you want to add to allow list.
         Must be a valid SHA256 hash.
       isArray: true
       name: hash_list
@@ -1651,8 +1649,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Whitelists requested files which have not already been blacklisted
-      or whitelisted.
+    description: Adds requested files to allow list if they are not already on block list or allow list.
     execution: false
     name: xdr-whitelist-files
   - arguments:
@@ -3112,7 +3109,7 @@ script:
     - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.ingestion_time
       description: Ingestion time.
       type: String
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.9.8.24399
   feed: false
   isfetch: true
   longRunning: false

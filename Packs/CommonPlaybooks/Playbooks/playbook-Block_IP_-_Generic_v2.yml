@@ -922,7 +922,7 @@ inputs:
 - key: IPBlacklistMiner
   value: {}
   required: false
-  description: The name of the IP blacklist Miner in  Minemeld.
+  description: The name of the IP block list Miner in  Minemeld.
   playbookInputQuery:
 - key: IP
   value: {}

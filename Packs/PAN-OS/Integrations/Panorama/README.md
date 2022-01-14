@@ -213,6 +213,7 @@ Run any command supported in the API.
 | target | Target number of the firewall. Use only on a Panorama instance. | Optional | 
 | job-id | Job ID. | Optional | 
 | query | Query string. | Optional | 
+| vsys | The name of the virtual system to be configured. If no vsys is mentioned, this command will not use the vsys parameter. | Optional | 
 
 
 #### Context Output
@@ -268,7 +269,11 @@ Commits a configuration to Palo Alto Firewall or Panorama, but does not validate
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| description | Commit description. | Optional | 
+| description | Commit description. | Optional |
+| admin_name | To commit admin-level changes on a firewall, include the administrator name in the request. | Optional |
+| force_commit | Force Commit. | Optional |
+| exclude_device_network_configuration | Partial commit while excluding device and network configuration. | Optional | 
+| exclude_shared_objects | Partial commit while excluding shared objects.| Optional |
 
 #### Context Output
 
@@ -317,6 +322,7 @@ Pushes rules from PAN-OS to the configured device group. In order to push the co
 | validate-only | Pre policy validation. | Optional. |
 | include-template | Whether to include template changes. | Optional. |
 | description | Push description. | Optional |
+| serial_number | The serial number for a virtual system commit. If provided, the commit will be a virtual system commit. | Optional |
 
 
 #### Context Output
@@ -2215,7 +2221,7 @@ Edits a policy rule.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | rulename | Name of the rule to edit. | Required | 
-| element_to_change | Parameter in the security rule to change. Can be 'source', 'destination', 'application', 'action', 'category', 'description', 'disabled', 'target', 'log-forwarding', 'tag' or 'profile-setting'. | Required | 
+| element_to_change | Parameter in the security rule to change. Can be 'source', 'destination', 'application', 'action', 'category', 'description', 'disabled', 'target', 'log-forwarding', 'tag', 'source-user', 'service' or 'profile-setting'. | Required | 
 | element_value | The new value for the parameter. | Required | 
 | pre_post | Pre-rule or post-rule (Panorama instances). | Optional | 
 | behaviour | Whether to replace, add, or remove the element_value from the current rule object value. | Optional | 

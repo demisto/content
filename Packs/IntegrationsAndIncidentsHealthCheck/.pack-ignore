@@ -94,3 +94,5 @@ ignore=RM106
 
 [file:RestartFailedTasks.py]
 ignore=E9003
+[file:pack_metadata.json]
+ignore=PA129

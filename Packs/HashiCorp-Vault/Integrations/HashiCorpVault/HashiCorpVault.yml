@@ -46,6 +46,12 @@ configuration:
   defaultvalue: KV,Cubbyhole
   type: 0
   required: false
+- display: Concat username to credential object name
+  name: concat_username_to_cred_name
+  type: 8
+  required: false
+  additionalinfo: Should be used in case there are several secrets 
+    under the same folder in order to make the credential object unique.
 script:
   script: ''
   type: python
@@ -205,7 +211,7 @@ script:
       description: Whether to show this mount in the UI-specific listing endpoint;
         "unauth" or "hidden", default is "hidden" Default is hidden.
     - name: passthrough_request_headers
-      description: CSV list of headers to whitelist and pass from the request to the
+      description: CSV list of headers to add to allow list and pass from the request to the
         backend
       isArray: true
     - name: kv_version
@@ -265,6 +271,9 @@ script:
     - name: path
       required: true
       description: The engine path, e.g., "secret/"
+    - name: folder
+      description: Specific folder to fetch secrets from, e.g., "secret-folder/".
+       (Supported only for engine type KV2)
     - name: type
       required: true
       description: The engine type, e.g., "KV"
