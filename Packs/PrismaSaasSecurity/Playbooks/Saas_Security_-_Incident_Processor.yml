@@ -56,9 +56,9 @@ tasks:
           Dear admin,
               An incident generated on your asset ${incident.saassecurityassetname}. Please  check if there is any risks in this file.
 
-          Prisma Saas Support Team
+          SaaS Security Support Team
       subject:
-        simple: An Incident Found in Prisma Saas Platform
+        simple: An Incident Found in SaaS Security Platform
       to:
         simple: ${incident.itemowneremail}
     separatecontext: false

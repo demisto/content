@@ -37,8 +37,8 @@ configuration:
   additionalinfo: Incident type is set by this field if a classifier does not exist.
     If a  classifier is selected, it takes precedence.
 - additionalinfo: 'Selects which direction you want the incidents mirrored.
- You can mirror Incoming only (from Saas Security to Cortex XSOAR),
-  **Outgoing** only (from Cortex XSOAR to Saas Security), or both **Incoming And Outgoing**.'
+ You can mirror Incoming only (from SaaS Security to Cortex XSOAR),
+  **Outgoing** only (from Cortex XSOAR to SaaS Security), or both **Incoming And Outgoing**.'
   defaultvalue: None
   display: Incident Mirroring Direction
   hidden: false
@@ -102,7 +102,7 @@ configuration:
   required: false
   additionalinfo: A comma-separated list of Application IDs. Run the ***saas-security-get-apps***
     command to return the **Application ID**, **Name**, and **Type** for all applications.
-- additionalinfo: If selected, when the incident closes on Saas Security, the incident closes in Cortex XSOAR.
+- additionalinfo: If selected, when the incident closes on SaaS Security, the incident closes in Cortex XSOAR.
   defaultvalue: 'false'
   display: Close Mirrored XSOAR Incident
   hidden: false
@@ -122,10 +122,11 @@ configuration:
   required: false
   additionalinfo: Uses the system proxy server to communicate with the  integration.
     If not selected, the integration will not use the system proxy server.
-description: Use the SaaS Security integration to protect against cloud‑based threats
-  by scanning and analyzing all your assets; applying Security policy to identify
-  exposures, external collaborators, risky user behavior, and sensitive documents;
-  and identifying the potential risks associated with each asset.
+description: SaaS Security API is a cloud-based service that you can connect directly to
+  your sanctioned SaaS applications using the cloud app’s API to provide data classification,
+  sharing and permission visibility, and threat detection. This Content Pack provides insights
+  into risks posed by data exposure and policy violations and enables you to use Cortex XSOAR
+  to effectively manage the incidents discovered by SaaS Security API.
 display: SaaS Security
 name: SaasSecurity
 script:

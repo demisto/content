@@ -12,19 +12,19 @@ Use the SaaS Security integration to protect against cloud‑based threats by:
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | Server URL | The instance configuration URL based on the server location: https://api.aperture.paloaltonetworks.com (US)<br/>https://api.aperture-eu.paloaltonetworks.com (EU)<br/>https://api.aperture-apac.paloaltonetworks.com (APAC) | True |
-    | Client ID | The SaaS Security Client ID | True |
-    | Client Secret | The SaaS Security Client Secret | True |
+    | Client ID | The SaaS Security Client ID. See instructions below. | True |
+    | Client Secret | The SaaS Security Client Secret. See instructions below. | True |
     | Fetch incidents | If selected, fetches incidents from SaaS Security. | False |
     | Incidents Fetch Interval | Frequency \(in hours and minutes\) by which Cortex XSOAR fetches incidents from SaaS Security when **Fetch Incidents** is selected. | False |
     | Incident type | Incident type is set by this field if a classifier does not exist. If a  classifier is selected, it takes precedence. | False |
-    | Incident Mirroring Direction | Selects which direction you want the incidents mirrored. You can mirror Incoming only \(from Saas Security to Cortex XSOAR\), **Outgoing** only \(from Cortex XSOAR to Saas Security\), or both **Incoming And Outgoing**. | False |
+    | Incident Mirroring Direction | Selects which direction you want the incidents mirrored. You can mirror Incoming only \(from SaaS Security to Cortex XSOAR\), **Outgoing** only \(from Cortex XSOAR to SaaS Security\), or both **Incoming And Outgoing**. | False |
     | Number of incidents per fetch | Minimum is 10. Maximum is 1000. | True |
     | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;. For example, 12 hours, 7 days) |  | False |
     | Fetch only incidents with matching state | Fetches only incidents with matching **All**, **Closed**, or **Open** state. If nothing is selected, **All** states will be used. | False |
     | Fetch only incidents with matching severity | If nothing is selected, **All** severities will be used. | False |
     | Fetch only incidents with matching status | If nothing is selected, **All** statuses will be used. | False |
     | Fetch only incidents with matching Application IDs | A comma-separated list of Application IDs. Run the ***saas-security-get-apps*** command to return the **Application ID**, **Name**, and **Type** for all applications. | False |
-    | Close Mirrored XSOAR Incident | If selected, when the incident closes on Saas Security, the incident closes in Cortex XSOAR. | False |
+    | Close Mirrored XSOAR Incident | If selected, when the incident closes on SaaS Security, the incident closes in Cortex XSOAR. | False |
     | Trust any certificate (not secure) | By default, SSL verification is enabled. If selected, the connection isn’t secure and all requests return an SSL error because the certificate cannot be verified. | False |
     | Use system proxy settings | Uses the system proxy server to communicate with the  integration. If not selected, the integration will not use the system proxy server. | False |
 

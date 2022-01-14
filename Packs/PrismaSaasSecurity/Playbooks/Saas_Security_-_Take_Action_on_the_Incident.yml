@@ -40,9 +40,9 @@ tasks:
     type: collection
     task:
       id: c3c29db4-4a98-460a-8614-93884d9021dc
-      description: Send questionaire to SaaS Security admin to select remediation action.
+      description: Send remediation action options to SaaS Security admin.
       version: -1
-      name: Send Ask Question Email
+      name: Send Remediation Action Request Email
       type: collection
       iscommand: false
       brand: ""
@@ -95,8 +95,7 @@ tasks:
         tooltip: ""
         readonly: false
       title: SaaS Security Incident
-      description: Admin can select remediation action taken on the risky asset from
-        questionnaire.
+      description: Admin can select remediation action to be taken from the options below.
       sender: Your SOC team
       expired: false
       totalanswers: 0
