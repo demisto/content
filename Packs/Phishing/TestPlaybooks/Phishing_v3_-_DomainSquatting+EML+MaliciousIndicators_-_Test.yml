@@ -557,10 +557,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 2e55a538-0e9b-4569-88de-4721c961db27
+    taskid: dfa2dd6d-7e13-4c80-89fe-83983e1b3a48
     type: regular
     task:
-      id: 2e55a538-0e9b-4569-88de-4721c961db27
+      id: dfa2dd6d-7e13-4c80-89fe-83983e1b3a48
       version: -1
       name: Investigate the incident
       description: commands.local.investigate
@@ -573,7 +573,7 @@ tasks:
       - "37"
     scriptarguments:
       id:
-        simple: "9"
+        simple: "234"
     separatecontext: false
     view: |-
       {
@@ -591,12 +591,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: f9712f9b-ef46-4ef8-845e-56c9c70f7426
+    taskid: ca609807-a906-4683-8f19-b324fcffaa55
     type: condition
     task:
-      id: f9712f9b-ef46-4ef8-845e-56c9c70f7426
+      id: ca609807-a906-4683-8f19-b324fcffaa55
       version: -1
-      name: Did DomainSquatting run (not a check whether it works yet)?
+      name: Did the domain-squatting check work?
       type: condition
       iscommand: false
       brand: ""
@@ -612,7 +612,33 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: Account.Email.Distance.Value
+              complex:
+                root: DBotScore
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DBotScore.Indicator
+                      iscontext: true
+                    right:
+                      value:
+                        simple: sr-test02@demistodev.ormicrosoft.com
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DBotScore.Score
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "2"
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DBotScore.Vendor
+                      iscontext: true
+                    right:
+                      value:
+                        simple: DomainSquatting
             iscontext: true
     view: |-
       {
@@ -630,10 +656,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 3f7c3e24-d438-48bb-879c-4a4960aefde0
+    taskid: 1bffd59d-0cfb-45d5-8828-d8b06b8e83c6
     type: regular
     task:
-      id: 3f7c3e24-d438-48bb-879c-4a4960aefde0
+      id: 1bffd59d-0cfb-45d5-8828-d8b06b8e83c6
       version: -1
       name: Get the final Email context
       description: Gets a value from the specified incident's context.
@@ -648,7 +674,7 @@ tasks:
       get_key:
         simple: Email
       incident_id:
-        simple: "9"
+        simple: "234"
     separatecontext: false
     view: |-
       {
@@ -1245,10 +1271,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: 451c5fcb-df03-42ea-8fd4-6d599389d025
+    taskid: 0d23e2fb-27e0-4c27-88fd-e7a89121fa6c
     type: regular
     task:
-      id: 451c5fcb-df03-42ea-8fd4-6d599389d025
+      id: 0d23e2fb-27e0-4c27-88fd-e7a89121fa6c
       version: -1
       name: Get final incident fields
       description: Searches Demisto incidents
@@ -1261,7 +1287,7 @@ tasks:
       - "24"
     scriptarguments:
       id:
-        simple: "9"
+        simple: "234"
     separatecontext: false
     view: |-
       {
@@ -1279,10 +1305,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: 23ebfaf8-184f-4c1f-89cd-2a9ab68ff9f6
+    taskid: f01d5d1b-0ae7-4e24-812e-9c304cb0e69a
     type: regular
     task:
-      id: 23ebfaf8-184f-4c1f-89cd-2a9ab68ff9f6
+      id: f01d5d1b-0ae7-4e24-812e-9c304cb0e69a
       version: -1
       name: Get the final Account context
       description: Gets a value from the specified incident's context.
@@ -1298,7 +1324,7 @@ tasks:
       get_key:
         simple: Account
       incident_id:
-        simple: "9"
+        simple: "234"
     separatecontext: false
     view: |-
       {
@@ -1343,10 +1369,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: 000096c2-e1ff-4d2b-8480-2b57990a15a2
+    taskid: c58e4ac6-9748-4504-80b8-2e31bd977d01
     type: regular
     task:
-      id: 000096c2-e1ff-4d2b-8480-2b57990a15a2
+      id: c58e4ac6-9748-4504-80b8-2e31bd977d01
       version: -1
       name: Wait and manually remediate
       description: Wait and complete tasks by given status. Used for test playbooks.
@@ -1361,7 +1387,7 @@ tasks:
       complete_task:
         simple: "true"
       incident_id:
-        simple: "9"
+        simple: "234"
       interval_between_tries:
         simple: "15"
       max_timeout:
@@ -1387,10 +1413,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: 53e3c749-c537-44ea-8fc5-030d2681ec89
+    taskid: ddb53ad5-390a-4d3d-86d4-0aa5d55fb52f
     type: regular
     task:
-      id: 53e3c749-c537-44ea-8fc5-030d2681ec89
+      id: ddb53ad5-390a-4d3d-86d4-0aa5d55fb52f
       version: -1
       name: Wait for incident to close
       description: Wait and complete tasks by given status. Used for test playbooks.
@@ -1407,7 +1433,7 @@ tasks:
       complete_task:
         simple: "false"
       incident_id:
-        simple: "9"
+        simple: "234"
       interval_between_tries:
         simple: "10"
       max_timeout:
