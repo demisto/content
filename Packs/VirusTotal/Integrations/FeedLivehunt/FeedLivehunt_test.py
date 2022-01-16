@@ -230,7 +230,7 @@ def test_main_default_command(mocker):
                                                   'get_api_indicators',
                                                   return_value=MOCK_VT_RESPONSE)
 
-    Client.set_last_run() #  Emulate previous execution with saving last run
+    Client.set_last_run()  # Emulate previous execution with saving last run
 
     main()
 
