@@ -26,8 +26,12 @@ args:
   isArray: true
 - description: The source user.
   name: source_user
-- description: The destination port.
+- description: Comma seperated destination ports.
   name: destination_port
+  isArray: true
+- description: Max number of api requests that script sends.
+  name: limit
+  defaultValue: '500'
 comment: 'Wrapper script for the panorama-security-policy-match command that receives
   multiple values (array) in the DST and SRC arguments and preforms the policy match
   on each of the values.'
@@ -37,9 +41,6 @@ commonfields:
 enabled: false
 name: PanoramaSecurityPolicyMatchWrapper
 outputs:
-- contextPath: Panorama.SecurityPolicyMatch.Query
-  description: Query for the session to test.
-  type: String
 - contextPath: Panorama.SecurityPolicyMatch.Rules.Name
   description: The matching rule name.
   type: String
@@ -60,33 +61,6 @@ outputs:
   type: String
 - contextPath: Panorama.SecurityPolicyMatch.Rules.To
   description: The matching rule to zone.
-  type: String
-- contextPath: Panorama.SecurityPolicyMatch.QueryFields.Application
-  description: The application name.
-  type: String
-- contextPath: Panorama.SecurityPolicyMatch.QueryFields.Category
-  description: The category name.
-  type: String
-- contextPath: Panorama.SecurityPolicyMatch.QueryFields.Destination
-  description: The destination IP address.
-  type: String
-- contextPath: Panorama.SecurityPolicyMatch.QueryFields.DestinationPort
-  description: The destination port.
-  type: Number
-- contextPath: Panorama.SecurityPolicyMatch.QueryFields.From
-  description: The query fields from zone.
-  type: String
-- contextPath: Panorama.SecurityPolicyMatch.QueryFields.To
-  description: The query fields to zone.
-  type: String
-- contextPath: Panorama.SecurityPolicyMatch.QueryFields.Protocol
-  description: The IP protocol value.
-  type: String
-- contextPath: Panorama.SecurityPolicyMatch.QueryFields.Source
-  description: The destination IP address.
-  type: String
-- contextPath: Panorama.SecurityPolicyMatch.QueryFields.SourceUser
-  description: The source user.
   type: String
 script: '-'
 system: false

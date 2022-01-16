@@ -8,31 +8,63 @@ import traceback
 ''' STANDALONE FUNCTION '''
 
 
+def create_script_output(result):
+    human_readable = ''
+    context = []
+    no_duplicates_dict_result = [dict(t) for t in {tuple(d.items()) for d in result if isinstance(d, dict)}]
+    str_res = [s for s in result if isinstance(s, str)]
+
+    for res in str_res:
+        human_readable += f'{res}\n\n'
+
+    for res in no_duplicates_dict_result:
+        if target := res.get('DeviceSerial'):
+            table_name = f'Matching Security Policies in `{target}` FW:'
+        else:
+            table_name = 'Matching Security Policies:'
+
+        table = tableToMarkdown(table_name, res)
+        human_readable += f'{table}\n\n'
+        context.append(res)
+
+    return human_readable, context
+
+
 def panorama_security_policy_match(args):
+    res = []
     try:
         result = demisto.executeCommand('panorama-security-policy-match', args=args)
-        return result[0]['EntryContext']
-        # return result
+        if 'The query did not match a Security policy' in result[0].get('Contents'):
+            return [f'The query for source: {args.get("source")}, destination: ' +
+                    f'{args.get("destination")} did not match a Security policy.']
+        else:
+            entry_context = result[0]['EntryContext']
+            policy_match = entry_context.get(
+                'Panorama.SecurityPolicyMatch(val.Query == obj.Query && val.Device == obj.Device)')
+            for entry in policy_match:
+                if rules := entry.get('Rules'):
+                    res.append(rules)
+
+            return res
     except Exception as e:
         raise Exception(f'Failed to run panorama-security-policy-match command. Error: {str(e)}')
 
 
-def wrapper_panorama_security_policy_match(destinations: list, sources: list, args: dict):
+def wrapper_panorama_security_policy_match(destinations: list, sources: list, destination_ports: list, args: dict):
     results = []
     for source in sources:
         args['source'] = source
         for destination in destinations:
             args['destination'] = destination
 
-            res = panorama_security_policy_match(args)
-            print(res)
-            try:
-                if 'The query did not match a Security policy' in res[0].get('Contents'):
-                    res[0]['Contents'] = f'The query for source: {source}, destination: {destination} ' \
-                                         f'did not match a Security policy.'
-            except Exception:
-                pass
-            results.append(res)
+            if destination_ports:
+                for port in destination_ports:
+                    args['destination-port'] = port
+                    res = panorama_security_policy_match(args)
+                    results.extend(res)
+            else:
+                res = panorama_security_policy_match(args)
+                results.extend(res)
 
     return results
 
@@ -40,7 +72,7 @@ def wrapper_panorama_security_policy_match(destinations: list, sources: list, ar
 def wrapper_command(args: Dict[str, Any]):
     destinations = argToList(args.get('destination'))
     sources = argToList(args.get('source'))
-    destination_port = args.get('destination_port')
+    destination_ports = argToList(args.get('destination_port'))
     source_user = args.get('source_user')
     vsys = args.get('vsys')
     target = args.get('target')
@@ -49,9 +81,14 @@ def wrapper_command(args: Dict[str, Any]):
     from_ = args.get('from')
     category = args.get('category')
     application = args.get('application')
+    limit = arg_to_number(args.get('limit', 500))
+
+    ports_num = len(destination_ports) if destination_ports else 1
+    if ports_num * len(destinations) * len(sources) > limit:
+        raise Exception(f'Provided arguments will cause more than {limit} API Requests. '
+                        'If you wish to exceed the API limit, increase limit argument.')
 
     args = {
-        'destination-port': destination_port,
         'source-user': source_user,
         'vsys': vsys,
         'target': target,
@@ -64,12 +101,15 @@ def wrapper_command(args: Dict[str, Any]):
 
     command_args = assign_params(**args)
 
-    result = wrapper_panorama_security_policy_match(destinations, sources, command_args)
+    result = wrapper_panorama_security_policy_match(destinations, sources, destination_ports, command_args)
 
-    return CommandResults(readable_output='',
-                          outputs_key_field='',
-                          outputs=result,
-                          outputs_prefix='')
+    human_readable, context = create_script_output(result)
+
+    return CommandResults(readable_output=human_readable,
+                          outputs_key_field=['Action', 'Name', 'Category', 'Destination', 'From', 'Source', 'To',
+                                             'DeviceSerial', 'Application'],
+                          outputs=context,
+                          outputs_prefix='Panorama.SecurityPolicyMatch.Rules')
 
 
 def main():
