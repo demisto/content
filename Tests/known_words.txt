@@ -54,3 +54,4 @@ BruteForceBlocker
 NetwitnessSearch
 NetwitnessQuery
 Deprecated
+SQS
