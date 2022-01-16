@@ -126,7 +126,7 @@ def search_records_by_report_soap_request(token, report_guid):
 
 def search_records_soap_request(
         token, app_id, display_fields, field_id, field_name, search_value, date_operator='',
-        numeric_operator='', max_results=10, level_id='',
+        field_to_search_by_id='', numeric_operator='', max_results=10, level_id='',
         sort_type: str = 'Ascending'
 ):
     request_body = '<?xml version="1.0" encoding="UTF-8"?>' + \
@@ -164,7 +164,7 @@ def search_records_soap_request(
                             '</NumericFilterCondition >'
         else:
 
-            if 'id' in field_name.lower():
+            if field_to_search_by_id and field_to_search_by_id.lower() == field_name.lower():
                 request_body += '<ContentFilterCondition>' + \
                                 f'        <Level>{level_id}</Level>' + \
                                 '        <Operator>Equals</Operator>' + \
@@ -464,7 +464,7 @@ class Client(BaseClient):
 
     def search_records(
             self, app_id, fields_to_display=None, field_to_search='', search_value='',
-            numeric_operator='', date_operator='', max_results=10,
+            field_to_search_by_id='', numeric_operator='', date_operator='', max_results=10,
             sort_type: str = 'Ascending'
     ):
         demisto.debug(f'searching for records {field_to_search}:{search_value}')
@@ -483,7 +483,8 @@ class Client(BaseClient):
             field_name = fields_mapping[field]['Name']
             if field_name in fields_to_display:
                 fields_xml += f'<DisplayField name="{field_name}">{field}</DisplayField>'
-            if field_to_search and field_name.lower() == field_to_search.lower():
+            if (field_to_search and field_name.lower() == field_to_search.lower()) or \
+               (field_to_search_by_id and field_name.lower() == field_to_search_by_id.lower()):
                 search_field_name = field_name
                 search_field_id = field
 
@@ -491,7 +492,7 @@ class Client(BaseClient):
             'archer-search-records',
             app_id=app_id, display_fields=fields_xml,
             field_id=search_field_id, field_name=search_field_name,
-            numeric_operator=numeric_operator,
+            field_to_search_by_id=field_to_search_by_id, numeric_operator=numeric_operator,
             date_operator=date_operator, search_value=search_value,
             max_results=max_results,
             sort_type=sort_type,
@@ -1066,6 +1067,7 @@ def list_users_command(client: Client, args: Dict[str, str]):
 def search_records_command(client: Client, args: Dict[str, str]):
     app_id = args.get('applicationId')
     field_to_search = args.get('fieldToSearchOn')
+    field_to_search_by_id = args.get('fieldToSearchById')
     search_value = args.get('searchValue')
     max_results = args.get('maxResults', 10)
     date_operator = args.get('dateOperator')
@@ -1088,7 +1090,7 @@ def search_records_command(client: Client, args: Dict[str, str]):
         fields_to_get = [fields_mapping[next(iter(fields_mapping))]['Name']]
 
     records, raw_res = client.search_records(
-        app_id, fields_to_get, field_to_search, search_value,
+        app_id, fields_to_get, field_to_search, search_value, field_to_search_by_id,
         numeric_operator, date_operator, max_results=max_results,
         sort_type=sort_type,
     )
