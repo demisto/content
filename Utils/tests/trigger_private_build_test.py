@@ -20,7 +20,7 @@ def test_branch_has_private_build_infra_change(mocker):
     Then
     - function returns True if there are infrastructure files changes in the branch.
     """
-    mocker.patch('Utils.trigger_private_build.get_modified_files', side_effect=GET_MODIFIED_FILES_MOCKS)
+    mocker.patch('Utils.github_triggers.trigger_private_build.get_modified_files', side_effect=GET_MODIFIED_FILES_MOCKS)
     not_infra_file = branch_has_private_build_infra_change()
     infra_file = branch_has_private_build_infra_change()
     infra_folder = branch_has_private_build_infra_change()
