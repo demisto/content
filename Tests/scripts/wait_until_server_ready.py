@@ -83,42 +83,41 @@ def main():
                             ami_instance_name == instance_name_to_wait_on]
 
     logging.info('Starting wait loop')
-    try:
-        while instance_ips_to_poll:
-            current_time = time.time()
-            exit_if_timed_out(loop_start_time, current_time)
+    while instance_ips_to_poll:
+        current_time = time.time()
+        exit_if_timed_out(loop_start_time, current_time)
 
-            for ami_instance_name, ami_instance_ip, tunnel_port in instance_ips:
-                if ami_instance_ip in instance_ips_to_poll:
-                    url = f"https://{ami_instance_ip}/health"
-                    method = 'GET'
-                    try:
-                        res = requests.request(method=method, url=url, verify=False)
-                    except (requests.exceptions.RequestException, requests.exceptions.HTTPError) as exp:
-                        logging.error(f'{ami_instance_name} encountered an error: {str(exp)}\n')
-                        if SETUP_TIMEOUT != 60 * 10:
-                            logging.warning('Setting SETUP_TIMEOUT to 10 minutes.')
-                            SETUP_TIMEOUT = 60 * 10
-                        continue
-                    except Exception:
-                        logging.exception(f'{ami_instance_name} encountered an error, Will retry this step later')
-                        continue
-                    if res.status_code == 200:
-                        if SETUP_TIMEOUT != 60 * 60:
-                            logging.info('Resetting SETUP_TIMEOUT to an hour.')
-                            SETUP_TIMEOUT = 60 * 60
-                        logging.info(f'{ami_instance_name} is ready to use')
-                        instance_ips_to_poll.remove(ami_instance_ip)
-                    # printing the message every 30 seconds
-                    elif current_time - last_update_time > PRINT_INTERVAL_IN_SECONDS:
-                        logging.info(
-                            f'{ami_instance_name} at ip {ami_instance_ip} is not ready yet - waiting for it to start')
+        for ami_instance_name, ami_instance_ip, tunnel_port in instance_ips:
+            if ami_instance_ip in instance_ips_to_poll:
+                url = f"https://{ami_instance_ip}/health"
+                method = 'GET'
+                try:
+                    res = requests.request(method=method, url=url, verify=False)
+                except (requests.exceptions.RequestException, requests.exceptions.HTTPError) as exp:
+                    logging.error(f'{ami_instance_name} encountered an error: {str(exp)}\n')
+                    if SETUP_TIMEOUT != 60 * 10:
+                        logging.warning('Setting SETUP_TIMEOUT to 10 minutes.')
+                        SETUP_TIMEOUT = 60 * 10
+                    continue
+                except Exception:
+                    logging.exception(f'{ami_instance_name} encountered an error, Will retry this step later')
+                    continue
+                if res.status_code == 200:
+                    if SETUP_TIMEOUT != 60 * 60:
+                        logging.info('Resetting SETUP_TIMEOUT to an hour.')
+                        SETUP_TIMEOUT = 60 * 60
+                    logging.info(f'{ami_instance_name} is ready to use')
+                    instance_ips_to_poll.remove(ami_instance_ip)
+                # printing the message every 30 seconds
+                elif current_time - last_update_time > PRINT_INTERVAL_IN_SECONDS:
+                    logging.info(
+                        f'{ami_instance_name} at ip {ami_instance_ip} is not ready yet - waiting for it to start')
 
-            if current_time - last_update_time > PRINT_INTERVAL_IN_SECONDS:
-                # The interval has passed, which means we printed a status update.
-                last_update_time = current_time
-            if len(instance_ips) > len(ready_ami_list):
-                sleep(1)
+        if current_time - last_update_time > PRINT_INTERVAL_IN_SECONDS:
+            # The interval has passed, which means we printed a status update.
+            last_update_time = current_time
+        if len(instance_ips) > len(ready_ami_list):
+            sleep(1)
 
 
 if __name__ == "__main__":
