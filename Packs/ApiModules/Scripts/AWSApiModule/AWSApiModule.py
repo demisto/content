@@ -142,16 +142,15 @@ class AWSClient:
         if not timeout:
             timeout = "60,10"  # default values
         try:
-            if isinstance(timeout, str):
+
+            if isinstance(timeout, int):
+                read_timeout = timeout
+                connect_timeout = 10
+
+            else:
                 timeout_vals = timeout.split(',')
                 read_timeout = int(timeout_vals[0])
                 connect_timeout = 10 if len(timeout_vals) == 1 else int(timeout_vals[1])
-
-            elif isinstance(timeout, int):
-                read_timeout = timeout
-                connect_timeout = 10
-            else:
-                raise ValueError
 
         except ValueError:
             raise DemistoException("You can specify just the read timeout (for example 60) or also the connect "
