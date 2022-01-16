@@ -1,0 +1,34 @@
+{
+	"brands": null,
+	"defaultIncidentType": "",
+	"definitionId": "",
+	"description": "Classifier for FW change management incidents using EWS integration.",
+	"feed": false,
+	"fromServerVersion": "",
+	"id": "e9eca0d1-0494-4282-8ae8-30f592fe264a",
+	"incidentSamples": null,
+	"indicatorSamples": null,
+	"instanceIds": null,
+	"itemVersion": "",
+	"keyTypeMap": {
+		"change management": "FW change management"
+	},
+	"locked": false,
+	"logicalVersion": 1,
+	"mapping": null,
+	"name": "EWS change management",
+	"nameRaw": "EWS change management",
+	"packID": "4ff829e5-1b1a-42fd-8d13-8956f7f6c66e",
+	"propagationLabels": [
+		"all"
+	],
+	"sourceClassifierId": "",
+	"system": false,
+	"toServerVersion": "",
+	"transformer": {
+		"simple": "subject"
+	},
+	"type": "classification",
+	"unclassifiedCases": null,
+	"version": -1
+}

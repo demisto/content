@@ -1,0 +1,42 @@
+{
+    "associatedToAll": true,
+    "caseInsensitive": true,
+    "cliName": "requestsrc",
+    "closeForm": false,
+    "content": true,
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_requestsrc",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Request SRC",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "selectValues": [
+        "192.168.1.69",
+        "192.168.1.68",
+        "192.168.1.60",
+        "1.1.1.1 ",
+        "192.168.1.57",
+        "8.8.8.8",
+        "1.1.1.1",
+        "192.168.1.32",
+        "192.169.1.69",
+        "2.2.2.2"
+    ],
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "tagsSelect",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "5.5.0"
+}

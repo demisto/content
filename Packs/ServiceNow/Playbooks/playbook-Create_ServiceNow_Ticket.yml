@@ -396,8 +396,8 @@ inputs:
   value:
     simple: Both
   required: false
-  description: "Set the mirror direction. It should be one of the following: \n1. In\n\
-    2. Out\n3. Both"
+  description: "Set the mirror direction. It should be one of the following: \n1.\
+    \ In\n2. Out\n3. Both"
   playbookInputQuery:
 - key: MirrorCommentTags
   value:
@@ -417,10 +417,49 @@ inputs:
 - key: TicketType
   value: {}
   required: false
-  description: Set the ServiceNow ticket type. Options are "incident", "problem", "change_request", "sc_request",
-    "sc_task", or "sc_req_item". Default is "incident".
+  description: Set the ServiceNow ticket type. Options are "incident", "problem",
+    "change_request", "sc_request", "sc_task", or "sc_req_item". Default is "incident".
   playbookInputQuery:
-outputs: []
+outputs:
+- contextPath: ServiceNow.Ticket.ID
+  description: Ticket ID.
+  type: string
+- contextPath: ServiceNow.Ticket.OpenedBy
+  description: Ticket opener ID.
+  type: string
+- contextPath: ServiceNow.Ticket.CreatedOn
+  description: Ticket creation date.
+  type: string
+- contextPath: ServiceNow.Ticket.Assignee
+  description: Ticket assignee ID.
+  type: string
+- contextPath: ServiceNow.Ticket.State
+  description: Ticket state.
+  type: string
+- contextPath: ServiceNow.Ticket.Summary
+  description: Ticket short summary.
+  type: string
+- contextPath: ServiceNow.Ticket.Number
+  description: Ticket number.
+  type: string
+- contextPath: ServiceNow.Ticket.Active
+  description: Ticket active.
+  type: string
+- contextPath: ServiceNow.Ticket.AdditionalComments
+  description: Ticket comments.
+  type: string
+- contextPath: ServiceNow.Ticket.Priority
+  description: Ticket priority.
+  type: string
+- contextPath: ServiceNow.Ticket.OpenedAt
+  description: Ticket opening time.
+  type: string
+- contextPath: ServiceNow.Ticket.ResolvedBy
+  description: Ticket resolver ID.
+  type: string
+- contextPath: ServiceNow.Ticket.CloseCode
+  description: Ticket close code.
+  type: string
 tests:
 - Create ServiceNow Ticket and Mirror Test
 - Create ServiceNow Ticket and State Polling Test

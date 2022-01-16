@@ -1,0 +1,28 @@
+{
+    "autorun": false,
+    "color": "#000000",
+    "days": 0,
+    "daysR": 0,
+    "default": false,
+    "detached": false,
+    "disabled": false,
+    "extractSettings": {
+        "fieldCliNameToExtractSettings": {},
+        "mode": "Specific"
+    },
+    "hours": 0,
+    "hoursR": 0,
+    "id": "FW change management",
+    "layout": "bc4065b8-b10b-44f6-8bc9-5bfbe4f4908e",
+    "locked": false,
+    "name": "FW change management",
+    "onChangeRepAlg": 0,
+    "playbookId": "6188b239-67bd-477f-81ed-3fbd8f39fa9e",
+    "readonly": false,
+    "reputationCalc": 0,
+    "system": false,
+    "version": -1,
+    "weeks": 0,
+    "weeksR": 0,
+    "fromVersion": "5.5.0"
+}

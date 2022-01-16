@@ -1,0 +1,32 @@
+{
+    "associatedToAll": true,
+    "caseInsensitive": true,
+    "cliName": "requestdescription",
+    "closeForm": false,
+    "content": true,
+    "description": "The description of the request issue/ticket",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_requestdescription",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Request Description",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "placeholder": "Please elaborate as possible on your request ",
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "5.5.0"
+}

@@ -1,0 +1,42 @@
+{
+    "associatedToAll": true,
+    "caseInsensitive": true,
+    "cliName": "requestdst",
+    "closeForm": false,
+    "content": true,
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_requestdst",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Request DST",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "selectValues": [
+        "192.168.1.255",
+        "192.168.1.250",
+        "192.168.1.251",
+        "2.2.2.2",
+        "1.1.1.1",
+        "192.168.1.69",
+        "192.268.1.58",
+        "8.8.8.8",
+        "192.168.1.2",
+        "192.168.1.50"
+    ],
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "tagsSelect",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "5.5.0"
+}
