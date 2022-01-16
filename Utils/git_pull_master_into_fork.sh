@@ -5,10 +5,8 @@ CONTENT_URL='https://github.com/demisto/content.git'
 if [ -z "$1" ]
 then
   CURRENT=$(git branch --show-current)
-  echo $CURRENT
 else
   CURRENT=$1
-  echo current is $CURRENT
 fi
 
 (
