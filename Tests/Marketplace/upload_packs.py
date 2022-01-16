@@ -995,7 +995,7 @@ def get_packs_depends_on(packs_list, artifacts_path):
         '-idp',
         f'{artifacts_path}/id_set.json']
     query_list.extend([pack_tuple_item for pack in packs_list for pack_tuple_item in
-                       ('-i', os.path.join('Pack', pack.name))])
+                       ('-i', os.path.join('Packs', pack.name))])
     # TODO: remove, intended for dev purposes
     logging.info('Calliing: ' + ' '.join(query_list))
     subprocess.check_call(query_list, stderr=subprocess.STDOUT)
