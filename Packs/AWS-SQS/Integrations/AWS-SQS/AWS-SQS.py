@@ -207,13 +207,7 @@ def main():
     timeout = params.get('timeout')
     retries = params.get('retries') or 5
     aws_queue_url = params.get('queueUrl')
-    max_fetch_param = params.get('max_fetch', 10)
-    if max_fetch_param < 1:
-        max_fetch = 1
-    elif max_fetch_param > 100:
-        max_fetch = 100
-    else:
-        max_fetch = max_fetch_param
+    max_fetch = min(params.get('max_fetch', 10), 100)
 
     commands = {
         'aws-sqs-get-queue-url': get_queue_url,
