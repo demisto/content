@@ -266,8 +266,7 @@ def prepare_fetch(params: dict, first_fetch: str):
         last_fetch = parse_date_range(first_fetch, date_format=DATE_FORMAT)[0]
 
     # set filter for fetch
-    time_now = datetime.utcnow().strftime(DATE_FORMAT)
-    params['time_detected_range'] = f'{last_fetch},{time_now}'
+    params['start_detected_time'] = last_fetch
     fetch_filter = filter_versions(params)
 
     return params, fetch_filter, last_fetch

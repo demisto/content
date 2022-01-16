@@ -771,7 +771,8 @@ class MsGraphClient:
         """
         Sends email from user's mailbox, the sent message will appear in Sent Items folder
         """
-        suffix_endpoint = f'/users/{self._mailbox_to_fetch}/sendMail'
+        from_address = kwargs.get('from', self._mailbox_to_fetch)
+        suffix_endpoint = f'/users/{from_address}/sendMail'
         message_content = MsGraphClient._build_message(**kwargs)
         self.ms_client.http_request('POST', suffix_endpoint, json_data={'message': message_content},
                                     resp_type="text")

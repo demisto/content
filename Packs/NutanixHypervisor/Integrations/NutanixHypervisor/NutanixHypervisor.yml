@@ -881,7 +881,7 @@ script:
     - contextPath: NutanixHypervisor.ResolvedFilterAlerts.alert_status_list.message
       description: Message returned by the resolve operation.
       type: String
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.9.9.25564
   isfetch: true
   runonce: false
   script: ''
