@@ -61,8 +61,8 @@ configuration:
   name: isFetch
   type: 8
   required: false
-- defaultvalue: '50'
-  display: 'Maximum incidents for one fetch'
+- defaultvalue: '10'
+  display: 'Maximum incidents for one fetch. Hard cap of 100.'
   name: max_fetch
   required: false
   type: 0
