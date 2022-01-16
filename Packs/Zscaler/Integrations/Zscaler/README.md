@@ -9,7 +9,7 @@ A custom category ID has the format `CUSTOM_01`, which is not indicative of the
 ## Configure Zscaler Internet Access on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Zscaler.
+2. Search for Zscaler Internet Access.
 3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
