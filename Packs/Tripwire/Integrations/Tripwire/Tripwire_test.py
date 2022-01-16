@@ -101,7 +101,7 @@ def test_prepare_fetch(mocker):
     mocker.patch.object(demisto, 'getLastRun', return_value={"lastRun": "2018-10-24T14:13:20Z"})
     params, fetch_filter, _ = prepare_fetch(params, '1 day ago')
     expected_filter = 'ruleId=-1:1&nodeId=-1:2&timeDetectedRange=2018-10-24T14:13:20Z,'
-    assert expected_filter in fetch_filter
+    assert expected_filter not in fetch_filter
 
 
 def test_filter_nodes():
