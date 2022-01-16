@@ -63,3 +63,24 @@ def test_invalid_loc(loc, mocker):
         del (sys.modules['ShowLocationOnMap'])
     with pytest.raises(Exception, match='return_error_called'):
         import ShowLocationOnMap  # noqa: F401
+
+
+def test_no_indicator_field_in_demisto_args(mocker):
+    """
+    Given:
+    - Demisto args with without indicator key.
+
+    When:
+    - Parsing them into lat and lng separately.
+
+    Then:
+    - Ensure return error is called.
+    """
+    mocker.patch.object(demisto, 'args', return_value={'indicator': None})
+    mocker.patch.object(CommonServerPython, 'return_error', side_effect=return_error_called)
+
+    with pytest.raises(Exception, match='return_error_called'):
+        import ShowLocationOnMap  # noqa: F401
+
+
+
