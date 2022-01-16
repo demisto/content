@@ -993,7 +993,7 @@ def get_packs_depends_on(packs_list):
         '$ARTIFACTS_FOLDER/packs_dependent_on.json',
         '-idp',
         '$ARTIFACTS_FOLDER/id_set.json']
-    query_list.extend([pack_tuple_item for pack in packs_list for pack_tuple_item in ('--get-dependent-on', pack)])
+    query_list.extend([pack_tuple_item for pack in packs_list for pack_tuple_item in ('--get-dependent-on', pack.name)])
     subprocess.check_call(query_list, stderr=subprocess.STDOUT)
     packs_dependent_on_path = subprocess.check_output(['echo', '$ARTIFACTS_FOLDER/packs_dependent_on.json'])
     with open(packs_dependent_on_path) as f:
