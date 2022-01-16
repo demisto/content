@@ -4,7 +4,10 @@ from CommonServerPython import *
 
 def main():
     try:
-        return_results(list(re.findall(emailRegex, demisto.args().get('value'))))
+        list_results = []
+        for val in argToList(demisto.args().get('value')):
+            list_results.extend(list(re.findall(emailRegex, val)))
+        return_results(list_results)
     except Exception as error:
         return_error(str(error), error)
 

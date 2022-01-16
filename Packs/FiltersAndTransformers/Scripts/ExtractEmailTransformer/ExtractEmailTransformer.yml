@@ -1,9 +1,15 @@
-comment: ExtractEmailTransformer
+comment: this script i used to extract email addresses from the context.
 commonfields:
   id: ExtractEmailTransformer
   version: -1
 name: ExtractEmailTransformer
 script: '-'
+args:
+- name: value
+  required: true
+  description: the input value.
+  isArray: true
+
 tags:
 - Transformer
 timeout: '0'
