@@ -209,7 +209,7 @@
           echo "env"
           env
           echo "send a comment"
-#          python3 ./Tests/scripts/wait_until_server_ready.py
+          python3 ./Tests/scripts/wait_until_server_ready.py
         fi
       fi
     - section_end "Run Unit Testing and Lint"
