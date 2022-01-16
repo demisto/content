@@ -55,7 +55,7 @@ def prepare_result(response: dict, args: dict) -> CommandResults:
     markdown = '### Success\n'
     outputs = None
     if argToBoolean(args.get('echo_spreadsheet')):
-        # here will be the code that will prep the result if echo is mode is on
+        # here will be the code that will prep the result if echo mode is on
         human_readable = {
             'spreadsheet Id': response.get('spreadsheetId'),
             'spreadsheet url': response.get('updatedSpreadsheet', {}).get('spreadsheetUrl')
@@ -115,7 +115,7 @@ def create_list_id_title(sheets: list) -> list:
 def handle_values_input(values: str) -> list:
     """
     input: a string representation of values in the form of "[1,2,3],[4,5,6]..."
-    output: a list of list of the values for this example [[1,2,3],[4,5,6]...]
+    output: a list of lists of the values for this example [[1,2,3],[4,5,6]...]
     """
     # TODO check if this is none
     split_by_brackets = re.findall("\[(.*?)\]", values)
@@ -146,6 +146,9 @@ def markdown_single_get(response: dict) -> str:
     sheets_titles = create_list_id_title(list(sheets))
     markdown += tableToMarkdown('Content', sheets_titles, headers=['SheetId', 'Sheet title'])
     return markdown
+
+
+# COMMANDS
 
 
 def create_spreadsheet(service: Resource, args: dict) -> CommandResults:
@@ -568,7 +571,6 @@ def sheets_value_append(service: Resource, args: dict) -> CommandResults:
 
     value_range_body = {
         "majorDimension": args.get('major_dimension'),
-        # TODO: check about the element types what how does it work
         "values": handle_values_input(str(args.get("values")))
     }
     request = service.spreadsheets().values().append(spreadsheetId=spreadsheet_id, range=range_,
