@@ -99,7 +99,7 @@ create-instances:
   extends:
     - .default-job-settings
     - .push-rule
-  needs: ["create-instances", "run-unittests-and-lint"]
+  needs: ["create-instances"]
   stage: run-instances
   script:
     - EXIT_CODE=0

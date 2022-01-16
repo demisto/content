@@ -142,7 +142,6 @@
   artifacts:
     reports:
       cobertura: /builds/xsoar/content/artifacts/coverage_report/coverage.xml
-      dotenv: build.env
     expire_in: 30 days
     paths:
       - /builds/xsoar/content/unit-tests
@@ -158,12 +157,6 @@
   extends:
     - .default-job-settings
   script:
-#    - echo "This is the CI_JOB_ID $CI_JOB_ID"
-#    - echo "Save the CI_JOB_ID to build_env"
-#    - echo "UT_JOB_ID=$CI_JOB_ID" >> build.env
-#    - echo "This is printed UT_JOB_ID $(cat build.env | xargs)"
-#    - export $(cat build.env | xargs)
-#    - echo "This is the UT_JOB_ID $UT_JOB_ID"
     - section_start "Test Infrastructure"
     - python3 -m pytest ./Tests/scripts/infrastructure_tests/ -v
     - python3 -m pytest ./Tests/Marketplace/Tests/ -v
