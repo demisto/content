@@ -1,5 +1,5 @@
 {
-    "name": "Zscaler",
+    "name": "Zscaler Internet Access",
     "description": "Zscaler is a cloud security solution built for performance and flexible scalability.",
     "support": "xsoar",
     "currentVersion": "1.1.15",
