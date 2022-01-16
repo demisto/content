@@ -60,7 +60,6 @@ while [[ "$#" -gt 0 ]]; do
     shift;;
 
   -o|--override-all-packs) _override_all_packs=true
-    shift
     shift;;
 
   *)    # unknown option.
