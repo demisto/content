@@ -115,4 +115,5 @@ curl --request POST \
   --form "variables[GCS_MARKET_BUCKET]=${_bucket}" \
   --form "variables[IFRA_ENV_TYPE]=Bucket-Upload" \
   --form "variables[STORAGE_BASE_PATH]=${_storage_base_path}" \
+  --form "variables[OVERRIDE_ALL_PACKS]=${_override_all_packs}" \
   "$BUILD_TRIGGER_URL"
