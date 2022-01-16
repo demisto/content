@@ -35,7 +35,7 @@ def panorama_security_policy_match(args):
     try:
         result = demisto.executeCommand('panorama-security-policy-match', args=args)
         if 'The query did not match a Security policy' in result[0].get('Contents'):
-            return [f'The query for source: {args.get("source")}, destination: ' +
+            return [f'The query for source: {args.get("source")}, destination: '
                     f'{args.get("destination")} did not match a Security policy.']
         else:
             entry_context = result[0]['EntryContext']
@@ -112,7 +112,7 @@ def wrapper_command(args: Dict[str, Any]):
                           outputs_prefix='Panorama.SecurityPolicyMatch.Rules')
 
 
-def main():
+def main():  # pragma: no cover
     try:
         return_results(wrapper_command(demisto.args()))
     except Exception as ex:
