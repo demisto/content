@@ -9,22 +9,22 @@ Mandiant Feed
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | Fetch indicators |  | False |
-    | Indicator Reputation | Indicators from this integration instance will be marked with this reputation | False |
-    | Source Reliability | Reliability of the source providing the intelligence data | True |
-    | Traffic Light Protocol Color | The Traffic Light Protocol \(TLP\) designation to apply to indicators fetched from the feed | False |
+    | Indicator Reputation | Indicators from this integration instance will be marked with this reputation. | False |
+    | Source Reliability | Reliability of the source providing the intelligence data. | True |
+    | Traffic Light Protocol Color | The Traffic Light Protocol \(TLP\) designation to apply to indicators fetched from the feed. | False |
     | Feed Fetch Interval |  | False |
     | Public Key |  | True |
     | Secret Key |  | True |
-    | Indicator Type | The indicators' type to fetch. Indicator type might include the following: Domains, IPs, Files and URLs. | False |
+    | Mandiant indicator type | The type of indicators to fetch. Indicator type might include the following: Domains, IPs, Files and URLs. | False |
     | First fetch time |  | False |
-    | Server URL (e.g. https://api.intelligence.fireeye.com) |  | True |
+    | Server URL (e.g., https://api.intelligence.fireeye.com) |  | True |
     | X-App-Name | X-App-Name header is required for this API. | True |
     | Maximum number of indicators per fetch |  | False |
     | Tags | Supports CSV values. | False |
     | Timeout | API calls timeout. | False |
     | Trust any certificate (not secure) |  | False |
     | Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | False |
-    | Retrieve Indicator Metadata | Retrieve additional information for each indicator. Please note that this requires additional API calls. | False |
+    | Retrieve indicator metadata | Retrieve additional information for each indicator. Please note that this requires additional API calls. | False |
     | Create Relationships. | Please note that this requires additional API calls. | False |
     | Use system proxy settings |  | False |
 
@@ -34,7 +34,7 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### feed-mandiant-get-indicators
 ***
-get mandiant indicators
+Get mandiant indicators.
 
 
 #### Base Command
@@ -44,10 +44,10 @@ get mandiant indicators
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | number of indicators to fetch. | Optional | 
+| limit | Maximum number of indicators to fetch. | Optional | 
 | indicatorMetadata | Retrieve additional data for each indicator. Possible values are: true, false. Default is false. | Optional | 
 | indicatorRelationships | Create relationships. Possible values are: true, false. Default is false. | Optional | 
-| type | What indicators types to fetch. Possible values are: Malware, Indicators, Actors. Default is Malware,Indicators,Actors. | Required | 
+| type | The type of indicators to fetch. Possible values are: Malware, Indicators, Actors. Default is Malware,Indicators,Actors. | Required | 
 
 
 #### Context Output
