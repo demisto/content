@@ -79,8 +79,7 @@ def test_none_indicator_value(mocker):
     mocker.patch.object(demisto, 'args', return_value={'indicator': None})
     mocker.patch.object(CommonServerPython, 'return_error', side_effect=return_error_called)
 
+    if 'ShowLocationOnMap' in sys.modules:
+        del (sys.modules['ShowLocationOnMap'])
     with pytest.raises(Exception, match='return_error_called'):
         import ShowLocationOnMap  # noqa: F401
-
-
-

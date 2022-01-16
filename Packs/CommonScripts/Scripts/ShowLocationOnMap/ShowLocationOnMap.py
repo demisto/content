@@ -1,6 +1,8 @@
 from CommonServerPython import *
 
-loc = demisto.get(demisto.args()['indicator'], "CustomFields.geolocation").strip()
+loc = demisto.get(demisto.args()['indicator'], "CustomFields.geolocation")
+if loc and isinstance(loc, str):
+    loc = loc.strip()
 err_msg = "No location data was available"
 long_lat_regex = re.compile(
     r'^\s*[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?)\s*([,:])\s*[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)\s*$')
