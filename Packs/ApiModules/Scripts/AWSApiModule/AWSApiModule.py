@@ -144,12 +144,10 @@ class AWSClient:
         try:
 
             if isinstance(timeout, int):
-                #print("im in if")
                 read_timeout = timeout
                 connect_timeout = 10
 
             else:
-                #print("im in else")
                 timeout_vals = timeout.split(',')
                 read_timeout = int(timeout_vals[0])
                 connect_timeout = 10 if len(timeout_vals) == 1 else int(timeout_vals[1])
