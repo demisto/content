@@ -1,34 +1,34 @@
 {
-    "associatedToAll": false,
-    "associatedTypes": [
-        "Content Update Check"
-    ],
-    "caseInsensitive": true,
-    "cliName": "contentpackselection",
-    "closeForm": false,
-    "content": true,
-    "description": "CSV of pack names to monitor. This can include \"All\" for all packs. (To find a list of installed packs, simple run !ListInstalledContentPacks from the war room).",
-    "editForm": true,
-    "group": 0,
-    "hidden": false,
-    "id": "incident_contentpackselection",
-    "isReadOnly": false,
-    "locked": false,
-    "name": "Content Pack Selection",
-    "neverSetAsRequired": false,
-    "ownerOnly": false,
-    "placeholder": "All",
-    "propagationLabels": [
-        "all"
-    ],
-    "required": false,
-    "sla": 0,
-    "system": false,
-    "threshold": 72,
-    "type": "longText",
-    "unmapped": false,
-    "unsearchable": false,
-    "useAsKpi": false,
-    "version": -1,
-    "fromVersion": "6.0.0"
+ "associatedToAll": false,
+ "associatedTypes": [
+  "Content Update Check"
+ ],
+ "caseInsensitive": true,
+ "cliName": "contentpackselection",
+ "closeForm": false,
+ "content": true,
+ "description": "A list of pack names to monitor. This can include \"All\" for all packs. (To find a list of installed packs, simple run !ListInstalledContentPacks from the war room).",
+ "editForm": true,
+ "group": 0,
+ "hidden": false,
+ "id": "incident_contentpackselection",
+ "isReadOnly": false,
+ "locked": false,
+ "name": "Content Pack Selection",
+ "neverSetAsRequired": false,
+ "ownerOnly": false,
+ "placeholder": "All",
+ "propagationLabels": [
+  "all"
+ ],
+ "required": false,
+ "sla": 0,
+ "system": false,
+ "threshold": 72,
+ "type": "longText",
+ "unmapped": false,
+ "unsearchable": true,
+ "useAsKpi": false,
+ "version": -1,
+ "fromVersion": "6.0.0"
 }

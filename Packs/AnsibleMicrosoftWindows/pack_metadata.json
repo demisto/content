@@ -15,5 +15,9 @@
     "useCases": [],
     "keywords": [
         "Asset Management"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }

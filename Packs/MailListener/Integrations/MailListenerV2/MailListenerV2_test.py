@@ -21,6 +21,7 @@ Content-Type: text/html; charset="UTF-8"
 
 <div dir="ltr"><br></div>
 <p>C:\Users</p>
+<p>C:\\Users</p>
 
 --0000000000002b271405ac80bf8b--
 """
@@ -60,7 +61,7 @@ EXPECTED_LABELS = [
     {'type': 'Email/headers/Content-Type',
      'value': 'multipart/alternative; boundary="0000000000002b271405ac80bf8b"'},
     {'type': 'Email', 'value': 'to@test1.com'},
-    {'type': 'Email/html', 'value': '<div dir="ltr"><br></div>\n<p>C:\\\\Users</p>'}]
+    {'type': 'Email/html', 'value': '<div dir="ltr"><br></div>\n<p>C:\\\\Users</p>\n<p>C:\\\\Users</p>'}]
 
 
 def test_convert_to_incident():
@@ -97,13 +98,13 @@ def test_convert_to_incident():
                 'OR',
                 'OR',
                 'FROM',
-                'test1@mail.com',
-                'FROM',
-                'test2@mail.com',
+                'domain2.com',
                 'FROM',
                 'test1.com',
                 'FROM',
-                'domain2.com',
+                'test1@mail.com',
+                'FROM',
+                'test2@mail.com',
                 'SINCE',
                 datetime(year=2020, month=10, day=1),
                 'UID',
@@ -122,16 +123,16 @@ def test_convert_to_incident():
                 'OR',
                 'HEADER',
                 'FROM',
-                'test1@mail.com',
-                'HEADER',
-                'FROM',
-                'test2@mail.com',
+                'domain2.com',
                 'HEADER',
                 'FROM',
                 'test1.com',
                 'HEADER',
                 'FROM',
-                'domain2.com',
+                'test1@mail.com',
+                'HEADER',
+                'FROM',
+                'test2@mail.com',
                 'SINCE',
                 datetime(year=2020, month=10, day=1),
                 'UID',

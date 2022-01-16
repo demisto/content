@@ -53,6 +53,7 @@ OBJECTS_TO_KEYS = {
     'users': 'id'
 }
 SYNC_CONTEXT = True
+PROFILING_DUMP_ROWS_LIMIT = 20
 
 ''' GLOBALS '''
 
@@ -737,6 +738,7 @@ def mirror_investigation():
         }
 
         send_slack_request_sync(CLIENT, 'chat.postMessage', body=body)
+
     if kick_admin:
         body = {
             'channel': conversation_id
@@ -944,7 +946,6 @@ class SlackLogger:
 
     Essentially this converts Logger.info() to demisto.info()
     """
-
     def __init__(self):
         """
         Set the base level as debug. The server will handle the filtering as needed.
@@ -969,6 +970,7 @@ class SlackLogger:
 
 
 async def slack_loop():
+    exception_await_seconds = 1
     while True:
         # SocketModeClient does not respect environment variables for ssl verification.
         # Instead we use a custom session.
@@ -977,15 +979,27 @@ async def slack_loop():
         client = SocketModeClient(
             app_token=APP_TOKEN,
             web_client=ASYNC_CLIENT,
-            logger=slack_logger  # type: ignore
+            logger=slack_logger,  # type: ignore
+            auto_reconnect_enabled=False
         )
         client.aiohttp_client_session = session
         client.socket_mode_request_listeners.append(listen)  # type: ignore
         try:
             await client.connect()
+            demisto.debug("Socket is connected")
+            # After successful connection, we reset the backoff time.
+            exception_await_seconds = 1
+            demisto.debug(f"Resetting exception wait time to {exception_await_seconds}")
             await asyncio.sleep(float("inf"))
         except Exception as e:
-            await handle_listen_error(f"An error occurred {str(e)}")
+            demisto.debug(f"Exception in long running loop, waiting {exception_await_seconds} - {e}")
+            await asyncio.sleep(exception_await_seconds)
+            exception_await_seconds *= 2
+        finally:
+            try:
+                await client.disconnect()
+            except Exception as e:
+                demisto.debug(f"Failed to close client. - {e}")
 
 
 async def handle_listen_error(error: str):
@@ -1713,15 +1727,14 @@ def handle_tags_in_message_sync(message: str) -> str:
     Returns:
         The tagged slack message
     """
-    matches = re.findall(USER_TAG_EXPRESSION, message)
-    message = re.sub(USER_TAG_EXPRESSION, r'\1', message)
+    matches = re.finditer(USER_TAG_EXPRESSION, message)
     for match in matches:
-        slack_user = get_user_by_name(match)
+        slack_user = get_user_by_name(match.group(1))
         if slack_user:
-            message = message.replace(match, f"<@{slack_user.get('id')}>")
-
+            message = message.replace(match.group(0), f"<@{slack_user.get('id')}>")
+        else:
+            message = re.sub(USER_TAG_EXPRESSION, r'\1', message)
     resolved_message = re.sub(URL_EXPRESSION, r'\1', message)
-
     return resolved_message
 
 
@@ -2435,4 +2448,5 @@ def main() -> None:
 ''' ENTRY POINT '''
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
+    register_signal_handler_profiling_dump(profiling_dump_rows_limit=PROFILING_DUMP_ROWS_LIMIT)
     main()
