@@ -59,6 +59,10 @@ while [[ "$#" -gt 0 ]]; do
     shift
     shift;;
 
+  -o|--override-all-packs) _override_all_packs=true
+    shift
+    shift;;
+
   *)    # unknown option.
     shift;;
   esac
@@ -95,6 +99,12 @@ if [ -n "$_force" ]; then
   _variables="variables[FORCE_BUCKET_UPLOAD]=true"
 fi
 
+if [ -z "$_override_all_packs" ]; then
+  _override_all_packs=false
+else
+  _override_all_packs=true
+fi
+
 source Utils/gitlab_triggers/trigger_build_url.sh
 
 curl --request POST \
@@ -107,4 +117,3 @@ curl --request POST \
   --form "variables[IFRA_ENV_TYPE]=Bucket-Upload" \
   --form "variables[STORAGE_BASE_PATH]=${_storage_base_path}" \
   "$BUILD_TRIGGER_URL"
-
