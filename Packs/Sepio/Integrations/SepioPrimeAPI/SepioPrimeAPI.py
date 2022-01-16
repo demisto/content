@@ -223,7 +223,7 @@ class Client(BaseClient):
         return res
 
     def prime_get_events(self, from_datetime, min_severity, categories, max_results,
-                         to_datetime=None, source=None, peripheral_type=None):
+                         to_datetime=None, source=None, peripheral_type=None, from_eventid=None):
         """Gets Events from Sepio Prime using the '/events/getevents' API endpoint
 
         :type from_datetime: ``str``
@@ -255,11 +255,14 @@ class Client(BaseClient):
         get_events_params = {
             'category': search_category,
             'minimumSeverity': min_severity,
-            'fromDate': from_datetime,
-            'toDate': to_datetime,
             'source': source,
             'peripheralIcon': peripheral_type
         }
+        if from_eventid is None:
+            get_events_params["FromDate"] = from_datetime
+            get_events_params["ToDate"] = to_datetime    
+        else:
+            get_events_params["FromEventId"] = from_eventid
 
         res = self.__prime_get_from_api_retries('/events/getevents', get_events_params, 'date_asc', max_results)
         return res
@@ -1099,13 +1102,14 @@ def fetch_incidents(client, last_run, first_fetch_time, min_serverity, categorie
 
     # Get the last fetch time, if exists
     last_fetch = last_run.get('last_fetch')
+    last_fetch_eventid = last_run.get('last_fetch_eventid')
 
     # Handle first time fetch
     last_fetch_dt = None
     if last_fetch is None:
-        last_fetch_dt = dateparser.parse(first_fetch_time)
+       last_fetch_dt = dateparser.parse(first_fetch_time)
     else:
-        last_fetch_dt = dateparser.parse(last_fetch)
+       last_fetch_dt = dateparser.parse(last_fetch)
 
     last_fetch_timestamp = date_to_timestamp(last_fetch_dt)
 
@@ -1113,7 +1117,7 @@ def fetch_incidents(client, last_run, first_fetch_time, min_serverity, categorie
     max_results = validate_fetch_data_max_result(max_results, MAX_RESULTS_EVENTS, 'limit')
 
     incidents = []
-    items = client.prime_get_events(timestamp_to_datestring(last_fetch_timestamp), min_serverity, categories, max_results)
+    items = client.prime_get_events(timestamp_to_datestring(last_fetch_timestamp), min_serverity, categories, max_results, None, None, None,last_fetch_eventid)
     for item in items:
         item['eventSource'] = SEPIO  # constant for mapping
         incident_created_time = dateparser.parse(item['creationTime'])
@@ -1129,9 +1133,10 @@ def fetch_incidents(client, last_run, first_fetch_time, min_serverity, categorie
 
         # Update last run and add incident if the incident is newer than last fetch
         if incident_created_timestamp > last_fetch_timestamp:
-            last_fetch_timestamp = incident_created_timestamp
-
-    next_run = {'last_fetch': timestamp_to_datestring(last_fetch_timestamp, DATE_FORMAT)}
+            last_fetch_timestamp = incident_created_timestamp    
+    if len(items):
+        last_fetch_eventid = items[0]["eventID"]+1
+    next_run = {'last_fetch': timestamp_to_datestring(last_fetch_timestamp, DATE_FORMAT),'last_fetch_eventid':last_fetch_eventid}
     return next_run, incidents
 
 
