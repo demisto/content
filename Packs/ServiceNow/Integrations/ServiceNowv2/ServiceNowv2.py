@@ -2558,6 +2558,7 @@ def main():
     if version:
         api = f'/api/now/{version}/'
         sc_api = f'/api/sn_sc/{version}/'
+        cr_api = f'/api/sn_chg_rest/{version}/'
     else:
         api = '/api/now/'
         sc_api = '/api/sn_sc/'
