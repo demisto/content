@@ -1,7 +1,15 @@
 #!/usr/bin/env bash
 
 CONTENT_URL='https://github.com/demisto/content.git'
-CURRENT=$(git branch --show-current)
+
+if [ -z "$1" ]
+then
+  CURRENT=$(git branch --show-current)
+  echo $CURRENT
+else
+  CURRENT=$1
+  echo current is $CURRENT
+fi
 
 (
   git remote add upstream_content $CONTENT_URL ||
