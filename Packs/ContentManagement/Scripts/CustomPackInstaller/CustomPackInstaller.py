@@ -6,11 +6,13 @@ from CommonServerPython import *
 SCRIPT_NAME = 'CustomPackInstaller'
 
 
-def install_custom_pack(pack_id: str) -> Tuple[bool, str]:
+def install_custom_pack(pack_id: str, skip_verify: bool, skip_validation: bool) -> Tuple[bool, str]:
     """Installs a custom pack in the machine.
 
     Args:
         pack_id (str): The ID of the pack to install.
+        skip_verify (bool): If true will skip pack signature validation.
+        skip_validation (bool) if true will skip all pack validations.
 
     Returns:
         - bool. Whether the installation of the pack was successful or not.
@@ -32,10 +34,18 @@ def install_custom_pack(pack_id: str) -> Tuple[bool, str]:
             pack_file_entry_id = file_in_context['EntryID']
             break
 
+    uri = '/contentpacks/installed/upload'
+
+    if skip_verify == 'true' and is_demisto_version_ge('6.5.0'):
+        uri = f'{uri}?skipVerify=true'
+
+    if skip_validation == 'true' and is_demisto_version_ge('6.6.0'):
+        uri = f'{uri}&skipValidation=true' if '?' in uri else f'{uri}?skipValidation=true'
+
     if pack_file_entry_id:
         status, res = execute_command(
             'demisto-api-multipart',
-            {'uri': '/contentpacks/installed/upload', 'entryID': pack_file_entry_id},
+            {'uri': uri, 'entryID': pack_file_entry_id},
             fail_on_error=False,
         )
 
@@ -55,9 +65,11 @@ def install_custom_pack(pack_id: str) -> Tuple[bool, str]:
 def main():
     args = demisto.args()
     pack_id = args.get('pack_id')
+    skip_verify = args.get('skip_verify')
+    skip_validation = args.get('skip_validation')
 
     try:
-        installation_status, error_message = install_custom_pack(pack_id)
+        installation_status, error_message = install_custom_pack(pack_id, skip_verify, skip_validation)
 
         return_results(
             CommandResults(
