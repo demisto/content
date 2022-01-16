@@ -35,7 +35,7 @@ Please refer to the video tutorial [found here](https://live.paloaltonetworks.co
 
 ### Caching
 
-When the `Disable Caching` parameter is configured, there are no pagination calls made to Slack. This is to avoid rate limiting which can occur in workspaces where there are excessive amounts of channels or users. If a command worked for you prior to version 2.3.0, please try disabling the `Disable Caching` parameter.
+When the `Disable Caching of Users and Channels` parameter is configured, there are no pagination calls made to Slack. This is to avoid rate limiting which can occur in workspaces where there are excessive amounts of channels or users. If there were no timeout issues with running commands on your environment prior to pack version 2.3.0, there is no direct need to enable this mode.
 
 Additionally. with the `Common Channels` parameter configured, channels, and their ID's found in this parameter will be accessible to the integration to use while caching is disabled.
 

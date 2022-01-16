@@ -125,7 +125,7 @@ def get_current_utc_time() -> datetime:
 def format_user_not_found_error(user: str) -> str:
     err_str = f'User {user} not found in Slack'
     if DISABLE_CACHING:
-        err_str += ' and Disable Caching is enabled. While caching is disabled, it is advised to perform actions using' \
+        err_str += ' and Disable Caching of Users and Channels is enabled. While caching is checked, it is advised to perform actions using' \
                    ' a users email. If this command worked previously for you, you may try disabling the Disable Caching' \
                    ' parameter from the instance configuration, however, this is not recommended. Please refer to ' \
                    'https://xsoar.pan.dev/docs/reference/integrations/slack-v3#caching for more details.'
@@ -234,7 +234,7 @@ def paginated_search_for_user(user_to_search: str):
         demisto.debug(f"User {user_to_search} was found.")
         return format_user_results(user)
     else:
-        demisto.debug(format_user_not_found_error(user=user_to_search))
+        demisto.info(format_user_not_found_error(user=user_to_search))
         return {}
 
 
@@ -423,7 +423,7 @@ def send_slack_request_sync(client: slack_sdk.WebClient, method: str, http_verb:
             response = api_error.response
             headers = response.headers  # type: ignore
             if 'Retry-After' in headers:
-                demisto.debug(f'Got rate limit error (sync). Body is: {str(body)}\n{api_error}')
+                demisto.info(f'Got rate limit error (sync). Body is: {str(body)}\n{api_error}')
                 retry_after = int(headers['Retry-After'])
                 total_try_time += retry_after
                 if total_try_time < MAX_LIMIT_TIME:
@@ -2370,7 +2370,7 @@ def init_globals(command_name: str = ''):
     # Formats the error message for the 'Channel Not Found' errors
     error_str = 'The channel was not found'
     if DISABLE_CACHING:
-        error_str += ' and caching is disabled. While caching is disabled, please use the `channel_id` argument, or configure' \
+        error_str += ' and Disable Caching of Users and Channels is checked. While caching is disabled, please use the `channel_id` argument, or configure' \
                      ' the Common Channels parameter. If this command worked for you previously consider enabling ' \
                      'caching. However, note that it is recommended to Disable Caching. Please refer to ' \
                      'https://xsoar.pan.dev/docs/reference/integrations/slack-v3#caching for more details.'
