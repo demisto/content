@@ -121,7 +121,9 @@ def main(args):
             'healthcheckdockerrunning': dataset['Running'],
             'healthcheckdockerpaused': dataset['Paused'],
             'healthcheckdockerstop': dataset['Stopped'],
-            'healthcheckdockerversion': dataset['Server Version']
+            'healthcheckdockerversion': dataset['Server Version'],
+            'healthcheckdockercontainersstats': container_array,
+            'healthcheckdockerimages': image_array
         })
 
     return CommandResults(
