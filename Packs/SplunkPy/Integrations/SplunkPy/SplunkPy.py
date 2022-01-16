@@ -2496,10 +2496,11 @@ def get_connection_args():
     Returns: connection args
     """
     params = demisto.params()
+    app = params.get('app', '-')
     connection_args = {
         'host': params['host'],
         'port': params['port'],
-        'app': params.get('app', '-'),
+        'app': '-' if not app else app,
         'verify': VERIFY_CERTIFICATE
     }
 
