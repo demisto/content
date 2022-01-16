@@ -989,11 +989,15 @@ def get_packs_depends_on(packs_list, artifacts_path):
     query_list = [
         'demisto-sdk',
         'find-dependencies',
+        '--get-dependent-on',
         '-o',
         f'{artifacts_path}/packs_dependent_on.json',
         '-idp',
         f'{artifacts_path}/id_set.json']
-    query_list.extend([pack_tuple_item for pack in packs_list for pack_tuple_item in ('--get-dependent-on', pack.name)])
+    query_list.extend([pack_tuple_item for pack in packs_list for pack_tuple_item in
+                       ('-i', os.path.join('Pack', pack.name))])
+    # TODO: remove, intended for dev purposes
+    logging.info('Calliing: ' + ' '.join(query_list))
     subprocess.check_call(query_list, stderr=subprocess.STDOUT)
     packs_dependent_on_path = subprocess.check_output(['echo', '$ARTIFACTS_FOLDER/packs_dependent_on.json'])
     with open(packs_dependent_on_path) as f:
