@@ -447,6 +447,11 @@ The following permissions are required for all commands:
       <td>A comma separated list of CIDs to embed attachments within the email.</td>
       <td>Optional</td>
     </tr>
+    <tr>
+      <td>from</td>
+      <td>The email address from which to reply.</td>
+      <td>Optional</td>
+    </tr>
   </tbody>
 </table>
 
