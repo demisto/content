@@ -51,4 +51,7 @@ ATOMs
 AlienVault
 BitcoinAbuse
 BruteForceBlocker
+NetwitnessSearch
+NetwitnessQuery
+Deprecated
 SQS
