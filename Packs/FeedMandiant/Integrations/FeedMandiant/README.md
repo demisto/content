@@ -15,6 +15,7 @@ Mandiant Feed Integration.
     | Feed Fetch Interval |  | False |
     | Public Key |  | True |
     | Secret Key |  | True |
+    | feedExpirationInterval | The interval after which the feed expires. | False |
     | feedExpirationPolicy | The feed's expiration policy. | False |
     | Mandiant indicator type | The indicators' type to fetch. Indicator type might include the following: Domains, IPs, Files and URLs. | False |
     | First fetch time | The maximum value allowed is 90 days. | False |
