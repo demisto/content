@@ -146,7 +146,9 @@ def options_handler():
     """
     parser = argparse.ArgumentParser(description="Downloads XSOAR packs as zip and their latest docker images as tar.")
     parser.add_argument('-p', '--packs',
-                        help="Comma separated list of pack names as they appear in https://xsoar.pan.dev/marketplace",
+                        help="A list of pack names as they appear in https://xsoar.pan.dev/marketplaceEither provided "
+                             "via a path to a file that contains the packs list (separated by new lines) or "
+                             "a string of comma separated packs (e.g. Base,AutoFocus)",
                         required=True)
     parser.add_argument('-o', '--output_path',
                         help="The path where the files will be saved to.",
@@ -167,7 +169,14 @@ def options_handler():
 def main():
     options = options_handler()
     output_path = options.output_path
-    pack_display_names = options.packs.split(',')
+    packs = options.packs
+    if os.path.isfile(packs):
+        pack_display_names = []
+        with open(packs) as file:
+            for line in file:
+                pack_display_names.append(line.rstrip())
+    else:
+        pack_display_names = packs.split(',')
     verify_ssl = not options.insecure
     id_set_json = load_bucket_id_set(verify_ssl)
     pack_names = get_pack_names(pack_display_names, id_set_json)
