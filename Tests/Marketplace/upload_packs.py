@@ -985,14 +985,14 @@ def prepare_and_zip_pack(pack, signature_key, delete_test_playbooks=True):
     return True
 
 
-def get_packs_depends_on(packs_list):
+def get_packs_depends_on(packs_list, artifacts_path):
     query_list = [
         'demisto-sdk',
         'find-dependencies',
         '-o',
-        '$ARTIFACTS_FOLDER/packs_dependent_on.json',
+        f'{artifacts_path}/packs_dependent_on.json',
         '-idp',
-        '$ARTIFACTS_FOLDER/id_set.json']
+        f'{artifacts_path}/id_set.json']
     query_list.extend([pack_tuple_item for pack in packs_list for pack_tuple_item in ('--get-dependent-on', pack.name)])
     subprocess.check_call(query_list, stderr=subprocess.STDOUT)
     packs_dependent_on_path = subprocess.check_output(['echo', '$ARTIFACTS_FOLDER/packs_dependent_on.json'])
@@ -1004,10 +1004,10 @@ def get_packs_depends_on(packs_list):
 
 
 def upload_packs_with_dependencies_zip(extract_destination_path, packs_dependencies_mapping, packs_list, signature_key,
-                                       storage_bucket, storage_base_path):
+                                       storage_bucket, storage_base_path, artifacts_path):
     logging.info("Starting to collect pack with dependencies zips")
     # add depends on packs
-    packs_list.extend(get_packs_depends_on(packs_list))
+    packs_list.extend(get_packs_depends_on(packs_list, artifacts_path))
     full_deps_graph = {}
     packs_dict = {pack.name: pack for pack in packs_list}
     try:
@@ -1273,8 +1273,9 @@ def main():
 
     if is_create_dependencies_zip:
         # handle packs with dependencies zip
+        artifacts_path = Path(packs_artifacts_path).parent.absolute()
         upload_packs_with_dependencies_zip(extract_destination_path, packs_dependencies_mapping, packs_list,
-                                           signature_key, storage_bucket, storage_base_path)
+                                           signature_key, storage_bucket, storage_base_path, artifacts_path)
 
 
 if __name__ == '__main__':
