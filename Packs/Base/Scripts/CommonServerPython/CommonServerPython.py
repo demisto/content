@@ -8621,7 +8621,7 @@ def get_message_local_vars():
     local_vars = list(locals().items())
     ret_value = '\n\n--- Start Local Vars ---\n\n'
     for current_local_var in local_vars:
-        ret_value += shorten_string_for_printing(str(current_local_var), 64) + '\n'
+        ret_value += shorten_string_for_printing(str(current_local_var)) + '\n'
 
     ret_value += '\n--- End Local Vars ---\n\n'
 
@@ -8717,7 +8717,7 @@ def get_message_global_vars():
     ret_value += 'Size\t\tName\t\tValue\n'
     for current_global in globals_sorted_by_size[:PROFILING_DUMP_ROWS_LIMIT]:
         ret_value += '{}\t\t{}\t\t{}\n'.format(current_global["size"], current_global["name"],
-                                               shorten_string_for_printing(str(current_global["value"]), 64))
+                                               shorten_string_for_printing(str(current_global["value"])))
     ret_value += '\n--- End Top {} Globals by Size ---\n'.format(PROFILING_DUMP_ROWS_LIMIT)
 
     return ret_value
@@ -8749,7 +8749,7 @@ def get_message_modules_sizes():
     ret_value += 'Size\t\tName\t\tValue\n'
     for current_global in globals_sorted_by_size[:PROFILING_DUMP_ROWS_LIMIT]:
         ret_value += '{}\t\t{}\t\t{}\n'.format(current_global["size"], current_global["name"],
-                                               shorten_string_for_printing(str(current_global["value"]), 64))
+                                               shorten_string_for_printing(str(current_global["value"])))
     ret_value += '\n--- End Top {} Modules by Size ---\n'.format(PROFILING_DUMP_ROWS_LIMIT)
 
     return ret_value
@@ -8802,7 +8802,7 @@ def register_signal_handler_profiling_dump(signal_type=None, profiling_dump_rows
         demisto.info('Not a Linux or Mac OS, profiling using a signal is not supported.')
 
 
-def shorten_string_for_printing(source_string, max_length):
+def shorten_string_for_printing(source_string, max_length=64):
     """
     Function that removes the middle of a long str, for printint or logging.
     If needed, it will replace the middle with '...',
@@ -8814,7 +8814,7 @@ def shorten_string_for_printing(source_string, max_length):
     :param source_string: A long str that needs shortening.
 
     :type max_length: ``int``
-    :param max_length: Maximum length of the returned str, should be higher than 0.
+    :param max_length: Maximum length of the returned str, should be higher than 0. Default is 64.
 
     :return:: A string no longer than max_length.
     :rtype: ``str``
