@@ -65,13 +65,13 @@ def test_invalid_loc(loc, mocker):
         import ShowLocationOnMap  # noqa: F401
 
 
-def test_no_indicator_field_in_demisto_args(mocker):
+def test_none_indicator_value(mocker):
     """
     Given:
-    - Demisto args with without indicator key.
+    - Demisto args with None indicator value.
 
     When:
-    - Parsing them into lat and lng separately.
+    - Trying to parse it into lat and lng separately.
 
     Then:
     - Ensure return error is called.
