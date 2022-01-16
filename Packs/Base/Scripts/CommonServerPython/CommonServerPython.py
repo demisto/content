@@ -8806,9 +8806,13 @@ def shorten_string_for_printing(source_string, max_length=64):
     """
     Function that removes the middle of a long str, for printint or logging.
     If needed, it will replace the middle with '...',
-    e.g. shorten_string_for_printing('123456789', 9) -> '123456789'
-    e.g. shorten_string_for_printing('1234567890', 9) -> 'abc...890'
-    e.g. shorten_string_for_printing('123456789012', 10) -> '1234...012'
+    Examples:
+    >>> shorten_string_for_printing('123456789', 9)
+    '123456789'
+    >>> shorten_string_for_printing('1234567890', 9)
+    'abc...890'
+    >>> shorten_string_for_printing('123456789012', 10)
+    '1234...012'
 
     :type source_string: ``str``
     :param source_string: A long str that needs shortening.
