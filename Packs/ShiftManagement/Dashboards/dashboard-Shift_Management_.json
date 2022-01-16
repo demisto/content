@@ -31,22 +31,21 @@
                 "itemVersion": "1.2.1",
                 "fromServerVersion": "5.5.0",
                 "toServerVersion": "",
-                "propagationLabels": [
-
-                ],
+                "propagationLabels": [],
                 "packPropagationLabels": [
                     "all"
                 ],
+                "definitionId": "",
                 "vcShouldIgnore": false,
                 "vcShouldKeepItemLegacyProdMachine": false,
                 "commitMessage": "",
                 "shouldCommit": false,
+                "Cache": null,
                 "name": "Out of office users",
                 "prevName": "Out of office users",
                 "dataType": "scripts",
                 "widgetType": "text",
                 "query": "GetUsersOOO",
-                "sort": null,
                 "isPredefined": true,
                 "description": "Details of the users that are currently out of office",
                 "dateRange": {
@@ -63,14 +62,14 @@
                     "fromDateLicense": "0001-01-01T00:00:00Z"
                 },
                 "params": null,
-                "size": 0,
                 "category": ""
-            }
+            },
+            "reflectDimensions": false
         },
         {
             "id": "19969900-656e-11eb-9cda-0739334e539c",
             "forceRange": false,
-            "x": 0,
+            "x": 4,
             "y": 7,
             "i": "19969900-656e-11eb-9cda-0739334e539c",
             "w": 4,
@@ -84,22 +83,21 @@
                 "itemVersion": "1.2.1",
                 "fromServerVersion": "5.5.0",
                 "toServerVersion": "",
-                "propagationLabels": [
-
-                ],
+                "propagationLabels": [],
                 "packPropagationLabels": [
                     "all"
                 ],
+                "definitionId": "",
                 "vcShouldIgnore": false,
                 "vcShouldKeepItemLegacyProdMachine": false,
                 "commitMessage": "",
                 "shouldCommit": false,
+                "Cache": null,
                 "name": "On-Call Hours Per User",
                 "prevName": "On-Call Hours Per User",
                 "dataType": "scripts",
                 "widgetType": "bar",
                 "query": "GetOnCallHoursPerUser",
-                "sort": null,
                 "isPredefined": true,
                 "description": "Displays number of on-call hours per user.",
                 "dateRange": {
@@ -116,9 +114,9 @@
                     "fromDateLicense": "0001-01-01T00:00:00Z"
                 },
                 "params": null,
-                "size": 0,
                 "category": ""
-            }
+            },
+            "reflectDimensions": false
         },
         {
             "id": "3bd1df70-656e-11eb-9cda-0739334e539c",
@@ -137,22 +135,21 @@
                 "itemVersion": "1.2.1",
                 "fromServerVersion": "5.5.0",
                 "toServerVersion": "",
-                "propagationLabels": [
-
-                ],
+                "propagationLabels": [],
                 "packPropagationLabels": [
                     "all"
                 ],
+                "definitionId": "",
                 "vcShouldIgnore": false,
                 "vcShouldKeepItemLegacyProdMachine": false,
                 "commitMessage": "",
                 "shouldCommit": false,
+                "Cache": null,
                 "name": "Roles Per Shift",
                 "prevName": "Roles Per Shift",
                 "dataType": "scripts",
                 "widgetType": "text",
                 "query": "GetRolesPerShift",
-                "sort": null,
                 "isPredefined": true,
                 "description": "Roles per shift 24x7",
                 "dateRange": {
@@ -169,9 +166,9 @@
                     "fromDateLicense": "0001-01-01T00:00:00Z"
                 },
                 "params": null,
-                "size": 0,
                 "category": ""
-            }
+            },
+            "reflectDimensions": false
         },
         {
             "id": "7b2878f0-656e-11eb-9cda-0739334e539c",
@@ -190,22 +187,21 @@
                 "itemVersion": "1.2.1",
                 "fromServerVersion": "5.5.0",
                 "toServerVersion": "",
-                "propagationLabels": [
-
-                ],
+                "propagationLabels": [],
                 "packPropagationLabels": [
                     "all"
                 ],
+                "definitionId": "",
                 "vcShouldIgnore": false,
                 "vcShouldKeepItemLegacyProdMachine": false,
                 "commitMessage": "",
                 "shouldCommit": false,
+                "Cache": null,
                 "name": "Shift changes in",
                 "prevName": "Shift changes in",
                 "dataType": "scripts",
                 "widgetType": "duration",
                 "query": "TimeToNextShift",
-                "sort": null,
                 "isPredefined": true,
                 "description": "Shows how much time left for the shift to ends.",
                 "dateRange": {
@@ -222,9 +218,9 @@
                     "fromDateLicense": "0001-01-01T00:00:00Z"
                 },
                 "params": null,
-                "size": 0,
                 "category": ""
-            }
+            },
+            "reflectDimensions": false
         },
         {
             "id": "8e1aefb0-656e-11eb-9cda-0739334e539c",
@@ -243,22 +239,21 @@
                 "itemVersion": "1.2.1",
                 "fromServerVersion": "5.5.0",
                 "toServerVersion": "",
-                "propagationLabels": [
-
-                ],
+                "propagationLabels": [],
                 "packPropagationLabels": [
                     "all"
                 ],
+                "definitionId": "",
                 "vcShouldIgnore": false,
                 "vcShouldKeepItemLegacyProdMachine": false,
                 "commitMessage": "",
                 "shouldCommit": false,
+                "Cache": null,
                 "name": "Users On-Call",
                 "prevName": "Users On-Call",
                 "dataType": "scripts",
                 "widgetType": "text",
                 "query": "GetUsersOnCall",
-                "sort": null,
                 "isPredefined": true,
                 "description": "Details of the users that are currently on-call",
                 "dateRange": {
@@ -275,9 +270,59 @@
                     "fromDateLicense": "0001-01-01T00:00:00Z"
                 },
                 "params": null,
-                "size": 0,
                 "category": ""
-            }
+            },
+            "reflectDimensions": false
+        },
+        {
+            "id": "ae091f00-6cb0-11ec-abd7-5fe04def6eef",
+            "forceRange": false,
+            "x": 0,
+            "y": 7,
+            "i": "ae091f00-6cb0-11ec-abd7-5fe04def6eef",
+            "w": 4,
+            "h": 3,
+            "widget": {
+                "id": "902948b9-dd73-4341-8000-959700b6252c",
+                "version": 1,
+                "modified": "2022-01-03T16:17:41.678746592Z",
+                "sortValues": null,
+                "packID": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "definitionId": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "Cache": null,
+                "name": "AwayUsers",
+                "prevName": "AwayUsers",
+                "dataType": "scripts",
+                "widgetType": "text",
+                "query": "GetAwayUsers",
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "",
+                        "toValue": null,
+                        "fromValue": null,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {},
+                "category": ""
+            },
+            "reflectDimensions": true
         }
     ],
     "fromVersion": "6.0.0",

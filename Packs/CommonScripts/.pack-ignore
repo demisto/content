@@ -22,10 +22,10 @@ ignore=SC105
 [file:GetFieldsByIncidentType.yml]
 ignore=SC105
 
-[file:script-ShowScheduledEntries.yml]
+[file:ShowScheduledEntries.yml]
 ignore=SC105
 
-[file:script-generateSummaryReport.yml]
+[file:GenerateInvestigationSummaryReport.yml]
 ignore=SC105
 
 [file:script-hideFieldsOnNewIncident.yml]
@@ -37,10 +37,7 @@ ignore=BA109
 [file:README.md]
 ignore=RM106
 
-[file:script-TimeStampToDate_README.md]
-ignore=RM106
-
-[file:script-ExampleJSScript.yml]
+[file:ExampleJSScript.yml]
 ignore=BA110
 
 [file:script-PCAPMiner_README.md]
@@ -61,6 +58,11 @@ ignore=SC106
 [file:ExtractIndicatorsFromTextFile.yml]
 ignore=SC106
 
-[file:script-DBotClosedIncidentsPercentage.yml]
+[file:DBotClosedIncidentsPercentage.yml]
 ignore=SC106
 
+[file:DeleteContext.yml]
+ignore=SC106
+
+[file:ReadPDFFileV2.yml]
+ignore=SC106

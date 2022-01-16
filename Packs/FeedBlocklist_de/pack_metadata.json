@@ -2,7 +2,7 @@
     "name": "BlockList DE Feed",
     "description": "Indicators feed from BlockList DE",
     "support": "xsoar",
-    "currentVersion": "1.1.9",
+    "currentVersion": "1.1.12",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
