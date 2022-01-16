@@ -921,7 +921,7 @@ script:
     - contextPath: STA.USER.SESSION.DELETED
       description: Returns true, if all the user SSO sessions deleted successfully.
       type: boolean
-  dockerimage: demisto/python3:3.10.1.25933
+  dockerimage: demisto/python3:3.9.8.24399
   runonce: false
   script: ''
   subtype: python3
