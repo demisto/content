@@ -59,7 +59,7 @@ def test_create_content_item_id_set():
                        'mock_integration_2': {'name': 'mock_integration_2', 'file_path': 'Packs/mock_pack_2/',
                                               'source': ['code.pan.run', 'xsoar', 'content'], 'fromversion': '5.0.0',
                                               'pack': 'mock_pack2', 'tests': ['No tests']}}
-    assert create_content_item_id_set(MOCK_ID_SET['integrations']) == expected_output
+    assert create_content_item_id_set(MOCK_ID_SET['integrations']) == expected_output  # type: ignore
 
 
 def test_create_content_item_id_set_empty():
@@ -72,7 +72,7 @@ def test_create_content_item_id_set_empty():
     Then:
         - return an empty dict
     """
-    mock_id_set_item = []
+    mock_id_set_item: list = []
     assert create_content_item_id_set(mock_id_set_item) == {}
 
 
@@ -106,7 +106,7 @@ def test_get_docker_images_with_tag_invalid(mock_print):
         - assert print warns pack wasn't found
         - return empty set
     """
-    expected_docker_image = set()
+    expected_docker_image: set = set()
     actual_docker_images = get_docker_images_with_tag({'d_no_pack': 'no_pack'}, MOCK_ID_SET)
     mock_print.assert_called_with('\tPack d_no_pack was not found in id_set.json.')
     assert actual_docker_images == expected_docker_image
