@@ -1,6 +1,6 @@
 from CommonServerPython import *
 
-loc = demisto.get(demisto.args()['indicator'], "CustomFields.geolocation")
+loc = demisto.get(demisto.args().get('indicator') or {}, "CustomFields.geolocation")
 if loc and isinstance(loc, str):
     loc = loc.strip()
 err_msg = "No location data was available"
