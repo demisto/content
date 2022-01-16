@@ -101,14 +101,14 @@ configuration:
   name: enable_dm
   required: false
   type: 8
-- display: Safe Mode
-  additionalinfo: The Safe Mode parameter prevents this integration from storing Users and Channels into the integration
+- display: Enable Caching of Users and Channels
+  additionalinfo: This parameter prevents this integration from storing Users and Channels into the integration
     context. This parameter also prevents paginated calls which can result in timeout errors for large workspaces.
   hidden: false
-  name: safe_mode
+  name: disable_caching
   required: false
   type: 8
-  defaultvalue: true
+  defaultvalue: false
 - display: Common Channels
   name: common_channels
   type: 12

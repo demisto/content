@@ -29,15 +29,15 @@ Please refer to the video tutorial [found here](https://live.paloaltonetworks.co
     | `filtered_tags` | Comma-separated list of tags by which to filter the messages sent from XSOAR. Only supported in Cortex XSOAR V6.1 and above. | False |
     | `permitted_notifications` | Types of Notifications to send in the dedicated channel. | False |
     | `common_channels` | For workspaces where a handful of channels are consistently being used, you may add them as a CSV in the format ChannelName:ChannelID. | False |
-    | `safe_mode` | When enabled, Safe Mode will prevent the integration from paginating to search for Users or Conversations. Additionally, it will prevent excess data from being stored to the integration context. If this parameter is disabled, the instance may create high memory usage. | False |
+    | `disable_caching` | When configured, Disable Caching will prevent the integration from paginating to search for Users or Conversations. Additionally, it will prevent excess data from being stored to the integration context. If this parameter is disabled, the instance may create high memory usage. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
-### Safe Mode
+### Caching
 
-When Safe Mode is enabled, there are no pagination calls made to Slack. This is to avoid rate limiting which can occur in workspaces where there are excessive amounts of channels or users. If a command worked for you prior to version 2.3.0, please try disabling the Safe Mode parameter.
+When the `Disable Caching` parameter is configured, there are no pagination calls made to Slack. This is to avoid rate limiting which can occur in workspaces where there are excessive amounts of channels or users. If a command worked for you prior to version 2.3.0, please try disabling the `Disable Caching` parameter.
 
-Safe Mode introduces the use of the `Common Channels` parameter. When configured, channels, and their ID's found in this parameter will be accessible to the integration to use while in Safe Mode.
+Additionally. with the `Common Channels` parameter configured, channels, and their ID's found in this parameter will be accessible to the integration to use while caching is disabled.
 
 #### Finding a Channel ID
 `Common Channels` follows the format, `First ChannelName:FirstChannelID, Second ChannelName:SecondChannelID`. To find the channel ID for the channels that are frequently used, please refer to the following steps:

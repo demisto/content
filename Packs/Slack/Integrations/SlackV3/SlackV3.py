@@ -77,7 +77,7 @@ PAGINATED_COUNT: int
 ENABLE_DM: bool
 PERMITTED_NOTIFICATION_TYPES: List[str]
 COMMON_CHANNELS: dict
-SAFE_MODE: bool
+DISABLE_CACHING: bool
 CHANNEL_NOT_FOUND_ERROR_MSG: str
 
 ''' HELPER FUNCTIONS '''
@@ -124,11 +124,11 @@ def get_current_utc_time() -> datetime:
 
 def format_user_not_found_error(user: str) -> str:
     err_str = f'User {user} not found in Slack'
-    if SAFE_MODE:
-        err_str += ' and Safe Mode is enabled. While in Safe Mode, it is advised to perform actions using a users email.' \
-                   ' If this command worked previously for you, you may try disabling Safe Mode from the instance ' \
-                   'configuration, however, this is not recommended. Please refer to ' \
-                   'https://xsoar.pan.dev/docs/reference/integrations/slack-v3#safe-mode for more details.'
+    if DISABLE_CACHING:
+        err_str += ' and Disable Caching is enabled. While caching is disabled, it is advised to perform actions using' \
+                   ' a users email. If this command worked previously for you, you may try disabling the Disable Caching' \
+                   ' parameter from the instance configuration, however, this is not recommended. Please refer to ' \
+                   'https://xsoar.pan.dev/docs/reference/integrations/slack-v3#caching for more details.'
     return err_str
 
 
@@ -202,7 +202,7 @@ def add_user_to_context(user: dict, integration_context=None):
 
 def paginated_search_for_user(user_to_search: str):
     """
-    When a user cannot be found via the context or users.lookupByEmail, ONLY if SAFE_MODE is disabled, will we attempt
+    When a user cannot be found via the context or users.lookupByEmail, ONLY if DISABLE_CACHING is false, will we attempt
     to paginate through the Slack users.list results. Please note, for large workspaces, this action can exceed the
     timeout limit for the command which triggered it.
 
@@ -258,9 +258,9 @@ def format_user_results(user: dict):
     }
 
 
-def get_user_by_name_safe_mode(user_to_search: str) -> dict:
+def get_user_by_name_caching_disabled(user_to_search: str) -> dict:
     """
-    When the default Safe Mode is enabled, we look for the user by email only.
+    When Disable Caching is true, we look for the user by email only.
 
     Args:
         user_to_search: The user's email
@@ -274,9 +274,9 @@ def get_user_by_name_safe_mode(user_to_search: str) -> dict:
     return user
 
 
-def get_user_by_name_safe_mode_disabled(user_to_search, add_to_context):
+def get_user_by_name_caching_enabled(user_to_search, add_to_context):
     """
-    When Safe Mode is disabled, we look for the user first in the context. If the user is not found, then we proceed to
+    When Disable Caching is false, we look for the user first in the context. If the user is not found, then we proceed to
     search for the user by email, if that fails, then we will search for the user using a paginated call.
 
     Args:
@@ -295,14 +295,14 @@ def get_user_by_name_safe_mode_disabled(user_to_search, add_to_context):
     if not user and re.match(emailRegex, user_to_search):
         demisto.debug(f"Checking via API for email of {user_to_search}")
         user = get_user_by_email(user_to_search)
-        if user and (add_to_context or not SAFE_MODE):
+        if user and (add_to_context or not DISABLE_CACHING):
             integration_context = get_integration_context(SYNC_CONTEXT)
             add_user_to_context(user=user, integration_context=integration_context)
     if not user:
-        demisto.debug(f"Couldn't find {user_to_search} and safe mode is disabled. Checking API")
+        demisto.debug(f"Couldn't find {user_to_search} and caching is disabled. Checking API")
         user = paginated_search_for_user(user_to_search)
         demisto.debug(f"Found {user_to_search} - {user}")
-        if user and (add_to_context or not SAFE_MODE):
+        if user and (add_to_context or not DISABLE_CACHING):
             integration_context = get_integration_context(SYNC_CONTEXT)
             add_user_to_context(user=user, integration_context=integration_context)
     return user
@@ -319,10 +319,10 @@ def get_user_by_name(user_to_search: str, add_to_context: bool = True) -> dict:
     Returns:
         A slack user object
     """
-    if SAFE_MODE:
-        return get_user_by_name_safe_mode(user_to_search=user_to_search)
+    if DISABLE_CACHING:
+        return get_user_by_name_caching_disabled(user_to_search=user_to_search)
     else:
-        return get_user_by_name_safe_mode_disabled(user_to_search=user_to_search, add_to_context=add_to_context)
+        return get_user_by_name_caching_enabled(user_to_search=user_to_search, add_to_context=add_to_context)
 
 
 def search_slack_users(users: Union[list, str]) -> list:
@@ -716,7 +716,7 @@ def mirror_investigation():
 
     mirrors.append(mirror)
 
-    if SAFE_MODE:
+    if DISABLE_CACHING:
         set_to_integration_context_with_retries({'mirrors': mirrors}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
     else:
         if not integration_context or not integration_context.get('conversations', []):
@@ -997,7 +997,7 @@ async def slack_loop():
             exception_await_seconds *= 2
         finally:
             try:
-                await client.disconnect()
+                await session.close()
             except Exception as e:
                 demisto.debug(f"Failed to close client. - {e}")
 
@@ -1337,7 +1337,7 @@ async def get_user_by_id_async(client: AsyncWebClient, user_id: str) -> dict:
         }
         user = (await send_slack_request_async(client, 'users.info', http_verb='GET', body=body)).get('user', {})
 
-    if not SAFE_MODE:
+    if not DISABLE_CACHING:
         users.append(format_user_results(user))
         set_to_integration_context_with_retries({'users': users}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
 
@@ -1448,7 +1448,7 @@ def search_conversation_in_context(conversation_to_search):
 
 def get_conversation_from_api_paginated(conversation_to_search):
     """
-    Searches the Slack API for the conversation. Used only when SAFE_MODE is disabled.
+    Searches the Slack API for the conversation. Used only when DISABLE_CACHING is false.
 
     Args:
         conversation_to_search: The conversation name that we are searching for.
@@ -1488,7 +1488,7 @@ def get_conversation_from_api_paginated(conversation_to_search):
 
 def save_conversation_to_context(conversation):
     """
-    Pulls the context and will insert the conversation. Used only when SAFE_MODE is disabled as it can cause the context
+    Pulls the context and will insert the conversation. Used only when DISABLE_CACHING is false as it can cause the context
     to grow to unsustainable sizes.
 
     Args:
@@ -1510,8 +1510,8 @@ def get_conversation_by_name(conversation_name: str) -> dict:
     Get a slack conversation by its name. Order of operation is:
     1. Check the COMMON_CHANNEL parameter for the conversation
     2. Check the integration context for the conversation
-    3. If SAFE_MODE is disabled, then we will paginate the api
-    4. If SAFE_MODE is disabled, then we will save the results of the pagination to context
+    3. If DISABLE_CACHING is false, then we will paginate the api
+    4. If DISABLE_CACHING is false, then we will save the results of the pagination to context
 
     Args:
         conversation_name: The conversation name
@@ -1526,12 +1526,12 @@ def get_conversation_by_name(conversation_name: str) -> dict:
     if len(COMMON_CHANNELS) > 0:
         conversation = search_conversation_in_params(conversation_to_search)
 
-    if not SAFE_MODE:
-        # Find conversation in the cache if SAFE_MODE is disabled.
+    if not DISABLE_CACHING:
+        # Find conversation in the cache if DISABLE_CACHING is false.
         if not conversation:
             conversation = search_conversation_in_context(conversation_to_search)
 
-        # Find conversation in the api if SAFE_MODE is disabled.
+        # Find conversation in the api if DISABLE_CACHING is false.
         if not conversation:
             conversation = get_conversation_from_api_paginated(conversation_to_search)
             # Save conversation to cache
@@ -1941,8 +1941,8 @@ def slack_send_request(to: str = None, channel: str = None, group: str = None, e
             else:
                 conversation = get_conversation_by_name(destination_name)  # type: ignore
                 if not conversation:
-                    return_error(f'Could not find the Slack conversation {destination_name}. If you\'re using'
-                                 ' Safe Mode, try searching by channel_id')
+                    return_error(f'Could not find the Slack conversation {destination_name}. If caching is disabled,'
+                                 f' try searching by channel_id')
                 conversation_id = conversation.get('id')
 
             if conversation_id:
@@ -2108,7 +2108,7 @@ def create_channel():
         'Name': created_channel_name
     }
 
-    if not SAFE_MODE:
+    if not DISABLE_CACHING:
         # Save it to integration context since we have it
         save_conversation_to_context({'name': created_channel_name, 'id': created_channel_id})
 
@@ -2327,7 +2327,7 @@ def init_globals(command_name: str = ''):
     global BOT_TOKEN, PROXY_URL, PROXIES, DEDICATED_CHANNEL, CLIENT
     global SEVERITY_THRESHOLD, ALLOW_INCIDENTS, INCIDENT_TYPE, VERIFY_CERT, ENABLE_DM
     global BOT_NAME, BOT_ICON_URL, MAX_LIMIT_TIME, PAGINATED_COUNT, SSL_CONTEXT, APP_TOKEN, ASYNC_CLIENT
-    global PERMITTED_NOTIFICATION_TYPES, COMMON_CHANNELS, SAFE_MODE, CHANNEL_NOT_FOUND_ERROR_MSG
+    global PERMITTED_NOTIFICATION_TYPES, COMMON_CHANNELS, DISABLE_CACHING, CHANNEL_NOT_FOUND_ERROR_MSG
 
     VERIFY_CERT = not demisto.params().get('unsecure', False)
     if not VERIFY_CERT:
@@ -2365,15 +2365,15 @@ def init_globals(command_name: str = ''):
         COMMON_CHANNELS = dict(item.split(':') for item in common_channels.split(','))
     else:
         COMMON_CHANNELS = {}
-    SAFE_MODE = demisto.params().get('safe_mode', False)
+    DISABLE_CACHING = demisto.params().get('disable_caching', False)
 
     # Formats the error message for the 'Channel Not Found' errors
     error_str = 'The channel was not found'
-    if SAFE_MODE:
-        error_str += ' and Safe Mode is enabled. While in Safe Mode. Please use the `channel_id` argument, or configure' \
-                     ' the Common Channels parameter. If this command worked for you previously consider disabling ' \
-                     'Safe Mode. However, note that it is recommended to use Safe Mode. Please refer to ' \
-                     'https://xsoar.pan.dev/docs/reference/integrations/slack-v3#safe-mode for more details.'
+    if DISABLE_CACHING:
+        error_str += ' and caching is disabled. While caching is disabled, please use the `channel_id` argument, or configure' \
+                     ' the Common Channels parameter. If this command worked for you previously consider enabling ' \
+                     'caching. However, note that it is recommended to Disable Caching. Please refer to ' \
+                     'https://xsoar.pan.dev/docs/reference/integrations/slack-v3#caching for more details.'
     else:
         error_str += '. Either the Slack app is not a member of the channel, or the slack app does not have permission' \
                      ' to find the channel.'

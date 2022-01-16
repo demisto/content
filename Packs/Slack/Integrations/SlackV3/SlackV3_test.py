@@ -201,8 +201,8 @@ def setup(mocker):
     })
 
     SlackV3.init_globals()
-    # We will manually change the safe mode to ensure it doesn't break previous user's envs.
-    SlackV3.SAFE_MODE = False
+    # We will manually change the caching mode to ensure it doesn't break previous user's envs.
+    SlackV3.ENABLE_CACHING = False
 
 
 class AsyncMock(MagicMock):
@@ -472,7 +472,7 @@ def test_get_user_by_name(mocker):
     assert slack_sdk.WebClient.api_call.call_count == 3
 
 
-def test_get_user_by_name_safe_mode(mocker):
+def test_get_user_by_name_caching_disabled(mocker):
     """
     Given:
         Test Case 1 - User's name only
@@ -495,7 +495,7 @@ def test_get_user_by_name_safe_mode(mocker):
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
     mocker.patch.object(slack_sdk.WebClient, 'api_call', side_effect=[user_1, user_2])
 
-    SlackV3.SAFE_MODE = True
+    SlackV3.DISABLE_CACHING = True
     # Assert
     # User name exists in integration context
     username = 'spengler'
@@ -2147,7 +2147,7 @@ def test_send_request_channel_id(mocker):
     assert channel_id_file_res == 'neat'
 
 
-def test_send_request_safe_mode(mocker, capfd):
+def test_send_request_caching_disabled(mocker, capfd):
     import SlackV3
 
     # Set
@@ -2167,7 +2167,7 @@ def test_send_request_safe_mode(mocker, capfd):
     mocker.patch.object(SlackV3, 'send_message', return_value='cool')
     return_error_mock = mocker.patch(RETURN_ERROR_TARGET, side_effect=InterruptedError())
 
-    SlackV3.SAFE_MODE = True
+    SlackV3.DISABLE_CACHING = True
     # Arrange
 
     channel_id_text_res = SlackV3.slack_send_request(to=None, channel=None, group=None, message='Hi',
@@ -2180,7 +2180,7 @@ def test_send_request_safe_mode(mocker, capfd):
                                        channel_id=None)
     err_msg_1 = return_error_mock.call_args[0][0]
 
-    assert err_msg_1 == "Could not find the Slack conversation should-fail. If you're using Safe Mode, try searching by" \
+    assert err_msg_1 == "Could not find the Slack conversation should-fail. If caching is disabled, try searching by" \
                         " channel_id"
 
     with capfd.disabled():
@@ -2189,7 +2189,7 @@ def test_send_request_safe_mode(mocker, capfd):
                                        file_dict={'foo': 'file'})
     err_msg_2 = return_error_mock.call_args[0][0]
 
-    assert err_msg_2 == "Could not find the Slack conversation should-fail. If you're using Safe Mode, try searching by" \
+    assert err_msg_2 == "Could not find the Slack conversation should-fail. If caching is disabled, try searching by" \
                         " channel_id"
 
     channel_id_text_args = SlackV3.send_message.call_args[0]
@@ -2296,7 +2296,7 @@ def test_send_request_with_severity(mocker):
     mocker.patch.object(SlackV3, 'send_message', return_value=SLACK_RESPONSE)
 
     # Arrange
-    SlackV3.SAFE_MODE = False
+    SlackV3.DISABLE_CACHING = False
     SlackV3.slack_send()
 
     send_args = SlackV3.send_message.call_args[0]
@@ -2352,7 +2352,7 @@ def test_send_request_with_notification_channel(mocker):
     mocker.patch.object(SlackV3, 'send_message', return_value=SLACK_RESPONSE)
 
     # Arrange
-    SlackV3.SAFE_MODE = False
+    SlackV3.DISABLE_CACHING = False
     SlackV3.slack_send()
 
     send_args = SlackV3.send_message.call_args[0]
@@ -2406,7 +2406,7 @@ def test_send_request_with_notification_channel_as_dest(mocker, notify):
     mocker.patch.object(SlackV3, 'send_message', return_value=SLACK_RESPONSE)
 
     # Arrange
-    SlackV3.SAFE_MODE = False
+    SlackV3.DISABLE_CACHING = False
     SlackV3.slack_send()
 
     send_args = SlackV3.send_message.call_args[0]
@@ -2691,7 +2691,7 @@ def test_send_request_with_severity_user_doesnt_exist(mocker, capfd):
                                                          'permitted_notifications': ['incidentOpened']})
 
     SlackV3.init_globals()
-    SlackV3.SAFE_MODE = False
+    SlackV3.DISABLE_CACHING = False
     # Set
 
     def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
@@ -3386,7 +3386,7 @@ def test_kick_users_no_channel(mocker):
     mocker.patch.object(demisto, 'results')
 
     # Arrange
-    SlackV3.SAFE_MODE = False
+    SlackV3.DISABLE_CACHING = False
     SlackV3.kick_from_channel()
 
     send_args = SlackV3.kick_users_from_conversation.call_args[0]
@@ -3560,7 +3560,7 @@ def test_get_user_by_name_paging_rate_limit(mocker):
 
     # Set
     SlackV3.init_globals()
-    SlackV3.SAFE_MODE = False
+    SlackV3.DISABLE_CACHING = False
     err_response: SlackResponse = SlackResponse(api_url='', client=None, http_verb='GET', req_args={},
                                                 data={'ok': False}, status_code=429, headers={'Retry-After': 30})
     first_call = {'members': js.loads(USERS), 'response_metadata': {'next_cursor': 'dGVhbTpDQ0M3UENUTks='}}
@@ -3595,7 +3595,7 @@ def test_get_user_by_name_paging_rate_limit_error(mocker):
 
     # Set
     SlackV3.init_globals()
-    SlackV3.SAFE_MODE = False
+    SlackV3.DISABLE_CACHING = False
     err_response: SlackResponse = SlackResponse(api_url='', client=None, http_verb='GET', req_args={},
                                                 data={'ok': False}, status_code=429, headers={'Retry-After': 40})
     first_call = {'members': js.loads(USERS), 'response_metadata': {'next_cursor': 'dGVhbTpDQ0M3UENUTks='}}
@@ -3626,7 +3626,7 @@ def test_get_user_by_name_paging_normal_error(mocker):
 
     # Set
     SlackV3.init_globals()
-    SlackV3.SAFE_MODE = False
+    SlackV3.DISABLE_CACHING = False
     err_response: SlackResponse = SlackResponse(api_url='', client=None, http_verb='GET', req_args={},
                                                 data={'ok': False}, status_code=500, headers={})
     first_call = {'members': js.loads(USERS), 'response_metadata': {'next_cursor': 'dGVhbTpDQ0M3UENUTks='}}
