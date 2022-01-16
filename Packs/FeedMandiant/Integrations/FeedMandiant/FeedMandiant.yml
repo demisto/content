@@ -115,8 +115,8 @@ configuration:
   name: feedBypassExclusionList
   required: false
   type: 8
-- additionalinfo: Retrieve additional information for each indicator. Note
-    that this requires additional API calls.
+- additionalinfo: Retrieve additional information for each indicator. Note that this
+    requires additional API calls.
   defaultvalue: 'false'
   display: Retrieve indicator metadata
   name: indicatorMetadata
@@ -188,7 +188,7 @@ script:
     description: Get mandiant indicators.
     execution: false
     name: feed-mandiant-get-indicators
-  dockerimage: demisto/python3:3.9.9.25564
+  dockerimage: demisto/python3:3.10.1.25933
   feed: true
   isfetch: false
   longRunning: false
