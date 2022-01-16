@@ -1,9 +1,9 @@
 ## Mandiant Feed
-- Use the Mandiant Feed integration to fetch indicators from Mandiant.
+Use the Mandiant Feed integration to fetch indicators from Mandiant.
 
 ### Login
-- Login is done by using the **Public Key** and **Secret Key** that was given you by Mandiant.
-- **X-App-Name** is a mandatory field, typically a combination of the customer or partners organization name, its application name, and its version. 
+- To log in, use the **Public Key** and **Secret Key** that was given to you by Mandiant.
+- **X-App-Name** is a mandatory field. This value is typically a combination of the customer's or partner's organization name, application name, and version. 
 ### Note
-- Checking the boxes *Retrieve Indicator Metadata* and *Create Relationships* will cause additional API calls to retrieve additional data, it is advised to limit the number of indicators in order to prevent system overload.
+- Checking the *Retrieve Indicator Metadata* and *Create Relationships* boxes will cause additional API calls to retrieve additional data. Palo Alto recommends limiting the number of indicators in order to prevent system overload.
 - Creating relationships could create additional indicators.
