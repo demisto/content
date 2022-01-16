@@ -8647,6 +8647,15 @@ def get_size_of_object(input_object):
     _seen_ids = set()
 
     def inner(obj, level):
+        """
+        A recursion that goes deep into objects, to calculate their deep memory footprint.
+
+        :type level: ``int``
+        :param level: Current level of the recursion (object)
+
+        :return: Size of obj in bytes.
+        :rtype: ``int``
+        """
         if level == MAX_LEVEL:
             # Stop at MAX_LEVEL
             return sys.getsizeof(obj)
