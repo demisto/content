@@ -42,7 +42,7 @@ def download_cloud_init_logs_from_server(ip: str) -> None:
     cloud_init_log_path = '/var/log/cloud-init-output.log'
     try:
         # downloading cloud-init logs to artifacts
-        check_output(f'scp {SSH_USER}@{ip}:{cloud_init_log_path} '
+        check_output(f'gcloud compute scp {SSH_USER}@{ip}:{cloud_init_log_path} '
                      f'{ARTIFACTS_FOLDER}/{ip}-cloud_init.log'.split())
     except Exception:
         logging.exception(f'Could not download cloud-init file from server {ip}.')
@@ -119,11 +119,6 @@ def main():
                 last_update_time = current_time
             if len(instance_ips) > len(ready_ami_list):
                 sleep(1)
-    finally:
-        instance_ips_to_download_log_files = [ami_instance_ip for ami_instance_name, ami_instance_ip, _ in instance_ips if
-                                              ami_instance_name == instance_name_to_wait_on]
-        for ip in instance_ips_to_download_log_files:
-            download_cloud_init_logs_from_server(ip)
 
 
 if __name__ == "__main__":
