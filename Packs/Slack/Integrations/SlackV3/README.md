@@ -49,7 +49,7 @@ Channel IDs typically follow the format `C` + Alphanumeric string.
 
 ![locate-channel-id](../../doc_files/SlackDocs_channel_id.png)
 
-**Warning** - Disabling `Safe Mode` can lead to the integration context becoming too large. This can adversely effect performance.
+**Warning** - While `Disable Caching` parameter is enabled, it can lead to the integration context becoming too large. This can adversely effect performance.
 
 ### Creating a Custom App
 1. Navigate to: https://api.slack.com/apps/ .

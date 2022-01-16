@@ -101,7 +101,7 @@ configuration:
   name: enable_dm
   required: false
   type: 8
-- display: Enable Caching of Users and Channels
+- display: Disable Caching of Users and Channels
   additionalinfo: This parameter prevents this integration from storing Users and Channels into the integration
     context. This parameter also prevents paginated calls which can result in timeout errors for large workspaces.
   hidden: false
