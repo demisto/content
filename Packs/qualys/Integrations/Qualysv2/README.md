@@ -1,4 +1,4 @@
-Qualys Vulnerability Management lets you create, run, fetch and manage reports. Launch and manage vulnerability and compliance scans. Manage the host assets you want to scan for vulnerabilities and compliance
+Qualys Vulnerability Management lets you create, run, fetch and manage reports, launch and manage vulnerability and compliance scans, and manage the host assets you want to scan for vulnerabilities and compliance.
 This integration was integrated and tested with version 2.0 of QualysVulnerabilityManagement
 
 ## Changes compared to V1
@@ -85,8 +85,8 @@ View a list of IP addresses in the user account.
 | ips | Show only certain IP addresses/ranges. | Optional | 
 | network_id | Restrict the request to a certain custom network ID. | Optional | 
 | tracking_method | Show only IP addresses/ranges which have a certain tracking method. Possible values are: IP, DNS, NETBIOS. | Optional | 
-| compliance_enabled | Specify 1 to list compliance IP addresses in the user’s account. These hosts are assigned to the policy compliance module. or 0 to get host that are not. Possible values are: 0, 1. | Optional | 
-| certview_enabled | (Optional) Set to 1 to list IP addresses in the user’s account assigned to the Certificate View module. Specify 0 to list IPs that are not assigned to the Certificate View module. Note - This option will be supported when Certificate View GA is released and is enabled for your account. Possible values are: 0, 1. | Optional | 
+| compliance_enabled | Specify 1 to list compliance IP addresses in the user’s account. These hosts are assigned to the policy compliance module. Specify 0 to get host that are not assigned to the policy compliance module. Possible values are: 0, 1. | Optional | 
+| certview_enabled | (Optional) Specify 1 to list IP addresses in the user’s account assigned to the Certificate View module. Specify 0 to list IP addresses that are not assigned to the Certificate View module. Note - This option will be supported when Certificate View GA is released and is enabled for your account. Possible values are: 0, 1. | Optional | 
 | limit | Specify a positive numeric value to limit the amount of results in the requested list. | Optional | 
 
 
@@ -94,8 +94,8 @@ View a list of IP addresses in the user account.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Qualys.IP.Address | unknown | IP Addresses. | 
-| Qualys.IP.Range | unknown | IP Range. | 
+| Qualys.IP.Address | unknown | IP addresses. | 
+| Qualys.IP.Range | unknown | IP range. | 
 
 
 #### Command Example
@@ -664,7 +664,7 @@ Get a list of compliance scans in your account.
 | Qualys.Scan.SCHEDULE | unknown | Scan Schedule. | 
 | Qualys.Scan.TARGET | unknown | Scan Target. | 
 | Qualys.Scan.ASSET_GROUP_TITLE | unknown | Target Asset Group Title. | 
-| Qualys.Scan.DEFAULT_FLAG | unknown | Scan Deafualt Flag. | 
+| Qualys.Scan.DEFAULT_FLAG | unknown | Scan Default Flag. | 
 | Qualys.Scan.USER_LOGIN | unknown | The user that created the scan. | 
 
 
@@ -19830,7 +19830,7 @@ fetch scan results for a scan
 
 ### qualys-report-cancel
 ***
-Cancel running report
+Cancel the running report.
 
 
 #### Base Command
@@ -19848,7 +19848,7 @@ Cancel running report
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Qualys.Report.ID | String | ID of the canceled report | 
-| Qualys.ScheduleScan.DATETIME | Date | Date of when command was executed. | 
+| Qualys.ScheduleScan.DATETIME | Date | Date the command was executed. | 
 | Qualys.ScheduleScan.TEXT | String | Qualys response for report cancellation. | 
 
 
@@ -19867,7 +19867,6 @@ Cancel running report
     }
 }
 ```
-.``` ```
 
 #### Human Readable Output
 >### Canceled report
@@ -19878,7 +19877,7 @@ Cancel running report
 
 ### qualys-report-delete
 ***
-Delete a saved report in the user’s Report Share
+Delete a saved report in the user’s Report Share.
 
 
 #### Base Command
@@ -19895,9 +19894,9 @@ Delete a saved report in the user’s Report Share
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Qualys.Report.ID | String | Deleted Report ID | 
-| Qualys.ScheduleScan.DATETIME | Date | Date of when command was executed. | 
-| Qualys.ScheduleScan.TEXT | String | Qualys response for report deletion. | 
+| Qualys.Report.ID | String | Deleted report ID. | 
+| Qualys.ScheduleScan.DATETIME | Date | Date the command was executed. | 
+| Qualys.ScheduleScan.TEXT | String | Qualys response for the report deletion. | 
 
 
 #### Command Example
@@ -19926,7 +19925,7 @@ Delete a saved report in the user’s Report Share
 >
 ### qualys-scorecard-launch
 ***
-Launch a vulnerability scorecard report
+Launch a vulnerability scorecard report.
 
 
 #### Base Command
@@ -19959,8 +19958,8 @@ Launch a vulnerability scorecard report
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Qualys.Report.ID | String | Report ID. | 
-| Qualys.ScheduleScan.DATETIME | Date | Date of when command was executed. | 
-| Qualys.ScheduleScan.TEXT | String | Qualys response for scorecard launch. | 
+| Qualys.ScheduleScan.DATETIME | Date | Date the command was executed. | 
+| Qualys.ScheduleScan.TEXT | String | Qualys response for the scorecard launch. | 
 
 
 #### Command Example
@@ -20017,7 +20016,7 @@ Launch a vulnerability scorecard report
 | iscanner_name | Specifies the name of the Scanner Appliance for the map, when the map target has private use internal IPs. Using Express Lite, Internal Scanning must be enabled in your account. | Optional | 
 | default_scanner | Specify 1 to use the default scanner in each target asset group. For an Express Lite user, Internal Scanning must be enabled in the user’s account. Possible values are: 0, 1. | Optional | 
 | scanners_in_ag | Specify 1 to distribute the scan to the target asset groups’ scanner appliances. Appliances in each asset group are tasked with scanning the IPs in the group. By default up to 5 appliances per group will be used and this can be configured for your account (please contact your Account Manager or Support). For an Express Lite user, Internal Scanning must be enabled in the user’s account. Possible values are: 0, 1. | Optional | 
-| scanners_in_tagset | Specify 1 to distribute the scan to scanner appliances that match the asset tags specified for the scan target. One of these parameters must be specified in a request for an internal scan: iscanner_name, iscanner_id, default_scanner, scanners_in_ag, scanners_in_tagset. When none of these are specified, External scanners are used. valid when the target_from=tags is specified. Possible values are: 0, 1. | Optional | 
+| scanners_in_tagset | Specify 1 to distribute the scan to scanner appliances that match the asset tags specified for the scan target. One of these parameters must be specified in a request for an internal scan: iscanner_name, iscanner_id, default_scanner, scanners_in_ag, scanners_in_tagset. When none of these are specified, external scanners are used. Only valid when the target_from=tags is specified. Possible values are: 0, 1. | Optional | 
 | scanners_in_network | Specify 1 to distribute the scan to all scanner appliances in the network. | Optional | 
 | option_title | The title of the compliance option profile to be used. One of these parameters must be specified in a request: option_title or option_id. These are mutually exclusive and cannot be specified in the same request. | Optional | 
 | option_id | The ID of the compliance option profile to be used. One of these parameters must be specified in a request: option_title or option_id. These are mutually exclusive and cannot be specified in the same request. | Optional | 
@@ -20311,7 +20310,7 @@ gives you the ability to update IP addresses within the subscription.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Qualys.IP.Update.TEXT | unknown | Action result message. | 
-| Qualys.IP.Update.DATETIME | unknown | Date &amp; time of the action | 
+| Qualys.IP.Update.DATETIME | unknown | Date &amp; time of the action. | 
 
 
 #### Command Example
@@ -20390,7 +20389,7 @@ Manage your excluded IPs list using the Excluded IP. The IPs in your excluded IP
 
 ### qualys-scheduled-report-launch
 ***
-Launch a scheduled report now
+Launch a scheduled report now.
 
 
 #### Base Command
@@ -20407,9 +20406,9 @@ Launch a scheduled report now
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Qualys.Report.ID | String | Launched Report ID | 
-| Qualys.ScheduleScan.DATETIME | Date | Date of when command was executed. | 
-| Qualys.ScheduleScan.TEXT | String | Qualys response for scheduled report launch. | 
+| Qualys.Report.ID | String | Launched report ID. | 
+| Qualys.ScheduleScan.DATETIME | Date | Date the command was executed. | 
+| Qualys.ScheduleScan.TEXT | String | Qualys response for the scheduled report launch. | 
 
 
 #### Command Example
@@ -20438,7 +20437,7 @@ Launch a scheduled report now
 
 ### qualys-report-launch-map
 ***
-Launches a map report
+Launches a map report.
 
 
 #### Base Command
@@ -20464,9 +20463,10 @@ Launches a map report
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Qualys.Report.ID | String | Launched Map Report ID | 
-| Qualys.ScheduleScan.DATETIME | Date | Date of when command was executed. | 
-| Qualys.ScheduleScan.TEXT | String | Qualys response for report launch map. | 
+| Qualys.Report.ID | String | Launched map report ID. | 
+| Qualys.ScheduleScan.DATETIME | Date | Date the command was executed. | 
+| Qualys.ScheduleScan.TEXT | String | Qualys response for the report launch map. | 
+
 
 #### Command Example
 ```!qualys-report-launch-map domain=qualys-test.com output_format=xml report_refs=map/1618151844.78754 template_id=1528888```
@@ -20521,8 +20521,8 @@ Run host based findings report
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Qualys.Report.ID | String | Report ID. | 
-| Qualys.ScheduleScan.DATETIME | Date | Date of when command was executed. | 
-| Qualys.ScheduleScan.TEXT | String | Qualys response for scan based findings. | 
+| Qualys.ScheduleScan.DATETIME | Date | Date the command was executed. | 
+| Qualys.ScheduleScan.TEXT | String | Qualys response for the scan based findings. | 
 
 
 #### Command Example
@@ -20631,8 +20631,8 @@ Run patch report
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Qualys.Report.ID | String | Report ID. | 
-| Qualys.ScheduleScan.DATETIME | Date | Date of when command was executed. | 
-| Qualys.ScheduleScan.TEXT | String | Qualys response for launch patch. | 
+| Qualys.ScheduleScan.DATETIME | Date | Date the command was executed. | 
+| Qualys.ScheduleScan.TEXT | String | Qualys response for the launch patch. | 
 
 
 #### Command Example
@@ -20687,9 +20687,9 @@ Run remediation report
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Qualys.Report.ID | String | Remediation Report ID | 
-| Qualys.ScheduleScan.DATETIME | Date | Date of when command was executed. | 
-| Qualys.ScheduleScan.TEXT | String | Qualys response for launch remediation. | 
+| Qualys.Report.ID | String | Remediation report ID. | 
+| Qualys.ScheduleScan.DATETIME | Date | Date the command was executed. | 
+| Qualys.ScheduleScan.TEXT | String | Qualys response for the launch remediation. | 
 
 
 #### Command Example
@@ -20744,9 +20744,9 @@ Run compliance report
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Qualys.Report.ID | String | Compliance Report ID | 
-| Qualys.ScheduleScan.DATETIME | Date | Date of when command was executed. | 
-| Qualys.ScheduleScan.TEXT | String | Qualys response for launch compliance. | 
+| Qualys.Report.ID | String | Compliance report ID. | 
+| Qualys.ScheduleScan.DATETIME | Date | Date the command was executed. | 
+| Qualys.ScheduleScan.TEXT | String | Qualys response for the launch compliance. | 
 
 
 #### Command Example
@@ -20803,9 +20803,9 @@ Run compliance policy report
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Qualys.Report.ID | String | Policy Report ID | 
-| Qualys.ScheduleScan.DATETIME | Date | Date of when command was executed. | 
-| Qualys.ScheduleScan.TEXT | String | Qualys response for launch compliance policy. | 
+| Qualys.Report.ID | String | Policy report ID. | 
+| Qualys.ScheduleScan.DATETIME | Date | Date the command was executed. | 
+| Qualys.ScheduleScan.TEXT | String | Qualys response for the launch compliance policy. | 
 
 
 #### Command Example
@@ -20933,7 +20933,7 @@ Get the list of restricted IPs within the user's subscription.
 
 ### qualys-host-list-detection
 ***
-Get a list of hosts with the hosts latest vulnerability data, based on the host based scan data available in the user’s account.
+Get a list of hosts with the hosts latest vulnerability data. The list is based on the host based scan data available in the user’s account.
 
 
 #### Base Command
@@ -20943,20 +20943,20 @@ Get a list of hosts with the hosts latest vulnerability data, based on the host 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ids | Show only certain host IDs/ranges. One or more host IDs/ranges may be specified. Multiple entries are comma separated. A host ID range is specified with a hyphen (for example, 190-400).Valid host IDs are required. | Optional | 
-| ips | The hosts you want to retrieve list detection. How to specify IP addresses. One or more IPs/ranges may be specified. Multiple IPs/ranges are comma separated. An IP range is specified with a hyphen (for example, 10.10.30.1-10.10.30.50). | Optional | 
-| qids | Show only detection records with certain QIDs. One or more QIDs may be specified. A range is specified with a dash (for example: 68518-68522). Multiple entries are comma separated. Valid QIDs are required. | Optional | 
-| severities | Show only detection records which have certain severities. One or more levels may be specified. A range is specified with a dash (for example: 1-3). Multiple entries are comma separated. | Optional | 
-| use_tags | Specify 0 (the default) if you want to select hosts based on IP addresses/ranges and/or asset groups. Specify 1 if you want to select hosts based on asset tags. Possible values are: 0, 1. | Optional | 
+| ids | A comma-separated list of host IDs/ranges. A host ID range is specified with a hyphen (for example, 190-400). Valid host IDs are required. | Optional | 
+| ips | A comma-separated list of host IP addresses/ranges. An IP address range is specified with a hyphen (for example, 10.10.30.1-10.10.30.50). | Optional | 
+| qids | A comma-separated list of valid detection record QIDs. A range is specified with a dash (for example, 68518-68522). | Optional | 
+| severities | A comma-separated list of severity levels. A range is specified with a dash (for example, 1-3). | Optional | 
+| use_tags | Specify 0 (the default) to select hosts based on IP addresses/ranges and/or asset groups. Specify 1 to select hosts based on asset tags. Possible values are: 0, 1. | Optional | 
 | tag_set_by | (Optional when use_tags=1) Specify “id” (the default) to select a tag set by providing tag IDs. Specify “name” to select a tag set by providing tag names. Possible values are: id, name. | Optional | 
-| tag_include_selector | (Optional when use_tags=1) Select “any” (the default) to include hosts that match at least one of the selected tags. Select “all” to include hosts that match all of the selected tags. Possible values are: any, all. | Optional | 
-| tag_exclude_selector | (Optional when use_tags=1) Select “any” (the default) to exclude hosts that match at least one of the selected tags. Select “all” to exclude hosts that match all of the selected tags. Possible values are: any, all. | Optional | 
-| tag_set_include | (Optional when use_tags=1) Specify a tag set to include. Hosts that match these tags will be included. You identify the tag set by providing tag name or IDs. Multiple entries are comma separated. | Optional | 
-| tag_set_exclude | (Optional when use_tags=1) Specify a tag set to exclude. Hosts that match these tags will be excluded. You identify the tag set by providing tag name or IDs. Multiple entries are comma separated. | Optional | 
-| detection_processed_before | Show detections with vulnerability scan results processed before a certain date and time. Specify the date in YYYY-MMDD[THH:MM:SSZ] format (UTC/GMT), like “2016-09-12” or “2016-09-12T23:15:00Z”. | Optional | 
-| detection_processed_after | Show detections with vulnerability scan results processed after a certain date and time. Specify the date in YYYY-MMDD[ THH:MM:SSZ] format (UTC/GMT), like “2016-09-12” or “2016-09-12T23:15:00Z”. | Optional | 
-| vm_scan_since | Show hosts that were last scanned for vulnerabilities since a certain date and time (optional). Hosts that were the target of a vulnerability scan since the date/time will be shown. Date/time is specified in this format: YYYY-MM-DD[THH:MM:SSZ] (UTC/GMT). Permissions: An Auditor cannot specify this parameter. | Optional | 
-| no_vm_scan_since | Show hosts not scanned since a certain date and time (optional). The date/time is specified in YYYY-MMDD[THH:MM:SSZ] format (UTC/GMT), like “2007-07-01” or “2007-01-25T23:12:00Z”. Permissions - An Auditor cannot specify this parameter. | Optional | 
+| tag_include_selector | (Optional when use_tags=1) Specify “any” (the default) to include hosts that match at least one of the selected tags. Specify “all” to include hosts that match all of the selected tags. Possible values are: any, all. | Optional | 
+| tag_exclude_selector | (Optional when use_tags=1) Specify “any” (the default) to exclude hosts that match at least one of the selected tags. Specify “all” to exclude hosts that match all of the selected tags. Possible values are: any, all. | Optional | 
+| tag_set_include | (Optional when use_tags=1) Specify a comma-separated list of tag names or IDs to include hosts that match these tags. | Optional | 
+| tag_set_exclude | (Optional when use_tags=1) Specify a comma-separated list of tag names or IDs for which to exclude hosts that match the tags. | Optional | 
+| detection_processed_before | Specify the date before which to retrieve detections vulnerability scan results that were processed. Specify the date in YYYY-MMDD[THH:MM:SSZ] format (UTC/GMT), for example, “2016-09-12” or “2016-09-12T23:15:00Z”. | Optional | 
+| detection_processed_after | Specify the date after which to retrieve detections vulnerability scan results that were processed. Specify the date in YYYY-MMDD[THH:MM:SSZ] format (UTC/GMT), for example, “2016-09-12” or “2016-09-12T23:15:00Z”. | Optional | 
+| vm_scan_since | Show hosts that were last scanned for vulnerabilities since the specified date and time (optional). Hosts that were the target of a vulnerability scan since the date/time will be shown. Date/time is specified in the following format: YYYY-MM-DD[THH:MM:SSZ] (UTC/GMT). Permissions: An Auditor cannot specify this parameter. | Optional | 
+| no_vm_scan_since | Show hosts not scanned since the specified date and time (optional). The date/time is specified in the following format: YYYY-MMDD[THH:MM:SSZ] format (UTC/GMT), for example, “2007-07-01” or “2007-01-25T23:12:00Z”. Permissions - An Auditor cannot specify this parameter. | Optional | 
 | truncation_limit | Specify the maximum number of host records processed per request. When not specified, the truncation limit is set to 1000 host records. You may specify a value less than the default (1-999) or greater than the default (1001-1000000). | Optional | 
 
 
@@ -20965,18 +20965,18 @@ Get a list of hosts with the hosts latest vulnerability data, based on the host 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Qualys.HostDetections.ID | String | Host detection ID. | 
-| Qualys.HostDetections.IP | String | Host detection IP. | 
+| Qualys.HostDetections.IP | String | Host detection IP address. | 
 | Qualys.HostDetections.TRACKING_METHOD | String | Tracking method. | 
-| Qualys.HostDetections.OS | String | Host OS. | 
+| Qualys.HostDetections.OS | String | Host operating system. | 
 | Qualys.HostDetections.DNS | String | Host DNS. | 
 | Qualys.HostDetections.DNS_DATA.HOSTNAME | String | DNS data host name. | 
 | Qualys.HostDetections.DNS_DATA.DOMAIN | Unknown | DNS data domain. | 
 | Qualys.HostDetections.DNS_DATA.FQDN | Unknown | DNS data FQDN. | 
 | Qualys.HostDetections.NETBIOS | String | Netbios. | 
-| Qualys.HostDetections.QG_HOSTID | String | QG Host ID. | 
+| Qualys.HostDetections.QG_HOSTID | String | QG host ID. | 
 | Qualys.HostDetections.LAST_SCAN_DATETIME | Date | Last scan date. | 
 | Qualys.HostDetections.LAST_VM_SCANNED_DATE | Date | Last VM scan date. | 
-| Qualys.HostDetections.LAST_VM_SCANNED_DURATION | String | Last vm scan duration. | 
+| Qualys.HostDetections.LAST_VM_SCANNED_DURATION | String | Last VM scan duration. | 
 | Qualys.HostDetections.LAST_PC_SCANNED_DATE | Date | Last PC scan date. | 
 | Qualys.HostDetections.DETECTION_LIST.DETECTION.QID | String | Detection QID. | 
 | Qualys.HostDetections.DETECTION_LIST.DETECTION.TYPE | String | Detection type. | 
@@ -20984,14 +20984,14 @@ Get a list of hosts with the hosts latest vulnerability data, based on the host 
 | Qualys.HostDetections.DETECTION_LIST.DETECTION.SSL | String | Detection SSL. | 
 | Qualys.HostDetections.DETECTION_LIST.DETECTION.RESULTS | String | Detection results. | 
 | Qualys.HostDetections.DETECTION_LIST.DETECTION.STATUS | String | Detection status. | 
-| Qualys.HostDetections.DETECTION_LIST.DETECTION.FIRST_FOUND_DATETIME | Date | Detection first found date. | 
-| Qualys.HostDetections.DETECTION_LIST.DETECTION.LAST_FOUND_DATETIME | Date | Detection last found date. | 
-| Qualys.HostDetections.DETECTION_LIST.DETECTION.TIMES_FOUND | String | Detection number of times found. | 
-| Qualys.HostDetections.DETECTION_LIST.DETECTION.LAST_TEST_DATETIME | Date | Detection last tested date. | 
-| Qualys.HostDetections.DETECTION_LIST.DETECTION.LAST_UPDATE_DATETIME | Date | Detection last updated date. | 
+| Qualys.HostDetections.DETECTION_LIST.DETECTION.FIRST_FOUND_DATETIME | Date | Date detection was first found. | 
+| Qualys.HostDetections.DETECTION_LIST.DETECTION.LAST_FOUND_DATETIME | Date | Date detection was last found. | 
+| Qualys.HostDetections.DETECTION_LIST.DETECTION.TIMES_FOUND | String | Number of times detection was found. | 
+| Qualys.HostDetections.DETECTION_LIST.DETECTION.LAST_TEST_DATETIME | Date | Date detection was last tested. | 
+| Qualys.HostDetections.DETECTION_LIST.DETECTION.LAST_UPDATE_DATETIME | Date | Date detection was last updated. | 
 | Qualys.HostDetections.DETECTION_LIST.DETECTION.IS_IGNORED | String | Whether detection is ignored. | 
 | Qualys.HostDetections.DETECTION_LIST.DETECTION.IS_DISABLED | String | Whether detection is disabled. | 
-| Qualys.HostDetections.DETECTION_LIST.DETECTION.LAST_PROCESSED_DATETIME | Date | Detection last processed date. | 
+| Qualys.HostDetections.DETECTION_LIST.DETECTION.LAST_PROCESSED_DATETIME | Date | Date detection was last processed. | 
 | Qualys.HostDetections.DETECTION_LIST.DETECTION.PORT | String | Detection port. | 
 | Qualys.HostDetections.DETECTION_LIST.DETECTION.PROTOCOL | String | Detection protocol. | 
 
@@ -21283,9 +21283,11 @@ Get a list of hosts with the hosts latest vulnerability data, based on the host 
 >| {'QID': '70000', 'RESULTS': 'AMAZON-544DB96A'},<br/>{'QID': '70001', 'RESULTS': 'Device Name\tComment\tType\nIPC$\tRemote IPC\t-2147483645\nC$\tDefault share\t-2147483648\nADMIN$\tRemote Admin\t-2147483648'},<br/>{'QID': '90043', 'RESULTS': None},<br/>{'QID': '90882', 'RESULTS': 'RDP Supported Encryption methods:  RC4(40 bit),RC4(56 bit)'},<br/>{'QID': '90883', 'RESULTS': 'RDP Public key is 512 bits long.'},<br/>{'QID': '105500', 'RESULTS': 'QID: 105500 detected on port 3389 over TCP.'},<br/>{'QID': '105501', 'RESULTS': 'QID: 105501 detected on port 3389 over TCP.'},<br/>{'QID': '105632', 'RESULTS': 'EOL/Obsolete Operating System : Windows Server 2003 R2 Detected'} | HOSTNAME: i-055ef1b4734491575 | 69291564 | 1.1.1.1 |
 
 
+
+
 ### qualys-host-update
 ***
-Update host attributes using new update parameters (new_tracking_method, new_owner, new_ud1, new_ud2, new_ud3, and new_comment).
+Update host attributes using new update parameters.
 
 
 #### Base Command
@@ -21295,26 +21297,26 @@ Update host attributes using new update parameters (new_tracking_method, new_own
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ids | Show only certain host IDs/ranges. One or more host IDs/ranges may be specified. Multiple entries are comma separated. A host ID range is specified with a hyphen (for example, 190-400).Valid host IDs are required. One of `ips` or `ids` parameters must be supplied. IDs or IPs can be retrieved via running the `qualys-host-list-detection` command, using the ID field or IPs field. | Optional | 
-| ips | The hosts you want to add to, remove from or replace in the restricted IPs list. How to specify IP addresses. One or more IPs/ranges may be specified. Multiple IPs/ranges are comma separated. An IP range is specified with a hyphen (for example, 10.10.30.1-10.10.30.50). One of `ips` or `ids` parameters must be supplied. | Optional | 
-| network_id | (Valid only when the Network Support feature is enabled for the user’s account) Restrict the request to a certain custom network by specifying the network ID. When unspecified, we default to Global Default Network. | Optional | 
+| ids | A comma-separated list of host IDs/ranges to update. A host ID range is specified with a hyphen (for example, 190-400). Valid host IDs are required. Either the `ips` or `ids` parameter must be supplied. IDs or IPs can be retrieved via running the `qualys-host-list-detection` command, using the ID field or IPs field. | Optional | 
+| ips | A comma-separated list of host IP addresses/ranges to add to, remove from or replace in the restricted IPs list. An IP range is specified with a hyphen (for example, 10.10.30.1-10.10.30.50). Either the `ips` or `ids` parameter must be supplied. | Optional | 
+| network_id | (Valid only when the Network Support feature is enabled for the user’s account.) The network ID of the custom network for which to restrict the request. When unspecified, defaults to Global Default Network. | Optional | 
 | host_dns | The DNS hostname for the IP you want to update. A single IP must be specified in the same request and the IP will only be updated if it matches the hostname specified. | Optional | 
 | host_netbios | The NetBIOS hostname for the IP you want to update. A single IP must be specified in the same request and the IP will only be updated if it matches the hostname specified. | Optional | 
 | tracking_method | Show only IP addresses/ranges which have a certain tracking method. Possible values are: IP, DNS, NETBIOS. | Optional | 
-| new_tracking_method | Change the tracking method. Specify IP for IP address, DNS or NETBIOS. Note - You cannot change the tracking method to EC2 or AGENT. If an IP is already tracked by EC2 or AGENT, you cannot change the tracking method to something else. Possible values are: IP, DNS, NETBIOS. | Optional | 
-| new_owner | Change the owner of the host asset(s). The owner must be a Manager. Another user (Unit Manager, Scanner, Reader) can be the owner if the IP address is in the user’s account. | Optional | 
-| new_comment | Change the user-defined comments. Specify new comments for the host asset(s). | Optional | 
-| new_ud1 | Change value for user-defined field 1. You can specify a maximum of 128 characters (ascii) for each field value. | Optional | 
-| new_ud2 | Change value for user-defined field 2. You can specify a maximum of 128 characters (ascii) for each field value. | Optional | 
-| new_ud3 | Change value for user-defined field 3. You can specify a maximum of 128 characters (ascii) for each field value. | Optional | 
+| new_tracking_method | The new tracking method. Note - You cannot change the tracking method to EC2 or AGENT. If an IP is already tracked by EC2 or AGENT, you cannot change the tracking method to something else. Possible values are: IP, DNS, NETBIOS. | Optional | 
+| new_owner | The new owner of the host asset(s). The owner must be a Manager. Another user (Unit Manager, Scanner, Reader) can be the owner if the IP address is in the user’s account. | Optional | 
+| new_comment | The user-defined comments. Specify new comments for the host asset(s). | Optional | 
+| new_ud1 | Change value for user-defined field 1. You can specify a maximum of 128 characters (ASCII) for each field value. | Optional | 
+| new_ud2 | Change value for user-defined field 2. You can specify a maximum of 128 characters (ASCII) for each field value. | Optional | 
+| new_ud3 | Change value for user-defined field 3. You can specify a maximum of 128 characters (ASCII) for each field value. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Qualys.Endpoint.Update.DATETIME | Date | Date of when command was executed. | 
-| Qualys.Endpoint.Update.TEXT | String | Qualys response for host update. | 
+| Qualys.Endpoint.Update.DATETIME | Date | Date the command was executed. | 
+| Qualys.Endpoint.Update.TEXT | String | Qualys response for the host update. | 
 
 
 #### Command Example
@@ -21351,34 +21353,34 @@ Create a scan schedule in the user’s account.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | scan_title | The scan title. | Required | 
-| ip | The IP addresses to be scanned. You may enter individual IP addresses and/or ranges. Multiple entries are comma separated. One of these parameters is required: ip, asset_groups or asset_group_ids. | Optional | 
-| asset_group_ids | The IDs of asset groups containing the hosts to be scanned. Multiple IDs are comma separated. One of these parameters is required: ip, asset_groups or asset_group_ids. | Optional | 
-| asset_groups | The titles of asset groups containing the hosts to be scanned. Multiple titles are comma separated. One of these parameters is required: ip, asset_groups or asset_group_ids. | Optional | 
+| ip | A comma-separated list of IP addresses/ranges to be scanned. At most, one of these parameters can be supplied: ip, asset_groups or asset_group_ids. | Optional | 
+| asset_group_ids | A comma-separated list of IDs of asset groups containing the hosts to be scanned. At most, one of these parameters can be supplied: ip, asset_groups or asset_group_ids. | Optional | 
+| asset_groups | A comma-separated list of titles of asset groups containing the hosts to be scanned. At most, one of these parameters can be supplied: ip, asset_groups or asset_group_ids. | Optional | 
 | option_title | The title of the compliance option profile to be used. | Required | 
-| frequency_days | Frequency scan occurs, value between 1-365. For example: if specified '1', the schedule will occur every day. If specified '2', the schedule will occur every 2 days. One of these parameters is required: 'frequency_days', 'frequency_weeks', 'frequency_months'. | Optional | 
-| frequency_weeks | Frequency scan occurs, value between 1-52. For example: if specified '1', the schedule will occur every week. If specified '2', the schedule will occur every 2 weeks. The argument 'weekdays' is required when frequency_weeks is given. Scan will occur only on specified days given in the 'weekdays' argument. One of these parameters is required: 'frequency_days', 'frequency_weeks', 'frequency_months'. | Optional | 
-| frequency_months | Frequency scan occurs, value between 1-12. For example: if specified '1', the schedule will occur every month. If specified '2', the schedule will occur every 2 months. Either the argument 'day_of_month' or the arguments 'day_of_week' and 'week_of_month' are required when frequency_months is given. Scan will occur only on specified days given in the those arguments argument. One of these parameters is required: 'frequency_days', 'frequency_weeks', 'frequency_months'. | Optional | 
-| weekdays | Required when 'frequency_weeks' is given. Days of when the scan will occur every week. E.g, weekdays='sunday,tuesday' along with 'frequency_weeks=2' means the scan will happen on sunday and tuesday every two weeks. Possible values are: sunday, monday, tuesday, wednesday, thursday, friday, saturday. | Optional | 
-| day_of_month | Only relevant when 'frequency_months' value was given. Day of month that the monthly schedule will run on. Between 1-31 depending on the month. For example, day_of_month=15 along with frequency_months=2 will result in the scan running every 2 months in the 15th of the month. | Optional | 
-| day_of_week | Only relevant when 'frequency_months' value was given. Must be given with 'week_of_month' as well. Day of week that the schedule will run on. Between 0-6, where 0 is Sunday, and 6 is Saturday depending on the month. For example, day_of_week=2, week_of_month=second along with frequency_months=2 will result in the scan running every 2 months on Tuesday in the second week of the month. Possible values are: 0, 1, 2, 3, 4, 5, 6. | Optional | 
-| week_of_month | Comma separated list. Only relevant when 'frequency_months' value was given. Must be given with 'week_of_month' as well. Day of week that the schedule will run on. Between 0-6, where 0 is Sunday, and 6 is Saturday depending on the month. For example, day_of_week=2, week_of_month=second along with frequency_months=2 will result in the scan running every 2 months on Tuesday in the second week of the month. Possible values are: first, second, third, fourth, last. | Optional | 
-| start_date | The start date of the schedule. Format of mm/dd/yyyy. For example, 12/15/2020. | Required | 
-| start_hour | The start hour of the scheduled scan. Value between 0-23. | Required | 
-| start_minute | The start minute of the scheduled scan. Value between 0-59. | Required | 
-| time_zone_code | Time zone code of the given schedule scan. For example, US-CA for time zone California in US. | Required | 
-| observe_dst | Specify yes to observe Daylight Saving Time (DST). This parameter is valid when the time zone code specified in time_zone_code supports DST. To get the list of time zones and their DST support, use the `qualys-time-zone-code` command. Possible values are: "yes", "no". | Optional | 
-| exclude_ip_per_scan | The IP addresses to be excluded from the scan when the scan target is specified as IP addresses (not asset tags). You may enter individual IP addresses and/or ranges. Multiple entries are comma separated. One of these parameters must be set: 'scanners_in_ag', 'default_scanner'. | Optional | 
-| default_scanner | Specify 1 to use the default scanner in each target asset group. For an Express Lite user, Internal Scanning must be enabled in the user’s account. One of these parameters must be set: 'scanners_in_ag', 'default_scanner'. Possible values are: 0, 1. | Optional | 
-| scanners_in_ag | Specify 1 to distribute the scan to the target asset groups’ scanner appliances. Appliances in each asset group are tasked with scanning the IPs in the group. By default up to 5 appliances per group will be used and this can be configured for your account (please contact your Account Manager or Support). For an Express Lite user, Internal Scanning must be enabled in the user’s account. One of these parameters must be set: 'scanners_in_ag', 'default_scanner'. Possible values are: 0, 1. | Optional | 
+| frequency_days | The frequency (days) in which the scan occurs. The value is between 1-365. For example: '1' indicates that the schedule will occur every day. '2' indicates that the schedule will occur every 2 days. At most, one of these parameters can be supplied: 'frequency_days', 'frequency_weeks', 'frequency_months'. | Optional | 
+| frequency_weeks | The frequency (weeks) in which the scan occurs. The value is between 1-52. For example: '1' indicates that the schedule will occur every week. '2' indicates that the schedule will occur every 2 weeks. The argument 'weekdays' is required when frequency_weeks is given. Scan will occur only on specified days given in the 'weekdays' argument. At most, one of these parameters can be supplied: 'frequency_days', 'frequency_weeks', 'frequency_months'. | Optional | 
+| frequency_months | The frequency (months) in which the scan occurs. The value is between 1-12. For example: '1' indicates that the schedule will occur every month. '2' indicates that the schedule will occur every 2 months. Either the argument 'day_of_month' or the arguments 'day_of_week' and 'week_of_month' are required when frequency_months is given. The scan will occur only on specified days given in those arguments At most, one of these parameters can be supplied: 'frequency_days', 'frequency_weeks', 'frequency_months'. | Optional | 
+| weekdays | A comma-separated list of the days when the scan will occur each week. Required when 'frequency_weeks' is given. For example: weekdays='sunday,tuesday' along with 'frequency_weeks=2' means the scan will occur on Sunday and Tuesday every two weeks. Possible values are: sunday, monday, tuesday, wednesday, thursday, friday, saturday. | Optional | 
+| day_of_month | Day of the month the monthly schedule will run on. The value is between 1-31 depending on the month. Only relevant when 'frequency_months' value was given. For example: day_of_month=15 along with frequency_months=2 will result in the scan running every 2 months on the 15th of the month. | Optional | 
+| day_of_week | Day of week that the schedule will run on. The value is between 0-6, where 0 is Sunday, and 6 is Saturday depending on the month. Only relevant when 'frequency_months' value was given. Must be used with 'week_of_month' as well. For example: day_of_week=2, week_of_month=second along with frequency_months=2 will result in the scan running every 2 months on Tuesday in the second week of the month. Possible values are: 0, 1, 2, 3, 4, 5, 6. | Optional | 
+| week_of_month | Comma-separated list of the days of the week that the schedule will run on. The value is between 0-6, where 0 is Sunday, and 6 is Saturday depending on the month. Only relevant when 'frequency_months' value was given. Must be used with 'week_of_month' as well. For example: day_of_week=2, week_of_month=second along with frequency_months=2 will result in the scan running every 2 months on Tuesday in the second week of the month. Possible values are: first, second, third, fourth, last. | Optional | 
+| start_date | The start date of the schedule in the format of mm/dd/yyyy. For example: 12/15/2020. | Required | 
+| start_hour | The start hour of the scheduled scan. Required when 'start_date' is given. The value is between 0-23. | Required | 
+| start_minute | The start minute of the scheduled scan. Required when 'start_date' is given. The value is between 0-59. | Required | 
+| time_zone_code | Time zone code of the given scheduled scan. For example: US-CA for California time zone in the US. Required when 'start_date' is given. | Required | 
+| observe_dst | Whether to observe Daylight Saving Time (DST). Required when start_date is given. This parameter is valid when the time zone code specified in time_zone_code supports DST. To get the list of time zones and their DST support, use the `qualys-time-zone-code` command. Possible values are: yes, no. | Optional | 
+| exclude_ip_per_scan | A comma-separated list of IP addresses/ranges to be excluded from the scan when the scan target is specified as IP addresses (not asset tags). One of the following parameters must be set: 'scanners_in_ag', 'default_scanner'. | Optional | 
+| default_scanner | Specify 1 to use the default scanner in each target asset group. For an Express Lite user, Internal Scanning must be enabled in the user’s account. At most, one of these parameters can be supplied: 'scanners_in_ag', 'default_scanner'. Possible values are: 0, 1. | Optional | 
+| scanners_in_ag | Specify 1 to distribute the scan to the target asset groups’ scanner appliances. Appliances in each asset group are tasked with scanning the IPs in the group. By default, up to 5 appliances per group will be used and this can be configured for your account (contact your Account Manager or Support). For an Express Lite user, Internal Scanning must be enabled in the user’s account. At most, one of these parameters can be supplied: 'scanners_in_ag', 'default_scanner'. Possible values are: 0, 1. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Qualys.ScheduleScan.ID | String | New scheduled scan created ID. | 
-| Qualys.ScheduleScan.DATETIME | Date | Date of when command was executed. | 
-| Qualys.ScheduleScan.TEXT | String | Qualys response for schedule scan creation. | 
+| Qualys.ScheduleScan.ID | String | ID of the new scheduled scan. | 
+| Qualys.ScheduleScan.DATETIME | Date | Date the command was executed. | 
+| Qualys.ScheduleScan.TEXT | String | Qualys response for the scheduled scan creation. | 
 
 
 #### Command Example
@@ -21417,27 +21419,27 @@ Updates a scan schedule in the user’s account.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | The scan ID to update. the ID can be retrieved via running the `qualys-schedule-scan-list` command, and using the ID field. | Required | 
+| id | The scan ID to update. The ID can be retrieved by running the 'qualys-schedule-scan-list' command, and using the ID field. | Required | 
 | scan_title | The scan title. | Optional | 
-| ip | The IP addresses to be scanned. You may enter individual IP addresses and/or ranges. Multiple entries are comma separated. At most one of these parameters can be supplied: ip, asset_groups or asset_group_ids. | Optional | 
-| asset_group_ids | The IDs of asset groups containing the hosts to be scanned. Multiple IDs are comma separated. At most one of these parameters can be supplied: ip, asset_groups or asset_group_ids. | Optional | 
-| asset_groups | The titles of asset groups containing the hosts to be scanned. Multiple titles are comma separated. At most one of these parameters can be supplied: ip, asset_groups or asset_group_ids. | Optional | 
-| frequency_days | Frequency scan occurs, value between 1-365. For example: if specified '1', the schedule will occur every day. If specified '2', the schedule will occur every 2 days. At most one of these parameters can be supplied: 'frequency_days', 'frequency_weeks', 'frequency_months'. | Optional | 
-| frequency_weeks | Frequency scan occurs, value between 1-52. For example: if specified '1', the schedule will occur every week. If specified '2', the schedule will occur every 2 weeks. The argument 'weekdays' is required when frequency_weeks is given. Scan will occur only on specified days given in the 'weekdays' argument. At most one of these parameters can be supplied: 'frequency_days', 'frequency_weeks', 'frequency_months'. | Optional | 
-| frequency_months | Frequency scan occurs, value between 1-12. For example: if specified '1', the schedule will occur every month. If specified '2', the schedule will occur every 2 months. Either the argument 'day_of_month' or the arguments 'day_of_week' and 'week_of_month' are required when frequency_months is given. Scan will occur only on specified days given in the those arguments argument. At most one of these parameters can be supplied: 'frequency_days', 'frequency_weeks', 'frequency_months'. | Optional | 
-| weekdays | Required when 'frequency_weeks' is given. Days of when the scan will occur every week. E.g, weekdays='sunday,tuesday' along with 'frequency_weeks=2' means the scan will happen on sunday and tuesday every two weeks. Possible values are: sunday, monday, tuesday, wednesday, thursday, friday, saturday. | Optional | 
-| day_of_month | Only relevant when 'frequency_months' value was given. Day of month that the monthly schedule will run on. Between 1-31 depending on the month. For example, day_of_month=15 along with frequency_months=2 will result in the scan running every 2 months in the 15th of the month. | Optional | 
-| day_of_week | Only relevant when 'frequency_months' value was given. Must be given with 'week_of_month' as well. Day of week that the schedule will run on. Between 0-6, where 0 is Sunday, and 6 is Saturday depending on the month. For example, day_of_week=2, week_of_month=second along with frequency_months=2 will result in the scan running every 2 months on Tuesday in the second week of the month. Possible values are: 0, 1, 2, 3, 4, 5, 6. | Optional | 
-| week_of_month | Comma separated list. Only relevant when 'frequency_months' value was given. Must be given with 'week_of_month' as well. Day of week that the schedule will run on. Between 0-6, where 0 is Sunday, and 6 is Saturday depending on the month. For example, day_of_week=2, week_of_month=second along with frequency_months=2 will result in the scan running every 2 months on Tuesday in the second week of the month. Possible values are: first, second, third, fourth, last. | Optional | 
-| start_date | The start date of the schedule. Format of mm/dd/yyyy. For example, 12/15/2020. | Optional | 
-| start_hour | Required when 'start_date' is given. The start hour of the scheduled scan. Value between 0-23. | Optional | 
-| start_minute | Required when 'start_date' is given. The start minute of the scheduled scan. Value between 0-59. | Optional | 
-| time_zone_code | Required when 'start_date' is given. Time zone code of the given schedule scan. For example, US-CA for time zone California in US. | Optional | 
-| observe_dst | Required when start_date is given. Specify yes to observe Daylight Saving Time (DST). This parameter is valid when the time zone code specified in time_zone_code supports DST. To get the list of time zones and their DST support, use the `qualys-time-zone-code` command. Possible values are: "yes", "no". | Optional | 
-| exclude_ip_per_scan | The IP addresses to be excluded from the scan when the scan target is specified as IP addresses (not asset tags). You may enter individual IP addresses and/or ranges. Multiple entries are comma separated. One of these parameters must be set: 'scanners_in_ag', 'default_scanner'. | Optional | 
-| default_scanner | Specify 1 to use the default scanner in each target asset group. For an Express Lite user, Internal Scanning must be enabled in the user’s account. At most one of these parameters can be supplied: 'scanners_in_ag', 'default_scanner'. Possible values are: 0, 1. | Optional | 
-| scanners_in_ag | Specify 1 to distribute the scan to the target asset groups’ scanner appliances. Appliances in each asset group are tasked with scanning the IPs in the group. By default up to 5 appliances per group will be used and this can be configured for your account (please contact your Account Manager or Support). For an Express Lite user, Internal Scanning must be enabled in the user’s account. At most one of these parameters can be supplied: 'scanners_in_ag', 'default_scanner'. Possible values are: 0, 1. | Optional | 
-| active | Whether schedule scan is activated. Possible values are: 0, 1. | Optional | 
+| ip | A comma-separated list of IP addresses/ranges to be scanned. At most, one of these parameters can be supplied: ip, asset_groups or asset_group_ids. | Optional | 
+| asset_group_ids | A comma-separated list of IDs of asset groups containing the hosts to be scanned. At most, one of these parameters can be supplied: ip, asset_groups or asset_group_ids. | Optional | 
+| asset_groups | A comma-separated list of titles of asset groups containing the hosts to be scanned. At most, one of these parameters can be supplied: ip, asset_groups or asset_group_ids. | Optional | 
+| frequency_days | The frequency (days) in which the scan occurs. The value is between 1-365. For example: '1' indicates that the schedule will occur every day. '2' indicates that the schedule will occur every 2 days. At most, one of these parameters can be supplied: 'frequency_days', 'frequency_weeks', 'frequency_months'. | Optional | 
+| frequency_weeks | The frequency (weeks) in which the scan occurs. The value is between 1-52. For example: '1' indicates that the schedule will occur every week. '2' indicates that the schedule will occur every 2 weeks. The argument 'weekdays' is required when frequency_weeks is given. Scan will occur only on specified days given in the 'weekdays' argument. At most, one of these parameters can be supplied: 'frequency_days', 'frequency_weeks', 'frequency_months'. | Optional | 
+| frequency_months | The frequency (months) in which the scan occurs. The value is between 1-12. For example: '1' indicates that the schedule will occur every month. '2' indicates that the schedule will occur every 2 months. Either the argument 'day_of_month' or the arguments 'day_of_week' and 'week_of_month' are required when frequency_months is given. The scan will occur only on specified days given in those arguments At most, one of these parameters can be supplied: 'frequency_days', 'frequency_weeks', 'frequency_months'. | Optional | 
+| weekdays | A comma-separated list of the days when the scan will occur each week. Required when 'frequency_weeks' is given. For example: weekdays='sunday,tuesday' along with 'frequency_weeks=2' means the scan will occur on Sunday and Tuesday every two weeks. Possible values are: sunday, monday, tuesday, wednesday, thursday, friday, saturday. | Optional | 
+| day_of_month | Day of the month the monthly schedule will run on. The value is between 1-31 depending on the month. Only relevant when 'frequency_months' value was given. For example: day_of_month=15 along with frequency_months=2 will result in the scan running every 2 months on the 15th of the month. | Optional | 
+| day_of_week | Day of week that the schedule will run on. The value is between 0-6, where 0 is Sunday, and 6 is Saturday depending on the month. Only relevant when 'frequency_months' value was given. Must be used with 'week_of_month' as well. For example: day_of_week=2, week_of_month=second along with frequency_months=2 will result in the scan running every 2 months on Tuesday in the second week of the month. Possible values are: 0, 1, 2, 3, 4, 5, 6. | Optional | 
+| week_of_month | Comma-separated list of the days of the week that the schedule will run on. The value is between 0-6, where 0 is Sunday, and 6 is Saturday depending on the month. Only relevant when 'frequency_months' value was given. Must be used with 'week_of_month' as well. For example: day_of_week=2, week_of_month=second along with frequency_months=2 will result in the scan running every 2 months on Tuesday in the second week of the month. Possible values are: first, second, third, fourth, last. | Optional | 
+| start_date | The start date of the schedule in the format of mm/dd/yyyy. For example: 12/15/2020. | Optional | 
+| start_hour | The start hour of the scheduled scan. Required when 'start_date' is given. The value is between 0-23. | Optional | 
+| start_minute | The start minute of the scheduled scan. Required when 'start_date' is given. The value is between 0-59. | Optional | 
+| time_zone_code | Time zone code of the given scheduled scan. For example: US-CA for California time zone in the US. Required when 'start_date' is given. | Optional | 
+| observe_dst | Whether to observe Daylight Saving Time (DST). Required when start_date is given. This parameter is valid when the time zone code specified in time_zone_code supports DST. To get the list of time zones and their DST support, use the `qualys-time-zone-code` command. Possible values are: yes, no. | Optional | 
+| exclude_ip_per_scan | A comma-separated list of IP addresses/ranges to be excluded from the scan when the scan target is specified as IP addresses (not asset tags). One of the following parameters must be set: 'scanners_in_ag', 'default_scanner'. | Optional | 
+| default_scanner | Specify 1 to use the default scanner in each target asset group. For an Express Lite user, Internal Scanning must be enabled in the user’s account. At most, one of these parameters can be supplied: 'scanners_in_ag', 'default_scanner'. Possible values are: 0, 1. | Optional | 
+| scanners_in_ag | Specify 1 to distribute the scan to the target asset groups’ scanner appliances. Appliances in each asset group are tasked with scanning the IPs in the group. By default, up to 5 appliances per group will be used and this can be configured for your account (contact your Account Manager or Support). For an Express Lite user, Internal Scanning must be enabled in the user’s account. At most, one of these parameters can be supplied: 'scanners_in_ag', 'default_scanner'. Possible values are: 0, 1. | Optional | 
+| active | Whether the scheduled scan is activated. Possible values are: 0, 1. | Optional | 
 
 
 #### Context Output
@@ -21445,9 +21447,8 @@ Updates a scan schedule in the user’s account.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Qualys.ScheduleScan.ID | String | ID of the scheduled scan to be updated. | 
-| Qualys.ScheduleScan.DATETIME | Date | Date of when command was executed. | 
-| Qualys.ScheduleScan.TEXT | String | Qualys response for schedule scan update. | 
-
+| Qualys.ScheduleScan.DATETIME | Date | Date the command was executed. | 
+| Qualys.ScheduleScan.TEXT | String | Qualys response for the scheduled scan update. | 
 
 
 #### Command Example
@@ -21488,15 +21489,15 @@ Create a new asset group.
 | --- | --- | --- |
 | title | The asset group title to add. | Required | 
 | network_id | Restrict the request to a certain custom network ID. | Optional | 
-| ips | Add IPs to asset group. IP addresses/ranges. One or more IPs/ranges may be specified. Multiple entries are comma separated. An IP range is specified with a hyphen (for example, 10.10.10.1-10.10.10.100). | Optional | 
-| domains | Add domains to asset group; do not enter "www." at the start of the domain name. Multiple entries are comma separated. | Optional | 
-| dns_names | Add DNS names to asset group. Multiple entries are comma separated. | Optional | 
-| netbios_names | Add NETBIOS names to asset group. Multiple entries are comma separated. | Optional | 
-| cvss_enviro_td | Add CVSS environment target distribution. Possible values are: high, medium, low, none. | Optional | 
-| cvss_enviro_cr | Add CVSS environment confidentiality requirement. Possible values are: high, medium, low. | Optional | 
-| cvss_enviro_ir | Add CVSS environment integrity requirement. Possible values are: high, medium, low. | Optional | 
-| cvss_enviro_ar | Add CVSS environment availability requirement. Possible values are: high, medium, low. | Optional | 
-| appliance_ids | Add appliance IDs to asset group. Multiple entries are comma separated. | Optional | 
+| ips | A comma-separated list of IP address/ranges to add to an asset group. An IP range is specified with a hyphen (for example, 10.10.10.1-10.10.10.100). | Optional | 
+| domains | A comma-separated list of domains to add to an asset group. Do not enter "www." at the start of the domain name. | Optional | 
+| dns_names | A comma-separated list of DNS names to add to an asset group. | Optional | 
+| netbios_names | A comma-separated list of NETBIOS names to add to an asset group. | Optional | 
+| cvss_enviro_td | The CVSS environment target distribution to add. Possible values are: high, medium, low, none. | Optional | 
+| cvss_enviro_cr | The CVSS environment confidentiality requirement to add. Possible values are: high, medium, low. | Optional | 
+| cvss_enviro_ir | The CVSS environment integrity requirement to add. Possible values are: high, medium, low. | Optional | 
+| cvss_enviro_ar | The CVSS environment availability requirement to add. Possible values are: high, medium, low. | Optional | 
+| appliance_ids | A comma-separated list of appliance IDs to add to an asset group. | Optional | 
 
 
 #### Context Output
@@ -21504,8 +21505,8 @@ Create a new asset group.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Qualys.AssetGroup.ID | String | Asset group ID. | 
-| Qualys.AssetGroup.DATETIME | Date | Date of when command was executed. | 
-| Qualys.AssetGroup.TEXT | String | Qualys response for asset group creation. | 
+| Qualys.AssetGroup.DATETIME | Date | Date the command was executed. | 
+| Qualys.AssetGroup.TEXT | String | Qualys response for the asset group creation. | 
 
 
 #### Command Example
@@ -21544,28 +21545,27 @@ Update an asset group.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| set_title | Set a new asset group title. | Optional | 
-| id | ID of the asset group to edit. ID of asset groups can be retrieved via running the `qualys-group-list` command and using its ID field. | Required | 
-| add_ips | Add IPs to asset group. IP addresses/ranges. One or more IPs/ranges may be specified. Multiple entries are comma separated. An IP range is specified with a hyphen (for example, 10.10.10.1-10.10.10.100). | Optional | 
-| set_ips | Set IPs of asset group. IP addresses/ranges. One or more IPs/ranges may be specified. Multiple entries are comma separated. An IP range is specified with a hyphen (for example, 10.10.10.1-10.10.10.100). | Optional | 
-| remove_ips | Remove IPs from asset group. IP addresses/ranges. One or more IPs/ranges may be specified. Multiple entries are comma separated. An IP range is specified with a hyphen (for example, 10.10.10.1-10.10.10.100). | Optional | 
-| add_domains | Add domains to asset group; do not enter "www." at the start of the domain name. Multiple entries are comma separated. | Optional | 
-| set_domains | Set domains of asset group; do not enter "www." at the start of the domain name. Multiple entries are comma separated. | Optional | 
-| remove_domains | Remove domains from asset group; do not enter "www." at the start of the domain name. Multiple entries are comma separated. | Optional | 
-| add_dns_names | Add DNS names to asset group. Multiple entries are comma separated. | Optional | 
-| set_dns_names | Set DNS names of asset group. Multiple entries are comma separated. | Optional | 
-| remove_dns_names | Remove DNS names from asset group. Multiple entries are comma separated. | Optional | 
-| netbios_names | Add NETBIOS names to asset group. Multiple entries are comma separated. | Optional | 
-| add_netbios_names | Add NETBIOS names to asset group. Multiple entries are comma separated. | Optional | 
-| set_netbios_names | Set NETBIOS names of asset group. Multiple entries are comma separated. | Optional | 
-| remove_netbios_names | Remove NETBIOS names from asset group. Multiple entries are comma separated. | Optional | 
-| set_cvss_enviro_td | Set CVSS environment target distribution. Possible values are: high, medium, low, none. | Optional | 
-| set_cvss_enviro_cr | Set CVSS environment confidentiality requirement. Possible values are: high, medium, low. | Optional | 
-| set_cvss_enviro_ir | Set CVSS environment integrity requirement. Possible values are: high, medium, low. | Optional | 
-| set_cvss_enviro_ar | Set CVSS environment availability requirement. Possible values are: high, medium, low. | Optional | 
-| add_appliance_ids | Add appliance IDs to asset group. Multiple entries are comma separated. | Optional | 
-| set_appliance_ids | Set appliance IDs of asset group. Multiple entries are comma separated. | Optional | 
-| remove_appliance_ids | Remove appliance IDs from asset group. Multiple entries are comma separated. | Optional | 
+| set_title | The new asset group title. | Optional | 
+| id | The ID of the asset group to edit. The ID of asset groups can be retrieved via running the `qualys-group-list` command and using its ID field. | Required | 
+| add_ips | A comma-separated list of IP address/ranges to add to an asset group. An IP range is specified with a hyphen (for example, 10.10.10.1-10.10.10.100). | Optional | 
+| set_ips | A comma-separated list of IP address/ranges of an asset group to set. An IP range is specified with a hyphen (for example, 10.10.10.1-10.10.10.100). | Optional | 
+| remove_ips | A comma-separated list of IP addresses/ranges to remove from an asset group. An IP range is specified with a hyphen (for example, 10.10.10.1-10.10.10.100). | Optional | 
+| add_domains | A comma-separated list of domains to add to an asset group. Do not enter "www." at the start of the domain name. | Optional | 
+| set_domains | A comma-separated list of domains of an asset group to set. Do not enter "www." at the start of the domain name. | Optional | 
+| remove_domains | A comma-separated list of domains to remove from an asset group. Do not enter "www." at the start of the domain name. | Optional | 
+| add_dns_names | A comma-separated list of DNS names to add to an asset group. | Optional | 
+| set_dns_names | A comma-separated list of DNS names of asset group to set. | Optional | 
+| remove_dns_names | A comma-separated list of DNS names to remove from an asset group. | Optional | 
+| add_netbios_names | A comma-separated list of NETBIOS names to add to an asset group. | Optional | 
+| set_netbios_names | A comma-separated list of NETBIOS names of an asset group to set. | Optional | 
+| remove_netbios_names | A comma-separated list of NETBIOS names to delete from an asset group. | Optional | 
+| set_cvss_enviro_td | The CVSS environment target distribution to set. Possible values are: high, medium, low, none. | Optional | 
+| set_cvss_enviro_cr | The CVSS environment confidentiality requirement to set. Possible values are: high, medium, low. | Optional | 
+| set_cvss_enviro_ir | The CVSS environment integrity requirement to set. Possible values are: high, medium, low. | Optional | 
+| set_cvss_enviro_ar | The CVSS environment availability requirement to set. Possible values are: high, medium, low. | Optional | 
+| add_appliance_ids | A comma-separated list of appliance IDs to add to an asset group. | Optional | 
+| set_appliance_ids | A comma-separated list of appliance IDs of an asset group to set. | Optional | 
+| remove_appliance_ids | A comma-separated list of appliance IDs to remove from an asset group. | Optional | 
 
 
 #### Context Output
@@ -21573,8 +21573,8 @@ Update an asset group.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Qualys.AssetGroup.ID | String | Asset group ID. | 
-| Qualys.AssetGroup.DATETIME | Date | Date of when command was executed. | 
-| Qualys.AssetGroup.TEXT | String | Qualys response for asset group update. | 
+| Qualys.AssetGroup.DATETIME | Date | Date the command was executed. | 
+| Qualys.AssetGroup.TEXT | String | Qualys response for the asset group update. | 
 
 
 #### Command Example
@@ -21621,8 +21621,8 @@ Delete an asset group.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Qualys.AssetGroup.ID | String | Asset group ID. | 
-| Qualys.AssetGroup.DATETIME | Date | Date of when command was executed. | 
-| Qualys.AssetGroup.TEXT | String | Qualys response for asset group deletion. | 
+| Qualys.AssetGroup.DATETIME | Date | Date the command was executed. | 
+| Qualys.AssetGroup.TEXT | String | Qualys response for the asset group deletion. | 
 
 
 #### Command Example
@@ -21661,7 +21661,7 @@ Delete a scheduled scan.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | Scheduled Scan ID to delete. the ID can be retrieved via running the `qualys-schedule-scan-list` command, and using the ID field. | Required | 
+| id | Scheduled Scan ID to delete. The ID can be retrieved via running the `qualys-schedule-scan-list` command, and using the ID field. | Required | 
 
 
 #### Context Output
@@ -21669,8 +21669,8 @@ Delete a scheduled scan.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Qualys.ScheduleScan.ID | String | ID of the scheduled scan to be deleted. | 
-| Qualys.ScheduleScan.DATETIME | Date | Date of when command was executed. | 
-| Qualys.ScheduleScan.TEXT | String | Qualys response for schedule scan deletion. | 
+| Qualys.ScheduleScan.DATETIME | Date | Date the command was executed. | 
+| Qualys.ScheduleScan.TEXT | String | Qualys response for the scheduled scan deletion. | 
 
 
 #### Command Example
@@ -21715,7 +21715,7 @@ Gets a list of the supported time zone codes.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Qualys.TimeZone.DST_SUPPORTED | String | Whether DST is supported. | 
+| Qualys.TimeZone.DST_SUPPORTED | String | Whether Daylight Saving Time \(DST\) is supported. | 
 | Qualys.TimeZone.TIME_ZONE_CODE | String | Time zone code. | 
 | Qualys.TimeZone.TIME_ZONE_DETAILS | String | Timezone code details. | 
 
