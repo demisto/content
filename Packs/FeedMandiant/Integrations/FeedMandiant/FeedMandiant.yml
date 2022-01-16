@@ -9,7 +9,7 @@ configuration:
   required: false
   type: 8
 - additionalinfo: Indicators from this integration instance will be marked with this
-    reputation
+    reputation.
   display: Indicator Reputation
   name: feedReputation
   options:
@@ -19,7 +19,7 @@ configuration:
   - Bad
   required: false
   type: 18
-- additionalinfo: Reliability of the source providing the intelligence data
+- additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: B - Usually reliable
   display: Source Reliability
   name: feedReliability
@@ -33,7 +33,7 @@ configuration:
   required: true
   type: 15
 - additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
-    fetched from the feed
+    fetched from the feed.
   display: Traffic Light Protocol Color
   name: tlp_color
   options:
@@ -66,7 +66,7 @@ configuration:
   name: auth
   required: true
   type: 9
-- additionalinfo: 'The indicators'' type to fetch. Indicator type might include the
+- additionalinfo: 'The type of indicators to fetch. Indicator type might include the
     following: Domains, IPs, Files and URLs.'
   defaultvalue: Malware,Actors,Indicators
   display: Mandiant indicator type
@@ -84,7 +84,7 @@ configuration:
   type: 0
   additionalinfo: The maximum value allowed is 90 days.
 - defaultvalue: https://api.intelligence.fireeye.com
-  display: Server URL (e.g. https://api.intelligence.fireeye.com)
+  display: Server URL (e.g., https://api.intelligence.fireeye.com)
   name: url
   required: true
   type: 0
@@ -115,14 +115,14 @@ configuration:
   name: feedBypassExclusionList
   required: false
   type: 8
-- additionalinfo: Retrieve additional information for each indicator. Please note
+- additionalinfo: Retrieve additional information for each indicator. Note
     that this requires additional API calls.
   defaultvalue: 'false'
   display: Retrieve indicator metadata
   name: indicatorMetadata
   required: false
   type: 8
-- additionalinfo: Please note that this requires additional API calls.
+- additionalinfo: Note that this requires additional API calls.
   defaultvalue: 'false'
   display: Create relationships
   name: indicatorRelationships
@@ -139,13 +139,13 @@ script:
   commands:
   - arguments:
     - default: true
-      description: update context
+      description: Update context.
       isArray: false
       name: update_context
       required: false
       secret: false
     - default: false
-      description: number of indicators to fetch
+      description: The maximum number of indicators to fetch.
       isArray: false
       name: limit
       required: false
@@ -153,7 +153,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Retrieve additional data for each indicator.
+      description: Whether to retrieve additional data for each indicator.
       isArray: false
       name: indicatorMetadata
       predefined:
@@ -164,7 +164,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Create relationships
+      description: Whether to create indicator relationships.
       isArray: false
       name: indicatorRelationships
       predefined:
@@ -175,7 +175,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Malware,Indicators,Actors
-      description: What indicators types to fetch
+      description: The type of indicators to fetch.
       isArray: true
       name: type
       predefined:
@@ -185,7 +185,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: get mandiant indicators
+    description: Get mandiant indicators.
     execution: false
     name: feed-mandiant-get-indicators
   dockerimage: demisto/python3:3.9.9.25564
