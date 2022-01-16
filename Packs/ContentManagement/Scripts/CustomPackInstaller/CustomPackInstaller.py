@@ -6,6 +6,19 @@ from CommonServerPython import *
 SCRIPT_NAME = 'CustomPackInstaller'
 
 
+def build_url_parameters(skip_verify: bool, skip_validation: bool) -> str:
+    is_server_ge_to_6_5 = is_demisto_version_ge('6.5.0')
+    is_server_ge_to_6_6 = is_demisto_version_ge('6.6.0')
+
+    uri = '/contentpacks/installed/upload'
+    if skip_verify == 'true' and is_server_ge_to_6_5:
+        uri = f'{uri}?skipVerify=true'
+
+    if skip_validation == 'true' and is_server_ge_to_6_6:
+        uri = f'{uri}&skipValidation=true' if '?' in uri else f'{uri}?skipValidation=true'
+    return uri
+
+
 def install_custom_pack(pack_id: str, skip_verify: bool, skip_validation: bool) -> Tuple[bool, str]:
     """Installs a custom pack in the machine.
 
@@ -34,13 +47,7 @@ def install_custom_pack(pack_id: str, skip_verify: bool, skip_validation: bool) 
             pack_file_entry_id = file_in_context['EntryID']
             break
 
-    uri = '/contentpacks/installed/upload'
-
-    if skip_verify == 'true' and is_demisto_version_ge('6.5.0'):
-        uri = f'{uri}?skipVerify=true'
-
-    if skip_validation == 'true' and is_demisto_version_ge('6.6.0'):
-        uri = f'{uri}&skipValidation=true' if '?' in uri else f'{uri}?skipValidation=true'
+    uri = build_url_parameters(skip_verify=skip_verify, skip_validation=skip_validation)
 
     if pack_file_entry_id:
         status, res = execute_command(
