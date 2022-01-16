@@ -9,4 +9,4 @@ Use this Content Pack to prioritize risks that span your entire cloud estate and
 _For more information, visit [Wiz Inc.](https://wiz.io/)_
 
 [![Wiz Overview](
-https://github.com/demisto/content/raw/master/Packs/Wiz/Author_image.pngg)](https://wiz.io "Wiz Overview")
+https://github.com/demisto/content/raw/master/Packs/Wiz/Author_image.png)](https://wiz.io "Wiz Overview")
