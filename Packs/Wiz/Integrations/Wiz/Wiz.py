@@ -614,6 +614,11 @@ def reject_issue(issue_id, reject_reason, reject_note):
         demisto.debug(f"could not find Issue with ID {issue_id}")
         return {}
 
+    if 'errors' in response:
+        demisto.error(f"Could not find Issue with ID {issue_id}")
+        demisto.error(f"Error: {response}")
+        return (f"Could not find Issue with ID {issue_id}")
+
     return response
 
 
@@ -659,6 +664,11 @@ def reopen_issue(issue_id, reopen_note):
         demisto.debug(f"could not find Issue with ID {issue_id}")
         return {}
 
+    if 'errors' in response:
+        demisto.error(f"Could not find Issue with ID {issue_id}")
+        demisto.error(f"Error: {response}")
+        return (f"Could not find Issue with ID {issue_id}")
+
     return response
 
 
@@ -703,6 +713,11 @@ def issue_in_progress(issue_id):
         demisto.debug(f"could not find Issue with ID {issue_id}")
         return {}
 
+    if 'errors' in response:
+        demisto.error(f"Could not find Issue with ID {issue_id}")
+        demisto.error(f"Error: {response}")
+        return (f"Could not find Issue with ID {issue_id}")
+
     return response
 
 
@@ -735,6 +750,11 @@ def set_issue_note(issue_id, note):
     except DemistoException:
         demisto.debug(f"could not find Issue with ID {issue_id}")
         return {}
+
+    if 'errors' in issue_response:
+        demisto.error(f"Could not find Issue with ID {issue_id}")
+        demisto.error(f"Error: {issue_response}")
+        return (f"Could not find Issue with ID {issue_id}")
 
     # Check if note is empty for appending
     issue_response_json = issue_response['data']
@@ -770,7 +790,7 @@ def set_issue_note(issue_id, note):
     try:
         response = checkAPIerrors(query, variables)
     except DemistoException:
-        demisto.debug(f"could not find Issue with ID {issue_id}")
+        demisto.debug(f"Could not update Issue with ID {issue_id}")
         return {}
 
     return response
@@ -817,6 +837,11 @@ def clear_issue_note(issue_id):
         demisto.debug(f"could not find Issue with ID {issue_id}")
         return {}
 
+    if 'errors' in response:
+        demisto.error(f"Could not find Issue with ID {issue_id}")
+        demisto.error(f"Error: {response}")
+        return (f"Could not find Issue with ID {issue_id}")
+
     return response
 
 
@@ -851,8 +876,13 @@ def get_issue_evidence(issue_id):
     try:
         issue_response = checkAPIerrors(issue_query, issue_variables)
     except DemistoException:
-        demisto.debug(f"could not find Issue with ID {issue_id}")
+        demisto.debug(f"Could not find Issue with ID {issue_id}")
         return {}
+
+    if 'errors' in issue_response:
+        demisto.error(f"Could not find Issue with ID {issue_id}")
+        demisto.error(f"Error: {issue_response}")
+        return (f"Could not find Issue with ID {issue_id}")
 
     # Run the Graph Query
     issue_response_json = issue_response['data']
@@ -960,7 +990,7 @@ def get_issue_evidence(issue_id):
     try:
         response = checkAPIerrors(query, variables)
     except DemistoException:
-        demisto.debug(f"could not find Issue with ID {issue_id}")
+        demisto.debug(f"Failed getting Issue evidence on ID {issue_id}")
         return {}
 
     return response
@@ -1024,9 +1054,8 @@ def rescan_machine_disk(vm_id):
         return(f"could not find VM with ID {vm_id}")
 
     else:
-        vm_id_wiz = vm_response['data']['graphSearch']['nodes'][0]['entities'][0]['id']    
+        vm_id_wiz = vm_response['data']['graphSearch']['nodes'][0]['entities'][0]['id']
         demisto.log(f"Found VM with ID {vm_id}")
-
 
     variables = {
         'input': {

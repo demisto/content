@@ -13,9 +13,8 @@ This integration was integrated and tested with Wiz
     | sasecret | Service Account Secret | True |
     | api_endpoint | API Endpoint. Default: `https://api.us1.app.wiz.io/graphql` <br /> To find your API endpoint URL: <br />1. Log in to Wiz, then open your <a href="https://app.wiz.io/user/profile">user profile</a> <br />2. Copy the **API Endpoint URL** to use here. | True
     | first_fetch | First fetch timestamp \(`<number>` `<time unit>`, e.g., 12 hours, 7 days\) | False |
-    | streaming_type | Issue Streaming type.<br />Either `Wiz` (to push live Issues) or `XSOAR` (to constantly pull Issues)| False |
+    | Fetch incidents | Issue Streaming type.<br />Either `Fetch incidents` (to constantly pull Issues) or `Do not fetch` (to push live Issues)| False |
     | max_fetch | Max Issues to fetch | False |
-    | proxy | Use system proxy settings | False |
 
 3. Click **Test** to validate the API Endpoint, Service Account and connection.
 
