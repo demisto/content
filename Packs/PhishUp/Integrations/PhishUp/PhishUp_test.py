@@ -137,7 +137,7 @@ def test_auth_success_test_module(requests_mock):
 
 
 def test_auth_error_test_module(requests_mock, mocker):
-    from PhishUp import Client, main
+    from PhishUp import main
     patcher = mocker.patch("demistomock.command", return_value="test-module")
     patcher_mock_params = mocker.patch("demistomock.params", return_value=MOCK_PARAMS)
     patcher_mock_params.start()
