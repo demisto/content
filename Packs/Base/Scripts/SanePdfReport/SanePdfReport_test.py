@@ -2,6 +2,7 @@ import demistomock as demisto
 from SanePdfReport import *
 import subprocess
 import os
+import http.client
 
 
 def test_find_zombie_processes(mocker):
@@ -44,3 +45,35 @@ def test_sane_pdf_report(mocker):
 
     zombies, output = find_zombie_processes()
     assert len(zombies) == 0
+
+
+def test_markdown_image_server(mocker, capfd):
+    with capfd.disabled():
+        mocker.patch.object(demisto, 'results')
+        fileName = '1234-5678-9012-3456.png'
+        path = f'./TestData/{fileName}'
+        mocker.patch.object(demisto, 'getFilePath', return_value={'path': path, 'name': fileName})
+
+        serverThread = threading.Thread(target=startServer)
+        serverThread.daemon = True
+        serverThread.start()
+        time.sleep(5)
+
+        # wrong path
+        conn = http.client.HTTPConnection("localhost", 10888)
+        conn.request("GET", "/wrong/path")
+        res1 = conn.getresponse()
+        assert res1.status == 400
+
+        # correct markdown image pat
+        conn.request("GET", "/markdown/image/1234-5678-9012-3456.png")
+        res2 = conn.getresponse()
+        assert res2.status == 200
+
+        # correct markdown image path with missing file
+        mocker.patch.object(demisto, 'getFilePath', return_value={'path': '', 'name': ''})
+        conn.request("GET", "/markdown/image/dummyFile.png")
+        res3 = conn.getresponse()
+        assert res3.status == 404
+
+        conn.close()

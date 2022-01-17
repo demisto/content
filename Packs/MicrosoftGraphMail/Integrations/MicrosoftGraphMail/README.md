@@ -6,6 +6,7 @@ For more details about the authentication used in this integration, see [Microso
 ### Required Permissions
 * Mail.ReadWrite - Application
 * User.Read - Application
+* Mail.Send - Application
 
 ### OData Usage
 The OData parameter can be used to create different queries for the ***msgraph-mail-list-emails*** and ***msgraph-mail-get-email*** commands. Please see [OData Docs](https://docs.microsoft.com/en-us/graph/query-parameters) for detailed information.
@@ -34,6 +35,7 @@ The query parameter '$filter' is not supported when using the 'search' parameter
 | folder_to_fetch | The name of the folder from which to fetch incidents (supports Folder ID and sub-folders e.g. Inbox/Phishing). | False |
 | first_fetch | The first fetched timestamp ((number) (time unit), e.g., 12 hours, 7 days). | False |
 | fetch_limit | The maximum number of emails to pull per fetch. | False |
+| HTTP Timeout | The timeout of the HTTP requests sent to Microsoft Graph API (in seconds). | False |
 | insecure | Whether to trust any certificate (not secure). | False |
 | proxy | Whether to use system proxy settings. | False |
 | self_deployed | Whether to use a self deployed Azure Application. | False |
@@ -72,28 +74,32 @@ Gets the properties of returned emails.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MSGraphMail.ID | String | The ID of the email. |
-| MSGraphMail.Created | Date | The time the email was created. |
-| MSGraphMail.LastModifiedTime | Date | The time the email was last modified. |
-| MSGraphMail.ReceivedTime | Date | The time the email was received. |
-| MSGraphMail.SendTime | Date | The time the email was sent. |
-| MSGraphMail.Categories | String | Categories of the email. |
-| MSGraphMail.HasAttachments | Boolean | Whether the email has attachments. |
-| MSGraphMail.Subject | String | The subject of email. |
-| MSGraphMail.IsDraft | Boolean | Whether the email is a draft. |
-| MSGraphMail.Body | String | The content \(body\) of the email. |
-| MSGraphMail.Sender.Name | String | The name of the sender. |
-| MSGraphMail.Sender.Address | String | The email address of the sender. |
-| MSGraphMail.From.Name | String | The name of the user in the 'from' field of the email. |
-| MSGraphMail.From.Address | String | The email address of the user in the 'from' field of the email |
-| MSGraphMail.CCRecipients.Name | String | The names of the CC recipients. |
-| MSGraphMail.CCRecipients.Address | String | The email address of the user in the 'cc' field of the email. |
-| MSGraphMail.BCCRecipients.Name | String | The names of the users in the 'bcc' field of the email. |
-| MSGraphMail.BCCRecipients.Address | String | The email address of the user in the 'bcc' field of the email. |
-| MSGraphMail.ReplyTo.Name | String | The name in the 'replyTo' field of the email. |
-| MSGraphMail.ReplyTo.Address | String | The email address in the 'replyTo' field of the email. |
-| MSGraphMail.UserID | String | The ID of the user. |
-| MSGraphMail.NextPage | String | A token to pass to the next list command to retrieve additional results. |
+| MSGraphMail.ID | String | The ID of the email. | 
+| MSGraphMail.Created | Date | The time the email was created. | 
+| MSGraphMail.LastModifiedTime | Date | The time the email was last modified. | 
+| MSGraphMail.ReceivedTime | Date | The time the email was received. | 
+| MSGraphMail.SendTime | Date | The time the email was sent. | 
+| MSGraphMail.Categories | String | Categories of the email. | 
+| MSGraphMail.HasAttachments | Boolean | Whether the email has attachments. | 
+| MSGraphMail.Subject | String | The subject of email. | 
+| MSGraphMail.IsDraft | Boolean | Whether the email is a draft. | 
+| MSGraphMail.Body | String | The content \(body\) of the email. | 
+| MSGraphMail.Sender.Name | String | The name of the sender. | 
+| MSGraphMail.Sender.Address | String | The email address of the sender. | 
+| MSGraphMail.From.Name | String | The name of the user in the 'from' field of the email. | 
+| MSGraphMail.From.Address | String | The email address of the user in the 'from' field of the email | 
+| MSGraphMail.CCRecipients.Name | String | The names of the CC recipients. | 
+| MSGraphMail.CCRecipients.Address | String | The email address of the user in the 'cc' field of the email. | 
+| MSGraphMail.BCCRecipients.Name | String | The names of the users in the 'bcc' field of the email. | 
+| MSGraphMail.BCCRecipients.Address | String | The email address of the user in the 'bcc' field of the email. | 
+| MSGraphMail.ReplyTo.Name | String | The name in the 'replyTo' field of the email. | 
+| MSGraphMail.ReplyTo.Address | String | The email address in the 'replyTo' field of the email. | 
+| MSGraphMail.UserID | String | The ID of the user. | 
+| MSGraphMail.ConversationID | String | The ID of the conversation. |
+| MSGraphMail.InternetMessageID | String | Internet Message ID of the message |
+| MSGraphMail.Recipients.Name | String | The name of the user in the 'toRecipients' field of the email. |
+| MSGraphMail.Recipients.Address | String | The email address of the user in the 'toRecipients' field of the email. |
+| MSGraphMail.NextPage | String | A token to pass to the next list command to retrieve additional results. | 
 
 
 ##### Command Example
@@ -108,6 +114,7 @@ Gets the properties of returned emails.
             "BCCRecipients": null,
             "CCRecipients": null,
             "Categories": [],
+            "ConversationID": """,
             "Created": "2020-03-29T09:56:37Z",
             "Flag": {
                 "flagStatus": "notFlagged"
@@ -120,9 +127,16 @@ Gets the properties of returned emails.
             "Headers": null,
             "ID": """",
             "Importance": "low",
+            "InternetMessageID": """,
             "IsDraft": false,
             "LastModifiedTime": "2020-03-29T09:56:37Z",
             "ReceivedTime": "2020-03-29T09:56:37Z",
+            "Recipients": [
+                {
+                "Address": "dev@demistodev.onmicrosoft.com",
+                "Name": "demisto dev"
+                }
+            ],
             "ReplyTo": null,
             "SendTime": "2020-03-29T09:56:37Z",
             "Sender": {
@@ -138,15 +152,15 @@ Gets the properties of returned emails.
 
 ##### Human Readable Output
 ##### ### Total of 7 of mails received
-|Subject|From|SendTime|ID|
-|---|---|---|---|
-| Demo test send mail | Name: demisto dev, Address: dev<span\>>@demistodev.onmicrosoft.com | 2020-03-29T09:56:37Z | AQMkADY0ZjMxZmMyLWU3MjgtNDNiOS04ZDZmLTYxZDVkYzk1MTg5MwBGAAADbTQIjNRTu0OcDJw7xPpreQcAdQ8OJfUvxEa-MxMBZHrT7QAAAgEJAAAAdQ8OJfUvxEa-MxMBZHrT7QACY4VISQBBBA== |
-| RE: Demo test | Name: demisto dev, Address: dev<span\>>@demistodev.onmicrosoft.com | 2020-03-29T09:56:18Z | AQMkADY0ZjMxZmMyLWU3MjgtNDNiOS04ZDZmLTYxZDVkYzk1MTg5MwBGAAADbTQIjNRTu0OcDJw7xPpreQcAdQ8OJfUvxEa-MxMBZHrT7QAAAgEJAAAAdQ8OJfUvxEa-MxMBZHrT7QACY4VISQCCAA== |
-| Demo test send mail | Name: demisto dev, Address: dev<span\>>@demistodev.onmicrosoft.com | 2020-03-29T09:52:59Z | AQMkADY0ZjMxZmMyLWU3MjgtNDNiOS04ZDZmLTYxZDVkYzk1MTg5MwBGAAADbTQIjNRTu0OcDJw7xPpreQcAdQ8OJfUvxEa-MxMBZHrT7QAAAgEJDCAAdQ8OJfUvxEa-MxMBZHrT7QACY4VISQAAAA== |
-| RE: Demo test | Name: demisto dev, Address: dev<span\>>@demistodev.onmicrosoft.com | 2020-03-29T09:52:41Z | AQMkADY0ZjMxZmMyLWU3MjgtNDNiOS04ZDZmLTYxZDVkYzk1MTg5MwBGAAADbTQIjNRTu0OcDJw7xPpreQcAdQ8OJfUvxEa-MxMBZHrT7QAAAgEJAAAAdQ8OJfUvxEk-MxMBZHrT7QACY4VISQAAAA== |
-| RE: Demo test | Name: demisto dev, Address: dev<span\>>@demistodev.onmicrosoft.com | 2020-03-29T09:51:06Z | AAAkADY0ZjMxZmMyLWU3MjgtNDNiOS04ZDZmLTYxZDVkYzk1MTg5MwBGAAADbTQIjNRTu0OcDJw7xPpreQcAdQ8OJfUvxEa-MxMBZHrT7QAAAgEJAAAAdQ8OJfUvxEa-MxMBZHrT7QACY4VISQAAAA== |
-| Demo test send mail | Name: demisto dev, Address: dev<span\>>@demistodev.onmicrosoft.com | 2020-03-29T09:06:54Z | ABKkADY0ZjMxZmMyLWU3MjgtNDNiOS04ZDZmLTYxZDVkYzk1MTg5MwBGAAADbTQIjNRTu0OcDJw7xPpreQcAdQ8OJfUvxEa-MxMBZHrT7QAAAgEJAAAAdQ8OJfUvxEa-MxMBZHrT7QACY4VISQAAAA== |
-| Demo test | Name: demisto dev, Address: dev<span\>>@demistodev.onmicrosoft.com | 2020-03-26T09:21:14Z | AQKkADY0ZjMxZmMyLWU3MjgtNDNiOS04ZDZmLTYxZDVkYzk1MTg5MwBGAAADbTQIjNRTu0OcDJw7xPpreQcAdQ8OJfUvxEa-MxMBZHrT7QAAAgEJAAAAdQ8OJfUvxEa-MxMBZHrT7QACY4VISQAAAA== |
+|Subject|From|Recipients|SendTime|ID|InternetMessageID
+|---|---|---|---|---|---|
+| Demo test send mail | Name: demisto dev, Address: dev<span\>>@demistodev.onmicrosoft.com | {'Name': 'demisto dev', 'Address': 'dev<span\>>@demistodev.onmicrosoft.com'} | 2020-03-29T09:56:37Z | AQMkADY0ZjMxZmMyLWU3MjgtNDNiOS04ZDZmLTYxZDVkYzk1MTg5MwBGAAADbTQIjNRTu0OcDJw7xPpreQcAdQ8OJfUvxEa-MxMBZHrT7QAAAgEJAAAAdQ8OJfUvxEa-MxMBZHrT7QACY4VISQBBBA== | "" |
+| RE: Demo test | Name: demisto dev, Address: dev<span\>>@demistodev.onmicrosoft.com | {'Name': 'demisto dev', 'Address': 'dev<span\>>@demistodev.onmicrosoft.com'} | 2020-03-29T09:56:18Z | AQMkADY0ZjMxZmMyLWU3MjgtNDNiOS04ZDZmLTYxZDVkYzk1MTg5MwBGAAADbTQIjNRTu0OcDJw7xPpreQcAdQ8OJfUvxEa-MxMBZHrT7QAAAgEJAAAAdQ8OJfUvxEa-MxMBZHrT7QACY4VISQCCAA== | "" |
+| Demo test send mail | Name: demisto dev, Address: dev<span\>>@demistodev.onmicrosoft.com | {'Name': 'demisto dev', 'Address': 'dev<span\>>@demistodev.onmicrosoft.com'} | 2020-03-29T09:52:59Z | AQMkADY0ZjMxZmMyLWU3MjgtNDNiOS04ZDZmLTYxZDVkYzk1MTg5MwBGAAADbTQIjNRTu0OcDJw7xPpreQcAdQ8OJfUvxEa-MxMBZHrT7QAAAgEJDCAAdQ8OJfUvxEa-MxMBZHrT7QACY4VISQAAAA== | "" |
+| RE: Demo test | Name: demisto dev, Address: dev<span\>>@demistodev.onmicrosoft.com | {'Name': 'demisto dev', 'Address': 'dev<span\>>@demistodev.onmicrosoft.com'} | 2020-03-29T09:52:41Z | AQMkADY0ZjMxZmMyLWU3MjgtNDNiOS04ZDZmLTYxZDVkYzk1MTg5MwBGAAADbTQIjNRTu0OcDJw7xPpreQcAdQ8OJfUvxEa-MxMBZHrT7QAAAgEJAAAAdQ8OJfUvxEk-MxMBZHrT7QACY4VISQAAAA== | "" |
+| RE: Demo test | Name: demisto dev, Address: dev<span\>>@demistodev.onmicrosoft.com | {'Name': 'demisto dev', 'Address': 'dev<span\>>@demistodev.onmicrosoft.com'} | 2020-03-29T09:51:06Z | AAAkADY0ZjMxZmMyLWU3MjgtNDNiOS04ZDZmLTYxZDVkYzk1MTg5MwBGAAADbTQIjNRTu0OcDJw7xPpreQcAdQ8OJfUvxEa-MxMBZHrT7QAAAgEJAAAAdQ8OJfUvxEa-MxMBZHrT7QACY4VISQAAAA== | "" |
+| Demo test send mail | Name: demisto dev, Address: dev<span\>>@demistodev.onmicrosoft.com | {'Name': 'demisto dev', 'Address': 'dev<span\>>@demistodev.onmicrosoft.com'} | 2020-03-29T09:06:54Z | ABKkADY0ZjMxZmMyLWU3MjgtNDNiOS04ZDZmLTYxZDVkYzk1MTg5MwBGAAADbTQIjNRTu0OcDJw7xPpreQcAdQ8OJfUvxEa-MxMBZHrT7QAAAgEJAAAAdQ8OJfUvxEa-MxMBZHrT7QACY4VISQAAAA== | "" |
+| Demo test | Name: demisto dev, Address: dev<span\>>@demistodev.onmicrosoft.com | {'Name': 'demisto dev', 'Address': 'dev<span\>>@demistodev.onmicrosoft.com'} | 2020-03-26T09:21:14Z | AQKkADY0ZjMxZmMyLWU3MjgtNDNiOS04ZDZmLTYxZDVkYzk1MTg5MwBGAAADbTQIjNRTu0OcDJw7xPpreQcAdQ8OJfUvxEa-MxMBZHrT7QAAAgEJAAAAdQ8OJfUvxEa-MxMBZHrT7QACY4VISQAAAA== | "" |
 
 
 
@@ -176,27 +190,31 @@ Returns the properties of an email.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MSGraphMail.ID | String | The ID of the email. |
-| MSGraphMail.Created | Date | The time the email was created. |
-| MSGraphMail.LastModifiedTime | Date | The time the email was last modified. |
-| MSGraphMail.ReceivedTime | Date | The time the email was received. |
-| MSGraphMail.SendTime | Date | The time the email was sent. |
-| MSGraphMail.Categories | String | The categories of the email. |
-| MSGraphMail.HasAttachments | Boolean | Whether the email has attachments. |
-| MSGraphMail.Subject | String | The subject of the email. |
-| MSGraphMail.IsDraft | Boolean | Whether the email is a draft. |
-| MSGraphMail.Body | String | The content (body) of the email. |
-| MSGraphMail.Sender.Name | String | The name of the sender. |
-| MSGraphMail.Sender.Address | String | The email address of the sender. |
-| MSGraphMail.From.Name | String | The name of the user in the 'from' field of the email. |
-| MSGraphMail.From.Address | String | The email address of the user in the 'from' field of the email. |
-| MSGraphMail.CCRecipients.Name | String | The names of the users in the 'cc' field of the email. |
-| MSGraphMail.CCRecipients.Address | String | The email address of the user in the 'cc' field of the email. |
-| MSGraphMail.BCCRecipients.Name | String | The names of the users in the 'bcc' field of the email. |
-| MSGraphMail.BCCRecipients.Address | String | The email address of the user in the 'bcc' field of the email. |
-| MSGraphMail.ReplyTo.Name | String | The name in the 'replyTo' field of the email. |
-| MSGraphMail.ReplyTo.Address | String | The email address in the 'replyTo' field of the email. |
-| MSGraphMail.UserID | String | The ID of the user. |
+| MSGraphMail.ID | String | The ID of the email. | 
+| MSGraphMail.Created | Date | The time the email was created. | 
+| MSGraphMail.LastModifiedTime | Date | The time the email was last modified. | 
+| MSGraphMail.ReceivedTime | Date | The time the email was received. | 
+| MSGraphMail.SendTime | Date | The time the email was sent. | 
+| MSGraphMail.Categories | String | The categories of the email. | 
+| MSGraphMail.HasAttachments | Boolean | Whether the email has attachments. | 
+| MSGraphMail.Subject | String | The subject of the email. | 
+| MSGraphMail.IsDraft | Boolean | Whether the email is a draft. | 
+| MSGraphMail.Body | String | The content (body) of the email. | 
+| MSGraphMail.Sender.Name | String | The name of the sender. | 
+| MSGraphMail.Sender.Address | String | The email address of the sender. | 
+| MSGraphMail.From.Name | String | The name of the user in the 'from' field of the email. | 
+| MSGraphMail.From.Address | String | The email address of the user in the 'from' field of the email. | 
+| MSGraphMail.CCRecipients.Name | String | The names of the users in the 'cc' field of the email. | 
+| MSGraphMail.CCRecipients.Address | String | The email address of the user in the 'cc' field of the email. | 
+| MSGraphMail.BCCRecipients.Name | String | The names of the users in the 'bcc' field of the email. | 
+| MSGraphMail.BCCRecipients.Address | String | The email address of the user in the 'bcc' field of the email. | 
+| MSGraphMail.ReplyTo.Name | String | The name in the 'replyTo' field of the email. | 
+| MSGraphMail.ReplyTo.Address | String | The email address in the 'replyTo' field of the email. | 
+| MSGraphMail.UserID | String | The ID of the user. | 
+| MSGraphMail.ConversationID | String | The ID of the conversation. |
+| MSGraphMail.InternetMessageID | String | Internet Message ID of the message |
+| MSGraphMail.Recipients.Name | String | The name of the user in the 'toRecipients' field of the email. |
+| MSGraphMail.Recipients.Address | String | The email address of the user in the 'toRecipients' field of the email. |
 
 
 ##### Command Example
@@ -209,6 +227,7 @@ Returns the properties of an email.
         "BCCRecipients": null,
         "CCRecipients": null,
         "Categories": [],
+        "ConversationID": """,
         "Created": "2020-03-26T09:21:15Z",
         "Flag": {
             "flagStatus": "notFlagged"
@@ -221,9 +240,16 @@ Returns the properties of an email.
         "Headers": null,
         "ID": """",
         "Importance": "low",
+        "InternetMessageID": """,
         "IsDraft": false,
         "LastModifiedTime": "2020-03-29T09:56:18Z",
         "ReceivedTime": "2020-03-26T09:21:15Z",
+        "Recipients": [
+            {
+            "Address": "dev@demistodev.onmicrosoft.com",
+            "Name": "demisto dev"
+            }
+        ],
         "ReplyTo": null,
         "SendTime": "2020-03-26T09:21:14Z",
         "Sender": {
@@ -238,9 +264,9 @@ Returns the properties of an email.
 
 ##### Human Readable Output
 ##### Results for message ID ""
-|ID|Subject|SendTime|Sender|From|HasAttachments|Body|
-|---|---|---|---|---|---|---|
-| "" | Demo test | 2020-03-26T09:21:14Z | Name: demisto dev, Address: dev<span\>>@demistodev.onmicrosoft.com | Name: demisto dev, Address: dev<span\>>@demistodev.onmicrosoft.com | false |  |
+|ID|Subject|SendTime|Sender|From|Recipients|HasAttachments|Body|
+|---|---|---|---|---|---|---|---|
+| "" | Demo test | 2020-03-26T09:21:14Z | Name: demisto dev, Address: dev<span\>>@demistodev.onmicrosoft.com | Name: demisto dev, Address: dev<span\>>@demistodev.onmicrosoft.com | {'Name': 'demisto dev', 'Address': 'dev<span\>>@demistodev.onmicrosoft.com'} | false |  |
 
 #### OData Usage
 The OData parameter can be used to create different queries. Please see [OData Docs](https://docs.microsoft.com/en-us/graph/query-parameters) for detailed information.
@@ -1126,3 +1152,6 @@ Replies to an email using Graph Mail.
 |ID|body|bccRecipients|bodyPreview|ccRecipients|subject|toRecipients|
 |---|---|---|---|---|---|---|
 |AAMkAGY3OTQyM| content: This is the body. contentType: html | dev2@demistodev.onmicrosoft.com | This is the body | dev3@demistodev.onmicrosoft.com | Re: This is the subject | dev@demistodev.onmicrosoft.com |
+
+## Troubleshooting
+In case you encounter *Read timeout* error, you can increase the HTTP timeout in the *HTTP Timeout* integration parameter.

@@ -6,7 +6,7 @@ from ServiceNowv2 import get_server_url, get_ticket_context, get_ticket_human_re
     list_table_fields_command, query_computers_command, get_table_name_command, add_tag_command, query_items_command, \
     get_item_details_command, create_order_item_command, document_route_to_table, fetch_incidents, main, \
     get_mapping_fields_command, get_remote_data_command, update_remote_system_command, build_query_for_request_params, \
-    ServiceNowClient, oauth_test_module, login_command, get_modified_remote_data_command
+    ServiceNowClient, oauth_test_module, login_command, get_modified_remote_data_command, parse_build_query
 from ServiceNowv2 import test_module as module
 from test_data.response_constants import RESPONSE_TICKET, RESPONSE_MULTIPLE_TICKET, RESPONSE_UPDATE_TICKET, \
     RESPONSE_UPDATE_TICKET_SC_REQ, RESPONSE_CREATE_TICKET, RESPONSE_CREATE_TICKET_WITH_OUT_JSON, RESPONSE_QUERY_TICKETS, \
@@ -18,7 +18,7 @@ from test_data.response_constants import RESPONSE_TICKET, RESPONSE_MULTIPLE_TICK
     RESPONSE_FETCH_ATTACHMENTS_TICKET, RESPONSE_TICKET_MIRROR, MIRROR_COMMENTS_RESPONSE, RESPONSE_MIRROR_FILE_ENTRY, \
     RESPONSE_ASSIGNMENT_GROUP, RESPONSE_MIRROR_FILE_ENTRY_FROM_XSOAR, MIRROR_COMMENTS_RESPONSE_FROM_XSOAR, \
     MIRROR_ENTRIES, RESPONSE_CLOSING_TICKET_MIRROR, RESPONSE_TICKET_ASSIGNED, OAUTH_PARAMS, \
-    RESPONSE_QUERY_TICKETS_EXCLUDE_REFERENCE_LINK
+    RESPONSE_QUERY_TICKETS_EXCLUDE_REFERENCE_LINK, MIRROR_ENTRIES_WITH_EMPTY_USERNAME
 from test_data.result_constants import EXPECTED_TICKET_CONTEXT, EXPECTED_MULTIPLE_TICKET_CONTEXT, \
     EXPECTED_TICKET_HR, EXPECTED_MULTIPLE_TICKET_HR, EXPECTED_UPDATE_TICKET, EXPECTED_UPDATE_TICKET_SC_REQ, \
     EXPECTED_CREATE_TICKET, EXPECTED_CREATE_TICKET_WITH_OUT_JSON, EXPECTED_QUERY_TICKETS, EXPECTED_ADD_LINK_HR, \
@@ -118,6 +118,25 @@ def test_split_fields_with_special_delimiter():
         assert "must contain a '=' to specify the keys and values" in str(err)
         return
     assert False
+
+
+@pytest.mark.parametrize('query, parsed, result', [
+    ('&', False, '&'),
+    ('&', True, []),
+    ('noampersand', False, 'noampersand'),
+    ('noampersand', True, 'noampersand')
+])
+def test_parse_build_query(query, parsed, result):
+    """Unit test
+    Given
+    - an ampersand
+    When
+    - no parsing the ampersand
+    - when parsing the ampersand
+    Then
+    -  Validate the query field is parsed correctly.
+    """
+    assert parse_build_query(query, parse_amp=parsed) == result
 
 
 @pytest.mark.parametrize('command, args, response, expected_result, expected_auto_extract', [
@@ -762,7 +781,8 @@ def add_comment_request(*args):
     return {'id': "1234", 'comment': "This is a comment"}
 
 
-def test_upload_entries_update_remote_system_command(mocker):
+@pytest.mark.parametrize('mirror_entries', [MIRROR_ENTRIES, MIRROR_ENTRIES_WITH_EMPTY_USERNAME])
+def test_upload_entries_update_remote_system_command(mocker, mirror_entries):
     """
     Given:
         -  ServiceNow client
@@ -777,7 +797,7 @@ def test_upload_entries_update_remote_system_command(mocker):
                     sysparm_query='sysparm_query', sysparm_limit=10, timestamp_field='opened_at',
                     ticket_type='incident', get_attachments=False, incident_name='description')
     params = {}
-    args = {'remoteId': '1234', 'data': {}, 'entries': MIRROR_ENTRIES, 'incidentChanged': False, 'delta': {}}
+    args = {'remoteId': '1234', 'data': {}, 'entries': mirror_entries, 'incidentChanged': False, 'delta': {}}
     mocker.patch.object(client, 'upload_file', side_effect=upload_file_request)
     mocker.patch.object(client, 'add_comment', side_effect=add_comment_request)
 

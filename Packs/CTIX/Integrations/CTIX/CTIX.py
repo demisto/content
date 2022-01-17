@@ -9,6 +9,7 @@ import base64
 import hashlib
 import hmac
 import time
+import json
 import requests
 import urllib.parse
 import urllib3
@@ -40,6 +41,7 @@ class Client(BaseClient):
     """
         Client to use in the CTIX integration. Overrides BaseClient
     """
+
     def __init__(self, base_url: str, access_id: str, secret_key: str, verify: bool, proxies: dict) -> None:
         self.base_url = base_url
         self.access_id = access_id
@@ -60,18 +62,29 @@ class Client(BaseClient):
         A wrapper to send requests and handle responses.
         """
         expires = int(time.time() + 30)
+        request_type = kwargs.pop("request_type", "get")
+        data = kwargs.get("data", None)
         kwargs["AccessID"] = self.access_id
         kwargs["Expires"] = expires
         kwargs["Signature"] = self.signature(expires)
 
         full_url = full_url + "?" + urllib.parse.urlencode(kwargs)
-        resp = (requests.get(full_url, verify=self.verify, proxies=self.proxies))
+        if request_type == "get":
+            resp = requests.get(full_url, verify=self.verify, proxies=self.proxies)
+        else:
+            headers = {"content-type": "application/json"}
+            resp = requests.post(
+                full_url,
+                data=data,
+                verify=self.verify,
+                proxies=self.proxies,
+                headers=headers,
+            )
         status_code = resp.status_code
         try:
             resp.raise_for_status()  # Raising an exception for non-200 status code
         except requests.exceptions.HTTPError as e:
-            err_msg = 'Error in API call [{}]' \
-                .format(resp.status_code)
+            err_msg = "Error in API call [{}]".format(resp.status_code)
             raise DemistoException(err_msg, e)
         json_data = resp.json()
         response = {"data": json_data, "status": status_code}
@@ -127,6 +140,21 @@ class Client(BaseClient):
         url_suffix = "objects/indicator/"
         client_url = self.base_url + url_suffix
         return self.http_request(full_url=client_url, **params)
+
+    def create_intel(self, data: dict):
+        """
+        Makes post call and creates Intel In CTIX Platform
+        :type data: ``dict``
+        :param data: Intel data
+
+        :return: dict containing post call response returned from the API
+        :rtype: ``Dict[str, Any]``
+        """
+        url_suffix = "create-intel/"
+        client_url = self.base_url + url_suffix
+        return self.http_request(
+            full_url=client_url, data=json.dumps(data), request_type="post"
+        )
 
     def get_url_details(self, url: list, enhanced: bool = False):
         """Gets the URL Details
@@ -493,6 +521,28 @@ def file_details_command(client: Client, args: Dict[str, Any]) -> List[CommandRe
     return file_data_list
 
 
+def create_intel_command(client: Client, args: Dict[str, Any]) -> Dict:
+    """
+    create_intel command: Creates Intel in CTIX
+    """
+    data = {
+        "ips": args.get("ips", []),
+        "urls": args.get("urls", []),
+        "domains": args.get("domains", []),
+        "files": args.get("files", []),
+        "emails": args.get("emails", []),
+        "malwares": args.get("malwares", []),
+        "threat_actors": args.get("threat_actors", []),
+        "attack_patterns": args.get("attack_patterns", []),
+        "title": args.get("title", None),
+        "description": args.get("description", None),
+        "confidence": args.get("confidence", None),
+        "tlp": args.get("tlp", None),
+    }
+    create_intel_response = client.create_intel(data)
+    return create_intel_response
+
+
 def main() -> None:
 
     base_url = demisto.params().get('base_url')
@@ -522,6 +572,8 @@ def main() -> None:
             return_results(url_details_command(client, demisto.args()))
         elif demisto.command() == 'file':
             return_results(file_details_command(client, demisto.args()))
+        elif demisto.command() == 'create_intel':
+            return_results(create_intel_command(client, demisto.args()))
 
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback

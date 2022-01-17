@@ -37,7 +37,7 @@ EOF
 ```
 3. Retrieve the token object name created into a env var called TOKEN
 ```
-TOKENNAME=`kubectl -n kube-system get serviceaccount/kubeconfig-sa -o jsonpath='{.secrets[0].name}'`
+TOKENNAME=`kubectl -n kube-system get serviceaccount/xsoar -o jsonpath='{.secrets[0].name}'`
 ```
 4. Output the API token value
 ```

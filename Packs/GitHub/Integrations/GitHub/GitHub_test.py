@@ -5,7 +5,7 @@ import pytest
 import demistomock as demisto
 from CommonServerPython import CommandResults
 from GitHub import main, list_branch_pull_requests, list_all_projects_command, \
-    add_issue_to_project_board_command, get_path_data
+    add_issue_to_project_board_command, get_path_data, github_releases_list_command, get_branch_command
 import GitHub
 
 REGULAR_BASE_URL = 'https://api.github.com'
@@ -259,6 +259,68 @@ def test_get_path_data_command(requests_mock, mocker):
     assert command_results.outputs_key_field == 'url'
     assert command_results.raw_response == test_get_file_data_command_response['response']
     assert command_results.outputs == test_get_file_data_command_response['expected']
+
+
+def test_releases_list_command(requests_mock, mocker):
+    """
+    Given:
+    - Demisto args
+
+    When:
+    - Calling 'GitHub-releases_list' command.
+
+    Then:
+    - Ensure expected CommandResults object is returned.
+
+    """
+    mocker.patch.object(demisto, 'args', return_value={'repository': 'demisto-sdk', 'organization': 'demisto',
+                                                       'limit': 2})
+    GitHub.TOKEN, GitHub.USE_SSL = '', ''
+    GitHub.HEADERS = dict()
+    GitHub.BASE_URL = 'https://api.github.com/'
+    test_releases_list_command_data = load_test_data(
+        './test_data/releases_get_response.json')
+    requests_mock.get(f'{GitHub.BASE_URL}/repos/demisto/demisto-sdk/releases?per_page=100&page=1',
+                      json=test_releases_list_command_data['response'])
+    mocker_results = mocker.patch('GitHub.return_results')
+    github_releases_list_command()
+
+    command_results: CommandResults = mocker_results.call_args[0][0]
+    assert command_results.outputs_prefix == 'GitHub.Release'
+    assert command_results.outputs_key_field == 'id'
+    assert command_results.outputs == test_releases_list_command_data['expected']
+
+
+def test_get_branch(requests_mock, mocker):
+    """
+    Given:
+        A branch name that does not have an author or parents
+    When:
+        Running the get_branch_command function.
+    Then:
+        Assert that the flow succeeded and that the output is as expected
+    """
+    mocker.patch.object(demisto, 'args', return_value={'branch_name': 'my-branch'})
+    GitHub.TOKEN, GitHub.USE_SSL = '', ''
+    GitHub.HEADERS = dict()
+    GitHub.BASE_URL = 'https://api.github.com/'
+    GitHub.USER_SUFFIX = '/repos/user/repo'
+    raw_response = load_test_data('./test_data/get_branch_response.json')
+    requests_mock.get(f'{GitHub.BASE_URL}/repos/user/repo/branches/my-branch',
+                      json=raw_response)
+    mocker_results = mocker.patch('GitHub.return_outputs')
+
+    get_branch_command()
+    return_outputs_res: CommandResults = mocker_results.call_args.kwargs.get('outputs')
+    assert return_outputs_res == {
+        'GitHub.Branch(val.Name === obj.Name && val.CommitSHA === obj.CommitSHA)': {'Name': 'my_branch',
+                                                                                    'CommitSHA': 'dsfsdf',
+                                                                                    'CommitNodeID': '45678=',
+                                                                                    'CommitAuthorID': None,
+                                                                                    'CommitAuthorLogin': None,
+                                                                                    'CommitParentSHA': ['dfg',
+                                                                                                        'srdtfy'],
+                                                                                    'Protected': False}}
 
 
 @pytest.mark.parametrize('mock_params, expected_url', [

@@ -2110,6 +2110,8 @@
    "id": 16
   },
   "enrich_offenses_result": {
+   "mirroring_events_message": "",
+   "last_mirror_in_time": "2021-09-22T14:10:40.169076",
    "username_count": 1,
    "description": "Session Closed\n",
    "rules": [
@@ -2171,6 +2173,8 @@
    "LinkToOffense": "192.168.0.1/api/console/do/sem/offensesummary?appName=Sem&pageId=OffenseSummary&summaryId=16"
   },
   "enrich_closed_offense": {
+   "mirroring_events_message": "",
+   "last_mirror_in_time": "2021-09-22T14:01:47.047215",
    "username_count": 1,
    "description": "Session Closed\n",
    "rules": [

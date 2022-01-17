@@ -1,0 +1,91 @@
+{
+	"defaultIncidentType": "",
+	"description": "Maps a User Profile data to the PrismaCloudIAM user data.",
+	"id": "User Profile - PrismaCloud (Outgoing)",
+	"mapping": {
+		"User Profile - Create": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+				"email": {
+					"complex": null,
+					"simple": "email"
+				},
+				"firstName": {
+					"complex": null,
+					"simple": "givenname"
+				},
+				"lastName": {
+					"complex": null,
+					"simple": "surname"
+				},
+				"displayName": {
+					"complex": null,
+					"simple": "displayname"
+				}
+			}
+		},
+		"User Profile - Update": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+				"email": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "email",
+						"transformers": [
+							{
+								"args": {
+									"applyIfEmpty": {
+										"isContext": false,
+										"value": null
+									},
+									"defaultValue": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "${username}"
+										}
+									}
+								},
+								"operator": "SetIfEmpty"
+							},
+							{
+								"args": {
+									"applyIfEmpty": {
+										"isContext": false,
+										"value": null
+									},
+									"defaultValue": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "${id}"
+										}
+									}
+								},
+								"operator": "SetIfEmpty"
+							}
+						]
+					},
+					"simple": ""
+				},
+				"firstName": {
+					"complex": null,
+					"simple": "givenname"
+				},
+				"lastName": {
+					"complex": null,
+					"simple": "surname"
+				},
+				"displayName": {
+					"complex": null,
+					"simple": "displayname"
+				}
+			}
+		}
+	},
+	"name": "User Profile - PrismaCloud (Outgoing)",
+	"type": "mapping-outgoing",
+	"version": -1,
+	"fromVersion": "6.0.0"
+}

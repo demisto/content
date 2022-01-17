@@ -661,6 +661,7 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: int, last_run:
     )).get('incidentId', '')
 
     if incidents_ids:
+        incidents_ids = incidents_ids[:fetch_limit]
         last_incident_time: str = ''
         last_incident_id: str = ''
         for incident_id in incidents_ids:
@@ -668,9 +669,6 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: int, last_run:
                 # Skipping last incident from last cycle if fetched again
                 continue
 
-            if fetch_limit == 0:
-                break
-            fetch_limit -= 1
             incident_details = json.dumps(helpers.serialize_object(client.service.incidentDetail(
                 incidentId=incident_id
             )[0]), default=datetime_to_iso_format)

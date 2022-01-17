@@ -24,62 +24,52 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Censys is a search engine that allows computer scientists to ask questions about the devices and networks that compose the Internet. Driven by Internet-wide scanning, Censys lets researchers find specific hosts and create aggregate reports on how devices, websites, and certificates are configured and deployed.
+description: Censys is a search engine that allows computer scientists to ask questions
+  about the devices and networks that compose the Internet. Driven by Internet-wide
+  scanning, Censys lets researchers find specific hosts and create aggregate reports
+  on how devices, websites, and certificates are configured and deployed.
 display: Censys
 name: Censys
 script:
   commands:
   - arguments:
-    - default: false
-      description: IP address for which to perform a query.
-      isArray: false
+    - description: IP address for which to perform a query.
       name: query
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
-      description: The index from which to retrieve data. Can be "ipv4", "websites", or "certificates".
-      isArray: false
+      description: The index from which to retrieve data. Can be "ipv4", "websites",
+        or "certificates".
       name: index
       predefined:
       - ipv4
       - websites
       - certificates
       required: true
-      secret: false
-    deprecated: false
-    description: Returns detailed information for an IP address within the specified index.
-    execution: false
+    description: Returns detailed information for an IP address within the specified
+      index.
     name: cen-view
   - arguments:
-    - default: false
-      description: The attribute for which you are searching (JSON format).
-      isArray: false
+    - description: The attribute for which you are searching (JSON format).
       name: query
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: The index on which to perform a query.
-      isArray: false
       name: index
       predefined:
       - ipv4
       - websites
       - certificates
       required: true
-      secret: false
-    deprecated: false
+    - defaultValue: '1'
+      description: Page to return (default 1)
+      name: page
     description: Searches for an attribute within the specified index.
-    execution: false
     name: cen-search
-  isfetch: false
+  dockerimage: demisto/python:2.7.18.24066
   runonce: false
-  script: '-'
-  type: python
+  script: ''
   subtype: python2
-  dockerimage: demisto/python:2.7.18.20958
-system: true
+  type: python
+fromversion: 5.0.0
 tests:
 - No test
-fromversion: 5.0.0

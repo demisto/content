@@ -1,2 +1,11 @@
 [file: README.md]
 ignore=RM100
+
+[file:AnsibleLinux.yml]
+ignore=IN145
+
+[file:AnsibleOpenSSL.yml]
+ignore=IN145
+
+[file:AnsibleACME.yml]
+ignore=IN145

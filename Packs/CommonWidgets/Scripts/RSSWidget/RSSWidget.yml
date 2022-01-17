@@ -5,33 +5,35 @@ name: RSSWidget
 script: ''
 type: python
 tags:
-- widget
+  - widget
 enabled: true
 comment: Script Widget - RSS Feed.
 args:
-- name: url
-  required: true
-  default: true
-  description: The URL of the RSS feed.
-- name: insecure
-  auto: PREDEFINED
-  predefined:
-  - "true"
-  - "false"
-  description: 'Trust any certificate (not secure). Possible values: "true" and "false".'
-  defaultValue: "false"
-- name: proxy
-  auto: PREDEFINED
-  predefined:
-  - "true"
-  - "false"
-  description: 'Use system proxy settings. Possible values: "true" and "false".'
-  defaultValue: "false"
+  - name: url
+    required: true
+    default: true
+    description: The URL of the RSS feed.
+  - name: limit
+    description: Maximum number of entries to return.
+  - name: insecure
+    auto: PREDEFINED
+    predefined:
+      - "true"
+      - "false"
+    description: 'Trust any certificate (not secure). Possible values: "true" and "false".'
+    defaultValue: "false"
+  - name: proxy
+    auto: PREDEFINED
+    predefined:
+      - "true"
+      - "false"
+    description: 'Use system proxy settings. Possible values: "true" and "false".'
+    defaultValue: "false"
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: demisto/feed-parser:1.0.0.23151
+dockerimage: demisto/feed-parser:1.0.0.24172
 runas: DBotWeakRole
 fromversion: 5.5.0
 tests:
-- No tests (auto formatted)
+  - No tests (auto formatted)

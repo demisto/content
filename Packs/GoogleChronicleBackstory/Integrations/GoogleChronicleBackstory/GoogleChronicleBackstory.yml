@@ -3199,7 +3199,7 @@ script:
       description: A page token that can be provided to the next call to view the
         next page of Rules. Absent if this is the last page.
       type: String
-  dockerimage: demisto/googleapi-python3:1.0.0.23531
+  dockerimage: demisto/googleapi-python3:1.0.0.24037
   feed: false
   isfetch: true
   longRunning: false

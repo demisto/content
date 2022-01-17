@@ -1,6 +1,5 @@
 from __future__ import print_function
 
-import logging
 import os
 import ast
 import json
@@ -18,9 +17,10 @@ from Tests.Marketplace.marketplace_services import init_storage_client, Pack, lo
 from Tests.Marketplace.upload_packs import download_and_extract_index
 from Tests.Marketplace.marketplace_constants import GCPConfig, PACKS_FULL_PATH, IGNORED_FILES, PACKS_FOLDER, Metadata
 from Tests.scripts.utils.content_packs_util import is_pack_deprecated
+from Tests.scripts.utils import logging_wrapper as logging
 
 PACK_METADATA_FILE = 'pack_metadata.json'
-PACK_PATH_VERSION_REGEX = re.compile(fr'^{GCPConfig.STORAGE_BASE_PATH}/[A-Za-z0-9-_.]+/(\d+\.\d+\.\d+)/[A-Za-z0-9-_.]'
+PACK_PATH_VERSION_REGEX = re.compile(fr'^{GCPConfig.PRODUCTION_STORAGE_BASE_PATH}/[A-Za-z0-9-_.]+/(\d+\.\d+\.\d+)/[A-Za-z0-9-_.]'
                                      r'+\.zip$')
 SUCCESS_FLAG = True
 
@@ -110,7 +110,7 @@ def get_pack_dependencies(client: demisto_client, pack_data: dict, lock: Lock):
         )
 
         if 200 <= status_code < 300:
-            dependencies_data = []
+            dependencies_data: list = []
             dependants_ids = [pack_id]
             reseponse_data = ast.literal_eval(response_data).get('dependencies', [])
             create_dependencies_data_structure(reseponse_data, dependants_ids, dependencies_data, dependants_ids)
@@ -184,6 +184,7 @@ def search_pack(client: demisto_client,
         global SUCCESS_FLAG
         SUCCESS_FLAG = False
         lock.release()
+        return {}
 
 
 def find_malformed_pack_id(error_message: str) -> List:
@@ -378,7 +379,7 @@ def search_pack_and_its_dependencies(client: demisto_client,
         installation_request_body (list): A list of packs to be installed, in the request format.
         lock (Lock): A lock object.
     """
-    pack_data = []
+    pack_data = {}
     if pack_id not in packs_to_install:
         pack_display_name = get_pack_display_name(pack_id)
         if pack_display_name:
@@ -423,7 +424,7 @@ def get_latest_version_from_bucket(pack_id: str, production_bucket: Bucket) -> s
     Returns: The latest version of the pack as it is in the production bucket
 
     """
-    pack_bucket_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, pack_id)
+    pack_bucket_path = os.path.join(GCPConfig.PRODUCTION_STORAGE_BASE_PATH, pack_id)
     logging.debug(f'Trying to get latest version for pack {pack_id} from bucket path {pack_bucket_path}')
     # Adding the '/' in the end of the prefix to search for the exact pack id
     pack_versions_paths = [f.name for f in production_bucket.list_blobs(prefix=f'{pack_bucket_path}/') if
@@ -435,6 +436,7 @@ def get_latest_version_from_bucket(pack_id: str, production_bucket: Bucket) -> s
         return pack_latest_version
     else:
         logging.error(f'Could not find any versions for pack {pack_id} in bucket path {pack_bucket_path}')
+        return ''
 
 
 def get_pack_installation_request_data(pack_id: str, pack_version: str):
@@ -500,8 +502,7 @@ def install_all_content_packs_from_build_bucket(client: demisto_client, host: st
 
     storage_client = init_storage_client(service_account)
     build_bucket = storage_client.bucket(GCPConfig.CI_BUILD_BUCKET)
-    GCPConfig.STORAGE_BASE_PATH = bucket_packs_root_path  # Setting Storage base path
-    index_folder_path, _, _ = download_and_extract_index(build_bucket, extract_destination_path)
+    index_folder_path, _, _ = download_and_extract_index(build_bucket, extract_destination_path, bucket_packs_root_path)
 
     for pack_id in os.listdir(index_folder_path):
         if os.path.isdir(os.path.join(index_folder_path, pack_id)):
@@ -598,8 +599,8 @@ def search_and_install_packs_and_their_dependencies(pack_ids: list,
 
     logging.info(f'Starting to search and install packs in server: {host}')
 
-    packs_to_install = []  # we save all the packs we want to install, to avoid duplications
-    installation_request_body = []  # the packs to install, in the request format
+    packs_to_install: list = []  # we save all the packs we want to install, to avoid duplications
+    installation_request_body: list = []  # the packs to install, in the request format
 
     threads_list = []
     lock = Lock()

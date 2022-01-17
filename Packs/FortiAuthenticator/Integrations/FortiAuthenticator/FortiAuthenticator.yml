@@ -27,8 +27,6 @@ name: FortiAuthenticator
 script:
   commands:
   - arguments:
-    - name: email
-      description: The user's email that defined in the User Information on FortiAuthenticator.
     - auto: PREDEFINED
       defaultValue: localusers
       description: 'The user type:  localusers (Local Users), ldapuser (Remote Users)'
@@ -37,12 +35,15 @@ script:
       - localusers
       - ldapusers
       required: true
+    - name: email
+      description: The user's email that is defined in the User Information on FortiAuthenticator.
+    - name: username
+      description: The username that is defined in the User Information on FortiAuthenticator.
+    - name: token_serial
+      description: The serial no. of the assigned Token on FortiAuthenticator.
     name: fortiauthenticator-get-user
     description: Get the user details for specific user by email.
   - arguments:
-    - name: email
-      description: The user's email that defined in the User Information on FortiAuthenticator.
-      required: true
     - auto: PREDEFINED
       defaultValue: "true"
       description: 'Define user''s active status:  false = Disabled, true = enabled'
@@ -59,9 +60,13 @@ script:
       - localusers
       - ldapusers
       required: true
+    - name: email
+      description: The user's email that is defined in the User Information on FortiAuthenticator.
+    - name: username
+      description: The username that is defined in the User Information on FortiAuthenticator.
     name: fortiauthenticator-update-user
     description: Update the active status for specific user by email
-  dockerimage: demisto/python3:3.9.6.22912
+  dockerimage: demisto/python3:3.9.7.24076
   runonce: false
   script: ''
   subtype: python3

@@ -1,6 +1,6 @@
-id: Cymulate Immediate Threats
+id: Cymulate V1 Test
 version: -1
-name: Cymulate Immediate Threats
+name: Cymulate V1 Test
 starttaskid: "0"
 tasks:
   "0":

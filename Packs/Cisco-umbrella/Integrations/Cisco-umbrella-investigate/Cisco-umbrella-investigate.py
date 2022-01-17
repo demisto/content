@@ -773,7 +773,7 @@ def get_domain_command():
         whois = {
             'Name': whois.get('domainName'),
             'Registrar Name': whois.get('registrarName'),
-            'Last Retrieved': timestamp_to_date(whois.get('timeOfLatestRealtimeCheck')),
+            'Last Retrieved': whois.get('timeOfLatestRealtimeCheck'),
             'Created': whois.get('created'),
             'Updated': whois.get('updated'),
             'Expires': whois.get('expires'),
@@ -847,7 +847,8 @@ def get_domain_command():
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable':
                 tableToMarkdown('"Umbrella Investigate" Domain Reputation for: ' + domain, contents, headers)
-                + tableToMarkdown('"Umbrella Investigate" WHOIS Record Data for: ' + domain, whois, headers)
+                + tableToMarkdown('"Umbrella Investigate" WHOIS Record Data for: ' + domain, whois, headers,
+                                  date_fields=["Last Retrieved"])
                 + tableToMarkdown('Name Servers:', {'Name Servers': name_servers}, headers)
                 + tableToMarkdown('Emails:', emails, ['Emails'])
                 + tableToMarkdown('Domain Categorization:', domain_categorization_table, headers),
@@ -1407,7 +1408,7 @@ def get_whois_for_domain_command():
         table_whois = {
             'Name': whois.get('Name'),
             'Registrar Name': whois.get('RegistrarName'),
-            'Last Retrieved': timestamp_to_date(whois.get('LastRetrieved')),
+            'Last Retrieved': whois.get('LastRetrieved'),
             'Created': whois.get('Created'),
             'Updated': whois.get('Updated'),
             'Expires': whois.get('Expires'),
@@ -1459,9 +1460,9 @@ def get_whois_for_domain_command():
         'Contents': [table_whois, contents_nameserver, contents_email],
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('"Umbrella Investigate" WHOIS Record Data for: ' + whois['Name'], table_whois,
-                                         headers) + tableToMarkdown('Nameservers: ', contents_nameserver,
-                                                                    headers) + tableToMarkdown('Email Addresses: ',
-                                                                                               contents_email, headers),
+                                         headers, date_fields=["Last Retrieved"])  # noqa: W504
+        + tableToMarkdown('Nameservers: ', contents_nameserver, headers)  # noqa: W504
+        + tableToMarkdown('Email Addresses: ', contents_email, headers),
         'EntryContext': context
     })
 

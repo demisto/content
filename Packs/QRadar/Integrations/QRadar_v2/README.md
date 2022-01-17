@@ -67,6 +67,7 @@ You can apply additional (optional) filters for the fetch-incident query using t
 
 #### Reset the "last run" timestamp
 To reset fetch incidents, run `qradar-reset-last-run` - this will reset the fetch to its initial state (will try to fetch first available offense).
+**Please Note**: It is recommended to *disable* and then *enable* the QRadar instance for the reset to take effect immediately.
 
 ## Required Permissions
 * Assets - Vulnerability Management *or* Assets
@@ -280,7 +281,7 @@ Searches in QRadar using AQL. It is highly recommended to use the playbook 'QRad
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query_expression | The query expressions in AQL (for more information about Ariel Query Language please review "https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.0/com.ibm.qradar.doc/c_aql_intro.html") | Required | 
+| query_expression | The query expressions in AQL (for more information about Ariel Query Language please review: https://www.ibm.com/docs/en/qsip/7.3.2?topic=qradar-ariel-query-language-aql ) | Required | 
 | headers | Table headers to use the human readable output (if none provided, will show all table headers) | Optional | 
 
 

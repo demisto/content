@@ -5826,7 +5826,7 @@ script:
     - contextPath: TOPdesk.Action.Person
       description: Action's person
       type: string
-  dockerimage: demisto/python3:3.9.6.22912
+  dockerimage: demisto/python3:3.9.7.24076
   isfetch: true
   runonce: false
   script: ''

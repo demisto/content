@@ -1,0 +1,23 @@
+{
+    "sessionId": "12345",
+    "cid": "12345",
+    "path": "C:\\Dir\\",
+    "entries": [
+        {
+            "type": "FILE",
+            "name": "file1.exe",
+            "permissions": 438,
+            "size": 10000,
+            "createdDate": 1580978057000,
+            "modifiedDate": 1534072262000
+        },
+        {
+            "type": "FILE",
+            "name": "file2.txt",
+            "permissions": 438,
+            "size": 10000,
+            "createdDate": 1578398000000,
+            "modifiedDate": 1578398026000
+        }
+    ]
+}

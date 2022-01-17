@@ -1,0 +1,60 @@
+category: Authentication
+commonfields:
+  id: ThycoticDSV
+  version: -1
+configuration:
+- display: Server URL (e.g. https://example.com)
+  name: url
+  required: true
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Client ID
+  hidden: false
+  name: client_id
+  required: true
+  type: 0
+- display: Client Secret
+  hidden: false
+  name: client_secret
+  required: true
+  type: 0
+description: Manage credentials for applications, databases, CI/CD tools, and services
+  without causing friction in the development process.
+display: ThycoticDSV
+name: ThycoticDSV
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: Secret name for DSV
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    deprecated: false
+    description: Getting a secret fom DSV
+    execution: false
+    name: dsv-secret-get
+    outputs:
+    - contextPath: secret
+      description: Received JSON object secret
+      type: String
+  dockerimage: demisto/python3:3.9.7.24076
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

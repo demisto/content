@@ -11,6 +11,7 @@ import traceback
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
+IAM_GET_USER_ATTRIBUTES = ['id', 'user_name', 'email']
 '''CLIENT CLASS'''
 
 
@@ -23,10 +24,10 @@ class Client(BaseClient):
         uri = '/table/sys_user?sysparm_limit=1'
         self._http_request(method='GET', url_suffix=uri)
 
-    def get_user(self, email):
+    def get_user(self, filter_name: str, filter_value: str):
         uri = 'table/sys_user'
         query_params = {
-            'email': email
+            filter_name: filter_value
         }
 
         res = self._http_request(
@@ -35,7 +36,7 @@ class Client(BaseClient):
             params=query_params
         )
 
-        if res and len(res.get('result', [])) == 1:
+        if res and len(res.get('result', [])) > 0:
             return res.get('result')[0]
         return None
 
@@ -137,10 +138,13 @@ def get_mapping_fields_command(client):
     return GetMappingFieldsResponse([incident_type_scheme])
 
 
-def get_user_command(client, args, mapper_in):
-    user_profile = IAMUserProfile(user_profile=args.get('user-profile'))
+def get_user_command(client, args, mapper_in, mapper_out):
+    user_profile = IAMUserProfile(user_profile=args.get('user-profile'), mapper=mapper_out,
+                                  incident_type=IAMUserProfile.UPDATE_INCIDENT_TYPE)
     try:
-        service_now_user = client.get_user(user_profile.get_attribute('email'))
+        iam_attr, iam_attr_value = user_profile.get_first_available_iam_user_attr(IAM_GET_USER_ATTRIBUTES)
+        service_now_filter_name: str = 'sys_id' if iam_attr == 'id' else iam_attr
+        service_now_user = client.get_user(service_now_filter_name, iam_attr_value)
         if not service_now_user:
             error_code, error_message = IAMErrors.USER_DOES_NOT_EXIST
             user_profile.set_result(action=IAMActions.GET_USER,
@@ -165,33 +169,39 @@ def get_user_command(client, args, mapper_in):
     return user_profile
 
 
-def disable_user_command(client, args, is_command_enabled):
-    user_profile = IAMUserProfile(user_profile=args.get('user-profile'))
+def disable_user_command(client, args, is_command_enabled, mapper_out):
+    user_profile = IAMUserProfile(user_profile=args.get('user-profile'), mapper=mapper_out,
+                                  incident_type=IAMUserProfile.UPDATE_INCIDENT_TYPE)
     if not is_command_enabled:
         user_profile.set_result(action=IAMActions.DISABLE_USER,
                                 skip=True,
                                 skip_reason='Command is disabled.')
     else:
         try:
-            service_now_user = client.get_user(user_profile.get_attribute('email'))
+            iam_attr, iam_attr_value = user_profile.get_first_available_iam_user_attr(IAM_GET_USER_ATTRIBUTES)
+            service_now_filter_name: str = 'sys_id' if iam_attr == 'id' else iam_attr
+            service_now_user = client.get_user(service_now_filter_name, iam_attr_value)
             if not service_now_user:
                 _, error_message = IAMErrors.USER_DOES_NOT_EXIST
                 user_profile.set_result(action=IAMActions.DISABLE_USER,
                                         skip=True,
                                         skip_reason=error_message)
             else:
-                user_id = service_now_user.get('sys_id')
-                user_data = {'active': False}
-                updated_user = client.update_user(user_id, user_data)
-                user_profile.set_result(
-                    action=IAMActions.DISABLE_USER,
-                    success=True,
-                    active=False,
-                    iden=updated_user.get('sys_id'),
-                    email=updated_user.get('email'),
-                    username=updated_user.get('user_name'),
-                    details=updated_user
-                )
+                if service_now_user.get('active', 'true') == 'false':
+                    user_profile.set_user_is_already_disabled(service_now_user)
+                else:
+                    user_id = service_now_user.get('sys_id')
+                    user_data = {'active': False}
+                    updated_user = client.update_user(user_id, user_data)
+                    user_profile.set_result(
+                        action=IAMActions.DISABLE_USER,
+                        success=True,
+                        active=False,
+                        iden=updated_user.get('sys_id'),
+                        email=updated_user.get('email'),
+                        username=updated_user.get('user_name'),
+                        details=updated_user
+                    )
 
         except Exception as e:
             handle_exception(user_profile, e, IAMActions.DISABLE_USER)
@@ -200,7 +210,8 @@ def disable_user_command(client, args, is_command_enabled):
 
 
 def create_user_command(client, args, mapper_out, is_command_enabled, is_update_enabled, is_enable_enabled):
-    user_profile = IAMUserProfile(user_profile=args.get('user-profile'))
+    user_profile = IAMUserProfile(user_profile=args.get('user-profile'), mapper=mapper_out,
+                                  incident_type=IAMUserProfile.CREATE_INCIDENT_TYPE)
 
     if not is_command_enabled:
         user_profile.set_result(action=IAMActions.CREATE_USER,
@@ -208,7 +219,9 @@ def create_user_command(client, args, mapper_out, is_command_enabled, is_update_
                                 skip_reason='Command is disabled.')
     else:
         try:
-            service_now_user = client.get_user(user_profile.get_attribute('email'))
+            iam_attr, iam_attr_value = user_profile.get_first_available_iam_user_attr(IAM_GET_USER_ATTRIBUTES)
+            service_now_filter_name: str = 'sys_id' if iam_attr == 'id' else iam_attr
+            service_now_user = client.get_user(service_now_filter_name, iam_attr_value)
             if service_now_user:
                 # if user exists, update it
                 user_profile = update_user_command(client, args, mapper_out, is_update_enabled,
@@ -236,7 +249,8 @@ def create_user_command(client, args, mapper_out, is_command_enabled, is_update_
 
 def update_user_command(client, args, mapper_out, is_command_enabled, is_enable_enabled,
                         is_create_user_enabled, create_if_not_exists):
-    user_profile = IAMUserProfile(user_profile=args.get('user-profile'))
+    user_profile = IAMUserProfile(user_profile=args.get('user-profile'), mapper=mapper_out,
+                                  incident_type=IAMUserProfile.UPDATE_INCIDENT_TYPE)
     allow_enable = args.get('allow-enable') == 'true'
     if not is_command_enabled:
         user_profile.set_result(action=IAMActions.UPDATE_USER,
@@ -244,7 +258,9 @@ def update_user_command(client, args, mapper_out, is_command_enabled, is_enable_
                                 skip_reason='Command is disabled.')
     else:
         try:
-            service_now_user = client.get_user(user_profile.get_attribute('email'))
+            iam_attr, iam_attr_value = user_profile.get_first_available_iam_user_attr(IAM_GET_USER_ATTRIBUTES)
+            service_now_filter_name: str = 'sys_id' if iam_attr == 'id' else iam_attr
+            service_now_user = client.get_user(service_now_filter_name, iam_attr_value)
             if service_now_user:
                 user_id = service_now_user.get('sys_id')
                 service_now_profile = user_profile.map_object(mapper_out,
@@ -319,7 +335,7 @@ def main():
     demisto.debug(f'Command being called is {command}')
 
     if command == 'iam-get-user':
-        user_profile = get_user_command(client, args, mapper_in)
+        user_profile = get_user_command(client, args, mapper_in, mapper_out)
 
     elif command == 'iam-create-user':
         user_profile = create_user_command(client, args, mapper_out, is_create_enabled, is_update_enabled,
@@ -330,7 +346,7 @@ def main():
                                            is_create_enabled, create_if_not_exists)
 
     elif command == 'iam-disable-user':
-        user_profile = disable_user_command(client, args, is_disable_enabled)
+        user_profile = disable_user_command(client, args, is_disable_enabled, mapper_out)
 
     if user_profile:
         return_results(user_profile)
@@ -346,8 +362,7 @@ def main():
         # For any other integration command exception, return an error
         return_error(f'Failed to execute {command} command. Traceback: {traceback.format_exc()}')
 
-
-from IAMApiModule import *  # noqa: E402
+from IAMApiModule import *  # noqa E402
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()

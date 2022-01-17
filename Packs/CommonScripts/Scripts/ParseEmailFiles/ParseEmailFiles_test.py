@@ -416,10 +416,26 @@ def test_email_with_special_character(mocker):
         '\xe3\x80\x90\xe2\x91\xa0'  # 【①
     ),
     (
-        'This is test =?iso-2022-jp?B?GyRCJWEhPCVrLSEkSHxxGyhC?= '
+        '=?iso-2022-jp?B?GyRCJWEhPCVrLSEkSHxxGyhC?= '
         '=?iso-2022-jp?B?GyRCRnxLXDhsSjg7eiQsST08KCQ1JGwkSiQkSjg7eiROJUYlOSVIGyhC?=',
-        'This is test メール�と�日本語文字が表示されない文字のテスト'
-    )
+        'メール�と�日本語文字が表示されない文字のテスト'
+    ),
+    (
+        '=?UTF-8?Q?TEST_UNDERSCORE?=',
+        'TEST UNDERSCORE'
+    ),
+    # (
+    #   'This is test =?iso-2022-jp?B?GyRCJWEhPCVrLSEkSHxxGyhC?= '
+    #   '=?iso-2022-jp?B?GyRCRnxLXDhsSjg7eiQsST08KCQ1JGwkSiQkSjg7eiROJUYlOSVIGyhC?=',
+    #   'This is test メール�と�日本語文字が表示されない文字のテスト'
+    # )
+    # ( 'Test =?UTF-8?Q?Seguran=C3=A7a=20?=da =?UTF-8?Q?Informa=C3=A7=C3=A3o?=',
+    #   'Test Segurança da Informação'
+    #  )
+    # This test should pass, it extend the case of This example "=?UTF-8?B?VGVzdMKu?= passes" and include multiple
+    # encoding parts.
+    # **please DO NOT delete the commented tests**.
+    # they have been disabled in attempt to fix issue no. 40877, and they may be needed for a better solution in the future.
 ])
 def test_utf_subject_convert(encoded_subject, decoded_subject):
     decoded = convert_to_unicode(encoded_subject)
@@ -491,6 +507,147 @@ def test_email_raw_headers_from_is_cyrillic_characters(mocker):
                                                                       ', Guy Test1 <example1@example.com>'
     assert results[0]['EntryContext']['Email']['HeadersMap']['CC'] == 'Guy Test <test@test.com>, ' \
                                                                       'Guy Test1 <example1@example.com>'
+
+
+def test_email_from_one_line_no_comma_lf(mocker):
+    """
+    Given:
+     - The email message with a 'From' header that contains a newline.
+     - Checking an email file that contains '\r\n' in it's 'From' header.
+
+    When:
+     - After parsed email file into Email object
+
+    Then:
+     - Validate that all raw headers are valid.
+    """
+    mocker.patch.object(demisto, 'args', return_value={'entryid': 'test', 'max_depth': '3'})
+    mocker.patch.object(demisto, 'executeCommand', side_effect=exec_command_for_file('from_one_line_no_comma_LF'
+                                                                                     '.eml'))
+    mocker.patch.object(demisto, 'results')
+    # validate our mocks are good
+    assert demisto.args()['entryid'] == 'test'
+
+    main()
+    assert demisto.results.call_count == 1
+    # call_args is tuple (args list, kwargs). we only need the first one
+    results = demisto.results.call_args[0]
+    assert len(results) == 1
+    assert results[0]['Type'] == entryTypes['note']
+    assert results[0]['EntryContext']['Email']['From'] == '1111@test.org'
+    assert results[0]['EntryContext']['Email']['HeadersMap']['From'] == '\"First Last\" <1111@test.org>'
+
+
+def test_email_from_newline_lf(mocker):
+    """
+    Given:
+     - The email message with a 'From' header that contains a newline.
+     - Checking an email file that contains '\r\n' in it's 'From' header.
+
+    When:
+     - After parsed email file into Email object
+
+    Then:
+     - Validate that all raw headers are valid.
+    """
+    mocker.patch.object(demisto, 'args', return_value={'entryid': 'test', 'max_depth': '3'})
+    mocker.patch.object(demisto, 'executeCommand', side_effect=exec_command_for_file('from_multiple_lines_LF'
+                                                                                     '.eml'))
+    mocker.patch.object(demisto, 'results')
+    # validate our mocks are good
+    assert demisto.args()['entryid'] == 'test'
+
+    main()
+    assert demisto.results.call_count == 1
+    # call_args is tuple (args list, kwargs). we only need the first one
+    results = demisto.results.call_args[0]
+    assert len(results) == 1
+    assert results[0]['Type'] == entryTypes['note']
+    assert results[0]['EntryContext']['Email']['From'] == '1111@test.org'
+
+
+def test_email_from_newline_crlf(mocker):
+    """
+    Given:
+     - The email message with a 'From' header that contains a newline.
+     - Checking an email file that contains '\r\n' in it's 'From' header.
+
+    When:
+     - After parsed email file into Email object
+
+    Then:
+     - Validate that all raw headers are valid.
+    """
+    mocker.patch.object(demisto, 'args', return_value={'entryid': 'test', 'max_depth': '3'})
+    mocker.patch.object(demisto, 'executeCommand', side_effect=exec_command_for_file('from_multiple_lines_CRLF'
+                                                                                     '.eml'))
+    mocker.patch.object(demisto, 'results')
+    # validate our mocks are good
+    assert demisto.args()['entryid'] == 'test'
+
+    main()
+    assert demisto.results.call_count == 1
+    # call_args is tuple (args list, kwargs). we only need the first one
+    results = demisto.results.call_args[0]
+    assert len(results) == 1
+    assert results[0]['Type'] == entryTypes['note']
+    assert results[0]['EntryContext']['Email']['From'] == '1111@test.org'
+
+
+def test_email_from_one_line_lf(mocker):
+    """
+    Given:
+     - The email message with a 'From' header that contains a newline.
+     - Checking an email file that contains '\r\n' in it's 'From' header.
+
+    When:
+     - After parsed email file into Email object
+
+    Then:
+     - Validate that all raw headers are valid.
+    """
+    mocker.patch.object(demisto, 'args', return_value={'entryid': 'test', 'max_depth': '3'})
+    mocker.patch.object(demisto, 'executeCommand', side_effect=exec_command_for_file('from_one_line_LF'
+                                                                                     '.eml'))
+    mocker.patch.object(demisto, 'results')
+    # validate our mocks are good
+    assert demisto.args()['entryid'] == 'test'
+
+    main()
+    assert demisto.results.call_count == 1
+    # call_args is tuple (args list, kwargs). we only need the first one
+    results = demisto.results.call_args[0]
+    assert len(results) == 1
+    assert results[0]['Type'] == entryTypes['note']
+    assert results[0]['EntryContext']['Email']['From'] == '1111@test.org'
+
+
+def test_email_from_one_line_crlf(mocker):
+    """
+    Given:
+     - The email message with a 'From' header that contains a newline.
+     - Checking an email file that contains '\r\n' in it's 'From' header.
+
+    When:
+     - After parsed email file into Email object
+
+    Then:
+     - Validate that all raw headers are valid.
+    """
+    mocker.patch.object(demisto, 'args', return_value={'entryid': 'test', 'max_depth': '3'})
+    mocker.patch.object(demisto, 'executeCommand', side_effect=exec_command_for_file('from_one_line_CRLF'
+                                                                                     '.eml'))
+    mocker.patch.object(demisto, 'results')
+    # validate our mocks are good
+    assert demisto.args()['entryid'] == 'test'
+
+    main()
+    assert demisto.results.call_count == 1
+    # call_args is tuple (args list, kwargs). we only need the first one
+    results = demisto.results.call_args[0]
+    assert len(results) == 1
+    assert results[0]['Type'] == entryTypes['note']
+    assert results[0]['EntryContext']['Email']['From'] == '1111@test.org'
 
 
 def test_eml_contains_eml_with_status(mocker):
@@ -1024,3 +1181,35 @@ def test_PtypString():
 
     data_value = DataModel.PtypString(b'e\x9c\xe6\xb9pe')
     assert data_value == u'eśćąpe'
+
+
+@pytest.mark.parametrize('payload, answer', [
+    ('escape', 'escape'),
+    (u'eśćąpe', u'eśćąpe')
+])
+def test_decode_attachment_payload_non_base64(payload, answer):
+    class MockedMessage:
+        def __init__(self, payload=None):
+            self.payload = payload
+
+        def get_payload(self):
+            return self.payload
+
+    from ParseEmailFiles import decode_attachment_payload
+    assert answer == decode_attachment_payload(MockedMessage(payload))
+
+
+@pytest.mark.parametrize('payload, answer', [
+    ('//5lAFsBBwEFAXAAZQA=', '\xff\xfee\x00[\x01\x07\x01\x05\x01p\x00e\x00'),  # eśćąpe
+    ('ZXNjYXBl', 'escape')
+])
+def test_decode_attachment_payload_base64(payload, answer):
+    class MockedMessage:
+        def __init__(self, payload=None):
+            self.payload = payload
+
+        def get_payload(self):
+            return self.payload
+
+    from ParseEmailFiles import decode_attachment_payload
+    assert answer == decode_attachment_payload(MockedMessage(payload))

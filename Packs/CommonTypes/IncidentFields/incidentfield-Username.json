@@ -12,7 +12,8 @@
 		"User Profile",
 		"IAM - Sync User",
 		"IAM - Rehire User",
-		"Carbon Black EDR"
+		"Carbon Black EDR",
+		"Azure Active Directory Identity and Access"
 	],
 	"breachScript": "",
 	"caseInsensitive": true,

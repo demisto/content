@@ -779,9 +779,6 @@ def test_module(args, params):
     on_demand = params.get('on_demand', None)
     if not on_demand:
         try_parse_integer(params.get('list_size'), CTX_LIMIT_ERR_MSG)  # validate export_iocs Size was set
-        query = params.get('indicators_query')  # validate indicators_query isn't empty
-        if not query:
-            raise ValueError('"Indicator Query" is required. Provide a valid query.')
         cache_refresh_rate = params.get('cache_refresh_rate', '')
         if not cache_refresh_rate:
             raise ValueError(CTX_MISSING_REFRESH_ERR_MSG)

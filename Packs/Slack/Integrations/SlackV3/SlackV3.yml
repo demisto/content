@@ -1,4 +1,4 @@
-beta: true
+beta: false
 category: Messaging
 commonfields:
   id: SlackV3
@@ -20,11 +20,6 @@ configuration:
   name: incidentNotificationChannel
   required: false
   type: 0
-- defaultvalue: 'true'
-  display: Send notifications about incidents to the dedicated channel
-  name: notify_incidents
-  required: false
-  type: 8
 - defaultvalue: Low
   display: Minimum incident severity to send messages to slack by
   name: min_severity
@@ -36,6 +31,18 @@ configuration:
   - Critical
   required: false
   type: 15
+- display: Types of Notifications to Send.
+  name: permitted_notifications
+  type: 16
+  required: false
+  options:
+  - incidentOpened
+  - incidentChanged
+  - investigationClosed
+  - investigationDeleted
+  - incidentReminderSLA
+  - taskCompleted
+  - incidentStatusChanged
 - defaultvalue: Unclassified
   display: Type of incidents created in Slack
   name: incidentType
@@ -54,9 +61,12 @@ configuration:
   required: false
   type: 8
 - defaultvalue: 'true'
+  additionalinfo: "If your organization does not require incident mirroring, or data collection, it is possible to
+  disable the `longRunning` parameter. For those organizations who do wish to use these features, the parameter should
+  be set to `True` to enable the long-running container."
   display: Long running instance. Required for investigation mirroring and direct
     messages.
-  hidden: true
+  hidden: false
   name: longRunning
   required: false
   type: 8
@@ -92,7 +102,7 @@ configuration:
   required: false
   type: 8
 description: Send messages and notifications to your Slack team.
-display: Slack v3 (beta)
+display: Slack v3
 name: SlackV3
 script:
   commands:

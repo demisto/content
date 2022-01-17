@@ -1,0 +1,426 @@
+id: ZTAP Alert
+version: -1
+name: ZTAP Alert
+description: |-
+  This playbok is triggered by fetching escalated ZTAP Alerts.
+  The playbook fetches newly escalated alerts.
+  Then, the playbook performs enrichment on the incident's indicators.
+  Lastly, it adds comments/logs as Evidence.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 173ec49d-83c4-41ab-82c2-b88bae01b38f
+    type: start
+    task:
+      id: 173ec49d-83c4-41ab-82c2-b88bae01b38f
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "27"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": -330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: a4dcd309-73d0-4f48-82d6-22ea5a9140f6
+    type: condition
+    task:
+      id: a4dcd309-73d0-4f48-82d6-22ea5a9140f6
+      version: -1
+      name: Should indicators be extracted and enriched?
+      description: Checks whether the Enrich playbook input is set to True.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.Enrich
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 06fc2c02-ba06-467e-87a9-5cc025103615
+    type: regular
+    task:
+      id: 06fc2c02-ba06-467e-87a9-5cc025103615
+      version: -1
+      name: Assign analyst to incident
+      description: Assigns a random analyst to this incident.
+      scriptName: AssignAnalystToIncident
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      assignBy:
+        simple: random
+      onCall:
+        complex:
+          root: inputs.OnCall
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 2e7fc4e6-863b-4277-8be2-a2c7f5caf278
+    type: title
+    task:
+      id: 2e7fc4e6-863b-4277-8be2-a2c7f5caf278
+      version: -1
+      name: Enrich indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 390,
+          "y": 470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: b9155732-55c9-4ce3-84ce-cda59a981abf
+    type: regular
+    task:
+      id: b9155732-55c9-4ce3-84ce-cda59a981abf
+      version: -1
+      name: Extract indicators from incident
+      description: Extracts all indicators that match the regex for the indicator
+        type, and enriches the repuration using the reputation command defined for
+        the indicator type.
+      script: Builtin|||extractIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      text:
+        complex:
+          root: incident
+          accessor: ztaptriggers
+          transformers:
+          - operator: ZTAPExtractFields
+    reputationcalc: 2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 390,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 1f2807d2-abeb-422d-87c6-c99541bb2f21
+    type: playbook
+    task:
+      id: 1f2807d2-abeb-422d-87c6-c99541bb2f21
+      version: -1
+      name: Calculate Severity - Generic v2
+      playbookName: Calculate Severity - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 390,
+          "y": 880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: ad08fb63-63c7-4dfa-87cd-c872e03f2251
+    type: title
+    task:
+      id: ad08fb63-63c7-4dfa-87cd-c872e03f2251
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 1345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: 5fb65a6b-f142-454d-841b-9dc15d444f51
+    type: regular
+    task:
+      id: 5fb65a6b-f142-454d-841b-9dc15d444f51
+      version: -1
+      name: Fetch initial entries
+      description: Get the entries data from a remote incident.
+      script: ZeroTrustAnalyticsPlatform|||ztap-get-alert-entries
+      type: regular
+      iscommand: true
+      brand: ZeroTrustAnalyticsPlatform
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      id:
+        simple: ${incident.dbotMirrorId}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": -15
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: ee52634e-726f-4b5e-8f06-24a6369b78bf
+    type: regular
+    task:
+      id: ee52634e-726f-4b5e-8f06-24a6369b78bf
+      version: -1
+      name: Add comments/logs as evidence
+      description: Adds new comment notes as evidence in the timeline.
+      scriptName: ZTAPBuildTimeline
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: 41e9754d-c935-426b-8e4d-c32fbf09fdbd
+    type: condition
+    task:
+      id: 41e9754d-c935-426b-8e4d-c32fbf09fdbd
+      version: -1
+      name: IsIntegrationAvailable
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "12"
+      "yes":
+      - "25"
+    scriptarguments:
+      brandname:
+        simple: ZeroTrustAnalyticsPlatform
+    results:
+    - brandInstances
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -350,
+          "y": -190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: b4fcb01b-b848-4c7b-8bde-9b4b4f30467d
+    type: playbook
+    task:
+      id: b4fcb01b-b848-4c7b-8bde-9b4b4f30467d
+      version: -1
+      name: Entity Enrichment - Generic v3
+      playbookName: Entity Enrichment - Generic v3
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 390,
+          "y": 740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "30":
+    id: "30"
+    taskid: bd3e5093-c358-4c11-8703-9d6a4b6f93d1
+    type: regular
+    task:
+      id: bd3e5093-c358-4c11-8703-9d6a4b6f93d1
+      version: -1
+      name: Take action(s) indicated by SOC
+      description: |-
+        Review and take actions as indicated by the alert comment in the timeline.
+
+        If action is needed by CriticalStart, add a note with the "escalate" tag to send the alert back to CriticalStart, otherwise close the incident.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 1190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "1_2_#default#": 0.17
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1740,
+        "width": 1120,
+        "x": -350,
+        "y": -330
+      }
+    }
+  }
+inputs:
+- key: Enrich
+  value:
+    simple: "True"
+  required: false
+  description: Determines whether to enrich all indicators in the incident.
+  playbookInputQuery:
+- key: OnCall
+  value:
+    simple: "false"
+  required: false
+  description: Set to true to assign only user that is currently on shift. Requires
+    Cortex XSOAR v5.5 or later.
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

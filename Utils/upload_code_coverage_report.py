@@ -16,7 +16,7 @@ TIMESTAMP_FORMAT_MICROSECONDS = '%Y-%m-%dT%H:%M:%S.%f'
 def create_minimal_report(source_file: str, destination_file: str) -> Tuple[bool, str]:
     if not os.path.isfile(source_file):
         print(f'File {source_file} does not exist.')
-        return False, {}
+        return False, ''
 
     with open(source_file, 'r') as cov_util_output:
         data = json.load(cov_util_output)
@@ -24,7 +24,7 @@ def create_minimal_report(source_file: str, destination_file: str) -> Tuple[bool
     # Check that we were able to read the json report correctly
     if not data or 'files' not in data:
         print(f'Empty file, or unable to read contents of {source_file}.')
-        return False, {}
+        return False, ''
 
     minimal_coverage_contents_files: Dict[str, float] = {}
     files = data['files']
@@ -46,31 +46,32 @@ def create_minimal_report(source_file: str, destination_file: str) -> Tuple[bool
     return True, str_from_datetime
 
 
-def upload_file_to_google_cloud_storage(service_account: str,
-                                        bucket_name: str,
-                                        minimal_file_name: str,
-                                        destination_blob_dir: str,
-                                        last_updated: str,
-                                        ):
-    """Uploads a file to the bucket."""
-    json_dest = f'{destination_blob_dir}/coverage-min.json'
+def upload_files_to_google_cloud_storage(service_account: str,
+                                         bucket_name: str,
+                                         source_file_name: str,
+                                         minimal_file_name: str,
+                                         destination_blob_dir: str,
+                                         last_updated: str,
+                                         ):
+    """Upload files to the bucket."""
+
     updated = datetime.strptime(last_updated, TIMESTAMP_FORMAT_SECONDS)
     updated_date = updated.strftime(DATE_FORMAT)
-    historic_data_dest = f'{destination_blob_dir}/history/coverage-min/{updated_date}.json'
 
-    upload_list = [json_dest, historic_data_dest]
+    files_to_upload = [
+        (f'{destination_blob_dir}/coverage.json', source_file_name),
+        (f'{destination_blob_dir}/history/coverage/{updated_date}.json', source_file_name),
+        (f'{destination_blob_dir}/coverage-min.json', minimal_file_name),
+        (f'{destination_blob_dir}/history/coverage-min/{updated_date}.json', minimal_file_name),
+    ]
+
     # google cloud storage client initialized
     storage_client = init_storage_client(service_account)
     bucket = storage_client.bucket(bucket_name)
 
-    for file_to_upload in upload_list:
-        upload_file_to_bucket(bucket, file_to_upload, minimal_file_name)
-
-    print(
-        "File {} uploaded to {}.".format(
-            minimal_file_name, ', '.join(upload_list)
-        )
-    )
+    for path_in_bucket, local_path in files_to_upload:
+        upload_file_to_bucket(bucket_obj=bucket, path_in_bucket=path_in_bucket, local_path=local_path)
+        print("File {} uploaded to {}.".format(local_path, path_in_bucket))
 
 
 def upload_file_to_bucket(bucket_obj, path_in_bucket, local_path):
@@ -117,41 +118,30 @@ def options_handler():
                         required=False)
 
     parser.add_argument('-d', '--destination_blob_dir',
-                        default='code-coverage',
+                        default='code-coverage-reports',
                         help=("Blob Name in Google Cloud Storage. "
-                              "Default value is code-coverage."),
-                        required=False)
-
-    parser.add_argument('-cov', '--cov_bin_dir',
-                        default='code-coverage/coverage_data.json',
+                              "Default value is code-coverage-reports."),
                         required=False)
 
     return parser.parse_args()
 
 
-def coverage_json(cov_file, json_file):
-    # this method will be removed when merge to sdk
-    from coverage import Coverage
-    cov = Coverage(data_file=cov_file, auto_data=False)
-    cov.load()
-    cov.json_report(outfile=json_file)
+def get_last_updated_from_file(min_filename: str) -> str:
+    with open(min_filename, 'r') as min_file:
+        return json.load(min_file)['last_updated']
 
 
 def main():
     options = options_handler()
-    coverage_json(options.cov_bin_dir, options.source_file_name)
+    last_updated = get_last_updated_from_file(options.minimal_file_name)
 
-    success, last_updated = create_minimal_report(source_file=options.source_file_name,
-                                                  destination_file=options.minimal_file_name,
-                                                  )
-
-    if success:
-        upload_file_to_google_cloud_storage(service_account=options.service_account,
-                                            bucket_name=options.bucket_name,
-                                            minimal_file_name=options.minimal_file_name,
-                                            destination_blob_dir=options.destination_blob_dir,
-                                            last_updated=last_updated
-                                            )
+    upload_files_to_google_cloud_storage(service_account=options.service_account,
+                                         bucket_name=options.bucket_name,
+                                         source_file_name=options.source_file_name,
+                                         minimal_file_name=options.minimal_file_name,
+                                         destination_blob_dir=options.destination_blob_dir,
+                                         last_updated=last_updated
+                                         )
 
 
 if __name__ == '__main__':

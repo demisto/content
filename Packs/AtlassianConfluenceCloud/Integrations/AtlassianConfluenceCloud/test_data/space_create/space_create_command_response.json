@@ -1,0 +1,2355 @@
+{
+  "id": 2064386,
+  "key": "XSOAR",
+  "name": "XSOAR_Project",
+  "description": {
+    "plain": {
+      "value": "",
+      "representation": "plain",
+      "embeddedContent": []
+    },
+    "_expandable": {
+      "view": ""
+    }
+  },
+  "homepage": {
+    "id": "2064538",
+    "type": "page",
+    "status": "current",
+    "title": "XSOAR_Project Home",
+    "macroRenderedOutput": {},
+    "extensions": {
+      "position": 340
+    },
+    "_expandable": {
+      "container": "/rest/api/space/XSOAR",
+      "metadata": "",
+      "restrictions": "/rest/api/content/2064538/restriction/byOperation",
+      "history": "/rest/api/content/2064538/history",
+      "body": "",
+      "version": "",
+      "descendants": "/rest/api/content/2064538/descendant",
+      "space": "/rest/api/space/XSOAR",
+      "childTypes": "",
+      "operations": "",
+      "schedulePublishDate": "",
+      "children": "/rest/api/content/2064538/child",
+      "ancestors": ""
+    },
+    "_links": {
+      "self": "https://xsoar-bd.atlassian.net/wiki/rest/api/content/2064538",
+      "tinyui": "/x/moAf",
+      "editui": "/pages/resumedraft.action?draftId=2064538",
+      "webui": "/spaces/XSOAR/overview"
+    }
+  },
+  "type": "global",
+  "permissions": [
+    {
+      "id": 2064388,
+      "subjects": {
+        "user": {
+          "results": [
+            {
+              "type": "known",
+              "accountId": "5ff2e30b4d2179006ea18449",
+              "accountType": "atlassian",
+              "email": "dummy.dummy@dummy.com",
+              "publicName": "John Doe",
+              "profilePicture": {
+                "path": "/wiki/aa-avatar/5ff2e30b4d2179006ea18449",
+                "width": 48,
+                "height": 48,
+                "isDefault": false
+              },
+              "displayName": "John Doe",
+              "isExternalCollaborator": false,
+              "_expandable": {
+                "operations": "",
+                "personalSpace": ""
+              },
+              "_links": {
+                "self": "https://xsoar-bd.atlassian.net/wiki/rest/api/user?accountId=5ff2e30b4d2179006ea18449"
+              }
+            }
+          ],
+          "size": 1
+        },
+        "_expandable": {
+          "group": ""
+        }
+      },
+      "operation": {
+        "operation": "delete",
+        "targetType": "page"
+      },
+      "anonymousAccess": false,
+      "unlicensedAccess": false
+    },
+    {
+      "id": 2064389,
+      "subjects": {
+        "group": {
+          "results": [
+            {
+              "type": "group",
+              "name": "administrators",
+              "id": "10453df5-f7fc-47be-8ca7-bc2949c1bd5b",
+              "_links": {
+                "self": "https://xsoar-bd.atlassian.net/wiki/rest/experimental/group/administrators"
+              }
+            }
+          ],
+          "size": 1
+        },
+        "_expandable": {
+          "user": ""
+        }
+      },
+      "operation": {
+        "operation": "read",
+        "targetType": "space"
+      },
+      "anonymousAccess": false,
+      "unlicensedAccess": false
+    },
+    {
+      "id": 2064390,
+      "subjects": {
+        "group": {
+          "results": [
+            {
+              "type": "group",
+              "name": "administrators",
+              "id": "10453df5-f7fc-47be-8ca7-bc2949c1bd5b",
+              "_links": {
+                "self": "https://xsoar-bd.atlassian.net/wiki/rest/experimental/group/administrators"
+              }
+            }
+          ],
+          "size": 1
+        },
+        "_expandable": {
+          "user": ""
+        }
+      },
+      "operation": {
+        "operation": "create",
+        "targetType": "comment"
+      },
+      "anonymousAccess": false,
+      "unlicensedAccess": false
+    },
+    {
+      "id": 2064391,
+      "subjects": {
+        "group": {
+          "results": [
+            {
+              "type": "group",
+              "name": "administrators",
+              "id": "10453df5-f7fc-47be-8ca7-bc2949c1bd5b",
+              "_links": {
+                "self": "https://xsoar-bd.atlassian.net/wiki/rest/experimental/group/administrators"
+              }
+            }
+          ],
+          "size": 1
+        },
+        "_expandable": {
+          "user": ""
+        }
+      },
+      "operation": {
+        "operation": "delete",
+        "targetType": "comment"
+      },
+      "anonymousAccess": false,
+      "unlicensedAccess": false
+    },
+    {
+      "id": 2064392,
+      "subjects": {
+        "user": {
+          "results": [
+            {
+              "type": "known",
+              "accountId": "5ff2e30b4d2179006ea18449",
+              "accountType": "atlassian",
+              "email": "dummy.dummy@dummy.com",
+              "publicName": "John Doe",
+              "profilePicture": {
+                "path": "/wiki/aa-avatar/5ff2e30b4d2179006ea18449",
+                "width": 48,
+                "height": 48,
+                "isDefault": false
+              },
+              "displayName": "John Doe",
+              "isExternalCollaborator": false,
+              "_expandable": {
+                "operations": "",
+                "personalSpace": ""
+              },
+              "_links": {
+                "self": "https://xsoar-bd.atlassian.net/wiki/rest/api/user?accountId=5ff2e30b4d2179006ea18449"
+              }
+            }
+          ],
+          "size": 1
+        },
+        "_expandable": {
+          "group": ""
+        }
+      },
+      "operation": {
+        "operation": "delete",
+        "targetType": "blogpost"
+      },
+      "anonymousAccess": false,
+      "unlicensedAccess": false
+    },
+    {
+      "id": 2064393,
+      "subjects": {
+        "group": {
+          "results": [
+            {
+              "type": "group",
+              "name": "confluence-users",
+              "id": "e50e7fe6-7961-4775-9bbf-99e4b50f8701",
+              "_links": {
+                "self": "https://xsoar-bd.atlassian.net/wiki/rest/experimental/group/confluence-users"
+              }
+            }
+          ],
+          "size": 1
+        },
+        "_expandable": {
+          "user": ""
+        }
+      },
+      "operation": {
+        "operation": "restrict_content",
+        "targetType": "space"
+      },
+      "anonymousAccess": false,
+      "unlicensedAccess": false
+    },
+    {
+      "id": 2064394,
+      "subjects": {
+        "group": {
+          "results": [
+            {
+              "type": "group",
+              "name": "trusted-users-9704e596-7b55-4a8b-a77b-f617d67cffd9",
+              "id": "5178e800-9b33-4b4b-9854-1fdd6776bd42",
+              "_links": {
+                "self": "https://xsoar-bd.atlassian.net/wiki/rest/experimental/group/trusted-users-9704e596-7b55-4a8b-a77b-f617d67cffd9"
+              }
+            }
+          ],
+          "size": 1
+        },
+        "_expandable": {
+          "user": ""
+        }
+      },
+      "operation": {
+        "operation": "delete",
+        "targetType": "comment"
+      },
+      "anonymousAccess": false,
+      "unlicensedAccess": false
+    },
+    {
+      "id": 2064396,
+      "subjects": {
+        "group": {
+          "results": [
+            {
+              "type": "group",
+              "name": "system-administrators",
+              "id": "2fda36d1-e4e0-4307-bc5f-ed0044f6ff2c",
+              "_links": {
+                "self": "https://xsoar-bd.atlassian.net/wiki/rest/experimental/group/system-administrators"
+              }
+            }
+          ],
+          "size": 1
+        },
+        "_expandable": {
+          "user": ""
+        }
+      },
+      "operation": {
+        "operation": "administer",
+        "targetType": "space"
+      },
+      "anonymousAccess": false,
+      "unlicensedAccess": false
+    },
+    {
+      "id": 2064397,
+      "subjects": {
+        "group": {
+          "results": [
+            {
+              "type": "group",
+              "name": "confluence-users",
+              "id": "e50e7fe6-7961-4775-9bbf-99e4b50f8701",
+              "_links": {
+                "self": "https://xsoar-bd.atlassian.net/wiki/rest/experimental/group/confluence-users"
+              }
+            }
+          ],
+          "size": 1
+        },
+        "_expandable": {
+          "user": ""
+        }
+      },
+      "operation": {
+        "operation": "create",
+        "targetType": "page"
+      },
+      "anonymousAccess": false,
+      "unlicensedAccess": false
+    },
+    {
+      "id": 2064398,
+      "subjects": {
+        "user": {
+          "results": [
+            {
+              "type": "known",
+              "accountId": "5ff2e30b4d2179006ea18449",
+              "accountType": "atlassian",
+              "email": "dummy.dummy@dummy.com",
+              "publicName": "John Doe",
+              "profilePicture": {
+                "path": "/wiki/aa-avatar/5ff2e30b4d2179006ea18449",
+                "width": 48,
+                "height": 48,
+                "isDefault": false
+              },
+              "displayName": "John Doe",
+              "isExternalCollaborator": false,
+              "_expandable": {
+                "operations": "",
+                "personalSpace": ""
+              },
+              "_links": {
+                "self": "https://xsoar-bd.atlassian.net/wiki/rest/api/user?accountId=5ff2e30b4d2179006ea18449"
+              }
+            }
+          ],
+          "size": 1
+        },
+        "_expandable": {
+          "group": ""
+        }
+      },
+      "operation": {
+        "operation": "delete",
+        "targetType": "comment"
+      },
+      "anonymousAccess": false,
+      "unlicensedAccess": false
+    },
+    {
+      "id": 2064399,
+      "subjects": {
+        "group": {
+          "results": [
+            {
+              "type": "group",
+              "name": "administrators",
+              "id": "10453df5-f7fc-47be-8ca7-bc2949c1bd5b",
+              "_links": {
+                "self": "https://xsoar-bd.atlassian.net/wiki/rest/experimental/group/administrators"
+              }
+            }
+          ],
+          "size": 1
+        },
+        "_expandable": {
+          "user": ""
+        }
+      },
+      "operation": {
+        "operation": "delete",
+        "targetType": "page"
+      },
+      "anonymousAccess": false,
+      "unlicensedAccess": false
+    },
+    {
+      "id": 2064400,
+      "subjects": {
+        "user": {
+          "results": [
+            {
+              "type": "known",
+              "accountId": "5ff2e30b4d2179006ea18449",
+              "accountType": "atlassian",
+              "email": "dummy.dummy@dummy.com",
+              "publicName": "John Doe",
+              "profilePicture": {
+                "path": "/wiki/aa-avatar/5ff2e30b4d2179006ea18449",
+                "width": 48,
+                "height": 48,
+                "isDefault": false
+              },
+              "displayName": "John Doe",
+              "isExternalCollaborator": false,
+              "_expandable": {
+                "operations": "",
+                "personalSpace": ""
+              },
+              "_links": {
+                "self": "https://xsoar-bd.atlassian.net/wiki/rest/api/user?accountId=5ff2e30b4d2179006ea18449"
+              }
+            }
+          ],
+          "size": 1
+        },
+        "_expandable": {
+          "group": ""
+        }
+      },
+      "operation": {
+        "operation": "create",
+        "targetType": "comment"
+      },
+      "anonymousAccess": false,
+      "unlicensedAccess": false
+    },
+    {
+      "id": 2064401,
+      "subjects": {
+        "group": {
+          "results": [
+            {
+              "type": "group",
+              "name": "confluence-users",
+              "id": "e50e7fe6-7961-4775-9bbf-99e4b50f8701",
+              "_links": {
+                "self": "https://xsoar-bd.atlassian.net/wiki/rest/experimental/group/confluence-users"
+              }
+            }
+          ],
+          "size": 1
+        },
+        "_expandable": {
+          "user": ""
+        }
+      },
+      "operation": {
+        "operation": "export",
+        "targetType": "space"
+      },
+      "anonymousAccess": false,
+      "unlicensedAccess": false
+    },
+    {
+      "id": 2064402,
+      "subjects": {
+        "group": {
+          "results": [
+            {
+              "type": "group",
+              "name": "administrators",
+              "id": "10453df5-f7fc-47be-8ca7-bc2949c1bd5b",
+              "_links": {
+                "self": "https://xsoar-bd.atlassian.net/wiki/rest/experimental/group/administrators"
+              }
+            }
+          ],
+          "size": 1
+        },
+        "_expandable": {
+          "user": ""
+        }
+      },
+      "operation": {
+        "operation": "delete",
+        "targetType": "blogpost"
+      },
+      "anonymousAccess": false,
+      "unlicensedAccess": false
+    },
+    {
+      "id": 2064403,
+      "subjects": {
+        "group": {
+          "results": [
+            {
+              "type": "group",
+              "name": "confluence-users",
+              "id": "e50e7fe6-7961-4775-9bbf-99e4b50f8701",
+              "_links": {
+                "self": "https://xsoar-bd.atlassian.net/wiki/rest/experimental/group/confluence-users"
+              }
+            }
+          ],
+          "size": 1
+        },
+        "_expandable": {
+          "user": ""
+        }
+      },
+      "operation": {
+        "operation": "create",
+        "targetType": "blogpost"
+      },
+      "anonymousAccess": false,
+      "unlicensedAccess": false
+    },
+    {
+      "id": 2064404,
+      "subjects": {
+        "group": {
+          "results": [
+            {
+              "type": "group",
+              "name": "system-administrators",
+              "id": "2fda36d1-e4e0-4307-bc5f-ed0044f6ff2c",
+              "_links": {
+                "self": "https://xsoar-bd.atlassian.net/wiki/rest/experimental/group/system-administrators"
+              }
+            }
+          ],
+          "size": 1
+        },
+        "_expandable": {
+          "user": ""
+        }
+      },
+      "operation": {
+        "operation": "create",
+        "targetType": "comment"
+      },
+      "anonymousAccess": false,
+      "unlicensedAccess": false
+    },
+    {
+      "id": 2064406,
+      "subjects": {
+        "user": {
+          "results": [
+            {
+              "type": "known",
+              "accountId": "5ff2e30b4d2179006ea18449",
+              "accountType": "atlassian",
+              "email": "dummy.dummy@dummy.com",
+              "publicName": "John Doe",
+              "profilePicture": {
+                "path": "/wiki/aa-avatar/5ff2e30b4d2179006ea18449",
+                "width": 48,
+                "height": 48,
+                "isDefault": false
+              },
+              "displayName": "John Doe",
+              "isExternalCollaborator": false,
+              "_expandable": {
+                "operations": "",
+                "personalSpace": ""
+              },
+              "_links": {
+                "self": "https://xsoar-bd.atlassian.net/wiki/rest/api/user?accountId=5ff2e30b4d2179006ea18449"
+              }
+            }
+          ],
+          "size": 1
+        },
+        "_expandable": {
+          "group": ""
+        }
+      },
+      "operation": {
+        "operation": "delete",
+        "targetType": "attachment"
+      },
+      "anonymousAccess": false,
+      "unlicensedAccess": false
+    },
+    {
+      "id": 2064407,
+      "subjects": {
+        "user": {
+          "results": [
+            {
+              "type": "known",
+              "accountId": "5ff2e30b4d2179006ea18449",
+              "accountType": "atlassian",
+              "email": "dummy.dummy@dummy.com",
+              "publicName": "John Doe",
+              "profilePicture": {
+                "path": "/wiki/aa-avatar/5ff2e30b4d2179006ea18449",
+                "width": 48,
+                "height": 48,
+                "isDefault": false
+              },
+              "displayName": "John Doe",
+              "isExternalCollaborator": false,
+              "_expandable": {
+                "operations": "",
+                "personalSpace": ""
+              },
+              "_links": {
+                "self": "https://xsoar-bd.atlassian.net/wiki/rest/api/user?accountId=5ff2e30b4d2179006ea18449"
+              }
+            }
+          ],
+          "size": 1
+        },
+        "_expandable": {
+          "group": ""
+        }
+      },
+      "operation": {
+        "operation": "read",
+        "targetType": "space"
+      },
+      "anonymousAccess": false,
+      "unlicensedAccess": false
+    },
+    {
+      "id": 2064408,
+      "subjects": {
+        "group": {
+          "results": [
+            {
+              "type": "group",
+              "name": "confluence-users",
+              "id": "e50e7fe6-7961-4775-9bbf-99e4b50f8701",
+              "_links": {
+                "self": "https://xsoar-bd.atlassian.net/wiki/rest/experimental/group/confluence-users"
+              }
+            }
+          ],
+          "size": 1
+        },
+        "_expandable": {
+          "user": ""
+        }
+      },
+      "operation": {
+        "operation": "create",
+        "targetType": "attachment"
+      },
+      "anonymousAccess": false,
+      "unlicensedAccess": false
+    },
+    {
+      "id": 2064409,
+      "subjects": {
+        "group": {
+          "results": [
+            {
+              "type": "group",
+              "name": "administrators",
+              "id": "10453df5-f7fc-47be-8ca7-bc2949c1bd5b",
+              "_links": {
+                "self": "https://xsoar-bd.atlassian.net/wiki/rest/experimental/group/administrators"
+              }
+            }
+          ],
+          "size": 1
+        },
+        "_expandable": {
+          "user": ""
+        }
+      },
+      "operation": {
+        "operation": "administer",
+        "targetType": "space"
+      },
+      "anonymousAccess": false,
+      "unlicensedAccess": false
+    },
+    {
+      "id": 2064410,
+      "subjects": {
+        "group": {
+          "results": [
+            {
+              "type": "group",
+              "name": "trusted-users-9704e596-7b55-4a8b-a77b-f617d67cffd9",
+              "id": "5178e800-9b33-4b4b-9854-1fdd6776bd42",
+              "_links": {
+                "self": "https://xsoar-bd.atlassian.net/wiki/rest/experimental/group/trusted-users-9704e596-7b55-4a8b-a77b-f617d67cffd9"
+              }
+            }
+          ],
+          "size": 1
+        },
+        "_expandable": {
+          "user": ""
+        }
+      },
+      "operation": {
+        "operation": "delete",
+        "targetType": "attachment"
+      },
+      "anonymousAccess": false,
+      "unlicensedAccess": false
+    },
+    {
+      "id": 2064411,
+      "subjects": {
+        "group": {
+          "results": [
+            {
+              "type": "group",
+              "name": "confluence-users",
+              "id": "e50e7fe6-7961-4775-9bbf-99e4b50f8701",
+              "_links": {
+                "self": "https://xsoar-bd.atlassian.net/wiki/rest/experimental/group/confluence-users"
+              }
+            }
+          ],
+          "size": 1
+        },
+        "_expandable": {
+          "user": ""
+        }
+      },
+      "operation": {
+        "operation": "delete",
+        "targetType": "attachment"
+      },
+      "anonymousAccess": false,
+      "unlicensedAccess": false
+    },
+    {
+      "id": 2064412,
+      "subjects": {
+        "group": {
+          "results": [
+            {
+              "type": "group",
+              "name": "administrators",
+              "id": "10453df5-f7fc-47be-8ca7-bc2949c1bd5b",
+              "_links": {
+                "self": "https://xsoar-bd.atlassian.net/wiki/rest/experimental/group/administrators"
+              }
+            }
+          ],
+          "size": 1
+        },
+        "_expandable": {
+          "user": ""
+        }
+      },
+      "operation": {
+        "operation": "export",
+        "targetType": "space"
+      },
+      "anonymousAccess": false,
+      "unlicensedAccess": false
+    },
+    {
+      "id": 2064413,
+      "subjects": {
+        "group": {
+          "results": [
+            {
+              "type": "group",
+              "name": "trusted-users-9704e596-7b55-4a8b-a77b-f617d67cffd9",
+              "id": "5178e800-9b33-4b4b-9854-1fdd6776bd42",
+              "_links": {
+                "self": "https://xsoar-bd.atlassian.net/wiki/rest/experimental/group/trusted-users-9704e596-7b55-4a8b-a77b-f617d67cffd9"
+              }
+            }
+          ],
+          "size": 1
+        },
+        "_expandable": {
+          "user": ""
+        }
+      },
+      "operation": {
+        "operation": "delete",
+        "targetType": "space"
+      },
+      "anonymousAccess": false,
+      "unlicensedAccess": false
+    },
+    {
+      "id": 2064414,
+      "subjects": {
+        "user": {
+          "results": [
+            {
+              "type": "known",
+              "accountId": "5ff2e30b4d2179006ea18449",
+              "accountType": "atlassian",
+              "email": "dummy.dummy@dummy.com",
+              "publicName": "John Doe",
+              "profilePicture": {
+                "path": "/wiki/aa-avatar/5ff2e30b4d2179006ea18449",
+                "width": 48,
+                "height": 48,
+                "isDefault": false
+              },
+              "displayName": "John Doe",
+              "isExternalCollaborator": false,
+              "_expandable": {
+                "operations": "",
+                "personalSpace": ""
+              },
+              "_links": {
+                "self": "https://xsoar-bd.atlassian.net/wiki/rest/api/user?accountId=5ff2e30b4d2179006ea18449"
+              }
+            }
+          ],
+          "size": 1
+        },
+        "_expandable": {
+          "group": ""
+        }
+      },
+      "operation": {
+        "operation": "restrict_content",
+        "targetType": "space"
+      },
+      "anonymousAccess": false,
+      "unlicensedAccess": false
+    },
+    {
+      "id": 2064415,
+      "subjects": {
+        "group": {
+          "results": [
+            {
+              "type": "group",
+              "name": "site-admins",
+              "id": "b7e24fd2-0faa-4eaa-9f87-b764ae157ae7",
+              "_links": {
+                "self": "https://xsoar-bd.atlassian.net/wiki/rest/experimental/group/site-admins"
+              }
+            }
+          ],
+          "size": 1
+        },
+        "_expandable": {
+          "user": ""
+        }
+      },
+      "operation": {
+        "operation": "delete",
+        "targetType": "comment"
+      },
+      "anonymousAccess": false,
+      "unlicensedAccess": false
+    },
+    {
+      "id": 2064416,
+      "subjects": {
+        "group": {
+          "results": [
+            {
+              "type": "group",
+              "name": "system-administrators",
+              "id": "2fda36d1-e4e0-4307-bc5f-ed0044f6ff2c",
+              "_links": {
+                "self": "https://xsoar-bd.atlassian.net/wiki/rest/experimental/group/system-administrators"
+              }
+            }
+          ],
+          "size": 1
+        },
+        "_expandable": {
+          "user": ""
+        }
+      },
+      "operation": {
+        "operation": "delete",
+        "targetType": "page"
+      },
+      "anonymousAccess": false,
+      "unlicensedAccess": false
+    },
+    {
+      "id": 2064417,
+      "subjects": {
+        "group": {
+          "results": [
+            {
+              "type": "group",
+              "name": "system-administrators",
+              "id": "2fda36d1-e4e0-4307-bc5f-ed0044f6ff2c",
+              "_links": {
+                "self": "https://xsoar-bd.atlassian.net/wiki/rest/experimental/group/system-administrators"
+              }
+            }
+          ],
+          "size": 1
+        },
+        "_expandable": {
+          "user": ""
+        }
+      },
+      "operation": {
+        "operation": "create",
+        "targetType": "blogpost"
+      },
+      "anonymousAccess": false,
+      "unlicensedAccess": false
+    },
+    {
+      "id": 2064420,
+      "subjects": {
+        "group": {
+          "results": [
+            {
+              "type": "group",
+              "name": "confluence-users",
+              "id": "e50e7fe6-7961-4775-9bbf-99e4b50f8701",
+              "_links": {
+                "self": "https://xsoar-bd.atlassian.net/wiki/rest/experimental/group/confluence-users"
+              }
+            }
+          ],
+          "size": 1
+        },
+        "_expandable": {
+          "user": ""
+        }
+      },
+      "operation": {
+        "operation": "administer",
+        "targetType": "space"
+      },
+      "anonymousAccess": false,
+      "unlicensedAccess": false
+    },
+    {
+      "id": 2064421,
+      "subjects": {
+        "group": {
+          "results": [
+            {
+              "type": "group",
+              "name": "system-administrators",
+              "id": "2fda36d1-e4e0-4307-bc5f-ed0044f6ff2c",
+              "_links": {
+                "self": "https://xsoar-bd.atlassian.net/wiki/rest/experimental/group/system-administrators"
+              }
+            }
+          ],
+          "size": 1
+        },
+        "_expandable": {
+          "user": ""
+        }
+      },
+      "operation": {
+        "operation": "delete",
+        "targetType": "blogpost"
+      },
+      "anonymousAccess": false,
+      "unlicensedAccess": false
+    },
+    {
+      "id": 2064422,
+      "subjects": {
+        "group": {
+          "results": [
+            {
+              "type": "group",
+              "name": "administrators",
+              "id": "10453df5-f7fc-47be-8ca7-bc2949c1bd5b",
+              "_links": {
+                "self": "https://xsoar-bd.atlassian.net/wiki/rest/experimental/group/administrators"
+              }
+            }
+          ],
+          "size": 1
+        },
+        "_expandable": {
+          "user": ""
+        }
+      },
+      "operation": {
+        "operation": "delete",
+        "targetType": "attachment"
+      },
+      "anonymousAccess": false,
+      "unlicensedAccess": false
+    },
+    {
+      "id": 2064423,
+      "subjects": {
+        "group": {
+          "results": [
+            {
+              "type": "group",
+              "name": "confluence-users",
+              "id": "e50e7fe6-7961-4775-9bbf-99e4b50f8701",
+              "_links": {
+                "self": "https://xsoar-bd.atlassian.net/wiki/rest/experimental/group/confluence-users"
+              }
+            }
+          ],
+          "size": 1
+        },
+        "_expandable": {
+          "user": ""
+        }
+      },
+      "operation": {
+        "operation": "delete",
+        "targetType": "space"
+      },
+      "anonymousAccess": false,
+      "unlicensedAccess": false
+    },
+    {
+      "id": 2064424,
+      "subjects": {
+        "group": {
+          "results": [
+            {
+              "type": "group",
+              "name": "site-admins",
+              "id": "b7e24fd2-0faa-4eaa-9f87-b764ae157ae7",
+              "_links": {
+                "self": "https://xsoar-bd.atlassian.net/wiki/rest/experimental/group/site-admins"
+              }
+            }
+          ],
+          "size": 1
+        },
+        "_expandable": {
+          "user": ""
+        }
+      },
+      "operation": {
+        "operation": "create",
+        "targetType": "attachment"
+      },
+      "anonymousAccess": false,
+      "unlicensedAccess": false
+    },
+    {
+      "id": 2064426,
+      "subjects": {
+        "group": {
+          "results": [
+            {
+              "type": "group",
+              "name": "system-administrators",
+              "id": "2fda36d1-e4e0-4307-bc5f-ed0044f6ff2c",
+              "_links": {
+                "self": "https://xsoar-bd.atlassian.net/wiki/rest/experimental/group/system-administrators"
+              }
+            }
+          ],
+          "size": 1
+        },
+        "_expandable": {
+          "user": ""
+        }
+      },
+      "operation": {
+        "operation": "delete",
+        "targetType": "attachment"
+      },
+      "anonymousAccess": false,
+      "unlicensedAccess": false
+    },
+    {
+      "id": 2064428,
+      "subjects": {
+        "group": {
+          "results": [
+            {
+              "type": "group",
+              "name": "system-administrators",
+              "id": "2fda36d1-e4e0-4307-bc5f-ed0044f6ff2c",
+              "_links": {
+                "self": "https://xsoar-bd.atlassian.net/wiki/rest/experimental/group/system-administrators"
+              }
+            }
+          ],
+          "size": 1
+        },
+        "_expandable": {
+          "user": ""
+        }
+      },
+      "operation": {
+        "operation": "create",
+        "targetType": "page"
+      },
+      "anonymousAccess": false,
+      "unlicensedAccess": false
+    },
+    {
+      "id": 2064429,
+      "subjects": {
+        "group": {
+          "results": [
+            {
+              "type": "group",
+              "name": "system-administrators",
+              "id": "2fda36d1-e4e0-4307-bc5f-ed0044f6ff2c",
+              "_links": {
+                "self": "https://xsoar-bd.atlassian.net/wiki/rest/experimental/group/system-administrators"
+              }
+            }
+          ],
+          "size": 1
+        },
+        "_expandable": {
+          "user": ""
+        }
+      },
+      "operation": {
+        "operation": "restrict_content",
+        "targetType": "space"
+      },
+      "anonymousAccess": false,
+      "unlicensedAccess": false
+    },
+    {
+      "id": 2064430,
+      "subjects": {
+        "group": {
+          "results": [
+            {
+              "type": "group",
+              "name": "administrators",
+              "id": "10453df5-f7fc-47be-8ca7-bc2949c1bd5b",
+              "_links": {
+                "self": "https://xsoar-bd.atlassian.net/wiki/rest/experimental/group/administrators"
+              }
+            }
+          ],
+          "size": 1
+        },
+        "_expandable": {
+          "user": ""
+        }
+      },
+      "operation": {
+        "operation": "restrict_content",
+        "targetType": "space"
+      },
+      "anonymousAccess": false,
+      "unlicensedAccess": false
+    },
+    {
+      "id": 2064431,
+      "subjects": {
+        "group": {
+          "results": [
+            {
+              "type": "group",
+              "name": "trusted-users-9704e596-7b55-4a8b-a77b-f617d67cffd9",
+              "id": "5178e800-9b33-4b4b-9854-1fdd6776bd42",
+              "_links": {
+                "self": "https://xsoar-bd.atlassian.net/wiki/rest/experimental/group/trusted-users-9704e596-7b55-4a8b-a77b-f617d67cffd9"
+              }
+            }
+          ],
+          "size": 1
+        },
+        "_expandable": {
+          "user": ""
+        }
+      },
+      "operation": {
+        "operation": "administer",
+        "targetType": "space"
+      },
+      "anonymousAccess": false,
+      "unlicensedAccess": false
+    },
+    {
+      "id": 2064432,
+      "subjects": {
+        "group": {
+          "results": [
+            {
+              "type": "group",
+              "name": "site-admins",
+              "id": "b7e24fd2-0faa-4eaa-9f87-b764ae157ae7",
+              "_links": {
+                "self": "https://xsoar-bd.atlassian.net/wiki/rest/experimental/group/site-admins"
+              }
+            }
+          ],
+          "size": 1
+        },
+        "_expandable": {
+          "user": ""
+        }
+      },
+      "operation": {
+        "operation": "create",
+        "targetType": "comment"
+      },
+      "anonymousAccess": false,
+      "unlicensedAccess": false
+    },
+    {
+      "id": 2064433,
+      "subjects": {
+        "user": {
+          "results": [
+            {
+              "type": "known",
+              "accountId": "5ff2e30b4d2179006ea18449",
+              "accountType": "atlassian",
+              "email": "dummy.dummy@dummy.com",
+              "publicName": "John Doe",
+              "profilePicture": {
+                "path": "/wiki/aa-avatar/5ff2e30b4d2179006ea18449",
+                "width": 48,
+                "height": 48,
+                "isDefault": false
+              },
+              "displayName": "John Doe",
+              "isExternalCollaborator": false,
+              "_expandable": {
+                "operations": "",
+                "personalSpace": ""
+              },
+              "_links": {
+                "self": "https://xsoar-bd.atlassian.net/wiki/rest/api/user?accountId=5ff2e30b4d2179006ea18449"
+              }
+            }
+          ],
+          "size": 1
+        },
+        "_expandable": {
+          "group": ""
+        }
+      },
+      "operation": {
+        "operation": "create",
+        "targetType": "page"
+      },
+      "anonymousAccess": false,
+      "unlicensedAccess": false
+    },
+    {
+      "id": 2064434,
+      "subjects": {
+        "user": {
+          "results": [
+            {
+              "type": "known",
+              "accountId": "5ff2e30b4d2179006ea18449",
+              "accountType": "atlassian",
+              "email": "dummy.dummy@dummy.com",
+              "publicName": "John Doe",
+              "profilePicture": {
+                "path": "/wiki/aa-avatar/5ff2e30b4d2179006ea18449",
+                "width": 48,
+                "height": 48,
+                "isDefault": false
+              },
+              "displayName": "John Doe",
+              "isExternalCollaborator": false,
+              "_expandable": {
+                "operations": "",
+                "personalSpace": ""
+              },
+              "_links": {
+                "self": "https://xsoar-bd.atlassian.net/wiki/rest/api/user?accountId=5ff2e30b4d2179006ea18449"
+              }
+            }
+          ],
+          "size": 1
+        },
+        "_expandable": {
+          "group": ""
+        }
+      },
+      "operation": {
+        "operation": "export",
+        "targetType": "space"
+      },
+      "anonymousAccess": false,
+      "unlicensedAccess": false
+    },
+    {
+      "id": 2064435,
+      "subjects": {
+        "group": {
+          "results": [
+            {
+              "type": "group",
+              "name": "site-admins",
+              "id": "b7e24fd2-0faa-4eaa-9f87-b764ae157ae7",
+              "_links": {
+                "self": "https://xsoar-bd.atlassian.net/wiki/rest/experimental/group/site-admins"
+              }
+            }
+          ],
+          "size": 1
+        },
+        "_expandable": {
+          "user": ""
+        }
+      },
+      "operation": {
+        "operation": "read",
+        "targetType": "space"
+      },
+      "anonymousAccess": false,
+      "unlicensedAccess": false
+    },
+    {
+      "id": 2064437,
+      "subjects": {
+        "group": {
+          "results": [
+            {
+              "type": "group",
+              "name": "administrators",
+              "id": "10453df5-f7fc-47be-8ca7-bc2949c1bd5b",
+              "_links": {
+                "self": "https://xsoar-bd.atlassian.net/wiki/rest/experimental/group/administrators"
+              }
+            }
+          ],
+          "size": 1
+        },
+        "_expandable": {
+          "user": ""
+        }
+      },
+      "operation": {
+        "operation": "create",
+        "targetType": "blogpost"
+      },
+      "anonymousAccess": false,
+      "unlicensedAccess": false
+    },
+    {
+      "id": 2064438,
+      "subjects": {
+        "group": {
+          "results": [
+            {
+              "type": "group",
+              "name": "system-administrators",
+              "id": "2fda36d1-e4e0-4307-bc5f-ed0044f6ff2c",
+              "_links": {
+                "self": "https://xsoar-bd.atlassian.net/wiki/rest/experimental/group/system-administrators"
+              }
+            }
+          ],
+          "size": 1
+        },
+        "_expandable": {
+          "user": ""
+        }
+      },
+      "operation": {
+        "operation": "export",
+        "targetType": "space"
+      },
+      "anonymousAccess": false,
+      "unlicensedAccess": false
+    },
+    {
+      "id": 2064439,
+      "subjects": {
+        "group": {
+          "results": [
+            {
+              "type": "group",
+              "name": "trusted-users-9704e596-7b55-4a8b-a77b-f617d67cffd9",
+              "id": "5178e800-9b33-4b4b-9854-1fdd6776bd42",
+              "_links": {
+                "self": "https://xsoar-bd.atlassian.net/wiki/rest/experimental/group/trusted-users-9704e596-7b55-4a8b-a77b-f617d67cffd9"
+              }
+            }
+          ],
+          "size": 1
+        },
+        "_expandable": {
+          "user": ""
+        }
+      },
+      "operation": {
+        "operation": "create",
+        "targetType": "page"
+      },
+      "anonymousAccess": false,
+      "unlicensedAccess": false
+    },
+    {
+      "id": 2064440,
+      "subjects": {
+        "group": {
+          "results": [
+            {
+              "type": "group",
+              "name": "confluence-users",
+              "id": "e50e7fe6-7961-4775-9bbf-99e4b50f8701",
+              "_links": {
+                "self": "https://xsoar-bd.atlassian.net/wiki/rest/experimental/group/confluence-users"
+              }
+            }
+          ],
+          "size": 1
+        },
+        "_expandable": {
+          "user": ""
+        }
+      },
+      "operation": {
+        "operation": "create",
+        "targetType": "comment"
+      },
+      "anonymousAccess": false,
+      "unlicensedAccess": false
+    },
+    {
+      "id": 2064441,
+      "subjects": {
+        "group": {
+          "results": [
+            {
+              "type": "group",
+              "name": "administrators",
+              "id": "10453df5-f7fc-47be-8ca7-bc2949c1bd5b",
+              "_links": {
+                "self": "https://xsoar-bd.atlassian.net/wiki/rest/experimental/group/administrators"
+              }
+            }
+          ],
+          "size": 1
+        },
+        "_expandable": {
+          "user": ""
+        }
+      },
+      "operation": {
+        "operation": "create",
+        "targetType": "page"
+      },
+      "anonymousAccess": false,
+      "unlicensedAccess": false
+    },
+    {
+      "id": 2064442,
+      "subjects": {
+        "group": {
+          "results": [
+            {
+              "type": "group",
+              "name": "confluence-users",
+              "id": "e50e7fe6-7961-4775-9bbf-99e4b50f8701",
+              "_links": {
+                "self": "https://xsoar-bd.atlassian.net/wiki/rest/experimental/group/confluence-users"
+              }
+            }
+          ],
+          "size": 1
+        },
+        "_expandable": {
+          "user": ""
+        }
+      },
+      "operation": {
+        "operation": "delete",
+        "targetType": "comment"
+      },
+      "anonymousAccess": false,
+      "unlicensedAccess": false
+    },
+    {
+      "id": 2064443,
+      "subjects": {
+        "group": {
+          "results": [
+            {
+              "type": "group",
+              "name": "trusted-users-9704e596-7b55-4a8b-a77b-f617d67cffd9",
+              "id": "5178e800-9b33-4b4b-9854-1fdd6776bd42",
+              "_links": {
+                "self": "https://xsoar-bd.atlassian.net/wiki/rest/experimental/group/trusted-users-9704e596-7b55-4a8b-a77b-f617d67cffd9"
+              }
+            }
+          ],
+          "size": 1
+        },
+        "_expandable": {
+          "user": ""
+        }
+      },
+      "operation": {
+        "operation": "restrict_content",
+        "targetType": "space"
+      },
+      "anonymousAccess": false,
+      "unlicensedAccess": false
+    },
+    {
+      "id": 2064445,
+      "subjects": {
+        "group": {
+          "results": [
+            {
+              "type": "group",
+              "name": "confluence-users",
+              "id": "e50e7fe6-7961-4775-9bbf-99e4b50f8701",
+              "_links": {
+                "self": "https://xsoar-bd.atlassian.net/wiki/rest/experimental/group/confluence-users"
+              }
+            }
+          ],
+          "size": 1
+        },
+        "_expandable": {
+          "user": ""
+        }
+      },
+      "operation": {
+        "operation": "read",
+        "targetType": "space"
+      },
+      "anonymousAccess": false,
+      "unlicensedAccess": false
+    },
+    {
+      "id": 2064446,
+      "subjects": {
+        "group": {
+          "results": [
+            {
+              "type": "group",
+              "name": "trusted-users-9704e596-7b55-4a8b-a77b-f617d67cffd9",
+              "id": "5178e800-9b33-4b4b-9854-1fdd6776bd42",
+              "_links": {
+                "self": "https://xsoar-bd.atlassian.net/wiki/rest/experimental/group/trusted-users-9704e596-7b55-4a8b-a77b-f617d67cffd9"
+              }
+            }
+          ],
+          "size": 1
+        },
+        "_expandable": {
+          "user": ""
+        }
+      },
+      "operation": {
+        "operation": "create",
+        "targetType": "blogpost"
+      },
+      "anonymousAccess": false,
+      "unlicensedAccess": false
+    },
+    {
+      "id": 2064447,
+      "subjects": {
+        "user": {
+          "results": [
+            {
+              "type": "known",
+              "accountId": "5ff2e30b4d2179006ea18449",
+              "accountType": "atlassian",
+              "email": "dummy.dummy@dummy.com",
+              "publicName": "John Doe",
+              "profilePicture": {
+                "path": "/wiki/aa-avatar/5ff2e30b4d2179006ea18449",
+                "width": 48,
+                "height": 48,
+                "isDefault": false
+              },
+              "displayName": "John Doe",
+              "isExternalCollaborator": false,
+              "_expandable": {
+                "operations": "",
+                "personalSpace": ""
+              },
+              "_links": {
+                "self": "https://xsoar-bd.atlassian.net/wiki/rest/api/user?accountId=5ff2e30b4d2179006ea18449"
+              }
+            }
+          ],
+          "size": 1
+        },
+        "_expandable": {
+          "group": ""
+        }
+      },
+      "operation": {
+        "operation": "create",
+        "targetType": "attachment"
+      },
+      "anonymousAccess": false,
+      "unlicensedAccess": false
+    },
+    {
+      "id": 2064448,
+      "subjects": {
+        "user": {
+          "results": [
+            {
+              "type": "known",
+              "accountId": "5ff2e30b4d2179006ea18449",
+              "accountType": "atlassian",
+              "email": "dummy.dummy@dummy.com",
+              "publicName": "John Doe",
+              "profilePicture": {
+                "path": "/wiki/aa-avatar/5ff2e30b4d2179006ea18449",
+                "width": 48,
+                "height": 48,
+                "isDefault": false
+              },
+              "displayName": "John Doe",
+              "isExternalCollaborator": false,
+              "_expandable": {
+                "operations": "",
+                "personalSpace": ""
+              },
+              "_links": {
+                "self": "https://xsoar-bd.atlassian.net/wiki/rest/api/user?accountId=5ff2e30b4d2179006ea18449"
+              }
+            }
+          ],
+          "size": 1
+        },
+        "_expandable": {
+          "group": ""
+        }
+      },
+      "operation": {
+        "operation": "create",
+        "targetType": "blogpost"
+      },
+      "anonymousAccess": false,
+      "unlicensedAccess": false
+    },
+    {
+      "id": 2064449,
+      "subjects": {
+        "group": {
+          "results": [
+            {
+              "type": "group",
+              "name": "site-admins",
+              "id": "b7e24fd2-0faa-4eaa-9f87-b764ae157ae7",
+              "_links": {
+                "self": "https://xsoar-bd.atlassian.net/wiki/rest/experimental/group/site-admins"
+              }
+            }
+          ],
+          "size": 1
+        },
+        "_expandable": {
+          "user": ""
+        }
+      },
+      "operation": {
+        "operation": "delete",
+        "targetType": "blogpost"
+      },
+      "anonymousAccess": false,
+      "unlicensedAccess": false
+    },
+    {
+      "id": 2064450,
+      "subjects": {
+        "group": {
+          "results": [
+            {
+              "type": "group",
+              "name": "site-admins",
+              "id": "b7e24fd2-0faa-4eaa-9f87-b764ae157ae7",
+              "_links": {
+                "self": "https://xsoar-bd.atlassian.net/wiki/rest/experimental/group/site-admins"
+              }
+            }
+          ],
+          "size": 1
+        },
+        "_expandable": {
+          "user": ""
+        }
+      },
+      "operation": {
+        "operation": "delete",
+        "targetType": "page"
+      },
+      "anonymousAccess": false,
+      "unlicensedAccess": false
+    },
+    {
+      "id": 2064451,
+      "subjects": {
+        "group": {
+          "results": [
+            {
+              "type": "group",
+              "name": "trusted-users-9704e596-7b55-4a8b-a77b-f617d67cffd9",
+              "id": "5178e800-9b33-4b4b-9854-1fdd6776bd42",
+              "_links": {
+                "self": "https://xsoar-bd.atlassian.net/wiki/rest/experimental/group/trusted-users-9704e596-7b55-4a8b-a77b-f617d67cffd9"
+              }
+            }
+          ],
+          "size": 1
+        },
+        "_expandable": {
+          "user": ""
+        }
+      },
+      "operation": {
+        "operation": "export",
+        "targetType": "space"
+      },
+      "anonymousAccess": false,
+      "unlicensedAccess": false
+    },
+    {
+      "id": 2064452,
+      "subjects": {
+        "group": {
+          "results": [
+            {
+              "type": "group",
+              "name": "site-admins",
+              "id": "b7e24fd2-0faa-4eaa-9f87-b764ae157ae7",
+              "_links": {
+                "self": "https://xsoar-bd.atlassian.net/wiki/rest/experimental/group/site-admins"
+              }
+            }
+          ],
+          "size": 1
+        },
+        "_expandable": {
+          "user": ""
+        }
+      },
+      "operation": {
+        "operation": "delete",
+        "targetType": "space"
+      },
+      "anonymousAccess": false,
+      "unlicensedAccess": false
+    },
+    {
+      "id": 2064453,
+      "subjects": {
+        "user": {
+          "results": [
+            {
+              "type": "known",
+              "accountId": "5ff2e30b4d2179006ea18449",
+              "accountType": "atlassian",
+              "email": "dummy.dummy@dummy.com",
+              "publicName": "John Doe",
+              "profilePicture": {
+                "path": "/wiki/aa-avatar/5ff2e30b4d2179006ea18449",
+                "width": 48,
+                "height": 48,
+                "isDefault": false
+              },
+              "displayName": "John Doe",
+              "isExternalCollaborator": false,
+              "_expandable": {
+                "operations": "",
+                "personalSpace": ""
+              },
+              "_links": {
+                "self": "https://xsoar-bd.atlassian.net/wiki/rest/api/user?accountId=5ff2e30b4d2179006ea18449"
+              }
+            }
+          ],
+          "size": 1
+        },
+        "_expandable": {
+          "group": ""
+        }
+      },
+      "operation": {
+        "operation": "administer",
+        "targetType": "space"
+      },
+      "anonymousAccess": false,
+      "unlicensedAccess": false
+    },
+    {
+      "id": 2064455,
+      "subjects": {
+        "group": {
+          "results": [
+            {
+              "type": "group",
+              "name": "site-admins",
+              "id": "b7e24fd2-0faa-4eaa-9f87-b764ae157ae7",
+              "_links": {
+                "self": "https://xsoar-bd.atlassian.net/wiki/rest/experimental/group/site-admins"
+              }
+            }
+          ],
+          "size": 1
+        },
+        "_expandable": {
+          "user": ""
+        }
+      },
+      "operation": {
+        "operation": "export",
+        "targetType": "space"
+      },
+      "anonymousAccess": false,
+      "unlicensedAccess": false
+    },
+    {
+      "id": 2064456,
+      "subjects": {
+        "group": {
+          "results": [
+            {
+              "type": "group",
+              "name": "site-admins",
+              "id": "b7e24fd2-0faa-4eaa-9f87-b764ae157ae7",
+              "_links": {
+                "self": "https://xsoar-bd.atlassian.net/wiki/rest/experimental/group/site-admins"
+              }
+            }
+          ],
+          "size": 1
+        },
+        "_expandable": {
+          "user": ""
+        }
+      },
+      "operation": {
+        "operation": "create",
+        "targetType": "page"
+      },
+      "anonymousAccess": false,
+      "unlicensedAccess": false
+    },
+    {
+      "id": 2064458,
+      "subjects": {
+        "group": {
+          "results": [
+            {
+              "type": "group",
+              "name": "confluence-users",
+              "id": "e50e7fe6-7961-4775-9bbf-99e4b50f8701",
+              "_links": {
+                "self": "https://xsoar-bd.atlassian.net/wiki/rest/experimental/group/confluence-users"
+              }
+            }
+          ],
+          "size": 1
+        },
+        "_expandable": {
+          "user": ""
+        }
+      },
+      "operation": {
+        "operation": "delete",
+        "targetType": "blogpost"
+      },
+      "anonymousAccess": false,
+      "unlicensedAccess": false
+    },
+    {
+      "id": 2064459,
+      "subjects": {
+        "group": {
+          "results": [
+            {
+              "type": "group",
+              "name": "system-administrators",
+              "id": "2fda36d1-e4e0-4307-bc5f-ed0044f6ff2c",
+              "_links": {
+                "self": "https://xsoar-bd.atlassian.net/wiki/rest/experimental/group/system-administrators"
+              }
+            }
+          ],
+          "size": 1
+        },
+        "_expandable": {
+          "user": ""
+        }
+      },
+      "operation": {
+        "operation": "read",
+        "targetType": "space"
+      },
+      "anonymousAccess": false,
+      "unlicensedAccess": false
+    },
+    {
+      "id": 2064460,
+      "subjects": {
+        "group": {
+          "results": [
+            {
+              "type": "group",
+              "name": "confluence-users",
+              "id": "e50e7fe6-7961-4775-9bbf-99e4b50f8701",
+              "_links": {
+                "self": "https://xsoar-bd.atlassian.net/wiki/rest/experimental/group/confluence-users"
+              }
+            }
+          ],
+          "size": 1
+        },
+        "_expandable": {
+          "user": ""
+        }
+      },
+      "operation": {
+        "operation": "delete",
+        "targetType": "page"
+      },
+      "anonymousAccess": false,
+      "unlicensedAccess": false
+    },
+    {
+      "id": 2064461,
+      "subjects": {
+        "group": {
+          "results": [
+            {
+              "type": "group",
+              "name": "site-admins",
+              "id": "b7e24fd2-0faa-4eaa-9f87-b764ae157ae7",
+              "_links": {
+                "self": "https://xsoar-bd.atlassian.net/wiki/rest/experimental/group/site-admins"
+              }
+            }
+          ],
+          "size": 1
+        },
+        "_expandable": {
+          "user": ""
+        }
+      },
+      "operation": {
+        "operation": "create",
+        "targetType": "blogpost"
+      },
+      "anonymousAccess": false,
+      "unlicensedAccess": false
+    },
+    {
+      "id": 2064462,
+      "subjects": {
+        "group": {
+          "results": [
+            {
+              "type": "group",
+              "name": "trusted-users-9704e596-7b55-4a8b-a77b-f617d67cffd9",
+              "id": "5178e800-9b33-4b4b-9854-1fdd6776bd42",
+              "_links": {
+                "self": "https://xsoar-bd.atlassian.net/wiki/rest/experimental/group/trusted-users-9704e596-7b55-4a8b-a77b-f617d67cffd9"
+              }
+            }
+          ],
+          "size": 1
+        },
+        "_expandable": {
+          "user": ""
+        }
+      },
+      "operation": {
+        "operation": "create",
+        "targetType": "attachment"
+      },
+      "anonymousAccess": false,
+      "unlicensedAccess": false
+    },
+    {
+      "id": 2064463,
+      "subjects": {
+        "group": {
+          "results": [
+            {
+              "type": "group",
+              "name": "system-administrators",
+              "id": "2fda36d1-e4e0-4307-bc5f-ed0044f6ff2c",
+              "_links": {
+                "self": "https://xsoar-bd.atlassian.net/wiki/rest/experimental/group/system-administrators"
+              }
+            }
+          ],
+          "size": 1
+        },
+        "_expandable": {
+          "user": ""
+        }
+      },
+      "operation": {
+        "operation": "delete",
+        "targetType": "comment"
+      },
+      "anonymousAccess": false,
+      "unlicensedAccess": false
+    },
+    {
+      "id": 2064464,
+      "subjects": {
+        "group": {
+          "results": [
+            {
+              "type": "group",
+              "name": "system-administrators",
+              "id": "2fda36d1-e4e0-4307-bc5f-ed0044f6ff2c",
+              "_links": {
+                "self": "https://xsoar-bd.atlassian.net/wiki/rest/experimental/group/system-administrators"
+              }
+            }
+          ],
+          "size": 1
+        },
+        "_expandable": {
+          "user": ""
+        }
+      },
+      "operation": {
+        "operation": "delete",
+        "targetType": "space"
+      },
+      "anonymousAccess": false,
+      "unlicensedAccess": false
+    },
+    {
+      "id": 2064465,
+      "subjects": {
+        "group": {
+          "results": [
+            {
+              "type": "group",
+              "name": "trusted-users-9704e596-7b55-4a8b-a77b-f617d67cffd9",
+              "id": "5178e800-9b33-4b4b-9854-1fdd6776bd42",
+              "_links": {
+                "self": "https://xsoar-bd.atlassian.net/wiki/rest/experimental/group/trusted-users-9704e596-7b55-4a8b-a77b-f617d67cffd9"
+              }
+            }
+          ],
+          "size": 1
+        },
+        "_expandable": {
+          "user": ""
+        }
+      },
+      "operation": {
+        "operation": "delete",
+        "targetType": "blogpost"
+      },
+      "anonymousAccess": false,
+      "unlicensedAccess": false
+    },
+    {
+      "id": 2064466,
+      "subjects": {
+        "group": {
+          "results": [
+            {
+              "type": "group",
+              "name": "administrators",
+              "id": "10453df5-f7fc-47be-8ca7-bc2949c1bd5b",
+              "_links": {
+                "self": "https://xsoar-bd.atlassian.net/wiki/rest/experimental/group/administrators"
+              }
+            }
+          ],
+          "size": 1
+        },
+        "_expandable": {
+          "user": ""
+        }
+      },
+      "operation": {
+        "operation": "delete",
+        "targetType": "space"
+      },
+      "anonymousAccess": false,
+      "unlicensedAccess": false
+    },
+    {
+      "id": 2064467,
+      "subjects": {
+        "group": {
+          "results": [
+            {
+              "type": "group",
+              "name": "trusted-users-9704e596-7b55-4a8b-a77b-f617d67cffd9",
+              "id": "5178e800-9b33-4b4b-9854-1fdd6776bd42",
+              "_links": {
+                "self": "https://xsoar-bd.atlassian.net/wiki/rest/experimental/group/trusted-users-9704e596-7b55-4a8b-a77b-f617d67cffd9"
+              }
+            }
+          ],
+          "size": 1
+        },
+        "_expandable": {
+          "user": ""
+        }
+      },
+      "operation": {
+        "operation": "delete",
+        "targetType": "page"
+      },
+      "anonymousAccess": false,
+      "unlicensedAccess": false
+    },
+    {
+      "id": 2064468,
+      "subjects": {
+        "group": {
+          "results": [
+            {
+              "type": "group",
+              "name": "site-admins",
+              "id": "b7e24fd2-0faa-4eaa-9f87-b764ae157ae7",
+              "_links": {
+                "self": "https://xsoar-bd.atlassian.net/wiki/rest/experimental/group/site-admins"
+              }
+            }
+          ],
+          "size": 1
+        },
+        "_expandable": {
+          "user": ""
+        }
+      },
+      "operation": {
+        "operation": "delete",
+        "targetType": "attachment"
+      },
+      "anonymousAccess": false,
+      "unlicensedAccess": false
+    },
+    {
+      "id": 2064469,
+      "subjects": {
+        "group": {
+          "results": [
+            {
+              "type": "group",
+              "name": "administrators",
+              "id": "10453df5-f7fc-47be-8ca7-bc2949c1bd5b",
+              "_links": {
+                "self": "https://xsoar-bd.atlassian.net/wiki/rest/experimental/group/administrators"
+              }
+            }
+          ],
+          "size": 1
+        },
+        "_expandable": {
+          "user": ""
+        }
+      },
+      "operation": {
+        "operation": "create",
+        "targetType": "attachment"
+      },
+      "anonymousAccess": false,
+      "unlicensedAccess": false
+    },
+    {
+      "id": 2064470,
+      "subjects": {
+        "group": {
+          "results": [
+            {
+              "type": "group",
+              "name": "site-admins",
+              "id": "b7e24fd2-0faa-4eaa-9f87-b764ae157ae7",
+              "_links": {
+                "self": "https://xsoar-bd.atlassian.net/wiki/rest/experimental/group/site-admins"
+              }
+            }
+          ],
+          "size": 1
+        },
+        "_expandable": {
+          "user": ""
+        }
+      },
+      "operation": {
+        "operation": "restrict_content",
+        "targetType": "space"
+      },
+      "anonymousAccess": false,
+      "unlicensedAccess": false
+    },
+    {
+      "id": 2064471,
+      "subjects": {
+        "group": {
+          "results": [
+            {
+              "type": "group",
+              "name": "trusted-users-9704e596-7b55-4a8b-a77b-f617d67cffd9",
+              "id": "5178e800-9b33-4b4b-9854-1fdd6776bd42",
+              "_links": {
+                "self": "https://xsoar-bd.atlassian.net/wiki/rest/experimental/group/trusted-users-9704e596-7b55-4a8b-a77b-f617d67cffd9"
+              }
+            }
+          ],
+          "size": 1
+        },
+        "_expandable": {
+          "user": ""
+        }
+      },
+      "operation": {
+        "operation": "read",
+        "targetType": "space"
+      },
+      "anonymousAccess": false,
+      "unlicensedAccess": false
+    },
+    {
+      "id": 2064472,
+      "subjects": {
+        "group": {
+          "results": [
+            {
+              "type": "group",
+              "name": "trusted-users-9704e596-7b55-4a8b-a77b-f617d67cffd9",
+              "id": "5178e800-9b33-4b4b-9854-1fdd6776bd42",
+              "_links": {
+                "self": "https://xsoar-bd.atlassian.net/wiki/rest/experimental/group/trusted-users-9704e596-7b55-4a8b-a77b-f617d67cffd9"
+              }
+            }
+          ],
+          "size": 1
+        },
+        "_expandable": {
+          "user": ""
+        }
+      },
+      "operation": {
+        "operation": "create",
+        "targetType": "comment"
+      },
+      "anonymousAccess": false,
+      "unlicensedAccess": false
+    },
+    {
+      "id": 2064475,
+      "subjects": {
+        "group": {
+          "results": [
+            {
+              "type": "group",
+              "name": "system-administrators",
+              "id": "2fda36d1-e4e0-4307-bc5f-ed0044f6ff2c",
+              "_links": {
+                "self": "https://xsoar-bd.atlassian.net/wiki/rest/experimental/group/system-administrators"
+              }
+            }
+          ],
+          "size": 1
+        },
+        "_expandable": {
+          "user": ""
+        }
+      },
+      "operation": {
+        "operation": "create",
+        "targetType": "attachment"
+      },
+      "anonymousAccess": false,
+      "unlicensedAccess": false
+    },
+    {
+      "id": 2064476,
+      "subjects": {
+        "group": {
+          "results": [
+            {
+              "type": "group",
+              "name": "site-admins",
+              "id": "b7e24fd2-0faa-4eaa-9f87-b764ae157ae7",
+              "_links": {
+                "self": "https://xsoar-bd.atlassian.net/wiki/rest/experimental/group/site-admins"
+              }
+            }
+          ],
+          "size": 1
+        },
+        "_expandable": {
+          "user": ""
+        }
+      },
+      "operation": {
+        "operation": "administer",
+        "targetType": "space"
+      },
+      "anonymousAccess": false,
+      "unlicensedAccess": false
+    },
+    {
+      "id": 2064477,
+      "subjects": {
+        "user": {
+          "results": [
+            {
+              "type": "known",
+              "accountId": "5ff2e30b4d2179006ea18449",
+              "accountType": "atlassian",
+              "email": "dummy.dummy@dummy.com",
+              "publicName": "John Doe",
+              "profilePicture": {
+                "path": "/wiki/aa-avatar/5ff2e30b4d2179006ea18449",
+                "width": 48,
+                "height": 48,
+                "isDefault": false
+              },
+              "displayName": "John Doe",
+              "isExternalCollaborator": false,
+              "_expandable": {
+                "operations": "",
+                "personalSpace": ""
+              },
+              "_links": {
+                "self": "https://xsoar-bd.atlassian.net/wiki/rest/api/user?accountId=5ff2e30b4d2179006ea18449"
+              }
+            }
+          ],
+          "size": 1
+        },
+        "_expandable": {
+          "group": ""
+        }
+      },
+      "operation": {
+        "operation": "delete",
+        "targetType": "space"
+      },
+      "anonymousAccess": false,
+      "unlicensedAccess": false
+    }
+  ],
+  "status": "current",
+  "_expandable": {
+    "settings": "/rest/api/space/XSOAR/settings",
+    "metadata": "",
+    "operations": "",
+    "lookAndFeel": "/rest/api/settings/lookandfeel?spaceKey=XSOAR",
+    "identifiers": "",
+    "icon": "",
+    "theme": "/rest/api/space/XSOAR/theme",
+    "history": ""
+  },
+  "_links": {
+    "context": "/wiki",
+    "self": "https://xsoar-bd.atlassian.net/wiki/rest/api/space/XSOAR",
+    "collection": "/rest/api/space",
+    "webui": "/spaces/XSOAR",
+    "base": "https://xsoar-bd.atlassian.net/wiki"
+  }
+}

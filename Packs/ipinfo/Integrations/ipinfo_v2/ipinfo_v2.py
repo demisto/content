@@ -8,6 +8,8 @@ from typing import Dict, Any
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
+BRAND_NAME = "IPinfo"  # matches context output path for faster caching
+
 
 class Client(BaseClient):
     def __init__(self, api_key: str, base_url: str, verify_certificate: bool, proxy: bool, reliability: str):
@@ -60,7 +62,7 @@ def parse_results(ip: str, raw_result: Dict[str, Any], reliability: str) -> List
                                             entity_a_type=FeedIndicatorType.IP,
                                             entity_b=hostname,
                                             entity_b_type=FeedIndicatorType.Domain,
-                                            brand='ipinfo_v2',
+                                            brand=BRAND_NAME,
                                             source_reliability=reliability))
 
     if 'org' in raw_result:
@@ -141,6 +143,7 @@ def parse_results(ip: str, raw_result: Dict[str, Any], reliability: str) -> List
         dbot_score=Common.DBotScore(indicator=ip,
                                     indicator_type=DBotScoreType.IP,
                                     reliability=dbot_reliability,
+                                    integration_name=BRAND_NAME,
                                     score=Common.DBotScore.NONE),
         asn=asn,
         hostname=hostname,

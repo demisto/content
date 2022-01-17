@@ -47,9 +47,10 @@ script: >-
       // Not Proofpoint so just un-escape
       if (v === 0) {
           var url = input.replace(/\[\.\]/g, '.')
-          if (input.startsWith('https') || input.startsWith('hxxps')) {
-              //Normalize: 1) [.] --> . 2) hxxps --> https 3) &amp --> & 4) https:\\ --> https://
-              url = url.replace(/hxxps/i, 'https').replace(/&amp;/g, '&').replace(/https:\\\\/g, 'https://').replace(/https:\\/g, 'https://')
+        if (input.toLowerCase().startsWith('https') || input.toLowerCase().startsWith('hxxps') || input.toLowerCase().startsWith('meows')) {
+            //Normalize: 1) [.] --> . 2) hxxps --> https 3) meows --> https 4) &amp --> & 5) https:\\ --> https://
+            url = 'https' + url.slice(5, url.length)
+            url = url.replace(/&amp;/g, '&').replace(/https:\\\\/g, 'https://').replace(/https:\\/g, 'https://')
               // Normalize the URL with https prefix
               if (url.startsWith('https:/') && !url.startsWith('https://')) {
                   url = url.replace('https:/', 'https://')
@@ -58,9 +59,11 @@ script: >-
                   url = url.replace(/https:/i, 'https://')
               }
           }
-          else if (input.startsWith('http') || input.startsWith('hxxp')) {
-              //Normalize: 1) [.] --> . 2) hxxp --> http 3) &amp --> & 4) http:\\ --> http://
-              url = url.replace(/hxxp/i, 'http').replace(/&amp;/g, '&').replace(/http:\\\\/g, 'http://').replace(/http:\\/g, 'http://')
+        else if (input.toLowerCase().startsWith('http') || input.toLowerCase().startsWith('hxxp') || input.toLowerCase().startsWith('meow')) {
+            //Normalize: 1) [.] --> . 2) hxxp --> http 3) meow --> http 4) &amp --> & 5) http:\\ --> http://
+            url = 'http' + url.slice(4, url.length)
+            url = url.replace(/&amp;/g, '&').replace(/http:\\\\/g, 'http://').replace(/http:\\/g, 'http://')
+
               // Normalize the URL with http prefix
               if (url.startsWith('http:/') && !url.startsWith('http://')) {
                   url = url.replace('http:/', 'http://')

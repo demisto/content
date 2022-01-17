@@ -6,7 +6,7 @@ configuration:
 - display: API Key
   hidden: false
   name: api_key
-  required: false
+  required: true
   type: 4
 - display: Fetch indicators
   name: feed
@@ -94,7 +94,7 @@ configuration:
   required: false
   type: 8
 description: Unit42 feed of published IOCs, which contains known malicious indicators.
-display: Unit42 v2 Feed
+display: Unit42 ATOMs Feed
 name: Unit42v2 Feed
 script:
   commands:

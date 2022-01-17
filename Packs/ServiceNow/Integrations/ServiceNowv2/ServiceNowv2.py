@@ -9,6 +9,7 @@ from CommonServerPython import *
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
+
 COMMAND_NOT_IMPLEMENTED_MSG = 'Command not implemented'
 
 TICKET_STATES = {
@@ -455,6 +456,17 @@ def build_query_for_request_params(query):
         return query
 
 
+def parse_build_query(sys_param_query, parse_amp=True):
+    """
+      Used to parse build the query parameters or ignore parsing.
+    """
+
+    if sys_param_query:
+        if parse_amp:
+            return build_query_for_request_params(sys_param_query)
+    return sys_param_query
+
+
 class Client(BaseClient):
     """
     Client to use in the ServiceNow integration. Overrides BaseClient.
@@ -829,7 +841,7 @@ class Client(BaseClient):
         return self.send_request('/table/label_entry', 'POST', body=body)
 
     def query(self, table_name: str, sys_param_limit: str, sys_param_offset: str, sys_param_query: str,
-              system_params: dict = {}, sysparm_fields: Optional[str] = None) -> dict:
+              system_params: dict = {}, sysparm_fields: Optional[str] = None, parse_amp: bool = True) -> dict:
         """Query records by sending a GET request.
 
         Args:
@@ -839,6 +851,7 @@ class Client(BaseClient):
         sys_param_query: the query
         system_params: system parameters
         sysparm_fields: Comma-separated list of field names to return in the response.
+        parse_amp: when querying fields you may want not to parse &'s.
 
         Returns:
             Response from API.
@@ -846,7 +859,7 @@ class Client(BaseClient):
 
         query_params = {'sysparm_limit': sys_param_limit, 'sysparm_offset': sys_param_offset}
         if sys_param_query:
-            query_params['sysparm_query'] = build_query_for_request_params(sys_param_query)
+            query_params['sysparm_query'] = parse_build_query(sys_param_query, parse_amp)
         if system_params:
             query_params.update(system_params)
         if sysparm_fields:
@@ -1591,7 +1604,7 @@ def query_groups_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, Any
     else:
         if group_name:
             group_query = f'name={group_name}'
-        result = client.query(table_name, limit, offset, group_query)
+        result = client.query(table_name, limit, offset, group_query, parse_amp=False)
 
     if not result or 'result' not in result:
         return 'No groups found.', {}, {}, False
@@ -2230,7 +2243,8 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], params: D
                     key = 'work_notes'
                 elif params.get('comment_tag') in tags:
                     key = 'comments'
-                user = entry.get('user', 'dbot')
+                # Sometimes user is an empty str, not None, therefore nothing is displayed in ServiceNow
+                user = entry.get('user', 'dbot') or 'dbot'
                 text = f"({user}): {str(entry.get('contents', ''))}\n\n Mirrored from Cortex XSOAR"
                 client.add_comment(ticket_id, ticket_type, key, text)
 
@@ -2284,6 +2298,12 @@ def get_modified_remote_data_command(
         modified_records_ids = [record.get('sys_id') for record in modified_records if 'sys_id' in record]
 
     return GetModifiedRemoteDataResponse(modified_records_ids)
+
+
+def add_custom_fields(params):
+    global SNOW_ARGS
+    custom_fields = argToList(params.get('custom_fields'))
+    SNOW_ARGS += custom_fields
 
 
 def main():
@@ -2343,6 +2363,7 @@ def main():
     get_attachments = params.get('get_attachments', False)
     update_timestamp_field = params.get('update_timestamp_field', 'sys_updated_on') or 'sys_updated_on'
     mirror_limit = params.get('mirror_limit', '100') or '100'
+    add_custom_fields(params)
 
     raise_exception = False
     try:
@@ -2410,7 +2431,6 @@ def main():
 
 
 from ServiceNowApiModule import *  # noqa: E402
-
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()

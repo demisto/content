@@ -1,5 +1,5 @@
 [file:integration-DemistoRESTAPI.yml]
-ignore=IN139,DS107
+ignore=IN139,DS107,IN145
 
 [file:DemistoUploadFileV2.yml]
 ignore=SC105

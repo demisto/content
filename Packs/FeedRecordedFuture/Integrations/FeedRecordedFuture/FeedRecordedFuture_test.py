@@ -1,7 +1,7 @@
 import pytest
 from collections import OrderedDict
-from FeedRecordedFuture import get_indicator_type, get_indicators_command, Client, fetch_indicators_command, \
-    remove_duplicate_indicators
+from FeedRecordedFuture import get_indicator_type, get_indicators_command, Client, fetch_indicators_command
+from csv import DictReader
 
 GET_INDICATOR_TYPE_INPUTS = [
     ('ip', OrderedDict([('Name', '192.168.1.1'), ('Risk', '89'), ('RiskString', '5/12'),
@@ -140,12 +140,24 @@ def test_fetch_indicators_command(mocker):
      - Verify the fetch runs successfully.
     """
     indicator_type = 'ip'
-    client = Client(indicator_type=indicator_type, api_token='dummytoken', services='fusion')
+    client = Client(indicator_type=indicator_type, api_token='dummytoken', services=['fusion'])
+    mocker.patch('FeedRecordedFuture.Client.build_iterator')
     mocker.patch(
-        'FeedRecordedFuture.Client.build_iterator',
-        return_value=[{'Name': '192.168.1.1'}]
+        'FeedRecordedFuture.Client.get_batches_from_file',
+        return_value=DictReaderGenerator(DictReader(open('test_data/response.txt')))
     )
-    fetch_indicators_command(client, indicator_type)
+    client_outputs = []
+    for output in fetch_indicators_command(client, indicator_type):
+        client_outputs.extend(output)
+    assert {'fields': {'recordedfutureevidencedetails': [], 'tags': []},
+            'rawJSON': {'Name': '192.168.0.1',
+                        'a': '3',
+                        'type': 'IP',
+                        'value': '192.168.0.1'},
+            'score': 0,
+            'type': 'IP',
+            'value': '192.168.0.1'} == client_outputs[0]
+    assert len(client_outputs) == 1
 
 
 @pytest.mark.parametrize('tags', (['tag1', 'tag2'], []))
@@ -165,34 +177,16 @@ def test_feed_tags(mocker, tags):
     assert tags == indicators[0]['fields']['tags']
 
 
-def test_remove_duplicate_indicators():
-    """
-        Given:
-            - Indicators list with duplicate indicators values ("test" and "TEST" are considered duplicates)
-        When:
-            - Calling the remove_duplicate_indicators method
-        Then:
-            - Validate the list returned from the method does not contain indicators with the same value
-    """
-    indicators_list_with_duplicates = [
-        {
-            'value': 'test',
-            'type': 'test type 1',
-        },
-        {
-            'value': 'test',
-            'type': 'test type 2',
-        },
-        {
-            'value': 'TEST',
-            'type': 'test type 3',
-        },
-    ]
+class DictReaderGenerator:
+    def __init__(self, dict_reader):
+        self.dict_reader = dict_reader
+        self.has_returned_dict_reader = False
 
-    non_duplicates_list = remove_duplicate_indicators(indicators_list_with_duplicates)
-    assert non_duplicates_list == [
-        {
-            'value': 'test',
-            'type': 'test type 1',
-        }
-    ]
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        if self.has_returned_dict_reader:
+            raise StopIteration()
+        self.has_returned_dict_reader = True
+        return self.dict_reader

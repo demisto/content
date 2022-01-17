@@ -120,7 +120,7 @@ def iterate_mapping(mappings: Union[List[Dict[str, Any]], Dict[str, Any]]):
 
 def translate(source: Any,
               mappings: Union[List[Dict[str, Any]], Dict[str, Any]],
-              caseless: bool,
+              regex_flags: int,
               priority: str,
               algorithm: str,
               context: Any) -> Tuple[Optional[List[str]], Any]:
@@ -128,7 +128,7 @@ def translate(source: Any,
 
     :param source: The string to be replaced.
     :param mappings: The mapping table to translate.
-    :param caseless: Set to True for caseless comparation, False otherwise.
+    :param regex_flags: The regex flags for pattern matching.
     :param priority: The priority order (first_match, last_match or longest_pattern).
     :param algorithm: The default algorithm for pattern match.
     :param context: The demisto context.
@@ -138,18 +138,17 @@ def translate(source: Any,
     matched_output = source
     source = str(source)
     for mapping in iterate_mapping(mappings):
-        flags = re.IGNORECASE if caseless else 0
         algorithm = mapping.get('algorithm') or algorithm
 
         # Check if the source matches a pattern
         pattern = make_regex(mapping['pattern'], algorithm)
-        match = re.fullmatch(pattern, source, flags=flags)
+        match = re.fullmatch(pattern, source, flags=regex_flags)
         if not match:
             continue
 
         # Check if the source matches any of exclusion patterns.
         exclude = [make_regex(x, algorithm) for x in mapping['exclude']]
-        if any([re.fullmatch(x, source, flags=flags) for x in exclude]):
+        if any([re.fullmatch(x, source, flags=regex_flags) for x in exclude]):
             continue
 
         # Set the output
@@ -163,7 +162,7 @@ def translate(source: Any,
 
         next_mappings = mapping.get('next')
         if next_mappings:
-            mapping, output = translate(output, next_mappings, caseless, priority, algorithm, context)
+            mapping, output = translate(output, next_mappings, regex_flags, priority, algorithm, context)
             if not mapping:
                 continue
 
@@ -184,8 +183,19 @@ def main():
     mappings = args['mappings']
     algorithm = args.get('algorithm') or DEFAULT_ALGORITHM
     priority = args.get('priority') or DEFAULT_PRIORITY
-    caseless = argToBoolean(args.get('caseless') or 'true')
     context = args.get('context')
+    regex_flags = re.IGNORECASE if argToBoolean(args.get('caseless') or 'true') else 0
+    for flag in argToList(args.get('flags', '')):
+        if flag in ('dotall', 's'):
+            regex_flags |= re.DOTALL
+        elif flag in ('multiline', 'm'):
+            regex_flags |= re.MULTILINE
+        elif flag in ('ignorecase', 'i'):
+            regex_flags |= re.IGNORECASE
+        elif flag in ('unicode', 'u'):
+            regex_flags |= re.UNICODE
+        else:
+            raise ValueError(f'Unknown flag: {flag}')
 
     if not isinstance(value, (dict, list)):
         if isinstance(mappings, str):
@@ -195,7 +205,7 @@ def main():
                 raise ValueError(f'Unable to decode mappings in JSON: {mappings}')
 
         if isinstance(mappings, (dict, list)):
-            _, value = translate(value, mappings, caseless, priority, algorithm, context)
+            _, value = translate(value, mappings, regex_flags, priority, algorithm, context)
         else:
             raise ValueError(f'mappings must be an array or an object in JSON: type={type(mappings)}')
 

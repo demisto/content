@@ -54,7 +54,7 @@ tags:
 - file
 timeout: '0'
 type: python
-dockerimage: demisto/unzip:1.0.0.12410
+dockerimage: demisto/unzip:1.0.0.23423
 runonce: false
 tests:
 - ZipFile-Test

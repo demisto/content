@@ -1,7 +1,9 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "Qradar Generic"
+        "Qradar Generic",
+        "Guardicore Incident",
+        "Tanium TR Incident"
     ],
     "breachScript": "",
     "caseInsensitive": true,

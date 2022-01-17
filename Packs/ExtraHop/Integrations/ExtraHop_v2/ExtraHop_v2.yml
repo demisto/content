@@ -3157,7 +3157,7 @@ script:
     - name: port2
       description: Returns packets sent from or received on the specified port.
     description: Search for specific packets in Reveal(x).
-  dockerimage: demisto/python3:3.7.2.200
+  dockerimage: demisto/python3:3.9.7.24076
   runonce: false
 tests:
 - ExtraHop_v2-Test

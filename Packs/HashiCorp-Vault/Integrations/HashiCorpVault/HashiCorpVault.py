@@ -24,6 +24,7 @@ if CREDENTIALS:
     PASSWORD = CREDENTIALS.get('password')
 VERIFY_SSL = not demisto.params().get('unsecure', False)
 TOKEN = demisto.params().get('token')
+USE_APPROLE_AUTH_METHOD = argToBoolean(demisto.params().get('use_approle', 'false') or 'false')
 
 
 def get_server_url():
@@ -57,10 +58,17 @@ def get_headers():
 
 
 def login():
-    path = 'auth/userpass/login/' + USERNAME  # type: ignore
-    body = {
-        'password': PASSWORD
-    }
+    if USE_APPROLE_AUTH_METHOD:
+        path = 'auth/approle/login'
+        body = {
+            'role_id': USERNAME,
+            'secret_id': PASSWORD,
+        }
+    else:
+        path = 'auth/userpass/login/' + USERNAME  # type: ignore
+        body = {
+            'password': PASSWORD
+        }
 
     url = '{}/{}'.format(SERVER_URL, path)
     res = requests.request('POST', url, headers=get_headers(), data=json.dumps(body), verify=VERIFY_SSL)

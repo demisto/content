@@ -14,6 +14,7 @@ SERVER += '/rest/'
 USE_SSL = not demisto.params().get('insecure', False)
 HEADERS = {'Authorization': 'api_key ' + API_KEY}
 ERROR_FORMAT = 'Error in API call to VMRay [{}] - {}'
+RELIABILITY = demisto.params().get('integrationReliability', DBotScoreReliability.C) or DBotScoreReliability.C
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -198,6 +199,7 @@ def dbot_score_by_hash(data):
                     'Type': 'hash',
                     'Vendor': 'VMRay',
                     'Score': DBOTSCORE.get(data.get('Verdict', 0)),
+                    'Reliability': RELIABILITY
                 }
             )
     return scores
@@ -671,6 +673,7 @@ def get_sample_by_hash_command():
     samples = raw_response.get('data')
 
     if samples:
+        # VMRay outputs
         entry_context = dict()
         context_key = 'VMRay.Sample(val.{} === obj.{})'.format(hash.upper(), hash.upper())
         entry_context[context_key] = [
@@ -678,10 +681,24 @@ def get_sample_by_hash_command():
             for sample in samples
         ]
 
+        # DBotScore output
         scores = list()  # type: list
         for sample in entry_context[context_key]:
             scores += dbot_score_by_hash(sample)
         entry_context[outputPaths['dbotscore']] = scores
+
+        # Indicator output
+        # just use the first sample that is returned by the API for now
+        entry = entry_context[context_key][0]
+        file = Common.File(
+            None,
+            md5=entry['MD5'],
+            sha1=entry['SHA1'],
+            sha256=entry['SHA256'],
+            ssdeep=entry['SSDeep'],
+            name=entry['FileName']
+        )
+        entry_context.update(file.to_context())
 
         human_readable = tableToMarkdown(
             'Results for {} hash {}:'.format(hash_type, hash),

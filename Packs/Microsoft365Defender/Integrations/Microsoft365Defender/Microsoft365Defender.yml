@@ -318,7 +318,7 @@ script:
     - contextPath: Microsoft365Defender.Hunt.results.
       description: The results of the query.
       type: Unknown
-  dockerimage: demisto/crypto:1.0.0.19032
+  dockerimage: demisto/crypto:1.0.0.24037
   feed: false
   isfetch: true
   longRunning: false

@@ -18,6 +18,7 @@ This integration was integrated and tested with versions 2.0 and 2.1 of Sentinel
     | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3 months, 1 year) | False |
     | Minimum risk score for importing incidents (0-10), where 0 is low risk and 10 is high risk. Relevant for API version 2.0. | False |
     | Fetch limit: the maximum number of incidents to fetch | False |
+    | Site IDs: comma-separated list of Site IDs to fetch incidents for. (leave blank to fetch all sites) | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -270,6 +271,7 @@ Returns threats according to the specified filters.
 | threat_ids | A comma-separated list of threat IDs, for example: "225494730938493804,225494730938493915". | Optional | 
 | classifications | CSV list of threat classifications to search, for example: "Malware", "Network", "Benign". Possible values are: Engine, Static, Cloud, Behavioral. | Optional | 
 | rank | Risk level threshold to retrieve (1-10). Relevant for API version 2.0 only. | Optional | 
+| site_ids | A comma-separated list of Site IDs to search for threats, for example: "225494730938493804,225494730938493915".  | Optional | 
 
 
 #### Context Output

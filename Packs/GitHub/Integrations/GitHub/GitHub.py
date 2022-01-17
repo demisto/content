@@ -41,6 +41,8 @@ FILE_HEADERS = ['Name', 'Path', 'Type', 'Size', 'SHA', 'DownloadUrl']
 MEDIA_TYPE_INTEGRATION_PREVIEW = "application/vnd.github.machine-man-preview+json"
 PROJECTS_PREVIEW = 'application/vnd.github.inertia-preview+json'
 
+DEFAULT_PAGE_SIZE = 50
+DEFAULT_PAGE_NUMBER = 1
 ''' HELPER FUNCTIONS '''
 
 
@@ -1019,9 +1021,9 @@ def get_branch_command():
     branch_name = args.get('branch_name')
     response = get_branch(branch_name)
 
-    commit = response.get('commit', {})
-    author = commit.get('author', {})
-    parents = commit.get('parents', [])
+    commit = response.get('commit', {}) or {}
+    author = commit.get('author', {}) or {}
+    parents = commit.get('parents', []) or []
     ec_object = {
         'Name': response.get('name'),
         'CommitSHA': commit.get('sha'),
@@ -1219,7 +1221,6 @@ def get_project_details(project, header):
 
 
 def list_all_projects_command():
-
     project_f = demisto.args().get('project_filter', [])
     limit = demisto.args().get('limit', MAX_FETCH_PAGE_RESULTS)
 
@@ -1246,8 +1247,8 @@ def list_all_projects_command():
         else:
             projects_obj.append(get_project_details(project=proj, header=header))
 
-    human_readable_projects = [{'Name': proj['Name'], 'ID': proj['ID'], 'Number': proj['Number'], 'Columns':
-                                [column for column in proj['Columns']]} for proj in projects_obj]
+    human_readable_projects = [{'Name': proj['Name'], 'ID': proj['ID'], 'Number': proj['Number'],
+                                'Columns': [column for column in proj['Columns']]} for proj in projects_obj]
 
     if projects_obj:
         human_readable = tableToMarkdown('Projects:', t=human_readable_projects, headers=PROJECT_HEADERS,
@@ -1405,7 +1406,6 @@ def search_code_command():
 
 
 def search_issue(query, limit, page=1):
-
     params = {'q': query, 'page': page, 'per_page': MAX_FETCH_PAGE_RESULTS, }
     response = http_request(method='GET',
                             url_suffix='/search/issues',
@@ -1519,7 +1519,8 @@ def list_team_members_command():
         }
         members.append(context_data)
     if members:
-        human_readable = tableToMarkdown(f'Team Member of team {team_slug} in organization {org}', t=members, removeNull=True)
+        human_readable = tableToMarkdown(f'Team Member of team {team_slug} in organization {org}', t=members,
+                                         removeNull=True)
     else:
         human_readable = f'There is no team members under team {team_slug} in organization {org}'
 
@@ -1710,7 +1711,8 @@ def get_github_get_check_run():
 
     check_run_result = []
 
-    check_runs = list_check_runs(owner_name=owner_name, repository_name=repository_name, run_id=run_id, commit_id=commit_id)
+    check_runs = list_check_runs(owner_name=owner_name, repository_name=repository_name, run_id=run_id,
+                                 commit_id=commit_id)
 
     for check_run in check_runs:
         check_run_id = check_run.get('id', '')
@@ -1885,6 +1887,52 @@ def get_path_data():
     return_results(results)
 
 
+def github_releases_list_command():
+    """
+    Gets releases data of given repository in given organization.
+    Returns:
+        CommandResults data.
+    """
+    args: Dict[str, Any] = demisto.args()
+
+    repo: str = args.get('repository') or REPOSITORY
+    organization: str = args.get('organization') or USER
+    page_number: Optional[int] = arg_to_number(args.get('page'))
+    page_size: Optional[int] = arg_to_number(args.get('page_size'))
+    limit = arg_to_number(args.get('limit'))
+    if (page_number or page_size) and limit:
+        raise DemistoException('page_number and page_size arguments cannot be given with limit argument.\n'
+                               'If limit is given, please do not use page or page_size arguments.')
+
+    results: List[Dict] = []
+    if limit:
+        page_number = 1
+        page_size = 100
+        while len(results) < limit:
+            url_suffix: str = f'/repos/{organization}/{repo}/releases?per_page={page_size}&page={page_number}'
+            response = http_request(method='GET', url_suffix=url_suffix)
+            # No more releases to bring from GitHub services.
+            if not response:
+                break
+            results.extend(response)
+            page_number += 1
+
+        results = results[:limit]
+    else:
+        page_size = page_size if page_size else DEFAULT_PAGE_SIZE
+        page_number = page_number if page_number else DEFAULT_PAGE_NUMBER
+        url_suffix = f'/repos/{organization}/{repo}/releases?per_page={page_size}&page={page_number}'
+        results = http_request(method='GET', url_suffix=url_suffix)
+
+    result: CommandResults = CommandResults(
+        outputs_prefix='GitHub.Release',
+        outputs_key_field='id',
+        outputs=results,
+        readable_output=tableToMarkdown(f'Releases Data Of {repo}', results, removeNull=True)
+    )
+    return_results(result)
+
+
 def fetch_incidents_command():
     last_run = demisto.getLastRun()
     if last_run and 'start_time' in last_run:
@@ -1940,7 +1988,8 @@ COMMANDS = {
     'GitHub-create-release': create_release_command,
     'Github-list-issue-events': get_issue_events_command,
     'GitHub-add-issue-to-project-board': add_issue_to_project_board_command,
-    'GitHub-get-path-data': get_path_data
+    'GitHub-get-path-data': get_path_data,
+    'GitHub-releases-list': github_releases_list_command,
 }
 
 

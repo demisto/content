@@ -1,0 +1,41 @@
+{
+    "fileEvidence": [
+        {
+            "uuid": "1",
+            "hostname": "host",
+            "path": "C:\\log1.txt",
+            "downloaded": "2020-01-15 13:04:02.827",
+            "hash": "12345",
+            "size": 10485904,
+            "process_creation_time": "2019-09-03T17:51:40.000Z",
+            "created_by": "",
+            "created_by_proc": "",
+            "last_modified": "2020-01-15T08:57:19.000Z",
+            "last_modified_by": "",
+            "last_modified_by_proc": "",
+            "tags": "",
+            "comments": "",
+            "username": null,
+            "evidenceType": "file"
+        },
+        {
+            "uuid": "2",
+            "hostname": "host",
+            "path": "C:\\log8.txt",
+            "downloaded": "2020-01-15 18:17:10.595",
+            "hash": "12345",
+            "size": 10485940,
+            "process_creation_time": "2019-09-03T17:51:40.000Z",
+            "created_by": "",
+            "created_by_proc": "",
+            "last_modified": "2020-01-13T13:11:35.000Z",
+            "last_modified_by": "",
+            "last_modified_by_proc": "",
+            "tags": "",
+            "comments": "",
+            "username": null,
+            "evidenceType": "file"
+        }
+    ],
+    "totalCount": 69
+}

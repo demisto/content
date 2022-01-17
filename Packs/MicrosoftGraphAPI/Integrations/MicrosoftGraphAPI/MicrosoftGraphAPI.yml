@@ -90,9 +90,9 @@ script:
       required: false
       secret: false
     - default: false
-      defaultValue: $top=10
       description: OData system query options, e.g. $filter=startswith(givenName,
-        'J'). For more details see https://docs.microsoft.com/en-us/graph/query-parameters
+        'J'). For more details see https://docs.microsoft.com/en-us/graph/query-parameters.
+        It is recommended to use the $top query option to limit the result.
       isArray: false
       name: odata
       required: false
@@ -126,7 +126,7 @@ script:
     description: Tests connectivity to Microsoft when using Cortex XSOAR Azure app.
     execution: false
     name: msgraph-api-test
-  dockerimage: demisto/crypto:1.0.0.17856
+  dockerimage: demisto/crypto:1.0.0.24380
   feed: false
   isfetch: false
   longRunning: false

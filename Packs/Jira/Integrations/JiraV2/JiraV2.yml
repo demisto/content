@@ -20,11 +20,13 @@ configuration:
   required: false
   type: 4
 - defaultvalue: OauthKey
+  additionalinfo: Will be ignored if other required fields are not provided (for example both the Access Token and the Private Key).
   display: Consumer key (OAuth 1.0)
   name: consumerKey
   required: false
   type: 0
-- display: Access token
+- display: Access Token
+  additionalinfo: Used for both OAuth 1.0 and Personal Access Token authentication methods.
   name: accessToken
   required: false
   type: 0
@@ -699,7 +701,7 @@ script:
       for debugging purposes.
     execution: false
     name: get-modified-remote-data
-  dockerimage: demisto/oauthlib:1.0.0.20579
+  dockerimage: demisto/oauthlib:1.0.0.23674
   feed: false
   isfetch: true
   ismappable: true

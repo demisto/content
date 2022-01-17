@@ -19,7 +19,7 @@
       CONTENT_LEADERS=$(curl -sS "https://api.github.com/orgs/demisto/teams/content-leaders/members" -H "Authorization: token ${GITHUB_TOKEN}")
       echo "recieved content leaders"
       LEADER_NAMES=$(echo $CONTENT_LEADERS | jq -r ".[].login")
-      LEADER_NAMES=$(echo "${LEADER_NAMES}" "content-bot" "svc-xsoar-gitlab-mirror" "${USERS_ALLOWED_TRIGGER_UPLOAD}" )
+      LEADER_NAMES=$(echo "${LEADER_NAMES}" "content-bot" "svc -xsoar-gitlab-mirror" "${USERS_ALLOWED_TRIGGER_UPLOAD}" )
       if [[ -z "$GITLAB_USER_NAME" ]] || [[ -z "`echo $LEADER_NAMES | grep -w "$GITLAB_USER_NAME"`" ]]; then
         echo -e "User '$GITLAB_USER_NAME' is not allowed to trigger this build, only one of:\n${LEADER_NAMES}"
         exit 1
@@ -146,20 +146,27 @@ upload-packs-to-marketplace:
         PACKS_DEPENDENCIES=$ARTIFACTS_FOLDER/packs_dependencies.json
         CI_COMMIT_BRANCH=${CI_COMMIT_BRANCH:-unknown}
         GCS_BUILD_BUCKET="marketplace-ci-build"
-        if [[ $GCS_MARKET_BUCKET != $GCS_PRODUCTION_BUCKET ]]; then
-          STORAGE_BASE_PATH="upload-flow/builds/$CI_COMMIT_BRANCH/$CI_PIPELINE_ID/content/packs"
+        if [[ $GCS_MARKET_BUCKET == $GCS_PRODUCTION_BUCKET ]] && [[ -z $STORAGE_BASE_PATH ]]; then
+          STORAGE_BASE_PATH="content"
         fi
-        python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb "$GCS_MARKET_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_MARKET_KEY -n $CI_PIPELINE_ID -c $CI_COMMIT_BRANCH -pbp "$STORAGE_BASE_PATH"
+
+        if [[ $GCS_MARKET_BUCKET != $GCS_PRODUCTION_BUCKET ]] && [[ -z $STORAGE_BASE_PATH ]]; then
+         STORAGE_BASE_PATH="upload-flow/builds/$CI_COMMIT_BRANCH/$CI_PIPELINE_ID/content"
+        fi
+
+        python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb "$GCS_MARKET_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_MARKET_KEY -n $CI_PIPELINE_ID -c $CI_COMMIT_BRANCH -pbp "$STORAGE_BASE_PATH/packs"
       fi
     - section_end "Upload Packs To Marketplace Storage"
     - section_start "Download packs from GCP"
     - |
-      if [[ $GCS_MARKET_BUCKET != $GCS_PRODUCTION_BUCKET ]]; then
-        STORAGE_BASE_PATH="upload-flow/builds/$CI_COMMIT_BRANCH/$CI_PIPELINE_ID/content/packs"
-      else
-        STORAGE_BASE_PATH="content/packs"
+      if [[ $GCS_MARKET_BUCKET == $GCS_PRODUCTION_BUCKET ]] && [[ -z $STORAGE_BASE_PATH ]]; then
+        STORAGE_BASE_PATH="content"
       fi
-      PACKS_SRC="gs://$GCS_MARKET_BUCKET/$STORAGE_BASE_PATH"
+      if [[ $GCS_MARKET_BUCKET != $GCS_PRODUCTION_BUCKET ]] && [[ -z $STORAGE_BASE_PATH ]]; then
+        STORAGE_BASE_PATH="upload-flow/builds/$CI_COMMIT_BRANCH/$CI_PIPELINE_ID/content"
+      fi
+
+      PACKS_SRC="gs://$GCS_MARKET_BUCKET/$STORAGE_BASE_PATH/packs"
       ZIP_FOLDER=$(mktemp -d)
       gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" >> $ARTIFACTS_FOLDER/logs/auth.out
       echo "successfully activated google cloud service account"
@@ -198,10 +205,15 @@ force-pack-upload:
     - CI_COMMIT_BRANCH=${CI_COMMIT_BRANCH:-unknown}
     - GCS_BUILD_BUCKET="marketplace-ci-build"
     - |
-      if [[ $GCS_MARKET_BUCKET != $GCS_PRODUCTION_BUCKET ]]; then
-          STORAGE_BASE_PATH="upload-flow/builds/$CI_COMMIT_BRANCH/$CI_PIPELINE_ID/content/packs"
+      if [[ $GCS_MARKET_BUCKET == $GCS_PRODUCTION_BUCKET ]] && [[ -z $STORAGE_BASE_PATH ]]; then
+        STORAGE_BASE_PATH="content"
       fi
-    - python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb "$GCS_MARKET_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_MARKET_KEY -n $CI_PIPELINE_ID -c $CI_COMMIT_BRANCH -p "${PACKS_TO_UPLOAD}" -pbp "${STORAGE_BASE_PATH}"
+
+      if [[ $GCS_MARKET_BUCKET != $GCS_PRODUCTION_BUCKET ]] && [[ -z $STORAGE_BASE_PATH ]]; then
+       STORAGE_BASE_PATH="upload-flow/builds/$CI_COMMIT_BRANCH/$CI_PIPELINE_ID/content"
+      fi
+
+    - python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb "$GCS_MARKET_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_MARKET_KEY -n $CI_PIPELINE_ID -c $CI_COMMIT_BRANCH -p "${PACKS_TO_UPLOAD}" -pbp "$STORAGE_BASE_PATH/packs"
 
 
 fan-in-bucket-upload:

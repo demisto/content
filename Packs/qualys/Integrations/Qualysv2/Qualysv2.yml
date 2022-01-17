@@ -81,9 +81,9 @@ script:
     name: qualys-ip-list
     outputs:
     - contextPath: Qualys.IP.Address
-      description: IP Addresses
+      description: IP Addresses.
     - contextPath: Qualys.IP.Range
-      description: IP Range
+      description: IP Range.
   - arguments:
     - default: false
       description: Specify a report ID of a report that is saved in the Report Share
@@ -130,25 +130,25 @@ script:
         in the requested list
     outputs:
     - contextPath: Qualys.Report.ID
-      description: Report ID
+      description: Report ID.
     - contextPath: Qualys.Report.TITLE
-      description: Report title
+      description: Report title.
     - contextPath: Qualys.Report.TYPE
-      description: Report type
+      description: Report type.
     - contextPath: Qualys.Report.LAUNCH_DATETIME
-      description: Date and time the report launched
+      description: Date and time the report launched.
     - contextPath: Qualys.Report.OUTPUT_FORMAT
-      description: Report output format
+      description: Report output format.
     - contextPath: Qualys.Report.SIZE
-      description: Report size
+      description: Report size.
     - contextPath: Qualys.Report.STATUS.STATE
-      description: Report state status
+      description: Report state status.
     - contextPath: Qualys.Report.STATUS.MESSAGE
-      description: Report status message
+      description: Report status message.
     - contextPath: Qualys.Report.STATUS.PERCENT
-      description: Report status percent
+      description: Report status percent.
     - contextPath: Qualys.Report.EXPIRATION_DATETIME
-      description: Report expiration datetime
+      description: Report expiration datetime.
     deprecated: false
     execution: false
     description: Get a list of generated reports in the system
@@ -239,33 +239,33 @@ script:
     name: qualys-vm-scan-list
     outputs:
     - contextPath: Qualys.Scan.REF
-      description: Scan REF
+      description: Scan REF.
     - contextPath: Qualys.Scan.TYPE
-      description: Scan type
+      description: Scan type.
     - contextPath: Qualys.Scan.TITLE
-      description: Scan title
+      description: Scan title.
     - contextPath: Qualys.Scan.LAUNCH_DATETIME
-      description: Date and time the scan launched
+      description: Date and time the scan launched.
     - contextPath: Qualys.Scan.DURATION
-      description: Scan Duration
+      description: Scan Duration.
     - contextPath: Qualys.Scan.PROCESSING_PRIORITY
-      description: Scan Processing Priority
+      description: Scan Processing Priority.
     - contextPath: Qualys.Scan.PROCESSED
-      description: Scan Processed
+      description: Scan Processed.
     - contextPath: Qualys.Scan.STATUS.STATE
-      description: Scan status state
+      description: Scan status state.
     - contextPath: Qualys.Scan.STATUS.SUB_STATE
-      description: Scan status sub state
+      description: Scan status sub state.
     - contextPath: Qualys.Scan.SCHEDULE
-      description: Scan Schedule
+      description: Scan Schedule.
     - contextPath: Qualys.Scan.TARGET
-      description: Scan Target
+      description: Scan Target.
     - contextPath: Qualys.Scan.ASSET_GROUP_TITLE
-      description: Target Asset Group Title
+      description: Target Asset Group Title.
     - contextPath: Qualys.Scan.DEFAULT_FLAG
-      description: Scan Deafualt Flag
+      description: Scan Deafualt Flag.
     - contextPath: Qualys.Scan.USER_LOGIN
-      description: The user that created the scan
+      description: The user that created the scan.
   - name: qualys-scap-scan-list
     arguments:
     - name: scan_ref
@@ -349,37 +349,37 @@ script:
         in the requested list
     outputs:
     - contextPath: Qualys.SCAP.Scan.ID
-      description: Scan ID
+      description: Scan ID.
     - contextPath: Qualys.SCAP.Scan.Reference
-      description: Scan ref
+      description: Scan ref.
     - contextPath: Qualys.SCAP.Scan.REF
-      description: Scan REF
+      description: Scan REF.
     - contextPath: Qualys.SCAP.Scan.Type
-      description: Scan type
+      description: Scan type.
     - contextPath: Qualys.SCAP.Scan.Title
-      description: Scan title
+      description: Scan title.
     - contextPath: Qualys.SCAP.Scan.LaunchDatetime
-      description: Date and time the scan launched
+      description: Date and time the scan launched.
     - contextPath: Qualys.SCAP.Scan.Duration
-      description: Scan Duration
+      description: Scan Duration.
     - contextPath: Qualys.SCAP.Scan.ProcessingPriority
-      description: Scan Processing Priority
+      description: Scan Processing Priority.
     - contextPath: Qualys.SCAP.Scan.Processed
-      description: Scan Processed
+      description: Scan Processed.
     - contextPath: Qualys.SCAP.Scan.Status.State
-      description: Scan status state
+      description: Scan status state.
     - contextPath: Qualys.SCAP.Scan.Status.SubState
-      description: Scan status sub state
+      description: Scan status sub state.
     - contextPath: Qualys.SCAP.Scan.Schedule
-      description: Scan Schedule
+      description: Scan Schedule.
     - contextPath: Qualys.SCAP.Scan.Target
-      description: Scan Target
+      description: Scan Target.
     - contextPath: Qualys.SCAP.Scan.AssetGroupTitle
-      description: Target Asset Group Title
+      description: Target Asset Group Title.
     - contextPath: Qualys.SCAP.Scan.DeafualtFlag
-      description: Scan Deafualt Flag
+      description: Scan Deafualt Flag.
     - contextPath: Qualys.SCAP.Scan.UserLogin
-      description: The user that created the scan
+      description: The user that created the scan.
     description: Gives you a list of SCAP scans in your account
   - name: qualys-pc-scan-list
     arguments:
@@ -460,33 +460,33 @@ script:
         in the requested list
     outputs:
     - contextPath: Qualys.Scan.REF
-      description: Scan REF
+      description: Scan REF.
     - contextPath: Qualys.Scan.TYPE
-      description: Scan type
+      description: Scan type.
     - contextPath: Qualys.Scan.TITLE
-      description: Scan title
+      description: Scan title.
     - contextPath: Qualys.Scan.LAUNCH_DATETIME
-      description: Date and time the scan launched
+      description: Date and time the scan launched.
     - contextPath: Qualys.Scan.DURATION
-      description: Scan Duration
+      description: Scan Duration.
     - contextPath: Qualys.Scan.PROCESSING_PRIORITY
-      description: Scan Processing Priority
+      description: Scan Processing Priority.
     - contextPath: Qualys.Scan.PROCESSED
-      description: Scan Processed
+      description: Scan Processed.
     - contextPath: Qualys.Scan.STATUS.STATE
-      description: Scan status state
+      description: Scan status state.
     - contextPath: Qualys.Scan.STATUS.SUB_STATE
-      description: Scan status sub state
+      description: Scan status sub state.
     - contextPath: Qualys.Scan.SCHEDULE
-      description: Scan Schedule
+      description: Scan Schedule.
     - contextPath: Qualys.Scan.TARGET
-      description: Scan Target
+      description: Scan Target.
     - contextPath: Qualys.Scan.ASSET_GROUP_TITLE
-      description: Target Asset Group Title
+      description: Target Asset Group Title.
     - contextPath: Qualys.Scan.DEFAULT_FLAG
-      description: Scan Deafualt Flag
+      description: Scan Deafualt Flag.
     - contextPath: Qualys.Scan.USER_LOGIN
-      description: The user that created the scan
+      description: The user that created the scan.
     description: Get a list of compliance scans in your account.
   - name: qualys-schedule-scan-list
     arguments:
@@ -528,63 +528,63 @@ script:
         in the requested list
     outputs:
     - contextPath: Qualys.Scan.ID
-      description: Scan ID
+      description: Scan ID.
     - contextPath: Qualys.Scan.REF
-      description: Scan REF
+      description: Scan REF.
     - contextPath: Qualys.Scan.TYPE
-      description: Scan type
+      description: Scan type.
     - contextPath: Qualys.Scan.TITLE
-      description: Scan title
+      description: Scan title.
     - contextPath: Qualys.Scan.LAUNCH_DATETIME
-      description: Date and time the scan launched
+      description: Date and time the scan launched.
     - contextPath: Qualys.Scan.DURATION
-      description: Scan Duration
+      description: Scan Duration.
     - contextPath: Qualys.Scan.PROCESSING_PRIORITY
-      description: Scan Processing Priority
+      description: Scan Processing Priority.
     - contextPath: Qualys.Scan.PROCESSED
-      description: Scan Processed
+      description: Scan Processed.
     - contextPath: Qualys.Scan.STATUS.STATE
-      description: Scan status state
+      description: Scan status state.
     - contextPath: Qualys.Scan.STATUS.SUB_STATE
-      description: Scan status sub state
+      description: Scan status sub state.
     - contextPath: Qualys.Scan.TARGET
-      description: Scan Target
+      description: Scan Target.
     - contextPath: Qualys.Scan.ASSET_GROUP_TITLE
-      description: Target Asset Group Title
+      description: Target Asset Group Title.
     - contextPath: Qualys.Scan.DEFAULT_FLAG
-      description: Scan Deafualt Flag
+      description: Scan Deafualt Flag.
     - contextPath: Qualys.Scan.USER_LOGIN
-      description: The user that created the scan
+      description: The user that created the scan.
     - contextPath: Qualys.Scan.ACTIVE
-      description: Scheduled scan active
+      description: Scheduled scan active.
     - contextPath: Qualys.Scan.USER_ENTERED_IPS.RANGE.START
-      description: IP range requested start
+      description: IP range requested start.
     - contextPath: Qualys.Scan.USER_ENTERED_IPS.RANGE.END
-      description: IP range requested end
+      description: IP range requested end.
     - contextPath: Qualys.Scan.ISCANNER_NAME
-      description: Iscanner name used in the scan
+      description: Iscanner name used in the scan.
     - contextPath: Qualys.Scan.SCHEDULE.DAILY.@frequency_days
-      description: Frequency of usage of the scan
+      description: Frequency of usage of the scan.
     - contextPath: Qualys.Scan.SCHEDULE.START_DATE_UTC
-      description: Start date of the scheduled scan in UTC format
+      description: Start date of the scheduled scan in UTC format.
     - contextPath: Qualys.Scan.SCHEDULE.START_HOUR
-      description: Start hour of the scheduled scan
+      description: Start hour of the scheduled scan.
     - contextPath: Qualys.Scan.SCHEDULE.START_MINUTE
-      description: Start minute of the scheduled scan
+      description: Start minute of the scheduled scan.
     - contextPath: Qualys.Scan.SCHEDULE.TIME_ZONE.TIME_ZONE_CODE
-      description: Time zone code of the time for the scheduled scan
+      description: Time zone code of the time for the scheduled scan.
     - contextPath: Qualys.Scan.SCHEDULE.TIME_ZONE.TIME_ZONE_DETAILS
-      description: Time zone details of the time for the scheduled scan
+      description: Time zone details of the time for the scheduled scan.
     - contextPath: Qualys.Scan.OPTION_PROFILE.DEFAULT_FLAG
-      description: Default flag of the option profile
+      description: Default flag of the option profile.
     - contextPath: Qualys.Scan.OPTION_PROFILE.TITLE
-      description: Title of the option profile
+      description: Title of the option profile.
     - contextPath: Qualys.Scan.EC2_INSTANCE.CONNECTOR_UUID
-      description: Connector UUID of EC2 instance
+      description: Connector UUID of EC2 instance.
     - contextPath: Qualys.Scan.EC2_INSTANCE.EC2_ENDPOINT
-      description: Endpoint of EC2 instance
+      description: Endpoint of EC2 instance.
     - contextPath: Qualys.Scan.EC2_INSTANCE.EC2_ONLY_CLASSIC
-      description: EC2 only classic
+      description: EC2 only classic.
     description: Shows schedule scans
   - name: qualys-host-list
     arguments:
@@ -703,31 +703,31 @@ script:
         in the requested list
     outputs:
     - contextPath: Qualys.Endpoint.ID
-      description: Endpoint ID
+      description: Endpoint ID.
     - contextPath: Qualys.Endpoint.IP
-      description: IP
+      description: IP.
     - contextPath: Qualys.Endpoint.CLOUD_PROVIDER
-      description: Host's cloud provider
+      description: Host's cloud provider.
     - contextPath: Qualys.Endpoint.DNS
-      description: DNS
+      description: DNS.
     - contextPath: Qualys.Endpoint.EC2_INSTANCE_ID
-      description: EC2 instance ID
+      description: EC2 instance ID.
     - contextPath: Qualys.Endpoint.QG_HOSTID
-      description: QG host ID
+      description: QG host ID.
     - contextPath: Qualys.Endpoint.CLOUD_SERVICE
-      description: Cloud service of the endpoint
+      description: Cloud service of the endpoint.
     - contextPath: Qualys.Endpoint.TRACKING_METHOD
-      description: Tracking method of the endpoint
+      description: Tracking method of the endpoint.
     - contextPath: Qualys.Endpoint.CLOUD_RESOURCE_ID
-      description: Cloud resource ID of the endpoint
+      description: Cloud resource ID of the endpoint.
     - contextPath: Qualys.Endpoint.DNS_DATA.DOMAIN
-      description: Domain of the endpoint
+      description: Domain of the endpoint.
     - contextPath: Qualys.Endpoint.DNS_DATA.HOSTNAME
-      description: Host name of the endpoint
+      description: Host name of the endpoint.
     - contextPath: Qualys.Endpoint.NETBIOS
-      description: NETBIOS
+      description: NETBIOS.
     - contextPath: Qualys.Endpoint.OS
-      description: Endpoint operation system
+      description: Endpoint operating system.
     description: View a list of scanned hosts in the user account.
   - name: qualys-virtual-host-list
     arguments:
@@ -740,11 +740,11 @@ script:
         in the requested list
     outputs:
     - contextPath: Qualys.VirtualEndpoint.IP
-      description: IP
+      description: IP.
     - contextPath: Qualys.VirtualEndpoint.PORT
-      description: Port
+      description: Port.
     - contextPath: Qualys.VirtualEndpoint.FQDN
-      description: Fully qualified domain name
+      description: Fully qualified domain name.
     description: View a list of virtual hosts in the user account.
   - name: qualys-virtual-host-manage
     arguments:
@@ -774,9 +774,9 @@ script:
         Multiple entries are comma separated.
     outputs:
     - contextPath: Qualys.VirtualEndpoint.DATETIME
-      description: Date and time of the executed manage action
+      description: Date and time of the executed manage action.
     - contextPath: Qualys.VirtualEndpoint.TEXT
-      description: Result message of the executed action
+      description: Result message of the executed action.
     description: View a list of virtual hosts in the user account.
   - name: qualys-host-excluded-list
     arguments:
@@ -839,17 +839,17 @@ script:
         in the requested list
     outputs:
     - contextPath: Qualys.Excluded.Host.Address
-      description: IP Address
+      description: IP Address.
     - contextPath: Qualys.Excluded.Host.Address.#text
-      description: IP of excluded host with expiration date
+      description: IP of excluded host with expiration date.
     - contextPath: Qualys.Excluded.Host.Address.@expiration_date
-      description: Expiration date of excluded host address
+      description: Expiration date of excluded host address.
     - contextPath: Qualys.Excluded.Host.Range.#text
-      description: Range of excluded hosts with expiration date
+      description: Range of excluded hosts with expiration date.
     - contextPath: Qualys.Excluded.Host.Range.@expiration_date
-      description: Expiration date of excluded hosts ranges
+      description: Expiration date of excluded hosts ranges.
     - contextPath: Qualys.Excluded.Host.Range
-      description: Range of IP addresses
+      description: Range of IP addresses.
     description: Show the excluded host list for the user's account. Hosts in your
       excluded host list will not be scanned.
   - name: qualys-scheduled-report-list
@@ -868,41 +868,41 @@ script:
         in the requested list
     outputs:
     - contextPath: Qualys.Report.ID
-      description: Report ID
+      description: Report ID.
     - contextPath: Qualys.Report.TITLE
-      description: Report title
+      description: Report title.
     - contextPath: Qualys.Report.TYPE
-      description: Report type
+      description: Report type.
     - contextPath: Qualys.Report.LAUNCH_DATETIME
-      description: Date and time the report launched
+      description: Date and time the report launched.
     - contextPath: Qualys.Report.OUTPUT_FORMAT
-      description: Report output format
+      description: Report output format.
     - contextPath: Qualys.Report.SIZE
-      description: Report size
+      description: Report size.
     - contextPath: Qualys.Report.STATUS.STATE
-      description: Report state status
+      description: Report state status.
     - contextPath: Qualys.Report.STATUS.MESSAGE
-      description: Report status message
+      description: Report status message.
     - contextPath: Qualys.Report.STATUS.PERCENT
-      description: Report status percent
+      description: Report status percent.
     - contextPath: Qualys.Report.EXPIRATION_DATETIME
-      description: Report expiration datetime
+      description: Report expiration datetime.
     - contextPath: Qualys.Report.ACTIVE
-      description: Report active
+      description: Report active.
     - contextPath: Qualys.Report.TEMPLATE_TITLE
-      description: Title of the template
+      description: Title of the template.
     - contextPath: Qualys.Report.SCHEDULE.START_DATE_UTC
-      description: Start date of the scheduled report in UTC format
+      description: Start date of the scheduled report in UTC format.
     - contextPath: Qualys.Report.SCHEDULE.START_HOUR
-      description: Start hour of the scheduled report
+      description: Start hour of the scheduled report.
     - contextPath: Qualys.Report.SCHEDULE.START_MINUTE
-      description: start minute of the scheduled report
+      description: Start minute of the scheduled report.
     - contextPath: Qualys.Report.SCHEDULE.DAILY.@frequency_days
-      description: Frequency of the schduled report
+      description: Frequency of the schduled report.
     - contextPath: Qualys.Report.SCHEDULE.TIME_ZONE.TIME_ZONE_CODE
-      description: Timezone of the scheduled report
+      description: Timezone of the scheduled report.
     - contextPath: Qualys.Report.SCHEDULE.TIME_ZONE.TIME_ZONE_DETAILS
-      description: Timezone details of the scheduled report
+      description: Timezone details of the scheduled report.
     description: Get list of scheduled reports
   - name: qualys-report-template-list
     arguments:
@@ -911,25 +911,25 @@ script:
         in the requested list
     outputs:
     - contextPath: Qualys.ReportTemplate.ID
-      description: Report template ID
+      description: Report template ID.
     - contextPath: Qualys.ReportTemplate.TYPE
-      description: Report type
+      description: Report type.
     - contextPath: Qualys.ReportTemplate.TITLE
-      description: Report template title
+      description: Report template title.
     - contextPath: Qualys.ReportTemplate.LAST_UPDATE
-      description: Last update time
+      description: Last update time.
     - contextPath: Qualys.ReportTemplate.GLOBAL
-      description: Report template global
+      description: Report template global.
     - contextPath: Qualys.ReportTemplate.DEFAULT
-      description: Report template default
+      description: Report template default.
     - contextPath: Qualys.ReportTemplate.USER.LOGIN
-      description: Last updated user login
+      description: Last updated user login.
     - contextPath: Qualys.ReportTemplate.USER.FIRSTNAME
-      description: Last updated user login first name
+      description: Last updated user login first name.
     - contextPath: Qualys.ReportTemplate.USER.LASTNAME
-      description: Last updated user login last name
+      description: Last updated user login last name.
     - contextPath: Qualys.ReportTemplate.TEMPLATE_TYPE
-      description: Type of report template
+      description: Type of report template.
     description: get list of report template for user
   - name: qualys-vulnerability-list
     arguments:
@@ -1057,47 +1057,47 @@ script:
         in the requested list
     outputs:
     - contextPath: Qualys.Vulnerability.List.QID
-      description: Vulnerability QID
+      description: Vulnerability QID.
     - contextPath: Qualys.Vulnerability.List.PATCHABLE
-      description: Is Vulnerability patchable
+      description: Is Vulnerability patchable.
     - contextPath: Qualys.Vulnerability.List.SEVERITY_LEVEL
-      description: Severity level of the Vulnerability
+      description: Severity level of the Vulnerability.
     - contextPath: Qualys.Vulnerability.List.CONSEQUENCE
-      description: Consequence of the Vulnerability
+      description: Consequence of the Vulnerability.
     - contextPath: Qualys.Vulnerability.List.VENDOR_REFERENCE_LIST.VENDOR_REFERENCE.ID
-      description: ID of the vendor
+      description: ID of the vendor.
     - contextPath: Qualys.Vulnerability.List.VENDOR_REFERENCE_LIST.VENDOR_REFERENCE.URL
-      description: URL of the vendor
+      description: URL of the vendor.
     - contextPath: Qualys.Vulnerability.List.LAST_SERVICE_MODIFICATION_DATETIME
-      description: Date of the last service modification
+      description: Date of the last service modification.
     - contextPath: Qualys.Vulnerability.List.CVE_LIST.CVE.ID
-      description: CVE ID
+      description: CVE ID.
     - contextPath: Qualys.Vulnerability.List.CVE_LIST.CVE.URL
-      description: CVE URL
+      description: CVE URL.
     - contextPath: Qualys.Vulnerability.List.PUBLISHED_DATETIME
-      description: Published date
+      description: Published date.
     - contextPath: Qualys.Vulnerability.List.DISCOVERY.ADDITIONAL_INFO
-      description: Additional info
+      description: Additional info.
     - contextPath: Qualys.Vulnerability.List.DISCOVERY.AUTH_TYPE_LIST.AUTH_TYPE
-      description: Discovery Authentication type
+      description: Discovery Authentication type.
     - contextPath: Qualys.Vulnerability.List.DISCOVERY.REMOTE
-      description: Is discovery remote
+      description: Is discovery remote.
     - contextPath: Qualys.Vulnerability.List.DIAGNOSIS
-      description: Diagnosis of vulnerability
+      description: Diagnosis of vulnerability.
     - contextPath: Qualys.Vulnerability.List.PCI_FLAG
-      description: PCI flag
+      description: PCI flag.
     - contextPath: Qualys.Vulnerability.List.SOFTWARE_LIST.SOFTWARE.PRODUCT
-      description: Product name
+      description: Product name.
     - contextPath: Qualys.Vulnerability.List.SOFTWARE_LIST.SOFTWARE.VENDOR
-      description: Vendor of the product
+      description: Vendor of the product.
     - contextPath: Qualys.Vulnerability.List.VULN_TYPE
-      description: Type of the vulnerability
+      description: Type of the vulnerability.
     - contextPath: Qualys.Vulnerability.List.TITLE
-      description: Title of the vulnerability
+      description: Title of the vulnerability.
     - contextPath: Qualys.Vulnerability.List.SOLUTION
-      description: Solution for the vulnerability
+      description: Solution for the vulnerability.
     - contextPath: Qualys.Vulnerability.List.CATEGORY
-      description: Category of the vulnerability
+      description: Category of the vulnerability.
     description: download a list of vulnerabilities from Qualys’ KnowledgeBase
   - name: qualys-group-list
     arguments:
@@ -1138,23 +1138,23 @@ script:
         in the requested list
     outputs:
     - contextPath: Qualys.AssetGroup.ID
-      description: Asset Group ID
+      description: Asset Group ID.
     - contextPath: Qualys.AssetGroup.TITLE
-      description: Asset Group title
+      description: Asset Group title.
     - contextPath: Qualys.AssetGroup.OWNER_ID
-      description: Asset Group owner ID
+      description: Asset Group owner ID.
     - contextPath: Qualys.AssetGroup.UNIT_ID
-      description: Asset Group unit ID
+      description: Asset Group unit ID.
     - contextPath: Qualys.AssetGroup.NETWORK_ID
-      description: Asset Group network ID
+      description: Asset Group network ID.
     - contextPath: Qualys.AssetGroup.IP_SET.IP
-      description: IP in the asset group
+      description: IP in the asset group.
     - contextPath: Qualys.AssetGroup.IP_SET.IP_RANGE
-      description: Asset Group IP range
+      description: Asset Group IP range.
     - contextPath: Qualys.AssetGroup.APPLIANCE_IDS
-      description: Appliance ids of the asset group
+      description: Appliance IDs of the asset group.
     - contextPath: Qualys.AssetGroup.DEFAULT_APPLIANCE_ID
-      description: Default appliance ids of the asset group
+      description: Default appliance IDs of the asset group.
     description: Get account asset groups
   - name: qualys-report-fetch
     arguments:
@@ -1219,17 +1219,17 @@ script:
         client_id or client_name may be specified for the same request.
     outputs:
     - contextPath: Qualys.VM.Dns
-      description: Scanned device DNS
+      description: Scanned device DNS.
     - contextPath: Qualys.VM.Instance
-      description: Scanned device instance
+      description: Scanned device instance.
     - contextPath: Qualys.VM.IP
-      description: Scanned device IP address
+      description: Scanned device IP address.
     - contextPath: Qualys.VM.Netbios
-      description: Scanned device Netbios
+      description: Scanned device Netbios.
     - contextPath: Qualys.VM.QID
-      description: Qualys ID for vulnerabilities
+      description: Qualys ID for vulnerabilities.
     - contextPath: Qualys.VM.Result
-      description: Scan result
+      description: Scan result.
     description: Download scan results when scan has status Finished, Canceled, Paused
       or Error
   - name: qualys-pc-scan-fetch
@@ -1240,31 +1240,31 @@ script:
         compliance/nnnnnnnnnn.nnnnn'
     outputs:
     - contextPath: Qualys.PC.USERNAME
-      description: The user who executed the scan
+      description: The user who executed the scan.
     - contextPath: Qualys.PC.COMPANY
-      description: The company of the user who executed the scan
+      description: The company of the user who executed the scan.
     - contextPath: Qualys.PC.USERNAME
-      description: The user who executed the scan
+      description: The user who executed the scan.
     - contextPath: Qualys.PC.DATE
-      description: The date of the scan
+      description: The date of the scan.
     - contextPath: Qualys.PC.TITLE
-      description: The scan title
+      description: The scan title.
     - contextPath: Qualys.PC.TARGET
       description: IP’s which were scanned.
     - contextPath: Qualys.PC.EXCLUDED_TARGET
-      description: IP’s which were excluded from the scan
+      description: IP’s which were excluded from the scan.
     - contextPath: Qualys.PC.DURATION
-      description: The duration of the scan
+      description: The duration of the scan.
     - contextPath: Qualys.PC.NBHOST_ALIVE
-      description: Number of hosts that are available during the scan
+      description: Number of hosts that are available during the scan.
     - contextPath: Qualys.PC.NBHOST_TOTAL
-      description: Total number of hosts that were submitted to scan
+      description: Total number of hosts that were submitted to scan.
     - contextPath: Qualys.PC.REPORT_TYPE
-      description: Type of the report
+      description: Type of the report.
     - contextPath: Qualys.PC.OPTIONS
-      description: Scan option profile
+      description: Scan option profile.
     - contextPath: Qualys.PC.STATUS
-      description: Status of the scan
+      description: Status of the scan.
     description: fetch scan results for a scan
   - name: qualys-report-cancel
     arguments:
@@ -1347,7 +1347,7 @@ script:
       description: One or two QIDs for missing software. Two QIDs are comma separated.
     outputs:
     - contextPath: Qualys.Report.ID
-      description: Report ID
+      description: Report ID.
     description: Launch a vulnerability scorecard report
     execution: true
   - name: qualys-vm-scan-launch
@@ -1555,9 +1555,9 @@ script:
         your VM/PC license.
     outputs:
     - contextPath: Qualys.Report.VM.Launched.KEY
-      description: Key name of launched VM scan, either ID or a REFERENCE
+      description: Key name of launched VM scan, either ID or a REFERENCE.
     - contextPath: Qualys.Report.VM.Launched.VALUE
-      description: Value of the key
+      description: Value of the key.
     description: ' launch vulnerability scans in the user’s account.'
   - name: qualys-vm-scan-action
     arguments:
@@ -1594,9 +1594,9 @@ script:
         format: compliance/nnnnnnnnnn.nnnnn'
     outputs:
     - contextPath: Qualys.Scan.KEY
-      description: key name, either ID or REFERENCE
+      description: Key name, either ID or REFERENCE.
     - contextPath: Qualys.Scan.VALUE
-      description: Value of either ID or REFERENCE
+      description: Value of either ID or REFERENCE.
     description: Allows users to take actions on compliance scans in their account,
       like cancel, pause, resume, delete and fetch completed scan results.
   - name: qualys-pc-scan-launch
@@ -1776,9 +1776,9 @@ script:
         GA is released and is enabled for your account.
     outputs:
     - contextPath: Qualys.IP.Add.TEXT
-      description: Action result message
+      description: Action result message.
     - contextPath: Qualys.IP.Add.DATETIME
-      description: Date & time of the action
+      description: Date & time of the action.
     description: Add IP addresses to the subscription.
     execution: true
   - name: qualys-ip-update
@@ -1822,9 +1822,9 @@ script:
       description: User-defined comments.
     outputs:
     - contextPath: Qualys.IP.Update.TEXT
-      description: Action result message
+      description: Action result message.
     - contextPath: Qualys.IP.Update.DATETIME
-      description: Date & time of the action
+      description: Date & time of the action.
     description: gives you the ability to update IP addresses within the subscription.
     execution: true
   - name: qualys-host-excluded-manage
@@ -1858,9 +1858,9 @@ script:
         list. By default, the user’s default network ID is assigned.
     outputs:
     - contextPath: Qualys.Endpoint.KEY
-      description: Result of action requested
+      description: Result of action requested.
     - contextPath: Qualys.Endpoint
-      description: IPs action was made on
+      description: IPs action was made on.
     description: Manage your excluded IPs list using the Excluded IP. The IPs in your
       excluded IPs list will not be scanned.
     execution: true
@@ -2002,7 +2002,7 @@ script:
         to report on hosts outside of your custom networks.
     outputs:
     - contextPath: Qualys.Report.ID
-      description: Report ID
+      description: Report ID.
     execution: true
   - name: qualys-report-launch-scan-based-findings
     arguments:
@@ -2058,7 +2058,7 @@ script:
         to the specified IPs/ranges. Multiple IPs and/or ranges are comma separated.
     outputs:
     - contextPath: Qualys.Report.ID
-      description: Report ID
+      description: Report ID.
     description: launches a scan report including scan based findings
   - name: qualys-report-launch-patch
     description: Run patch report
@@ -2115,7 +2115,7 @@ script:
         (see the API v1 User Guide).
     outputs:
     - contextPath: Qualys.Report.ID
-      description: Report ID
+      description: Report ID.
     execution: true
   - name: qualys-report-launch-remediation
     description: Run remediation report
@@ -2314,9 +2314,9 @@ script:
         in the requested list
     outputs:
     - contextPath: Qualys.Restricted.Address
-      description: List of the restricted IPs
+      description: List of the restricted IPs.
     - contextPath: Qualys.Restricted.Range
-      description: List of the restricted IPs
+      description: List of the restricted IPs.
     description: Get the list of restricted IPs within the user's subscription.
     execution: true
   - name: qualys-ip-restricted-manage
@@ -2347,14 +2347,14 @@ script:
         (for example, 10.10.30.1-10.10.30.50).
     outputs:
     - contextPath: Qualys.Restricted.Manage.TEXT
-      description: Action result message
+      description: Action result message.
     - contextPath: Qualys.Restricted.Manage.DATETIME
-      description: Date & time of the action
+      description: Date & time of the action.
     - contextPath: Qualys.Restricted.Manage.ITEM_LIST.ITEM.VALUE
-      description: Status of the restricted ips feature
+      description: Status of the restricted ips feature.
     description: Get the list of restricted IPs within the user's subscription.
     execution: true
-  dockerimage: demisto/python3:3.9.6.22912
+  dockerimage: demisto/python3:3.9.7.24076
   feed: false
   isfetch: false
   longRunning: false

@@ -106,8 +106,7 @@ tags:
 - incidents
 timeout: '0'
 type: python
-dockerimage: demisto/sklearn:1.0.0.19770
-runas: DBotRole
+dockerimage: demisto/sklearn:1.0.0.23593
 runonce: true
 tests:
 - No test

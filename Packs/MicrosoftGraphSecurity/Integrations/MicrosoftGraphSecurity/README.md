@@ -550,4 +550,7 @@ For more details about the authentication used in this integration, see <a href=
 <p>If not all expected alerts were returned, it is possible that partial content was returned from Microsoft Graph. If so, the response headers will be printed to Cortex XSOAR logs, and you can find more details under the **Warning** header. For more information, see the <a href="https://docs.microsoft.com/en-us/graph/api/resources/security-error-codes?view=graph-rest-1.0" target="_blank" rel="noopener">Microsoft Graph documentation</a>.</p>
 
 <h2>Known Limitations</h2>
-<p>Microsoft does not support updating alerts with Office 365 Security and Compliance set as provider.</p>
+<ol>
+<li>Microsoft does not support updating alerts with Office 365 Security and Compliance set as provider.</li>
+<li>Updating status for alerts from the providers Azure Active Directory Identity Protection, Microsoft Cloud App Security, Microsoft Defender for Identity and Azure Information Protection gets updated across Microsoft Graph Security API integrated applications but not reflected in the provider’s management experience. For more details, see the <a href="https://docs.microsoft.com/en-us/graph/api/resources/security-api-overview?view=graph-rest-1.0#alerts" target="_blank" rel="noopener">Microsoft documentation</a>.</li>
+</ol>

@@ -5,7 +5,7 @@ Use the Palo Alto Networks Wildfire integration to automatically identify unknow
 1. WildFire - Detonate File
 2. Detonate URL - WildFire v2.1
 
-##Use Cases
+## Use Cases
 
 1. Send a File sample to WildFire.
 2. Upload a file hosted on a website to WildFire.

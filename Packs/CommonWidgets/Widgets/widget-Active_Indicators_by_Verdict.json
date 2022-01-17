@@ -1,0 +1,30 @@
+{
+    "dataType": "indicators",
+    "dateRange": {
+        "fromDate": "0001-01-01T00:00:00Z",
+        "fromDateLicense": "0001-01-01T00:00:00Z",
+        "period": {
+            "by": "",
+            "byFrom": "days",
+            "byTo": "",
+            "field": "",
+            "fromValue": 7,
+            "toValue": null
+        },
+        "toDate": "0001-01-01T00:00:00Z"
+    },
+    "id": "058c56ef-b78f-4318-8ec9-a20a3c298c44",
+    "isPredefined": true,
+    "name": "Active Indicators by Verdict",
+    "params": {
+        "groupBy": [
+            "score"
+        ],
+        "valuesFormat": "abbreviated"
+    },
+    "query": "(expirationStatus:active or expirationStatus:\"\")",
+    "version": -1,
+    "widgetType": "pie",
+    "fromVersion": "6.2.0",
+    "description": ""
+}

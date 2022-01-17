@@ -41,7 +41,8 @@ class Client:
         401: 'Unauthorized access. An issue occurred during authentication. This can indicate an '    # noqa: W504
              + 'incorrect key, id, or other invalid authentication parameters.',
         402: 'Unauthorized access. User does not have the required license type to run this API.',
-        403: 'Unauthorized access. The provided API key does not have the required RBAC permissions to run this API.'
+        403: 'Unauthorized access. The provided API key does not have the required RBAC permissions to run this API.',
+        404: 'XDR Not found: The provided URL may not be of an active XDR server.'
     }
 
     def __init__(self, params: Dict):
@@ -50,20 +51,21 @@ class Client:
         self._params = params
         handle_proxy()
 
-    def http_request(self, url_suffix: str, requests_kwargs) -> Dict:
-        url: str = f'{self._base_url}{url_suffix}'
-        res = requests.post(url=url,
+    def http_request(self, url_suffix: str, requests_kwargs=None) -> Dict:
+        if requests_kwargs is None:
+            requests_kwargs = dict()
+
+        res = requests.post(url=self._base_url + url_suffix,
                             verify=self._verify_cert,
                             headers=self._headers,
                             **requests_kwargs)
 
         if res.status_code in self.error_codes:
-            raise DemistoException(f'{self.error_codes[res.status_code]}\t({res.content.decode()})')
+            raise DemistoException(self.error_codes[res.status_code], res=res)
         try:
             return res.json()
-        except json.decoder.JSONDecodeError as error:
-            demisto.error(str(res.content))
-            raise error
+        except json.decoder.JSONDecodeError as e:
+            raise DemistoException(f'Could not parse json out of {res.content.decode()}', exception=e, res=res)
 
     @property
     def _headers(self):

@@ -1,0 +1,19 @@
+{
+  "id": 1,
+  "state": "resolved",
+  "type": "detect.match",
+  "guid": "guid",
+  "priority": "high",
+  "severity": "info",
+  "intelDocId": 17,
+  "intelDocRevisionId": null,
+  "scanConfigId": 1,
+  "scanConfigRevisionId": 1,
+  "computerName": "hostname",
+  "computerIpAddress": "1.1.1.1",
+  "eid": null,
+  "details": "details",
+  "alertedAt": "2020-02-29T15:29:59.000Z",
+  "createdAt": "2020-02-29T15:30:29.893Z",
+  "updatedAt": "2020-02-29T15:43:19.899Z"
+}

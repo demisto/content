@@ -12,3 +12,6 @@ ignore=BA101
 
 [file:README.md]
 ignore=RM104
+
+[file:GoogleVault.yml]
+ignore=IN145

@@ -1,0 +1,23 @@
+{
+    "id": "Flashpoint Alerts",
+    "version": -1,
+    "vcShouldIgnore": false,
+    "locked": false,
+    "name": "Flashpoint Alerts",
+    "prevName": "Flashpoint Alerts",
+    "color": "#FB8C00",
+    "hours": 0,
+    "days": 0,
+    "weeks": 0,
+    "hoursR": 0,
+    "daysR": 0,
+    "weeksR": 0,
+    "system": false,
+    "readonly": false,
+    "default": false,
+    "autorun": false,
+    "disabled": false,
+    "reputationCalc": 0,
+    "layout": "Flashpoint Alerts",
+    "fromVersion": "5.0.0"
+}

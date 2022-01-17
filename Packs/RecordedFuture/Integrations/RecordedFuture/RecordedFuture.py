@@ -14,7 +14,7 @@ STATUS_TO_RETRY = [500, 501, 502, 503, 504]
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # pylint:disable=no-member
 
-__version__ = '2.2'
+__version__ = '2.3'
 
 
 def rename_keys(old_to_new: Dict[str, str], original: Dict[str, Any]):
@@ -175,7 +175,7 @@ class Client(BaseClient):
             status_list_to_retry=STATUS_TO_RETRY
         )
 
-    def get_alert_rules(self, rule_name: str, limit: int) -> Dict[str, Any]:
+    def get_alert_rules(self, rule_name: str, limit: int = None) -> Dict[str, Any]:
         """Get Alert Rules."""
         params: Dict[str, Any] = {}
         if rule_name:
@@ -200,6 +200,17 @@ class Client(BaseClient):
             timeout=30,
             retries=3,
             status_list_to_retry=STATUS_TO_RETRY
+        )
+
+    def update_alerts(self, data: Union[List, Dict]):
+        """Update Alerts"""
+        return self._http_request(
+            method="post",
+            url_suffix="alert/update",
+            json_data=data,
+            timeout=30,
+            retries=3,
+            status_list_to_retry=STATUS_TO_RETRY,
         )
 
     def get_triage(
@@ -343,6 +354,7 @@ def create_indicator(
             Common.DBotScore(
                 entity,
                 DBotScoreType.IP,
+
                 dbot_vendor,
                 dbot_score,
                 dbot_description,
@@ -413,6 +425,8 @@ def get_output_prefix(entity_type: str) -> str:
         return "RecordedFuture.File"
     elif entity_type == "links":
         return "RecordedFuture.Links"
+    elif entity_type == "alerts":
+        return "RecordedFuture.Alerts"
     else:
         raise Exception(f"Unknown entity type: {entity_type}")
 
@@ -434,7 +448,6 @@ class Actions():
         entity_data = self.client.entity_lookup(entities, entity_type)
         command_results = self.__build_rep_context(entity_data, entity_type)
         return command_results
-
 
     def __build_rep_markdown(
         self, ent: Dict[str, Any], entity_type: str
@@ -486,7 +499,7 @@ class Actions():
                 }
                 for x, detail in evidence.items()
             ]
-            evid_table.sort(key=lambda x: x.get("Level"), reverse=True) # type: ignore
+            evid_table.sort(key=lambda x: x.get("Level"), reverse=True)  # type: ignore
             markdown.append(
                 tableToMarkdown(
                     "Risk Rules Triggered",
@@ -496,7 +509,6 @@ class Actions():
                 )
             )
         return "\n".join(markdown)
-
 
     def __build_rep_context(
         self, entity_data: Dict[str, Any], entity_type: str
@@ -566,12 +578,12 @@ class Actions():
                 readable_output="No records found"
             )]
 
-
     def triage_command(
         self, entities: Dict[str, List[str]], context: str
     ) -> List[CommandResults]:
         """Do Auto Triage."""
         zero_filter = entities.pop('filter', False)
+
         def include_score(score):
             if zero_filter and score > 0:
                 return True
@@ -594,7 +606,6 @@ class Actions():
             )
         )
         return command_results
-
 
     def __build_triage_markdown(
         self, context_data: Dict[str, Any], context: str
@@ -653,7 +664,6 @@ class Actions():
             )
         return "\n".join(tables)
 
-
     def __build_triage_context(
         self, context_data: Dict[str, Any]
     ) -> Tuple[Dict[str, Any], List]:
@@ -693,7 +703,6 @@ class Actions():
             command_results.append(command_result)
         return context, command_results
 
-
     def enrich_command(
         self, entity: str, entity_type: str, related: bool, risky: bool, profile: str = "All"
     ) -> List[CommandResults]:
@@ -701,9 +710,9 @@ class Actions():
         try:
             entity_data = self.client.entity_enrich(entity, entity_type, related, risky, profile)
             if entity_data.get("data", {}).get("relatedEntities"):
-                    entity_data["data"]["relatedEntities"] = self.__handle_related_entities(
-                        entity_data["data"].pop("relatedEntities")
-                    )
+                entity_data["data"]["relatedEntities"] = self.__handle_related_entities(
+                    entity_data["data"].pop("relatedEntities")
+                )
             markdown = self.__build_intel_markdown(entity_data, entity_type)
             return self.__build_intel_context(entity, entity_data, entity_type, markdown)
         except DemistoException as err:
@@ -743,7 +752,7 @@ class Actions():
                 f'{data["entity"]["name"]}',
                 f'Risk Score: {risk.get("score", "N/A")}',
                 f'Summary: {risk.get("riskSummary", "N/A")}',
-                f"Criticality label: " f'{risk.get("criticalityLabel", "N/A")}',
+                f'Criticality label: {risk["criticalityLabel"] if risk.get("criticalityLabel") else "N/A"}',
                 f"Total references to this entity: {total_hits}",
             ]
             if entity_type == "ip":
@@ -752,12 +761,12 @@ class Actions():
                 markdown.extend(
                     [
                         "ASN and Geolocation",
-                        f'AS Number: {loc.get("asn", "N/A")}',
-                        f'AS Name: {loc.get("organization", "N/A")}',
-                        f'CIDR: {loc.get("cidr", {}).get("name", "N/A")}',
-                        "Geolocation (city): " f'{locloc.get("city", "N/A")}',
+                        f'AS Number: {loc["asn"] if loc.get("asn") else "N/A"}',
+                        f'AS Name: {loc["organization"] if loc.get("organization") else "N/A"}',
+                        f'CIDR: {loc["cidr"].get("name", "N/A") if loc.get("cidr") else "N/A"}',
+                        "Geolocation (city): " f'{locloc["city"] if locloc.get("city") else "N/A"}',
                         "Geolocation (country): "
-                        f'{locloc.get("country", "N/A")}',
+                        f'{locloc["country"] if locloc.get("country") else "N/A"}',
                     ]
                 )
             tstamps = data.get("timestamps", {})
@@ -837,8 +846,8 @@ class Actions():
                             "CPE Information",
                             parse_cpe(data.get("cpe")),
                             ['Part', 'Vendor', 'Product', 'Version', 'Update', 'Edition',
-                            'Language', 'Software Edition', 'Target Software',
-                            'Target Hardware', 'Other']
+                             'Language', 'Software Edition', 'Target Software',
+                             'Target Hardware', 'Other']
                         )
                     )
                 if data.get('relatedLinks', None):
@@ -903,7 +912,6 @@ class Actions():
             return "\n".join(markdown)
         else:
             return "No records found"
-
 
     def __build_intel_context(
         self, entity: str, entity_data: Dict[str, Any], entity_type: str, markdown: str
@@ -980,7 +988,6 @@ class Actions():
             )
         return command_results
 
-
     def __handle_related_entities(self, data: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         return_data = []
         for related in data:
@@ -998,7 +1005,6 @@ class Actions():
                 }
             )
         return return_data
-
 
     def get_alert_rules_command(
         self, rule_name: str, limit: int
@@ -1033,7 +1039,6 @@ class Actions():
                 )
             },
         }
-
 
     def __document_formatting(self, data):
         title = data['title']
@@ -1092,7 +1097,6 @@ class Actions():
                 )
             }
         }
-
 
     def __entity_formatting(self, data):
         entities = []
@@ -1155,7 +1159,6 @@ class Actions():
             }
         }
 
-
     def get_alert_single_command(self, _id: str) -> CommandResults:
         """Command to get a single alert"""
         data = self.client.get_single_alert(_id)["data"]
@@ -1175,7 +1178,6 @@ class Actions():
                 readable_output=msg,
                 outputs_key_field="",
             )
-
 
     def get_alerts_command(
         self, params: Dict[str, str]
@@ -1291,7 +1293,7 @@ class Actions():
                         entities.append(link)
                     lists.append({
                         "entities": entities,
-                        "entity_type":  LINK_CATEGORIES.get(sec_list["type"]["name"], sec_list["type"]["name"])
+                        "entity_type": LINK_CATEGORIES.get(sec_list["type"]["name"], sec_list["type"]["name"])
                     })
                 categories.append({
                     "category": section["section_id"]["name"],
@@ -1351,12 +1353,135 @@ class Actions():
 
     def __build_links_context(self, links_data: Dict[str, List], markdown: str) -> CommandResults:
         return CommandResults(
-                    outputs_prefix=get_output_prefix('links'),
-                    outputs=links_data,
-                    readable_output=markdown,
-                    outputs_key_field=""
-                )
+            outputs_prefix=get_output_prefix('links'),
+            outputs=links_data,
+            readable_output=markdown,
+            outputs_key_field=""
+        )
 
+    def fetch_incidents(self, rule_names_arg: Optional[str], first_fetch: str, max_fetch: Optional[int] = None) -> None:
+        if rule_names_arg:
+            rule_names = rule_names_arg.split(';')
+        else:
+            rule_names = []
+
+        last_run = demisto.getLastRun()
+        if not last_run:
+            last_run = {}
+        if 'time' not in last_run:
+            time, _ = parse_date_range(first_fetch, date_format='%Y-%m-%dT%H:%M:%S.%fZ')
+        else:
+            time = last_run['time']
+
+        current_time = datetime.strptime(time, '%Y-%m-%dT%H:%M:%S.%fZ')
+        triggered_time = '[{},)'.format(datetime.strftime(current_time, '%Y-%m-%d %H:%M:%S'))
+        max_time = current_time
+
+        rule_ids = []  # type: list
+
+        for rule in rule_names:
+            rules = self.client.get_alert_rules(rule)
+            if rules and 'data' in rules:
+                rule_ids += map(lambda r: r['id'], rules['data'].get('results', []))
+
+        all_alerts = []  # type: list
+        rules_get_params: Dict[str, Any] = {
+            "triggered": triggered_time,
+            "orderby": "triggered",
+            "direction": "asc",
+            "status": "no-action",
+        }
+        if max_fetch:
+            rules_get_params["limit"] = max_fetch
+        if rule_ids:
+            for rule_id in rule_ids:
+                rules_get_params["alertRule"] = rule_id
+                alerts = self.client.get_alerts(rules_get_params)
+                if alerts and 'data' in alerts:
+                    all_alerts += alerts['data'].get('results', [])
+        else:
+            alerts = self.client.get_alerts(rules_get_params)
+            if alerts and 'data' in alerts:
+                all_alerts += alerts['data'].get('results', [])
+
+        incidents = []
+        update_data = []
+        for alert in all_alerts:
+            alert_time = datetime.strptime(alert['triggered'], '%Y-%m-%dT%H:%M:%S.%fZ')
+            # The API returns also alerts that are triggered in the same time
+            if alert_time > current_time:
+                # Set alerts status to pending
+                update_data.append({"id": alert['id'], "status": "pending"})
+                alert_data = self.client.get_single_alert(alert['id'])
+                if alert_data and 'data' in alert_data:
+                    alert = alert_data['data']
+                incidents.append({
+                    "name": "Recorded Future Alert - " + alert['title'],
+                    "occurred": datetime.strftime(alert_time, "%Y-%m-%dT%H:%M:%SZ"),
+                    "rawJSON": json.dumps(alert),
+                })
+
+                if alert_time > max_time:
+                    max_time = alert_time
+        if update_data:
+            self.client.update_alerts(update_data)
+        # Reverse the list so that they are created in the right order
+        incidents.reverse()
+        demisto.incidents(incidents)
+        demisto.setLastRun({
+            'start_time': datetime.strftime(max_time, '%Y-%m-%dT%H:%M:%S.%fZ')
+        })
+
+    def alert_set_status(self, alert_id: str, status: str):
+        data = [{
+            "id": alert_id,
+            "status": status,
+        }]
+        response = self.client.update_alerts(data)
+        if response.get('success'):
+            # We are working only with one alert so there is one element in response list
+            context_data = response.get('success')[0]
+            result = CommandResults(
+                readable_output=f'## Status {status} for Alert {alert_id} was successfully set',
+                outputs_prefix=get_output_prefix('alerts'),
+                outputs=context_data,
+                outputs_key_field='id',
+            )
+        else:
+            error_message = "; ".join(
+                error.get('reason', 'Please contact Recorded Future') for error in response.get('error')
+            )
+            result = CommandResults(
+                readable_output=(
+                    f'## Error setting the {status} status for Alert {alert_id}.'
+                    f'Reason: {error_message}'
+                ),
+            )
+        return result
+
+    def alert_set_note(self, alert_id: str, note: str):
+        data = [{
+            "id": alert_id,
+            "note": note,
+        }]
+        response = self.client.update_alerts(data)
+        if response.get('success'):
+            # We are working only with one alert so there is one element in response list
+            context_data = response.get('success')[0]
+            result = CommandResults(
+                readable_output=f'## Note for Alert {alert_id} was successfully set',
+                outputs_prefix=get_output_prefix('alerts'),
+                outputs=context_data,
+                outputs_key_field='id',
+            )
+        else:
+            error_message = "; ".join(
+                error.get('reason', 'Please contact Recorded Future') for error in response.get('error')
+            )
+            result = CommandResults(
+                readable_output=f'## Error setting the note for Alert {alert_id}. Reason: {error_message}',
+            )
+        return result
 
 
 def main() -> None:
@@ -1382,20 +1507,26 @@ def main() -> None:
                 client.whoami()
                 return_results("ok")
             except Exception as err:
+                message = str(err)
                 try:
                     error = json.loads(str(err).split("\n")[1])
-                    if "error" in error:
-                        message = error.get("error", {})["message"]
-                        return_results(f"Failed due to: {message}")
-                except Exception as err2:
-                    return_results(
+                    if "fail" in error.get("result", {}).get("status", ""):
+                        message = error.get("result", {})["message"]
+                except Exception:
+                    message = (
                         "Unknown error. Please verify that the API"
-                        " URL and Token are correctly configured."
+                        f" URL and Token are correctly configured. RAW Error: {err}"
                     )
+                raise DemistoException(f"Failed due to - {message}")
 
         elif command in ["url", "ip", "domain", "file", "cve"]:
             entities = argToList(demisto_args.get(command))
             return_results(actions.lookup_command(entities, command))
+        elif command == 'fetch-incidents':
+            rule_names = demisto_params.get('rule_names', '').strip()
+            first_fetch = demisto_params.get('first_fetch', '24 hours').strip()
+            max_fetch = demisto_params.get('max_fetch', 50)
+            actions.fetch_incidents(rule_names, first_fetch, max_fetch)
         elif command == "recordedfuture-threat-assessment":
             context = demisto_args.get("context")
             entities = {
@@ -1447,6 +1578,20 @@ def main() -> None:
                 actions.get_links_command(
                     demisto_args.get("entity"),
                     demisto_args.get("entity_type")
+                )
+            )
+        elif command == "recordedfuture-alert-set-status":
+            return_results(
+                actions.alert_set_status(
+                    demisto_args.get("alert_id"),
+                    demisto_args.get("status"),
+                )
+            )
+        elif command == "recordedfuture-alert-set-note":
+            return_results(
+                actions.alert_set_note(
+                    demisto_args.get('alert_id'),
+                    demisto_args.get('note'),
                 )
             )
     except Exception as e:

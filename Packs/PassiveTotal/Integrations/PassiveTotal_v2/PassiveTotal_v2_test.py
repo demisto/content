@@ -7,8 +7,9 @@ from requests.exceptions import MissingSchema, InvalidSchema, ConnectionError
 
 import demistomock as demisto
 from CommonServerPython import DemistoException
+from test_data import input_data
 
-MOCK_URL = 'http://123-fake-api.com'    # NOSONAR
+MOCK_URL = 'http://123-fake-api.com'  # NOSONAR
 
 SSL_ARGS = {
     'field': 'serialNumber',
@@ -753,7 +754,8 @@ def test_get_pdns_details_command_success(mocker_http_request, client):
     assert result[0].raw_response == expected_res
     assert result[0].outputs == expected_ec
     assert result[0].readable_output == expected_hr
-    assert result[0].outputs_prefix == 'PassiveTotal.PDNS(val.resolve == obj.resolve && val.recordType == obj.recordType' \
+    assert result[0].outputs_prefix == 'PassiveTotal.PDNS(val.resolve == obj.resolve && val.recordType == ' \
+                                       'obj.recordType' \
                                        ' && val.resolveType == obj.resolveType)'
 
 
@@ -922,59 +924,45 @@ def test_domain_reputation_command_not_specify_domain_arguments_values(client):
     assert 'domain(s) not specified' == str(e.value)
 
 
-@patch('PassiveTotal_v2.CommandResults')
 @patch('PassiveTotal_v2.Client.http_request')
-def test_domain_reputatoin_command_success(request_mocker, mock_cr, client):
+def test_domain_reputation_command_success(mocker_http_request, client):
     """
         Proper Readable output and context should be set via CommonResults in case of proper response from whois-search
-    API endpoint
+        and reputation API endpoint
     """
     from PassiveTotal_v2 import domain_reputation_command
-    from PassiveTotal_v2 import get_human_readable_for_whois_commands
     from PassiveTotal_v2 import get_context_for_whois_commands
 
     # Configure
     args = {
         'domain': 'somedomain.com'
     }
-    with open('test_data/domain_reputatoin/domain_reputatoin_response.json', 'rb') as f:
+    with open('test_data/domain_reputation/domain_reputation_response.json', 'rb') as f:
         dummy_response = json.load(f)
-    with open('test_data/domain_reputatoin/domain_reputatoin_context.json', 'rb') as f:
+    with open('test_data/domain_reputation/domain_reputation_context.json', 'rb') as f:
         dummy_custom_context = json.load(f)
-    with open('test_data/domain_reputatoin/domain_reputatoin_command_readable_output.md', 'r') as f:
+    with open('test_data/domain_reputation/domain_reputation_command_readable_output.md', 'r') as f:
         dummy_readable_output = f.read()
-    request_mocker.return_value = dummy_response
+    with open('test_data/domain_reputation/domain_reputation_command_reputation_response.json', 'rb') as f:
+        dummy_custom_reputation_context = json.load(f)
+    mocker_http_request.return_value = dummy_response
 
-    # Execute
-    domains = dummy_response.get('results')
-    # get human readable via dummy response
-    readable_output = get_human_readable_for_whois_commands(
-        domains,
-        is_reputation_command=True
-    )
-    # get custom context via dummy response
-    standard_commands, custom_context = get_context_for_whois_commands(domains)
-    domain_reputation_command(client, args)
+    _, custom_context = get_context_for_whois_commands(dummy_response.get('results'))
+    custom_context.append(dummy_custom_reputation_context)
+    final_context = [{k: v for x in custom_context for k, v in x.items()}]
+    assert final_context == dummy_custom_context
+    command_response = domain_reputation_command(client, args)
 
-    # Assert
-    # asserts the readable output
-    assert readable_output == dummy_readable_output
-    # asserts the custom context
-    assert custom_context == dummy_custom_context
-    # assert overall command output
-    mock_cr.assert_called_with(
-        outputs_prefix='PassiveTotal.Domain',
-        outputs_key_field='domain',
-        outputs=dummy_custom_context,
-        readable_output=dummy_readable_output
-    )
+    assert command_response[0].outputs_prefix == 'PassiveTotal.Domain'
+    assert command_response[0].outputs_key_field == 'domain'
+    assert command_response[0].readable_output == dummy_readable_output
 
 
 @patch('PassiveTotal_v2.CommandResults')
 @patch('PassiveTotal_v2.Client.http_request')
-def test_domain_reputatin_command_empty_response(request_mocker, mock_cr, client):
+def test_domain_reputation_command_empty_response(request_mocker, mock_cr, client):
     """
-        Proper message should be display in case of empty response from whois-search API endpoint
+        Proper message should be display in case of empty response from whois-search and reputation API endpoint
     """
     from PassiveTotal_v2 import domain_reputation_command
 
@@ -995,7 +983,8 @@ def test_domain_reputatin_command_empty_response(request_mocker, mock_cr, client
         outputs_prefix='PassiveTotal.Domain',
         outputs_key_field='domain',
         outputs=[],
-        readable_output='### Domain(s)\n**No entries.**\n'
+        readable_output="### Domain(s)\n**No entries.**\nThe reputation score for 'somedomain.com' is  "
+                        "and is classified as ''.\n### Reputation Rules\n**No entries.**\n"
     )
 
 
@@ -1278,3 +1267,1153 @@ def test_pt_get_articles_empty_response(request_mocker, client):
 
     # Assert
     assert response.readable_output == 'No articles were found for the given argument(s).'
+
+
+@patch('PassiveTotal_v2.Client.http_request')
+def test_get_data_card_command_success(request_mocker, client):
+    """
+        Positive case (HR and contextData) should be validated.
+    """
+    from PassiveTotal_v2 import get_data_card_summary_command
+
+    # Configure
+    args = {
+        'query': '1.1.1.1'
+    }
+
+    with open('test_data/Data_Card/data_card_command.json', 'rb') as f:
+        dummy_response = json.load(f)
+
+    with open('test_data/Data_Card/data_card_command_readable_output.md', 'r') as f:
+        readable_output = f.read()
+
+    request_mocker.return_value = dummy_response
+
+    # Execute
+    command_response = get_data_card_summary_command(client, args)
+
+    # Assert
+    assert command_response.outputs_prefix == 'PassiveTotal.DataCard'
+    assert command_response.outputs_key_field == 'name'
+    assert command_response.readable_output == readable_output
+    assert command_response.raw_response == dummy_response
+
+
+def test_get_data_card_command_failure(client):
+    """Test case scenario for failure execution of pt-data-card-get command."""
+
+    from PassiveTotal_v2 import get_data_card_summary_command, MESSAGES
+    args = {
+        "query": ""
+    }
+    with pytest.raises(ValueError) as err:
+        get_data_card_summary_command(client, args)
+    assert str(err.value) == MESSAGES["REQUIRED_ARGUMENT"].format("query")
+
+
+@patch('PassiveTotal_v2.Client.http_request')
+def test_get_reputation_command_success(request_mocker, client):
+    """
+        Positive case (HR and contextData) should be validated.
+    """
+    from PassiveTotal_v2 import get_reputation_command
+
+    # Configure
+    args = {
+        'query': '2020-windows.com'
+    }
+
+    with open('test_data/Reputation/reputation_command_response.json', 'rb') as f:
+        dummy_response = json.load(f)
+
+    with open('test_data/Reputation/reputation_command_readable_output.md', 'r') as f:
+        readable_output = f.read()
+
+    with open('test_data/Reputation/reputation_command_context.json', 'r') as f:
+        dummy_custom_context = json.load(f)
+
+    request_mocker.return_value = dummy_response
+
+    # Execute
+    command_response = get_reputation_command(client, args)
+
+    # Assert
+    assert command_response.outputs_prefix == 'PassiveTotal.Reputation'
+    assert command_response.outputs_key_field == 'query'
+    assert command_response.readable_output == readable_output
+    assert command_response.raw_response == dummy_response
+    assert command_response.outputs == dummy_custom_context
+
+
+def test_get_reputation_command_failure(client):
+    """Test case scenario for failure execution of pt-reputation-get command."""
+
+    from PassiveTotal_v2 import get_reputation_command, MESSAGES
+    args = {
+        "query": ""
+    }
+    with pytest.raises(ValueError) as err:
+        get_reputation_command(client, args)
+    assert str(err.value) == MESSAGES["REQUIRED_ARGUMENT"].format("query")
+
+
+def test_ip_reputation_command_empty_arguments_values(client):
+    """
+        When no value enter for command argument then should raise error with proper message
+    """
+    from PassiveTotal_v2 import ip_reputation_command
+
+    # Configure
+    args = {
+        'ip': ',,'
+    }
+
+    # Execute
+    with pytest.raises(ValueError) as e:
+        ip_reputation_command(client, args)
+
+    # Assert
+    assert 'IP(s) not specified' == str(e.value)
+
+
+def test_ip_reputation_command_when_invalid_args_provided(client):
+    """
+        When invalid IP value enter for command argument then should raise error with proper message
+    """
+    from PassiveTotal_v2 import ip_reputation_command
+
+    # Configure
+    args = {
+        'ip': '2020-windows.com'
+    }
+
+    # Execute
+    with pytest.raises(ValueError) as e:
+        ip_reputation_command(client, args)
+
+    # Assert
+    assert 'Invalid IP - 2020-windows.com' == str(e.value)
+
+
+@patch('PassiveTotal_v2.Client.http_request')
+def test_ip_reputation_command_success(request_mocker, client):
+    """
+        Positive case (HR and contextData) should be validated.
+    """
+    from PassiveTotal_v2 import ip_reputation_command
+
+    # Configure
+    args = {
+        'ip': '1.1.1.1'
+    }
+
+    with open('test_data/ip_reputation/ip_reputation_command_response.json', 'rb') as f:
+        dummy_response = json.load(f)
+    with open('test_data/ip_reputation/ip_reputation_command_context.json', 'r') as f:
+        dummy_custom_context = json.load(f)
+    with open('test_data/ip_reputation/ip_reputation_command_readable_output.md', 'r') as f:
+        readable_output = f.read()
+
+    request_mocker.return_value = dummy_response
+
+    # Execute
+    command_response = ip_reputation_command(client, args)
+
+    # Assert
+    assert command_response[0].outputs_prefix == 'PassiveTotal.IP'
+    assert command_response[0].outputs_key_field == 'query'
+    assert command_response[0].readable_output == readable_output
+    assert command_response[0].outputs == dummy_custom_context
+    assert command_response[0].indicator.ip == "1.1.1.1"
+
+
+@patch('PassiveTotal_v2.Client.http_request')
+def test_pt_list_intel_profile_command_success(request_mocker, client):
+    """
+        Positive case (HR and contextData) should be validated.
+    """
+    from PassiveTotal_v2 import get_intel_profile_command
+
+    # Configure
+    args = {
+        'indicator_value': 'conglomeratoid.com',
+        'type': 'actor',
+        'source': 'osint',
+        'category': 'network'
+    }
+    with open('test_data/IntelProfile/intel_profile_command_response.json', 'r') as f:
+        dummy_response = json.load(f)
+
+    with open('test_data/IntelProfile/intel_profile_command_context.json', 'r') as f:
+        dummy_custom_context = json.load(f)
+
+    with open('test_data/IntelProfile/intel_profile_command_readable_output.md', 'r') as f:
+        dummy_readable_output = f.read()
+
+    request_mocker.return_value = dummy_response
+
+    # Execute
+    response = get_intel_profile_command(client, args)
+
+    # Assert
+    assert response.outputs_prefix == 'PassiveTotal.IntelProfile'
+    assert response.outputs_key_field == "id"
+    assert response.readable_output == dummy_readable_output
+    assert response.outputs == dummy_custom_context
+
+
+@pytest.mark.parametrize("args, err_msg", input_data.list_intel_profile_invalid_args)
+def test_pt_list_intel_profile_command_when_invalid_args_are_provided(args, err_msg):
+    """
+    To test pt-list-intel-profiles command when invalid arguments are provided.
+    """
+    from PassiveTotal_v2 import get_intel_profile_command
+    with pytest.raises(ValueError) as de:
+        get_intel_profile_command(client, args)
+    assert str(de.value) == err_msg
+
+
+@patch('PassiveTotal_v2.Client.http_request')
+def test_pt_list_intel_profile_command_when_empty_response_is_returned(request_mocker, client):
+    """
+    To test pt-list-intel-profiles command when empty response returned.
+    """
+    from PassiveTotal_v2 import get_intel_profile_command
+
+    request_mocker.return_value = {"totalCount": 0, "results": []}
+
+    args = {
+        "query": "abc"
+    }
+
+    response = get_intel_profile_command(client, args)
+
+    assert response.readable_output == "No profiles were found for the given argument(s)."
+
+
+@patch('PassiveTotal_v2.Client.http_request')
+def test_list_intel_profile_indicators_command_success(request_mocker, client):
+    """
+        Positive case (HR and contextData) should be validated.
+    """
+    from PassiveTotal_v2 import list_intel_profile_indicators_command
+
+    # Configure
+    args = {
+        'id': 'apt33',
+        'page_size': 2
+    }
+
+    with open('test_data/Intel_Profile_Indicator/intel_profile_indicator_command.json', 'rb') as f:
+        dummy_response = json.load(f)
+
+    with open('test_data/Intel_Profile_Indicator/intel_profile_indicator_readable_output.md', 'r') as f:
+        readable_output = f.read()
+
+    request_mocker.return_value = dummy_response
+
+    # Execute
+    command_response = list_intel_profile_indicators_command(client, args)
+
+    # Assert
+    assert command_response.outputs_prefix == 'PassiveTotal.IntelProfile'
+    assert command_response.outputs_key_field == 'id'
+    assert command_response.readable_output == readable_output
+    assert command_response.raw_response == dummy_response
+
+
+@pytest.mark.parametrize("args, error_msg", input_data.intel_profile_indicator_invalid_args)
+def test_list_intel_profile_indicators_command_failure(args, error_msg, client):
+    """Test case scenario for failure execution of list-intel-profile-indicators command."""
+
+    from PassiveTotal_v2 import list_intel_profile_indicators_command
+
+    with pytest.raises(ValueError) as err:
+        list_intel_profile_indicators_command(client, args)
+    assert str(err.value) == error_msg
+
+
+@patch('PassiveTotal_v2.Client.http_request')
+def test_list_intel_profile_indicators_command_when_empty_response_is_returned(request_mocker, client):
+    """
+    Test case scenario for successful execution of pt-list-intel-profile-indicators command with an empty response.
+    """
+    from PassiveTotal_v2 import list_intel_profile_indicators_command, MESSAGES
+
+    request_mocker.return_value = {"results": []}
+    command_results = list_intel_profile_indicators_command(client, {"id": "apt33", "page_size": "1"})
+
+    assert command_results.readable_output == MESSAGES['NO_RECORDS_FOUND'].format('indicators')
+
+
+@patch('PassiveTotal_v2.Client.http_request')
+def test_pt_list_my_asi_insights_command_success(request_mocker, client):
+    """
+        Positive case (HR and contextData) should be validated.
+    """
+    from PassiveTotal_v2 import list_my_asi_insights_command
+
+    # Configure
+    args = {
+        'priority': 'high',
+    }
+    with open('test_data/ASI_Insights/asi_insights_command_response.json', 'r') as f:
+        dummy_response = json.load(f)
+
+    with open('test_data/ASI_Insights/asi_insights_command_context.json', 'r') as f:
+        dummy_custom_context = json.load(f)
+
+    with open('test_data/ASI_Insights/asi_insights_command_readable_output.md', 'r') as f:
+        dummy_readable_output = f.read()
+
+    request_mocker.return_value = dummy_response
+
+    # Execute
+    response = list_my_asi_insights_command(client, args)
+
+    # Assert
+    assert response.readable_output == dummy_readable_output
+    assert response.outputs == dummy_custom_context
+    assert response.raw_response == dummy_response
+
+
+@pytest.mark.parametrize("args, err_msg", input_data.list_asi_insights_invalid_args)
+def test_pt_list_my_asi_insights_command_when_invalid_args_are_provided(args, err_msg, client):
+    """
+    To test pt-list-intel-profiles command when invalid arguments are provided.
+    """
+    from PassiveTotal_v2 import list_my_asi_insights_command
+    with pytest.raises(ValueError) as de:
+        list_my_asi_insights_command(client, args)
+    assert str(de.value) == err_msg
+
+
+@patch('PassiveTotal_v2.Client.http_request')
+def test_pt_list_my_asi_insights_command_key_not_present(request_mocker, client):
+    """
+        Positive case (HR and contextData) should be validated.
+    """
+    from PassiveTotal_v2 import list_my_asi_insights_command
+
+    # Configure
+    args = {
+        'priority': 'high',
+    }
+    with open('test_data/ASI_Insights/asi_insights_command_key_not_present_response.json', 'r') as f:
+        dummy_response = json.load(f)
+
+    with open('test_data/ASI_Insights/asi_insights_command_key_not_present_context.json', 'r') as f:
+        dummy_custom_context = json.load(f)
+
+    with open('test_data/ASI_Insights/asi_insights_command_key_not_present_readable_output.md', 'r') as f:
+        dummy_readable_output = f.read()
+
+    request_mocker.return_value = dummy_response
+
+    # Execute
+    response = list_my_asi_insights_command(client, args)
+
+    # Assert
+    assert response.readable_output == dummy_readable_output
+    assert response.outputs == dummy_custom_context
+    assert response.raw_response == dummy_response
+
+
+@patch('PassiveTotal_v2.Client.http_request')
+def test_list_my_attack_surfaces_command_success(request_mocker, client):
+    """
+        Positive case (HR and contextData) should be validated.
+    """
+    from PassiveTotal_v2 import list_my_attack_surfaces_command
+
+    with open('test_data/Attack_Surface/attack_surface_command.json', 'rb') as f:
+        dummy_response = json.load(f)
+
+    with open('test_data/Attack_Surface/attack_surface_context.json', 'rb') as f:
+        dummy_context = json.load(f)
+
+    with open('test_data/Attack_Surface/attack_surface_readable_output.md', 'r') as f:
+        readable_output = f.read()
+
+    request_mocker.return_value = dummy_response
+
+    # Execute
+    command_response = list_my_attack_surfaces_command(client, {})
+
+    # Assert
+    assert command_response.outputs_prefix == 'PassiveTotal.AttackSurface'
+    assert command_response.outputs_key_field == 'id'
+    assert command_response.readable_output == readable_output
+    assert command_response.raw_response == dummy_response
+    assert command_response.outputs == dummy_context
+
+
+@pytest.mark.parametrize("args, err_msg", input_data.list_my_attack_surface_invalid_args)
+def test_list_my_attack_surfaces_command_command_when_invalid_args_are_provided(args, err_msg, client):
+    """
+    To test pt-list-my-attack-surfaces command when invalid arguments are provided.
+    """
+    from PassiveTotal_v2 import list_my_attack_surfaces_command
+    with pytest.raises(ValueError) as de:
+        list_my_attack_surfaces_command(client, args)
+    assert str(de.value) == err_msg
+
+
+@patch('PassiveTotal_v2.Client.http_request')
+def test_list_my_attack_surfaces_command_when_object_not_present_success(request_mocker, client):
+    """
+       To test pt-list-my-attack-surfaces command when valid response with missing some objects return.
+    """
+    from PassiveTotal_v2 import list_my_attack_surfaces_command
+
+    with open('test_data/Attack_Surface/attack_surface_object_not_present.json', 'rb') as f:
+        dummy_response = json.load(f)
+
+    with open('test_data/Attack_Surface/attack_surface_object_not_present_context.json', 'rb') as f:
+        dummy_context = json.load(f)
+
+    with open('test_data/Attack_Surface/attack_surface_object_not_present.md', 'r') as f:
+        readable_output = f.read()
+
+    request_mocker.return_value = dummy_response
+
+    # Execute
+    command_response = list_my_attack_surfaces_command(client, {})
+
+    # Assert
+    assert command_response.outputs_prefix == 'PassiveTotal.AttackSurface'
+    assert command_response.outputs_key_field == 'id'
+    assert command_response.readable_output == readable_output
+    assert command_response.raw_response == dummy_response
+    assert command_response.outputs == dummy_context
+
+
+@patch('PassiveTotal_v2.Client.http_request')
+def test_list_third_party_asi_command_success(request_mocker, client):
+    """
+        Positive case (HR and contextData) should be validated.
+    """
+    from PassiveTotal_v2 import list_third_party_asi_command
+
+    with open('test_data/Attack_Surface/attack_surface_command.json', 'rb') as f:
+        dummy_response = json.load(f)
+
+    with open('test_data/Attack_Surface/third_party_attack_surface_command_context.json', 'rb') as f:
+        dummy_context = json.load(f)
+
+    with open('test_data/Attack_Surface/attack_surface_readable_output.md', 'r') as f:
+        readable_output = f.read()
+
+    request_mocker.return_value = dummy_response[0]
+
+    # Execute
+    command_response = list_third_party_asi_command(client, {"id": "88256"})
+
+    # Assert
+    assert command_response.readable_output == readable_output
+    assert command_response.raw_response == dummy_response[0]
+    assert command_response.outputs == dummy_context
+
+
+@patch('PassiveTotal_v2.Client.http_request')
+def test_list_third_party_asi_command_when_object_not_present_success(request_mocker, client):
+    """
+       To test pt-list-third-party-attack-surface command when valid response with missing some objects return.
+    """
+    from PassiveTotal_v2 import list_third_party_asi_command
+
+    with open('test_data/Attack_Surface/attack_surface_object_not_present.json', 'rb') as f:
+        dummy_response = json.load(f)
+
+    with open('test_data/Attack_Surface/third_party_attack_surface_object_not_present_context.json', 'rb') as f:
+        dummy_context = json.load(f)
+
+    with open('test_data/Attack_Surface/attack_surface_object_not_present.md', 'r') as f:
+        readable_output = f.read()
+
+    request_mocker.return_value = dummy_response[0]
+
+    # Execute
+    command_response = list_third_party_asi_command(client, {"id": "88256", "page_size": 1})
+
+    # Assert
+    assert command_response.readable_output == readable_output
+    assert command_response.raw_response == dummy_response[0]
+    assert command_response.outputs == dummy_context
+
+
+@pytest.mark.parametrize("args, error_msg", input_data.list_third_party_asi_invalid_args)
+def test_list_third_party_asi_command_failure(args, error_msg, client):
+    """
+    Test case scenario for failure execution of list_third_party_asi command.
+    """
+    from PassiveTotal_v2 import list_third_party_asi_command
+
+    with pytest.raises(ValueError) as err:
+        list_third_party_asi_command(client, args)
+    assert str(err.value) == error_msg
+
+
+@pytest.mark.parametrize("args, err_msg", input_data.list_asi_assets_invalid_args)
+def test_pt_list_my_asi_assets_command_when_invalid_args_are_provided(args, err_msg):
+    """
+    To test pt-list-my-attack-surface-assets command when invalid arguments are provided.
+    """
+    from PassiveTotal_v2 import list_my_asi_assets_command
+    with pytest.raises(ValueError) as de:
+        list_my_asi_assets_command(client, args)
+    assert str(de.value) == err_msg
+
+
+@patch('PassiveTotal_v2.Client.http_request')
+def test_list_my_asi_assets_command_success(request_mocker, client):
+    """
+        Positive case (HR and contextData) should be validated.
+    """
+    from PassiveTotal_v2 import list_my_asi_assets_command
+
+    with open('test_data/ASI_Assets/asi_assets_command_response.json', 'rb') as f:
+        dummy_response = json.load(f)
+
+    with open('test_data/ASI_Assets/asi_assets_command_context.json', 'rb') as f:
+        dummy_context = json.load(f)
+
+    with open('test_data/ASI_Assets/asi_assets_command_readable_output.md', 'r') as f:
+        readable_output = f.read()
+
+    request_mocker.return_value = dummy_response
+
+    args = {
+        "id": "40466",
+        "segment_by": "savedfilter_metric_29644"
+    }
+    # Execute
+    command_response = list_my_asi_assets_command(client, args)
+
+    # Assert
+
+    assert command_response.readable_output == readable_output
+    assert command_response.raw_response == dummy_response
+    assert command_response.outputs == dummy_context
+
+
+@patch('PassiveTotal_v2.Client.http_request')
+def test_list_my_asi_assets_command_success_object_not_present(request_mocker, client):
+    """
+        Positive case (HR and contextData) should be validated.
+    """
+    from PassiveTotal_v2 import list_my_asi_assets_command
+
+    with open('test_data/ASI_Assets/asi_assets_command_object_not_present_response.json', 'rb') as f:
+        dummy_response = json.load(f)
+
+    with open('test_data/ASI_Assets/asi_assets_command_object_not_present_context.json', 'rb') as f:
+        dummy_context = json.load(f)
+
+    with open('test_data/ASI_Assets/asi_assets_command_object_not_present_readable_output.md', 'r') as f:
+        readable_output = f.read()
+
+    request_mocker.return_value = dummy_response
+
+    args = {
+        "id": "40466",
+        "segment_by": "savedfilter_metric_29644"
+    }
+    # Execute
+    command_response = list_my_asi_assets_command(client, args)
+
+    # Assert
+
+    assert command_response.readable_output == readable_output
+    assert command_response.raw_response == dummy_response
+    assert command_response.outputs == dummy_context
+
+
+@patch('PassiveTotal_v2.Client.http_request')
+def test_list_third_party_asi_insights_command_success(request_mocker, client):
+    """
+        Positive case (HR and contextData) should be validated.
+    """
+    from PassiveTotal_v2 import list_third_party_asi_insights_command
+
+    # Configure
+    args = {
+        'id': 88256,
+        'priority': 'high',
+    }
+    with open('test_data/ASI_Insights/asi_insights_command_response.json', 'r') as f:
+        dummy_response = json.load(f)
+
+    with open('test_data/ASI_Insights/third_party_asi_insights_command_context.json', 'r') as f:
+        dummy_custom_context = json.load(f)
+
+    with open('test_data/ASI_Insights/asi_insights_command_readable_output.md', 'r') as f:
+        dummy_readable_output = f.read()
+
+    request_mocker.return_value = dummy_response
+
+    # Execute
+    response = list_third_party_asi_insights_command(client, args)
+
+    # Assert
+    assert response.readable_output == dummy_readable_output
+    assert response.outputs == dummy_custom_context
+    assert response.raw_response == dummy_response
+
+
+@pytest.mark.parametrize("args, err_msg", input_data.list_third_party_asi_insights_invalid_args)
+def test_list_third_party_asi_insights_command_when_invalid_args_are_provided(args, err_msg, client):
+    """
+    To test pt-list-third-party-attack-surface-insights command when invalid arguments are provided.
+    """
+    from PassiveTotal_v2 import list_third_party_asi_insights_command
+    with pytest.raises(ValueError) as de:
+        list_third_party_asi_insights_command(client, args)
+    assert str(de.value) == err_msg
+
+
+@patch('PassiveTotal_v2.Client.http_request')
+def test_list_third_party_asi_insights_command_key_not_present(request_mocker, client):
+    """
+        To test pt-list-third-party-attack-surface-insights command when valid response with missing key return.
+    """
+    from PassiveTotal_v2 import list_third_party_asi_insights_command
+
+    # Configure
+    args = {
+        'id': 88256,
+        'priority': 'high',
+    }
+    with open('test_data/ASI_Insights/asi_insights_command_key_not_present_response.json', 'r') as f:
+        dummy_response = json.load(f)
+
+    with open('test_data/ASI_Insights/third_party_asi_insights_key_not_present_context.json', 'r') as f:
+        dummy_custom_context = json.load(f)
+
+    with open('test_data/ASI_Insights/asi_insights_command_key_not_present_readable_output.md', 'r') as f:
+        dummy_readable_output = f.read()
+
+    request_mocker.return_value = dummy_response
+
+    # Execute
+    response = list_third_party_asi_insights_command(client, args)
+
+    # Assert
+    assert response.readable_output == dummy_readable_output
+    assert response.outputs == dummy_custom_context
+    assert response.raw_response == dummy_response
+
+
+@patch('PassiveTotal_v2.Client.http_request')
+def test_list_my_asi_vulnerable_components_command_success(request_mocker, client):
+    """
+        Positive case (HR and contextData) should be validated.
+    """
+    from PassiveTotal_v2 import list_my_asi_vulnerable_components_command
+
+    with open('test_data/ASI_VulnerableComponents/asi_vulnerable_components_command_response.json', 'rb') as f:
+        dummy_response = json.load(f)
+
+    with open('test_data/ASI_VulnerableComponents/asi_vulnerable_components_command_context.json', 'rb') as f:
+        dummy_context = json.load(f)
+
+    with open('test_data/ASI_VulnerableComponents/asi_vulnerable_components_command_readable_output.md', 'r') as f:
+        readable_output = f.read()
+
+    request_mocker.return_value = dummy_response
+
+    args = {
+        "page_size": 2,
+        "page_number": 0
+    }
+    # Execute
+    command_response = list_my_asi_vulnerable_components_command(client, args)
+
+    # Assert
+    assert command_response.readable_output == readable_output
+    assert command_response.raw_response == dummy_response
+    assert command_response.outputs == dummy_context
+
+
+@pytest.mark.parametrize("args, expected_params", input_data.common_args)
+def test_validate_page_and_size_args(args, expected_params):
+    """Test case scenario when valid arguments are provided."""
+    from PassiveTotal_v2 import validate_page_and_size_args
+
+    assert validate_page_and_size_args(args) == expected_params
+
+
+@patch('PassiveTotal_v2.Client.http_request')
+def test_list_my_asi_vulnerable_components_command_when_empty_response_is_returned(request_mocker, client):
+    """
+    Test case scenario for successful execution of pt-list-my-attack-surface-vulnerable-components command with an empty response.
+    """
+    from PassiveTotal_v2 import list_my_asi_vulnerable_components_command, MESSAGES
+
+    request_mocker.return_value = {"vulnerableComponents": []}
+    command_results = list_my_asi_vulnerable_components_command(client, {"page_number": "100"})
+
+    assert command_results.readable_output == MESSAGES['NO_RECORDS_FOUND'].format('vulnerable components')
+
+
+@patch('PassiveTotal_v2.Client.http_request')
+def test_list_my_asi_vulnerabilities_command_success(request_mocker, client):
+    """
+        Positive case (HR and contextData) should be validated.
+    """
+    from PassiveTotal_v2 import list_my_asi_vulnerabilities_command
+
+    with open('test_data/ASI_Vulnerability/asi_vulnerability_command_response.json', 'rb') as f:
+        dummy_response = json.load(f)
+
+    with open('test_data/ASI_Vulnerability/asi_vulnerability_command_context.json', 'rb') as f:
+        dummy_context = json.load(f)
+
+    with open('test_data/ASI_Vulnerability/asi_vulnerability_command_readable_output.md', 'r') as f:
+        readable_output = f.read()
+
+    request_mocker.return_value = dummy_response
+
+    args = {
+        "page_size": 2,
+        "page_number": 0
+    }
+    # Execute
+    command_response = list_my_asi_vulnerabilities_command(client, args)
+
+    # Assert
+
+    assert command_response.readable_output == readable_output
+    assert command_response.raw_response == dummy_response
+    assert command_response.outputs == dummy_context
+
+
+@patch('PassiveTotal_v2.Client.http_request')
+def test_list_my_asi_vulnerabilities_command_when_empty_response_is_returned(request_mocker, client):
+    """
+    Test case scenario for successful execution of pt-list-my-attack-surface-vulnerabilities command with an empty response.
+    """
+    from PassiveTotal_v2 import list_my_asi_vulnerabilities_command, MESSAGES
+
+    request_mocker.return_value = {"cves": []}
+    command_results = list_my_asi_vulnerabilities_command(client, {"page_number": "100"})
+
+    assert command_results.readable_output == MESSAGES['NO_RECORDS_FOUND'].format('vulnerabilities')
+
+
+@patch('PassiveTotal_v2.Client.http_request')
+def test_list_my_asi_observations_command_success(request_mocker, client):
+    """
+        Positive case (HR and contextData) should be validated.
+    """
+    from PassiveTotal_v2 import list_my_asi_observations_command
+
+    with open('test_data/ASI_Observations/asi_observation_command_response.json', 'rb') as f:
+        dummy_response = json.load(f)
+
+    with open('test_data/ASI_Observations/asi_observation_command_context.json', 'rb') as f:
+        dummy_context = json.load(f)
+
+    with open('test_data/ASI_Observations/asi_observation_command_readable_output.md', 'r') as f:
+        readable_output = f.read()
+
+    request_mocker.return_value = dummy_response
+
+    args = {
+        "cve_id": "CVE-2021-23017",
+        "page_size": 2,
+        "page_number": 0
+    }
+    # Execute
+    command_response = list_my_asi_observations_command(client, args)
+
+    # Assert
+
+    assert command_response.readable_output == readable_output
+    assert command_response.raw_response == dummy_response
+    assert command_response.outputs == dummy_context
+
+
+@pytest.mark.parametrize("args, err_msg", input_data.list_asi_observation_invalid_args)
+def test_list_my_asi_observations_command_when_invalid_args_are_provided(args, err_msg, client):
+    """
+    To test pt-list-my-attack-surface-observations command when invalid arguments are provided.
+    """
+    from PassiveTotal_v2 import list_my_asi_observations_command
+    with pytest.raises(ValueError) as de:
+        list_my_asi_observations_command(client, args)
+    assert str(de.value) == err_msg
+
+
+@patch('PassiveTotal_v2.Client.http_request')
+def test_list_my_asi_observations_command_success_object_not_present(request_mocker, client):
+    """
+        Positive case (HR and contextData) should be validated.
+    """
+    from PassiveTotal_v2 import list_my_asi_observations_command
+
+    with open('test_data/ASI_Observations/asi_observation_command_object_not_present_response.json', 'rb') as f:
+        dummy_response = json.load(f)
+
+    with open('test_data/ASI_Observations/asi_observation_command_object_not_present_context.json', 'rb') as f:
+        dummy_context = json.load(f)
+
+    with open('test_data/ASI_Observations/asi_observations_command_object_not_present_readable_output.md', 'r') as f:
+        readable_output = f.read()
+
+    request_mocker.return_value = dummy_response
+
+    args = {
+        "cve_id": "CVE-2021-23017",
+        "page_size": 2,
+        "page_number": 0
+    }
+    # Execute
+    command_response = list_my_asi_observations_command(client, args)
+
+    # Assert
+
+    assert command_response.readable_output == readable_output
+    assert command_response.raw_response == dummy_response
+    assert command_response.outputs == dummy_context
+
+
+@pytest.mark.parametrize("args, err_msg", input_data.list_third_party_asi_assets_invalid_args)
+def test_pt_list_third_party_asi_assets_command_when_invalid_args_are_provided(args, err_msg, client):
+    """
+    To test pt-list-third-party-attack-surface-assets command when invalid arguments are provided.
+    """
+    from PassiveTotal_v2 import list_third_party_asi_assets_command
+    with pytest.raises(ValueError) as de:
+        list_third_party_asi_assets_command(client, args)
+    assert str(de.value) == err_msg
+
+
+@patch('PassiveTotal_v2.Client.http_request')
+def test_list_third_party_asi_assets_command_success(request_mocker, client):
+    """
+        Positive case (HR and contextData) should be validated.
+    """
+    from PassiveTotal_v2 import list_third_party_asi_assets_command
+
+    with open('test_data/ASI_Assets/asi_assets_command_response.json', 'rb') as f:
+        dummy_response = json.load(f)
+
+    with open('test_data/ASI_Assets/third_party_asi_assets_command_context.json', 'rb') as f:
+        dummy_context = json.load(f)
+
+    with open('test_data/ASI_Assets/asi_assets_command_readable_output.md', 'r') as f:
+        readable_output = f.read()
+
+    request_mocker.return_value = dummy_response
+
+    args = {
+        "vendor_id": 45998,
+        "id": 123,
+        "segment_by": "savedfilter_metric_29644"
+    }
+    # Execute
+    command_response = list_third_party_asi_assets_command(client, args)
+
+    # Assert
+    assert command_response.readable_output == readable_output
+    assert command_response.raw_response == dummy_response
+    assert command_response.outputs == dummy_context
+
+
+@patch('PassiveTotal_v2.Client.http_request')
+def test_list_third_party_asi_assets_command_success_object_not_present(request_mocker, client):
+    """
+    Test case scenario for successful execution of pt-list-third-party-attack-surface-assets command with an empty response.
+    """
+    from PassiveTotal_v2 import list_third_party_asi_assets_command
+
+    with open('test_data/ASI_Assets/asi_assets_command_object_not_present_response.json', 'rb') as f:
+        dummy_response = json.load(f)
+
+    with open('test_data/ASI_Assets/third_party_asi_assets_command_object_not_present_context.json', 'rb') as f:
+        dummy_context = json.load(f)
+
+    with open('test_data/ASI_Assets/asi_assets_command_object_not_present_readable_output.md', 'r') as f:
+        readable_output = f.read()
+
+    request_mocker.return_value = dummy_response
+
+    args = {
+        "vendor_id": 45998,
+        "id": 123,
+        "segment_by": "savedfilter_metric_29644"
+    }
+    # Execute
+    command_response = list_third_party_asi_assets_command(client, args)
+
+    # Assert
+    assert command_response.readable_output == readable_output
+    assert command_response.raw_response == dummy_response
+    assert command_response.outputs == dummy_context
+
+
+@patch('PassiveTotal_v2.Client.http_request')
+def test_pt_list_my_asi_insights_command_sorted_hr(request_mocker, client):
+    """
+        Test case scenario for sorted hr response for pt-list-my-attack-surface-insights
+    """
+    from PassiveTotal_v2 import list_my_asi_insights_command
+
+    # Configure
+    args = {
+        'priority': 'high',
+    }
+    with open('test_data/ASI_Insights/asi_insights_command_sorted_hr_response.json', 'r') as f:
+        dummy_response = json.load(f)
+
+    with open('test_data/ASI_Insights/asi_insights_command_sorted_readable_output.md', 'r') as f:
+        dummy_readable_output = f.read()
+
+    request_mocker.return_value = dummy_response
+
+    # Execute
+    response = list_my_asi_insights_command(client, args)
+
+    # Assert
+    assert response.readable_output == dummy_readable_output
+    assert response.raw_response == dummy_response
+
+
+@patch('PassiveTotal_v2.Client.http_request')
+def test_list_third_party_asi_vulnerable_components_command_success(request_mocker, client):
+    """
+        Positive case (HR and contextData) should be validated.
+    """
+    from PassiveTotal_v2 import list_third_party_asi_vulnerable_components_command
+
+    with open('test_data/ASI_VulnerableComponents/asi_vulnerable_components_command_response.json', 'rb') as f:
+        dummy_response = json.load(f)
+
+    with open('test_data/ASI_VulnerableComponents/third_party_asi_vulnerable_components_command_context.json',
+              'rb') as f:
+        dummy_context = json.load(f)
+
+    with open('test_data/ASI_VulnerableComponents/asi_vulnerable_components_command_readable_output.md', 'r') as f:
+        readable_output = f.read()
+
+    request_mocker.return_value = dummy_response
+
+    args = {
+        "id": 45998,
+        "page_size": 2,
+        "page_number": 0
+    }
+    # Execute
+    command_response = list_third_party_asi_vulnerable_components_command(client, args)
+
+    # Assert
+    assert command_response.readable_output == readable_output
+    assert command_response.raw_response == dummy_response
+    assert command_response.outputs == dummy_context
+
+
+@pytest.mark.parametrize("args, err_msg", input_data.list_third_party_asi_vulnerable_component_invalid_args)
+def test_list_third_party_asi_vulnerable_components_command_when_invalid_args_provided(args, err_msg, client):
+    """Test case scenario when invalid arguments are provided for pt-list-third-party-asi-vulnerable-components."""
+    from PassiveTotal_v2 import list_third_party_asi_vulnerable_components_command
+
+    with pytest.raises(ValueError) as de:
+        list_third_party_asi_vulnerable_components_command(client, args)
+    assert str(de.value) == err_msg
+
+
+@patch('PassiveTotal_v2.Client.http_request')
+def test_list_third_party_asi_vulnerable_components_command_when_empty_response_is_returned(request_mocker, client):
+    """
+    Test case scenario for successful execution of pt-list-third-party-asi-vulnerable-components command with an empty
+    response.
+    """
+    from PassiveTotal_v2 import list_third_party_asi_vulnerable_components_command, MESSAGES
+
+    request_mocker.return_value = {"vulnerableComponents": []}
+    command_results = list_third_party_asi_vulnerable_components_command(client, {"id": 45998, "page_number": "100"})
+
+    assert command_results.readable_output == MESSAGES['NO_RECORDS_FOUND'].format('third party vulnerable components')
+
+
+@patch('PassiveTotal_v2.Client.http_request')
+def test_list_third_party_attack_surface_vulnerabilities_command_success(request_mocker, client):
+    """
+        Positive case (HR and contextData) should be validated.
+    """
+    from PassiveTotal_v2 import list_third_party_attack_surface_vulnerabilities_command
+
+    with open('test_data/ASI_Vulnerability/asi_vulnerability_command_response.json', 'rb') as f:
+        dummy_response = json.load(f)
+
+    with open('test_data/ASI_Vulnerability/third_party_asi_vulnerability_command_context.json', 'rb') as f:
+        dummy_context = json.load(f)
+
+    with open('test_data/ASI_Vulnerability/asi_vulnerability_command_readable_output.md', 'r') as f:
+        readable_output = f.read()
+
+    request_mocker.return_value = dummy_response
+
+    args = {
+        "id": 45998,
+        "page_size": 2,
+        "page_number": 0
+    }
+    # Execute
+    command_response = list_third_party_attack_surface_vulnerabilities_command(client, args)
+
+    # Assert
+
+    assert command_response.readable_output == readable_output
+    assert command_response.raw_response == dummy_response
+    assert command_response.outputs == dummy_context
+
+
+@patch('PassiveTotal_v2.Client.http_request')
+def test_list_third_party_attack_surface_vulnerabilities_command_when_empty_response_is_returned(request_mocker,
+                                                                                                 client):
+    """
+    Test case scenario for successful execution of pt-list-third-party-attack-surface-vulnerabilities command with an
+    empty response.
+    """
+    from PassiveTotal_v2 import list_third_party_attack_surface_vulnerabilities_command, MESSAGES
+
+    request_mocker.return_value = {"cves": []}
+    command_results = list_third_party_attack_surface_vulnerabilities_command(client,
+                                                                              {"id": 45998, "page_number": "100"})
+
+    assert command_results.readable_output == MESSAGES['NO_RECORDS_FOUND'].format('third party vulnerabilities')
+
+
+@pytest.mark.parametrize("args, err_msg", input_data.list_third_party_asi_vulnerable_component_invalid_args)
+def test_list_third_party_attack_surface_vulnerabilities_command_when_invalid_args_provided(args, err_msg, client):
+    """Test case scenario when invalid arguments are provided for pt-list-third-party-attack-surface-vulnerabilities."""
+    from PassiveTotal_v2 import list_third_party_attack_surface_vulnerabilities_command
+
+    with pytest.raises(ValueError) as de:
+        list_third_party_attack_surface_vulnerabilities_command(client, args)
+    assert str(de.value) == err_msg
+
+
+@patch('PassiveTotal_v2.Client.http_request')
+def test_list_third_party_asi_observations_command_success(request_mocker, client):
+    """
+        Positive case (HR and contextData) should be validated.
+    """
+    from PassiveTotal_v2 import list_third_party_asi_observations_command
+
+    with open('test_data/ASI_Observations/asi_observation_command_response.json', 'rb') as f:
+        dummy_response = json.load(f)
+
+    with open('test_data/ASI_Observations/third_party_asi_observation_command_context.json', 'rb') as f:
+        dummy_context = json.load(f)
+
+    with open('test_data/ASI_Observations/asi_observation_command_readable_output.md', 'r') as f:
+        readable_output = f.read()
+
+    request_mocker.return_value = dummy_response
+
+    args = {
+        "id": 45998,
+        "cve_id": "CVE-2021-23017",
+        "page_size": 2,
+        "page_number": 0
+    }
+    # Execute
+    command_response = list_third_party_asi_observations_command(client, args)
+
+    # Assert
+    assert command_response.readable_output == readable_output
+    assert command_response.raw_response == dummy_response
+    assert command_response.outputs == dummy_context
+
+
+@pytest.mark.parametrize("args, err_msg", input_data.list_third_party_asi_observation_invalid_args)
+def test_list_third_party_asi_observations_command_when_invalid_args_are_provided(args, err_msg, client):
+    """
+    To test pt-list-third-party-attack-surface-observations command when invalid arguments are provided.
+    """
+    from PassiveTotal_v2 import list_third_party_asi_observations_command
+    with pytest.raises(ValueError) as de:
+        list_third_party_asi_observations_command(client, args)
+    assert str(de.value) == err_msg
+
+
+@patch('PassiveTotal_v2.Client.http_request')
+def test_list_third_party_asi_observations_command_success_object_not_present(request_mocker, client):
+    """
+        Test case scenario for pt-list-third-party-attack-surface-observations when object not present
+    """
+    from PassiveTotal_v2 import list_third_party_asi_observations_command
+
+    with open('test_data/ASI_Observations/asi_observation_command_object_not_present_response.json', 'rb') as f:
+        dummy_response = json.load(f)
+
+    with open('test_data/ASI_Observations/third_party_asi_observation_command_object_not_present_context.json',
+              'rb') as f:
+        dummy_context = json.load(f)
+
+    with open('test_data/ASI_Observations/asi_observations_command_object_not_present_readable_output.md', 'r') as f:
+        readable_output = f.read()
+
+    request_mocker.return_value = dummy_response
+
+    args = {
+        "id": 45998,
+        "cve_id": "CVE-2021-23017",
+        "page_size": 2,
+        "page_number": 0
+    }
+    # Execute
+    command_response = list_third_party_asi_observations_command(client, args)
+
+    # Assert
+
+    assert command_response.readable_output == readable_output
+    assert command_response.raw_response == dummy_response
+    assert command_response.outputs == dummy_context
+
+
+@patch('PassiveTotal_v2.Client.http_request')
+def test_list_third_party_attack_surface_observations_command_when_empty_response_is_returned(request_mocker,
+                                                                                              client):
+    """
+    Test case scenario for successful execution of pt-list-third-party-attack-surface-observations command with an
+    empty response.
+    """
+    from PassiveTotal_v2 import list_third_party_asi_observations_command, MESSAGES
+
+    request_mocker.return_value = {"assets": []}
+
+    args = {
+        "id": 45998,
+        "cve_id": "CVE-2021-23017",
+        "page_size": 2,
+        "page_number": 0
+    }
+
+    command_results = list_third_party_asi_observations_command(client, args)
+
+    assert command_results.readable_output == MESSAGES['NO_RECORDS_FOUND'].format('third party observations')
+
+
+@patch('PassiveTotal_v2.Client.http_request')
+def test_list_my_asi_observations_command_when_empty_response_is_returned(request_mocker, client):
+    """
+    Test case scenario for successful execution of pt-list-my-attack-surface-observations command with an
+    empty response.
+    """
+    from PassiveTotal_v2 import list_my_asi_observations_command, MESSAGES
+
+    request_mocker.return_value = {"assets": []}
+
+    args = {
+        "cve_id": "CVE-2021-23017",
+        "page_size": 2,
+        "page_number": 0
+    }
+
+    command_results = list_my_asi_observations_command(client, args)
+
+    assert command_results.readable_output == MESSAGES['NO_RECORDS_FOUND'].format('observations')

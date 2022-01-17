@@ -600,7 +600,7 @@ def results(results):
       None: No data returned
 
     """
-    if type(results) is dict and results.get("contents"):
+    if isinstance(results, dict) and results.get("contents"):
         results = results.get("contents")
     log("demisto results: {}".format(json.dumps(results, indent=4, sort_keys=True)))
 
@@ -764,7 +764,7 @@ def incidents(incidents=None):
 
     """
     if incidents is None:
-        return exampleIncidents[0]['Contents']['data']
+        return exampleIncidents[0]['Contents']['data']  # type: ignore[index]
     else:
         return results(
             {"Type": 1, "Contents": json.dumps(incidents), "ContentsFormat": "json"}
@@ -1076,7 +1076,7 @@ def mapObject(obj, mapper, mapper_type):
       dict: the obj after mapping
 
     """
-    return {}
+    return obj
 
 
 def getModules():
@@ -1142,3 +1142,7 @@ def parentEntry():
 
     """
     return {}
+
+
+def getLicenseCustomField(api_key):
+    return api_key

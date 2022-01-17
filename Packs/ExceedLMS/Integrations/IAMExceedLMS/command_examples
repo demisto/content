@@ -1,0 +1,4 @@
+!iam-disable-user user-profile=`{"email": "john.doe@example.com", "givenname": "John"}`
+!iam-update-user user-profile=`{"email": "john.doe@example.com", "givenname": "John"}`
+!iam-create-user user-profile=`{"email": "john.doe@example.com", "givenname": "test", "surname": "test"}`
+!iam-get-user user-profile=`{"email": "john.doe@example.com"}`

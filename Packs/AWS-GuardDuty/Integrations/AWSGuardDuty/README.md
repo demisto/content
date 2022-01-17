@@ -4,6 +4,8 @@ bulit-in AWS policies:
 * _AmazonGuardDutyFullAccess_
 * _AmazonGuardDutyReadOnlyAccess_
 
+For detailed instructions about setting up authentication, see: [AWS Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/aws-integrations---authentication).
+
 ## Prerequisites
 
 It is important that you familiarize yourself with and complete all steps detailed in

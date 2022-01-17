@@ -5,14 +5,15 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 744423d3-752d-4add-89d5-467ede0537b7
+    taskid: 2313b0df-5a7e-4f7d-8a8d-0ae5fec73a9f
     type: start
     task:
-      id: 744423d3-752d-4add-89d5-467ede0537b7
+      id: 2313b0df-5a7e-4f7d-8a8d-0ae5fec73a9f
       version: -1
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -25,12 +26,18 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 893f9473-776d-4e38-8eec-10fa50515c84
+    taskid: e7ce8c8d-6c02-4eed-8573-fba2442f3ad9
     type: regular
     task:
-      id: 893f9473-776d-4e38-8eec-10fa50515c84
+      id: e7ce8c8d-6c02-4eed-8573-fba2442f3ad9
       version: -1
       name: Delete All Context
       scriptName: DeleteContext
@@ -45,7 +52,6 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-      key: {}
     separatecontext: false
     view: |-
       {
@@ -55,12 +61,18 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 00f68a22-3831-4183-859c-328259f21d52
+    taskid: ac05b96c-2aa4-423e-8ef7-64475560d160
     type: regular
     task:
-      id: 00f68a22-3831-4183-859c-328259f21d52
+      id: ac05b96c-2aa4-423e-8ef7-64475560d160
       version: -1
       name: Generate Email
       scriptName: GenerateEmail
@@ -79,12 +91,18 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: c70d3c4b-4ce2-4b30-8867-40fb5314302d
+    taskid: 6b8f2f4c-8225-40b6-8ec9-99b934f80714
     type: regular
     task:
-      id: c70d3c4b-4ce2-4b30-8867-40fb5314302d
+      id: 6b8f2f4c-8225-40b6-8ec9-99b934f80714
       version: -1
       name: zoom-create-user (default=Basic)
       script: Zoom|||zoom-create-user
@@ -101,7 +119,6 @@ tasks:
         simple: Testy
       last_name:
         simple: McTesty
-      user_type: {}
     separatecontext: false
     view: |-
       {
@@ -111,12 +128,18 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: cdd27e15-beb7-4777-86bc-4c6fa882e629
+    taskid: d11eda6e-7b6e-49c0-896a-e58a22784fb9
     type: regular
     task:
-      id: cdd27e15-beb7-4777-86bc-4c6fa882e629
+      id: d11eda6e-7b6e-49c0-896a-e58a22784fb9
       version: -1
       name: zoom-delete-user
       script: Zoom|||zoom-delete-user
@@ -127,7 +150,6 @@ tasks:
       '#none#':
       - "5"
     scriptarguments:
-      action: {}
       user:
         simple: ${Zoom.User.email}
     separatecontext: false
@@ -139,12 +161,18 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: f36866f7-b842-418e-8875-d83e3b1862c1
+    taskid: 5ac2340b-83db-453e-8de1-da1d67ea5ec5
     type: condition
     task:
-      id: f36866f7-b842-418e-8875-d83e3b1862c1
+      id: 5ac2340b-83db-453e-8de1-da1d67ea5ec5
       version: -1
       name: Verify created user
       type: condition
@@ -198,12 +226,18 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: efd1f537-c0f0-4dd9-85c1-7ce4aa5efc38
+    taskid: 2540ef0c-0326-464e-8228-8e64dc3d0264
     type: regular
     task:
-      id: efd1f537-c0f0-4dd9-85c1-7ce4aa5efc38
+      id: 2540ef0c-0326-464e-8228-8e64dc3d0264
       version: -1
       name: Delete All Context
       scriptName: DeleteContext
@@ -216,7 +250,6 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-      key: {}
     separatecontext: false
     view: |-
       {
@@ -226,12 +259,18 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 0f2598af-f75c-4758-8da6-86db7a410c93
+    taskid: f1b872e5-1454-4b06-8a40-83e6f859bb89
     type: regular
     task:
-      id: 0f2598af-f75c-4758-8da6-86db7a410c93
+      id: f1b872e5-1454-4b06-8a40-83e6f859bb89
       version: -1
       name: Generate Email
       scriptName: GenerateEmail
@@ -240,7 +279,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "8"
+      - "11"
     separatecontext: false
     view: |-
       {
@@ -250,133 +289,18 @@ tasks:
         }
       }
     note: false
-  "8":
-    id: "8"
-    taskid: a79e20e9-ee98-459b-8492-9eeb407610cd
-    type: regular
-    task:
-      id: a79e20e9-ee98-459b-8492-9eeb407610cd
-      version: -1
-      name: zoom-create-user (Pro)
-      script: Zoom|||zoom-create-user
-      type: regular
-      iscommand: true
-      brand: Zoom
-    nexttasks:
-      '#none#':
-      - "9"
-    scriptarguments:
-      email:
-        simple: ${GeneratedEmail}
-      first_name:
-        simple: Testy
-      last_name:
-        simple: McTesty
-      user_type:
-        simple: Pro
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1275
-        }
-      }
-    note: false
-  "9":
-    id: "9"
-    taskid: fbd33478-3805-4c37-85ec-855b05086aa8
-    type: regular
-    task:
-      id: fbd33478-3805-4c37-85ec-855b05086aa8
-      version: -1
-      name: zoom-delete-user
-      script: Zoom|||zoom-delete-user
-      type: regular
-      iscommand: true
-      brand: Zoom
-    nexttasks:
-      '#none#':
-      - "10"
-    scriptarguments:
-      action:
-        simple: disassociate
-      user:
-        simple: ${Zoom.User.email}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1450
-        }
-      }
-    note: false
-  "10":
-    id: "10"
-    taskid: 60501c9e-5178-4e42-87a6-80a1de82f569
-    type: condition
-    task:
-      id: 60501c9e-5178-4e42-87a6-80a1de82f569
-      version: -1
-      name: Verify created user
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "11"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: Zoom.User.first_name
-            iscontext: true
-          right:
-            value:
-              simple: Testy
-      - - operator: isEqualString
-          left:
-            value:
-              simple: Zoom.User.last_name
-            iscontext: true
-          right:
-            value:
-              simple: McTesty
-      - - operator: isEqualString
-          left:
-            value:
-              simple: Zoom.User.email
-            iscontext: true
-          right:
-            value:
-              simple: GeneratedEmail
-            iscontext: true
-      - - operator: isEqualString
-          left:
-            value:
-              simple: Zoom.User.type
-            iscontext: true
-          right:
-            value:
-              simple: "2"
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1625
-        }
-      }
-    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: c8c225b0-fa9d-420e-8e21-d03c88c0b39f
+    taskid: 5a0dbc79-9082-4a29-8dc5-3161be2ebe93
     type: regular
     task:
-      id: c8c225b0-fa9d-420e-8e21-d03c88c0b39f
+      id: 5a0dbc79-9082-4a29-8dc5-3161be2ebe93
       version: -1
       name: Delete All Context
       scriptName: DeleteContext
@@ -387,23 +311,29 @@ tasks:
       '#none#':
       - "16"
     scriptarguments:
-      all: {}
-      key: {}
+      all:
+        simple: "yes"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1800
+          "y": 1310
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 44d38d0b-6c71-4624-8d57-e074d5d2b0a1
+    taskid: 462e5156-6b39-48fc-89de-894d0b5afa5b
     type: regular
     task:
-      id: 44d38d0b-6c71-4624-8d57-e074d5d2b0a1
+      id: 462e5156-6b39-48fc-89de-894d0b5afa5b
       version: -1
       name: zoom-list-users
       script: Zoom|||zoom-list-users
@@ -413,25 +343,27 @@ tasks:
     nexttasks:
       '#none#':
       - "17"
-    scriptarguments:
-      page-number: {}
-      page-size: {}
-      status: {}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1975
+          "y": 1485
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 417b574a-eb96-482e-868e-c97f039d1ffa
+    taskid: d6c706fe-d755-49c7-8025-cf225ad525cf
     type: condition
     task:
-      id: 417b574a-eb96-482e-868e-c97f039d1ffa
+      id: d6c706fe-d755-49c7-8025-cf225ad525cf
       version: -1
       name: Verify admin is in user list
       type: condition
@@ -456,16 +388,22 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2150
+          "y": 1660
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: e2fdcdd0-970c-4e2f-8399-89879647eb4e
+    taskid: b7ba7dcf-2fd5-4d05-847d-bb5e953fbdc2
     type: regular
     task:
-      id: e2fdcdd0-970c-4e2f-8399-89879647eb4e
+      id: b7ba7dcf-2fd5-4d05-847d-bb5e953fbdc2
       version: -1
       name: zoom-create-meeting
       script: Zoom|||zoom-create-meeting
@@ -476,12 +414,8 @@ tasks:
       '#none#':
       - "19"
     scriptarguments:
-      auto-record-meeting: {}
-      start-time: {}
-      timezone: {}
       topic:
         simple: Testing
-      type: {}
       user:
         simple: admin@demistodev.com
     separatecontext: false
@@ -493,12 +427,18 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: f25c9c7c-11a1-4dbb-878d-23bbc5bfe9fc
+    taskid: 5d9fab79-c25e-4aa1-8f80-21e82b4a77bc
     type: regular
     task:
-      id: f25c9c7c-11a1-4dbb-878d-23bbc5bfe9fc
+      id: 5d9fab79-c25e-4aa1-8f80-21e82b4a77bc
       version: -1
       name: Verify meeting was created
       scriptName: VerifyContext
@@ -506,7 +446,6 @@ tasks:
       iscommand: false
       brand: ""
     scriptarguments:
-      expectedValue: {}
       fields:
         simple: id
       path:
@@ -520,12 +459,18 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: b7c44d4f-028a-4a9a-88e8-8950604c4079
+    taskid: 547e7bee-ce29-4de1-83ff-4e67ccc347e2
     type: regular
     task:
-      id: b7c44d4f-028a-4a9a-88e8-8950604c4079
+      id: 547e7bee-ce29-4de1-83ff-4e67ccc347e2
       version: -1
       name: Print test result
       scriptName: Print
@@ -540,16 +485,22 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2325
+          "y": 1835
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 06fbde49-303e-410f-8a0c-916d6e0edc27
+    taskid: 72285ba4-15e6-4005-8ede-308ff35e04f2
     type: regular
     task:
-      id: 06fbde49-303e-410f-8a0c-916d6e0edc27
+      id: 72285ba4-15e6-4005-8ede-308ff35e04f2
       version: -1
       name: zoom-fetch-recording
       script: Zoom|||zoom-fetch-recording
@@ -559,6 +510,7 @@ tasks:
     scriptarguments:
       meeting_id:
         simple: "120332943"
+    continueonerror: true
     separatecontext: false
     view: |-
       {
@@ -568,12 +520,18 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2355,
+        "height": 1865,
         "width": 1240,
         "x": 50,
         "y": 65
@@ -583,3 +541,4 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.0.0
+description: ''

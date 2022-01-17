@@ -1155,3 +1155,429 @@ Get search query result with task ID output from lr-execute-search-query command
 >|OriginEntityId|ImpactedIp|LogSourceName|OriginHost|EntityName|
 >|---|---|---|---|---|
 >| 1 | 10.0.0.1 | Linux Syslog | 1.2.3.4 | Nothing | 
+
+
+### lr-get-users
+***
+Returns a list of users
+
+
+#### Base Command
+
+`lr-get-users`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user_id | The LogRhythm user ID. | Optional | 
+| count | Number of users to return. Default is 30. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Logrhythm.User.ID | string | LogRhythm user ID | 
+| Logrhythm.User.DateUpdated | string | Date that the user was updated. | 
+| Logrhythm.User.HostStatus | string | Host status of the LogRhythm user. | 
+| Logrhythm.User.LastName | string | Last name of the LogRhythm user. | 
+| Logrhythm.User.FirstName | string | First name of the LogRhythm user. | 
+| Logrhythm.User.UserType | string | LogRhythm user type | 
+| Logrhythm.User.Entity | string | LogRhythm entity information | 
+| Logrhythm.User.Owner | string | LogRhythm owner information | 
+| Logrhythm.User.ReadAccess | string | Read Access of the LogRhythm user. | 
+| Logrhythm.User.WriteAccess | string | Write Access of the LogRhythm user. | 
+
+
+#### Command Example
+```!lr-get-users user_id=5```
+
+#### Context Example
+```json
+{
+    "Logrhythm": {
+        "User": {
+            "DateUpdated": "2021-10-11T15:04:50.757Z",
+            "Entity": {
+                "id": 1,
+                "name": "Primary Site"
+            },
+            "FirstName": "testuser",
+            "HostStatus": "Retired",
+            "ID": 5,
+            "LastName": "testuser",
+            "Owner": {
+                "id": 1,
+                "name": "myadmin"
+            },
+            "ReadAccess": "Private",
+            "UserType": "Individual",
+            "WriteAccess": "Private"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Users information
+>|ID|DateUpdated|HostStatus|LastName|FirstName|UserType|Entity|Owner|ReadAccess|WriteAccess|
+>|---|---|---|---|---|---|---|---|---|---|
+>| 5 | 2021-10-11T15:04:50.757Z | Retired | testuser | testuser | Individual | id: 1<br/>name: Primary Site | id: 1<br/>name: myadmin | Private | Private |
+
+
+### lr-get-logins
+***
+Returns a list of logins
+
+
+#### Base Command
+
+`lr-get-logins`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user_id | The LogRhythm user ID. | Optional | 
+| count | Number of logins to return. Default is 30. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Logrhythm.Login.Login | string | The login username | 
+| Logrhythm.Login.UserProfileId | string | The profile ID for the LogRhythm user | 
+| Logrhythm.Login.UserId | string | LogRhythm user ID | 
+| Logrhythm.Login.DefaultEntityId | string | The default entity ID of the login | 
+| Logrhythm.Login.HostStatus | string | Host status of the LogRhythm login. | 
+| Logrhythm.Login.DateUpdated | string | Date that the login was updated. | 
+| Logrhythm.Login.DateCreated | string | Date that the login was created. | 
+| Logrhythm.Login.Entities | string | LogRhythm entities information | 
+
+
+#### Command Example
+```!lr-get-logins user_id=5```
+
+#### Context Example
+```json
+{
+    "Logrhythm": {
+        "Login": {
+            "DateCreated": "2021-09-21T13:27:59.72Z",
+            "DateUpdated": "2021-10-11T15:04:50.753Z",
+            "DefaultEntityId": 1,
+            "Entities": [
+                {
+                    "id": -100,
+                    "name": "Global Entity"
+                },
+                {
+                    "id": 1,
+                    "name": "Primary Site"
+                },
+                {
+                    "id": 3,
+                    "name": "v3"
+                }
+            ],
+            "HostStatus": "Retired",
+            "Login": "testusername",
+            "UserId": 5,
+            "UserProfileId": -100
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Logins information
+>|Login|UserProfileId|UserId|DefaultEntityId|HostStatus|DateUpdated|DateCreated|
+>|---|---|---|---|---|---|---|
+>| testusername | -100 | 5 | 1 | Retired | 2021-10-11T15:04:50.753Z | 2021-09-21T13:27:59.72Z |
+
+
+### lr-get-privileges
+***
+Returns the privileges of a given user.
+
+
+#### Base Command
+
+`lr-get-privileges`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user_id | The LogRhythm user ID. | Required | 
+| offset | The position to start at . Default is 0. | Optional | 
+| count | Number of privileges to return. Default is 30. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Logrhythm.Privileges.ID | string | The LogRhythm user ID | 
+| Logrhythm.Privileges.Privileges | string | A list of the LogRhythm user's privileges. | 
+
+
+#### Command Example
+```!lr-get-privileges user_id=5 count=15```
+
+#### Context Example
+```json
+{
+    "Logrhythm": {
+        "Privileges": {
+            "ID": "5",
+            "Privileges": [
+                "GlobalAIEEventsAccess",
+                "SecondLookMgmt",
+                "LogRhythmAPIAccess",
+                "CaseMgmtAccess",
+                "CloudAIAccess",
+                "ShowDeploymentManager",
+                "ShowEntityMgr",
+                "EntityMgmt",
+                "ShowAgentAgentMgr",
+                "AgentMgmt",
+                "ShowLSMgr",
+                "LSMgmt",
+                "DPMgmt",
+                "PMMgmt",
+                "NMMgmt"
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Privileges information
+>|Privileges|
+>|---|
+>| GlobalAIEEventsAccess,<br/>SecondLookMgmt,<br/>LogRhythmAPIAccess,<br/>CaseMgmtAccess,<br/>CloudAIAccess,<br/>ShowDeploymentManager,<br/>ShowEntityMgr,<br/>EntityMgmt,<br/>ShowAgentAgentMgr,<br/>AgentMgmt,<br/>ShowLSMgr,<br/>LSMgmt,<br/>DPMgmt,<br/>PMMgmt,<br/>NMMgmt |
+
+
+### lr-get-profiles
+***
+Returns a list of user profiles
+
+
+#### Base Command
+
+`lr-get-profiles`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| profile_id | The LogRhythm profile ID. | Optional | 
+| count | Number of profiles to return. Default is 30. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Logrhythm.Profile.ID | string | ID of the LogRhythm user profile | 
+| LogRhythm.Profile.Name | string | Name of the Logrhythm user profile | 
+| LogRhythm.Profile.ShortDescription | string | Short description of the profile | 
+| LogRhythm.Profile.LongDescription | string | Long description of the profile | 
+| LogRhythm.Profile.DataProcessorAccessMode | string | Data processor access mode | 
+| LogRhythm.Profile.SecurityRole | string | The user profile's security role | 
+| LogRhythm.Profile.ProfileType | string | The user profile's type | 
+| LogRhythm.Profile.DateUpdated | string | Date that the profile was updated. | 
+| LogRhythm.Profile.TotalAssociatedUsers | string | Total number of users with this profile | 
+| LogRhythm.Profile.NotificationGroupsPermissions | string | Permissions on notification groups | 
+| LogRhythm.Profile.ADGroupsPermissions | string | Active Directory group permissions | 
+| LogRhythm.Profile.EntityPermissions | string | Entity permissions for the profile | 
+| LogRhythm.Profile.DataProcessorsPermissions | string | Profile's data processor permissions | 
+| LogRhythm.Profile.LogsourceListPermissions | string | Profile's logsource list permissions | 
+| LogRhythm.Profile.LogSourcePermissions | string | Profile's permissions for log sources | 
+| LogRhythm.Profile.Privileges | string | Profile's privileges | 
+| LogRhythm.Profile.SmartResponsePluginsPermissions | string | Profile's smart response plugin permissions | 
+
+
+#### Command Example
+```!lr-get-profiles profile_id=-100```
+
+#### Context Example
+```json
+{
+    "Logrhythm": {
+        "Profile": {
+            "DataProcessorAccessMode": "All",
+            "DateUpdated": "2021-07-09T16:03:19.62Z",
+            "ID": -100,
+            "LongDescription": "The LogRhythm Global Administrator profile is a system record which cannot be modified or deleted.",
+            "Name": "LogRhythm Global Administrator",
+            "NotificationGroupsPermissions": [
+                {
+                    "id": 1,
+                    "name": "minim quis"
+                }
+            ],
+            "ProfileType": "Allow",
+            "SecurityRole": "GlobalAdmin",
+            "ShortDescription": "LogRhythm Global Administrators have full access to the system.",
+            "TotalAssociatedUsers": 11
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Users information
+>|ID|Name|ShortDescription|LongDescription|DataProcessorAccessMode|SecurityRole|ProfileType|DateUpdated|TotalAssociatedUsers|
+>|---|---|---|---|---|---|---|---|---|
+>| -100 | LogRhythm Global Administrator | LogRhythm Global Administrators have full access to the system. | The LogRhythm Global Administrator profile is a system record which cannot be modified or deleted. | All | GlobalAdmin | Allow | 2021-07-09T16:03:19.62Z | 11 |
+
+
+### lr-add-user
+***
+Add a new user to the LogRhythm SIEM
+
+
+#### Base Command
+
+`lr-add-user`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| first_name | First name of the LogRhythm user. | Required | 
+| last_name | Last name of the LogRhythm user. | Required | 
+| abbreviation | Abbreviation of the user name. Defaults to first letter of first name and then last name, all lowercase. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Logrhythm.User.ID | string | LogRhythm user ID | 
+| Logrhythm.User.DateUpdated | string | Date that the user was updated. | 
+| Logrhythm.User.HostStatus | string | Host status of the LogRhythm user. | 
+| Logrhythm.User.LastName | string | Last name of the LogRhythm user. | 
+| Logrhythm.User.FirstName | string | First name of the LogRhythm user. | 
+| Logrhythm.User.UserType | string | LogRhythm user type | 
+| Logrhythm.User.Entity | string | LogRhythm entity information | 
+| Logrhythm.User.Owner | string | LogRhythm owner information | 
+| Logrhythm.User.ReadAccess | string | Read Access of the LogRhythm user. | 
+| Logrhythm.User.WriteAccess | string | Write Access of the LogRhythm user. | 
+
+
+#### Command Example
+```!lr-add-user first_name=Alice last_name=Richards```
+
+#### Context Example
+```json
+{
+    "Logrhythm": {
+        "User": {
+            "DateUpdated": "2021-10-20T15:02:14.733Z",
+            "Entity": {
+                "id": 1,
+                "name": "Primary Site"
+            },
+            "FirstName": "Alice",
+            "HostStatus": "Active",
+            "ID": 13,
+            "LastName": "Richards",
+            "Owner": {
+                "id": 1,
+                "name": "myadmin"
+            },
+            "ReadAccess": "Private",
+            "UserType": "Individual",
+            "WriteAccess": "Private"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### User added
+>|ID|DateUpdated|HostStatus|LastName|FirstName|UserType|Entity|Owner|ReadAccess|WriteAccess|
+>|---|---|---|---|---|---|---|---|---|---|
+>| 13 | 2021-10-20T15:02:14.733Z | Active | Richards | Alice | Individual | id: 1<br/>name: Primary Site | id: 1<br/>name: myadmin | Private | Private |
+
+
+### lr-add-login
+***
+Add a new login to the LogRhythm user
+
+
+#### Base Command
+
+`lr-add-login`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user_id | ID of the user to attach the login to. | Required | 
+| login | Login name for the user. | Required | 
+| profile_id | ID of the user profile to associate with the login. | Required | 
+| password | Password for the user. . | Required | 
+| entity_id | ID of the entity to associate with the login. Defaults to 1. Default is 1. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Logrhythm.Login.Login | string | The login username | 
+| Logrhythm.Login.UserProfileId | string | The profile ID for the LogRhythm user | 
+| Logrhythm.Login.UserId | string | LogRhythm user ID | 
+| Logrhythm.Login.DefaultEntityId | string | The default entity ID of the login | 
+| Logrhythm.Login.HostStatus | string | Host status of the LogRhythm login. | 
+| Logrhythm.Login.DateUpdated | string | Date that the login was updated. | 
+| Logrhythm.Login.DateCreated | string | Date that the login was created. | 
+| Logrhythm.Login.Entities | string | LogRhythm entities information | 
+
+
+#### Command Example
+```!lr-add-login login=arichards password=Example0Password123!! profile_id=-100 user_id=13```
+
+#### Context Example
+```json
+{
+    "Logrhythm": {
+        "User": {
+            "DateCreated": "2021-10-20T15:02:17.78Z",
+            "DateUpdated": "2021-10-20T15:02:17.783Z",
+            "DefaultEntityId": 1,
+            "Entities": [
+                {
+                    "id": -100,
+                    "name": "Global Entity"
+                },
+                {
+                    "id": 1,
+                    "name": "Primary Site"
+                },
+                {
+                    "id": 3,
+                    "name": "v3"
+                }
+            ],
+            "HostStatus": "Active",
+            "Login": "arichards",
+            "UserId": 13,
+            "UserProfileId": -100
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Login added
+>|Login|UserProfileId|UserId|DefaultEntityId|HostStatus|DateUpdated|DateCreated|
+>|---|---|---|---|---|---|---|
+>| arichards | -100 | 13 | 1 | Active | 2021-10-20T15:02:17.783Z | 2021-10-20T15:02:17.78Z |
+

@@ -83,7 +83,7 @@ def test_get_user_command__existing_user(mocker):
     mocker.patch.object(client, 'get_user_id_and_activity_by_mail', return_value=("id", None))
     mocker.patch.object(IAMUserProfile, 'update_with_app_data', return_value={})
 
-    iam_user_profile = get_user_command(client, args, 'mapper_in')
+    iam_user_profile = get_user_command(client, args, 'mapper_in', 'mapper_out')
     outputs = get_outputs_from_user_profile(iam_user_profile)
 
     assert outputs.get('action') == IAMActions.GET_USER
@@ -101,7 +101,7 @@ def test_get_user_command__non_existing_user(mocker):
     mocker.patch.object(client, 'get_user_id_and_activity_by_mail', return_value=(None, None))
     mocker.patch.object(client, 'get_user', return_value={})
 
-    iam_user_profile = get_user_command(client, args, 'mapper_in')
+    iam_user_profile = get_user_command(client, args, 'mapper_in', 'mapper_out')
     outputs = get_outputs_from_user_profile(iam_user_profile)
 
     assert outputs.get('action') == IAMActions.GET_USER

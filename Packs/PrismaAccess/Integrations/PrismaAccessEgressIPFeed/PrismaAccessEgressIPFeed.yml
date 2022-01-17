@@ -147,7 +147,7 @@ script:
       description: Prisma Access Egress IP zone
       type: string
     description: Gets indicators from the feed.
-  dockerimage: demisto/python3:3.8.5.10845
+  dockerimage: demisto/python3:3.9.7.24076
   feed: true
   runonce: false
   subtype: python3

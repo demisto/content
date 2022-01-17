@@ -1,4 +1,4 @@
-from splunklib.binding import HTTPError, namespace
+from splunklib.binding import HTTPError, namespace, AuthenticationError
 
 import demistomock as demisto
 from CommonServerPython import *
@@ -1084,11 +1084,11 @@ def update_remote_system_command(args, params, service, auth_token):
                     urgency=changed_data['urgency'], owner=changed_data['owner'], eventIDs=[notable_id],
                     auth_token=auth_token, sessionKey=session_key
                 )
-                msg = response_info.get('message')
                 if 'success' not in response_info or not response_info['success']:
-                    demisto.error('Failed updating notable {}: {}'.format(notable_id, msg))
+                    demisto.error('Failed updating notable {}: {}'.format(notable_id, str(response_info)))
                 else:
-                    demisto.debug('update-remote-system for notable {}: {}'.format(notable_id, msg))
+                    demisto.debug('update-remote-system for notable {}: {}'.format(notable_id,
+                                                                                   response_info.get('message')))
 
             except Exception as e:
                 demisto.error('Error in Splunk outgoing mirror for incident corresponding to notable {}. '
@@ -1928,6 +1928,14 @@ def splunk_parse_raw_command():
 
 
 def test_module(service):
+
+    try:
+        # validate connection
+        service.info()
+    except AuthenticationError:
+        return_error('Authentication error, please validate your credentials.')
+
+    # validate fetch
     params = demisto.params()
     if params.get('isFetch'):
         t = datetime.utcnow() - timedelta(hours=1)
