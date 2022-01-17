@@ -29,10 +29,6 @@ configuration:
   hidden: false
   required: true
   type: 0
-- name: insecure
-  display: Trust any certificate (not secure)
-  required: false
-  type: 8
 - display: Use system proxy settings
   name: proxy
   required: false
