@@ -30,7 +30,7 @@ configuration:
 description: This integration enables you to process alerts from SafeNet Trusted Access
   (STA) indicating security risks to end user accounts, and apply security remediation
   actions on SafeNet Trusted Access through security orchestration playbooks.
-display: SafeNet Trusted Access
+display: Thales SafeNet Trusted Access
 name: SafeNet Trusted Access
 script:
   commands:
