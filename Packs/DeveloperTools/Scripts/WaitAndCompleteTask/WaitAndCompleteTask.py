@@ -85,7 +85,7 @@ def wait_and_complete_task_command(args: Dict[str, Any]) -> CommandResults:
         incident = demisto.incidents()[0]
         incident_id = incident.get('id')
     task_name = args.get('task_name')
-    complete_task = argToBoolean(args.get('complete_task', 'true'))
+    complete_task = argToBoolean(args.get('complete_task', 'false'))
     max_timeout = arg_to_number(args.get('max_timeout', 60))
     interval_between_tries = arg_to_number(args.get('interval_between_tries', 3))
 
@@ -162,7 +162,7 @@ def wait_and_complete_task_command(args: Dict[str, Any]) -> CommandResults:
         outputs_prefix='WaitAndCompleteTask',
         outputs_key_field='',
         outputs={'CompletedTask': completed_tasks,
-                 'FoundTasks': found_tasks},
+                 'FoundTask': found_tasks},
     )
 
 
