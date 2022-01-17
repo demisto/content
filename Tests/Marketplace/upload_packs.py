@@ -995,7 +995,7 @@ def main():
             pack.cleanup()
             continue
 
-        if not pack.should_upload_to_market_place:
+        if not pack.should_upload_to_marketplace:
             logging.warning(f"Skipping {pack.name} pack as it is not supported in the current marketplace.")
             pack.status = PackStatus.NOT_RELEVANT_FOR_MARKETPLACE.name
             pack.cleanup()

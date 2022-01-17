@@ -106,7 +106,7 @@ class Pack(object):
         self._contains_transformer = False  # initialized in collect_content_items function
         self._contains_filter = False  # initialized in collect_content_items function
         self._is_missing_dependencies = False  # a flag that specifies if pack is missing dependencies
-        self.should_upload_to_market_place = True  # initialized in load_user_metadata function
+        self.should_upload_to_marketplace = True  # initialized in load_user_metadata function
 
     @property
     def name(self):
@@ -987,10 +987,6 @@ class Pack(object):
         """
         task_status = True
 
-        # if not self._should_upload_to_market_place:
-        #     logging.warning(f"Skipping {self._pack_name} pack as it is not supported in the current marketplace.")
-        #     return task_status, False, None
-
         try:
             version_pack_path = os.path.join(storage_base_path, self._pack_name, latest_version)
             existing_files = [f.name for f in storage_bucket.list_blobs(prefix=version_pack_path)]
@@ -1062,9 +1058,6 @@ class Pack(object):
              otherwise returned False.
 
         """
-        # if not self._should_upload_to_market_place:
-        #     logging.warning(f"Skipping {self._pack_name} pack as it is not supported in the current marketplace.")
-
         pack_not_uploaded_in_prepare_content = self._pack_name not in successful_packs_dict
         if pack_not_uploaded_in_prepare_content:
             logging.warning("The following packs already exist at storage.")
@@ -1756,7 +1749,7 @@ class Pack(object):
             self.display_name = user_metadata.get(Metadata.NAME, '')  # type: ignore[misc]
             self._user_metadata = user_metadata
             self.eula_link = user_metadata.get(Metadata.EULA_LINK, Metadata.EULA_URL)
-            self.should_upload_to_market_place = marketplace in user_metadata.get('marketplaces', ['xsoar'])
+            self.should_upload_to_marketplace = marketplace in user_metadata.get('marketplaces', ['xsoar'])
 
             logging.info(f"Finished loading {self._pack_name} pack user metadata")
             task_status = True
