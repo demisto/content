@@ -1,5 +1,7 @@
 id: Endpoint Enrichment - Generic v2.1
 version: -1
+contentitemexportablefields:
+  contentitemfields: {}
 name: Endpoint Enrichment - Generic v2.1
 description: |-
   Enrich an endpoint by hostname using one or more integrations.
@@ -39,6 +41,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
     taskid: 54895e0d-9904-4e62-8f45-ebd0d17ad5c9
@@ -62,8 +66,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1280,
-          "y": 440
+          "x": 1750,
+          "y": 410
         }
       }
     note: false
@@ -71,6 +75,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
     taskid: c9799048-288a-40cc-8d2f-c561d0ea2f6b
@@ -79,7 +85,8 @@ tasks:
       id: c9799048-288a-40cc-8d2f-c561d0ea2f6b
       version: -1
       name: Is McAfee ePolicy Orchestrator enabled?
-      description: Checks if there is an active instance of the McAfee ePolicy Orchestrator integration enabled.
+      description: Checks if there is an active instance of the McAfee ePolicy Orchestrator
+        integration enabled.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -115,8 +122,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 360,
-          "y": 750
+          "x": 380,
+          "y": 890
         }
       }
     note: false
@@ -124,6 +131,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
     taskid: efeca58b-3c8f-40aa-8c2e-f9e84257b1bb
@@ -166,6 +175,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "4":
     id: "4"
     taskid: ea90c16b-6985-4f28-816f-78608df3fe51
@@ -191,6 +202,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     id: "5"
     taskid: 44a06d71-1772-47af-8d41-8c6dbdd149e7
@@ -213,14 +226,13 @@ tasks:
           root: inputs.Hostname
           transformers:
           - operator: uniq
-      verbose: {}
     reputationcalc: 1
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 360,
-          "y": 1086
+          "x": 500,
+          "y": 1056
         }
       }
     note: false
@@ -228,6 +240,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "8":
     id: "8"
     taskid: 9fa921fa-d196-40ba-8419-ed0c4f838ab8
@@ -236,7 +250,8 @@ tasks:
       id: 9fa921fa-d196-40ba-8419-ed0c4f838ab8
       version: -1
       name: Is Carbon Black Enterprise Response enabled?
-      description: Checks if there is an active instance of the Carbon Black Enterprise Response integration enabled.
+      description: Checks if there is an active instance of the Carbon Black Enterprise
+        Response integration enabled.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -272,8 +287,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 830,
-          "y": 750
+          "x": 1300,
+          "y": 720
         }
       }
     note: false
@@ -281,6 +296,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "9":
     id: "9"
     taskid: 79f17c3a-2456-47d9-8e68-cc3d84ef01bd
@@ -298,22 +315,19 @@ tasks:
       '#none#':
       - "4"
     scriptarguments:
-      groupid: {}
       hostname:
         complex:
           root: inputs.Hostname
           transformers:
           - operator: uniq
-      ip: {}
-      sensor: {}
     reputationcalc: 1
     continueonerror: true
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 830,
-          "y": 1086
+          "x": 1300,
+          "y": 1056
         }
       }
     note: false
@@ -321,6 +335,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "10":
     id: "10"
     taskid: 216aed2b-2f34-4c5e-8c54-60b978218896
@@ -329,7 +345,8 @@ tasks:
       id: 216aed2b-2f34-4c5e-8c54-60b978218896
       version: -1
       name: Is CrowdStrike Falcon Host enabled?
-      description: Checks if there is an active instance of the CrowdStrike Falcon Host integration enabled.
+      description: Checks if there is an active instance of the CrowdStrike Falcon
+        Host integration enabled.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -365,8 +382,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2150,
-          "y": 770
+          "x": 2620,
+          "y": 740
         }
       }
     note: false
@@ -374,6 +391,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "16":
     id: "16"
     taskid: d9d617d9-2efd-466e-8ce7-190f8db83b95
@@ -388,13 +407,13 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "2"
+      - "33"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 360,
-          "y": 605
+          "x": 610,
+          "y": 575
         }
       }
     note: false
@@ -402,6 +421,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "18":
     id: "18"
     taskid: 6cf08862-644d-479e-89ce-f9e173a8c562
@@ -421,8 +442,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 830,
-          "y": 605
+          "x": 1300,
+          "y": 575
         }
       }
     note: false
@@ -430,6 +451,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "19":
     id: "19"
     taskid: 471d3862-a05c-42b1-871d-c1faa2fbb7a9
@@ -449,8 +472,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1280,
-          "y": 605
+          "x": 1750,
+          "y": 575
         }
       }
     note: false
@@ -458,6 +481,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "20":
     id: "20"
     taskid: 5d371f29-3a4c-43c5-8f71-b383db2e5320
@@ -477,8 +502,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2150,
-          "y": 605
+          "x": 2620,
+          "y": 575
         }
       }
     note: false
@@ -486,6 +511,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "22":
     id: "22"
     taskid: f7f190b9-5a39-4d8a-83a5-77d5a023f0d4
@@ -494,7 +521,8 @@ tasks:
       id: f7f190b9-5a39-4d8a-83a5-77d5a023f0d4
       version: -1
       name: Is Active Directory Query v2 enabled?
-      description: Checks if there is an active instance of the Active Directory Query v2 integration enabled.
+      description: Checks if there is an active instance of the Active Directory Query
+        v2 integration enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -542,6 +570,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "23":
     id: "23"
     taskid: 23c75906-3b4e-42e8-8e32-c883d5f06fb3
@@ -561,10 +591,6 @@ tasks:
       '#none#':
       - "4"
     scriptarguments:
-      attributes: {}
-      custom-field-data: {}
-      custom-field-type: {}
-      dn: {}
       name:
         complex:
           root: inputs.Hostname
@@ -584,6 +610,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "24":
     id: "24"
     taskid: 9706cc39-d338-44cd-8ee1-efc5ea95b04d
@@ -604,7 +632,7 @@ tasks:
       {
         "position": {
           "x": -616,
-          "y": 440
+          "y": 410
         }
       }
     note: false
@@ -612,6 +640,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "26":
     id: "26"
     taskid: d973a016-35b6-4e7c-88a5-9f4c60190224
@@ -643,8 +673,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1280,
-          "y": 1086
+          "x": 1750,
+          "y": 1056
         }
       }
     note: false
@@ -652,6 +682,8 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "27":
     id: "27"
     taskid: f74a190a-1427-4557-8cf1-ff7865da3042
@@ -660,7 +692,9 @@ tasks:
       id: f74a190a-1427-4557-8cf1-ff7865da3042
       version: -1
       name: Get Crowdstrike device ID
-      description: Gets the Crowdstrike Falcon Host device ID that corresponds to the endpoint that is being enriched. The device ID is necessary to get information about the endpoint.
+      description: Gets the Crowdstrike Falcon Host device ID that corresponds to
+        the endpoint that is being enriched. The device ID is necessary to get information
+        about the endpoint.
       script: '|||cs-device-search'
       type: regular
       iscommand: true
@@ -681,16 +715,13 @@ tasks:
               suffix:
                 value:
                   simple: '"'
-      limit: {}
-      offset: {}
-      query: {}
     reputationcalc: 1
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 2250,
-          "y": 1070
+          "x": 2720,
+          "y": 1040
         }
       }
     note: false
@@ -698,6 +729,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "28":
     id: "28"
     taskid: 9c60a60d-b2f3-4707-8b0f-690891e080d0
@@ -706,7 +739,8 @@ tasks:
       id: 9c60a60d-b2f3-4707-8b0f-690891e080d0
       version: -1
       name: Was a device ID found?
-      description: Checks whether a Crowdstrike device ID was found for the hostname that is being enriched.
+      description: Checks whether a Crowdstrike device ID was found for the hostname
+        that is being enriched.
       type: condition
       iscommand: false
       brand: ""
@@ -728,8 +762,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2250,
-          "y": 1220
+          "x": 2720,
+          "y": 1190
         }
       }
     note: false
@@ -737,6 +771,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "29":
     id: "29"
     taskid: 9681a79e-1d5e-462c-8e65-ec0bfe1bb7d8
@@ -764,8 +800,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2460,
-          "y": 1440
+          "x": 2930,
+          "y": 1410
         }
       }
     note: false
@@ -773,6 +809,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "30":
     id: "30"
     taskid: ec344482-77f7-42b5-8ee4-34317afd1179
@@ -792,8 +830,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1710,
-          "y": 605
+          "x": 2180,
+          "y": 575
         }
       }
     note: false
@@ -801,6 +839,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "31":
     id: "31"
     taskid: 58c8b4be-657c-45f6-8eca-5a01da85f1f3
@@ -809,7 +849,8 @@ tasks:
       id: 58c8b4be-657c-45f6-8eca-5a01da85f1f3
       version: -1
       name: Is ExtraHop Reveal(x) enabled?
-      description: Checks if there is an active instance of the ExtraHop Reveal(x) integration enabled.
+      description: Checks if there is an active instance of the ExtraHop Reveal(x)
+        integration enabled.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -845,8 +886,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1710,
-          "y": 770
+          "x": 2180,
+          "y": 740
         }
       }
     note: false
@@ -854,6 +895,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "32":
     id: "32"
     taskid: 344e1330-e5f8-4292-83df-7a4fba147ebf
@@ -871,29 +914,14 @@ tasks:
       '#none#':
       - "4"
     scriptarguments:
-      active_from: {}
-      active_until: {}
-      activity: {}
-      discover_time: {}
-      ip: {}
-      l3_only: {}
-      limit: {}
-      mac: {}
-      match_type: {}
       name:
         simple: ${inputs.Hostname}
-      operator: {}
-      role: {}
-      software: {}
-      tag: {}
-      vendor: {}
-      vlan: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1730,
-          "y": 1086
+          "x": 2200,
+          "y": 1056
         }
       }
     note: false
@@ -901,6 +929,106 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: cb25c554-4bce-4f19-8bf1-974a6a51c57d
+    type: condition
+    task:
+      id: cb25c554-4bce-4f19-8bf1-974a6a51c57d
+      version: -1
+      name: is Mcafee ePolicy Orchestrator v2 enabled
+      description: "Gets a value and returns it. This is to be used in playbook conditional\
+        \ tasks - get a value from incident field, label or context, and act accordingly.\
+        \ \nIf an array is returned. the first value will be the decision making value."
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "34"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isExists
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+          right:
+            value:
+              simple: McAfee ePO v2
+    view: |-
+      {
+        "position": {
+          "x": 610,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 06214be3-c325-4805-8b3f-ad0a3bce4872
+    type: regular
+    task:
+      id: 06214be3-c325-4805-8b3f-ad0a3bce4872
+      version: -1
+      name: Get- host information from McAfee ePO v2
+      description: Finds systems in the McAfee ePO system tree.
+      script: McAfee ePO v2|||epo-find-system
+      type: regular
+      iscommand: true
+      brand: McAfee ePO v2
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      searchText:
+        simple: ${inputs.Hostname}
+      verbose:
+        simple: "false"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 1056
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {
@@ -910,7 +1038,7 @@ view: |-
       "22_4_#default#": 0.15,
       "28_29_yes": 0.4,
       "28_4_#default#": 0.1,
-      "2_4_#default#": 0.21,
+      "2_4_#default#": 0.43,
       "2_5_yes": 0.64,
       "31_32_yes": 0.64,
       "31_4_#default#": 0.1,
@@ -923,7 +1051,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 1645,
-        "width": 3456,
+        "width": 3926,
         "x": -616,
         "y": 50
       }
@@ -958,7 +1086,8 @@ outputs:
   description: The domain names of the endpoints that were enriched.
   type: string
 - contextPath: CylanceProtectDevice
-  description: The device information about the hostname that was enriched using Cylance Protect v2.
+  description: The device information about the hostname that was enriched using Cylance
+    Protect v2.
   type: unknown
 - contextPath: ExtraHop.Device.Macaddr
   description: The MAC Address of the device.
@@ -967,7 +1096,8 @@ outputs:
   description: The class of the device.
   type: String
 - contextPath: ExtraHop.Device.UserModTime
-  description: The time of the most recent update, expressed in milliseconds since the epoch.
+  description: The time of the most recent update, expressed in milliseconds since
+    the epoch.
   type: Number
 - contextPath: ExtraHop.Device.AutoRole
   description: The role automatically detected by the ExtraHop.
@@ -991,10 +1121,11 @@ outputs:
   description: The display name of device.
   type: String
 - contextPath: ExtraHop.Device.OnWatchlist
-  description: Whether the device is on the advanced analysis whitelist.
+  description: Whether the device is on the advanced analysis allow list.
   type: Boolean
 - contextPath: ExtraHop.Device.ModTime
-  description: The time of the most recent update, expressed in milliseconds since the epoch.
+  description: The time of the most recent update, expressed in milliseconds since
+    the epoch.
   type: Number
 - contextPath: ExtraHop.Device.IsL3
   description: Indicates whether the device is a Layer 3 device.
@@ -1038,6 +1169,28 @@ outputs:
 - contextPath: ExtraHop.Device.Url
   description: Link to the device details page in ExtraHop.
   type: string
-fromversion: 5.0.0
 tests:
+- Field polling test
+- test-domain-indicator
+- Calculate Severity - Generic v2 - Test
+- Wait Until Datetime - Test
+- Calculate Severity - Standard - Test
+- Extract Indicators From File - Generic v2 - Test
+- URL Enrichment - Generic v2 - Test
+- File Enrichment - Generic v2 - Test
+- Domain Enrichment - Generic v2 - Test
+- Account Enrichment - Generic v2.1 - Test
+- IP Enrichment - Generic v2 - Test
+- Get endpoint details - Generic - test
+- Detonate URL - Generic Test
+- Email Address Enrichment - Generic v2.1 - Test
+- Generic Polling Test
+- Send Investigation Summary Reports - Test
+- Detonate File - No Files test
+- Test Convert file hash to corresponding hashes
+- Detonate File - Generic Test
 - Endpoint Enrichment - Generic v2.1 - Test
+- Retrieve File from Endpoint - Generic V2 Test
+- Isolate and unisolate endpoint - test
+- Block IP - Generic V3_Test
+fromversion: 5.0.0

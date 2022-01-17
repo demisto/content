@@ -2,7 +2,7 @@
     "name": "Whois",
     "description": "This Content Pack helps you run Whois commands as playbook tasks or real-time actions within Cortex XSOAR to obtain valuable domain metadata.",
     "support": "xsoar",
-    "currentVersion": "1.2.7",
+    "currentVersion": "1.2.8",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -28,5 +28,9 @@
             "mandatory": false,
             "display_name": "JsonWhoIs"
         }
-    }
+    },
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

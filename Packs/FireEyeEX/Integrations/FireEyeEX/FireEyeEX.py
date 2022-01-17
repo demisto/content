@@ -23,7 +23,15 @@ class Client:
 
 @logger
 def run_test_module(client: Client) -> str:
-    client.fe_client.get_alerts_request({'info_level': 'concise'})
+    """
+    Test module by getting alerts from the last day.
+    """
+    start_time = to_fe_datetime_converter('1 day')
+    client.fe_client.get_alerts_request({
+        'info_level': 'concise',
+        'start_time': start_time,
+        'duration': '24_hours',
+    })
     return 'ok'
 
 

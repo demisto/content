@@ -213,6 +213,7 @@ Run any command supported in the API.
 | target | Target number of the firewall. Use only on a Panorama instance. | Optional | 
 | job-id | Job ID. | Optional | 
 | query | Query string. | Optional | 
+| vsys | The name of the virtual system to be configured. If no vsys is mentioned, this command will not use the vsys parameter. | Optional | 
 
 
 #### Context Output
@@ -268,7 +269,11 @@ Commits a configuration to Palo Alto Firewall or Panorama, but does not validate
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| description | Commit description. | Optional | 
+| description | Commit description. | Optional |
+| admin_name | To commit admin-level changes on a firewall, include the administrator name in the request. | Optional |
+| force_commit | Force Commit. | Optional |
+| exclude_device_network_configuration | Partial commit while excluding device and network configuration. | Optional | 
+| exclude_shared_objects | Partial commit while excluding shared objects.| Optional |
 
 #### Context Output
 
@@ -317,6 +322,7 @@ Pushes rules from PAN-OS to the configured device group. In order to push the co
 | validate-only | Pre policy validation. | Optional. |
 | include-template | Whether to include template changes. | Optional. |
 | description | Push description. | Optional |
+| serial_number | The serial number for a virtual system commit. If provided, the commit will be a virtual system commit. | Optional |
 
 
 #### Context Output
@@ -2215,7 +2221,7 @@ Edits a policy rule.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | rulename | Name of the rule to edit. | Required | 
-| element_to_change | Parameter in the security rule to change. Can be 'source', 'destination', 'application', 'action', 'category', 'description', 'disabled', 'target', 'log-forwarding', 'tag' or 'profile-setting'. | Required | 
+| element_to_change | Parameter in the security rule to change. Can be 'source', 'destination', 'application', 'action', 'category', 'description', 'disabled', 'target', 'log-forwarding', 'tag', 'source-user', 'service' or 'profile-setting'. | Required | 
 | element_value | The new value for the parameter. | Required | 
 | pre_post | Pre-rule or post-rule (Panorama instances). | Optional | 
 | behaviour | Whether to replace, add, or remove the element_value from the current rule object value. | Optional | 
@@ -2954,54 +2960,35 @@ Retrieves the data of a logs query.
 | Panorama.Monitor.Logs.DestinationUser | String | Username of the user to which the session was destined. | 
 | Panorama.Monitor.Logs.DestinationCountry | String | Destination country or internal region for private addresses. Maximum length is 32 bytes. | 
 | Panorama.Monitor.Logs.DestinationPort | String | Destination port utilized by the session. | 
-| Panorama.Monitor.Logs.FileDigest | String | Only for the WildFire subtype, all other types do not use this field. The filedigest string shows the binary hash of the file sent to be analyzed by the WildFire service. | 
-| Panorama.Monitor.Logs.FileName | String | File name or file type when the subtype is file.
-File name when the subtype is virus.
-File name when the subtype is wildfire-virus.
-File name when the subtype is wildfire. | 
-| Panorama.Monitor.Logs.FileType | String | Only for the WildFire subtype, all other types do not use this field.
-Specifies the type of file that the firewall forwarded for WildFire analysis. | 
+| Panorama.Monitor.Logs.FileDigest | String | Only for the WildFire subtype, all other types do not use this field. The file digest string shows the binary hash of the file sent to be analyzed by the WildFire service. | 
+| Panorama.Monitor.Logs.FileName | String | File name or file type when the subtype is file.<br/>File name when the subtype is virus.<br/>File name when the subtype is wildfire-virus.<br/>File name when the subtype is wildfire. | 
+| Panorama.Monitor.Logs.FileType | String | Only for the WildFire subtype, all other types do not use this field.<br/>Specifies the type of file that the firewall forwarded for WildFire analysis. | 
 | Panorama.Monitor.Logs.FromZone | String | The zone from which the session was sourced. | 
-| Panorama.Monitor.Logs.URLOrFilename | String | The actual URL when the subtype is url.
-File name or file type when the subtype is file.
-File name when the subtype is virus.
-File name when the subtype is wildfire-virus.
-File name when the subtype is wildfire.
-URL or file name when the subtype is vulnerability \(if applicable\). | 
+| Panorama.Monitor.Logs.URLOrFilename | String | The actual URL when the subtype is url.<br/>File name or file type when the subtype is file.<br/>File name when the subtype is virus.<br/>File name when the subtype is wildfire-virus.<br/>File name when the subtype is wildfire.<br/>URL or file name when the subtype is vulnerability \(if applicable\). | 
 | Panorama.Monitor.Logs.NATDestinationIP | String | If destination NAT performed, the post-NAT destination IP address. | 
 | Panorama.Monitor.Logs.NATDestinationPort | String | Post-NAT destination port. | 
 | Panorama.Monitor.Logs.NATSourceIP | String | If source NAT performed, the post-NAT source IP address. | 
 | Panorama.Monitor.Logs.NATSourcePort | String | Post-NAT source port. | 
-| Panorama.Monitor.Logs.PCAPid | String | The packet capture \(pcap\) ID is a 64 bit unsigned integral denoting
-an ID to correlate threat pcap files with extended pcaps taken as a part of
-that flow. All threat logs will contain either a pcap_id of 0 \(no associated
-pcap\), or an ID referencing the extended pcap file. | 
+| Panorama.Monitor.Logs.PCAPid | String | The packet capture \(pcap\) ID is a 64 bit unsigned integral denoting an ID to correlate threat pcap files with extended pcaps taken as a part of that flow. All threat logs will contain either a pcap_id of 0 \(no associated pcap\), or an ID referencing the extended pcap file. | 
 | Panorama.Monitor.Logs.IPProtocol | String | IP protocol associated with the session. | 
-| Panorama.Monitor.Logs.Recipient | String | Only for the WildFire subtype, all other types do not use this field.
-Specifies the name of the receiver of an email that WildFire determined to be malicious when analyzing an email link forwarded by the firewall. | 
+| Panorama.Monitor.Logs.Recipient | String | Only for the WildFire subtype, all other types do not use this field.<br/>Specifies the name of the receiver of an email that WildFire determined to be malicious when analyzing an email link forwarded by the firewall. | 
 | Panorama.Monitor.Logs.Rule | String | Name of the rule that the session matched. | 
 | Panorama.Monitor.Logs.RuleID | String | ID of the rule that the session matched. | 
 | Panorama.Monitor.Logs.ReceiveTime | String | Time the log was received at the management plane. | 
-| Panorama.Monitor.Logs.Sender | String | Only for the WildFire subtype; all other types do not use this field.
-Specifies the name of the sender of an email that WildFire determined to be malicious when analyzing an email link forwarded by the firewall. | 
+| Panorama.Monitor.Logs.Sender | String | Only for the WildFire subtype; all other types do not use this field.<br/>Specifies the name of the sender of an email that WildFire determined to be malicious when analyzing an email link forwarded by the firewall. | 
 | Panorama.Monitor.Logs.SessionID | String | An internal numerical identifier applied to each session. | 
 | Panorama.Monitor.Logs.DeviceSN | String | The serial number of the firewall on which the session was logged. | 
-| Panorama.Monitor.Logs.Severity | String | Severity associated with the threat. Can be "informational", "low",
-"medium", "high", or "critical". | 
+| Panorama.Monitor.Logs.Severity | String | Severity associated with the threat. Can be "informational", "low", "medium", "high", or "critical". | 
 | Panorama.Monitor.Logs.SourceAddress | String | Original session source IP address. | 
-| Panorama.Monitor.Logs.SourceCountry | String | Source country or internal region for private addresses. Maximum
-length is 32 bytes. | 
+| Panorama.Monitor.Logs.SourceCountry | String | Source country or internal region for private addresses. Maximum length is 32 bytes. | 
 | Panorama.Monitor.Logs.SourceUser | String | Username of the user who initiated the session. | 
 | Panorama.Monitor.Logs.SourcePort | String | Source port utilized by the session. | 
-| Panorama.Monitor.Logs.ThreatCategory | String | Describes threat categories used to classify different types of
-threat signatures. | 
-| Panorama.Monitor.Logs.Name | String | Palo Alto Networks identifier for the threat. It is a description
-string followed by a 64-bit numerical identifier | 
+| Panorama.Monitor.Logs.ThreatCategory | String | Describes threat categories used to classify different types of threat signatures. | 
+| Panorama.Monitor.Logs.Name | String | Palo Alto Networks identifier for the threat. It is a description string followed by a 64-bit numerical identifier. | 
 | Panorama.Monitor.Logs.ID | String | Palo Alto Networks ID for the threat. | 
 | Panorama.Monitor.Logs.ToZone | String | The zone to which the session was destined. | 
 | Panorama.Monitor.Logs.TimeGenerated | String | Time that the log was generated on the dataplane. | 
-| Panorama.Monitor.Logs.URLCategoryList | String | A list of the URL filtering categories that the firewall used to
-enforce the policy. | 
+| Panorama.Monitor.Logs.URLCategoryList | String | A list of the URL filtering categories that the firewall used to enforce the policy. | 
 | Panorama.Monitor.Logs.Bytes | String | Total log bytes. | 
 | Panorama.Monitor.Logs.BytesReceived | String | Log bytes received. | 
 | Panorama.Monitor.Logs.BytesSent | String | Log bytes sent. | 

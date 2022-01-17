@@ -65,3 +65,27 @@ def test_cyberark_fetch_credentials(creds_name_to_fetch, expected_res, mocker):
     mocker.patch.object(demisto, 'credentials')
     fetch_credentials(client, {'identifier': creds_name_to_fetch})
     demisto.credentials.assert_called_with(expected_res)
+
+
+@pytest.mark.parametrize('creds_name_to_fetch, get_call_num, expected_res', [
+    ('name1, name2', 2, 'ok'),
+    ('', 1, 'ok')
+])
+def test_test_module_passes(creds_name_to_fetch, get_call_num, expected_res, mocker):
+    """
+        Given
+        - Case A: Creds name to fetch credentials is 'name1, name2'
+        - Case B: No specific creds were asked in fetch credentials
+        When
+        - Running fetch-credentials process
+        Then
+        - Ensure that the credentials returned to demisto are: [(username1,password1,name1)]
+        - Ensure that all credentials were returned to demisto: [(username1,password1,name1),(username2,password2,name2)]
+        """
+    from CyberArkAIM_v2 import test_module
+    client = Client(server_url="https://api.example.com/", use_ssl=False, proxy=False, app_id="app", folder="Root",
+                    safe="safe1", credentials_object=creds_name_to_fetch, username="", password="", cert_text="", key_text="")
+    get_mock = mocker.patch.object(Client, 'get_credentials')
+    res = test_module(client)
+    assert get_mock.call_count == get_call_num
+    assert res == expected_res

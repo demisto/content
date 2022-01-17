@@ -1,0 +1,24 @@
+[
+  {
+    "type": "IP",
+    "value": "132.148.83.171",
+    "rawJSON": {
+      "type": "IP",
+      "value": "132.148.83.171"
+    },
+    "fields": {
+      "firstseenbysource": "1453-05-29T09:05:00Z",
+      "lastseenbysource": "1923-10-29T09:05:00Z",
+      "collection_maintainer_name": "MockMaintainerName",
+      "extra_info": {
+        "geo_location": {
+          "AsnCode": 1,
+          "AsnName": "AsnName",
+          "MockKey": "MockValue"
+        }
+      },
+      "tags": ["TEST"],
+      "trafficlightprotocol": "GREEN"
+    }
+  }
+]

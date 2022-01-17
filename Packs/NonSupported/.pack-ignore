@@ -100,8 +100,8 @@ ignore=RP104
 [file:playbook-Detonate_url_-_Generic_4_9_9.yml]
 ignore=BA101
 
-[file:NonSupported]
-ignore=PA116
+[file:pack_metadata.json]
+ignore=PA116,PA129
 
 [file:integration-SecureWorks_V350.yml]
 ignore=IN126

@@ -485,7 +485,8 @@ class Notable:
             if isParseNotableEventsRaw:
                 rawDict = rawToDict(notable_data['_raw'])
                 for rawKey in rawDict:
-                    labels.append({'type': rawKey, 'value': rawDict[rawKey]})
+                    val = rawDict[rawKey] if isinstance(rawDict[rawKey], str) else convert_to_str(rawDict[rawKey])
+                    labels.append({'type': rawKey, 'value': val})
         if demisto.get(notable_data, 'security_domain'):
             labels.append({'type': 'security_domain', 'value': notable_data["security_domain"]})
         incident['labels'] = labels
@@ -1563,6 +1564,97 @@ def get_current_splunk_time(splunk_service):
     raise ValueError('Error: Could not fetch Splunk time')
 
 
+def quote_group(text):
+    """ A function that splits groups of key value pairs.
+        Taking into consideration key values pairs with nested quotes.
+    """
+
+    def clean(t):
+        return t.strip().rstrip(',')
+
+    # Return strings that aren't key-valued, as is.
+    if len(text.strip()) < 3 or "=" not in text:
+        return [text]
+
+    # Remove prefix & suffix wrapping quotes if present around all the text
+    # For example a text could be:
+    # "a="123"", we want it to be: a="123"
+    text = re.sub(r'^\"([\s\S]+\")\"$', r'\1', text)
+
+    # Some of the texts don't end with a comma so we add it to make sure
+    # everything acts the same.
+    if not text.rstrip().endswith(","):
+        text = text.rstrip()
+        text += ","
+
+    # Fix elements that aren't key=value (`111, a="123"` => `a="123"`)
+    # (^) - start of text
+    # ([^=]+), - everything without equal sign and a comma at the end
+    #   ('111,' above)
+    text = re.sub(r"(^)([^=]+),", ",", text).lstrip(",")
+
+    # Wrap all key values without a quote (`a=123` => `a="123"`)
+    # Key part: ([^\"\,]+?=)
+    #   asdf=123, here it will match 'asdf'.
+    #
+    # Value part: ([^\"]+?)
+    #   every string without a quote or doesn't start the text.
+    #   For example: asdf=123, here it will match '123'.
+    #
+    # End value part: (,|\")
+    #   we need to decide when to end the value, in our case
+    #   with a comma. We also check for quotes for this case:
+    #   a="b=nested_value_without_a_wrapping_quote", as we want to
+    #   wrap 'nested_value_without_a_wrapping_quote' with quotes.
+    text = re.sub(r'([^\"\,]+?=)([^\"]+?)(,|\")', r'\1"\2"\3', text)
+
+    # The basic idea here is to check that every key value ends with a `",`
+    # Assuming that there are even number of quotes before
+    # (some values can have deep nested quotes).
+    quote_counter = 0
+    rindex = 0
+    lindex = 0
+    groups = []
+    while rindex < len(text):
+
+        # For every quote we increment the quote counter
+        # (to preserve context on the opening/closed quotes)
+        if text[rindex] == '"':
+            quote_counter += 1
+
+        # A quote group ends when `",` is encountered.
+        is_end_keypair = rindex > 1 and text[rindex - 1] + text[rindex] == '",'
+
+        # If the quote_counter isn't even we shouldn't close the group,
+        # for example: a="b="1",c="3""                * *
+        # I'll space for readability:   a = " b = " 1 " , c ...
+        #                               0 1 2 3 4 5 6 7 8 9
+        # quote_counter is even:            F     T   F   T
+        # On index 7 & 8 we find a potential quote closing, but as you can
+        # see it isn't a valid group (because of nesting) we need to check
+        # the quote counter for an even number => a closing match.
+        is_even_number_of_quotes = quote_counter % 2 == 0
+
+        # We check both conditions to find a group
+        if is_end_keypair and is_even_number_of_quotes:
+            # Clean the match group and append to groups
+            groups.append(clean(text[lindex:rindex]))
+
+            # Incrementing the indexes to start searching for the next group.
+            lindex = rindex + 1
+            rindex += 1
+            quote_counter = 0
+
+        # Continue to walk the string until we find a quote again.
+        rindex += 1
+
+    # Sometimes there aren't any quotes in the string so we can just append it
+    if len(groups) == 0:
+        groups.append(clean(text))
+
+    return groups
+
+
 def rawToDict(raw):
     result = {}  # type: Dict[str, str]
     try:
@@ -1585,9 +1677,15 @@ def rawToDict(raw):
                         result[key] = val
 
         else:
-            raw_response = re.split('(?<=\S),', raw)  # split by any non-whitespace character
-            for key_val in raw_response:
-                key_value = key_val.replace('"', '').strip()
+            # search for the pattern: `key="value", `
+            # (the double quotes are optional)
+            # we append `, ` to the end of the string to catch the last value
+            groups = quote_group(raw)
+            for g in groups:
+                key_value = g.replace('"', '').strip()
+                if key_value == '':
+                    continue
+
                 if '=' in key_value:
                     key_and_val = key_value.split('=', 1)
                     result[key_and_val[0]] = key_and_val[1]
@@ -1755,7 +1853,7 @@ def requests_handler(url, message, **kwargs):
     }
 
 
-def build_search_kwargs(args):
+def build_search_kwargs(args, polling=False):
     t = datetime.utcnow() - timedelta(days=7)
     time_str = t.strftime(SPLUNK_TIME_FORMAT)
 
@@ -1769,6 +1867,12 @@ def build_search_kwargs(args):
         kwargs_normalsearch['latest_time'] = args['latest_time']
     if demisto.get(args, 'app'):
         kwargs_normalsearch['app'] = args['app']
+    if polling:
+        kwargs_normalsearch['exec_mode'] = "normal"
+    else:
+        # A blocking search runs synchronously, and returns a job when it's finished.
+        # It will be added just if it's not a polling command.
+        kwargs_normalsearch['exec_mode'] = "blocking"
     return kwargs_normalsearch
 
 
@@ -1780,14 +1884,28 @@ def build_search_query(args):
     return query
 
 
-def create_entry_context(args, parsed_search_results, dbot_scores):
+def create_entry_context(args, parsed_search_results, dbot_scores, status_res):
     ec = {}
 
     if args.get('update_context', "true") == "true":
         ec['Splunk.Result'] = parsed_search_results
         if len(dbot_scores) > 0:
             ec['DBotScore'] = dbot_scores
+        if status_res:
+            ec['Splunk.JobStatus(val.SID && val.SID === obj.SID)'] = status_res.outputs
     return ec
+
+
+def schedule_polling_command(command, args, interval_in_secs):
+    """
+    Returns a ScheduledCommand object which contain the needed arguments for schedule the polling command.
+    """
+    return ScheduledCommand(
+        command=command,
+        next_run_in_seconds=interval_in_secs,
+        args=args,
+        timeout_in_seconds=600
+    )
 
 
 def build_search_human_readable(args, parsed_search_results):
@@ -1805,7 +1923,8 @@ def build_search_human_readable(args, parsed_search_results):
 
                 headers = update_headers_from_field_names(parsed_search_results, chosen_fields)
 
-    human_readable = tableToMarkdown("Splunk Search results for query: {}".format(args['query']),
+    query = args['query'].replace('`', r'\`')
+    human_readable = tableToMarkdown("Splunk Search results for query: {}".format(query),
                                      parsed_search_results, headers)
     return human_readable
 
@@ -1864,15 +1983,39 @@ def splunk_search_command(service):
     args = demisto.args()
 
     query = build_search_query(args)
-    search_kwargs = build_search_kwargs(args)
-    search_job = service.jobs.create(query, **search_kwargs)  # type: ignore
-    num_of_results_from_query = search_job["resultCount"]
+    polling = argToBoolean(args.get("polling", False))
+    search_kwargs = build_search_kwargs(args, polling)
+    job_sid = args.get("sid")
+    search_job = None
+    interval_in_secs = int(args.get('interval_in_seconds', 30))
 
-    results_limit = float(demisto.args().get("event_limit", 100))
+    if not job_sid or not polling:
+        # create a new job to search the query.
+        search_job = service.jobs.create(query, **search_kwargs)  # type: ignore
+        job_sid = search_job["sid"]
+        args['sid'] = job_sid
+
+    status_cmd_result = None
+    if polling:
+        status_cmd_result = splunk_job_status(service, args)
+        status = status_cmd_result.outputs['Status']
+        if status.lower() != 'done':
+            # Job is still running, schedule the next run of the command.
+            scheduled_command = schedule_polling_command("splunk-search", args, interval_in_secs)
+            status_cmd_result.scheduled_command = scheduled_command
+            status_cmd_result.readable_output = 'Job is still running, it may take a little while...'
+            return status_cmd_result
+        else:
+            # Get the job by its SID.
+            search_job = service.job(job_sid)
+
+    num_of_results_from_query = search_job["resultCount"] if search_job else None
+
+    results_limit = float(args.get("event_limit", 100))
     if results_limit == 0.0:
         # In Splunk, a result limit of 0 means no limit.
         results_limit = float("inf")
-    batch_size = int(demisto.args().get("batch_limit", 25000))
+    batch_size = int(args.get("batch_limit", 25000))
 
     results_offset = 0
     total_parsed_results = []  # type: List[Dict[str,Any]]
@@ -1888,16 +2031,14 @@ def splunk_search_command(service):
 
         results_offset += batch_size
 
-    entry_context = create_entry_context(args, total_parsed_results, dbot_scores)
+    entry_context = create_entry_context(args, total_parsed_results, dbot_scores, status_cmd_result)
     human_readable = build_search_human_readable(args, total_parsed_results)
 
-    demisto.results({
-        "Type": 1,
-        "Contents": total_parsed_results,
-        "ContentsFormat": "json",
-        "EntryContext": entry_context,
-        "HumanReadable": human_readable
-    })
+    return CommandResults(
+        outputs=entry_context,
+        raw_response=total_parsed_results,
+        readable_output=human_readable
+    )
 
 
 def splunk_job_create_command(service):
@@ -2045,6 +2186,7 @@ def splunk_submit_event_hec_command():
 
 def splunk_edit_notable_event_command(service, auth_token):
     params = demisto.params()
+
     base_url = 'https://' + params['host'] + ':' + params['port'] + '/'
     sessionKey = service.token if not auth_token else None
 
@@ -2069,8 +2211,8 @@ def splunk_edit_notable_event_command(service, auth_token):
     demisto.results('Splunk ES Notable events: ' + response_info.get('message'))
 
 
-def splunk_job_status(service):
-    sid = demisto.args().get('sid')
+def splunk_job_status(service, args):
+    sid = args.get('sid')
     try:
         job = service.job(sid)
     except HTTPError as error:
@@ -2084,15 +2226,13 @@ def splunk_job_status(service):
             'SID': sid,
             'Status': status
         }
-        context = {'Splunk.JobStatus(val.SID && val.SID === obj.SID)': entry_context}
         human_readable = tableToMarkdown('Splunk Job Status', entry_context)
-        demisto.results({
-            "Type": entryTypes['note'],
-            "Contents": entry_context,
-            "ContentsFormat": formats["json"],
-            "EntryContext": context,
-            "HumanReadable": human_readable
-        })
+        return CommandResults(
+            outputs=entry_context,
+            readable_output=human_readable,
+            outputs_prefix="Splunk.JobStatus",
+            outputs_key_field="SID"
+        )
 
 
 def splunk_parse_raw_command():
@@ -2370,6 +2510,7 @@ def main():
     else:
         connection_args['username'] = username
         connection_args['password'] = password
+        connection_args['autologin'] = True
 
     if use_requests_handler:
         handle_proxy()
@@ -2396,7 +2537,7 @@ def main():
     elif command == 'splunk-reset-enriching-fetch-mechanism':
         reset_enriching_fetch_mechanism()
     elif command == 'splunk-search':
-        splunk_search_command(service)
+        return_results(splunk_search_command(service))
     elif command == 'splunk-job-create':
         splunk_job_create_command(service)
     elif command == 'splunk-results':
@@ -2412,7 +2553,7 @@ def main():
     elif command == 'splunk-submit-event-hec':
         splunk_submit_event_hec_command()
     elif command == 'splunk-job-status':
-        splunk_job_status(service)
+        return_results(splunk_job_status(service, demisto.args()))
     elif command.startswith('splunk-kv-') and service is not None:
         args = demisto.args()
         app = args.get('app_name', 'search')

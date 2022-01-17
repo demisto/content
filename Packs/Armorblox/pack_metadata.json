@@ -1,0 +1,24 @@
+{
+    "name": "Armorblox",
+    "description": "Armorblox is an API-based platform that stops targeted email attacks, protects sensitive data, and automates incident response.",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "Armorblox",
+    "url": "https://www.armorblox.com/",
+    "email": "support@armorblox.com",
+    "devEmail": "app-publishers@armorblox.com",
+    "categories": [
+        "Analytics & SIEM"
+    ],
+    "tags": [
+        "Alerts", "Attack", "Breach", "Compliance", "Email", "Forensics", "GDPR","HIPAA","Incident Response","IT","Machine Learning","Malware","PII","Scam","Security","Security Analytics","Spam","Threat Intelligence"
+
+    ],
+    "useCases": ["Email Communication"],
+    "keywords": ["Email Security", "Cloud Security", "Abuse Mailbox", "Data Loss Protection", "Data Leaks", "Compliance"],
+    "githubUser": ["urajat", "ab-samba", "ab-dj"],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}

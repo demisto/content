@@ -108,9 +108,10 @@ class TestConf(object):
         for integration in tested_integrations:
             try:
                 int_path = id_set__get_integration_file_path(id_set, integration)
-                pack = tools.get_pack_name(int_path)
-                if pack:
-                    packs.add(pack)
+                if int_path:
+                    pack = tools.get_pack_name(int_path)
+                    if pack:
+                        packs.add(pack)
             except TypeError:
                 err_msg = f'Error occurred when trying to determine the pack of integration "{integration}"'
                 err_msg += f' with path "{int_path}"' if int_path else ''

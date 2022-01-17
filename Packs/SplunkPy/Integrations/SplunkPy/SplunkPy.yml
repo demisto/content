@@ -174,6 +174,25 @@ configuration:
   additionalinfo: The limit of how many events to retrieve per each one of the enrichment
     types (Drilldown, Asset, and Identity). To retrieve all events, enter "0" (not
     recommended).
+- display: 'Advanced: Extensive logging (for debugging purposes) - Please use this option unless advised otherwise.'
+  name: extensive_logs
+  type: 8
+  required: false
+- display: 'Advanced: Fetch backwards window for the events occurrence time (minutes)'
+  name: occurrence_look_behind
+  defaultvalue: "15"
+  type: 0
+  required: false
+  additionalinfo: The fetch time range will be at least of the size specified here.
+    This will support events that have a gap between their occurrence time and their
+    index time in Splunk. To decide how long the backwards window should be, you need to analyze what is the average
+    time between them both on your splunk envorinment.
+- display: 'Advanced: Unique ID fields'
+  name: unique_id_fields
+  type: 0
+  required: false
+  additionalinfo: Use this parameter to specify a list of comma separated fields, which
+    together are a unique identifier for the events you wish to fetch.
 description: Runs queries on Splunk servers.
 display: SplunkPy
 name: SplunkPy
@@ -264,15 +283,40 @@ script:
       name: app
       required: false
       secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Use XSOAR built-in polling to retrieve the result when it's ready.
+      isArray: false
+      name: polling
+      predefined:
+        - 'true'
+        - 'false'
+    - default: false
+      description: Interval in seconds between each poll.
+      isArray: false
+      name: interval_in_seconds
+      required: false
+      secret: false
+      defaultValue: '30'
+    - default: false
+      description: The job sid.
+      isArray: false
+      name: sid
+      required: false
+      secret: false
     deprecated: false
     description: Searches Splunk for events.
     execution: false
     name: splunk-search
+    polling: true
     outputs:
     - contextPath: Splunk.Result
       description: The results of the Splunk search. The results are a JSON array,
         in which each item is a Splunk event.
       type: Unknown
+    - contextPath: Splunk.JobStatus
+      description: The search status.
+      type: String
   - arguments:
     - default: false
       description: Splunk index in which to push data. Run the splunk-get-indexes

@@ -2,7 +2,7 @@
     "name": "Export Indicators",
     "description": "Use the Export Indicators Service integration to provide an endpoint with a list of indicators as a service for the system indicators.",
     "support": "xsoar",
-    "currentVersion": "1.0.12",
+    "currentVersion": "1.0.14",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -14,5 +14,9 @@
     "useCases": [],
     "keywords": [
         "Export Indicators"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }

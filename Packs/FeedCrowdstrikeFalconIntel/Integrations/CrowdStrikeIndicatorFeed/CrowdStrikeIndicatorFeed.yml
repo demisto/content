@@ -15,13 +15,14 @@ configuration:
   defaultvalue: "https://api.crowdstrike.com/"
 - display: CrowdStrike API Client ID
   displaypassword: CrowdStrike API Client Secret
-  additionalinfo: 'For non 6.1 - enter your CrowdStrike API Client Secret in the password field.'
+  additionalinfo: 'For non 6.1 - enter your CrowdStrike API Client Secret in the password
+    field.'
   name: credentials
   type: 9
   required: true
 - additionalinfo: 'The indicator types to fetch. Out-of-the-box indicator types supported
-    in XSOAR are: "Account", "Domain", "Email", "File MD5",
-    "File SHA-256", "IP", "Registry Key", and "URL". The default is "ALL".'
+    in XSOAR are: "Account", "Domain", "Email", "File MD5", "File SHA-256", "IP",
+    "Registry Key", and "URL". The default is "ALL".'
   display: Type
   hidden: false
   name: type
@@ -41,14 +42,16 @@ configuration:
   name: first_fetch
   required: false
   type: 0
-  additionalinfo: The time range to consider for the initial data fetch. Leave empty to fetch from the first available indicator.
+  additionalinfo: The time range to consider for the initial data fetch. Leave empty
+    to fetch from the first available indicator.
 - display: Max. indicators per fetch
   defaultvalue: 5000
   hidden: false
   name: max_indicator_to_fetch
   required: false
   type: 0
-  additionalinfo: Maximum number of indicators per fetch. Value should be between 1 - 10000. A large value may result in a timeout.
+  additionalinfo: Maximum number of indicators per fetch. Value should be between
+    1 - 10000. A large value may result in a timeout.
 - additionalinfo: Malicious confidence level to filter by.
   display: Malicious confidence
   hidden: false
@@ -64,7 +67,8 @@ configuration:
   name: include_deleted
   required: false
   type: 8
-- additionalinfo: "Advanced: FQL query. For more information visit the CrowdStrike documentation."
+- additionalinfo: "Advanced: FQL query. For more information visit the CrowdStrike\
+    \ documentation."
   display: Filter
   hidden: false
   name: filter
@@ -138,6 +142,12 @@ configuration:
   name: feedTags
   required: false
   type: 0
+- defaultvalue: 'true'
+  additionalinfo: Create relationships between indicators as part of Enrichment.
+  display: Create relationships
+  name: create_relationships
+  required: false
+  type: 8
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -231,7 +241,7 @@ script:
     description: 'WARNING: This command will reset your fetch history.'
     execution: false
     name: crowdstrike-reset-fetch-indicators
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.9.9.25564
   feed: true
   isfetch: false
   longRunning: false
@@ -241,5 +251,5 @@ script:
   subtype: python3
   type: python
 tests:
-- No tests
+- Fetch Indicators Test
 fromversion: 5.5.0

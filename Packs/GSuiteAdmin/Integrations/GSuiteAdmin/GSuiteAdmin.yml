@@ -252,7 +252,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: If true, the user's IP address is white listed.
+      description: If true, the user's IP address is on allow list.
       isArray: false
       name: is_ip_white_listed
       predefined:
@@ -428,7 +428,7 @@ script:
       description: The secondary email type.
       type: String
     - contextPath: GSuite.User.ipWhitelisted
-      description: If true, the user's IP address is white listed.
+      description: If true, the user's IP address is addded to allow list.
       type: Boolean
     - contextPath: GSuite.User.recoveryEmail
       description: Recovery email of the user.
@@ -1365,7 +1365,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: If true, the user's IP address is white listed.
+      description: If true, the user's IP address is on allow list.
       isArray: false
       name: is_ip_white_listed
       predefined:
@@ -1592,7 +1592,7 @@ script:
       description: Indicates if this is the user's primary email. Only one entry can be marked as primary.
       type: Boolean
     - contextPath: GSuite.User.ipWhitelisted
-      description: If true, the user's IP address is white listed.
+      description: If true, the user's IP address is added to allow list.
       type: Boolean
     - contextPath: GSuite.User.recoveryEmail
       description: Recovery email of the user.
@@ -1959,7 +1959,7 @@ script:
         be marked as primary.
       type: Boolean
     - contextPath: GSuite.User.ipWhitelisted
-      description: If true, the user's IP address is white listed.
+      description: If true, the user's IP address is added to allow list.
       type: Boolean
     - contextPath: GSuite.User.recoveryEmail
       description: Recovery email of the user.
@@ -2272,7 +2272,7 @@ script:
       description: List of the group's non-editable alias email addresses that are
         outside of the account's primary domain or subdomains.
       type: String
-  dockerimage: demisto/googleapi-python3:1.0.0.24037
+  dockerimage: demisto/googleapi-python3:1.0.0.25823
   feed: false
   isfetch: false
   longRunning: false

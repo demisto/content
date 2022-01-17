@@ -9,7 +9,7 @@ tags:
 - transformer
 - general
 - entirelist
-comment: Accepts an array of domains as a whitelist, and a list of email addresses. The script then filters out any email address whose domain is not in the whitelist.  The filtered list will be returned as an array.
+comment: Accepts an array of domains as an allow list, and a list of email addresses. The script then filters out any email address whose domain is not in the allow list.  The filtered list will be returned as an array.
 enabled: true
 args:
 - name: value
@@ -18,11 +18,11 @@ args:
   isArray: true
 - name: domain_list
   required: true
-  description: An array of domains to whitelist.
+  description: An array of domains to allow list.
   isArray: true
 scripttarget: 0
 runonce: false
-dockerimage: demisto/python3:3.9.7.24076
+dockerimage: demisto/python3:3.9.8.24399
 runas: DBotWeakRole
 tests:
 - No test - unit test

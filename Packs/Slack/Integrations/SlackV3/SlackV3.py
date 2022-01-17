@@ -52,6 +52,7 @@ OBJECTS_TO_KEYS = {
     'users': 'id'
 }
 SYNC_CONTEXT = True
+PROFILING_DUMP_ROWS_LIMIT = 20
 
 ''' GLOBALS '''
 
@@ -572,11 +573,6 @@ def mirror_investigation():
     set_to_integration_context_with_retries({'mirrors': mirrors, 'conversations': conversations}, OBJECTS_TO_KEYS,
                                             SYNC_CONTEXT)
 
-    if kick_admin:
-        body = {
-            'channel': conversation_id
-        }
-        send_slack_request_sync(CLIENT, 'conversations.leave', body=body)
     if send_first_message:
         server_links = demisto.demistoUrls()
         server_link = server_links.get('server')
@@ -589,6 +585,12 @@ def mirror_investigation():
 
         send_slack_request_sync(CLIENT, 'chat.postMessage', body=body)
 
+    if kick_admin:
+        body = {
+            'channel': conversation_id
+        }
+        send_slack_request_sync(CLIENT, 'conversations.leave', body=body)
+
     demisto.results(f'Investigation mirrored successfully, channel: {conversation_name}')
 
 
@@ -598,6 +600,7 @@ async def long_running_loop():
         try:
             check_for_mirrors()
             check_for_unanswered_questions()
+            await asyncio.sleep(15)
         except requests.exceptions.ConnectionError as e:
             error = f'Could not connect to the Slack endpoint: {str(e)}'
         except Exception as e:
@@ -819,6 +822,7 @@ class SlackLogger:
 
 
 async def slack_loop():
+    exception_await_seconds = 1
     while True:
         # SocketModeClient does not respect environment variables for ssl verification.
         # Instead we use a custom session.
@@ -827,15 +831,27 @@ async def slack_loop():
         client = SocketModeClient(
             app_token=APP_TOKEN,
             web_client=ASYNC_CLIENT,
-            logger=slack_logger  # type: ignore
+            logger=slack_logger,  # type: ignore
+            auto_reconnect_enabled=False
         )
         client.aiohttp_client_session = session
         client.socket_mode_request_listeners.append(listen)  # type: ignore
         try:
             await client.connect()
+            demisto.debug("Socket is connected")
+            # After successful connection, we reset the backoff time.
+            exception_await_seconds = 1
+            demisto.debug(f"Resetting exception wait time to {exception_await_seconds}")
             await asyncio.sleep(float("inf"))
         except Exception as e:
-            await handle_listen_error(f"An error occurred {str(e)}")
+            demisto.debug(f"Exception in long running loop, waiting {exception_await_seconds} - {e}")
+            await asyncio.sleep(exception_await_seconds)
+            exception_await_seconds *= 2
+        finally:
+            try:
+                await client.disconnect()
+            except Exception as e:
+                demisto.debug(f"Failed to close client. - {e}")
 
 
 async def handle_listen_error(error: str):
@@ -853,9 +869,8 @@ async def start_listening():
     """
     Starts a Slack SocketMode client and checks for mirrored incidents.
     """
-    await slack_loop()
-    long_loop_task = asyncio.create_task(long_running_loop(), name="Unanswered loop")
-    await asyncio.gather(long_loop_task)
+    tasks = [asyncio.ensure_future(slack_loop()), asyncio.ensure_future(long_running_loop())]
+    await asyncio.gather(*tasks)
 
 
 async def handle_dm(user: dict, text: str, client: AsyncWebClient):
@@ -1071,7 +1086,7 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
             if event.get('subtype') == 'bot_message':
                 demisto.debug("Received bot_message event type. Ignoring.")
                 return
-            if event.get('bot_id', None) in bot_id:
+            if event.get('bot_id', '') == bot_id:
                 demisto.debug("Received bot message from the current bot. Ignoring.")
                 return
         if event.get('subtype') == 'message_changed':
@@ -1493,15 +1508,14 @@ def handle_tags_in_message_sync(message: str) -> str:
     Returns:
         The tagged slack message
     """
-    matches = re.findall(USER_TAG_EXPRESSION, message)
-    message = re.sub(USER_TAG_EXPRESSION, r'\1', message)
+    matches = re.finditer(USER_TAG_EXPRESSION, message)
     for match in matches:
-        slack_user = get_user_by_name(match)
+        slack_user = get_user_by_name(match.group(1))
         if slack_user:
-            message = message.replace(match, f"<@{slack_user.get('id')}>")
-
+            message = message.replace(match.group(0), f"<@{slack_user.get('id')}>")
+        else:
+            message = re.sub(USER_TAG_EXPRESSION, r'\1', message)
     resolved_message = re.sub(URL_EXPRESSION, r'\1', message)
-
     return resolved_message
 
 
@@ -1866,7 +1880,18 @@ def create_channel():
         }
         send_slack_request_sync(CLIENT, 'conversations.setTopic', body=body)
     created_channel_name = conversation.get('name')
+    created_channel_id = conversation.get('id')
     demisto.results(f'Successfully created the channel {created_channel_name}')
+
+    # Save the newly created channel to the context for fast future lookups
+    integration_context = get_integration_context(SYNC_CONTEXT)
+    context_conversations = integration_context.get('conversations', '[]')
+    conversations = json.loads(context_conversations)
+    conversations.append({
+        'name': created_channel_name,
+        'id': created_channel_id
+    })
+    set_to_integration_context_with_retries({'conversations': conversations}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
 
 
 def invite_to_channel():
@@ -2178,4 +2203,5 @@ def main() -> None:
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
+    register_signal_handler_profiling_dump(profiling_dump_rows_limit=PROFILING_DUMP_ROWS_LIMIT)
     main()

@@ -264,3 +264,7 @@ Returns all content of a specific content type.
 |---|---|---|---|
 | 1111111-aaaa-bbbb | 2020-04-26T10:10:10 | MicrosoftTeams | TeamsSessionStarted |
 | 2222222-vvvv-gggg | 2020-04-26T09:09:09 | MicrosoftTeams | MemberAdded |
+
+
+## Additional Information
+Record types to fetch from should be set with numerical values from the [Microsoft documentation](https://docs.microsoft.com/en-us/office/office-365-management-api/office-365-management-activity-api-schema#auditlogrecordtype). For example, in order to fetch events of type **MailSubmission**, the value **29** should be set.

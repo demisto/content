@@ -113,17 +113,20 @@ def get_account(account_email):
     )
 
 
-def send_email_to_mailbox(account, to, subject, body, bcc=None, cc=None, reply_to=None, html_body=None, attachments=[]):
+def send_email_to_mailbox(account, to, subject, body, bcc=None, cc=None, reply_to=None,
+                          html_body=None, attachments=[], raw_message=None, from_address=None):
     message_body = HTMLBody(html_body) if html_body else body
     m = Message(
         account=account,
+        mime_content=raw_message.encode('UTF-8') if raw_message else None,
         folder=account.sent,
         cc_recipients=cc,
         bcc_recipients=bcc,
         subject=subject,
         body=message_body,
         to_recipients=to,
-        reply_to=reply_to
+        reply_to=reply_to,
+        author=from_address
     )
     if account.protocol.version.build <= EXCHANGE_2010_SP2:
         m.save()
@@ -185,7 +188,8 @@ def collect_manual_attachments(manualAttachObj):
 
 
 def send_email(to, subject, body="", bcc=None, cc=None, replyTo=None, htmlBody=None,
-               attachIDs="", attachCIDs="", attachNames="", from_mailbox=None, manualAttachObj=None):
+               attachIDs="", attachCIDs="", attachNames="", from_mailbox=None, manualAttachObj=None,
+               raw_message=None, from_address=None):
     account = get_account(from_mailbox or ACCOUNT_EMAIL)
     bcc = bcc.split(",") if bcc else None
     cc = cc.split(",") if cc else None
@@ -195,7 +199,8 @@ def send_email(to, subject, body="", bcc=None, cc=None, replyTo=None, htmlBody=N
 
     attachments, attachments_names = process_attachments(attachCIDs, attachIDs, attachNames, manualAttachObj)
 
-    send_email_to_mailbox(account, to, subject, body, bcc, cc, replyTo, htmlBody, attachments)
+    send_email_to_mailbox(account, to, subject, body, bcc, cc, replyTo, htmlBody, attachments, raw_message,
+                          from_address)
     result_object = {
         'from': account.primary_smtp_address,
         'to': to,
@@ -321,6 +326,8 @@ def prepare():
 
 
 def prepare_args(d):
+    if "from" in d:
+        d['from_address'] = d.pop('from')
     return dict((k.replace("-", "_"), v) for k, v in d.items())
 
 

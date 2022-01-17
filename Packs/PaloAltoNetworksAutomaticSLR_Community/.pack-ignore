@@ -6,3 +6,5 @@ ignore=BA111
 
 [file:PaloAltoNetworksAutomaticSLRCommunity.yml]
 ignore=IN145
+[file:pack_metadata.json]
+ignore=PA129

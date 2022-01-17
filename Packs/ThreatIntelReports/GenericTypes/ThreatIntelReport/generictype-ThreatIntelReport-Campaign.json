@@ -3,7 +3,7 @@
     "layout": "Campaign Report",
     "locked": false,
     "name": "Campaign",
-    "color": "#00FFFF",
+    "color": "#F7B933",
     "definitionId": "ThreatIntelReport",
     "genericModuleId": "threatIntel",
     "system": false,

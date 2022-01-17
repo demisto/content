@@ -1104,7 +1104,7 @@ List all of the events discovered within your enterprise on a particular device 
 
 ### 8. gcb-list-detections
 ***
-Return the Detections for a specified Rule Version.
+Return the detections for the specified version of a rule, the latest version of a rule, all versions of a rule, or all versions of all rules.
 
 
 ##### Base Command
@@ -1114,9 +1114,13 @@ Return the Detections for a specified Rule Version.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | Unique identifier for a rule or specific version of a rule, defined and returned by the server. You can specify exactly one rule identifier.<br/>Use the following format to specify the id:<br/>ru_{UUID} or {ruleId}@v_{int64}_{int64} | Required | 
-| detection_start_time | Time to begin returning detections, filtering on a detection's detectionTime. If not specified, the start time is treated as open-ended.<br/>Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours.<br/>Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours. | Optional | 
-| detection_end_time | Time to stop returning detections, filtering on a detection's detectionTime. If not specified, the end time is treated as open-ended.<br/>Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours.<br/>Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours. | Optional | 
+| id | Unique identifier for a rule or specific version of a rule, defined and returned by the server. You can specify exactly one rule identifier. Use the following format to specify the id: ru_{UUID} or {ruleId}@v_{int64}_{int64}. If not specified then detections for all versions of all rules are returned. | Optional | 
+| detection_start_time | (Deprecated)Time to begin returning detections, filtering on a detection's detectionTime. If not specified, the start time is treated as open-ended.<br/>Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours.<br/>Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours. | Optional | 
+| detection_end_time | (Deprecated)Time to stop returning detections, filtering on a detection's detectionTime. If not specified, the end time is treated as open-ended.<br/>Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours.<br/>Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours. | Optional | 
+| start_time | Time to begin returning detections, filtering by the detection field specified in the listBasis parameter. If not specified, the start time is treated as open-ended.<br/>Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours.<br/>Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours. | Optional | 
+| end_time | Time to stop returning detections, filtering by the detection field specified by the listBasis parameter. If not specified, the end time is treated as open-ended.<br/>Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours.<br/>Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours. | Optional | 
+| detection_for_all_versions | Whether the user wants to retrieve detections for all versions of a rule with a given rule identifier.<br/><br/>Note: If this option is set to true, rule id is required. | Optional | 
+| list_basis | Sort detections by "DETECTION_TIME" or by "CREATED_TIME". If not specified, it defaults to "DETECTION_TIME". Detections are returned in descending order of the timestamp.<br/><br/>Note: Requires either "start_time" or "end_time" argument. | Optional | 
 | alert_state | Filter detections on if they are ALERTING or NOT_ALERTING.<br/>Avoid specifying to return all detections. | Optional | 
 | page_size | Specify the limit on the number of detections to display. You can specify between 1 and 1,000. | Optional | 
 | page_token | A page token received from a previous call. Provide this to retrieve the subsequent page. If the page token is configured, overrides the detection start and end time arguments. | Optional | 

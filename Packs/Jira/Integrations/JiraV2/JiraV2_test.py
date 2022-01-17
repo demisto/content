@@ -1233,3 +1233,23 @@ def test_jira_req(mocker, requests_mock, params, custom_headers, expected_header
                     resource_url=params.get('url'),
                     headers=custom_headers)
     assert expected_headers == req_mock.call_args[1]['headers']
+
+
+def test_get_issue_outputs(mocker):
+    """
+    Given:
+        - The issue ID.
+    When
+        - Running the get issue command.
+    Then
+        - Ensure the outputs as expected
+    """
+    from test_data.raw_response import GET_ISSUE_RESPONSE
+    from test_data.expected_results import GET_ISSUE_OUTPUTS_RESULT
+    from JiraV2 import get_issue
+
+    mocker.patch('JiraV2.jira_req', return_value=GET_ISSUE_RESPONSE)
+
+    _, outputs, _ = get_issue('id')
+
+    assert outputs == GET_ISSUE_OUTPUTS_RESULT
