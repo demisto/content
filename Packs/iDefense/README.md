@@ -1,3 +1,4 @@
+This pack will be entering maintenance mode from **February 1st, 2022** and will reach end of life on **August 1st, 2022**
 # **Accenture CTI** \*
 
 This pack is integrated with our IntelGraph Intelligence Portal to provide threat intelligence. 
