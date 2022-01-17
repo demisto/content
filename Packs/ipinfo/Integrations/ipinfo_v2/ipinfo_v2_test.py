@@ -20,6 +20,10 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
+def test_test():
+    raise Exception()
+
+
 def test_ipinfo_ip_command(requests_mock):
     """
     Given:
