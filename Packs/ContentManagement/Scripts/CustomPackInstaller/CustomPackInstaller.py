@@ -1,4 +1,5 @@
 from typing import Tuple
+from urllib import parse
 
 import demistomock as demisto
 from CommonServerPython import *
@@ -11,12 +12,15 @@ def build_url_parameters(skip_verify: bool, skip_validation: bool) -> str:
     is_server_ge_to_6_6 = is_demisto_version_ge('6.6.0')
 
     uri = '/contentpacks/installed/upload'
+    params = {}
     if skip_verify == 'true' and is_server_ge_to_6_5:
-        uri = f'{uri}?skipVerify=true'
+        params['skipVerify'] = 'true'
 
     if skip_validation == 'true' and is_server_ge_to_6_6:
-        uri = f'{uri}&skipValidation=true' if '?' in uri else f'{uri}?skipValidation=true'
-    return uri
+        params['skipValidation'] = 'true'
+
+    params = parse.urlencode(params)
+    return f'{uri}?{params}' if params else uri
 
 
 def install_custom_pack(pack_id: str, skip_verify: bool, skip_validation: bool) -> Tuple[bool, str]:
