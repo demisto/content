@@ -10,15 +10,39 @@ You must add at least a Unit Test function for every XSOAR command
 you are implementing with your integration
 """
 
+from cgi import test
 import io
 import json
 from typing import Any
+from pytest import raises
+
+from CommonServerPython import DemistoException
 
 
 def util_load_json(path: str) -> Any:
     with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
+
+def test_module_command_success(requests_mock):
+    from CadoResponse import Client, test_module
+    mock_response = {
+        'status': 'Running'
+    }
+
+    requests_mock.get('https://test.com/api/v2/system/status', json=mock_response)
+
+    client = Client(
+        base_url='https://test.com/api/v2/',
+        verify=False,
+        headers={
+            'Authentication': 'Bearer some_api_key'
+        }
+    )
+
+    response = test_module(client)
+
+    assert response == 'ok'
 
 def test_create_project_command_success(requests_mock):
     from CadoResponse import Client, create_project_command
@@ -46,7 +70,6 @@ def test_create_project_command_success(requests_mock):
     assert response.outputs_prefix == 'CadoResponse.Project'
     assert response.outputs_key_field == 'id'
     assert response.outputs == mock_response
-
 
 def test_list_project_command_success(requests_mock):
     from CadoResponse import Client, list_project_command
@@ -90,7 +113,6 @@ def test_list_project_command_success(requests_mock):
     assert response.outputs_prefix == 'CadoResponse.Projects'
     assert response.outputs_key_field == 'id'
     assert response.outputs == mock_response
-
 
 def test_list_project_command_limit_success(requests_mock):
     from CadoResponse import Client, list_project_command
@@ -610,3 +632,41 @@ def test_trigger_s3_command_success(requests_mock):
             "user_id": 1
         }
     ]
+
+def test_trigger_s3_command_raises_bucket():
+    from CadoResponse import Client, trigger_s3_command
+
+    client = Client(
+        base_url='https://test.com/api/v2/',
+        verify=False,
+        headers={
+            'Authentication': 'Bearer some_api_key'
+        }
+    )
+
+    args = {
+        'project_id': 1,
+        "file_name": "test",
+    }
+
+    with raises(DemistoException, match='bucket is a required parameter!'):
+        trigger_s3_command(client, args)
+
+def test_trigger_s3_command_raises_file():
+    from CadoResponse import Client, trigger_s3_command
+
+    client = Client(
+        base_url='https://test.com/api/v2/',
+        verify=False,
+        headers={
+            'Authentication': 'Bearer some_api_key'
+        }
+    )
+
+    args = {
+        'project_id': 1,
+        "bucket": "test",
+    }
+
+    with raises(DemistoException, match='file_name is a required parameter!'):
+        trigger_s3_command(client, args)
