@@ -29,10 +29,9 @@ def get_incident_tasks_by_state(incident_id: int, task_states: Optional[list] = 
         args['states'] = ','.join(task_states)
     try:
         raw_response = demisto.executeCommand('DemistoGetIncidentTasksByState', args=args)
-        return raw_response[0].get("Contents")
+        return raw_response[0].get("Contents") if raw_response[0].get("Contents") else []
     except Exception as e:
-        demisto.debug(f'Failed to execute script: DemistoGetIncidentTasksByState. Error: {e}')
-        return []
+        raise Exception(f'Failed to execute script: DemistoGetIncidentTasksByState. Error: {e}')
 
 
 def complete_task_by_id(task_id, task_parent_id, incident_id, complete_option=None) -> str:
@@ -55,10 +54,9 @@ def complete_task_by_id(task_id, task_parent_id, incident_id, complete_option=No
     )
     try:
         raw_response = demisto.executeCommand('taskComplete', args=args)
-        return raw_response[0].get("Contents")
+        return raw_response[0].get("Contents") if raw_response[0].get("Contents") else ''
     except Exception as e:
-        demisto.debug(f'Failed to execute script: taskComplete. Error: {e}')
-        return ''
+        raise Exception(f'Failed to execute script: taskComplete. Error: {e}')
 
 
 ''' COMMAND FUNCTION '''
@@ -146,7 +144,7 @@ def wait_and_complete_task_command(args: Dict[str, Any]) -> CommandResults:
         if time.time() - start_time > max_timeout:  # type: ignore[operator]
             break
 
-        sleep(float(interval_between_tries))    # type: ignore[arg-type]
+        sleep(float(interval_between_tries))  # type: ignore[arg-type]
 
     if not completed_tasks and not found_tasks:
         if task_name and task_states:
@@ -158,11 +156,16 @@ def wait_and_complete_task_command(args: Dict[str, Any]) -> CommandResults:
         else:
             raise Exception('No tasks were found.')
 
+    outputs = {'CompletedTask': completed_tasks,
+               'FoundTask': found_tasks}
+
+    human_readable = tableToMarkdown(name='', t=outputs, headerTransform=pascalToSpace)
+
     return CommandResults(
         outputs_prefix='WaitAndCompleteTask',
         outputs_key_field='',
-        outputs={'CompletedTask': completed_tasks,
-                 'FoundTask': found_tasks},
+        outputs=outputs,
+        readable_output=human_readable
     )
 
 

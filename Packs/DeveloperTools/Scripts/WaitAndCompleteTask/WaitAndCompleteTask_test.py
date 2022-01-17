@@ -74,10 +74,14 @@ COMPLETE_RES = '{"id": some_id}'
 def test_wait_and_complete_task_command(mocker, args, tasks_ret_value, complete_res, completed_tasks, found_tasks):
     """
     Given:
-        - The "WaitAndCompleteTask" script
-
+        - An incident which runs a playbook with four tasks in a Waiting state.
     When:
-        - Waiting to all task that has given status
+        - Calling the "WaitAndCompleteTask" script in the following cases:
+            - there is Waiting task `conditional task 1` to complete with complete option yes
+            - there is Waiting task `conditional task 1` to that not needed to be completed
+            - have to complete all Waiting tasks
+            - have to complete all Waiting tasks, but there is no tasks to be completed.
+            - found all Waiting tasks, and not complete them
 
     Then:
         - Validate the output returned as expected
@@ -88,7 +92,7 @@ def test_wait_and_complete_task_command(mocker, args, tasks_ret_value, complete_
     response = wait_and_complete_task_command(args)
 
     assert response.outputs == {'CompletedTask': completed_tasks,
-                                'FoundTasks': found_tasks}
+                                'FoundTask': found_tasks}
 
 
 @pytest.mark.parametrize('args,res', [
@@ -127,10 +131,14 @@ def test_wait_and_complete_task_command_failure(mocker, args, res):
         - The "WaitAndCompleteTask" script
 
     When:
-        - Waiting to all task that has given status
+        - Calling the "WaitAndCompleteTask" script in the following cases:
+            - asked for conditional task that didn't reached Waiting state during the run
+            - the asked task does not exist
+            - None of the tasks reached the Waiting or Completed
+            - No tasks were found
 
     Then:
-        - Validate the output returned as expected
+        - Validate the error returned as expected
 
     """
     mocker.patch('WaitAndCompleteTask.get_incident_tasks_by_state', return_value=[])
