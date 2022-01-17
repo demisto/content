@@ -14,11 +14,11 @@ Note: This is a beta Integration, which lets you implement and test pre-release 
     | Server URL (e.g https://192.168.0.1) |  | True |
     | User name |  | True |
     | Password |  | True |
-    | Service Id | The service id that will be automatically used in every command where service id is required. retrieve all service id's with rsa-nw-services-list command. to overwrite with another service id use the command argument 'service_id'. | False |
+    | Service Id | The service ID that is automatically used in every command where service ID is required. Retrieve all service IDs with the rsa-nw-services-list command. To overwrite with another service ID, use the command argument 'service_id'. | False |
     | Use system proxy settings |  | False |
     | Trust any certificate (not secure) |  | False |
-    | Fetch Limit | the maximum number of incidents to fetch | False |
-    | Fetch Time | First fetch timestamp \(&amp;lt;number&amp;gt; &amp;lt;time unit&amp;gt;, e.g., 12 hours, 7 days\) | False |
+    | Fetch Limit | The maximum number of incidents to fetch | False |
+    | Fetch Time | First fetch timestamp \(&amp;lt;number&amp;gt; &amp;lt;time unit&amp;gt;, for example, 12 hours, 7 days\) | False |
     | Incident type |  | False |
     | Fetch incidents |  | False |
 
@@ -28,7 +28,7 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### rsa-nw-list-incidents
 ***
-Retrieve a single incident by id or multiple incidents by the date and time they were created using the start time ('since') or end time ('until'). you can limit the results using the limit argument or the page size argument. If no arguments are entered the last 50 results will be returned.
+Retrieves a single incident by ID or multiple incidents by the date and time they were created using the start time ('since') or end time ('until'). You can limit the results using the limit argument or the page size argument. If no arguments are entered the last 50 results are returned.
 
 
 #### Base Command
@@ -38,61 +38,53 @@ Retrieve a single incident by id or multiple incidents by the date and time they
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| until | A timestamp in the following format 2020-01-18T14:00:00.000Z. Retrieve incidents created on and before this timestamp. | Optional | 
-| since | A timestamp in the following format 2020-01-18T14:00:00.000Z. Retrieve incidents created on and after this timestamp. | Optional | 
-| page_size | The maximum number of items to return in a single page. cannot be supplied with the limit argument. | Optional | 
-| page_number | The requested page number, first page is 0. cannot be supplied with the limit argument. | Optional | 
-| limit | Maximum number of results to be returned, if not set the first 50 results will be returned. cannot be supplied with a page_size/page_number arguments. | Optional | 
-| id | Enter an incident's id to receive it's full details. e.g 'INC-40'. | Optional | 
+| until | A timestamp in the format 2020-01-18T14:00:00.000Z. Retrieve incidents created on and before this timestamp. | Optional | 
+| since | A timestamp in the format 2020-01-18T14:00:00.000Z. Retrieve incidents created on and after this timestamp. | Optional | 
+| page_size | The maximum number of items to return in a single page. Cannot be supplied with the limit argument. | Optional | 
+| page_number | The requested page number, first page is 0. Cannot be supplied with the limit argument. | Optional | 
+| limit | Maximum number of results to be returned. If not set, the first 50 results are returned. Cannot be supplied with page_size/page_number arguments. | Optional | 
+| id | Enter an incident ID to receive its full details. For example, 'INC-40'. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| RSANetWitness115.Incidents.id | String | The unique identifier of the incident. | 
-| RSANetWitness115.Incidents.title | String | The title of the incident. | 
-| RSANetWitness115.Incidents.summary | Unknown | The summary of the incident. | 
-| RSANetWitness115.Incidents.priority | String | The incident priority can be Low,Medium,High or Critical | 
+| RSANetWitness115.Incidents.id | String | The unique incident identifier. | 
+| RSANetWitness115.Incidents.title | String | The incident title. | 
+| RSANetWitness115.Incidents.summary | String | The incident summary. | 
+| RSANetWitness115.Incidents.priority | String | The incident priority. Can be Low, Medium, High, or Critical. | 
 | RSANetWitness115.Incidents.riskScore | Number | The incident risk score is calculated based on the associated alert’s risk score. Risk score ranges from 0 \(no risk\) to 100 \(highest risk\). | 
-| RSANetWitness115.Incidents.status | String | The current status. | 
+| RSANetWitness115.Incidents.status | String | The current incident status. | 
 | RSANetWitness115.Incidents.alertCount | Number | The number of alerts associated with an incident. | 
 | RSANetWitness115.Incidents.averageAlertRiskScore | Number | The average risk score of the alerts associated with the incident. Risk score ranges from 0 \(no risk\) to 100 \(highest risk\). | 
 | RSANetWitness115.Incidents.sealed | Boolean | Indicates if additional alerts can be associated with an incident. A sealed incident cannot be associated with additional alerts. | 
 | RSANetWitness115.Incidents.totalRemediationTaskCount | Number | The number of total remediation tasks for an incident. | 
 | RSANetWitness115.Incidents.openRemediationTaskCount | Number | The number of open remediation tasks for an incident. | 
-| RSANetWitness115.Incidents.created | Date | The timestamp of when the incident is created. | 
-| RSANetWitness115.Incidents.lastUpdated | Date | The timestamp of when the incident was last updated. | 
-| RSANetWitness115.Incidents.lastUpdatedBy | Unknown | The NetWitness user identifier of the user who last updated the incident. | 
+| RSANetWitness115.Incidents.created | Date | The timestamp when the incident was created. | 
+| RSANetWitness115.Incidents.lastUpdated | Date | The timestamp when the incident was last updated. | 
+| RSANetWitness115.Incidents.lastUpdatedBy | String | The NetWitness user identifier of the user who last updated the incident. | 
 | RSANetWitness115.Incidents.assignee | String | The NetWitness user identifier of the user currently working on the incident. | 
-| RSANetWitness115.Incidents.sources | String | Unique set of sources for all of the alerts in an incident. | 
-| RSANetWitness115.Incidents.ruleId | Unknown | The unique identifier of the rule that created the incident. | 
-| RSANetWitness115.Incidents.firstAlertTime | Unknown | The timestamp of the earliest occurring Alert in this incident. | 
-| RSANetWitness115.Incidents.categories | Unknown | The list of categories this incident is categorized under. | 
-| RSANetWitness115.Incidents.journalEntries | Unknown | Set of notes about the incident investigation, also known as the JournalEntry. | 
-| RSANetWitness115.Incidents.createdBy | String | The NetWitness user id or name of the rule that created the incident. | 
-| RSANetWitness115.Incidents.deletedAlertCount | Number | The number of alerts that are deleted from the incident. | 
-| RSANetWitness115.Incidents.eventCount | Number | The number of events associated with incident. | 
-| RSANetWitness115.Incidents.alertMeta.SourceIp | String | Unique source IP addresses. | 
-| RSANetWitness115.Incidents.alertMeta.DestinationIp | String | Unique destination IP addresses. | 
+| RSANetWitness115.Incidents.sources | String | Unique set of sources for all the alerts in an incident. | 
+| RSANetWitness115.Incidents.ruleId | String | The unique identifier of the rule that created the incident. | 
+| RSANetWitness115.Incidents.firstAlertTime | String | The timestamp of the earliest occurring Alert in this incident. | 
+| RSANetWitness115.Incidents.categories.id | String | The unique category identifier. | 
+| RSANetWitness115.Incidents.categories.parent | String | The parent name of the category. | 
+| RSANetWitness115.Incidents.categories.name | String | The friendly name of the category. | 
 | RSANetWitness115.Incidents.journalEntries.id | String | The unique journal entry identifier. | 
 | RSANetWitness115.Incidents.journalEntries.author | String | The author of this entry. | 
 | RSANetWitness115.Incidents.journalEntries.notes | String | Notes and observations about the incident. | 
-| RSANetWitness115.Incidents.journalEntries.created | Date | The timestamp of the journal entry created date. | 
-| RSANetWitness115.Incidents.journalEntries.lastUpdated | Date | The timestamp of the journal entry last updated date. | 
+| RSANetWitness115.Incidents.journalEntries.created | String | The timestamp of the journal entry created date. | 
+| RSANetWitness115.Incidents.journalEntries.lastUpdated | String | The timestamp of the journal entry last updated date. | 
 | RSANetWitness115.Incidents.journalEntries.milestone | String | Incident milestone classifier. | 
-| RSANetWitness115.Incidents.page_number | Number | The requested page number. | 
-| RSANetWitness115.Incidents.page_size | Number | The requested number of items to return in a single page. | 
-| RSANetWitness115.Incidents.totalPages | Number | The total number of pages available. | 
-| RSANetWitness115.Incidents.totalItems | Number | The total number of items available. | 
-| RSANetWitness115.Incidents.hasNext | Boolean | Indicates if there is a page containing results after this page. | 
-| RSANetWitness115.Incidents.hasPrevious | Boolean | Indicates if there is a page containing results before this page. | 
-| RSANetWitness115.Incidents.categories.id | Unknown | The unique category identifier. | 
-| RSANetWitness115.Incidents.categories.parent | Unknown | The parent name of the category. | 
-| RSANetWitness115.Incidents.categories.name | Unknown | The friendly name of the category. | 
-| RSANetWitness115.paging.Incidents.hasNext | Unknown | Indicates if there is a page containing results after this page. | 
+| RSANetWitness115.Incidents.createdBy | String | The NetWitness user ID or name of the rule that created the incident. | 
+| RSANetWitness115.Incidents.deletedAlertCount | Number | The number of alerts that are deleted from the incident. | 
+| RSANetWitness115.Incidents.eventCount | Number | The number of events associated with incident. | 
+| RSANetWitness115.Incidents.alertMeta.SourceIp | String | The unique source IP addresses. | 
+| RSANetWitness115.Incidents.alertMeta.DestinationIp | String | The unique destination IP addresses. | 
+| RSANetWitness115.paging.Incidents.hasNext | Boolean | Indicates if there is a page containing results after this page. | 
 | RSANetWitness115.paging.Incidents.hasPrevious | Boolean | Indicates if there is a page containing results before this page. | 
-| RSANetWitness115.paging.Incidents.pageNumber | Number | The requested page number | 
+| RSANetWitness115.paging.Incidents.pageNumber | Number | The requested page number. | 
 | RSANetWitness115.paging.Incidents.pageSize | Number | The requested number of items to return in a single page. | 
 | RSANetWitness115.paging.Incidents.totalPages | Number | The total number of pages available. | 
 | RSANetWitness115.paging.Incidents.totalItems | Number | The total number of items available. | 
@@ -172,7 +164,7 @@ Retrieve a single incident by id or multiple incidents by the date and time they
 
 ### rsa-nw-update-incident
 ***
-Update an incident’s status and assignee
+Updates incident status and assignee.
 
 
 #### Base Command
@@ -182,47 +174,47 @@ Update an incident’s status and assignee
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | The incident's id. | Required | 
-| status | The new status of the incident. Possible values are: New, Assigned, InProgress, RemediationRequested, RemediationComplete, Closed, ClosedFalsePositive. | Optional | 
-| assignee | The NetWitness user identifier of the user currently working on the incident. You can find the list of asignees in the RSA Net Witness interface. | Optional | 
+| id | The incident ID. | Required | 
+| status | The new incident status. Can be New, Assigned, InProgress, RemediationRequested, RemediationComplete, Closed, ClosedFalsePositive. Possible values are: New, Assigned, InProgress, RemediationRequested, RemediationComplete, Closed, ClosedFalsePositive. | Optional | 
+| assignee | The NetWitness user identifier of the user currently working on the incident. You can find the list of assignees in the RSA Net Witness interface. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| RSANetWitness115.Incidents.id | String | The unique identifier of the incident. | 
-| RSANetWitness115.Incidents.title | String | The title of the incident. | 
-| RSANetWitness115.Incidents.summary | Unknown | The summary of the incident. | 
-| RSANetWitness115.Incidents.priority | String | The incident priority | 
+| RSANetWitness115.Incidents.id | String | The unique incident identifier. | 
+| RSANetWitness115.Incidents.title | String | The incident title. | 
+| RSANetWitness115.Incidents.summary | String | The incident summary. | 
+| RSANetWitness115.Incidents.priority | String | The incident priority. Can be Low, Medium, High, or Critical. | 
 | RSANetWitness115.Incidents.riskScore | Number | The incident risk score is calculated based on the associated alert’s risk score. Risk score ranges from 0 \(no risk\) to 100 \(highest risk\). | 
-| RSANetWitness115.Incidents.status | String | The current status | 
+| RSANetWitness115.Incidents.status | String | The current incident status. | 
 | RSANetWitness115.Incidents.alertCount | Number | The number of alerts associated with an incident. | 
 | RSANetWitness115.Incidents.averageAlertRiskScore | Number | The average risk score of the alerts associated with the incident. Risk score ranges from 0 \(no risk\) to 100 \(highest risk\). | 
 | RSANetWitness115.Incidents.sealed | Boolean | Indicates if additional alerts can be associated with an incident. A sealed incident cannot be associated with additional alerts. | 
 | RSANetWitness115.Incidents.totalRemediationTaskCount | Number | The number of total remediation tasks for an incident. | 
 | RSANetWitness115.Incidents.openRemediationTaskCount | Number | The number of open remediation tasks for an incident. | 
-| RSANetWitness115.Incidents.created | Date | The timestamp of when the incident is created. | 
-| RSANetWitness115.Incidents.lastUpdated | Date | The timestamp of when the incident was last updated. | 
+| RSANetWitness115.Incidents.created | Date | The timestamp when the incident was created. | 
+| RSANetWitness115.Incidents.lastUpdated | Date | The timestamp when the incident was last updated. | 
 | RSANetWitness115.Incidents.lastUpdatedBy | String | The NetWitness user identifier of the user who last updated the incident. | 
-| RSANetWitness115.Incidents.assignee | Unknown | The NetWitness user identifier of the user currently working on the incident. | 
-| RSANetWitness115.Incidents.sources | String | Unique set of sources for all of the alerts in an incident. | 
-| RSANetWitness115.Incidents.ruleId | Unknown | The unique identifier of the rule that created the incident. | 
-| RSANetWitness115.Incidents.firstAlertTime | Unknown | The timestamp of the earliest occurring Alert in this incident. | 
+| RSANetWitness115.Incidents.assignee | String | The NetWitness user identifier of the user currently working on the incident. | 
+| RSANetWitness115.Incidents.sources | String | Unique set of sources for all the alerts in an incident. | 
+| RSANetWitness115.Incidents.ruleId | String | The unique identifier of the rule that created the incident. | 
+| RSANetWitness115.Incidents.firstAlertTime | String | The timestamp of the earliest occurring Alert in this incident. | 
 | RSANetWitness115.Incidents.categories.id | String | The unique category identifier. | 
 | RSANetWitness115.Incidents.categories.parent | String | The parent name of the category. | 
 | RSANetWitness115.Incidents.categories.name | String | The friendly name of the category. | 
 | RSANetWitness115.Incidents.journalEntries.id | String | The unique journal entry identifier. | 
 | RSANetWitness115.Incidents.journalEntries.author | String | The author of this entry. | 
 | RSANetWitness115.Incidents.journalEntries.notes | String | Notes and observations about the incident. | 
-| RSANetWitness115.Incidents.journalEntries.created | Date | The timestamp of the journal entry created date. | 
-| RSANetWitness115.Incidents.journalEntries.lastUpdated | Date | The timestamp of the journal entry last updated date. | 
+| RSANetWitness115.Incidents.journalEntries.created | String | The timestamp of the journal entry created date. | 
+| RSANetWitness115.Incidents.journalEntries.lastUpdated | String | The timestamp of the journal entry last updated date. | 
 | RSANetWitness115.Incidents.journalEntries.milestone | String | Incident milestone classifier. | 
-| RSANetWitness115.Incidents.createdBy | String | The NetWitness user id or name of the rule that created the incident. | 
+| RSANetWitness115.Incidents.createdBy | String | The NetWitness user ID or name of the rule that created the incident. | 
 | RSANetWitness115.Incidents.deletedAlertCount | Number | The number of alerts that are deleted from the incident. | 
 | RSANetWitness115.Incidents.eventCount | Number | The number of events associated with incident. | 
-| RSANetWitness115.Incidents.alertMeta.SourceIp | String | Unique source IP addresses. | 
-| RSANetWitness115.Incidents.alertMeta.DestinationIp | String | Unique destination IP addresses. | 
+| RSANetWitness115.Incidents.alertMeta.SourceIp | String | The unique source IP addresses. | 
+| RSANetWitness115.Incidents.alertMeta.DestinationIp | String | The unique destination IP addresses. |
 
 #### Command example
 ```!rsa-nw-update-incident id=INC-49 status=Assigned```
@@ -285,7 +277,6 @@ Update an incident’s status and assignee
 >|---|---|---|---|---|---|---|---|---|---|---|---|
 >| INC-49 | Fetch_testing |  | Low | 70 | Assigned | 1 | 2021-11-15T07:30:49.670Z | 2022-01-10T14:12:35.992Z |  | Reporting Engine |  |
 
-
 ### rsa-nw-remove-incident
 ***
 Remove a single incident using the incident’s unique identifier.
@@ -298,7 +289,7 @@ Remove a single incident using the incident’s unique identifier.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | The unique identifier of the incident. | Required | 
+| id | The unique incident identifier. | Required | 
 
 
 #### Context Output
@@ -316,10 +307,10 @@ Add a journal entry to an existing incident.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | The unique identifier of the incident. | Required | 
-| author | The NetWitness user id of the user creating the journal entry. Can be found in the RSA platform. In case no author is provided the command will list the user from the integration configuration as the author. | Optional | 
+| id | The unique incident identifier. | Required | 
+| author | The NetWitness user ID of the user creating the journal entry. Can be found in the RSA platform. If no author is provided the command lists the user from the integration configuration as the author. | Optional | 
 | notes | Notes and observations about the incident. | Required | 
-| milestone | The incident milestone classifier. Possible values are: Reconnaissance, Delivery, Exploitation, Installation, CommandAndControl, ActionOnObjective, Containment, Eradication, Closure. | Optional | 
+| milestone | The incident milestone classifier. Can be Reconnaissance, Delivery, Exploitation, Installation, CommandAndControl, ActionOnObjective, Containment, Eradication, Closure. Possible values are: Reconnaissance, Delivery, Exploitation, Installation, CommandAndControl, ActionOnObjective, Containment, Eradication, Closure. | Optional | 
 
 
 #### Context Output
@@ -333,7 +324,7 @@ There is no context output for this command.
 
 ### rsa-nw-incident-list-alerts
 ***
-Retrieve all the alerts that are associated with an incident based on the incident's id. you can limit the results using the limit argument or the page size argument. the default is 50 results.
+Retrieves all the alerts that are associated with an incident based on the incident ID. you can limit the results using the limit argument or the page size argument.
 
 
 #### Base Command
@@ -343,10 +334,10 @@ Retrieve all the alerts that are associated with an incident based on the incide
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | The unique identifier of the incident. | Required | 
-| page_number | The requested page number, first page is 0. cannot be supllied with the limit argument. | Optional | 
-| page_size | The maximum number of items to return in a single page. cannot be supllied with the limit argument. | Optional | 
-| limit | Maximum number of results to be returned, if not set the first 50 results will be returned. cannot be supllied with a page_size/page_number arguments. | Optional | 
+| id | The unique incident identifier. | Required | 
+| page_number | The requested page number, first page is 0. Cannot be supplied with the limit argument. | Optional | 
+| page_size | The maximum number of items to return in a single page. Cannot be supplied with the limit argument. | Optional | 
+| limit | The maximum number of results to be returned. If not set, the first 50 results are returned. cannot be supplied with page_size/page_number arguments. | Optional | 
 
 
 #### Context Output
@@ -355,31 +346,31 @@ Retrieve all the alerts that are associated with an incident based on the incide
 | --- | --- | --- |
 | RSANetWitness115.IncidentAlerts.id | String | The unique alert identifier. | 
 | RSANetWitness115.IncidentAlerts.title | String | The title or name of the rule that created the alert. | 
-| RSANetWitness115.IncidentAlerts.detail | Unknown | The details of the alert. This can be the module name or meta that the module included. | 
+| RSANetWitness115.IncidentAlerts.detail | String | The details of the alert. This can be the module name or meta that the module included. | 
 | RSANetWitness115.IncidentAlerts.created | Date | The timestamp of the alert created date. | 
-| RSANetWitness115.IncidentAlerts.source | String | The source of this alert. For example, "Event Stream Analysis", "Malware Analysis", etc. | 
+| RSANetWitness115.IncidentAlerts.source | String | The source of this alert. For example, Event Stream Analysis or Malware Analysis. | 
 | RSANetWitness115.IncidentAlerts.riskScore | Number | The risk score of this alert, usually in the range 0 - 100. | 
-| RSANetWitness115.IncidentAlerts.type | String | The type of alert, "Network", "Log", etc. | 
-| RSANetWitness115.IncidentAlerts.events.source.device.ipAddress | Unknown | The IP address. | 
-| RSANetWitness115.IncidentAlerts.events.source.device.port | Unknown | The port. | 
-| RSANetWitness115.IncidentAlerts.events.source.device.macAddress | Unknown | The ethernet MAC address. | 
-| RSANetWitness115.IncidentAlerts.events.source.device.dnsHostname | Unknown | The DNS resolved hostname. | 
-| RSANetWitness115.IncidentAlerts.events.source.device.dnsDomain | Unknown | The top-level domain from the DNS resolved hostname. | 
-| RSANetWitness115.IncidentAlerts.events.source.user.username | String | The unique username. | 
-| RSANetWitness115.IncidentAlerts.events.source.user.emailAddress | Unknown | An email address. | 
-| RSANetWitness115.IncidentAlerts.events.source.user.adUsername | Unknown | An Active Directory \(AD\) username. | 
-| RSANetWitness115.IncidentAlerts.events.source.user.adDomain | Unknown | An Active Directory \(AD\) domain. | 
-| RSANetWitness115.IncidentAlerts.events.destination.device.ipAddress | Unknown | The IP address. | 
-| RSANetWitness115.IncidentAlerts.events.destination.device.port | Unknown | The port. | 
-| RSANetWitness115.IncidentAlerts.events.destination.device.macAddress | Unknown | The ethernet MAC address. | 
-| RSANetWitness115.IncidentAlerts.events.destination.device.dnsHostname | Unknown | The DNS resolved hostname. | 
-| RSANetWitness115.IncidentAlerts.events.destination.device.dnsDomain | Unknown | The top-level domain from the DNS resolved hostname. | 
-| RSANetWitness115.IncidentAlerts.events.destination.user.username | Unknown | The unique username. | 
-| RSANetWitness115.IncidentAlerts.events.destination.user.emailAddress | Unknown | An email address. | 
-| RSANetWitness115.IncidentAlerts.events.destination.user.adUsername | Unknown | An Active Directory \(AD\) username. | 
-| RSANetWitness115.IncidentAlerts.events.destination.user.adDomain | Unknown | An Active Directory \(AD\) domain. | 
-| RSANetWitness115.IncidentAlerts.events.domain | String | The top-level domain or Windows domain. | 
-| RSANetWitness115.IncidentAlerts.events.eventSource | Unknown | The source of the event. This may be a fully- qualified hostname with a port, or simple name. | 
+| RSANetWitness115.IncidentAlerts.type | String | The type alert type. For example, Network or Log. | 
+| RSANetWitness115.IncidentAlerts.events.source.device.ipAddress | String | The source IP address. | 
+| RSANetWitness115.IncidentAlerts.events.source.device.port | Number | The source port. | 
+| RSANetWitness115.IncidentAlerts.events.source.device.macAddress | String | The source ethernet MAC address. | 
+| RSANetWitness115.IncidentAlerts.events.source.device.dnsHostname | String | The source DNS resolved hostname. | 
+| RSANetWitness115.IncidentAlerts.events.source.device.dnsDomain | String | The source top-level domain from the DNS resolved hostname. | 
+| RSANetWitness115.IncidentAlerts.events.source.user.username | String | The source unique username. | 
+| RSANetWitness115.IncidentAlerts.events.source.user.emailAddress | String | The source email address. | 
+| RSANetWitness115.IncidentAlerts.events.source.user.adUsername | String | The source Active Directory \(AD\) username. | 
+| RSANetWitness115.IncidentAlerts.events.source.user.adDomain | String | The source Active Directory \(AD\) domain. | 
+| RSANetWitness115.IncidentAlerts.events.destination.device.ipAddress | String | The destination IP address. | 
+| RSANetWitness115.IncidentAlerts.events.destination.device.port | Number | The destination port. | 
+| RSANetWitness115.IncidentAlerts.events.destination.device.macAddress | String | The destination ethernet MAC address. | 
+| RSANetWitness115.IncidentAlerts.events.destination.device.dnsHostname | String | The destination DNS resolved hostname. | 
+| RSANetWitness115.IncidentAlerts.events.destination.device.dnsDomain | String | The destination top-level domain from the DNS resolved hostname. | 
+| RSANetWitness115.IncidentAlerts.events.destination.user.username | String | The destination unique username. | 
+| RSANetWitness115.IncidentAlerts.events.destination.user.emailAddress | String | The destination email address. | 
+| RSANetWitness115.IncidentAlerts.events.destination.user.adUsername | String | The destination Active Directory \(AD\) username. | 
+| RSANetWitness115.IncidentAlerts.events.destination.user.adDomain | String | An destination Active Directory \(AD\) domain. | 
+| RSANetWitness115.IncidentAlerts.events.domain | String | The destination top-level domain or Windows domain. | 
+| RSANetWitness115.IncidentAlerts.events.eventSource | String | The source of the event. This may be a fully-qualified hostname with a port, or simple name. | 
 | RSANetWitness115.IncidentAlerts.events.eventSourceId | String | The unique identifier of the event on the source. For Network and Log events, this is the Nextgen Session ID. | 
 | RSANetWitness115.paging.IncidentAlerts.pageNumber | Number | The requested page number. | 
 | RSANetWitness115.paging.IncidentAlerts.pageSize | Number | The requested number of items to return in a single page. | 
@@ -466,7 +457,7 @@ Retrieve all the alerts that are associated with an incident based on the incide
 
 ### rsa-nw-services-list
 ***
-Retrieve a list of all services, or filter by name
+Retrieves a list of all services, or filter by name.
 
 
 #### Base Command
@@ -476,18 +467,19 @@ Retrieve a list of all services, or filter by name
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | Name of the service. For example, endpoint-server. | Optional | 
+| name | The name of the service. For example, endpoint-server. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| RSANetWitness115.ServicesList.id | String | Unique identifier of each service installed in the RSA NetWitness suite. | 
-| RSANetWitness115.ServicesList.name | String | Name of the service. For example, endpoint- server. | 
-| RSANetWitness115.ServicesList.displayName | String | Display name of the service. | 
-| RSANetWitness115.ServicesList.host | String | Host details of the service. | 
-| RSANetWitness115.ServicesList.version | String | Version of the service. | 
+| RSANetWitness115.ServicesList.id | String | The unique identifier of each service installed in the RSA NetWitness suite. | 
+| RSANetWitness115.ServicesList.name | String | The name of the service. For example, endpoint- server. | 
+| RSANetWitness115.ServicesList.displayName | String | The display name of the service. | 
+| RSANetWitness115.ServicesList.host | String | The host details of the service. | 
+| RSANetWitness115.ServicesList.version | String | The version of the service. | 
+
 
 #### Command example
 ```!rsa-nw-services-list```
@@ -515,10 +507,9 @@ Retrieve a list of all services, or filter by name
 >|---|---|---|---|---|
 >| ELD | 1.1.1.1 | 1 | server | 1 |
 
-
 ### rsa-nw-hosts-list
 ***
-lists all hosts' information from a particular Endpoint Server. filter the results using the supplied arguments (list can be supplied) or use the 'filter' argument. more info in the integration documentation. you can limit the results using the limit argument or the page size argument. the default is 50 results.
+Lists all host information from a specific endpoint server. Filter the results using the supplied arguments (can be a list) or use the 'filter' argument. You can limit the results using the limit argument or the page size argument.
 
 
 #### Base Command
@@ -528,33 +519,33 @@ lists all hosts' information from a particular Endpoint Server. filter the resul
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| service_id | service ID of the specific Endpoint Server. view all service ID's using the 'rsa-nw-services-list' command. If none is given the service ID configured in the integration configuration will be used. | Optional | 
-| page_number | The requested page number, first page is 0. cannot be supllied with the limit argument. | Optional | 
-| page_size | The maximum number of items to return in a single page. cannot be supllied with the limit argument. | Optional | 
-| limit | Maximum number of results to be returned, if not set the first 50 results will be returned.  cannot be supllied with a page_size/page_number arguments. | Optional | 
-| agent_id | Agent ID of the host. can be supllied as a list of agent ids. | Optional | 
-| host_name | Name of the host. can be supplied as a list. | Optional | 
-| risk_score | Risk score of the host. will return all results with risk score greather or equal. | Optional | 
-| ip | IPV4 in the network interface. can be supplied as a list of ip's. | Optional | 
-| filter | Custom filter in a JSON format. More details in the integration documentation. | Optional | 
+| service_id | The service ID of the specific endpoint server. View all service IDs using the 'rsa-nw-services-list' command. If none is given, the service ID configured in the integration configuration is used. | Optional | 
+| page_number | The requested page number, first page is 0. Cannot be supplied with the limit argument. | Optional | 
+| page_size | The maximum number of items to return in a single page. Cannot be supplied with the limit argument. | Optional | 
+| limit | The maximum number of results to be returned. If not set, the first 50 results are returned. Cannot be supplied with page_size/page_number arguments. | Optional | 
+| agent_id | A comma-separated list of host agent IDs. | Optional | 
+| host_name | A comma-separated list of host names. | Optional | 
+| risk_score | The host risk score. Returns all results with risk score greater than or equal to. | Optional | 
+| ip | A comma-separated list of IPV4 in the network interface. | Optional | 
+| filter | Custom filter in JSON format. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| RSANetWitness115.HostsList.agentId | String | Agent ID of the host. | 
-| RSANetWitness115.HostsList.hostName | String | Name of the host. | 
-| RSANetWitness115.HostsList.riskScore | Number | Risk score of the host. | 
-| RSANetWitness115.HostsList.networkInterfaces.name | String | Name of the network interface. | 
-| RSANetWitness115.HostsList.networkInterfaces.macAddress | String | MAC Address of the network interface. | 
-| RSANetWitness115.HostsList.networkInterfaces.ipv4 | String | List of IPV4 in the network interface. | 
-| RSANetWitness115.HostsList.networkInterfaces.ipv6 | String | List of IPV6 in the network interface. | 
-| RSANetWitness115.HostsList.networkInterfaces.networkIdv6 | String | List of network IDV6 in the network interface. | 
-| RSANetWitness115.HostsList.networkInterfaces.gateway | String | List of gateway in the network interface. | 
-| RSANetWitness115.HostsList.networkInterfaces.dns | String | List of DNS in the network interface. | 
-| RSANetWitness115.HostsList.networkInterfaces.promiscuous | Boolean | Specifies if the network interface is in the promiscuous mode. | 
-| RSANetWitness115.HostsList.lastSeenTime | Date | Agent last seen time. | 
+| RSANetWitness115.HostsList.agentId | String | The host agent ID. | 
+| RSANetWitness115.HostsList.hostName | String | The host name. | 
+| RSANetWitness115.HostsList.riskScore | Number | The host risk score. | 
+| RSANetWitness115.HostsList.networkInterfaces.name | String | The name of the network interface. | 
+| RSANetWitness115.HostsList.networkInterfaces.macAddress | String | The MAC Address of the network interface. | 
+| RSANetWitness115.HostsList.networkInterfaces.ipv4 | String | The list of IPV4 in the network interface. | 
+| RSANetWitness115.HostsList.networkInterfaces.ipv6 | String | The list of IPV6 in the network interface. | 
+| RSANetWitness115.HostsList.networkInterfaces.networkIdv6 | String | The list of network IDV6 in the network interface. | 
+| RSANetWitness115.HostsList.networkInterfaces.gateway | String | The list of gateways in the network interface. | 
+| RSANetWitness115.HostsList.networkInterfaces.dns | String | The list of DNS in the network interface. | 
+| RSANetWitness115.HostsList.networkInterfaces.promiscuous | Boolean | Specifies if the network interface is in promiscuous mode. | 
+| RSANetWitness115.HostsList.lastSeenTime | Date | The agent last seen time. | 
 | RSANetWitness115.paging.HostsList.pageNumber | Number | The requested page number. | 
 | RSANetWitness115.paging.HostsList.pageSize | Number | The requested number of items to return in a single page. | 
 | RSANetWitness115.paging.HostsList.totalPages | Number | The total number of pages available. | 
@@ -621,7 +612,7 @@ lists all hosts' information from a particular Endpoint Server. filter the resul
 
 ### endpoint
 ***
-Retrieve host information for a specific endpoint. In order to use this command service id must be set in the integration configuration.
+Retrieves host information for a specific endpoint. To use this command, service ID must be set in the integration configuration.
 
 
 #### Base Command
@@ -632,7 +623,7 @@ Retrieve host information for a specific endpoint. In order to use this command 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | The endpoint ID. | Optional | 
-| ip | The endpoint ip. | Optional | 
+| ip | The endpoint IP. | Optional | 
 | hostname | The endpoint hostname. | Optional | 
 
 
@@ -640,27 +631,28 @@ Retrieve host information for a specific endpoint. In order to use this command 
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Endpoint.Hostname | String | The endpoint's hostname. | 
-| Endpoint.Relationships.EntityA | string | The source of the relationship. | 
-| Endpoint.Relationships.EntityB | string | The destination of the relationship. | 
-| Endpoint.Relationships.Relationship | string | The name of the relationship. | 
-| Endpoint.Relationships.EntityAType | string | The type of the source of the relationship. | 
-| Endpoint.Relationships.EntityBType | string | The type of the destination of the relationship. | 
-| Endpoint.OS | String | The endpoint's operation system. | 
-| Endpoint.IPAddress | String | The endpoint's IP address. | 
-| Endpoint.ID | String | The endpoint's ID. | 
-| Endpoint.Status | String | The endpoint's status. | 
-| Endpoint.IsIsolated | String | The endpoint's isolation status. | 
-| Endpoint.MACAddress | String | The endpoint's MAC address. | 
+| Endpoint.Hostname | String | The endpoint hostname. | 
+| Endpoint.Relationships.EntityA | string | The relationship source. | 
+| Endpoint.Relationships.EntityB | string | The relationship destination. | 
+| Endpoint.Relationships.Relationship | string | The relationship name. | 
+| Endpoint.Relationships.EntityAType | string | The relationship source type. | 
+| Endpoint.Relationships.EntityBType | string | The relationship destination type. | 
+| Endpoint.OS | String | The endpoint operation system. | 
+| Endpoint.IPAddress | String | The endpoint IP address. | 
+| Endpoint.ID | String | The endpoint ID. | 
+| Endpoint.Status | String | The endpoint status. | 
+| Endpoint.IsIsolated | String | The endpoint isolation status. | 
+| Endpoint.MACAddress | String | The endpoint MAC address. | 
 | Endpoint.Vendor | String | The integration name of the endpoint vendor. | 
-| Endpoint.Domain | String | The endpoint's domain. | 
-| Endpoint.DHCPServer | String | The DHCP server of the endpoint. | 
-| Endpoint.OSVersion | String | The endpoint's operation system version. | 
-| Endpoint.BIOSVersion | String | The endpoint's BIOS version. | 
+| Endpoint.Domain | String | The endpoint domain. | 
+| Endpoint.DHCPServer | String | The endpoint DHCP server. | 
+| Endpoint.OSVersion | String | The endpoint operation system version. | 
+| Endpoint.BIOSVersion | String | The endpoint BIOS version. | 
 | Endpoint.Model | String | The model of the machine or device. | 
-| Endpoint.Memory | Int | Memory on this endpoint. | 
+| Endpoint.Memory | Int | The memory on this endpoint. | 
 | Endpoint.Processors | Int | The number of processors. | 
-| Endpoint.Processor | String | The model of the processor. | 
+| Endpoint.Processor | String | The processor model. | 
+
 
 #### Command example
 ```!endpoint```
@@ -693,7 +685,7 @@ Retrieve host information for a specific endpoint. In order to use this command 
 
 ### rsa-nw-snapshots-list-for-host
 ***
-Retrieve a list os snapshot ID's for a given host.
+Retrieve a list os snapshot IDs for a given host.
 
 
 #### Base Command
@@ -703,15 +695,16 @@ Retrieve a list os snapshot ID's for a given host.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| agent_id | Agent ID of the host. | Required | 
-| service_id | service ID of the specific Endpoint Server. view all service ID's using the 'rsa-nw-services-list' command. If none is given the service ID configured in the integration configuration will be used. | Optional | 
+| agent_id | The host agent ID. | Required | 
+| service_id | The service ID of the specific endpoint server. View all service IDs using the 'rsa-nw-services-list' command. If none is given, the service ID configured in the integration configuration is used. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| RSANetWitness115.SnapshotsListForHost | Date | List of snapshot timestamps. | 
+| RSANetWitness115.SnapshotsListForHost | Date | The list of snapshot timestamps. | 
+
 
 #### Command example
 ```!rsa-nw-snapshots-list-for-host agent_id=1```
@@ -746,7 +739,7 @@ Retrieve a list os snapshot ID's for a given host.
 
 ### rsa-nw-snapshot-details-get
 ***
-Provides snapshot details of the given host for the provided snapshot time. using categories to filter the reults is highly reccomended, as data recieved from this command may be very large.
+Provides snapshot details of the given host for the specified snapshot time. It is recommended to use categories to filter the results since this command returns a large amount of data.
 
 
 #### Base Command
@@ -756,243 +749,243 @@ Provides snapshot details of the given host for the provided snapshot time. usin
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| agent_id | Agent ID of the host. | Required | 
-| snapshot_timestamp | Start time of the scan snapshot, can be retrieved using the 'rsa-nw-snapshots-list-for-host' command. | Required | 
-| service_id | service ID of the specific Endpoint Server. View all service ID's using the 'rsa-nw-services-list' command. If none is given the service ID configured in the integration configuration will be used. | Optional | 
-| categories | filter the results based on categories. enter a single category name or a list divided by commas. for example - PROCESSES,SERVICES. . Possible values are: PROCESSES, LOADED_LIBRARIES, SERVICES, AUTORUNS, TASKS, DRIVERS, THREADS, IMAGE_HOOKS, KERNEL_HOOKS.. | Optional | 
-| limit | The maximun amount of results returned by the command. Default is 50. | Optional | 
-| offset | the offset to recieve results from. e.g offse =3 will return results from the 3rd results and onwards. | Optional | 
+| agent_id | The host agent ID. | Required | 
+| snapshot_timestamp | The start time of the scan snapshot. Can be retrieved using the 'rsa-nw-snapshots-list-for-host' command. | Required | 
+| service_id | The service ID of the specific endpoint server. View all service IDs using the 'rsa-nw-services-list' command. If none is given, the service ID configured in the integration configuration is used. | Optional | 
+| categories | A comma-separated list of categories to filter the results. For example, PROCESSES,SERVICES. Possible values are: PROCESSES, LOADED_LIBRARIES, SERVICES, AUTORUNS, TASKS, DRIVERS, THREADS, IMAGE_HOOKS, KERNEL_HOOKS.. | Optional | 
+| limit | The maximum number of results returned by the command. Default is 50. | Optional | 
+| offset | The offset to receive results from. For example, offset=3 returns results from the 3rd result onward. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| RSANetWitness115.SnapshotDetailsGet.machineOsType | String | Type of operating system \(Windows, Mac, Linux\). | 
-| RSANetWitness115.SnapshotDetailsGet.hostName | String | Name of the host. | 
-| RSANetWitness115.SnapshotDetailsGet.agentId | String | Agent ID of the host. | 
-| RSANetWitness115.SnapshotDetailsGet.agentVersion | String | Version of the agent. | 
-| RSANetWitness115.SnapshotDetailsGet.scanStartTime | Date | Start time of the scan snapshot. | 
-| RSANetWitness115.SnapshotDetailsGet.directory | String | Directory of the file. | 
-| RSANetWitness115.SnapshotDetailsGet.fileName | String | Name of the file. | 
-| RSANetWitness115.SnapshotDetailsGet.owner.username | String | User name of the owner of the file. | 
-| RSANetWitness115.SnapshotDetailsGet.owner.groupname | String | Group name of the owner of the file. | 
-| RSANetWitness115.SnapshotDetailsGet.owner.uid | String | UID of the user name. | 
-| RSANetWitness115.SnapshotDetailsGet.owner.gid | String | GID of the user name. | 
-| RSANetWitness115.SnapshotDetailsGet.timeCreated | Date | Time when file was created. | 
-| RSANetWitness115.SnapshotDetailsGet.timeModified | Date | Time when file was modified. | 
-| RSANetWitness115.SnapshotDetailsGet.timeAccessed | Date | Time when file was last accessed. | 
-| RSANetWitness115.SnapshotDetailsGet.attributes | String | List of file attributes. | 
-| RSANetWitness115.SnapshotDetailsGet.accessMode | Number | Access mode of the file. | 
-| RSANetWitness115.SnapshotDetailsGet.sameDirectoryFileCounts.nonExe | Number | Number of non-exe files in the same directory of the file. | 
-| RSANetWitness115.SnapshotDetailsGet.sameDirectoryFileCounts.exe | Number | Number of exe files in the same directory of the file. | 
-| RSANetWitness115.SnapshotDetailsGet.sameDirectoryFileCounts.subFolder | Number | Number of sub-folders in the same directory of the file | 
-| RSANetWitness115.SnapshotDetailsGet.sameDirectoryFileCounts.exeSameCompany | Number | Number of executables with the same company name in the same directory of the file. | 
-| RSANetWitness115.SnapshotDetailsGet.sameDirectoryFileCounts.hiddenFiles | Number | Count of hidden files in the same directory of the file | 
-| RSANetWitness115.SnapshotDetailsGet.fileContext | String | List of file context. | 
-| RSANetWitness115.SnapshotDetailsGet.directoryContext | String | List of directory context. | 
-| RSANetWitness115.SnapshotDetailsGet.autorunContext | Unknown | List of autorun context. | 
-| RSANetWitness115.SnapshotDetailsGet.networkContext | Unknown | List of network context. | 
-| RSANetWitness115.SnapshotDetailsGet.kernelModeContext | Unknown | List of kernel mode context. | 
-| RSANetWitness115.SnapshotDetailsGet.userModeContext | String | List of user mode context. | 
-| RSANetWitness115.SnapshotDetailsGet.processContext | Unknown | List of process context. | 
-| RSANetWitness115.SnapshotDetailsGet.rpm.packageName | String | RPM package name to which the file belongs. | 
-| RSANetWitness115.SnapshotDetailsGet.rpm.category | String | Category to which the rpm package belongs. | 
-| RSANetWitness115.SnapshotDetailsGet.windows.processes.pid | Number | ID of the process. | 
-| RSANetWitness115.SnapshotDetailsGet.windows.processes.parentPid | Number | ID of the parent process. | 
-| RSANetWitness115.SnapshotDetailsGet.windows.processes.imageBase | Number | Base address of the process. | 
-| RSANetWitness115.SnapshotDetailsGet.windows.processes.createUtcTime | Unknown | Creation time of the process. | 
-| RSANetWitness115.SnapshotDetailsGet.windows.processes.owner | String | Name of the user. | 
-| RSANetWitness115.SnapshotDetailsGet.windows.processes.launchArguments | String | Launch arguments of the process. | 
-| RSANetWitness115.SnapshotDetailsGet.windows.processes.threadCount | Number | Number of threads running in the process. | 
-| RSANetWitness115.SnapshotDetailsGet.windows.processes.eprocess | String | Identifier of the process. | 
-| RSANetWitness115.SnapshotDetailsGet.windows.processes.sessionId | Number | Session ID of the process. | 
-| RSANetWitness115.SnapshotDetailsGet.windows.processes.parentPath | Unknown | Directory of the parent process. | 
-| RSANetWitness115.SnapshotDetailsGet.windows.processes.imageSize | Number | Size of the process image. | 
-| RSANetWitness115.SnapshotDetailsGet.windows.processes.integrityLevel | Number | Integrity level of the process. | 
-| RSANetWitness115.SnapshotDetailsGet.windows.processes.context | String | List of process context. | 
-| RSANetWitness115.SnapshotDetailsGet.windows.dlls.createTime | Date | Creation time of the process. | 
-| RSANetWitness115.SnapshotDetailsGet.windows.dlls.eprocess | String | Identity of the process. | 
-| RSANetWitness115.SnapshotDetailsGet.windows.dlls.imageSize | Number | Size of the DLL image in memory. | 
-| RSANetWitness115.SnapshotDetailsGet.windows.threads.processName | String | Name of the process. | 
-| RSANetWitness115.SnapshotDetailsGet.windows.threads.processTime | String | Creation time of the process. | 
-| RSANetWitness115.SnapshotDetailsGet.windows.threads.eprocess | String | Identifier of the process. | 
-| RSANetWitness115.SnapshotDetailsGet.windows.threads.pid | Number | PID of the process. | 
-| RSANetWitness115.SnapshotDetailsGet.windows.threads.ethread | String | Identifier of the thread. | 
-| RSANetWitness115.SnapshotDetailsGet.windows.threads.tid | Number | ID of the thread. | 
-| RSANetWitness115.SnapshotDetailsGet.windows.threads.teb | String | Address of thread environment block. | 
-| RSANetWitness115.SnapshotDetailsGet.windows.threads.startAddress | String | Start address of the thread in memory. | 
-| RSANetWitness115.SnapshotDetailsGet.windows.threads.state | Unknown | Thread state. | 
-| RSANetWitness115.SnapshotDetailsGet.windows.threads.behaviorKey | String | Floating behavior resolution of the thread. | 
-| RSANetWitness115.SnapshotDetailsGet.windows.drivers.imageBase | Number | Base address of the driver image. | 
-| RSANetWitness115.SnapshotDetailsGet.windows.drivers.imageSize | Number | Size of the driver image. | 
-| RSANetWitness115.SnapshotDetailsGet.windows.services.serviceName | String | Service name as identified by the system. | 
-| RSANetWitness115.SnapshotDetailsGet.windows.services.displayName | String | Display name for the service. | 
-| RSANetWitness115.SnapshotDetailsGet.windows.services.description | String | Description of the service. | 
-| RSANetWitness115.SnapshotDetailsGet.windows.services.account | String | Name of the user the service executes as. | 
-| RSANetWitness115.SnapshotDetailsGet.windows.services.launchArguments | String | Launch arguments of the service. | 
-| RSANetWitness115.SnapshotDetailsGet.windows.services.serviceMain | String | Service’s main. | 
-| RSANetWitness115.SnapshotDetailsGet.windows.services.hostingPid | Number | Service’s hosting process ID. | 
-| RSANetWitness115.SnapshotDetailsGet.windows.services.state | Unknown | Current state of the service. | 
-| RSANetWitness115.SnapshotDetailsGet.windows.services.win32ErrorCode | Number | Last Windows 32 error code from registry. | 
-| RSANetWitness115.SnapshotDetailsGet.windows.services.context | Unknown | List of service context. | 
-| RSANetWitness115.SnapshotDetailsGet.windows.tasks.name | String | Name of the task. | 
-| RSANetWitness115.SnapshotDetailsGet.windows.tasks.executeUser | String | Name of the user the task executes as. | 
-| RSANetWitness115.SnapshotDetailsGet.windows.tasks.creatorUser | String | Name of the user who created the task. | 
-| RSANetWitness115.SnapshotDetailsGet.windows.tasks.launchArguments | String | Launch arguments of the task. | 
-| RSANetWitness115.SnapshotDetailsGet.windows.tasks.status | Unknown | Status of the task. | 
-| RSANetWitness115.SnapshotDetailsGet.windows.tasks.lastRunTime | Unknown | Time when the task was last run. | 
-| RSANetWitness115.SnapshotDetailsGet.windows.tasks.nextRunTime | Unknown | Next scheduled time of the task. | 
-| RSANetWitness115.SnapshotDetailsGet.windows.tasks.triggerString | Unknown | Textual trigger string of the task. | 
-| RSANetWitness115.SnapshotDetailsGet.windows.autoruns.type | String | Type of the autorun. | 
-| RSANetWitness115.SnapshotDetailsGet.windows.autoruns.registryPath | String | Registry path where autorun is located. | 
-| RSANetWitness115.SnapshotDetailsGet.windows.autoruns.launchArguments | String | Launch argument of the autorun. | 
-| RSANetWitness115.SnapshotDetailsGet.windows.imageHooks.process.pid | String | PID of the process in which hook was detected. | 
-| RSANetWitness115.SnapshotDetailsGet.windows.imageHooks.process.fileName | String | Filename of the process in which hook was detected. | 
-| RSANetWitness115.SnapshotDetailsGet.windows.imageHooks.process.createUtcTime | String | Creation time of the process in which hook was  detected. | 
-| RSANetWitness115.SnapshotDetailsGet.windows.imageHooks.hookLocation.section | String | Name of the image section that was modified by the hook. | 
-| RSANetWitness115.SnapshotDetailsGet.windows.imageHooks.hookLocation.sectionBase | String | Base of the image section that was modified by the hook. | 
-| RSANetWitness115.SnapshotDetailsGet.windows.imageHooks.hookLocation.symbol | String | Closest symbol name to the memory location that was modified. | 
-| RSANetWitness115.SnapshotDetailsGet.windows.imageHooks.hookLocation.symbolOffset | Number | Closest symbol \+/- offset to the hook location when relevant. | 
-| RSANetWitness115.SnapshotDetailsGet.windows.imageHooks.inlinePatch.originalBytes | String | Hexadecimal bytes which were replaced. | 
-| RSANetWitness115.SnapshotDetailsGet.windows.imageHooks.inlinePatch.originalAsm | Unknown | Array of decoded ASM instructions that were replaced. | 
-| RSANetWitness115.SnapshotDetailsGet.windows.imageHooks.inlinePatch.currentBytes | String | Hexadecimal bytes which have overwritten the original code. | 
-| RSANetWitness115.SnapshotDetailsGet.windows.imageHooks.inlinePatch.currentAsm | Unknown | Array of decoded ASM instructions that have  overwritten the original code. | 
+| RSANetWitness115.SnapshotDetailsGet.machineOsType | String | The operating system type \(Windows, Mac, Linux\). | 
+| RSANetWitness115.SnapshotDetailsGet.hostName | String | The host name. | 
+| RSANetWitness115.SnapshotDetailsGet.agentId | String | The host agent ID. | 
+| RSANetWitness115.SnapshotDetailsGet.agentVersion | String | The agent version. | 
+| RSANetWitness115.SnapshotDetailsGet.scanStartTime | Date | The start time of the scan snapshot. | 
+| RSANetWitness115.SnapshotDetailsGet.directory | String | The file directory. | 
+| RSANetWitness115.SnapshotDetailsGet.fileName | String | The file name. | 
+| RSANetWitness115.SnapshotDetailsGet.owner.username | String | The user name of the file owner. | 
+| RSANetWitness115.SnapshotDetailsGet.owner.groupname | String | The group name of the file owner. | 
+| RSANetWitness115.SnapshotDetailsGet.owner.uid | String | The UID of the user name. | 
+| RSANetWitness115.SnapshotDetailsGet.owner.gid | String | The GID of the user name. | 
+| RSANetWitness115.SnapshotDetailsGet.timeCreated | Date | The timestamp when the file was created. | 
+| RSANetWitness115.SnapshotDetailsGet.timeModified | Date | The timestamp when the file was modified. | 
+| RSANetWitness115.SnapshotDetailsGet.timeAccessed | Date | The timestamp when the file was last accessed. | 
+| RSANetWitness115.SnapshotDetailsGet.attributes | String | The list of file attributes. | 
+| RSANetWitness115.SnapshotDetailsGet.accessMode | Number | The file access mode. | 
+| RSANetWitness115.SnapshotDetailsGet.sameDirectoryFileCounts.nonExe | Number | The number of non-exe files in the same directory as the file. | 
+| RSANetWitness115.SnapshotDetailsGet.sameDirectoryFileCounts.exe | Number | The number of exe files in the same directory as the file. | 
+| RSANetWitness115.SnapshotDetailsGet.sameDirectoryFileCounts.subFolder | Number | The number of sub-folders in the same directory as the file. | 
+| RSANetWitness115.SnapshotDetailsGet.sameDirectoryFileCounts.exeSameCompany | Number | The number of executables with the same company name in the same directory as the file. | 
+| RSANetWitness115.SnapshotDetailsGet.sameDirectoryFileCounts.hiddenFiles | Number | The count of hidden files in the same directory as the file. | 
+| RSANetWitness115.SnapshotDetailsGet.fileContext | String | The list of file context. | 
+| RSANetWitness115.SnapshotDetailsGet.directoryContext | String | The list of directory context. | 
+| RSANetWitness115.SnapshotDetailsGet.autorunContext | Unknown | The list of autorun context. | 
+| RSANetWitness115.SnapshotDetailsGet.networkContext | Unknown | The list of network context. | 
+| RSANetWitness115.SnapshotDetailsGet.kernelModeContext | Unknown | The list of kernel mode context. | 
+| RSANetWitness115.SnapshotDetailsGet.userModeContext | Unknown | The list of user mode context. | 
+| RSANetWitness115.SnapshotDetailsGet.processContext | Unknown | The list of process context. | 
+| RSANetWitness115.SnapshotDetailsGet.rpm.packageName | String | The RPM package name to which the file belongs. | 
+| RSANetWitness115.SnapshotDetailsGet.rpm.category | String | The category to which the RPM package belongs. | 
+| RSANetWitness115.SnapshotDetailsGet.windows.processes.pid | Number | The process ID. | 
+| RSANetWitness115.SnapshotDetailsGet.windows.processes.parentPid | Number | The parent process ID. | 
+| RSANetWitness115.SnapshotDetailsGet.windows.processes.imageBase | Number | The process image base address. | 
+| RSANetWitness115.SnapshotDetailsGet.windows.processes.createUtcTime | String | The process creation time. | 
+| RSANetWitness115.SnapshotDetailsGet.windows.processes.owner | String | The user name. | 
+| RSANetWitness115.SnapshotDetailsGet.windows.processes.launchArguments | String | The process launch arguments. | 
+| RSANetWitness115.SnapshotDetailsGet.windows.processes.threadCount | Number | The number of threads running in the process. | 
+| RSANetWitness115.SnapshotDetailsGet.windows.processes.eprocess | String | The process identifier. | 
+| RSANetWitness115.SnapshotDetailsGet.windows.processes.sessionId | Number | The process session ID. | 
+| RSANetWitness115.SnapshotDetailsGet.windows.processes.parentPath | String | The parent process directory. | 
+| RSANetWitness115.SnapshotDetailsGet.windows.processes.imageSize | Number | The process image size. | 
+| RSANetWitness115.SnapshotDetailsGet.windows.processes.integrityLevel | Number | The process integrity level. | 
+| RSANetWitness115.SnapshotDetailsGet.windows.processes.context | String | The list of process context. | 
+| RSANetWitness115.SnapshotDetailsGet.windows.dlls.createTime | Date | The process creation timestamp. | 
+| RSANetWitness115.SnapshotDetailsGet.windows.dlls.eprocess | String | The process identity. | 
+| RSANetWitness115.SnapshotDetailsGet.windows.dlls.imageSize | Number | The size of the DLL image in memory. | 
+| RSANetWitness115.SnapshotDetailsGet.windows.threads.processName | String | The process name. | 
+| RSANetWitness115.SnapshotDetailsGet.windows.threads.processTime | Date | The process creation timestamp. | 
+| RSANetWitness115.SnapshotDetailsGet.windows.threads.eprocess | String | The process identifier. | 
+| RSANetWitness115.SnapshotDetailsGet.windows.threads.pid | Number | The process ID. | 
+| RSANetWitness115.SnapshotDetailsGet.windows.threads.ethread | String | The thread identifier. | 
+| RSANetWitness115.SnapshotDetailsGet.windows.threads.tid | Number | The thread ID. | 
+| RSANetWitness115.SnapshotDetailsGet.windows.threads.teb | String | The address of the thread environment block. | 
+| RSANetWitness115.SnapshotDetailsGet.windows.threads.startAddress | String | The start address of the thread in memory. | 
+| RSANetWitness115.SnapshotDetailsGet.windows.threads.state | Unknown | The thread state. | 
+| RSANetWitness115.SnapshotDetailsGet.windows.threads.behaviorKey | String | The floating behavior resolution of the thread. | 
+| RSANetWitness115.SnapshotDetailsGet.windows.drivers.imageBase | Number | The driver image base address. | 
+| RSANetWitness115.SnapshotDetailsGet.windows.drivers.imageSize | Number | The driver image size. | 
+| RSANetWitness115.SnapshotDetailsGet.windows.services.serviceName | String | The service name as identified by the system. | 
+| RSANetWitness115.SnapshotDetailsGet.windows.services.displayName | String | The service display name. | 
+| RSANetWitness115.SnapshotDetailsGet.windows.services.description | String | The service description. | 
+| RSANetWitness115.SnapshotDetailsGet.windows.services.account | String | The name of the user the service executes as. | 
+| RSANetWitness115.SnapshotDetailsGet.windows.services.launchArguments | String | The launch arguments of the service. | 
+| RSANetWitness115.SnapshotDetailsGet.windows.services.serviceMain | String | The service main. | 
+| RSANetWitness115.SnapshotDetailsGet.windows.services.hostingPid | Number | The service hosting process ID. | 
+| RSANetWitness115.SnapshotDetailsGet.windows.services.state | String | The service current state. | 
+| RSANetWitness115.SnapshotDetailsGet.windows.services.win32ErrorCode | Number | The last Windows 32 error code from registry. | 
+| RSANetWitness115.SnapshotDetailsGet.windows.services.context | Unknown | The list of service context. | 
+| RSANetWitness115.SnapshotDetailsGet.windows.tasks.name | String | The task name. | 
+| RSANetWitness115.SnapshotDetailsGet.windows.tasks.executeUser | String | The name of the user the task executes as. | 
+| RSANetWitness115.SnapshotDetailsGet.windows.tasks.creatorUser | String | The name of the user who created the task. | 
+| RSANetWitness115.SnapshotDetailsGet.windows.tasks.launchArguments | String | The launch arguments of the task. | 
+| RSANetWitness115.SnapshotDetailsGet.windows.tasks.status | Unknown | The task status. | 
+| RSANetWitness115.SnapshotDetailsGet.windows.tasks.lastRunTime | String | The time the task was last run. | 
+| RSANetWitness115.SnapshotDetailsGet.windows.tasks.nextRunTime | String | The next scheduled time of the task. | 
+| RSANetWitness115.SnapshotDetailsGet.windows.tasks.triggerString | String | The textual trigger string of the task. | 
+| RSANetWitness115.SnapshotDetailsGet.windows.autoruns.type | String | The autorun type. | 
+| RSANetWitness115.SnapshotDetailsGet.windows.autoruns.registryPath | String | The registry path where the autorun is located. | 
+| RSANetWitness115.SnapshotDetailsGet.windows.autoruns.launchArguments | String | the autorun launch argument. | 
+| RSANetWitness115.SnapshotDetailsGet.windows.imageHooks.process.pid | String | The PID of the process in which the hook was detected. | 
+| RSANetWitness115.SnapshotDetailsGet.windows.imageHooks.process.fileName | String | The filename of the process in which the hook was detected. | 
+| RSANetWitness115.SnapshotDetailsGet.windows.imageHooks.process.createUtcTime | String | The creation time of the process in which the hook was detected. | 
+| RSANetWitness115.SnapshotDetailsGet.windows.imageHooks.hookLocation.section | String | The name of the image section that was modified by the hook. | 
+| RSANetWitness115.SnapshotDetailsGet.windows.imageHooks.hookLocation.sectionBase | String | The base of the image section that was modified by the hook. | 
+| RSANetWitness115.SnapshotDetailsGet.windows.imageHooks.hookLocation.symbol | String | The closest symbol name to the memory location that was modified. | 
+| RSANetWitness115.SnapshotDetailsGet.windows.imageHooks.hookLocation.symbolOffset | Number | The closest symbol \+/- offset to the hook location when relevant. | 
+| RSANetWitness115.SnapshotDetailsGet.windows.imageHooks.inlinePatch.originalBytes | String | The hexadecimal bytes which were replaced. | 
+| RSANetWitness115.SnapshotDetailsGet.windows.imageHooks.inlinePatch.originalAsm | Unknown | The array of decoded ASM instructions that were replaced. | 
+| RSANetWitness115.SnapshotDetailsGet.windows.imageHooks.inlinePatch.currentBytes | String | The hexadecimal bytes that overwrote the original code. | 
+| RSANetWitness115.SnapshotDetailsGet.windows.imageHooks.inlinePatch.currentAsm | Unknown | The array of decoded ASM instructions that overwrote the original code. | 
 | RSANetWitness115.SnapshotDetailsGet.windows.kernelHooks.hookLocation.objectName | String | Name of the object that was hooked in kernel. | 
-| RSANetWitness115.SnapshotDetailsGet.windows.kernelHooks.hookLocation.objectFunction | String | Name of the object function that was hooked in kernel. | 
-| RSANetWitness115.SnapshotDetailsGet.mac.processes.priority | Number | Priority of the process. | 
-| RSANetWitness115.SnapshotDetailsGet.mac.processes.flags | Number | Process flags. | 
-| RSANetWitness115.SnapshotDetailsGet.mac.processes.nice | Number | Nice value of process. | 
-| RSANetWitness115.SnapshotDetailsGet.mac.processes.openFilesCount | Number | Number of open files by process at scan time. | 
-| RSANetWitness115.SnapshotDetailsGet.mac.processes.context | Unknown | Process context. | 
-| RSANetWitness115.SnapshotDetailsGet.mac.processes.pid | Number | ID of the process. | 
-| RSANetWitness115.SnapshotDetailsGet.mac.processes.parentPid | Number | ID of the parent process. | 
-| RSANetWitness115.SnapshotDetailsGet.mac.processes.imageBase | Number | Base address of the process. | 
-| RSANetWitness115.SnapshotDetailsGet.mac.processes.createUtcTime | String | Creation time of the process. | 
-| RSANetWitness115.SnapshotDetailsGet.mac.processes.owner | String | Name of the user. | 
-| RSANetWitness115.SnapshotDetailsGet.mac.processes.launchArguments | String | Launch arguments of the process. | 
-| RSANetWitness115.SnapshotDetailsGet.mac.processes.threadCount | Number | Number of threads running in the process. | 
-| RSANetWitness115.SnapshotDetailsGet.mac.dylibs.pid | Number | Process ID in dylib which is loaded. | 
-| RSANetWitness115.SnapshotDetailsGet.mac.dylibs.processName | String | Name of the process. | 
-| RSANetWitness115.SnapshotDetailsGet.mac.dylibs.imageBase | String | Base address of image in the process. | 
-| RSANetWitness115.SnapshotDetailsGet.mac.drivers.preLinked | Boolean | True if Kext bundle is prelinked. | 
-| RSANetWitness115.SnapshotDetailsGet.mac.drivers.numberOfReferences | Number | Number of references. | 
-| RSANetWitness115.SnapshotDetailsGet.mac.drivers.dependencies | Unknown | List of kexts\(name\) the driver is linked against. | 
-| RSANetWitness115.SnapshotDetailsGet.mac.drivers.imageBase | String | Base address of the driver image. | 
-| RSANetWitness115.SnapshotDetailsGet.mac.drivers.imageSize | String | Size of the driver image. | 
-| RSANetWitness115.SnapshotDetailsGet.mac.daemons.name | String | Label of the daemon. | 
-| RSANetWitness115.SnapshotDetailsGet.mac.daemons.sessionName | String | Name of the session in which daemon runs. | 
-| RSANetWitness115.SnapshotDetailsGet.mac.daemons.user | String | Name of the user under which the daemon runs. | 
-| RSANetWitness115.SnapshotDetailsGet.mac.daemons.pid | Number | ID of the process. | 
-| RSANetWitness115.SnapshotDetailsGet.mac.daemons.onDemand | Boolean | True if daemon is configured to run on demand. | 
-| RSANetWitness115.SnapshotDetailsGet.mac.daemons.lastExitCode | Number | Last exit code. | 
-| RSANetWitness115.SnapshotDetailsGet.mac.daemons.timeout | Number | Time out value. | 
-| RSANetWitness115.SnapshotDetailsGet.mac.daemons.daemons.launchArguments | String | Launch argument of the daemon. | 
-| RSANetWitness115.SnapshotDetailsGet.mac.daemons.daemons.config | String | Full path of the configuration file used to File configure this daemon. | 
-| RSANetWitness115.SnapshotDetailsGet.mac.tasks.name | String | Name of the task. | 
-| RSANetWitness115.SnapshotDetailsGet.mac.tasks.cronJob | Boolean | True if the task is cron job, else launchd. | 
-| RSANetWitness115.SnapshotDetailsGet.mac.tasks.launchArguments | String | Launch argument of the task. | 
-| RSANetWitness115.SnapshotDetailsGet.mac.tasks.user | String | Name of the user under which this task will run. | 
-| RSANetWitness115.SnapshotDetailsGet.mac.tasks.triggerString | String | Trigger string of the task. | 
-| RSANetWitness115.SnapshotDetailsGet.mac.tasks.configFile | String | Full path of the configuration file used to configure this task. | 
-| RSANetWitness115.SnapshotDetailsGet.mac.autoruns.type | String | Type of autorun. | 
-| RSANetWitness115.SnapshotDetailsGet.mac.autoruns.user | String | Name of the user under which the autorun is run. | 
-| RSANetWitness115.SnapshotDetailsGet.mac.autoruns.name | String | Label of the autorun. | 
-| RSANetWitness115.SnapshotDetailsGet.mac.autoruns.detail | String | Details of the autorun. | 
-| RSANetWitness115.SnapshotDetailsGet.linux.processes.priority | Number | Priority of the process. | 
-| RSANetWitness115.SnapshotDetailsGet.linux.processes.uid | Number | UID of the user. | 
-| RSANetWitness115.SnapshotDetailsGet.linux.processes.environment | String | Environment variables. | 
-| RSANetWitness115.SnapshotDetailsGet.linux.processes.nice | Number | Nice value of the process. | 
-| RSANetWitness115.SnapshotDetailsGet.linux.processes.securityContext | String | Security context. | 
-| RSANetWitness115.SnapshotDetailsGet.linux.processes.pid | Number | ID of the process. | 
-| RSANetWitness115.SnapshotDetailsGet.linux.processes.parentPid | Number | ID of the parent process. | 
-| RSANetWitness115.SnapshotDetailsGet.linux.processes.imageBase | Number | Base address of the process. | 
-| RSANetWitness115.SnapshotDetailsGet.linux.processes.createUtcTime | String | Time of creation of the process. | 
-| RSANetWitness115.SnapshotDetailsGet.linux.processes.owner | String | Name of the user. | 
-| RSANetWitness115.SnapshotDetailsGet.linux.processes.launchArguments | String | Launch arguments of the process. | 
-| RSANetWitness115.SnapshotDetailsGet.linux.processes.threadCount | Number | Number of threads running in the process. | 
-| RSANetWitness115.SnapshotDetailsGet.linux.loadedLibraries.pid | String | Process ID in which library is loaded. | 
-| RSANetWitness115.SnapshotDetailsGet.linux.loadedLibraries.process | String | Name of the process. Name | 
-| RSANetWitness115.SnapshotDetailsGet.linux.loadedLibraries.imageBase | String | Base address of image in the process. | 
-| RSANetWitness115.SnapshotDetailsGet.linux.drivers.numberOfInstances | Number | Number of instances loaded in memory. | 
-| RSANetWitness115.SnapshotDetailsGet.linux.drivers.loadState | String | Load state of the driver. | 
-| RSANetWitness115.SnapshotDetailsGet.linux.drivers.dependencies | Unknown | Dependent driver names. | 
-| RSANetWitness115.SnapshotDetailsGet.linux.drivers.author | String | Name of the author of driver. | 
-| RSANetWitness115.SnapshotDetailsGet.linux.drivers.description | String | Description of the driver. | 
-| RSANetWitness115.SnapshotDetailsGet.linux.drivers.sourceVersion | String | Source version of the driver. | 
-| RSANetWitness115.SnapshotDetailsGet.linux.drivers.versionMagic | String | Version magic of the driver. | 
-| RSANetWitness115.SnapshotDetailsGet.linux.initds.initdHashSha256 | String | Hash of the init-d script file. | 
-| RSANetWitness115.SnapshotDetailsGet.linux.initds.initdPaths | String | Path of the init-d script file. | 
-| RSANetWitness115.SnapshotDetailsGet.linux.initds.pid | Number | ID of the process. | 
-| RSANetWitness115.SnapshotDetailsGet.linux.initds.description | String | Description of the init-d. | 
-| RSANetWitness115.SnapshotDetailsGet.linux.initds.status | String | Status of the init-d. | 
-| RSANetWitness115.SnapshotDetailsGet.linux.initds.runLevels | Unknown | List of run levels in which the init-d is enabled. | 
-| RSANetWitness115.SnapshotDetailsGet.linux.systemds.systemdHashSha256 | String | Hash value of the systemd script file. | 
-| RSANetWitness115.SnapshotDetailsGet.linux.systemds.systemdPaths | String | Path value of the systemd script file. | 
-| RSANetWitness115.SnapshotDetailsGet.linux.systemds.name | String | Name of the systemd. | 
-| RSANetWitness115.SnapshotDetailsGet.linux.systemds.description | String | Description of the systemd. | 
-| RSANetWitness115.SnapshotDetailsGet.linux.systemds.state | String | State of the systemd. | 
-| RSANetWitness115.SnapshotDetailsGet.linux.systemds.launchArguments | String | Launch argument of the systemd. | 
-| RSANetWitness115.SnapshotDetailsGet.linux.systemds.pid | Number | ID of the process. | 
-| RSANetWitness115.SnapshotDetailsGet.linux.systemds.triggeredBy | Unknown | Triggered by list of the systemd. | 
-| RSANetWitness115.SnapshotDetailsGet.linux.systemds.triggerStrings | Unknown | Trigger strings of the systemd. | 
-| RSANetWitness115.SnapshotDetailsGet.linux.autoruns.type | String | Type of autorun. | 
-| RSANetWitness115.SnapshotDetailsGet.linux.autoruns.label | String | Label of the autorun. | 
-| RSANetWitness115.SnapshotDetailsGet.linux.autoruns.comments | String | Comments of the autorun. | 
-| RSANetWitness115.SnapshotDetailsGet.linux.crons.user | String | User account under which cron job was created. | 
-| RSANetWitness115.SnapshotDetailsGet.linux.crons.triggerString | String | Trigger string that would launch the cron job. | 
-| RSANetWitness115.SnapshotDetailsGet.linux.crons.launchArguments | String | Launch arguments of the cron job. | 
-| RSANetWitness115.SnapshotDetailsGet.fileProperties.firstFileName | String | First name of the file sent by the agent. | 
-| RSANetWitness115.SnapshotDetailsGet.fileProperties.reputationStatus | String | Reputation status of the file. | 
-| RSANetWitness115.SnapshotDetailsGet.fileProperties.globalRiskScore | String | Global risk score. | 
-| RSANetWitness115.SnapshotDetailsGet.fileProperties.firstSeenTime | String | Time when the file was first seen by the Endpoint Server. | 
-| RSANetWitness115.SnapshotDetailsGet.machineOsType | String | Type of operating system \(Windows, Mac, Linux\). | 
-| RSANetWitness115.SnapshotDetailsGet.fileProperties.signature | Object | Signatory information of the file. | 
-| RSANetWitness115.SnapshotDetailsGet.fileProperties.signature.timeStamp | String | Timestamp of the signature. | 
-| RSANetWitness115.SnapshotDetailsGet.fileProperties.signature.thumbprint | String | Thumbprint of the certificate. | 
-| RSANetWitness115.SnapshotDetailsGet.fileProperties.signature.context | Unknown | Context information of the certificate. | 
-| RSANetWitness115.SnapshotDetailsGet.fileProperties.signature.signer | String | Signer information of the certificate. | 
-| RSANetWitness115.SnapshotDetailsGet.fileProperties.size | String | Size of the file. | 
-| RSANetWitness115.SnapshotDetailsGet.fileProperties.checksumMd5 | String | MD5 of the file. | 
-| RSANetWitness115.SnapshotDetailsGet.fileProperties.checksumSha1 | String | SHA1 of the file. | 
-| RSANetWitness115.SnapshotDetailsGet.fileProperties.checksumSha256 | String | SHA256 of the file. | 
-| RSANetWitness115.SnapshotDetailsGet.fileProperties.pe | Object | PE information of the file. This is applicable for Windows files. | 
-| RSANetWitness115.SnapshotDetailsGet.fileProperties.pe.timeStamp | String | Timestamp of the PE File. | 
-| RSANetWitness115.SnapshotDetailsGet.fileProperties.pe.imageSize | String | Image size of the PE file. | 
-| RSANetWitness115.SnapshotDetailsGet.fileProperties.pe.numberOfExportedFunctions | String | Number of exported function in the PE file. | 
-| RSANetWitness115.SnapshotDetailsGet.fileProperties.pe.numberOfNamesExported | String | Number of names exported in the PE file. | 
-| RSANetWitness115.SnapshotDetailsGet.fileProperties.pe.numberOfExecuteWriteSections | String | Number of execute write sections in the PE file. | 
-| RSANetWitness115.SnapshotDetailsGet.fileProperties.pe.context | Unknown | Context information of the PE file. | 
-| RSANetWitness115.SnapshotDetailsGet.fileProperties.pe.resources | Object | Resources of the PE file. | 
-| RSANetWitness115.SnapshotDetailsGet.fileProperties.pe.resources.originalFileName | String | Original filename as per PE information. | 
-| RSANetWitness115.SnapshotDetailsGet.fileProperties.pe.resources.company | String | Company name as per PE information. | 
-| RSANetWitness115.SnapshotDetailsGet.fileProperties.pe.resources.description | String | Description of the file as per PE information. | 
-| RSANetWitness115.SnapshotDetailsGet.fileProperties.pe.resources.version | String | Version of the file as per PE information. | 
-| RSANetWitness115.SnapshotDetailsGet.fileProperties.pe.sectionNames | Unknown | List of section names in the PE file. | 
-| RSANetWitness115.SnapshotDetailsGet.fileProperties.pe.importedLibraries | Unknown | List of imported libraries in the PE file. | 
-| RSANetWitness115.SnapshotDetailsGet.fileProperties.elf | Object | ELF information of the file. This is applicable for Linux files. | 
-| RSANetWitness115.SnapshotDetailsGet.elf.classType | String | Class type of the ELF file. | 
-| RSANetWitness115.SnapshotDetailsGet.elf.data | String | Data of ELF file. | 
-| RSANetWitness115.SnapshotDetailsGet.elf.entryPoint | String | Entry point for the ELF file. | 
-| RSANetWitness115.SnapshotDetailsGet.elf.context | Unknown | Context information of ELF file. | 
-| RSANetWitness115.SnapshotDetailsGet.elf.type | String | Type of ELF file. | 
-| RSANetWitness115.SnapshotDetailsGet.elf.sectionNames | Unknown | List of section names in ELF file. | 
-| RSANetWitness115.SnapshotDetailsGet.elf.importedLibraries | Unknown | List of imported libraries in ELF file. | 
-| RSANetWitness115.SnapshotDetailsGet.fileProperties.macho | Object | Macho information of the file. This is applicable for Mac files. | 
-| RSANetWitness115.SnapshotDetailsGet.macho.uuid | String | UUID of the Macho file. | 
-| RSANetWitness115.SnapshotDetailsGet.macho.identifier | String | Identifier of the Macho file. | 
-| RSANetWitness115.SnapshotDetailsGet.macho.minOsxVersion | String | Minimum OSx version for the Macho file. | 
-| RSANetWitness115.SnapshotDetailsGet.macho.context | Unknown | Context information of the Macho file. | 
-| RSANetWitness115.SnapshotDetailsGet.macho.flags | String | Flags of Macho file. | 
-| RSANetWitness115.SnapshotDetailsGet.macho.numberOfLoadCommands | String | Number of load commands for the Macho file. | 
-| RSANetWitness115.SnapshotDetailsGet.macho.version | String | Version of the Macho file. | 
-| RSANetWitness115.SnapshotDetailsGet.macho.sectionNames | Unknown | Section names in the Macho file. | 
-| RSANetWitness115.SnapshotDetailsGet.macho.importedLibraries | Unknown | Imported libraries list in the Macho file. | 
-| RSANetWitness115.SnapshotDetailsGet.fileProperties.entropy | String | Entropy of the file. | 
-| RSANetWitness115.SnapshotDetailsGet.fileProperties.format | String | Format of the file. | 
-| RSANetWitness115.SnapshotDetailsGet.fileProperties.fileStatus | String | Status of the file as assigned by the analyst. \(Whitelist, Blacklist, Neutral, and Graylist\). | 
-| RSANetWitness115.SnapshotDetailsGet.fileProperties.remediationAction | String | Remediation action as assigned by the analyst. For example, Blocked. | 
-| RSANetWitness115.SnapshotDetailsGet.localRiskScore | Number | File’s score based on alerts triggered in the given agent. | 
+| RSANetWitness115.SnapshotDetailsGet.windows.kernelHooks.hookLocation.objectFunction | String | The name of the object function that was hooked in the kernel. | 
+| RSANetWitness115.SnapshotDetailsGet.mac.processes.priority | Number | The process priority. | 
+| RSANetWitness115.SnapshotDetailsGet.mac.processes.flags | Number | The process flags. | 
+| RSANetWitness115.SnapshotDetailsGet.mac.processes.nice | Number | The nice value of the process. | 
+| RSANetWitness115.SnapshotDetailsGet.mac.processes.openFilesCount | Number | The number of open files by process at scan time. | 
+| RSANetWitness115.SnapshotDetailsGet.mac.processes.context | Unknown | The process context. | 
+| RSANetWitness115.SnapshotDetailsGet.mac.processes.pid | Number | The process ID. | 
+| RSANetWitness115.SnapshotDetailsGet.mac.processes.parentPid | Number | The parent process ID. | 
+| RSANetWitness115.SnapshotDetailsGet.mac.processes.imageBase | Number | The process image base address. | 
+| RSANetWitness115.SnapshotDetailsGet.mac.processes.createUtcTime | String | The process UTC creation time. | 
+| RSANetWitness115.SnapshotDetailsGet.mac.processes.owner | String | The user name. | 
+| RSANetWitness115.SnapshotDetailsGet.mac.processes.launchArguments | String | The process launch arguments. | 
+| RSANetWitness115.SnapshotDetailsGet.mac.processes.threadCount | Number | The number of threads running in the process. | 
+| RSANetWitness115.SnapshotDetailsGet.mac.dylibs.pid | Number | The process ID in dylibs which is loaded. | 
+| RSANetWitness115.SnapshotDetailsGet.mac.dylibs.processName | String | The process name in dylibs. | 
+| RSANetWitness115.SnapshotDetailsGet.mac.dylibs.imageBase | String | The process image base address in dylibs. | 
+| RSANetWitness115.SnapshotDetailsGet.mac.drivers.preLinked | Boolean | True if the kext bundle is prelinked. | 
+| RSANetWitness115.SnapshotDetailsGet.mac.drivers.numberOfReferences | Number | The number of references. | 
+| RSANetWitness115.SnapshotDetailsGet.mac.drivers.dependencies | Unknown | The list of kexts \(name\) the driver is linked against. | 
+| RSANetWitness115.SnapshotDetailsGet.mac.drivers.imageBase | String | The driver image base address. | 
+| RSANetWitness115.SnapshotDetailsGet.mac.drivers.imageSize | String | The driver image size. | 
+| RSANetWitness115.SnapshotDetailsGet.mac.daemons.name | String | The daemon label. | 
+| RSANetWitness115.SnapshotDetailsGet.mac.daemons.sessionName | String | The name of the session in which the daemon runs. | 
+| RSANetWitness115.SnapshotDetailsGet.mac.daemons.user | String | The name of the user under which the daemon runs. | 
+| RSANetWitness115.SnapshotDetailsGet.mac.daemons.pid | Number | The daemon PID. | 
+| RSANetWitness115.SnapshotDetailsGet.mac.daemons.onDemand | Boolean | True if the daemon is configured to run on demand. | 
+| RSANetWitness115.SnapshotDetailsGet.mac.daemons.lastExitCode | Number | The daemon last exit code. | 
+| RSANetWitness115.SnapshotDetailsGet.mac.daemons.timeout | Number | The daemon timeout value. | 
+| RSANetWitness115.SnapshotDetailsGet.mac.daemons.daemons.launchArguments | String | The daemon launch argument. | 
+| RSANetWitness115.SnapshotDetailsGet.mac.daemons.daemons.config | String | The full path of the configuration file used to configure the daemon. | 
+| RSANetWitness115.SnapshotDetailsGet.mac.tasks.name | String | The task name. | 
+| RSANetWitness115.SnapshotDetailsGet.mac.tasks.cronJob | Boolean | True if the task is a cron job, else launchd. | 
+| RSANetWitness115.SnapshotDetailsGet.mac.tasks.launchArguments | String | The task launch argument. | 
+| RSANetWitness115.SnapshotDetailsGet.mac.tasks.user | String | The name of the user under which the task runs. | 
+| RSANetWitness115.SnapshotDetailsGet.mac.tasks.triggerString | String | The task trigger string. | 
+| RSANetWitness115.SnapshotDetailsGet.mac.tasks.configFile | String | The full path of the configuration file used to configure the task. | 
+| RSANetWitness115.SnapshotDetailsGet.mac.autoruns.type | String | The autorun type. | 
+| RSANetWitness115.SnapshotDetailsGet.mac.autoruns.user | String | The name of the user under which the autorun is run. | 
+| RSANetWitness115.SnapshotDetailsGet.mac.autoruns.name | String | The autorun label. | 
+| RSANetWitness115.SnapshotDetailsGet.mac.autoruns.detail | String | The autorun details. | 
+| RSANetWitness115.SnapshotDetailsGet.linux.processes.priority | Number | The process priority. | 
+| RSANetWitness115.SnapshotDetailsGet.linux.processes.uid | Number | The user UID. | 
+| RSANetWitness115.SnapshotDetailsGet.linux.processes.environment | String | The process environment variables. | 
+| RSANetWitness115.SnapshotDetailsGet.linux.processes.nice | Number | The process nice value. | 
+| RSANetWitness115.SnapshotDetailsGet.linux.processes.securityContext | String | The process security context. | 
+| RSANetWitness115.SnapshotDetailsGet.linux.processes.pid | Number | The process ID. | 
+| RSANetWitness115.SnapshotDetailsGet.linux.processes.parentPid | Number | The parent process ID. | 
+| RSANetWitness115.SnapshotDetailsGet.linux.processes.imageBase | Number | The process base address. | 
+| RSANetWitness115.SnapshotDetailsGet.linux.processes.createUtcTime | String | The process UTC creation time. | 
+| RSANetWitness115.SnapshotDetailsGet.linux.processes.owner | String | The user name. | 
+| RSANetWitness115.SnapshotDetailsGet.linux.processes.launchArguments | String | The process launch arguments. | 
+| RSANetWitness115.SnapshotDetailsGet.linux.processes.threadCount | Number | The number of threads running in the process. | 
+| RSANetWitness115.SnapshotDetailsGet.linux.loadedLibraries.pid | String | The process ID in the loaded library. | 
+| RSANetWitness115.SnapshotDetailsGet.linux.loadedLibraries.processName | String | The process name in the loaded library. | 
+| RSANetWitness115.SnapshotDetailsGet.linux.loadedLibraries.imageBase | String | The process image base address in the loaded library. | 
+| RSANetWitness115.SnapshotDetailsGet.linux.drivers.numberOfInstances | Number | The number of instances loaded in memory. | 
+| RSANetWitness115.SnapshotDetailsGet.linux.drivers.loadState | String | The driver load state. | 
+| RSANetWitness115.SnapshotDetailsGet.linux.drivers.dependencies | Unknown | The dependent driver names. | 
+| RSANetWitness115.SnapshotDetailsGet.linux.drivers.author | String | The driver author name. | 
+| RSANetWitness115.SnapshotDetailsGet.linux.drivers.description | String | The driver description. | 
+| RSANetWitness115.SnapshotDetailsGet.linux.drivers.sourceVersion | String | The driver source version. | 
+| RSANetWitness115.SnapshotDetailsGet.linux.drivers.versionMagic | String | The driver version magic. | 
+| RSANetWitness115.SnapshotDetailsGet.linux.initds.initdHashSha256 | String | The hash of the init-d script file. | 
+| RSANetWitness115.SnapshotDetailsGet.linux.initds.initdPaths | String | The path of the init-d script file. | 
+| RSANetWitness115.SnapshotDetailsGet.linux.initds.pid | Number | The process ID of the init-d script file. | 
+| RSANetWitness115.SnapshotDetailsGet.linux.initds.description | String | The init-d script file description. | 
+| RSANetWitness115.SnapshotDetailsGet.linux.initds.status | String | The init-d script file status. | 
+| RSANetWitness115.SnapshotDetailsGet.linux.initds.runLevels | Unknown | The list of run levels in which the init-d script file is enabled. | 
+| RSANetWitness115.SnapshotDetailsGet.linux.systemds.systemdHashSha256 | String | The systemd script file hash value. | 
+| RSANetWitness115.SnapshotDetailsGet.linux.systemds.systemdPaths | String | The systemd script file path value. | 
+| RSANetWitness115.SnapshotDetailsGet.linux.systemds.name | String | The systemd script file name. | 
+| RSANetWitness115.SnapshotDetailsGet.linux.systemds.description | String | The systemd script file description. | 
+| RSANetWitness115.SnapshotDetailsGet.linux.systemds.state | String | The systemd script file state. | 
+| RSANetWitness115.SnapshotDetailsGet.linux.systemds.launchArguments | String | The systemd script file launch argument. | 
+| RSANetWitness115.SnapshotDetailsGet.linux.systemds.pid | Number | The process ID. | 
+| RSANetWitness115.SnapshotDetailsGet.linux.systemds.triggeredBy | Unknown | The systemd script file triggered by list. | 
+| RSANetWitness115.SnapshotDetailsGet.linux.systemds.triggerStrings | Unknown | The systemd script file trigger strings. | 
+| RSANetWitness115.SnapshotDetailsGet.linux.autoruns.type | String | The autorun type. | 
+| RSANetWitness115.SnapshotDetailsGet.linux.autoruns.label | String | The autorun label. | 
+| RSANetWitness115.SnapshotDetailsGet.linux.autoruns.comments | String | The autorun comments. | 
+| RSANetWitness115.SnapshotDetailsGet.linux.crons.user | String | The user account under which cron job was created. | 
+| RSANetWitness115.SnapshotDetailsGet.linux.crons.triggerString | String | The trigger string that launches the cron job. | 
+| RSANetWitness115.SnapshotDetailsGet.linux.crons.launchArguments | String | The cron job launch arguments. | 
+| RSANetWitness115.SnapshotDetailsGet.fileProperties.firstFileName | String | The first name of the file sent by the agent. | 
+| RSANetWitness115.SnapshotDetailsGet.fileProperties.reputationStatus | String | The reputation status of the file. | 
+| RSANetWitness115.SnapshotDetailsGet.fileProperties.globalRiskScore | String | The global risk score. | 
+| RSANetWitness115.SnapshotDetailsGet.fileProperties.firstSeenTime | String | The time the file was first seen by the endpoint server. | 
+| RSANetWitness115.SnapshotDetailsGet.machineOsType | String | The operating system type \(Windows, Mac, Linux\). | 
+| RSANetWitness115.SnapshotDetailsGet.fileProperties.signature | Object | The file signatory information. | 
+| RSANetWitness115.SnapshotDetailsGet.fileProperties.signature.timeStamp | String | The signature timestamp. | 
+| RSANetWitness115.SnapshotDetailsGet.fileProperties.signature.thumbprint | String | The certificate thumbprint. | 
+| RSANetWitness115.SnapshotDetailsGet.fileProperties.signature.context | Unknown | The certificate context information. | 
+| RSANetWitness115.SnapshotDetailsGet.fileProperties.signature.signer | String | The certificate signer information. | 
+| RSANetWitness115.SnapshotDetailsGet.fileProperties.size | String | The file size. | 
+| RSANetWitness115.SnapshotDetailsGet.fileProperties.checksumMd5 | String | The file MD5. | 
+| RSANetWitness115.SnapshotDetailsGet.fileProperties.checksumSha1 | String | The file SHA1. | 
+| RSANetWitness115.SnapshotDetailsGet.fileProperties.checksumSha256 | String | The file SHA256. | 
+| RSANetWitness115.SnapshotDetailsGet.fileProperties.pe | Object | The file PE information. This is applicable for Windows files. | 
+| RSANetWitness115.SnapshotDetailsGet.fileProperties.pe.timeStamp | String | The PE file timestamp. | 
+| RSANetWitness115.SnapshotDetailsGet.fileProperties.pe.imageSize | String | The PE file image size. | 
+| RSANetWitness115.SnapshotDetailsGet.fileProperties.pe.numberOfExportedFunctions | String | The number of exported functions in the PE file. | 
+| RSANetWitness115.SnapshotDetailsGet.fileProperties.pe.numberOfNamesExported | String | The number of names exported in the PE file. | 
+| RSANetWitness115.SnapshotDetailsGet.fileProperties.pe.numberOfExecuteWriteSections | String | The number of execute write sections in the PE file. | 
+| RSANetWitness115.SnapshotDetailsGet.fileProperties.pe.context | Unknown | The PE file context information. | 
+| RSANetWitness115.SnapshotDetailsGet.fileProperties.pe.resources | Object | The PE file resources. | 
+| RSANetWitness115.SnapshotDetailsGet.fileProperties.pe.resources.originalFileName | String | The original filename as per PE information. | 
+| RSANetWitness115.SnapshotDetailsGet.fileProperties.pe.resources.company | String | The company name as per PE information. | 
+| RSANetWitness115.SnapshotDetailsGet.fileProperties.pe.resources.description | String | The description of the file as per PE information. | 
+| RSANetWitness115.SnapshotDetailsGet.fileProperties.pe.resources.version | String | The version of the file as per PE information. | 
+| RSANetWitness115.SnapshotDetailsGet.fileProperties.pe.sectionNames | Unknown | The list of section names in the PE file. | 
+| RSANetWitness115.SnapshotDetailsGet.fileProperties.pe.importedLibraries | Unknown | The list of imported libraries in the PE file. | 
+| RSANetWitness115.SnapshotDetailsGet.fileProperties.elf | Object | The ELF information of the file. This is applicable for Linux files. | 
+| RSANetWitness115.SnapshotDetailsGet.elf.classType | String | The ELF file class type. | 
+| RSANetWitness115.SnapshotDetailsGet.elf.data | String | The ELF file data. | 
+| RSANetWitness115.SnapshotDetailsGet.elf.entryPoint | String | The ELF file entry point. | 
+| RSANetWitness115.SnapshotDetailsGet.elf.context | Unknown | The ELF file context information. | 
+| RSANetWitness115.SnapshotDetailsGet.elf.type | String | The ELF file type. | 
+| RSANetWitness115.SnapshotDetailsGet.elf.sectionNames | Unknown | The list of section names in the ELF file. | 
+| RSANetWitness115.SnapshotDetailsGet.elf.importedLibraries | Unknown | The list of imported libraries in the ELF file. | 
+| RSANetWitness115.SnapshotDetailsGet.fileProperties.macho | Object | The Macho file information. This is applicable for Mac files. | 
+| RSANetWitness115.SnapshotDetailsGet.macho.uuid | String | The Macho file UUID. | 
+| RSANetWitness115.SnapshotDetailsGet.macho.identifier | String | The Macho file identifier. | 
+| RSANetWitness115.SnapshotDetailsGet.macho.minOsxVersion | String | The minimum OSx version for the Macho file. | 
+| RSANetWitness115.SnapshotDetailsGet.macho.context | Unknown | The Macho file context information. | 
+| RSANetWitness115.SnapshotDetailsGet.macho.flags | String | The Macho file flags. | 
+| RSANetWitness115.SnapshotDetailsGet.macho.numberOfLoadCommands | String | The number of Macho file load commands. | 
+| RSANetWitness115.SnapshotDetailsGet.macho.version | String | The Macho file version. | 
+| RSANetWitness115.SnapshotDetailsGet.macho.sectionNames | Unknown | The Macho file section names. | 
+| RSANetWitness115.SnapshotDetailsGet.macho.importedLibraries | Unknown | The Macho file imported libraries list. | 
+| RSANetWitness115.SnapshotDetailsGet.fileProperties.entropy | String | The file entropy. | 
+| RSANetWitness115.SnapshotDetailsGet.fileProperties.format | String | The file format. | 
+| RSANetWitness115.SnapshotDetailsGet.fileProperties.fileStatus | String | The file status as assigned by the analyst. Can be Whitelist, Blacklist, Neutral, or Graylist. | 
+| RSANetWitness115.SnapshotDetailsGet.fileProperties.remediationAction | String | The remediation action as assigned by the analyst. For example, Blocked. | 
+| RSANetWitness115.SnapshotDetailsGet.localRiskScore | Number | The file score based on alerts triggered in the given agent. | 
 
 #### Command example
 ```!rsa-nw-snapshot-details-get agent_id=1 snapshot_timestamp=2022-01-09T16:42:45.661Z categories=AUTORUNS```
@@ -1175,7 +1168,7 @@ Provides snapshot details of the given host for the provided snapshot time. usin
 
 ### rsa-nw-files-list
 ***
-lists all related information of files from a specific Endpoint Server. you can limit the results using the limit argument or the page size argument. the default is 10 results.
+Lists all related file information from a specific endpoint server. You can limit the results using the limit argument or the page size argument.
 
 
 #### Base Command
@@ -1185,165 +1178,166 @@ lists all related information of files from a specific Endpoint Server. you can 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| service_id | service ID of the specific Endpoint Server. View all service ID's using the 'rsa-nw-services-list' command. If none is given the service ID configured in the integration configuration will be used. | Optional | 
-| page_number | The requested page number, first page is number 0. cannot be supllied with the limit argument. | Optional | 
-| page_size | The maximum number of items to return in a single page. cannot be supllied with the limit argument. | Optional | 
-| limit | Maximum number of results to be returned, if not set the first 10 results will be returned.  cannot be supllied with a page_size/page_number arguments. | Optional | 
+| service_id | The service ID of the specific endpoint Server. View all service IDs using the 'rsa-nw-services-list' command. If none is given, the service ID configured in the integration configuration is used. | Optional | 
+| page_number | The requested page number, first page is number 0. Cannot be supplied with the limit argument. | Optional | 
+| page_size | The maximum number of items to return in a single page. Cannot be supplied with the limit argument. | Optional | 
+| limit | The maximum number of results to be returned. If not set, the first 10 results are returned.  Cannot be supplied with page_size/page_number arguments. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| RSANetWitness115.FilesList.windows.autoruns.type | String | Type of the autorun. | 
-| RSANetWitness115.FilesList.windows.autoruns.registryPath | String | Registry path where autorun is located. | 
-| RSANetWitness115.FilesList.windows.autoruns.launchArguments | String | Launch argument of the autorun. | 
-| RSANetWitness115.FilesList.windows.imageHooks.process.pid | String | PID of the process in which hook was detected. | 
-| RSANetWitness115.FilesList.windows.imageHooks.process.fileName | String | Filename of the process in which hook was detected. | 
-| RSANetWitness115.FilesList.windows.imageHooks.process.createUtcTime | String | Creation time of the process in which hook was  detected. | 
-| RSANetWitness115.FilesList.windows.imageHooks.hookLocation.section | String | Name of the image section that was modified by the hook. | 
-| RSANetWitness115.FilesList.windows.imageHooks.hookLocation.sectionBase | String | Base of the image section that was modified by the hook. | 
-| RSANetWitness115.FilesList.windows.imageHooks.hookLocation.symbol | String | Closest symbol name to the memory location that was modified. | 
-| RSANetWitness115.FilesList.windows.imageHooks.hookLocation.symbolOffset | Number | Closest symbol \+/- offset to the hook location when relevant. | 
-| RSANetWitness115.FilesList.windows.imageHooks.inlinePatch.originalBytes | String | Hexadecimal bytes which were replaced. | 
-| RSANetWitness115.FilesList.windows.imageHooks.inlinePatch.originalAsm | Unknown | Array of decoded ASM instructions that were replaced. | 
-| RSANetWitness115.FilesList.windows.imageHooks.inlinePatch.currentBytes | String | Hexadecimal bytes which have overwritten the original code. | 
-| RSANetWitness115.FilesList.windows.imageHooks.inlinePatch.currentAsm | Unknown | Array of decoded ASM instructions that have  overwritten the original code. | 
-| RSANetWitness115.FilesList.windows.kernelHooks.hookLocation.objectName | String | Name of the object that was hooked in kernel. | 
-| RSANetWitness115.FilesList.windows.kernelHooks.hookLocation.objectFunction | String | Name of the object function that was hooked in kernel. | 
-| RSANetWitness115.FilesList.mac.processes.priority | Number | Priority of the process. | 
-| RSANetWitness115.FilesList.mac.processes.flags | Number | Process flags. | 
-| RSANetWitness115.FilesList.mac.processes.nice | Number | Nice value of process. | 
-| RSANetWitness115.FilesList.mac.processes.openFilesCount | Number | Number of open files by process at scan time. | 
-| RSANetWitness115.FilesList.mac.processes.context | Unknown | Process context. | 
-| RSANetWitness115.FilesList.mac.processes.pid | Number | ID of the process. | 
-| RSANetWitness115.FilesList.mac.processes.parentPid | Number | ID of the parent process. | 
-| RSANetWitness115.FilesList.mac.processes.imageBase | Number | Base address of the process. | 
-| RSANetWitness115.FilesList.mac.processes.createUtcTime | String | Creation time of the process. | 
-| RSANetWitness115.FilesList.mac.processes.owner | String | Name of the user. | 
-| RSANetWitness115.FilesList.mac.processes.launchArguments | String | Launch arguments of the process. | 
-| RSANetWitness115.FilesList.mac.processes.threadCount | Number | Number of threads running in the process. | 
-| RSANetWitness115.FilesList.mac.dylibs.pid | Number | Process ID in dylib which is loaded. | 
-| RSANetWitness115.FilesList.mac.dylibs.processName | String | Name of the process. | 
-| RSANetWitness115.FilesList.mac.dylibs.imageBase | String | Base address of image in the process. | 
-| RSANetWitness115.FilesList.mac.drivers.preLinked | Boolean | True if Kext bundle is prelinked. | 
-| RSANetWitness115.FilesList.mac.drivers.numberOfReferences | Number | Number of references. | 
-| RSANetWitness115.FilesList.mac.drivers.dependencies | Unknown | List of kexts\(name\) the driver is linked against. | 
-| RSANetWitness115.FilesList.mac.drivers.imageBase | String | Base address of the driver image. | 
-| RSANetWitness115.FilesList.mac.drivers.imageSize | String | Size of the driver image. | 
-| RSANetWitness115.FilesList.mac.daemons.name | String | Label of the daemon. | 
-| RSANetWitness115.FilesList.mac.daemons.sessionName | String | Name of the session in which daemon runs. | 
-| RSANetWitness115.FilesList.mac.daemons.user | String | Name of the user under which the daemon runs. | 
-| RSANetWitness115.FilesList.mac.daemons.pid | Number | ID of the process. | 
-| RSANetWitness115.FilesList.mac.daemons.onDemand | Boolean | True if daemon is configured to run on demand. | 
-| RSANetWitness115.FilesList.mac.daemons.lastExitCode | Number | Last exit code. | 
-| RSANetWitness115.FilesList.mac.daemons.timeout | Number | Time out value. | 
-| RSANetWitness115.FilesList.mac.daemons.daemons.launchArguments | String | Launch argument of the daemon. | 
-| RSANetWitness115.FilesList.mac.daemons.daemons.config | String | Full path of the configuration file used to File configure this daemon. | 
-| RSANetWitness115.FilesList.mac.tasks.name | String | Name of the task. | 
-| RSANetWitness115.FilesList.mac.tasks.cronJob | Boolean | True if the task is cron job, else launchd. | 
-| RSANetWitness115.FilesList.mac.tasks.launchArguments | String | Launch argument of the task. | 
-| RSANetWitness115.FilesList.mac.tasks.user | String | Name of the user under which this task will run. | 
-| RSANetWitness115.FilesList.mac.tasks.triggerString | String | Trigger string of the task. | 
-| RSANetWitness115.FilesList.mac.tasks.configFile | String | Full path of the configuration file used to configure this task. | 
-| RSANetWitness115.FilesList.mac.autoruns.type | String | Type of autorun. | 
-| RSANetWitness115.FilesList.mac.autoruns.user | String | Name of the user under which the autorun is run. | 
-| RSANetWitness115.FilesList.mac.autoruns.name | String | Label of the autorun. | 
-| RSANetWitness115.FilesList.mac.autoruns.detail | String | Details of the autorun. | 
-| RSANetWitness115.FilesList.linux.processes.priority | Number | Priority of the process. | 
-| RSANetWitness115.FilesList.linux.processes.uid | Number | UID of the user. | 
-| RSANetWitness115.FilesList.linux.processes.environment | String | Environment variables. | 
-| RSANetWitness115.FilesList.linux.processes.nice | Number | Nice value of the process. | 
-| RSANetWitness115.FilesList.linux.processes.securityContext | String | Security context. | 
-| RSANetWitness115.FilesList.linux.processes.pid | Number | ID of the process. | 
-| RSANetWitness115.FilesList.linux.processes.parentPid | Number | ID of the parent process. | 
-| RSANetWitness115.FilesList.linux.processes.imageBase | Number | Base address of the process. | 
-| RSANetWitness115.FilesList.linux.processes.createUtcTime | String | Time of creation of the process. | 
-| RSANetWitness115.FilesList.linux.processes.owner | String | Name of the user. | 
-| RSANetWitness115.FilesList.linux.processes.launchArguments | String | Launch arguments of the process. | 
-| RSANetWitness115.FilesList.linux.processes.threadCount | Number | Number of threads running in the process. | 
-| RSANetWitness115.FilesList.linux.loadedLibraries.pid | String | Process ID in which library is loaded. | 
-| RSANetWitness115.FilesList.linux.loadedLibraries.process | String | Name of the process. Name | 
-| RSANetWitness115.FilesList.linux.loadedLibraries.imageBase | String | Base address of image in the process. | 
-| RSANetWitness115.FilesList.linux.drivers.numberOfInstances | Number | Number of instances loaded in memory. | 
-| RSANetWitness115.FilesList.linux.drivers.loadState | String | Load state of the driver. | 
-| RSANetWitness115.FilesList.linux.drivers.dependencies | Unknown | Dependent driver names. | 
-| RSANetWitness115.FilesList.linux.drivers.author | String | Name of the author of driver. | 
-| RSANetWitness115.FilesList.linux.drivers.description | String | Description of the driver. | 
-| RSANetWitness115.FilesList.linux.drivers.sourceVersion | String | Source version of the driver. | 
-| RSANetWitness115.FilesList.linux.drivers.versionMagic | String | Version magic of the driver. | 
-| RSANetWitness115.FilesList.linux.initds.initdHashSha256 | String | Hash of the init-d script file. | 
-| RSANetWitness115.FilesList.linux.initds.initdPaths | String | Path of the init-d script file. | 
-| RSANetWitness115.FilesList.linux.initds.pid | Number | ID of the process. | 
-| RSANetWitness115.FilesList.linux.initds.description | String | Description of the init-d. | 
-| RSANetWitness115.FilesList.linux.initds.status | String | Status of the init-d. | 
-| RSANetWitness115.FilesList.linux.initds.runLevels | Unknown | List of run levels in which the init-d is enabled. | 
-| RSANetWitness115.FilesList.linux.systemds.systemdHashSha256 | String | Hash value of the systemd script file. | 
-| RSANetWitness115.FilesList.linux.systemds.systemdPaths | String | Path value of the systemd script file. | 
-| RSANetWitness115.FilesList.linux.systemds.name | String | Name of the systemd. | 
-| RSANetWitness115.FilesList.linux.systemds.description | String | Description of the systemd. | 
-| RSANetWitness115.FilesList.linux.systemds.state | String | State of the systemd. | 
-| RSANetWitness115.FilesList.linux.systemds.launchArguments | String | Launch argument of the systemd. | 
-| RSANetWitness115.FilesList.linux.systemds.pid | Number | ID of the process. | 
-| RSANetWitness115.FilesList.linux.systemds.triggeredBy | Unknown | Triggered by list of the systemd. | 
-| RSANetWitness115.FilesList.linux.systemds.triggerStrings | Unknown | Trigger strings of the systemd. | 
-| RSANetWitness115.FilesList.linux.autoruns.type | String | Type of autorun. | 
-| RSANetWitness115.FilesList.linux.autoruns.label | String | Label of the autorun. | 
-| RSANetWitness115.FilesList.linux.autoruns.comments | String | Comments of the autorun. | 
-| RSANetWitness115.FilesList.linux.crons.user | String | User account under which cron job was created. | 
-| RSANetWitness115.FilesList.linux.crons.triggerString | String | Trigger string that would launch the cron job. | 
-| RSANetWitness115.FilesList.linux.crons.launchArguments | String | Launch arguments of the cron job. | 
-| RSANetWitness115.FilesList.firstFileName | String | First name of the file sent by the agent. | 
-| RSANetWitness115.FilesList.reputationStatus | String | Reputation status of the file. | 
-| RSANetWitness115.FilesList.globalRiskScore | String | Global risk score. | 
-| RSANetWitness115.FilesList.firstSeenTime | String | Time when the file was first seen by the Endpoint Server. | 
-| RSANetWitness115.FilesList.fileProperties.machineOsType | String | Type of operating system \(Windows, Mac, Linux\). | 
-| RSANetWitness115.FilesList.signature | Object | Signatory information of the file. | 
-| RSANetWitness115.FilesList.signature.timeStamp | String | Timestamp of the signature. | 
-| RSANetWitness115.FilesList.signature.thumbprint | String | Thumbprint of the certificate. | 
-| RSANetWitness115.FilesList.signature.context | Unknown | Context information of the certificate. | 
-| RSANetWitness115.FilesList.signature.signer | String | Signer information of the certificate. | 
-| RSANetWitness115.FilesList.size | String | Size of the file. | 
-| RSANetWitness115.FilesList.checksumMd5 | String | MD5 of the file. | 
-| RSANetWitness115.FilesList.checksumSha1 | String | SHA1 of the file. | 
-| RSANetWitness115.FilesList.checksumSha256 | String | SHA256 of the file. | 
-| RSANetWitness115.FilesList.pe | Object | PE information of the file. This is applicable for Windows files. | 
-| RSANetWitness115.FilesList.pe.timeStamp | String | Timestamp of the PE File. | 
-| RSANetWitness115.FilesList.pe.imageSize | String | Image size of the PE file. | 
-| RSANetWitness115.FilesList.pe.numberOfExportedFunctions | String | Number of exported function in the PE file. | 
-| RSANetWitness115.FilesList.pe.numberOfNamesExported | String | Number of names exported in the PE file. | 
-| RSANetWitness115.FilesList.pe.numberOfExecuteWriteSections | String | Number of execute write sections in the PE file. | 
-| RSANetWitness115.FilesList.pe.context | Unknown | Context information of the PE file. | 
-| RSANetWitness115.FilesList.pe.resources | Object | Resources of the PE file. | 
-| RSANetWitness115.FilesList.pe.resources.originalFileName | String | Original filename as per PE information. | 
-| RSANetWitness115.FilesList.pe.resources.company | String | Company name as per PE information. | 
-| RSANetWitness115.FilesList.pe.resources.description | String | Description of the file as per PE information. | 
-| RSANetWitness115.FilesList.pe.resources.version | String | Version of the file as per PE information. | 
-| RSANetWitness115.FilesList.pe.sectionNames | Unknown | List of section names in the PE file. | 
-| RSANetWitness115.FilesList.pe.importedLibraries | Unknown | List of imported libraries in the PE file. | 
-| RSANetWitness115.FilesList.elf | Object | ELF information of the file. This is applicable for Linux files. | 
-| RSANetWitness115.FilesList.elf.classType | String | Class type of the ELF file. | 
-| RSANetWitness115.FilesList.elf.data | String | Data of ELF file. | 
-| RSANetWitness115.FilesList.elf.entryPoint | String | Entry point for the ELF file. | 
-| RSANetWitness115.FilesList.elf.context | Unknown | Context information of ELF file. | 
-| RSANetWitness115.FilesList.elf.type | String | Type of ELF file. | 
-| RSANetWitness115.FilesList.elf.sectionNames | Unknown | List of section names in ELF file. | 
-| RSANetWitness115.FilesList.elf.importedLibraries | Unknown | List of imported libraries in ELF file. | 
-| RSANetWitness115.FilesList.macho | Object | Macho information of the file. This is applicable for Mac files. | 
-| RSANetWitness115.FilesList.macho.uuid | String | UUID of the Macho file. | 
-| RSANetWitness115.FilesList.macho.identifier | String | Identifier of the Macho file. | 
-| RSANetWitness115.FilesList.macho.minOsxVersion | String | Minimum OSx version for the Macho file. | 
-| RSANetWitness115.FilesList.macho.context | Unknown | Context information of the Macho file. | 
-| RSANetWitness115.FilesList.macho.flags | String | Flags of Macho file. | 
-| RSANetWitness115.FilesList.macho.numberOfLoadCommands | String | Number of load commands for the Macho file. | 
-| RSANetWitness115.FilesList.macho.version | String | Version of the Macho file. | 
-| RSANetWitness115.FilesList.macho.sectionNames | Unknown | Section names in the Macho file. | 
-| RSANetWitness115.FilesList.macho.importedLibraries | Unknown | Imported libraries list in the Macho file. | 
-| RSANetWitness115.FilesList.entropy | String | Entropy of the file. | 
-| RSANetWitness115.FilesList.format | String | Format of the file. | 
-| RSANetWitness115.FilesList.fileStatus | String | Status of the file as assigned by the analyst. \(Whitelist, Blacklist, Neutral, and Graylist\). | 
-| RSANetWitness115.FilesList.remediationAction | String | Remediation action as assigned by the analyst. For example, Blocked. | 
-| RSANetWitness115.FilesList.localRiskScore | Number | File’s score based on alerts triggered in the given agent. | 
+| RSANetWitness115.FilesList.windows.autoruns.type | String | The autorun type. | 
+| RSANetWitness115.FilesList.windows.autoruns.registryPath | String | The registry path where autorun is located. | 
+| RSANetWitness115.FilesList.windows.autoruns.launchArguments | String | The autorun launch argument. | 
+| RSANetWitness115.FilesList.windows.imageHooks.process.pid | String | The PID of the process the hook was detected in. | 
+| RSANetWitness115.FilesList.windows.imageHooks.process.fileName | String | The file name of the process the hook was detected in. | 
+| RSANetWitness115.FilesList.windows.imageHooks.process.createUtcTime | String | The creation time of the process the hook was detected in. | 
+| RSANetWitness115.FilesList.windows.imageHooks.hookLocation.section | String | The name of the image section modified by the hook. | 
+| RSANetWitness115.FilesList.windows.imageHooks.hookLocation.sectionBase | String | The image section base modified by the hook. | 
+| RSANetWitness115.FilesList.windows.imageHooks.hookLocation.symbol | String | The closest symbol name to the memory location that was modified. | 
+| RSANetWitness115.FilesList.windows.imageHooks.hookLocation.symbolOffset | Number | The closest symbol \+/- offset to the hook location when relevant. | 
+| RSANetWitness115.FilesList.windows.imageHooks.inlinePatch.originalBytes | String | The hexadecimal bytes that were replaced. | 
+| RSANetWitness115.FilesList.windows.imageHooks.inlinePatch.originalAsm | Unknown | The array of decoded ASM instructions that were replaced. | 
+| RSANetWitness115.FilesList.windows.imageHooks.inlinePatch.currentBytes | String | The hexadecimal bytes that overwrote the original code. | 
+| RSANetWitness115.FilesList.windows.imageHooks.inlinePatch.currentAsm | Unknown | The array of decoded ASM instructions that overwrote the original code. | 
+| RSANetWitness115.FilesList.windows.kernelHooks.hookLocation.objectName | String | The name of the object that was hooked in the kernel. | 
+| RSANetWitness115.FilesList.windows.kernelHooks.hookLocation.objectFunction | String | The name of the object function that was hooked in the kernel. | 
+| RSANetWitness115.FilesList.mac.processes.priority | Number | The process priority. | 
+| RSANetWitness115.FilesList.mac.processes.flags | Number | The process flags. | 
+| RSANetWitness115.FilesList.mac.processes.nice | Number | The process nice value. | 
+| RSANetWitness115.FilesList.mac.processes.openFilesCount | Number | The number of open files by the process at scan time. | 
+| RSANetWitness115.FilesList.mac.processes.context | Unknown | The process context. | 
+| RSANetWitness115.FilesList.mac.processes.pid | Number | The process ID. | 
+| RSANetWitness115.FilesList.mac.processes.parentPid | Number | The parent process ID. | 
+| RSANetWitness115.FilesList.mac.processes.imageBase | Number | The process image base address. | 
+| RSANetWitness115.FilesList.mac.processes.createUtcTime | String | The process UTC creation time. | 
+| RSANetWitness115.FilesList.mac.processes.owner | String | The user name. | 
+| RSANetWitness115.FilesList.mac.processes.launchArguments | String | The process launch arguments. | 
+| RSANetWitness115.FilesList.mac.processes.threadCount | Number | The number of threads running in the process. | 
+| RSANetWitness115.FilesList.mac.dylibs.pid | Number | The process ID in dylibs which is loaded. | 
+| RSANetWitness115.FilesList.mac.dylibs.processName | String | The process name in dylibs. | 
+| RSANetWitness115.FilesList.mac.dylibs.imageBase | String | The process image base address in dylibs. | 
+| RSANetWitness115.FilesList.mac.drivers.preLinked | Boolean | True if the kext bundle is prelinked. | 
+| RSANetWitness115.FilesList.mac.drivers.numberOfReferences | Number | The number of references. | 
+| RSANetWitness115.FilesList.mac.drivers.dependencies | Unknown | The list of kexts\(name\) the driver is linked against. | 
+| RSANetWitness115.FilesList.mac.drivers.imageBase | String | The driver image base address. | 
+| RSANetWitness115.FilesList.mac.drivers.imageSize | String | The driver image size. | 
+| RSANetWitness115.FilesList.mac.daemons.name | String | The daemon label. | 
+| RSANetWitness115.FilesList.mac.daemons.sessionName | String | The name of the session in which daemon runs. | 
+| RSANetWitness115.FilesList.mac.daemons.user | String | The name of the user under which the daemon runs. | 
+| RSANetWitness115.FilesList.mac.daemons.pid | Number | The daemon ID. | 
+| RSANetWitness115.FilesList.mac.daemons.onDemand | Boolean | True if the daemon is configured to run on demand. | 
+| RSANetWitness115.FilesList.mac.daemons.lastExitCode | Number | The daemon last exit code. | 
+| RSANetWitness115.FilesList.mac.daemons.timeout | Number | The daemon timeout value. | 
+| RSANetWitness115.FilesList.mac.daemons.daemons.launchArguments | String | The daemon launch argument. | 
+| RSANetWitness115.FilesList.mac.daemons.daemons.config | String | The full path of the configuration file used to configure the daemon. | 
+| RSANetWitness115.FilesList.mac.tasks.name | String | The task name. | 
+| RSANetWitness115.FilesList.mac.tasks.cronJob | Boolean | True if the task is a cron job, else launchd. | 
+| RSANetWitness115.FilesList.mac.tasks.launchArguments | String | The task launch argument. | 
+| RSANetWitness115.FilesList.mac.tasks.user | String | The name of the user under which this task will run. | 
+| RSANetWitness115.FilesList.mac.tasks.triggerString | String | The task trigger string. | 
+| RSANetWitness115.FilesList.mac.tasks.configFile | String | The full path of the configuration file used to configure the task. | 
+| RSANetWitness115.FilesList.mac.autoruns.type | String | The autorun type. | 
+| RSANetWitness115.FilesList.mac.autoruns.user | String | The name of the user under which the autorun is run. | 
+| RSANetWitness115.FilesList.mac.autoruns.name | String | The autorun label. | 
+| RSANetWitness115.FilesList.mac.autoruns.detail | String | The autorun details. | 
+| RSANetWitness115.FilesList.linux.processes.priority | Number | The process priority. | 
+| RSANetWitness115.FilesList.linux.processes.uid | Number | The user UID. | 
+| RSANetWitness115.FilesList.linux.processes.environment | String | The environment variables. | 
+| RSANetWitness115.FilesList.linux.processes.nice | Number | The process nice value. | 
+| RSANetWitness115.FilesList.linux.processes.securityContext | String | The process security context. | 
+| RSANetWitness115.FilesList.linux.processes.pid | Number | The process ID. | 
+| RSANetWitness115.FilesList.linux.processes.parentPid | Number | The parent process ID. | 
+| RSANetWitness115.FilesList.linux.processes.imageBase | Number | The process base address. | 
+| RSANetWitness115.FilesList.linux.processes.createUtcTime | String | The process UTC creation time. | 
+| RSANetWitness115.FilesList.linux.processes.owner | String | The user name. | 
+| RSANetWitness115.FilesList.linux.processes.launchArguments | String | The process launch arguments. | 
+| RSANetWitness115.FilesList.linux.processes.threadCount | Number | The number of threads running in the process. | 
+| RSANetWitness115.FilesList.linux.loadedLibraries.pid | String | The process ID in the loaded library. | 
+| RSANetWitness115.FilesList.linux.loadedLibraries.processName | String | The process name in the loaded library. | 
+| RSANetWitness115.FilesList.linux.loadedLibraries.imageBase | String | The process image base address in the loaded library. | 
+| RSANetWitness115.FilesList.linux.drivers.numberOfInstances | Number | The number of instances loaded in memory. | 
+| RSANetWitness115.FilesList.linux.drivers.loadState | String | The driver load state. | 
+| RSANetWitness115.FilesList.linux.drivers.dependencies | Unknown | The dependent driver names. | 
+| RSANetWitness115.FilesList.linux.drivers.author | String | The driver author name. | 
+| RSANetWitness115.FilesList.linux.drivers.description | String | The driver description. | 
+| RSANetWitness115.FilesList.linux.drivers.sourceVersion | String | The driver source version. | 
+| RSANetWitness115.FilesList.linux.drivers.versionMagic | String | The driver version magic. | 
+| RSANetWitness115.FilesList.linux.initds.initdHashSha256 | String | The init-d script file hash. | 
+| RSANetWitness115.FilesList.linux.initds.initdPaths | String | The init-d script file path. | 
+| RSANetWitness115.FilesList.linux.initds.pid | Number | The init-d script file process ID. | 
+| RSANetWitness115.FilesList.linux.initds.description | String | The init-d script file description. | 
+| RSANetWitness115.FilesList.linux.initds.status | String | The init-d script file status. | 
+| RSANetWitness115.FilesList.linux.initds.runLevels | Unknown | The ist of run levels in which the init-d script file is enabled. | 
+| RSANetWitness115.FilesList.linux.systemds.systemdHashSha256 | String | The systemd script file hash value. | 
+| RSANetWitness115.FilesList.linux.systemds.systemdPaths | String | The systemd script file path value. | 
+| RSANetWitness115.FilesList.linux.systemds.name | String | The systemd script file name. | 
+| RSANetWitness115.FilesList.linux.systemds.description | String | The systemd script file description. | 
+| RSANetWitness115.FilesList.linux.systemds.state | String | The systemd script file state. | 
+| RSANetWitness115.FilesList.linux.systemds.launchArguments | String | The systemd script file launch argument. | 
+| RSANetWitness115.FilesList.linux.systemds.pid | Number | The systemd script file process ID. | 
+| RSANetWitness115.FilesList.linux.systemds.triggeredBy | Unknown | The systemd script file triggered by list. | 
+| RSANetWitness115.FilesList.linux.systemds.triggerStrings | Unknown | The systemd script file trigger strings. | 
+| RSANetWitness115.FilesList.linux.autoruns.type | String | The autorun type. | 
+| RSANetWitness115.FilesList.linux.autoruns.label | String | The autorun label. | 
+| RSANetWitness115.FilesList.linux.autoruns.comments | String | The autorun comments. | 
+| RSANetWitness115.FilesList.linux.crons.user | String | The user account under which cron job was created. | 
+| RSANetWitness115.FilesList.linux.crons.triggerString | String | The trigger string that launches the cron job. | 
+| RSANetWitness115.FilesList.linux.crons.launchArguments | String | The cron job launch arguments. | 
+| RSANetWitness115.FilesList.firstFileName | String | The first name of the file sent by the agent. | 
+| RSANetWitness115.FilesList.reputationStatus | String | The file reputation status. | 
+| RSANetWitness115.FilesList.globalRiskScore | String | The global risk score. | 
+| RSANetWitness115.FilesList.firstSeenTime | String | The time the file was first seen by the endpoint server. | 
+| RSANetWitness115.FilesList.fileProperties.machineOsType | String | The operating system type \(Windows, Mac, Linux\). | 
+| RSANetWitness115.FilesList.signature | Object | The file signatory information. | 
+| RSANetWitness115.FilesList.signature.timeStamp | String | The signature timestamp. | 
+| RSANetWitness115.FilesList.signature.thumbprint | String | The certificate thumbprint. | 
+| RSANetWitness115.FilesList.signature.context | Unknown | The certificate context information. | 
+| RSANetWitness115.FilesList.signature.signer | String | The certificate signer information. | 
+| RSANetWitness115.FilesList.size | String | The file size. | 
+| RSANetWitness115.FilesList.checksumMd5 | String | The file MD5. | 
+| RSANetWitness115.FilesList.checksumSha1 | String | The file SHA1. | 
+| RSANetWitness115.FilesList.checksumSha256 | String | The file SHA256. | 
+| RSANetWitness115.FilesList.pe | Object | The file PE information. This is applicable for Windows files. | 
+| RSANetWitness115.FilesList.pe.timeStamp | String | The PE file timestamp. | 
+| RSANetWitness115.FilesList.pe.imageSize | String | The PE file image size. | 
+| RSANetWitness115.FilesList.pe.numberOfExportedFunctions | String | The number of exported functions in the PE file. | 
+| RSANetWitness115.FilesList.pe.numberOfNamesExported | String | The number of names exported in the PE file. | 
+| RSANetWitness115.FilesList.pe.numberOfExecuteWriteSections | String | The number of execute write sections in the PE file. | 
+| RSANetWitness115.FilesList.pe.context | Unknown | The PE file context information. | 
+| RSANetWitness115.FilesList.pe.resources | Object | The PE file resources. | 
+| RSANetWitness115.FilesList.pe.resources.originalFileName | String | The original filename as per PE information. | 
+| RSANetWitness115.FilesList.pe.resources.company | String | The company name as per PE information. | 
+| RSANetWitness115.FilesList.pe.resources.description | String | The file description as per PE information. | 
+| RSANetWitness115.FilesList.pe.resources.version | String | The file version as per PE information. | 
+| RSANetWitness115.FilesList.pe.sectionNames | Unknown | The list of section names in the PE file. | 
+| RSANetWitness115.FilesList.pe.importedLibraries | Unknown | The list of imported libraries in the PE file. | 
+| RSANetWitness115.FilesList.elf | Object | The file ELF information. This is applicable for Linux files. | 
+| RSANetWitness115.FilesList.elf.classType | String | The ELF file Class type. | 
+| RSANetWitness115.FilesList.elf.data | String | The ELF file data. | 
+| RSANetWitness115.FilesList.elf.entryPoint | String | The ELF file entry point. | 
+| RSANetWitness115.FilesList.elf.context | Unknown | The ELF file context information. | 
+| RSANetWitness115.FilesList.elf.type | String | The ELF file type. | 
+| RSANetWitness115.FilesList.elf.sectionNames | Unknown | The list of section names in the ELF file. | 
+| RSANetWitness115.FilesList.elf.importedLibraries | Unknown | The list of imported libraries in the ELF file. | 
+| RSANetWitness115.FilesList.macho | Object | The file Macho information. This is applicable for Mac files. | 
+| RSANetWitness115.FilesList.macho.uuid | String | The Macho file UUID. | 
+| RSANetWitness115.FilesList.macho.identifier | String | The Macho file identifier. | 
+| RSANetWitness115.FilesList.macho.minOsxVersion | String | The minimum OSx version for the Macho file. | 
+| RSANetWitness115.FilesList.macho.context | Unknown | The Macho file context information. | 
+| RSANetWitness115.FilesList.macho.flags | String | The Macho file flags. | 
+| RSANetWitness115.FilesList.macho.numberOfLoadCommands | String | The number of load commands for the Macho file. | 
+| RSANetWitness115.FilesList.macho.version | String | The Macho file version. | 
+| RSANetWitness115.FilesList.macho.sectionNames | Unknown | The Macho file section names. | 
+| RSANetWitness115.FilesList.macho.importedLibraries | Unknown | The Macho file imported libraries list. | 
+| RSANetWitness115.FilesList.entropy | String | The file entropy. | 
+| RSANetWitness115.FilesList.format | String | The file format. | 
+| RSANetWitness115.FilesList.fileStatus | String | The file status as assigned by the analyst. Can be Whitelist, Blacklist, Neutral, or Graylist. | 
+| RSANetWitness115.FilesList.remediationAction | String | The remediation action as assigned by the analyst. For example, Blocked. | 
+| RSANetWitness115.FilesList.localRiskScore | Number | The file score based on alerts triggered in the given agent. | 
+
 
 #### Command example
 ```!rsa-nw-files-list limit=1```
@@ -1449,7 +1443,7 @@ lists all related information of files from a specific Endpoint Server. you can 
 
 ### rsa-nw-scan-request
 ***
-starts a scan for the host with the specified agent ID. Each scan produces a snapshot, the full detailed can be seen using 'rsa-nw-snapshot-details-get' command
+Starts a scan for the host with the specified agent ID. Each scan produces a snapshot, the full details can be seen using the 'rsa-nw-snapshot-details-get' command.
 
 
 #### Base Command
@@ -1459,8 +1453,8 @@ starts a scan for the host with the specified agent ID. Each scan produces a sna
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| agent_id | Agent ID of the host. | Required | 
-| service_id | service ID of the specific Endpoint Server. View all service ID's using the 'rsa-nw-services-list' command. If none is given the service ID configured in the integration configuration will be used. | Optional | 
+| agent_id | The host agent ID. | Required | 
+| service_id | The service ID of the specific endpoint server. View all service IDs using the 'rsa-nw-services-list' command. If none is given, the service ID configured in the integration configuration is used. | Optional | 
 | cpu_max | You can use cpuMax to specify the amount of CPU the agent can use to run the scan. You can choose a value from 5 to 100. If you do not specify a value, the agent uses the default 25% CPU for the scan. | Optional | 
 
 
@@ -1475,7 +1469,7 @@ There is no context output for this command.
 
 ### rsa-nw-scan-stop-request
 ***
-stop a scan for the host with the specified agent ID.
+Stop a scan for the host with the specified agent ID.
 
 
 #### Base Command
@@ -1486,7 +1480,7 @@ stop a scan for the host with the specified agent ID.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | agent_id | Unique identifier of the host. | Required | 
-| service_id | service ID of the specific Endpoint Server. view all service ID's using the 'rsa-nw-services-list' command. If none is given the service ID configured in the integration configuration will be used. | Optional | 
+| service_id | The service ID of the specific endpoint server. View all service IDs using the 'rsa-nw-services-list' command. If none is given, the service ID configured in the integration configuration is used. | Optional | 
 
 
 #### Context Output
@@ -1500,7 +1494,7 @@ There is no context output for this command.
 
 ### rsa-nw-host-alerts-list
 ***
-Get all alerts triggered for a given host.
+Gets all alerts triggered for a given host.
 
 
 #### Base Command
@@ -1510,21 +1504,21 @@ Get all alerts triggered for a given host.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| agent_id | Unique identifier of the host. | Required | 
-| service_id | service ID of the specific Endpoint Server. view all service ID's using the 'rsa-nw-services-list' command. If none is given the service ID configured in the integration configuration will be used. | Optional | 
-| alert_category |  filter alerts based on the category. Possible values are: Critical, High, Medium, Low. | Optional | 
+| agent_id | Unique host identifier. | Required | 
+| service_id | The service ID of the specific endpoint server. View all service IDs using the 'rsa-nw-services-list' command. If none is given, the service ID configured in the integration configuration is used. | Optional | 
+| alert_category | Filter alerts based on the category. Can be Critical, High, Medium, or Low. Possible values are: Critical, High, Medium, Low. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| RSANetWitness115.HostAlerts.id | String | ID of the entity for which score needs to be queried. Agent ID in case of host and checksum in case of files. | 
-| RSANetWitness115.HostAlerts.distinctAlertCount.critical | Number | Number of critical alerts. | 
-| RSANetWitness115.HostAlerts.distinctAlertCount.high | Number | Number of high alerts. | 
-| RSANetWitness115.HostAlerts.distinctAlertCount.medium | Number | Number of medium alerts. | 
-| RSANetWitness115.HostAlerts.distinctAlertCount.low | Number | Number of low alerts. | 
-| RSANetWitness115.HostAlerts.categorizedAlerts | String | Count of alert and events for a file/host, categorized by severity. | 
+| RSANetWitness115.HostAlerts.id | String | The entity ID for which the score needs to be queried. Use agent ID for hosts and checksum for files. | 
+| RSANetWitness115.HostAlerts.distinctAlertCount.critical | Number | The number of critical alerts. | 
+| RSANetWitness115.HostAlerts.distinctAlertCount.high | Number | The number of high alerts. | 
+| RSANetWitness115.HostAlerts.distinctAlertCount.medium | Number | The number of medium alerts. | 
+| RSANetWitness115.HostAlerts.distinctAlertCount.low | Number | The number of low alerts. | 
+| RSANetWitness115.HostAlerts.categorizedAlerts | String | The alert and event count for a file/host, categorized by severity. | 
 
 #### Command example
 ```!rsa-nw-host-alerts-list agent_id=1```
@@ -1556,7 +1550,7 @@ Get all alerts triggered for a given host.
 
 ### rsa-nw-file-alerts-list
 ***
-Get all alerts triggered for a given file
+Gets all alerts triggered for a given file.
 
 
 #### Base Command
@@ -1567,20 +1561,20 @@ Get all alerts triggered for a given file
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | check_sum | The file hash, either md5 or sha256. Possible values are: . | Required | 
-| service_id | service ID of the specific Endpoint Server. view all service ID's using the 'rsa-nw-services-list' command. If none is given the service ID configured in the integration configuration will be used. | Optional | 
-| alert_category |  filter alerts based on the category. Possible values are: Critical, High, Medium, Low. | Optional | 
+| service_id | The service ID of the specific endpoint server. View all service IDs using the 'rsa-nw-services-list' command. If none is given, the service ID configured in the integration configuration is used. | Optional | 
+| alert_category | Filter alerts based on the category.  Can be Critical, High, Medium, or Low. Possible values are: Critical, High, Medium, Low. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| RSANetWitness115.FileAlerts.id | String | ID of the entity for which score needs to be queried. Agent ID in case of host and checksum in case of files. | 
-| RSANetWitness115.FileAlerts.distinctAlertCount.critical | Number | Number of critical alerts. | 
-| RSANetWitness115.FileAlerts.distinctAlertCount.high | Number | Number of high alerts. | 
-| RSANetWitness115.FileAlerts.distinctAlertCount.medium | Number | Number of medium alerts. | 
-| RSANetWitness115.FileAlerts.distinctAlertCount.low | Number | Number of low alerts. | 
-| RSANetWitness115.FileAlerts.categorizedAlerts | String | Count of alert and events for a file/host, categorized by severity. | 
+| RSANetWitness115.FileAlerts.id | String | The entity ID for which score needs to be queried. Use agent ID for hosts and checksum for files. | 
+| RSANetWitness115.FileAlerts.distinctAlertCount.critical | Number | The number of critical alerts. | 
+| RSANetWitness115.FileAlerts.distinctAlertCount.high | Number | The number of high alerts. | 
+| RSANetWitness115.FileAlerts.distinctAlertCount.medium | Number | The number of medium alerts. | 
+| RSANetWitness115.FileAlerts.distinctAlertCount.low | Number | The number of low alerts. | 
+| RSANetWitness115.FileAlerts.categorizedAlerts | String | The alert and event count for a file/host, categorized by severity. | 
 
 #### Command example
 ```!rsa-nw-file-alerts-list check_sum=5dad5b58ad14d95b29ef7fc2e685fa3270e9c3a347d4183c84b1cbbf29ab2510```
@@ -1612,7 +1606,7 @@ Get all alerts triggered for a given file
 
 ### rsa-nw-file-download
 ***
-Initiate file download for a single file, or multiple files, to the Endpoint Server
+Initiate file download for a single file or multiple files to the endpoint server.
 
 
 #### Base Command
@@ -1622,11 +1616,11 @@ Initiate file download for a single file, or multiple files, to the Endpoint Ser
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| agent_id | Agent ID of the host. | Required | 
-| service_id | service ID of the specific Endpoint Server. view all service ID's using the 'rsa-nw-services-list' command. If none is given the service ID configured in the integration configuration will be used. | Optional | 
-| path | Path where the files may be present, either specify a single file path or use a wildcard. for example - "C:\Users\sample\*" . To see scanned files paths use the command 'rsa-nw-snapshot-details-get'. | Required | 
-| count_files | Maximum number of files returned by the host matching the wildcard path (default 10). Default is 10. | Optional | 
-| max_file_size | Maximum size of each file (in MB) when using a wildcard path (default 100 MB). Default is 100. | Optional | 
+| agent_id | The host agent ID. | Required | 
+| service_id | The service ID of the specific endpoint server. View all service IDs using the 'rsa-nw-services-list' command. If none is given, the service ID configured in the integration configuration is used. | Optional | 
+| path | The path where the files may be present, either specify a single file path or use a wild card. for example - "C:\Users\sample\*" . To see scanned files paths use the command 'rsa-nw-snapshot-details-get'. | Required | 
+| count_files | The maximum number of files returned by the host matching the wild card path. Default is 10. | Optional | 
+| max_file_size | The maximum size of each file (in MB) when using a wild card path. Default is 100. | Optional | 
 
 
 #### Context Output
@@ -1640,7 +1634,7 @@ There is no context output for this command.
 
 ### rsa-nw-mft-download-request
 ***
-initiatesthe download of MFT to the Endpoint Server.
+Initiates the MFT download to the endpoint server.
 
 
 #### Base Command
@@ -1650,8 +1644,8 @@ initiatesthe download of MFT to the Endpoint Server.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| agent_id | Agent ID of the host. | Required | 
-| service_id | Service ID of the Endpoint Server to be connected. | Optional | 
+| agent_id | The host agent ID. | Required | 
+| service_id | The service ID of the endpoint server to be connected. | Optional | 
 
 
 #### Context Output
@@ -1659,7 +1653,7 @@ initiatesthe download of MFT to the Endpoint Server.
 There is no context output for this command.
 ### rsa-nw-system-dump-download-request
 ***
-initiate the download of the system dump to the Endpoint Server.
+Initiates the download of the system dump to the endpoint server.
 
 
 #### Base Command
@@ -1669,8 +1663,8 @@ initiate the download of the system dump to the Endpoint Server.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| agent_id | Agent ID of the host. | Required | 
-| service_id | Service ID of the Endpoint Server to be connected. | Optional | 
+| agent_id | The host agent ID. | Required | 
+| service_id | The service ID of the endpoint server to be connected. | Optional | 
 
 
 #### Context Output
@@ -1678,7 +1672,7 @@ initiate the download of the system dump to the Endpoint Server.
 There is no context output for this command.
 ### rsa-nw-process-dump-download-request
 ***
-initiate the download of the process dump to the Endpoint Server. You can find the process details by using the 'rsa-nw-snapshot-details-get' and filter by category=PROCESSES, or use the RSA NW UI.
+Initiates the download of the process dump to the endpoint server. You can find the process details by using the 'rsa-nw-snapshot-details-get' and filter by category=PROCESSES, or use the RSA NW UI.
 
 
 #### Base Command
@@ -1688,14 +1682,14 @@ initiate the download of the process dump to the Endpoint Server. You can find t
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| agent_id | Agent ID of the host. | Required | 
-| service_id | Service ID of the Endpoint Server to be connected. | Optional | 
-| process_id | ID of the process. | Required | 
-| eprocess | Identifier of the process in windows. | Required | 
-| file_name | the file's name. | Required | 
-| path | path to the file. | Optional | 
-| hash | the hash (sha256 or md5) of the file. can be found in the 'rsa-nw-snapshot-details-get' command response under field fileProperties.checksumSha256 or fileProperties.checksumMd5. | Required | 
-| process_create_utctime | The process created time in UTC. can be found in the 'rsa-nw-snapshot-details-get' response under  field windows.processes.createUtcTime. | Required | 
+| agent_id | The host agent ID. | Required | 
+| service_id | The service ID of the endpoint server to be connected. | Optional | 
+| process_id | The process ID. | Required | 
+| eprocess | The process identifier in Windows. | Required | 
+| file_name | the file name. | Required | 
+| path | The file path. | Optional | 
+| hash | The hash (sha256 or md5) of the file. Can be found in the 'rsa-nw-snapshot-details-get' command response under field fileProperties.checksumSha256 or fileProperties.checksumMd5. | Required | 
+| process_create_utctime | The process UTC created time. Can be found in the 'rsa-nw-snapshot-details-get' response under field windows.processes.createUtcTime. | Required | 
 
 
 #### Context Output
@@ -1713,11 +1707,11 @@ Isolates the host with the specified agent ID from the network.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| agent_id | Unique identifier of the host. | Required | 
-| service_id | Service ID of the Endpoint Server to be connected. | Optional | 
+| agent_id | The unique host identifier. | Required | 
+| service_id | The service ID of the endpoint server to be connected. | Optional | 
 | allow_dns_only_by_system | Allow DNS communication. Possible values are: True, False. | Optional | 
-| exclusion_list | Comma separated list of IPv4 or IPv6 addresses to excluded from isolation. For example - 1.2.3.4,11:22:33:44. | Optional | 
-| comment | additional information. | Required | 
+| exclusion_list | A comma-separated list of IPv4 or IPv6 addresses to excluded from isolation. For example, 1.2.3.4,11:22:33:44. | Optional | 
+| comment | Additional information. | Required | 
 
 
 #### Context Output
@@ -1725,7 +1719,7 @@ Isolates the host with the specified agent ID from the network.
 There is no context output for this command.
 ### rsa-nw-endpoint-update-exclusions
 ***
-Update the network isolation exclusion list for the host with the specified agent ID
+Updates the network isolation exclusion list for the host with the specified agent ID.
 
 
 #### Base Command
@@ -1735,11 +1729,11 @@ Update the network isolation exclusion list for the host with the specified agen
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| agent_id | Unique identifier of the host. | Required | 
-| service_id | Service ID of the Endpoint Server to be connected. | Optional | 
-| allow_dns_only_by_system | Allow DNS communication. | Optional | 
-| exclusion_list |  Comma separated list of IPv4 or IPv6 addresses to excluded from isolation. For example - 1.2.3.4,11:22:33:44. | Required | 
-| comment | additional information. | Required | 
+| agent_id | The unique host identifier. | Required | 
+| service_id | The service ID of the endpoint server to be connected. | Optional | 
+| allow_dns_only_by_system | Allows DNS communication. | Optional | 
+| exclusion_list |  A comma-separated list of IPv4 or IPv6 addresses to excluded from isolation. For example, 1.2.3.4,11:22:33:44. | Required | 
+| comment | Additional information. | Required | 
 
 
 #### Context Output
@@ -1747,7 +1741,7 @@ Update the network isolation exclusion list for the host with the specified agen
 There is no context output for this command.
 ### rsa-nw-endpoint-isolation-remove
 ***
-restore the network connection and removes IP addresses added to the exclusion list for the host with the specified agent ID.
+Restores the network connection and removes IP addresses added to the exclusion list for the host with the specified agent ID.
 
 
 #### Base Command
@@ -1757,9 +1751,9 @@ restore the network connection and removes IP addresses added to the exclusion l
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| agent_id | Unique identifier of the host. | Required | 
-| service_id | Service ID of the Endpoint Server to be connected. | Optional | 
-| allow_dns_only_by_system | Allow DNS communication. | Optional | 
+| agent_id | The unique host identifier. | Required | 
+| service_id | The service ID of the endpoint server to be connected. | Optional | 
+| allow_dns_only_by_system | Allows DNS communication. | Optional | 
 | comment | Additional information. | Required | 
 
 
