@@ -141,7 +141,7 @@ script:
     - name: hours_back
       default: false
       defaultValue: 1
-      description: Defines how many hours hours back in time should the indicators
+      description: Defines how many hours back in time should the indicators
         be fetched from. Value should be between 1 and 4. Recommended value is 1.
       isArray: false
       required: false
