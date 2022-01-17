@@ -18,7 +18,9 @@
         "Trending"
     ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Cado Security"
+    ],
     "devEmail": [
         "jthompson@cadosecurity.com",
         "ahillel@cadosecurity.com"

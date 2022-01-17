@@ -485,8 +485,12 @@ def main() -> None:
 
     except Exception as e:
         message: str = str(e)
-        demisto.error(traceback.format_exc())
-        return_error(enrich_errors(message, command), error=e)
+
+        if '404' in message:
+            return_results(f'Nothing found for {command}')
+        else:
+            demisto.error(traceback.format_exc())
+            return_error(enrich_errors(message, command), error=e)
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

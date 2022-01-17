@@ -96,7 +96,7 @@ script:
       description: Array of users assigned to the retrieved project
       type: Array
     - contextPath: CadoResponse.Projects.created
-      description: Creation date of the project
+      description: Creation date of the project (format YYYY-MM-DDTHH:MM:SSZ)
       type: Date
   - name: cado-get-pipeline
     arguments:
@@ -128,7 +128,7 @@ script:
       description: The type of pipeline that was retrieved
       type: String
     - contextPath: CadoResponse.Pipeline.created
-      description: The date at which the retrieved pipeline was started
+      description: The date at which the retrieved pipeline was started (format YYYY-MM-DDTHH:MM:SSZ)
       type: Date
     - contextPath: CadoResponse.Pipeline.evidence_id
       description: The evidence ID linked to the retrieved pipeline
@@ -301,7 +301,7 @@ script:
   script: "-"
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.9.9.25564
+  dockerimage: demisto/python3:3.10.1.25933
 fromversion: "6.0.0"
 tests:
 - No tests (auto formatted)

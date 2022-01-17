@@ -5,5 +5,5 @@
 !cado-get-pipeline project_id=1 limit=100
 !cado-list-ec2 project_id=1 region="us-east-1" limit=100
 !cado-list-s3 project_id=1 limit=100
-!cado-trigger-ec2 project_id=1 instance_id="i-0ab12c3d456e789" region="us-east-1" bucket="cado-default-bucket" compress=true include_disks=true include_hash=true include_logs=true include_screenshot=true
-!cado-trigger-s3 project_id=1 bucket="my-bucket" file_name="my-file.dd.gz"
+!cado-trigger-ec2 project_id=1 instance_id="i-0e03f893198b23633" region="us-east-1" bucket="cado-test-josh" compress=true include_disks=true include_hash=true include_logs=true include_screenshot=true
+!cado-trigger-s3 project_id=1 bucket="cado-test-josh" file_name="image.qcow2"
