@@ -150,6 +150,7 @@ class AWSClient:
             else:
                 timeout_vals = timeout.split(',')
                 read_timeout = int(timeout_vals[0])
+                # the default connect timeout is 10
                 connect_timeout = 10 if len(timeout_vals) == 1 else int(timeout_vals[1])
 
         except ValueError:
