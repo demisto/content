@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: iDefense_v2
+  id: ACTI Indicator Query
   version: -1
 configuration:
 - display: URL
@@ -38,8 +38,8 @@ configuration:
   type: 8
   required: false
 description: ACTI provides intelligence regarding security threats and vulnerabilities.
-display: Accenture CTI
-name: iDefense_v2
+display: ACTI Indicator Query
+name: ACTI Indicator Query
 script:
   commands:
   - name: ip
@@ -138,7 +138,7 @@ script:
       description: The actual score.
       type: Number
     description: Checks the reputation of the given URL.
-  - name: idefense-get-ioc-by-uuid
+  - name: acti-get-ioc-by-uuid
     arguments:
     - name: uuid
       required: true
@@ -200,4 +200,4 @@ script:
   type: python
 fromversion: 5.5.0
 tests:
-- iDefense_v2_Test
+- ACTI Indicator Query Test
