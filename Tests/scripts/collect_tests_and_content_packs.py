@@ -1317,15 +1317,15 @@ def get_from_version_and_to_version_bounderies(all_modified_files_paths: set,
                     if to_version:
                         max_to_version = max(max_to_version, Version(to_version))
 
-    if max_to_version.vstring == '0.0.0' or max_to_version < max_from_version:
+    if str(max_to_version) == '0.0.0' or max_to_version < max_from_version:
         max_to_version = Version('99.99.99')
-    if min_from_version.vstring == '99.99.99':
+    if str(min_from_version) == '99.99.99':
         min_from_version = Version('0.0.0')
     logging.debug(f'modified files are {all_modified_files_paths}')
     logging.debug(f'lowest from version found is {min_from_version}')
     logging.debug(f'highest from version found is {max_from_version}')
     logging.debug(f'highest to version found is {max_to_version}')
-    return min_from_version.vstring, max_to_version.vstring
+    return str(min_from_version), str(max_to_version)
 
 
 def create_filter_envs_file(from_version: str, to_version: str, documentation_changes_only: bool = False):
