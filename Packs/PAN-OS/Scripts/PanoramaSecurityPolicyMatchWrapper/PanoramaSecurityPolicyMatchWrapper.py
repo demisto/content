@@ -35,17 +35,20 @@ def panorama_security_policy_match(args):
     try:
         result = demisto.executeCommand('panorama-security-policy-match', args=args)
         if 'The query did not match a Security policy' in result[0].get('Contents'):
-            return [f'The query for source: {args.get("source")}, destination: '
-                    f'{args.get("destination")} did not match a Security policy.']
-        else:
-            entry_context = result[0]['EntryContext']
+            res = [f'The query for source: {args.get("source")}, destination: '
+                   f'{args.get("destination")} did not match a Security policy.']
+        elif entry_context := result[0]['EntryContext']:
             policy_match = entry_context.get(
                 'Panorama.SecurityPolicyMatch(val.Query == obj.Query && val.Device == obj.Device)')
             for entry in policy_match:
                 if rules := entry.get('Rules'):
                     res.append(rules)
-
-            return res
+        elif 'Request Failed' in result[0].get('Contents'):
+            res = [f'For the following arguments: {args}, panorama-security-policy-match command failed to run: '
+                   f'Error: {result[0].get("Contents")}']
+        else:
+            res = result[0].get("Contents")
+        return res
     except Exception as e:
         raise Exception(f'Failed to run panorama-security-policy-match command. Error: {str(e)}')
 

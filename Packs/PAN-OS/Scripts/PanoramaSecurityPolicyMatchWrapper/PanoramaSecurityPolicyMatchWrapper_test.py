@@ -18,9 +18,9 @@ SECURITY_POLICY_MATCH2 = ['The query for source: 1.1.1.1, destination: 8.8.8.8 d
 def test_wrapper_command(mocker):
     """
     Given:
-        -
+        - args for wrapper_command
     When:
-        -
+        - running PanoramaSecurityPolicyMatchWrapper command
     Then:
         - Validate the output returned as expected
     """
@@ -43,9 +43,9 @@ def test_wrapper_command(mocker):
 def test_wrapper_panorama_security_policy_match(mocker):
     """
     Given:
-        -
+        - args for wrapper_panorama_security_policy_match
     When:
-        -
+        - calling wrapper_panorama_security_policy_match command
     Then:
         - Validate the output returned as expected
     """
