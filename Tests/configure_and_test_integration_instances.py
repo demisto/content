@@ -9,7 +9,7 @@ import sys
 import uuid
 import zipfile
 from datetime import datetime
-from distutils.version import LooseVersion
+from packaging.version import Version
 from enum import IntEnum
 from pprint import pformat
 from threading import Thread
@@ -271,7 +271,7 @@ def check_test_version_compatible_with_server(test, server_version):
     test_to_version = format_version(test.get('toversion', '99.99.99'))
     server_version = format_version(server_version)
 
-    if not LooseVersion(test_from_version) <= LooseVersion(server_version) <= LooseVersion(test_to_version):
+    if not Version(test_from_version) <= Version(server_version) <= Version(test_to_version):
         playbook_id = test.get('playbookID')
         logging.debug(
             f'Test Playbook: {playbook_id} was ignored in the content installation test due to version mismatch '
