@@ -81,7 +81,7 @@ script:
     - contextPath: PhishUp.Action
       description: Chosen action from PhishUp instance
       type: String
-  dockerimage: demisto/python3:3.9.9.25564
+  dockerimage: demisto/python3:3.10.1.25933
   feed: false
   isfetch: false
   longRunning: false
@@ -92,4 +92,4 @@ script:
   type: python
 tests:
 - No tests (auto formatted)
-fromversion: 5.5.0
+fromversion: 6.0.0
