@@ -17,4 +17,3 @@ if isinstance(loc, str):
         lat, lng = loc.split(':')
     demisto.results(
         {'ContentsFormat': formats['json'], 'Type': entryTypes['map'], 'Contents': {"lat": float(lat), "lng": float(lng)}})
-
