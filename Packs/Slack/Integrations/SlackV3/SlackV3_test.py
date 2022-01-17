@@ -188,7 +188,7 @@ RETURN_ERROR_TARGET = 'SlackV3.return_error'
 
 @pytest.fixture(autouse=True)
 def setup(mocker):
-    from SlackV3 import init_globals
+    import SlackV3
 
     mocker.patch.object(demisto, 'info')
     mocker.patch.object(demisto, 'debug')
@@ -200,7 +200,9 @@ def setup(mocker):
         'bot_id': 'W12345678'
     })
 
-    init_globals()
+    SlackV3.init_globals()
+    # We will manually change the caching mode to ensure it doesn't break previous user's envs.
+    SlackV3.ENABLE_CACHING = False
 
 
 class AsyncMock(MagicMock):
@@ -411,24 +413,27 @@ def test_get_user_by_name(mocker):
     # Set
 
     def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
-        users = {'members': js.loads(USERS)}
         new_user = {
             'name': 'perikles',
             'profile': {
                 'email': 'perikles@acropoli.com',
+                'display_name': 'Dingus',
+                'real_name': 'Lingus'
             },
             'id': 'U012B3CUI'
         }
-
-        users['members'].append(new_user)
-        return users
+        if method == 'users.list':
+            users = {'members': js.loads(USERS)}
+            users['members'].append(new_user)
+            return users
+        elif method == 'users.lookupByEmail':
+            return {'user': new_user}
 
     mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
     mocker.patch.object(slack_sdk.WebClient, 'api_call', side_effect=api_call)
 
     # Assert
-
     # User name exists in integration context
     username = 'spengler'
     user = get_user_by_name(username)
@@ -465,6 +470,50 @@ def test_get_user_by_name(mocker):
     user = get_user_by_name(username)
     assert user == {}
     assert slack_sdk.WebClient.api_call.call_count == 3
+
+
+def test_get_user_by_name_caching_disabled(mocker):
+    """
+    Given:
+        Test Case 1 - User's name only
+        Test Case 2 - A user's valid email
+        Test Case 3 - A user's valid email which is not in Slack.
+    When:
+        Searching for a user's ID
+    Then:
+        Test Case 1 - Assert that only an empty dict was returned and the API was not called.
+        Test Case 2 - Assert That the user's ID was found in the returned dict.
+        Test Case 3 - Assert that only an empty dict was returned
+    """
+    import SlackV3
+    # Set
+
+    user_1 = {'user': js.loads(USERS)[0]}
+    user_2 = {'user': {}}
+
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
+    mocker.patch.object(slack_sdk.WebClient, 'api_call', side_effect=[user_1, user_2])
+
+    SlackV3.DISABLE_CACHING = True
+    # Assert
+    # User name exists in integration context
+    username = 'spengler'
+    user = SlackV3.get_user_by_name(username)
+    assert user == {}
+    assert slack_sdk.WebClient.api_call.call_count == 0
+
+    # User email exists in Slack API
+    email = 'spengler@ghostbusters.example.com'
+    user = SlackV3.get_user_by_name(email)
+    assert user['id'] == 'U012A3CDE'
+    assert slack_sdk.WebClient.api_call.call_count == 1
+
+    # User email doesn't exist in Slack API
+    email = 'perikles@acropoli.com'
+    user = SlackV3.get_user_by_name(email)
+    assert user == {}
+    assert slack_sdk.WebClient.api_call.call_count == 2
 
 
 def test_get_user_by_name_paging(mocker):
@@ -1073,14 +1122,19 @@ def test_check_for_mirrors(mocker):
         'name': 'perikles',
         'profile': {
             'email': 'perikles@acropoli.com',
+            'display_name': 'Dingus',
+            'real_name': 'Lingus'
         },
         'id': 'U012B3CUI'
     }
 
     def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
-        users = {'members': js.loads(USERS)}
-        users['members'].append(new_user)
-        return users
+        if method == 'users.list':
+            users = {'members': js.loads(USERS)}
+            users['members'].append(new_user)
+            return users
+        elif method == 'users.lookupByEmail':
+            return {'user': new_user}
 
     # Set
     mirrors = js.loads(MIRRORS)
@@ -1125,7 +1179,7 @@ def test_check_for_mirrors(mocker):
     check_for_mirrors()
 
     calls = slack_sdk.WebClient.api_call.call_args_list
-    users_call = [c for c in calls if c[0][0] == 'users.list']
+    users_call = [c for c in calls if c[0][0] == 'users.lookupByEmail']
     invite_call = [c for c in calls if c[0][0] == 'conversations.invite']
 
     mirror_id = demisto.mirrorInvestigation.call_args[0][0]
@@ -1178,7 +1232,6 @@ def test_check_for_mirrors_email_user_not_matching(mocker):
     from SlackV3 import check_for_mirrors
 
     def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
-        users = {'members': js.loads(USERS)}
         new_user = {
             'name': 'nope',
             'profile': {
@@ -1186,9 +1239,12 @@ def test_check_for_mirrors_email_user_not_matching(mocker):
             },
             'id': 'U012B3CUI'
         }
-
-        users['members'].append(new_user)
-        return users
+        if method == 'users.list':
+            users = {'members': js.loads(USERS)}
+            users['members'].append(new_user)
+            return users
+        elif method == 'users.lookupByEmail':
+            return {'user': new_user}
 
     # Set
     mirrors = js.loads(MIRRORS)
@@ -1222,7 +1278,7 @@ def test_check_for_mirrors_email_user_not_matching(mocker):
     check_for_mirrors()
 
     calls = slack_sdk.WebClient.api_call.call_args_list
-    users_call = [c for c in calls if c[0][0] == 'users.list']
+    users_call = [c for c in calls if c[0][0] == 'users.lookupByEmail']
     invite_call = [c for c in calls if c[0][0] == 'conversations.invite']
 
     invited_users = [c[1]['json']['users'] for c in invite_call]
@@ -1302,7 +1358,6 @@ def test_check_for_mirrors_user_email_not_matching(mocker):
     from SlackV3 import check_for_mirrors
 
     def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
-        users = {'members': js.loads(USERS)}
         new_user = {
             'name': 'perikles',
             'profile': {
@@ -1310,9 +1365,12 @@ def test_check_for_mirrors_user_email_not_matching(mocker):
             },
             'id': 'U012B3CUI'
         }
-
-        users['members'].append(new_user)
-        return users
+        if method == 'users.list':
+            users = {'members': js.loads(USERS)}
+            users['members'].append(new_user)
+            return users
+        elif method == 'users.lookupByEmail':
+            return {'user': {}}
 
     # Set
     mirrors = js.loads(MIRRORS)
@@ -1347,7 +1405,7 @@ def test_check_for_mirrors_user_email_not_matching(mocker):
     check_for_mirrors()
 
     calls = slack_sdk.WebClient.api_call.call_args_list
-    users_call = [c for c in calls if c[0][0] == 'users.list']
+    users_call = [c for c in calls if c[0][0] == 'users.lookupByEmail']
     invite_call = [c for c in calls if c[0][0] == 'conversations.invite']
 
     invited_users = [c[1]['json']['users'] for c in invite_call]
@@ -1357,8 +1415,8 @@ def test_check_for_mirrors_user_email_not_matching(mocker):
 
     # Assert
     assert demisto.setIntegrationContext.call_count == 1
-    assert error_results[0]['Contents'] == 'User 123 not found in Slack'
-    assert len(users_call) == 2
+    assert error_results[0]['Contents'] == 'User bruce.wayne@pharmtech.zz not found in Slack'
+    assert len(users_call) == 1
     assert len(invite_call) == 1
     assert invited_users == ['U012A3CDE']
     assert channel == ['new_group']
@@ -2023,6 +2081,147 @@ def test_send_request(mocker):
     assert channel_res == 'neat'
 
 
+def test_send_request_channel_id(mocker):
+    """
+    Given:
+        Test Case 1: A valid Channel ID as a destination to send a message to.
+        Test Case 2: A valid Channel ID as a destination to send a file to.
+    When:
+        Test Case 1: Sending a message using a channel_id
+        Test Case 2: Sending a file using a channel_id
+    Then:
+        Test Case 1: Assert that the endpoint was called using only the channel_id, and no other calls were made.
+        Test Case 2: Assert that the endpoint was called using only the channel_id, and no other calls were made.
+    """
+    import SlackV3
+
+    # Set
+    def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
+        if method == 'users.list':
+            return {'members': js.loads(USERS)}
+        elif method == 'conversations.list':
+            return {'channels': js.loads(CONVERSATIONS)}
+        elif method == 'conversations.open':
+            return {'channel': {'id': 'im_channel'}}
+        return {}
+
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
+    mocker.patch.object(slack_sdk.WebClient, 'api_call', side_effect=api_call)
+    mocker.patch.object(SlackV3, 'send_file', return_value='neat')
+    mocker.patch.object(SlackV3, 'send_message', return_value='cool')
+
+    # Arrange
+
+    channel_id_text_res = SlackV3.slack_send_request(to=None, channel=None, group=None, message='Hi', channel_id='C12345')
+    channel_id_file_res = SlackV3.slack_send_request(to=None, channel=None, group=None, channel_id='C12345',
+                                                     file_dict={'foo': 'file'})
+
+    channel_id_text_args = SlackV3.send_message.call_args[0]
+    channel_id_file_args = SlackV3.send_file.call_args[0]
+
+    calls = slack_sdk.WebClient.api_call.call_args_list
+
+    users_call = [c for c in calls if c[0][0] == 'users.list']
+    conversations_call = [c for c in calls if c[0][0] == 'conversations.list']
+
+    # Assert
+    # Assert that NO user or channel APIs were called.
+    assert len(users_call) == 0
+    assert len(conversations_call) == 0
+
+    assert SlackV3.send_message.call_count == 1
+    assert SlackV3.send_file.call_count == 1
+
+    assert channel_id_text_args[0] == ['C12345']
+    assert channel_id_text_args[1] == ''
+    assert channel_id_text_args[2] is False
+    assert channel_id_text_args[4] == 'Hi'
+    assert channel_id_text_args[5] == ''
+
+    assert channel_id_file_args[0] == ['C12345']
+    assert channel_id_file_args[1] == {'foo': 'file'}
+    assert channel_id_file_args[3] == ''
+
+    assert channel_id_text_res == 'cool'
+    assert channel_id_file_res == 'neat'
+
+
+def test_send_request_caching_disabled(mocker, capfd):
+    import SlackV3
+
+    # Set
+    def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
+        if method == 'users.list':
+            return {'members': js.loads(USERS)}
+        elif method == 'conversations.list':
+            return {'channels': js.loads(CONVERSATIONS)}
+        elif method == 'conversations.open':
+            return {'channel': {'id': 'im_channel'}}
+        return {}
+
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
+    mocker.patch.object(slack_sdk.WebClient, 'api_call', side_effect=api_call)
+    mocker.patch.object(SlackV3, 'send_file', return_value='neat')
+    mocker.patch.object(SlackV3, 'send_message', return_value='cool')
+    return_error_mock = mocker.patch(RETURN_ERROR_TARGET, side_effect=InterruptedError())
+
+    SlackV3.DISABLE_CACHING = True
+    # Arrange
+
+    channel_id_text_res = SlackV3.slack_send_request(to=None, channel=None, group=None, message='Hi',
+                                                     channel_id='C12345')
+    channel_id_file_res = SlackV3.slack_send_request(to=None, channel=None, group=None, channel_id='C12345',
+                                                     file_dict={'foo': 'file'})
+    with capfd.disabled():
+        with pytest.raises(InterruptedError):
+            SlackV3.slack_send_request(to=None, channel='should-fail', group=None, message='Hi',
+                                       channel_id=None)
+    err_msg_1 = return_error_mock.call_args[0][0]
+
+    assert err_msg_1 == "Could not find the Slack conversation should-fail. If caching is disabled, try searching by" \
+                        " channel_id"
+
+    with capfd.disabled():
+        with pytest.raises(InterruptedError):
+            SlackV3.slack_send_request(to=None, channel='should-fail', group=None, channel_id=None,
+                                       file_dict={'foo': 'file'})
+    err_msg_2 = return_error_mock.call_args[0][0]
+
+    assert err_msg_2 == "Could not find the Slack conversation should-fail. If caching is disabled, try searching by" \
+                        " channel_id"
+
+    channel_id_text_args = SlackV3.send_message.call_args[0]
+    channel_id_file_args = SlackV3.send_file.call_args[0]
+
+    calls = slack_sdk.WebClient.api_call.call_args_list
+
+    users_call = [c for c in calls if c[0][0] == 'users.list']
+    conversations_call = [c for c in calls if c[0][0] == 'conversations.list']
+
+    # Assert
+    # Assert that NO user or channel APIs were called.
+    assert len(users_call) == 0
+    assert len(conversations_call) == 0
+
+    assert SlackV3.send_message.call_count == 1
+    assert SlackV3.send_file.call_count == 1
+
+    assert channel_id_text_args[0] == ['C12345']
+    assert channel_id_text_args[1] == ''
+    assert channel_id_text_args[2] is False
+    assert channel_id_text_args[4] == 'Hi'
+    assert channel_id_text_args[5] == ''
+
+    assert channel_id_file_args[0] == ['C12345']
+    assert channel_id_file_args[1] == {'foo': 'file'}
+    assert channel_id_file_args[3] == ''
+
+    assert channel_id_text_res == 'cool'
+    assert channel_id_file_res == 'neat'
+
+
 def test_send_request_different_name(mocker):
     import SlackV3
 
@@ -2097,6 +2296,7 @@ def test_send_request_with_severity(mocker):
     mocker.patch.object(SlackV3, 'send_message', return_value=SLACK_RESPONSE)
 
     # Arrange
+    SlackV3.DISABLE_CACHING = False
     SlackV3.slack_send()
 
     send_args = SlackV3.send_message.call_args[0]
@@ -2152,6 +2352,7 @@ def test_send_request_with_notification_channel(mocker):
     mocker.patch.object(SlackV3, 'send_message', return_value=SLACK_RESPONSE)
 
     # Arrange
+    SlackV3.DISABLE_CACHING = False
     SlackV3.slack_send()
 
     send_args = SlackV3.send_message.call_args[0]
@@ -2205,6 +2406,7 @@ def test_send_request_with_notification_channel_as_dest(mocker, notify):
     mocker.patch.object(SlackV3, 'send_message', return_value=SLACK_RESPONSE)
 
     # Arrange
+    SlackV3.DISABLE_CACHING = False
     SlackV3.slack_send()
 
     send_args = SlackV3.send_message.call_args[0]
@@ -2489,7 +2691,7 @@ def test_send_request_with_severity_user_doesnt_exist(mocker, capfd):
                                                          'permitted_notifications': ['incidentOpened']})
 
     SlackV3.init_globals()
-
+    SlackV3.DISABLE_CACHING = False
     # Set
 
     def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
@@ -2618,7 +2820,7 @@ def test_send_request_no_severity(mocker):
     # Assert
 
     assert return_error_mock.call_count == 1
-    assert err_msg == 'Either a user, group or channel must be provided.'
+    assert err_msg == 'Either a user, group, channel id, or channel must be provided.'
     assert len(users_call) == 0
     assert SlackV3.send_message.call_count == 0
 
@@ -2664,7 +2866,7 @@ def test_send_request_zero_severity(mocker):
     # Assert
 
     assert return_error_mock.call_count == 1
-    assert err_msg == 'Either a user, group or channel must be provided.'
+    assert err_msg == 'Either a user, group, channel id, or channel must be provided.'
     assert len(users_call) == 0
     assert SlackV3.send_message.call_count == 0
 
@@ -2877,7 +3079,7 @@ def test_get_conversation_by_name_paging(mocker):
 
     def api_call(method: str, http_verb: str = 'POST', file: str = None, params=None, json=None, data=None):
         if method == 'conversations.list':
-            if len(params) == 2:
+            if len(params) == 3:
                 return {'channels': js.loads(CONVERSATIONS), 'response_metadata': {
                     'next_cursor': 'dGVhbTpDQ0M3UENUTks='
                 }}
@@ -2899,9 +3101,9 @@ def test_get_conversation_by_name_paging(mocker):
 
     # Assert
     assert args[0][0][0] == 'conversations.list'
-    assert len(first_args['params']) == 2
+    assert len(first_args['params']) == 3
     assert first_args['params']['limit'] == 200
-    assert len(second_args['params']) == 3
+    assert len(second_args['params']) == 4
     assert second_args['params']['cursor'] == 'dGVhbTpDQ0M3UENUTks='
     assert channel['id'] == 'C248918AB'
     assert slack_sdk.WebClient.api_call.call_count == 2
@@ -2958,7 +3160,7 @@ def test_send_file_no_args_no_investigation(mocker):
 
     # Assert
     assert SlackV3.slack_send_request.call_count == 0
-    assert err_msg == 'Either a user, group or channel must be provided.'
+    assert err_msg == 'Either a user, group, channel id or channel must be provided.'
 
 
 def test_set_topic(mocker):
@@ -3057,8 +3259,8 @@ def test_set_topic_no_args_no_investigation(mocker):
 
     # Assert
     assert SlackV3.get_conversation_by_name.call_count == 0
-    assert err_msg == 'Channel was not found - Either the Slack app is not a member of the channel, ' \
-                      'or the slack app does not have permission to find the channel.'
+    assert err_msg == 'The channel was not found. Either the Slack app is not a member of the channel, or the slack app ' \
+                      'does not have permission to find the channel.'
 
 
 def test_invite_users(mocker):
@@ -3139,8 +3341,8 @@ def test_invite_users_no_channel_doesnt_exist(mocker):
     # Assert
     assert SlackV3.get_conversation_by_name.call_count == 0
     assert SlackV3.invite_users_to_conversation.call_count == 0
-    assert err_msg == 'Channel was not found - Either the Slack app is not a member of the channel, ' \
-                      'or the slack app does not have permission to find the channel.'
+    assert err_msg == 'The channel was not found. Either the Slack app is not a member of the channel, or the slack app ' \
+                      'does not have permission to find the channel.'
 
 
 def test_kick_users(mocker):
@@ -3184,6 +3386,7 @@ def test_kick_users_no_channel(mocker):
     mocker.patch.object(demisto, 'results')
 
     # Arrange
+    SlackV3.DISABLE_CACHING = False
     SlackV3.kick_from_channel()
 
     send_args = SlackV3.kick_users_from_conversation.call_args[0]
@@ -3221,8 +3424,8 @@ def test_kick_users_no_channel_doesnt_exist(mocker):
     # Assert
     assert SlackV3.get_conversation_by_name.call_count == 0
     assert SlackV3.invite_users_to_conversation.call_count == 0
-    assert err_msg == 'Channel was not found - Either the Slack app is not a member of the channel, ' \
-                      'or the slack app does not have permission to find the channel.'
+    assert err_msg == 'The channel was not found. Either the Slack app is not a member of the channel, or the slack app ' \
+                      'does not have permission to find the channel.'
 
 
 def test_rename_channel(mocker):
@@ -3321,8 +3524,8 @@ def test_rename_no_args_no_investigation(mocker):
 
     # Assert
     assert SlackV3.get_conversation_by_name.call_count == 0
-    assert err_msg == 'Channel was not found - Either the Slack app is not a member of the channel, ' \
-                      'or the slack app does not have permission to find the channel.'
+    assert err_msg == 'The channel was not found. Either the Slack app is not a member of the channel, or the slack app ' \
+                      'does not have permission to find the channel.'
 
 
 def test_get_user(mocker):
@@ -3350,13 +3553,14 @@ def test_get_user(mocker):
 
 
 def test_get_user_by_name_paging_rate_limit(mocker):
-    from SlackV3 import get_user_by_name, init_globals
+    import SlackV3
     from slack_sdk.errors import SlackApiError
     from slack_sdk.web.slack_response import SlackResponse
     import time
 
     # Set
-    init_globals()
+    SlackV3.init_globals()
+    SlackV3.DISABLE_CACHING = False
     err_response: SlackResponse = SlackResponse(api_url='', client=None, http_verb='GET', req_args={},
                                                 data={'ok': False}, status_code=429, headers={'Retry-After': 30})
     first_call = {'members': js.loads(USERS), 'response_metadata': {'next_cursor': 'dGVhbTpDQ0M3UENUTks='}}
@@ -3369,7 +3573,7 @@ def test_get_user_by_name_paging_rate_limit(mocker):
     mocker.patch.object(time, 'sleep')
 
     # Arrange
-    user = get_user_by_name('alexios')
+    user = SlackV3.get_user_by_name('alexios')
     args = slack_sdk.WebClient.api_call.call_args_list
     first_args = args[0][1]
     second_args = args[2][1]
@@ -3384,13 +3588,14 @@ def test_get_user_by_name_paging_rate_limit(mocker):
 
 
 def test_get_user_by_name_paging_rate_limit_error(mocker):
-    from SlackV3 import get_user_by_name, init_globals
+    import SlackV3
     from slack_sdk.errors import SlackApiError
     from slack_sdk.web.slack_response import SlackResponse
     import time
 
     # Set
-    init_globals()
+    SlackV3.init_globals()
+    SlackV3.DISABLE_CACHING = False
     err_response: SlackResponse = SlackResponse(api_url='', client=None, http_verb='GET', req_args={},
                                                 data={'ok': False}, status_code=429, headers={'Retry-After': 40})
     first_call = {'members': js.loads(USERS), 'response_metadata': {'next_cursor': 'dGVhbTpDQ0M3UENUTks='}}
@@ -3404,7 +3609,7 @@ def test_get_user_by_name_paging_rate_limit_error(mocker):
 
     # Arrange
     with pytest.raises(SlackApiError):
-        get_user_by_name('alexios')
+        SlackV3.get_user_by_name('alexios')
     args = slack_sdk.WebClient.api_call.call_args_list
     first_args = args[0][1]
 
@@ -3415,12 +3620,13 @@ def test_get_user_by_name_paging_rate_limit_error(mocker):
 
 
 def test_get_user_by_name_paging_normal_error(mocker):
-    from SlackV3 import get_user_by_name, init_globals
+    import SlackV3
     from slack_sdk.errors import SlackApiError
     from slack_sdk.web.slack_response import SlackResponse
 
     # Set
-    init_globals()
+    SlackV3.init_globals()
+    SlackV3.DISABLE_CACHING = False
     err_response: SlackResponse = SlackResponse(api_url='', client=None, http_verb='GET', req_args={},
                                                 data={'ok': False}, status_code=500, headers={})
     first_call = {'members': js.loads(USERS), 'response_metadata': {'next_cursor': 'dGVhbTpDQ0M3UENUTks='}}
@@ -3433,7 +3639,7 @@ def test_get_user_by_name_paging_normal_error(mocker):
 
     # Arrange
     with pytest.raises(SlackApiError):
-        get_user_by_name('alexios')
+        SlackV3.get_user_by_name('alexios')
     args = slack_sdk.WebClient.api_call.call_args_list
     first_args = args[0][1]
 
@@ -3660,14 +3866,17 @@ def test_handle_tags_in_message_sync(mocker):
     mocker.patch.object(slack_sdk.WebClient, 'api_call', side_effect=api_call)
 
     user_exists_message = 'Hello <@spengler>!'
+    user_exists_message_in_email = "Hello <@spengler>! connected with spengler@ghostbusters.example.com !"
     user_doesnt_exist_message = 'Goodbye <@PetahTikva>!'
 
     user_message_exists_result = handle_tags_in_message_sync(user_exists_message)
+    user_message_exists_in_email_result = handle_tags_in_message_sync(user_exists_message_in_email)
     user_message_doesnt_exist_result = handle_tags_in_message_sync(user_doesnt_exist_message)
 
     # Assert
 
     assert user_message_exists_result == 'Hello <@U012A3CDE>!'
+    assert user_message_exists_in_email_result == 'Hello <@U012A3CDE>! connected with spengler@ghostbusters.example.com !'
     assert user_message_doesnt_exist_result == 'Goodbye PetahTikva!'
 
 

@@ -105,6 +105,38 @@ def initialize_server(host, port, secure_connection, unsecure):
     return Server(host)
 
 
+def user_account_to_boolean_fields(user_account_control):
+    """
+    parse the userAccountControl into boolean values.
+    following the values from:
+    https://docs.microsoft.com/en-US/troubleshoot/windows-server/identity/useraccountcontrol-manipulate-account-properties
+    """
+    return {
+        'SCRIPT': bool(user_account_control & 0x0001),
+        'ACCOUNTDISABLE': bool(user_account_control & 0x0002),
+        'HOMEDIR_REQUIRED': bool(user_account_control & 0x0008),
+        'LOCKOUT': bool(user_account_control & 0x0010),
+        'PASSWD_NOTREQD': bool(user_account_control & 0x0020),
+        'PASSWD_CANT_CHANGE': bool(user_account_control & 0x0040),
+        'ENCRYPTED_TEXT_PWD_ALLOWED': bool(user_account_control & 0x0080),
+        'TEMP_DUPLICATE_ACCOUNT': bool(user_account_control & 0x0100),
+        'NORMAL_ACCOUNT': bool(user_account_control & 0x0200),
+        'INTERDOMAIN_TRUST_ACCOUNT': bool(user_account_control & 0x0800),
+        'WORKSTATION_TRUST_ACCOUNT': bool(user_account_control & 0x1000),
+        'SERVER_TRUST_ACCOUNT': bool(user_account_control & 0x2000),
+        'DONT_EXPIRE_PASSWORD': bool(user_account_control & 0x10000),
+        'MNS_LOGON_ACCOUNT': bool(user_account_control & 0x20000),
+        'SMARTCARD_REQUIRED': bool(user_account_control & 0x40000),
+        'TRUSTED_FOR_DELEGATION': bool(user_account_control & 0x80000),
+        'NOT_DELEGATED': bool(user_account_control & 0x100000),
+        'USE_DES_KEY_ONLY': bool(user_account_control & 0x200000),
+        'DONT_REQ_PREAUTH': bool(user_account_control & 0x400000),
+        'PASSWORD_EXPIRED': bool(user_account_control & 0x800000),
+        'TRUSTED_TO_AUTH_FOR_DELEGATION': bool(user_account_control & 0x1000000),
+        'PARTIAL_SECRETS_ACCOUNT': bool(user_account_control & 0x04000000),
+    }
+
+
 def account_entry(person_object, custom_attributes):
     # create an account entry from a person objects
     account = {
@@ -391,7 +423,7 @@ def search_with_paging(search_filter, search_base, attributes=None, page_size=10
 
         entries_left_to_fetch -= len(conn.entries)
         total_entries += len(conn.entries)
-        cookie = conn.result['controls']['1.2.840.113556.1.4.319']['value']['cookie']
+        cookie = dict_safe_get(conn.result, ['controls', '1.2.840.113556.1.4.319', 'value', 'cookie'])
         time_diff = (start - datetime.now()).seconds
 
         entries.extend(conn.entries)
@@ -578,11 +610,13 @@ def search_users(default_base_dn, page_size):
 
     accounts = [account_entry(entry, custom_attributes) for entry in entries['flat']]
 
-    if args.get('user-account-control-out', '') == 'true':
+    for user in entries['flat']:
+        user_account_control = user.get('userAccountControl')[0]
+        user['userAccountControlFields'] = user_account_to_boolean_fields(user_account_control)
+
         # display a literal translation of the numeric account control flag
-        for i, user in enumerate(entries['flat']):
-            flag_no = user.get('userAccountControl')[0]
-            entries['flat'][i]['userAccountControl'] = COOMON_ACCOUNT_CONTROL_FLAGS.get(flag_no) or flag_no
+        if args.get('user-account-control-out', '') == 'true':
+            user['userAccountControl'] = COOMON_ACCOUNT_CONTROL_FLAGS.get(user_account_control) or user_account_control
 
     demisto_entry = {
         'ContentsFormat': formats['json'],
@@ -1152,6 +1186,26 @@ def update_user(default_base_dn):
     demisto.results(demisto_entry)
 
 
+def update_group(default_base_dn):
+    args = demisto.args()
+
+    sam_account_name = args.get('groupname')
+    attribute_name = args.get('attributename')
+    attribute_value = args.get('attributevalue')
+    search_base = args.get('basedn') or default_base_dn
+    dn = group_dn(sam_account_name, search_base)
+
+    modification = {attribute_name: [('MODIFY_REPLACE', attribute_value)]}
+    modify_object(dn, modification)
+
+    demisto_entry = {
+        'ContentsFormat': formats['text'],
+        'Type': entryTypes['note'],
+        'Contents': f"Updated group's {attribute_name} to {attribute_value} "
+    }
+    demisto.results(demisto_entry)
+
+
 def update_contact():
     args = demisto.args()
 
@@ -1642,6 +1696,9 @@ def main():
 
         if command == 'ad-update-user':
             update_user(DEFAULT_BASE_DN)
+
+        if command == 'ad-update-group':
+            update_group(DEFAULT_BASE_DN)
 
         if command == 'ad-modify-computer-ou':
             modify_computer_ou(DEFAULT_BASE_DN)

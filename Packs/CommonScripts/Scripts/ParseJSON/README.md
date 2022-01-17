@@ -1,6 +1,6 @@
 Parses a given JSON string "value" to a representative object. 
 
-Example: "{'a':'value'}" => { a: "value"}.
+Example: `{"a":"value"}` => { "a": "value"}.
 
 ## Script Data
 ---

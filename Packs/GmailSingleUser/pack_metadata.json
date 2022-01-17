@@ -1,8 +1,8 @@
 {
-    "name": "Gmail Single User (Beta)",
+    "name": "Gmail Single User",
     "description": "Gmail API using OAuth 2.0.",
     "support": "xsoar",
-    "currentVersion": "1.1.3",
+    "currentVersion": "1.1.6",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -18,5 +18,9 @@
             "mandatory": false,
             "display_name": "Phishing"
         }
-    }
+    },
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

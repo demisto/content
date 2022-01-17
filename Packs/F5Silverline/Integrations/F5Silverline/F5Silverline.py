@@ -91,7 +91,7 @@ def get_ip_and_mask_from_cidr(cidr_range):
     return ip_address, mask
 
 
-def add_ip_objects_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def add_ip_objects_command(client: Client, args: Dict[str, Any]):
     """
     Adds a new IP object to the requested list type (denylist or allowlist).
     IP object includes an IP address (mandatory). Other fields are optional and have default values.
@@ -100,19 +100,31 @@ def add_ip_objects_command(client: Client, args: Dict[str, Any]) -> CommandResul
     """
     list_type = args['list_type']
     cidr_range = args['cidr_range']
-    ip_address, mask = get_ip_and_mask_from_cidr(cidr_range)
     list_target = args.get('list_target', 'proxy-routed')
     duration = int(args.get('duration', 0))
     note = args.get('note', "")
     tags = argToList(args.get('tags', []))
     url_suffix = f'{list_type}/ip_objects'
 
-    body = define_body_for_add_ip_command(list_target, mask, ip_address, duration, note, tags)
+    errors_list = []
+    success_list = []
+    for ip_address, mask in map(get_ip_and_mask_from_cidr, argToList(cidr_range)):
+        body = define_body_for_add_ip_command(list_target, mask, ip_address, duration, note, tags)
 
-    client.request_ip_objects(body=body, method='POST', url_suffix=url_suffix, params={}, resp_type='content')
-    human_readable = f"IP object with CIDR range address: {ip_address}/{mask} added successfully into the {list_type}" \
-                     f" list."
-    return CommandResults(readable_output=human_readable)
+        try:
+            client.request_ip_objects(body=body, method='POST', url_suffix=url_suffix, params={}, resp_type='content')
+        except Exception as error:
+            demisto.error(traceback.format_exc())
+            errors_list.append(f'could not add {ip_address}/{mask} to {list_type}. error: {error}')
+        success_list.append(f'| {ip_address}/{mask} |')
+
+    if success_list:
+
+        success_lines = '\n'.join(success_list)
+        human_readable = f"IP objects wehre added successfully into the {list_type}\n| IP |\n| - |\n{success_lines}"
+        return_results(CommandResults(readable_output=human_readable))
+    if errors_list:
+        return_error('\n'.join(errors_list))
 
 
 def define_body_for_add_ip_command(list_target, mask, ip_address, duration, note, tags):
@@ -372,7 +384,7 @@ def main() -> None:
             return_results(get_ip_objects_list_command(client, args))
 
         elif demisto.command() == 'f5-silverline-ip-object-add':
-            return_results(add_ip_objects_command(client, args))
+            add_ip_objects_command(client, args)
 
         elif demisto.command() == 'f5-silverline-ip-object-delete':
             return_results(delete_ip_objects_command(client, args))

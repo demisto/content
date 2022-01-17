@@ -111,7 +111,7 @@ class Client(BaseClient):
 
     def get_threats_request(self, content_hash=None, mitigation_status=None, created_before=None, created_after=None,
                             created_until=None, created_from=None, resolved='false', display_name=None, query=None,
-                            threat_ids=None, limit=20, classifications=None, site_ids=None):
+                            threat_ids=None, limit=20, classifications=None, site_ids=None, rank=None):
         keys_to_ignore = ['displayName__like' if IS_VERSION_2_1 else 'displayName']
 
         params = assign_params(
@@ -128,8 +128,9 @@ class Client(BaseClient):
             ids=argToList(threat_ids),
             limit=int(limit),
             classifications=argToList(classifications),
-            keys_to_ignore=keys_to_ignore,
             siteIds=site_ids,
+            rank=int(rank) if rank else None,
+            keys_to_ignore=keys_to_ignore,
         )
         response = self._http_request(method='GET', url_suffix='threats', params=params)
         return response.get('data', {})
@@ -980,7 +981,7 @@ def list_agents_command(client: Client, args: dict) -> CommandResults:
         active_threats=args.get('min_active_threats'),
         computer_name=args.get('computer_name'),
         scan_status=args.get('scan_status'),
-        os_type=args.get('os_type'),
+        osTypes=args.get('os_type'),
         created_at=args.get('created_at'),
         limit=int(args.get('limit', 10)),
     )

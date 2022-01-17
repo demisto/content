@@ -1,0 +1,18 @@
+{
+    "name": "Content Installation",
+    "description": "This pack enables you install content packs.",
+    "support": "xsoar",
+    "currentVersion": "1.0.1",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2021-12-06T07:45:21Z",
+    "categories": ["Utilities"],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+      "xsoar",
+      "marketplacev2"
+    ]
+}

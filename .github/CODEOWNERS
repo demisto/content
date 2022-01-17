@@ -31,10 +31,12 @@
 /Packs/Active_Directory_Query/Integrations/Active_Directory_Query/* @demisto/content-leaders
 /Packs/VirusTotal/Integrations/integration-VirusTotal_5.5.yml @demisto/content-leaders
 /Packs/VirusTotal/* @jochman
+/Packs/ContentManagement/* @ChanochShayner
 
 # Important Scripts
 /Packs/CommonScripts/Scripts/SetGridField/* @yaakovi @David-BMS
 /Packs/CommonScripts/Scripts/SearchIncidentsV2/* @demisto/content-leaders
+/Packs/CommonScripts/Scripts/ParseEmailFiles/* @moishce
 
 # Build related
 .circleci/config.yml @avidan-H @DinaMeylakh

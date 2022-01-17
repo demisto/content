@@ -68,3 +68,42 @@ def test_is_incident_id_valid(id_value, expected_output):
     except DemistoException:
         is_valid_id = False
     assert is_valid_id == expected_output
+
+
+EXAMPLE_INCIDENTS_RAW_RESPONSE = [
+    {
+        u'id': u'1',
+        u'type': u'TypeA',
+        u'name': u'Phishing',
+    },
+    {
+        u'id': u'2',
+        u'type': u'Type-A',
+        u'name': u'Phishing Campaign',
+    },
+    {
+        u'id': u'3',
+        u'type': u'SomeType-A',
+        u'name': u'Go Phish',
+    },
+    {
+        u'id': u'4',
+        u'type': u'Another Type-A',
+        u'name': u'Hello',
+    },
+]
+
+FILTER_TO_MATCHED_INCIDENTS = [
+    ({'type': 'Type-A'}, ['2']),
+    ({'type': 'Type-A, SomeTypeA'}, ['2']),
+    ({'type': ['Type-A', 'SomeType-A']}, ['2', '3']),
+    ({'type': 'Another'}, []),
+    ({'name': 'Phishing'}, ['1']),
+    ({'name': 'Phishing,Phishing Campaign'}, ['1', '2']),
+]
+
+
+@pytest.mark.parametrize('args, expected_incident_ids', FILTER_TO_MATCHED_INCIDENTS)
+def test_apply_filters(args, expected_incident_ids):
+    incidents = apply_filters(EXAMPLE_INCIDENTS_RAW_RESPONSE, args)
+    assert [incident['id'] for incident in incidents] == expected_incident_ids

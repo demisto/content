@@ -3,7 +3,7 @@ commonfields:
   id: RedLock
   version: -1
 configuration:
-- defaultvalue: https://api.redlock.io/
+- defaultvalue: https://api.prismacloud.io/
   display: Server URL
   name: url
   required: true
@@ -65,8 +65,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'The RQL query to run. Examples of RQL queries can be found here:
-        https://docs.paloaltonetworks.com/prisma/prisma-cloud/prisma-cloud-rql-reference/rql-reference/rql-examples.
+      description: 'The RQL config query to run. Examples of RQL config queries can be found here:
+        https://docs.paloaltonetworks.com/prisma/prisma-cloud/prisma-cloud-rql-reference/rql-reference/config-query/config-query-examples.html.
         Note that ` limit search records to 1` is automatically appended to each query
         and a `;` may need to be added to the end of the rql input to make the entire
         query valid.  The limit parameter adjusts this to be a value other than 1.'
@@ -75,7 +75,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Runs an RQL query on the Prisma Cloud.
+    description: Returns the results of an RQL config query.
     execution: false
     name: redlock-get-rql-response
     outputs:
@@ -1212,7 +1212,8 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The scan ID. Scan Id can be retrieved by the redlock-list-scans command.
+      description: The scan ID. Scan Id can be retrieved by the redlock-list-scans
+        command.
       isArray: false
       name: scan_id
       required: true
@@ -1262,7 +1263,7 @@ script:
     - contextPath: Redlock.Scans.results.id
       description: Scan results ID
       type: String
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.9.8.24399
   feed: false
   isfetch: true
   longRunning: false
