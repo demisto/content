@@ -43,6 +43,27 @@ def test_module_command_success(requests_mock):
 
     assert response == 'ok'
 
+def test_module_command_fail(requests_mock):
+    from CadoResponse import Client, test_module
+    mock_response = {
+        'status': 'Down'
+    }
+
+    requests_mock.get('https://test.com/api/v2/system/status', json=mock_response)
+
+    client = Client(
+        base_url='https://test.com/api/v2/',
+        verify=False,
+        headers={
+            'Authentication': 'Bearer some_api_key'
+        }
+    )
+
+    response = test_module(client)
+
+    assert response == 'Cado Response is not running'
+
+
 def test_create_project_command_success(requests_mock):
     from CadoResponse import Client, create_project_command
     mock_response = {
@@ -69,6 +90,7 @@ def test_create_project_command_success(requests_mock):
     assert response.outputs_prefix == 'CadoResponse.Project'
     assert response.outputs_key_field == 'id'
     assert response.outputs == mock_response
+
 
 def test_list_project_command_success(requests_mock):
     from CadoResponse import Client, list_project_command
@@ -112,6 +134,93 @@ def test_list_project_command_success(requests_mock):
     assert response.outputs_prefix == 'CadoResponse.Projects'
     assert response.outputs_key_field == 'id'
     assert response.outputs == mock_response
+
+
+def test_list_single_project_command_success(requests_mock):
+    from CadoResponse import Client, list_project_command
+
+    mock_response = [
+        {
+            "caseName": "Project Name",
+            "created": "2021-10-18T10:36:33.140305",
+            "deleted": False,
+            "description": "Project Description",
+            "id": 1,
+            "status": "Pending",
+            "users": [
+                {
+                    "display_name": "admin",
+                    "id": 1,
+                    "is_admin": True,
+                    "login_type": 0,
+                    "username": "admin"
+                }
+            ]
+        }
+    ]
+
+    requests_mock.get('https://test.com/api/v2/projects/1', json=mock_response)
+
+    client = Client(
+        base_url='https://test.com/api/v2/',
+        verify=False,
+        headers={
+            'Authentication': 'Bearer some_api_key'
+        }
+    )
+
+    args = {
+        'project_id': 1
+    }
+
+    response = list_project_command(client, args)
+
+    assert response.outputs_prefix == 'CadoResponse.Projects'
+    assert response.outputs_key_field == 'id'
+    assert response.outputs == mock_response
+
+
+def test_list_single_project_no_id_command_success(requests_mock):
+    from CadoResponse import Client, list_project_command
+
+    mock_response = [
+        {
+            "caseName": "Project Name",
+            "created": "2021-10-18T10:36:33.140305",
+            "deleted": False,
+            "description": "Project Description",
+            "id": 1,
+            "status": "Pending",
+            "users": [
+                {
+                    "display_name": "admin",
+                    "id": 1,
+                    "is_admin": True,
+                    "login_type": 0,
+                    "username": "admin"
+                }
+            ]
+        }
+    ]
+
+    requests_mock.get('https://test.com/api/v2/projects', json=mock_response)
+
+    client = Client(
+        base_url='https://test.com/api/v2/',
+        verify=False,
+        headers={
+            'Authentication': 'Bearer some_api_key'
+        }
+    )
+
+    args = {}
+
+    response = list_project_command(client, args)
+
+    assert response.outputs_prefix == 'CadoResponse.Projects'
+    assert response.outputs_key_field == 'id'
+    assert response.outputs == mock_response
+
 
 def test_list_project_command_limit_success(requests_mock):
     from CadoResponse import Client, list_project_command
@@ -294,6 +403,72 @@ def test_get_pipeline_command_success(requests_mock):
             "user_name": "admin"
         }
     ]
+
+
+def test_get_single_pipeline_command_success(requests_mock):
+    from CadoResponse import Client, get_pipeline_command
+
+    mock_response = {
+        "pipelines": [
+            {
+                "can_be_terminated": False,
+                "created": "2021-10-20T13:04:21.198423",
+                "evidence_id": 10,
+                "evidence_name": "import_test.dd",
+                "name": "",
+                "pipeline_id": 9,
+                "pipeline_type": "processing",
+                "project_id": 1,
+                "project_name": "1",
+                "subtasks": [
+                    {
+                        "execution_duration": 0,
+                        "finish_time": 1634735123.8961182,
+                        "name": "Shutdown: Stopping worker machine.",
+                        "name_key": "infrastructure.self_shutdown",
+                        "notification_level": "Info",
+                        "progress_text": [],
+                        "start_time": 1634735123.8948352,
+                        "state": "SUCCESS",
+                        "task_id": "8b957153-fb64-47f0-8ad0-917e3411063e",
+                        "total_stages": "null"
+                    }
+                ],
+                "summary": {
+                    "cancelled": 0,
+                    "failure": 0,
+                    "pending": 0,
+                    "running": 0,
+                    "success": 15,
+                    "total": 15
+                },
+                "terminated": True,
+                "user_id": 1,
+                "user_name": "admin"
+            }
+        ]
+    }
+
+    requests_mock.get('https://test.com/api/v2/tasks/pipelines', json=mock_response)
+
+    client = Client(
+        base_url='https://test.com/api/v2/',
+        verify=False,
+        headers={
+            'Authentication': 'Bearer some_api_key'
+        }
+    )
+
+    args = {
+        "project_id": 1,
+        'pipeline_id': 1
+    }
+
+    response = get_pipeline_command(client, args)
+
+    assert response.outputs_prefix == 'CadoResponse.Pipelines'
+    assert response.outputs_key_field == 'pipeline_id'
+    assert response.outputs == mock_response
 
 
 def test_get_pipeline_command_limit_success(requests_mock):
@@ -632,6 +807,7 @@ def test_trigger_s3_command_success(requests_mock):
         }
     ]
 
+
 def test_trigger_s3_command_raises_bucket():
     from CadoResponse import Client, trigger_s3_command
 
@@ -650,6 +826,7 @@ def test_trigger_s3_command_raises_bucket():
 
     with raises(DemistoException, match='bucket is a required parameter!'):
         trigger_s3_command(client, args)
+
 
 def test_trigger_s3_command_raises_file():
     from CadoResponse import Client, trigger_s3_command
