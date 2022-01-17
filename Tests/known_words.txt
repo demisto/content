@@ -52,3 +52,7 @@ AlienVault
 BitcoinAbuse
 BruteForceBlocker
 SQS
+ACM
+unicode
+CloudWatchLogs
+GuardDuty
