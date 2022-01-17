@@ -72,7 +72,7 @@ outputs:
 - contextPath: WaitAndCompleteTask.CompletedTask
   description: 'Task name that was completed by script.'
   type: String
-- contextPath: WaitAndCompleteTask.FoundTasks
+- contextPath: WaitAndCompleteTask.FoundTask
   description: 'Tasks that were found by script.'
 script: '-'
 system: false
