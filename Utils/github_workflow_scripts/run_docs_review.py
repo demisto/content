@@ -27,7 +27,8 @@ def pass_files_to_docs_review(files_for_review: List[str]) -> int:
         click.secho(f'Checking file: {file_path}\n', fg="yellow")
         doc_reviewer = DocReviewer(file_path=file_path,
                                    release_notes_only=True,
-                                   known_words_file_path='Tests/known_words.txt')
+                                   known_words_file_path='Tests/known_words.txt',
+                                   no_camel_case=True)
 
         result = doc_reviewer.run_doc_review()
         if not result:
