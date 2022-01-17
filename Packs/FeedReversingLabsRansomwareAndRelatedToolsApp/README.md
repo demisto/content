@@ -12,8 +12,7 @@ to create technical indicators.
 * Indicators from multiple stages of typical attacks allow for early detection and the ability to reduce damage associated with IP theft and ransomware attacks.
 * Aggressive aging of the indicators ensures only relevant indicators are active in the list.
 * Extensive post processing of indicators eliminates or reduces confidence on indicators likely to produce false positives.
-* Indicators such as IP, Domain and Hash include tagging to give additional context such as MITRE ATT&CK, network parameters, attack stage and malware family name.
-
+* Indicators such as IP, Domain, URI and Hash include tagging to give additional context such as MITRE ATT&CK, network parameters, attack stage and malware family name
 
 ## About ReversingLabs
 ReversingLabs is the leading provider of explainable threat intelligence solutions that dissect complex file-based threats for enterprises stretched for time and expertise. Its hybrid-cloud Titanium Platform enables digital business resiliency, protects against new modern architecture exposures, and automates manual SOC processes with a transparency that arms analysts to confidently take action and hunt threats.
