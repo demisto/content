@@ -1,3 +1,5 @@
+**This integration supports Bluecat Address Manager version 9.1, Other versions might fail to run.**
+
 When you configure an instance of the Bluecat Address Manager integration in Cortex XSOAR, you need to provide an API user account.
 
 ## Generate an API user account
