@@ -187,13 +187,13 @@ MOCK_ES7_INCIDENTS = str([
                    '"_score": 0.6814878, '
                    '"_source": {"Date": "2019-08-27T18:00:00Z"}'
                    '}',
+        'occurred': '2019-08-27T18:00:00Z',
         'labels': [
             {
                 'type': 'Date',
                 'value': '2019-08-27T18:00:00Z'
             }
-        ],
-        'occurred': '2019-08-27T18:00:00Z'
+        ]
     }, {
         'name': 'Elasticsearch: Index: customer, ID: 456',
         'rawJSON': '{'
@@ -203,13 +203,13 @@ MOCK_ES7_INCIDENTS = str([
                    '"_score": 0.6814878, '
                    '"_source": {"Date": "2019-08-27T18:01:00Z"}'
                    '}',
+        'occurred': '2019-08-27T18:01:00Z',
         'labels': [
             {
                 'type': 'Date',
                 'value': '2019-08-27T18:01:00Z'
             }
-        ],
-        'occurred': '2019-08-27T18:01:00Z'
+        ]
     }
 ])
 
@@ -223,14 +223,14 @@ MOCK_ES6_INCIDETNS = str([
                    '"_score": 1.3862944, '
                    '"_source": {"Date": "2019-08-29T14:45:00Z"}'
                    '}',
+        'occurred': '2019-08-29T14:45:00Z',
         'labels':
             [
                 {
                     'type': 'Date',
                     'value': '2019-08-29T14:45:00Z'
                 }
-            ],
-        'occurred': '2019-08-29T14:45:00Z'
+            ]
     }, {
         'name': 'Elasticsearch: Index: users, ID: 456',
         'rawJSON': '{'
@@ -240,14 +240,14 @@ MOCK_ES6_INCIDETNS = str([
                    '"_score": 0.9517491, '
                    '"_source": {"Date": "2019-08-29T14:46:00Z"}'
                    '}',
+        'occurred': '2019-08-29T14:46:00Z',
         'labels':
             [
                 {
                     'type': 'Date',
                     'value': '2019-08-29T14:46:00Z'
                 }
-            ],
-        'occurred': '2019-08-29T14:46:00Z'
+            ]
     }
 ])
 
@@ -298,13 +298,13 @@ MOCK_ES7_INCIDENTS_FROM_TIMESTAMP = str([
                    '"_score": 0.6814878, '
                    '"_source": {"Date": "1572502634"}'
                    '}',
+        'occurred': '2019-10-31T06:17:14Z',
         'labels': [
             {
                 'type': 'Date',
                 'value': '1572502634'
             }
-        ],
-        'occurred': '2019-10-31T06:17:14Z'
+        ]
     }, {
         'name': 'Elasticsearch: Index: customer, ID: 456',
         'rawJSON': '{'
@@ -314,13 +314,13 @@ MOCK_ES7_INCIDENTS_FROM_TIMESTAMP = str([
                    '"_score": 0.6814878, '
                    '"_source": {"Date": "1572502640"}'
                    '}',
+        'occurred': '2019-10-31T06:17:20Z',
         'labels': [
             {
                 'type': 'Date',
                 'value': '1572502640'
             }
-        ],
-        'occurred': '2019-10-31T06:17:20Z'
+        ]
     }
 ])
 
