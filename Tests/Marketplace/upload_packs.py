@@ -744,54 +744,6 @@ Total number of packs: {len(successful_packs + skipped_packs + failed_packs)}
         add_pr_comment(pr_comment)
 
 
-def option_handler():
-    """Validates and parses script arguments.
-
-    Returns:
-        Namespace: Parsed arguments object.
-
-    """
-    parser = argparse.ArgumentParser(description="Store packs in cloud storage.")
-    # disable-secrets-detection-start
-    parser.add_argument('-a', '--artifacts_path', help="The full path of packs artifacts", required=True)
-    parser.add_argument('-e', '--extract_path', help="Full path of folder to extract wanted packs", required=True)
-    parser.add_argument('-b', '--bucket_name', help="Storage bucket name", required=True)
-    parser.add_argument('-s', '--service_account',
-                        help=("Path to gcloud service account, is for circleCI usage. "
-                              "For local development use your personal account and "
-                              "authenticate using Google Cloud SDK by running: "
-                              "`gcloud auth application-default login` and leave this parameter blank. "
-                              "For more information go to: "
-                              "https://googleapis.dev/python/google-api-core/latest/auth.html"),
-                        required=False)
-    parser.add_argument('-d', '--pack_dependencies', help="Full path to pack dependencies json file.", required=False)
-    parser.add_argument('-p', '--pack_names',
-                        help=("Target packs to upload to gcs. Optional values are: `All`, "
-                              "`Modified` or csv list of packs "
-                              "Default is set to `All`"),
-                        required=False, default="All")
-    parser.add_argument('-n', '--ci_build_number',
-                        help="CircleCi build number (will be used as hash revision at index file)", required=False)
-    parser.add_argument('-o', '--override_all_packs', help="Override all existing packs in cloud storage",
-                        type=str2bool, default=False, required=True)
-    parser.add_argument('-k', '--key_string', help="Base64 encoded signature key used for signing packs.",
-                        required=False)
-    parser.add_argument('-sb', '--storage_base_path', help="Storage base path of the directory to upload to.",
-                        required=False)
-    parser.add_argument('-rt', '--remove_test_playbooks', type=str2bool,
-                        help='Should remove test playbooks from content packs or not.', default=True)
-    parser.add_argument('-bu', '--bucket_upload', help='is bucket upload build?', type=str2bool, required=True)
-    parser.add_argument('-pb', '--private_bucket_name', help="Private storage bucket name", required=False)
-    parser.add_argument('-c', '--ci_branch', help="CI branch of current build", required=True)
-    parser.add_argument('-f', '--force_upload', help="is force upload build?", type=str2bool, required=True)
-    parser.add_argument('-do', '--packs_dependencies_on', help="Full path to pack dependencies on json file",
-                        required=False)
-    parser.add_argument('-dz', '--create_dependencies_zip', help="Upload packs with dependencies zip", type=str2bool,
-                        required=False)
-    # disable-secrets-detection-end
-    return parser.parse_args()
-
-
 def add_pr_comment(comment: str):
     """Add comment to the pull request.
 
@@ -985,35 +937,68 @@ def prepare_and_zip_pack(pack, signature_key, delete_test_playbooks=True):
     return True
 
 
-def get_packs_depends_on(packs_list, artifacts_path):
+def get_packs_depends_on(packs_list, packs_dict, extract_destination_path, artifacts_path, id_set_path):
+
+    #### TODO: REMOVE DEBUG CODE
+    if 'Base' in packs_dict:
+        packs_dict.pop('Base')
+        packs_list = [pack for pack in packs_list if pack.name != 'Base']
+    #### TODO: end of DEBUG CODE
+    if 'Base' in packs_dict:
+        # collect all packs
+        packs_list = []
+        with open(id_set_path) as f:
+            id_set_packs = json.load(id_set_path).get('Packs')
+        for pack_name in id_set_packs.keys():
+            if pack_name not in packs_dict:
+                pack = Pack(pack_name, os.path.join(extract_destination_path, pack_name))
+                packs_list.append(pack)
+                packs_dict[pack_name] = pack
+            else:
+                packs_list.append(packs_dict[pack_name])
+        return packs_list, packs_dict
+    packs_dependent_on_path = os.path.join(artifacts_path, 'packs_dependent_on.json')
     query_list = [
         'demisto-sdk',
         'find-dependencies',
         '--get-dependent-on',
         '-o',
-        f'{artifacts_path}/packs_dependent_on.json',
+        packs_dependent_on_path,
         '-idp',
-        f'{artifacts_path}/id_set.json']
+        id_set_path]
     query_list.extend([pack_tuple_item for pack in packs_list for pack_tuple_item in
                        ('-i', os.path.join('Packs', pack.name))])
     # TODO: remove, intended for dev purposes
     logging.info('Calliing: ' + ' '.join(query_list))
     subprocess.check_call(query_list, stderr=subprocess.STDOUT)
-    packs_dependent_on_path = subprocess.check_output(['echo', '$ARTIFACTS_FOLDER/packs_dependent_on.json'])
     with open(packs_dependent_on_path) as f:
-        result = json.load(f)
+        dependent_on_packs = json.load(f)
         # TODO: remove, inteneded for dev purposes
-        logging.info(json.dumps(result, indent=4))
-    return []
+        logging.info(json.dumps(dependent_on_packs, indent=4))
+    for dep_pack_item in dependent_on_packs.values():
+        if 'packsDependentOnThisPackMandatorily' in dep_pack_item:
+            for pack_name in dep_pack_item['packsDependentOnThisPackMandatorily'].keys():
+                if pack_name in packs_dict:
+                    continue
+                pack = Pack(pack_name, os.path.join(extract_destination_path, pack_name))
+                packs_list.append(pack)
+                packs_dict[pack_name] = pack
+    return packs_list, packs_dict
 
 
 def upload_packs_with_dependencies_zip(extract_destination_path, packs_dependencies_mapping, packs_list, signature_key,
-                                       storage_bucket, storage_base_path, artifacts_path):
+                                       storage_bucket, storage_base_path, artifacts_path, id_set_path):
     logging.info("Starting to collect pack with dependencies zips")
-    # add depends on packs
-    packs_list.extend(get_packs_depends_on(packs_list, artifacts_path))
-    full_deps_graph = {}
     packs_dict = {pack.name: pack for pack in packs_list}
+    # add depends on packs
+    packs_list, packs_dict = get_packs_depends_on(
+        packs_list,
+        packs_dict,
+        extract_destination_path,
+        artifacts_path,
+        id_set_path
+    )
+    full_deps_graph = {}
     try:
         for pack in packs_list:
             logging.info(f"Collecting dependencies of {pack.name}")
@@ -1068,10 +1053,60 @@ def upload_packs_with_dependencies_zip(extract_destination_path, packs_dependenc
         logging.error(f"Failed uploading packs with dependencies: {e}")
 
 
+def option_handler():
+    """Validates and parses script arguments.
+
+    Returns:
+        Namespace: Parsed arguments object.
+
+    """
+    parser = argparse.ArgumentParser(description="Store packs in cloud storage.")
+    # disable-secrets-detection-start
+    parser.add_argument('-a', '--artifacts_path', help="The full path of artifacts directory", required=False)
+    parser.add_argument('-pa', '--packs_artifacts_path', help="The full path of packs artifacts", required=True)
+    parser.add_argument('-idp', '--id_set_path', help="The full path of id_set.json", required=False)
+    parser.add_argument('-e', '--extract_path', help="Full path of folder to extract wanted packs", required=True)
+    parser.add_argument('-b', '--bucket_name', help="Storage bucket name", required=True)
+    parser.add_argument('-s', '--service_account',
+                        help=("Path to gcloud service account, is for circleCI usage. "
+                              "For local development use your personal account and "
+                              "authenticate using Google Cloud SDK by running: "
+                              "`gcloud auth application-default login` and leave this parameter blank. "
+                              "For more information go to: "
+                              "https://googleapis.dev/python/google-api-core/latest/auth.html"),
+                        required=False)
+    parser.add_argument('-d', '--pack_dependencies', help="Full path to pack dependencies json file.", required=False)
+    parser.add_argument('-p', '--pack_names',
+                        help=("Target packs to upload to gcs. Optional values are: `All`, "
+                              "`Modified` or csv list of packs "
+                              "Default is set to `All`"),
+                        required=False, default="All")
+    parser.add_argument('-n', '--ci_build_number',
+                        help="CircleCi build number (will be used as hash revision at index file)", required=False)
+    parser.add_argument('-o', '--override_all_packs', help="Override all existing packs in cloud storage",
+                        type=str2bool, default=False, required=True)
+    parser.add_argument('-k', '--key_string', help="Base64 encoded signature key used for signing packs.",
+                        required=False)
+    parser.add_argument('-sb', '--storage_base_path', help="Storage base path of the directory to upload to.",
+                        required=False)
+    parser.add_argument('-rt', '--remove_test_playbooks', type=str2bool,
+                        help='Should remove test playbooks from content packs or not.', default=True)
+    parser.add_argument('-bu', '--bucket_upload', help='is bucket upload build?', type=str2bool, required=True)
+    parser.add_argument('-pb', '--private_bucket_name', help="Private storage bucket name", required=False)
+    parser.add_argument('-c', '--ci_branch', help="CI branch of current build", required=True)
+    parser.add_argument('-f', '--force_upload', help="is force upload build?", type=str2bool, required=True)
+    parser.add_argument('-dz', '--create_dependencies_zip', help="Upload packs with dependencies zip", type=str2bool,
+                        required=False)
+    # disable-secrets-detection-end
+    return parser.parse_args()
+
+
 def main():
     install_logging('Prepare_Content_Packs_For_Testing.log', logger=logging)
     option = option_handler()
-    packs_artifacts_path = option.artifacts_path
+    artifacts_path = option.artifacts_path
+    packs_artifacts_path = option.packs_artifacts_path
+    id_set_path = option.id_set_path
     extract_destination_path = option.extract_path
     storage_bucket_name = option.bucket_name
     service_account = option.service_account
@@ -1080,7 +1115,6 @@ def main():
     override_all_packs = option.override_all_packs
     signature_key = option.key_string
     packs_dependencies_mapping = load_json(option.pack_dependencies) if option.pack_dependencies else {}
-    packs_dependencies_on = load_json(option.packs_dependencies_on) if option.packs_dependencies_on else {}
     storage_base_path = option.storage_base_path
     remove_test_playbooks = option.remove_test_playbooks
     is_bucket_upload_flow = option.bucket_upload
@@ -1277,9 +1311,9 @@ def main():
 
     if is_create_dependencies_zip:
         # handle packs with dependencies zip
-        artifacts_path = Path(packs_artifacts_path).parent.absolute()
         upload_packs_with_dependencies_zip(extract_destination_path, packs_dependencies_mapping, packs_list,
-                                           signature_key, storage_bucket, storage_base_path, artifacts_path)
+                                           signature_key, storage_bucket, storage_base_path, artifacts_path,
+                                           id_set_path)
 
 
 if __name__ == '__main__':
