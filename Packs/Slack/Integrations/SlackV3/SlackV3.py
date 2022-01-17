@@ -125,10 +125,11 @@ def get_current_utc_time() -> datetime:
 def format_user_not_found_error(user: str) -> str:
     err_str = f'User {user} not found in Slack'
     if DISABLE_CACHING:
-        err_str += ' and Disable Caching of Users and Channels is enabled. While caching is checked, it is advised to perform actions using' \
-                   ' a users email. If this command worked previously for you, you may try disabling the Disable Caching' \
-                   ' parameter from the instance configuration, however, this is not recommended. Please refer to ' \
-                   'https://xsoar.pan.dev/docs/reference/integrations/slack-v3#caching for more details.'
+        err_str += ' and Disable Caching of Users and Channels is enabled. While caching is checked, it is advised to' \
+                   ' perform actions using a users email. If this command worked previously for you, you may try' \
+                   ' disabling the Disable Caching parameter from the instance configuration, however, this is not' \
+                   ' recommended. Please refer to https://xsoar.pan.dev/docs/reference/integrations/slack-v3#caching' \
+                   ' for more details.'
     return err_str
 
 
@@ -258,7 +259,7 @@ def format_user_results(user: dict):
     }
 
 
-def get_user_by_name_caching_disabled(user_to_search: str) -> dict:
+def get_user_by_name_without_caching(user_to_search: str) -> dict:
     """
     When Disable Caching is true, we look for the user by email only.
 
@@ -274,7 +275,7 @@ def get_user_by_name_caching_disabled(user_to_search: str) -> dict:
     return user
 
 
-def get_user_by_name_caching_enabled(user_to_search, add_to_context):
+def get_user_by_name_with_caching(user_to_search, add_to_context):
     """
     When Disable Caching is false, we look for the user first in the context. If the user is not found, then we proceed to
     search for the user by email, if that fails, then we will search for the user using a paginated call.
@@ -295,14 +296,14 @@ def get_user_by_name_caching_enabled(user_to_search, add_to_context):
     if not user and re.match(emailRegex, user_to_search):
         demisto.debug(f"Checking via API for email of {user_to_search}")
         user = get_user_by_email(user_to_search)
-        if user and (add_to_context or not DISABLE_CACHING):
+        if user and add_to_context:
             integration_context = get_integration_context(SYNC_CONTEXT)
             add_user_to_context(user=user, integration_context=integration_context)
     if not user:
         demisto.debug(f"Couldn't find {user_to_search} and caching is disabled. Checking API")
         user = paginated_search_for_user(user_to_search)
         demisto.debug(f"Found {user_to_search} - {user}")
-        if user and (add_to_context or not DISABLE_CACHING):
+        if user and add_to_context:
             integration_context = get_integration_context(SYNC_CONTEXT)
             add_user_to_context(user=user, integration_context=integration_context)
     return user
@@ -320,9 +321,9 @@ def get_user_by_name(user_to_search: str, add_to_context: bool = True) -> dict:
         A slack user object
     """
     if DISABLE_CACHING:
-        return get_user_by_name_caching_disabled(user_to_search=user_to_search)
+        return get_user_by_name_without_caching(user_to_search=user_to_search)
     else:
-        return get_user_by_name_caching_enabled(user_to_search=user_to_search, add_to_context=add_to_context)
+        return get_user_by_name_with_caching(user_to_search=user_to_search, add_to_context=add_to_context)
 
 
 def search_slack_users(users: Union[list, str]) -> list:
@@ -846,6 +847,7 @@ def check_for_mirrors():
     if integration_context.get('mirrors'):
         mirrors = json.loads(integration_context['mirrors'])
         updated_mirrors = []
+        updated_users = []
         for mirror in mirrors:
             if not mirror['mirrored']:
                 investigation_id = mirror['investigation_id']
@@ -862,7 +864,8 @@ def check_for_mirrors():
                                                                     f'{mirror_type}:{direction}', auto_close)
                     if mirror_type != 'none':
                         try:
-                            invite_to_mirrored_channel(channel_id, users)
+                            invited_users = invite_to_mirrored_channel(channel_id, users)
+                            updated_users.extend(invited_users)
                         except Exception as error:
                             demisto.error(f"Could not invite investigation users to the mirrored channel: {error}")
 
@@ -873,6 +876,8 @@ def check_for_mirrors():
 
         if updated_mirrors:
             context = {'mirrors': updated_mirrors}
+            if updated_users:
+                context['users'] = updated_users
 
             set_to_integration_context_with_retries(context, OBJECTS_TO_KEYS, SYNC_CONTEXT)
         return
@@ -2370,7 +2375,8 @@ def init_globals(command_name: str = ''):
     # Formats the error message for the 'Channel Not Found' errors
     error_str = 'The channel was not found'
     if DISABLE_CACHING:
-        error_str += ' and Disable Caching of Users and Channels is checked. While caching is disabled, please use the `channel_id` argument, or configure' \
+        error_str += ' and Disable Caching of Users and Channels is checked. While caching is disabled, please use the' \
+                     ' `channel_id` argument, or configure' \
                      ' the Common Channels parameter. If this command worked for you previously consider enabling ' \
                      'caching. However, note that it is recommended to Disable Caching. Please refer to ' \
                      'https://xsoar.pan.dev/docs/reference/integrations/slack-v3#caching for more details.'

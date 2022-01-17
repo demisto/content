@@ -1202,7 +1202,7 @@ def test_check_for_mirrors(mocker):
     assert len(invite_call) == 2
     assert invited_users == ['U012A3CDE', 'U012B3CUI']
     assert channel == ['new_group', 'new_group']
-    assert demisto.setIntegrationContext.call_count == 2
+    assert demisto.setIntegrationContext.call_count == 1
     assert len(our_mirror_filter) == 1
     assert our_mirror == new_mirror
     assert len(our_user_filter) == 1
@@ -1283,7 +1283,7 @@ def test_check_for_mirrors_email_user_not_matching(mocker):
 
     invited_users = [c[1]['json']['users'] for c in invite_call]
     channel = [c[1]['json']['channel'] for c in invite_call]
-    assert demisto.setIntegrationContext.call_count == 2
+    assert demisto.setIntegrationContext.call_count == 1
 
     # Assert
     assert len(users_call) == 1
@@ -1351,7 +1351,7 @@ def test_check_for_mirrors_email_not_matching(mocker):
     assert len(invite_call) == 2
     assert invited_users == ['U012A3CDE', 'U012B3CUI']
     assert channel == ['new_group', 'new_group']
-    assert demisto.setIntegrationContext.call_count == 2
+    assert demisto.setIntegrationContext.call_count == 1
 
 
 def test_check_for_mirrors_user_email_not_matching(mocker):
