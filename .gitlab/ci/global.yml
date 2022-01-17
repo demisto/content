@@ -165,6 +165,8 @@
     - python3 -m pytest ./Tests/private_build/ -v
     - python3 -m pytest Utils -v
     - |
+      echo "send a comment"
+      python3 ./Tests/scripts/generate_build_readable_report.py
       if [ -n "${DEMISTO_SDK_NIGHTLY}" ]; then
         ./Tests/scripts/sdk_pylint_check.sh
       fi
@@ -201,8 +203,6 @@
           fi
         fi
       fi
-      echo "send a comment"
-      python3 ./Tests/scripts/generate_build_readable_report.py
     - section_end "Run Unit Testing and Lint"
 
 .run-validations:
