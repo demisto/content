@@ -10,16 +10,6 @@ SECURITY_POLICY_MATCH = [
         'Name': 'block rule',
         'Source': '1.1.1.1',
         'To': 'any'
-    },
-    {
-        'Action': 'allow',
-        'Category': 'any',
-        'Destination': 'any',
-        'DeviceSerial': '1234567890',
-        'From': 'any',
-        'Name': 'block rule',
-        'Source': '1.1.1.1',
-        'To': 'any'
     }
 ]
 SECURITY_POLICY_MATCH2 = ['The query for source: 1.1.1.1, destination: 8.8.8.8 did not match a Security policy.']

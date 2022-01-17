@@ -9,23 +9,23 @@ import traceback
 
 
 def create_script_output(result):
-    human_readable = ''
+    human_readable_arr = set()
     context = []
-    no_duplicates_dict_result = [dict(t) for t in {tuple(d.items()) for d in result if isinstance(d, dict)}]
-    str_res = [s for s in result if isinstance(s, str)]
 
-    for res in str_res:
-        human_readable += f'{res}\n\n'
+    for res in result:
+        if isinstance(res, str):
+            human_readable_arr.add(res)
+        elif isinstance(res, dict):
+            if target := res.get('DeviceSerial'):
+                table_name = f'Matching Security Policies in `{target}` FW:'
+            else:
+                table_name = 'Matching Security Policies:'
 
-    for res in no_duplicates_dict_result:
-        if target := res.get('DeviceSerial'):
-            table_name = f'Matching Security Policies in `{target}` FW:'
-        else:
-            table_name = 'Matching Security Policies:'
+            table = tableToMarkdown(table_name, res)
+            human_readable_arr.add(table)
+            context.append(res)
 
-        table = tableToMarkdown(table_name, res)
-        human_readable += f'{table}\n\n'
-        context.append(res)
+    human_readable = '\n\n'.join(human_readable_arr)
 
     return human_readable, context
 
