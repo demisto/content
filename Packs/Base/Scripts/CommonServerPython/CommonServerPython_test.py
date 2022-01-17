@@ -5944,6 +5944,30 @@ def test_shorten_string_for_printing():
     assert shorten_string_for_printing('123456789012', 10) == '1234...012'
 
 
+def test_get_size_of_object():
+    from CommonServerPython import get_size_of_object
+
+    class Object(object):
+        pass
+
+    level_3 = Object()
+    level_3.key3 = 'val3'
+
+    level_2 = Object()
+    level_2.key2 = 'val2'
+    level_2.child = level_3
+
+    level_1 = Object()
+    level_1.key1 = 'val1'
+    level_1.child = level_2
+
+    level_1_sys_size = sys.getsizeof(level_1)
+    level_1_deep_size = get_size_of_object(level_1)
+
+    # 3 levels, so shoulod be at least 3 times as large
+    assert level_1_deep_size > 3 * level_1_sys_size
+
+
 class TestSetAndGetLastMirrorRun:
 
     def test_get_last_mirror_run_in_6_6(self, mocker):
