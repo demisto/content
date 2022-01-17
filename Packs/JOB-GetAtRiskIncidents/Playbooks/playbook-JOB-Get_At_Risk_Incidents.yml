@@ -165,10 +165,10 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: b327276c-ba59-45ab-84a5-bf5c94d54ad7
+      id: AtRiskIncidentsNotification
       iscommand: false
       name: Sort At Risk Incidents
-      scriptName: At-Risk-Incidents-Notification
+      scriptName: AtRiskIncidentsNotification
       type: regular
       version: -1
     taskid: b327276c-ba59-45ab-84a5-bf5c94d54ad7
