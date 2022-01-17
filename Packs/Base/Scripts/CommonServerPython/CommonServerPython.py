@@ -8640,9 +8640,9 @@ def get_size_of_object(input_object):
     """
     from collections import deque, Mapping
     from numbers import Number
-    # Python 3 also needs range
-    # ZERO_DEPTH_BASES = (str, bytes, Number, range, bytearray)
     ZERO_DEPTH_BASES = (str, bytes, Number, bytearray)
+    if IS_PY3:
+        ZERO_DEPTH_BASES = (str, bytes, Number, range, bytearray)
     MAX_LEVEL = 20
     _seen_ids = set()
 
