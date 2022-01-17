@@ -51,6 +51,11 @@ configuration:
   - Timestamp-Milliseconds
   required: false
   type: 15
+- display: Map JSON fields into labels
+  defaultvalue: true
+  name: map_labels
+  required: false
+  type: 8
 - defaultvalue: 3 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: fetch_time
