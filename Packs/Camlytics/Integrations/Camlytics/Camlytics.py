@@ -39,7 +39,7 @@ class Client(BaseClient):
         return response
 
 
-def channels_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_channels_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     response = client.channels_request()
     command_results = CommandResults(
@@ -52,7 +52,7 @@ def channels_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     return command_results
 
 
-def eventstotalsrule_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_events_totals_by_rule_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     channelid = args.get('channelid')
     sincetime = args.get('sincetime')
     untiltime = args.get('untiltime')
@@ -69,7 +69,7 @@ def eventstotalsrule_command(client: Client, args: Dict[str, Any]) -> CommandRes
     return command_results
 
 
-def eventstotalstype_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_events_totals_by_type_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     channelid = args.get('channelid')
     sincetime = args.get('sincetime')
     untiltime = args.get('untiltime')
@@ -86,7 +86,7 @@ def eventstotalstype_command(client: Client, args: Dict[str, Any]) -> CommandRes
     return command_results
 
 
-def events_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_events_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     channelid = args.get('channelid')
     sinceid = args.get('sinceid')
     sincetime = args.get('sincetime')
@@ -128,10 +128,10 @@ def main() -> None:
         requests.packages.urllib3.disable_warnings()
         client: Client = Client(urljoin(url, ''), verify_certificate, proxy, headers=headers)
         commands = {
-            'camlytics-get-channels': channels_command,
-            'camlytics-get-events-totals-by-rule': eventstotalsrule_command,
-            'camlytics-get-events-totals-by-type': eventstotalstype_command,
-            'camlytics-get-events': events_command,
+            'camlytics-get-channels': get_channels_command,
+            'camlytics-get-events-totals-by-rule': get_events_totals_by_rule_command,
+            'camlytics-get-events-totals-by-type': get_events_totals_by_type_command,
+            'camlytics-get-events': get_events_command,
         }
 
         if command == 'test-module':
@@ -142,7 +142,7 @@ def main() -> None:
             raise NotImplementedError(f'{command} command is not implemented.')
 
     except Exception as e:
-        return_error(str(e))
+        return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
