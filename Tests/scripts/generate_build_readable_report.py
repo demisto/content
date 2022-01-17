@@ -4,7 +4,7 @@ import requests
 
 COVERAGE_REPORT_COMMENT = 'Link to the coverage report of the integration'
 JID = os.environ.get("CI_JOB_ID")
-COVERAGE_LINK = f'https://xsoar.docs.pan.run/-/content/-/jobs/{JID}/artifacts/artifacts/coverage_report/html/index.html'
+COVERAGE_LINK = f'https://xsoar.docs.pan.run/-/content/-/jobs/{JID}/artifacts/unit-tests'
 
 
 def add_pr_comment():
@@ -33,7 +33,7 @@ def add_pr_comment():
                 requests.post(issue_url, json={'body': f'{COVERAGE_REPORT_COMMENT}:\n {COVERAGE_LINK}'},
                               headers=headers)
         else:
-            print('Add pull request comment failed: There is more then one open pull request for branch {branch_name}.')
+            print(f'Add pull request comment failed: There is more then one open pull request for branch {branch_name}.')
     except Exception as e:
         print(f'Add pull request comment failed with error {e}')
 
