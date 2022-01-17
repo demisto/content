@@ -201,6 +201,8 @@
           fi
         fi
       fi
+          echo "send a comment"
+          python3 ./Tests/scripts/generate_build_readable_report.py
     - section_end "Run Unit Testing and Lint"
 
 .run-validations:
