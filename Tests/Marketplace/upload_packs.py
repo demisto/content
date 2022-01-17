@@ -1043,7 +1043,6 @@ def upload_packs_with_dependencies_zip(extract_destination_path, packs_dependenc
                 storage_base_path=storage_base_path,
                 upload_path=upload_path
             )
-            shutil.rmtree(zip_with_deps_path)
             logging.info(f"{pack.name} with dependencies was{' not' if not task_status else ''} uploaded successfully")
             if not task_status:
                 pack.status = PackStatus.FAILED_UPLOADING_PACK.name

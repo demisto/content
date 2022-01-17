@@ -23,7 +23,7 @@ from google.cloud import storage
 
 import Tests.Marketplace.marketplace_statistics as mp_statistics
 from Tests.Marketplace.marketplace_constants import PackFolders, Metadata, GCPConfig, BucketUploadFlow, PACKS_FOLDER, \
-    PackTags, PackIgnored, Changelog, PackStatus
+    PackTags, PackIgnored, Changelog
 from Utils.release_notes_generator import aggregate_release_notes_for_marketplace
 from Tests.scripts.utils import logging_wrapper as logging
 
