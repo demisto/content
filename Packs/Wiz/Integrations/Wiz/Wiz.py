@@ -993,7 +993,10 @@ def get_issue_evidence(issue_id):
         demisto.debug(f"Failed getting Issue evidence on ID {issue_id}")
         return {}
 
-    return response
+    if response['data']['graphSearch']['nodes'] is None:
+        return "Resource Not Found"
+    else:
+        return response['data']['graphSearch']['nodes'][0]['entities']
 
 
 def rescan_machine_disk(vm_id):
