@@ -43,6 +43,7 @@ def test_module_command_success(requests_mock):
 
     assert response == 'ok'
 
+
 def test_module_command_fail(requests_mock):
     from CadoResponse import Client, test_module
     mock_response = {
