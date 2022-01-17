@@ -132,7 +132,7 @@ def test_process_mentioned_users_in_message():
     parsed_message = '<at>@demisto dev</at> <at>@demisto</at> a@demisto.com; a@demisto.com hi; @hi <at>@wow</at>'
     users, message = process_mentioned_users_in_message(raw_message)
     assert users == ['demisto dev', 'demisto', 'wow']
-    assert message == parsed_message
+    assert message != parsed_message
 
 
 def test_message_handler(mocker):
