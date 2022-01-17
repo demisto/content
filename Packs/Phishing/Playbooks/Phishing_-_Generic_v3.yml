@@ -335,8 +335,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1087.5,
-          "y": 3460
+          "x": -1500,
+          "y": 3680
         }
       }
     note: false
@@ -771,7 +771,7 @@ tasks:
       brand: ""
     nexttasks:
       "No":
-      - "16"
+      - "148"
       "Yes":
       - "123"
     separatecontext: false
@@ -2801,6 +2801,47 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "148":
+    id: "148"
+    taskid: 906b39f7-657b-43d1-882c-ec1e7e1eaa3f
+    type: condition
+    task:
+      id: 906b39f7-657b-43d1-882c-ec1e7e1eaa3f
+      version: -1
+      name: Can the user be informed about the verdict?
+      description: Checks whether the user can be informed about the verdict of the
+        incident.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "Yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ReporterAddress
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -1160,
+          "y": 3470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -2809,8 +2850,8 @@ view: |-
       "144_134_#default#": 0.59,
       "144_145_Manually": 0.44,
       "146_11_#default#": 0.13,
+      "148_8_#default#": 0.15,
       "15_31_#default#": 0.6,
-      "33_16_No": 0.64,
       "36_43_#default#": 0.57,
       "37_43_#default#": 0.5,
       "37_91_yes": 0.57,
