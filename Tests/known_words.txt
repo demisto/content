@@ -61,3 +61,4 @@ ACM
 unicode
 CloudWatchLogs
 GuardDuty
+NetWitness
