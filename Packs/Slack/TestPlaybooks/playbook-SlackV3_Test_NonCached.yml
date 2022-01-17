@@ -1,6 +1,5 @@
 id: Test_SlackV3_NonCaching
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: Test_SlackV3_NonCaching
 starttaskid: "0"
 tasks:
@@ -14,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -290,3 +290,5 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.5.0
+description: ''
