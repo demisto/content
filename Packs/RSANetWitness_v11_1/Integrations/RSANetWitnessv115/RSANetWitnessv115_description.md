@@ -1,6 +1,8 @@
 This is a beta integration, which lets you implement and test pre-release software. However, it may contain bugs. Updates to the integration during the beta phase may include non-backward compatible features. We appreciate your feedback on the quality and usability of the integration to help us identify issues, fix them, and continually improve.
 
-# Log in
+# Configure the Integration
+
+## Log in
 To log in, use your RSA NetWitness server URL and the supplied username and password.
 
 ## Default Service ID
@@ -11,7 +13,7 @@ To use a different service ID for a specific command, use the *service_id* argum
 To make requests through the NetWitness Platform API, users must have **integration-server.api.access** permission. This permission is granted automatically to users with the **Admin** or **DPOs - Data Privacy Officer** role.
 You can either assign a user one of these roles, or create a new role with the API permission and assign the user the new role.
 
-**Assign a Role to a User**
+### Assign a Role to a User
 1. Log in as the admin user and go to Admin > Security.
 2. In the **Users** tab, select a user and click the edit button.
 3. In the **Roles** section:
@@ -19,7 +21,7 @@ You can either assign a user one of these roles, or create a new role with the A
    2. Select a role and click Add.
 4. Click Save.
 
-**Create a New Role**
+### Create a New Role
 1. Log in as the admin user and go to Admin > Security.
 2. Click the **Roles** tab.
 3. In the toolbar, click the plus sign to add a new role.
