@@ -34,7 +34,7 @@ configuration:
   name: apikey
   required: true
   type: 4
-- additionalinfo: The timeout of the HTTP requests sent to Cortex Core API (in seconds).
+- additionalinfo: The timeout of the HTTP requests sent to Cortex XDR API (in seconds).
   defaultvalue: '120'
   display: HTTP Timeout
   name: timeout
@@ -52,13 +52,13 @@ configuration:
   required: false
   type: 0
 - additionalinfo: For Cortex XSOAR version 6.0.0 and above. If selected, for every
-    incident fetched from Cortex Core to Cortex XSOAR, the incident owners will be
+    incident fetched from Cortex XDR to Cortex XSOAR, the incident owners will be
     synced. Note that once this value is changed and synchronized between the systems,
     additional changes will not be reflected. For example, if you change the owner
-    in Cortex XSOAR, the new owner will also be changed in Cortex Core. However, if
-    you now change the owner back in Cortex Core, this additional change will not be
+    in Cortex XSOAR, the new owner will also be changed in Cortex XDR. However, if
+    you now change the owner back in Cortex XDR, this additional change will not be
     reflected in Cortex XSOAR. In addition, for this change to be reflected, the owners
-    must exist in both Cortex XSOAR and Cortex Core.
+    must exist in both Cortex XSOAR and Cortex XDR.
   display: Sync Incident Owners
   hidden: false
   name: sync_owners
@@ -90,7 +90,7 @@ configuration:
   - resolved_auto
   required: false
   type: 16
-description: Cortex Core is the world's first detection and response app that natively
+description: Cortex XDR is the world's first detection and response app that natively
   integrates network, endpoint, and cloud data to stop sophisticated attacks.
 display: Investigation & Response
 name: Cortex Core - IR
@@ -253,7 +253,7 @@ script:
       description: Comments entered by the user regarding the incident.
       type: String
     - contextPath: PaloAltoNetworksCore.Incident.creation_time
-      description: Date and time the incident was created on Core.
+      description: Date and time the incident was created on XDR.
       type: date
     - contextPath: PaloAltoNetworksCore.Incident.detection_time
       description: Date and time that the first alert occurred in the incident.
@@ -279,7 +279,7 @@ script:
       defaultValue: 'False'
       description: Return data only if the incident was changed since the last time
         it was mirrored in to XSOAR.  This flag should be used only from within a
-        Core incident.
+        XDR incident.
       isArray: false
       name: return_only_updated_incident
       required: false
@@ -778,7 +778,7 @@ script:
       secret: false
     deprecated: false
     description: Upload alerts in CEF format from external alert sources. After you
-      map CEF alert fields to Cortex Core fields, Cortex Core displays the alerts in
+      map CEF alert fields to CortexXDR fields, Cortex XDR displays the alerts in
       related incidents and views. You can send 600 requests per minute. Each request
       can contain a maximum of 60 alerts.
     execution: false
@@ -2142,7 +2142,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Deletes selected endpoints in the Cortex Core app. You can delete
+    description: Deletes selected endpoints in the Cortex XDR app. You can delete
       up to 1000 endpoints.
     execution: false
     name: core-delete-endpoints
@@ -3122,8 +3122,5 @@ script:
   isremotesyncout: true
   type: python
 tests:
-- Test Core Playbook
-defaultmapperin: Cortex Core - IR-mapper
-defaultclassifier: Cortex Core - IR
-defaultmapperout: Cortex Core - IR-out-mapper
+- No tests
 fromversion: 5.0.0
