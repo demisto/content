@@ -1,4 +1,4 @@
-{
+[{
 	"CustomFields": null,
 	"ShardID": 0,
 	"account": "",
@@ -320,3 +320,4 @@
 	"type": "",
 	"version": 0
 }
+	]
