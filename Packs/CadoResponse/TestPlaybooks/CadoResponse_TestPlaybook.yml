@@ -1,6 +1,5 @@
-id: 33273009-3d22-456b-8819-29b5f296c63d
-version: 5
-vcShouldKeepItemLegacyProdMachine: false
+id: CadoResponse_TestPlaybook
+version: -1
 name: CadoResponse_TestPlaybook
 starttaskid: "0"
 tasks:
@@ -14,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -120,5 +120,7 @@ inputs:
     simple: cado-test-josh
   required: false
   description: ""
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
+fromversion: 5.0.0
+description: ''
