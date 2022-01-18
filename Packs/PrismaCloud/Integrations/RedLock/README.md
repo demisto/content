@@ -1074,32 +1074,6 @@ Search events on the Prisma Cloud (RedLock) platform using RQL language.
                 "regionName": "AWS Oregon",
                 "dynamicData": {}
             },
-            {
-                "account": "712829893241",
-                "regionId": 4,
-                "eventTs": 1642051966000,
-                "subject": "ejb-iam-cloudops",
-                "type": "CREATE",
-                "source": "s3.amazonaws.com",
-                "name": "CreateBucket",
-                "id": 2557671674,
-                "ip": "172.31.34.235",
-                "accessKeyUsed": false,
-                "cityId": -4,
-                "cityName": "Private",
-                "stateId": -4,
-                "stateName": "Private",
-                "countryId": -4,
-                "countryName": "Private",
-                "cityLatitude": -1.0,
-                "cityLongitude": -1.0,
-                "success": false,
-                "internal": false,
-                "location": "Private",
-                "accountName": "aws-emea-tac",
-                "regionName": "AWS Oregon",
-                "dynamicData": {}
-            }
         ]
     }
 }
@@ -1109,7 +1083,6 @@ Search events on the Prisma Cloud (RedLock) platform using RQL language.
 >|accessKeyUsed|account|accountName|cityId|cityLatitude|cityLongitude|cityName|countryId|countryName|dynamicData|eventTs|id|internal|ip|location|name|regionId|regionName|source|stateId|stateName|subject|success|type|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| false | 712829893241 | aws-emea-tac | -4 | -1.0 | -1.0 | Private | -4 | Private |  | 1642051938000 | 2557671539 | false | 172.31.34.235 | Private | CreateBucket | 4 | AWS Oregon | s3.amazonaws.com | -4 | Private | ejb-iam-cloudops | false | CREATE |
->| false | 712829893241 | aws-emea-tac | -4 | -1.0 | -1.0 | Private | -4 | Private |  | 1642051938000 | 2557671540 | false | 172.31.34.235 | Private | CreateBucket | 4 | AWS Oregon | s3.amazonaws.com | -4 | Private | ejb-iam-cloudops | false | CREATE |
 
 
 ### redlock-search-network
@@ -1147,7 +1120,7 @@ Search networks on the Prisma Cloud (RedLock) platform using RQL language.
 ```json
 {
     "Redlock": {
-        "Nodes": [
+        "Node": [
               {
                 "id": 1422407688,
                 "name": "aqwe",
@@ -1214,111 +1187,57 @@ Search networks on the Prisma Cloud (RedLock) platform using RQL language.
                     ],
                     "compliance_count": 0
                 }
-            },
-            {
-                "id": 1411487329,
-                "name": "gke-oldtac-nopublicclust-default-pool-f08b69f0-6g3n",
-                "ipAddr": "172.31.34.235",
-                "grouped": false,
-                "suspicious": false,
-                "vulnerable": true,
-                "metadata": {
-                    "redlock_alert_count": 5,
-                    "vpc_name": [
-                        {
-                            "id": "https://www.googleapis.com/compute/v1/projects/tac-prisma-cloud-and-compute/global/networks/us-central1",
-                            "name": "us-central1"
-                        }
-                    ],
-                    "vpc_id": [
-                        "https://www.googleapis.com/compute/v1/projects/tac-prisma-cloud-and-compute/global/networks/us-central1"
-                    ],
-                    "ip_addresses": [
-                        "172.31.34.235"
-                    ],
-                    "inspector_rba_count": 0,
-                    "secgroup_ids": [
-                        "7466735050281694697",
-                        "5386953130680217005"
-                    ],
-                    "guard_duty_iam_count": 0,
-                    "asset_role": [
-                        "VM Instance"
-                    ],
-                    "account_name": [
-                        "gcp-emea-tac"
-                    ],
-                    "region_name": [
-                        "GCP Iowa"
-                    ],
-                    "compliance_count": 0,
-                    "host_vulnerability_count": 0,
-                    "initial": true,
-                    "region_id": [
-                        "us-central1"
-                    ],
-                    "net_iface_id": [
-                        "gke-oldtac-nopublicclust-default-pool-f08b69f0-6g3n#nic0"
-                    ],
-                    "guard_duty_host_count": 0,
-                    "tags": [
-                        {
-                            "name": "gke-oldtac-nopublicclusterhere-fc43a760-node",
-                            "values": [
-                                ""
-                            ]
-                        },
-                        {
-                            "name": "goog-gke-node",
-                            "values": [
-                                ""
-                            ]
-                        }
-                    ],
-                    "rrn": "rrn::instance:us-central1:tac-prisma-cloud-and-compute:7040cac26d62fa19dea22bcb6cd52dba6c213212:1397701696990493277",
-                    "security_groups": [
-                        {
-                            "id": "7466735050281694697",
-                            "name": "allow-ingress-from-iap-tac"
-                        },
-                        {
-                            "id": "5386953130680217005",
-                            "name": "gke-oldtac-nopublicclusterhere-fc43a760-all"
-                        },
-                        {
-                            "id": "6289343630928735661",
-                            "name": "gke-oldtac-nopublicclusterhere-fc43a760-master"
-                        }
-                    ],
-                    "serverless_vulnerability_count": 0,
-                    "instance_id": [
-                        "1397701696990493277"
-                    ],
-                    "account_id": [
-                        "tac-prisma-cloud-and-compute"
-                    ],
-                    "cloud_type": [
-                        "gcp"
-                    ],
-                    "resource_id": [
-                        "1397701696990493277"
-                    ],
-                    "inspector_sbp_count": 0
-                }
             }
         ],
-        "Connections": []
+        "Connection": [
+            {
+                "from": 994246246,
+                "to": 1418248367,
+                "label": "Postgres",
+                "suspicious": false,
+                "metadata": {
+                    "account_id": [
+                        "274307705868"
+                    ],
+                    "cloud_type": [
+                        "aws"
+                    ],
+                    "bytes_attempted": 0,
+                    "connection_overview_table": [
+                        {
+                            "port": "Postgres",
+                            "traffic_volume": 83938,
+                            "accepted": "yes"
+                        }
+                    ],
+                    "region_id": [
+                        "us-east-2"
+                    ],
+                    "bytes_accepted": 83938,
+                    "to_ip_addresses": [
+                        "172.31.17.210"
+                    ],
+                    "flow_class": [
+                        "Postgres"
+                    ],
+                    "from_ip_addresses": [
+                        "172.31.20.235"
+                    ],
+                    "bytes_rejected": 0
+                }
+            }
+        ]
     }
 }
 ```
 
 #### Human Readable Output
 >## Network Details
->### Nodes
+>### Node
 >|grouped|id|ipAddr|metadata|name|suspicious|vulnerable|
 >|---|---|---|---|---|---|---|
 >| false | 1411487329 | 172.31.34.235 | redlock_alert_count: 5<br>vpc_name: {'id': 'https://www.googleapis.com/compute/v1/projects/tac-prisma-cloud-and-compute/global/networks/us-central1', 'name': 'us-central1'}<br>vpc_id: https://www.googleapis.com/compute/v1/projects/tac-prisma-cloud-and-compute/global/networks/us-central1<br>ip_addresses: 172.31.34.235<br>inspector_rba_count: 0<br>secgroup_ids: 7466735050281694697,<br>5386953130680217005<br>guard_duty_iam_count: 0<br>asset_role: VM Instance<br>account_name: gcp-emea-tac<br>region_name: GCP Iowa<br>compliance_count: 0<br>host_vulnerability_count: 0<br>initial: true<br>region_id: us-central1<br>net_iface_id: gke-oldtac-nopublicclust-default-pool-f08b69f0-6g3n#nic0<br>guard_duty_host_count: 0<br>tags: {'name': 'gke-oldtac-nopublicclusterhere-fc43a760-node', 'values': ['']},<br>{'name': 'goog-gke-node', 'values': ['']}<br>rrn: rrn::instance:us-central1:tac-prisma-cloud-and-compute:7040cac26d62fa19dea22bcb6cd52dba6c213212:1397701696990493277<br>security_groups: {'id': '7466735050281694697', 'name': 'allow-ingress-from-iap-tac'},<br>{'id': '5386953130680217005', 'name': 'gke-oldtac-nopublicclusterhere-fc43a760-all'}<br>serverless_vulnerability_count: 0<br>instance_id: 1397701696990493277<br>account_id: tac-prisma-cloud-and-compute<br>cloud_type: gcp<br>resource_id: 1397701696990493277<br>inspector_sbp_count: 0 | gke-oldtac-nopublicclust-default-pool-f08b69f0-6g3n | false | true |
->### Connections
+>### Connection
 >|from|label|metadata|suspicious|to|
 >|---|---|---|---|---|
 >| 1418600304 | Web | bytes_attempted: 1473<br>connection_overview_table: {'port': 'Web (443)', 'traffic_volume': 43694, 'accepted': 'yes'},<br>{'port': 'Web (443)', 'traffic_volume': 1473, 'accepted': 'no'}<br>region_id: us-central1<br>countries: N/A<br>to_ip_addresses: 0.0.0.0<br>flow_class: Web (443)<br>states: N/A<br>account_id: tac-prisma-cloud-and-compute<br>cloud_type: gcp<br>asset_role: Internet IPs<br>bytes_accepted: 43694<br>isps: N/A<br>from_ip_addresses: 10.128.0.5<br>bytes_rejected: 0 | false | -1977384788 |
