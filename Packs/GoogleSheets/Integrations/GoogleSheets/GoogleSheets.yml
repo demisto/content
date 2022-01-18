@@ -78,8 +78,6 @@ script:
       required: false
       isArray: true
       defaultValue: ""
-      predefined:
-      - ""
     - default: false
       defaultValue: "11"
       description: Cell font size in the Spreadsheet to create.

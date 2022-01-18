@@ -1,20 +1,4 @@
-"""Base Integration for Cortex XSOAR (aka Demisto)
-
-This is an empty Integration with some basic structure according
-to the code conventions.
-
-MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
-
-Developer Documentation: https://xsoar.pan.dev/docs/welcome
-Code Conventions: https://xsoar.pan.dev/docs/integrations/code-conventions
-Linting: https://xsoar.pan.dev/docs/integrations/linting
-
-This is an empty structure file. Check an example at;
-https://github.com/demisto/content/blob/master/Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py
-
-"""
 import json
-
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
@@ -151,7 +135,7 @@ def markdown_single_get(response: dict) -> str:
 # COMMANDS
 
 
-def create_spreadsheet(service: Resource, args: dict) -> CommandResults:
+def spreadsheet_create(service: Resource, args: dict) -> CommandResults:
     '''
         input: service - google-api discovery resource (google api client)
                 args - demisto.args() for the api call
@@ -210,7 +194,7 @@ def create_spreadsheet(service: Resource, args: dict) -> CommandResults:
     return results
 
 
-def sheets_spreadsheet_update(service: Resource, args: dict) -> CommandResults:
+def spreadsheet_update(service: Resource, args: dict) -> CommandResults:
     '''
        input: service - google-api discovery resource (google api client)
                args - demisto.args() for the api call
@@ -223,7 +207,7 @@ def sheets_spreadsheet_update(service: Resource, args: dict) -> CommandResults:
     return prepare_result(response, args)
 
 
-def get_spreadsheet(service: Resource, args: dict) -> CommandResults:
+def spreadsheet_get(service: Resource, args: dict) -> CommandResults:
     '''
         input: service - google-api discovery resource (google api client)
                 args - demisto.args() for the api call
@@ -322,7 +306,7 @@ def sheet_duplicate(service: Resource, args: dict) -> CommandResults:
         ],
         "includeSpreadsheetInResponse": args.get('echo_spreadsheet')
     }
-
+    request_to_update = remove_empty_elements(request_to_update)
     response = service.spreadsheets().batchUpdate(spreadsheetId=spreadsheet_id, body=request_to_update).execute()
     results = prepare_result(response, args)
     return results
@@ -373,7 +357,7 @@ def sheet_delete(service: Resource, args: dict) -> CommandResults:
         ],
         "includeSpreadsheetInResponse": args.get('echo_spreadsheet')
     }
-
+    request_to_update = remove_empty_elements(request_to_update)
     response = service.spreadsheets().batchUpdate(spreadsheetId=spreadsheet_id, body=request_to_update).execute()
     results = prepare_result(response, args)
     return results
@@ -659,11 +643,11 @@ def main() -> None:
         if command == 'test-module':
             return_results(test_module())
         elif command == 'google-sheets-spreadsheet-create':
-            return_results(create_spreadsheet(service, demisto.args()))
+            return_results(spreadsheet_create(service, demisto.args()))
         elif command == 'google-sheets-spreadsheet-get':
-            return_results(get_spreadsheet(service, demisto.args()))
+            return_results(spreadsheet_get(service, demisto.args()))
         elif command == 'google-sheets-spreadsheet-update':
-            return_results(sheets_spreadsheet_update(service, demisto.args()))
+            return_results(spreadsheet_update(service, demisto.args()))
         elif command == 'google-sheets-sheet-create':
             return_results(sheet_create(service, demisto.args()))
         elif command == 'google-sheets-sheet-duplicate':
