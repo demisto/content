@@ -87,7 +87,7 @@ def wrapper_command(args: Dict[str, Any]):
     limit = arg_to_number(args.get('limit', 500))
 
     ports_num = len(destination_ports) if destination_ports else 1
-    if ports_num * len(destinations) * len(sources) > limit:
+    if ports_num * len(destinations) * len(sources) > limit:    # type: ignore[operator]
         raise Exception(f'Provided arguments will cause more than {limit} API Requests. '
                         'If you wish to exceed the API limit, increase limit argument.')
 
