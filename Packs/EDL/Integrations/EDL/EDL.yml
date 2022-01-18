@@ -53,7 +53,7 @@ configuration:
   name: certificate
   required: false
   type: 12
-- additionalinfo: For use with HTTPS - the certificate that the service should use.
+- additionalinfo: For use with HTTPS - the private key that the service should use.
   display: Private Key (Required for HTTPS)
   name: key
   required: false
@@ -63,7 +63,7 @@ configuration:
   name: credentials
   required: false
   type: 9
-- additionalinfo: If selected, add to an empty list the comment "# Empty list".
+- additionalinfo: If selected, the comment "# Empty list" will be added to an empty list.
   defaultvalue: 'true'
   display: Add comment to empty list
   hidden: false
@@ -181,7 +181,7 @@ configuration:
 - additionalinfo: NGNIX read timeout in seconds.
   display: NGINX Read Timeout
   hidden: false
-  name: time_out
+  name: timeout
   required: false
   type: 0
 - additionalinfo: 'When enabled, the integration will query the server using full queries. Advanced configuration to be used only if instructed by XSOAR Support, or youve encountered log errors in the form of: msgpack: invalid code.'
@@ -192,7 +192,7 @@ configuration:
   type: 8
 description: Use the Generic Export Indicators Service integration to provide an endpoint
   with a list of indicators as a service for the system indicators.
-display: Generic Export Indicators service
+display: Generic Export Indicators Service
 name: EDL
 script:
   commands:

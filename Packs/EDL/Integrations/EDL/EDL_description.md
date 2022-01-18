@@ -28,23 +28,23 @@ Use the following arguments in the URL to change the request:
  * Example: https://{cortex-xsoar_instance}/instance/execute/{ExportIndicators_instance_name}?n=50
 2. **s** - The starting entry index from which to export the indicators.
  * Example: https://{cortex-xsoar_instance}/instance/execute/{ExportIndicators_instance_name}?s=10&n=50
-3. **v** - The output format. Supports `text`, `csv`, `json`, `json-seq`,`xsoar-json`, `xsoar-seq`, `mwg` and `proxysg` (alias: `bluecoat`).
+3. **v** - The output format. Supports `PAN-OS (Text)`, `csv`, `json`, `mwg` and `proxysg` (alias: `bluecoat`).
  * Example: https://{cortex-xsoar_instance}/instance/execute/{ExportIndicators_instance_name}?v=json
 4. **q** - The query used to retrieve indicators from the system.
  * Example: https://{cortex-xsoar_instance}/instance/execute/{ExportIndicators_instance_name}?q="type:ip and sourceBrand:my_source"
 5. **t** - Only with `mwg` format. The type indicated on the top of the exported list. Supports: string, applcontrol, dimension, category, ip, mediatype, number and regex.
  * Example: https://{cortex-xsoar_instance}/instance/execute/{ExportIndicators_instance_name}?v=mwg&t=ip
-6. **sp** - Only with `text` format. If set will strip ports off URLs, otherwise will ignore URLs with ports.
+6. **sp** - If set will strip ports off URLs, otherwise will ignore URLs with ports.
  * Example: https://{cortex-xsoar_instance}/instance/execute/{ExportIndicators_instance_name}?v=text&sp 
-7. **di** - Only with `text` format. If set will ignore URLs which are not compliant with PAN-OS URL format instead of being re-written.
+7. **di** - Only with `PAN-OS (Text)` format. If set will ignore URLs which are not compliant with PAN-OS URL format instead of being re-written.
  * Example: https://{cortex-xsoar_instance}/instance/execute/{ExportIndicators_instance_name}?v=text&di
-8. **pr** - Only with `text` format. If set will strip protocols off URLs.
+8. **pr** - If set will strip protocols off URLs.
  * Example: https://{cortex-xsoar_instance}/instance/execute/{ExportIndicators_instance_name}?v=text&pr
 9. **cd** - Only with `proxysg` format. The default category for the exported indicators.
  * Example: https://{cortex-xsoar_instance}/instance/execute/{ExportIndicators_instance_name}?v=proxysg&cd=default_category
 10. **ca** - Only with `proxysg` format. The categories which will be exported. Indicators not in these categories will be classified as the default category.
  * Example: https://{cortex-xsoar_instance}/instance/execute/{ExportIndicators_instance_name}?v=proxysg&ca=category1,category2
-11. **tr** - Whether to collapse IPs. 
+11. **tr** - Only with `PAN-OS (Text)` format, Whether to collapse IPs. 
     * 0 - Do not collapse. 
     * 1 - Collapse to ranges.
     * 2 - Collapse to CIDRs.

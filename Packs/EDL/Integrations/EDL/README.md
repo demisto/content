@@ -24,7 +24,7 @@ Unlike `PAN-OS EDL Management`, this integration hosts the EDL on the Cortex XSO
 ---
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for ExportIndicators.
+2. Search for Export Indicators.
 3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
@@ -68,17 +68,17 @@ Use the following arguments in the URL to change the request:
 | --- | --- | --- |
 | n | The maximum number of entries in the output. If no value is provided, will use the value specified in the List Size parameter configured in the instance configuration. | `https://{server_host}/instance/execute/{instance_name}?n=50` |
 | s | The starting entry index from which to export the indicators. | `https://{server_host}/instance/execute/{instance_name}?s=10&n=50` |
-| v | The output format. Supports `text`, `csv`, `json`, `json-seq`,`xsoar-json`, `xsoar-seq`, `xsoar-csv`, `mwg`, `panosurl` and `proxysg` (alias: `bluecoat`). | `https://{server_host}/instance/execute/{instance_name}?v=json` |
+| v | The output format. Supports `PAN-OS (Text)`, `csv`, `json`, `mwg`, `panosurl` and `proxysg` (alias: `bluecoat`). | `https://{server_host}/instance/execute/{instance_name}?v=json` |
 | q | The query used to retrieve indicators from the system. | `https://{server_host}/instance/execute/{instance_name}?q="type:ip and sourceBrand:my_source"` |
 | t | Only with `mwg` format. The type indicated on the top of the exported list. Supports: string, applcontrol, dimension, category, ip, mediatype, number and regex. | `https://{server_host}/instance/execute/{instance_name}?v=mwg&t=ip` |
-| sp | Only with `text` format. If set will strip ports off URLs. | `https://{server_host}/instance/execute/{instance_name}?v=text&sp` |
-| pr | Only with `text` format. If set will strip protocol off URLs. | `https://{server_host}/instance/execute/{instance_name}?v=text&pr` |
-| di | Only with `text` format. If set will ignore urls which are not compliant with PAN-OS URL format instead of being re-written. | `https://{server_host}/instance/execute/{instance_name}?v=text&di` |
+| sp | If set will strip ports off URLs. | `https://{server_host}/instance/execute/{instance_name}?v=text&sp` |
+| pr | If set will strip protocol off URLs. | `https://{server_host}/instance/execute/{instance_name}?v=text&pr` |
+| di | Only with `PAN-OS (Text)` format. If set will ignore urls which are not compliant with PAN-OS URL format instead of being re-written. | `https://{server_host}/instance/execute/{instance_name}?v=text&di` |
+| tr | Only with `PAN-OS (Text)`Whether to collapse IPs. 0 - to not collapse, 1 - collapse to ranges or 2 - collapse to CIDRs | `https://{server_host}/instance/execute/{instance_name}?q="type:ip and sourceBrand:my_source"&tr=1` |
 | cd | Only with `proxysg` format. The default category for the exported indicators. | `https://{server_host}/instance/execute/{instance_name}?v=proxysg&cd=default_category` |
 | ca | Only with `proxysg` format. The categories which will be exported. Indicators not falling to these categories will be classified as the default category. | `https://{server_host}/instance/execute/{instance_name}?v=proxysg&ca=category1,category2` |
-| tr | Whether to collapse IPs. 0 - to not collapse, 1 - collapse to ranges or 2 - collapse to CIDRs | `https://{server_host}/instance/execute/{instance_name}?q="type:ip and sourceBrand:my_source"&tr=1` |
-| tx | Whether to output `csv` format as textual web pages. | `https://{server_host}/instance/execute/{instance_name}?v=xsoar-csv&tx` |
-| fi | Only with `text` or `json` format - Select fields to export .. | `https://{server_host}/instance/execute/{instance_name}?v=xsoar-csv&tx` |
+| tx | Whether to output `CSV` format as textual web pages. | `https://{server_host}/instance/execute/{instance_name}?v=xsoar-csv&tx` |
+| fi | Only with `CSV` or `JSON` format - Select fields to export .. | `https://{server_host}/instance/execute/{instance_name}?v=xsoar-csv&tx` |
 
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI as part of an automation, or in a playbook.
@@ -97,7 +97,7 @@ Updates values stored in the EDL (only available On-Demand).
 | query | The query used to retrieve indicators from the system. Leave empty to use the query from the integration parameters.  | Optional | 
 | format | The output format. | Optional | 
 | edl_size | The maximum number of entries in the output. If no value is provided, will use the value specified in the List Size parameter configured in the instance configuration. | Optional | 
-| print_indicators | If set to true will print the indicators the that were saved to the export indicators service | Required | 
+| print_indicators | If set to true will print the indicators that were saved to the export indicators service | Required | 
 | mwg_type | For use with McAfee Web Gateway format to indicate the list type. | Optional |
 | url_port_stripping | For use with TEXT format - if True will strip the port off urls. | Optional |
 | url_protocol_stripping | For use with TEXT format - if True will strip the port off urls. | Optional |

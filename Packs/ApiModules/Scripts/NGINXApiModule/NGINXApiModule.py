@@ -59,7 +59,7 @@ server {
 
     # Proxy everything to python
     location / {
-        proxy_read_timeout $time_out;
+        proxy_read_timeout $timeout;
         proxy_pass http://localhost:$serverport/;
         add_header X-Proxy-Cache $upstream_cache_status;
         # allow bypassing the cache with an arg of nocache=1 ie http://server:7000/?nocache=1
@@ -85,7 +85,7 @@ def create_nginx_server_conf(file_path: str, port: int, params: Dict):
     template_str = params.get('nginx_server_conf') or NGINX_SERVER_CONF
     certificate: str = params.get('certificate', '')
     private_key: str = params.get('key', '')
-    time_out: str = params.get('time_out') or '300'
+    timeout: str = params.get('timeout') or '300'
     ssl = ''
     sslcerts = ''
     serverport = port + 1
@@ -104,7 +104,7 @@ def create_nginx_server_conf(file_path: str, port: int, params: Dict):
     if credentials.get('identifier'):
         extra_cache_key = "$http_authorization"
     server_conf = Template(template_str).safe_substitute(port=port, serverport=serverport, ssl=ssl,
-                                                         sslcerts=sslcerts, extra_cache_key=extra_cache_key, time_out=time_out)
+                                                         sslcerts=sslcerts, extra_cache_key=extra_cache_key, timeout=timeout)
     with open(file_path, mode='wt+') as f:
         f.write(server_conf)
 
