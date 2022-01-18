@@ -1239,7 +1239,7 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
             if event.get('subtype') == 'bot_message':
                 demisto.debug("Received bot_message event type. Ignoring.")
                 return
-            if event.get('bot_id', None) in bot_id:
+            if event.get('bot_id', '') == bot_id:
                 demisto.debug("Received bot message from the current bot. Ignoring.")
                 return
         if event.get('subtype') == 'message_changed':
