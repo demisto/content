@@ -49,7 +49,7 @@ script:
       secret: false
     - default: true
       defaultValue: en
-      description: The locale of the Spreadsheet to create
+      description: The locale of the Spreadsheet to create.
       isArray: false
       name: locale
       required: false
