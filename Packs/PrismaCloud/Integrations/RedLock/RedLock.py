@@ -571,18 +571,12 @@ def redlock_search_network():
     Run query in network API endpoint
     """
     query = demisto.args().get('query', None)
-    limit = demisto.args().get('limit', None)
     cloud_type = demisto.args().get('cloud-type', None)
-    if not limit:
-        limit = DEFAULT_LIMIT
-    else:
-        limit = int(limit)
 
     if not query:
         return_error('You must specify a query to retrieve assets')
     payload = {
         'query': query,
-        'limit': limit,
     }
     handle_time_filter(payload, {'type': 'to_now', 'value': 'epoch'})
     if cloud_type:
@@ -602,15 +596,15 @@ def redlock_search_network():
         nodes = response_data.get('nodes', [])
         connections = response_data.get('connections', [])
         md = "## Network Details\n"
-        md += tableToMarkdown("Nodes", nodes)
-        md += tableToMarkdown("Connections", connections)
+        md += tableToMarkdown("Node", nodes)
+        md += tableToMarkdown("Connection", connections)
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
             'Contents': response_data,
             'EntryContext': {
-                'Redlock.Network.Nodes(val.id == obj.id)': nodes,
-                'Redlock.Network.Connections(val.id == obj.from)': connections
+                'Redlock.Network.Node(val.id == obj.id)': nodes,
+                'Redlock.Network.Connection(val.id == obj.from)': connections
             },
             'HumanReadable': md
         })
