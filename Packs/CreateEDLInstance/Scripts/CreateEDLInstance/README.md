@@ -6,7 +6,7 @@ Use this automation to create an EDL instance on XSOAR.
 | **Name** | **Description** |
 | --- | --- |
 | Script Type | python3 |
-| Tags |  |
+| Tags | None  |
 
 ## Inputs
 ---

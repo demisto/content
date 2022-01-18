@@ -1,14 +1,15 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import random
-import json
 
 edl_instance_name = demisto.args().get('InstanceName')
 edl_port_list_name = demisto.args().get('PortListName')
 edl_query = demisto.args().get('Query')
 
-existing_port_list = demisto.executeCommand('getList', {'listName': edl_port_list_name})[0]['Contents'].split(',')
-
+try:
+    existing_port_list = demisto.executeCommand('getList', {'listName': edl_port_list_name})[0].get('Contents').split(',')
+except Exception as e:
+    return_error(e)
 
 def generate_random_port():
     return random.randint(3000, 50000)
@@ -29,7 +30,10 @@ while str(random_port) in existing_port_list:
 existing_port_list.append(str(random_port))
 
 # Add new port to existing port list
-new_list = demisto.executeCommand('setList', {'listName': edl_port_list_name, 'listData': ",".join(existing_port_list)})
+try: 
+    new_list = demisto.executeCommand('setList', {'listName': edl_port_list_name, 'listData': ",".join(existing_port_list)})
+except Exception as e:
+    return_error(e)
 
 body = {
     "name": edl_instance_name,
@@ -611,7 +615,18 @@ body = {
 }
 
 
-# Create EDL instance
-parameters = {'uri': '/settings/integration', 'body': body}
-results = demisto.executeCommand('demisto-api-put', parameters)
-demisto.results(f"EDL: {edl_instance_name} created on port: {random_port}")
+
+def main():
+    # Create EDL instance
+    parameters = {'uri': '/settings/integration', 'body': body}
+
+    try:
+        results = demisto.executeCommand('demisto-api-put', parameters)
+    except Exception as e:
+        return_error(e)
+
+    readable_output = f"EDL: {edl_instance_name} created on port: {random_port}"
+    return_results(CommandResults(readable_output=readable_output))
+
+if __name__ in ('__main__', '__builtin__', 'builtins'):
+    main()
