@@ -2,10 +2,9 @@ import os
 import requests
 
 
-COVERAGE_REPORT_COMMENT = 'This is the link to the failed unit tests: '
+FAILED_UT_COMMENT = 'This is the link to the failed unit tests: '
 JID = os.environ.get("CI_JOB_ID")
-COVERAGE_LINK = f'https://xsoar.docs.pan.run/-/content/-/jobs/{JID}/artifacts/unit-tests/'
-
+FAILED_UT_LINK = f'https://xsoar.docs.pan.run/-/content/-/jobs/{JID}/artifacts/failed_unit_tests.txt'
 
 def add_pr_comment():
     token = os.environ['CONTENT_GITHUB_TOKEN']
@@ -27,10 +26,10 @@ def add_pr_comment():
                 for existing_comment in issue_comments:
                     # Check if a comment about report coverage already exists. If there is delete it first and then post
                     # a new comment:
-                    if COVERAGE_REPORT_COMMENT in existing_comment.get('body'):
+                    if FAILED_UT_COMMENT in existing_comment.get('body'):
                         comment_url = existing_comment.get('url')
                         requests.delete(comment_url, headers=headers)
-                requests.post(issue_url, json={'body': f'{COVERAGE_REPORT_COMMENT}:\n {COVERAGE_LINK}'},
+                requests.post(issue_url, json={'body': f'{FAILED_UT_COMMENT}:\n {FAILED_UT_LINK}'},
                               headers=headers)
         else:
             print(f'Add pull request comment failed: There is more then one open pull request for branch {branch_name}.')
