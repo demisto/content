@@ -1,0 +1,23 @@
+{
+    "name": "Accenture CTI v2",
+    "description": "Accenture Cyber Threat Intelligence",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "Accenture",
+    "url": "https://www.accenture.com/us-en/services/security/cyber-defense",
+    "email": "CTI.AcctManagement@accenture.com",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "devEmail": [
+        "CTI.Engineering.Integration@accenture.com"
+    ],
+    "githubUser": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}
