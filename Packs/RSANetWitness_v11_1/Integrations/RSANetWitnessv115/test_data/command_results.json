@@ -1,0 +1,741 @@
+{
+  "list_incident": {
+    "RSANetWitness115.Incidents(val.id === obj.id)": {
+      "id": "INC-1",
+      "title": "testing",
+      "summary": null,
+      "priority": "Low",
+      "riskScore": 70,
+      "status": "New",
+      "alertCount": 1,
+      "averageAlertRiskScore": 70,
+      "sealed": false,
+      "totalRemediationTaskCount": 0,
+      "openRemediationTaskCount": 0,
+      "created": "2021-11-15T07:30:49.670Z",
+      "lastUpdated": "2022-01-04T13:39:37.039Z",
+      "lastUpdatedBy": "Admin",
+      "assignee": null,
+      "sources": [
+        "Reporting Engine"
+      ],
+      "ruleId": null,
+      "firstAlertTime": null,
+      "categories": null,
+      "journalEntries": [
+        {
+          "id": "48",
+          "author": "Admin",
+          "notes": "great inc for demo",
+          "created": "2021-12-26T16:10:21.810Z",
+          "lastUpdated": "2021-12-26T16:10:21.810Z",
+          "milestone": null
+        },
+        {
+          "id": "49",
+          "author": "Admin",
+          "notes": "Demo Note",
+          "created": "2021-12-30T09:16:30.463Z",
+          "lastUpdated": "2021-12-30T09:16:30.463Z",
+          "milestone": null
+        },
+        {
+          "id": "50",
+          "author": "Admin",
+          "notes": "another note",
+          "created": "2022-01-05T09:32:03.066Z",
+          "lastUpdated": "2022-01-05T09:32:03.066Z",
+          "milestone": null
+        }
+      ],
+      "createdBy": "Admin",
+      "deletedAlertCount": 0,
+      "eventCount": 1,
+      "alertMeta": {
+        "SourceIp": [
+          ""
+        ],
+        "DestinationIp": [
+          "1.1.1.1"
+        ]
+      }
+    }
+  },
+  "list_incidents": {
+    "RSANetWitness115.Incidents(val.id === obj.id)": [
+      {
+        "id": "INC-1",
+        "title": "testing",
+        "summary": null,
+        "priority": "Low",
+        "riskScore": 70,
+        "status": "New",
+        "alertCount": 1,
+        "averageAlertRiskScore": 70,
+        "sealed": false,
+        "totalRemediationTaskCount": 0,
+        "openRemediationTaskCount": 0,
+        "created": "2021-11-15T07:30:49.670Z",
+        "lastUpdated": "2022-01-04T13:39:37.039Z",
+        "lastUpdatedBy": "Admin",
+        "assignee": null,
+        "sources": [
+          "Reporting Engine"
+        ],
+        "ruleId": null,
+        "firstAlertTime": null,
+        "categories": null,
+        "journalEntries": [
+          {
+            "id": "48",
+            "author": "Admin",
+            "notes": "great inc for demo",
+            "created": "2021-12-26T16:10:21.810Z",
+            "lastUpdated": "2021-12-26T16:10:21.810Z",
+            "milestone": null
+          },
+          {
+            "id": "49",
+            "author": "Admin",
+            "notes": "Demo Note",
+            "created": "2021-12-30T09:16:30.463Z",
+            "lastUpdated": "2021-12-30T09:16:30.463Z",
+            "milestone": null
+          },
+          {
+            "id": "50",
+            "author": "Admin",
+            "notes": "another note",
+            "created": "2022-01-05T09:32:03.066Z",
+            "lastUpdated": "2022-01-05T09:32:03.066Z",
+            "milestone": null
+          }
+        ],
+        "createdBy": "Admin",
+        "deletedAlertCount": 0,
+        "eventCount": 1,
+        "alertMeta": {
+          "SourceIp": [
+            ""
+          ],
+          "DestinationIp": [
+            "1.1.1.1"
+          ]
+        }
+      }
+    ],
+    "RSANetWitness115.paging.Incidents(true)": {
+      "pageNumber": 0,
+      "pageSize": 1,
+      "totalPages": 28,
+      "totalItems": 28,
+      "hasNext": true,
+      "hasPrevious": false
+    }
+  },
+  "update_incident": {
+    "id": "INC-1",
+    "title": "testing",
+    "summary": null,
+    "priority": "Low",
+    "riskScore": 70,
+    "status": "New",
+    "alertCount": 1,
+    "averageAlertRiskScore": 70,
+    "sealed": false,
+    "totalRemediationTaskCount": 0,
+    "openRemediationTaskCount": 0,
+    "created": "2021-11-15T07:30:49.670Z",
+    "lastUpdated": "2022-01-04T13:39:37.039Z",
+    "lastUpdatedBy": "Admin",
+    "assignee": null,
+    "sources": [
+      "Reporting Engine"
+    ],
+    "ruleId": null,
+    "firstAlertTime": null,
+    "categories": null,
+    "journalEntries": [
+      {
+        "id": "48",
+        "author": "Admin",
+        "notes": "great inc for demo",
+        "created": "2021-12-26T16:10:21.810Z",
+        "lastUpdated": "2021-12-26T16:10:21.810Z",
+        "milestone": null
+      },
+      {
+        "id": "49",
+        "author": "Admin",
+        "notes": "Demo Note",
+        "created": "2021-12-30T09:16:30.463Z",
+        "lastUpdated": "2021-12-30T09:16:30.463Z",
+        "milestone": null
+      },
+      {
+        "id": "50",
+        "author": "Admin",
+        "notes": "another note",
+        "created": "2022-01-05T09:32:03.066Z",
+        "lastUpdated": "2022-01-05T09:32:03.066Z",
+        "milestone": null
+      }
+    ],
+    "createdBy": "Admin",
+    "deletedAlertCount": 0,
+    "eventCount": 1,
+    "alertMeta": {
+      "SourceIp": [
+        ""
+      ],
+      "DestinationIp": [
+        "1.1.1.1"
+      ]
+    }
+  },
+  "list_alerts_for_incident": {
+    "RSANetWitness115.IncidentAlerts(val.id === obj.id)": [
+      {
+        "id": "616e89b3ec6fe54e08b712af",
+        "title": "testAlert",
+        "detail": null,
+        "created": "2021-10-19T09:02:43.195Z",
+        "source": "NetWitness Investigate",
+        "riskScore": 50,
+        "type": "Log",
+        "events": [
+          {
+            "source": {
+              "device": {
+                "ipAddress": null,
+                "port": null,
+                "macAddress": null,
+                "dnsHostname": null,
+                "dnsDomain": null
+              },
+              "user": {
+                "username": "NT AUTHORITY\\SYSTEM",
+                "emailAddress": null,
+                "adUsername": null,
+                "adDomain": null
+              }
+            },
+            "destination": {
+              "device": {
+                "ipAddress": null,
+                "port": null,
+                "macAddress": null,
+                "dnsHostname": null,
+                "dnsDomain": null
+              },
+              "user": {
+                "username": null,
+                "emailAddress": null,
+                "adUsername": null,
+                "adDomain": null
+              }
+            },
+            "domain": "host_name",
+            "eventSource": null,
+            "eventSourceId": "181740"
+          },
+          {
+            "source": {
+              "device": {
+                "ipAddress": null,
+                "port": null,
+                "macAddress": null,
+                "dnsHostname": null,
+                "dnsDomain": null
+              },
+              "user": {
+                "username": "NT AUTHORITY\\SYSTEM",
+                "emailAddress": null,
+                "adUsername": null,
+                "adDomain": null
+              }
+            },
+            "destination": {
+              "device": {
+                "ipAddress": null,
+                "port": null,
+                "macAddress": null,
+                "dnsHostname": null,
+                "dnsDomain": null
+              },
+              "user": {
+                "username": null,
+                "emailAddress": null,
+                "adUsername": null,
+                "adDomain": null
+              }
+            },
+            "domain": "host_name",
+            "eventSource": null,
+            "eventSourceId": "181741"
+          },
+          {
+            "source": {
+              "device": {
+                "ipAddress": null,
+                "port": null,
+                "macAddress": null,
+                "dnsHostname": null,
+                "dnsDomain": null
+              },
+              "user": {
+                "username": "NT AUTHORITY\\SYSTEM",
+                "emailAddress": null,
+                "adUsername": null,
+                "adDomain": null
+              }
+            },
+            "destination": {
+              "device": {
+                "ipAddress": null,
+                "port": null,
+                "macAddress": null,
+                "dnsHostname": null,
+                "dnsDomain": null
+              },
+              "user": {
+                "username": null,
+                "emailAddress": null,
+                "adUsername": null,
+                "adDomain": null
+              }
+            },
+            "domain": "host_name",
+            "eventSource": null,
+            "eventSourceId": "181742"
+          }
+        ],
+        "IncidentId": "INC-1"
+      }
+    ],
+    "RSANetWitness115.paging.IncidentAlerts(true)": {
+      "pageNumber": 0,
+      "pageSize": 50,
+      "totalPages": 1,
+      "totalItems": 1,
+      "hasNext": false,
+      "hasPrevious": false
+    }
+  },
+  "services_list": [
+    {
+      "id": "213b6e75-691e-4df1-8d4f-52aef2970f5d",
+      "name": "endpoint-server",
+      "displayName": "Endpoint Server",
+      "host": "1.1.1.1",
+      "version": "1.1.1.1"
+    }
+  ],
+  "hosts_list": {
+    "RSANetWitness115.HostsList(val.agentId === obj.agentId)": [
+      {
+        "agentId": "1",
+        "hostName": "host_name",
+        "riskScore": 0,
+        "networkInterfaces": [
+          {
+            "name": "AWS Network",
+            "macAddress": "01:11:11:AA:11:11",
+            "ipv4": [
+              "1.1.1.1"
+            ],
+            "ipv6": [
+              "111::111:11:111:11"
+            ],
+            "networkIdv6": [
+              "111"
+            ],
+            "gateway": [
+              "1.1.1.1"
+            ],
+            "dns": [
+              "1.1.1.1"
+            ],
+            "promiscuous": false
+          }
+        ],
+        "lastSeenTime": "2021-10-19T11:08:55.052Z"
+      }
+    ],
+    "RSANetWitness115.paging.HostsList(true)": {
+      "pageNumber": 0,
+      "pageSize": 100,
+      "totalPages": 1,
+      "totalItems": 1,
+      "hasNext": false,
+      "hasPrevious": false
+    }
+  },
+  "single_incident": {
+    "RSANetWitness115.Incidents(val.id === obj.id)": {
+      "id": "INC-1",
+      "title": "testing",
+      "summary": null,
+      "priority": "Low",
+      "riskScore": 70,
+      "status": "New",
+      "alertCount": 1,
+      "averageAlertRiskScore": 70,
+      "sealed": false,
+      "totalRemediationTaskCount": 0,
+      "openRemediationTaskCount": 0,
+      "created": "2021-11-15T07:30:49.670Z",
+      "lastUpdated": "2022-01-04T13:39:37.039Z",
+      "lastUpdatedBy": "Admin",
+      "assignee": null,
+      "sources": [
+        "Reporting Engine"
+      ],
+      "ruleId": null,
+      "firstAlertTime": null,
+      "categories": null,
+      "journalEntries": [
+        {
+          "id": "48",
+          "author": "Admin",
+          "notes": "great inc for demo",
+          "created": "2021-12-26T16:10:21.810Z",
+          "lastUpdated": "2021-12-26T16:10:21.810Z",
+          "milestone": null
+        },
+        {
+          "id": "49",
+          "author": "Admin",
+          "notes": "Demo Note",
+          "created": "2021-12-30T09:16:30.463Z",
+          "lastUpdated": "2021-12-30T09:16:30.463Z",
+          "milestone": null
+        },
+        {
+          "id": "50",
+          "author": "Admin",
+          "notes": "another note",
+          "created": "2022-01-05T09:32:03.066Z",
+          "lastUpdated": "2022-01-05T09:32:03.066Z",
+          "milestone": null
+        }
+      ],
+      "createdBy": "Admin",
+      "deletedAlertCount": 0,
+      "eventCount": 1,
+      "alertMeta": {
+        "SourceIp": [
+          ""
+        ],
+        "DestinationIp": [
+          "1.1.1.1"
+        ]
+      }
+    }
+  },
+  "empty_response": null,
+  "endpoint_command": {
+    "Type": 1,
+    "ContentsFormat": "json",
+    "Contents": {
+      "items": [
+        {
+          "agentId": "1",
+          "hostName": "host_name",
+          "riskScore": 0,
+          "networkInterfaces": [
+            {
+              "name": "AWS Network",
+              "macAddress": "01:11:11:AA:11:11",
+              "ipv4": [
+                "1.1.1.1"
+              ],
+              "ipv6": [
+                "111::111:11:111:11"
+              ],
+              "networkIdv6": [
+                "111"
+              ],
+              "gateway": [
+                "1.1.1.1"
+              ],
+              "dns": [
+                "1.1.1.1"
+              ],
+              "promiscuous": false
+            }
+          ],
+          "lastSeenTime": "2021-10-19T11:08:55.052Z"
+        }
+      ],
+      "pageNumber": 0,
+      "pageSize": 100,
+      "totalPages": 1,
+      "totalItems": 1,
+      "hasNext": false,
+      "hasPrevious": false
+    },
+    "HumanReadable": "### RSA NetWitness 11.5 -  Endpoint: 1\n|Hostname|ID|IPAddress|MACAddress|Vendor|\n|---|---|---|---|---|\n| host_name | 1 | ['1.1.1.1'] | 01:11:11:AA:11:11 | RSA NetWitness 11.5 Response |\n",
+    "EntryContext": {
+      "Endpoint(val.ID && val.ID == obj.ID)": [
+        {
+          "ID": "1",
+          "Hostname": "host_name",
+          "IPAddress": [
+            [
+              "1.1.1.1"
+            ]
+          ],
+          "MACAddress": [
+            "01:11:11:AA:11:11"
+          ],
+          "Vendor": "RSA NetWitness 11.5 Response"
+        }
+      ]
+    },
+    "IndicatorTimeline": [],
+    "IgnoreAutoExtract": false,
+    "Note": false,
+    "Relationships": []
+  },
+  "snapshot_list": [
+    "2021-10-19T08:51:50.913Z",
+    "2021-10-19T08:35:50.790Z",
+    "2021-10-19T06:49:37.712Z",
+    "2021-10-19T06:34:37.523Z",
+    "2021-10-19T06:20:01.622Z"
+  ],
+  "snapshot_details": [
+    {
+      "machineOsType": "windows",
+      "hostName": "host_name",
+      "agentId": "1",
+      "agentVersion": "1",
+      "scanStartTime": "2021-10-19T06:49:37.712Z",
+      "directory": "",
+      "fileName": "dll",
+      "owner": null,
+      "timeCreated": "2021-06-09T04:31:32.110Z",
+      "timeModified": "2021-06-09T04:31:32.157Z",
+      "timeAccessed": "2021-06-09T04:31:32.157Z",
+      "attributes": [
+        "file.attribute.archive"
+      ],
+      "accessMode": 0,
+      "sameDirectoryFileCounts": {
+        "nonExe": 563,
+        "exe": 3280,
+        "subFolder": 121,
+        "exeSameCompany": 3248,
+        "hiddenFiles": 0
+      },
+      "fileContext": [
+        "file.found"
+      ],
+      "directoryContext": [],
+      "autorunContext": null,
+      "networkContext": null,
+      "kernelModeContext": null,
+      "userModeContext": null,
+      "processContext": null,
+      "rpm": null,
+      "windows": {
+        "processes": [],
+        "dlls": [],
+        "threads": [],
+        "drivers": [],
+        "services": [
+          {
+            "serviceName": "",
+            "displayName": "",
+            "description": "",
+            "account": "",
+            "launchArguments": " - -p",
+            "serviceMain": null,
+            "hostingPid": 0,
+            "state": "running",
+            "win32ErrorCode": 0,
+            "context": [
+              "service.foundRegistryKey"
+            ]
+          }
+        ],
+        "tasks": [],
+        "autoruns": [],
+        "imageHooks": [],
+        "kernelHooks": []
+      },
+      "mac": null,
+      "linux": null,
+      "fileProperties": {
+        "firstFileName": "dll",
+        "reputationStatus": null,
+        "globalRiskScore": 0,
+        "firstSeenTime": "2021-07-28T08:00:33.324Z",
+        "machineOsType": "windows",
+        "signature": {
+          "timeStamp": "2021-05-11T23:04:05.207Z",
+          "thumbprint": "1",
+          "context": [
+            "microsoft"
+          ],
+          "signer": "Microsoft Windows"
+        },
+        "size": 988008,
+        "checksumMd5": "1",
+        "checksumSha1": "1",
+        "checksumSha256": "1",
+        "pe": {
+          "timeStamp": "1962-08-22T03:46:33.000Z",
+          "imageSize": 987136,
+          "numberOfExportedFunctions": 67,
+          "numberOfNamesExported": 67,
+          "numberOfExecuteWriteSections": 0,
+          "context": [
+            "file.dll"
+          ],
+          "resources": {
+            "originalFileName": "ll",
+            "company": "Microsoft",
+            "description": "Windowss",
+            "version": null
+          },
+          "sectionNames": [
+            ".text"
+          ],
+          "importedLibraries": [
+            "api-ms-win-crt-string-l1-1-0.dll"
+          ]
+        },
+        "elf": null,
+        "macho": null,
+        "entropy": 6.415184949872613,
+        "format": "pe",
+        "fileStatus": "Neutral",
+        "remediationAction": "Unblock"
+      },
+      "localRiskScore": 0
+    }
+  ],
+  "files_list": {
+    "RSANetWitness115.FilesList(val.firstFileName === obj.firstFileName)": [
+      {
+        "firstFileName": "exe",
+        "reputationStatus": null,
+        "globalRiskScore": 0,
+        "firstSeenTime": "2022-01-06T08:29:50.699Z",
+        "machineOsType": "windows",
+        "signature": {
+          "timeStamp": "2022-01-06T01:01:33.446Z",
+          "thumbprint": "1",
+          "context": [
+            "microsoft",
+            "signed",
+            "valid"
+          ],
+          "signer": "Microsoft Corporation"
+        },
+        "size": 1872304,
+        "checksumMd5": "1",
+        "checksumSha1": "1",
+        "checksumSha256": "1",
+        "pe": {
+          "timeStamp": "2022-01-06T00:56:13.000Z",
+          "imageSize": 1871872,
+          "numberOfExportedFunctions": 0,
+          "numberOfNamesExported": 0,
+          "numberOfExecuteWriteSections": 0,
+          "context": [
+            "file.exe"
+          ],
+          "resources": {
+            "originalFileName": "exe",
+            "company": "Microsoftn",
+            "description": "Microsoft",
+            "version": null
+          },
+          "sectionNames": [
+            ".text"
+          ],
+          "importedLibraries": []
+        },
+        "elf": null,
+        "macho": null,
+        "entropy": 7.902470213927833,
+        "format": "pe",
+        "fileStatus": "Neutral",
+        "remediationAction": "Unblock"
+      }
+    ],
+    "RSANetWitness115.paging.FilesList(true)": {
+      "pageNumber": 0,
+      "pageSize": 1,
+      "totalPages": 1446,
+      "totalItems": 1446,
+      "hasNext": true,
+      "hasPrevious": false
+    }
+  },
+  "host_alerts": {
+    "id": "1",
+    "distinctAlertCount": {
+      "critical": 0,
+      "high": 4,
+      "medium": 2,
+      "low": 0
+    },
+    "categorizedAlerts": {
+      "All": {
+        "Possibly Renamed net.exe Detected": {
+          "alertCount": 1,
+          "eventCount": 1
+        },
+        "Powershell Injects Remote Process": {
+          "alertCount": 3,
+          "eventCount": 3
+        },
+        "Unexpected taskhostw.exe Parent": {
+          "alertCount": 1,
+          "eventCount": 1
+        },
+        "Unexpected runtimebroker.exe Parent": {
+          "alertCount": 1,
+          "eventCount": 1
+        },
+        "Performs Scripted File Transfer": {
+          "alertCount": 1,
+          "eventCount": 1
+        },
+        "Unexpected Svchost.Exe Parent": {
+          "alertCount": 1,
+          "eventCount": 1
+        }
+      }
+    }
+  },
+  "file_alerts": {
+    "id": "1",
+    "distinctAlertCount": {
+      "critical": 0,
+      "high": 2,
+      "medium": 1,
+      "low": 0
+    },
+    "categorizedAlerts": {
+      "All": {
+        "Possibly Renamed net.exe Detected": {
+          "alertCount": 1,
+          "eventCount": 1
+        },
+        "Powershell Injects Remote Process": {
+          "alertCount": 3,
+          "eventCount": 3
+        },
+        "Performs Scripted File Transfer": {
+          "alertCount": 1,
+          "eventCount": 1
+        }
+      }
+    }
+  }
+}
