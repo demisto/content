@@ -42,7 +42,7 @@ script:
   commands:
   - arguments:
     - default: false
-      description: The title of the Spreadsheet to create
+      description: The title of the Spreadsheet to create.
       isArray: false
       name: title
       required: true
