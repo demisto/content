@@ -6,12 +6,12 @@ USER_AGENT = f"ReversingLabs XSOAR Ransomware Feed {VERSION}"
 
 MAX_HOURS_HISTORICAL = 4
 
-ALLOWED_INDICATOR_TYPES = ("ipv4", "domain", "Hash", "uri")
+ALLOWED_INDICATOR_TYPES = ("ipv4", "domain", "hash", "uri")
 
 INDICATOR_TYPE_MAP = {
     "ipv4": FeedIndicatorType.IP,
     "domain": FeedIndicatorType.Domain,
-    "Hash": FeedIndicatorType.File,
+    "hash": FeedIndicatorType.File,
     "uri": FeedIndicatorType.URL
 }
 
@@ -205,7 +205,7 @@ def get_indicators_command(client):
     if hours_arg > MAX_HOURS_HISTORICAL:
         hours_arg = MAX_HOURS_HISTORICAL
 
-    indicator_types_arg = demisto.args().get("indicator_types", "ipv4,domain,Hash,uri").replace(" ", "")
+    indicator_types_arg = demisto.args().get("indicator_types", "ipv4,domain,hash,uri").replace(" ", "")
 
     for indicator_type in indicator_types_arg.split(","):
         if indicator_type not in ALLOWED_INDICATOR_TYPES:
