@@ -626,7 +626,7 @@ def main():
         return_error(e)
 
     readable_output = f"EDL: {edl_instance_name} created on port: {random_port}"
-    return_results(CommandResults(readable_output=readable_output))
+    return_results(CommandResults(readable_output=readable_output, raw_response=results))
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
