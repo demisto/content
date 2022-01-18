@@ -1,8 +1,5 @@
 from optparse import OptionParser
 from unittest.mock import Mock
-
-import requests_mock
-
 import demistomock as demisto
 import pytest
 
@@ -127,7 +124,7 @@ def test_issue_query_command_with_results(mocker):
     assert outputs == QUERY_ISSUE_RESULT
 
 
-def test_issue_query_command_with_custom_fields_with_results(mocker,requests_mock):
+def test_issue_query_command_with_custom_fields_with_results(mocker, requests_mock):
     """
     Given
     - Jira issue query command and extraFields parameters
@@ -1276,9 +1273,10 @@ def test_get_issue_outputs(mocker):
 
     assert outputs == GET_ISSUE_OUTPUTS_RESULT
 
-def test_get_custom_field_names(mocker,requests_mock):
+
+def test_get_custom_field_names(mocker, requests_mock):
     from JiraV2 import get_custom_field_names
-    from test_data.raw_response import FIELDS_RESPONSE,EXPECTED_RESP
+    from test_data.raw_response import FIELDS_RESPONSE, EXPECTED_RESP
     mocker.patch.object(demisto, "info")
     mocker.patch.object(demisto, "debug")
     requests_mock.get('https://localhost/rest/api/latest/field', json=FIELDS_RESPONSE)
