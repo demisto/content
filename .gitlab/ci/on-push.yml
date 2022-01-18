@@ -127,7 +127,7 @@ create-instances-mpv2:
     - section_end "Create Content Artifacts and Update Conf"
 
     - section_start "Calculate Packs Dependencies" --collapsed
-    - demisto-sdk find-dependencies -idp Tests/id_set.json --all-packs-dependencies -o $ARTIFACTS_FOLDER/packs_dependencies.json
+    - demisto-sdk find-dependencies -idp Tests/id_set_mp_v2.json --all-packs-dependencies -o $ARTIFACTS_FOLDER/packs_dependencies.json
     - section_end "Calculate Packs Dependencies"
 
     - section_start "Collect Tests and Content Packs"
