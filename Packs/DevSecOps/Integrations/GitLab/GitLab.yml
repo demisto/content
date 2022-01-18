@@ -1079,7 +1079,7 @@ script:
       name: project_id
       required: true
       secret: false
-    description: Trigger a contribution build
+    description: Trigger a pipeline in gitlab.
     name: gitlab-trigger-build
     outputs:
     - contextPath: GitLab.Pipeline.id
