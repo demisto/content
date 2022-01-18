@@ -627,7 +627,7 @@ def build_and_authenticate(params: dict):
     credentials = service_account.ServiceAccountCredentials.from_json_keyfile_dict(service_account_credentials,
                                                                                    scopes=SCOPES)
     # add delegation to help manage the UI - link to a google-account
-    if params.get('user_id', None) is not None:
+    if params.get('user_id'):
         credentials = credentials.create_delegated(params.get('user_id'))
 
     proxy = params.get('proxy', False)
