@@ -1070,7 +1070,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'json contains the requests variables as keys and values for example {"CONTRIB_BRANCH": "branch_value"}.'
+      description: 'json contains the requests variables as keys and values for example {"BuildParam1": "ParamValue"}.'
       isArray: false
       name: trigger_variables
     - default: false
@@ -1079,8 +1079,8 @@ script:
       name: project_id
       required: true
       secret: false
-    description: Trigger a contribution build
-    name: gitlab-trigger-build
+    description: Trigger a pipeline in gitlab.
+    name: gitlab-trigger-pipeline
     outputs:
     - contextPath: GitLab.Pipeline.id
       description: Pipeline ID.
