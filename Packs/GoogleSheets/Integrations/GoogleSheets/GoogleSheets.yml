@@ -126,7 +126,7 @@ script:
       description: Spreadsheet title
       type: Unknown
     - contextPath: Spreadsheet.spreadsheetId
-      description: Spreadsheet Id
+      description: Spreadsheet ID.
       type: Unknown
   - arguments:
     - name: spreadsheet_id
