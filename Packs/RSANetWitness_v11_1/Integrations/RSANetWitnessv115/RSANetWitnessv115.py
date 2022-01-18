@@ -528,7 +528,7 @@ def hosts_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
                                      added_filter=added_filter)
     # remove duplicates that might occur from paging
     items = remove_duplicates_in_items(items, 'hostName')
-    context_data = prepare_paging_context_data(response, items, 'HostsList')
+    context_data = prepare_paging_context_data(response, items, 'HostsList', filter_id='agentId')
     page_number = response.get('pageNumber')
     output = prepare_hosts_readable_items(items)
     total_pages = response.get('totalPages')
@@ -658,7 +658,7 @@ def scan_request_command(client: Client, args: Dict[str, Any]) -> CommandResults
 
     client.scan_request_request(agent_id, service_id, scan_type, cpu_max)
     command_results = CommandResults(
-        readable_output=f"Scan request for host {agent_id} Sent Successfully",
+        readable_output=f"Scan request for host {agent_id}, sent successfully",
     )
 
     return command_results
