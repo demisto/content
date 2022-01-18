@@ -1181,39 +1181,6 @@ class Client(BaseClient):
         )
         return reply
 
-    def get_endpoints_by_status(self, status, last_seen_gte=None, last_seen_lte=None):
-        filters = [
-            {
-                'field': 'endpoint_status',
-                'operator': 'IN',
-                'value': [status]
-            }
-        ]
-
-        if last_seen_gte:
-            filters.append({
-                'field': 'last_seen',
-                'operator': 'gte',
-                'value': last_seen_gte
-            })
-
-        if last_seen_lte:
-            filters.append({
-                'field': 'last_seen',
-                'operator': 'lte',
-                'value': last_seen_lte
-            })
-
-        reply = self._http_request(
-            method='POST',
-            url_suffix='/endpoints/get_endpoint/',
-            json_data={'request_data': {'filters': filters}},
-            timeout=self.timeout
-        )
-
-        endpoints_count = reply.get('reply').get('total_count', 0)
-        return endpoints_count, reply
-
 
 def create_endpoint_context(audit_logs):
     endpoints = []
@@ -2599,31 +2566,6 @@ def run_script_kill_process_command(client: Client, args: Dict) -> List[CommandR
     return all_processes_response
 
 
-def get_endpoints_by_status_command(client: Client, args: Dict) -> CommandResults:
-    status = args.get('status')
-
-    last_seen_gte = arg_to_timestamp(
-        arg=args.get('last_seen_gte'),
-        arg_name='last_seen_gte'
-    )
-
-    last_seen_lte = arg_to_timestamp(
-        arg=args.get('last_seen_lte'),
-        arg_name='last_seen_lte'
-    )
-
-    endpoints_count, raw_res = client.get_endpoints_by_status(status, last_seen_gte=last_seen_gte, last_seen_lte=last_seen_lte)
-
-    ec = {'status': status, 'count': endpoints_count}
-
-    return CommandResults(
-        readable_output=f'{status} endpoints count: {endpoints_count}',
-        outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.EndpointsStatus',
-        outputs_key_field='status',
-        outputs=ec,
-        raw_response=raw_res)
-
-
 def main():
     """
     Executes an integration command
@@ -2781,9 +2723,6 @@ def main():
 
         elif command == 'endpoint':
             return_results(endpoint_command(client, args))
-
-        elif command == 'core-get-endpoints-by-status':
-            return_results(get_endpoints_by_status_command(client, args))
 
     except Exception as err:
         demisto.error(traceback.format_exc())
