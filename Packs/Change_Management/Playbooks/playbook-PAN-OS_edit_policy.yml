@@ -1,48 +1,26 @@
-contentitemexportablefields:
-  contentitemfields:
-    propagationLabels:
-    - all
+id: PAN-OS edit policy
+version: -1
+name: PAN-OS edit policy
 description: This playbook will guide the user in the process of editing existing
   policy, the playbook will send a data collection form that will retrieve the relevant
   parameters for editing the existing rule.
-id: PAN-OS edit policy
-inputs:
-- description: The email of the relevant security team for FW change management approval.
-  key: SecurityTeamEmail
-  playbookInputQuery:
-  required: false
-  value: {}
-- description: The name of the relevant policy.
-  key: rulename
-  playbookInputQuery:
-  required: false
-  value: {}
-name: PAN-OS edit policy
-outputs: []
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
+    taskid: fa6a958b-44d3-4166-885e-674d09d7f16c
+    type: start
+    task:
+      id: fa6a958b-44d3-4166-885e-674d09d7f16c
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "10"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: fa6a958b-44d3-4166-885e-674d09d7f16c
-      iscommand: false
-      name: ""
-      version: -1
-      description: ''
-    taskid: fa6a958b-44d3-4166-885e-674d09d7f16c
-    timertriggers: []
-    type: start
     view: |-
       {
         "position": {
@@ -50,119 +28,30 @@ tasks:
           "y": -280
         }
       }
-  "1":
-    form:
-      description: 'Please provide the following paraments'
-      expired: false
-      questions:
-      - defaultrows: []
-        fieldassociated: ""
-        gridcolumns: []
-        id: "0"
-        label: ""
-        labelarg:
-          simple: Element to change?
-        options: []
-        optionsarg:
-        - simple: source
-        - simple: destination
-        - simple: application
-        - simple: action
-        placeholder: ""
-        readonly: false
-        required: true
-        tooltip: ""
-        type: singleSelect
-      - defaultrows: []
-        fieldassociated: ""
-        gridcolumns: []
-        id: "1"
-        label: ""
-        labelarg:
-          simple: 'Element value to be edit'
-        options: []
-        optionsarg: []
-        placeholder: ""
-        readonly: false
-        required: true
-        tooltip: ""
-        type: shortText
-      - defaultrows: []
-        fieldassociated: ""
-        gridcolumns: []
-        id: "2"
-        label: ""
-        labelarg:
-          simple: Rule position (should be the exact position as defined in Panorama)
-        options: []
-        optionsarg:
-        - simple: post-rulebase
-        - simple: pre-rulebase
-        placeholder: ""
-        readonly: false
-        required: false
-        tooltip: ""
-        type: singleSelect
-      - defaultrows: []
-        fieldassociated: ""
-        gridcolumns: []
-        id: "3"
-        label: ""
-        labelarg:
-          simple: Behavior
-        options: []
-        optionsarg:
-        - simple: replace
-        - simple: add
-        - simple: remove
-        placeholder: ""
-        readonly: false
-        required: false
-        tooltip: Whether to replace, add, or remove the element_value from the current
-          rule object value.
-        type: singleSelect
-      sender: ""
-      title: Which parameters to edit in the policy?
-      totalanswers: 0
-    id: "1"
+    note: false
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
-    message:
-      bcc:
-      body:
-        simple: 'Please provide the following parameters for editing the current policy'
-      cc:
-      format: ""
-      methods:
-      - email
-      subject:
-        simple: Parameters to edit in the policy
-      timings:
-        completeafterreplies: 1
-        retriescount: 2
-        retriesinterval: 360
-      to:
-        simple: ${inputs.SecurityTeamEmail}
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 1ebaf0ef-a356-4680-86cc-eb81d6514f81
+    type: collection
+    task:
+      id: 1ebaf0ef-a356-4680-86cc-eb81d6514f81
+      version: -1
+      name: Which parameters to edit in the policy?
+      description: This task query the user which object to modify in the current
+        policy
+      type: collection
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "4"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: This task query the user which object to modify in the current
-        policy
-      id: 1ebaf0ef-a356-4680-86cc-eb81d6514f81
-      iscommand: false
-      name: Which parameters to edit in the policy?
-      type: collection
-      version: -1
-    taskid: 1ebaf0ef-a356-4680-86cc-eb81d6514f81
-    timertriggers: []
-    type: collection
     view: |-
       {
         "position": {
@@ -170,43 +59,145 @@ tasks:
           "y": 80
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        simple: ${inputs.SecurityTeamEmail}
+      subject:
+        simple: Parameters to edit in the policy
+      body:
+        simple: 'Please provide the following parameters for editing the current policy '
+      methods:
+      - email
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Element to change?
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: source
+        - simple: destination
+        - simple: application
+        - simple: action
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: 'Element value to be edit '
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      - id: "2"
+        label: ""
+        labelarg:
+          simple: Rule position (should be the exact position as defined in Panorama)
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: post-rulebase
+        - simple: pre-rulebase
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      - id: "3"
+        label: ""
+        labelarg:
+          simple: Behavior
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: replace
+        - simple: add
+        - simple: remove
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Whether to replace, add, or remove the element_value from the current
+          rule object value.
+        readonly: false
+      title: Which parameters to edit in the policy?
+      description: 'Please provide the following paraments '
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
+    taskid: 0bf332bc-2864-43b9-8c0a-a56b17a00036
+    type: title
     task:
-      brand: ""
       id: 0bf332bc-2864-43b9-8c0a-a56b17a00036
-      iscommand: false
+      version: -1
       name: Done
       type: title
-      version: -1
+      iscommand: false
+      brand: ""
       description: ''
-    taskid: 0bf332bc-2864-43b9-8c0a-a56b17a00036
-    timertriggers: []
-    type: title
+    separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 860
+          "x": 40,
+          "y": 1060
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
+    taskid: 4c4448c3-5c73-403c-8f27-3bfd8d6a9f8f
+    type: regular
+    task:
+      id: 4c4448c3-5c73-403c-8f27-3bfd8d6a9f8f
+      version: -1
+      name: Edit current policy
+      description: Edits a policy rule.
+      script: '|||panorama-edit-rule'
+      type: regular
+      iscommand: true
+      brand: ""
     nexttasks:
       '#none#':
-      - "6"
-    note: false
-    quietmode: 0
+      - "13"
     scriptarguments:
       behaviour:
         simple: ${Which parameters to edit in the policy?.Answers.3}
@@ -219,19 +210,6 @@ tasks:
       rulename:
         simple: ${inputs.rulename}
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Edits a policy rule.
-      id: 4c4448c3-5c73-403c-8f27-3bfd8d6a9f8f
-      iscommand: true
-      name: Edit current policy
-      script: '|||panorama-edit-rule'
-      type: regular
-      version: -1
-    taskid: 4c4448c3-5c73-403c-8f27-3bfd8d6a9f8f
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -239,93 +217,70 @@ tasks:
           "y": 275
         }
       }
-  "5":
-    id: "5"
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    nexttasks:
-      '#none#':
-      - "3"
     note: false
-    quietmode: 0
-    scriptarguments:
-      all:
-        simple: "yes"
-      subplaybook:
-        simple: "yes"
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Delete field from context
-      id: 99a4e7ee-635f-4a07-8d89-f76259cabbbf
-      iscommand: false
-      name: Delete context
-      scriptName: DeleteContext
-      type: regular
-      version: -1
-    taskid: 99a4e7ee-635f-4a07-8d89-f76259cabbbf
     timertriggers: []
-    type: regular
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 680
-        }
-      }
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    loop:
-      exitCondition: ""
-      iscommand: false
-      max: 100
-      wait: 1
-    nexttasks:
-      '#none#':
-      - "5"
-    note: false
-    quietmode: 0
-    separatecontext: true
-    skipunavailable: false
+    taskid: 97f707a9-2681-45e9-8d89-f5c137e452aa
+    type: playbook
     task:
-      brand: ""
+      id: 97f707a9-2681-45e9-8d89-f5c137e452aa
+      version: -1
+      name: PAN-OS Commit Configuration
       description: Commit the PAN-OS Panorama or Firewall configuration.\nIf specified
         as Panorama, it also pushes the Policies to the specified Device Group in
         the instance.
-      id: 97f707a9-2681-45e9-8d89-f5c137e452aa
-      iscommand: false
-      name: PAN-OS Commit Configuration
-      playbookId: PAN-OS Commit Configuration
+      playbookName: PAN-OS Commit Configuration
       type: playbook
-      version: -1
-    taskid: 97f707a9-2681-45e9-8d89-f5c137e452aa
-    timertriggers: []
-    type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 480
+          "x": -200,
+          "y": 680
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
+    taskid: 16ea8049-c1ef-4542-89fa-30e5df14db4f
+    type: regular
+    task:
+      id: 16ea8049-c1ef-4542-89fa-30e5df14db4f
+      version: -1
+      name: Edit current policy
+      description: Edits a policy rule.
+      script: '|||panorama-edit-rule'
+      type: regular
+      iscommand: true
+      brand: ""
     nexttasks:
       '#none#':
-      - "6"
-    note: false
-    quietmode: 0
+      - "13"
     scriptarguments:
       behaviour:
-        simple: ${Which parameters to edit in the policy?.Answers.3}
+        simple: ${Which parameters to edit in the policy?.Answers.2}
       element_to_change:
         simple: ${Which parameters to edit in the policy?.Answers.0}
       element_value:
@@ -333,19 +288,6 @@ tasks:
       rulename:
         simple: ${inputs.rulename}
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Edits a policy rule.
-      id: 05ecdd70-001f-4d8d-8e7f-4c1f6a612df4
-      iscommand: true
-      name: Edit current policy
-      script: '|||panorama-edit-rule'
-      type: regular
-      version: -1
-    taskid: 05ecdd70-001f-4d8d-8e7f-4c1f6a612df4
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -353,84 +295,84 @@ tasks:
           "y": 275
         }
       }
-  "10":
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              complex:
-                filters:
-                - - left:
-                      iscontext: true
-                      value:
-                        simple: modules.name
-                    operator: containsGeneral
-                    right:
-                      value:
-                        simple: Panorama
-                - - left:
-                      iscontext: true
-                      value:
-                        simple: modules.state
-                    operator: isEqualString
-                    right:
-                      value:
-                        simple: active
-                root: modules
-          operator: isExists
-          right:
-            value: {}
-      label: panorama
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              complex:
-                filters:
-                - - left:
-                      iscontext: true
-                      value:
-                        simple: modules.name
-                    operator: containsGeneral
-                    right:
-                      value:
-                        simple: Pan-os
-                - - left:
-                      iscontext: true
-                      value:
-                        simple: modules.state
-                    operator: isEqualString
-                    right:
-                      value:
-                        simple: active
-                root: modules
-          operator: isExists
-      label: Pan-os
-    id: "10"
+    note: false
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: e884484a-7226-4a09-8833-bdef0f6ec1c9
+    type: condition
+    task:
+      id: e884484a-7226-4a09-8833-bdef0f6ec1c9
+      version: -1
+      name: Panorama or Pan-os?
+      description: 'This task which instance is available Panorama or Pan-os? '
+      type: condition
+      iscommand: false
+      brand: ""
     nexttasks:
       Pan-os:
       - "11"
       panorama:
       - "1"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: 'This task which instance is available Panorama or Pan-os?'
-      id: e884484a-7226-4a09-8833-bdef0f6ec1c9
-      iscommand: false
-      name: Panorama or Pan-os?
-      type: condition
-      version: -1
-    taskid: e884484a-7226-4a09-8833-bdef0f6ec1c9
-    timertriggers: []
-    type: condition
+    conditions:
+    - label: panorama
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: modules.name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Panorama
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+          right:
+            value: {}
+    - label: Pan-os
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: modules.name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Pan-os
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
     view: |-
       {
         "position": {
@@ -438,103 +380,30 @@ tasks:
           "y": -130
         }
       }
-  "11":
-    form:
-      description: 'Please provide the following paraments'
-      expired: false
-      questions:
-      - defaultrows: []
-        fieldassociated: ""
-        gridcolumns: []
-        id: "0"
-        label: ""
-        labelarg:
-          simple: Element to change?
-        options: []
-        optionsarg:
-        - simple: source
-        - simple: destination
-        - simple: application
-        - simple: action
-        placeholder: ""
-        readonly: false
-        required: true
-        tooltip: ""
-        type: singleSelect
-      - defaultrows: []
-        fieldassociated: ""
-        gridcolumns: []
-        id: "1"
-        label: ""
-        labelarg:
-          simple: 'Element value to be edit'
-        options: []
-        optionsarg: []
-        placeholder: ""
-        readonly: false
-        required: true
-        tooltip: ""
-        type: shortText
-      - defaultrows: []
-        fieldassociated: ""
-        gridcolumns: []
-        id: "2"
-        label: ""
-        labelarg:
-          simple: Behavior
-        options: []
-        optionsarg:
-        - simple: replace
-        - simple: add
-        - simple: remove
-        placeholder: ""
-        readonly: false
-        required: false
-        tooltip: Whether to replace, add, or remove the element_value from the current
-          rule object value.
-        type: singleSelect
-      sender: ""
-      title: Which parameters to edit in the policy?
-      totalanswers: 0
-    id: "11"
+    note: false
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
-    message:
-      bcc:
-      body:
-        simple: 'Please provide the following parameters for editing the current policy'
-      cc:
-      format: ""
-      methods:
-      - email
-      subject:
-        simple: Parameters to edit in the policy
-      timings:
-        completeafterreplies: 1
-        retriescount: 2
-        retriesinterval: 360
-      to:
-        simple: ${inputs.SecurityTeamEmail}
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: d0b934cc-37de-4c3e-8aef-7dcd6e1aa29a
+    type: collection
+    task:
+      id: d0b934cc-37de-4c3e-8aef-7dcd6e1aa29a
+      version: -1
+      name: Which parameters to edit in the policy?
+      description: This task query the user which object to modify in the current
+        policy
+      type: collection
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "8"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: This task query the user which object to modify in the current
-        policy
-      id: 824b8ed7-6005-4098-858f-168851f95340
-      iscommand: false
-      name: Which parameters to edit in the policy?
-      type: collection
-      version: -1
-    taskid: 824b8ed7-6005-4098-858f-168851f95340
-    timertriggers: []
-    type: collection
     view: |-
       {
         "position": {
@@ -542,21 +411,224 @@ tasks:
           "y": 80
         }
       }
-version: -1
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        simple: ${inputs.SecurityTeamEmail}
+      subject:
+        simple: Parameters to edit in the policy
+      body:
+        simple: 'Please provide the following parameters for editing the current policy '
+      methods:
+      - email
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Element to change?
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: source
+        - simple: destination
+        - simple: application
+        - simple: action
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: 'Element value to be edit '
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Please provide value for the element
+        readonly: false
+      - id: "2"
+        label: ""
+        labelarg:
+          simple: Behavior
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: replace
+        - simple: add
+        - simple: remove
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Whether to replace, add, or remove the element_value from the current
+          rule object value.
+        readonly: false
+      title: Which parameters to edit in the policy?
+      description: 'Please provide the following paraments '
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: fe262bcb-ebcc-4e3a-88c3-4d76bfa7d108
+    type: regular
+    task:
+      id: fe262bcb-ebcc-4e3a-88c3-4d76bfa7d108
+      version: -1
+      name: 'Delete Context '
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      all:
+        simple: "yes"
+      subplaybook:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: c1495577-e895-4009-8aa9-28f1096fc62d
+    type: condition
+    task:
+      id: c1495577-e895-4009-8aa9-28f1096fc62d
+      version: -1
+      name: 'Was the rule modify? '
+      description: 'Was the rule modify? '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "14"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Panorama.SecurityRule
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 69d27a21-a0c2-4f85-8bb7-7c86c909b92c
+    type: regular
+    task:
+      id: 69d27a21-a0c2-4f85-8bb7-7c86c909b92c
+      version: -1
+      name: Rule wasn't edit please verify inputs
+      description: Rule wasn't edit please verify inputs.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 290,
+          "y": 680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
-      "10_11_Pan-os": 0.64
+      "10_11_Pan-os": 0.64,
+      "13_6_yes": 0.77
     },
     "paper": {
       "dimensions": {
-        "height": 1205,
+        "height": 1405,
         "width": 880,
         "x": -200,
         "y": -280
       }
     }
   }
+inputs:
+- key: SecurityTeamEmail
+  value: {}
+  required: false
+  description: The email of the relevant security team for FW change management approval.
+  playbookInputQuery:
+- key: rulename
+  value: {}
+  required: false
+  description: The name of the relevant policy.
+  playbookInputQuery:
+outputs: []
 tests:
 - No tests (auto formatted)
 fromversion: 6.0.0
