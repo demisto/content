@@ -4,6 +4,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "RSANetWitnessv115",
+            "playbookID": "RSANetWitnessv115-Test"
+        },
+        {
             "integrations": ["FeedMandiant", "Demisto REST API"],
             "playbookID": "Fetch Indicators Test",
             "fromversion": "6.1.0",
