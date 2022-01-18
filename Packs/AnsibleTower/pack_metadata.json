@@ -2,7 +2,7 @@
     "name": "Ansible Tower",
     "description": "Scale IT automation, manage complex deployments and speed productivity.",
     "support": "xsoar",
-    "currentVersion": "1.0.9",
+    "currentVersion": "1.0.10",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
