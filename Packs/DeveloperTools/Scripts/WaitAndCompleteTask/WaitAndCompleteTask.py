@@ -27,11 +27,11 @@ def get_incident_tasks_by_state(incident_id: int, task_states: Optional[list] = 
     # leave states empty to get all tasks
     if task_states:
         args['states'] = ','.join(task_states)
-    try:
-        raw_response = demisto.executeCommand('DemistoGetIncidentTasksByState', args=args)
-        return raw_response[0].get("Contents") if raw_response[0].get("Contents") else []
-    except Exception as e:
-        raise Exception(f'Failed to execute script: DemistoGetIncidentTasksByState. Error: {e}')
+    raw_response = demisto.executeCommand('DemistoGetIncidentTasksByState', args=args)
+    if is_error(raw_response):
+        raise Exception(f'Failed to execute script: DemistoGetIncidentTasksByState. '
+                        f'Error: {get_error(raw_response)}')
+    return raw_response[0].get("Contents") if raw_response[0].get("Contents") else []
 
 
 def complete_task_by_id(task_id, task_parent_id, incident_id, complete_option=None) -> str:
@@ -52,11 +52,11 @@ def complete_task_by_id(task_id, task_parent_id, incident_id, complete_option=No
         incidentId=incident_id,
         input=complete_option
     )
-    try:
-        raw_response = demisto.executeCommand('taskComplete', args=args)
-        return raw_response[0].get("Contents") if raw_response[0].get("Contents") else ''
-    except Exception as e:
-        raise Exception(f'Failed to execute script: taskComplete. Error: {e}')
+
+    raw_response = demisto.executeCommand('taskComplete', args=args)
+    if is_error(raw_response):
+        raise Exception(f'Failed to execute script: taskComplete. Error: {get_error(raw_response)}')
+    return raw_response[0].get("Contents") if raw_response[0].get("Contents") else ''
 
 
 ''' COMMAND FUNCTION '''
