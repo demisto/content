@@ -938,12 +938,6 @@ def prepare_and_zip_pack(pack, signature_key, delete_test_playbooks=True):
 
 
 def get_packs_depends_on(packs_list, packs_dict, extract_destination_path, artifacts_path, id_set_path):
-
-    #### TODO: REMOVE DEBUG CODE
-    if 'Base' in packs_dict:
-        packs_dict.pop('Base')
-        packs_list = [pack for pack in packs_list if pack.name != 'Base']
-    #### TODO: end of DEBUG CODE
     if 'Base' in packs_dict:
         # collect all packs
         packs_list = []
@@ -968,13 +962,10 @@ def get_packs_depends_on(packs_list, packs_dict, extract_destination_path, artif
         id_set_path]
     query_list.extend([pack_tuple_item for pack in packs_list for pack_tuple_item in
                        ('-i', os.path.join('Packs', pack.name))])
-    # TODO: remove, intended for dev purposes
     logging.info('Calliing: ' + ' '.join(query_list))
     subprocess.check_call(query_list, stderr=subprocess.STDOUT)
     with open(packs_dependent_on_path) as f:
         dependent_on_packs = json.load(f)
-        # TODO: remove, inteneded for dev purposes
-        logging.info(json.dumps(dependent_on_packs, indent=4))
     for dep_pack_item in dependent_on_packs.values():
         if 'packsDependentOnThisPackMandatorily' in dep_pack_item:
             for pack_name in dep_pack_item['packsDependentOnThisPackMandatorily'].keys():
