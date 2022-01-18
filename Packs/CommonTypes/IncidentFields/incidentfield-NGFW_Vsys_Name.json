@@ -1,0 +1,32 @@
+{
+    "associatedToAll": true,
+    "caseInsensitive": true,
+    "cliName": "ngfwvsysname",
+    "closeForm": false,
+    "content": true,
+    "description": "Name of the virtual system for the Palo Alto Networks firewall that triggered an alert",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_ngfwvsysname",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "NGFW Vsys Name",
+    "neverSetAsRequired": false,
+    "openEnded": true,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "multiSelect",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "5.5.0",
+	"x2_fields": "fw_vsys"
+}

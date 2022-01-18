@@ -44,5 +44,6 @@
     "validationRegex": "",
     "version": -1,
     "fromVersion": "6.0.0",
-    "openEnded": true
+    "openEnded": true,
+    "x2_fields": "action_local_ip"
 }
