@@ -1,4 +1,4 @@
-Cortex Core is the world's first detection and response app that natively integrates network, endpoint, and cloud data to stop sophisticated attacks.
+Cortex XDR is the world's first detection and response app that natively integrates network, endpoint, and cloud data to stop sophisticated attacks.
 This integration was integrated and tested with version xx of Cortex Core - IR
 
 ## Configure Investigation & Response on Cortex XSOAR
@@ -9,270 +9,19 @@ This integration was integrated and tested with version xx of Cortex Core - IR
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Fetch incidents |  | False |
     | Incident type |  | False |
-    | Incident Mirroring Direction |  | False |
     | Server URL (copy URL from Core - click ? to see more info.) |  | True |
     | API Key ID |  | True |
     | API Key |  | True |
-    | HTTP Timeout | The timeout of the HTTP requests sent to Cortex Core API \(in seconds\). | False |
-    | Maximum number of incidents per fetch | The maximum number of incidents per fetch. Cannot exceed 100. | False |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
-    | Sync Incident Owners | For Cortex XSOAR version 6.0.0 and above. If selected, for every incident fetched from Cortex Core to Cortex XSOAR, the incident owners will be synced. Note that once this value is changed and synchronized between the systems, additional changes will not be reflected. For example, if you change the owner in Cortex XSOAR, the new owner will also be changed in Cortex Core. However, if you now change the owner back in Cortex Core, this additional change will not be reflected in Cortex XSOAR. In addition, for this change to be reflected, the owners must exist in both Cortex XSOAR and Cortex Core. | False |
+    | HTTP Timeout | The timeout of the HTTP requests sent to Cortex XDR API \(in seconds\). | False |
+    | Sync Incident Owners | For Cortex XSOAR version 6.0.0 and above. If selected, for every incident fetched from Cortex XDR to Cortex XSOAR, the incident owners will be synced. Note that once this value is changed and synchronized between the systems, additional changes will not be reflected. For example, if you change the owner in Cortex XSOAR, the new owner will also be changed in Cortex XDR. However, if you now change the owner back in Cortex XDR, this additional change will not be reflected in Cortex XSOAR. In addition, for this change to be reflected, the owners must exist in both Cortex XSOAR and Cortex XDR. | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
-    | Incident Statuses to Fetch | The statuses of the incidents that will be fetched. If no status is provided then incidents of all the statuses will be fetched. Note: An incident whose status was changed to a filtered status after its creation time will not be fetched. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-### core-get-incidents
-***
-Returns a list of incidents, which you can filter by a list of incident IDs (max. 100), the time the incident was last modified, and the time the incident was created.
-If you pass multiple filtering arguments, they will be concatenated using the AND condition. The OR condition is not supported.
-
-
-#### Base Command
-
-`core-get-incidents`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| lte_creation_time | A date in the format 2019-12-31T23:59:00. Only incidents that were created on or before the specified date/time will be retrieved. | Optional | 
-| gte_creation_time | A date in the format 2019-12-31T23:59:00. Only incidents that were created on or after the specified date/time will be retrieved. | Optional | 
-| lte_modification_time | Filters returned incidents that were created on or before the specified date/time, in the format 2019-12-31T23:59:00. | Optional | 
-| gte_modification_time | Filters returned incidents that were modified on or after the specified date/time, in the format 2019-12-31T23:59:00. | Optional | 
-| incident_id_list | An array or CSV string of incident IDs. | Optional | 
-| since_creation_time | Filters returned incidents that were created on or after the specified date/time range, for example, 1 month, 2 days, 1 hour, and so on. | Optional | 
-| since_modification_time | Filters returned incidents that were modified on or after the specified date/time range, for example, 1 month, 2 days, 1 hour, and so on. | Optional | 
-| sort_by_modification_time | Sorts returned incidents by the date/time that the incident was last modified ("asc" - ascending, "desc" - descending). Possible values are: asc, desc. | Optional | 
-| sort_by_creation_time | Sorts returned incidents by the date/time that the incident was created ("asc" - ascending, "desc" - descending). Possible values are: asc, desc. | Optional | 
-| page | Page number (for pagination). The default is 0 (the first page). Default is 0. | Optional | 
-| limit | Maximum number of incidents to return per page. The default and maximum is 100. Default is 100. | Optional | 
-| status | Filters only incidents in the specified status. The options are: new, under_investigation, resolved_known_issue, resolved_false_positive, resolved_true_positive resolved_security_testing, resolved_other, resolved_auto. | Optional | 
-
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| PaloAltoNetworksCore.Incident.incident_id | String | Unique ID assigned to each returned incident. | 
-| PaloAltoNetworksCore.Incident.manual_severity | String | Incident severity assigned by the user. This does not affect the calculated severity. Can be "low", "medium", "high" | 
-| PaloAltoNetworksCore.Incident.manual_description | String | Incident description provided by the user. | 
-| PaloAltoNetworksCore.Incident.assigned_user_mail | String | Email address of the assigned user. | 
-| PaloAltoNetworksCore.Incident.high_severity_alert_count | String | Number of alerts with the severity HIGH. | 
-| PaloAltoNetworksCore.Incident.host_count | number | Number of hosts involved in the incident. | 
-| PaloAltoNetworksCore.Incident.core_url | String | A link to the incident view on Core. | 
-| PaloAltoNetworksCore.Incident.assigned_user_pretty_name | String | Full name of the user assigned to the incident. | 
-| PaloAltoNetworksCore.Incident.alert_count | number | Total number of alerts in the incident. | 
-| PaloAltoNetworksCore.Incident.med_severity_alert_count | number | Number of alerts with the severity MEDIUM. | 
-| PaloAltoNetworksCore.Incident.user_count | number | Number of users involved in the incident. | 
-| PaloAltoNetworksCore.Incident.severity | String | Calculated severity of the incident. Valid values are:
-"low","medium","high"
- | 
-| PaloAltoNetworksCore.Incident.low_severity_alert_count | String | Number of alerts with the severity LOW. | 
-| PaloAltoNetworksCore.Incident.status | String | Current status of the incident. Valid values are: "new","under_investigation","resolved_known_issue","resolved_duplicate","resolved_false_positive","resolved_true_positive","resolved_security_testing" or "resolved_other".
- | 
-| PaloAltoNetworksCore.Incident.description | String | Dynamic calculated description of the incident. | 
-| PaloAltoNetworksCore.Incident.resolve_comment | String | Comments entered by the user when the incident was resolved. | 
-| PaloAltoNetworksCore.Incident.notes | String | Comments entered by the user regarding the incident. | 
-| PaloAltoNetworksCore.Incident.creation_time | date | Date and time the incident was created on Core. | 
-| PaloAltoNetworksCore.Incident.detection_time | date | Date and time that the first alert occurred in the incident. | 
-| PaloAltoNetworksCore.Incident.modification_time | date | Date and time that the incident was last modified. | 
-
-### core-get-incident-extra-data
-***
-Returns additional data for the specified incident, for example, related alerts, file artifacts, network artifacts, and so on.
-
-
-#### Base Command
-
-`core-get-incident-extra-data`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| incident_id | The ID of the incident for which to get additional data. | Required | 
-| alerts_limit | Maximum number of alerts to return. Default is 1,000. Default is 1000. | Optional | 
-| return_only_updated_incident | Return data only if the incident was changed since the last time it was mirrored in to XSOAR.  This flag should be used only from within a Core incident. Default is False. | Optional | 
-
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| PaloAltoNetworksCore.Incident.incident_id | String | Unique ID assigned to each returned incident. | 
-| PaloAltoNetworksCore.Incident.creation_time | Date | Date and time the incident was created on Core. | 
-| PaloAltoNetworksCore.Incident.modification_time | Date | Date and time that the incident was last modified. | 
-| PaloAltoNetworksCore.Incident.detection_time | Date | Date and time that the first alert occurred in the incident. | 
-| PaloAltoNetworksCore.Incident.status | String | Current status of the incident. Valid values are:
-"new","under_investigation","resolved_known_issue","resolved_duplicate","resolved_false_positive","resolved_true_positive","resolved_security_testing","resolved_other" | 
-| PaloAltoNetworksCore.Incident.severity | String | Calculated severity of the incident. Valid values are: "low","medium","high" | 
-| PaloAltoNetworksCore.Incident.description | String | Dynamic calculated description of the incident. | 
-| PaloAltoNetworksCore.Incident.assigned_user_mail | String | Email address of the assigned user. | 
-| PaloAltoNetworksCore.Incident.assigned_user_pretty_name | String | Full name of the user assigned to the incident. | 
-| PaloAltoNetworksCore.Incident.alert_count | Number | Total number of alerts in the incident. | 
-| PaloAltoNetworksCore.Incident.low_severity_alert_count | Number | Number of alerts with the severity LOW. | 
-| PaloAltoNetworksCore.Incident.med_severity_alert_count | Number | Number of alerts with the severity MEDIUM. | 
-| PaloAltoNetworksCore.Incident.high_severity_alert_count | Number | Number of alerts with the severity HIGH. | 
-| PaloAltoNetworksCore.Incident.user_count | Number | Number of users involved in the incident. | 
-| PaloAltoNetworksCore.Incident.host_count | Number | Number of hosts involved in the incident | 
-| PaloAltoNetworksCore.Incident.notes | Unknown | Comments entered by the user regarding the incident. | 
-| PaloAltoNetworksCore.Incident.resolve_comment | String | Comments entered by the user when the incident was resolved. | 
-| PaloAltoNetworksCore.Incident.manual_severity | String | Incident severity assigned by the user. This does not affect the calculated severity of low, medium, or high. | 
-| PaloAltoNetworksCore.Incident.manual_description | String | Incident description provided by the user. | 
-| PaloAltoNetworksCore.Incident.core_url | String | A link to the incident view on Core. | 
-| PaloAltoNetworksCore.Incident.starred | Boolean | Incident starred. | 
-| PaloAltoNetworksCore.Incident.wildfire_hits.mitre_techniques_ids_and_names | String | Incident Mitre techniques ids and names. | 
-| PaloAltoNetworksCore.Incident.wildfire_hits.mitre_tactics_ids_and_names | String | Incident Mitre tactics ids and names. | 
-| PaloAltoNetworksCore.Incident.alerts.alert_id | String | Unique ID for each alert. | 
-| PaloAltoNetworksCore.Incident.alerts.detection_timestamp | Date | Date and time that the alert occurred. | 
-| PaloAltoNetworksCore.Incident.alerts.source | String | Source of the alert. The product/vendor this alert came from. | 
-| PaloAltoNetworksCore.Incident.alerts.severity | String | Severity of the alert.Valid values are: "low","medium","high""" | 
-| PaloAltoNetworksCore.Incident.alerts.name | String | Calculated name of the alert. | 
-| PaloAltoNetworksCore.Incident.alerts.category | String | Category of the alert, for example, Spyware Detected via Anti-Spyware profile. | 
-| PaloAltoNetworksCore.Incident.alerts.description | String | Textual description of the alert. | 
-| PaloAltoNetworksCore.Incident.alerts.host_ip_list | Unknown | Host IP involved in the alert. | 
-| PaloAltoNetworksCore.Incident.alerts.host_name | String | Host name involved in the alert. | 
-| PaloAltoNetworksCore.Incident.alerts.user_name | String | User name involved with the alert. | 
-| PaloAltoNetworksCore.Incident.alerts.event_type | String | Event type. Valid values are: "Process Execution","Network Event","File Event","Registry Event","Injection Event","Load Image Event","Windows Event Log" | 
-| PaloAltoNetworksCore.Incident.alerts.action | String | The action that triggered the alert. Valid values are: "REPORTED", "BLOCKED", "POST_DETECTED", "SCANNED", "DOWNLOAD", "PROMPT_ALLOW", "PROMPT_BLOCK", "DETECTED", "BLOCKED_1", "BLOCKED_2", "BLOCKED_3", "BLOCKED_5", "BLOCKED_6", "BLOCKED_7", "BLOCKED_8", "BLOCKED_9", "BLOCKED_10", "BLOCKED_11", "BLOCKED_13", "BLOCKED_14", "BLOCKED_15", "BLOCKED_16", "BLOCKED_17", "BLOCKED_24", "BLOCKED_25", "DETECTED_0", "DETECTED_4", "DETECTED_18", "DETECTED_19", "DETECTED_20", "DETECTED_21", "DETECTED_22", "DETECTED_23" | 
-| PaloAltoNetworksCore.Incident.alerts.action_pretty | String | The action that triggered the alert. Valid values are: "Detected \(Reported\)" "Prevented \(Blocked\)" "Detected \(Post Detected\)" "Detected \(Scanned\)" "Detected \(Download\)" "Detected \(Prompt Allow\)" "Prevented \(Prompt Block\)" "Detected" "Prevented \(Denied The Session\)" "Prevented \(Dropped The Session\)" "Prevented \(Dropped The Session And Sent a TCP Reset\)" "Prevented \(Blocked The URL\)" "Prevented \(Blocked The IP\)" "Prevented \(Dropped The Packet\)" "Prevented \(Dropped All Packets\)" "Prevented \(Terminated The Session And Sent a TCP Reset To Both Sides Of The Connection\)" "Prevented \(Terminated The Session And Sent a TCP Reset To The Client\)" "Prevented \(Terminated The Session And Sent a TCP Reset To The Server\)" "Prevented \(Continue\)" "Prevented \(Block-Override\)" "Prevented \(Override-Lockout\)" "Prevented \(Override\)" "Prevented \(Random-Drop\)" "Prevented \(Silently Dropped The Session With An ICMP Unreachable Message To The Host Or Application\)" "Prevented \(Block\)" "Detected \(Allowed The Session\)" "Detected \(Raised An Alert\)" "Detected \(Syncookie Sent\)" "Detected \(Forward\)" "Detected \(Wildfire Upload Success\)" "Detected \(Wildfire Upload Failure\)" "Detected \(Wildfire Upload Skip\)" "Detected \(Sinkhole\)" | 
-| PaloAltoNetworksCore.Incident.alerts.actor_process_image_name | String | Image name. | 
-| PaloAltoNetworksCore.Incident.alerts.actor_process_command_line | String | Command line. | 
-| PaloAltoNetworksCore.Incident.alerts.actor_process_signature_status | String | Signature status. Valid values are: "Signed" "Invalid Signature" "Unsigned" "Revoked" "Signature Fail" "N/A" "Weak Hash". | 
-| PaloAltoNetworksCore.Incident.alerts.actor_process_signature_vendor | String | Singature vendor name. | 
-| PaloAltoNetworksCore.Incident.alerts.causality_actor_process_image_name | String | Image name. | 
-| PaloAltoNetworksCore.Incident.alerts.causality_actor_process_command_line | String | Command line. | 
-| PaloAltoNetworksCore.Incident.alerts.causality_actor_process_signature_status | String | Signature status. Valid values are: "Signed" "Invalid Signature" "Unsigned" "Revoked" "Signature Fail" "N/A" "Weak Hash" | 
-| PaloAltoNetworksCore.Incident.alerts.causality_actor_process_signature_vendor | String | Signature vendor. | 
-| PaloAltoNetworksCore.Incident.alerts.causality_actor_causality_id | Unknown | Causality id. | 
-| PaloAltoNetworksCore.Incident.alerts.action_process_image_name | String | Image name. | 
-| PaloAltoNetworksCore.Incident.alerts.action_process_image_command_line | String | Command line. | 
-| PaloAltoNetworksCore.Incident.alerts.action_process_image_sha256 | String | Image SHA256. | 
-| PaloAltoNetworksCore.Incident.alerts.action_process_signature_status | String | Signature status. Valid values are: "Signed" "Invalid Signature" "Unsigned" "Revoked" "Signature Fail" "N/A" "Weak Hash" | 
-| PaloAltoNetworksCore.Incident.alerts.action_process_signature_vendor | String | Signature vendor name. | 
-| PaloAltoNetworksCore.Incident.alerts.action_file_path | String | File path. | 
-| PaloAltoNetworksCore.Incident.alerts.action_file_md5 | String | File MD5. | 
-| PaloAltoNetworksCore.Incident.alerts.action_file_sha256 | String | File SHA256. | 
-| PaloAltoNetworksCore.Incident.alerts.action_registry_data | String | Registry data. | 
-| PaloAltoNetworksCore.Incident.alerts.action_registry_full_key | String | Registry full key. | 
-| PaloAltoNetworksCore.Incident.alerts.action_local_ip | String | Local IP. | 
-| PaloAltoNetworksCore.Incident.alerts.action_local_port | Number | Local port. | 
-| PaloAltoNetworksCore.Incident.alerts.action_remote_ip | String | Remote IP. | 
-| PaloAltoNetworksCore.Incident.alerts.action_remote_port | Number | Remote port. | 
-| PaloAltoNetworksCore.Incident.alerts.action_external_hostname | String | External hostname. | 
-| PaloAltoNetworksCore.Incident.alerts.fw_app_id | Unknown | Firewall app id. | 
-| PaloAltoNetworksCore.Incident.alerts.is_whitelisted | String | Is the alert on allow list. Valid values are: "Yes" "No" | 
-| PaloAltoNetworksCore.Incident.alerts.starred | Boolean | Alert starred. | 
-| PaloAltoNetworksCore.Incident.network_artifacts.type | String | Network artifact type. | 
-| PaloAltoNetworksCore.Incident.network_artifacts.network_remote_port | number | The remote port related to the artifact. | 
-| PaloAltoNetworksCore.Incident.network_artifacts.alert_count | number | Number of alerts related to the artifact. | 
-| PaloAltoNetworksCore.Incident.network_artifacts.network_remote_ip | String | The remote IP related to the artifact. | 
-| PaloAltoNetworksCore.Incident.network_artifacts.is_manual | boolean | Whether the artifact was created by the user \(manually\). | 
-| PaloAltoNetworksCore.Incident.network_artifacts.network_domain | String | The domain related to the artifact. | 
-| PaloAltoNetworksCore.Incident.network_artifacts.type | String | The artifact type. Valid values are: "META", "GID", "CID", "HASH", "IP", "DOMAIN", "REGISTRY", "HOSTNAME" | 
-| PaloAltoNetworksCore.Incident.network_artifacts.network_country | String | The country related to the artifact. | 
-| PaloAltoNetworksCore.Incident.file_artifacts.file_signature_status | String | Digital signature status of the file. Valid values are: "SIGNATURE_UNAVAILABLE" "SIGNATURE_SIGNED" "SIGNATURE_INVALID" "SIGNATURE_UNSIGNED" "SIGNATURE_WEAK_HASH" | 
-| PaloAltoNetworksCore.Incident.file_artifacts.is_process | boolean | Whether the file artifact is related to a process execution. | 
-| PaloAltoNetworksCore.Incident.file_artifacts.file_name | String | Name of the file. | 
-| PaloAltoNetworksCore.Incident.file_artifacts.file_wildfire_verdict | String | The file verdict, calculated by Wildfire. Valid values are: "BENIGN" "MALWARE" "GRAYWARE" "PHISING" "UNKNOWN". | 
-| PaloAltoNetworksCore.Incident.file_artifacts.alert_count | number | Number of alerts related to the artifact. | 
-| PaloAltoNetworksCore.Incident.file_artifacts.is_malicious | boolean | Whether the artifact is malicious, as decided by the Wildfire verdict. | 
-| PaloAltoNetworksCore.Incident.file_artifacts.is_manual | boolean | Whether the artifact was created by the user \(manually\). | 
-| PaloAltoNetworksCore.Incident.file_artifacts.type | String | The artifact type. Valid values are: "META" "GID" "CID" "HASH" "IP" "DOMAIN" "REGISTRY" "HOSTNAME" | 
-| PaloAltoNetworksCore.Incident.file_artifacts.file_sha256 | String | SHA-256 hash of the file. | 
-| PaloAltoNetworksCore.Incident.file_artifacts.file_signature_vendor_name | String | File signature vendor name. | 
-| Account.Username | String | The username in the relevant system. | 
-| Endpoint.Hostname | String | The hostname that is mapped to this endpoint. | 
-| File.Path | String | The path where the file is located. | 
-| File.MD5 | String | The MD5 hash of the file. | 
-| File.SHA256 | String | The SHA256 hash of the file. | 
-| File.Name | String | The full file name \(including file extension\). | 
-| Process.Name | String | The name of the process. | 
-| Process.MD5 | String | The MD5 hash of the process. | 
-| Process.SHA256 | String | The SHA256 hash of the process. | 
-| Process.PID | String | The PID of the process. | 
-| Process.Path | String | The file system path to the binary file. | 
-| Process.Start Time | String | The timestamp of the process start time. | 
-| Process.CommandLine | String | The full command line \(including arguments\). | 
-| IP.Address | String | IP address. | 
-| IP.Geo.Country | String | The country in which the IP address is located. | 
-| Domain.Name | String | The domain name, for example: "google.com". | 
-
-### core-update-incident
-***
-Updates one or more fields of a specified incident. Missing fields will be ignored. To remove the assignment for an incident, pass a null value in the assignee email argument.
-
-
-#### Base Command
-
-`core-update-incident`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| incident_id | Core incident ID. You can get the incident ID from the output of the 'core-get-incidents' command or the 'core-get-incident-extra-details' command. | Required | 
-| manual_severity | Severity to assign to the incident (LOW, MEDIUM, or HIGH). Possible values are: HIGH, MEDIUM, LOW. | Optional | 
-| assigned_user_mail | Email address of the user to assign to the incident. | Optional | 
-| assigned_user_pretty_name | Full name of the user assigned to the incident. | Optional | 
-| status | Status of the incident. Valid values are: NEW, UNDER_INVESTIGATION, RESOLVED_KNOWN_ISSUE, RESOLVED_DUPLICATE, RESOLVED_FALSE_POSITIVE, RESOLVED_TRUE_POSITIVE, RESOLVED_SECURITY_TESTING, RESOLVED_OTHER. Possible values are: NEW, UNDER_INVESTIGATION, RESOLVED_KNOWN_ISSUE, RESOLVED_DUPLICATE, RESOLVED_FALSE_POSITIVE, RESOLVED_TRUE_POSITIVE, RESOLVED_SECURITY_TESTING, RESOLVED_OTHER. | Optional | 
-| resolve_comment | Comment explaining why the incident was resolved. This should be set when the incident is resolved. | Optional | 
-| unassign_user | If true, will remove all assigned users from the incident. Possible values are: true. | Optional | 
-
-
-#### Context Output
-
-There is no context output for this command.
-### core-insert-parsed-alert
-***
-Upload alert from external alert sources in Cortex Core format. Cortex Core displays alerts that are parsed
-successfully in related incidents and views. You can send 600 alerts per minute. Each request can contain a
-maximum of 60 alerts.
-
-
-#### Base Command
-
-`core-insert-parsed-alert`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| product | String value that defines the product. | Required | 
-| vendor | String value that defines the product. | Required | 
-| local_ip | String value for the source IP address. | Optional | 
-| local_port | Integer value for the source port. | Required | 
-| remote_ip | String value of the destination IP<br/>address. | Required | 
-| remote_port | Integer value for the destination<br/>port. | Required | 
-| event_timestamp | Integer value representing the epoch of the time the alert occurred in milliseconds, or a string value in date format 2019-10-23T10:00:00. If not set, the event time will be defined as now. | Optional | 
-| severity | String value of alert severity. Valid values are:<br/>Informational, Low, Medium or High. Possible values are: Informational, Low, Medium, High. Default is Medium. | Optional | 
-| alert_name | String defining the alert name. | Required | 
-| alert_description | String defining the alert description. | Optional | 
-
-
-#### Context Output
-
-There is no context output for this command.
-### core-insert-cef-alerts
-***
-Upload alerts in CEF format from external alert sources. After you map CEF alert fields to Cortex Core fields, Cortex Core displays the alerts in related incidents and views. You can send 600 requests per minute. Each request can contain a maximum of 60 alerts.
-
-
-#### Base Command
-
-`core-insert-cef-alerts`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| cef_alerts | List of alerts in CEF format. | Required | 
-
-
-#### Context Output
-
-There is no context output for this command.
 ### core-isolate-endpoint
 ***
 Isolates the specified endpoint.
@@ -564,14 +313,14 @@ Gets agent event reports. You can filter by multiple fields, which will be conca
 | Endpoint.Hostname | String | The hostname that is mapped to this endpoint. | 
 | Endpoint.Domain | String | The domain of the endpoint. | 
 
-### core-blacklist-files
+### core-blocklist-files
 ***
 Block lists requested files which have not already been block listed or added to allow list.
 
 
 #### Base Command
 
-`core-blacklist-files`
+`core-blocklist-files`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -735,58 +484,6 @@ Cancel the scan of selected endpoints. A scan can only be aborted if the selecte
 | PaloAltoNetworksCore.endpointScan.actionId | Unknown | The action id of the abort scan request. | 
 | PaloAltoNetworksCore.endpointScan.aborted | Boolean | Was the scan aborted. | 
 
-### get-mapping-fields
-***
-Get mapping fields from remote incident. Please note that this method will not update the current incident, it's here for debugging purposes.
-
-
-#### Base Command
-
-`get-mapping-fields`
-#### Input
-
-There are no input arguments for this command.
-
-#### Context Output
-
-There is no context output for this command.
-### get-remote-data
-***
-Get remote data from a remote incident. Please note that this method will not update the current incident, it's here for debugging purposes.
-
-
-#### Base Command
-
-`get-remote-data`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| id | The remote incident id. | Required | 
-| lastUpdate | UTC timestamp in seconds. The incident is only updated if it was modified after the last update time. Default is 0. | Optional | 
-
-
-#### Context Output
-
-There is no context output for this command.
-### get-modified-remote-data
-***
-Get the list of incidents that were modified since the last update. Please note that this method is here for debugging purposes. get-modified-remote-data is used as part of a Mirroring feature, which is available since version 6.1.
-
-
-#### Base Command
-
-`get-modified-remote-data`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| lastUpdate | Date string representing the local time.The incident is only returned if it was modified after the last update time. | Optional | 
-
-
-#### Context Output
-
-There is no context output for this command.
 ### core-get-policy
 ***
 Gets the policy name for a specific endpoint.
@@ -851,7 +548,7 @@ Gets a list of scripts available in the scripts library.
 
 ### core-delete-endpoints
 ***
-Deletes selected endpoints in the Cortex Core app. You can delete up to 1000 endpoints.
+Deletes selected endpoints in the Cortex XDR app. You can delete up to 1000 endpoints.
 
 
 #### Base Command
@@ -1350,65 +1047,3 @@ Returns the number of the connected\disconnected endpoints.
 | --- | --- | --- |
 | PaloAltoNetworksCore.EndpointsStatus.status | String | The endpoint's status. | 
 | PaloAltoNetworksCore.EndpointsStatus.count | Number | The number of endpoint's with this status. | 
-
-### core-get-cloud-original-alerts
-***
-Returns information about each alert ID.
-
-
-#### Base Command
-
-`core-get-cloud-original-alerts`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| alert_ids | A comma-separated list of alert IDs. | Required | 
-
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| PaloAltoNetworksCore.OriginalAlert.event._time | String | The timestamp of the occurence of the event. | 
-| PaloAltoNetworksCore.OriginalAlert.event.vendor | String | Vendor name. | 
-| PaloAltoNetworksCore.OriginalAlert.event.event_timestamp | Number | Event timestamp. | 
-| PaloAltoNetworksCore.OriginalAlert.event.event_type | Number | Event type \(static 500\). | 
-| PaloAltoNetworksCore.OriginalAlert.event.cloud_provider | String | The cloud provider - GCP, AZURE, or AWS. | 
-| PaloAltoNetworksCore.OriginalAlert.event.project | String | The project in which the event occurred. | 
-| PaloAltoNetworksCore.OriginalAlert.event.cloud_provider_event_id | String | The ID given to the event by the cloud provider, if the ID exists. | 
-| PaloAltoNetworksCore.OriginalAlert.event.cloud_correlation_id | String | The ID the cloud provider is using to aggregate events that are part of the same general event. | 
-| PaloAltoNetworksCore.OriginalAlert.event.operation_name_orig | String | The name of the operation that occurred, as supplied by the cloud provider. | 
-| PaloAltoNetworksCore.OriginalAlert.event.operation_name | String | The normalized name of the operation performed by the event. | 
-| PaloAltoNetworksCore.OriginalAlert.event.identity_orig | String | Contains the original identity related fields as provided by the cloud provider. | 
-| PaloAltoNetworksCore.OriginalAlert.event.identity_name | String | The name of the identity that initiated the action. | 
-| PaloAltoNetworksCore.OriginalAlert.event.identity_uuid | String | Same as identity_name but also contains the UUID of the identity if it exists. | 
-| PaloAltoNetworksCore.OriginalAlert.event.identity_type | String | An enum representing the type of the identity. | 
-| PaloAltoNetworksCore.OriginalAlert.event.identity_sub_type | String | An enum representing the sub-type of the identity, respective to its identity_type. | 
-| PaloAltoNetworksCore.OriginalAlert.event.identity_invoked_by_name | String | The name of the identity that invoked the action as it appears in the log. | 
-| PaloAltoNetworksCore.OriginalAlert.event.identity_invoked_by_uuid | String | The UUID of the identity that invoked the action as it appears in the log. | 
-| PaloAltoNetworksCore.OriginalAlert.event.identity_invoked_by_type | String | An enum that represents the type of identity event that invoked the action. | 
-| PaloAltoNetworksCore.OriginalAlert.event.identity_invoked_by_sub_type | String | An enum that represents the respective sub_type of the type of identity \(identity_type\) that has invoked the action. | 
-| PaloAltoNetworksCore.OriginalAlert.event.operation_status | String | Status of whether the operation has succeed or failed, if provided. | 
-| PaloAltoNetworksCore.OriginalAlert.event.operation_status_orig | String | The operation status code as it appears in the log, including lookup from code number to code name. | 
-| PaloAltoNetworksCore.OriginalAlert.event.operation_status_orig_code | String | The operation status code as it appears in the log. | 
-| PaloAltoNetworksCore.OriginalAlert.event.operation_status_reason_provided | String | Description of the error, if the log record indicates an error and the cloud provider supplied the reason. | 
-| PaloAltoNetworksCore.OriginalAlert.event.resource_type | String | The normalized type of the service that emitted the log row. | 
-| PaloAltoNetworksCore.OriginalAlert.event.resource_type_orig | String | The type of the service that omitted the log as provided by the cloud provider. | 
-| PaloAltoNetworksCore.OriginalAlert.event.resource_sub_type | String | The sub-type respective to the resource_type field, normalized across all cloud providers. | 
-| PaloAltoNetworksCore.OriginalAlert.event.resource_sub_type_orig | String | The sub-type of the service that emitted this log row as provided by the cloud provider. | 
-| PaloAltoNetworksCore.OriginalAlert.event.region | String | The cloud region of the resource that emitted the log. | 
-| PaloAltoNetworksCore.OriginalAlert.event.zone | String | The availability zone of the resource that emitted the log. | 
-| PaloAltoNetworksCore.OriginalAlert.event.referenced_resource | String | The cloud resource referenced in the audit log. | 
-| PaloAltoNetworksCore.OriginalAlert.event.referenced_resource_name | String | Same as referenced_resource but provides only the substring that represents the resource name instead of the full asset ID. | 
-| PaloAltoNetworksCore.OriginalAlert.event.referenced_resources_count | Number | The number of extracted resources referenced in this audit log. | 
-| PaloAltoNetworksCore.OriginalAlert.event.user_agent | String | The user agent provided in the call to the API of the cloud provider. | 
-| PaloAltoNetworksCore.OriginalAlert.event.caller_ip | String | The IP of the caller that performed the action in the log. | 
-| PaloAltoNetworksCore.OriginalAlert.event.caller_ip_geolocation | String | The geolocation associated with the caller_ip's value. | 
-| PaloAltoNetworksCore.OriginalAlert.event.caller_ip_asn | Number | The ASN of the caller_ip's value. | 
-| PaloAltoNetworksCore.OriginalAlert.event.caller_project | String | The project of the caller entity. | 
-| PaloAltoNetworksCore.OriginalAlert.event.raw_log | Unknown | The raw log that is being normalized. | 
-| PaloAltoNetworksCore.OriginalAlert.event.log_name | String | The name of the log that contains the log row. | 
-| PaloAltoNetworksCore.OriginalAlert.event.caller_ip_asn_org | String | The organization associated with the ASN of the caller_ip's value. | 
-| PaloAltoNetworksCore.OriginalAlert.event.event_base_id | String | Event base ID. | 
-| PaloAltoNetworksCore.OriginalAlert.event.ingestion_time | String | Ingestion time. | 

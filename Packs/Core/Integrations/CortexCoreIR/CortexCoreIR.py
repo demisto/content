@@ -2,12 +2,9 @@ import copy
 import hashlib
 import secrets
 import string
-import traceback
-from datetime import timezone
 from operator import itemgetter
-from typing import Any, Dict, Tuple
+from typing import Tuple
 
-import dateparser
 import demistomock as demisto  # noqa: F401
 import urllib3
 from CommonServerPython import *  # noqa: F401
@@ -20,160 +17,14 @@ NONCE_LENGTH = 64
 API_KEY_LENGTH = 128
 
 INTEGRATION_CONTEXT_BRAND = 'PaloAltoNetworksCore'
-Core_INCIDENT_TYPE_NAME = 'Cortex Core Incident'
 INTEGRATION_NAME = 'Cortex Core - IR'
 
-Core_INCIDENT_FIELDS = {
-    "status": {"description": "Current status of the incident: \"new\",\"under_"
-                              "investigation\",\"resolved_known_issue\","
-                              "\"resolved_duplicate\",\"resolved_false_positive\","
-                              "\"resolved_true_positive\",\"resolved_security_testing\",\"resolved_other\"",
-               "xsoar_field_name": 'xdrstatusv2'},
-    "assigned_user_mail": {"description": "Email address of the assigned user.",
-                           'xsoar_field_name': "xdrassigneduseremail"},
-    "assigned_user_pretty_name": {"description": "Full name of the user assigned to the incident.",
-                                  "xsoar_field_name": "xdrassigneduserprettyname"},
-    "resolve_comment": {"description": "Comments entered by the user when the incident was resolved.",
-                        "xsoar_field_name": "xdrresolvecomment"},
-    "manual_severity": {"description": "Incident severity assigned by the user. "
-                                       "This does not affect the calculated severity low medium high",
-                        "xsoar_field_name": "severity"},
-}
-
-Core_RESOLVED_STATUS_TO_XSOAR = {
-    'resolved_known_issue': 'Other',
-    'resolved_duplicate': 'Duplicate',
-    'resolved_false_positive': 'False Positive',
-    'resolved_true_positive': 'Resolved',
-    'resolved_security_testing': 'Other',
-    'resolved_other': 'Other'
-}
 
 XSOAR_RESOLVED_STATUS_TO_Core = {
     'Other': 'resolved_other',
     'Duplicate': 'resolved_duplicate',
     'False Positive': 'resolved_false_positive',
     'Resolved': 'resolved_true_positive',
-}
-
-MIRROR_DIRECTION = {
-    'None': None,
-    'Incoming': 'In',
-    'Outgoing': 'Out',
-    'Both': 'Both'
-}
-
-ALERT_GENERAL_FIELDS = {
-    'detection_modules',
-    'alert_full_description',
-    'matching_service_rule_id',
-    'variation_rule_id',
-    'content_version',
-    'detector_id',
-    'mitre_technique_id_and_name',
-    'silent',
-    'mitre_technique_ids',
-    'activity_first_seet_at',
-    '_type',
-    'dst_association_strength',
-    'alert_description',
-}
-
-ALERT_EVENT_GENERAL_FIELDS = {
-    "_time",
-    "vendor",
-    "event_timestamp",
-    "event_type",
-    "event_id",
-    "cloud_provider",
-    "project",
-    "cloud_provider_event_id",
-    "cloud_correlation_id",
-    "operation_name_orig",
-    "operation_name",
-    "identity_orig",
-    "identity_name",
-    "identity_uuid",
-    "identity_type",
-    "identity_sub_type",
-    "identity_invoked_by_name",
-    "identity_invoked_by_uuid",
-    "identity_invoked_by_type",
-    "identity_invoked_by_sub_type",
-    "operation_status",
-    "operation_status_orig",
-    "operation_status_orig_code",
-    "operation_status_reason_provided",
-    "resource_type",
-    "resource_type_orig",
-    "resource_sub_type",
-    "resource_sub_type_orig",
-    "region",
-    "zone",
-    "referenced_resource",
-    "referenced_resource_name",
-    "referenced_resources_count",
-    "user_agent",
-    "caller_ip",
-    'caller_ip_geolocation',
-    "caller_ip_asn",
-    'caller_project',
-    'raw_log',
-    "log_name",
-    "caller_ip_asn_org",
-    "event_base_id",
-    "ingestion_time",
-}
-
-ALERT_EVENT_AWS_FIELDS = {
-    "eventVersion",
-    "userIdentity",
-    "eventTime",
-    "eventSource",
-    "eventName",
-    "awsRegion",
-    "sourceIPAddress",
-    "userAgent",
-    "requestID",
-    "eventID",
-    "readOnly",
-    "eventType",
-    "apiVersion",
-    "managementEvent",
-    "recipientAccountId",
-    "eventCategory",
-    "errorCode",
-    "errorMessage",
-    "resources",
-}
-
-ALERT_EVENT_GCP_FIELDS = {
-    "labels",
-    "operation",
-    "protoPayload",
-    "resource",
-    "severity",
-    "timestamp",
-}
-
-ALERT_EVENT_AZURE_FIELDS = {
-    "time",
-    "resourceId",
-    "category",
-    "operationName",
-    "operationVersion",
-    "schemaVersion",
-    "statusCode",
-    "statusText",
-    "callerIpAddress",
-    "correlationId",
-    "identity",
-    "level",
-    "properties",
-    "uri",
-    "protocol",
-    "resourceType",
-    "tenantId",
 }
 
 
@@ -214,16 +65,6 @@ def create_auth(api_key):
     hash_ = hashlib.sha256()
     hash_.update((api_key + nonce + timestamp).encode("utf-8"))
     return nonce, timestamp, hash_.hexdigest()
-
-
-def clear_trailing_whitespace(res):
-    index = 0
-    while index < len(res):
-        for key, value in res[index].items():
-            if isinstance(value, str):
-                res[index][key] = value.rstrip()
-        index += 1
-    return res
 
 
 class Client(BaseClient):
@@ -350,30 +191,6 @@ class Client(BaseClient):
         incidents = res.get('reply').get('incidents', [])
 
         return incidents
-
-    def get_incident_extra_data(self, incident_id, alerts_limit=1000):
-        """
-        Returns incident by id
-
-        :param incident_id: The id of incident
-        :param alerts_limit: Maximum number alerts to get
-        :return:
-        """
-        request_data = {
-            'incident_id': incident_id,
-            'alerts_limit': alerts_limit,
-        }
-
-        reply = self._http_request(
-            method='POST',
-            url_suffix='/incidents/get_incident_extra_data/',
-            json_data={'request_data': request_data},
-            timeout=self.timeout
-        )
-
-        incident = reply.get('reply')
-
-        return incident
 
     def update_incident(self, incident_id, assigned_user_mail, assigned_user_pretty_name, status, severity,
                         resolve_comment, unassign_user):
@@ -594,30 +411,6 @@ class Client(BaseClient):
             timeout=self.timeout
         )
 
-    def insert_alerts(self, alerts):
-        self._http_request(
-            method='POST',
-            url_suffix='/alerts/insert_parsed_alerts/',
-            json_data={
-                'request_data': {
-                    'alerts': alerts
-                }
-            },
-            timeout=self.timeout
-        )
-
-    def insert_cef_alerts(self, alerts):
-        self._http_request(
-            method='POST',
-            url_suffix='/alerts/insert_cef_alerts/',
-            json_data={
-                'request_data': {
-                    'alerts': alerts
-                }
-            },
-            timeout=self.timeout
-        )
-
     def get_distribution_url(self, distribution_id, package_type):
         reply = self._http_request(
             method='POST',
@@ -828,7 +621,7 @@ class Client(BaseClient):
 
         return reply.get('reply').get('data', [])
 
-    def blacklist_files(self, hash_list, comment=None, incident_id=None):
+    def blocklist_files(self, hash_list, comment=None, incident_id=None):
         request_data: Dict[str, Any] = {"hash_list": hash_list}
         if comment:
             request_data["comment"] = comment
@@ -838,7 +631,7 @@ class Client(BaseClient):
         self._headers['content-type'] = 'application/json'
         reply = self._http_request(
             method='POST',
-            url_suffix='/hash_exceptions/blacklist/',
+            url_suffix='/hash_exceptions/blocklist/',
             json_data={'request_data': request_data},
             ok_codes=(200, 201, 500,),
             timeout=self.timeout
@@ -1379,23 +1172,14 @@ class Client(BaseClient):
         )
         return reply
 
-    def save_modified_incidents_to_integration_context(self):
-        last_modified_incidents = self.get_incidents(limit=100, sort_by_modification_time='desc')
-        modified_incidents_context = {}
-        for incident in last_modified_incidents:
-            incident_id = incident.get('incident_id')
-            modified_incidents_context[incident_id] = incident.get('modification_time')
-
-        set_integration_context({'modified_incidents': modified_incidents_context})
-
     def get_endpoints_by_status(self, status, last_seen_gte=None, last_seen_lte=None):
-        filters = []
-
-        filters.append({
-            'field': 'endpoint_status',
-            'operator': 'IN',
-            'value': [status]
-        })
+        filters = [
+            {
+                'field': 'endpoint_status',
+                'operator': 'IN',
+                'value': [status]
+            }
+        ]
 
         if last_seen_gte:
             filters.append({
@@ -1420,108 +1204,6 @@ class Client(BaseClient):
 
         endpoints_count = reply.get('reply').get('total_count', 0)
         return endpoints_count, reply
-
-    def get_original_alerts(self, alert_id_list):
-        res = self._http_request(
-            method='POST',
-            url_suffix='/alerts/get_original_alerts/',
-            json_data={
-                'request_data': {
-                    'alert_id_list': alert_id_list,
-                }
-            },
-        )
-        return res.get('reply', {})
-
-
-def get_incidents_command(client, args):
-    """
-    Retrieve a list of incidents from Core, filtered by some filters.
-    """
-
-    # sometimes incident id can be passed as integer from the playbook
-    incident_id_list = args.get('incident_id_list')
-    if isinstance(incident_id_list, int):
-        incident_id_list = str(incident_id_list)
-
-    incident_id_list = argToList(incident_id_list)
-    # make sure all the ids passed are strings and not integers
-    for index, id_ in enumerate(incident_id_list):
-        if isinstance(id_, (int, float)):
-            incident_id_list[index] = str(id_)
-
-    lte_modification_time = args.get('lte_modification_time')
-    gte_modification_time = args.get('gte_modification_time')
-    since_modification_time = args.get('since_modification_time')
-
-    if since_modification_time and gte_modification_time:
-        raise ValueError('Can\'t set both since_modification_time and lte_modification_time')
-    if since_modification_time:
-        gte_modification_time, _ = parse_date_range(since_modification_time, TIME_FORMAT)
-
-    lte_creation_time = args.get('lte_creation_time')
-    gte_creation_time = args.get('gte_creation_time')
-    since_creation_time = args.get('since_creation_time')
-
-    if since_creation_time and gte_creation_time:
-        raise ValueError('Can\'t set both since_creation_time and lte_creation_time')
-    if since_creation_time:
-        gte_creation_time, _ = parse_date_range(since_creation_time, TIME_FORMAT)
-
-    statuses = argToList(args.get('status', ''))
-
-    sort_by_modification_time = args.get('sort_by_modification_time')
-    sort_by_creation_time = args.get('sort_by_creation_time')
-
-    page = int(args.get('page', 0))
-    limit = int(args.get('limit', 100))
-
-    # If no filters were given, return a meaningful error message
-    if not incident_id_list and (not lte_modification_time and not gte_modification_time and not since_modification_time
-                                 and not lte_creation_time and not gte_creation_time and not since_creation_time
-                                 and not statuses):
-        raise ValueError("Specify a query for the incidents.\nFor example:"
-                         " !core-get-incidents since_creation_time=\"1 year\" sort_by_creation_time=\"desc\" limit=10")
-
-    if statuses:
-        raw_incidents = []
-
-        for status in statuses:
-            raw_incidents += client.get_incidents(
-                incident_id_list=incident_id_list,
-                lte_modification_time=lte_modification_time,
-                gte_modification_time=gte_modification_time,
-                lte_creation_time=lte_creation_time,
-                gte_creation_time=gte_creation_time,
-                sort_by_creation_time=sort_by_creation_time,
-                sort_by_modification_time=sort_by_modification_time,
-                page_number=page,
-                limit=limit,
-                status=status
-            )
-
-        if len(raw_incidents) > limit:
-            raw_incidents[:limit]
-    else:
-        raw_incidents = client.get_incidents(
-            incident_id_list=incident_id_list,
-            lte_modification_time=lte_modification_time,
-            gte_modification_time=gte_modification_time,
-            lte_creation_time=lte_creation_time,
-            gte_creation_time=gte_creation_time,
-            sort_by_creation_time=sort_by_creation_time,
-            sort_by_modification_time=sort_by_modification_time,
-            page_number=page,
-            limit=limit,
-        )
-
-    return (
-        tableToMarkdown('Incidents', raw_incidents),
-        {
-            f'{INTEGRATION_CONTEXT_BRAND}.Incident(val.incident_id==obj.incident_id)': raw_incidents
-        },
-        raw_incidents
-    )
 
 
 def create_endpoint_context(audit_logs):
@@ -1612,164 +1294,6 @@ def create_context_from_network_artifacts(network_artifacts, ip_context):
                 ip_context.append(network_ip_details)
 
     return domain_context
-
-
-def get_indicators_context(incident):
-    file_context: List[Any] = []
-    process_context: List[Any] = []
-    ip_context: List[Any] = []
-    for alert in incident.get('alerts', []):
-        # file context
-        file_details = {
-            'Name': alert.get('action_file_name'),
-            'Path': alert.get('action_file_path'),
-            'SHA265': alert.get('action_file_sha256'),  # Here for backward compatibility
-            'SHA256': alert.get('action_file_sha256'),
-            'MD5': alert.get('action_file_md5'),
-        }
-        remove_nulls_from_dictionary(file_details)
-
-        if file_details:
-            file_context.append(file_details)
-
-        # process context
-        process_types = ['actor', 'os_actor', 'causality_actor', 'action']
-        for process_type in process_types:
-            single_process_context = get_process_context(alert, process_type)
-            if single_process_context:
-                process_context.append(single_process_context)
-
-        # ip context
-        add_to_ip_context(alert, ip_context)
-
-    network_artifacts = incident.get('network_artifacts', [])
-
-    domain_context = create_context_from_network_artifacts(network_artifacts, ip_context)
-
-    file_artifacts = incident.get('file_artifacts', [])
-    for file in file_artifacts:
-        file_details = {
-            'Name': file.get('file_name'),
-            'SHA256': file.get('file_sha256'),
-        }
-        remove_nulls_from_dictionary(file_details)
-        if file_details:
-            file_context.append(file_details)
-
-    return file_context, process_context, domain_context, ip_context
-
-
-def check_if_incident_was_modified_in_core(incident_id, last_mirrored_in_time_timestamp, last_modified_incidents_dict):
-    if incident_id in last_modified_incidents_dict:  # search the incident in the dict of modified incidents
-        incident_modification_time_in_core = int(str(last_modified_incidents_dict[incident_id]))
-
-        demisto.debug(f"Core incident {incident_id}\n"
-                      f"modified time:         {incident_modification_time_in_core}\n"
-                      f"last mirrored in time: {last_mirrored_in_time_timestamp}")
-
-        if incident_modification_time_in_core > last_mirrored_in_time_timestamp:  # need to update this incident
-            demisto.info(f"Incident '{incident_id}' was modified. performing extra-data request.")
-            return True
-    # the incident was not modified
-    return False
-
-
-def get_last_mirrored_in_time(args):
-    demisto_incidents = demisto.get_incidents()  # type: ignore
-
-    if demisto_incidents:  # handling 5.5 version
-        demisto_incident = demisto_incidents[0]
-        last_mirrored_in_time = demisto_incident.get('CustomFields', {}).get('lastmirroredintime')
-        if not last_mirrored_in_time:  # this is an old incident, update anyway
-            return 0
-        last_mirrored_in_timestamp = arg_to_timestamp(last_mirrored_in_time, 'last_mirrored_in_time')
-
-    else:  # handling 6.0 version
-        last_mirrored_in_time = arg_to_timestamp(args.get('last_update'), 'last_update')
-        last_mirrored_in_timestamp = (last_mirrored_in_time - (120 * 1000))
-
-    return last_mirrored_in_timestamp
-
-
-def get_incident_extra_data_command(client, args):
-    incident_id = args.get('incident_id')
-    alerts_limit = int(args.get('alerts_limit', 1000))
-    return_only_updated_incident = argToBoolean(args.get('return_only_updated_incident', 'False'))
-
-    if return_only_updated_incident:
-        last_mirrored_in_time = get_last_mirrored_in_time(args)
-        last_modified_incidents_dict = get_integration_context().get('modified_incidents', {})
-
-        if check_if_incident_was_modified_in_core(incident_id, last_mirrored_in_time, last_modified_incidents_dict):
-            pass  # the incident was modified. continue to perform extra-data request
-
-        else:  # the incident was not modified
-            return "The incident was not modified in Core since the last mirror in.", {}, {}
-
-    demisto.debug(f"Performing extra-data request on incident: {incident_id}")
-    raw_incident = client.get_incident_extra_data(incident_id, alerts_limit)
-
-    incident = raw_incident.get('incident')
-    incident_id = incident.get('incident_id')
-    raw_alerts = raw_incident.get('alerts').get('data')
-    context_alerts = clear_trailing_whitespace(raw_alerts)
-    for alert in context_alerts:
-        alert['host_ip_list'] = alert.get('host_ip').split(',') if alert.get('host_ip') else []
-    file_artifacts = raw_incident.get('file_artifacts').get('data')
-    network_artifacts = raw_incident.get('network_artifacts').get('data')
-
-    readable_output = [tableToMarkdown('Incident {}'.format(incident_id), incident)]
-
-    if len(context_alerts) > 0:
-        readable_output.append(tableToMarkdown('Alerts', context_alerts,
-                                               headers=[key for key in context_alerts[0] if key != 'host_ip']))
-    else:
-        readable_output.append(tableToMarkdown('Alerts', []))
-
-    if len(network_artifacts) > 0:
-        readable_output.append(tableToMarkdown('Network Artifacts', network_artifacts))
-    else:
-        readable_output.append(tableToMarkdown('Network Artifacts', []))
-
-    if len(file_artifacts) > 0:
-        readable_output.append(tableToMarkdown('File Artifacts', file_artifacts))
-    else:
-        readable_output.append(tableToMarkdown('File Artifacts', []))
-
-    incident.update({
-        'alerts': context_alerts,
-        'file_artifacts': file_artifacts,
-        'network_artifacts': network_artifacts
-    })
-    account_context_output = assign_params(**{
-        'Username': incident.get('users', '')
-    })
-    endpoint_context_output = assign_params(**{
-        'Hostname': incident.get('hosts', '')
-    })
-
-    context_output = {f'{INTEGRATION_CONTEXT_BRAND}.Incident(val.incident_id==obj.incident_id)': incident}
-    if account_context_output:
-        context_output['Account(val.Username==obj.Username)'] = account_context_output
-    if endpoint_context_output:
-        context_output['Endpoint(val.Hostname==obj.Hostname)'] = endpoint_context_output
-
-    file_context, process_context, domain_context, ip_context = get_indicators_context(incident)
-
-    if file_context:
-        context_output[Common.File.CONTEXT_PATH] = file_context
-    if domain_context:
-        context_output[Common.Domain.CONTEXT_PATH] = domain_context
-    if ip_context:
-        context_output[Common.IP.CONTEXT_PATH] = ip_context
-    if process_context:
-        context_output['Process(val.Name && val.Name == obj.Name)'] = process_context
-
-    return (
-        '\n'.join(readable_output),
-        context_output,
-        raw_incident
-    )
 
 
 def update_incident_command(client, args):
@@ -1971,96 +1495,6 @@ def endpoint_command(client, args):
             raw_response=endpoints,
         ))
     return command_results
-
-
-def create_parsed_alert(product, vendor, local_ip, local_port, remote_ip, remote_port, event_timestamp, severity,
-                        alert_name, alert_description):
-    alert = {
-        "product": product,
-        "vendor": vendor,
-        "local_ip": local_ip,
-        "local_port": local_port,
-        "remote_ip": remote_ip,
-        "remote_port": remote_port,
-        "event_timestamp": event_timestamp,
-        "severity": severity,
-        "alert_name": alert_name,
-        "alert_description": alert_description
-    }
-
-    return alert
-
-
-def insert_parsed_alert_command(client, args):
-    product = args.get('product')
-    vendor = args.get('vendor')
-    local_ip = args.get('local_ip')
-    local_port = arg_to_int(
-        arg=args.get('local_port'),
-        arg_name='local_port'
-    )
-    remote_ip = args.get('remote_ip')
-    remote_port = arg_to_int(
-        arg=args.get('remote_port'),
-        arg_name='remote_port'
-    )
-
-    severity = args.get('severity')
-    alert_name = args.get('alert_name')
-    alert_description = args.get('alert_description', '')
-
-    if args.get('event_timestamp') is None:
-        # get timestamp now if not provided
-        event_timestamp = int(round(time.time() * 1000))
-    else:
-        event_timestamp = int(args.get('event_timestamp'))
-
-    alert = create_parsed_alert(
-        product=product,
-        vendor=vendor,
-        local_ip=local_ip,
-        local_port=local_port,
-        remote_ip=remote_ip,
-        remote_port=remote_port,
-        event_timestamp=event_timestamp,
-        severity=severity,
-        alert_name=alert_name,
-        alert_description=alert_description
-    )
-
-    client.insert_alerts([alert])
-
-    return (
-        'Alert inserted successfully',
-        None,
-        None
-    )
-
-
-def insert_cef_alerts_command(client, args):
-    # parsing alerts list. the reason we don't use argToList is because cef_alerts could contain comma (,) so
-    # we shouldn't split them by comma
-    alerts = args.get('cef_alerts')
-    if isinstance(alerts, list):
-        pass
-    elif isinstance(alerts, str):
-        if alerts[0] == '[' and alerts[-1] == ']':
-            # if the string contains [] it means it is a list and must be parsed
-            alerts = json.loads(alerts)
-        else:
-            # otherwise it is a single alert
-            alerts = [alerts]
-    else:
-        raise ValueError('Invalid argument "cef_alerts". It should be either list of strings (cef alerts), '
-                         'or single string')
-
-    client.insert_cef_alerts(alerts)
-
-    return (
-        'Alerts inserted successfully',
-        None,
-        None
-    )
 
 
 def isolate_endpoint_command(client, args):
@@ -2404,12 +1838,12 @@ def create_distribution_command(client, args):
     )
 
 
-def blacklist_files_command(client, args):
+def blocklist_files_command(client, args):
     hash_list = argToList(args.get('hash_list'))
     comment = args.get('comment')
     incident_id = arg_to_number(args.get('incident_id'))
 
-    res = client.blacklist_files(hash_list=hash_list, comment=comment, incident_id=incident_id)
+    res = client.blocklist_files(hash_list=hash_list, comment=comment, incident_id=incident_id)
     if isinstance(res, dict) and res.get('err_extra') != "All hashes have already been added to the allow or block list":
         raise ValueError(res)
     markdown_data = [{'fileHash': file_hash} for file_hash in hash_list]
@@ -2667,35 +2101,6 @@ def sort_by_key(list_to_sort, main_key, fallback_key):
     return sorted_list
 
 
-def sort_all_list_incident_fields(incident_data):
-    """Sorting all lists fields in an incident - without this, elements may shift which results in false
-    identification of changed fields"""
-    if incident_data.get('hosts', []):
-        incident_data['hosts'] = sorted(incident_data.get('hosts', []))
-        incident_data['hosts'] = [host.upper() for host in incident_data.get('hosts', [])]
-
-    if incident_data.get('users', []):
-        incident_data['users'] = sorted(incident_data.get('users', []))
-        incident_data['users'] = [user.upper() for user in incident_data.get('users', [])]
-
-    if incident_data.get('incident_sources', []):
-        incident_data['incident_sources'] = sorted(incident_data.get('incident_sources', []))
-
-    if incident_data.get('alerts', []):
-        incident_data['alerts'] = sort_by_key(incident_data.get('alerts', []), main_key='alert_id', fallback_key='name')
-        reformat_sublist_fields(incident_data['alerts'])
-
-    if incident_data.get('file_artifacts', []):
-        incident_data['file_artifacts'] = sort_by_key(incident_data.get('file_artifacts', []), main_key='file_name',
-                                                      fallback_key='file_sha256')
-        reformat_sublist_fields(incident_data['file_artifacts'])
-
-    if incident_data.get('network_artifacts', []):
-        incident_data['network_artifacts'] = sort_by_key(incident_data.get('network_artifacts', []),
-                                                         main_key='network_domain', fallback_key='network_remote_ip')
-        reformat_sublist_fields(incident_data['network_artifacts'])
-
-
 def drop_field_underscore(section):
     section_copy = section.copy()
     for field in section_copy.keys():
@@ -2706,166 +2111,6 @@ def drop_field_underscore(section):
 def reformat_sublist_fields(sublist):
     for section in sublist:
         drop_field_underscore(section)
-
-
-def sync_incoming_incident_owners(incident_data):
-    if incident_data.get('assigned_user_mail') and demisto.params().get('sync_owners'):
-        user_info = demisto.findUser(email=incident_data.get('assigned_user_mail'))
-        if user_info:
-            demisto.debug(f"Syncing incident owners: Core incident {incident_data.get('incident_id')}, "
-                          f"owner {user_info.get('username')}")
-            incident_data['owner'] = user_info.get('username')
-
-        else:
-            demisto.debug(f"The user assigned to Core incident {incident_data.get('incident_id')} "
-                          f"is not registered on XSOAR")
-
-
-def handle_incoming_user_unassignment(incident_data):
-    incident_data['assigned_user_mail'] = ''
-    incident_data['assigned_user_pretty_name'] = ''
-    if demisto.params().get('sync_owners'):
-        demisto.debug(f'Unassigning owner from Core incident {incident_data.get("incident_id")}')
-        incident_data['owner'] = ''
-
-
-def handle_incoming_closing_incident(incident_data):
-    closing_entry = {}  # type: Dict
-    if incident_data.get('status') in Core_RESOLVED_STATUS_TO_XSOAR:
-        demisto.debug(f"Closing Core issue {incident_data.get('incident_id')}")
-        closing_entry = {
-            'Type': EntryType.NOTE,
-            'Contents': {
-                'dbotIncidentClose': True,
-                'closeReason': Core_RESOLVED_STATUS_TO_XSOAR.get(incident_data.get("status")),
-                'closeNotes': incident_data.get('resolve_comment')
-            },
-            'ContentsFormat': EntryFormat.JSON
-        }
-        incident_data['closeReason'] = Core_RESOLVED_STATUS_TO_XSOAR.get(incident_data.get("status"))
-        incident_data['closeNotes'] = incident_data.get('resolve_comment')
-
-        if incident_data.get('status') == 'resolved_known_issue':
-            closing_entry['Contents']['closeNotes'] = 'Known Issue.\n' + incident_data['closeNotes']
-            incident_data['closeNotes'] = 'Known Issue.\n' + incident_data['closeNotes']
-
-    return closing_entry
-
-
-def get_mapping_fields_command():
-    core_incident_type_scheme = SchemeTypeMapping(type_name=Core_INCIDENT_TYPE_NAME)
-    for field in Core_INCIDENT_FIELDS:
-        core_incident_type_scheme.add_field(name=field, description=Core_INCIDENT_FIELDS[field].get('description'))
-
-    mapping_response = GetMappingFieldsResponse()
-    mapping_response.add_scheme_type(core_incident_type_scheme)
-
-    return mapping_response
-
-
-def get_modified_remote_data_command(client, args):
-    remote_args = GetModifiedRemoteDataArgs(args)
-    last_update = remote_args.last_update  # In the first run, this value will be set to 1 minute earlier
-
-    demisto.debug(f'Performing get-modified-remote-data command. Last update is: {last_update}')
-
-    last_update_utc = dateparser.parse(last_update, settings={'TIMEZONE': 'UTC'})  # convert to utc format
-    if last_update_utc:
-        last_update_without_ms = last_update_utc.isoformat().split('.')[0]
-
-    raw_incidents = client.get_incidents(gte_modification_time=last_update_without_ms, limit=100)
-
-    modified_incident_ids = list()
-    for raw_incident in raw_incidents:
-        incident_id = raw_incident.get('incident_id')
-        modified_incident_ids.append(incident_id)
-
-    return GetModifiedRemoteDataResponse(modified_incident_ids)
-
-
-def get_remote_data_command(client, args):
-    remote_args = GetRemoteDataArgs(args)
-    demisto.debug(f'Performing get-remote-data command with incident id: {remote_args.remote_incident_id}')
-
-    incident_data = {}
-    try:
-        # when Demisto version is 6.1.0 and above, this command will only be automatically executed on incidents
-        # returned from get_modified_remote_data_command so we want to perform extra-data request on those incidents.
-        return_only_updated_incident = not is_demisto_version_ge('6.1.0')  # True if version is below 6.1 else False
-
-        incident_data = get_incident_extra_data_command(client, {"incident_id": remote_args.remote_incident_id,
-                                                                 "alerts_limit": 1000,
-                                                                 "return_only_updated_incident": return_only_updated_incident,
-                                                                 "last_update": remote_args.last_update})
-        if 'The incident was not modified' not in incident_data[0]:
-            demisto.debug(f"Updating Core incident {remote_args.remote_incident_id}")
-
-            incident_data = incident_data[2].get('incident')
-            incident_data['id'] = incident_data.get('incident_id')
-
-            sort_all_list_incident_fields(incident_data)
-
-            # deleting creation time as it keeps updating in the system
-            del incident_data['creation_time']
-
-            # handle unasignment
-            if incident_data.get('assigned_user_mail') is None:
-                handle_incoming_user_unassignment(incident_data)
-
-            else:
-                # handle owner sync
-                sync_incoming_incident_owners(incident_data)
-
-            # handle closed issue in Core and handle outgoing error entry
-            entries = [handle_incoming_closing_incident(incident_data)]
-
-            reformatted_entries = []
-            for entry in entries:
-                if entry:
-                    reformatted_entries.append(entry)
-
-            incident_data['in_mirror_error'] = ''
-
-            return GetRemoteDataResponse(
-                mirrored_object=incident_data,
-                entries=reformatted_entries
-            )
-
-        else:  # no need to update this incident
-            incident_data = {
-                'id': remote_args.remote_incident_id,
-                'in_mirror_error': ""
-            }
-
-            return GetRemoteDataResponse(
-                mirrored_object=incident_data,
-                entries=[]
-            )
-
-    except Exception as e:
-        demisto.debug(f"Error in Core incoming mirror for incident {remote_args.remote_incident_id} \n"
-                      f"Error message: {str(e)}")
-
-        if "Rate limit exceeded" in str(e):
-            return_error("API rate limit")
-
-        if incident_data:
-            incident_data['in_mirror_error'] = str(e)
-            sort_all_list_incident_fields(incident_data)
-
-            # deleting creation time as it keeps updating in the system
-            del incident_data['creation_time']
-
-        else:
-            incident_data = {
-                'id': remote_args.remote_incident_id,
-                'in_mirror_error': str(e)
-            }
-
-        return GetRemoteDataResponse(
-            mirrored_object=incident_data,
-            entries=[]
-        )
 
 
 def handle_outgoing_incident_owner_sync(update_args):
@@ -2930,93 +2175,6 @@ def update_remote_system_command(client, args):
                       f"Error message: {str(e)}")
 
         return remote_args.remote_incident_id
-
-
-def fetch_incidents(client, first_fetch_time, integration_instance, last_run: dict = None, max_fetch: int = 10,
-                    statuses: List = []):
-    # Get the last fetch time, if exists
-    last_fetch = last_run.get('time') if isinstance(last_run, dict) else None
-    incidents_from_previous_run = last_run.get('incidents_from_previous_run', []) if isinstance(last_run,
-                                                                                                dict) else []
-
-    # Handle first time fetch, fetch incidents retroactively
-    if last_fetch is None:
-        last_fetch, _ = parse_date_range(first_fetch_time, to_timestamp=True)
-
-    incidents = []
-    if incidents_from_previous_run:
-        raw_incidents = incidents_from_previous_run
-    else:
-        if statuses:
-            raw_incidents = []
-            for status in statuses:
-                raw_incidents += client.get_incidents(gte_creation_time_milliseconds=last_fetch, status=status,
-                                                      limit=max_fetch, sort_by_creation_time='asc')
-            raw_incidents = sorted(raw_incidents, key=lambda inc: inc['creation_time'])
-        else:
-            raw_incidents = client.get_incidents(gte_creation_time_milliseconds=last_fetch, limit=max_fetch,
-                                                 sort_by_creation_time='asc')
-
-    # save the last 100 modified incidents to the integration context - for mirroring purposes
-    client.save_modified_incidents_to_integration_context()
-
-    # maintain a list of non created incidents in a case of a rate limit exception
-    non_created_incidents: list = raw_incidents.copy()
-    next_run = dict()
-    try:
-        # The count of incidents, so as not to pass the limit
-        count_incidents = 0
-
-        for raw_incident in raw_incidents:
-            incident_id = raw_incident.get('incident_id')
-
-            incident_data = get_incident_extra_data_command(client, {"incident_id": incident_id,
-                                                                     "alerts_limit": 1000})[2].get('incident')
-
-            sort_all_list_incident_fields(incident_data)
-
-            incident_data['mirror_direction'] = MIRROR_DIRECTION.get(demisto.params().get('mirror_direction', 'None'),
-                                                                     None)
-            incident_data['mirror_instance'] = integration_instance
-            incident_data['last_mirrored_in'] = int(datetime.now().timestamp() * 1000)
-
-            description = raw_incident.get('description')
-            occurred = timestamp_to_datestring(raw_incident['creation_time'], TIME_FORMAT + 'Z')
-            incident = {
-                'name': f'Core Incident {incident_id} - {description}',
-                'occurred': occurred,
-                'rawJSON': json.dumps(incident_data),
-            }
-
-            if demisto.params().get('sync_owners') and incident_data.get('assigned_user_mail'):
-                incident['owner'] = demisto.findUser(email=incident_data.get('assigned_user_mail')).get('username')
-
-            # Update last run and add incident if the incident is newer than last fetch
-            if raw_incident['creation_time'] > last_fetch:
-                last_fetch = raw_incident['creation_time']
-
-            incidents.append(incident)
-            non_created_incidents.remove(raw_incident)
-
-            count_incidents += 1
-            if count_incidents == max_fetch:
-                break
-
-    except Exception as e:
-        if "Rate limit exceeded" in str(e):
-            demisto.info(f"Cortex Core - rate limit exceeded, number of non created incidents is: "
-                         f"'{len(non_created_incidents)}'.\n The incidents will be created in the next fetch")
-        else:
-            raise
-
-    if non_created_incidents:
-        next_run['incidents_from_previous_run'] = non_created_incidents
-    else:
-        next_run['incidents_from_previous_run'] = []
-
-    next_run['time'] = last_fetch + 1
-
-    return next_run, incidents
 
 
 def delete_endpoints_command(client: Client, args: Dict[str, str]) -> Tuple[str, Any, Any]:
@@ -3353,107 +2511,6 @@ def get_script_execution_result_files_command(client: Client, args: Dict) -> Dic
     return fileResult(filename, file_response.content)
 
 
-def decode_dict_values(dict_to_decode: dict):
-    """Decode JSON str values of a given dict.
-
-    Args:
-      dict_to_decode (dict): The dict to decode.
-
-    """
-    for key, value in dict_to_decode.items():
-        # if value is a dictionary, we want to recursively decode it's values
-        if isinstance(value, dict):
-            decode_dict_values(value)
-        # if value is a string, we want to try to decode it, if it cannot be decoded, we will move on.
-        elif isinstance(value, str):
-            try:
-                dict_to_decode[key] = json.loads(value)
-            except ValueError:
-                continue
-
-
-def filter_general_fields(alert: dict) -> dict:
-    """filter only relevant general fields from a given alert.
-
-    Args:
-      alert (dict): The alert to filter
-
-    Returns:
-      dict: The filtered alert
-    """
-
-    updated_alert = {}
-    updated_event = {}
-    for field in ALERT_GENERAL_FIELDS:
-        if field in alert:
-            updated_alert[field] = alert.get(field)
-
-    event = alert.get('raw_abioc', {}).get('event', {})
-    if not event:
-        return_warning('No Core cloud analytics event.')
-    else:
-        for field in ALERT_EVENT_GENERAL_FIELDS:
-            if field in event:
-                updated_event[field] = event.get(field)
-        updated_alert['event'] = updated_event
-    return updated_alert
-
-
-def filter_vendor_fields(alert: dict):
-    """Remove non relevant fields from the alert event (filter by vendor: Amazon/google/Microsoft)
-
-    Args:
-      alert (dict): The alert to filter
-
-    Returns:
-      dict: The filtered alert
-    """
-    vendor_mapper = {
-        'Amazon': ALERT_EVENT_AWS_FIELDS,
-        'Google': ALERT_EVENT_GCP_FIELDS,
-        'MSFT': ALERT_EVENT_AZURE_FIELDS,
-    }
-    event = alert.get('event', {})
-    vendor = event.get('vendor')
-    if vendor and vendor in vendor_mapper:
-        raw_log = event.get('raw_log', {})
-        if raw_log and isinstance(raw_log, dict):
-            for key in list(raw_log):
-                if key not in vendor_mapper[vendor]:
-                    raw_log.pop(key)
-
-
-def get_original_alerts_command(client: Client, args: Dict) -> CommandResults:
-    alert_id_list = argToList(args.get('alert_ids', []))
-    raw_response = client.get_original_alerts(alert_id_list)
-    reply = copy.deepcopy(raw_response)
-    alerts = reply.get('alerts', [])
-    filtered_alerts = []
-    for i, alert in enumerate(alerts):
-        # decode raw_response
-        try:
-            alert['original_alert_json'] = safe_load_json(alert.get('original_alert_json', ''))
-            # some of the returned JSON fields are double encoded, so it needs to be double-decoded.
-            # example: {"x": "someValue", "y": "{\"z\":\"anotherValue\"}"}
-            decode_dict_values(alert)
-        except Exception:
-            continue
-        # remove original_alert_json field and add its content to alert.
-        alert.update(
-            alert.pop('original_alert_json', None))
-        updated_alert = filter_general_fields(alert)
-        if 'event' in updated_alert:
-            filter_vendor_fields(updated_alert)
-        filtered_alerts.append(updated_alert)
-
-    return CommandResults(
-        outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.OriginalAlert',
-        outputs_key_field='internal_id',
-        outputs=filtered_alerts,
-        raw_response=raw_response,
-    )
-
-
 def run_script_execute_commands_command(client: Client, args: Dict) -> CommandResults:
     endpoint_ids = argToList(args.get('endpoint_ids'))
     incident_id = arg_to_number(args.get('incident_id'))
@@ -3565,22 +2622,15 @@ def main():
 
     api_key = demisto.params().get('apikey')
     api_key_id = demisto.params().get('apikey_id')
-    first_fetch_time = demisto.params().get('fetch_time', '3 days')
     base_url = urljoin(demisto.params().get('url'), '/public_api/v1')
     proxy = demisto.params().get('proxy')
     verify_cert = not demisto.params().get('insecure', False)
-    statuses = demisto.params().get('status')
 
     try:
         timeout = int(demisto.params().get('timeout', 120))
     except ValueError as e:
         demisto.debug(f'Failed casting timeout parameter to int, falling back to 120 - {e}')
         timeout = 120
-    try:
-        max_fetch = int(demisto.params().get('max_fetch', 10))
-    except ValueError as e:
-        demisto.debug(f'Failed casting max fetch parameter to int, falling back to 10 - {e}')
-        max_fetch = 10
 
     nonce = "".join([secrets.choice(string.ascii_letters + string.digits) for _ in range(64)])
     timestamp = str(int(datetime.now(timezone.utc).timestamp()) * 1000)
@@ -3607,33 +2657,11 @@ def main():
 
     try:
         if command == 'test-module':
-            client.test_module(first_fetch_time)
+            client.test_module('3 days')
             demisto.results('ok')
-
-        elif command == 'fetch-incidents':
-            integration_instance = demisto.integrationInstance()
-            next_run, incidents = fetch_incidents(client, first_fetch_time, integration_instance, demisto.getLastRun(),
-                                                  max_fetch, statuses)
-            demisto.setLastRun(next_run)
-            demisto.incidents(incidents)
-
-        elif command == 'core-get-incidents':
-            return_outputs(*get_incidents_command(client, args))
-
-        elif command == 'core-get-incident-extra-data':
-            return_outputs(*get_incident_extra_data_command(client, args))
-
-        elif command == 'core-update-incident':
-            return_outputs(*update_incident_command(client, args))
 
         elif command == 'core-get-endpoints':
             return_outputs(*get_endpoints_command(client, args))
-
-        elif command == 'core-insert-parsed-alert':
-            return_outputs(*insert_parsed_alert_command(client, args))
-
-        elif command == 'core-insert-cef-alerts':
-            return_outputs(*insert_cef_alerts_command(client, args))
 
         elif command == 'core-isolate-endpoint':
             return_outputs(*isolate_endpoint_command(client, args))
@@ -3659,8 +2687,8 @@ def main():
         elif command == 'core-get-audit-agent-reports':
             return_outputs(*get_audit_agent_reports_command(client, args))
 
-        elif command == 'core-blacklist-files':
-            return_outputs(*blacklist_files_command(client, args))
+        elif command == 'core-blocklist-files':
+            return_outputs(*blocklist_files_command(client, args))
 
         elif command == 'core-whitelist-files':
             return_outputs(*whitelist_files_command(client, args))
@@ -3679,12 +2707,6 @@ def main():
 
         elif command == 'core-endpoint-scan-abort':
             return_outputs(*endpoint_scan_abort_command(client, args))
-
-        elif command == 'get-mapping-fields':
-            return_results(get_mapping_fields_command())
-
-        elif command == 'get-remote-data':
-            return_results(get_remote_data_command(client, args))
 
         elif command == 'update-remote-system':
             return_results(update_remote_system_command(client, args))
@@ -3719,9 +2741,6 @@ def main():
         elif command == 'core-action-status-get':
             return_outputs(*action_status_get_command(client, args))
 
-        elif command == 'get-modified-remote-data':
-            return_results(get_modified_remote_data_command(client, demisto.args()))
-
         elif command == 'core-run-script':
             return_results(run_script_command(client, args))
 
@@ -3736,9 +2755,6 @@ def main():
 
         elif command == 'core-get-script-execution-result-files':
             return_results(get_script_execution_result_files_command(client, args))
-
-        elif command == 'core-get-cloud-original-alerts':
-            return_results(get_original_alerts_command(client, args))
 
         elif command == 'core-run-script-execute-commands':
             return_results(run_script_execute_commands_command(client, args))
