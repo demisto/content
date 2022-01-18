@@ -46,4 +46,17 @@ Blocklist
 Spamhaus
 SSL
 Prisma
+runtime
+ATOMs
+AlienVault
+BitcoinAbuse
+BruteForceBlocker
+NetwitnessSearch
+NetwitnessQuery
+Deprecated
+SQS
+ACM
+unicode
+CloudWatchLogs
+GuardDuty
 Gitlab
