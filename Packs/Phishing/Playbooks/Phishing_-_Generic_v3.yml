@@ -3015,5 +3015,3 @@ outputs: []
 tests:
 - Phishing v2 - Test - Incident Starter
 fromversion: 6.1.0
-contentitemexportablefields:
-  contentitemfields: {}
