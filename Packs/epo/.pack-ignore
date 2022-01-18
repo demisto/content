@@ -1,14 +1,11 @@
 [file:epo]
 ignore=PA116
 
-[file:integration-epo.yml]
+[file:Epo.yml]
 ignore=IN135
 
-[file:integration-epo_README.md]
-ignore=RM102
-
 [file:README.md]
-ignore=RM104
+ignore=RM104,RM102
 
 [file:playbook-McAfee_ePO_Endpoint_Compliance_v2.yml]
 ignore=BA110
