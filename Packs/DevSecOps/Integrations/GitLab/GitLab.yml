@@ -1080,7 +1080,7 @@ script:
       required: true
       secret: false
     description: Trigger a pipeline in gitlab.
-    name: gitlab-trigger-build
+    name: gitlab-trigger-pipeline
     outputs:
     - contextPath: GitLab.Pipeline.id
       description: Pipeline ID.
