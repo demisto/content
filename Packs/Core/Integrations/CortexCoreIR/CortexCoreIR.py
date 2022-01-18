@@ -245,6 +245,7 @@ class Client(BaseClient):
                       last_seen_lte=None,
                       sort_by_first_seen=None,
                       sort_by_last_seen=None,
+                      status=None,
                       no_filter=False
                       ):
 
@@ -270,6 +271,14 @@ class Client(BaseClient):
 
         else:
             filters = []
+
+            if status:
+                filters.append({
+                    'field': 'endpoint_status',
+                    'operator': 'IN',
+                    'value': [status]
+                })
+
             if endpoint_id_list:
                 filters.append({
                     'field': 'endpoint_id_list',
@@ -1356,6 +1365,7 @@ def get_endpoints_command(client, args):
         alias_name = argToList(args.get('alias_name'))
         isolate = args.get('isolate')
         hostname = argToList(args.get('hostname'))
+        status = args.get('status')
 
         first_seen_gte = arg_to_timestamp(
             arg=args.get('first_seen_gte'),
@@ -1396,7 +1406,8 @@ def get_endpoints_command(client, args):
             last_seen_gte=last_seen_gte,
             last_seen_lte=last_seen_lte,
             sort_by_first_seen=sort_by_first_seen,
-            sort_by_last_seen=sort_by_last_seen
+            sort_by_last_seen=sort_by_last_seen,
+            status=status
         )
 
     standard_endpoints = generate_endpoint_by_contex_standard(endpoints, False)
