@@ -2,7 +2,7 @@ import os
 import requests
 
 
-COVERAGE_REPORT_COMMENT = 'Link to the coverage report of the integration'
+COVERAGE_REPORT_COMMENT = 'This is the link to the failed unit tests: '
 JID = os.environ.get("CI_JOB_ID")
 COVERAGE_LINK = f'https://xsoar.docs.pan.run/-/content/-/jobs/{JID}/artifacts/unit-tests/'
 
