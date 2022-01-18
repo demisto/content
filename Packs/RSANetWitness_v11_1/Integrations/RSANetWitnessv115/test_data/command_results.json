@@ -332,7 +332,7 @@
     }
   ],
   "hosts_list": {
-    "RSANetWitness115.HostsList(val.id === obj.id)": [
+    "RSANetWitness115.HostsList(val.agentId === obj.agentId)": [
       {
         "agentId": "1",
         "hostName": "host_name",
