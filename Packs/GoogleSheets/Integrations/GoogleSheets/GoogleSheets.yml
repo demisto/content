@@ -128,7 +128,7 @@ script:
       type: Unknown
   - arguments:
     - name: spreadsheet_id
-      description: Id of the Spreadsheet to get
+      description: ID of the Spreadsheet to get
       required: true
       isArray: true
       defaultValue: ""
@@ -163,7 +163,7 @@ script:
       type: Unknown
   - arguments:
     - default: false
-      description: Spreadsheet id to create a new sheet in it
+      description: Spreadsheet ID to create a new sheet in it
       isArray: false
       name: spreadsheet_id
       required: true
@@ -249,7 +249,7 @@ script:
     deprecated: false
     arguments:
     - name: spreadsheet_id
-      description: Spreadsheet id you want to copy a sheet from.
+      description: Spreadsheet ID you want to copy a sheet from.
       required: true
       isArray: false
       defaultValue: ""
@@ -284,13 +284,13 @@ script:
       description: Spreadsheet title
       type: String
     - contextPath: Spreadsheet.spreadsheetId
-      description: "Spreadsheet Id "
+      description: Spreadsheet ID
       type: String
     - contextPath: Spreadsheet.spreadsheetUrl
       description: Spreadsheet URL
       type: Unknown
     - contextPath: Spreadsheet.sheets.properties.sheetId
-      description: Sheets id
+      description: Sheets ID
       type: String
     - contextPath: Spreadsheet.sheets.properties.title
       description: Sheet title
@@ -300,7 +300,7 @@ script:
     deprecated: false
     arguments:
     - name: source_spreadsheet_id
-      description: Spreadsheet id to copy from
+      description: Spreadsheet ID to copy from
       required: true
       isArray: false
       defaultValue: ""
@@ -310,13 +310,13 @@ script:
       isArray: false
       defaultValue: ""
     - name: destination_spreadsheet_id
-      description: The Id of the spreadsheet to copy the sheet to.
+      description: The ID of the spreadsheet to copy the sheet to.
       required: true
       isArray: false
       defaultValue: ""
     outputs: []
   - name: google-sheets-sheet-delete
-    description: Delete a sheet from a spreadsheet by id
+    description: Delete a sheet from a spreadsheet by ID
     deprecated: false
     arguments:
     - name: spreadsheet_id
@@ -334,7 +334,7 @@ script:
       - "true"
       - "false"
     - name: sheet_id
-      description: Sheet id to delete
+      description: Sheet ID to delete
       required: true
       isArray: false
       defaultValue: ""
@@ -343,13 +343,13 @@ script:
       description: Spreadsheet title
       type: String
     - contextPath: Spreadsheet.spreadsheetId
-      description: "Spreadsheet Id "
+      description: Spreadsheet ID
       type: String
     - contextPath: Spreadsheet.spreadsheetUrl
       description: Spreadsheet URL
       type: Unknown
     - contextPath: Spreadsheet.sheets.properties.sheetId
-      description: Sheets id
+      description: Sheets ID
       type: String
     - contextPath: Spreadsheet.sheets.properties.title
       description: Sheet title
@@ -361,7 +361,7 @@ script:
     deprecated: false
     arguments:
     - name: spreadsheet_id
-      description: Spreadsheet Id to Update
+      description: Spreadsheet ID to Update
       required: true
       isArray: false
       defaultValue: ""
@@ -375,13 +375,13 @@ script:
       description: Spreadsheet title
       type: String
     - contextPath: Spreadsheet.spreadsheetId
-      description: "Spreadsheet Id "
+      description: Spreadsheet ID
       type: String
     - contextPath: Spreadsheet.spreadsheetUrl
       description: Spreadsheet URL
       type: Unknown
     - contextPath: Spreadsheet.sheets.properties.sheetId
-      description: Sheets id
+      description: Sheets ID
       type: String
     - contextPath: Spreadsheet.sheets.properties.title
       description: Sheet title
@@ -391,7 +391,7 @@ script:
     deprecated: false
     arguments:
     - name: spreadsheet_id
-      description: Spreadsheet Id
+      description: Spreadsheet ID
       required: true
       isArray: false
       defaultValue: ""
@@ -445,13 +445,13 @@ script:
       description: Spreadsheet title
       type: String
     - contextPath: Spreadsheet.spreadsheetId
-      description: "Spreadsheet Id "
+      description: Spreadsheet ID
       type: String
     - contextPath: Spreadsheet.spreadsheetUrl
       description: Spreadsheet URL
       type: Unknown
     - contextPath: Spreadsheet.sheets.properties.sheetId
-      description: Sheets id
+      description: Sheets ID
       type: String
     - contextPath: Spreadsheet.sheets.properties.title
       description: Sheet title
@@ -462,7 +462,7 @@ script:
     deprecated: false
     arguments:
     - name: spreadsheet_id
-      description: "Spreadsheet id "
+      description: Spreadsheet ID
       required: true
       isArray: false
       defaultValue: ""
@@ -504,13 +504,13 @@ script:
       description: Spreadsheet title
       type: String
     - contextPath: Spreadsheet.spreadsheetId
-      description: "Spreadsheet Id "
+      description: Spreadsheet ID
       type: String
     - contextPath: Spreadsheet.spreadsheetUrl
       description: Spreadsheet URL
       type: Unknown
     - contextPath: Spreadsheet.sheets.properties.sheetId
-      description: Sheets id
+      description: Sheets ID
       type: String
     - contextPath: Spreadsheet.sheets.properties.title
       description: Sheet title
@@ -520,7 +520,7 @@ script:
     deprecated: false
     arguments:
     - name: spreadsheet_id
-      description: SpreadsheetId
+      description: Spreadsheet ID
       required: true
       isArray: false
       defaultValue: ""
@@ -584,13 +584,13 @@ script:
       description: Spreadsheet title
       type: String
     - contextPath: Spreadsheet.spreadsheetId
-      description: "Spreadsheet Id "
+      description: Spreadsheet ID
       type: String
     - contextPath: Spreadsheet.spreadsheetUrl
       description: Spreadsheet URL
       type: Unknown
     - contextPath: Spreadsheet.sheets.properties.sheetId
-      description: Sheets id
+      description: Sheets ID
       type: String
     - contextPath: Spreadsheet.sheets.properties.title
       description: Sheet title
@@ -600,7 +600,7 @@ script:
     deprecated: false
     arguments:
     - name: spreadsheet_id
-      description: "Spreadsheet Id "
+      description: Spreadsheet ID
       required: true
       isArray: false
       defaultValue: ""
@@ -685,13 +685,13 @@ script:
       description: Spreadsheet title
       type: String
     - contextPath: Spreadsheet.spreadsheetId
-      description: "Spreadsheet Id "
+      description: Spreadsheet ID
       type: String
     - contextPath: Spreadsheet.spreadsheetUrl
       description: Spreadsheet URL
       type: Unknown
     - contextPath: Spreadsheet.sheets.properties.sheetId
-      description: Sheets id
+      description: Sheets ID
       type: String
     - contextPath: Spreadsheet.sheets.properties.title
       description: Sheet title
@@ -702,7 +702,7 @@ script:
     deprecated: false
     arguments:
     - name: spreadsheet_id
-      description: Spreadsheet id
+      description: Spreadsheet ID
       required: true
       isArray: false
       defaultValue: ""
@@ -751,7 +751,7 @@ script:
     deprecated: false
     arguments:
     - name: spreadsheet_id
-      description: Spreadsheet id
+      description: Spreadsheet ID
       required: true
       isArray: false
       defaultValue: ""
@@ -805,7 +805,7 @@ script:
     deprecated: false
     arguments:
     - name: spreadsheet_id
-      description: "Spreadsheet Id "
+      description: Spreadsheet ID
       required: true
       isArray: false
       defaultValue: ""
@@ -829,13 +829,13 @@ script:
       description: Spreadsheet title
       type: String
     - contextPath: Spreadsheet.spreadsheetId
-      description: "Spreadsheet Id "
+      description: Spreadsheet ID
       type: String
     - contextPath: Spreadsheet.spreadsheetUrl
       description: Spreadsheet URL
       type: Unknown
     - contextPath: Spreadsheet.sheets.properties.sheetId
-      description: Sheets id
+      description: Sheets ID
       type: String
     - contextPath: Spreadsheet.sheets.properties.title
       description: Sheet title

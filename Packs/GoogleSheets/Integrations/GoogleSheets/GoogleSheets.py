@@ -102,11 +102,16 @@ def handle_values_input(values: str) -> list:
     output: a list of lists of the values for this example [[1,2,3],[4,5,6]...]
     """
     # TODO check if this is none
+    if not values:
+        raise ValueError('Wrong format of values entered, please check the documentation')
     split_by_brackets = re.findall("\[(.*?)\]", values)
     res_for_values_req = []
     # split each element by that was in the brackets by a comma
     for element in split_by_brackets:
         res_for_values_req.append(element.split(","))
+
+    if not res_for_values_req:
+        raise ValueError('Wrong format of values entered, please check the documentation')
 
     return res_for_values_req
 
@@ -219,6 +224,8 @@ def spreadsheet_get(service: Resource, args: dict) -> CommandResults:
     # The ranges to retrieve from the spreadsheet.
     ranges = args.get('ranges')
     markdown = ""
+    if not spread_sheets_ids:
+        raise 'No spreadsheet ID given'
     if len(spread_sheets_ids) > 1:
         for spreadsheet in spread_sheets_ids:
             response = service.spreadsheets().get(spreadsheetId=spreadsheet).execute()
@@ -227,7 +234,6 @@ def spreadsheet_get(service: Resource, args: dict) -> CommandResults:
 
         markdown = '### Success\n' + markdown
         return CommandResults(readable_output=markdown)
-
     else:
         request = service.spreadsheets().get(spreadsheetId=spread_sheets_ids[0], ranges=ranges,
                                              includeGridData=include_grid_data)

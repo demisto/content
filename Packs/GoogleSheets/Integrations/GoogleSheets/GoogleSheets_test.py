@@ -88,11 +88,8 @@ def test_create_list_id_title():
 handle_values_input_parametrized = [
     ("[1,2,3],[4,5,6]", [['1', '2', '3'], ['4', '5', '6']]),
     ("[1,2]", [['1', '2']]),
-    ("[]", [['']]),
-    ("1,2,3", []),
-    ("[4,5", []),
-    ("{3,4}", []),
-    ("(1,2,3)", [])
+    ("[1]", [['1']]),
+    ("[]", [['']])
 ]
 
 
@@ -112,6 +109,34 @@ def test_handle_values_input(test_input, expected):
 
     '''
     assert GoogleSheets.handle_values_input(test_input) == expected
+
+
+handle_values_input_parametrized_exception = [
+    ("1,2,3", pytest.raises(ValueError)),
+    ("[4,5", pytest.raises(ValueError)),
+    ("{3,4}", pytest.raises(ValueError)),
+    ("(1,2,3)", pytest.raises(ValueError)),
+    (None, pytest.raises(ValueError))
+]
+
+
+@pytest.mark.parametrize("test_input,expected", handle_values_input_parametrized_exception)
+def test_handle_values_input_exception(test_input, expected):
+    '''
+
+        Given:
+            - an input of values from the user in the wrong format
+
+        When:
+            - we want to apply one of the update function with values input
+
+        Then:
+            - a ValueError exception with a message for the user
+
+    '''
+    with pytest.raises(ValueError) as exc_info:
+        GoogleSheets.handle_values_input(test_input)
+    assert str(exc_info.value) == 'Wrong format of values entered, please check the documentation'
 
 
 def test_markdown_single_get(mocker):
