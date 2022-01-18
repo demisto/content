@@ -942,7 +942,7 @@ def get_packs_depends_on(packs_list, packs_dict, extract_destination_path, artif
         # collect all packs
         packs_list = []
         with open(id_set_path) as f:
-            id_set_packs = json.load(id_set_path).get('Packs')
+            id_set_packs = json.load(f).get('Packs')
         for pack_name in id_set_packs.keys():
             if pack_name not in packs_dict:
                 pack = Pack(pack_name, os.path.join(extract_destination_path, pack_name))
