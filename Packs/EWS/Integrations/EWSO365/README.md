@@ -1366,6 +1366,7 @@ Impersonation rights are required. To perform actions on the target mailbox of o
 | templateParams | Replace {varname} variables with values from this argument. Expected values are in the form of a JSON document like {"varname": {"value": "some value", "key": "context key"}}. Each var name can either be provided with the value or a context key to retrieve the value from. Note that only context data is accessible for this argument, while incident fields are not. | Optional | 
 | additionalHeader | A comma-separated list list of additional headers in the format: headerName=headerValue. For example: "headerName1=headerValue1,headerName2=headerValue2". | Optional | 
 | raw_message | Raw email message to send. If provided, all other arguments, but to, cc and bcc, will be ignored. | Optional | 
+| from_address | The email address from which to reply. | Optional |
 
 
 #### Context Output

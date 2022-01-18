@@ -1,0 +1,4 @@
+!vt-livehunt-get-indicators
+!vt-livehunt-get-indicators limit=15
+!vt-livehunt-get-indicators limit=5 filter="WannaCry_Ransomware"
+!vt-livehunt-get-indicators filter="WannaCry_Ransomware"
