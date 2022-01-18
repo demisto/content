@@ -1032,8 +1032,18 @@ def delete_rpz_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict
 
 def list_hosts_command(client: Client, args: Dict):
     raw_response = client.list_hosts()
+    hosts = raw_response.get('result')
+    fixed_keys_host_list = []
+    for host in hosts:
+        fixed_keys_obj = {RESPONSE_TRANSLATION_DICTIONARY.get(key, string_to_context_key(key)): val for key, val in
+                          host.items()}
+        fixed_keys_host_list.append(fixed_keys_obj)
+    title = f'{INTEGRATION_NAME} - List of Host Records: '
+    context = {
+        f'{INTEGRATION_CONTEXT_NAME}.ListHosts(?)': fixed_keys_host_list}
 
-    return tableToMarkdown("Hosts", raw_response["result"]), {"Infoblox": raw_response["result"]}, raw_response
+    human_readable = tableToMarkdown(title, fixed_keys_host_list, headerTransform=pascalToSpace)
+    return human_readable, context, raw_response
 
 
 def list_records_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
@@ -1044,15 +1054,26 @@ def list_records_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """
     zone = str(args.get('zone'))
     raw_response = client.list_records(zone)
-
-    return '', {}, raw_response
+    records = raw_response.get('result')
+    fixed_keys_record_list = []
+    for record in records:
+        fixed_keys_obj = {RESPONSE_TRANSLATION_DICTIONARY.get(key, string_to_context_key(key)): val for key, val in
+                          record.items()}
+        fixed_keys_record_list.append(fixed_keys_obj)
+    title = f'{INTEGRATION_NAME} - List of All Records: '
+    context = {f'{INTEGRATION_CONTEXT_NAME}.ListAllRecords(?)': fixed_keys_record_list}
+    human_readable = tableToMarkdown(title, fixed_keys_record_list, headerTransform=pascalToSpace)
+    return human_readable, context, raw_response
 
 
 def search_host_record_command(client: Client, args: Dict):
     name = str(args.get("name"))
     raw_response = client.search_host_record(name)
-
-    return tableToMarkdown("Host", raw_response["result"]), {"Infoblox": raw_response["result"]}, raw_response
+    title = f'{INTEGRATION_NAME} - Search for a Host Record: {name}'
+    fixed_keys_rule_list = ''
+    context = {}
+    human_readable = tableToMarkdown(title, fixed_keys_rule_list, headerTransform=pascalToSpace)
+    return human_readable, context, raw_response
 
 
 def create_a_record_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
@@ -1077,7 +1098,6 @@ def create_a_record_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict
         f'{INTEGRATION_CONTEXT_NAME}.ModifiedHostRecord(val.Name && val.Name === obj.Name)': fixed_keys_rule_res}
     human_readable = tableToMarkdown(title, fixed_keys_rule_res, headerTransform=pascalToSpace)
 
-    # return raw_response, raw_response, raw_response
     return human_readable, context, raw_response
 
 
@@ -1094,18 +1114,22 @@ def add_host_record_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict
     ipadd = args.get('ipadd')
 
     raw_response = client.add_host(host, ipadd)
-    demisto.results(raw_response)
-
-    return f'{INTEGRATION_NAME} - ' + raw_response['result'], {}, {}
+    title = f'{INTEGRATION_NAME} - Added a Host Record: {host} with IP address: {ipadd}'
+    fixed_keys_rule_list = ''
+    context = {}
+    human_readable = tableToMarkdown(title, fixed_keys_rule_list, headerTransform=pascalToSpace)
+    return human_readable, context, raw_response
 
 
 def update_host_ip_command(client: Client, args: Dict):
     refid = str(args.get("refid"))
     ipv4addr = str(args.get("ipv4addr"))
-
     raw_response = client.update_host_ip(refid, ipv4addr)
-
-    return tableToMarkdown("Updated Hosts", raw_response["result"]), {"Infoblox": raw_response["result"]}, raw_response
+    title = f'{INTEGRATION_NAME} - Updated a Host Record with the ReferenceID: {refid} with IP address: {ipv4addr}'
+    fixed_keys_rule_list = ''
+    context = {}
+    human_readable = tableToMarkdown(title, fixed_keys_rule_list, headerTransform=pascalToSpace)
+    return human_readable, context, raw_response
 
 
 def update_a_record_command(client: Client, args: Dict):
@@ -1115,8 +1139,11 @@ def update_a_record_command(client: Client, args: Dict):
     comment = str(args.get("comment"))
 
     raw_response = client.update_a_record(refid, ipv4addr, name, comment)
-
-    return tableToMarkdown("Updated Hosts", raw_response["result"]), {"Infoblox": raw_response["result"]}, raw_response
+    title = f'{INTEGRATION_NAME} - Updated a Host Record with the ReferenceID: {refid} with IP address: {ipv4addr}'
+    fixed_keys_rule_list = ''
+    context = {}
+    human_readable = tableToMarkdown(title, fixed_keys_rule_list, headerTransform=pascalToSpace)
+    return human_readable, context, raw_response
 
 
 def delete_host_record_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
@@ -1139,10 +1166,11 @@ def delete_host_record_command(client: Client, args: Dict) -> Tuple[str, Dict, D
     if refid:
         raw_response = client.delete_host(refid)
         demisto.results(raw_response)
-
-        return f'{INTEGRATION_NAME} - ' + raw_response['result'], {}, {}
+        title = f'{INTEGRATION_NAME} - ' + raw_response['result']
+        return title, {}, {}
     else:
-        return f'{INTEGRATION_NAME} - No RefID', {}, {}
+        title = f'{INTEGRATION_NAME} - No RefID'
+        return title, {}, {}
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
