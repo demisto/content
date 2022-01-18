@@ -56,7 +56,7 @@ class GCPConfig(object):
     BASE_PACK = "Base"  # base pack name
     INDEX_NAME = "index"  # main index folder name
     CORE_PACK_FILE_NAME = "corepacks.json"  # core packs file name
-    BUILD_BUCKET_PACKS_ROOT_PATH = 'content/builds/{branch}/{build}/content/packs'
+    BUILD_BUCKET_PACKS_ROOT_PATH = 'content/builds/{branch}/{build}/{marketplace}/content/packs'
 
     with open(os.path.join(os.path.dirname(__file__), 'core_packs_list.json'), 'r') as core_packs_list_file:
         CORE_PACKS_LIST = json.load(core_packs_list_file)
