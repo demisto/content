@@ -386,7 +386,7 @@ def create_corepacks_config(storage_bucket: Any, build_number: str, index_folder
     corepacks_json_path = os.path.join(artifacts_dir, GCPConfig.CORE_PACK_FILE_NAME)
     core_packs_data = {
         'corePacks': core_packs_public_urls,
-        'upgradeCorePacks': GCPConfig.CORE_PACKS_LIST_TO_UPDATE,
+        'upgradeCorePacks': GCPConfig.get_core_packs_to_upgrade(marketplace),
         'buildNumber': build_number
     }
     json_write(corepacks_json_path, core_packs_data)
