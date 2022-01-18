@@ -57,7 +57,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: TEXT
-      description: "The type of the number format of the Spreadsheet to create "
+      description: "The type of the number format of the Spreadsheet to create."
       isArray: false
       name: cell_format_type
       predefined:
