@@ -1215,13 +1215,13 @@ Search networks on the Prisma Cloud (RedLock) platform using RQL language.
                     ],
                     "bytes_accepted": 83938,
                     "to_ip_addresses": [
-                        "172.31.17.210"
+                        "172.31.34.235"
                     ],
                     "flow_class": [
                         "Postgres"
                     ],
                     "from_ip_addresses": [
-                        "172.31.20.235"
+                        "172.31.34.235"
                     ],
                     "bytes_rejected": 0
                 }
