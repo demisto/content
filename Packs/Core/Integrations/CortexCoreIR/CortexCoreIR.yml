@@ -54,7 +54,8 @@ script:
   commands:
   - arguments:
     - default: false
-      description: Allows to link the response action to the incident that triggered it.
+      description: Allows to link the response action to the incident that triggered
+        it.
       isArray: false
       name: incident_id
       required: false
@@ -88,7 +89,8 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Allows to link the response action to the incident that triggered it.
+      description: Allows to link the response action to the incident that triggered
+        it.
       isArray: false
       name: incident_id
       required: false
@@ -874,14 +876,15 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Allows to link the response action to the incident that triggered it.
+      description: Allows to link the response action to the incident that triggered
+        it.
       isArray: false
       name: incident_id
       required: false
       secret: false
     - default: false
-      description: String that represents a list of hashed files you want to block list.
-        Must be a valid SHA256 hash.
+      description: String that represents a list of hashed files you want to block
+        list. Must be a valid SHA256 hash.
       isArray: true
       name: hash_list
       required: true
@@ -899,14 +902,15 @@ script:
     name: core-blocklist-files
   - arguments:
     - default: false
-      description: Allows to link the response action to the incident that triggered it.
+      description: Allows to link the response action to the incident that triggered
+        it.
       isArray: false
       name: incident_id
       required: false
       secret: false
     - default: false
-      description: String that represents a list of hashed files you want to add to allow list.
-        Must be a valid SHA256 hash.
+      description: String that represents a list of hashed files you want to add to
+        allow list. Must be a valid SHA256 hash.
       isArray: true
       name: hash_list
       required: true
@@ -918,12 +922,14 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Adds requested files to allow list if they are not already on block list or allow list.
+    description: Adds requested files to allow list if they are not already on block
+      list or allow list.
     execution: false
     name: core-whitelist-files
   - arguments:
     - default: false
-      description: Allows to link the response action to the incident that triggered it.
+      description: Allows to link the response action to the incident that triggered
+        it.
       isArray: false
       name: incident_id
       required: false
@@ -977,7 +983,8 @@ script:
     name: core-get-quarantine-status
   - arguments:
     - default: false
-      description: Allows to link the response action to the incident that triggered it.
+      description: Allows to link the response action to the incident that triggered
+        it.
       isArray: false
       name: incident_id
       required: false
@@ -1003,7 +1010,8 @@ script:
     name: core-restore-file
   - arguments:
     - default: false
-      description: Allows to link the response action to the incident that triggered it.
+      description: Allows to link the response action to the incident that triggered
+        it.
       isArray: false
       name: incident_id
       required: false
@@ -1117,7 +1125,8 @@ script:
       type: Boolean
   - arguments:
     - default: false
-      description: Allows to link the response action to the incident that triggered it.
+      description: Allows to link the response action to the incident that triggered
+        it.
       isArray: false
       name: incident_id
       required: false
@@ -1522,7 +1531,8 @@ script:
       type: string
   - arguments:
     - default: false
-      description: Allows to link the response action to the incident that triggered it.
+      description: Allows to link the response action to the incident that triggered
+        it.
       isArray: false
       name: incident_id
       required: false
@@ -1724,7 +1734,8 @@ script:
       type: number
   - arguments:
     - default: false
-      description: Allows to link the response action to the incident that triggered it.
+      description: Allows to link the response action to the incident that triggered
+        it.
       isArray: false
       name: incident_id
       required: false
@@ -1771,7 +1782,8 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: Allows to link the response action to the incident that triggered it.
+      description: Allows to link the response action to the incident that triggered
+        it.
       isArray: false
       name: incident_id
       required: false
@@ -1956,7 +1968,8 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Allows to link the response action to the incident that triggered it.
+      description: Allows to link the response action to the incident that triggered
+        it.
       isArray: false
       name: incident_id
       required: false
@@ -1994,7 +2007,8 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: Allows to link the response action to the incident that triggered it.
+      description: Allows to link the response action to the incident that triggered
+        it.
       isArray: false
       name: incident_id
       required: false
@@ -2035,7 +2049,8 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: Allows to link the response action to the incident that triggered it.
+      description: Allows to link the response action to the incident that triggered
+        it.
       isArray: false
       name: incident_id
       required: false
@@ -2074,7 +2089,8 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: Allows to link the response action to the incident that triggered it.
+      description: Allows to link the response action to the incident that triggered
+        it.
       isArray: false
       name: incident_id
       required: false
@@ -2130,6 +2146,12 @@ script:
       name: hostname
       required: false
       secret: false
+    - default: true
+      description: ''
+      isArray: true
+      name: endpoint
+      required: true
+      secret: false
     deprecated: false
     description: Returns information about an endpoint.
     execution: false
@@ -2159,7 +2181,7 @@ script:
     - contextPath: Endpoint.Vendor
       description: The integration name of the endpoint vendor.
       type: String
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.1.25933
   feed: false
   isfetch: false
   longRunning: false

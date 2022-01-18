@@ -691,7 +691,7 @@ def test_endpoint_scan_command(requests_mock):
     from CortexCoreIR import endpoint_scan_command, Client
     test_data = load_test_data('test_data/scan_endpoints.json')
     scan_expected_tesult = {'PaloAltoNetworksCore.endpointScan(val.actionId == obj.actionId)': {'actionId': 123,
-                                                                                               'aborted': False}}
+                                                                                                'aborted': False}}
     requests_mock.post(f'{Core_URL}/public_api/v1/endpoints/scan/', json={"reply": {"action_id": 123}})
 
     client = Client(
@@ -715,7 +715,7 @@ def test_endpoint_scan_command_scan_all_endpoints(requests_mock):
     from CortexCoreIR import endpoint_scan_command, Client
     test_data = load_test_data('test_data/scan_all_endpoints.json')
     scan_expected_tesult = {'PaloAltoNetworksCore.endpointScan(val.actionId == obj.actionId)': {'actionId': 123,
-                                                                                               'aborted': False}}
+                                                                                                'aborted': False}}
     requests_mock.post(f'{Core_URL}/public_api/v1/endpoints/scan/', json={"reply": {"action_id": 123}})
 
     client = Client(
@@ -786,7 +786,7 @@ def test_endpoint_scan_abort_command(requests_mock):
     from CortexCoreIR import endpoint_scan_abort_command, Client
     test_data = load_test_data('test_data/scan_endpoints.json')
     scan_expected_tesult = {'PaloAltoNetworksCore.endpointScan(val.actionId == obj.actionId)': {'actionId': 123,
-                                                                                               'aborted': True}}
+                                                                                                'aborted': True}}
     requests_mock.post(f'{Core_URL}/public_api/v1/endpoints/abort_scan/', json={"reply": {"action_id": 123}})
 
     client = Client(
@@ -810,7 +810,7 @@ def test_endpoint_scan_abort_command_all_endpoints(requests_mock):
     from CortexCoreIR import endpoint_scan_abort_command, Client
     test_data = load_test_data('test_data/scan_all_endpoints.json')
     scan_expected_tesult = {'PaloAltoNetworksCore.endpointScan(val.actionId == obj.actionId)': {'actionId': 123,
-                                                                                               'aborted': True}}
+                                                                                                'aborted': True}}
     requests_mock.post(f'{Core_URL}/public_api/v1/endpoints/abort_scan/', json={"reply": {"action_id": 123}})
 
     client = Client(
