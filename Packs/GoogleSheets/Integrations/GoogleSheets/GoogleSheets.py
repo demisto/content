@@ -476,13 +476,16 @@ def sheets_data_paste(service: Resource, args: dict) -> CommandResults:
         "includeSpreadsheetInResponse": args.get('echo_spreadsheet', None)
     }
     request_to_update = remove_empty_elements(request_to_update)
+    # getting the kind arg
     kind = args.get('data_kind')
-    data_paste_req = request_to_update.get('requests')[0].get('pasteData')
+    # getting the pasteData sub dict from the request_to_update
+    paste_data = request_to_update.get('requests')[0].get('pasteData')
+    # adding a field to the paste data sub dict so that it will fit the api call needed
     if kind == 'delimiter':
-        data_paste_req[kind] = ','
+        paste_data[kind] = ','
     else:
-        data_paste_req[kind] = "true"
-
+        paste_data[kind] = "true"
+    # this change in the sub dict modifies the request_to_update that is sent to the google api
     request_to_update = remove_empty_elements(request_to_update)
     response = service.spreadsheets().batchUpdate(spreadsheetId=spreadsheet_id, body=request_to_update).execute()
     results = prepare_result(response, args)
