@@ -582,14 +582,12 @@ def sheets_value_append(service: Resource, args: dict) -> CommandResults:
     return CommandResults(readable_output=markdown)
 
 
-# disable-secrets-detection-start
-# @staticmethod
 def get_http_client_with_proxy(proxy: bool, insecure: bool):
     """
     Create an http client with proxy with whom to use when using a proxy.
     :param proxy: Whether to use a proxy.
     :param insecure: Whether to disable ssl and use an insecure connection.
-    :return:
+    :return: httplib2 object with the proper settings for google api client
     """
     if proxy:
         proxies = handle_proxy()
@@ -656,36 +654,37 @@ def main() -> None:
     demisto.debug(f'Command being called is {demisto.command()}')
 
     try:
+        command = demisto.command()
         service = build_and_authenticate(demisto.params())
-        if demisto.command() == 'test-module':
+        if command == 'test-module':
             return_results(test_module())
-        elif demisto.command() == 'google-sheets-spreadsheet-create':
+        elif command == 'google-sheets-spreadsheet-create':
             return_results(create_spreadsheet(service, demisto.args()))
-        elif demisto.command() == 'google-sheets-spreadsheet-get':
+        elif command == 'google-sheets-spreadsheet-get':
             return_results(get_spreadsheet(service, demisto.args()))
-        elif demisto.command() == 'google-sheets-spreadsheet-update':
+        elif command == 'google-sheets-spreadsheet-update':
             return_results(sheets_spreadsheet_update(service, demisto.args()))
-        elif demisto.command() == 'google-sheets-sheet-create':
+        elif command == 'google-sheets-sheet-create':
             return_results(sheet_create(service, demisto.args()))
-        elif demisto.command() == 'google-sheets-sheet-duplicate':
+        elif command == 'google-sheets-sheet-duplicate':
             return_results(sheet_duplicate(service, demisto.args()))
-        elif demisto.command() == 'google-sheets-sheet-copy-to':
+        elif command == 'google-sheets-sheet-copy-to':
             return_results(sheet_copy_to(service, demisto.args()))
-        elif demisto.command() == 'google-sheets-sheet-delete':
+        elif command == 'google-sheets-sheet-delete':
             return_results(sheet_delete(service, demisto.args()))
-        elif demisto.command() == 'google-sheets-sheet-clear':
+        elif command == 'google-sheets-sheet-clear':
             return_results(sheet_clear(service, demisto.args()))
-        elif demisto.command() == 'google-sheets-dimension-delete':
+        elif command == 'google-sheets-dimension-delete':
             return_results(sheet_dimension_delete(service, demisto.args()))
-        elif demisto.command() == 'google-sheets-range-delete':
+        elif command == 'google-sheets-range-delete':
             return_results(sheet_range_delete(service, demisto.args()))
-        elif demisto.command() == 'google-sheets-data-paste':
+        elif command == 'google-sheets-data-paste':
             return_results(sheets_data_paste(service, demisto.args()))
-        elif demisto.command() == 'google-sheets-find-replace':
+        elif command == 'google-sheets-find-replace':
             return_results(sheets_find_replace(service, demisto.args()))
-        elif demisto.command() == 'google-sheets-value-update':
+        elif command == 'google-sheets-value-update':
             return_results(sheets_value_update(service, demisto.args()))
-        elif demisto.command() == 'google-sheets-value-append':
+        elif command == 'google-sheets-value-append':
             return_results(sheets_value_append(service, demisto.args()))
         else:
             raise NotImplementedError('Command "{}" is not implemented.'.format(demisto.command()))
