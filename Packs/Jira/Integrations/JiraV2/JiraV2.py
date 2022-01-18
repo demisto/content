@@ -182,7 +182,7 @@ def run_query(query, start_at='', max_results=None, extra_fields=None, nofields=
         fields = extra_fields.split(",")
         fields_mapping_name_id = {k.lower(): v.lower() for k, v in get_custom_field_names().items()}
         query_params['fields'] = [k for y in fields for k, v in fields_mapping_name_id.items() if v == y.lower()]
-        nofields.update({fieldextra for fieldextra in fields if fieldextra not in fields_mapping_name_id.values()})
+        nofields.update({fieldextra for fieldextra in fields if fieldextra.lower() not in fields_mapping_name_id.values()})
     if nofields:
         if len(nofields) > 1:
             return_warning(f'{",".join(nofields)} do not exist')
