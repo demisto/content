@@ -1,0 +1,105 @@
+commonfields:
+  id: F5 firewall
+  version: -1
+name: F5 firewall
+display: F5 firewall
+category: Network Security
+description: Manages F5 firewall rules
+configuration:
+- display: URL
+  name: url
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Port
+  name: port
+  defaultvalue: "34993"
+  type: 0
+  required: true
+- display: Credentials
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: true
+- display: Advanced login - set to true to authenticate via LDAP, AD etc
+  name: advancedLogin
+  defaultvalue: "false"
+  type: 8
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+script:
+  script: ''
+  type: javascript
+  commands:
+  - name: f5-create-policy
+    arguments: []
+    description: Creates an F5 firewall policy.
+  - name: f5-create-rule
+    arguments:
+    - name: policy-name
+      required: true
+      default: true
+      description: The policy name the rule will be associated with.
+    description: Creates a rule in a specific policy
+  - name: f5-list-rules
+    arguments:
+    - name: policy-name
+      required: true
+      default: true
+      description: The policy name that the rules displayed are associated with
+    description: Lists all the rules of a specific policy.
+  - name: f5-modify-rule
+    arguments:
+    - name: policy-name
+      required: true
+      default: true
+      description: The policy name the rule is associated with.
+    - name: rule-name
+      required: true
+      description: The rule name to modify.
+    description: Modifies an F5 rule in a specific policy
+  - name: f5-del-rule
+    arguments:
+    - name: policy-name
+      required: true
+      default: true
+      description: The policy name the rule is associated with.
+    - name: rule-name
+      required: true
+      description: The name of the rule to delete.
+    description: Delete an F5 firewall rule.
+  - name: f5-modify-global-policy
+    arguments:
+    - name: enforcedPolicy
+      required: true
+      default: true
+      description: The new enforced policy to add to the global policy.
+    description: Adds the specific policy to a global policy.
+  - name: f5-show-global-policy
+    arguments: []
+    description: Display global policy.
+  - name: f5-del-policy
+    arguments:
+    - name: policy-name
+      required: true
+      default: true
+      description: The name of the policy to delete.
+    description: Delete a policy.
+  - name: f5-list-all-user-sessions
+    arguments:
+    - name: resource-ip
+      description: Client IP address.
+      required: true
+    description: Lists all the sessions with client IP for the given username.
+tests:
+- No test
+fromversion: 5.0.0
