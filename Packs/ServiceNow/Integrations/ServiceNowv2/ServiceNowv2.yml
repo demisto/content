@@ -18,8 +18,8 @@ configuration:
   name: use_oauth
   required: false
   type: 8
-- additionalinfo: 'The ticket type can be: incident, problem, change_request, sc_request,
-    sc_task or sc_req_item.'
+- additionalinfo: 'The ticket type can be incident, problem, change_request, sc_request,
+    sc_task, sc_req_item or sn_si_incident'
   defaultvalue: incident
   display: Default ticket type for running ticket commands and fetching incidents
   name: ticket_type
