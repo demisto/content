@@ -38,6 +38,10 @@
                     "complex": null,
                     "simple": "issue.note"
                 },
+                "Wiz Resource Cloud ID": {
+                    "complex": null,
+                    "simple": "entitySnapshot.providerId"
+                },
                 "Wiz Resource ID": {
                     "complex": null,
                     "simple": "resource.id"
@@ -158,7 +162,7 @@
                                         "isContext": false,
                                         "value": {
                                             "complex": null,
-                                            "simple": "0"
+                                            "simple": "0.5"
                                         }
                                     },
                                     "toReplace": {

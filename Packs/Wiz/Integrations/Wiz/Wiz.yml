@@ -121,7 +121,90 @@ script:
     - contextPath: Wiz.Manager.Resource.userMetadata
       description: User metadata for the resource
       type: String
-  dockerimage: demisto/python3:3.9.9.25564
+  - name: wiz-reject-issue
+    description: Reject a Wiz Issue
+    execution: false
+    arguments:
+    - name: issue_id
+      required: true
+      description: issue id
+    - name: reject_reason
+      description: rejection reason
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - WONT_FIX
+      - EXCEPTION
+      - FALSE_POSITIVE
+    - name: reject_note
+      description: rejection note
+      required: true
+  - name: wiz-reopen-issue
+    description: Reject a Wiz Issue
+    execution: false
+    arguments:
+    - name: issue_id
+      description: issue id
+      required: true
+    - name: reopen_note
+      description: reopen note
+      required: false
+  - name: wiz-issue-in-progress
+    description: Set a Wiz Issue to in progress
+    execution: false
+    arguments:
+    - name: issue_id
+      description: issue id
+      required: true
+  - name: wiz-set-issue-note
+    description: Set a note on a Wiz Issue
+    execution: false
+    arguments:
+    - name: issue_id
+      description: issue id
+      required: true
+    - name: note
+      description: note
+      required: true
+  - name: wiz-clear-issue-note
+    description: Clear a note from a Wiz Issue
+    execution: false
+    arguments:
+    - name: issue_id
+      description: issue id
+      required: true
+  - name: wiz-set-issue-due-date
+    description: Set a due date on a Wiz Issue
+    execution: false
+    arguments:
+    - name: issue_id
+      description: issue id
+      required: true
+    - name: due_at
+      description: due at date. Format needs to be YYYY-MM-DD
+      required: false
+  - name: wiz-clear-issue-due-date
+    description: Clear a due date on a Wiz Issue
+    execution: false
+    arguments:
+    - name: issue_id
+      description: issue id
+      required: true
+  - name: wiz-get-issue-evidence
+    description: Get the Wiz Issue evidence
+    execution: false
+    arguments:
+    - name: issue_id
+      description: issue id
+      required: true
+  - name: wiz-rescan-machine-disk
+    description: Rescan a VM disk in Wiz
+    execution: false
+    arguments:
+    - name: vm_id
+      description: vm cloud provider id
+      required: true
+  dockerimage: demisto/python3:3.10.1.25933
   feed: false
   isfetch: true
   longRunning: false

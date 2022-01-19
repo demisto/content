@@ -3,3 +3,21 @@
 !wiz-get-issues issue_type="VIRTUAL_MACHINE"
 !wiz-get-issues resource_id="arn:aws:ec2:us-east-2:123456789098:instance/i-0g03j4h5gd123d456"
 !wiz-get-issues resource_id="arn:aws:ec2:us-east-2:123456789098:instance/i-0g03j4h5gd123d456" severity=HIGH
+
+!wiz-issue-in-progress issue_id="12345678-1234-1234-1234-cc0a24716e0b"
+
+!wiz-reopen-issue issue_id="12345678-1234-1234-1234-cc0a24716e0b" reopen-note="still an issue"
+
+!wiz-reject-issue issue_id="12345678-1234-1234-1234-cc0a24716e0b" reject_reason="WONT_FIX" reject_note="this is by design"
+
+!wiz-set-issue-note issue_id="12345678-1234-1234-1234-cc0a24716e0b" note="Checking with owner"
+
+!wiz-clear-issue-note issue_id="12345678-1234-1234-1234-cc0a24716e0b"
+
+!wiz-get-issue-evidence issue_id="12345678-1234-1234-1234-cc0a24716e0b"
+
+!wiz-rescan-machine-disk vm_id="arn:aws:ec2:us-east-2:123456789098:instance/i-1234abcd123456789"
+
+!wiz-set-issue-due-date issue_id="12345678-1234-1234-1234-cc0a24716e0b" due_at="2022-01-20"
+
+!wiz-clear-issue-due-date issue_id="12345678-1234-1234-1234-cc0a24716e0b"
