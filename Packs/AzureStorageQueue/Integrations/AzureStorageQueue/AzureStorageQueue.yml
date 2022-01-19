@@ -357,7 +357,7 @@ script:
     description: Delete all messages from the specified Queue.
     execution: true
     name: azure-storage-queue-message-clear
-  dockerimage: demisto/python3:3.9.9.25564
+  dockerimage: demisto/python3:3.10.1.25933
   feed: false
   isfetch: true
   longRunning: false
