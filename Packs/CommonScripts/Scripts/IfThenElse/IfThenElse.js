@@ -140,4 +140,4 @@ if (evaluate(operator, lhs, rhs, options)) {
 } else {
     ret = convertValue(args, options["input_data_type:else"], args.else);
 }
-return ret ? ret : "";
+return ret === null ? "" : ret;
