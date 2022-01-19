@@ -4390,7 +4390,8 @@ tlds = {
     },
     "ph": {
         "adapter": "web",
-        "url": "http://www.dot.ph/whois"
+        "url": "http://www.dot.ph/whois",
+        "host": "whois.iana.org"
     },
     "pharmacy": {
         "_type": "newgtld",
