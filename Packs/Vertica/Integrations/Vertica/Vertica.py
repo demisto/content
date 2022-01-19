@@ -7,6 +7,7 @@ from datetime import datetime
 import getpass
 
 
+
 class FixGetPass():
     def __init__(self):
         self.getpass_getuser_org = getpass.getuser

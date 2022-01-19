@@ -24,7 +24,6 @@ PROCESS_TEXT = 'Process information for process with PTID'
 PARENT_PROCESS_TEXT = 'Parent process for process with PTID'
 PROCESS_CHILDREN_TEXT = 'Children for process with PTID'
 
-
 # The commands below won't work unless the connection passed in `connection_name` argument is active.
 COMMANDS_DEPEND_ON_CONNECTIVITY = [
     'tanium-tr-create-snapshot',
