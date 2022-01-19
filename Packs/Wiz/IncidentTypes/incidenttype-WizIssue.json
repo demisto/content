@@ -16,7 +16,7 @@
     "readonly": false,
     "default": false,
     "autorun": false,
-    "playbookId": "Assess_Wiz_Issues",
+    "playbookId": "Assess Wiz Issues",
     "disabled": false,
     "reputationCalc": 0,
     "onChangeRepAlg": 1,
