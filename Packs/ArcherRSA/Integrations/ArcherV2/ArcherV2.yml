@@ -463,6 +463,13 @@ script:
       required: false
       secret: false
     - default: false
+      description: The name of the primary Id field on which to search.
+        Used instead of the fieldToSearchOn argument for searching by the application primary field.
+      isArray: false
+      name: fieldToSearchById
+      required: false
+      secret: false
+    - default: false
       description: Search value. Leave empty to search for all.
       isArray: false
       name: searchValue
