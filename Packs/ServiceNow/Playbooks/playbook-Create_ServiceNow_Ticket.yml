@@ -39,6 +39,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "8":
     id: "8"
     taskid: a90ee65d-6502-423e-8527-feb58987e15d
@@ -64,6 +66,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "9":
     id: "9"
     taskid: ccbdd637-fa6d-4c61-8c8f-5335843393b4
@@ -119,6 +123,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "11":
     id: "11"
     taskid: e19b8ff2-09e8-4991-8b5b-fc0e9c3af1fd
@@ -184,6 +190,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "12":
     id: "12"
     taskid: 1d87781e-ad25-4ba4-8b68-d4d803e85cf6
@@ -235,6 +243,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "13":
     id: "13"
     taskid: c5b89716-e739-462c-817d-29ad856a6034
@@ -296,6 +306,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 system: true
 view: |-
   {
@@ -353,7 +365,8 @@ inputs:
   description: Add a comment for the created ticket.
   playbookInputQuery:
 - key: SyncTicket
-  value: {}
+  value:
+    simple: Mirror
   required: false
   description: "Set the value of the desired sync method with ServiceNow Ticket. you\
     \ can choose one of three options:\n1. StatePolling\n2. Mirror \n3. Blank for\
@@ -387,7 +400,8 @@ inputs:
     \ instance to use. "
   playbookInputQuery:
 - key: InstanceName
-  value: {}
+  value:
+    simple: ServiceNow v2_instance_1
   required: false
   description: |
     Set the ServiceNow Instance that will be used for mirroring/running polling commands.
@@ -396,8 +410,8 @@ inputs:
   value:
     simple: Both
   required: false
-  description: "Set the mirror direction. It should be one of the following: \n1. In\n\
-    2. Out\n3. Both"
+  description: "Set the mirror direction. It should be one of the following: \n1.\
+    \ In\n2. Out\n3. Both"
   playbookInputQuery:
 - key: MirrorCommentTags
   value:
@@ -406,8 +420,7 @@ inputs:
   description: Set tags for mirror comments and files to ServiceNow.
   playbookInputQuery:
 - key: FieldPolling
-  value:
-    simple: "true"
+  value: {}
   required: false
   description: |-
     Set the value to true or false to determine if the playbook will execute the FieldPolling sub playbook.
@@ -417,16 +430,50 @@ inputs:
 - key: TicketType
   value: {}
   required: false
-  description: Set the ServiceNow ticket type. Options are "incident", "problem", "change_request", "sc_request",
-    "sc_task", or "sc_req_item". Default is "incident".
+  description: Set the ServiceNow ticket type. Options are "incident", "problem",
+    "change_request", "sc_request", "sc_task", or "sc_req_item". Default is "incident".
   playbookInputQuery:
-outputs: []
+outputs:
+- contextPath: ServiceNow.Ticket.ID
+  description: Ticket ID.
+  type: string
+- contextPath: ServiceNow.Ticket.OpenedBy
+  description: Ticket opener ID.
+  type: string
+- contextPath: ServiceNow.Ticket.CreatedOn
+  description: Ticket creation date.
+  type: string
+- contextPath: ServiceNow.Ticket.Assignee
+  description: Ticket assignee ID.
+  type: string
+- contextPath: ServiceNow.Ticket.State
+  description: Ticket state.
+  type: string
+- contextPath: ServiceNow.Ticket.Summary
+  description: Ticket short summary.
+  type: string
+- contextPath: ServiceNow.Ticket.Number
+  description: Ticket number.
+  type: string
+- contextPath: ServiceNow.Ticket.Active
+  description: Ticket active.
+  type: string
+- contextPath: ServiceNow.Ticket.AdditionalComments
+  description: Ticket comments.
+  type: string
+- contextPath: ServiceNow.Ticket.Priority
+  description: Ticket priority.
+  type: string
+- contextPath: ServiceNow.Ticket.OpenedAt
+  description: Ticket opening time.
+  type: string
+- contextPath: ServiceNow.Ticket.ResolvedBy
+  description: Ticket resolver ID.
+  type: string
+- contextPath: ServiceNow.Ticket.CloseCode
+  description: Ticket close code.
+  type: string
 tests:
 - Create ServiceNow Ticket and Mirror Test
 - Create ServiceNow Ticket and State Polling Test
-- ServiceNow_CMDB_OAuth_Test
-- ServiceNow_CMDB_Test
-- ServiceNow_OAuth_Test
-- servicenow_test_v2
-- ServiceNow IAM - Test Playbook
 fromversion: 6.0.0
