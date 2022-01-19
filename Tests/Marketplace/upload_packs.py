@@ -937,61 +937,33 @@ def prepare_and_zip_pack(pack, signature_key, delete_test_playbooks=True):
     return True
 
 
-def get_packs_depends_on(packs_list, packs_dict, extract_destination_path, artifacts_path, id_set_path):
-    if 'Base' in packs_dict:
-        # collect all packs
-        packs_list = []
-        with open(id_set_path) as f:
-            id_set_packs = json.load(f).get('Packs')
-        for pack_name in id_set_packs.keys():
-            if pack_name not in packs_dict:
-                pack = Pack(pack_name, os.path.join(extract_destination_path, pack_name))
-                packs_list.append(pack)
-                packs_dict[pack_name] = pack
-            else:
-                packs_list.append(packs_dict[pack_name])
-        return packs_list, packs_dict
-    packs_dependent_on_path = os.path.join(artifacts_path, 'packs_dependent_on.json')
-    query_list = [
-        'demisto-sdk',
-        'find-dependencies',
-        '--get-dependent-on',
-        '-o',
-        packs_dependent_on_path,
-        '-idp',
-        id_set_path]
-    query_list.extend([pack_tuple_item for pack in packs_list for pack_tuple_item in
-                       ('-i', os.path.join('Packs', pack.name))])
-    logging.info('Calliing: ' + ' '.join(query_list))
-    subprocess.check_call(query_list, stderr=subprocess.STDOUT)
-    with open(packs_dependent_on_path) as f:
-        dependent_on_packs = json.load(f)
-    for dep_pack_item in dependent_on_packs.values():
-        if 'packsDependentOnThisPackMandatorily' in dep_pack_item:
-            for pack_name in dep_pack_item['packsDependentOnThisPackMandatorily'].keys():
-                if pack_name in packs_dict:
-                    continue
-                pack = Pack(pack_name, os.path.join(extract_destination_path, pack_name))
-                packs_list.append(pack)
-                packs_dict[pack_name] = pack
-    return packs_list, packs_dict
+def get_all_packs(packs_dict, extract_destination_path, id_set_path):
+    """
+    Collect all packs from the id_set that are not packs_dict
+    """
+    if not id_set_path:
+        return packs_dict
+    packs_dict = dict(packs_dict)
+    with open(id_set_path) as f:
+        id_set_packs = json.load(f).get('Packs')
+    for pack_name in id_set_packs.keys():
+        if pack_name not in packs_dict:
+            pack = Pack(pack_name, os.path.join(extract_destination_path, pack_name))
+            packs_dict[pack_name] = pack
+    return packs_dict
 
 
-def upload_packs_with_dependencies_zip(extract_destination_path, packs_dependencies_mapping, packs_list, signature_key,
-                                       storage_bucket, storage_base_path, artifacts_path, id_set_path):
+def upload_packs_with_dependencies_zip(extract_destination_path, packs_dependencies_mapping, signature_key,
+                                       storage_bucket, storage_base_path, id_set_path, packs_list):
+    """
+    Uploads packs with mandatory dependencies zip for all packs
+    """
     logging.info("Starting to collect pack with dependencies zips")
     packs_dict = {pack.name: pack for pack in packs_list}
-    # add depends on packs
-    packs_list, packs_dict = get_packs_depends_on(
-        packs_list,
-        packs_dict,
-        extract_destination_path,
-        artifacts_path,
-        id_set_path
-    )
+    packs_dict = get_all_packs(packs_dict, extract_destination_path, id_set_path)
     full_deps_graph = {}
     try:
-        for pack in packs_list:
+        for pack in packs_dict.values():
             logging.info(f"Collecting dependencies of {pack.name}")
             pack_with_dep_path = os.path.join(pack.path, "with_dependencies")
             zip_with_deps_path = os.path.join(pack.path, pack.name + "_with_dependencies.zip")
@@ -1052,7 +1024,6 @@ def option_handler():
     """
     parser = argparse.ArgumentParser(description="Store packs in cloud storage.")
     # disable-secrets-detection-start
-    parser.add_argument('-a', '--artifacts_path', help="The full path of artifacts directory", required=False)
     parser.add_argument('-pa', '--packs_artifacts_path', help="The full path of packs artifacts", required=True)
     parser.add_argument('-idp', '--id_set_path', help="The full path of id_set.json", required=False)
     parser.add_argument('-e', '--extract_path', help="Full path of folder to extract wanted packs", required=True)
@@ -1094,7 +1065,6 @@ def option_handler():
 def main():
     install_logging('Prepare_Content_Packs_For_Testing.log', logger=logging)
     option = option_handler()
-    artifacts_path = option.artifacts_path
     packs_artifacts_path = option.packs_artifacts_path
     id_set_path = option.id_set_path
     extract_destination_path = option.extract_path
@@ -1301,9 +1271,8 @@ def main():
 
     if is_create_dependencies_zip:
         # handle packs with dependencies zip
-        upload_packs_with_dependencies_zip(extract_destination_path, packs_dependencies_mapping, packs_list,
-                                           signature_key, storage_bucket, storage_base_path, artifacts_path,
-                                           id_set_path)
+        upload_packs_with_dependencies_zip(extract_destination_path, packs_dependencies_mapping, signature_key,
+                                           storage_bucket, storage_base_path, id_set_path, packs_list)
 
 
 if __name__ == '__main__':
