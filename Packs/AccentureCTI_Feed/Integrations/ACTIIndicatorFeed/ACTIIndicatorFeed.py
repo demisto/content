@@ -136,7 +136,7 @@ def main():
     params['feed_name_to_config'] = create_fetch_configuration(indicators_type, filters, params)
 
     params['headers'] = {"Content-Type": "application/json",
-                         'auth-token': params.get('api_token').get("password")}
+                         'auth-token': dict(params.get('api_token')).get("password")}
 
     feed_main(params, 'ACTI Indicator Feed', 'acti')
 
