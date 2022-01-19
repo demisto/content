@@ -442,7 +442,7 @@ def test_remove_from_custom_url_category(category_name, items, mocker):
     mocker.patch('Panorama.get_pan_os_major_version', return_value=9)
     mocker.patch('Panorama.http_request', side_effect=http_mock)
 
-    result = panorama_custom_url_category_remove_items(category_name, items, "URL List")
+    panorama_custom_url_category_remove_items(category_name, items, "URL List")
     demisto_result_got = return_results_mock.call_args.args[0]['Contents']
     assert "www.test.com" in demisto_result_got['element']
 
