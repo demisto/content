@@ -574,7 +574,7 @@ MOCK_PARAMS = [
         'fetch_index': 'customer',
         'fetch_time_field': 'Date',
         'time_method': 'Simple-Date',
-        'map_labels': 'true',
+        'map_labels': True,
         'credentials': {
             'identifier': 'mock',
             'password': 'demisto',
@@ -585,7 +585,7 @@ MOCK_PARAMS = [
         'fetch_index': 'customer',
         'fetch_time_field': 'Date',
         'time_method': 'Simple-Date',
-        'map_labels': 'false',
+        'map_labels': False,
         'credentials': {
             'identifier': 'mock',
             'password': 'demisto',
@@ -596,7 +596,7 @@ MOCK_PARAMS = [
         'fetch_index': 'customer',
         'fetch_time_field': 'Date',
         'time_method': 'Simple-Date',
-        'map_labels': 'true',
+        'map_labels': True,
         'credentials': {
             'identifier': 'mock',
             'password': 'demisto',
