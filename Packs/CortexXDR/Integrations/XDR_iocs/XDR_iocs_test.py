@@ -12,6 +12,29 @@ def d_sort(in_dict):
 
 
 class TestGetHeaders:
+    @freeze_time('2020-06-01T00:00:00Z')
+    def test_sanity(self, mocker):
+        """
+            Given:
+             - API key
+             - API key ID
+            Then:
+                - Verify headers created correct.
+        """
+        params = {
+            "apikey_id": "7",
+            "apikey": "t3PkfrEhaRAD9a3r6Lq5cVPyqdMqtLd8cOJlSWUtbslkbERUgb2BTkSNRtDr3C6CWAgYqxvyzwDFJ83BLBgu1V2cxQY7rsoo2ks2u3W2aBL2BlteF8C8u75lCVUrNbv1"    # noqa: E501
+        }
+        headers = {
+            'Authorization': 'da94963b561e3c95899d843b1284cecf410606e9e809be528ec1cf03880c6e9e',
+            'x-iocs-source': 'xsoar',
+            'x-xdr-auth-id': '7',
+            'x-xdr-nonce': '1111111111111111111111111111111111111111111111111111111111111111',
+            'x-xdr-timestamp': '1590969600000'
+        }
+        mocker.patch('secrets.choice', return_value='1')
+        output = get_headers(params)
+        assert output == headers, f'get_headers({params})\n\treturns: {d_sort(output)}\n\tinstead: {d_sort(headers)}'
 
     def test_empty_case(self):
         """
