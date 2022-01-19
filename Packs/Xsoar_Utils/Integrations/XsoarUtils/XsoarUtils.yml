@@ -3,7 +3,7 @@ commonfields:
   id: Xsoar_Utils
   version: -1
 configuration:
-- display: XSOAR Server URL
+- display: 'XSOAR Server URL '
   name: url
   required: true
   type: 0
@@ -26,7 +26,7 @@ contentitemexportablefields:
     definitionid: ""
     fromServerVersion: ""
     itemVersion: ""
-    packID: 9a34b202-cd79-4e4f-852b-f20444b34924
+    packID: 6f820efa-0359-4d07-8821-c44dd71a19e8
     propagationLabels: []
     toServerVersion: ""
 description: |-
@@ -43,10 +43,10 @@ name: Xsoar_Utils
 script:
   commands:
   - arguments:
-    - description: The entry value to be created on the investigation.
+    - description: Entry value to be created
       name: data
-    - description: The investigation -id to be used. If not specified, the playground-id
-        is used.
+    - description: The investigation id on which the entry is created. Defaults to
+        playbook-id
       name: inv_id
     description: Creates an entry into an investigation warroom or  by default on
       the playground.

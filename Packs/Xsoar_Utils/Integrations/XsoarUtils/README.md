@@ -16,7 +16,7 @@ This integration was integrated and tested with version xx of Xsoar_Utils
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | XSOAR Server URL |  | True |
+    | XSOAR Server URL  |  | True |
     | XSOAR Server API_Key |  | True |
     | XSOAR Server playground-id |  | True |
     | Allow Insecure connections to the server | Check this to ignore certificate signature | False |
@@ -37,8 +37,8 @@ Creates an entry into an investigation warroom or  by default on the playground.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| data | The entry value to be created on the investigation. | Optional | 
-| inv_id | The investigation -id to be used. If not specified, the playground-id is used. | Optional | 
+| data | Entry value to be created. | Optional | 
+| inv_id | The investigation id on which the entry is created. Defaults to playbook-id. | Optional | 
 
 
 #### Context Output
