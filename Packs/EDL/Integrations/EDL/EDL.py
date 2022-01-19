@@ -336,8 +336,8 @@ def create_json_out_format(list_fields: List, indicator: Dict, request_args: Req
     Returns:
         An indicator to add to the file in json format.
     """
-    if indicator_value := indicator.get('value') and indicator.get('indicator_type') == 'URL':
-        indicator['value'] = url_handler(indicator_value, request_args.url_protocol_stripping,
+    if indicator.get('value') and indicator.get('indicator_type') == 'URL':
+        indicator['value'] = url_handler(indicator.get('value', ''), request_args.url_protocol_stripping,
                                          request_args.url_port_stripping, request_args.url_truncate)
     filtered_json = {}
     if list_fields:
@@ -361,8 +361,8 @@ def create_mwg_out_format(indicator: dict, request_args: RequestArguments, heade
     Returns:
         An indicator to add to the file in mwg format.
     """
-    if indicator_value := indicator.get('value') and indicator.get('indicator_type') == 'URL':
-        indicator['value'] = url_handler(indicator_value, request_args.url_protocol_stripping,
+    if indicator.get('value') and indicator.get('indicator_type') == 'URL':
+        indicator['value'] = url_handler(indicator.get('value', ''), request_args.url_protocol_stripping,
                                          request_args.url_port_stripping, request_args.url_truncate)
 
     value = "\"" + indicator.get('value', '') + "\""
@@ -453,8 +453,8 @@ def create_csv_out_format(headers_was_writen: bool, list_fields: List, ioc, requ
     Returns:
         a one indicator to add to the file in csv format.
     """
-    if ioc_value := ioc.get('value') and ioc.get('indicator_type') == 'URL':
-        ioc['value'] = url_handler(ioc_value, request_args.url_protocol_stripping,
+    if ioc.get('value') and ioc.get('indicator_type') == 'URL':
+        ioc['value'] = url_handler(ioc.get('value', ''), request_args.url_protocol_stripping,
                                    request_args.url_port_stripping, request_args.url_truncate)
     if not list_fields:
         values = list(ioc.values())
