@@ -371,38 +371,6 @@ def test_clear_issue_note_failed(checkAPIerrors, capfd):
         assert res == ("Could not find Issue with ID 12345678-2222-3333-1111-ff5fa2ff7f78")
 
 
-test_get_issue_evidence_response = {
-    "data": {
-        "issue": {
-            "id": "12345678-1234-1234-1234-d25e16359c19",
-            "control": {
-                "id": "12345678-4321-4321-4321-3792e8a03318",
-                "name": "test delete",
-                "query": "full query here"
-            },
-            "createdAt": "2022-01-02T15:46:34Z",
-            "updatedAt": "2022-01-04T10:40:57Z",
-            "status": "OPEN",
-            "note": "blah note",
-            "severity": "CRITICAL",
-            "entity": {
-                "bla": "lot more blah was here",
-                "name": "virtualMachine",
-                "type": "virtualMachine"
-            }
-        }
-    }
-}
-
-
-@patch('Wiz.checkAPIerrors', return_value=test_get_issue_evidence_response)
-def test_get_issue_evidence(checkAPIerrors):
-    from Wiz import get_issue_evidence
-
-    res = get_issue_evidence('12345678-1234-1234-1234-d25e16359c19')
-    assert res == test_get_issue_evidence_response
-
-
 test_get_issue_evidence_fail_response = {
     "errors": [
         {
@@ -434,3 +402,47 @@ def test_get_issue_evidence_failure(checkAPIerrors, capfd):
 
         res = get_issue_evidence('12345678-1234-1234-1234-d25e16359c19')
         assert res == ("Could not find Issue with ID 12345678-1234-1234-1234-d25e16359c19")
+
+
+test_set_issue_due_data_response = {
+    "data": {
+        "updateIssue": {
+            "issue": {
+                "id": "12345678-2222-3333-1111-ff5fa2ff7f78",
+                "note": "",
+                "status": "OPEN",
+                "dueAt": "2022-01-20T00:00:00.000Z",
+                "resolutionReason": None
+            }
+        }
+    }
+}
+
+
+@patch('Wiz.checkAPIerrors', return_value=test_set_issue_due_data_response)
+def test_set_issue_due_date(checkAPIerrors):
+    from Wiz import set_issue_due_date
+
+    res = set_issue_due_date('12345678-2222-3333-1111-ff5fa2ff7f78', '2022-01-20')
+    assert res == test_set_issue_due_data_response
+
+
+test_clear_issue_due_data_response = {
+    "data": {
+        "issue": {
+            "id": "12345678-2222-3333-1111-ff5fa2ff7f78",
+            "note": "",
+            "status": "OPEN",
+            "dueAt": None,
+            "resolutionReason": None
+        }
+    }
+}
+
+
+@patch('Wiz.checkAPIerrors', return_value=test_clear_issue_due_data_response)
+def test_clear_issue_due_date(checkAPIerrors):
+    from Wiz import clear_issue_due_date
+
+    res = clear_issue_due_date('12345678-2222-3333-1111-ff5fa2ff7f78')
+    assert res == test_clear_issue_due_data_response

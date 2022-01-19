@@ -1,19 +1,18 @@
 id: Assess Wiz Issues
-version: -1
 name: Assess Wiz Issues
+description: Example basic Playbook to assess Wiz Issues
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: b8954e73-6031-473d-8b79-ad6cbd4ba8c6
     type: start
     task:
-      id: b8954e73-6031-473d-8b79-ad6cbd4ba8c6
       version: -1
       name: ""
       iscommand: false
       brand: ""
       description: ''
+      id: bc1ead13-760b-47f3-a643-a36d59ee9a4e
     nexttasks:
       '#none#':
       - "1"
@@ -33,12 +32,11 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    taskid: bc1ead13-760b-47f3-a643-a36d59ee9a4e
   "1":
     id: "1"
-    taskid: 7b2aca6b-cc64-4cb6-88fd-8c995e233a90
     type: regular
     task:
-      id: 7b2aca6b-cc64-4cb6-88fd-8c995e233a90
       version: -1
       name: wiz-get-resource
       description: Get details of a resource
@@ -46,6 +44,7 @@ tasks:
       type: regular
       iscommand: true
       brand: Wiz
+      id: 5af98a5b-22f5-4f58-a3b6-a79fb17d6333
     nexttasks:
       '#none#':
       - "2"
@@ -67,12 +66,11 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    taskid: 5af98a5b-22f5-4f58-a3b6-a79fb17d6333
   "2":
     id: "2"
-    taskid: d5fafcfe-4a95-483a-8a0f-2ff771370f33
     type: regular
     task:
-      id: d5fafcfe-4a95-483a-8a0f-2ff771370f33
       version: -1
       name: wiz-get-issues
       description: Get the Issues on cloud resources
@@ -80,6 +78,7 @@ tasks:
       type: regular
       iscommand: true
       brand: Wiz
+      id: 14648a48-5b1a-4185-a4d8-f846dd498da5
     scriptarguments:
       resource_id:
         simple: ${incident.wizresourcecloudid}
@@ -100,12 +99,11 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    taskid: 14648a48-5b1a-4185-a4d8-f846dd498da5
   "3":
     id: "3"
-    taskid: 183eab26-17d3-479a-8abf-cb4ceb819a50
     type: regular
     task:
-      id: 183eab26-17d3-479a-8abf-cb4ceb819a50
       version: -1
       name: wiz-get-issue-evidence
       description: Get the Wiz Issue evidence
@@ -113,6 +111,7 @@ tasks:
       type: regular
       iscommand: true
       brand: Wiz
+      id: 26cec1b3-3a5e-41b1-bf35-16bfb9fa36d7
     nexttasks:
       '#none#':
       - "4"
@@ -134,12 +133,11 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    taskid: 26cec1b3-3a5e-41b1-bf35-16bfb9fa36d7
   "4":
     id: "4"
-    taskid: 7f04313e-e89a-400b-8638-1dd20b137c8c
     type: regular
     task:
-      id: 7f04313e-e89a-400b-8638-1dd20b137c8c
       version: -1
       name: wiz-issue-in-progress
       description: Set a Wiz Issue to in progress
@@ -147,6 +145,10 @@ tasks:
       type: regular
       iscommand: true
       brand: Wiz
+      id: fabde172-2e4d-4548-a4e3-f67ecb646c90
+    nexttasks:
+      '#none#':
+      - "5"
     scriptarguments:
       issue_id:
         simple: ${incident.wizissueid}
@@ -165,12 +167,82 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    taskid: fabde172-2e4d-4548-a4e3-f67ecb646c90
+  "5":
+    id: "5"
+    taskid: 15b5e184-a9e7-444c-8958-7e274fb41a46
+    type: regular
+    task:
+      id: 15b5e184-a9e7-444c-8958-7e274fb41a46
+      version: -1
+      name: wiz-set-issue-due-date
+      description: Set a due date on a Wiz Issue
+      script: Wiz|||wiz-set-issue-due-date
+      type: regular
+      iscommand: true
+      brand: Wiz
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      due_at:
+        simple: ${incident.dueDate}
+      issue_id:
+        simple: ${incident.wizissueid}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -380,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 58d4591d-2a04-4d39-832b-48de3b0dd300
+    type: regular
+    task:
+      id: 58d4591d-2a04-4d39-832b-48de3b0dd300
+      version: -1
+      name: wiz-set-issue-note
+      description: Set a note on a Wiz Issue
+      script: Wiz|||wiz-set-issue-note
+      type: regular
+      iscommand: true
+      brand: Wiz
+    scriptarguments:
+      issue_id:
+        simple: ${incident.wizissueid}
+      note:
+        simple: Incident assigned to ${incident.user} in XSOAR
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -380,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 645,
+        "height": 815,
         "width": 820,
         "x": -380,
         "y": 50
@@ -180,4 +252,4 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 6.0.0
-description: Example basic Playbook to assess Wiz Issues
+version: -1

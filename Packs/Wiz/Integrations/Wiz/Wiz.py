@@ -845,6 +845,142 @@ def clear_issue_note(issue_id):
     return response
 
 
+def set_issue_due_date(issue_id, due_at):
+    """
+    Set a due date for a Wiz Issue
+    """
+
+    demisto.debug("set_issue_due_date, enter")
+
+    if not issue_id:
+        demisto.error("You should pass an Issue ID.")
+        return "You should pass an Issue ID."
+
+    if (due_at is not None) and (due_at != ""):
+        # time has to be like 2022-01-19T00:00:00.000Z
+        format = "%Y-%m-%d"
+        try:
+            datetime.strptime(due_at, format)
+            demisto.info("This is the correct date string format.")
+        except ValueError:
+            demisto.error("This is the incorrect. It should be YYYY-MM-DD")
+            return "The date format is the incorrect. It should be YYYY-MM-DD"
+        due_at = due_at + 'T00:00:00.000Z'
+    else:
+        demisto.error("This is the incorrect. It should be YYYY-MM-DD")
+        return "The date format is the incorrect. It should be YYYY-MM-DD"
+
+    variables = {
+        'issueId': issue_id,
+        'patch': {
+            'dueAt': due_at
+        }
+    }
+    query = ("""
+        mutation UpdateIssue(
+            $issueId: ID!
+            $patch: UpdateIssuePatch
+            $override: UpdateIssuePatch
+            ) {
+            updateIssue(input: { id: $issueId, patch: $patch, override: $override }) {
+                issue {
+                    id
+                    note
+                    status
+                    dueAt
+                    resolutionReason
+                }
+            }
+        }
+    """)
+
+    try:
+        response = checkAPIerrors(query, variables)
+    except DemistoException:
+        demisto.debug(f"could not find Issue with ID {issue_id}")
+        return {}
+
+    if 'errors' in response:
+        demisto.error(f"Could not find Issue with ID {issue_id}")
+        demisto.error(f"Error: {response}")
+        return (f"Could not find Issue with ID {issue_id}")
+
+    return response
+
+
+def clear_issue_due_date(issue_id):
+    """
+    Clear a due date for a Wiz Issue
+    """
+
+    demisto.debug("clear_issue_due_date, enter")
+
+    if not issue_id:
+        demisto.error("You should pass an Issue ID.")
+        return "You should pass an Issue ID."
+
+    issue_variables = {
+        'issueId': issue_id
+    }
+    issue_query = ("""
+        query IssueDrawer($issueId: ID!) {
+            issue(id: $issueId) {
+                id
+                note
+                status
+                dueAt
+                resolutionReason
+            }
+        }
+    """)
+
+    try:
+        issue_response = checkAPIerrors(issue_query, issue_variables)
+    except DemistoException:
+        demisto.debug(f"could not find Issue with ID {issue_id}")
+        return {}
+
+    variables = {
+        'issueId': issue_id,
+        'override': {
+            'note': issue_response['data']['issue']['note'],
+            'status': issue_response['data']['issue']['status'],
+            'resolutionReason': issue_response['data']['issue']['resolutionReason']
+        }
+    }
+
+    query = ("""
+        mutation UpdateIssue(
+            $issueId: ID!
+            $patch: UpdateIssuePatch
+            $override: UpdateIssuePatch
+            ) {
+            updateIssue(input: { id: $issueId, patch: $patch, override: $override }) {
+                issue {
+                    id
+                    note
+                    status
+                    dueAt
+                    resolutionReason
+                }
+            }
+        }
+    """)
+
+    try:
+        response = checkAPIerrors(query, variables)
+    except DemistoException:
+        demisto.debug(f"could not find Issue with ID {issue_id}")
+        return {}
+
+    if 'errors' in response:
+        demisto.error(f"Could not find Issue with ID {issue_id}")
+        demisto.error(f"Error: {response}")
+        return (f"Could not find Issue with ID {issue_id}")
+
+    return response
+
+
 def get_issue_evidence(issue_id):
     """
     Get evidence on a Wiz Issue
@@ -1183,6 +1319,26 @@ def main():
             demisto_args = demisto.args()
             issue_id = demisto_args.get('issue_id')
             issue_response = get_issue_evidence(
+                issue_id=issue_id
+            )
+            command_result = CommandResults(readable_output=issue_response, raw_response=issue_response)
+            return_results(command_result)
+
+        elif command == 'wiz-set-issue-due-date':
+            demisto_args = demisto.args()
+            issue_id = demisto_args.get('issue_id')
+            due_at = demisto_args.get('due_at')
+            issue_response = set_issue_due_date(
+                issue_id=issue_id,
+                due_at=due_at
+            )
+            command_result = CommandResults(readable_output=issue_response, raw_response=issue_response)
+            return_results(command_result)
+
+        elif command == 'wiz-clear-issue-due-date':
+            demisto_args = demisto.args()
+            issue_id = demisto_args.get('issue_id')
+            issue_response = clear_issue_due_date(
                 issue_id=issue_id
             )
             command_result = CommandResults(readable_output=issue_response, raw_response=issue_response)

@@ -167,7 +167,24 @@ script:
       description: note
       required: true
   - name: wiz-clear-issue-note
-    description: Clear a note from  a Wiz Issue
+    description: Clear a note from a Wiz Issue
+    execution: false
+    arguments:
+    - name: issue_id
+      description: issue id
+      required: true
+  - name: wiz-set-issue-due-date
+    description: Set a due date on a Wiz Issue
+    execution: false
+    arguments:
+    - name: issue_id
+      description: issue id
+      required: true
+    - name: due_at
+      description: due at date. Format needs to be YYYY-MM-DD
+      required: false
+  - name: wiz-clear-issue-due-date
+    description: Clear a due date on a Wiz Issue
     execution: false
     arguments:
     - name: issue_id

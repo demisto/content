@@ -240,3 +240,42 @@ Rescan a VM disk in Wiz.
 ```
 !wiz-rescan-machine-disk vm_id="arn:aws:ec2:us-east-2:123456789098:instance/i-1234abcd123456789"
 ```
+
+### wiz-set-issue-due-date
+***
+Set a due date for an Issue.
+
+<h4> Base Command </h4>
+
+`wiz-set-issue-due-date`
+
+<h4> Input </h4>
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| issue_id | Issue id | Required | 
+| due_at | Due At Date | Required | 
+
+#### Command Example
+```
+!wiz-set-issue-due-date issue_id="12345678-1234-1234-1234-cc0a24716e0b" due_at="2022-01-20"
+```
+
+### wiz-clear-issue-due-date
+***
+Clear a due date for an Issue.
+
+<h4> Base Command </h4>
+
+`wiz-clear-issue-due-date`
+
+<h4> Input </h4>
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| issue_id | Issue id | Required | 
+
+#### Command Example
+```
+!wiz-clear-issue-due-date issue_id="12345678-1234-1234-1234-cc0a24716e0b"
+```
