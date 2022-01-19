@@ -32,6 +32,14 @@
                     "complex": null,
                     "simple": "category"
                 },
+                "ServiceNow Closed By": {
+                    "complex": null,
+                    "simple": "closed_by"
+                },
+                "ServiceNow Resolution Notes": {
+                    "complex": null,
+                    "simple": "close_notes"
+                },
                 "ServiceNow Due Date": {
                     "complex": {
                         "accessor": "",
@@ -152,7 +160,7 @@
                             }
                         ]
                     },
-                    "simple": ""
+                    "simple": "impact"
                 },
                 "ServiceNow Notify": {
                     "complex": {
@@ -748,6 +756,18 @@
                 "details": {
                     "complex": null,
                     "simple": "description"
+                },
+                "Source IP": {
+                    "complex": null,
+                    "simple": "source_ip"
+                },
+                "Destination IP": {
+                    "complex": null,
+                    "simple": "dest_ip"
+                },
+                "Risk score": {
+                    "complex": null,
+                    "simple": "risk_score"
                 },
                 "name": {
                     "complex": null,
