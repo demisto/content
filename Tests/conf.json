@@ -2018,7 +2018,7 @@
         {
             "integrations": "RedLock",
             "playbookID": "RedLockTest",
-            "nightly": false
+            "nightly": true
         },
         {
             "integrations": "Symantec Messaging Gateway",
