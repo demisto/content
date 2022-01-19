@@ -108,7 +108,7 @@ script:
     description: Returns the number of log entries.
     execution: false
     name: mongodb-logs-number
-  dockerimage: demisto/py3-tools:0.0.1.25751
+  dockerimage: demisto/pymongo:1.0.0.23423
   isfetch: false
   longRunning: false
   longRunningPort: false
