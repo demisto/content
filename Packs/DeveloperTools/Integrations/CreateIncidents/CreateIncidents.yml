@@ -3,17 +3,11 @@ commonfields:
   id: CreateIncidents
   version: -1
 configuration:
-- defaultvalue: https://example.com/
-  display: Your server URL
-  name: url
+- defaultvalue: Git
+  display: Source for uploading and fetching files from
+  name: source
   required: true
   type: 0
-- displaypassword: API Key
-  additionalinfo: The API Key to use for connection
-  name: credentials
-  required: true
-  hiddenusername: true
-  type: 9
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -22,35 +16,45 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: '[Enter a comprehensive, yet concise, description of what the integration
-  does, what use cases it is designed for, etc.]'
+description: CreateIncidents fetches incident created manually
 display: CreateIncidents
 name: CreateIncidents
 script:
   commands:
   - arguments:
     - default: false
-      description: '[Enter a description of the argument, including any important
-        information users need to know, for example, default values.]'
+      description: 'The path of json file containing incidents. Can contain one incident
+        or a list of incidents. For example: Packs/somePack/TestPlaybooks/examples.json'
       isArray: false
-      name: dummy
+      name: incidents_path
       required: true
       secret: false
+    - default: false
+      description: 'The path of a file to be added to incidents as attachment. Would
+        be added to all incidents provided in the incident_path file. For example:
+        Packs/somePack/TestPlaybooks/attach.eml'
+      isArray: false
+      name: attachment_path
+      required: false
+      secret: false
     deprecated: false
-    description: '[Enter a description of the command, including any important information
-      users need to know, for example required permissions.]'
+    description: Creates incidents from json files provided, and stores it in the
+      instance context.
     execution: false
-    name: baseintegration-dummy
+    name: create-test-incident-from-file
     outputs:
     - contextPath: BaseIntegration.Output
       description: '[Enter a description of the data returned in this output.]'
       type: String
-  isfetch: false
+  dockerimage: demisto/python3:3.9.8.24399
+  feed: false
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
   runonce: false
   script: '-'
-  type: python
   subtype: python3
-  dockerimage: demisto/python3:3.9.8.24399
-fromversion: 6.1.0
+  type: python
 tests:
 - No tests (auto formatted)
+fromversion: 6.1.0

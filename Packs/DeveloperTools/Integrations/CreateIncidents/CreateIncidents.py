@@ -1,4 +1,5 @@
 import pathlib
+from collections import namedtuple
 
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
@@ -14,134 +15,175 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
-
-class FileLoader():
-    def __init__(self, source_path):
-        self.source_path = source_path
-
-    def get_file(self, file_path):
-        file_path = urljoin(self.source_path, file_path)
-        return requests.get(file_path, verify=False)
+Attachment = namedtuple('Attachment', ['name', 'content'])
 
 
-class GitFileLoader(FileLoader):
-    def __init__(self):
-        git_master_packs_path = 'https://github.com/demisto/content/blob/master'
-        super().__init__(git_master_packs_path)
+class Client(BaseClient):
+    def __init__(self, base_url: str, use_ssl: bool, use_proxy: bool):
+        self.verify = use_ssl
+        self.proxy = use_proxy
+        headers = {'Accept': 'application/json', 'Content-Type': 'application/json'}
+        super().__init__(base_url, headers=headers, verify=self.verify, proxy=self.proxy)
 
-    def get_json_file(self, file_path):
-        res = super().get_file(file_path)
-        if res.status_code != 200:
-            raise ValueError(f'File could not be retrieved.')
-
-        return res.json()
+    def http_request(self, file_path: str, response_type: str = 'json') -> Union[dict, str, list]:
+        pass
 
 
-# def test_module(client: Client) -> str:
-#
-#     message: str = ''
-#     try:
-#         # TODO: ADD HERE some code to test connectivity and authentication to your service.
-#         # This  should validate all the inputs given in the integration configuration panel,
-#         # either manually or by using an API that uses them.
-#         message = 'ok'
-#     except DemistoException as e:
-#         if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
-#             message = 'Authorization Error: make sure API Key is correctly set'
-#         else:
-#             raise e
-#     return message
+class GitClient(Client):
+    def __init__(self, use_ssl: bool = False, use_proxy: bool = False):
+        # self.base_url = 'https://raw.github.com/demisto/content/end_to_end_pb_create_incidents'
+        self.base_url = 'https://raw.github.com/demisto/content/master'
+        super().__init__(self.base_url, use_ssl, use_proxy)
+
+    def http_request(self, file_path: str, response_type: str = 'json') -> Union[dict, str, list]:
+        file_path = urljoin(self.base_url, file_path)
+        data = self._http_request(
+            method='GET',
+            full_url=file_path,
+            resp_type=response_type,
+            return_empty_response=True,
+        )
+        return data
 
 
-def get_loader(file_path: str, source: str = 'Git'):
-    if source == 'Git':
-        return GitFileLoader(file_path)
+def test_module(client) -> str:
+    """ Getting README file just to see we manage to get a basic file. """
+    message: str = ''
+    try:
+        client.http_request('README.md', 'content')
+        message = 'ok'
 
-    else:
-        'Unauthorized source'
+    except DemistoException as e:
+        if 'Forbidden' in str(e) or 'Authorization' in str(e):
+            message = 'Authorization Error: make sure API Key is correctly set'
+        else:
+            raise e
+    return message
 
 
-def fetch_incidents_command():
+def fetch_incidents_command(client):
+    """
+    The fetch runs on instance's context, gets the formatted incidents, and add attachments if needed.
+    It then clears the context so incident would not be duplicated.
+    """
     data = get_integration_context()
     incidents = data.pop('incidents') if 'incidents' in data else []
+
+    for incident in incidents:
+        if 'attachment' in incident:
+            _add_attachment(client, incident)
+
+    # clear the integration contex from already seen incidents
+    set_integration_context({'incidents': []})
     return incidents
 
 
-def create_test_incident_command(args: Dict[str, Any]) -> CommandResults:
+def _add_attachment(client, incident: dict):
+    """
+     This function takes a formatted incident and add an attachments in case it has one.
+    """
+    attachment_path = incident['attachment']
+    attachment = Attachment(content=client.http_request(file_path=attachment_path, response_type='content'),
+                            name=pathlib.Path(attachment_path).name)
+    file_result = fileResult(attachment.name, attachment.content)
+
+    incident['attachment'] = [{
+        'path': file_result['FileID'],
+        'name': attachment.name
+    }]
+
+
+def create_test_incident_from_file_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    This function will get the incidents and save the formatted incidents to instance context, for the fetch.
+    """
     incidents_path = args.get('incidents_path')
     attachment_path = args.get('attachment_path')
     if not incidents_path:
         raise ValueError('Incidents were not specified')
 
-    loader = get_loader(incidents_path)
-    incidents = loader.get_json_file(incidents_path)
-    if not isinstance(incidents, list):
-        incidents = [incidents]
-    attachment = None
-    if attachment_path:
-        attachment = loader.get_json_file(attachment_path).content
-
-    ready_incidents = parse_incidents(attachment, incidents)
-
+    ready_incidents = get_incidents(attachment_path=attachment_path, incidents_path=incidents_path, client=client)
     set_integration_context({'incidents': ready_incidents})
-
     return CommandResults(readable_output=f'Loaded {len(ready_incidents)} incidents from file.')
 
 
-def parse_incidents(incidents: List[dict], attachment: Optional, attachment_name: Optional[str]):
+def get_incidents(client: Client, incidents_path: str, attachment_path: str = None):
+    """
+    This function retrieves the incidents from the file provided using the relevant client,
+    handling the case of a single incident, it returns formatted incidents.
+    """
+    incidents = client.http_request(file_path=incidents_path, response_type='json')
+    if not isinstance(incidents, list):
+        incidents = [incidents]  # type: ignore
+
+    ready_incidents = parse_incidents(incidents, attachment_path)
+    return ready_incidents
+
+
+def parse_incidents(incidents: List[dict], attachment_path: str = None) -> List[dict]:
+    """
+    This function will take a list of incidents and make them in the format of XSoar format,
+     as a preparation for the fetch command.
+     Since fileResult only exists in the scope of the command, we only save the path to the file.
+     The actual file is added at the fetch command.
+    """
     ready_incidents = []
-    file_result = None
-    if attachment:
-        file_result = fileResult(attachment_name, attachment)
 
     for incident in incidents:
         parsed_incident = {
             'name': incident['name'],
-            'occurred': timestamp_to_datestring(incident['created']),
-            'rawJSON': json.dumps(incident),
-            'labels': incident.get('labels'),
+            'occurred': incident['created'],
+            'rawJSON': json.dumps(incident)
         }
-        if file_result:
-            parsed_incident['attachment'].append({
-                'path': file_result['FileID'],
-                'name': attachment_name
-            })
+        if incident.get('labels'):
+            parsed_incident['labels'] = incident.get('labels')
+
+        if attachment_path:
+            parsed_incident['attachment'] = attachment_path
+
         ready_incidents.append(parsed_incident)
     return ready_incidents
+
+
+def get_client(source: str = 'Git', ssl: bool = False, proxy: bool = False):
+    """
+    This function allows adding other client types so the url of the given files can be changed in the future.
+    In order to do so- add a relevant client class which inherits from Client, and in this function create an instance
+    and return it according to the source you want to add.
+    """
+    if source == 'Git':
+        return GitClient(ssl, proxy)
+
+    else:
+        raise Exception('Unauthorized source')
 
 
 ''' MAIN FUNCTION '''
 
 
 def main() -> None:
-    """main function, parses params and runs command functions
-
-    :return:
-    :rtype:
-    """
-
-    # verify_certificate = not demisto.params().get('insecure', False)
-    # proxy = demisto.params().get('proxy', False)
     try:
-
+        params = demisto.params()
         command = demisto.command()
+
         demisto.debug(f'Command being called is {command}')
-
+        client = get_client(
+            ssl=not params.get('insecure', False),
+            proxy=params.get('proxy', False)
+        )
         if command == 'fetch-incidents':
-            incidents = fetch_incidents_command()
+            incidents = fetch_incidents_command(client)
             demisto.incidents(incidents)
-
-        # elif command == 'test-module':
-            # result = test_module()
-            # return_results(result)
-
-        elif command == 'create-test-incident':
-            return_results(create_test_incident_command(demisto.args()))
+        elif command == 'test-module':
+            result = test_module(client)
+            return_results(result)
+        elif command == 'create-test-incident-from-file':
+            return_results(create_test_incident_from_file_command(client, demisto.args()))
 
     # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}, {traceback.format_exc()}')
 
 
 ''' ENTRY POINT '''
