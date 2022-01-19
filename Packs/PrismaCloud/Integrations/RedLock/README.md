@@ -1073,13 +1073,14 @@ Search events on the Prisma Cloud (RedLock) platform using RQL language.
                 "accountName": "aws-emea-tac",
                 "regionName": "AWS Oregon",
                 "dynamicData": {}
-            },
+            }
         ]
     }
 }
 ```
 #### Human Readable Output
 >### Event Details
+> Showing 1 out of 1243 events
 >|accessKeyUsed|account|accountName|cityId|cityLatitude|cityLongitude|cityName|countryId|countryName|dynamicData|eventTs|id|internal|ip|location|name|regionId|regionName|source|stateId|stateName|subject|success|type|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| false | 712829893241 | aws-emea-tac | -4 | -1.0 | -1.0 | Private | -4 | Private |  | 1642051938000 | 2557671539 | false | 172.31.34.235 | Private | CreateBucket | 4 | AWS Oregon | s3.amazonaws.com | -4 | Private | ejb-iam-cloudops | false | CREATE |

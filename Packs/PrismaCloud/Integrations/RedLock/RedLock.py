@@ -557,7 +557,7 @@ def redlock_search_event():
         response_data = response.get('data')
         items = response_data.get('items', [])
         total_events = response_data.get('totalRows', len(items))
-        md = tableToMarkdown(f"Event Details\nShowing {len(items)} events out of {total_events} events", items)
+        md = tableToMarkdown(f"Event Details\nShowing {len(items)} out of {total_events} events", items)
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
