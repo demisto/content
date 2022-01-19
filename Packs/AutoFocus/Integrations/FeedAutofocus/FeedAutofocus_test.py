@@ -1,6 +1,9 @@
 import pytest
 from FeedAutofocus import Client, fetch_indicators_command
 
+from CommonServerPython import *
+
+
 INDICATORS = [
     "d4da1b2d5554587136f2bcbdf0a6a1e29ab83f1d64a4b2049f9787479ad02fad",
     "19.117.63.253",
@@ -26,23 +29,26 @@ TYPES = [
 ]
 
 
-def test_type_finder():
-    client = Client(api_key="a", insecure=False, proxy=None, indicator_feeds=['Daily Threat Feed'])
+@pytest.fixture()
+def auto_focus_client():
+    return Client(api_key="a", insecure=False, proxy=None, indicator_feeds=['Daily Threat Feed'])
+
+
+def test_type_finder(auto_focus_client):
     for i in range(0, 9):
-        indicator_type = client.find_indicator_type(INDICATORS[i])
+        indicator_type = auto_focus_client.find_indicator_type(INDICATORS[i])
         assert indicator_type == TYPES[i]
 
 
-def test_url_format():
-    client = Client(api_key="a", insecure=False, proxy=None, indicator_feeds=['Daily Threat Feed'])
+def test_url_format(auto_focus_client):
     url1 = "https://autofocus.paloaltonetworks.com/IOCFeed/{ID}/{Name}"
     url2 = "autofocus.paloaltonetworks.com/IOCFeed/{ID2}/{Name2}"
-    assert client.url_format(url1) == "https://autofocus.paloaltonetworks.com/api/v1.0/IOCFeed/{ID}/{Name}"
-    assert client.url_format(url2) == "https://autofocus.paloaltonetworks.com/api/v1.0/IOCFeed/{ID2}/{Name2}"
+    assert auto_focus_client.url_format(url1) == "https://autofocus.paloaltonetworks.com/api/v1.0/IOCFeed/{ID}/{Name}"
+    assert auto_focus_client.url_format(url2) == "https://autofocus.paloaltonetworks.com/api/v1.0/IOCFeed/{ID2}/{Name2}"
 
 
 @pytest.mark.parametrize('tlp_color', ['', None, 'AMBER'])
-def test_feed_tags_param(mocker, tlp_color):
+def test_feed_tags_param(mocker, auto_focus_client, tlp_color):
     """Unit test
     Given
     - fetch indicators command
@@ -57,9 +63,8 @@ def test_feed_tags_param(mocker, tlp_color):
     Validate The value of the tags field.
     Validate the value of trafficlightprotocol incident field.
     """
-    client = Client(api_key="a", insecure=False, proxy=None, indicator_feeds='Daily Threat Feed')
-    mocker.patch.object(client, 'daily_custom_http_request', return_value=INDICATORS)
-    indicators = fetch_indicators_command(client, ['test_tag'], tlp_color)
+    mocker.patch.object(auto_focus_client, 'daily_custom_http_request', return_value=INDICATORS)
+    indicators = fetch_indicators_command(auto_focus_client, ['test_tag'], tlp_color)
     assert indicators[0].get('fields').get('tags') == ['test_tag']
     if tlp_color:
         assert indicators[0].get('fields').get('trafficlightprotocol') == tlp_color
@@ -67,8 +72,24 @@ def test_feed_tags_param(mocker, tlp_color):
         assert not indicators[0].get('fields').get('trafficlightprotocol')
 
 
-def test_something(mocker):
-    client = Client(api_key="a", insecure=False, proxy=None, indicator_feeds=['Daily Threat Feed'])
-    mocker.patch.object(client, 'daily_custom_http_request', return_value=INDICATORS)
-    client.find_indicator_type(indicator='146.185.215.64/7/server/')
-    print()
+INDICATORS_AND_TYPES = [
+    (
+        "1.1.1.1/7/server/somestring/something.php?fjjasjkfhsjasofds=sjhfhdsfhasld", FeedIndicatorType.URL
+    )
+]
+
+
+@pytest.mark.parametrize('indicator, expected_indicator_type', INDICATORS_AND_TYPES)
+def test_indicator_types_are_classified_correctly(mocker, auto_focus_client, indicator, expected_indicator_type):
+    """
+    Given
+    - an indicator as string.
+
+    When
+    - trying to find the indicator type.
+
+    Then
+    - the indicator type that is returned is what we expected it to be.
+    """
+    mocker.patch.object(auto_focus_client, 'daily_custom_http_request')
+    assert auto_focus_client.find_indicator_type(indicator=indicator) == expected_indicator_type
