@@ -48,7 +48,17 @@ SSL
 Prisma
 runtime
 ATOMs
+Mappers
+mapper
 AlienVault
 BitcoinAbuse
 BruteForceBlocker
+NetwitnessSearch
+NetwitnessQuery
+Deprecated
 SQS
+ACM
+unicode
+CloudWatchLogs
+GuardDuty
+NetWitness
