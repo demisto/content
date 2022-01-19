@@ -2803,8 +2803,9 @@ def list_detection_summaries_command():
     args = demisto.args()
     fetch_query = args.get('fetch_query')
 
-    if args.get('ids'):
-        detections_ids = argToList(args.get('ids'))
+    args_ids = args.get('ids')
+    if args_ids:
+        detections_ids = argToList(args_ids)
     elif fetch_query:
         fetch_query = "{query}".format(query=fetch_query)
         detections_ids = demisto.get(get_fetch_detections(filter_arg=fetch_query), 'resources')
@@ -2839,8 +2840,9 @@ def list_incident_summaries_command():
     args = demisto.args()
     fetch_query = args.get('fetch_query')
 
-    if args.get('ids'):
-        incidents_ids = argToList(args.get('ids'))
+    args_ids = args.get('ids')
+    if args_ids:
+        incidents_ids = argToList(args_ids)
     elif fetch_query:
         fetch_query = "{query}".format(query=fetch_query)
         incidents_ids = get_incidents_ids(filter_arg=fetch_query)
