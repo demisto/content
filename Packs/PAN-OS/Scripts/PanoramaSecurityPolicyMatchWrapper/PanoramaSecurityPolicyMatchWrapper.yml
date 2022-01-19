@@ -32,7 +32,9 @@ args:
 - description: Maximum number of API calls that script sends.
   name: limit
   defaultValue: '500'
-comment: 'A wrapper script for the panorama-security-policy-match command that receives multiple values for the source, destination and destination port arguments and performs the policy match for each combination of the inputs.'
+comment: 'A wrapper script for the panorama-security-policy-match command that receives
+  multiple values for the source, destination and destination port arguments and performs
+  the policy match for each combination of the inputs.'
 commonfields:
   id: PanoramaSecurityPolicyMatchWrapper
   version: -1
