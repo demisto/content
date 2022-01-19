@@ -885,7 +885,7 @@ script:
     - default: false
       description: String that represents a list of hashed files you want to block
         list. Must be a valid SHA256 hash.
-      isArray: true
+      isArray: ![](../CoreIOCs/CoreIOCs_image.png)true
       name: hash_list
       required: true
       secret: false
@@ -2181,6 +2181,39 @@ script:
     - contextPath: Endpoint.Vendor
       description: The integration name of the endpoint vendor.
       type: String
+  - arguments:
+      - default: false
+        description: String that represents the file’s hash. Must be a valid SHA256
+          hash.
+        isArray: false
+        name: file_hash
+        required: true
+        secret: false
+      - default: false
+        description: The new verdict of the file. 0 - benign, 1 - malware.
+        predefined:
+          - '0'
+          - '1'
+        isArray: false
+        name: new_verdict
+        required: true
+        secret: false
+      - default: false
+        description: String that represents the reason of the report
+        isArray: false
+        name: reason
+        required: true
+        secret: false
+      - default: false
+        description: User’s email address.
+        isArray: false
+        name: email
+        required: true
+        secret: false
+    deprecated: false
+    description:
+    execution: true
+    name: core-report-incorrect-wildfire
   dockerimage: demisto/python3:3.10.1.25933
   feed: false
   isfetch: false

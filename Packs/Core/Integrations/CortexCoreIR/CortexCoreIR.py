@@ -1181,6 +1181,21 @@ class Client(BaseClient):
         )
         return reply
 
+    def report_incorrect_wildfire(self, file_hash: str, new_verdict: int, reason: str, email: str):
+        request_data: Dict[str, Any] = {
+            "hash": file_hash,
+            "new_verdict": new_verdict,
+            "reason": reason,
+            "email": email,
+        }
+        reply = self._http_request(
+            method='POST',
+            url_suffix='/wildfire/report_as_incorrect/',
+            json_data={'request_data': request_data},
+            timeout=self.timeout
+        )
+        return reply
+
 
 def create_endpoint_context(audit_logs):
     endpoints = []
@@ -2566,6 +2581,26 @@ def run_script_kill_process_command(client: Client, args: Dict) -> List[CommandR
     return all_processes_response
 
 
+def report_incorrect_wildfire_command(client: Client, args: Dict) -> CommandResults:
+    file_hash = args.get('file_hash')
+    reason = args.get('reason')
+    email = args.get('email')
+    new_verdict = arg_to_int(
+                                arg=args.get('new_verdict'),
+                                arg_name='Failed to parse "new_verdict". Must be a number.',
+                                required=True
+                            )
+
+    response = client.report_incorrect_wildfire(file_hash, new_verdict, reason, email)
+    reply = response.get('reply')
+    return CommandResults(
+            readable_output=tableToMarkdown(f'Reported incorrect WildFire on {hash}', reply),
+            outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.WildFire',
+            outputs=reply,
+            raw_response=response,
+        )
+
+
 def main():
     """
     Executes an integration command
@@ -2724,6 +2759,8 @@ def main():
         elif command == 'endpoint':
             return_results(endpoint_command(client, args))
 
+        elif command == 'core-report-incorrect-wildfire':
+            return_results(report_incorrect_wildfire_command(client, args))
     except Exception as err:
         demisto.error(traceback.format_exc())
         return_error(str(err))
