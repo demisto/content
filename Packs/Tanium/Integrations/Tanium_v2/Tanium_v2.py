@@ -1063,19 +1063,20 @@ def get_action_result(client, data_args):
         endpoint_url = '/result_data/action/' + str(action_id)
         raw_response = client.do_request('GET', endpoint_url)
         try:
-            devices_raw = raw_response['data']['result_sets'][0]['rows']
+            all_devices_results = raw_response['data']['result_sets'][0]['rows']
             device_results = []
-            for device in devices_raw:
+            for device_res in all_devices_results:
                 formatted_device = {
-                    'HostName': device['data'][0][0]['text'],
-                    'Status': str(device['data'][1][0]['text']).split(':')[1],
-                    'ComputerID': device['cid']
+                    'HostName': device_res['data'][0][0]['text'],
+                    'Status': str(device_res['data'][1][0]['text']).split(':')[1],
+                    'ComputerID': device_res['cid']
                 }
                 device_results.append(formatted_device)
             raw_response = raw_response.get('data')
             raw_response['ID'] = action_id
             action_res_outputs.append(raw_response)
-            action_res_hr.extend(device_results) if device_results else None
+            if device_results:
+                action_res_hr.extend(device_results)
         except Exception:
             continue
 
