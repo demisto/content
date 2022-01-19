@@ -189,7 +189,7 @@ script:
       type: Number
     description: Get specific indicator reputation
 
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/py3-tools:0.0.1.25751
   feed: false
   isfetch: false
   longRunning: false
