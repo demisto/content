@@ -59,8 +59,7 @@ Newly fetched incidents will be mirrored in the direction you select. However, t
      - *asset_sha256*
  - The only fields that can be *mirrored out* from XSOAR to SaaS Security are:
      - *state*
-     - *category*
-
+     - *category* The supported categories for closing incidents are: "misidentified", "no_reason", and "business_justified".
     **Note**: Mirroring out works only for closed incidents due to an API limitation.
 
 
