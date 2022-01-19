@@ -925,7 +925,7 @@ script:
     description: Adds requested files to allow list if they are not already on block
       list or allow list.
     execution: false
-    name: core-whitelist-files
+    name: core-allowlist-files
   - arguments:
     - default: false
       description: Allows to link the response action to the incident that triggered

@@ -462,7 +462,7 @@ def test_blocklist_files_command_with_more_than_one_file(requests_mock):
     """
 
     from CortexCoreIR import blocklist_files_command, Client
-    test_data = load_test_data('test_data/blocklist_whitelist_files_success.json')
+    test_data = load_test_data('test_data/blocklist_allowlist_files_success.json')
     expected_command_result = {'PaloAltoNetworksCore.blackList.fileHash(val.fileHash == obj.fileHash)': test_data[
         'multi_command_args']['hash_list']}
     requests_mock.post(f'{Core_URL}/public_api/v1/hash_exceptions/blocklist/', json=test_data['api_response'])
@@ -487,7 +487,7 @@ def test_blocklist_files_command_with_single_file(requests_mock):
     """
 
     from CortexCoreIR import blocklist_files_command, Client
-    test_data = load_test_data('test_data/blocklist_whitelist_files_success.json')
+    test_data = load_test_data('test_data/blocklist_allowlist_files_success.json')
     expected_command_result = {
         'PaloAltoNetworksCore.blackList.fileHash(val.fileHash == obj.fileHash)':
             test_data['single_command_args']['hash_list']}
@@ -513,7 +513,7 @@ def test_blocklist_files_command_with_no_comment_file(requests_mock):
     """
 
     from CortexCoreIR import blocklist_files_command, Client
-    test_data = load_test_data('test_data/blocklist_whitelist_files_success.json')
+    test_data = load_test_data('test_data/blocklist_allowlist_files_success.json')
     expected_command_result = {
         'PaloAltoNetworksCore.blackList.fileHash(val.fileHash == obj.fileHash)':
             test_data['no_comment_command_args']['hash_list']}
@@ -528,79 +528,79 @@ def test_blocklist_files_command_with_no_comment_file(requests_mock):
     assert expected_command_result == context
 
 
-def test_whitelist_files_command_with_more_than_one_file(requests_mock):
+def test_allowlist_files_command_with_more_than_one_file(requests_mock):
     """
     Given:
-        - ￿List of files' hashes to put in whitelist
+        - ￿List of files' hashes to put in allowlist
     When
         - A user desires to mark more than one file
     Then
         - returns markdown, context data and raw response.
     """
 
-    from CortexCoreIR import whitelist_files_command, Client
-    test_data = load_test_data('test_data/blocklist_whitelist_files_success.json')
+    from CortexCoreIR import allowlist_files_command, Client
+    test_data = load_test_data('test_data/blocklist_allowlist_files_success.json')
     expected_command_result = {'PaloAltoNetworksCore.whiteList.fileHash(val.fileHash == obj.fileHash)': test_data[
         'multi_command_args']['hash_list']}
-    requests_mock.post(f'{Core_URL}/public_api/v1/hash_exceptions/whitelist/', json=test_data['api_response'])
+    requests_mock.post(f'{Core_URL}/public_api/v1/hash_exceptions/allowlist/', json=test_data['api_response'])
 
     client = Client(
         base_url=f'{Core_URL}/public_api/v1', headers={}
     )
     client._headers = {}
-    markdown, context, raw = whitelist_files_command(client, test_data['multi_command_args'])
+    markdown, context, raw = allowlist_files_command(client, test_data['multi_command_args'])
 
     assert expected_command_result == context
 
 
-def test_whitelist_files_command_with_single_file(requests_mock):
+def test_allowlist_files_command_with_single_file(requests_mock):
     """
     Given:
-        - List of a file hashes to put in whitelist.
+        - List of a file hashes to put in allowlist.
     When
-        - A user desires to whitelist one file.
+        - A user desires to allowlist one file.
     Then
         - returns markdown, context data and raw response.
     """
 
-    from CortexCoreIR import whitelist_files_command, Client
-    test_data = load_test_data('test_data/blocklist_whitelist_files_success.json')
+    from CortexCoreIR import allowlist_files_command, Client
+    test_data = load_test_data('test_data/blocklist_allowlist_files_success.json')
     expected_command_result = {
         'PaloAltoNetworksCore.whiteList.fileHash(val.fileHash == obj.fileHash)':
             test_data['single_command_args']['hash_list']}
-    requests_mock.post(f'{Core_URL}/public_api/v1/hash_exceptions/whitelist/', json=test_data['api_response'])
+    requests_mock.post(f'{Core_URL}/public_api/v1/hash_exceptions/allowlist/', json=test_data['api_response'])
 
     client = Client(
         base_url=f'{Core_URL}/public_api/v1', headers={}
     )
     client._headers = {}
-    markdown, context, raw = whitelist_files_command(client, test_data['single_command_args'])
+    markdown, context, raw = allowlist_files_command(client, test_data['single_command_args'])
 
     assert expected_command_result == context
 
 
-def test_whitelist_files_command_with_no_comment_file(requests_mock):
+def test_allowlist_files_command_with_no_comment_file(requests_mock):
     """
     Given:
-        - List of files' hashes to put in whitelist without passing the comment argument.
+        - List of files' hashes to put in allowlist without passing the comment argument.
     When
-        - A user desires to whitelist files without adding a comment.
+        - A user desires to allowlist files without adding a comment.
     Then
         - returns markdown, context data and raw response.
     """
 
-    from CortexCoreIR import whitelist_files_command, Client
-    test_data = load_test_data('test_data/blocklist_whitelist_files_success.json')
+    from CortexCoreIR import allowlist_files_command, Client
+    test_data = load_test_data('test_data/blocklist_allowlist_files_success.json')
     expected_command_result = {
         'PaloAltoNetworksCore.whiteList.fileHash(val.fileHash == obj.fileHash)': test_data['no_comment_command_args'][
             'hash_list']}
-    requests_mock.post(f'{Core_URL}/public_api/v1/hash_exceptions/whitelist/', json=test_data['api_response'])
+    requests_mock.post(f'{Core_URL}/public_api/v1/hash_exceptions/allowlist/', json=test_data['api_response'])
 
     client = Client(
         base_url=f'{Core_URL}/public_api/v1', headers={}
     )
     client._headers = {}
-    markdown, context, raw = whitelist_files_command(client, test_data['no_comment_command_args'])
+    markdown, context, raw = allowlist_files_command(client, test_data['no_comment_command_args'])
 
     assert expected_command_result == context
 

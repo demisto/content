@@ -647,7 +647,7 @@ class Client(BaseClient):
         )
         return reply.get('reply')
 
-    def whitelist_files(self, hash_list, comment=None, incident_id=None):
+    def allowlist_files(self, hash_list, comment=None, incident_id=None):
         request_data: Dict[str, Any] = {"hash_list": hash_list}
         if comment:
             request_data["comment"] = comment
@@ -657,7 +657,7 @@ class Client(BaseClient):
         self._headers['content-type'] = 'application/json'
         reply = self._http_request(
             method='POST',
-            url_suffix='/hash_exceptions/whitelist/',
+            url_suffix='/hash_exceptions/allowlist/',
             json_data={'request_data': request_data},
             ok_codes=(201, 200),
             timeout=self.timeout
@@ -1835,12 +1835,12 @@ def blocklist_files_command(client, args):
     )
 
 
-def whitelist_files_command(client, args):
+def allowlist_files_command(client, args):
     hash_list = argToList(args.get('hash_list'))
     comment = args.get('comment')
     incident_id = arg_to_number(args.get('incident_id'))
 
-    client.whitelist_files(hash_list=hash_list, comment=comment, incident_id=incident_id)
+    client.allowlist_files(hash_list=hash_list, comment=comment, incident_id=incident_id)
     markdown_data = [{'fileHash': file_hash} for file_hash in hash_list]
     return (
         tableToMarkdown('Whitelist Files', markdown_data, ['fileHash'], headerTransform=pascalToSpace),
@@ -2643,8 +2643,8 @@ def main():
         elif command == 'core-blocklist-files':
             return_outputs(*blocklist_files_command(client, args))
 
-        elif command == 'core-whitelist-files':
-            return_outputs(*whitelist_files_command(client, args))
+        elif command == 'core-allowlist-files':
+            return_outputs(*allowlist_files_command(client, args))
 
         elif command == 'core-quarantine-files':
             return_outputs(*quarantine_files_command(client, args))
