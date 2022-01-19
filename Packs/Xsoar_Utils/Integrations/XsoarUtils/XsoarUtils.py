@@ -89,7 +89,7 @@ def main():
             create_entry(obj, data="**testapi**", inv_id=default_playground_id)
 
     else:
-        print("Executing Xsoar_Utils detected demisto as environment")
+        demisto.info("Executing Xsoar_Utils, detected demisto as environment")
         command = demisto.command()
         command_args = demisto.args()
         if "inv_id" not in command_args.keys():
