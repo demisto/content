@@ -234,6 +234,7 @@ def main() -> None:
     proxy = demisto.params().get('proxy', False)
 
     headers = {
+        'Content-Type': 'application/json',
         'Netskope-Api-Token': api_key,
         'Accept': 'application/json'
     }
