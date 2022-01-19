@@ -17,18 +17,10 @@ configuration:
   type: 0
 - additionalinfo: Check this to ignore certificate signature
   defaultvalue: "false"
-  display: Allow Insecure connections to the server
+  display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
-contentitemexportablefields:
-  contentitemfields:
-    definitionid: ""
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: 6f820efa-0359-4d07-8821-c44dd71a19e8
-    propagationLabels: []
-    toServerVersion: ""
 description: |-
   This is a wrapper on top of XSOAR API. Can be used to implement commands that call the XSOAR API in the background.  This is mostly to avoid  constructing raw json strings while calling the demisto rest api integration.
 
@@ -56,3 +48,6 @@ script:
   script: ''
   subtype: python3
   type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
