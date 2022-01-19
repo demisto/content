@@ -1,4 +1,4 @@
 !camlytics-get-channels
-!camlytics-get-events channelid="b7ad2693-c9bf-42a7-9cfa-7289ca30a708" limit="10"
-!camlytics-get-events-totals-by-type channelid=b7ad2693-c9bf-42a7-9cfa-7289ca30a708 origin=Pedestrian
+!camlytics-get-events channelid="09ed1f1f-63fe-41d9-8e4a-f4909f94f2b9" limit="10"
+!camlytics-get-events-totals-by-type channelid=09ed1f1f-63fe-41d9-8e4a-f4909f94f2b9 origin=Pedestrian
 !camlytics-get-events-totals-by-rule

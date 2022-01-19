@@ -73,14 +73,24 @@ script:
       name: untiltime
       required: false
       secret: false
-    - default: false
-      description: The origin.
+    - auto: PREDEFINED
+      default: false
+      description: The origin that generated the events. For example, if you want
+        to display only vehicles events and skip pedestrians in your report, choose
+        Vehicle.
       isArray: false
       name: origin
+      predefined:
+      - Pedestrians
+      - Vehicle
+      - Uknown
       required: false
       secret: false
     deprecated: false
-    description: Retrieve video analytics events totals grouped by rules (zones, lines).
+    description: Retrieve video analytics events totals grouped by calibration rules,
+      these rules can be defined using zones and lines to set areas where different
+      camera events will be generated. For example, you can add zone where you want
+      signalize all of all entered objects, line where you want to count people, etc.
     execution: false
     name: camlytics-get-events-totals-by-rule
     outputs:
@@ -115,14 +125,22 @@ script:
       name: untiltime
       required: false
       secret: false
-    - default: false
-      description: The origin.
+    - auto: PREDEFINED
+      default: false
+      description: The origin that generated the events. For example, if you want
+        to display only vehicles events and skip pedestrians in your report, choose
+        Vehicle.
       isArray: false
       name: origin
+      predefined:
+      - Pedestrians
+      - Vehicle
+      - Uknown
       required: false
       secret: false
     deprecated: false
-    description: Retrieve video analytics events totals grouped by type.
+    description: 'Retrieve video analytics events totals grouped by analytics event
+      type. For example: ObjectAppear, Tailgating, Sabotage and TripwireCrossed.'
     execution: false
     name: camlytics-get-events-totals-by-type
     outputs:
@@ -130,7 +148,8 @@ script:
       description: The channel ID.
       type: String
     - contextPath: Camlytics.EventsTotalsType.type
-      description: The event type.
+      description: 'The event type. For example: ObjectAppear, Tailgating, Sabotage
+        and TripwireCrossed.'
       type: String
     - contextPath: Camlytics.EventsTotalsType.type_count
       description: The type count.
@@ -240,6 +259,6 @@ script:
   script: '-'
   subtype: python3
   type: python
-fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
+fromversion: 6.0.0

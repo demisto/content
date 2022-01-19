@@ -1,5 +1,5 @@
 You can use this integration to automate different Camlytics surveillance analysis actions.
-This integration was integrated and tested with version 2.2.5 of Camlytics
+This integration was integrated and tested with version 2.2.5 of Camlytics.
 
 ## Configure Camlytics on Cortex XSOAR
 
@@ -51,24 +51,24 @@ There are no input arguments for this command.
     "Camlytics": {
         "Channels": [
             {
-                "channel_id": "b7ad2693-c9bf-42a7-9cfa-7289ca30a708",
+                "channel_id": "09ed1f1f-63fe-41d9-8e4a-f4909f94f2b9",
                 "login": null,
-                "name": "Video file",
+                "name": "Springs",
                 "password": null,
                 "profile_name": "none",
                 "profile_token": "",
-                "stream_uri": "C:\\Users\\hussain\\Desktop\\Human.mp4",
+                "stream_uri": "C:\\Users\\hussain\\Desktop\\Test Video.mp4",
                 "type": "File",
                 "uri": "http://localhost/"
             },
             {
-                "channel_id": "8eed552b-ed50-47b1-a1d0-4180484848a0",
+                "channel_id": "8c27e658-cfee-4801-b1f7-29626ce45afc",
                 "login": null,
                 "name": "Video file",
                 "password": null,
                 "profile_name": "none",
                 "profile_token": "",
-                "stream_uri": "C:\\Users\\hussain\\Desktop\\Human2.mp4",
+                "stream_uri": "C:\\Users\\hussain\\Desktop\\Test Video - Copy.mp4",
                 "type": "File",
                 "uri": "http://localhost/"
             }
@@ -82,13 +82,13 @@ There are no input arguments for this command.
 >### Results
 >|channel_id|login|name|password|profile_name|profile_token|stream_uri|type|uri|
 >|---|---|---|---|---|---|---|---|---|
->| b7ad2693-c9bf-42a7-9cfa-7289ca30a708 |  | Video file |  | none |  | C:\Users\hussain\Desktop\Human.mp4 | File | http://localhost/ |
->| 8eed552b-ed50-47b1-a1d0-4180484848a0 |  | Video file |  | none |  | C:\Users\hussain\Desktop\Human2.mp4 | File | http://localhost/ |
+>| 09ed1f1f-63fe-41d9-8e4a-f4909f94f2b9 |  | Springs |  | none |  | C:\Users\hussain\Desktop\Test Video.mp4 | File | http://localhost/ |
+>| 8c27e658-cfee-4801-b1f7-29626ce45afc |  | Video file |  | none |  | C:\Users\hussain\Desktop\Test Video - Copy.mp4 | File | http://localhost/ |
 
 
 ### camlytics-get-events-totals-by-rule
 ***
-Retrieve video analytics events totals grouped by rules (zones, lines).
+Retrieve video analytics events totals grouped by calibration rules, these rules can be defined using zones and lines to set areas where different camera events will be generated. For example, you can add zone where you want signalize all of all entered objects, line where you want to count people, etc.
 
 
 #### Base Command
@@ -101,7 +101,7 @@ Retrieve video analytics events totals grouped by rules (zones, lines).
 | channelid | The channel ID. | Optional | 
 | sincetime | The since time. | Optional | 
 | untiltime | The until time. | Optional | 
-| origin | The origin. | Optional | 
+| origin | The origin that generated the events. For example, if you want to display only vehicles events and skip pedestrians in your report, choose Vehicle. Possible values are: Pedestrians, Vehicle, Uknown. | Optional | 
 
 
 #### Context Output
@@ -121,27 +121,27 @@ Retrieve video analytics events totals grouped by rules (zones, lines).
     "Camlytics": {
         "EventsTotalsRule": [
             {
-                "channel_id": "b7ad2693-c9bf-42a7-9cfa-7289ca30a708",
-                "rule_count": 4,
+                "channel_id": "09ed1f1f-63fe-41d9-8e4a-f4909f94f2b9",
+                "rule_count": 47,
                 "rule_id": "-1",
                 "rule_name": ""
             },
             {
-                "channel_id": "b7ad2693-c9bf-42a7-9cfa-7289ca30a708",
-                "rule_count": 3,
-                "rule_id": "e953f9ef-3138-4052-887b-235eb81c00d4",
+                "channel_id": "09ed1f1f-63fe-41d9-8e4a-f4909f94f2b9",
+                "rule_count": 4,
+                "rule_id": "18413998-0ab9-44ba-a90c-5d0ce844abff",
                 "rule_name": "Motion detection"
             },
             {
-                "channel_id": "8eed552b-ed50-47b1-a1d0-4180484848a0",
-                "rule_count": 11,
+                "channel_id": "8c27e658-cfee-4801-b1f7-29626ce45afc",
+                "rule_count": 9,
                 "rule_id": "-1",
                 "rule_name": ""
             },
             {
-                "channel_id": "8eed552b-ed50-47b1-a1d0-4180484848a0",
-                "rule_count": 3,
-                "rule_id": "4fe7338f-6f85-441a-a200-f383d814b0ee",
+                "channel_id": "8c27e658-cfee-4801-b1f7-29626ce45afc",
+                "rule_count": 1,
+                "rule_id": "2ec821ed-3fb5-4b0b-aab9-3f600c05914c",
                 "rule_name": "Motion detection"
             }
         ]
@@ -154,15 +154,15 @@ Retrieve video analytics events totals grouped by rules (zones, lines).
 >### Results
 >|channel_id|rule_count|rule_id|rule_name|
 >|---|---|---|---|
->| b7ad2693-c9bf-42a7-9cfa-7289ca30a708 | 4 | -1 |  |
->| b7ad2693-c9bf-42a7-9cfa-7289ca30a708 | 3 | e953f9ef-3138-4052-887b-235eb81c00d4 | Motion detection |
->| 8eed552b-ed50-47b1-a1d0-4180484848a0 | 11 | -1 |  |
->| 8eed552b-ed50-47b1-a1d0-4180484848a0 | 3 | 4fe7338f-6f85-441a-a200-f383d814b0ee | Motion detection |
+>| 09ed1f1f-63fe-41d9-8e4a-f4909f94f2b9 | 47 | -1 |  |
+>| 09ed1f1f-63fe-41d9-8e4a-f4909f94f2b9 | 4 | 18413998-0ab9-44ba-a90c-5d0ce844abff | Motion detection |
+>| 8c27e658-cfee-4801-b1f7-29626ce45afc | 9 | -1 |  |
+>| 8c27e658-cfee-4801-b1f7-29626ce45afc | 1 | 2ec821ed-3fb5-4b0b-aab9-3f600c05914c | Motion detection |
 
 
 ### camlytics-get-events-totals-by-type
 ***
-Retrieve video analytics events totals grouped by type.
+Retrieve video analytics events totals grouped by analytics event type. For example: ObjectAppear, Tailgating, Sabotage and TripwireCrossed.
 
 
 #### Base Command
@@ -175,7 +175,7 @@ Retrieve video analytics events totals grouped by type.
 | channelid | The channel ID. | Optional | 
 | sincetime | The since time. | Optional | 
 | untiltime | The until time. | Optional | 
-| origin | The origin. | Optional | 
+| origin | The origin that generated the events. For example, if you want to display only vehicles events and skip pedestrians in your report, choose Vehicle. Possible values are: Pedestrians, Vehicle, Uknown. | Optional | 
 
 
 #### Context Output
@@ -183,30 +183,25 @@ Retrieve video analytics events totals grouped by type.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Camlytics.EventsTotalsType.channel_id | String | The channel ID. | 
-| Camlytics.EventsTotalsType.type | String | The event type. | 
+| Camlytics.EventsTotalsType.type | String | The event type. For example: ObjectAppear, Tailgating, Sabotage and TripwireCrossed. | 
 | Camlytics.EventsTotalsType.type_count | Number | The type count. | 
 
 #### Command example
-```!camlytics-get-events-totals-by-type channelid=b7ad2693-c9bf-42a7-9cfa-7289ca30a708 origin=Pedestrian```
+```!camlytics-get-events-totals-by-type channelid=09ed1f1f-63fe-41d9-8e4a-f4909f94f2b9 origin=Pedestrian```
 #### Context Example
 ```json
 {
     "Camlytics": {
         "EventsTotalsType": [
             {
-                "channel_id": "b7ad2693-c9bf-42a7-9cfa-7289ca30a708",
-                "type": "MotionInRegionOn",
-                "type_count": 2
-            },
-            {
-                "channel_id": "b7ad2693-c9bf-42a7-9cfa-7289ca30a708",
+                "channel_id": "09ed1f1f-63fe-41d9-8e4a-f4909f94f2b9",
                 "type": "ObjectAppear",
-                "type_count": 3
+                "type_count": 4
             },
             {
-                "channel_id": "b7ad2693-c9bf-42a7-9cfa-7289ca30a708",
+                "channel_id": "09ed1f1f-63fe-41d9-8e4a-f4909f94f2b9",
                 "type": "ObjectDisappear",
-                "type_count": 1
+                "type_count": 3
             }
         ]
     }
@@ -218,9 +213,8 @@ Retrieve video analytics events totals grouped by type.
 >### Results
 >|channel_id|type|type_count|
 >|---|---|---|
->| b7ad2693-c9bf-42a7-9cfa-7289ca30a708 | MotionInRegionOn | 2 |
->| b7ad2693-c9bf-42a7-9cfa-7289ca30a708 | ObjectAppear | 3 |
->| b7ad2693-c9bf-42a7-9cfa-7289ca30a708 | ObjectDisappear | 1 |
+>| 09ed1f1f-63fe-41d9-8e4a-f4909f94f2b9 | ObjectAppear | 4 |
+>| 09ed1f1f-63fe-41d9-8e4a-f4909f94f2b9 | ObjectDisappear | 3 |
 
 
 ### camlytics-get-events
@@ -265,123 +259,171 @@ Retrieve video analytics events ordered by event id.
 | Camlytics.Events.video_file_time | Date | The event video file time. | 
 
 #### Command example
-```!camlytics-get-events channelid="b7ad2693-c9bf-42a7-9cfa-7289ca30a708" limit="10"```
+```!camlytics-get-events channelid="09ed1f1f-63fe-41d9-8e4a-f4909f94f2b9" limit="10"```
 #### Context Example
 ```json
 {
     "Camlytics": {
         "Events": [
             {
-                "channel_id": "b7ad2693-c9bf-42a7-9cfa-7289ca30a708",
+                "channel_id": "09ed1f1f-63fe-41d9-8e4a-f4909f94f2b9",
                 "channel_name": null,
-                "event_id": 14,
-                "object_id": "1",
-                "origin": "Pedestrian",
-                "recording_path": "",
-                "rule_id": "-1",
-                "rule_name": "",
-                "snapshot_path": "",
-                "time": "2022-01-12T10:34:54.6870000",
-                "timestamp": "1.533",
-                "type": "ObjectAppear",
-                "video_file_name": "Human.mp4",
-                "video_file_time": "2022-01-11T21:23:50.4930000"
-            },
-            {
-                "channel_id": "b7ad2693-c9bf-42a7-9cfa-7289ca30a708",
-                "channel_name": null,
-                "event_id": 15,
-                "object_id": "1",
-                "origin": "Pedestrian",
-                "recording_path": "",
-                "rule_id": "-1",
-                "rule_name": "",
-                "snapshot_path": "",
-                "time": "2022-01-12T10:35:07.8400000",
-                "timestamp": "7.333",
-                "type": "ObjectAppear",
-                "video_file_name": "Human.mp4",
-                "video_file_time": "2022-01-11T21:23:56.2930000"
-            },
-            {
-                "channel_id": "b7ad2693-c9bf-42a7-9cfa-7289ca30a708",
-                "channel_name": null,
-                "event_id": 16,
-                "object_id": "1",
-                "origin": "Pedestrian",
-                "recording_path": "",
-                "rule_id": "e953f9ef-3138-4052-887b-235eb81c00d4",
-                "rule_name": "Motion detection",
-                "snapshot_path": "C:\\Users\\hussain\\AppData\\Roaming\\Camlytics\\Data\\b7ad2693-c9bf-42a7-9cfa-7289ca30a708\\Snapshots\\MotionInRegionOn 1 2022-01-11 21-23-56-293.jpg",
-                "time": "2022-01-12T10:35:07.8400000",
-                "timestamp": "7.333",
-                "type": "MotionInRegionOn",
-                "video_file_name": "Human.mp4",
-                "video_file_time": "2022-01-11T21:23:56.2930000"
-            },
-            {
-                "channel_id": "b7ad2693-c9bf-42a7-9cfa-7289ca30a708",
-                "channel_name": null,
-                "event_id": 17,
-                "object_id": "1",
-                "origin": "Pedestrian",
-                "recording_path": "",
-                "rule_id": "-1",
-                "rule_name": "",
-                "snapshot_path": "",
-                "time": "2022-01-12T10:35:19.7270000",
-                "timestamp": "1.533",
-                "type": "ObjectAppear",
-                "video_file_name": "Human.mp4",
-                "video_file_time": "2022-01-11T21:23:50.4930000"
-            },
-            {
-                "channel_id": "b7ad2693-c9bf-42a7-9cfa-7289ca30a708",
-                "channel_name": null,
-                "event_id": 18,
-                "object_id": "1",
-                "origin": "Pedestrian",
-                "recording_path": "",
-                "rule_id": "e953f9ef-3138-4052-887b-235eb81c00d4",
-                "rule_name": "Motion detection",
-                "snapshot_path": "C:\\Users\\hussain\\AppData\\Roaming\\Camlytics\\Data\\b7ad2693-c9bf-42a7-9cfa-7289ca30a708\\Snapshots\\MotionInRegionOn 1 2022-01-11 21-23-50-493.jpg",
-                "time": "2022-01-12T10:35:19.7270000",
-                "timestamp": "1.533",
-                "type": "MotionInRegionOn",
-                "video_file_name": "Human.mp4",
-                "video_file_time": "2022-01-11T21:23:50.4930000"
-            },
-            {
-                "channel_id": "b7ad2693-c9bf-42a7-9cfa-7289ca30a708",
-                "channel_name": null,
-                "event_id": 19,
-                "object_id": "1",
-                "origin": "Pedestrian",
-                "recording_path": "",
-                "rule_id": "-1",
-                "rule_name": "",
-                "snapshot_path": "",
-                "time": "2022-01-12T10:35:23.9600000",
-                "timestamp": "9.067",
-                "type": "ObjectDisappear",
-                "video_file_name": "Human.mp4",
-                "video_file_time": "2022-01-11T21:23:58.0270000"
-            },
-            {
-                "channel_id": "b7ad2693-c9bf-42a7-9cfa-7289ca30a708",
-                "channel_name": null,
-                "event_id": 20,
+                "event_id": 70,
                 "object_id": "-1",
                 "origin": "Unknown",
                 "recording_path": "",
-                "rule_id": "e953f9ef-3138-4052-887b-235eb81c00d4",
-                "rule_name": "Motion detection",
+                "rule_id": "-1",
+                "rule_name": "",
                 "snapshot_path": "",
-                "time": "2022-01-12T10:35:25.1000000",
-                "timestamp": "18",
-                "type": "MotionInRegionOff",
-                "video_file_name": "Human.mp4",
-                "video_file_time": "2022-01-11T21:24:06.9600000"
+                "time": "2022-01-19T16:22:25.4330000",
+                "timestamp": "1.877",
+                "type": "Sabotage",
+                "video_file_name": "Test Video.mp4",
+                "video_file_time": "2022-01-19T16:21:11.8770000"
+            },
+            {
+                "channel_id": "09ed1f1f-63fe-41d9-8e4a-f4909f94f2b9",
+                "channel_name": null,
+                "event_id": 71,
+                "object_id": "1",
+                "origin": "Unknown",
+                "recording_path": "",
+                "rule_id": "-1",
+                "rule_name": "",
+                "snapshot_path": "",
+                "time": "2022-01-19T16:22:32.5630000",
+                "timestamp": "3.545",
+                "type": "ObjectAppear",
+                "video_file_name": "Test Video.mp4",
+                "video_file_time": "2022-01-19T16:21:13.5470000"
+            },
+            {
+                "channel_id": "09ed1f1f-63fe-41d9-8e4a-f4909f94f2b9",
+                "channel_name": null,
+                "event_id": 72,
+                "object_id": "1",
+                "origin": "Unknown",
+                "recording_path": "",
+                "rule_id": "18413998-0ab9-44ba-a90c-5d0ce844abff",
+                "rule_name": "Motion detection",
+                "snapshot_path": "C:\\Users\\hussain\\AppData\\Roaming\\Camlytics\\Data\\09ed1f1f-63fe-41d9-8e4a-f4909f94f2b9\\Snapshots\\MotionInRegionOn 1 2022-01-19 16-21-13-546.jpg",
+                "time": "2022-01-19T16:22:32.5630000",
+                "timestamp": "3.545",
+                "type": "MotionInRegionOn",
+                "video_file_name": "Test Video.mp4",
+                "video_file_time": "2022-01-19T16:21:13.5470000"
+            },
+            {
+                "channel_id": "09ed1f1f-63fe-41d9-8e4a-f4909f94f2b9",
+                "channel_name": null,
+                "event_id": 73,
+                "object_id": "2",
+                "origin": "Unknown",
+                "recording_path": "",
+                "rule_id": "-1",
+                "rule_name": "",
+                "snapshot_path": "",
+                "time": "2022-01-19T16:22:32.3670000",
+                "timestamp": "3.504",
+                "type": "ObjectAppear",
+                "video_file_name": "Test Video.mp4",
+                "video_file_time": "2022-01-19T16:21:13.5030000"
+            },
+            {
+                "channel_id": "09ed1f1f-63fe-41d9-8e4a-f4909f94f2b9",
+                "channel_name": null,
+                "event_id": 74,
+                "object_id": "3",
+                "origin": "Unknown",
+                "recording_path": "",
+                "rule_id": "-1",
+                "rule_name": "",
+                "snapshot_path": "",
+                "time": "2022-01-19T16:22:32.4470000",
+                "timestamp": "3.67",
+                "type": "ObjectAppear",
+                "video_file_name": "Test Video.mp4",
+                "video_file_time": "2022-01-19T16:21:13.6700000"
+            },
+            {
+                "channel_id": "09ed1f1f-63fe-41d9-8e4a-f4909f94f2b9",
+                "channel_name": null,
+                "event_id": 75,
+                "object_id": "3",
+                "origin": "Unknown",
+                "recording_path": "",
+                "rule_id": "-1",
+                "rule_name": "",
+                "snapshot_path": "",
+                "time": "2022-01-19T16:22:33.6030000",
+                "timestamp": "5.005",
+                "type": "ObjectDisappear",
+                "video_file_name": "Test Video.mp4",
+                "video_file_time": "2022-01-19T16:21:15.0070000"
+            },
+            {
+                "channel_id": "09ed1f1f-63fe-41d9-8e4a-f4909f94f2b9",
+                "channel_name": null,
+                "event_id": 76,
+                "object_id": "2",
+                "origin": "Unknown",
+                "recording_path": "",
+                "rule_id": "-1",
+                "rule_name": "",
+                "snapshot_path": "",
+                "time": "2022-01-19T16:22:33.6030000",
+                "timestamp": "5.005",
+                "type": "ObjectDisappear",
+                "video_file_name": "Test Video.mp4",
+                "video_file_time": "2022-01-19T16:21:15.0070000"
+            },
+            {
+                "channel_id": "09ed1f1f-63fe-41d9-8e4a-f4909f94f2b9",
+                "channel_name": null,
+                "event_id": 77,
+                "object_id": "5",
+                "origin": "Vehicle",
+                "recording_path": "",
+                "rule_id": "-1",
+                "rule_name": "",
+                "snapshot_path": "",
+                "time": "2022-01-19T16:22:32.8100000",
+                "timestamp": "4.213",
+                "type": "ObjectAppear",
+                "video_file_name": "Test Video.mp4",
+                "video_file_time": "2022-01-19T16:21:14.2130000"
+            },
+            {
+                "channel_id": "09ed1f1f-63fe-41d9-8e4a-f4909f94f2b9",
+                "channel_name": null,
+                "event_id": 78,
+                "object_id": "4",
+                "origin": "Vehicle",
+                "recording_path": "",
+                "rule_id": "-1",
+                "rule_name": "",
+                "snapshot_path": "",
+                "time": "2022-01-19T16:22:32.1430000",
+                "timestamp": "3.545",
+                "type": "ObjectAppear",
+                "video_file_name": "Test Video.mp4",
+                "video_file_time": "2022-01-19T16:21:13.5470000"
+            },
+            {
+                "channel_id": "09ed1f1f-63fe-41d9-8e4a-f4909f94f2b9",
+                "channel_name": null,
+                "event_id": 79,
+                "object_id": "1",
+                "origin": "Unknown",
+                "recording_path": "",
+                "rule_id": "-1",
+                "rule_name": "",
+                "snapshot_path": "",
+                "time": "2022-01-19T16:22:33.8930000",
+                "timestamp": "5.589",
+                "type": "ObjectDisappear",
+                "video_file_name": "Test Video.mp4",
+                "video_file_time": "2022-01-19T16:21:15.5900000"
             }
         ]
     }
@@ -393,11 +435,14 @@ Retrieve video analytics events ordered by event id.
 >### Results
 >|channel_id|channel_name|event_id|object_id|origin|recording_path|rule_id|rule_name|snapshot_path|time|timestamp|type|video_file_name|video_file_time|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| b7ad2693-c9bf-42a7-9cfa-7289ca30a708 |  | 14 | 1 | Pedestrian |  | -1 |  |  | 2022-01-12T10:34:54.6870000 | 1.533 | ObjectAppear | Human.mp4 | 2022-01-11T21:23:50.4930000 |
->| b7ad2693-c9bf-42a7-9cfa-7289ca30a708 |  | 15 | 1 | Pedestrian |  | -1 |  |  | 2022-01-12T10:35:07.8400000 | 7.333 | ObjectAppear | Human.mp4 | 2022-01-11T21:23:56.2930000 |
->| b7ad2693-c9bf-42a7-9cfa-7289ca30a708 |  | 16 | 1 | Pedestrian |  | e953f9ef-3138-4052-887b-235eb81c00d4 | Motion detection | C:\Users\hussain\AppData\Roaming\Camlytics\Data\b7ad2693-c9bf-42a7-9cfa-7289ca30a708\Snapshots\MotionInRegionOn 1 2022-01-11 21-23-56-293.jpg | 2022-01-12T10:35:07.8400000 | 7.333 | MotionInRegionOn | Human.mp4 | 2022-01-11T21:23:56.2930000 |
->| b7ad2693-c9bf-42a7-9cfa-7289ca30a708 |  | 17 | 1 | Pedestrian |  | -1 |  |  | 2022-01-12T10:35:19.7270000 | 1.533 | ObjectAppear | Human.mp4 | 2022-01-11T21:23:50.4930000 |
->| b7ad2693-c9bf-42a7-9cfa-7289ca30a708 |  | 18 | 1 | Pedestrian |  | e953f9ef-3138-4052-887b-235eb81c00d4 | Motion detection | C:\Users\hussain\AppData\Roaming\Camlytics\Data\b7ad2693-c9bf-42a7-9cfa-7289ca30a708\Snapshots\MotionInRegionOn 1 2022-01-11 21-23-50-493.jpg | 2022-01-12T10:35:19.7270000 | 1.533 | MotionInRegionOn | Human.mp4 | 2022-01-11T21:23:50.4930000 |
->| b7ad2693-c9bf-42a7-9cfa-7289ca30a708 |  | 19 | 1 | Pedestrian |  | -1 |  |  | 2022-01-12T10:35:23.9600000 | 9.067 | ObjectDisappear | Human.mp4 | 2022-01-11T21:23:58.0270000 |
->| b7ad2693-c9bf-42a7-9cfa-7289ca30a708 |  | 20 | -1 | Unknown |  | e953f9ef-3138-4052-887b-235eb81c00d4 | Motion detection |  | 2022-01-12T10:35:25.1000000 | 18 | MotionInRegionOff | Human.mp4 | 2022-01-11T21:24:06.9600000 |
+>| 09ed1f1f-63fe-41d9-8e4a-f4909f94f2b9 |  | 70 | -1 | Unknown |  | -1 |  |  | 2022-01-19T16:22:25.4330000 | 1.877 | Sabotage | Test Video.mp4 | 2022-01-19T16:21:11.8770000 |
+>| 09ed1f1f-63fe-41d9-8e4a-f4909f94f2b9 |  | 71 | 1 | Unknown |  | -1 |  |  | 2022-01-19T16:22:32.5630000 | 3.545 | ObjectAppear | Test Video.mp4 | 2022-01-19T16:21:13.5470000 |
+>| 09ed1f1f-63fe-41d9-8e4a-f4909f94f2b9 |  | 72 | 1 | Unknown |  | 18413998-0ab9-44ba-a90c-5d0ce844abff | Motion detection | C:\Users\hussain\AppData\Roaming\Camlytics\Data\09ed1f1f-63fe-41d9-8e4a-f4909f94f2b9\Snapshots\MotionInRegionOn 1 2022-01-19 16-21-13-546.jpg | 2022-01-19T16:22:32.5630000 | 3.545 | MotionInRegionOn | Test Video.mp4 | 2022-01-19T16:21:13.5470000 |
+>| 09ed1f1f-63fe-41d9-8e4a-f4909f94f2b9 |  | 73 | 2 | Unknown |  | -1 |  |  | 2022-01-19T16:22:32.3670000 | 3.504 | ObjectAppear | Test Video.mp4 | 2022-01-19T16:21:13.5030000 |
+>| 09ed1f1f-63fe-41d9-8e4a-f4909f94f2b9 |  | 74 | 3 | Unknown |  | -1 |  |  | 2022-01-19T16:22:32.4470000 | 3.67 | ObjectAppear | Test Video.mp4 | 2022-01-19T16:21:13.6700000 |
+>| 09ed1f1f-63fe-41d9-8e4a-f4909f94f2b9 |  | 75 | 3 | Unknown |  | -1 |  |  | 2022-01-19T16:22:33.6030000 | 5.005 | ObjectDisappear | Test Video.mp4 | 2022-01-19T16:21:15.0070000 |
+>| 09ed1f1f-63fe-41d9-8e4a-f4909f94f2b9 |  | 76 | 2 | Unknown |  | -1 |  |  | 2022-01-19T16:22:33.6030000 | 5.005 | ObjectDisappear | Test Video.mp4 | 2022-01-19T16:21:15.0070000 |
+>| 09ed1f1f-63fe-41d9-8e4a-f4909f94f2b9 |  | 77 | 5 | Vehicle |  | -1 |  |  | 2022-01-19T16:22:32.8100000 | 4.213 | ObjectAppear | Test Video.mp4 | 2022-01-19T16:21:14.2130000 |
+>| 09ed1f1f-63fe-41d9-8e4a-f4909f94f2b9 |  | 78 | 4 | Vehicle |  | -1 |  |  | 2022-01-19T16:22:32.1430000 | 3.545 | ObjectAppear | Test Video.mp4 | 2022-01-19T16:21:13.5470000 |
+>| 09ed1f1f-63fe-41d9-8e4a-f4909f94f2b9 |  | 79 | 1 | Unknown |  | -1 |  |  | 2022-01-19T16:22:33.8930000 | 5.589 | ObjectDisappear | Test Video.mp4 | 2022-01-19T16:21:15.5900000 |
 
