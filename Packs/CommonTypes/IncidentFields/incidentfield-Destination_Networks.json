@@ -1,23 +1,18 @@
 {
-    "associatedToAll": false,
-    "associatedTypes": [
-        "Qradar Generic",
-        "FW change management"
-    ],
+    "associatedToAll": true,
     "caseInsensitive": true,
-    "cliName": "destinationips",
+    "cliName": "destinationnetworks",
     "closeForm": false,
     "content": true,
-    "description": "The destination IPs of the event.",
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_destinationips",
-    "isExtractingSpecificIndicatorTypes": false,
+    "id": "incident_destinationnetworks",
     "isReadOnly": false,
     "locked": false,
-    "name": "Destination IPs",
+    "name": "Destination Networks",
     "neverSetAsRequired": false,
+    "openEnded": true,
     "ownerOnly": false,
     "propagationLabels": [
         "all"
@@ -31,6 +26,5 @@
     "unsearchable": true,
     "useAsKpi": false,
     "version": -1,
-    "fromVersion": "6.0.0",
-    "openEnded": true
+    "fromVersion": "5.5.0"
 }
