@@ -54,7 +54,7 @@ FETCH_SIZE = int(param.get('fetch_size', 50))
 INSECURE = not param.get('insecure', False)
 TIME_METHOD = param.get('time_method', 'Simple-Date')
 TIMEOUT = int(param.get('timeout') or 60)
-MAP_LABELS = param.get('map_labels', 'true') == 'true'
+MAP_LABELS = param.get('map_labels', True)
 
 
 def get_timestamp_first_fetch(last_fetch):
