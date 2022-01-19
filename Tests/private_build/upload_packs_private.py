@@ -506,7 +506,7 @@ def main():
     # detect packs to upload
     pack_names = get_packs_names(target_packs)
     extract_packs_artifacts(packs_artifacts_path, extract_destination_path)
-    packs_list = [Pack(pack_name, os.path.join(extract_destination_path, pack_name)) for pack_name in pack_names
+    packs_list = [Pack(pack_name, os.path.join(extract_destination_path, pack_name), 'xsoar') for pack_name in pack_names
                   if os.path.exists(os.path.join(extract_destination_path, pack_name))]
 
     if not is_private_build:
