@@ -3,7 +3,7 @@
     "description": "Maps incoming ServiceNow SIR incident fields.",
     "feed": false,
     "fromVersion": "6.0.0",
-    "id": "ServiceNow-incoming-SIR-mapper",
+    "id": "ServiceNow - Incoming SIR Mapper",
     "mapping": {
         "ServiceNow Ticket": {
             "dontMapEventToLabels": false,
@@ -42,10 +42,10 @@
                                 "args": {
                                     "dayfirst": {
                                         "isContext": false,
-                                         "value": {
-                                                  "complex": null,
-                                                  "simple": "false"
-                                                }
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "false"
+                                        }
                                     },
                                     "fuzzy": {
                                         "isContext": false,
@@ -501,7 +501,8 @@
                                     }
                                 },
                                 "operator": "replace"
-                            },{
+                            },
+                            {
                                 "args": {
                                     "limit": {
                                         "isContext": false,
@@ -523,7 +524,8 @@
                                     }
                                 },
                                 "operator": "replace"
-                            },{
+                            },
+                            {
                                 "args": {
                                     "limit": {
                                         "isContext": false,
@@ -648,9 +650,9 @@
                                     "dayfirst": {
                                         "isContext": false,
                                         "value": {
-                                                  "complex": null,
-                                                  "simple": "false"
-                                                }
+                                            "complex": null,
+                                            "simple": "false"
+                                        }
                                     },
                                     "fuzzy": {
                                         "isContext": false,
@@ -694,10 +696,10 @@
                                 "args": {
                                     "dayfirst": {
                                         "isContext": false,
-                                         "value": {
-                                                  "complex": null,
-                                                  "simple": "false"
-                                                }
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "false"
+                                        }
                                     },
                                     "fuzzy": {
                                         "isContext": false,
@@ -808,9 +810,9 @@
                     "simple": ""
                 },
                 "ServiceNow Ticket ID": {
-					"complex": null,
-					"simple": "sys_id"
-				}
+                    "complex": null,
+                    "simple": "sys_id"
+                }
             }
         }
     },
