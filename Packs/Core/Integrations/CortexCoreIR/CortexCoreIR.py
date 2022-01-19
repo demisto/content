@@ -2608,7 +2608,9 @@ def main():
     command = demisto.command()
     LOG(f'Command being called is {command}')
 
-    api_key = demisto.params().get('apikey')
+    args = demisto.args()
+
+    api_key = demisto.params().get('apikey') if command != "core-report-incorrect-wildfire" else demisto.args().get('master_key')
     api_key_id = demisto.params().get('apikey_id')
     base_url = urljoin(demisto.params().get('url'), '/public_api/v1')
     proxy = demisto.params().get('proxy')
@@ -2640,8 +2642,6 @@ def main():
         headers=headers,
         timeout=timeout
     )
-
-    args = demisto.args()
 
     try:
         if command == 'test-module':

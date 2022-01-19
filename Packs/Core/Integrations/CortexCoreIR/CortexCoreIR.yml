@@ -2183,8 +2183,13 @@ script:
       type: String
   - arguments:
       - default: false
-        description: String that represents the file’s hash. Must be a valid SHA256
-          hash.
+        description: String that represents the Master Key.
+        isArray: false
+        name: master_key
+        required: true
+        secret: false
+      - default: false
+        description: String that represents the file’s hash. Must be a valid SHA256 hash.
         isArray: false
         name: file_hash
         required: true
