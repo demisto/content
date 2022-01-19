@@ -3,31 +3,31 @@ from ReversingLabsRansomwareAndRelatedToolsFeed import create_indicator_object, 
 
 
 RL_INDICATOR = {
-        "indicatorValue": "197.232.50.85",
-        "indicatorType": "ipv4",
-        "daysValid": 30,
-        "confidence": 100,
-        "rating": 4.0,
-        "indicatorTags": {
-            "lifecycleStage": "Middle",
-            "malwareType": "Trojan",
-            "malwareFamilyName": "TrickBot",
-            "mitre": [
-                "T1071 Application Layer Protocol",
-                "T1095 Non-Application Layer Protocol",
-                "T1105 Ingress Tool Transfer",
-                "T1573 Encrypted Channel"
-            ],
-            "source": "ReversingLabs",
-            "port": [
-                "TCP-443"
-            ],
-            "asn": "AS36866::KE::JTL"
-        },
-        "lastUpdate": "2022-01-19T14:48:03Z",
-        "deleted": False,
-        "uuid": "indicator--4b827068-3ea0-567d-99ba-ec8ed160d1f7"
-    }
+    "indicatorValue": "197.232.50.85",
+    "indicatorType": "ipv4",
+    "daysValid": 30,
+    "confidence": 100,
+    "rating": 4.0,
+    "indicatorTags": {
+        "lifecycleStage": "Middle",
+        "malwareType": "Trojan",
+        "malwareFamilyName": "TrickBot",
+        "mitre": [
+            "T1071 Application Layer Protocol",
+            "T1095 Non-Application Layer Protocol",
+            "T1105 Ingress Tool Transfer",
+            "T1573 Encrypted Channel"
+        ],
+        "source": "ReversingLabs",
+        "port": [
+            "TCP-443"
+        ],
+        "asn": "AS36866::KE::JTL"
+    },
+    "lastUpdate": "2022-01-19T14:48:03Z",
+    "deleted": False,
+    "uuid": "indicator--4b827068-3ea0-567d-99ba-ec8ed160d1f7"
+}
 
 
 XSOAR_INDICATOR = {
@@ -82,4 +82,3 @@ def test_return_validated_params():
     assert hours_historical <= 4
     assert isinstance(indicator_types_param, str)
     assert indicator_types_param == ",".join(PARAMS.get("indicatorTypes"))
-
