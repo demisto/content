@@ -236,6 +236,22 @@ def test_indian_tld():
     assert result == "in.whois-servers.net"
 
 
+def test_ph_tld():
+    """
+    Given:
+        - A domain that its extension (tld) is '.ph'
+
+    When:
+        - running the get_root_server function
+
+    Then:
+        - Verify the function returns the correct Whois server
+    """
+    from Whois import get_root_server
+    host = get_root_server("test.com.ph")
+    assert host == "whois.iana.org"
+
+
 def test_parse_raw_whois():
     with open('test_data/EU domains.text', 'r') as f:
         raw_data = f.read()
