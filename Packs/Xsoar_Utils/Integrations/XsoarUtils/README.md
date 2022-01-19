@@ -6,7 +6,6 @@ The idea is to use the same code to test from a local machine.
 python3  Xsoar_Utils.py  xsoar-create-entry  '{"data":"# testapi4","inv_id":"122c7bff-feae-4177-867e-37e2096cd7d9"}'
 
 Read the code to understand more.
-This integration was integrated and tested with version xx of Xsoar_Utils
 
 ## Configure Xsoar_Utils on Cortex XSOAR
 
