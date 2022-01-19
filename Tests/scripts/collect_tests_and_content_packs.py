@@ -142,6 +142,9 @@ CONF: TestConf = None  # type: ignore[assignment]
 if os.path.isfile('./artifacts/id_set.json'):
     with open('./artifacts/id_set.json', 'r') as conf_file:
         ID_SET = json.load(conf_file)
+elif os.path.isfile('./artifacts/id_set_mp_v2.json'):
+    with open('./artifacts/id_set_mp_v2.json', 'r') as conf_file:
+        ID_SET = json.load(conf_file)
 
 if os.path.isfile('./artifacts/conf.json'):
     with open('./artifacts/conf.json', 'r') as conf_file:
