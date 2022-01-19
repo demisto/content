@@ -83,7 +83,7 @@ tasks:
       alert-status:
         simple: resolved
       time-range-unit:
-        simple: week
+        simple: day
       time-range-value:
         simple: "1"
     separatecontext: false
