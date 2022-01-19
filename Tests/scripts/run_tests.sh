@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 SECRET_CONF_PATH=$(cat secret_conf_path)
-CONF_PATH="./Tests/conf.json"
+CONF_PATH="./Tests/mini_conf.json"
 
 [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
 [ -n "${MEM_CHECK}" ] && MEM_CHECK=true || MEM_CHECK=false
