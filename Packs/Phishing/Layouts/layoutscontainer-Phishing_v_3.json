@@ -989,7 +989,7 @@
     "edit": {
         "sections": [
             {
-                "description": "Trigger the incident based on a phishing email attachment.\n\nPlease fill in:\n1. A name of the incident.\n2. The email address for which you're making the report (optional).\n3. An EML or MSG file representing the phishing email, or containing another EML or MSG file of the phishing email within it.\n\nIf the reporter email address is left blank - user engagement will be skipped in the playbook.",
+                "description": "Trigger the incident based on a phishing email attachment.\n\nPlease fill in:\n1. A name for the incident.\n2. The email address for which you're making the report (optional).\n3. An EML or MSG file representing the phishing email, or containing another EML or MSG file of the phishing email within it.\n\nIf the reporter email address is left blank, user engagement will be skipped in the playbook.",
                 "fields": [
                     {
                         "fieldId": "incident_name",
