@@ -6,12 +6,12 @@ USER_AGENT = f"ReversingLabs XSOAR Ransomware Feed {VERSION}"
 
 MAX_HOURS_HISTORICAL = 4
 
-ALLOWED_INDICATOR_TYPES = ("ipv4", "domain", "Hash", "uri")
+ALLOWED_INDICATOR_TYPES = ("ipv4", "domain", "hash", "uri")
 
 INDICATOR_TYPE_MAP = {
     "ipv4": FeedIndicatorType.IP,
     "domain": FeedIndicatorType.Domain,
-    "Hash": FeedIndicatorType.File,
+    "hash": FeedIndicatorType.File,
     "uri": FeedIndicatorType.URL
 }
 
@@ -128,14 +128,39 @@ def fetch_indicators_command(client, params):
     return indicators, new_last_run
 
 
+def map_file_info(indicator, tag_list, file_info):
+    if file_info:
+        if isinstance(file_info, list):
+            tag_list.extend(file_info)
+
+        elif isinstance(file_info, dict):
+            file_name = file_info.get("fileName")
+
+            file_info_fields = assign_params(
+                size=file_info.get("fileSize"),
+                filetype=file_info.get("fileType"),
+                associatedfilenames=[file_name]
+            )
+
+            indicator["fields"].update(file_info_fields)
+
+            if file_name and isinstance(file_name, str):
+                file_name_parts = file_name.split(".")
+
+                if len(file_name_parts) > 1:
+                    file_extension = file_name_parts[-1]
+                    indicator["fields"]["fileextension"] = file_extension
+
+
 def create_indicator_object(rl_indicator, user_tag_list, tlp_color_param):
     last_update = rl_indicator.get("lastUpdate", None)
     last_seen = datetime.strptime(last_update, "%Y-%m-%dT%H:%M:%SZ") if last_update else datetime.now()
     last_seen = last_seen.strftime("%Y-%m-%dT%H:%M:%S+00:00")
+    indicator_type = rl_indicator.get("indicatorType").lower()
 
     indicator = {
         "value": rl_indicator.get("indicatorValue"),
-        "type": INDICATOR_TYPE_MAP.get(rl_indicator.get("indicatorType"), None),
+        "type": INDICATOR_TYPE_MAP.get(indicator_type),
         "rawJSON": rl_indicator,
         "fields": {
             "lastseenbysource": last_seen
@@ -148,34 +173,11 @@ def create_indicator_object(rl_indicator, user_tag_list, tlp_color_param):
     if not indicator_tags:
         return indicator
 
-    additional_fields = assign_params(
-        malwaretypes=indicator_tags.get("malwareType"),
-        malwarefamily=indicator_tags.get("malwareFamilyName"),
-        port=indicator_tags.get("port"),
-        trafficlightprotocol=tlp_color_param
-    )
-
-    indicator["fields"].update(additional_fields)
-
-    hashes = rl_indicator.get("hash", None)
-    if hashes:
-        hash_fields = assign_params(
-            sha1=hashes.get("sha1"),
-            sha256=hashes.get("sha256"),
-            md5=hashes.get("md5")
-        )
-
-        indicator["fields"].update(hash_fields)
-
     tag_list = []
 
     mitre = indicator_tags.get("mitre")
     if mitre:
         tag_list.extend(mitre)
-
-    protocol = indicator_tags.get("Protocol")
-    if protocol:
-        tag_list.extend(protocol)
 
     lifecycle_stage = indicator_tags.get("lifecycleStage")
     if lifecycle_stage:
@@ -184,6 +186,41 @@ def create_indicator_object(rl_indicator, user_tag_list, tlp_color_param):
     source = indicator_tags.get("source")
     if source:
         tag_list.append(source)
+
+    additional_fields = assign_params(
+        malwaretypes=indicator_tags.get("malwareType"),
+        malwarefamily=indicator_tags.get("malwareFamilyName"),
+        trafficlightprotocol=tlp_color_param
+    )
+
+    indicator["fields"].update(additional_fields)
+
+    if indicator_type == "hash":
+        hashes = rl_indicator.get("hash")
+        if hashes:
+            hash_fields = assign_params(
+                sha1=hashes.get("sha1"),
+                sha256=hashes.get("sha256"),
+                md5=hashes.get("md5")
+            )
+
+            indicator["fields"].update(hash_fields)
+
+        map_file_info(indicator, tag_list, indicator_tags.get("fileInfo"))
+
+    elif indicator_type in ("ipv4", "uri", "domain"):
+        port = indicator_tags.get("port")
+        if port:
+            indicator["fields"]["port"] = port
+
+        protocol = indicator_tags.get("Protocol")
+        if protocol:
+            tag_list.extend(protocol)
+
+        if indicator_type == "ipv4":
+            asn = indicator_tags.get("asn")
+            if asn:
+                indicator["fields"]["asn"] = asn
 
     tag_list.extend(user_tag_list)
 
@@ -205,7 +242,7 @@ def get_indicators_command(client):
     if hours_arg > MAX_HOURS_HISTORICAL:
         hours_arg = MAX_HOURS_HISTORICAL
 
-    indicator_types_arg = demisto.args().get("indicator_types", "ipv4,domain,Hash,uri").replace(" ", "")
+    indicator_types_arg = demisto.args().get("indicator_types", "ipv4,domain,hash,uri").replace(" ", "")
 
     for indicator_type in indicator_types_arg.split(","):
         if indicator_type not in ALLOWED_INDICATOR_TYPES:
