@@ -65,3 +65,10 @@ def test_feed_tags_param(mocker, tlp_color):
         assert indicators[0].get('fields').get('trafficlightprotocol') == tlp_color
     else:
         assert not indicators[0].get('fields').get('trafficlightprotocol')
+
+
+def test_something(mocker):
+    client = Client(api_key="a", insecure=False, proxy=None, indicator_feeds=['Daily Threat Feed'])
+    mocker.patch.object(client, 'daily_custom_http_request', return_value=INDICATORS)
+    client.find_indicator_type(indicator='146.185.215.64/7/server/')
+    print()
