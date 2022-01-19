@@ -73,7 +73,6 @@ def test_create_indicator_object():
     indicator = create_indicator_object(rl_indicator=RL_INDICATOR, user_tag_list=["MyCustomTag", "AnotherCustomTag"],
                                         tlp_color_param=None)
 
-    print(indicator)
     assert indicator == XSOAR_INDICATOR
 
 
