@@ -12,7 +12,7 @@ requests.packages.urllib3.disable_warnings()
 
 APP_NAME = 'ms-azure-log-analytics'
 
-API_VERSION = '2020-03-01-preview'
+API_VERSION = '2021-06-01'
 
 AUTHORIZATION_ERROR_MSG = 'There was a problem in retrieving an updated access token.\n'\
                           'The response from the server did not contain the expected content.'

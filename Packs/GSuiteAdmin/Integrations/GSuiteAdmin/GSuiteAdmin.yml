@@ -2272,7 +2272,7 @@ script:
       description: List of the group's non-editable alias email addresses that are
         outside of the account's primary domain or subdomains.
       type: String
-  dockerimage: demisto/googleapi-python3:1.0.0.25341
+  dockerimage: demisto/googleapi-python3:1.0.0.25823
   feed: false
   isfetch: false
   longRunning: false

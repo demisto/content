@@ -237,33 +237,59 @@ def expand_urls(data, depth=0):
                     return expand_urls(value, depth + 1)
 
 
-def search_user(query: str, max_results: str = '50'):
+def search_user(query: str, max_results: str = '50', is_jirav2api: bool = False):
     """
         Search for user by name or email address.
     Args:
         query: A query string that is matched against user attributes ( displayName, and emailAddress) to find relevant users.
         max_results (str): The maximum number of items to return. default by the server: 50
+        is_jirav2api (bool): if the instance is connecting to a Jira Server that supports only the v2 REST API. default as False
+
 
     Returns:
         List of users.
     """
-    url = f"rest/api/latest/user/search?query={query}&maxResults={max_results}"
+
+    if is_jirav2api:
+        """
+        override user identifier for Jira v2 API
+        https://docs.atlassian.com/software/jira/docs/api/REST/8.13.15/#user-findUsers
+        """
+        url = f"rest/api/latest/user/search?username={query}&maxResults={max_results}"
+    else:
+        url = f"rest/api/latest/user/search?query={query}&maxResults={max_results}"
+
     res = jira_req('GET', url, resp_type='json')
     return res
 
 
-def get_account_id_from_attribute(attribute: str, max_results: str = '50') -> Union[CommandResults, str]:
+def get_account_id_from_attribute(
+        attribute: str,
+        max_results: str = '50',
+        is_jirav2api: str = 'false') -> Union[CommandResults, str]:
     """
     https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-user-search/#api-rest-api-3-user-search-get
 
     Args:
         attribute (str): Username or Email address of a user.
         max_results (str): The maximum number of items to return. default by the server: 50
+        is_jirav2api (str): if the instance is connecting to a Jira Server that supports only the v2 REST API. default as false
     """
-    users = search_user(attribute, max_results)
-    account_ids = {
-        user.get('accountId') for user in users if (attribute.lower() in [user.get('displayName', '').lower(),
-                                                                          user.get('emailAddress', '').lower()])}
+
+    if is_jirav2api == 'true':
+        """
+        override user identifier for Jira v2 API
+        https://docs.atlassian.com/software/jira/docs/api/REST/8.13.15/#user-findUsers
+        """
+        users = search_user(attribute, max_results, is_jirav2api=True)
+        account_ids = {
+            user.get('name') for user in users if (attribute.lower() in [user.get('displayName', '').lower(),
+                                                                         user.get('emailAddress', '').lower()])}
+    else:
+        users = search_user(attribute, max_results)
+        account_ids = {
+            user.get('accountId') for user in users if (attribute.lower() in [user.get('displayName', '').lower(),
+                                                                              user.get('emailAddress', '').lower()])}
 
     if not account_ids:
         return f'No Account ID was found for attribute: {attribute}.'

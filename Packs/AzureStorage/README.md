@@ -14,5 +14,5 @@ The integration in this pack enables you to:
 
 ## Authorization
 To connect to the Azure Storage Accounts and the Blob Service, you will need to run the commands for the azure storage authorization process
-and then log in to the Crtex XSOAR Azure App or Self-Deployed Azure App.
+and then log in to the Cortex XSOAR Azure App or Self-Deployed Azure App.
 

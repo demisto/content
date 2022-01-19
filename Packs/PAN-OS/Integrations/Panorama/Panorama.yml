@@ -134,6 +134,9 @@ script:
       name: job-id
     - description: Query string.
       name: query
+    - description: The name of the virtual system to be configured. If no vsys is
+        mentioned, this command will not use the vsys parameter.
+      name: vsys
     description: Run any command supported in the API.
     name: panorama
   - arguments:
@@ -187,20 +190,20 @@ script:
       description: Force Commit.
       name: force_commit
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
     - auto: PREDEFINED
       description: Partial commit while excluding device and network configuration.
       name: exclude_device_network_configuration
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
     - auto: PREDEFINED
       description: Partial commit while excluding shared objects.
       name: exclude_shared_objects
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
     description: Commits a configuration to the Palo Alto firewall or Panorama, but
       does not validate if the commit was successful. Committing to Panorama does
       not push the configuration to the firewalls. To push the configuration, run
@@ -233,9 +236,13 @@ script:
       - 'false'
     - description: Push description.
       name: description
-    - description: The serial number for a virtual system commit. If provided, the commit will be a virtual system commit.
+    - description: The serial number for a virtual system commit. If provided, the
+        commit will be a virtual system commit.
       name: serial_number
-    description: Pushes rules from PAN-OS to the configured device group. In order to push the configuration to Prisma Access managed tenants (single or multi tenancy), use the device group argument with the device group which is associated with the tenant ID.
+    description: Pushes rules from PAN-OS to the configured device group. In order
+      to push the configuration to Prisma Access managed tenants (single or multi
+      tenancy), use the device group argument with the device group which is associated
+      with the tenant ID.
     name: panorama-push-to-device-group
     outputs:
     - contextPath: Panorama.Push.DeviceGroup
@@ -955,7 +962,7 @@ script:
       description: URL to check.
       isArray: true
       name: url
-      required: false
+      required: true
     description: Gets a URL category from URL filtering.
     execution: false
     name: url
@@ -1901,7 +1908,8 @@ script:
       predefined:
       - 'true'
       - 'false'
-    - description: Timeout value to automatically unregister the IPs. Only applicable to PAN-OS 9.x and higher. Can not be used with persistent as true.
+    - description: Timeout value to automatically unregister the IPs. Only applicable
+        to PAN-OS 9.x and higher. Can not be used with persistent as true.
       name: timeout
     description: Registers IP addresses to a tag.
     name: panorama-register-ip-tag
@@ -2404,6 +2412,10 @@ script:
       name: source-user
     - description: Target number of the firewall. Use only on a Panorama instance.
       name: target
+      isArray: true
+    - description: Target vsys of the firewall. Use only on a Panorama instance.
+      name: vsys
+      isArray: true
     description: Checks whether a session matches a specified security policy. This
       command is only available on Firewall instances.
     name: panorama-security-policy-match
@@ -3448,7 +3460,7 @@ script:
     - contextPath: Panorama.Content.Install.Status
       description: Installation status.
       type: string
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.9.9.25564
   runonce: false
   script: ''
   subtype: python3

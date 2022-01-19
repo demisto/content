@@ -1,0 +1,19 @@
+commonfields:
+  id: CBSensors
+  version: -1
+name: CBSensors
+script: ''
+type: javascript
+tags:
+- carbon-black
+- endpoint
+comment: List Carbon Black sensors
+system: true
+scripttarget: 0
+dependson:
+  must:
+  - cb-list-sensors
+timeout: 0s
+fromversion: 5.0.0
+tests:
+- No tests

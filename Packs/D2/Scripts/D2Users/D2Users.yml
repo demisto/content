@@ -1,0 +1,17 @@
+commonfields:
+  id: D2Users
+  version: -1
+name: D2Users
+script: ''
+type: javascript
+tags:
+- agent
+- endpoint
+comment: Show local accounts
+system: true
+scripttarget: 1
+dependson: {}
+timeout: 0s
+fromversion: 5.0.0
+tests:
+- no test

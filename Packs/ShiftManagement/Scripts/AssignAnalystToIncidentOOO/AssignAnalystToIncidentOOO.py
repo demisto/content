@@ -21,10 +21,17 @@ def main():
     list_info = ooo_list[0].get('EntryContext').get('ShiftManagment.OOOUsers')
     list_info = [i['username'] for i in list_info]
 
+    # Get Away Users
+    away_users_response = demisto.executeCommand("GetAwayUsers", {})
+    if is_error(away_users_response) or not away_users_response:
+        return_error(f'Failed to get away users: {str(get_error(away_users_response))}')
+    away_users: List[Dict] = away_users_response[0].get('EntryContext', {}).get('AwayUsers', [])
+    away_user_names: List[str] = [away_user['username'] for away_user in away_users] if away_users else []
     # Build list of users that we can assign to
     userinfo = userinfo[0]['Contents']
 
-    non_OOO_list = [x['username'] for x in userinfo if x['username'] not in list_info]
+    non_OOO_list = [x['username'] for x in userinfo if
+                    x['username'] not in list_info and x['username'] not in away_user_names]
 
     # Assign user to the Incident, if there is anyone to assign
     if not non_OOO_list:

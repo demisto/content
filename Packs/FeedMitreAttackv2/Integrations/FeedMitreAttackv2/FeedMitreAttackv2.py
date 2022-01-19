@@ -239,7 +239,7 @@ def map_fields_by_type(indicator_type: str, indicator_json: dict):
     for external_reference in indicator_json.get('external_references', []):
         if external_reference.get('external_id'):
             continue
-        url = external_reference.get('url')
+        url = external_reference.get('url', '')
         description = external_reference.get('description')
         source_name = external_reference.get('source_name')
         publications.append({'link': url, 'title': description, 'source': source_name})
@@ -335,12 +335,17 @@ def create_relationship(item_json, id_to_name):
         demisto.debug(f"Invalid relation type: {item_json.get('relationship_type')}")
         return
 
-    return EntityRelationship(name=item_json.get('relationship_type'),
-                              entity_a=id_to_name.get(item_json.get('source_ref')),
-                              entity_a_type=a_type,
-                              entity_b=id_to_name.get(item_json.get('target_ref')),
-                              entity_b_type=b_type,
-                              fields=mapping_fields)
+    entity_a = id_to_name.get(item_json.get('source_ref'))
+    entity_b = id_to_name.get(item_json.get('target_ref'))
+
+    if entity_b and entity_a:
+        return EntityRelationship(name=item_json.get('relationship_type'),
+                                  entity_a=entity_a,
+                                  entity_a_type=a_type,
+                                  entity_b=entity_b,
+                                  entity_b_type=b_type,
+                                  fields=mapping_fields)
+    return None
 
 
 def handle_multiple_dates_in_one_field(field_name: str, field_value: str):

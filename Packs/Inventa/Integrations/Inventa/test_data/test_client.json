@@ -1,0 +1,3351 @@
+{
+    "get_entities": {
+        "Demographic": [
+            {
+                "entityName": "BIRTHDAY",
+                "sensitive": false
+            }
+        ],
+        "Digital Identification": [
+            {
+                "entityName": "BROWSER_USER_AGENT",
+                "sensitive": false
+            },
+            {
+                "entityName": "GUID",
+                "sensitive": false
+            }
+        ],
+        "Financial information": [
+            {
+                "entityName": "ACCOUNT_NUMBER",
+                "sensitive": false
+            },
+            {
+                "entityName": "CC_CVV",
+                "sensitive": false
+            },
+            {
+                "entityName": "CC_EXPIRES",
+                "sensitive": false
+            },
+            {
+                "entityName": "CC_NUMBER",
+                "sensitive": false
+            },
+            {
+                "entityName": "CC_TYPE",
+                "sensitive": false
+            }
+        ],
+        "Race": [
+            {
+                "entityName": "RACE",
+                "sensitive": true
+            }
+        ],
+        "Vehicle related information": [
+            {
+                "entityName": "VEHICLE_NUMBER",
+                "sensitive": false
+            },
+            {
+                "entityName": "VEHICLE_YEAR",
+                "sensitive": false
+            },
+            {
+                "entityName": "VEHICLE_MODEL",
+                "sensitive": false
+            },
+            {
+                "entityName": "VEHICLE_TYPE",
+                "sensitive": false
+            }
+        ],
+        "Religion": [
+            {
+                "entityName": "RELIGION",
+                "sensitive": true
+            }
+        ],
+        "Professional information": [
+            {
+                "entityName": "COMPANY",
+                "sensitive": false
+            },
+            {
+                "entityName": "DOMAIN",
+                "sensitive": false
+            },
+            {
+                "entityName": "OCCUPATION",
+                "sensitive": false
+            },
+            {
+                "entityName": "TITLE",
+                "sensitive": false
+            },
+            {
+                "entityName": "USERNAME",
+                "sensitive": false
+            }
+        ],
+        "Government issued IDs": [
+            {
+                "entityName": "DRIVER_LICENSE",
+                "sensitive": false
+            },
+            {
+                "entityName": "NATIONAL_ID",
+                "sensitive": false
+            },
+            {
+                "entityName": "PASSPORT_NUMBER",
+                "sensitive": false
+            },
+            {
+                "entityName": "TAX_ID",
+                "sensitive": false
+            }
+        ],
+        "Political": [
+            {
+                "entityName": "POLITICAL_OPINION",
+                "sensitive": true
+            }
+        ],
+        "Contact information": [
+            {
+                "entityName": "CITY",
+                "sensitive": false
+            },
+            {
+                "entityName": "COUNTRY",
+                "sensitive": false
+            },
+            {
+                "entityName": "COUNTRY_CODE",
+                "sensitive": false
+            },
+            {
+                "entityName": "EMAIL_ADDRESS",
+                "sensitive": false
+            },
+            {
+                "entityName": "PHONE_NUMBER",
+                "sensitive": false
+            },
+            {
+                "entityName": "STATE",
+                "sensitive": false
+            },
+            {
+                "entityName": "STREET_ADDRESS",
+                "sensitive": false
+            },
+            {
+                "entityName": "UPS",
+                "sensitive": false
+            },
+            {
+                "entityName": "ZIP_CODE",
+                "sensitive": false
+            },
+            {
+                "entityName": "POSTCODE",
+                "sensitive": false
+            }
+        ],
+        "Personal information": [
+            {
+                "entityName": "FULL_NAME",
+                "sensitive": false
+            },
+            {
+                "entityName": "GIVEN_NAME",
+                "sensitive": false
+            },
+            {
+                "entityName": "MIDDLE_INITIAL",
+                "sensitive": false
+            },
+            {
+                "entityName": "MOTHERS_MAIDEN",
+                "sensitive": false
+            },
+            {
+                "entityName": "SURNAME",
+                "sensitive": false
+            }
+        ]
+    },
+    "get_datasubject": {
+        "dataSubjects": [
+            {
+                "id": "619257ea5287e1298b13d776",
+                "piis": [
+                    {
+                        "id": null,
+                        "piiEntityType": "CC_TYPE",
+                        "piiEntityValue": "discover",
+                        "piiEntityValueNew": null,
+                        "action": null
+                    },
+                    {
+                        "id": null,
+                        "piiEntityType": "CC_TYPE",
+                        "piiEntityValue": "american express",
+                        "piiEntityValueNew": null,
+                        "action": null
+                    },
+                    {
+                        "id": null,
+                        "piiEntityType": "DOMAIN",
+                        "piiEntityValue": "minagory.com",
+                        "piiEntityValueNew": null,
+                        "action": null
+                    },
+                    {
+                        "id": null,
+                        "piiEntityType": "DOMAIN",
+                        "piiEntityValue": "gcfac.com",
+                        "piiEntityValueNew": null,
+                        "action": null
+                    },
+                    {
+                        "id": null,
+                        "piiEntityType": "ZIP_CODE",
+                        "piiEntityValue": "50322",
+                        "piiEntityValueNew": null,
+                        "action": null
+                    },
+                    {
+                        "id": null,
+                        "piiEntityType": "ZIP_CODE",
+                        "piiEntityValue": "80936",
+                        "piiEntityValueNew": null,
+                        "action": null
+                    },
+                    {
+                        "id": null,
+                        "piiEntityType": "CC_EXPIRES",
+                        "piiEntityValue": "2/2019",
+                        "piiEntityValueNew": null,
+                        "action": null
+                    },
+                    {
+                        "id": null,
+                        "piiEntityType": "CC_EXPIRES",
+                        "piiEntityValue": "2/2023",
+                        "piiEntityValueNew": null,
+                        "action": null
+                    },
+                    {
+                        "id": null,
+                        "piiEntityType": "MIDDLE_INITIAL",
+                        "piiEntityValue": "u",
+                        "piiEntityValueNew": null,
+                        "action": null
+                    },
+                    {
+                        "id": null,
+                        "piiEntityType": "STATE",
+                        "piiEntityValue": "iowa",
+                        "piiEntityValueNew": null,
+                        "action": null
+                    },
+                    {
+                        "id": null,
+                        "piiEntityType": "STATE",
+                        "piiEntityValue": "alaska",
+                        "piiEntityValueNew": null,
+                        "action": null
+                    },
+                    {
+                        "id": null,
+                        "piiEntityType": "VEHICLE_NUMBER",
+                        "piiEntityValue": "66x8628",
+                        "piiEntityValueNew": null,
+                        "action": null
+                    },
+                    {
+                        "id": null,
+                        "piiEntityType": "VEHICLE_NUMBER",
+                        "piiEntityValue": "xly515",
+                        "piiEntityValueNew": null,
+                        "action": null
+                    },
+                    {
+                        "id": null,
+                        "piiEntityType": "EMAIL_ADDRESS",
+                        "piiEntityValue": "<test.email.1>",
+                        "piiEntityValueNew": null,
+                        "action": null
+                    },
+                    {
+                        "id": null,
+                        "piiEntityType": "EMAIL_ADDRESS",
+                        "piiEntityValue": "<test.email.2>",
+                        "piiEntityValueNew": null,
+                        "action": null
+                    },
+                    {
+                        "id": null,
+                        "piiEntityType": "NATIONAL_ID",
+                        "piiEntityValue": "480728626",
+                        "piiEntityValueNew": null,
+                        "action": null
+                    },
+                    {
+                        "id": null,
+                        "piiEntityType": "NATIONAL_ID",
+                        "piiEntityValue": "324259004",
+                        "piiEntityValueNew": null,
+                        "action": null
+                    },
+                    {
+                        "id": null,
+                        "piiEntityType": "COUNTRY",
+                        "piiEntityValue": "united states",
+                        "piiEntityValueNew": null,
+                        "action": null
+                    },
+                    {
+                        "id": null,
+                        "piiEntityType": "CC_CVV",
+                        "piiEntityValue": "685",
+                        "piiEntityValueNew": null,
+                        "action": null
+                    },
+                    {
+                        "id": null,
+                        "piiEntityType": "CC_CVV",
+                        "piiEntityValue": "171",
+                        "piiEntityValueNew": null,
+                        "action": null
+                    },
+                    {
+                        "id": null,
+                        "piiEntityType": "PASSPORT_NUMBER",
+                        "piiEntityValue": "336342840",
+                        "piiEntityValueNew": null,
+                        "action": null
+                    },
+                    {
+                        "id": null,
+                        "piiEntityType": "USERNAME",
+                        "piiEntityValue": "43cowie0",
+                        "piiEntityValueNew": null,
+                        "action": null
+                    },
+                    {
+                        "id": null,
+                        "piiEntityType": "USERNAME",
+                        "piiEntityValue": "wareat78",
+                        "piiEntityValueNew": null,
+                        "action": null
+                    },
+                    {
+                        "id": null,
+                        "piiEntityType": "BIRTHDAY",
+                        "piiEntityValue": "19/11/71",
+                        "piiEntityValueNew": null,
+                        "action": null
+                    },
+                    {
+                        "id": null,
+                        "piiEntityType": "BIRTHDAY",
+                        "piiEntityValue": "11/19/71",
+                        "piiEntityValueNew": null,
+                        "action": null
+                    },
+                    {
+                        "id": null,
+                        "piiEntityType": "BIRTHDAY",
+                        "piiEntityValue": "05/28/95",
+                        "piiEntityValueNew": null,
+                        "action": null
+                    },
+                    {
+                        "id": null,
+                        "piiEntityType": "SURNAME",
+                        "piiEntityValue": "szigethy",
+                        "piiEntityValueNew": null,
+                        "action": null
+                    },
+                    {
+                        "id": null,
+                        "piiEntityType": "SURNAME",
+                        "piiEntityValue": "westerhof",
+                        "piiEntityValueNew": null,
+                        "action": null
+                    },
+                    {
+                        "id": null,
+                        "piiEntityType": "GIVEN_NAME",
+                        "piiEntityValue": "jacobien",
+                        "piiEntityValueNew": null,
+                        "action": null
+                    },
+                    {
+                        "id": null,
+                        "piiEntityType": "GIVEN_NAME",
+                        "piiEntityValue": "lucas",
+                        "piiEntityValueNew": null,
+                        "action": null
+                    },
+                    {
+                        "id": null,
+                        "piiEntityType": "BROWSER_USER_AGENT",
+                        "piiEntityValue": "mozilla/5.0 (macintosh; intel mac os x 10_12_6) applewebkit/537.36 (khtml, like gecko) chrome/63.0.3239.132 safari/537.36",
+                        "piiEntityValueNew": null,
+                        "action": null
+                    },
+                    {
+                        "id": null,
+                        "piiEntityType": "GUID",
+                        "piiEntityValue": "288418d0-edec-45be-be77-1b68d64d096b",
+                        "piiEntityValueNew": null,
+                        "action": null
+                    },
+                    {
+                        "id": null,
+                        "piiEntityType": "GUID",
+                        "piiEntityValue": "76953b91-3f81-4e54-a12e-4b01bfcf9e6d",
+                        "piiEntityValueNew": null,
+                        "action": null
+                    },
+                    {
+                        "id": null,
+                        "piiEntityType": "DRIVER_LICENSE",
+                        "piiEntityValue": "x643895803450",
+                        "piiEntityValueNew": null,
+                        "action": null
+                    },
+                    {
+                        "id": null,
+                        "piiEntityType": "VEHICLE_MODEL",
+                        "piiEntityValue": "daihatsu sirion",
+                        "piiEntityValueNew": null,
+                        "action": null
+                    },
+                    {
+                        "id": null,
+                        "piiEntityType": "VEHICLE_MODEL",
+                        "piiEntityValue": "peugeot 406",
+                        "piiEntityValueNew": null,
+                        "action": null
+                    },
+                    {
+                        "id": null,
+                        "piiEntityType": "COMPANY",
+                        "piiEntityValue": "future plan",
+                        "piiEntityValueNew": null,
+                        "action": null
+                    },
+                    {
+                        "id": null,
+                        "piiEntityType": "CITY",
+                        "piiEntityValue": "shemya",
+                        "piiEntityValueNew": null,
+                        "action": null
+                    },
+                    {
+                        "id": null,
+                        "piiEntityType": "CITY",
+                        "piiEntityValue": "urbandale",
+                        "piiEntityValueNew": null,
+                        "action": null
+                    },
+                    {
+                        "id": null,
+                        "piiEntityType": "RELIGION",
+                        "piiEntityValue": "jewish",
+                        "piiEntityValueNew": null,
+                        "action": null
+                    },
+                    {
+                        "id": null,
+                        "piiEntityType": "RACE",
+                        "piiEntityValue": "caucasian",
+                        "piiEntityValueNew": null,
+                        "action": null
+                    },
+                    {
+                        "id": null,
+                        "piiEntityType": "VEHICLE_YEAR",
+                        "piiEntityValue": "1998",
+                        "piiEntityValueNew": null,
+                        "action": null
+                    },
+                    {
+                        "id": null,
+                        "piiEntityType": "VEHICLE_YEAR",
+                        "piiEntityValue": "2006",
+                        "piiEntityValueNew": null,
+                        "action": null
+                    },
+                    {
+                        "id": null,
+                        "piiEntityType": "OCCUPATION",
+                        "piiEntityValue": "copy editor",
+                        "piiEntityValueNew": null,
+                        "action": null
+                    },
+                    {
+                        "id": null,
+                        "piiEntityType": "OCCUPATION",
+                        "piiEntityValue": "accounting clerk",
+                        "piiEntityValueNew": null,
+                        "action": null
+                    },
+                    {
+                        "id": null,
+                        "piiEntityType": "TITLE",
+                        "piiEntityValue": "mr.",
+                        "piiEntityValueNew": null,
+                        "action": null
+                    },
+                    {
+                        "id": null,
+                        "piiEntityType": "TITLE",
+                        "piiEntityValue": "ms.",
+                        "piiEntityValueNew": null,
+                        "action": null
+                    },
+                    {
+                        "id": null,
+                        "piiEntityType": "POLITICAL_OPINION",
+                        "piiEntityValue": "communist",
+                        "piiEntityValueNew": null,
+                        "action": null
+                    },
+                    {
+                        "id": null,
+                        "piiEntityType": "STREET_ADDRESS",
+                        "piiEntityValue": "3064 park boulevard",
+                        "piiEntityValueNew": null,
+                        "action": null
+                    },
+                    {
+                        "id": null,
+                        "piiEntityType": "STREET_ADDRESS",
+                        "piiEntityValue": "6355 williams mine road",
+                        "piiEntityValueNew": null,
+                        "action": null
+                    },
+                    {
+                        "id": null,
+                        "piiEntityType": "PHONE_NUMBER",
+                        "piiEntityValue": "1527564666",
+                        "piiEntityValueNew": null,
+                        "action": null
+                    },
+                    {
+                        "id": null,
+                        "piiEntityType": "PHONE_NUMBER",
+                        "piiEntityValue": "6417811277",
+                        "piiEntityValueNew": null,
+                        "action": null
+                    },
+                    {
+                        "id": null,
+                        "piiEntityType": "COUNTRY_CODE",
+                        "piiEntityValue": "usa",
+                        "piiEntityValueNew": null,
+                        "action": null
+                    }
+                ]
+            }
+        ],
+        "total": 1
+    },
+    "prepare_ticket": 305,
+    "create_ticket": 305,
+    "get_ticket": {
+        "id": 305,
+        "piiId": "619257ea5287e1298b13d776",
+        "name": "jacobien szigethy",
+        "email": "<test.email.1>",
+        "reason": "rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr",
+        "daysLeft": 25,
+        "daysToRespond": 30,
+        "createdDate": 1639563593268,
+        "respondUntilDate": 1642155593268,
+        "status": "TO_DO",
+        "manualTicket": false,
+        "entities": [
+            {
+                "id": 3911,
+                "piiEntityType": "CC_TYPE",
+                "piiEntityValue": "discover",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3912,
+                "piiEntityType": "CC_TYPE",
+                "piiEntityValue": "american express",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3913,
+                "piiEntityType": "DOMAIN",
+                "piiEntityValue": "minagory.com",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3914,
+                "piiEntityType": "DOMAIN",
+                "piiEntityValue": "gcfac.com",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3915,
+                "piiEntityType": "ZIP_CODE",
+                "piiEntityValue": "50322",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3916,
+                "piiEntityType": "ZIP_CODE",
+                "piiEntityValue": "80936",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3917,
+                "piiEntityType": "CC_EXPIRES",
+                "piiEntityValue": "2/2019",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3918,
+                "piiEntityType": "CC_EXPIRES",
+                "piiEntityValue": "2/2023",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3919,
+                "piiEntityType": "MIDDLE_INITIAL",
+                "piiEntityValue": "u",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3920,
+                "piiEntityType": "STATE",
+                "piiEntityValue": "iowa",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3921,
+                "piiEntityType": "STATE",
+                "piiEntityValue": "alaska",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3922,
+                "piiEntityType": "VEHICLE_NUMBER",
+                "piiEntityValue": "66x8628",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3923,
+                "piiEntityType": "VEHICLE_NUMBER",
+                "piiEntityValue": "xly515",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3924,
+                "piiEntityType": "EMAIL_ADDRESS",
+                "piiEntityValue": "<test.email.1>",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3925,
+                "piiEntityType": "EMAIL_ADDRESS",
+                "piiEntityValue": "<test.email.2>",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3926,
+                "piiEntityType": "NATIONAL_ID",
+                "piiEntityValue": "480728626",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3927,
+                "piiEntityType": "NATIONAL_ID",
+                "piiEntityValue": "324259004",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3928,
+                "piiEntityType": "COUNTRY",
+                "piiEntityValue": "united states",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3929,
+                "piiEntityType": "CC_CVV",
+                "piiEntityValue": "685",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3930,
+                "piiEntityType": "CC_CVV",
+                "piiEntityValue": "171",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3931,
+                "piiEntityType": "PASSPORT_NUMBER",
+                "piiEntityValue": "336342840",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3932,
+                "piiEntityType": "USERNAME",
+                "piiEntityValue": "43cowie0",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3933,
+                "piiEntityType": "USERNAME",
+                "piiEntityValue": "wareat78",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3934,
+                "piiEntityType": "BIRTHDAY",
+                "piiEntityValue": "19/11/71",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3935,
+                "piiEntityType": "BIRTHDAY",
+                "piiEntityValue": "11/19/71",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3936,
+                "piiEntityType": "BIRTHDAY",
+                "piiEntityValue": "05/28/95",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3937,
+                "piiEntityType": "SURNAME",
+                "piiEntityValue": "szigethy",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3938,
+                "piiEntityType": "SURNAME",
+                "piiEntityValue": "westerhof",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3939,
+                "piiEntityType": "GIVEN_NAME",
+                "piiEntityValue": "jacobien",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3940,
+                "piiEntityType": "GIVEN_NAME",
+                "piiEntityValue": "lucas",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3941,
+                "piiEntityType": "BROWSER_USER_AGENT",
+                "piiEntityValue": "mozilla/5.0 (macintosh; intel mac os x 10_12_6) applewebkit/537.36 (khtml, like gecko) chrome/63.0.3239.132 safari/537.36",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3942,
+                "piiEntityType": "GUID",
+                "piiEntityValue": "288418d0-edec-45be-be77-1b68d64d096b",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3943,
+                "piiEntityType": "GUID",
+                "piiEntityValue": "76953b91-3f81-4e54-a12e-4b01bfcf9e6d",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3944,
+                "piiEntityType": "DRIVER_LICENSE",
+                "piiEntityValue": "x643895803450",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3945,
+                "piiEntityType": "VEHICLE_MODEL",
+                "piiEntityValue": "daihatsu sirion",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3946,
+                "piiEntityType": "VEHICLE_MODEL",
+                "piiEntityValue": "peugeot 406",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3947,
+                "piiEntityType": "COMPANY",
+                "piiEntityValue": "future plan",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3948,
+                "piiEntityType": "CITY",
+                "piiEntityValue": "shemya",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3949,
+                "piiEntityType": "CITY",
+                "piiEntityValue": "urbandale",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3950,
+                "piiEntityType": "RELIGION",
+                "piiEntityValue": "jewish",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3951,
+                "piiEntityType": "RACE",
+                "piiEntityValue": "caucasian",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3952,
+                "piiEntityType": "VEHICLE_YEAR",
+                "piiEntityValue": "1998",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3953,
+                "piiEntityType": "VEHICLE_YEAR",
+                "piiEntityValue": "2006",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3954,
+                "piiEntityType": "OCCUPATION",
+                "piiEntityValue": "copy editor",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3955,
+                "piiEntityType": "OCCUPATION",
+                "piiEntityValue": "accounting clerk",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3956,
+                "piiEntityType": "TITLE",
+                "piiEntityValue": "mr.",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3957,
+                "piiEntityType": "TITLE",
+                "piiEntityValue": "ms.",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3958,
+                "piiEntityType": "POLITICAL_OPINION",
+                "piiEntityValue": "communist",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3959,
+                "piiEntityType": "STREET_ADDRESS",
+                "piiEntityValue": "3064 park boulevard",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3960,
+                "piiEntityType": "STREET_ADDRESS",
+                "piiEntityValue": "6355 williams mine road",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3961,
+                "piiEntityType": "PHONE_NUMBER",
+                "piiEntityValue": "1527564666",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3962,
+                "piiEntityType": "PHONE_NUMBER",
+                "piiEntityValue": "6417811277",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3963,
+                "piiEntityType": "COUNTRY_CODE",
+                "piiEntityValue": "usa",
+                "piiEntityValueNew": null,
+                "action": null
+            }
+        ],
+        "updateDataSubjectDetails": {
+            "entities": null,
+            "details": null
+        },
+        "disputeRequest": {
+            "id": 305,
+            "reason": null,
+            "details": null
+        },
+        "dataPortability": {
+            "orgId": null,
+            "orgAddress": null,
+            "orgName": null,
+            "orgContactDetails": null,
+            "forwardOptions": null,
+            "details": null
+        },
+        "askToErasure": {
+            "personRequestingName": null,
+            "personRequestingPhone": null,
+            "personRequestingAddress": null,
+            "personRequestingEmail": null,
+            "performedByDataSubject": null,
+            "dataSubjectName": null,
+            "dataSubjectPhone": null,
+            "dataSubjectAddress": null,
+            "dataSubjectEmail": null,
+            "erasureReasons": [],
+            "informationToErase": null,
+            "declaration": null,
+            "details": null
+        },
+        "changeConsent": {
+            "consents": [],
+            "details": null
+        },
+        "report": {
+            "id": 305,
+            "filename": "DSAR - Report.pdf",
+            "logo": null,
+            "header": "na",
+            "headerLogoEnable": false,
+            "footer": "na",
+            "footerLogoEnable": false,
+            "introduction": "<p>Dear <strong>Jacobien</strong>,</p><p><p>123</p></p>",
+            "scheduleOfInformationEnable": false,
+            "entities": [
+                {
+                    "id": 3911,
+                    "piiEntityType": "CC_TYPE",
+                    "piiEntityValue": "discover",
+                    "piiEntityValueNew": null,
+                    "action": null
+                },
+                {
+                    "id": 3912,
+                    "piiEntityType": "CC_TYPE",
+                    "piiEntityValue": "american express",
+                    "piiEntityValueNew": null,
+                    "action": null
+                },
+                {
+                    "id": 3913,
+                    "piiEntityType": "DOMAIN",
+                    "piiEntityValue": "minagory.com",
+                    "piiEntityValueNew": null,
+                    "action": null
+                },
+                {
+                    "id": 3914,
+                    "piiEntityType": "DOMAIN",
+                    "piiEntityValue": "gcfac.com",
+                    "piiEntityValueNew": null,
+                    "action": null
+                },
+                {
+                    "id": 3915,
+                    "piiEntityType": "ZIP_CODE",
+                    "piiEntityValue": "50322",
+                    "piiEntityValueNew": null,
+                    "action": null
+                },
+                {
+                    "id": 3916,
+                    "piiEntityType": "ZIP_CODE",
+                    "piiEntityValue": "80936",
+                    "piiEntityValueNew": null,
+                    "action": null
+                },
+                {
+                    "id": 3917,
+                    "piiEntityType": "CC_EXPIRES",
+                    "piiEntityValue": "2/2019",
+                    "piiEntityValueNew": null,
+                    "action": null
+                },
+                {
+                    "id": 3918,
+                    "piiEntityType": "CC_EXPIRES",
+                    "piiEntityValue": "2/2023",
+                    "piiEntityValueNew": null,
+                    "action": null
+                },
+                {
+                    "id": 3919,
+                    "piiEntityType": "MIDDLE_INITIAL",
+                    "piiEntityValue": "u",
+                    "piiEntityValueNew": null,
+                    "action": null
+                },
+                {
+                    "id": 3920,
+                    "piiEntityType": "STATE",
+                    "piiEntityValue": "iowa",
+                    "piiEntityValueNew": null,
+                    "action": null
+                },
+                {
+                    "id": 3921,
+                    "piiEntityType": "STATE",
+                    "piiEntityValue": "alaska",
+                    "piiEntityValueNew": null,
+                    "action": null
+                },
+                {
+                    "id": 3922,
+                    "piiEntityType": "VEHICLE_NUMBER",
+                    "piiEntityValue": "66x8628",
+                    "piiEntityValueNew": null,
+                    "action": null
+                },
+                {
+                    "id": 3923,
+                    "piiEntityType": "VEHICLE_NUMBER",
+                    "piiEntityValue": "xly515",
+                    "piiEntityValueNew": null,
+                    "action": null
+                },
+                {
+                    "id": 3924,
+                    "piiEntityType": "EMAIL_ADDRESS",
+                    "piiEntityValue": "<test.email.1>",
+                    "piiEntityValueNew": null,
+                    "action": null
+                },
+                {
+                    "id": 3925,
+                    "piiEntityType": "EMAIL_ADDRESS",
+                    "piiEntityValue": "<test.email.2>",
+                    "piiEntityValueNew": null,
+                    "action": null
+                },
+                {
+                    "id": 3926,
+                    "piiEntityType": "NATIONAL_ID",
+                    "piiEntityValue": "480728626",
+                    "piiEntityValueNew": null,
+                    "action": null
+                },
+                {
+                    "id": 3927,
+                    "piiEntityType": "NATIONAL_ID",
+                    "piiEntityValue": "324259004",
+                    "piiEntityValueNew": null,
+                    "action": null
+                },
+                {
+                    "id": 3928,
+                    "piiEntityType": "COUNTRY",
+                    "piiEntityValue": "united states",
+                    "piiEntityValueNew": null,
+                    "action": null
+                },
+                {
+                    "id": 3929,
+                    "piiEntityType": "CC_CVV",
+                    "piiEntityValue": "685",
+                    "piiEntityValueNew": null,
+                    "action": null
+                },
+                {
+                    "id": 3930,
+                    "piiEntityType": "CC_CVV",
+                    "piiEntityValue": "171",
+                    "piiEntityValueNew": null,
+                    "action": null
+                },
+                {
+                    "id": 3931,
+                    "piiEntityType": "PASSPORT_NUMBER",
+                    "piiEntityValue": "336342840",
+                    "piiEntityValueNew": null,
+                    "action": null
+                },
+                {
+                    "id": 3932,
+                    "piiEntityType": "USERNAME",
+                    "piiEntityValue": "43cowie0",
+                    "piiEntityValueNew": null,
+                    "action": null
+                },
+                {
+                    "id": 3933,
+                    "piiEntityType": "USERNAME",
+                    "piiEntityValue": "wareat78",
+                    "piiEntityValueNew": null,
+                    "action": null
+                },
+                {
+                    "id": 3934,
+                    "piiEntityType": "BIRTHDAY",
+                    "piiEntityValue": "19/11/71",
+                    "piiEntityValueNew": null,
+                    "action": null
+                },
+                {
+                    "id": 3935,
+                    "piiEntityType": "BIRTHDAY",
+                    "piiEntityValue": "11/19/71",
+                    "piiEntityValueNew": null,
+                    "action": null
+                },
+                {
+                    "id": 3936,
+                    "piiEntityType": "BIRTHDAY",
+                    "piiEntityValue": "05/28/95",
+                    "piiEntityValueNew": null,
+                    "action": null
+                },
+                {
+                    "id": 3937,
+                    "piiEntityType": "SURNAME",
+                    "piiEntityValue": "szigethy",
+                    "piiEntityValueNew": null,
+                    "action": null
+                },
+                {
+                    "id": 3938,
+                    "piiEntityType": "SURNAME",
+                    "piiEntityValue": "westerhof",
+                    "piiEntityValueNew": null,
+                    "action": null
+                },
+                {
+                    "id": 3939,
+                    "piiEntityType": "GIVEN_NAME",
+                    "piiEntityValue": "jacobien",
+                    "piiEntityValueNew": null,
+                    "action": null
+                },
+                {
+                    "id": 3940,
+                    "piiEntityType": "GIVEN_NAME",
+                    "piiEntityValue": "lucas",
+                    "piiEntityValueNew": null,
+                    "action": null
+                },
+                {
+                    "id": 3941,
+                    "piiEntityType": "BROWSER_USER_AGENT",
+                    "piiEntityValue": "mozilla/5.0 (macintosh; intel mac os x 10_12_6) applewebkit/537.36 (khtml, like gecko) chrome/63.0.3239.132 safari/537.36",
+                    "piiEntityValueNew": null,
+                    "action": null
+                },
+                {
+                    "id": 3942,
+                    "piiEntityType": "GUID",
+                    "piiEntityValue": "288418d0-edec-45be-be77-1b68d64d096b",
+                    "piiEntityValueNew": null,
+                    "action": null
+                },
+                {
+                    "id": 3943,
+                    "piiEntityType": "GUID",
+                    "piiEntityValue": "76953b91-3f81-4e54-a12e-4b01bfcf9e6d",
+                    "piiEntityValueNew": null,
+                    "action": null
+                },
+                {
+                    "id": 3944,
+                    "piiEntityType": "DRIVER_LICENSE",
+                    "piiEntityValue": "x643895803450",
+                    "piiEntityValueNew": null,
+                    "action": null
+                },
+                {
+                    "id": 3945,
+                    "piiEntityType": "VEHICLE_MODEL",
+                    "piiEntityValue": "daihatsu sirion",
+                    "piiEntityValueNew": null,
+                    "action": null
+                },
+                {
+                    "id": 3946,
+                    "piiEntityType": "VEHICLE_MODEL",
+                    "piiEntityValue": "peugeot 406",
+                    "piiEntityValueNew": null,
+                    "action": null
+                },
+                {
+                    "id": 3947,
+                    "piiEntityType": "COMPANY",
+                    "piiEntityValue": "future plan",
+                    "piiEntityValueNew": null,
+                    "action": null
+                },
+                {
+                    "id": 3948,
+                    "piiEntityType": "CITY",
+                    "piiEntityValue": "shemya",
+                    "piiEntityValueNew": null,
+                    "action": null
+                },
+                {
+                    "id": 3949,
+                    "piiEntityType": "CITY",
+                    "piiEntityValue": "urbandale",
+                    "piiEntityValueNew": null,
+                    "action": null
+                },
+                {
+                    "id": 3950,
+                    "piiEntityType": "RELIGION",
+                    "piiEntityValue": "jewish",
+                    "piiEntityValueNew": null,
+                    "action": null
+                },
+                {
+                    "id": 3951,
+                    "piiEntityType": "RACE",
+                    "piiEntityValue": "caucasian",
+                    "piiEntityValueNew": null,
+                    "action": null
+                },
+                {
+                    "id": 3952,
+                    "piiEntityType": "VEHICLE_YEAR",
+                    "piiEntityValue": "1998",
+                    "piiEntityValueNew": null,
+                    "action": null
+                },
+                {
+                    "id": 3953,
+                    "piiEntityType": "VEHICLE_YEAR",
+                    "piiEntityValue": "2006",
+                    "piiEntityValueNew": null,
+                    "action": null
+                },
+                {
+                    "id": 3954,
+                    "piiEntityType": "OCCUPATION",
+                    "piiEntityValue": "copy editor",
+                    "piiEntityValueNew": null,
+                    "action": null
+                },
+                {
+                    "id": 3955,
+                    "piiEntityType": "OCCUPATION",
+                    "piiEntityValue": "accounting clerk",
+                    "piiEntityValueNew": null,
+                    "action": null
+                },
+                {
+                    "id": 3956,
+                    "piiEntityType": "TITLE",
+                    "piiEntityValue": "mr.",
+                    "piiEntityValueNew": null,
+                    "action": null
+                },
+                {
+                    "id": 3957,
+                    "piiEntityType": "TITLE",
+                    "piiEntityValue": "ms.",
+                    "piiEntityValueNew": null,
+                    "action": null
+                },
+                {
+                    "id": 3958,
+                    "piiEntityType": "POLITICAL_OPINION",
+                    "piiEntityValue": "communist",
+                    "piiEntityValueNew": null,
+                    "action": null
+                },
+                {
+                    "id": 3959,
+                    "piiEntityType": "STREET_ADDRESS",
+                    "piiEntityValue": "3064 park boulevard",
+                    "piiEntityValueNew": null,
+                    "action": null
+                },
+                {
+                    "id": 3960,
+                    "piiEntityType": "STREET_ADDRESS",
+                    "piiEntityValue": "6355 williams mine road",
+                    "piiEntityValueNew": null,
+                    "action": null
+                },
+                {
+                    "id": 3961,
+                    "piiEntityType": "PHONE_NUMBER",
+                    "piiEntityValue": "1527564666",
+                    "piiEntityValueNew": null,
+                    "action": null
+                },
+                {
+                    "id": 3962,
+                    "piiEntityType": "PHONE_NUMBER",
+                    "piiEntityValue": "6417811277",
+                    "piiEntityValueNew": null,
+                    "action": null
+                },
+                {
+                    "id": 3963,
+                    "piiEntityType": "COUNTRY_CODE",
+                    "piiEntityValue": "usa",
+                    "piiEntityValueNew": null,
+                    "action": null
+                }
+            ],
+            "reasonsOfProcessingEnable": false,
+            "reasonsOfProcessing": [],
+            "thirdPartiesEnable": false,
+            "thirdParties": [],
+            "consentsEnable": false,
+            "agreements": [],
+            "copiesOfPersonalInformationEnable": false,
+            "documents": [],
+            "retentionPeriodEnable": false,
+            "retentionPeriod": "",
+            "legalNoteEnable": false,
+            "legalNote": "",
+            "automatedDecisionEnable": false,
+            "automatedDecision": "",
+            "dataProtectorEnable": false,
+            "dataProtector": {
+                "id": 305,
+                "name": "",
+                "title": "",
+                "email": "",
+                "phone": "",
+                "fax": "",
+                "address": "",
+                "otherContactInfo": ""
+            },
+            "socialLinks": {
+                "id": 305,
+                "facebook": "",
+                "linkedin": "",
+                "twitter": "",
+                "instagram": ""
+            }
+        }
+    },
+    "get_dsar": {
+        "copiesUsageData": {
+            "transactions": [],
+            "files": [
+                {
+                    "id": 573,
+                    "timestamp": null,
+                    "name": "AK-50KAK-50K",
+                    "size": 17768910,
+                    "path": "/AK-50KAK-50K.xlsx",
+                    "url": "nfs://<test.ip>//crawlershare",
+                    "entityTypes": [
+                        {
+                            "type": "CC_TYPE",
+                            "values": [
+                                "discover",
+                                "american express"
+                            ]
+                        },
+                        {
+                            "type": "DOMAIN",
+                            "values": [
+                                "minagory.com",
+                                "gcfac.com"
+                            ]
+                        },
+                        {
+                            "type": "ZIP_CODE",
+                            "values": [
+                                "50322",
+                                "80936"
+                            ]
+                        },
+                        {
+                            "type": "STATE",
+                            "values": [
+                                "iowa",
+                                "alaska"
+                            ]
+                        },
+                        {
+                            "type": "VEHICLE_NUMBER",
+                            "values": [
+                                "66x8628",
+                                "xly515"
+                            ]
+                        },
+                        {
+                            "type": "COUNTRY",
+                            "values": [
+                                "united states"
+                            ]
+                        },
+                        {
+                            "type": "NATIONAL_ID",
+                            "values": [
+                                "324259004",
+                                "480728626"
+                            ]
+                        },
+                        {
+                            "type": "EMAIL_ADDRESS",
+                            "values": [
+                                "<test.email.2>",
+                                "<test.email.1>"
+                            ]
+                        },
+                        {
+                            "type": "CC_CVV",
+                            "values": [
+                                "171",
+                                "685"
+                            ]
+                        },
+                        {
+                            "type": "PASSPORT_NUMBER",
+                            "values": [
+                                "336342840"
+                            ]
+                        },
+                        {
+                            "type": "USERNAME",
+                            "values": [
+                                "wareat78",
+                                "43cowie0"
+                            ]
+                        },
+                        {
+                            "type": "BIRTHDAY",
+                            "values": [
+                                "05/28/95",
+                                "19/11/71",
+                                "11/19/71"
+                            ]
+                        },
+                        {
+                            "type": "SURNAME",
+                            "values": [
+                                "szigethy",
+                                "westerhof"
+                            ]
+                        },
+                        {
+                            "type": "GIVEN_NAME",
+                            "values": [
+                                "lucas",
+                                "jacobien"
+                            ]
+                        },
+                        {
+                            "type": "BROWSER_USER_AGENT",
+                            "values": [
+                                "mozilla/5.0 (macintosh; intel mac os x 10_12_6) applewebkit/537.36 (khtml",
+                                " like gecko) chrome/63.0.3239.132 safari/537.36"
+                            ]
+                        },
+                        {
+                            "type": "GUID",
+                            "values": [
+                                "288418d0-edec-45be-be77-1b68d64d096b",
+                                "76953b91-3f81-4e54-a12e-4b01bfcf9e6d"
+                            ]
+                        },
+                        {
+                            "type": "DRIVER_LICENSE",
+                            "values": [
+                                "x643895803450"
+                            ]
+                        },
+                        {
+                            "type": "VEHICLE_MODEL",
+                            "values": [
+                                "peugeot 406",
+                                "daihatsu sirion"
+                            ]
+                        },
+                        {
+                            "type": "CITY",
+                            "values": [
+                                "shemya",
+                                "urbandale"
+                            ]
+                        },
+                        {
+                            "type": "RELIGION",
+                            "values": [
+                                "jewish"
+                            ]
+                        },
+                        {
+                            "type": "RACE",
+                            "values": [
+                                "caucasian"
+                            ]
+                        },
+                        {
+                            "type": "VEHICLE_YEAR",
+                            "values": [
+                                "2006",
+                                "1998"
+                            ]
+                        },
+                        {
+                            "type": "OCCUPATION",
+                            "values": [
+                                "copy editor",
+                                "accounting clerk"
+                            ]
+                        },
+                        {
+                            "type": "TITLE",
+                            "values": [
+                                "mr.",
+                                "ms."
+                            ]
+                        },
+                        {
+                            "type": "POLITICAL_OPINION",
+                            "values": [
+                                "communist"
+                            ]
+                        },
+                        {
+                            "type": "PHONE_NUMBER",
+                            "values": [
+                                "1527564666",
+                                "6417811277"
+                            ]
+                        },
+                        {
+                            "type": "STREET_ADDRESS",
+                            "values": [
+                                "6355 williams mine road",
+                                "3064 park boulevard"
+                            ]
+                        },
+                        {
+                            "type": "COUNTRY_CODE",
+                            "values": [
+                                "usa"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "id": 574,
+                    "timestamp": 1596714077070,
+                    "name": "AK-110K",
+                    "size": 38712273,
+                    "path": "!\\AK-110K.xlsx",
+                    "url": "smb://qa-server2016.1touch.co/vip",
+                    "entityTypes": [
+                        {
+                            "type": "CC_TYPE",
+                            "values": [
+                                "discover",
+                                "american express"
+                            ]
+                        },
+                        {
+                            "type": "DOMAIN",
+                            "values": [
+                                "minagory.com",
+                                "gcfac.com"
+                            ]
+                        },
+                        {
+                            "type": "ZIP_CODE",
+                            "values": [
+                                "50322",
+                                "80936"
+                            ]
+                        },
+                        {
+                            "type": "STATE",
+                            "values": [
+                                "iowa",
+                                "alaska"
+                            ]
+                        },
+                        {
+                            "type": "VEHICLE_NUMBER",
+                            "values": [
+                                "66x8628",
+                                "xly515"
+                            ]
+                        },
+                        {
+                            "type": "COUNTRY",
+                            "values": [
+                                "united states"
+                            ]
+                        },
+                        {
+                            "type": "NATIONAL_ID",
+                            "values": [
+                                "324259004",
+                                "480728626"
+                            ]
+                        },
+                        {
+                            "type": "EMAIL_ADDRESS",
+                            "values": [
+                                "<test.email.2>",
+                                "<test.email.1>"
+                            ]
+                        },
+                        {
+                            "type": "CC_CVV",
+                            "values": [
+                                "171",
+                                "685"
+                            ]
+                        },
+                        {
+                            "type": "PASSPORT_NUMBER",
+                            "values": [
+                                "336342840"
+                            ]
+                        },
+                        {
+                            "type": "USERNAME",
+                            "values": [
+                                "wareat78",
+                                "43cowie0"
+                            ]
+                        },
+                        {
+                            "type": "BIRTHDAY",
+                            "values": [
+                                "05/28/95",
+                                "19/11/71",
+                                "11/19/71"
+                            ]
+                        },
+                        {
+                            "type": "SURNAME",
+                            "values": [
+                                "szigethy",
+                                "westerhof"
+                            ]
+                        },
+                        {
+                            "type": "GIVEN_NAME",
+                            "values": [
+                                "lucas",
+                                "jacobien"
+                            ]
+                        },
+                        {
+                            "type": "BROWSER_USER_AGENT",
+                            "values": [
+                                "mozilla/5.0 (macintosh; intel mac os x 10_12_6) applewebkit/537.36 (khtml",
+                                " like gecko) chrome/63.0.3239.132 safari/537.36"
+                            ]
+                        },
+                        {
+                            "type": "GUID",
+                            "values": [
+                                "288418d0-edec-45be-be77-1b68d64d096b",
+                                "76953b91-3f81-4e54-a12e-4b01bfcf9e6d"
+                            ]
+                        },
+                        {
+                            "type": "DRIVER_LICENSE",
+                            "values": [
+                                "x643895803450"
+                            ]
+                        },
+                        {
+                            "type": "VEHICLE_MODEL",
+                            "values": [
+                                "peugeot 406",
+                                "daihatsu sirion"
+                            ]
+                        },
+                        {
+                            "type": "CITY",
+                            "values": [
+                                "shemya",
+                                "urbandale"
+                            ]
+                        },
+                        {
+                            "type": "RELIGION",
+                            "values": [
+                                "jewish"
+                            ]
+                        },
+                        {
+                            "type": "RACE",
+                            "values": [
+                                "caucasian"
+                            ]
+                        },
+                        {
+                            "type": "VEHICLE_YEAR",
+                            "values": [
+                                "2006",
+                                "1998"
+                            ]
+                        },
+                        {
+                            "type": "OCCUPATION",
+                            "values": [
+                                "copy editor",
+                                "accounting clerk"
+                            ]
+                        },
+                        {
+                            "type": "TITLE",
+                            "values": [
+                                "mr.",
+                                "ms."
+                            ]
+                        },
+                        {
+                            "type": "POLITICAL_OPINION",
+                            "values": [
+                                "communist"
+                            ]
+                        },
+                        {
+                            "type": "PHONE_NUMBER",
+                            "values": [
+                                "1527564666",
+                                "6417811277"
+                            ]
+                        },
+                        {
+                            "type": "STREET_ADDRESS",
+                            "values": [
+                                "6355 williams mine road",
+                                "3064 park boulevard"
+                            ]
+                        },
+                        {
+                            "type": "COUNTRY_CODE",
+                            "values": [
+                                "usa"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "id": 575,
+                    "timestamp": 1635782915233,
+                    "name": "CSV-100000-(1)_short",
+                    "size": 49771766,
+                    "path": "New folder\\CSV-100000-(1)_short.csv",
+                    "url": "smb://qa-server2016.1touch.co/dfs_yuri2016",
+                    "entityTypes": [
+                        {
+                            "type": "CC_TYPE",
+                            "values": [
+                                "discover",
+                                "american express"
+                            ]
+                        },
+                        {
+                            "type": "DOMAIN",
+                            "values": [
+                                "minagory.com",
+                                "gcfac.com"
+                            ]
+                        },
+                        {
+                            "type": "ZIP_CODE",
+                            "values": [
+                                "50322",
+                                "80936"
+                            ]
+                        },
+                        {
+                            "type": "CC_EXPIRES",
+                            "values": [
+                                "2/2023",
+                                "2/2019"
+                            ]
+                        },
+                        {
+                            "type": "STATE",
+                            "values": [
+                                "iowa",
+                                "alaska"
+                            ]
+                        },
+                        {
+                            "type": "VEHICLE_NUMBER",
+                            "values": [
+                                "66x8628",
+                                "xly515"
+                            ]
+                        },
+                        {
+                            "type": "COUNTRY",
+                            "values": [
+                                "united states"
+                            ]
+                        },
+                        {
+                            "type": "NATIONAL_ID",
+                            "values": [
+                                "324259004",
+                                "480728626"
+                            ]
+                        },
+                        {
+                            "type": "EMAIL_ADDRESS",
+                            "values": [
+                                "<test.email.2>",
+                                "<test.email.1>"
+                            ]
+                        },
+                        {
+                            "type": "CC_CVV",
+                            "values": [
+                                "171",
+                                "685"
+                            ]
+                        },
+                        {
+                            "type": "PASSPORT_NUMBER",
+                            "values": [
+                                "336342840"
+                            ]
+                        },
+                        {
+                            "type": "USERNAME",
+                            "values": [
+                                "wareat78",
+                                "43cowie0"
+                            ]
+                        },
+                        {
+                            "type": "BIRTHDAY",
+                            "values": [
+                                "05/28/95",
+                                "19/11/71",
+                                "11/19/71"
+                            ]
+                        },
+                        {
+                            "type": "SURNAME",
+                            "values": [
+                                "szigethy",
+                                "westerhof"
+                            ]
+                        },
+                        {
+                            "type": "GIVEN_NAME",
+                            "values": [
+                                "lucas",
+                                "jacobien"
+                            ]
+                        },
+                        {
+                            "type": "BROWSER_USER_AGENT",
+                            "values": [
+                                "mozilla/5.0 (macintosh; intel mac os x 10_12_6) applewebkit/537.36 (khtml",
+                                " like gecko) chrome/63.0.3239.132 safari/537.36"
+                            ]
+                        },
+                        {
+                            "type": "GUID",
+                            "values": [
+                                "288418d0-edec-45be-be77-1b68d64d096b",
+                                "76953b91-3f81-4e54-a12e-4b01bfcf9e6d"
+                            ]
+                        },
+                        {
+                            "type": "DRIVER_LICENSE",
+                            "values": [
+                                "x643895803450"
+                            ]
+                        },
+                        {
+                            "type": "VEHICLE_MODEL",
+                            "values": [
+                                "peugeot 406",
+                                "daihatsu sirion"
+                            ]
+                        },
+                        {
+                            "type": "CITY",
+                            "values": [
+                                "shemya",
+                                "urbandale"
+                            ]
+                        },
+                        {
+                            "type": "RELIGION",
+                            "values": [
+                                "jewish"
+                            ]
+                        },
+                        {
+                            "type": "RACE",
+                            "values": [
+                                "caucasian"
+                            ]
+                        },
+                        {
+                            "type": "VEHICLE_YEAR",
+                            "values": [
+                                "2006",
+                                "1998"
+                            ]
+                        },
+                        {
+                            "type": "OCCUPATION",
+                            "values": [
+                                "copy editor",
+                                "accounting clerk"
+                            ]
+                        },
+                        {
+                            "type": "TITLE",
+                            "values": [
+                                "mr.",
+                                "ms."
+                            ]
+                        },
+                        {
+                            "type": "POLITICAL_OPINION",
+                            "values": [
+                                "communist"
+                            ]
+                        },
+                        {
+                            "type": "PHONE_NUMBER",
+                            "values": [
+                                "1527564666",
+                                "6417811277"
+                            ]
+                        },
+                        {
+                            "type": "STREET_ADDRESS",
+                            "values": [
+                                "6355 williams mine road",
+                                "3064 park boulevard"
+                            ]
+                        },
+                        {
+                            "type": "COUNTRY_CODE",
+                            "values": [
+                                "usa"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "id": 576,
+                    "timestamp": 1635782915233,
+                    "name": "CSV-100000-(1)_short",
+                    "size": 49771766,
+                    "path": "New folder\\CSV-100000-(1)_short.csv",
+                    "url": "smb://qa-server2016.1touch.co/yuri",
+                    "entityTypes": [
+                        {
+                            "type": "CC_TYPE",
+                            "values": [
+                                "discover",
+                                "american express"
+                            ]
+                        },
+                        {
+                            "type": "DOMAIN",
+                            "values": [
+                                "minagory.com",
+                                "gcfac.com"
+                            ]
+                        },
+                        {
+                            "type": "ZIP_CODE",
+                            "values": [
+                                "50322",
+                                "80936"
+                            ]
+                        },
+                        {
+                            "type": "CC_EXPIRES",
+                            "values": [
+                                "2/2023",
+                                "2/2019"
+                            ]
+                        },
+                        {
+                            "type": "STATE",
+                            "values": [
+                                "iowa",
+                                "alaska"
+                            ]
+                        },
+                        {
+                            "type": "VEHICLE_NUMBER",
+                            "values": [
+                                "66x8628",
+                                "xly515"
+                            ]
+                        },
+                        {
+                            "type": "COUNTRY",
+                            "values": [
+                                "united states"
+                            ]
+                        },
+                        {
+                            "type": "NATIONAL_ID",
+                            "values": [
+                                "324259004",
+                                "480728626"
+                            ]
+                        },
+                        {
+                            "type": "EMAIL_ADDRESS",
+                            "values": [
+                                "<test.email.2>",
+                                "<test.email.1>"
+                            ]
+                        },
+                        {
+                            "type": "CC_CVV",
+                            "values": [
+                                "171",
+                                "685"
+                            ]
+                        },
+                        {
+                            "type": "PASSPORT_NUMBER",
+                            "values": [
+                                "336342840"
+                            ]
+                        },
+                        {
+                            "type": "USERNAME",
+                            "values": [
+                                "wareat78",
+                                "43cowie0"
+                            ]
+                        },
+                        {
+                            "type": "BIRTHDAY",
+                            "values": [
+                                "05/28/95",
+                                "19/11/71",
+                                "11/19/71"
+                            ]
+                        },
+                        {
+                            "type": "SURNAME",
+                            "values": [
+                                "szigethy",
+                                "westerhof"
+                            ]
+                        },
+                        {
+                            "type": "GIVEN_NAME",
+                            "values": [
+                                "lucas",
+                                "jacobien"
+                            ]
+                        },
+                        {
+                            "type": "BROWSER_USER_AGENT",
+                            "values": [
+                                "mozilla/5.0 (macintosh; intel mac os x 10_12_6) applewebkit/537.36 (khtml",
+                                " like gecko) chrome/63.0.3239.132 safari/537.36"
+                            ]
+                        },
+                        {
+                            "type": "GUID",
+                            "values": [
+                                "288418d0-edec-45be-be77-1b68d64d096b",
+                                "76953b91-3f81-4e54-a12e-4b01bfcf9e6d"
+                            ]
+                        },
+                        {
+                            "type": "DRIVER_LICENSE",
+                            "values": [
+                                "x643895803450"
+                            ]
+                        },
+                        {
+                            "type": "VEHICLE_MODEL",
+                            "values": [
+                                "peugeot 406",
+                                "daihatsu sirion"
+                            ]
+                        },
+                        {
+                            "type": "CITY",
+                            "values": [
+                                "shemya",
+                                "urbandale"
+                            ]
+                        },
+                        {
+                            "type": "RELIGION",
+                            "values": [
+                                "jewish"
+                            ]
+                        },
+                        {
+                            "type": "RACE",
+                            "values": [
+                                "caucasian"
+                            ]
+                        },
+                        {
+                            "type": "VEHICLE_YEAR",
+                            "values": [
+                                "2006",
+                                "1998"
+                            ]
+                        },
+                        {
+                            "type": "OCCUPATION",
+                            "values": [
+                                "copy editor",
+                                "accounting clerk"
+                            ]
+                        },
+                        {
+                            "type": "TITLE",
+                            "values": [
+                                "mr.",
+                                "ms."
+                            ]
+                        },
+                        {
+                            "type": "POLITICAL_OPINION",
+                            "values": [
+                                "communist"
+                            ]
+                        },
+                        {
+                            "type": "PHONE_NUMBER",
+                            "values": [
+                                "1527564666",
+                                "6417811277"
+                            ]
+                        },
+                        {
+                            "type": "STREET_ADDRESS",
+                            "values": [
+                                "6355 williams mine road",
+                                "3064 park boulevard"
+                            ]
+                        },
+                        {
+                            "type": "COUNTRY_CODE",
+                            "values": [
+                                "usa"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "id": 577,
+                    "timestamp": 1635782915233,
+                    "name": "CSV-100000-(1)_short",
+                    "size": 49771766,
+                    "path": "New folder\\CSV-100000-(1)_short.csv",
+                    "url": "smb://qa-server2016.1touch.co/new_dfs_share",
+                    "entityTypes": [
+                        {
+                            "type": "CC_TYPE",
+                            "values": [
+                                "discover",
+                                "american express"
+                            ]
+                        },
+                        {
+                            "type": "DOMAIN",
+                            "values": [
+                                "minagory.com",
+                                "gcfac.com"
+                            ]
+                        },
+                        {
+                            "type": "ZIP_CODE",
+                            "values": [
+                                "50322",
+                                "80936"
+                            ]
+                        },
+                        {
+                            "type": "CC_EXPIRES",
+                            "values": [
+                                "2/2023",
+                                "2/2019"
+                            ]
+                        },
+                        {
+                            "type": "STATE",
+                            "values": [
+                                "iowa",
+                                "alaska"
+                            ]
+                        },
+                        {
+                            "type": "VEHICLE_NUMBER",
+                            "values": [
+                                "66x8628",
+                                "xly515"
+                            ]
+                        },
+                        {
+                            "type": "COUNTRY",
+                            "values": [
+                                "united states"
+                            ]
+                        },
+                        {
+                            "type": "NATIONAL_ID",
+                            "values": [
+                                "324259004",
+                                "480728626"
+                            ]
+                        },
+                        {
+                            "type": "EMAIL_ADDRESS",
+                            "values": [
+                                "<test.email.2>",
+                                "<test.email.1>"
+                            ]
+                        },
+                        {
+                            "type": "CC_CVV",
+                            "values": [
+                                "171",
+                                "685"
+                            ]
+                        },
+                        {
+                            "type": "PASSPORT_NUMBER",
+                            "values": [
+                                "336342840"
+                            ]
+                        },
+                        {
+                            "type": "USERNAME",
+                            "values": [
+                                "wareat78",
+                                "43cowie0"
+                            ]
+                        },
+                        {
+                            "type": "BIRTHDAY",
+                            "values": [
+                                "05/28/95",
+                                "19/11/71",
+                                "11/19/71"
+                            ]
+                        },
+                        {
+                            "type": "SURNAME",
+                            "values": [
+                                "szigethy",
+                                "westerhof"
+                            ]
+                        },
+                        {
+                            "type": "GIVEN_NAME",
+                            "values": [
+                                "lucas",
+                                "jacobien"
+                            ]
+                        },
+                        {
+                            "type": "BROWSER_USER_AGENT",
+                            "values": [
+                                "mozilla/5.0 (macintosh; intel mac os x 10_12_6) applewebkit/537.36 (khtml",
+                                " like gecko) chrome/63.0.3239.132 safari/537.36"
+                            ]
+                        },
+                        {
+                            "type": "GUID",
+                            "values": [
+                                "288418d0-edec-45be-be77-1b68d64d096b",
+                                "76953b91-3f81-4e54-a12e-4b01bfcf9e6d"
+                            ]
+                        },
+                        {
+                            "type": "DRIVER_LICENSE",
+                            "values": [
+                                "x643895803450"
+                            ]
+                        },
+                        {
+                            "type": "VEHICLE_MODEL",
+                            "values": [
+                                "peugeot 406",
+                                "daihatsu sirion"
+                            ]
+                        },
+                        {
+                            "type": "CITY",
+                            "values": [
+                                "shemya",
+                                "urbandale"
+                            ]
+                        },
+                        {
+                            "type": "RELIGION",
+                            "values": [
+                                "jewish"
+                            ]
+                        },
+                        {
+                            "type": "RACE",
+                            "values": [
+                                "caucasian"
+                            ]
+                        },
+                        {
+                            "type": "VEHICLE_YEAR",
+                            "values": [
+                                "2006",
+                                "1998"
+                            ]
+                        },
+                        {
+                            "type": "OCCUPATION",
+                            "values": [
+                                "copy editor",
+                                "accounting clerk"
+                            ]
+                        },
+                        {
+                            "type": "TITLE",
+                            "values": [
+                                "mr.",
+                                "ms."
+                            ]
+                        },
+                        {
+                            "type": "POLITICAL_OPINION",
+                            "values": [
+                                "communist"
+                            ]
+                        },
+                        {
+                            "type": "PHONE_NUMBER",
+                            "values": [
+                                "1527564666",
+                                "6417811277"
+                            ]
+                        },
+                        {
+                            "type": "STREET_ADDRESS",
+                            "values": [
+                                "6355 williams mine road",
+                                "3064 park boulevard"
+                            ]
+                        },
+                        {
+                            "type": "COUNTRY_CODE",
+                            "values": [
+                                "usa"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "id": 578,
+                    "timestamp": 1633364750593,
+                    "name": "QA-CSV",
+                    "size": 4674711,
+                    "path": "QA-CSV.csv",
+                    "url": "smb://qa-server2016.1touch.co/demo10k",
+                    "entityTypes": [
+                        {
+                            "type": "CC_TYPE",
+                            "values": [
+                                "discover",
+                                "american express"
+                            ]
+                        },
+                        {
+                            "type": "DOMAIN",
+                            "values": [
+                                "minagory.com",
+                                "gcfac.com"
+                            ]
+                        },
+                        {
+                            "type": "ZIP_CODE",
+                            "values": [
+                                "50322",
+                                "80936"
+                            ]
+                        },
+                        {
+                            "type": "CC_EXPIRES",
+                            "values": [
+                                "2/2023",
+                                "2/2019"
+                            ]
+                        },
+                        {
+                            "type": "MIDDLE_INITIAL",
+                            "values": [
+                                "u"
+                            ]
+                        },
+                        {
+                            "type": "STATE",
+                            "values": [
+                                "iowa",
+                                "alaska"
+                            ]
+                        },
+                        {
+                            "type": "VEHICLE_NUMBER",
+                            "values": [
+                                "66x8628",
+                                "xly515"
+                            ]
+                        },
+                        {
+                            "type": "COUNTRY",
+                            "values": [
+                                "united states"
+                            ]
+                        },
+                        {
+                            "type": "NATIONAL_ID",
+                            "values": [
+                                "324259004",
+                                "480728626"
+                            ]
+                        },
+                        {
+                            "type": "EMAIL_ADDRESS",
+                            "values": [
+                                "<test.email.2>",
+                                "<test.email.1>"
+                            ]
+                        },
+                        {
+                            "type": "CC_CVV",
+                            "values": [
+                                "171",
+                                "685"
+                            ]
+                        },
+                        {
+                            "type": "PASSPORT_NUMBER",
+                            "values": [
+                                "336342840"
+                            ]
+                        },
+                        {
+                            "type": "USERNAME",
+                            "values": [
+                                "wareat78",
+                                "43cowie0"
+                            ]
+                        },
+                        {
+                            "type": "BIRTHDAY",
+                            "values": [
+                                "05/28/95",
+                                "19/11/71",
+                                "11/19/71"
+                            ]
+                        },
+                        {
+                            "type": "SURNAME",
+                            "values": [
+                                "szigethy",
+                                "westerhof"
+                            ]
+                        },
+                        {
+                            "type": "GIVEN_NAME",
+                            "values": [
+                                "lucas",
+                                "jacobien"
+                            ]
+                        },
+                        {
+                            "type": "GUID",
+                            "values": [
+                                "288418d0-edec-45be-be77-1b68d64d096b",
+                                "76953b91-3f81-4e54-a12e-4b01bfcf9e6d"
+                            ]
+                        },
+                        {
+                            "type": "VEHICLE_MODEL",
+                            "values": [
+                                "peugeot 406",
+                                "daihatsu sirion"
+                            ]
+                        },
+                        {
+                            "type": "COMPANY",
+                            "values": [
+                                "future plan"
+                            ]
+                        },
+                        {
+                            "type": "CITY",
+                            "values": [
+                                "shemya",
+                                "urbandale"
+                            ]
+                        },
+                        {
+                            "type": "RELIGION",
+                            "values": [
+                                "jewish"
+                            ]
+                        },
+                        {
+                            "type": "RACE",
+                            "values": [
+                                "caucasian"
+                            ]
+                        },
+                        {
+                            "type": "VEHICLE_YEAR",
+                            "values": [
+                                "2006",
+                                "1998"
+                            ]
+                        },
+                        {
+                            "type": "OCCUPATION",
+                            "values": [
+                                "copy editor",
+                                "accounting clerk"
+                            ]
+                        },
+                        {
+                            "type": "TITLE",
+                            "values": [
+                                "mr.",
+                                "ms."
+                            ]
+                        },
+                        {
+                            "type": "POLITICAL_OPINION",
+                            "values": [
+                                "communist"
+                            ]
+                        },
+                        {
+                            "type": "PHONE_NUMBER",
+                            "values": [
+                                "1527564666",
+                                "6417811277"
+                            ]
+                        },
+                        {
+                            "type": "STREET_ADDRESS",
+                            "values": [
+                                "6355 williams mine road",
+                                "3064 park boulevard"
+                            ]
+                        },
+                        {
+                            "type": "COUNTRY_CODE",
+                            "values": [
+                                "usa"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "id": 579,
+                    "timestamp": null,
+                    "name": "AK-110K.xlsAK-110K",
+                    "size": 38712273,
+                    "path": "/AK-110K.xlsAK-110K.xlsx",
+                    "url": "nfs://<test.ip>//crawlershare",
+                    "entityTypes": [
+                        {
+                            "type": "CC_TYPE",
+                            "values": [
+                                "discover",
+                                "american express"
+                            ]
+                        },
+                        {
+                            "type": "DOMAIN",
+                            "values": [
+                                "minagory.com",
+                                "gcfac.com"
+                            ]
+                        },
+                        {
+                            "type": "ZIP_CODE",
+                            "values": [
+                                "50322",
+                                "80936"
+                            ]
+                        },
+                        {
+                            "type": "STATE",
+                            "values": [
+                                "iowa",
+                                "alaska"
+                            ]
+                        },
+                        {
+                            "type": "VEHICLE_NUMBER",
+                            "values": [
+                                "66x8628",
+                                "xly515"
+                            ]
+                        },
+                        {
+                            "type": "COUNTRY",
+                            "values": [
+                                "united states"
+                            ]
+                        },
+                        {
+                            "type": "NATIONAL_ID",
+                            "values": [
+                                "324259004",
+                                "480728626"
+                            ]
+                        },
+                        {
+                            "type": "EMAIL_ADDRESS",
+                            "values": [
+                                "<test.email.1>",
+                                "test.email.2>"
+                            ]
+                        },
+                        {
+                            "type": "CC_CVV",
+                            "values": [
+                                "171",
+                                "685"
+                            ]
+                        },
+                        {
+                            "type": "PASSPORT_NUMBER",
+                            "values": [
+                                "336342840"
+                            ]
+                        },
+                        {
+                            "type": "USERNAME",
+                            "values": [
+                                "wareat78",
+                                "43cowie0"
+                            ]
+                        },
+                        {
+                            "type": "BIRTHDAY",
+                            "values": [
+                                "05/28/95",
+                                "19/11/71",
+                                "11/19/71"
+                            ]
+                        },
+                        {
+                            "type": "SURNAME",
+                            "values": [
+                                "szigethy",
+                                "westerhof"
+                            ]
+                        },
+                        {
+                            "type": "GIVEN_NAME",
+                            "values": [
+                                "lucas",
+                                "jacobien"
+                            ]
+                        },
+                        {
+                            "type": "BROWSER_USER_AGENT",
+                            "values": [
+                                "mozilla/5.0 (macintosh; intel mac os x 10_12_6) applewebkit/537.36 (khtml",
+                                " like gecko) chrome/63.0.3239.132 safari/537.36"
+                            ]
+                        },
+                        {
+                            "type": "GUID",
+                            "values": [
+                                "288418d0-edec-45be-be77-1b68d64d096b",
+                                "76953b91-3f81-4e54-a12e-4b01bfcf9e6d"
+                            ]
+                        },
+                        {
+                            "type": "DRIVER_LICENSE",
+                            "values": [
+                                "x643895803450"
+                            ]
+                        },
+                        {
+                            "type": "VEHICLE_MODEL",
+                            "values": [
+                                "peugeot 406",
+                                "daihatsu sirion"
+                            ]
+                        },
+                        {
+                            "type": "CITY",
+                            "values": [
+                                "shemya",
+                                "urbandale"
+                            ]
+                        },
+                        {
+                            "type": "RELIGION",
+                            "values": [
+                                "jewish"
+                            ]
+                        },
+                        {
+                            "type": "RACE",
+                            "values": [
+                                "caucasian"
+                            ]
+                        },
+                        {
+                            "type": "VEHICLE_YEAR",
+                            "values": [
+                                "2006",
+                                "1998"
+                            ]
+                        },
+                        {
+                            "type": "OCCUPATION",
+                            "values": [
+                                "copy editor",
+                                "accounting clerk"
+                            ]
+                        },
+                        {
+                            "type": "TITLE",
+                            "values": [
+                                "mr.",
+                                "ms."
+                            ]
+                        },
+                        {
+                            "type": "POLITICAL_OPINION",
+                            "values": [
+                                "communist"
+                            ]
+                        },
+                        {
+                            "type": "PHONE_NUMBER",
+                            "values": [
+                                "1527564666",
+                                "6417811277"
+                            ]
+                        },
+                        {
+                            "type": "STREET_ADDRESS",
+                            "values": [
+                                "6355 williams mine road",
+                                "3064 park boulevard"
+                            ]
+                        },
+                        {
+                            "type": "COUNTRY_CODE",
+                            "values": [
+                                "usa"
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "databases": [
+                {
+                    "id": 308,
+                    "name": "flat_1t_40_full",
+                    "tables": [
+                        {
+                            "id": 0,
+                            "name": "flat_200000t_250PII_short.AK_250PII_single_152_5",
+                            "entityTypes": [
+                                {
+                                    "type": "CITY",
+                                    "values": [
+                                        "shemya",
+                                        "urbandale"
+                                    ]
+                                },
+                                {
+                                    "type": "BROWSER_USER_AGENT",
+                                    "values": [
+                                        "mozilla/5.0 (macintosh; intel mac os x 10_12_6) applewebkit/537.36 (khtml",
+                                        " like gecko) chrome/63.0.3239.132 safari/537.36"
+                                    ]
+                                },
+                                {
+                                    "type": "PASSPORT_NUMBER",
+                                    "values": [
+                                        "336342840"
+                                    ]
+                                },
+                                {
+                                    "type": "STATE",
+                                    "values": [
+                                        "iowa",
+                                        "alaska"
+                                    ]
+                                },
+                                {
+                                    "type": "OCCUPATION",
+                                    "values": [
+                                        "copy editor",
+                                        "accounting clerk"
+                                    ]
+                                },
+                                {
+                                    "type": "VEHICLE_NUMBER",
+                                    "values": [
+                                        "66x8628",
+                                        "xly515"
+                                    ]
+                                },
+                                {
+                                    "type": "BIRTHDAY",
+                                    "values": [
+                                        "05/28/95",
+                                        "19/11/71",
+                                        "11/19/71"
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "id": 309,
+                    "name": "flat_1t_40_full",
+                    "tables": [
+                        {
+                            "id": 0,
+                            "name": "flat_500t_100K_short.AK_100K_1_5",
+                            "entityTypes": [
+                                {
+                                    "type": "DOMAIN",
+                                    "values": [
+                                        "minagory.com",
+                                        "gcfac.com"
+                                    ]
+                                },
+                                {
+                                    "type": "BROWSER_USER_AGENT",
+                                    "values": [
+                                        "mozilla/5.0 (macintosh; intel mac os x 10_12_6) applewebkit/537.36 (khtml",
+                                        " like gecko) chrome/63.0.3239.132 safari/537.36"
+                                    ]
+                                },
+                                {
+                                    "type": "EMAIL_ADDRESS",
+                                    "values": [
+                                        "<test.email.1>",
+                                        "<test.email.2>"
+                                    ]
+                                },
+                                {
+                                    "type": "PASSPORT_NUMBER",
+                                    "values": [
+                                        "336342840"
+                                    ]
+                                },
+                                {
+                                    "type": "GUID",
+                                    "values": [
+                                        "288418d0-edec-45be-be77-1b68d64d096b",
+                                        "76953b91-3f81-4e54-a12e-4b01bfcf9e6d"
+                                    ]
+                                },
+                                {
+                                    "type": "USERNAME",
+                                    "values": [
+                                        "wareat78",
+                                        "43cowie0"
+                                    ]
+                                },
+                                {
+                                    "type": "OCCUPATION",
+                                    "values": [
+                                        "copy editor",
+                                        "accounting clerk"
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "dataAssets": [
+                {
+                    "id": 358,
+                    "name": "AK-50k",
+                    "description": "AK-50k",
+                    "reasonsOfProcessing": [
+                        "1"
+                    ],
+                    "piis": []
+                },
+                {
+                    "id": 359,
+                    "name": "Default",
+                    "description": null,
+                    "reasonsOfProcessing": [],
+                    "piis": []
+                }
+            ]
+        },
+        "piis": [
+            {
+                "id": 3911,
+                "piiEntityType": "CC_TYPE",
+                "piiEntityValue": "discover",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3912,
+                "piiEntityType": "CC_TYPE",
+                "piiEntityValue": "american express",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3913,
+                "piiEntityType": "DOMAIN",
+                "piiEntityValue": "minagory.com",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3914,
+                "piiEntityType": "DOMAIN",
+                "piiEntityValue": "gcfac.com",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3915,
+                "piiEntityType": "ZIP_CODE",
+                "piiEntityValue": "50322",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3916,
+                "piiEntityType": "ZIP_CODE",
+                "piiEntityValue": "80936",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3917,
+                "piiEntityType": "CC_EXPIRES",
+                "piiEntityValue": "2/2019",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3918,
+                "piiEntityType": "CC_EXPIRES",
+                "piiEntityValue": "2/2023",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3919,
+                "piiEntityType": "MIDDLE_INITIAL",
+                "piiEntityValue": "u",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3920,
+                "piiEntityType": "STATE",
+                "piiEntityValue": "iowa",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3921,
+                "piiEntityType": "STATE",
+                "piiEntityValue": "alaska",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3922,
+                "piiEntityType": "VEHICLE_NUMBER",
+                "piiEntityValue": "66x8628",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3923,
+                "piiEntityType": "VEHICLE_NUMBER",
+                "piiEntityValue": "xly515",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3924,
+                "piiEntityType": "EMAIL_ADDRESS",
+                "piiEntityValue": "<test.email.1>",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3925,
+                "piiEntityType": "EMAIL_ADDRESS",
+                "piiEntityValue": "test.email.2>",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3926,
+                "piiEntityType": "NATIONAL_ID",
+                "piiEntityValue": "480728626",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3927,
+                "piiEntityType": "NATIONAL_ID",
+                "piiEntityValue": "324259004",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3928,
+                "piiEntityType": "COUNTRY",
+                "piiEntityValue": "united states",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3929,
+                "piiEntityType": "CC_CVV",
+                "piiEntityValue": "685",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3930,
+                "piiEntityType": "CC_CVV",
+                "piiEntityValue": "171",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3931,
+                "piiEntityType": "PASSPORT_NUMBER",
+                "piiEntityValue": "336342840",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3932,
+                "piiEntityType": "USERNAME",
+                "piiEntityValue": "43cowie0",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3933,
+                "piiEntityType": "USERNAME",
+                "piiEntityValue": "wareat78",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3934,
+                "piiEntityType": "BIRTHDAY",
+                "piiEntityValue": "19/11/71",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3935,
+                "piiEntityType": "BIRTHDAY",
+                "piiEntityValue": "11/19/71",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3936,
+                "piiEntityType": "BIRTHDAY",
+                "piiEntityValue": "05/28/95",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3937,
+                "piiEntityType": "SURNAME",
+                "piiEntityValue": "szigethy",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3938,
+                "piiEntityType": "SURNAME",
+                "piiEntityValue": "westerhof",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3939,
+                "piiEntityType": "GIVEN_NAME",
+                "piiEntityValue": "jacobien",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3940,
+                "piiEntityType": "GIVEN_NAME",
+                "piiEntityValue": "lucas",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3941,
+                "piiEntityType": "BROWSER_USER_AGENT",
+                "piiEntityValue": "mozilla/5.0 (macintosh; intel mac os x 10_12_6) applewebkit/537.36 (khtml, like gecko) chrome/63.0.3239.132 safari/537.36",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3942,
+                "piiEntityType": "GUID",
+                "piiEntityValue": "288418d0-edec-45be-be77-1b68d64d096b",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3943,
+                "piiEntityType": "GUID",
+                "piiEntityValue": "76953b91-3f81-4e54-a12e-4b01bfcf9e6d",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3944,
+                "piiEntityType": "DRIVER_LICENSE",
+                "piiEntityValue": "x643895803450",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3945,
+                "piiEntityType": "VEHICLE_MODEL",
+                "piiEntityValue": "daihatsu sirion",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3946,
+                "piiEntityType": "VEHICLE_MODEL",
+                "piiEntityValue": "peugeot 406",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3947,
+                "piiEntityType": "COMPANY",
+                "piiEntityValue": "future plan",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3948,
+                "piiEntityType": "CITY",
+                "piiEntityValue": "shemya",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3949,
+                "piiEntityType": "CITY",
+                "piiEntityValue": "urbandale",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3950,
+                "piiEntityType": "RELIGION",
+                "piiEntityValue": "jewish",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3951,
+                "piiEntityType": "RACE",
+                "piiEntityValue": "caucasian",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3952,
+                "piiEntityType": "VEHICLE_YEAR",
+                "piiEntityValue": "1998",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3953,
+                "piiEntityType": "VEHICLE_YEAR",
+                "piiEntityValue": "2006",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3954,
+                "piiEntityType": "OCCUPATION",
+                "piiEntityValue": "copy editor",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3955,
+                "piiEntityType": "OCCUPATION",
+                "piiEntityValue": "accounting clerk",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3956,
+                "piiEntityType": "TITLE",
+                "piiEntityValue": "mr.",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3957,
+                "piiEntityType": "TITLE",
+                "piiEntityValue": "ms.",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3958,
+                "piiEntityType": "POLITICAL_OPINION",
+                "piiEntityValue": "communist",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3959,
+                "piiEntityType": "STREET_ADDRESS",
+                "piiEntityValue": "3064 park boulevard",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3960,
+                "piiEntityType": "STREET_ADDRESS",
+                "piiEntityValue": "6355 williams mine road",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3961,
+                "piiEntityType": "PHONE_NUMBER",
+                "piiEntityValue": "1527564666",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3962,
+                "piiEntityType": "PHONE_NUMBER",
+                "piiEntityValue": "6417811277",
+                "piiEntityValueNew": null,
+                "action": null
+            },
+            {
+                "id": 3963,
+                "piiEntityType": "COUNTRY_CODE",
+                "piiEntityValue": "usa",
+                "piiEntityValueNew": null,
+                "action": null
+            }
+        ]
+    }
+}
