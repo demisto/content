@@ -33,19 +33,34 @@ This playbook does not use any scripts.
 | Urgency | Set the urgency of the new ticket. Leave empty for ServiceNow default urgency. |  | Optional |
 | Severity  | Set the severity of the new ticket. Leave empty for ServiceNow default severity. |  | Optional |
 | Comment | Add a comment for the created ticket. |  | Optional |
-| SyncTicket | Set the value of the desired sync method with ServiceNow Ticket. you can choose one of three options:<br/>1. StatePolling<br/>2. Mirror <br/>3. Blank for none <br/><br/>GenericPolling polls for the state of the ticket and runs until the ticket state is either resolved or closed. <br/><br/>Mirror - You can use the Mirror option to perform a full sync with the ServiceNow Ticket. The ticket data is synced automatically between ServiceNow and Cortex xSOAR with the ServiceNow mirror feature.<br/>If this option is selected, FieldPolling is true by default.  |  | Optional |
+| SyncTicket | Set the value of the desired sync method with ServiceNow Ticket. you can choose one of three options:<br/>1. StatePolling<br/>2. Mirror <br/>3. Blank for none <br/><br/>GenericPolling polls for the state of the ticket and runs until the ticket state is either resolved or closed. <br/><br/>Mirror - You can use the Mirror option to perform a full sync with the ServiceNow Ticket. The ticket data is synced automatically between ServiceNow and Cortex xSOAR with the ServiceNow mirror feature.<br/>If this option is selected, FieldPolling is true by default.  | Mirror | Optional |
 | PollingInterval | Set interval time for the polling to run<br/>\(In minutes\) |  | Optional |
 | PollingTimeout | Set the amount of time to poll the status of the ticket before declaring a timeout and resuming the playbook.<br/>\(In minutes\) |  | Optional |
 | AdditionalPollingCommandName | In this use case, Additional polling commands are relevant when using StatePolling, and there is more than one ServiceNow instance. It will specify the polling command to use a specific instance to run on. <br/>If so, please add "Using" to the value. <br/>The playbook will then take the instance name as the instance to use.  |  | Optional |
-| InstanceName | Set the ServiceNow Instance that will be used for mirroring/running polling commands.<br/> |  | Optional |
+| InstanceName | Set the ServiceNow Instance that will be used for mirroring/running polling commands.<br/> | ServiceNow v2_instance_1 | Optional |
 | MirrorDirection | Set the mirror direction. It should be one of the following: <br/>1. In<br/>2. Out<br/>3. Both | Both | Optional |
 | MirrorCommentTags | Set tags for mirror comments and files to ServiceNow. | comments,work_notes,ForServiceNow | Optional |
-| FieldPolling | Set the value to true or false to determine if the playbook will execute the FieldPolling sub playbook.<br/>It is useful when it is needed to wait for the ServiceNow ticket to be resolved and continue the parent playbook.<br/>FieldPolling will run until the ticket state is either resolved or closed. | true | Optional |
-| TicketType | Set the ServiceNow ticket type. Options are "incident", "problem", "change_request", "sc_request", "sc_task", or "sc_req_item". |  | Optional |
+| FieldPolling | Set the value to true or false to determine if the playbook will execute the FieldPolling sub playbook.<br/>It is useful when it is needed to wait for the ServiceNow ticket to be resolved and continue the parent playbook.<br/>FieldPolling will run until the ticket state is either resolved or closed. |  | Optional |
+| TicketType | Set the ServiceNow ticket type. Options are "incident", "problem", "change_request", "sc_request", "sc_task", or "sc_req_item". Default is "incident". |  | Optional |
 
 ## Playbook Outputs
 ---
-There are no outputs for this playbook.
+
+| **Path** | **Description** | **Type** |
+| --- | --- | --- |
+| ServiceNow.Ticket.ID | Ticket ID. | string |
+| ServiceNow.Ticket.OpenedBy | Ticket opener ID. | string |
+| ServiceNow.Ticket.CreatedOn | Ticket creation date. | string |
+| ServiceNow.Ticket.Assignee | Ticket assignee ID. | string |
+| ServiceNow.Ticket.State | Ticket state. | string |
+| ServiceNow.Ticket.Summary | Ticket short summary. | string |
+| ServiceNow.Ticket.Number | Ticket number. | string |
+| ServiceNow.Ticket.Active | Ticket active. | string |
+| ServiceNow.Ticket.AdditionalComments | Ticket comments. | string |
+| ServiceNow.Ticket.Priority | Ticket priority. | string |
+| ServiceNow.Ticket.OpenedAt | Ticket opening time. | string |
+| ServiceNow.Ticket.ResolvedBy | Ticket resolver ID. | string |
+| ServiceNow.Ticket.CloseCode | Ticket close code. | string |
 
 ## Playbook Image
 ---
