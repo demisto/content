@@ -22,8 +22,8 @@ configuration:
   required: false
   type: 8
 description: Qualys Vulnerability Management lets you create, run, fetch and manage
-  reports, launch and manage vulnerability and compliance scans, and manage the host assets
-  you want to scan for vulnerabilities and compliance.
+  reports, launch and manage vulnerability and compliance scans, and manage the host
+  assets you want to scan for vulnerabilities and compliance.
 display: Qualys v2
 name: QualysV2
 script:
@@ -3371,7 +3371,7 @@ script:
       type: String
     description: Gets a list of the supported time zone codes.
     execution: true
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.1.25933
   feed: false
   isfetch: false
   longRunning: false
