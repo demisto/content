@@ -654,7 +654,7 @@ def test_incident_creation_e6(params, mocker):
     incidents, last_fetch2 = results_to_incidents_datetime(ES_V6_RESPONSE, last_fetch)
 
     assert str(last_fetch2) == '2019-08-29T14:46:00Z'
-    if params.get('map_labels') == 'true':
+    if params.get('map_labels'):
         assert str(incidents) == MOCK_ES6_INCIDETNS
     else:
         assert str(incidents) == MOCK_ES6_INCIDETNS_WITHOUT_LABELS
@@ -669,7 +669,7 @@ def test_incident_creation_e7(params, mocker):
     incidents, last_fetch2 = results_to_incidents_datetime(ES_V7_RESPONSE, last_fetch)
 
     assert str(last_fetch2) == '2019-08-27T18:01:00Z'
-    if params.get('map_labels') == 'true':
+    if params.get('map_labels'):
         assert str(incidents) == MOCK_ES7_INCIDENTS
     else:
         assert str(incidents) == MOCK_ES7_INCIDENTS_WITHOUT_LABELS
@@ -704,7 +704,7 @@ def test_incident_creation_with_timestamp_e7(params, mocker):
     lastfetch = int(datetime.strptime('2019-08-27T17:59:00Z', '%Y-%m-%dT%H:%M:%SZ').timestamp())
     incidents, last_fetch2 = results_to_incidents_timestamp(ES_V7_RESPONSE_WITH_TIMESTAMP, lastfetch)
     assert last_fetch2 == 1572502640
-    if params.get('map_labels') == 'true':
+    if params.get('map_labels'):
         assert str(incidents) == MOCK_ES7_INCIDENTS_FROM_TIMESTAMP
     else:
         assert str(incidents) == MOCK_ES7_INCIDENTS_FROM_TIMESTAMP_WITHOUT_LABELS
