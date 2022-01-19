@@ -3,7 +3,7 @@ commonfields:
   id: Xsoar_Utils
   version: -1
 configuration:
-- display: XSOAR Server URL (e.g. https://soar.monstersofhack.com)
+- display: XSOAR Server URL
   name: url
   required: true
   type: 0
@@ -43,8 +43,11 @@ name: Xsoar_Utils
 script:
   commands:
   - arguments:
-    - name: data
-    - name: inv_id
+    - description: The entry value to be created on the investigation.
+      name: data
+    - description: The investigation -id to be used. If not specified, the playground-id
+        is used.
+      name: inv_id
     description: Creates an entry into an investigation warroom or  by default on
       the playground.
     name: xsoar-create-entry
