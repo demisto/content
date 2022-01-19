@@ -41,8 +41,10 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VisionOne.BlockList.action_id | String | The action id | 
-| VisionOne.BlockList.task_status | String | Status of existing task |
+| VisionOne.BlockList.actionId | String | The action id | 
+| VisionOne.BlockList.taskStatus | String | Status of existing task |
+
+Note: To get the complete task status run polling command `trendmicro-visionone-check-task-status` giving `actionId` as input parameter.
 
 2. `trendmicro-visionone-remove-from-block-list`
 
@@ -59,8 +61,10 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VisionOne.BlockList.action_id | String | The action id | 
-| VisionOne.BlockList.task_status | String | Status of existing task |
+| VisionOne.BlockList.actionId | String | The action id | 
+| VisionOne.BlockList.taskStatus | String | Status of existing task |
+
+Note: To get the complete task status run polling command `trendmicro-visionone-check-task-status` giving `actionId` as input parameter.
 
 3. `trendmicro-visionone-quarantine-email-message`
 
@@ -78,8 +82,10 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VisionOne.Email.action_id | String | The action id | 
-| VisionOne.Email.task_status | String | Status of existing task |
+| VisionOne.Email.actionId | String | The action id | 
+| VisionOne.Email.taskStatus | String | Status of existing task |
+
+Note: To get the complete task status run polling command `trendmicro-visionone-check-task-status` giving `actionId` as input parameter.
 
 4. `trendmicro-visionone-delete-email-message`
 
@@ -97,8 +103,10 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VisionOne.Email.action_id | String | The action id | 
-| VisionOne.Email.task_status | String | Status of existing task |
+| VisionOne.Email.actionId | String | The action id | 
+| VisionOne.Email.taskStatus | String | Status of existing task |
+
+Note: To get the complete task status run polling command `trendmicro-visionone-check-task-status` giving `actionId` as input parameter.
 
 5. `trendmicro-visionone-isolate-endpoint`
 
@@ -115,9 +123,10 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VisionOne.Endpoint_Connection.action_id | String | The action id | 
-| VisionOne.Endpoint_Connection.task_status | String | Status of existing task |
+| VisionOne.Endpoint_Connection.actionId | String | The action id | 
+| VisionOne.Endpoint_Connection.taskStatus | String | Status of existing task |
 
+Note: To get the complete task status run polling command `trendmicro-visionone-check-task-status` giving `actionId` as input parameter.
 Note: The above command should be added with execution timeout in the advanced field of playbook execution. The recommended timeout be ``20 minutes``.
 
 6. `trendmicro-visionone-restore-endpoint-connection`
@@ -135,9 +144,10 @@ Note: The above command should be added with execution timeout in the advanced f
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VisionOne.Endpoint_Connection.action_id | String | The action id | 
-| VisionOne.Endpoint_Connection.task_status | String | Status of existing task |
+| VisionOne.Endpoint_Connection.actionId | String | The action id | 
+| VisionOne.Endpoint_Connection.taskStatus | String | Status of existing task |
 
+Note: To get the complete task status run polling command `trendmicro-visionone-check-task-status` giving `actionId` as input parameter.
 Note: The above command should be added with execution timeout in the advanced field of playbook execution. The recommended timeout be ``20 minutes``.
 
 7. `trendmicro-visionone-add-objects-to-exception-list`
@@ -230,9 +240,10 @@ Note: The above command should be added with execution timeout in the advanced f
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VisionOne.Terminate_Process.action_id | String | The action id | 
-| VisionOne.Terminate_Process.task_status | String | Status of existing task |
+| VisionOne.Terminate_Process.actionId | String | The action id | 
+| VisionOne.Terminate_Process.taskStatus | String | Status of existing task |
 
+Note: To get the complete task status run polling command `trendmicro-visionone-check-task-status` giving `actionId` as input parameter.
 Note: The above command should be added with execution timeout in the advanced field of playbook execution. The recommended timeout is ``20 minutes``.
 
 12. `trendmicro-visionone-get-file-analysis-status`
@@ -248,7 +259,7 @@ Note: The above command should be added with execution timeout in the advanced f
 | VisionOne.File_Analysis_Status.message | String | Message status | 
 | VisionOne.File_Analysis_Status.code | String | Code status of the task |
 | VisionOne.File_Analysis_Status.task_id | String | Task id |
-| VisionOne.File_Analysis_Status.task_status | String | Task status |
+| VisionOne.File_Analysis_Status.taskStatus | String | Task status |
 | VisionOne.File_Analysis_Status.digest | String | Hash value of task |
 | VisionOne.File_Analysis_Status.analysis_completion_time | String | Task completion time |
 | VisionOne.File_Analysis_Status.risk_level | String | Risk level of task |
@@ -292,16 +303,17 @@ Note: The above command should be added with execution timeout in the advanced f
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VisionOne.Collect_Forensic_File.action_id | String | Action id of the running task |
-| VisionOne.Collect_Forensic_File.task_status | String | Status of the running task |
+| VisionOne.Collect_Forensic_File.actionId | String | Action id of the running task |
+| VisionOne.Collect_Forensic_File.taskStatus | String | Status of the running task |
 
+Note: To get the complete task status run polling command `trendmicro-visionone-check-task-status` giving `actionId` as input parameter.
 Note: The above command should be added with execution timeout in the advanced field of playbook execution. The recommended timeout be ``20 minutes``.
 
 15. `trendmicro-visionone-download-information-for-collected-forensic-file`
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| action_id | action_id output from the collect command used to collect the file |Required| 
+| actionId | actionId output from the collect command used to collect the file |Required| 
 
 #### Context Output
 

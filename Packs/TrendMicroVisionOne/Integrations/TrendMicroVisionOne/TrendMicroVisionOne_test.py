@@ -11,7 +11,8 @@ from TrendMicroVisionOne import (
     get_file_analysis_report,
     collect_file,
     download_information_collected_file,
-    submit_file_to_sandbox
+    submit_file_to_sandbox,
+    get_task_status
 )
 
 
@@ -51,10 +52,10 @@ def test_add_blocklist(mocker):
     result = add_or_remove_from_block_list(
         client, "trendmicro-visionone-add-to-block-list", args
     )
-    assert result.outputs["task_status"] == "success"
-    assert isinstance(result.outputs["action_id"], str)
+    assert result.outputs["taskStatus"] == "pending"
+    assert isinstance(result.outputs["actionId"], str)
     assert result.outputs_prefix == "VisionOne.BlockList"
-    assert result.outputs_key_field == "action_id"
+    assert result.outputs_key_field == "actionId"
 
 
 # Test cases for remove from block list
@@ -73,10 +74,10 @@ def test_remove_block_list(mocker):
     result = add_or_remove_from_block_list(
         client, "trendmicro-visionone-remove-from-block-list", args
     )
-    assert result.outputs["task_status"] == "success"
-    assert isinstance(result.outputs["action_id"], str)
+    assert result.outputs["taskStatus"] == "pending"
+    assert isinstance(result.outputs["actionId"], str)
     assert result.outputs_prefix == "VisionOne.BlockList"
-    assert result.outputs_key_field == "action_id"
+    assert result.outputs_key_field == "actionId"
 
 
 # Mock function for quarantine and delete email message
@@ -116,10 +117,10 @@ def test_quarantine_email_message(mocker):
     result = quarantine_or_delete_email_message(
         client, "trendmicro-visionone-quarantine-email-message", args
     )
-    assert result.outputs["task_status"] == "success"
-    assert isinstance(result.outputs["action_id"], str)
+    assert result.outputs["taskStatus"] == "pending"
+    assert isinstance(result.outputs["actionId"], str)
     assert result.outputs_prefix == "VisionOne.Email"
-    assert result.outputs_key_field == "action_id"
+    assert result.outputs_key_field == "actionId"
 
 
 # Test cases for delete email message
@@ -143,10 +144,10 @@ def test_delete_email_message(mocker):
     result = quarantine_or_delete_email_message(
         client, "trendmicro-visionone-delete-email-message", args
     )
-    assert result.outputs["task_status"] == "success"
-    assert isinstance(result.outputs["action_id"], str)
+    assert result.outputs["taskStatus"] == "pending"
+    assert isinstance(result.outputs["actionId"], str)
     assert result.outputs_prefix == "VisionOne.Email"
-    assert result.outputs_key_field == "action_id"
+    assert result.outputs_key_field == "actionId"
 
 
 # Mock function for isolate and restore endpoint
@@ -185,9 +186,9 @@ def test_isolate_endpoint(mocker):
     result = isolate_or_restore_connection(
         client, "trendmicro-visionone-isolate-endpoint", args
     )
-    assert result.outputs["task_status"] == "success"
+    assert result.outputs["taskStatus"] == "pending"
     assert result.outputs_prefix == "VisionOne.Endpoint_Connection"
-    assert result.outputs_key_field == "action_id"
+    assert result.outputs_key_field == "actionId"
 
 
 # Test cases for restore endpoint
@@ -206,9 +207,9 @@ def test_restore_endpoint(mocker):
     result = isolate_or_restore_connection(
         client, "trendmicro-visionone-restore-endpoint-connection", args
     )
-    assert result.outputs["task_status"] == "success"
+    assert result.outputs["taskStatus"] == "pending"
     assert result.outputs_prefix == "VisionOne.Endpoint_Connection"
-    assert result.outputs_key_field == "action_id"
+    assert result.outputs_key_field == "actionId"
 
 
 # Test cases for terminate process endpoint
@@ -227,10 +228,10 @@ def test_terminate_process_endpoint(mocker):
         "filename": "testfile",
     }
     result = terminate_process(client, args)
-    assert result.outputs["task_status"] == "success"
-    assert isinstance(result.outputs["action_id"], str)
+    assert result.outputs["taskStatus"] == "pending"
+    assert isinstance(result.outputs["actionId"], str)
     assert result.outputs_prefix == "VisionOne.Terminate_Process"
-    assert result.outputs_key_field == "action_id"
+    assert result.outputs_key_field == "actionId"
 
 
 # Mock function for add and delete exception list
@@ -384,7 +385,7 @@ def test_get_file_status(mocker):
     assert result.outputs["message"] == "Success"
     assert result.outputs["code"] == "Success"
     assert result.outputs["task_id"] == "012e4eac-9bd9-4e89-95db-77e02f75a6f3"
-    assert result.outputs["task_status"] == "finished"
+    assert result.outputs["taskStatus"] == "finished"
     assert result.outputs["report_id"] == (
         "012e4eac-9bd9-4e89-95db-77e02f75a6f3")
     assert result.outputs_prefix == "VisionOne.File_Analysis_Status"
@@ -479,7 +480,7 @@ def mock_collect_file(*args, **kwargs):
             "finishedTime": 1589525725,
             "taskStatus": "success",
             "error": {},
-        },
+        }
     }
     return return_value
 
@@ -502,10 +503,10 @@ def test_collect_forensic_file(mocker):
         "os": "linux",
     }
     result = collect_file(client, args)
-    assert result.outputs["task_status"] == "success"
-    assert isinstance(result.outputs["action_id"], str)
+    assert result.outputs["taskStatus"] == "pending"
+    assert isinstance(result.outputs["actionId"], str)
     assert result.outputs_prefix == "VisionOne.Collect_Forensic_File"
-    assert result.outputs_key_field == "action_id"
+    assert result.outputs_key_field == "actionId"
 
 
 # Mock for downloaded file information
@@ -557,7 +558,6 @@ def mock_submit_file_to_sandbox_reponse(*args, **kwargs):
     return return_response
 
 
-# Test cases for submit file to sandbox.
 # Mock response for submit file to sandbox.
 def mocked_requests_get(*args, **kwargs):
     class MockResponse:
@@ -632,3 +632,29 @@ def test_submit_file_to_sandbox(mocker):
     result = submit_file_to_sandbox(client, args)
     assert result.outputs["message"] == "Success"
     assert result.outputs["code"] == "Success"
+
+
+# Mock function for check task status
+def check_task_status_mock_response(*args, **kwargs):
+    return_value = {
+        "data": {
+            "createdTime": 1589525651,
+            "executedTime": 1589525725,
+            "finishedTime": 1589525725,
+            "taskStatus": "success",
+            "error": {}
+        }
+    }
+    return return_value
+
+
+def test_check_task_status(mocker):
+    mocker.patch(
+        "TrendMicroVisionOne.Client.http_request",
+        check_task_status_mock_response)
+    client = Client("https://api.xdr.trendmicro.com", api_key)
+    args = {
+        "actionId": "00001108"
+    }
+    result = get_task_status(args, client)
+    assert result.outputs["taskStatus"] == "success"

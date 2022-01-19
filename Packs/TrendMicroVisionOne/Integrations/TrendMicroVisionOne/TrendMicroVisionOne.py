@@ -49,7 +49,7 @@ FILE_URL = 'file_url'
 FILE_NAME = 'filename'
 DOCUMENT_PASSWORD = 'document_password'
 ARCHIVE_PASSWORD = 'archive_password'
-ACTION_ID = 'action_id'
+ACTION_ID = 'actionId'
 # End Points
 ADD_BLOCKLIST_ENDPOINT = '/v2.0/xdr/response/block'
 REMOVE_BLOCKLIST_ENDPOINT = '/v2.0/xdr/response/restoreBlock'
@@ -84,6 +84,9 @@ RAW_RESPONSE = "The raw response data - {raw_response}"
 SUCCESS_RESPONSE = 'success with url {url} and response status {status}'
 EXCEPTION_MESSAGE = "Successfully {task} object to exception list with response {code}, Total items in exception list - {length}"
 SUCCESS_TEST = 'Successfully connected to the vision one API.'
+POLLING_MESSAGE = (
+    "The task has not completed, will check status again in 30 seconds"
+)
 # Table Heading
 TABLE_ADD_TO_BLOCKLIST = 'The status of add to block list '
 TABLE_REMOVE_FROM_BLOCKLIST = 'The status of remove from block list '
@@ -118,6 +121,7 @@ GET_FILE_ANALYSIS_REPORT = 'trendmicro-visionone-get-file-analysis-report'
 COLLECT_FILE = 'trendmicro-visionone-collect-forensic-file'
 DOWNLOAD_COLLECTED_FILE = 'trendmicro-visionone-download-information-for-collected-forensic-file'
 FILE_TO_SANDBOX = 'trendmicro-visionone-submit-file-to-sandbox'
+CHECK_TASK_STATUS = 'trendmicro-visionone-check-task-status'
 FETCH_INCIDENTS = 'fetch-incidents'
 
 table_name = {
@@ -207,23 +211,19 @@ class Client(BaseClient):
         :return: task status response data.
         :rtype: ``Any``
         """
-        task_id = data.get("actionId", {})
-        params = {"actionId": task_id}
-        flag = True
-        while flag:
-            scheduled_command = ScheduledCommand(
-                command=self.http_request(
-                    GET, TASK_DETAIL_ENDPOINT, params=params
-                ), next_run_in_seconds=30, timeout_in_seconds=600
-            )
-            task_status = scheduled_command.to_results().get(
-                "PollingCommand", {}).get(
-                    "data", {}).get(
-                        "taskStatus", None)
-            if task_status in ("pending", "ongoing"):
-                continue
-            elif task_status in ("success", "failed", "timeout"):
-                return task_status
+        action_id = data.get(ACTION_ID)
+        params = {"actionId": action_id}
+        response = self.http_request(GET, TASK_DETAIL_ENDPOINT, params=params)
+        message = {
+            "taskStatus": response.get("data").get("taskStatus")
+        }
+        return CommandResults(
+            readable_output=tableToMarkdown("Status of task ", message),
+            outputs_prefix=(
+                "VisionOne.Task_Status"
+            ),
+            outputs_key_field="taskStatus",
+            outputs=message)
 
     def get_computer_id(self, field: Any, value: Any) -> str:
         """
@@ -291,6 +291,61 @@ class Client(BaseClient):
         return response
 
 
+def run_polling_command(
+    args: Dict[str, Any],
+    cmd: str, client: Client
+) -> Union[str, CommandResults]:
+    """
+    Performs polling interval to check status of task.
+    :type args: ``args``
+    :param client: argument required for polling.
+
+    :type client: ``cmd``
+    :param client: The command that polled for an interval.
+
+    :type client: ``Client``
+    :param client: client object to use http_request.
+    """
+    ScheduledCommand.raise_error_if_not_supported()
+    interval_in_secs = int(args.get('interval_in_seconds', 30))
+    command_results = client.status_check(args)
+    if command_results.outputs.get(
+        "taskStatus") not in (
+            "success", "failed", "timeout", "skipped"):
+        # schedule next poll
+        demisto.results(POLLING_MESSAGE)
+        polling_args = {
+            'actionId': args.get("actionId"),
+            'interval_in_seconds': interval_in_secs,
+            'polling': True,
+            **args
+        }
+        scheduled_command = ScheduledCommand(
+            command=cmd,
+            next_run_in_seconds=interval_in_secs,
+            args=polling_args,
+            timeout_in_seconds=1500)  # The timeout interval set for 25 minutes.
+        command_results.scheduled_command = scheduled_command
+        return command_results
+    return command_results
+
+
+def get_task_status(
+    args: Dict[str, Any],
+    client: Client
+) -> Union[str, CommandResults]:
+    """
+    check status of task.
+
+    :type args: ``args``
+    :param client: argument required for polling.
+
+    :type client: ``Client``
+    :param client: client object to use http_request.
+    """
+    return run_polling_command(args, CHECK_TASK_STATUS, client)
+
+
 def test_module(client: Client) -> Any:
     """
     Performs basic get request to get item samples.
@@ -301,39 +356,75 @@ def test_module(client: Client) -> Any:
     return 'ok'
 
 
-def add_block_list_mapping(task_status: str, data: Dict[str, Any]) -> Dict[str, Any]:
+def add_delete_block_list_mapping(
+    data: Dict[str, Any]
+) -> Dict[str, Any]:
     """
     Mapping add to block list response data.
-    :type task_status: ``str``
-    :param task_status: The status of task either success or failed.
+
     :type data: ``dict``
     :param data: Response data to received from the end point.
+
     :return: mapped response data.
     :rtype: ``dict``
     """
-    action_id = data.get('actionId', {})
-    return {
-        'action_id': action_id,
-        'task_status': task_status
-    }
+    action_id = data.get("actionId", {})
+    task_status = data.get("taskStatus", {})
+    return {"actionId": action_id, "taskStatus": task_status}
 
 
-def remove_block_list_mapping(task_status: str, data: Dict[str, Any]) -> Dict[str, Any]:
+def add_or_remove_from_block_list(
+    client: Client, command: str, args: Dict[str, Any]
+) -> Union[str, CommandResults]:
     """
-    Mapping remove to block list response data.
-    :type task_status: ``str``
-    :param task_status: The status of task either success or failed.
+    Retrieve data from the add or remove from block list and
+    sends the result to demist war room.
 
-    :type data: ``dict``
-    :param method: Response data to received from the end point.
-    :return: mapped response data.
-    :rtype: ``dict``
+    :type client: ``Client``
+    :param client: client object to use http_request.
+
+    :type command: ``str``
+    :param command: type of command either
+    trendmicro-visionone-add-to-block-list or
+    trendmicro-visionone-remove-from-block-list.
+
+    :type args: ``dict``
+    :param args: args object to fetch the argument data.
+
+    :return: sends data to demisto war room.
+    :rtype: ``dict`
     """
-    action_id = data.get('actionId', {})
-    return {
-        'action_id': action_id,
-        'task_status': task_status
+    value_type = args.get(VALUE_TYPE)
+    target_value = args.get(TARGET_VALUE)
+    product_id = args.get(PRODUCT_ID)
+    if not product_id:
+        product_id = EMPTY_STRING
+    description = args.get(DESCRIPTION)
+    if not description:
+        description = EMPTY_STRING
+    body = {
+        VALUE_TYPE: value_type,
+        TARGET_VALUE: target_value,
+        PRODUCT_ID: product_id,
+        DESCRIPTION: description,
     }
+    if command == ADD_BLOCKLIST_COMMAND:
+        response = client.http_request(
+            POST, ADD_BLOCKLIST_ENDPOINT, data=json.dumps(body)
+        )
+    elif command == REMOVE_BLOCKLIST_COMMAND:
+        response = client.http_request(
+            POST, REMOVE_BLOCKLIST_ENDPOINT, data=json.dumps(body)
+        )
+    demisto.results(RAW_RESPONSE.format(raw_response=response))
+    mapping_data = add_delete_block_list_mapping(response)
+    results = CommandResults(
+        readable_output=tableToMarkdown(table_name[command], mapping_data),
+        outputs_prefix="VisionOne.BlockList",
+        outputs_key_field="actionId",
+        outputs=mapping_data,
+    )
+    return results
 
 
 def fetch_incidents(client: Client):
@@ -380,96 +471,41 @@ def fetch_incidents(client: Client):
     return incidents
 
 
-def add_or_remove_from_block_list(client: Client, command: str, args: Dict[str, Any]) -> Union[str, CommandResults]:
-    """
-    Retrieve data from the add or remove from block list and sends the result to demist war room
-    :type client: ``Client``
-    :param client: client object to use http_request.
-    :type command: ``str``
-    :param command: type of command either trendmicro-visionone-add-to-block-list or trendmicro-visionone-remove-from-block-list.
-    :type args: ``dict``
-    :param args: args object to fetch the argument data.
-    :return: sends data to demisto war room.
-    :rtype: ``dict`
-    """
-    value_type = args.get(VALUE_TYPE)
-    target_value = args.get(TARGET_VALUE)
-    product_id = args.get(PRODUCT_ID)
-    if not product_id:
-        product_id = EMPTY_STRING
-    description = args.get(DESCRIPTION)
-    if not description:
-        description = EMPTY_STRING
-    body = {
-        'valueType': value_type,
-        'targetValue': target_value,
-        'productId': product_id,
-        'description': description,
-    }
-    if command == ADD_BLOCKLIST_COMMAND:
-        response = client.http_request(POST, ADD_BLOCKLIST_ENDPOINT, data=json.dumps(body))
-        task_status = client.status_check(response)
-        mapping_data = add_block_list_mapping(task_status, response)
-    elif command == REMOVE_BLOCKLIST_COMMAND:
-        response = client.http_request(POST, REMOVE_BLOCKLIST_ENDPOINT, data=json.dumps(body))
-        task_status = client.status_check(response)
-        mapping_data = remove_block_list_mapping(task_status, response)
-    demisto.results(RAW_RESPONSE.format(raw_response=response))
-    results = CommandResults(
-        readable_output=tableToMarkdown(table_name[command], mapping_data),
-        outputs_prefix='VisionOne.BlockList',
-        outputs_key_field='action_id',
-        outputs=mapping_data
-    )
-    return results
-
-
-def quarantine_email_mapping(task_status: str, data: Dict[str, Any]) -> Dict[str, Any]:
+def quarantine_delete_email_mapping(
+    data: Dict[str, Any]
+) -> Dict[str, Any]:
     """
     Mapping quarantine email message response data.
-    :type task_status: ``str``
-    :param task_status: The status of task either success or failed.
 
     :type data: ``dict``
     :param method: Response data to received from the end point.
+
     :return: mapped response data.
     :rtype: ``dict``
     """
-    action_id = data.get('actionId', {})
-    return {
-        'action_id': action_id,
-        'task_status': task_status
-    }
+    action_id = data.get("actionId", {})
+    task_status = data.get("taskStatus", {})
+    return {"actionId": action_id, "taskStatus": task_status}
 
 
-def delete_email_mapping(task_status: str, data: Dict[str, Any]) -> Dict[str, Any]:
+def quarantine_or_delete_email_message(
+    client: Client, command: str, args: Dict[str, Any]
+) -> Union[str, CommandResults]:
     """
-    Mapping delete email message response data.
-    :type task_status: ``str``
-    :param task_status: The status of task either success or failed.
+    Retrieve data from the quarantine or delete email message and
+    sends the result to demist war room.
 
-    :type data: ``dict``
-    :param method: Response data to received from the end point.
-    :return: mapped response data.
-    :rtype: ``dict``
-    """
-    action_id = data.get('actionId', {})
-    return {
-        'action_id': action_id,
-        'task_status': task_status
-    }
-
-
-def quarantine_or_delete_email_message(client: Client, command: str, args: Dict[str, Any]) -> Union[str, CommandResults]:
-    """
-    Retrieve data from the quarantine or delete email message and sends the result to demist war room
     :type client: ``Client``
     :param client: client object to use http_request.
+
     :type command: ``str``
-    :param command: type of command either trendmicro-visionone-quarantine-email-message
-        or trendmicro-visionone-delete-email-message
+    :param command: type of command either
+    trendmicro-visionone-quarantine-email-message or
+    trendmicro-visionone-delete-email-message
+
     :type args: ``dict``
     :param args: args object to fetch the argument data.
+
     :return: sends data to demisto war room.
     :rtype: ``dict`
     """
@@ -488,68 +524,60 @@ def quarantine_or_delete_email_message(client: Client, command: str, args: Dict[
         'description': description
     }
     if command == QUARANTINE_EMAIL_COMMAND:
-        response = client.http_request(POST, QUARANTINE_EMAIL_ENDPOINT, data=json.dumps(body))
-        task_status = client.status_check(response)
-        mapping_data = quarantine_email_mapping(task_status, response)
+        response = client.http_request(
+            POST, QUARANTINE_EMAIL_ENDPOINT, data=json.dumps(body)
+        )
 
     elif command == DELETE_EMAIL_COMMAND:
-        response = client.http_request(POST, DELETE_EMAIL_ENDPOINT, data=json.dumps(body))
-        task_status = client.status_check(response)
-        mapping_data = delete_email_mapping(task_status, response)
+        response = client.http_request(
+            POST, DELETE_EMAIL_ENDPOINT, data=json.dumps(body)
+        )
     demisto.results(RAW_RESPONSE.format(raw_response=response))
+    mapping_data = quarantine_delete_email_mapping(response)
     results = CommandResults(
         readable_output=tableToMarkdown(table_name[command], mapping_data),
-        outputs_prefix='VisionOne.Email',
-        outputs_key_field='action_id',
-        outputs=mapping_data
+        outputs_prefix="VisionOne.Email",
+        outputs_key_field="actionId",
+        outputs=mapping_data,
     )
     return results
 
 
-def isolate_endpoint_mapping(task_status: str, data: Dict[str, Any]) -> Dict[str, Any]:
+def isolate_restore_endpoint_mapping(
+    data: Dict[str, Any]
+) -> Dict[str, Any]:
     """
-    Mapping isolate endpoint response data.
-    :type task_status: ``str``
-    :param task_status: The status of task either success or failed.
+    Mapping isolate endpoint and restore endpoint response data.
+
     :type data: ``dict``
     :param method: Response data to received from the end point.
+
     :return: mapped response data.
     :rtype: ``dict``
     """
-    action_id = data.get('actionId', {})
-    return {
-        'action_id': action_id,
-        'task_status': task_status
-    }
+    action_id = data.get("actionId", {})
+    task_status = data.get("taskStatus", {})
+    return {"actionId": action_id, "taskStatus": task_status}
 
 
-def restore_endpoint_connection_mapping(task_status: str, data: Dict[str, Any]) -> Dict[str, Any]:
+def isolate_or_restore_connection(
+    client: Client, command: str, args: Dict[str, Any]
+) -> Union[str, CommandResults]:
     """
-    Mapping restore endpoint response data.
-    :type task_status: ``str``
-    :param task_status: The status of task either success or failed.
-    :type data: ``dict``
-    :param method: Response data to received from the end point.
-    :return: mapped response data.
-    :rtype: ``dict``
-    """
-    action_id = data.get('actionId', {})
-    return {
-        'action_id': action_id,
-        'task_status': task_status
-    }
+    Retrieve data from the isolate or restore endpoint connection and
+    sends the result to demist war room.
 
-
-def isolate_or_restore_connection(client: Client, command: str, args: Dict[str, Any]) -> Union[str, CommandResults]:
-    """
-    Retrieve data from the isolate or restore endpoint connection and sends the result to demist war room
     :type client: ``Client``
     :param client: client object to use http_request.
+
     :type command: ``str``
-    :param command: type of command either trendmicro-visionone-isolate-endpoint
-        or trendmicro-visionone-restore-endpoint-connection
+    :param command: type of command either
+    trendmicro-visionone-isolate-endpoint or
+    trendmicro-visionone-restore-endpoint-connection
+
     :type args: ``dict``
     :param args: args object to fetch the argument data.
+
     :return: sends data to demisto war room.
     :rtype: ``dict`
     """
@@ -559,39 +587,47 @@ def isolate_or_restore_connection(client: Client, command: str, args: Dict[str, 
     description = args.get(DESCRIPTION)
     if not description:
         description = EMPTY_STRING
-    computer_id = client.get_computer_id(field, value)    # type: ignore
-
+    computer_id = client.get_computer_id(field, value)
     body = {
         'computerId': computer_id,
         'productId': product_id,
         'description': description
     }
     if command == ISOLATE_ENDPOINT_COMMAND:
-        response = client.http_request(POST, ISOLATE_CONNECTION_ENDPOINT, data=json.dumps(body))
-        task_status = client.status_check(response)
-        mapping_data = isolate_endpoint_mapping(task_status, response)
+        response = client.http_request(
+            POST, ISOLATE_CONNECTION_ENDPOINT, data=json.dumps(body)
+        )
 
     elif command == RESTORE_ENDPOINT_COMMAND:
-        response = client.http_request(POST, RESTORE_CONNECTION_ENDPOINT, data=json.dumps(body))
-        task_status = client.status_check(response)
-        mapping_data = restore_endpoint_connection_mapping(task_status, response)
+        response = client.http_request(
+            POST, RESTORE_CONNECTION_ENDPOINT, data=json.dumps(body)
+        )
+
+    mapping_data = isolate_restore_endpoint_mapping(
+        response)
     demisto.results(RAW_RESPONSE.format(raw_response=response))
     results = CommandResults(
         readable_output=tableToMarkdown(table_name[command], mapping_data),
-        outputs_prefix='VisionOne.Endpoint_Connection',
-        outputs_key_field='action_id',
-        outputs=mapping_data
+        outputs_prefix="VisionOne.Endpoint_Connection",
+        outputs_key_field="actionId",
+        outputs=mapping_data,
     )
     return results
 
 
-def terminate_process(client: Client, args: Dict[str, Any]) -> Union[str, CommandResults]:
+def terminate_process(
+    client: Client, args: Dict[str, Any]
+) -> Union[str, CommandResults]:
     """
-    Terminate the process running on the end point and sends the result to demist war room
+    Terminate the process running on the end point and
+    sends the result to demist war room.
+
     :type client: ``Client``
     :param client: client object to use http_request.
+
     :type args: ``dict``
     :param args: args object to fetch the argument data.
+
     :return: sends data to demisto war room.
     :rtype: ``dict`
     """
@@ -602,7 +638,7 @@ def terminate_process(client: Client, args: Dict[str, Any]) -> Union[str, Comman
     description = args.get(DESCRIPTION)
     if not description:
         description = EMPTY_STRING
-    computer_id = client.get_computer_id(field, value)    # type: ignore
+    computer_id = client.get_computer_id(field, value)
     file_sha1 = args.get(FILESHA)
     filename = args.get(FILENAME)
     if filename:
@@ -614,79 +650,89 @@ def terminate_process(client: Client, args: Dict[str, Any]) -> Union[str, Comman
         'description': description,
         'filename': file_list
     }
-    response = client.http_request(POST, TERMINATE_PROCESS_ENDPOINT, data=json.dumps(body))
+    response = client.http_request(
+        POST, TERMINATE_PROCESS_ENDPOINT, data=json.dumps(body)
+    )
     demisto.results(RAW_RESPONSE.format(raw_response=response))
-    task_status = client.status_check(response)
-    action_id = response.get('actionId', {})
-    message = {
-        'action_id': action_id,
-        'task_status': task_status
-    }
+    action_id = response.get("actionId", {})
+    task_status = response.get("taskStatus", {})
+    message = {"actionId": action_id, "taskStatus": task_status}
     results = CommandResults(
         readable_output=tableToMarkdown(TABLE_TERMINATE_PROCESS, message),
-        outputs_prefix='VisionOne.Terminate_Process',
-        outputs_key_field='action_id',
-        outputs=message
+        outputs_prefix="VisionOne.Terminate_Process",
+        outputs_key_field="actionId",
+        outputs=message,
     )
     return results
 
 
-def add_or_delete_from_exception_list(client: Client, command: str, args: Dict[str, Any]) -> Union[str, CommandResults]:
+def add_or_delete_from_exception_list(
+    client: Client, command: str, args: Dict[str, Any]
+) -> Union[str, CommandResults]:
     """
-    Add or Delete the exception object to exception list and sends the result to demist war room
+    Add or Delete the exception object to exception list and
+    sends the result to demist war room.
+
     :type client: ``Client``
     :param client: client object to use http_request.
+
     :type command: ``str``
-    :param command: type of command either trendmicro-visionone-add-objects-to-exception-list
-        or trendmicro-visionone-delete-objects-from-exception-list
+    :param command: type of command either
+    trendmicro-visionone-add-objects-to-exception-list or
+    trendmicro-visionone-delete-objects-from-exception-list
+
     :type args: ``dict``
     :param args: args object to fetch the argument data.
+
     :return: sends data to demisto war room.
     :rtype: ``dict`
     """
-    type = args.get(TYPE)
+    types = args.get(TYPE)
     value = args.get(VALUE)
-    body = {
-        DATA: [
-            {
-                'type': type,
-                'value': value
-            }
-        ]
-    }
+    body = {DATA: [{'type': types, 'value': value}]}
     if command == ADD_EXCEPTION_LIST_COMMAND:
         description = args.get(DESCRIPTION)
         if not description:
             description = EMPTY_STRING
         body[DATA][0][DESCRIPTION] = description
-        response = client.http_request(POST, ADD_OBJECT_TO_EXCEPTION_LIST, data=json.dumps(body))
+        response = client.http_request(
+            POST, ADD_OBJECT_TO_EXCEPTION_LIST, data=json.dumps(body)
+        )
 
     elif command == DELETE_EXCEPTION_LIST_COMMAND:
-        response = client.http_request(POST, DELETE_OBJECT_FROM_EXCEPTION_LIST, data=json.dumps(body))
+        response = client.http_request(
+            POST, DELETE_OBJECT_FROM_EXCEPTION_LIST, data=json.dumps(body)
+        )
 
     exception_list = client.exception_list_count()
     demisto.results(RAW_RESPONSE.format(raw_response=response))
     message = {
-        'message': "success",
-        'status_code': client.status,
-        'total_items': exception_list
+        "message": "success",
+        "status_code": client.status,
+        "total_items": exception_list,
     }
     results = CommandResults(
         readable_output=tableToMarkdown(table_name[command], message),
-        outputs_prefix='VisionOne.Exception_List',
-        outputs_key_field='message',
-        outputs=message
+        outputs_prefix="VisionOne.Exception_List",
+        outputs_key_field="message",
+        outputs=message,
     )
     return results
 
 
-def add_to_suspicious_list(client: Client, args: Dict[str, Any]) -> Union[str, CommandResults]:
+def add_to_suspicious_list(
+    client: Client, args: Dict[str, Any]
+) -> Union[str, CommandResults]:
     """
-    Add suspicious object to suspicious list and sends the result to demist war room
+    Add suspicious object to suspicious list and
+    sends the result to demist war room.
+
     :type client: ``Client``
     :param client: client object to use http_request.
+
     :type args: ``dict``
     :param args: args object to fetch the argument data.
+
     :return: sends data to demisto war room.
     :rtype: ``dict`
     """
@@ -696,10 +742,10 @@ def add_to_suspicious_list(client: Client, args: Dict[str, Any]) -> Union[str, C
     if not description:
         description = EMPTY_STRING
     scan_action = args.get(SCAN_ACTION)
-    if scan_action and scan_action not in ('log', 'block'):
+    if scan_action and scan_action not in ("log", "block"):
         return_error(PARAMETER_ISSUE.format(param=SCAN_ACTION))
     risk_level = args.get(RISK_LEVEL)
-    if risk_level and risk_level not in ('high', 'medium', 'low'):
+    if risk_level and risk_level not in ("high", "medium", "low"):
         return_error(PARAMETER_ISSUE.format(param=RISK_LEVEL))
     expiry = args.get(EXPIRYDAY)
     if not expiry:
@@ -716,68 +762,81 @@ def add_to_suspicious_list(client: Client, args: Dict[str, Any]) -> Union[str, C
             }
         ]
     }
-    response = client.http_request(POST, ADD_OBJECT_TO_SUSPICIOUS_LIST, data=json.dumps(body))
+    response = client.http_request(
+        POST, ADD_OBJECT_TO_SUSPICIOUS_LIST, data=json.dumps(body)
+    )
     suspicious_list = client.suspicious_list_count()
     demisto.results(RAW_RESPONSE.format(raw_response=response))
     message = {
-        'message': "success",
-        'status_code': client.status,
-        'total_items': suspicious_list
+        "message": "success",
+        "status_code": client.status,
+        "total_items": suspicious_list,
     }
     results = CommandResults(
-        readable_output=tableToMarkdown(table_name[ADD_SUSPICIOUS_LIST_COMMAND], message),
-        outputs_prefix='VisionOne.Suspicious_List',
-        outputs_key_field='message',
-        outputs=message
+        readable_output=tableToMarkdown(
+            table_name[ADD_SUSPICIOUS_LIST_COMMAND], message
+        ),
+        outputs_prefix="VisionOne.Suspicious_List",
+        outputs_key_field="message",
+        outputs=message,
     )
     return results
 
 
-def delete_from_suspicious_list(client: Client, args: Dict[str, Any]) -> Union[str, CommandResults]:
+def delete_from_suspicious_list(
+    client: Client, args: Dict[str, Any]
+) -> Union[str, CommandResults]:
     """
-    Delete the suspicious object from suspicious list and sends the result to demist war room
+    Delete the suspicious object from suspicious list and
+    sends the result to demist war room.
+
     :type client: ``Client``
     :param client: client object to use http_request.
+
     :type args: ``dict``
     :param args: args object to fetch the argument data.
+
     :return: sends data to demisto war room.
     :rtype: ``dict`
     """
-    type = args.get(TYPE)
+    types = args.get(TYPE)
     value = args.get(VALUE)
-    body = {
-        DATA: [
-            {
-                'type': type,
-                'value': value
-            }
-        ]
-    }
-    response = client.http_request(POST, DELETE_OBJECT_FROM_SUSPICIOUS_LIST, data=json.dumps(body))
+    body = {DATA: [{'type': types, 'value': value}]}
+    response = client.http_request(
+        POST, DELETE_OBJECT_FROM_SUSPICIOUS_LIST, data=json.dumps(body)
+    )
 
     exception_list = client.suspicious_list_count()
     demisto.results(RAW_RESPONSE.format(raw_response=response))
     message = {
-        'message': "success",
-        'status_code': client.status,
-        'total_items': exception_list
+        "message": "success",
+        "status_code": client.status,
+        "total_items": exception_list,
     }
     results = CommandResults(
-        readable_output=tableToMarkdown(table_name[DELETE_SUSPICIOUS_LIST_COMMAND], message),
-        outputs_prefix='VisionOne.Suspicious_List',
-        outputs_key_field='message',
-        outputs=message
+        readable_output=tableToMarkdown(
+            table_name[DELETE_SUSPICIOUS_LIST_COMMAND], message
+        ),
+        outputs_prefix="VisionOne.Suspicious_List",
+        outputs_key_field="message",
+        outputs=message,
     )
     return results
 
 
-def get_file_analysis_status(client: Client, args: Dict[str, Any]) -> Union[str, CommandResults]:
+def get_file_analysis_status(
+    client: Client, args: Dict[str, Any]
+) -> Union[str, CommandResults]:
     """
-    Get the status of file based on task id and sends the result to demist war room
+    Get the status of file based on task id and
+    sends the result to demist war room
+
     :type client: ``Client``
     :param client: client object to use http_request.
+
     :type args: ``dict``
     :param args: args object to fetch the argument data.
+
     :return: sends data to demisto war room.
     :rtype: ``dict`
     """
@@ -785,24 +844,37 @@ def get_file_analysis_status(client: Client, args: Dict[str, Any]) -> Union[str,
     response = client.http_request(GET, GET_FILE_STATUS.format(taskId=task_id))
     demisto.results(RAW_RESPONSE.format(raw_response=response))
     message = {
-        'message': response.get("message", ""),
-        'code': response.get("code", ""),
-        'task_id': response.get("data", {}).get("taskId", ""),
-        'task_status': response.get("data", {}).get("taskStatus", ""),
-        'digest': response.get("data", {}).get("digest", ""),
-        'analysis_completion_time': response.get("data", {}).get("analysisSummary", "").get("analysisCompletionTime", ""),
-        'risk_level': response.get("data", {}).get("analysisSummary", "").get("riskLevel", ""),
-        'description': response.get("data", {}).get("analysisSummary", "").get("description", ""),
-        'detection_name_list': response.get("data", {}).get("analysisSummary", "").get("detectionNameList", ""),
-        'threat_type_list': response.get("data", {}).get("analysisSummary", "").get("threatTypeList", ""),
-        'file_type': response.get("data", {}).get("analysisSummary", "").get("trueFileType", ""),
-        'report_id': response.get("data", {}).get("reportId", "")
+        "message": response.get("message", ""),
+        "code": response.get("code", ""),
+        "task_id": response.get("data", {}).get("taskId", ""),
+        "taskStatus": response.get("data", {}).get("taskStatus", ""),
+        "digest": response.get("data", {}).get("digest", ""),
+        "analysis_completion_time": response.get("data", {})
+        .get("analysisSummary", "")
+        .get("analysisCompletionTime", ""),
+        "risk_level": response.get("data", {})
+        .get("analysisSummary", "")
+        .get("riskLevel", ""),
+        "description": response.get("data", {})
+        .get("analysisSummary", "")
+        .get("description", ""),
+        "detection_name_list": response.get("data", {})
+        .get("analysisSummary", "")
+        .get("detectionNameList", ""),
+        "threat_type_list": response.get("data", {})
+        .get("analysisSummary", "")
+        .get("threatTypeList", ""),
+        "file_type": response.get("data", {})
+        .get("analysisSummary", "")
+        .get("trueFileType", ""),
+        "report_id": response.get("data", {}).get("reportId", ""),
     }
     results = CommandResults(
-        readable_output=tableToMarkdown(TABLE_GET_FILE_ANALYSIS_STATUS, message),
-        outputs_prefix='VisionOne.File_Analysis_Status',
-        outputs_key_field='message',
-        outputs=message
+        readable_output=tableToMarkdown(
+            TABLE_GET_FILE_ANALYSIS_STATUS, message),
+        outputs_prefix="VisionOne.File_Analysis_Status",
+        outputs_key_field="message",
+        outputs=message,
     )
     return results
 
@@ -886,16 +958,16 @@ def collect_file(client: Client, args: Dict[str, Any]) -> Union[str, CommandResu
     }
     response = client.http_request(POST, COLLECT_FORENSIC_FILE, data=json.dumps(body))
     demisto.results(RAW_RESPONSE.format(raw_response=response))
-    task_status = client.status_check(response)
+    task_status = response.get("taskStatus", {})
     action_id = response.get('actionId', {})
     message = {
-        'action_id': action_id,
-        'task_status': task_status
+        'actionId': action_id,
+        'taskStatus': task_status
     }
     results = CommandResults(
         readable_output=tableToMarkdown(TABLE_COLLECT_FILE, message),
         outputs_prefix='VisionOne.Collect_Forensic_File',
-        outputs_key_field='action_id',
+        outputs_key_field='actionId',
         outputs=message
     )
     return results
@@ -1040,6 +1112,14 @@ def main():
 
         elif command == FILE_TO_SANDBOX:
             return_results(submit_file_to_sandbox(client, args))
+
+        elif command == CHECK_TASK_STATUS:
+            if args.get("polling") == "true":
+                cmd_res = get_task_status(args, client)
+                if cmd_res is not None:
+                    return_results(cmd_res)
+            else:
+                return_results(client.status_check(args))
 
         else:
             demisto.error(f'{command} command is not implemented.')

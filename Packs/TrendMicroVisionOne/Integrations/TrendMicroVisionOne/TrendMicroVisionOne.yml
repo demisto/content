@@ -65,11 +65,11 @@ script:
       Suspicious Objects List, which blocks the objects on subsequent detections
     name: trendmicro-visionone-add-to-block-list
     outputs:
-    - contextPath: VisionOne.BlockList.action_id
+    - contextPath: VisionOne.BlockList.actionId
       description: Action ID of task adding file SHA-1, IP address, domain, or URL
         to the User-Defined Suspicious Objects List
       type: string
-    - contextPath: VisionOne.BlockList.task_status
+    - contextPath: VisionOne.BlockList.taskStatus
       description: Task status of adding file SHA-1, IP address, domain, or URL object
         to the User-Defined Suspicious Objects List
       type: string
@@ -89,11 +89,11 @@ script:
       Suspicious Objects List
     name: trendmicro-visionone-remove-from-block-list
     outputs:
-    - contextPath: VisionOne.BlockList.action_id
+    - contextPath: VisionOne.BlockList.actionId
       description: Action ID of task removing file SHA-1, IP address, domain, or URL
         object from the User-Defined Suspicious Objects List
       type: string
-    - contextPath: VisionOne.BlockList.task_status
+    - contextPath: VisionOne.BlockList.taskStatus
       description: Task Status of removing file SHA-1, IP address, domain, or URL
         object that was added to the User-Defined Suspicious Objects List from block
         list
@@ -117,11 +117,11 @@ script:
     description: Moves a message from a mailbox to the quarantine folder
     name: trendmicro-visionone-quarantine-email-message
     outputs:
-    - contextPath: VisionOne.Email.action_id
+    - contextPath: VisionOne.Email.actionId
       description: The Action Id of moving a message from a mailbox to the quarantine
         folder
       type: string
-    - contextPath: VisionOne.Email.task_status
+    - contextPath: VisionOne.Email.taskStatus
       description: The status of moving a message from a mailbox to the quarantine
         folder
       type: string
@@ -144,10 +144,10 @@ script:
     description: Deletes a message from a mailbox
     name: trendmicro-visionone-delete-email-message
     outputs:
-    - contextPath: VisionOne.Email.action_id
+    - contextPath: VisionOne.Email.actionId
       description: The action id of deleting a message from a mailbox
       type: string
-    - contextPath: VisionOne.Email.task_status
+    - contextPath: VisionOne.Email.taskStatus
       description: The task status of deleting a message from a mailbox
       type: string
   - arguments:
@@ -168,10 +168,10 @@ script:
       with the managing Trend Micro product)
     name: trendmicro-visionone-isolate-endpoint
     outputs:
-    - contextPath: VisionOne.Endpoint_Connection.action_id
+    - contextPath: VisionOne.Endpoint_Connection.actionId
       description: The action ID of isolate endpoint task
       type: string
-    - contextPath: VisionOne.Endpoint_Connection.task_status
+    - contextPath: VisionOne.Endpoint_Connection.taskStatus
       description: 'The task status of isolate endpoint '
       type: string
   - arguments:
@@ -192,10 +192,10 @@ script:
       endpoint" action
     name: trendmicro-visionone-restore-endpoint-connection
     outputs:
-    - contextPath: VisionOne.Endpoint_Connection.action_id
+    - contextPath: VisionOne.Endpoint_Connection.actionId
       description: The action ID of the restore endpoint connection
       type: string
-    - contextPath: VisionOne.Endpoint_Connection.task_status
+    - contextPath: VisionOne.Endpoint_Connection.taskStatus
       description: The task status of restore endpoint connection
       type: string
   - arguments:
@@ -320,10 +320,10 @@ script:
     description: Terminates a process that is running on an endpoint
     name: trendmicro-visionone-terminate-process
     outputs:
-    - contextPath: VisionOne.Terminate_Process.action_id
+    - contextPath: VisionOne.Terminate_Process.actionId
       description: Action Id of the current running task
       type: string
-    - contextPath: VisionOne.Terminate_Process.task_status
+    - contextPath: VisionOne.Terminate_Process.taskStatus
       description: Status of current running task
       type: string
   - arguments:
@@ -343,7 +343,7 @@ script:
     - contextPath: VisionOne.File_Analysis_Status.task_id
       description: task_id of the task queried
       type: string
-    - contextPath: VisionOne.File_Analysis_Status.task_status
+    - contextPath: VisionOne.File_Analysis_Status.taskStatus
       description: Sandbox analysis status
       type: string
     - contextPath: VisionOne.File_Analysis_Status.digest
@@ -430,15 +430,15 @@ script:
       and then sends the archive to the XDR service platform
     name: trendmicro-visionone-collect-forensic-file
     outputs:
-    - contextPath: VisionOne.Collect_Forensic_File.action_id
+    - contextPath: VisionOne.Collect_Forensic_File.actionId
       description: Action ID of the particular file.
       type: string
-    - contextPath: VisionOne.Collect_Forensic_File.task_status
+    - contextPath: VisionOne.Collect_Forensic_File.taskStatus
       description: Task status of collected file
       type: string
   - arguments:
-    - description: action_id output from the collect command used to collect the file.
-      name: action_id
+    - description: actionId output from the collect command used to collect the file.
+      name: actionId
       required: true
     description: Retrieves a URL and other information required to download a collected
       file via the trendmicro-visionone-collect-forensic-file command
@@ -485,6 +485,20 @@ script:
       type: string
     - contextPath: VisionOne.Submit_File_to_Sandbox.digest
       description: The hash value of the file
+  - name: trendmicro-visionone-check-task-status
+    polling: true
+    arguments:
+    - name: polling
+      default: true
+      description: polling the task for 30 seconds interval.
+      defaultValue: "true"
+    - name: actionId
+      required: true
+      description: Action id of the task you would like to check.
+    outputs:
+    - contextPath: VisionOne.Task_Status.taskStatus
+      description: Status of the task.
+    description: Command gives the status of the running task based on the action id.
   dockerimage: demisto/python3:3.10.1.25933
   isFetchSamples: true
   isfetch: true
