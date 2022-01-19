@@ -1,4 +1,4 @@
-comment: this script is used to extract email addresses from the context.
+comment: Extracts email addresses from the value.
 commonfields:
   id: ExtractEmailTransformer
   version: -1
