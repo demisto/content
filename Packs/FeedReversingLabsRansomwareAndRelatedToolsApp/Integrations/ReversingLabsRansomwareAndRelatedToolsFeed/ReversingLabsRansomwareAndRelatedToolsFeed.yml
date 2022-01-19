@@ -83,15 +83,15 @@ configuration:
     is 2.
 - display: Indicator types
   name: indicatorTypes
-  defaultvalue: ipv4,domain,Hash,uri
+  defaultvalue: ipv4,domain,hash,uri
   additionalinfo: Which types of indicators should be fetched from the feed. Possible
-    values are 'ipv4', 'domain', 'Hash', 'uri'.
+    values are 'ipv4', 'domain', 'hash', 'uri'.
   required: false
   type: 16
   options:
   - ipv4
   - domain
-  - Hash
+  - hash
   - uri
 - display: Trust any certificate (not secure)
   name: insecure
@@ -133,9 +133,9 @@ script:
       secret: false
     - name: indicator_types
       default: false
-      defaultValue: 'ipv4,domain,Hash,uri'
+      defaultValue: 'ipv4,domain,hash,uri'
       description: Which indicator types should be fetched from the feed. Possible
-        values are 'ipv4', 'domain', 'Hash', 'uri'.
+        values are 'ipv4', 'domain', 'hash', 'uri'.
       required: false
       secret: false
     - name: hours_back
