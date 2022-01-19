@@ -1,6 +1,7 @@
 import os
 import json
 import enum
+from typing import List
 from Tests.scripts.utils.content_packs_util import IGNORED_FILES
 
 CONTENT_ROOT_PATH = os.path.abspath(os.path.join(__file__, '../../..'))  # full path to content root repo
@@ -59,9 +60,29 @@ class GCPConfig(object):
 
     with open(os.path.join(os.path.dirname(__file__), 'core_packs_list.json'), 'r') as core_packs_list_file:
         CORE_PACKS_LIST = json.load(core_packs_list_file)
+    with open(os.path.join(os.path.dirname(__file__), 'core_packs_mpv2_list.json'), 'r') as core_packs_list_file:
+        CORE_PACKS_MPV2_LIST = json.load(core_packs_list_file)
+
     with open(os.path.join(os.path.dirname(__file__), 'upgrade_core_packs_list.json'), 'r') as upgrade_core_packs_list:
         packs_list = json.load(upgrade_core_packs_list)
         CORE_PACKS_LIST_TO_UPDATE = packs_list.get("update_core_packs_list")
+    CORE_PACKS_MPV2_LIST_TO_UPDATE: List[str] = []
+
+    @classmethod
+    def get_core_packs(cls, marketplace):
+        mapping = {
+            'xsoar': cls.CORE_PACKS_LIST,
+            'marketplacev2': cls.CORE_PACKS_MPV2_LIST,
+        }
+        return mapping.get(marketplace, GCPConfig.CORE_PACKS_LIST)
+
+    @classmethod
+    def get_core_packs_to_upgrade(cls, marketplace):
+        mapping = {
+            'xsoar': cls.CORE_PACKS_LIST_TO_UPDATE,
+            'marketplacev2': cls.CORE_PACKS_MPV2_LIST_TO_UPDATE,
+        }
+        return mapping.get(marketplace, GCPConfig.CORE_PACKS_LIST_TO_UPDATE)
 
 
 class PackTags(object):
@@ -224,6 +245,7 @@ class PackStatus(enum.Enum):
     FAILED_DECRYPT_PACK = "Failed to decrypt pack: a premium pack," \
                           " which should be encrypted, seems not to be encrypted."
     FAILED_METADATA_REFORMATING = "Failed to reparse and create metadata.json when missing dependencies"
+    NOT_RELEVANT_FOR_MARKETPLACE = "Pack is not relevant for current marketplace."
 
 
 class Changelog(object):
