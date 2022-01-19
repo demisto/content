@@ -11,6 +11,7 @@ try:
 except Exception as e:
     return_error(e)
 
+
 def generate_random_port():
     return random.randint(3000, 50000)
 
@@ -30,7 +31,7 @@ while str(random_port) in existing_port_list:
 existing_port_list.append(str(random_port))
 
 # Add new port to existing port list
-try: 
+try:
     new_list = demisto.executeCommand('setList', {'listName': edl_port_list_name, 'listData': ",".join(existing_port_list)})
 except Exception as e:
     return_error(e)
@@ -68,7 +69,8 @@ body = {
                 "hiddenPassword": False,
                 "hidden": False,
                 "name": "indicators_query",
-                "info": "The query to run to update the EDL. To view expected results, you can run the following command from the Cortex XSOAR CLI `!findIndicators query=<your query>`",
+                "info": "The query to run to update the EDL. To view expected results, you can run the following command"
+                        " from the Cortex XSOAR CLI `!findIndicators query=<your query>`",
                 "defaultValue": "",
                 "type": 0,
                 "displayPassword": "",
@@ -111,7 +113,8 @@ body = {
                 "hiddenPassword": False,
                 "hidden": False,
                 "name": "cache_refresh_rate",
-                "info": "How often to refresh the EDL (e.g., 5 minutes, 12 hours, 7 days, 3 months, 1 year). For performance reasons, we do not recommend setting this value to less than 1 minute.",
+                "info": "How often to refresh the EDL (e.g., 5 minutes, 12 hours, 7 days, 3 months, 1 year)."
+                        " For performance reasons, we do not recommend setting this value to less than 1 minute.",
                 "defaultValue": "5 minutes",
                 "type": 0,
                 "displayPassword": "",
@@ -141,7 +144,8 @@ body = {
                 "hiddenPassword": False,
                 "hidden": False,
                 "name": "longRunningPort",
-                "info": "Will run the EDL service on this port from within Cortex XSOAR. Requires a unique port for each long-running integration instance. Do not use the same port for multiple instances.",
+                "info": "Will run the EDL service on this port from within Cortex XSOAR. Requires a unique port for"
+                        " each long-running integration instance. Do not use the same port for multiple instances.",
                 "defaultValue": "",
                 "type": 0,
                 "displayPassword": "",
@@ -195,7 +199,8 @@ body = {
                 "hiddenPassword": False,
                 "hidden": False,
                 "name": "url_port_stripping",
-                "info": "If selected, a URL that includes a port number will be reformatted to remove the port. For example, 'www.example.com:9999/path' would become 'www.example.com/path'.",
+                "info": "If selected, a URL that includes a port number will be reformatted to remove the port."
+                        " For example, 'www.example.com:9999/path' would become 'www.example.com/path'.",
                 "defaultValue": "true",
                 "type": 8,
                 "displayPassword": "",
@@ -210,7 +215,8 @@ body = {
                 "hiddenPassword": False,
                 "hidden": False,
                 "name": "drop_invalids",
-                "info": "If selected, any URL entry that is not compliant with PAN-OS EDL URL format is dropped instead of being rewritten.",
+                "info": "If selected, any URL entry that is not compliant with PAN-OS EDL URL format is dropped instead"
+                        " of being rewritten.",
                 "defaultValue": "",
                 "type": 8,
                 "displayPassword": "",
@@ -257,7 +263,8 @@ body = {
                 "hiddenPassword": False,
                 "hidden": False,
                 "name": "page_size",
-                "info": "Internal page size used when querying Cortex XSOAR for the EDL. By default, this value shouldn't be changed.",
+                "info": "Internal page size used when querying Cortex XSOAR for the EDL."
+                        " By default, this value shouldn't be changed.",
                 "defaultValue": "2000",
                 "type": 0,
                 "displayPassword": "",
@@ -272,7 +279,9 @@ body = {
                 "hiddenPassword": False,
                 "hidden": False,
                 "name": "nginx_global_directives",
-                "info": "NGINX global directives to be passed on the command line using the -g option. Each directive should end with `;`. For example: `worker_processes 4; timer_resolution 100ms;`. Advanced configuration to be used only if instructed by Cortex XSOAR Support.",
+                "info": "NGINX global directives to be passed on the command line using the -g option."
+                        " Each directive should end with `;`. For example: `worker_processes 4; timer_resolution 100ms;`"
+                        ". Advanced configuration to be used only if instructed by Cortex XSOAR Support.",
                 "defaultValue": "",
                 "type": 0,
                 "displayPassword": "",
@@ -285,7 +294,9 @@ body = {
                 "hiddenPassword": False,
                 "hidden": False,
                 "name": "nginx_server_conf",
-                "info": "NGINX server configuration. To be used instead of the default NGINX_SERVER_CONF used in the integration code. Advanced configuration to be used only if instructed by Cortex XSOAR Support.",
+                "info": "NGINX server configuration. To be used instead of the default NGINX_SERVER_CONF used"
+                        " in the integration code. Advanced configuration to be used only if instructed by Cortex"
+                        " XSOAR Support.",
                 "defaultValue": "",
                 "type": 12,
                 "displayPassword": "",
@@ -298,7 +309,9 @@ body = {
                 "hiddenPassword": False,
                 "hidden": False,
                 "name": "use_legacy_query",
-                "info": "Legacy Queries: When enabled, the integration will query the Server using full queries. Enable this query mode, if you've been instructed by Support, or you've encountered in the log errors of the form: msgpack: invalid code.",
+                "info": "Legacy Queries: When enabled, the integration will query the Server using full queries."
+                        " Enable this query mode, if you've been instructed by Support,"
+                        " or you've encountered in the log errors of the form: msgpack: invalid code.",
                 "defaultValue": "",
                 "type": 8,
                 "displayPassword": "",
@@ -323,7 +336,8 @@ body = {
         "icon": "",
         "toServerVersion": "",
         "id": "EDL",
-        "description": "This integration provides External Dynamic List (EDL) as a service for the system indicators (Outbound feed).",
+        "description": "This integration provides External Dynamic List (EDL) as a service for"
+                       " the system indicators (Outbound feed).",
         "category": "Data Enrichment & Threat Intelligence",
         "prevName": "EDL",
         "integrationScript": {
@@ -354,7 +368,9 @@ body = {
                         {
                             "default": False,
                             "deprecated": False,
-                            "description": "The maximum number of entries in the EDL. If no value is provided, will use the value specified in the \"EDL Size\" parameter configured in the instance configuration.",
+                            "description": "The maximum number of entries in the EDL. If no value is provided,"
+                                           " will use the value specified in the \"EDL Size\" parameter configured"
+                                           " in the instance configuration.",
                             "name": "edl_size",
                             "required": False,
                             "secret": False
@@ -370,7 +386,8 @@ body = {
                             "secret": False,
                             "defaultValue": "false",
                             "deprecated": False,
-                            "description": "If True, any URL entry that is not compliant with PAN-OS EDL URL format is dropped instead of being rewritten.",
+                            "description": "If True, any URL entry that is not compliant with PAN-OS EDL URL"
+                                           " format is dropped instead of being rewritten.",
                             "required": False
                         },
                         {
@@ -384,7 +401,9 @@ body = {
                             "secret": False,
                             "defaultValue": "false",
                             "deprecated": False,
-                            "description": "If set to True, a URL that includes a port number will be reformatted to remove the port. For example, 'www.example.com:9999/path' would become 'www.example.com/path'.",
+                            "description": "If set to True, a URL that includes a port number will be reformatted to"
+                                           " remove the port. For example, 'www.example.com:9999/path' would become"
+                                           " 'www.example.com/path'.",
                             "required": False
                         },
                         {
@@ -615,7 +634,6 @@ body = {
 }
 
 
-
 def main():
     # Create EDL instance
     parameters = {'uri': '/settings/integration', 'body': body}
@@ -627,6 +645,7 @@ def main():
 
     readable_output = f"EDL: {edl_instance_name} created on port: {random_port}"
     return_results(CommandResults(readable_output=readable_output, raw_response=results))
+
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
