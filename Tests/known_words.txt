@@ -48,6 +48,8 @@ SSL
 Prisma
 runtime
 ATOMs
+Mappers
+mapper
 AlienVault
 BitcoinAbuse
 BruteForceBlocker
@@ -59,3 +61,4 @@ ACM
 unicode
 CloudWatchLogs
 GuardDuty
+NetWitness
