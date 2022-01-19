@@ -2,10 +2,11 @@ import json
 import os
 import string
 import sys
-
 import demistomock as demisto  # noqa: F401
 import requests
 from CommonServerPython import *  # noqa: F401
+
+from typing import Callable
 
 # change the below to your default playground id while testing from your local machine
 default_playground_id = "122c7bff-feae-4177-867e-37e2096cd7d9"
@@ -47,7 +48,7 @@ def log_response_terminal(res: requests.Response):
     print(res.text)
 
 
-def send_request(obj: Main_Object, path: string, method="get", data=""):
+def send_request(obj: Main_Object, path: str, method="get", data=""):
     endpoint = f'{obj.endpoint}{path}'
     headers = {'Authorization': obj.api_key, 'content-type': 'application/json'}
     if method == "get":
