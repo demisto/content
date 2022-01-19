@@ -109,8 +109,7 @@ class TestRecordsOperations:
     A General Test class for infoblox API functions, using pytest mocker.
     """
     from Infoblox import list_records_command, list_hosts_command, search_host_record_command, \
-        create_a_record_command, add_host_record_command, update_host_ip_command, update_a_record_command, \
-        delete_host_record_command
+        create_a_record_command, add_host_record_command, update_host_ip_command, update_a_record_command
 
     TEST_LIST_RECORDS_DATA = {
         "args": {"zone": "foo.com"},
@@ -125,7 +124,7 @@ class TestRecordsOperations:
 |  | remote | allrecords/ZG5zLnpvbmVfc2VhcmNoX2luZGV4JGRucy5ob3N0JC5fZGVmYXVsdC5jb20uZm9vLmtha2E:remote | UNSUPPORTED | default | foo.com |
 """,
         "context": {
-            "Infoblox.ListAllRecords(???)": [
+            "Infoblox.Record(val.ReferenceID && val.ReferenceID === obj.ReferenceID)": [
                 {
                     "ReferenceID": "allrecords/ZG5zLnpvbmVfc2VhcmNoX2luZGV4JC4uZmFrZV9iaW5kX25zJC5zcmdfcm9vdC4zLi5uaW9zLnBvYy5pbmZvYmxveC5sb2NhbHwuX2RlZmF1bHQuY29tLmZvb3x8bmlvcy5wb2MuaW5mb2Jsb3gubG9jYWw:",
                     "Comment": "Auto-created by Add Zone",
@@ -233,32 +232,30 @@ class TestRecordsOperations:
         "human_readable": """### Infoblox Integration - List of Host Records: 
 |Ipv 4 Addrs|Reference ID|
 |---|---|
-| {'_ref': 'record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQubG9jYWwuaW5mb2Jsb3gucG9jLnh0bmRzcGYxZDhuMmMuMTczLjE4LjAuNS4:173.18.0.5/xtndspf1d8n2c.poc.infoblox.local/default', 'configure_for_dhcp': False, 'host': 'xtndspf1d8n2c.poc.infoblox.local', 'ipv4addr': '173.18.0.5'} | record:host/ZG5zLmhvc3QkLl9kZWZhdWx0LmxvY2FsLmluZm9ibG94LnBvYy54dG5kc3BmMWQ4bjJj:xtndspf1d8n2c.poc.infoblox.local/default |
-| {'_ref': 'record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQubG9jYWwuaW5mb2Jsb3gucG9jLnh0bmRzcGYxZDhuMmQuMTczLjE4LjAuMTAu:173.18.0.10/xtndspf1d8n2d.poc.infoblox.local/default', 'configure_for_dhcp': False, 'host': 'xtndspf1d8n2d.poc.infoblox.local', 'ipv4addr': '173.18.0.10'} | record:host/ZG5zLmhvc3QkLl9kZWZhdWx0LmxvY2FsLmluZm9ibG94LnBvYy54dG5kc3BmMWQ4bjJk:xtndspf1d8n2d.poc.infoblox.local/default |
-| {'_ref': 'record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQubG9jYWwuaW5mb2Jsb3gucG9jLnh0bmRzcGYxZDhuMmUuMTczLjE4LjAuMTAu:173.18.0.10/xtndspf1d8n2e.poc.infoblox.local/default', 'configure_for_dhcp': False, 'host': 'xtndspf1d8n2e.poc.infoblox.local', 'ipv4addr': '173.18.0.10'} | record:host/ZG5zLmhvc3QkLl9kZWZhdWx0LmxvY2FsLmluZm9ibG94LnBvYy54dG5kc3BmMWQ4bjJl:xtndspf1d8n2e.poc.infoblox.local/default |
-| {'_ref': 'record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQubG9jYWwuaW5mb2Jsb3gucG9jLnh0bmRzcGYxZDhuMmYuMTczLjE4LjAuMTEyLg:173.18.0.112/xtndspf1d8n2f.poc.infoblox.local/default', 'configure_for_dhcp': False, 'host': 'xtndspf1d8n2f.poc.infoblox.local', 'ipv4addr': '173.18.0.112'} | record:host/ZG5zLmhvc3QkLl9kZWZhdWx0LmxvY2FsLmluZm9ibG94LnBvYy54dG5kc3BmMWQ4bjJm:xtndspf1d8n2f.poc.infoblox.local/default |
-| {'_ref': 'record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQubG9jYWwuaW5mb2Jsb3gucG9jLnh0bmRzcGYxZDhuMmcuMTczLjE4LjAuMTEu:173.18.0.11/xtndspf1d8n2g.poc.infoblox.local/default', 'configure_for_dhcp': False, 'host': 'xtndspf1d8n2g.poc.infoblox.local', 'ipv4addr': '173.18.0.11'} | record:host/ZG5zLmhvc3QkLl9kZWZhdWx0LmxvY2FsLmluZm9ibG94LnBvYy54dG5kc3BmMWQ4bjJn:xtndspf1d8n2g.poc.infoblox.local/default |
-| {'_ref': 'record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQubG9jYWwuaW5mb2Jsb3gucG9jLnh0bmRzcGYxZDhuMmguMTczLjE4LjAuMTEyLg:173.18.0.112/xtndspf1d8n2h.poc.infoblox.local/default', 'configure_for_dhcp': False, 'host': 'xtndspf1d8n2h.poc.infoblox.local', 'ipv4addr': '173.18.0.112'} | record:host/ZG5zLmhvc3QkLl9kZWZhdWx0LmxvY2FsLmluZm9ibG94LnBvYy54dG5kc3BmMWQ4bjJo:xtndspf1d8n2h.poc.infoblox.local/default |
-| {'_ref': 'record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQubG9jYWwuaW5mb2Jsb3gucG9jLmEuMTAuMC4xLjIzNi4:10.0.1.236/a.poc.infoblox.local/default', 'configure_for_dhcp': False, 'host': 'a.poc.infoblox.local', 'ipv4addr': '10.0.1.236'} | record:host/ZG5zLmhvc3QkLl9kZWZhdWx0LmxvY2FsLmluZm9ibG94LnBvYy5h:a.poc.infoblox.local/default |
-| {'_ref': 'record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQubG9jYWwuaW5mb2Jsb3gucG9jLmZvby4xMC4wLjEuMC4:10.0.1.0/foo.poc.infoblox.local/default', 'configure_for_dhcp': False, 'host': 'foo.poc.infoblox.local', 'ipv4addr': '10.0.1.0'} | record:host/ZG5zLmhvc3QkLl9kZWZhdWx0LmxvY2FsLmluZm9ibG94LnBvYy5mb28:foo.poc.infoblox.local/default |
-| {'_ref': 'record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQubG9jYWwuaW5mb2Jsb3gucG9jLmJsYS4xMC4wLjAuMS4:10.0.0.1/bla.poc.infoblox.local/default', 'configure_for_dhcp': False, 'host': 'bla.poc.infoblox.local', 'ipv4addr': '10.0.0.1'} | record:host/ZG5zLmhvc3QkLl9kZWZhdWx0LmxvY2FsLmluZm9ibG94LnBvYy5ibGE:bla.poc.infoblox.local/default |
-| {'_ref': 'record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQuY29tLmZvby4uMTAuMTAuMTAuMjAu:10.10.10.20/foo.com/default', 'configure_for_dhcp': False, 'host': 'foo.com', 'ipv4addr': '10.10.10.20'} | record:host/ZG5zLmhvc3QkLl9kZWZhdWx0LmNvbS5mb28u:foo.com/default |
-| {'_ref': 'record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQubG9jYWwuaW5mb2Jsb3gucG9jLi4xLjEuMS4xLg:1.1.1.1/poc.infoblox.local/default', 'configure_for_dhcp': False, 'host': 'poc.infoblox.local', 'ipv4addr': '1.1.1.1'} | record:host/ZG5zLmhvc3QkLl9kZWZhdWx0LmxvY2FsLmluZm9ibG94LnBvYy4:poc.infoblox.local/default |
-| {'_ref': 'record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQuY29tLmZvby5rYWthLjEuMS4xLjEwLg:1.1.1.10/kaka.foo.com/default', 'configure_for_dhcp': False, 'host': 'kaka.foo.com', 'ipv4addr': '1.1.1.10'} | record:host/ZG5zLmhvc3QkLl9kZWZhdWx0LmNvbS5mb28ua2FrYQ:kaka.foo.com/default |
-| {'_ref': 'record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQubG9jYWwuaW5mb2Jsb3gucG9jLm1hY2FyZW5hLjEwLjEwLjEwLjIwLg:10.10.10.20/macarena.poc.infoblox.local/default', 'configure_for_dhcp': False, 'host': 'macarena.poc.infoblox.local', 'ipv4addr': '10.10.10.20'} | record:host/ZG5zLmhvc3QkLl9kZWZhdWx0LmxvY2FsLmluZm9ibG94LnBvYy5tYWNhcmVuYQ:macarena.poc.infoblox.local/default |
+| {'_ref': 'record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQubG9jYWwuaW5mb2Jsb3gucG9jLnh0bmRzcGYxZDhuMmMuMTczLjE4LjAuNS4:xxx.xxx.xxx.xxx/xtndspf1d8n2c.poc.infoblox.local/default', 'configure_for_dhcp': False, 'host': 'xtndspf1d8n2c.poc.infoblox.local', 'ipv4addr': 'xxx.xxx.xxx.xxx'} | record:host/ZG5zLmhvc3QkLl9kZWZhdWx0LmxvY2FsLmluZm9ibG94LnBvYy54dG5kc3BmMWQ4bjJj:xtndspf1d8n2c.poc.infoblox.local/default |
+| {'_ref': 'record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQubG9jYWwuaW5mb2Jsb3gucG9jLnh0bmRzcGYxZDhuMmQuMTczLjE4LjAuMTAu:xxx.xxx.xxx.xxx/xtndspf1d8n2d.poc.infoblox.local/default', 'configure_for_dhcp': False, 'host': 'xtndspf1d8n2d.poc.infoblox.local', 'ipv4addr': 'xxx.xxx.xxx.xxx'} | record:host/ZG5zLmhvc3QkLl9kZWZhdWx0LmxvY2FsLmluZm9ibG94LnBvYy54dG5kc3BmMWQ4bjJk:xtndspf1d8n2d.poc.infoblox.local/default |
+| {'_ref': 'record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQubG9jYWwuaW5mb2Jsb3gucG9jLnh0bmRzcGYxZDhuMmUuMTczLjE4LjAuMTAu:xxx.xxx.xxx.xxx/xtndspf1d8n2e.poc.infoblox.local/default', 'configure_for_dhcp': False, 'host': 'xtndspf1d8n2e.poc.infoblox.local', 'ipv4addr': 'xxx.xxx.xxx.xxx'} | record:host/ZG5zLmhvc3QkLl9kZWZhdWx0LmxvY2FsLmluZm9ibG94LnBvYy54dG5kc3BmMWQ4bjJl:xtndspf1d8n2e.poc.infoblox.local/default |
+| {'_ref': 'record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQubG9jYWwuaW5mb2Jsb3gucG9jLnh0bmRzcGYxZDhuMmYuMTczLjE4LjAuMTEyLg:xxx.xxx.xxx.xxx/xtndspf1d8n2f.poc.infoblox.local/default', 'configure_for_dhcp': False, 'host': 'xtndspf1d8n2f.poc.infoblox.local', 'ipv4addr': 'xxx.xxx.xxx.xxx'} | record:host/ZG5zLmhvc3QkLl9kZWZhdWx0LmxvY2FsLmluZm9ibG94LnBvYy54dG5kc3BmMWQ4bjJm:xtndspf1d8n2f.poc.infoblox.local/default |
+| {'_ref': 'record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQubG9jYWwuaW5mb2Jsb3gucG9jLnh0bmRzcGYxZDhuMmcuMTczLjE4LjAuMTEu:xxx.xxx.xxx.xxx/xtndspf1d8n2g.poc.infoblox.local/default', 'configure_for_dhcp': False, 'host': 'xtndspf1d8n2g.poc.infoblox.local', 'ipv4addr': 'xxx.xxx.xxx.xxx'} | record:host/ZG5zLmhvc3QkLl9kZWZhdWx0LmxvY2FsLmluZm9ibG94LnBvYy54dG5kc3BmMWQ4bjJn:xtndspf1d8n2g.poc.infoblox.local/default |
+| {'_ref': 'record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQubG9jYWwuaW5mb2Jsb3gucG9jLnh0bmRzcGYxZDhuMmguMTczLjE4LjAuMTEyLg:xxx.xxx.xxx.xxx/xtndspf1d8n2h.poc.infoblox.local/default', 'configure_for_dhcp': False, 'host': 'xtndspf1d8n2h.poc.infoblox.local', 'ipv4addr': 'xxx.xxx.xxx.xxx'} | record:host/ZG5zLmhvc3QkLl9kZWZhdWx0LmxvY2FsLmluZm9ibG94LnBvYy54dG5kc3BmMWQ4bjJo:xtndspf1d8n2h.poc.infoblox.local/default |
+| {'_ref': 'record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQubG9jYWwuaW5mb2Jsb3gucG9jLmEuMTAuMC4xLjIzNi4:xxx.xxx.xxx.xxx/a.poc.infoblox.local/default', 'configure_for_dhcp': False, 'host': 'a.poc.infoblox.local', 'ipv4addr': 'xxx.xxx.xxx.xxx'} | record:host/ZG5zLmhvc3QkLl9kZWZhdWx0LmxvY2FsLmluZm9ibG94LnBvYy5h:a.poc.infoblox.local/default |
+| {'_ref': 'record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQubG9jYWwuaW5mb2Jsb3gucG9jLmZvby4xMC4wLjEuMC4:xxx.xxx.xxx.xxx/foo.poc.infoblox.local/default', 'configure_for_dhcp': False, 'host': 'foo.poc.infoblox.local', 'ipv4addr': 'xxx.xxx.xxx.xxx'} | record:host/ZG5zLmhvc3QkLl9kZWZhdWx0LmxvY2FsLmluZm9ibG94LnBvYy5mb28:foo.poc.infoblox.local/default |
+| {'_ref': 'record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQubG9jYWwuaW5mb2Jsb3gucG9jLmJsYS4xMC4wLjAuMS4:xxx.xxx.xxx.xxx/bla.poc.infoblox.local/default', 'configure_for_dhcp': False, 'host': 'bla.poc.infoblox.local', 'ipv4addr': 'xxx.xxx.xxx.xxx'} | record:host/ZG5zLmhvc3QkLl9kZWZhdWx0LmxvY2FsLmluZm9ibG94LnBvYy5ibGE:bla.poc.infoblox.local/default |
+| {'_ref': 'record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQuY29tLmZvby4uMTAuMTAuMTAuMjAu:xxx.xxx.xxx.xxx/foo.com/default', 'configure_for_dhcp': False, 'host': 'foo.com', 'ipv4addr': 'xxx.xxx.xxx.xxx'} | record:host/ZG5zLmhvc3QkLl9kZWZhdWx0LmNvbS5mb28u:foo.com/default |
+| {'_ref': 'record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQubG9jYWwuaW5mb2Jsb3gucG9jLi4xLjEuMS4xLg:xxx.xxx.xxx.xxx/poc.infoblox.local/default', 'configure_for_dhcp': False, 'host': 'poc.infoblox.local', 'ipv4addr': 'xxx.xxx.xxx.xxx'} | record:host/ZG5zLmhvc3QkLl9kZWZhdWx0LmxvY2FsLmluZm9ibG94LnBvYy4:poc.infoblox.local/default |
+| {'_ref': 'record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQuY29tLmZvby5rYWthLjEuMS4xLjEwLg:xxx.xxx.xxx.xxx/kaka.foo.com/default', 'configure_for_dhcp': False, 'host': 'kaka.foo.com', 'ipv4addr': 'xxx.xxx.xxx.xxx'} | record:host/ZG5zLmhvc3QkLl9kZWZhdWx0LmNvbS5mb28ua2FrYQ:kaka.foo.com/default |
+| {'_ref': 'record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQubG9jYWwuaW5mb2Jsb3gucG9jLm1hY2FyZW5hLjEwLjEwLjEwLjIwLg:xxx.xxx.xxx.xxx/macarena.poc.infoblox.local/default', 'configure_for_dhcp': False, 'host': 'macarena.poc.infoblox.local', 'ipv4addr': 'xxx.xxx.xxx.xxx'} | record:host/ZG5zLmhvc3QkLl9kZWZhdWx0LmxvY2FsLmluZm9ibG94LnBvYy5tYWNhcmVuYQ:macarena.poc.infoblox.local/default |
 """,
         "context": {
-            "Infoblox.ListHosts(???)": [
+            "Infoblox.Host(val.ReferenceID && val.ReferenceID === obj.ReferenceID)": [
                 {
-                    "ReferenceID": "record:host/ZG5zLmhvc3QkLl9kZWZhdWx0LmxvY2FsLmluZm9ibG94LnBvYy54dG5kc3BmMWQ4bjJj"
-                                   ":xtndspf1d8n2c.poc.infoblox.local/default",
+                    "ReferenceID": "record:host/ZG5zLmhvc3QkLl9kZWZhdWx0LmxvY2FsLmluZm9ibG94LnBvYy54dG5kc3BmMWQ4bjJj:xtndspf1d8n2c.poc.infoblox.local/default",
                     "Ipv4addrs": [
                         {
-                            "_ref": "record:host_ipv4addr"
-                                    "/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQubG9jYWwuaW5mb2Jsb3gucG9jLnh0bmRzcGYxZDhuMmMuMTczLjE4LjAuNS4:173.18.0.5/xtndspf1d8n2c.poc.infoblox.local/default",
+                            "_ref": "record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQubG9jYWwuaW5mb2Jsb3gucG9jLnh0bmRzcGYxZDhuMmMuMTczLjE4LjAuNS4:xxx.xxx.xxx.xxx/xtndspf1d8n2c.poc.infoblox.local/default",
                             "configure_for_dhcp": False,
                             "host": "xtndspf1d8n2c.poc.infoblox.local",
-                            "ipv4addr": "173.18.0.5"
+                            "ipv4addr": "xxx.xxx.xxx.xxx"
                         }
                     ]
                 },
@@ -266,10 +263,10 @@ class TestRecordsOperations:
                     "ReferenceID": "record:host/ZG5zLmhvc3QkLl9kZWZhdWx0LmxvY2FsLmluZm9ibG94LnBvYy54dG5kc3BmMWQ4bjJk:xtndspf1d8n2d.poc.infoblox.local/default",
                     "Ipv4addrs": [
                         {
-                            "_ref": "record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQubG9jYWwuaW5mb2Jsb3gucG9jLnh0bmRzcGYxZDhuMmQuMTczLjE4LjAuMTAu:173.18.0.10/xtndspf1d8n2d.poc.infoblox.local/default",
+                            "_ref": "record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQubG9jYWwuaW5mb2Jsb3gucG9jLnh0bmRzcGYxZDhuMmQuMTczLjE4LjAuMTAu:xxx.xxx.xxx.xxx/xtndspf1d8n2d.poc.infoblox.local/default",
                             "configure_for_dhcp": False,
                             "host": "xtndspf1d8n2d.poc.infoblox.local",
-                            "ipv4addr": "173.18.0.10"
+                            "ipv4addr": "xxx.xxx.xxx.xxx"
                         }
                     ]
                 },
@@ -277,10 +274,10 @@ class TestRecordsOperations:
                     "ReferenceID": "record:host/ZG5zLmhvc3QkLl9kZWZhdWx0LmxvY2FsLmluZm9ibG94LnBvYy54dG5kc3BmMWQ4bjJl:xtndspf1d8n2e.poc.infoblox.local/default",
                     "Ipv4addrs": [
                         {
-                            "_ref": "record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQubG9jYWwuaW5mb2Jsb3gucG9jLnh0bmRzcGYxZDhuMmUuMTczLjE4LjAuMTAu:173.18.0.10/xtndspf1d8n2e.poc.infoblox.local/default",
+                            "_ref": "record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQubG9jYWwuaW5mb2Jsb3gucG9jLnh0bmRzcGYxZDhuMmUuMTczLjE4LjAuMTAu:xxx.xxx.xxx.xxx/xtndspf1d8n2e.poc.infoblox.local/default",
                             "configure_for_dhcp": False,
                             "host": "xtndspf1d8n2e.poc.infoblox.local",
-                            "ipv4addr": "173.18.0.10"
+                            "ipv4addr": "xxx.xxx.xxx.xxx"
                         }
                     ]
                 },
@@ -288,10 +285,10 @@ class TestRecordsOperations:
                     "ReferenceID": "record:host/ZG5zLmhvc3QkLl9kZWZhdWx0LmxvY2FsLmluZm9ibG94LnBvYy54dG5kc3BmMWQ4bjJm:xtndspf1d8n2f.poc.infoblox.local/default",
                     "Ipv4addrs": [
                         {
-                            "_ref": "record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQubG9jYWwuaW5mb2Jsb3gucG9jLnh0bmRzcGYxZDhuMmYuMTczLjE4LjAuMTEyLg:173.18.0.112/xtndspf1d8n2f.poc.infoblox.local/default",
+                            "_ref": "record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQubG9jYWwuaW5mb2Jsb3gucG9jLnh0bmRzcGYxZDhuMmYuMTczLjE4LjAuMTEyLg:xxx.xxx.xxx.xxx/xtndspf1d8n2f.poc.infoblox.local/default",
                             "configure_for_dhcp": False,
                             "host": "xtndspf1d8n2f.poc.infoblox.local",
-                            "ipv4addr": "173.18.0.112"
+                            "ipv4addr": "xxx.xxx.xxx.xxx"
                         }
                     ]
                 },
@@ -299,10 +296,10 @@ class TestRecordsOperations:
                     "ReferenceID": "record:host/ZG5zLmhvc3QkLl9kZWZhdWx0LmxvY2FsLmluZm9ibG94LnBvYy54dG5kc3BmMWQ4bjJn:xtndspf1d8n2g.poc.infoblox.local/default",
                     "Ipv4addrs": [
                         {
-                            "_ref": "record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQubG9jYWwuaW5mb2Jsb3gucG9jLnh0bmRzcGYxZDhuMmcuMTczLjE4LjAuMTEu:173.18.0.11/xtndspf1d8n2g.poc.infoblox.local/default",
+                            "_ref": "record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQubG9jYWwuaW5mb2Jsb3gucG9jLnh0bmRzcGYxZDhuMmcuMTczLjE4LjAuMTEu:xxx.xxx.xxx.xxx/xtndspf1d8n2g.poc.infoblox.local/default",
                             "configure_for_dhcp": False,
                             "host": "xtndspf1d8n2g.poc.infoblox.local",
-                            "ipv4addr": "173.18.0.11"
+                            "ipv4addr": "xxx.xxx.xxx.xxx"
                         }
                     ]
                 },
@@ -310,10 +307,10 @@ class TestRecordsOperations:
                     "ReferenceID": "record:host/ZG5zLmhvc3QkLl9kZWZhdWx0LmxvY2FsLmluZm9ibG94LnBvYy54dG5kc3BmMWQ4bjJo:xtndspf1d8n2h.poc.infoblox.local/default",
                     "Ipv4addrs": [
                         {
-                            "_ref": "record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQubG9jYWwuaW5mb2Jsb3gucG9jLnh0bmRzcGYxZDhuMmguMTczLjE4LjAuMTEyLg:173.18.0.112/xtndspf1d8n2h.poc.infoblox.local/default",
+                            "_ref": "record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQubG9jYWwuaW5mb2Jsb3gucG9jLnh0bmRzcGYxZDhuMmguMTczLjE4LjAuMTEyLg:xxx.xxx.xxx.xxx/xtndspf1d8n2h.poc.infoblox.local/default",
                             "configure_for_dhcp": False,
                             "host": "xtndspf1d8n2h.poc.infoblox.local",
-                            "ipv4addr": "173.18.0.112"
+                            "ipv4addr": "xxx.xxx.xxx.xxx"
                         }
                     ]
                 },
@@ -321,10 +318,10 @@ class TestRecordsOperations:
                     "ReferenceID": "record:host/ZG5zLmhvc3QkLl9kZWZhdWx0LmxvY2FsLmluZm9ibG94LnBvYy5h:a.poc.infoblox.local/default",
                     "Ipv4addrs": [
                         {
-                            "_ref": "record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQubG9jYWwuaW5mb2Jsb3gucG9jLmEuMTAuMC4xLjIzNi4:10.0.1.236/a.poc.infoblox.local/default",
+                            "_ref": "record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQubG9jYWwuaW5mb2Jsb3gucG9jLmEuMTAuMC4xLjIzNi4:xxx.xxx.xxx.xxx/a.poc.infoblox.local/default",
                             "configure_for_dhcp": False,
                             "host": "a.poc.infoblox.local",
-                            "ipv4addr": "10.0.1.236"
+                            "ipv4addr": "xxx.xxx.xxx.xxx"
                         }
                     ]
                 },
@@ -332,10 +329,10 @@ class TestRecordsOperations:
                     "ReferenceID": "record:host/ZG5zLmhvc3QkLl9kZWZhdWx0LmxvY2FsLmluZm9ibG94LnBvYy5mb28:foo.poc.infoblox.local/default",
                     "Ipv4addrs": [
                         {
-                            "_ref": "record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQubG9jYWwuaW5mb2Jsb3gucG9jLmZvby4xMC4wLjEuMC4:10.0.1.0/foo.poc.infoblox.local/default",
+                            "_ref": "record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQubG9jYWwuaW5mb2Jsb3gucG9jLmZvby4xMC4wLjEuMC4:xxx.xxx.xxx.xxx/foo.poc.infoblox.local/default",
                             "configure_for_dhcp": False,
                             "host": "foo.poc.infoblox.local",
-                            "ipv4addr": "10.0.1.0"
+                            "ipv4addr": "xxx.xxx.xxx.xxx"
                         }
                     ]
                 },
@@ -343,10 +340,10 @@ class TestRecordsOperations:
                     "ReferenceID": "record:host/ZG5zLmhvc3QkLl9kZWZhdWx0LmxvY2FsLmluZm9ibG94LnBvYy5ibGE:bla.poc.infoblox.local/default",
                     "Ipv4addrs": [
                         {
-                            "_ref": "record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQubG9jYWwuaW5mb2Jsb3gucG9jLmJsYS4xMC4wLjAuMS4:10.0.0.1/bla.poc.infoblox.local/default",
+                            "_ref": "record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQubG9jYWwuaW5mb2Jsb3gucG9jLmJsYS4xMC4wLjAuMS4:xxx.xxx.xxx.xxx/bla.poc.infoblox.local/default",
                             "configure_for_dhcp": False,
                             "host": "bla.poc.infoblox.local",
-                            "ipv4addr": "10.0.0.1"
+                            "ipv4addr": "xxx.xxx.xxx.xxx"
                         }
                     ]
                 },
@@ -354,10 +351,10 @@ class TestRecordsOperations:
                     "ReferenceID": "record:host/ZG5zLmhvc3QkLl9kZWZhdWx0LmNvbS5mb28u:foo.com/default",
                     "Ipv4addrs": [
                         {
-                            "_ref": "record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQuY29tLmZvby4uMTAuMTAuMTAuMjAu:10.10.10.20/foo.com/default",
+                            "_ref": "record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQuY29tLmZvby4uMTAuMTAuMTAuMjAu:xxx.xxx.xxx.xxx/foo.com/default",
                             "configure_for_dhcp": False,
                             "host": "foo.com",
-                            "ipv4addr": "10.10.10.20"
+                            "ipv4addr": "xxx.xxx.xxx.xxx"
                         }
                     ]
                 },
@@ -365,10 +362,10 @@ class TestRecordsOperations:
                     "ReferenceID": "record:host/ZG5zLmhvc3QkLl9kZWZhdWx0LmxvY2FsLmluZm9ibG94LnBvYy4:poc.infoblox.local/default",
                     "Ipv4addrs": [
                         {
-                            "_ref": "record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQubG9jYWwuaW5mb2Jsb3gucG9jLi4xLjEuMS4xLg:1.1.1.1/poc.infoblox.local/default",
+                            "_ref": "record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQubG9jYWwuaW5mb2Jsb3gucG9jLi4xLjEuMS4xLg:xxx.xxx.xxx.xxx/poc.infoblox.local/default",
                             "configure_for_dhcp": False,
                             "host": "poc.infoblox.local",
-                            "ipv4addr": "1.1.1.1"
+                            "ipv4addr": "xxx.xxx.xxx.xxx"
                         }
                     ]
                 },
@@ -376,10 +373,10 @@ class TestRecordsOperations:
                     "ReferenceID": "record:host/ZG5zLmhvc3QkLl9kZWZhdWx0LmNvbS5mb28ua2FrYQ:kaka.foo.com/default",
                     "Ipv4addrs": [
                         {
-                            "_ref": "record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQuY29tLmZvby5rYWthLjEuMS4xLjEwLg:1.1.1.10/kaka.foo.com/default",
+                            "_ref": "record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQuY29tLmZvby5rYWthLjEuMS4xLjEwLg:xxx.xxx.xxx.xxx/kaka.foo.com/default",
                             "configure_for_dhcp": False,
                             "host": "kaka.foo.com",
-                            "ipv4addr": "1.1.1.10"
+                            "ipv4addr": "xxx.xxx.xxx.xxx"
                         }
                     ]
                 },
@@ -387,10 +384,10 @@ class TestRecordsOperations:
                     "ReferenceID": "record:host/ZG5zLmhvc3QkLl9kZWZhdWx0LmxvY2FsLmluZm9ibG94LnBvYy5tYWNhcmVuYQ:macarena.poc.infoblox.local/default",
                     "Ipv4addrs": [
                         {
-                            "_ref": "record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQubG9jYWwuaW5mb2Jsb3gucG9jLm1hY2FyZW5hLjEwLjEwLjEwLjIwLg:10.10.10.20/macarena.poc.infoblox.local/default",
+                            "_ref": "record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQubG9jYWwuaW5mb2Jsb3gucG9jLm1hY2FyZW5hLjEwLjEwLjEwLjIwLg:xxx.xxx.xxx.xxx/macarena.poc.infoblox.local/default",
                             "configure_for_dhcp": False,
                             "host": "macarena.poc.infoblox.local",
-                            "ipv4addr": "10.10.10.20"
+                            "ipv4addr": "xxx.xxx.xxx.xxx"
                         }
                     ]
                 }
@@ -401,10 +398,10 @@ class TestRecordsOperations:
                 "_ref": "record:host/ZG5zLmhvc3QkLl9kZWZhdWx0LmxvY2FsLmluZm9ibG94LnBvYy54dG5kc3BmMWQ4bjJj:xtndspf1d8n2c.poc.infoblox.local/default",
                 "ipv4addrs": [
                     {
-                        "_ref": "record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQubG9jYWwuaW5mb2Jsb3gucG9jLnh0bmRzcGYxZDhuMmMuMTczLjE4LjAuNS4:173.18.0.5/xtndspf1d8n2c.poc.infoblox.local/default",
+                        "_ref": "record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQubG9jYWwuaW5mb2Jsb3gucG9jLnh0bmRzcGYxZDhuMmMuMTczLjE4LjAuNS4:xxx.xxx.xxx.xxx/xtndspf1d8n2c.poc.infoblox.local/default",
                         "configure_for_dhcp": False,
                         "host": "xtndspf1d8n2c.poc.infoblox.local",
-                        "ipv4addr": "173.18.0.5"
+                        "ipv4addr": "xxx.xxx.xxx.xxx"
                     }
                 ]
             },
@@ -412,10 +409,10 @@ class TestRecordsOperations:
                 "_ref": "record:host/ZG5zLmhvc3QkLl9kZWZhdWx0LmxvY2FsLmluZm9ibG94LnBvYy54dG5kc3BmMWQ4bjJk:xtndspf1d8n2d.poc.infoblox.local/default",
                 "ipv4addrs": [
                     {
-                        "_ref": "record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQubG9jYWwuaW5mb2Jsb3gucG9jLnh0bmRzcGYxZDhuMmQuMTczLjE4LjAuMTAu:173.18.0.10/xtndspf1d8n2d.poc.infoblox.local/default",
+                        "_ref": "record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQubG9jYWwuaW5mb2Jsb3gucG9jLnh0bmRzcGYxZDhuMmQuMTczLjE4LjAuMTAu:xxx.xxx.xxx.xxx/xtndspf1d8n2d.poc.infoblox.local/default",
                         "configure_for_dhcp": False,
                         "host": "xtndspf1d8n2d.poc.infoblox.local",
-                        "ipv4addr": "173.18.0.10"
+                        "ipv4addr": "xxx.xxx.xxx.xxx"
                     }
                 ]
             },
@@ -423,10 +420,10 @@ class TestRecordsOperations:
                 "_ref": "record:host/ZG5zLmhvc3QkLl9kZWZhdWx0LmxvY2FsLmluZm9ibG94LnBvYy54dG5kc3BmMWQ4bjJl:xtndspf1d8n2e.poc.infoblox.local/default",
                 "ipv4addrs": [
                     {
-                        "_ref": "record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQubG9jYWwuaW5mb2Jsb3gucG9jLnh0bmRzcGYxZDhuMmUuMTczLjE4LjAuMTAu:173.18.0.10/xtndspf1d8n2e.poc.infoblox.local/default",
+                        "_ref": "record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQubG9jYWwuaW5mb2Jsb3gucG9jLnh0bmRzcGYxZDhuMmUuMTczLjE4LjAuMTAu:xxx.xxx.xxx.xxx/xtndspf1d8n2e.poc.infoblox.local/default",
                         "configure_for_dhcp": False,
                         "host": "xtndspf1d8n2e.poc.infoblox.local",
-                        "ipv4addr": "173.18.0.10"
+                        "ipv4addr": "xxx.xxx.xxx.xxx"
                     }
                 ]
             },
@@ -434,10 +431,10 @@ class TestRecordsOperations:
                 "_ref": "record:host/ZG5zLmhvc3QkLl9kZWZhdWx0LmxvY2FsLmluZm9ibG94LnBvYy54dG5kc3BmMWQ4bjJm:xtndspf1d8n2f.poc.infoblox.local/default",
                 "ipv4addrs": [
                     {
-                        "_ref": "record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQubG9jYWwuaW5mb2Jsb3gucG9jLnh0bmRzcGYxZDhuMmYuMTczLjE4LjAuMTEyLg:173.18.0.112/xtndspf1d8n2f.poc.infoblox.local/default",
+                        "_ref": "record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQubG9jYWwuaW5mb2Jsb3gucG9jLnh0bmRzcGYxZDhuMmYuMTczLjE4LjAuMTEyLg:xxx.xxx.xxx.xxx/xtndspf1d8n2f.poc.infoblox.local/default",
                         "configure_for_dhcp": False,
                         "host": "xtndspf1d8n2f.poc.infoblox.local",
-                        "ipv4addr": "173.18.0.112"
+                        "ipv4addr": "xxx.xxx.xxx.xxx"
                     }
                 ]
             },
@@ -445,10 +442,10 @@ class TestRecordsOperations:
                 "_ref": "record:host/ZG5zLmhvc3QkLl9kZWZhdWx0LmxvY2FsLmluZm9ibG94LnBvYy54dG5kc3BmMWQ4bjJn:xtndspf1d8n2g.poc.infoblox.local/default",
                 "ipv4addrs": [
                     {
-                        "_ref": "record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQubG9jYWwuaW5mb2Jsb3gucG9jLnh0bmRzcGYxZDhuMmcuMTczLjE4LjAuMTEu:173.18.0.11/xtndspf1d8n2g.poc.infoblox.local/default",
+                        "_ref": "record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQubG9jYWwuaW5mb2Jsb3gucG9jLnh0bmRzcGYxZDhuMmcuMTczLjE4LjAuMTEu:xxx.xxx.xxx.xxx/xtndspf1d8n2g.poc.infoblox.local/default",
                         "configure_for_dhcp": False,
                         "host": "xtndspf1d8n2g.poc.infoblox.local",
-                        "ipv4addr": "173.18.0.11"
+                        "ipv4addr": "xxx.xxx.xxx.xxx"
                     }
                 ]
             },
@@ -456,10 +453,10 @@ class TestRecordsOperations:
                 "_ref": "record:host/ZG5zLmhvc3QkLl9kZWZhdWx0LmxvY2FsLmluZm9ibG94LnBvYy54dG5kc3BmMWQ4bjJo:xtndspf1d8n2h.poc.infoblox.local/default",
                 "ipv4addrs": [
                     {
-                        "_ref": "record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQubG9jYWwuaW5mb2Jsb3gucG9jLnh0bmRzcGYxZDhuMmguMTczLjE4LjAuMTEyLg:173.18.0.112/xtndspf1d8n2h.poc.infoblox.local/default",
+                        "_ref": "record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQubG9jYWwuaW5mb2Jsb3gucG9jLnh0bmRzcGYxZDhuMmguMTczLjE4LjAuMTEyLg:xxx.xxx.xxx.xxx/xtndspf1d8n2h.poc.infoblox.local/default",
                         "configure_for_dhcp": False,
                         "host": "xtndspf1d8n2h.poc.infoblox.local",
-                        "ipv4addr": "173.18.0.112"
+                        "ipv4addr": "xxx.xxx.xxx.xxx"
                     }
                 ]
             },
@@ -467,10 +464,10 @@ class TestRecordsOperations:
                 "_ref": "record:host/ZG5zLmhvc3QkLl9kZWZhdWx0LmxvY2FsLmluZm9ibG94LnBvYy5h:a.poc.infoblox.local/default",
                 "ipv4addrs": [
                     {
-                        "_ref": "record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQubG9jYWwuaW5mb2Jsb3gucG9jLmEuMTAuMC4xLjIzNi4:10.0.1.236/a.poc.infoblox.local/default",
+                        "_ref": "record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQubG9jYWwuaW5mb2Jsb3gucG9jLmEuMTAuMC4xLjIzNi4:xxx.xxx.xxx.xxx/a.poc.infoblox.local/default",
                         "configure_for_dhcp": False,
                         "host": "a.poc.infoblox.local",
-                        "ipv4addr": "10.0.1.236"
+                        "ipv4addr": "xxx.xxx.xxx.xxx"
                     }
                 ]
             },
@@ -478,10 +475,10 @@ class TestRecordsOperations:
                 "_ref": "record:host/ZG5zLmhvc3QkLl9kZWZhdWx0LmxvY2FsLmluZm9ibG94LnBvYy5mb28:foo.poc.infoblox.local/default",
                 "ipv4addrs": [
                     {
-                        "_ref": "record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQubG9jYWwuaW5mb2Jsb3gucG9jLmZvby4xMC4wLjEuMC4:10.0.1.0/foo.poc.infoblox.local/default",
+                        "_ref": "record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQubG9jYWwuaW5mb2Jsb3gucG9jLmZvby4xMC4wLjEuMC4:xxx.xxx.xxx.xxx/foo.poc.infoblox.local/default",
                         "configure_for_dhcp": False,
                         "host": "foo.poc.infoblox.local",
-                        "ipv4addr": "10.0.1.0"
+                        "ipv4addr": "xxx.xxx.xxx.xxx"
                     }
                 ]
             },
@@ -489,10 +486,10 @@ class TestRecordsOperations:
                 "_ref": "record:host/ZG5zLmhvc3QkLl9kZWZhdWx0LmxvY2FsLmluZm9ibG94LnBvYy5ibGE:bla.poc.infoblox.local/default",
                 "ipv4addrs": [
                     {
-                        "_ref": "record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQubG9jYWwuaW5mb2Jsb3gucG9jLmJsYS4xMC4wLjAuMS4:10.0.0.1/bla.poc.infoblox.local/default",
+                        "_ref": "record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQubG9jYWwuaW5mb2Jsb3gucG9jLmJsYS4xMC4wLjAuMS4:xxx.xxx.xxx.xxx/bla.poc.infoblox.local/default",
                         "configure_for_dhcp": False,
                         "host": "bla.poc.infoblox.local",
-                        "ipv4addr": "10.0.0.1"
+                        "ipv4addr": "xxx.xxx.xxx.xxx"
                     }
                 ]
             },
@@ -500,10 +497,10 @@ class TestRecordsOperations:
                 "_ref": "record:host/ZG5zLmhvc3QkLl9kZWZhdWx0LmNvbS5mb28u:foo.com/default",
                 "ipv4addrs": [
                     {
-                        "_ref": "record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQuY29tLmZvby4uMTAuMTAuMTAuMjAu:10.10.10.20/foo.com/default",
+                        "_ref": "record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQuY29tLmZvby4uMTAuMTAuMTAuMjAu:xxx.xxx.xxx.xxx/foo.com/default",
                         "configure_for_dhcp": False,
                         "host": "foo.com",
-                        "ipv4addr": "10.10.10.20"
+                        "ipv4addr": "xxx.xxx.xxx.xxx"
                     }
                 ]
             },
@@ -511,10 +508,10 @@ class TestRecordsOperations:
                 "_ref": "record:host/ZG5zLmhvc3QkLl9kZWZhdWx0LmxvY2FsLmluZm9ibG94LnBvYy4:poc.infoblox.local/default",
                 "ipv4addrs": [
                     {
-                        "_ref": "record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQubG9jYWwuaW5mb2Jsb3gucG9jLi4xLjEuMS4xLg:1.1.1.1/poc.infoblox.local/default",
+                        "_ref": "record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQubG9jYWwuaW5mb2Jsb3gucG9jLi4xLjEuMS4xLg:xxx.xxx.xxx.xxx/poc.infoblox.local/default",
                         "configure_for_dhcp": False,
                         "host": "poc.infoblox.local",
-                        "ipv4addr": "1.1.1.1"
+                        "ipv4addr": "xxx.xxx.xxx.xxx"
                     }
                 ]
             },
@@ -522,10 +519,10 @@ class TestRecordsOperations:
                 "_ref": "record:host/ZG5zLmhvc3QkLl9kZWZhdWx0LmNvbS5mb28ua2FrYQ:kaka.foo.com/default",
                 "ipv4addrs": [
                     {
-                        "_ref": "record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQuY29tLmZvby5rYWthLjEuMS4xLjEwLg:1.1.1.10/kaka.foo.com/default",
+                        "_ref": "record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQuY29tLmZvby5rYWthLjEuMS4xLjEwLg:xxx.xxx.xxx.xxx/kaka.foo.com/default",
                         "configure_for_dhcp": False,
                         "host": "kaka.foo.com",
-                        "ipv4addr": "1.1.1.10"
+                        "ipv4addr": "xxx.xxx.xxx.xxx"
                     }
                 ]
             },
@@ -533,10 +530,10 @@ class TestRecordsOperations:
                 "_ref": "record:host/ZG5zLmhvc3QkLl9kZWZhdWx0LmxvY2FsLmluZm9ibG94LnBvYy5tYWNhcmVuYQ:macarena.poc.infoblox.local/default",
                 "ipv4addrs": [
                     {
-                        "_ref": "record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQubG9jYWwuaW5mb2Jsb3gucG9jLm1hY2FyZW5hLjEwLjEwLjEwLjIwLg:10.10.10.20/macarena.poc.infoblox.local/default",
+                        "_ref": "record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQubG9jYWwuaW5mb2Jsb3gucG9jLm1hY2FyZW5hLjEwLjEwLjEwLjIwLg:xxx.xxx.xxx.xxx/macarena.poc.infoblox.local/default",
                         "configure_for_dhcp": False,
                         "host": "macarena.poc.infoblox.local",
-                        "ipv4addr": "10.10.10.20"
+                        "ipv4addr": "xxx.xxx.xxx.xxx"
                     }
                 ]
             }
@@ -547,18 +544,18 @@ class TestRecordsOperations:
         "human_readable": """### Infoblox Integration - Search for a Host Record: poc.infoblox.local
 |Ipv 4 Addrs|Name|Reference ID|View|
 |---|---|---|---|
-| {'_ref': 'record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQubG9jYWwuaW5mb2Jsb3gucG9jLi4xLjEuMS4xLg:1.1.1.1/poc.infoblox.local/default', 'configure_for_dhcp': False, 'host': 'poc.infoblox.local', 'ipv4addr': '1.1.1.1'} | poc.infoblox.local | record:host/ZG5zLmhvc3QkLl9kZWZhdWx0LmxvY2FsLmluZm9ibG94LnBvYy4:poc.infoblox.local/default | default |
+| {'_ref': 'record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQubG9jYWwuaW5mb2Jsb3gucG9jLi4xLjEuMS4xLg:xxx.xxx.xxx.xxx/poc.infoblox.local/default', 'configure_for_dhcp': False, 'host': 'poc.infoblox.local', 'ipv4addr': 'xxx.xxx.xxx.xxx'} | poc.infoblox.local | record:host/ZG5zLmhvc3QkLl9kZWZhdWx0LmxvY2FsLmluZm9ibG94LnBvYy4:poc.infoblox.local/default | default |
 """,
         "context": {
-            "Infoblox.SearchHostResults(???)": [
+            "Infoblox.Host(val.ReferenceID && val.ReferenceID === obj.ReferenceID)": [
                 {
                     "ReferenceID": "record:host/ZG5zLmhvc3QkLl9kZWZhdWx0LmxvY2FsLmluZm9ibG94LnBvYy4:poc.infoblox.local/default",
                     "Ipv4addrs": [
                         {
-                            "_ref": "record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQubG9jYWwuaW5mb2Jsb3gucG9jLi4xLjEuMS4xLg:1.1.1.1/poc.infoblox.local/default",
+                            "_ref": "record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQubG9jYWwuaW5mb2Jsb3gucG9jLi4xLjEuMS4xLg:xxx.xxx.xxx.xxx/poc.infoblox.local/default",
                             "configure_for_dhcp": False,
                             "host": "poc.infoblox.local",
-                            "ipv4addr": "1.1.1.1"
+                            "ipv4addr": "xxx.xxx.xxx.xxx"
                         }
                     ],
                     "Name": "poc.infoblox.local",
@@ -571,10 +568,10 @@ class TestRecordsOperations:
                 "_ref": "record:host/ZG5zLmhvc3QkLl9kZWZhdWx0LmxvY2FsLmluZm9ibG94LnBvYy4:poc.infoblox.local/default",
                 "ipv4addrs": [
                     {
-                        "_ref": "record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQubG9jYWwuaW5mb2Jsb3gucG9jLi4xLjEuMS4xLg:1.1.1.1/poc.infoblox.local/default",
+                        "_ref": "record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQubG9jYWwuaW5mb2Jsb3gucG9jLi4xLjEuMS4xLg:xxx.xxx.xxx.xxx/poc.infoblox.local/default",
                         "configure_for_dhcp": False,
                         "host": "poc.infoblox.local",
-                        "ipv4addr": "1.1.1.1"
+                        "ipv4addr": "xxx.xxx.xxx.xxx"
                     }
                 ],
                 "name": "poc.infoblox.local",
@@ -583,17 +580,17 @@ class TestRecordsOperations:
         ]}
     }
     TEST_CREATE_A_RECORD_DATA = {
-        "args": {"name": "poc.infoblox.local", "ipv4addr": "250.250.250.250"},
-        "human_readable": """### Infoblox Integration - Host Record: poc.infoblox.local has been created:
+        "args": {"name": "poc.infoblox.local", "ipv4addr": "xxx.xxx.xxx.xxx"},
+        "human_readable": """### Infoblox Integration - A Record: poc.infoblox.local has been created:
 |Disable|Ipv 4 Addr|Name|Reference ID|Type|View|
 |---|---|---|---|---|---|
-| false | 250.250.250.250 | poc.infoblox.local | record:a/ZG5zLmJpbmRfYSQuX2RlZmF1bHQubG9jYWwuaW5mb2Jsb3gucG9jLCwyNTAuMjUwLjI1MC4yNTA:poc.infoblox.local/default | record:a | default |
+| false | xxx.xxx.xxx.xxx | poc.infoblox.local | record:a/ZG5zLmJpbmRfYSQuX2RlZmF1bHQubG9jYWwuaW5mb2Jsb3gucG9jLCwyNTAuMjUwLjI1MC4yNTA:poc.infoblox.local/default | record:a | default |
 """,
         "context": {
-            'Infoblox.CreatedARecord(???)': {
+            'Infoblox.ARecord(val.ReferenceID && val.ReferenceID === obj.ReferenceID)': {
                 "ReferenceID": "record:a/ZG5zLmJpbmRfYSQuX2RlZmF1bHQubG9jYWwuaW5mb2Jsb3gucG9jLCwyNTAuMjUwLjI1MC4yNTA:poc.infoblox.local/default",
                 "Disable": False,
-                "Ipv4addr": "250.250.250.250",
+                "Ipv4addr": "xxx.xxx.xxx.xxx",
                 "Name": "poc.infoblox.local",
                 "View": "default",
                 "Type": "record:a"
@@ -602,16 +599,71 @@ class TestRecordsOperations:
         "raw_response": {"result": {
             "_ref": "record:a/ZG5zLmJpbmRfYSQuX2RlZmF1bHQubG9jYWwuaW5mb2Jsb3gucG9jLCwyNTAuMjUwLjI1MC4yNTA:poc.infoblox.local/default",
             "disable": False,
-            "ipv4addr": "250.250.250.250",
+            "ipv4addr": "xxx.xxx.xxx.xxx",
             "name": "poc.infoblox.local",
             "view": "default",
             "type": "record:a"
         }}
     }
-    TEST_ADD_HOST_RECORD_DATA = {}
-    TEST_UPDATE_HOST_IP_DATA = {}
-    TEST_UPDATE_A_RECORD_DATA = {}
-    TEST_DELETE_HOST_RECORD_DATA = {}
+    TEST_ADD_HOST_RECORD_DATA = {
+        "args": {'host': 'koko.poc.infoblox.local', 'ipadd': 'xxx.xxx.xxx.xxx'},
+        "human_readable": """### Infoblox Integration - Host Record koko.poc.infoblox.local with IP address xxx.xxx.xxx.xxx was added successfully with reference
+record:host/ZG5zLmhvc3QkLl9kZWZhdWx0LmxvY2FsLmluZm9ibG94LnBvYy5rb2tv:koko.poc.infoblox.local/default
+|Reference ID|
+|---|
+| record:host/ZG5zLmhvc3QkLl9kZWZhdWx0LmxvY2FsLmluZm9ibG94LnBvYy5rb2tv:koko.poc.infoblox.local/default |
+""",
+        "context": {
+            "Infoblox.Host(val.ReferenceID && val.ReferenceID === obj.ReferenceID)": {
+                "ReferenceID": "record:host/ZG5zLmhvc3QkLl9kZWZhdWx0LmxvY2FsLmluZm9ibG94LnBvYy5rb2tv:koko.poc.infoblox.local/default"
+            }
+        },
+        "raw_response": {
+            "result": "record:host/ZG5zLmhvc3QkLl9kZWZhdWx0LmxvY2FsLmluZm9ibG94LnBvYy5rb2tv:koko.poc.infoblox.local/default"
+        }
+    }
+    TEST_UPDATE_HOST_IP_DATA = {
+        "args": {
+            'refid': 'record:host/ZG5zLmhvc3QkLl9kZWZhdWx0LmxvY2FsLmluZm9ibG94LnBvYy5rb2tv:koko.poc.infoblox.local/default',
+            'ipv4addr': 'xxx.xxx.xxx.xxx'},
+        "human_readable": """### Infoblox Integration - Updated a Host's IP with the ReferenceID: record:host/ZG5zLmhvc3QkLl9kZWZhdWx0LmxvY2FsLmluZm9ibG94LnBvYy5rb2tv:koko.poc.infoblox.local/default. New IP address is xxx.xxx.xxx.xxx
+|Ipv 4 Addrs|Reference ID|
+|---|---|
+| {'_ref': 'record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQubG9jYWwuaW5mb2Jsb3gucG9jLmtva28uMS4yLjI1MC4yNTAu:xxx.xxx.xxx.xxx/koko.poc.infoblox.local/default', 'configure_for_dhcp': False, 'host': 'koko.poc.infoblox.local', 'ipv4addr': 'xxx.xxx.xxx.xxx'} | record:host/ZG5zLmhvc3QkLl9kZWZhdWx0LmxvY2FsLmluZm9ibG94LnBvYy5rb2tv:koko.poc.infoblox.local/default |
+""",
+        "context": {
+            "Infoblox.Host(val.ReferenceID && val.ReferenceID === obj.ReferenceID)": {
+                "ReferenceID": "record:host/ZG5zLmhvc3QkLl9kZWZhdWx0LmxvY2FsLmluZm9ibG94LnBvYy5rb2tv:koko.poc.infoblox.local/default",
+                "Ipv4addrs": [
+                    {
+                        "_ref": "record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQubG9jYWwuaW5mb2Jsb3gucG9jLmtva28uMS4yLjI1MC4yNTAu:xxx.xxx.xxx.xxx/koko.poc.infoblox.local/default",
+                        "configure_for_dhcp": False,
+                        "host": "koko.poc.infoblox.local",
+                        "ipv4addr": "xxx.xxx.xxx.xxx"
+                    }
+                ]
+            }
+        },
+        "raw_response": {
+            "result": {
+                "_ref": "record:host/ZG5zLmhvc3QkLl9kZWZhdWx0LmxvY2FsLmluZm9ibG94LnBvYy5rb2tv:koko.poc.infoblox.local/default",
+                "ipv4addrs": [
+                    {
+                        "_ref": "record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQubG9jYWwuaW5mb2Jsb3gucG9jLmtva28uMS4yLjI1MC4yNTAu:xxx.xxx.xxx.xxx/koko.poc.infoblox.local/default",
+                        "configure_for_dhcp": False,
+                        "host": "koko.poc.infoblox.local",
+                        "ipv4addr": "xxx.xxx.xxx.xxx"
+                    }
+                ]
+            }
+        }
+    }
+    TEST_UPDATE_A_RECORD_DATA = {
+        "args": {},
+        "human_readable": {},
+        "context": {},
+        "raw_response": {}
+    }
 
     @pytest.mark.parametrize(
         "infoblox_function, test_data",
@@ -620,10 +672,9 @@ class TestRecordsOperations:
             (list_hosts_command, TEST_LIST_HOSTS_DATA),
             (search_host_record_command, TEST_SEARCH_HOST_RECORD_DATA),
             (create_a_record_command, TEST_CREATE_A_RECORD_DATA),
-            # (add_host_record_command, TEST_ADD_HOST_RECORD_DATA),
-            # (update_host_ip_command, TEST_UPDATE_HOST_IP_DATA),
-            # (update_a_record_command, TEST_UPDATE_A_RECORD_DATA),
-            # (delete_host_record_command, TEST_DELETE_HOST_RECORD_DATA)
+            (add_host_record_command, TEST_ADD_HOST_RECORD_DATA),
+            (update_host_ip_command, TEST_UPDATE_HOST_IP_DATA),
+            # (update_a_record_command, TEST_UPDATE_A_RECORD_DATA)
         ]
     )
     def test_record(self, mocker, infoblox_function, test_data):

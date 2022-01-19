@@ -402,13 +402,10 @@ class Client(BaseClient):
 
     def update_a_record(self, refid: str, ipv4addr: str, name: Optional[str], comment: Optional[str]):
         params = {
-            "_return_fields": "ipv4addrs",
             "_return_as_object": 1
         }
         payload = {
-            "ipv4addrs": [
-                {"ipv4addr": str(ipv4addr)}
-            ],
+            "ipv4addr": str(ipv4addr),
             "name": name,
             "comment": comment
         }
@@ -507,7 +504,7 @@ def search_related_objects_by_ip_command(client: Client, args: Dict) -> Tuple[st
     max_results = args.get('max_results')
     raw_response = client.search_related_objects_by_ip(ip, max_results)
     results = raw_response.get('result')
-    if not raw_response.get('result'):
+    if not results:
         return f'{INTEGRATION_NAME} - No objects associated with ip: {ip} were found', {}, {}
     context_data = results_to_context_data(results, to_list=True)
     title = f'{INTEGRATION_NAME} - IP: {ip} search results.'
@@ -1017,14 +1014,15 @@ def delete_rpz_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict
     return title, {}, raw_response
 
 
-def list_hosts_command(client: Client, args: Dict):
+def list_hosts_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     raw_response = client.list_hosts()
     results = raw_response.get('result')
+    if not results:
+        return f'{INTEGRATION_NAME} - No hosts were found', {}, {}
     context_data = results_to_context_data(results, to_list=True)
     title = f'{INTEGRATION_NAME} - List of Host Records: '
     context = {
-        f'{INTEGRATION_CONTEXT_NAME}.ListHosts(???)': context_data}
-
+        f'{INTEGRATION_CONTEXT_NAME}.Host(val.ReferenceID && val.ReferenceID === obj.ReferenceID)': context_data}
     human_readable = tableToMarkdown(title, context_data, headerTransform=pascalToSpace)
     return human_readable, context, raw_response
 
@@ -1033,20 +1031,26 @@ def list_records_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     zone = str(args.get('zone'))
     raw_response = client.list_records(zone)
     results = raw_response.get('result')
+    if not results:
+        return f'{INTEGRATION_NAME} - No records associated to {zone} were found', {}, {}
     context_data = results_to_context_data(results, to_list=True)
     title = f'{INTEGRATION_NAME} - List of All Records: '
-    context = {f'{INTEGRATION_CONTEXT_NAME}.ListAllRecords(???)': context_data}
+    context = {
+        f'{INTEGRATION_CONTEXT_NAME}.Record(val.ReferenceID && val.ReferenceID === obj.ReferenceID)': context_data}
     human_readable = tableToMarkdown(title, context_data, headerTransform=pascalToSpace)
     return human_readable, context, raw_response
 
 
-def search_host_record_command(client: Client, args: Dict):
+def search_host_record_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     name = str(args.get("name"))
     raw_response = client.search_host_record(name)
     results = raw_response.get("result")
+    if not results:
+        return f'{INTEGRATION_NAME} - No records associated to {name} were found', {}, {}
     context_data = results_to_context_data(results, to_list=True)
     title = f'{INTEGRATION_NAME} - Search for a Host Record: {name}'
-    context = {f'{INTEGRATION_CONTEXT_NAME}.SearchHostResults(???)': context_data}
+    context = {
+        f'{INTEGRATION_CONTEXT_NAME}.Host(val.ReferenceID && val.ReferenceID === obj.ReferenceID)': context_data}
     human_readable = tableToMarkdown(title, context_data, headerTransform=pascalToSpace)
     return human_readable, context, raw_response
 
@@ -1055,61 +1059,56 @@ def create_a_record_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict
     name = args.get('name')
     ipv4addr = args.get('ipv4addr')
     infoblox_object_type = 'record:a'
-
     raw_response = client.create_record(infoblox_object_type, name=name, ipv4addr=ipv4addr)
     results = raw_response.get('result')
     context_data = results_to_context_data(results, to_list=False)
-    title = f'{INTEGRATION_NAME} - Host Record: {name} has been created:'
-    context = {f'{INTEGRATION_CONTEXT_NAME}.CreatedARecord(???)': context_data}
+    title = f'{INTEGRATION_NAME} - A Record: {name} has been created:'
+    context = {
+        f'{INTEGRATION_CONTEXT_NAME}.ARecord(val.ReferenceID && val.ReferenceID === obj.ReferenceID)': context_data}
     human_readable = tableToMarkdown(title, context_data, headerTransform=pascalToSpace)
 
     return human_readable, context, raw_response
 
 
 def add_host_record_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    """
-    Args:
-        client: Client object
-        args: Usually demisto.args()
-
-    Returns:
-        Outputs
-    """
     host = args.get('host')
     ipadd = args.get('ipadd')
-
     raw_response = client.add_host(host, ipadd)
-    results = raw_response.get('result')
-    context_data = results_to_context_data(results, to_list=False)
-    title = f'{INTEGRATION_NAME} - Added a Host Record: {host} with IP address: {ipadd}'
-    context = {f'{INTEGRATION_CONTEXT_NAME}.AddedHostRecord(???)': context_data}
+    ref_id = raw_response.get('result')
+    context_data = {RESPONSE_TRANSLATION_DICTIONARY['_ref']: ref_id}
+    title = f'{INTEGRATION_NAME} - Host Record {host} with IP address {ipadd} was added successfully with reference\n' \
+            f'{ref_id}'
+    context = {
+        f'{INTEGRATION_CONTEXT_NAME}.Host(val.ReferenceID && val.ReferenceID === obj.ReferenceID)': context_data}
     human_readable = tableToMarkdown(title, context_data, headerTransform=pascalToSpace)
     return human_readable, context, raw_response
 
 
-def update_host_ip_command(client: Client, args: Dict):
+def update_host_ip_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     refid = str(args.get("refid"))
     ipv4addr = str(args.get("ipv4addr"))
     raw_response = client.update_host_ip(refid, ipv4addr)
-    results = raw_response.get('result')
-    context_data = results_to_context_data(results, to_list=False)
-    title = f'{INTEGRATION_NAME} - Updated a Host Record with the ReferenceID: {refid} with IP address: {ipv4addr}'
-    context = {f'{INTEGRATION_CONTEXT_NAME}.UpdatedHostIP(???)': context_data}
+    result_ref_id = raw_response.get('result')
+    context_data = {RESPONSE_TRANSLATION_DICTIONARY['_ref']: result_ref_id}
+    title = f"{INTEGRATION_NAME} - Updated a Host's IP with the ReferenceID: {refid}. New IP address is {ipv4addr}"
+    context = {
+        f'{INTEGRATION_CONTEXT_NAME}.Host(val.ReferenceID && val.ReferenceID === obj.ReferenceID)': context_data}
     human_readable = tableToMarkdown(title, context_data, headerTransform=pascalToSpace)
     return human_readable, context, raw_response
 
 
-def update_a_record_command(client: Client, args: Dict):
+def update_a_record_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     refid = str(args.get("refid"))
     ipv4addr = str(args.get("ipv4addr"))
     name = str(args.get("name"))
     comment = str(args.get("comment"))
 
     raw_response = client.update_a_record(refid, ipv4addr, name, comment)
-    results = raw_response.get('result')
+    result_ref_id = raw_response.get('result')
+    context_data = {RESPONSE_TRANSLATION_DICTIONARY['_ref']: result_ref_id}
     title = f'{INTEGRATION_NAME} - Updated a Host Record with the ReferenceID: {refid} with IP address: {ipv4addr}'
-    context_data = results_to_context_data(results, to_list=False)
-    context = {f'{INTEGRATION_CONTEXT_NAME}.UpdatedARecord(???)': context_data}
+    context = {
+        f'{INTEGRATION_CONTEXT_NAME}.ARecord(val.ReferenceID && val.ReferenceID === obj.ReferenceID)': context_data}
     human_readable = tableToMarkdown(title, context_data, headerTransform=pascalToSpace)
     return human_readable, context, raw_response
 
@@ -1133,8 +1132,9 @@ def delete_host_record_command(client: Client, args: Dict) -> Tuple[str, Dict, D
 
     if refid:
         raw_response = client.delete_host(refid)
+        deleted_ref_id = raw_response.get('result')
         demisto.results(raw_response)
-        title = f'{INTEGRATION_NAME} - ' + raw_response['result']
+        title = f'{INTEGRATION_NAME} - Deleted a host successfully with reference id: {deleted_ref_id}'
         return title, {}, {}
     else:
         title = f'{INTEGRATION_NAME} - No RefID'
