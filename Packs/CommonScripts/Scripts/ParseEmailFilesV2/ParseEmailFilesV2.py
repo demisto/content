@@ -56,6 +56,15 @@ def data_to_md(email_data, email_file_name=None, parent_email_file=None, print_o
     return md
 
 
+def save_file(file_name, file_content):
+    created_file = fileResult(file_name, file_content)
+    file_id = created_file.get('FileID')
+    attachment_internal_path = demisto.investigation().get('id') + '_' + file_id
+    demisto.results(created_file)
+
+    return attachment_internal_path
+
+
 def main():
     file_type = ''
     entry_id = demisto.args()['entryid']
@@ -88,46 +97,25 @@ def main():
         email_parser = EmailParser(file_path=file_path, max_depth=max_depth, parse_only_headers=parse_only_headers,
                                    file_info=file_type)
         output = email_parser.parse()
+
         resultss = []
-
-        if isinstance(output, list) and len(output) > 0:
-            for email in output:
-                if email.get('AttachmentsData'):
-                    for attachment in email.get('AttachmentsData'):
-                        if attachment.get('Name') and attachment.get('FileData'):
-                            if isinstance(attachment.get('FileData'), dict):
-                                content = attachment.get('FileData').get('file_content').decode("utf-8")
-                                attachment.get('FileData')['file_content'] = content
-                            else:
-                                content = attachment.get('FileData').decode("utf-8")
-                                attachment['FileData'] = content
-
-                            name = attachment.get('Name')
-                            demisto.results(fileResult(name, content))
-                resultss.append(CommandResults(outputs_prefix='Email',
-                                outputs=email,
-                                readable_output=data_to_md(email, file_name, print_only_headers=parse_only_headers),
-                                raw_response=email,
-                                entry_type=EntryType.NOTE))
-
         if isinstance(output, dict):
-            if output.get('AttachmentsData'):
-                for attachment in output.get('AttachmentsData'):
+            output = [output]
+
+        for email in output:
+            if email.get('AttachmentsData'):
+                for attachment in email.get('AttachmentsData'):
                     if attachment.get('Name') and attachment.get('FileData'):
-                        if isinstance(attachment.get('FileData'), dict):
-                            content = attachment.get('FileData').get('file_content').decode("utf-8")
-                            attachment.get('FileData')['file_content'] = content
-                        else:
-                            content = attachment.get('FileData').decode("utf-8")
-                            attachment['FileData'] = content
+                        content = attachment.get('FileData')
+                        del attachment['FileData']
                         name = attachment.get('Name')
-                        demisto.results(fileResult(name, content))
-                        resultss.append(CommandResults(outputs_prefix='Email',
-                                        outputs=output,
-                                        readable_output=data_to_md(output, file_name,
-                                                                   print_only_headers=parse_only_headers),
-                                        raw_response=output,
-                                        entry_type=EntryType.NOTE))
+                        attachment['FilePath'] = save_file(name, content)
+            resultss.append(CommandResults(outputs_prefix='Email',
+                            outputs=email,
+                            readable_output=data_to_md(email, file_name, email.get('ParentFileName', None),
+                                                       print_only_headers=parse_only_headers),
+                            raw_response=email,
+                            entry_type=EntryType.NOTE))
         return_results(resultss)
 
     except Exception as e:
