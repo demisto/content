@@ -14,13 +14,22 @@ if [[ ! -f "$GCS_MARKET_KEY" ]]; then
     exit 1
 fi
 
+if [[ -z "$3" ]]; then
+  MARKETPLACE_TYPE="xsoar"
+else
+  MARKETPLACE_TYPE=$3
+  if [[ "$MARKETPLACE_TYPE" == "marketplacev2" ]]; then
+    GCS_PRODUCTION_BUCKET=$GCS_PRODUCTION_V2_BUCKET
+  fi
+fi
+
 echo "Preparing content packs for testing ..."
 gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" > auth.out 2>&1
 echo "Auth loaded successfully."
 
 # ====== BUILD CONFIGURATION ======
 GCS_BUILD_BUCKET="marketplace-ci-build"
-BUILD_BUCKET_PATH="content/builds/$CI_COMMIT_BRANCH/$CI_PIPELINE_ID"
+BUILD_BUCKET_PATH="content/builds/$CI_COMMIT_BRANCH/$CI_PIPELINE_ID/$MARKETPLACE_TYPE"
 BUILD_BUCKET_PACKS_DIR_PATH="$BUILD_BUCKET_PATH/content/packs"
 BUILD_BUCKET_CONTENT_DIR_FULL_PATH="$GCS_BUILD_BUCKET/$BUILD_BUCKET_PATH/content"
 BUILD_BUCKET_FULL_PATH="$GCS_BUILD_BUCKET/$BUILD_BUCKET_PATH"
@@ -54,7 +63,7 @@ echo "Copying master files at: gs://$GCS_MARKET_BUCKET/$SOURCE_PATH to target pa
 gsutil -m cp -r "gs://$GCS_MARKET_BUCKET/$SOURCE_PATH" "gs://$BUILD_BUCKET_CONTENT_DIR_FULL_PATH" > "$ARTIFACTS_FOLDER/logs/Prepare Content Packs For Testing gsutil.log" 2>&1
 echo "Finished copying successfully."
 
-if [ ! -n "${BUCKET_UPLOAD}" ]; then
+if [ -z "${BUCKET_UPLOAD}" ]; then
     echo "Updating modified content packs in the bucket ..."
     CONTENT_PACKS_TO_INSTALL_FILE="$ARTIFACTS_FOLDER/content_packs_to_install.txt"
   if [ ! -f $CONTENT_PACKS_TO_INSTALL_FILE ]; then
@@ -65,7 +74,7 @@ if [ ! -n "${BUCKET_UPLOAD}" ]; then
       echo "Did not get content packs to update in the bucket."
     else
       echo "Updating the following content packs: $CONTENT_PACKS_TO_INSTALL ..."
-      python3 ./Tests/Marketplace/upload_packs.py -pa $PACK_ARTIFACTS -idp $ID_SET -d $ARTIFACTS_FOLDER/packs_dependencies.json -e $EXTRACT_FOLDER -b $GCS_BUILD_BUCKET -s "$GCS_MARKET_KEY" -n $CI_PIPELINE_ID -p $CONTENT_PACKS_TO_INSTALL -o true -sb $BUILD_BUCKET_PACKS_DIR_PATH -k $PACK_SIGNING_KEY -rt false -bu false -c $CI_COMMIT_BRANCH -f false -dz true
+      python3 ./Tests/Marketplace/upload_packs.py -pa $PACK_ARTIFACTS -idp $ID_SET -d $ARTIFACTS_FOLDER/packs_dependencies.json -e $EXTRACT_FOLDER -b $GCS_BUILD_BUCKET -s "$GCS_MARKET_KEY" -n $CI_PIPELINE_ID -p $CONTENT_PACKS_TO_INSTALL -o true -sb $BUILD_BUCKET_PACKS_DIR_PATH -k $PACK_SIGNING_KEY -rt false -bu false -c $CI_COMMIT_BRANCH -f false -dz true -mp "$MARKETPLACE_TYPE"
       echo "Finished updating content packs successfully."
     fi
   fi
@@ -87,15 +96,15 @@ else
     PACKS_LIST="all"
     IS_FORCE_UPLOAD=false
   fi
-  python3 ./Tests/Marketplace/upload_packs.py -pa $PACK_ARTIFACTS -idp $ID_SET -d $ARTIFACTS_FOLDER/packs_dependencies.json -e $EXTRACT_FOLDER -b $GCS_BUILD_BUCKET -s "$GCS_MARKET_KEY" -n $CI_PIPELINE_ID -p "$PACKS_LIST" -o $OVERRIDE_ALL_PACKS -sb $BUILD_BUCKET_PACKS_DIR_PATH -k $PACK_SIGNING_KEY -rt $REMOVE_PBS -bu $BUCKET_UPLOAD_FLOW -pb "$GCS_PRIVATE_BUCKET" -c $CI_COMMIT_BRANCH -f $IS_FORCE_UPLOAD -dz true
+  python3 ./Tests/Marketplace/upload_packs.py -pa $PACK_ARTIFACTS -idp $ID_SET -d $ARTIFACTS_FOLDER/packs_dependencies.json -e $EXTRACT_FOLDER -b $GCS_BUILD_BUCKET -s "$GCS_MARKET_KEY" -n $CI_PIPELINE_ID -p "$PACKS_LIST" -o $OVERRIDE_ALL_PACKS -sb $BUILD_BUCKET_PACKS_DIR_PATH -k $PACK_SIGNING_KEY -rt $REMOVE_PBS -bu $BUCKET_UPLOAD_FLOW -pb "$GCS_PRIVATE_BUCKET" -c $CI_COMMIT_BRANCH -f $IS_FORCE_UPLOAD -dz true -mp "$MARKETPLACE_TYPE"
 
-  if [ -f $ARTIFACTS_FOLDER/index.json ]; then
-    gsutil cp -z json $ARTIFACTS_FOLDER/index.json "gs://$BUILD_BUCKET_PACKS_DIR_FULL_PATH"
+  if [ -f "$ARTIFACTS_FOLDER/index.json" ]; then
+    gsutil cp -z json "$ARTIFACTS_FOLDER/index.json" "gs://$BUILD_BUCKET_PACKS_DIR_FULL_PATH"
   else
     echo "Skipping uploading index.json file."
   fi
-  if [ -f $ARTIFACTS_FOLDER/corepacks.json ]; then
-    gsutil cp -z json $ARTIFACTS_FOLDER/corepacks.json "gs://$BUILD_BUCKET_PACKS_DIR_FULL_PATH"
+  if [ -f "$ARTIFACTS_FOLDER/corepacks.json" ]; then
+    gsutil cp -z json "$ARTIFACTS_FOLDER/corepacks.json" "gs://$BUILD_BUCKET_PACKS_DIR_FULL_PATH"
   else
     echo "Skipping uploading corepacks.json file."
   fi
