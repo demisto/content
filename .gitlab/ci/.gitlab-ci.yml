@@ -8,11 +8,8 @@ default:
     when: always
 
 stages:
-  - unittests-and-validations
   - create-instances
   - run-instances
-  - upload-to-marketplace
-  - fan-in  # concentrate pipeline artifacts to single job before triggering child slack pipeline
 
 
 variables:
