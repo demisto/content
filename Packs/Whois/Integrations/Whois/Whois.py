@@ -7302,13 +7302,13 @@ def precompile_regexes(source, flags=0):
     return [re.compile(regex, flags) for regex in source]
 
 
-def preprocess_regex(regex):
-    # Fix for #2; prevents a ridiculous amount of varying size permutations.
-    regex = re.sub(r"\\s\*\(\?P<([^>]+)>\.\+\)", r"\s*(?P<\1>\S.*)", regex)
-    # Experimental fix for #18; removes unnecessary variable-size whitespace
-    # matching, since we're stripping results anyway.
-    regex = re.sub(r"\[ \]\*\(\?P<([^>]+)>\.\*\)", r"(?P<\1>.*)", regex)
-    return regex
+# def preprocess_regex(regex):
+#     # Fix for #2; prevents a ridiculous amount of varying size permutations.
+#     regex = re.sub(r"\\s\*\(\?P<([^>]+)>\.\+\)", r"\s*(?P<\1>\S.*)", regex)
+#     # Experimental fix for #18; removes unnecessary variable-size whitespace
+#     # matching, since we're stripping results anyway.
+#     regex = re.sub(r"\[ \]\*\(\?P<([^>]+)>\.\*\)", r"(?P<\1>.*)", regex)
+#     return regex
 
 
 registrant_regexes = [
@@ -7580,10 +7580,10 @@ nic_contact_references = {
 # matching positions. The workaround is to use \S.* instead of .+, but in the interest of keeping the regexes
 # consistent and compact, it's more practical to do this (predictable) conversion on runtime.
 # FIXME: This breaks on NIC contact regex for nic.at. Why?
-registrant_regexes = [preprocess_regex(regex) for regex in registrant_regexes]
-tech_contact_regexes = [preprocess_regex(regex) for regex in tech_contact_regexes]
-admin_contact_regexes = [preprocess_regex(regex) for regex in admin_contact_regexes]
-billing_contact_regexes = [preprocess_regex(regex) for regex in billing_contact_regexes]
+# registrant_regexes = [preprocess_regex(regex) for regex in registrant_regexes]
+# tech_contact_regexes = [preprocess_regex(regex) for regex in tech_contact_regexes]
+# admin_contact_regexes = [preprocess_regex(regex) for regex in admin_contact_regexes]
+# billing_contact_regexes = [preprocess_regex(regex) for regex in billing_contact_regexes]
 
 nic_contact_regexes = [
     "personname:\s*(?P<name>.+)\norganization:\s*(?P<organization>.+)\nstreet address:\s*(?P<street>.+)\npostal code:\s*(?P<postalcode>.+)\ncity:\s*(?P<city>.+)\ncountry:\s*(?P<country>.+)\n(?:phone:\s*(?P<phone>.+)\n)?(?:fax-no:\s*(?P<fax>.+)\n)?(?:e-mail:\s*(?P<email>.+)\n)?nic-hdl:\s*(?P<handle>.+)\nchanged:\s*(?P<changedate>.+)",
@@ -8373,6 +8373,17 @@ def create_outputs(whois_result, domain, reliability, query=None):
     return md, standard_ec, dbot_score.to_context()
 
 
+def prepare_readable_ip_data(response):
+    network_data = response.get('network', {})
+    return {'query': response.get('query'),
+            'asn': response.get('asn'),
+            'asn_cidr': response.get('asn_cidr'),
+            'asn_date': response.get('asn_date'),
+            'country_code': network_data.get('country'),
+            'network_name': network_data.get('name')
+            }
+
+
 '''COMMANDS'''
 
 
@@ -8422,21 +8433,21 @@ def ip_command(ips, reliability):
             value=response.get('network', {}).get('cidr'),
             indicator_type='CIDR'
         )
+        network_data = response.get('network', {})
         ip_output = Common.IP(
             ip=ip,
             asn=response.get('asn'),
-            geo_country=response.get('asn_country_code'),
-            organization_name=response.get('asn_description'),
+            geo_country=network_data.get('country'),
+            organization_name=network_data.get('name'),
             dbot_score=dbot_score,
             feed_related_indicators=[related_feed]
         )
+        readable_data = prepare_readable_ip_data(response)
         result = CommandResults(
             outputs_prefix='Whois.IP',
             outputs_key_field='query',
             outputs=response,
-            readable_output=tableToMarkdown('Whois results:', response,
-                                            ['query', 'asn', 'asn_cidr', 'asn_country_code', 'asn_date',
-                                             'asn_description']),
+            readable_output=tableToMarkdown('Whois results:', readable_data),
             raw_response=response,
             indicator=ip_output
         )
@@ -8498,6 +8509,7 @@ def setup_proxy():
         raise ValueError("Un supported proxy scheme: {}".format(scheme))
     socks.set_default_proxy(proxy_type[0], host, port, proxy_type[1])
     socket.socket = socks.socksocket  # type: ignore
+
 
 ''' EXECUTION CODE '''
 
