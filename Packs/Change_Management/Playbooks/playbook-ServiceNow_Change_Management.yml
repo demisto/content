@@ -1,0 +1,1358 @@
+id: ServiceNow Change Management
+version: -1
+name: ServiceNow Change Management
+description: "If you are using Pan-os/panorama firewall and ServiceNow as a ticketing\
+  \ system this playbook will be a perfect match for your change management for FW\
+  \ process.\nThis playbook will be triggered by fetch from ServiceNow and will help\
+  \ you manage and automate your change management process.     "
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: b923835b-ee25-4345-8cda-555821b0a698
+    type: start
+    task:
+      id: b923835b-ee25-4345-8cda-555821b0a698
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "56"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 420,
+          "y": -2620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 4f538fb2-94f8-4433-8ee7-21ba7656fdd2
+    type: title
+    task:
+      id: 4f538fb2-94f8-4433-8ee7-21ba7656fdd2
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": 2390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: b5efbd18-906e-435f-84f9-60058ed434bd
+    type: regular
+    task:
+      id: b5efbd18-906e-435f-84f9-60058ed434bd
+      version: -1
+      name: Deploy the configuration to test environment
+      description: Deploy the configuration to test environment.
+      tags:
+      - comments
+      - work_notes
+      script: '|||panorama-create-rule'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      action:
+        complex:
+          root: inputs.Action
+      application:
+        complex:
+          root: 'inputs.Application '
+      destination:
+        complex:
+          root: inputs.addr-dst
+      destination_zone:
+        complex:
+          root: inputs.zone-dst
+      log_forwarding:
+        complex:
+          root: inputs.Log_forwarding
+      profile_setting:
+        complex:
+          root: inputs.Profile_setting
+      rulename:
+        complex:
+          root: inputs.Rulename
+      service:
+        complex:
+          root: 'inputs.Service '
+      source:
+        complex:
+          root: inputs.addr-src
+      source_zone:
+        complex:
+          root: inputs.zone-src
+      using:
+        simple: ${inputs.TestInstance}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": -320
+        }
+      }
+    note: true
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 236a76c9-4f87-4598-8f17-14ec04844e92
+    type: playbook
+    task:
+      id: 236a76c9-4f87-4598-8f17-14ec04844e92
+      version: -1
+      name: Panorama Query Logs
+      description: 'Query Panorama Logs of types: traffic, threat, url, data-filtering
+        and wildfire.'
+      playbookName: Panorama Query Logs
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "53"
+    scriptarguments:
+      action:
+        complex:
+          root: inputs.Action
+      addr-dst:
+        complex:
+          root: incident
+          accessor: requestdst
+      addr-src:
+        complex:
+          root: incident
+          accessor: requestsrc
+      log_type:
+        complex:
+          root: inputs.log_type
+      port-dst:
+        complex:
+          root: inputs.port-dst
+      query:
+        complex:
+          root: inputs.query
+      time-generated:
+        complex:
+          root: inputs.Time-generated
+      zone-dst:
+        complex:
+          root: inputs.zone-dst
+      zone-src:
+        complex:
+          root: inputs.zone-src
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 420,
+          "y": -2305
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 2a7732ad-e0bb-4f7d-8767-61542d505a48
+    type: condition
+    task:
+      id: 2a7732ad-e0bb-4f7d-8767-61542d505a48
+      version: -1
+      name: Test configuration?
+      description: This task check if to exam the change request in DEV environment
+        first.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "38"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.TestConfigurations
+            iscontext: true
+          right:
+            value:
+              simple: "Yes"
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": -680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: bb9d9446-c76e-4895-896b-746815179a1f
+    type: regular
+    task:
+      id: bb9d9446-c76e-4895-896b-746815179a1f
+      version: -1
+      name: export to CSV
+      description: Export given array to csv file
+      scriptName: ExportToCSV
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      csvArray:
+        complex:
+          root: Panorama.Monitor
+          accessor: Logs
+      fileName:
+        simple: FW logs
+      using:
+        simple: Attachments
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 420,
+          "y": -1905
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: d96d0dfe-8747-42e3-8eab-1da855dc88c8
+    type: regular
+    task:
+      id: d96d0dfe-8747-42e3-8eab-1da855dc88c8
+      version: -1
+      name: Upload logs to ServiceNow
+      description: Uploads a file to the specified ticket.
+      script: '|||servicenow-upload-file'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "45"
+    scriptarguments:
+      file_id:
+        complex:
+          root: File
+          accessor: EntryID
+      file_name:
+        simple: FW logs
+      id:
+        complex:
+          root: incident.labels
+          accessor: sys_id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 420,
+          "y": -1720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: f0c58ac0-2364-489e-89a8-2ba527d10817
+    type: playbook
+    task:
+      id: f0c58ac0-2364-489e-89a8-2ba527d10817
+      version: -1
+      name: PAN-OS create or edit policy
+      description: "This playbook will automate the process of creating or editing\
+        \ policy.\nFirst task in the playbook will check if there is security policy\
+        \ that matches the playbook inputs in case there is no security policy that\
+        \ matches a new policy will be created, in case there is security policy that\
+        \ matches the user will be able to modify the existing policy or create a\
+        \ new hardened policy "
+      playbookName: PAN-OS create or edit policy
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "57"
+    scriptarguments:
+      Action:
+        complex:
+          root: inputs.Action
+      'Application ':
+        complex:
+          root: inputs.Application
+      Destination:
+        complex:
+          root: inputs.addr-dst
+      Destination_port:
+        complex:
+          root: inputs.port-dst
+      Destination_zone:
+        complex:
+          root: inputs.zone-dst
+      Email:
+        complex:
+          root: inputs.SecurityTeamEmail
+      Log_forwarding:
+        complex:
+          root: inputs.Log_forwarding
+      Profile_setting:
+        complex:
+          root: inputs.Profile_setting
+      'Protocol ':
+        complex:
+          root: inputs.Protocol
+      Rule_position:
+        complex:
+          root: inputs.Rule_position
+      Rulename:
+        complex:
+          root: inputs.Rulename
+      Service:
+        complex:
+          root: inputs.Service
+      Source:
+        complex:
+          root: inputs.addr-src
+      Source_zone:
+        complex:
+          root: inputs.zone-src
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1710,
+          "y": 1080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: 3062dc77-a186-4718-89e2-2b911cec4437
+    type: collection
+    task:
+      id: 3062dc77-a186-4718-89e2-2b911cec4437
+      version: -1
+      name: Ask for FW change request review
+      description: Ask for FW change request review.
+      tags:
+      - comments
+      - verdict
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "61"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 420,
+          "y": -1320
+        }
+      }
+    note: true
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        simple: ${inputs.SecurityTeamEmail}
+      subject:
+        simple: FW change request
+      body:
+        simple: |-
+          Please see the following FW change request and approve or reject accordingly:
+          ${inputs.TickedSummery}
+          SRC:${inputs.addr-src}
+          DST:${inputs.addr-dst}
+          Action:${inputs.Action}
+      methods:
+      - email
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+      replyOptions:
+      - Approve
+      - Reject
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Do you approve the FW change request?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: Approve
+        - simple: Reject
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: FW change request
+      description: ""
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: ccd3e95a-1648-4ebf-866f-f9178cbc8111
+    type: collection
+    task:
+      id: ccd3e95a-1648-4ebf-866f-f9178cbc8111
+      version: -1
+      name: Ask security team to review the test results
+      description: Ask security team to review the test results of the deployed rule
+        in the DEV environment.
+      tags:
+      - comments
+      - verdict
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "62"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": -140
+        }
+      }
+    note: true
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        complex:
+          root: inputs.SecurityTeamEmail
+      subject:
+        simple: Please review the the configuration test
+      body:
+        simple: Approve or reject the configuration test
+      methods:
+      - email
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+      replyOptions:
+      - Approve
+      - reject
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Do you approve the change request?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - simple: Approve
+        - simple: Reject
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Please review the configuration test  in DEV environment
+      description: Approve or reject the configuration test
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: cbe06129-c60d-4b21-88f2-6709da448719
+    type: regular
+    task:
+      id: cbe06129-c60d-4b21-88f2-6709da448719
+      version: -1
+      name: Add XSOAR link to ticket
+      description: Adds a link to the specified ticket.
+      script: '|||servicenow-add-link'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "40"
+    scriptarguments:
+      id:
+        simple: ${incident.labels.sys_id}
+      link:
+        simple: ${demistoUrls.investigation}
+      text:
+        simple: Link to XSOAR change request incident
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 420,
+          "y": -1510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: 94e91620-f0b6-4705-86cf-5db34b9c1d37
+    type: collection
+    task:
+      id: 94e91620-f0b6-4705-86cf-5db34b9c1d37
+      version: -1
+      name: 'Details for ServiceNow '
+      description: Asking from the user details for closing the incident in ServiceNow.
+      tags:
+      - comments
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "48"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": 1810
+        }
+      }
+    note: true
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        simple: ${inputs.SecurityTeamEmail}
+      subject:
+        simple: 'Details for ServiceNow '
+      body:
+        simple: |-
+          Please provide details for closing the ServiceNow ticket
+          Warning: without those details the ticket in ServiceNow  will not closed.
+      methods:
+      - email
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: What is the resolution code?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: Closed/Resolved by Caller
+        - simple: Not Solved (Not Reproducible)
+        - simple: Not Solved (Too Costly)
+        - simple: Solved (Permanently)
+        - simple: Solved (Work Around)
+        - simple: Solved Remotely (Permanently)
+        - simple: Solved Remotely (Work Around)
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: Resolution notes
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      - id: "2"
+        label: ""
+        labelarg:
+          simple: Caller ID
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Caller ID (UID format).
+        readonly: false
+      - id: "3"
+        label: ""
+        labelarg:
+          simple: State
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: 'State of the ticket, for example: "Closed" or "7" or "7 - Closed".'
+        readonly: false
+      title: Details for ServiceNow
+      description: "Please provide details for closing the ServiceNow ticket\nWarning:\
+        \ without those details the ticket in ServiceNow  will not closed. "
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "48":
+    id: "48"
+    taskid: b8f3d42d-6b07-4510-8bc1-6de28d90de3e
+    type: regular
+    task:
+      id: b8f3d42d-6b07-4510-8bc1-6de28d90de3e
+      version: -1
+      name: Close ServiceNow ticket
+      description: Updates the specified ticket.
+      script: '|||servicenow-update-ticket'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "51"
+    scriptarguments:
+      caller_id:
+        complex:
+          root: Details for ServiceNow.Answers
+          accessor: "2"
+      close_code:
+        complex:
+          root: Details for ServiceNow.Answers
+          accessor: "0"
+      close_notes:
+        complex:
+          root: Details for ServiceNow.Answers
+          accessor: "1"
+      id:
+        complex:
+          root: incident.labels
+          accessor: sys_id
+      short_description:
+        complex:
+          root: inputs.Description
+      state:
+        complex:
+          root: Details for ServiceNow.Answers
+          accessor: "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": 2010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "51":
+    id: "51"
+    taskid: 2287581b-c498-4d4e-886a-936d4305e577
+    type: regular
+    task:
+      id: 2287581b-c498-4d4e-886a-936d4305e577
+      version: -1
+      name: Close XSOAR incident
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      closeReason:
+        simple: 'Request was rejected '
+      id:
+        complex:
+          root: incident
+          accessor: id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": 2210
+        }
+      }
+    note: true
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "52":
+    id: "52"
+    taskid: c5bf0d16-6594-4c9a-8c47-814d922b4ce1
+    type: regular
+    task:
+      id: c5bf0d16-6594-4c9a-8c47-814d922b4ce1
+      version: -1
+      name: Notify the request owner  to validate the change
+      description: Request from the request owner  to validate the change.
+      tags:
+      - comments
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "47"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1710,
+          "y": 1440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "53":
+    id: "53"
+    taskid: 5e501a0f-10ea-4ff2-8914-84adff1188a0
+    type: condition
+    task:
+      id: 5e501a0f-10ea-4ff2-8914-84adff1188a0
+      version: -1
+      name: Are there logs?
+      description: 'This task check if there is logs as a result of "Panorama Query
+        Logs" playbook.  '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "45"
+      "yes":
+      - "25"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Panorama.Monitor.Logs
+            iscontext: true
+          right:
+            value: {}
+    view: |-
+      {
+        "position": {
+          "x": 420,
+          "y": -2130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "56":
+    id: "56"
+    taskid: b9db5be0-9181-4abe-8536-af4f93aaf1f6
+    type: regular
+    task:
+      id: b9db5be0-9181-4abe-8536-af4f93aaf1f6
+      version: -1
+      name: Update incident state
+      description: Set the incident state to the layout
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      state:
+        simple: 2 - Request Was Submitted
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 420,
+          "y": -2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "57":
+    id: "57"
+    taskid: e5c5724a-ead8-443c-8593-915d59aa0639
+    type: regular
+    task:
+      id: e5c5724a-ead8-443c-8593-915d59aa0639
+      version: -1
+      name: Update incident state
+      description: Change the properties of an incident.
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "52"
+    scriptarguments:
+      state:
+        simple: 3 - Awaiting Request Owner Validation
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1710,
+          "y": 1265
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "58":
+    id: "58"
+    taskid: 274ea0d3-a343-4641-82f6-3099d10b2f2a
+    type: regular
+    task:
+      id: 274ea0d3-a343-4641-82f6-3099d10b2f2a
+      version: -1
+      name: Update incident state
+      description: Set the incident state to the layout
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      state:
+        simple: 1 - Request Was Approved
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": -880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "59":
+    id: "59"
+    taskid: bd422084-3ba2-4de6-870b-a13c24b8efc6
+    type: regular
+    task:
+      id: bd422084-3ba2-4de6-870b-a13c24b8efc6
+      version: -1
+      name: Update incident state
+      description: Set the incident state to the layout
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "47"
+    scriptarguments:
+      state:
+        simple: 5 - Request Was Rejected
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 180,
+          "y": -880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "60":
+    id: "60"
+    taskid: 3584e3fc-6b0a-4a31-8e52-89b2b0a693fe
+    type: regular
+    task:
+      id: 3584e3fc-6b0a-4a31-8e52-89b2b0a693fe
+      version: -1
+      name: Update incident state
+      description: Set the incident state to the layout.
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "47"
+    scriptarguments:
+      state:
+        simple: 5 - Request Was Rejected
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": 1080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "61":
+    id: "61"
+    taskid: a0257c8a-91b2-436b-8fed-873f4e23c56d
+    type: condition
+    task:
+      id: a0257c8a-91b2-436b-8fed-873f4e23c56d
+      version: -1
+      name: Did the request was approved?
+      description: Conditional task that check if the request for change was approved
+        or rejected.
+      tags:
+      - comments
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      Approve:
+      - "58"
+      Reject:
+      - "59"
+    separatecontext: false
+    conditions:
+    - label: Approve
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: FW change request.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: Approve
+    - label: Reject
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: FW change request.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: Reject
+    view: |-
+      {
+        "position": {
+          "x": 420,
+          "y": -1130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "62":
+    id: "62"
+    taskid: c3f880d1-f0f2-43c0-84ab-0d14c2f68366
+    type: condition
+    task:
+      id: c3f880d1-f0f2-43c0-84ab-0d14c2f68366
+      version: -1
+      name: Did the test in DEV environment passed?
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      tags:
+      - comments
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      Approve:
+      - "38"
+      Reject:
+      - "60"
+    separatecontext: false
+    conditions:
+    - label: Approve
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Please review the configuration test  in DEV environment.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: Approve
+    - label: Reject
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Please review the configuration test  in DEV environment.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: Reject
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": 110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "11_38_#default#": 0.34,
+      "11_5_yes": 0.59,
+      "53_25_yes": 0.5,
+      "61_58_Approve": 0.68,
+      "61_59_Reject": 0.65,
+      "62_38_Approve": 0.37,
+      "62_60_Reject": 0.44
+    },
+    "paper": {
+      "dimensions": {
+        "height": 5075,
+        "width": 1910,
+        "x": 180,
+        "y": -2620
+      }
+    }
+  }
+inputs:
+- key: TicketSummary
+  value:
+    complex:
+      root: incident
+      accessor: details
+  required: false
+  description: 'Provide a summery for your firewall request. '
+  playbookInputQuery:
+- key: SecurityTeamEmail
+  value: {}
+  required: false
+  description: 'The email of the security team that approves the FW requests. '
+  playbookInputQuery:
+- key: log_type
+  value:
+    simple: traffic
+  required: false
+  description: 'Log type to query. Can be: traffic, threat, wildfire, url or data-filtering.'
+  playbookInputQuery:
+- key: query
+  value: {}
+  required: false
+  description: The query string by which to match criteria for the logs. This is similar
+    to the query provided in the web interface under the Monitor tab when viewing
+    the logs.
+  playbookInputQuery:
+- key: addr-src
+  value:
+    complex:
+      root: incident
+      accessor: sourceips
+  required: false
+  description: Source address.
+  playbookInputQuery:
+- key: addr-dst
+  value:
+    complex:
+      root: incident
+      accessor: destinationips
+  required: false
+  description: Destination address.
+  playbookInputQuery:
+- key: port-dst
+  value:
+    complex:
+      root: incident
+      accessor: dstports
+  required: false
+  description: Destination port.
+  playbookInputQuery:
+- key: TestConfigurations
+  value:
+    simple: "No"
+  required: false
+  description: 'By providing YES to this input the requested FW rule will be tested
+    in your test environment. '
+  playbookInputQuery:
+- key: zone-src
+  value:
+    complex:
+      root: incident
+      accessor: sourcenetworks
+  required: false
+  description: Firewall source zone.
+  playbookInputQuery:
+- key: zone-dst
+  value:
+    complex:
+      root: incident
+      accessor: destinationnetworks
+  required: false
+  description: Firewall destination zone.
+  playbookInputQuery:
+- key: TestInstance
+  value: {}
+  required: false
+  description: The instance name of the FW in DEV environment for testing the new
+    rule.
+  playbookInputQuery:
+- key: Action
+  value:
+    complex:
+      root: incident
+      accessor: policyactions
+  required: false
+  description: The action for the change request
+  playbookInputQuery:
+- key: Protocol
+  value:
+    complex:
+      root: incident
+      accessor: protocol
+  required: false
+  description: The IP protocol.
+  playbookInputQuery:
+- key: Log_forwarding
+  value: {}
+  required: false
+  description: Log forwarding profile.
+  playbookInputQuery:
+- key: Profile_setting
+  value: {}
+  required: false
+  description: A profile setting group.
+  playbookInputQuery:
+- key: Service
+  value:
+    complex:
+      root: incident
+      accessor: protocolnames
+  required: false
+  description: A comma-separated list of service object names for the rule.
+  playbookInputQuery:
+- key: Application
+  value: {}
+  required: false
+  description: A comma-separated list of application object names for the rule to
+    create.
+  playbookInputQuery:
+- key: Rulename
+  value: {}
+  required: false
+  description: Name of the rule to create.
+  playbookInputQuery:
+- key: Description
+  value:
+    complex:
+      root: incident
+      accessor: description
+  required: false
+  description: Set the description of the ticket.
+  playbookInputQuery:
+- key: Time-generated
+  value: {}
+  required: false
+  description: 'The time the log was generated from the timestamp and prior to it.
+    For example: "2019/08/11 01:10:44".'
+  playbookInputQuery:
+- key: Rule_position
+  value: {}
+  required: false
+  description: |-
+    Pre rule or Post rule (Panorama instances).
+    Possible options:
+    - post-rulebase
+    - pre-rulebase
+  playbookInputQuery:
+- key: Target
+  value: {}
+  required: false
+  description: Target number of the firewall. Use only on a Panorama instance.
+  playbookInputQuery:
+- key: Vsys
+  value: {}
+  required: false
+  description: Target number of the firewall. Use only on a Panorama instance.
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
