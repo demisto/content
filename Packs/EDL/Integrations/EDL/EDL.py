@@ -58,17 +58,12 @@ MIMETYPE_TEXT: str = 'text/plain'
 
 FORMAT_CSV: str = 'CSV'
 FORMAT_TEXT: str = 'PAN-OS (text)'
-FORMAT_JSON_SEQ: str = 'json-seq'
 FORMAT_JSON: str = 'JSON'
 FORMAT_ARG_MWG = 'mwg'
 FORMAT_ARG_BLUECOAT = 'bluecoat'
 FORMAT_ARG_PROXYSG = 'proxysg'
 FORMAT_MWG: str = 'McAfee Web Gateway'
 FORMAT_PROXYSG: str = "Symantec ProxySG"
-FORMAT_XSOAR_JSON: str = 'XSOAR json'
-FORMAT_ARG_XSOAR_JSON: str = 'xsoar-json'
-FORMAT_XSOAR_JSON_SEQ: str = 'XSOAR json-seq'
-FORAMT_ARG_XSOAR_JSON_SEQ: str = 'xsoar-seq'
 
 MWG_TYPE_OPTIONS = ["string", "applcontrol", "dimension", "category", "ip", "mediatype", "number", "regex"]
 
@@ -98,7 +93,6 @@ class RequestArguments:
     FILTER_FIELDS_ON_FORMAT_PROXYSG = "name,type,proxysgcategory"
     FILTER_FIELDS_ON_FORMAT_CSV = "name,type"
     FILTER_FIELDS_ON_FORMAT_JSON = "name,type"
-    FILTER_FIELDS_ON_FORMAT_XSOAR_JSON = "name,type"
 
     def __init__(self,
                  query: str,
@@ -193,17 +187,15 @@ class RequestArguments:
             FORMAT_TEXT: self.FILTER_FIELDS_ON_FORMAT_TEXT,
             FORMAT_CSV: self.FILTER_FIELDS_ON_FORMAT_CSV,
             FORMAT_JSON: self.FILTER_FIELDS_ON_FORMAT_JSON,
-            FORMAT_XSOAR_JSON: self.FILTER_FIELDS_ON_FORMAT_XSOAR_JSON,
-            FORMAT_JSON_SEQ: self.FILTER_FIELDS_ON_FORMAT_JSON,
-            FORMAT_XSOAR_JSON_SEQ: self.FILTER_FIELDS_ON_FORMAT_XSOAR_JSON,
             FORMAT_MWG: self.FILTER_FIELDS_ON_FORMAT_MWG,
             FORMAT_PROXYSG: self.FILTER_FIELDS_ON_FORMAT_PROXYSG
         }
-        if self.out_format in [FORMAT_CSV, FORMAT_JSON, FORMAT_XSOAR_JSON, FORMAT_JSON_SEQ, FORMAT_XSOAR_JSON_SEQ] and\
+        if self.out_format in [FORMAT_CSV, FORMAT_JSON] and\
                 fields_to_present:
             if 'all' in argToList(fields_to_present):
                 return ''
             else:
+                # replace "value" to "name"
                 list_fields = argToList(fields_to_present)
                 if 'value' in list_fields:
                     list_fields[list_fields.index('value')] = 'name'
@@ -290,7 +282,7 @@ def get_indicators_to_format(indicator_searcher: IndicatorsSearcher, request_arg
     Finds indicators using demisto.searchIndicators, and returns the indicators in file written in the requested format
     Parameters:
         indicator_searcher (IndicatorsSearcher): The indicator searcher used to look for indicators
-        request_args (RequestArguments)
+        request_args (RequestArguments):  all the request arguments.
     Returns:
         (IO): indicators in file writen in requested format
     """
@@ -336,10 +328,10 @@ def create_json_out_format(list_fields: List, indicator: Dict, request_args: Req
     """format the indicator to json format.
 
     Args:
-        not_first_call (bool): .
+        not_first_call (bool): Whether if this is the first call to the function.
         list_fields (list): the fields to return.
         indicator (dict): the indicator info
-        request_args (RequestArguments):
+        request_args (RequestArguments): all the request arguments.
 
     Returns:
         An indicator to add to the file in json format.
@@ -362,9 +354,9 @@ def create_mwg_out_format(indicator: dict, request_args: RequestArguments, heade
     """format the indicator to mwg format.
 
     Args:
-        headers_was_writen (bool): .
         indicator (dict): the indicator info
-        request_args (RequestArguments):
+        request_args (RequestArguments): Request Arguments
+        headers_was_writen (bool): Whether if the headers was writen to the file.
 
     Returns:
         An indicator to add to the file in mwg format.
@@ -414,7 +406,7 @@ def create_proxysg_out_format(indicator: dict, files_by_category: dict, request_
     Args:
         indicator (dict): the indicator info
         files_by_category (list): a dict of the formatted indicators by category.
-        request_args (RequestArguments):
+        request_args (RequestArguments): Request Arguments
 
     Returns:
         a dict of the formatted indicators by category.
@@ -429,12 +421,12 @@ def create_proxysg_out_format(indicator: dict, files_by_category: dict, request_
         # than list add the indicator to it's category list
         if indicator_proxysg_category is not None and \
                 (indicator_proxysg_category in request_args.category_attribute or len(request_args.category_attribute) == 0):
-            files_by_category = add_indicator_to_category(stripped_indicator, indicator_proxysg_category,
-                                                          files_by_category)
+            proxysg_category = indicator_proxysg_category
         else:
             # if ProxySG Category is not set or does not exist in the category_attribute list
-            files_by_category = add_indicator_to_category(stripped_indicator, request_args.category_default,
-                                                          files_by_category)
+            proxysg_category = request_args.category_default
+
+        files_by_category = add_indicator_to_category(stripped_indicator, proxysg_category, files_by_category)
     return files_by_category
 
 
@@ -456,7 +448,7 @@ def create_csv_out_format(headers_was_writen: bool, list_fields: List, ioc, requ
         headers_was_writen (bool): .
         list_fields (list): the fields to return.
         ioc (dict): the indicator info
-        request_args (RequestArguments):
+        request_args (RequestArguments): all the request arguments.
 
     Returns:
         a one indicator to add to the file in csv format.
@@ -622,6 +614,7 @@ def create_text_out_format(iocs: IO, request_args: RequestArguments) -> Union[IO
     ipv6_formatted_indicators = set()
     iocs.seek(0)
     formatted_indicators = tempfile.TemporaryFile(mode='w+t')
+    new_line = ''  # For the first time he will not add a new line
     for str_ioc in iocs:
         ioc = json.loads(str_ioc.rstrip())
         indicator = ioc.get('value')
@@ -649,27 +642,30 @@ def create_text_out_format(iocs: IO, request_args: RequestArguments) -> Union[IO
             # we should provide both
             # this could generate more than num entries according to PAGE_SIZE
             if indicator.startswith('*.'):
-                formatted_indicators.write(str(indicator.lstrip('*.')) + '\n')
+                formatted_indicators.write(new_line + str(indicator.lstrip('*.')))
 
-            if request_args.collapse_ips != DONT_COLLAPSE and ioc_type in (FeedIndicatorType.IP, FeedIndicatorType.CIDR):
-                ipv4_formatted_indicators.add(indicator)
+        if request_args.collapse_ips != DONT_COLLAPSE and ioc_type in (FeedIndicatorType.IP, FeedIndicatorType.CIDR):
+            ipv4_formatted_indicators.add(indicator)
 
-            elif request_args.collapse_ips != DONT_COLLAPSE and ioc_type == FeedIndicatorType.IPv6:
-                ipv6_formatted_indicators.add(indicator)
+        elif request_args.collapse_ips != DONT_COLLAPSE and ioc_type == FeedIndicatorType.IPv6:
+            ipv6_formatted_indicators.add(indicator)
 
-            else:
-                formatted_indicators.write(str(indicator) + '\n')
+        else:
+            formatted_indicators.write(new_line + str(indicator))
+            new_line = '\n'
     iocs.close()
 
     if len(ipv4_formatted_indicators) > 0:
         ipv4_formatted_indicators = ips_to_ranges(ipv4_formatted_indicators, request_args.collapse_ips)
         for ip in ipv4_formatted_indicators:
-            formatted_indicators.write(str(ip) + '\n')
+            formatted_indicators.write(new_line + str(ip))
+            new_line = '\n'
 
     if len(ipv6_formatted_indicators) > 0:
         ipv6_formatted_indicators = ips_to_ranges(ipv6_formatted_indicators, request_args.collapse_ips)
         for ip in ipv6_formatted_indicators:
-            formatted_indicators.write(str(ip) + '\n')
+            formatted_indicators.write(new_line + str(ip))
+            new_line = '\n'
 
     return formatted_indicators
 
@@ -698,14 +694,11 @@ def url_handler(indicator: str, url_protocol_stripping: bool, url_port_stripping
 
 def get_outbound_mimetype(request_args: RequestArguments) -> str:
     """Returns the mimetype of the export_iocs"""
-    if request_args.out_format == [FORMAT_JSON, FORMAT_XSOAR_JSON]:
+    if request_args.out_format == FORMAT_JSON:
         return MIMETYPE_JSON
 
     elif request_args.out_format == FORMAT_CSV and not request_args.csv_text:
         return MIMETYPE_CSV
-
-    elif request_args.out_format in [FORMAT_JSON_SEQ, FORMAT_XSOAR_JSON_SEQ]:
-        return MIMETYPE_JSON_SEQ
 
     else:
         return MIMETYPE_TEXT
@@ -855,10 +848,8 @@ def get_request_args(request_args: dict, params: dict) -> RequestArguments:
             2: COLLAPSE_TO_CIDR
         }
         collapse_ips = collapse_options[collapse_ips]
-    if out_format not in [FORMAT_PROXYSG, FORMAT_TEXT, FORMAT_JSON, FORMAT_CSV,
-                          FORMAT_JSON_SEQ, FORMAT_MWG, FORMAT_ARG_BLUECOAT, FORMAT_ARG_MWG,
-                          FORMAT_ARG_PROXYSG, FORMAT_XSOAR_JSON, FORMAT_ARG_XSOAR_JSON,
-                          FORMAT_XSOAR_JSON_SEQ, FORAMT_ARG_XSOAR_JSON_SEQ]:
+    if out_format not in [FORMAT_PROXYSG, FORMAT_TEXT, FORMAT_JSON, FORMAT_CSV, FORMAT_MWG, FORMAT_ARG_BLUECOAT,
+                          FORMAT_ARG_MWG, FORMAT_ARG_PROXYSG]:
         raise DemistoException(EDL_FORMAT_ERR_MSG)
 
     elif out_format in [FORMAT_ARG_PROXYSG, FORMAT_ARG_BLUECOAT]:
@@ -866,12 +857,6 @@ def get_request_args(request_args: dict, params: dict) -> RequestArguments:
 
     elif out_format == FORMAT_ARG_MWG:
         out_format = FORMAT_MWG
-
-    elif out_format == FORMAT_ARG_XSOAR_JSON:
-        out_format = FORMAT_XSOAR_JSON
-
-    elif out_format == FORAMT_ARG_XSOAR_JSON_SEQ:
-        out_format = FORMAT_XSOAR_JSON_SEQ
 
     if out_format == FORMAT_MWG:
         if mwg_type not in MWG_TYPE_OPTIONS:
@@ -1045,6 +1030,7 @@ def main():
     commands = {
         'test-module': test_module,
         'edl-update': update_edl_command,
+        'export-indicators-list-update': update_edl_command,
     }
 
     try:

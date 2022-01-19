@@ -28,7 +28,7 @@ Use the following arguments in the URL to change the request:
  * Example: https://{cortex-xsoar_instance}/instance/execute/{ExportIndicators_instance_name}?n=50
 2. **s** - The starting entry index from which to export the indicators.
  * Example: https://{cortex-xsoar_instance}/instance/execute/{ExportIndicators_instance_name}?s=10&n=50
-3. **v** - The output format. Supports `PAN-OS (Text)`, `csv`, `json`, `mwg` and `proxysg` (alias: `bluecoat`).
+3. **v** - The output format. Supports `PAN-OS (Text)`, `CSV`, `JSON`, `mwg` and `proxysg` (alias: `bluecoat`).
  * Example: https://{cortex-xsoar_instance}/instance/execute/{ExportIndicators_instance_name}?v=json
 4. **q** - The query used to retrieve indicators from the system.
  * Example: https://{cortex-xsoar_instance}/instance/execute/{ExportIndicators_instance_name}?q="type:ip and sourceBrand:my_source"
@@ -49,8 +49,8 @@ Use the following arguments in the URL to change the request:
     * 1 - Collapse to ranges.
     * 2 - Collapse to CIDRs.
  * Example: https://{cortex-xsoar_instance}/instance/execute/{ExportIndicators_instance_name}?q="type:ip and sourceBrand:my_source"&tr=1
-12. **tx** - Whether to output `csv` formats as textual web pages.
+12. **tx** - Whether to output `CSV` formats as textual web pages.
  * Example: https://{cortex-xsoar_instance}/instance/execute/{ExportIndicators_instance_name}?v=csv&tx
 
 ### When running in On-Demand mode
-Make sure you run the `!edl-update` command for the first time to initialize the export process.
+Make sure you run the `!export-indicators-list-update` command for the first time to initialize the export process.
