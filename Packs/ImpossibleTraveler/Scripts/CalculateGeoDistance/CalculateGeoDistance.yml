@@ -23,7 +23,7 @@ outputs:
   description: List of coordinates used in the calculation.
 scripttarget: 0
 runonce: false
-dockerimage: demisto/py3-tools:0.0.1.25751
+dockerimage: demisto/geopy:1.0.0.3443
 runas: DBotWeakRole
 tests:
 - Impossible Traveler - Test
