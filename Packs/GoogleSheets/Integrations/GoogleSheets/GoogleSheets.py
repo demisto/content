@@ -31,10 +31,11 @@ def prepare_result(response: dict, args: dict) -> CommandResults:
         and the output will be empty.
         if echo_spreadsheet is true then we prepare the HR and substitute the response to the output
 
-        input:
+        Args:
             response: the response from the google API
             args: demisto.args
-        output: the command result of the function
+        Returns:
+            The command result ready for the server
     """
     markdown = '### Success\n'
     outputs = None
@@ -66,7 +67,8 @@ def prepare_result(response: dict, args: dict) -> CommandResults:
 
 def create_list_id_title(sheets: list) -> list:
     """
-        input: this function gets a list of all the sheets of a spreadsheet
+        Args:
+             this function gets a list of all the sheets of a spreadsheet
                 a sheet is represented as a dict format with the following fields
                  "sheets" : [
                   {
@@ -84,9 +86,9 @@ def create_list_id_title(sheets: list) -> list:
                   ...
                   ]
 
-        output :
+        Returns :
             the output of the function will be a list of dict in the format
-            [...{'sheetId' : 123 , 'sheet title': 'title'}...]
+            [{'sheetId' : 123 , 'sheet title': 'title'},...]
     """
     result = []
     for sheet in sheets:
@@ -98,8 +100,10 @@ def create_list_id_title(sheets: list) -> list:
 
 def handle_values_input(values: str) -> list:
     """
-    input: a string representation of values in the form of "[1,2,3],[4,5,6]..."
-    output: a list of lists of the values for this example [[1,2,3],[4,5,6]...]
+    Args:
+        values (str): A string representation of values in the form of "[1,2,3],[4,5,6]..."
+    Returns:
+         (list) A list of lists of the values for this example [[1,2,3],[4,5,6]...]
     """
     # TODO check if this is none
     if not values:
@@ -118,6 +122,11 @@ def handle_values_input(values: str) -> list:
 
 def markdown_single_get(response: dict) -> str:
     """
+        Args:
+            response (dict): The response from the api call
+        Returns:
+            (str): a mark down representation string
+        Action:
         creates for a single spreadsheet a mark down with 2 tables
         table 1: spreadsheet id and title
         table 2: all the sheets under this spreadsheet id and title
@@ -142,10 +151,12 @@ def markdown_single_get(response: dict) -> str:
 
 def spreadsheet_create(service: Resource, args: dict) -> CommandResults:
     '''
-        input: service - google-api discovery resource (google api client)
-                args - demisto.args() for the api call
-        output : command result
-        action : creats a new spreadsheet
+        Args:
+            service (Google Resource): google-api discovery resource (google api client)
+            args (dict): demisto.args() for the api call
+        Returns:
+            (CommandResults) command result ready for the server
+        Action : creates a new spreadsheet
     '''
     # in this function I can set them to None and then remove them in
     # the next function, or I can set them manually to the default value.
@@ -201,10 +212,13 @@ def spreadsheet_create(service: Resource, args: dict) -> CommandResults:
 
 def spreadsheet_update(service: Resource, args: dict) -> CommandResults:
     '''
-       input: service - google-api discovery resource (google api client)
-               args - demisto.args() for the api call
-       output : command result
-       action : updates a spreadsheet by a user costume update request
+       Args:
+            service (discovery Resource):  google-api discovery resource (google api client)
+            args (dict): demisto.args() for the api call
+       Returns:
+            CommandResults
+       Action:
+            updates a spreadsheet by a user costume update request
     '''
     spreadsheet_id = args.get('spreadsheet_id')
     request_to_update = safe_load_json(args.get('requests'))
@@ -214,7 +228,8 @@ def spreadsheet_update(service: Resource, args: dict) -> CommandResults:
 
 def spreadsheet_get(service: Resource, args: dict) -> CommandResults:
     '''
-        input: service - google-api discovery resource (google api client)
+        Args:
+            service - google-api discovery resource (google api client)
                 args - demisto.args() for the api call
         output : command result
         action : gets a single or multiple spreadsheets
@@ -255,10 +270,13 @@ def spreadsheet_get(service: Resource, args: dict) -> CommandResults:
 
 def sheet_create(service: Resource, args: dict) -> CommandResults:
     '''
-        input: service - google-api discovery resource (google api client)
-                args - demisto.args() for the api call
-        output : command result
-        action: creates a new sheet in a spreadsheet
+       Args:
+            service (discovery Resource):  google-api discovery resource (google api client)
+            args (dict): demisto.args() for the api call
+       Returns:
+            CommandResults
+       Action:
+            creates a new sheet in a spreadsheet
     '''
     spreadsheet_id = args.get('spreadsheet_id')
     rgb_format = argToList(args.get('tab_color'))
@@ -294,10 +312,12 @@ def sheet_create(service: Resource, args: dict) -> CommandResults:
 
 def sheet_duplicate(service: Resource, args: dict) -> CommandResults:
     '''
-        input: service - google-api discovery resource (google api client)
-                args - demisto.args() for the api call
-        output : the command result containing the duplicate spreadsheet sheet update api call
-        action : duplicates a sheet within a spreadsheet
+        Args:
+            service (discovery Resource):  google-api discovery resource (google api client)
+            args (dict): demisto.args() for the api call
+       Returns:
+            (CommandResults) : the command result containing the duplicate spreadsheet sheet update api call
+        Action : duplicates a sheet within a spreadsheet
     '''
     spreadsheet_id = args.get('spreadsheet_id')
     request_to_update = {
@@ -320,10 +340,13 @@ def sheet_duplicate(service: Resource, args: dict) -> CommandResults:
 
 def sheet_copy_to(service: Resource, args: dict) -> CommandResults:
     '''
-        input: service - google-api discovery resource (google api client)
-                args - demisto.args() for the api call
-        output : Command result with only readable output
-        action : copies a spreadsheet sheet from one spreadsheet to another
+        Args:
+            service (discovery Resource):  google-api discovery resource (google api client)
+            args (dict): demisto.args() for the api call
+       Returns:
+            (CommandResults): Command result with only readable output
+       Action:
+            Copies a spreadsheet sheet from one spreadsheet to another
     '''
     spreadsheet_id_to_copy = args.get('source_spreadsheet_id')
 
@@ -347,10 +370,13 @@ def sheet_copy_to(service: Resource, args: dict) -> CommandResults:
 
 def sheet_delete(service: Resource, args: dict) -> CommandResults:
     '''
-        input: service - google-api discovery resource (google api client)
-                args - demisto.args() for the api call
-        output : Command result
-        action : deletes a sheet from a spreadsheet
+       Args:
+            service (discovery Resource):  google-api discovery resource (google api client)
+            args (dict): demisto.args() for the api call
+       Returns:
+            (CommandResults): Command result with only readable output
+       Action:
+            deletes a sheet from a spreadsheet
     '''
     spreadsheet_id = args.get('spreadsheet_id')
     request_to_update = {
@@ -371,10 +397,13 @@ def sheet_delete(service: Resource, args: dict) -> CommandResults:
 
 def sheet_clear(service: Resource, args: dict) -> CommandResults:
     '''
-         input: service - google-api discovery resource (google api client)
-                 args - demisto.args() for the api call
-         output : Command result
-         action : clears a sheet from a spreadsheet
+       Args:
+            service (discovery Resource):  google-api discovery resource (google api client)
+            args (dict): demisto.args() for the api call
+       Returns:
+            (CommandResults): Command result with only readable output
+       Action:
+            Clears a sheet from a spreadsheet
      '''
     spreadsheet_id = args.get('spreadsheet_id')
     ranges = args.get('range')
@@ -391,10 +420,13 @@ def sheet_clear(service: Resource, args: dict) -> CommandResults:
 
 def sheet_dimension_delete(service: Resource, args: dict) -> CommandResults:
     '''
-         input: service - google-api discovery resource (google api client)
-                 args - demisto.args() for the api call
-         output : Command result
-         action : deletes a specified dimension from a sheet in a specified spreadsheet
+        Args:
+            service (discovery Resource):  google-api discovery resource (google api client)
+            args (dict): demisto.args() for the api call
+       Returns:
+            (CommandResults): Command result with only readable output
+       Action:
+            deletes a specified dimension from a sheet in a specified spreadsheet
      '''
     spreadsheet_id = args.get('spreadsheet_id')
 
@@ -421,10 +453,13 @@ def sheet_dimension_delete(service: Resource, args: dict) -> CommandResults:
 
 def sheet_range_delete(service: Resource, args: dict) -> CommandResults:
     '''
-       input: service - google-api discovery resource (google api client)
-               args - demisto.args() for the api call
-       output : Command result
-       action : deletes a specified range from a sheet in a specified spreadsheet
+       Args:
+            service (discovery Resource):  google-api discovery resource (google api client)
+            args (dict): demisto.args() for the api call
+       Returns:
+            (CommandResults): Command result with only readable output
+       Action:
+            Deletes a specified range from a sheet in a specified spreadsheet
     '''
     spreadsheet_id = args.get('spreadsheet_id')
 
@@ -453,10 +488,13 @@ def sheet_range_delete(service: Resource, args: dict) -> CommandResults:
 
 def sheets_data_paste(service: Resource, args: dict) -> CommandResults:
     '''
-       input: service - google-api discovery resource (google api client)
-               args - demisto.args() for the api call
-       output : Command result
-       action : inserts data into a spreadsheet sheet
+       Args:
+            service (discovery Resource):  google-api discovery resource (google api client)
+            args (dict): demisto.args() for the api call
+       Returns:
+            (CommandResults): Command result with only readable output
+       Action:
+            Inserts data into a spreadsheet sheet
     '''
     spreadsheet_id = args.get('spreadsheet_id')
     request_to_update = {
@@ -494,10 +532,13 @@ def sheets_data_paste(service: Resource, args: dict) -> CommandResults:
 
 def sheets_find_replace(service: Resource, args: dict) -> CommandResults:
     '''
-       input: service - google-api discovery resource (google api client)
-               args - demisto.args() for the api call
-       output : Command result
-       action : finds a vaule in the spreadsheets sheet and replaces it.
+       Args:
+            service (discovery Resource):  google-api discovery resource (google api client)
+            args (dict): demisto.args() for the api call
+       Returns:
+            (CommandResults): Command result with only readable output
+       Action:
+            Finds a vaule in the spreadsheets sheet and replaces it.
     '''
     spreadsheet_id = args.get('spreadsheet_id')
     request_to_update = {
@@ -531,10 +572,13 @@ def sheets_find_replace(service: Resource, args: dict) -> CommandResults:
 
 def sheets_value_update(service: Resource, args: dict) -> CommandResults:
     '''
-       input: service - google-api discovery resource (google api client)
-               args - demisto.args() for the api call
-       output : Command result
-       action : updates values in the spreadsheets sheet
+       Args:
+            service (discovery Resource):  google-api discovery resource (google api client)
+            args (dict): demisto.args() for the api call
+       Returns:
+            (CommandResults): Command result with only readable output
+       Action:
+            Updates values in the spreadsheets sheet
     '''
     spreadsheet_id = args.get('spreadsheet_id')
     input_option = args.get('input_option')
@@ -552,10 +596,13 @@ def sheets_value_update(service: Resource, args: dict) -> CommandResults:
 
 def sheets_value_append(service: Resource, args: dict) -> CommandResults:
     '''
-         input: service - google-api discovery resource (google api client)
-                 args - demisto.args() for the api call
-         output : Command result
-         action : appends values to a spreadsheets sheet
+         Args:
+            service (discovery Resource):  google-api discovery resource (google api client)
+            args (dict): demisto.args() for the api call
+         Returns:
+            (CommandResults): Command result with only readable output
+         Action:
+            Appends values to a spreadsheets sheet
     '''
     spreadsheet_id = args.get('spreadsheet_id')
     range_ = args.get('range')
@@ -577,10 +624,13 @@ def sheets_value_append(service: Resource, args: dict) -> CommandResults:
 
 def get_http_client_with_proxy(proxy: bool, insecure: bool):
     """
-    Create an http client with proxy with whom to use when using a proxy.
-    :param proxy: Whether to use a proxy.
-    :param insecure: Whether to disable ssl and use an insecure connection.
-    :return: httplib2 object with the proper settings for google api client
+        Args:
+            proxy (bool): Whether to use a proxy.
+            insecure (bool): Whether to disable ssl and use an insecure connection.
+        Returns:
+            httplib2 object with the proper settings for google api client
+        Action:
+            Create a http client with proxy with whom to use when using a proxy.
     """
     if proxy:
         proxies = handle_proxy()
@@ -604,14 +654,13 @@ def get_http_client_with_proxy(proxy: bool, insecure: bool):
 
 def build_and_authenticate(params: dict):
     """
-    Return a service object via which can call GRM API.
-
-    Use the service_account credential file generated in the Google Cloud
-    Platform to build the Google Resource Manager API Service object.
-
-    returns: service
-        Google Resource Manager API Service object via which commands in the
-        integration will make API calls
+        Args:
+            params (dict):
+                demisto.params() - we use the service account key and proxy and insecure parameters in order to
+                build the Google API resource.
+        Returns:
+            Google Resource Manager API Service object via which commands in the
+            integration will make API calls
     """
     service_account_credentials = params.get('service_account_credentials', {})
     service_account_credentials = json.loads(service_account_credentials.get('password'))
@@ -639,9 +688,8 @@ def test_module() -> str:
 
 
 def main() -> None:
-    """main function, parses params and runs command functions
-    :return:
-    :rtype:
+    """
+    main function, parses params and runs command functions
     """
 
     demisto.debug(f'Command being called is {demisto.command()}')

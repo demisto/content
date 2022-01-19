@@ -799,7 +799,8 @@ script:
       defaultValue: ""
     outputs: []
   - name: google-sheets-spreadsheet-update
-    description: Applies one or more updates to the spreadsheet.  Each request is
+    description: This is a costume update command, inorder to apply any of the Google Sheets API options.
+      Applies one or more updates to the spreadsheet. Each request is
       validated before being applied. If any request is not valid then the entire
       request will fail and nothing will be applied.
     deprecated: false
@@ -820,7 +821,7 @@ script:
       - "True"
     - name: requests
       description: JSON Input according to the method documentation and object documentation
-        - for advanced users’ free use
+        - for advanced users’ free use (Google Sheets API)
       required: true
       isArray: false
       defaultValue: ""
