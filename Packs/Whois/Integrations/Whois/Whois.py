@@ -7302,13 +7302,13 @@ def precompile_regexes(source, flags=0):
     return [re.compile(regex, flags) for regex in source]
 
 
-# def preprocess_regex(regex):
-#     # Fix for #2; prevents a ridiculous amount of varying size permutations.
-#     regex = re.sub(r"\\s\*\(\?P<([^>]+)>\.\+\)", r"\s*(?P<\1>\S.*)", regex)
-#     # Experimental fix for #18; removes unnecessary variable-size whitespace
-#     # matching, since we're stripping results anyway.
-#     regex = re.sub(r"\[ \]\*\(\?P<([^>]+)>\.\*\)", r"(?P<\1>.*)", regex)
-#     return regex
+def preprocess_regex(regex):
+    # Fix for #2; prevents a ridiculous amount of varying size permutations.
+    regex = re.sub(r"\\s\*\(\?P<([^>]+)>\.\+\)", r"\s*(?P<\1>\S.*)", regex)
+    # Experimental fix for #18; removes unnecessary variable-size whitespace
+    # matching, since we're stripping results anyway.
+    regex = re.sub(r"\[ \]\*\(\?P<([^>]+)>\.\*\)", r"(?P<\1>.*)", regex)
+    return regex
 
 
 registrant_regexes = [
@@ -7580,10 +7580,10 @@ nic_contact_references = {
 # matching positions. The workaround is to use \S.* instead of .+, but in the interest of keeping the regexes
 # consistent and compact, it's more practical to do this (predictable) conversion on runtime.
 # FIXME: This breaks on NIC contact regex for nic.at. Why?
-# registrant_regexes = [preprocess_regex(regex) for regex in registrant_regexes]
-# tech_contact_regexes = [preprocess_regex(regex) for regex in tech_contact_regexes]
-# admin_contact_regexes = [preprocess_regex(regex) for regex in admin_contact_regexes]
-# billing_contact_regexes = [preprocess_regex(regex) for regex in billing_contact_regexes]
+registrant_regexes = [preprocess_regex(regex) for regex in registrant_regexes]
+tech_contact_regexes = [preprocess_regex(regex) for regex in tech_contact_regexes]
+admin_contact_regexes = [preprocess_regex(regex) for regex in admin_contact_regexes]
+billing_contact_regexes = [preprocess_regex(regex) for regex in billing_contact_regexes]
 
 nic_contact_regexes = [
     "personname:\s*(?P<name>.+)\norganization:\s*(?P<organization>.+)\nstreet address:\s*(?P<street>.+)\npostal code:\s*(?P<postalcode>.+)\ncity:\s*(?P<city>.+)\ncountry:\s*(?P<country>.+)\n(?:phone:\s*(?P<phone>.+)\n)?(?:fax-no:\s*(?P<fax>.+)\n)?(?:e-mail:\s*(?P<email>.+)\n)?nic-hdl:\s*(?P<handle>.+)\nchanged:\s*(?P<changedate>.+)",
