@@ -1,5 +1,43 @@
-This README contains the full documentation for your integration.
+CreateIncidents fetches incident created manually
 
-You auto-generate this README file from your integration YML file using the `demisto-sdk generate-docs` command.
+## Configure CreateIncidents on Cortex XSOAR
 
-For more information see the [integration documentation](https://xsoar.pan.dev/docs/integrations/integration-docs).
+1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+2. Search for CreateIncidents.
+3. Click **Add instance** to create and configure a new integration instance.
+
+    | **Parameter** | **Description** | **Required** |
+    | --- | --- | --- |
+    | Source for uploading and fetching files from | The source where you will upload incidents and attachments file to. | True |
+    | Trust any certificate (not secure) |  | False |
+    | Use system proxy settings |  | False |
+    | Incident type |  | False |
+    | Fetch incidents |  | False |
+    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | This field will be ignored as the fetch takes everything in the context. | False |
+    | None | This field will be ignored as the fetch takes everything in the context. | False |
+
+4. Click **Test** to validate the URLs, token, and connection.
+## Commands
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+After you successfully execute a command, a DBot message appears in the War Room with the command details.
+### create-test-incident-from-file
+***
+Creates incidents from json files provided, and stores it in the instance context.
+
+
+#### Base Command
+
+`create-test-incident-from-file`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| incidents_path | The path of json file containing incidents. Can contain one incident or a list of incidents. For example: Packs/somePack/TestPlaybooks/examples.json. | Required | 
+| attachment_path | The path of a file to be added to incidents as attachment. Would be added to all incidents provided in the incident_path file. For example: Packs/somePack/TestPlaybooks/attach.eml. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| BaseIntegration.Output | String | \[Enter a description of the data returned in this output.\] | 
