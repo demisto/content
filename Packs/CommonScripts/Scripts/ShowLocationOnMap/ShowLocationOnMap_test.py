@@ -63,3 +63,27 @@ def test_invalid_loc(loc, mocker):
         del (sys.modules['ShowLocationOnMap'])
     with pytest.raises(Exception, match='return_error_called'):
         import ShowLocationOnMap  # noqa: F401
+
+
+INVALID_LOC_TYPE = [None, {}, []]
+
+
+@pytest.mark.parametrize('loc', INVALID_LOC_TYPE)
+def test_invalid_indicator_value_type(mocker, loc):
+    """
+    Given:
+    - Demisto args with invalid types as indicator value (not a string).
+
+    When:
+    - Trying to parse it into lat and lng separately.
+
+    Then:
+    - Ensure that return error is raised.
+    """
+    mocker.patch.object(demisto, 'args', return_value={'indicator': loc})
+    mocker.patch.object(CommonServerPython, 'return_error', side_effect=return_error_called)
+
+    if 'ShowLocationOnMap' in sys.modules:
+        del (sys.modules['ShowLocationOnMap'])
+    with pytest.raises(Exception, match='return_error_called'):
+        import ShowLocationOnMap  # noqa: F401
