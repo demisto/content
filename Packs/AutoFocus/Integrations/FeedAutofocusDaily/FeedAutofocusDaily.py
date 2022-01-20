@@ -44,60 +44,31 @@ class Client(BaseClient):
         indicator_list = res.text.split('\n')
         return indicator_list
 
-    def get_ip_type(self, indicator):
+    @staticmethod
+    def find_indicator_type(indicator: str) -> str:
         """
-        Indicates the correct IP of the given indicator.
+        Get the type of the indicator.
+
         Args:
-            indicator: (str) Will be checked according to it the type will be returned.
+            indicator (str): The indicator whose type we want to check.
+
         Returns:
-            Indicator Type of the given value.
+            str: The type of the indicator.
         """
-        if re.match(ipv4cidrRegex, indicator):
-            return FeedIndicatorType.CIDR
-
-        elif re.match(ipv6cidrRegex, indicator):
-            return FeedIndicatorType.IPv6CIDR
-
-        elif re.match(ipv4Regex, indicator):
-            return FeedIndicatorType.IP
-
-        elif re.match(ipv6Regex, indicator):
-            return FeedIndicatorType.IPv6
-
-        else:
-            return None
-
-    def find_indicator_type(self, indicator):
-        """Infer the type of the indicator.
-        Args:
-            indicator(str): The indicator whose type we want to check.
-        Returns:
-            str. The type of the indicator.
-        """
-
-        # trying to catch X.X.X.X:portNum
-        if ':' in indicator and '/' not in indicator:
-            sub_indicator = indicator.split(':', 1)[0]
-            ip_type = self.get_ip_type(sub_indicator)
-            if ip_type:
-                return ip_type
-
-        ip_type = self.get_ip_type(indicator)
-        if ip_type:
-            # catch URLs of type X.X.X.X/path/url or X.X.X.X:portNum/path/url
-            if '/' in indicator and (ip_type not in [FeedIndicatorType.IPv6CIDR, FeedIndicatorType.CIDR]):
+        if ip_type := FeedIndicatorType.ip_to_indicator_type(indicator):
+            # catch URLs of type X.X.X.X/path/url or X.X.X.X:portNum/path/url or X.X.X.X/cidrNumber/path/url
+            # or X.X.X.X/path
+            if indicator.count('/') > 1 or (
+                ip_type in (FeedIndicatorType.IP, FeedIndicatorType.IPv6) and indicator.count('/') == 1
+            ):
                 return FeedIndicatorType.URL
-
-            else:
-                return ip_type
-
+            return ip_type
         elif re.match(sha256Regex, indicator):
             return FeedIndicatorType.File
-
         # in AutoFocus, URLs include a path while domains do not - so '/' is a good sign for us to catch URLs.
+        # catch URLs of type X.X.X.X/path
         elif '/' in indicator:
             return FeedIndicatorType.URL
-
         else:
             return FeedIndicatorType.Domain
 

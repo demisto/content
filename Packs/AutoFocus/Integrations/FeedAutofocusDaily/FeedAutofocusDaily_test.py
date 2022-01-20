@@ -70,15 +70,63 @@ def test_feed_tags_param(mocker, auto_focus_client, tlp_color):
         assert not indicators[0].get('fields').get('trafficlightprotocol')
 
 
-INDICATORS_AND_TYPES = [
+INDICATORS_CLASSIFICATION_DATA = [
+    (
+        "1.1.1.1/path", FeedIndicatorType.URL
+    ),
+    (
+        "1.1.1.1:8080", FeedIndicatorType.IP
+    ),
+    (
+        "19.117.63.253:28/other/path", FeedIndicatorType.URL
+    ),
+    (
+        "19.117.63.253:28/path", FeedIndicatorType.URL
+    ),
+    (
+        '1.1.1.1/7', FeedIndicatorType.CIDR
+    ),
     (
         "1.1.1.1/7/server/somestring/something.php?fjjasjkfhsjasofds=sjhfhdsfhasld", FeedIndicatorType.URL
+    ),
+    (
+        "1.1.1.1/7/server", FeedIndicatorType.URL
+    ),
+    (
+        "d4da1b2d5554587136f2bcbdf0a6a1e29ab83f1d64a4b2049f9787479ad02fad", FeedIndicatorType.File
+    ),
+    (
+        "domaintools.com", FeedIndicatorType.Domain
+    ),
+    (
+        "test.test.com", FeedIndicatorType.Domain
+    ),
+    (
+        "flake8.pycqa.org/en/latest", FeedIndicatorType.URL
+    ),
+    (
+        "19.117.63.253/28", FeedIndicatorType.CIDR,
+    ),
+    (
+        "2001:db8:85a3:8d3:1319:8a2e:370:7348", FeedIndicatorType.IPv6
+    ),
+    (
+        "2001:db8:85a3:8d3:1319:8a2e:370:7348/path/path", FeedIndicatorType.URL
+    ),
+    (
+        "2001:db8:85a3:8d3:1319:8a2e:370:7348/32", FeedIndicatorType.IPv6CIDR
+    ),
+    (
+        "2001:db8:85a3:8d3:1319:8a2e:370:7348/path", FeedIndicatorType.URL
+    ),
+    (
+        "2001:db8:85a3:8d3:1319:8a2e:370:7348/32/path", FeedIndicatorType.URL
     )
 ]
 
 
-@pytest.mark.parametrize('indicator, expected_indicator_type', INDICATORS_AND_TYPES)
-def test_indicator_types_are_classified_correctly(mocker, auto_focus_client, indicator, expected_indicator_type):
+@pytest.mark.parametrize('indicator, expected_indicator_type', INDICATORS_CLASSIFICATION_DATA)
+def test_indicator_classified_to_the_correct_type(mocker, auto_focus_client, indicator, expected_indicator_type):
     """
     Given
     - an indicator as string.
@@ -87,7 +135,7 @@ def test_indicator_types_are_classified_correctly(mocker, auto_focus_client, ind
     - trying to find the indicator type.
 
     Then
-    - the indicator type that is returned is what we expected it to be.
+    - the indicator is classified correctly.
     """
     mocker.patch.object(auto_focus_client, 'daily_http_request')
     assert auto_focus_client.find_indicator_type(indicator=indicator) == expected_indicator_type
