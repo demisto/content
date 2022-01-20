@@ -1,5 +1,5 @@
 import pytest
-from FeedAutofocus import Client, fetch_indicators_command
+from FeedAutofocus import Client, fetch_indicators_command, get_indicators_command
 
 from CommonServerPython import *
 
@@ -32,12 +32,6 @@ TYPES = [
 @pytest.fixture()
 def auto_focus_client():
     return Client(api_key="a", insecure=False, proxy=None, indicator_feeds=['Daily Threat Feed'])
-
-
-def test_type_finder(auto_focus_client):
-    for i in range(0, 9):
-        indicator_type = auto_focus_client.find_indicator_type(INDICATORS[i])
-        assert indicator_type == TYPES[i]
 
 
 def test_url_format(auto_focus_client):
@@ -141,3 +135,21 @@ def test_indicator_classified_to_the_correct_type(mocker, auto_focus_client, ind
     """
     mocker.patch.object(auto_focus_client, 'daily_custom_http_request')
     assert auto_focus_client.find_indicator_type(indicator=indicator) == expected_indicator_type
+
+
+def test_get_indicators_command(mocker, auto_focus_client):
+    """
+    Given
+    - indicators list
+
+    When
+    - getting all the indicators
+
+    Then
+    - make sure the indicator type and values are returned correctly.
+    """
+    mocker.patch.object(auto_focus_client, 'daily_custom_http_request', return_value=INDICATORS)
+    _, _, indicators = get_indicators_command(auto_focus_client, {}, feed_tags=[], tlp_color=None)
+    for i in range(0, 9):
+        assert indicators[i]['type'] == TYPES[i]
+        assert indicators[i]['value'] in INDICATORS[i]

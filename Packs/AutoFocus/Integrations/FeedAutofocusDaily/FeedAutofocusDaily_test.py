@@ -1,5 +1,5 @@
 import pytest
-from FeedAutofocusDaily import Client, fetch_indicators_command
+from FeedAutofocusDaily import Client, fetch_indicators_command, get_indicators_command
 
 from CommonServerPython import *
 
@@ -133,3 +133,44 @@ def test_indicator_classified_to_the_correct_type(mocker, auto_focus_client, ind
     """
     mocker.patch.object(auto_focus_client, 'daily_http_request')
     assert auto_focus_client.find_indicator_type(indicator=indicator) == expected_indicator_type
+
+
+LIMIT_AND_OFFSET = [(0, 2), (0, 3), (0, 4), [1, 4], [3, 2], [4, 5]]
+
+
+@pytest.mark.parametrize('offset, limit', LIMIT_AND_OFFSET)
+def test_fetch_indicators_filtered_correctly(mocker, auto_focus_client, offset, limit):
+    """
+    Given
+    - a limit and an offset
+
+    When
+    - fetching indicators
+
+    Then
+    - The indicator response is filtered correctly.
+    """
+    mocker.patch.object(auto_focus_client, 'daily_http_request', return_value=INDICATORS)
+    indicators = fetch_indicators_command(auto_focus_client, feed_tags=[], tlp_color=None, limit=limit, offset=offset)
+    assert len(indicators) == limit
+
+    indicator_types = [indicator['type'] for indicator in indicators]
+    assert indicator_types == TYPES[offset: offset + limit]
+
+
+def test_get_indicators_command(mocker, auto_focus_client):
+    """
+    Given
+    - indicators list
+
+    When
+    - getting all the indicators
+
+    Then
+    - make sure the indicator type and values are returned correctly. 
+    """
+    mocker.patch.object(auto_focus_client, 'daily_http_request', return_value=INDICATORS)
+    _, _, indicators = get_indicators_command(auto_focus_client, {}, feed_tags=[], tlp_color=None)
+    for i in range(0, 9):
+        assert indicators[i]['type'] == TYPES[i]
+        assert indicators[i]['value'] in INDICATORS[i]
