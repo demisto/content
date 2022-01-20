@@ -7270,22 +7270,28 @@ def whois_request(domain, server, port=43):
                            exit=True, outputs=context)
 
     else:
-        sock.send(("%s\r\n" % domain).encode("utf-8"))
-        buff = b""
-        while True:
-            data = sock.recv(1024)
-            if len(data) == 0:
-                break
-            buff += data
-        sock.close()
-        try:
-            d = buff.decode("utf-8")
-        except UnicodeDecodeError:
-            d = buff.decode("latin-1")
-
-        return d
+        return whois_request_get_response(socket=sock, domain=domain)
     finally:
         sock.close()
+
+
+def whois_request_get_response(socket, domain):
+    socket.send(("%s\r\n" % domain).encode("utf-8"))
+    buff = b""
+    while True:
+        data = socket.recv(1024)
+        if len(data) == 0:
+            break
+        buff += data
+    socket.close()
+    try:
+        d = buff.decode("utf-8")
+    except UnicodeDecodeError:
+        d = buff.decode("latin-1")
+
+    return d
+
+
 
 
 airports = {}  # type: dict
