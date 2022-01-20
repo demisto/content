@@ -153,10 +153,12 @@ upload-packs-to-marketplace:
         GCS_BUILD_BUCKET="marketplace-ci-build"
         if [[ $GCS_MARKET_BUCKET == $GCS_PRODUCTION_BUCKET ]] && [[ -z $STORAGE_BASE_PATH ]]; then
           STORAGE_BASE_PATH="content"
+          echo "Set storage base path to $STORAGE_BASE_PATH"
         fi
 
         if [[ $GCS_MARKET_BUCKET != $GCS_PRODUCTION_BUCKET ]] && [[ -z $STORAGE_BASE_PATH ]]; then
-         STORAGE_BASE_PATH="upload-flow/builds/$CI_COMMIT_BRANCH/$CI_PIPELINE_ID/xsoar/content"
+          STORAGE_BASE_PATH="upload-flow/builds/$CI_COMMIT_BRANCH/$CI_PIPELINE_ID/xsoar/content"
+          echo "Set storage base path to $STORAGE_BASE_PATH"
         fi
 
         python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb "$GCS_MARKET_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_MARKET_KEY -n $CI_PIPELINE_ID -c $CI_COMMIT_BRANCH -pbp "$STORAGE_BASE_PATH/packs" --marketplace xsoar
@@ -224,10 +226,12 @@ upload-packs-to-marketplace-v2:
         GCS_BUILD_BUCKET="marketplace-ci-build"
         if [[ $GCS_MARKET_V2_BUCKET == $GCS_PRODUCTION_V2_BUCKET ]] && [[ -z $STORAGE_BASE_PATH ]]; then
           STORAGE_BASE_PATH="content"
+          echo "Set storage base path to $STORAGE_BASE_PATH"
         fi
 
         if [[ $GCS_MARKET_V2_BUCKET != $GCS_PRODUCTION_V2_BUCKET ]] && [[ -z $STORAGE_BASE_PATH ]]; then
-         STORAGE_BASE_PATH="upload-flow/builds/$CI_COMMIT_BRANCH/$CI_PIPELINE_ID/marketplacev2/content"
+          STORAGE_BASE_PATH="upload-flow/builds/$CI_COMMIT_BRANCH/$CI_PIPELINE_ID/marketplacev2/content"
+          echo "Set storage base path to $STORAGE_BASE_PATH"
         fi
 
         python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb "$GCS_MARKET_V2_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_MARKET_KEY -n $CI_PIPELINE_ID -c $CI_COMMIT_BRANCH -pbp "$STORAGE_BASE_PATH/packs" --marketplace marketplacev2
