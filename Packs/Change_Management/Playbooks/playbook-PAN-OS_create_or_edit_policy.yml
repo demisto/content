@@ -1,11 +1,11 @@
 id: PAN-OS create or edit policy
 version: -1
 name: PAN-OS create or edit policy
-description: "This playbook will automate the process of creating or editing policy.\n\
-  First task in the playbook will check if there is security policy that matches the\
-  \ playbook inputs in case there is no security policy that matches a new policy\
-  \ will be created, in case there is security policy that matches the user will be\
-  \ able to modify the existing policy or create a new hardened policy "
+description: "This playbook will automate the process of creating or editing a policy.\n\
+  The first task in the playbook checks if there is a security policy that matches the\
+  \ playbook inputs. If there is no security policy that matches, a new policy\
+  \ will be created. If there is a security policy that matches, the user will be\
+  \ able to modify the existing policy or create a new hardened policy."
 starttaskid: "0"
 tasks:
   "0":
@@ -46,7 +46,7 @@ tasks:
       version: -1
       name: Search for matching security policy?
       description: Wrapper script for the panorama-security-policy-match command that
-        receives multiple values (array) in the DST, SRC and port arguments and preforms
+        receives multiple values (array) in the DST, SRC, and port arguments and performs
         the policy match on each of the values.
       tags:
       - comment
@@ -114,7 +114,7 @@ tasks:
       id: edbe7b28-b59d-41f8-895b-12310bf802ac
       version: -1
       name: Is there matching security policy?
-      description: Check if there matching security policy
+      description: Check if there is a matching security policy.
       type: condition
       iscommand: false
       brand: ""
@@ -223,7 +223,7 @@ tasks:
         tooltip: ""
         readonly: false
       title: Edit existing rule source
-      description: Please chose which rule to edit
+      description: Choose which rule to edit.
       sender: ""
       expired: false
       totalanswers: 0
@@ -335,7 +335,7 @@ tasks:
       id: e02947f3-e874-46b5-8f27-34043e3c5e6e
       version: -1
       name: Ask if harden/modify the existing policy?
-      description: Asking if to modify or not the current policy
+      description: Asking Whether to modify the current policy.
       tags:
       - comment
       - comments
@@ -392,8 +392,8 @@ tasks:
       id: 83a0a814-32d4-42fe-8fff-1680a8f9f261
       version: -1
       name: PAN-OS Commit Configuration
-      description: Commit the PAN-OS Panorama or Firewall configuration.\nIf specified
-        as Panorama, it also pushes the Policies to the specified Device Group in
+      description: Commit the PAN-OS/Panorama firewall configuration.\nIf specified
+        as Panorama, it also pushes the policies to the specified device group in
         the instance.
       playbookName: PAN-OS Commit Configuration
       type: playbook
@@ -455,9 +455,9 @@ tasks:
       to:
         simple: ${inputs.Email}
       subject:
-        simple: Which action would you like to preform?
+        simple: Which action would you like to perform?
       body:
-        simple: Do you wish create new rule or edit existing?
+        simple: Do you want to create a new rule or edit an existing rule?
       methods:
       - email
       format: ""
@@ -491,7 +491,7 @@ tasks:
         tooltip: ""
         readonly: false
       title: Which action would you like to preform?
-      description: Choose one of the following actions
+      description: Choose one of the following actions.
       sender: ""
       expired: false
       totalanswers: 0
@@ -506,7 +506,7 @@ tasks:
     task:
       id: ff31debe-9458-4cdd-8177-23e53e0486ed
       version: -1
-      name: Create new harden rule
+      name: Create a new harden rule
       description: Creates a policy rule.
       tags:
       - comment
@@ -604,7 +604,7 @@ tasks:
       id: f88b18a8-85a1-448d-87eb-ba939766420d
       version: -1
       name: 'Manually review the relevant rule '
-      description: Manually review the relevant rule  in the FW interface.
+      description: Manually review the relevant rule in the firewall interface.
       tags:
       - comment
       - comments
@@ -637,7 +637,7 @@ tasks:
       id: 7b5978e9-c78e-4308-8778-7657133f3cdf
       version: -1
       name: Set security policy match to layout
-      description: Creates a Grid table from items or key-value pairs.
+      description: Creates a grid table from items or key-value pairs.
       scriptName: SetGridField
       type: regular
       iscommand: false
@@ -677,8 +677,8 @@ tasks:
       id: 7f0fc9bf-2a76-4a98-8e43-3af4992dc6ed
       version: -1
       name: PAN-OS Commit Configuration
-      description: Commit the PAN-OS Panorama or Firewall configuration.\nIf specified
-        as Panorama, it also pushes the Policies to the specified Device Group in
+      description: Commit the PAN-OS/Panorama firewall configuration.\nIf specified
+        as Panorama, it also pushes the policies to the specified device group in
         the instance.
       playbookName: PAN-OS Commit Configuration
       type: playbook
@@ -715,7 +715,7 @@ tasks:
       id: e2ea7ec3-f0ca-4b1e-896c-fde413faa909
       version: -1
       name: Update incident state
-      description: Set the incident state to the layout
+      description: Set the incident state in the layout.
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -749,7 +749,7 @@ tasks:
       id: c2935a67-b605-4686-85ca-8dee3378f0c7
       version: -1
       name: Update incident state
-      description: Set the incident state to the layout
+      description: Set the incident state in the layout.
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -783,7 +783,7 @@ tasks:
       id: b2f637e5-ee39-4ba5-845d-601d3a9eab21
       version: -1
       name: Update incident state
-      description: Set the incident state to the layout
+      description: Set the incident state in the layout.
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -817,8 +817,8 @@ tasks:
       id: 44cfc485-17c2-4c51-8f0b-6f3092abafb9
       version: -1
       name: PAN-OS edit policy
-      description: This playbook will guide the user in the process of editing existing
-        policy, the playbook will send a data collection form that will retrieve the
+      description: This playbook will guide the user in the process of editing an existing
+        policy. The playbook will send a data collection form that will retrieve the
         relevant parameters for editing the existing rule.
       playbookName: PAN-OS edit policy
       type: playbook
@@ -885,7 +885,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: Which action would you like to preform?.Answers.0
+              simple: Which action would you like to perform?.Answers.0
             iscontext: true
           right:
             value:
@@ -895,7 +895,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: Which action would you like to preform?.Answers.0
+              simple: Which action would you like to perform?.Answers.0
             iscontext: true
           right:
             value:
@@ -905,7 +905,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: Which action would you like to preform?.Answers.0
+              simple: Which action would you like to perform?.Answers.0
             iscontext: true
           right:
             value:
@@ -1021,7 +1021,7 @@ inputs:
 - key: Email
   value: {}
   required: false
-  description: 'The email of the network/security team.  '
+  description: 'The email of the network/security team.'
   playbookInputQuery:
 - key: Rule_position
   value: {}
@@ -1043,17 +1043,17 @@ inputs:
 - key: Target
   value: {}
   required: false
-  description: Target number of the firewall. Use only on a Panorama instance.
+  description: Target number of the firewall. Use only for a Panorama instance.
   playbookInputQuery:
 - key: Vsys
   value: {}
   required: false
-  description: Target vsys of the firewall. Use only on a Panorama instance.
+  description: Target vsys of the firewall. Use only for a Panorama instance.
   playbookInputQuery:
 - key: Limit
   value: {}
   required: false
-  description: "Max number of API requests that the \nPanoramaSecurityPolicyMatchWrapper\
+  description: "Maximum number of API requests that the \nPanoramaSecurityPolicyMatchWrapper\
     \ script will send.\nThe default is 500."
   playbookInputQuery:
 outputs: []
