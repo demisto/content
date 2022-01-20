@@ -8,6 +8,7 @@ $script:SEARCH_ACTION_ENTRY_CONTEXT = "$script:INTEGRATION_ENTRY_CONTEX.SearchAc
 
 #### HELPER FUNCTIONS ####
 
+
 function UpdateIntegrationContext([OAuth2DeviceCodeClient]$client){
     $integration_context = @{
         "DeviceCode" = $client.device_code
