@@ -7172,10 +7172,9 @@ H || val.SSDeep && val.SSDeep == obj.SSDeep)': {'Malicious': {'Vendor': 'Vendor'
 if 'requests' in sys.modules:
     if IS_PY3 and PY_VER_MINOR >= 10:
         from requests.packages.urllib3.util.ssl_ import create_urllib3_context
-
-        '''    
-         The ciphers string used to replace default cipher string 
-        '''
+        """    
+            The ciphers string used to replace default cipher string 
+        """
         CIPHERS_STRING = '@SECLEVEL=1:ECDHE+AESGCM:ECDHE+CHACHA20:DHE+AESGCM:DHE+CHACHA20:ECDH+AESGCM:DH+AESGCM:ECDH+AES:DH+AES:RSA+ANESGCM:RSA+AES:!aNULL:!eNULL:!MD5:!DSS'
 
         class SSLAdapter(HTTPAdapter):
@@ -7193,7 +7192,6 @@ if 'requests' in sys.modules:
                 context = create_urllib3_context(ciphers=CIPHERS_STRING)
                 kwargs['ssl_context'] = context
                 return super(SSLAdapter, self).proxy_manager_for(*args, **kwargs)
-
 
     class BaseClient(object):
         """Client to use in integrations with powerful _http_request
@@ -7244,11 +7242,11 @@ if 'requests' in sys.modules:
             self._auth = auth
             self._session = requests.Session()
 
-            '''
+            """
             the following condition was added to overcome the security hardening happened in Python 3.10. 
             https://github.com/python/cpython/pull/25778
             https://bugs.python.org/issue43998
-            '''
+            """
             if IS_PY3 and PY_VER_MINOR >= 10 and not verify:
                 self._session.mount('https://', SSLAdapter())
 
@@ -7334,11 +7332,11 @@ if 'requests' in sys.modules:
                 )
                 http_adapter = HTTPAdapter(max_retries=retry)
 
-                '''
+                """
                    the following condition was added to overcome the security hardening happened in Python 3.10. 
                    https://github.com/python/cpython/pull/25778
                    https://bugs.python.org/issue43998
-                '''
+                """
 
                 if self._verify:
                     https_adapter = http_adapter
