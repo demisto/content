@@ -88,9 +88,9 @@ def test_get_endpoints(requests_mock):
         'limit': 3
     }
 
-    _, outputs, _ = get_endpoints_command(client, args)
+    res = get_endpoints_command(client, args)
     assert get_endpoints_response.get('reply').get('endpoints') == \
-           outputs['PaloAltoNetworksCore.Endpoint(val.endpoint_id == obj.endpoint_id)']
+           res.outputs['PaloAltoNetworksCore.Endpoint(val.endpoint_id == obj.endpoint_id)']
 
 
 def test_get_all_endpoints_using_limit(requests_mock):
@@ -107,10 +107,10 @@ def test_get_all_endpoints_using_limit(requests_mock):
         'page': 0,
         'sort_order': 'asc'
     }
-    _, outputs, _ = get_endpoints_command(client, args)
+    res = get_endpoints_command(client, args)
     expected_endpoint = get_endpoints_response.get('reply')[0]
 
-    assert [expected_endpoint] == outputs['PaloAltoNetworksCore.Endpoint(val.endpoint_id == obj.endpoint_id)']
+    assert [expected_endpoint] == res.outputs['PaloAltoNetworksCore.Endpoint(val.endpoint_id == obj.endpoint_id)']
 
 
 def test_endpoint_command(requests_mock):
@@ -166,8 +166,8 @@ def test_isolate_endpoint(requests_mock):
         "endpoint_id": "1111"
     }
 
-    readable_output, _, _ = isolate_endpoint_command(client, args)
-    assert readable_output == 'The isolation request has been submitted successfully on Endpoint 1111.\n' \
+    res = isolate_endpoint_command(client, args)
+    assert res.readable_output == 'The isolation request has been submitted successfully on Endpoint 1111.\n' \
                               'To check the endpoint isolation status please run:' \
                               ' !core-get-endpoints endpoint_id_list=1111 and look at the [is_isolated] field.'
 
@@ -227,8 +227,8 @@ def test_unisolate_endpoint(requests_mock):
         "endpoint_id": "1111"
     }
 
-    readable_output, _, _ = unisolate_endpoint_command(client, args)
-    assert readable_output == 'The un-isolation request has been submitted successfully on Endpoint 1111.\n' \
+    res = unisolate_endpoint_command(client, args)
+    assert res.readable_output == 'The un-isolation request has been submitted successfully on Endpoint 1111.\n' \
                               'To check the endpoint isolation status please run:' \
                               ' !core-get-endpoints endpoint_id_list=1111 and look at the [is_isolated] field.'
 

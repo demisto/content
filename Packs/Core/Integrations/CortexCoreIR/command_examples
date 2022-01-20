@@ -28,7 +28,7 @@
 !core-get-script-execution-status action_id=3641
 !core-get-script-execution-results action_id=3641
 !core-get-script-execution-result-files action_id=3641 endpoint_id=23a86310665d413a958926fce5b794b3
-!core-run-script-execute-commands endpoint_ids=23a86310665d413a958926fce5b794b3 commands_list=tasklist
+!core-run-script-execute-commands endpoint_ids=23a86310665d413a958926fce5b794b3 commands=tasklist
 !core-run-script-delete-file endpoint_ids=23a86310665d413a958926fce5b794b3 file_path=test.txt
 !core-run-script-file-exists endpoint_ids=23a86310665d413a958926fce5b794b3 file_path=test.txt
 !core-run-script-kill-process endpoint_ids=23a86310665d413a958926fce5b794b3 process_name=calculator.exe

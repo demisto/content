@@ -61,6 +61,12 @@ script:
       required: false
       secret: false
     - default: false
+      description: For polling use
+      isArray: true
+      name: action_id
+      required: false
+      secret: false
+    - default: false
       description: The endpoint ID (string) to isolate. You can retrieve the string
         from the core-get-endpoints command.
       isArray: false
@@ -83,6 +89,7 @@ script:
     description: Isolates the specified endpoint.
     execution: true
     name: core-isolate-endpoint
+    polling: true
     outputs:
     - contextPath: PaloAltoNetworksCore.Isolation.endpoint_id
       description: The endpoint ID.
@@ -114,10 +121,17 @@ script:
       - 'false'
       required: false
       secret: false
+    - default: false
+      description: For polling use
+      isArray: true
+      name: action_id
+      required: false
+      secret: false
     deprecated: false
     description: Reverses the isolation of an endpoint.
     execution: true
     name: core-unisolate-endpoint
+    polling: true
     outputs:
     - contextPath: PaloAltoNetworksCore.UnIsolation.endpoint_id
       description: Isolates the specified endpoint.
@@ -885,7 +899,7 @@ script:
     - default: false
       description: String that represents a list of hashed files you want to block
         list. Must be a valid SHA256 hash.
-      isArray: ![](../CoreIOCs/CoreIOCs_image.png)true
+      isArray: true
       name: hash_list
       required: true
       secret: false
@@ -953,11 +967,18 @@ script:
       name: file_hash
       required: true
       secret: false
+    - default: false
+      description: For polling use
+      isArray: true
+      name: action_id
+      required: false
+      secret: false
     deprecated: false
     description: Quarantines a file on selected endpoints. You can select up to 1000
       endpoints.
     execution: false
     name: core-quarantine-files
+    polling: true
   - arguments:
     - default: false
       description: String the represents the endpoint ID.
@@ -1004,10 +1025,17 @@ script:
       name: endpoint_id
       required: false
       secret: false
+    - default: false
+      description: For polling use
+      isArray: true
+      name: action_id
+      required: false
+      secret: false
     deprecated: false
     description: Restores a quarantined file on requested endpoints.
     execution: false
     name: core-restore-file
+    polling: true
   - arguments:
     - default: false
       description: Allows to link the response action to the incident that triggered
@@ -1110,12 +1138,19 @@ script:
       - 'false'
       required: false
       secret: false
+    - default: false
+      description: For polling use
+      isArray: true
+      name: action_id
+      required: false
+      secret: false
     deprecated: false
     description: Runs a scan on a selected endpoint. To scan all endpoints, run this
       command with argument all=true. Do note that scanning all the endpoints may
       cause performance issues and latency.
     execution: true
     name: core-endpoint-scan
+    polling: true
     outputs:
     - contextPath: PaloAltoNetworksCore.endpointScan.actionId
       description: The action ID of the scan request.
@@ -1570,6 +1605,12 @@ script:
       name: generic_file_path
       required: false
       secret: false
+    - default: false
+      description: For polling use
+      isArray: true
+      name: action_id
+      required: false
+      secret: false
     deprecated: false
     description: Retrieves files from selected endpoints. You can retrieve up to 20
       files, from no more than 10 endpoints. At least one endpoint ID and one file
@@ -1578,6 +1619,7 @@ script:
       the action status.
     execution: false
     name: core-retrieve-files
+    polling: true
     outputs:
     - contextPath: PaloAltoNetworksCore.RetrievedFiles.action_id
       description: ID of the action to retrieve files from selected endpoints.
@@ -1802,11 +1844,18 @@ script:
       name: snippet_code
       required: true
       secret: false
+    - default: false
+      description: For polling use
+      isArray: true
+      name: action_id
+      required: false
+      secret: false
     deprecated: false
     description: Initiates a new endpoint script execution action using the provided
       snippet code.
     execution: false
     name: core-run-snippet-code-script
+    polling: true
     outputs:
     - contextPath: PaloAltoNetworksCore.ScriptRun.action_id
       description: ID of the action initiated.
@@ -1994,10 +2043,17 @@ script:
       name: timeout
       required: false
       secret: false
+    - default: false
+      description: For polling use
+      isArray: true
+      name: action_id
+      required: false
+      secret: false
     deprecated: false
     description: Initiate a new endpoint script execution of shell commands.
     execution: false
     name: core-run-script-execute-commands
+    polling: true
     outputs:
     - contextPath: PaloAltoNetworksCore.ScriptRun.action_id
       description: ID of the action initiated.
@@ -2035,11 +2091,18 @@ script:
       name: timeout
       required: false
       secret: false
+    - default: false
+      description: For polling use
+      isArray: true
+      name: action_id
+      required: false
+      secret: false
     deprecated: false
     description: Initiates a new endpoint script execution to delete the specified
       file.
     execution: false
     name: core-run-script-delete-file
+    polling: true
     outputs:
     - contextPath: PaloAltoNetworksCore.ScriptRun.action_id
       description: ID of the action initiated.
@@ -2076,10 +2139,17 @@ script:
       name: timeout
       required: false
       secret: false
+    - default: false
+      description: For polling use
+      isArray: true
+      name: action_id
+      required: false
+      secret: false
     deprecated: false
     description: Initiates a new endpoint script execution to check if file exists.
     execution: false
     name: core-run-script-file-exists
+    polling: true
     outputs:
     - contextPath: PaloAltoNetworksCore.ScriptRun.action_id
       description: ID of the action initiated.
@@ -2116,10 +2186,17 @@ script:
       name: timeout
       required: false
       secret: false
+    - default: false
+      description: For polling use
+      isArray: true
+      name: action_id
+      required: false
+      secret: false
     deprecated: false
     description: Initiates a new endpoint script execution kill process.
     execution: false
     name: core-run-script-kill-process
+    polling: true
     outputs:
     - contextPath: PaloAltoNetworksCore.ScriptRun.action_id
       description: ID of the action initiated.

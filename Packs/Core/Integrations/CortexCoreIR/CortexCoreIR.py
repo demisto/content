@@ -3,7 +3,7 @@ import hashlib
 import secrets
 import string
 from operator import itemgetter
-from typing import Tuple
+from typing import Tuple, Callable
 
 import demistomock as demisto  # noqa: F401
 import urllib3
@@ -399,12 +399,13 @@ class Client(BaseClient):
         if incident_id:
             request_data['incident_id'] = incident_id
 
-        self._http_request(
-            method='POST',
-            url_suffix='/endpoints/isolate',
-            json_data={'request_data': request_data},
-            timeout=self.timeout
-        )
+        reply = self._http_request(
+                                    method='POST',
+                                    url_suffix='/endpoints/isolate',
+                                    json_data={'request_data': request_data},
+                                    timeout=self.timeout
+                                )
+        return reply.get('reply')
 
     def unisolate_endpoint(self, endpoint_id, incident_id=None):
         request_data = {
@@ -413,12 +414,13 @@ class Client(BaseClient):
         if incident_id:
             request_data['incident_id'] = incident_id
 
-        self._http_request(
-            method='POST',
-            url_suffix='/endpoints/unisolate',
-            json_data={'request_data': request_data},
-            timeout=self.timeout
+        reply = self._http_request(
+                                    method='POST',
+                                    url_suffix='/endpoints/unisolate',
+                                    json_data={'request_data': request_data},
+                                    timeout=self.timeout
         )
+        return reply.get('reply')
 
     def get_distribution_url(self, distribution_id, package_type):
         reply = self._http_request(
@@ -1325,13 +1327,13 @@ def arg_to_int(arg, arg_name: str, required: bool = False):
 
 def get_endpoints_command(client, args):
     page_number = arg_to_int(
-        arg=args.get('page'),
+        arg=args.get('page', '0'),
         arg_name='Failed to parse "page". Must be a number.',
         required=True
     )
 
     limit = arg_to_int(
-        arg=args.get('limit'),
+        arg=args.get('limit', '30'),
         arg_name='Failed to parse "limit". Must be a number.',
         required=True
     )
@@ -1405,10 +1407,11 @@ def get_endpoints_command(client, args):
     account_context = create_account_context(endpoints)
     if account_context:
         context[Common.Account.CONTEXT_PATH] = account_context
-    return (
-        tableToMarkdown('Endpoints', endpoints),
-        context,
-        endpoints
+
+    return CommandResults(
+        readable_output=tableToMarkdown('Endpoints', endpoints),
+        outputs=context,
+        raw_response=endpoints
     )
 
 
@@ -1502,16 +1505,12 @@ def isolate_endpoint_command(client, args):
     endpoint_status = endpoint.get('endpoint_status')
     is_isolated = endpoint.get('is_isolated')
     if is_isolated == 'AGENT_ISOLATED':
-        return (
-            f'Endpoint {endpoint_id} already isolated.',
-            None,
-            None
+        return CommandResults(
+            readable_output=f'Endpoint {endpoint_id} already isolated.'
         )
     if is_isolated == 'AGENT_PENDING_ISOLATION':
-        return (
-            f'Endpoint {endpoint_id} pending isolation.',
-            None,
-            None
+        return CommandResults(
+            readable_output=f'Endpoint {endpoint_id} pending isolation.'
         )
     if endpoint_status == 'UNINSTALLED':
         raise ValueError(f'Error: Endpoint {endpoint_id}\'s Agent is uninstalled and therefore can not be isolated.')
@@ -1519,22 +1518,20 @@ def isolate_endpoint_command(client, args):
         if disconnected_should_return_error:
             raise ValueError(f'Error: Endpoint {endpoint_id} is disconnected and therefore can not be isolated.')
         else:
-            return (
-                f'Warning: isolation action is pending for the following disconnected endpoint: {endpoint_id}.',
-                {f'{INTEGRATION_CONTEXT_BRAND}.Isolation.endpoint_id(val.endpoint_id == obj.endpoint_id)': endpoint_id},
-                None)
+            return CommandResults(
+                readable_output=f'Warning: isolation action is pending for the following disconnected endpoint: {endpoint_id}.',
+                outputs={f'{INTEGRATION_CONTEXT_BRAND}.Isolation.endpoint_id(val.endpoint_id == obj.endpoint_id)': endpoint_id}
+                )
     if is_isolated == 'AGENT_PENDING_ISOLATION_CANCELLATION':
         raise ValueError(
             f'Error: Endpoint {endpoint_id} is pending isolation cancellation and therefore can not be isolated.'
         )
-    client.isolate_endpoint(endpoint_id=endpoint_id, incident_id=incident_id)
+    result = client.isolate_endpoint(endpoint_id=endpoint_id, incident_id=incident_id)
 
-    return (
-        f'The isolation request has been submitted successfully on Endpoint {endpoint_id}.\n'
-        f'To check the endpoint isolation status please run: !core-get-endpoints endpoint_id_list={endpoint_id}'
-        f' and look at the [is_isolated] field.',
-        {f'{INTEGRATION_CONTEXT_BRAND}.Isolation.endpoint_id(val.endpoint_id == obj.endpoint_id)': endpoint_id},
-        None
+    return CommandResults(
+        readable_output=f'The isolation request has been submitted successfully on Endpoint {endpoint_id}.\n',
+        outputs={f'{INTEGRATION_CONTEXT_BRAND}.Isolation.endpoint_id(val.endpoint_id == obj.endpoint_id)': endpoint_id},
+        raw_response=result
     )
 
 
@@ -1551,16 +1548,12 @@ def unisolate_endpoint_command(client, args):
     endpoint_status = endpoint.get('endpoint_status')
     is_isolated = endpoint.get('is_isolated')
     if is_isolated == 'AGENT_UNISOLATED':
-        return (
-            f'Endpoint {endpoint_id} already unisolated.',
-            None,
-            None
+        return CommandResults(
+            readable_output=f'Endpoint {endpoint_id} already unisolated.'
         )
     if is_isolated == 'AGENT_PENDING_ISOLATION_CANCELLATION':
-        return (
-            f'Endpoint {endpoint_id} pending isolation cancellation.',
-            None,
-            None
+        return CommandResults(
+            readable_output=f'Endpoint {endpoint_id} pending isolation cancellation.'
         )
     if endpoint_status == 'UNINSTALLED':
         raise ValueError(f'Error: Endpoint {endpoint_id}\'s Agent is uninstalled and therefore can not be un-isolated.')
@@ -1568,23 +1561,22 @@ def unisolate_endpoint_command(client, args):
         if disconnected_should_return_error:
             raise ValueError(f'Error: Endpoint {endpoint_id} is disconnected and therefore can not be un-isolated.')
         else:
-            return (
-                f'Warning: un-isolation action is pending for the following disconnected endpoint: {endpoint_id}.',
-                {
+            return CommandResults(
+                readable_output=f'Warning: un-isolation action is pending for the following disconnected endpoint: {endpoint_id}.',
+                outputs={
                     f'{INTEGRATION_CONTEXT_BRAND}.UnIsolation.endpoint_id(val.endpoint_id == obj.endpoint_id)'
-                    f'': endpoint_id}, None)
+                    f'': endpoint_id}
+                )
     if is_isolated == 'AGENT_PENDING_ISOLATION':
         raise ValueError(
             f'Error: Endpoint {endpoint_id} is pending isolation and therefore can not be un-isolated.'
         )
-    client.unisolate_endpoint(endpoint_id=endpoint_id, incident_id=incident_id)
+    result = client.unisolate_endpoint(endpoint_id=endpoint_id, incident_id=incident_id)
 
-    return (
-        f'The un-isolation request has been submitted successfully on Endpoint {endpoint_id}.\n'
-        f'To check the endpoint isolation status please run: !core-get-endpoints endpoint_id_list={endpoint_id}'
-        f' and look at the [is_isolated] field.',
-        {f'{INTEGRATION_CONTEXT_BRAND}.UnIsolation.endpoint_id(val.endpoint_id == obj.endpoint_id)': endpoint_id},
-        None
+    return CommandResults(
+        readable_output=f'The un-isolation request has been submitted successfully on Endpoint {endpoint_id}.\n',
+        outputs={f'{INTEGRATION_CONTEXT_BRAND}.UnIsolation.endpoint_id(val.endpoint_id == obj.endpoint_id)': endpoint_id},
+        raw_response=result
     )
 
 
@@ -1885,13 +1877,10 @@ def quarantine_files_command(client, args):
         'actionId': reply.get("action_id")
     }
 
-    return (
-        tableToMarkdown('Quarantine files', output, headers=[*output],
-                        headerTransform=pascalToSpace),
-        {
-            f'{INTEGRATION_CONTEXT_BRAND}.quarantineFiles.actionIds(val.actionId === obj.actionId)': output
-        },
-        reply
+    return CommandResults(
+        readable_output=tableToMarkdown('Quarantine files', output, headers=[*output], headerTransform=pascalToSpace),
+        outputs={f'{INTEGRATION_CONTEXT_BRAND}.quarantineFiles.actionIds(val.actionId === obj.actionId)': output},
+        raw_response=reply
     )
 
 
@@ -1907,12 +1896,10 @@ def restore_file_command(client, args):
     )
     action_id = reply.get("action_id")
 
-    return (
-        tableToMarkdown('Restore files', {'Action Id': action_id}, ['Action Id']),
-        {
-            f'{INTEGRATION_CONTEXT_BRAND}.restoredFiles.actionId(val.actionId == obj.actionId)': action_id
-        },
-        action_id
+    return CommandResults(
+        readable_output=tableToMarkdown('Restore files', {'Action Id': action_id}, ['Action Id']),
+        outputs={f'{INTEGRATION_CONTEXT_BRAND}.restoredFiles.actionId(val.actionId == obj.actionId)': action_id},
+        raw_response=reply
     )
 
 
@@ -1933,13 +1920,11 @@ def get_quarantine_status_command(client, args):
         'fileHash': reply['file_hash']
     }
 
-    return (
-        tableToMarkdown('Quarantine files', output, headers=[*output], headerTransform=pascalToSpace),
-        {
-            f'{INTEGRATION_CONTEXT_BRAND}.quarantineFiles.status(val.fileHash === obj.fileHash &&'
-            f'val.endpointId === obj.endpointId && val.filePath === obj.filePath)': output
-        },
-        reply
+    return CommandResults(
+        readable_output=tableToMarkdown('Quarantine files status', output, headers=[*output], headerTransform=pascalToSpace),
+        outputs={f'{INTEGRATION_CONTEXT_BRAND}.quarantineFiles.status(val.fileHash === obj.fileHash &&'
+                 f'val.endpointId === obj.endpointId && val.filePath === obj.filePath)': output},
+        raw_response=reply
     )
 
 
@@ -1984,12 +1969,10 @@ def endpoint_scan_command(client, args):
         "aborted": False
     }
 
-    return (
-        tableToMarkdown('Endpoint scan', {'Action Id': action_id}, ['Action Id']),
-        {
-            f'{INTEGRATION_CONTEXT_BRAND}.endpointScan(val.actionId == obj.actionId)': context
-        },
-        reply
+    return CommandResults(
+        readable_output=tableToMarkdown('Endpoint scan', {'Action Id': action_id}, ['Action Id']),
+        outputs={f'{INTEGRATION_CONTEXT_BRAND}.endpointScan(val.actionId == obj.actionId)': context},
+        raw_response=reply
     )
 
 
@@ -2034,12 +2017,10 @@ def endpoint_scan_abort_command(client, args):
         "aborted": True
     }
 
-    return (
-        tableToMarkdown('Endpoint abort scan', {'Action Id': action_id}, ['Action Id']),
-        {
-            f'{INTEGRATION_CONTEXT_BRAND}.endpointScan(val.actionId == obj.actionId)': context
-        },
-        reply
+    return CommandResults(
+        readable_output=tableToMarkdown('Endpoint abort scan', {'Action Id': action_id}, ['Action Id']),
+        outputs={f'{INTEGRATION_CONTEXT_BRAND}.endpointScan(val.actionId == obj.actionId)': context},
+        raw_response=reply
     )
 
 
@@ -2250,7 +2231,7 @@ def get_endpoint_device_control_violations_command(client: Client, args: Dict[st
     )
 
 
-def retrieve_files_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
+def retrieve_files_command(client: Client, args: Dict[str, str]) -> CommandResults:
     endpoint_id_list: list = argToList(args.get('endpoint_ids'))
     windows: list = argToList(args.get('windows_file_paths'))
     linux: list = argToList(args.get('linux_file_paths'))
@@ -2268,12 +2249,11 @@ def retrieve_files_command(client: Client, args: Dict[str, str]) -> Tuple[str, d
     )
 
     result = {'action_id': reply.get('action_id')}
-    return (
-        tableToMarkdown(name='Retrieve files', t=result, headerTransform=string_to_table_header),
-        {
-            f'{INTEGRATION_CONTEXT_BRAND}.RetrievedFiles(val.action_id == obj.action_id)': result
-        },
-        reply
+
+    return CommandResults(
+        readable_output=tableToMarkdown(name='Retrieve files', t=result, headerTransform=string_to_table_header),
+        outputs={f'{INTEGRATION_CONTEXT_BRAND}.RetrievedFiles(val.action_id == obj.action_id)': result},
+        raw_response=reply
     )
 
 
@@ -2393,7 +2373,7 @@ def get_script_code_command(client: Client, args: Dict[str, str]) -> Tuple[str, 
     )
 
 
-def action_status_get_command(client: Client, args) -> Tuple[str, Any, Any]:
+def action_status_get_command(client: Client, args) -> CommandResults:
     action_id_list = argToList(args.get('action_id', ''))
     action_id_list = [arg_to_int(arg=item, arg_name=str(item)) for item in action_id_list]
 
@@ -2408,12 +2388,10 @@ def action_status_get_command(client: Client, args) -> Tuple[str, Any, Any]:
                 'status': status
             })
 
-    return (
-        tableToMarkdown(name='Get Action Status', t=result, removeNull=True),
-        {
-            f'{INTEGRATION_CONTEXT_BRAND}.GetActionStatus(val.action_id == obj.action_id)': result
-        },
-        result
+    return CommandResults(
+        readable_output=tableToMarkdown(name='Get Action Status', t=result, removeNull=True),
+        outputs={f'{INTEGRATION_CONTEXT_BRAND}.GetActionStatus(val.action_id == obj.action_id)': result},
+        raw_response=result
     )
 
 
@@ -2451,7 +2429,7 @@ def run_snippet_code_script_command(client: Client, args: Dict) -> CommandResult
         outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.ScriptRun',
         outputs_key_field='action_id',
         outputs=reply,
-        raw_response=response,
+        raw_response=reply,
     )
 
 
@@ -2516,7 +2494,7 @@ def run_script_execute_commands_command(client: Client, args: Dict) -> CommandRe
         outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.ScriptRun',
         outputs_key_field='action_id',
         outputs=reply,
-        raw_response=response,
+        raw_response=reply,
     )
 
 
@@ -2535,7 +2513,7 @@ def run_script_delete_file_command(client: Client, args: Dict) -> List[CommandRe
             outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.ScriptRun',
             outputs_key_field='action_id',
             outputs=reply,
-            raw_response=response,
+            raw_response=reply,
         ))
     return all_files_response
 
@@ -2555,7 +2533,7 @@ def run_script_file_exists_command(client: Client, args: Dict) -> List[CommandRe
             outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.ScriptRun',
             outputs_key_field='action_id',
             outputs=reply,
-            raw_response=response,
+            raw_response=reply,
         ))
     return all_files_response
 
@@ -2575,7 +2553,7 @@ def run_script_kill_process_command(client: Client, args: Dict) -> List[CommandR
             outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.ScriptRun',
             outputs_key_field='action_id',
             outputs=reply,
-            raw_response=response,
+            raw_response=reply,
         ))
 
     return all_processes_response
@@ -2599,6 +2577,81 @@ def report_incorrect_wildfire_command(client: Client, args: Dict) -> CommandResu
             outputs=reply,
             raw_response=response,
         )
+
+
+def run_polling_command(client: Client,
+                        args: dict,
+                        cmd: str,
+                        command_function: Callable,
+                        command_decision_field: str,
+                        results_function: Callable,
+                        polling_field: str,
+                        polling_value: List,
+                        stop_polling: bool = False) -> CommandResults:
+    """
+    args: demito args
+    cmd: the command to schedule by after the current command
+    command_function: the function which is runs the actual command
+    command_decision_field: the field in the response based on it what the command status and if the command occurred
+    results_function: the function which we are polling on and retrieves the status of the command_function
+    polling_field: the field which from the result of the results_function which we are interested in its value
+    polling_value: list of values of the polling_field we want to check
+    stop_polling: yes - polling_value is stopping, not - polling_value not stopping
+    """
+
+    ScheduledCommand.raise_error_if_not_supported()
+    interval_in_secs = int(args.get('interval_in_seconds', 60))
+    if command_decision_field not in args:
+        # create new command run
+        command_results = command_function(client, args)
+        if isinstance(command_results, CommandResults):
+            outputs = [command_results.raw_response] if command_results.raw_response else []
+        else:
+            outputs = [c.raw_response for c in command_results]
+        command_decision_values = [o.get(command_decision_field) for o in outputs] if outputs else []
+        if outputs and command_decision_values:
+            polling_args = {
+                command_decision_field: command_decision_values,
+                'interval_in_seconds': interval_in_secs,
+                **args
+            }
+            scheduled_command = ScheduledCommand(
+                command=cmd,
+                next_run_in_seconds=interval_in_secs,
+                args=polling_args,
+                timeout_in_seconds=600)
+            if isinstance(command_results, list):
+                command_results = command_results[0]
+            command_results.scheduled_command = scheduled_command
+            return command_results
+        else:
+            if command_results.readable_output:
+                demisto.error(f"{command_results.readable_output}")
+            else:
+                demisto.error(f"Command {command_function} didn't succeeded, returned "
+                              f"{command_decision_field} = {outputs.get(command_decision_field)}")
+            return command_results
+    # get polling result
+    command_results = results_function(client, args)
+    outputs = command_results.raw_response
+    result = outputs.get(polling_field) if isinstance(outputs, dict) else outputs[0].get(polling_field)
+    cond = result not in polling_value if stop_polling else result in polling_value
+    if cond:
+        # schedule next poll
+        polling_args = {
+            'interval_in_seconds': interval_in_secs,
+            **args
+        }
+        scheduled_command = ScheduledCommand(
+            command=cmd,
+            next_run_in_seconds=interval_in_secs,
+            args=polling_args,
+            timeout_in_seconds=600)
+
+        # result with scheduled_command only - no update to the war room
+        command_results = CommandResults(scheduled_command=scheduled_command,
+                                         readable_output=f"Polling again because {polling_field} = {result}")
+    return command_results
 
 
 def main():
@@ -2649,13 +2702,37 @@ def main():
             demisto.results('ok')
 
         elif command == 'core-get-endpoints':
-            return_outputs(*get_endpoints_command(client, args))
+            return_results(get_endpoints_command(client, args))
 
         elif command == 'core-isolate-endpoint':
-            return_outputs(*isolate_endpoint_command(client, args))
+            polling_args = {
+                **args,
+                "endpoint_id_list": args.get('endpoint_id')
+            }
+            return_results(run_polling_command(client=client,
+                                               args=polling_args,
+                                               cmd="core-isolate-endpoint",
+                                               command_function=isolate_endpoint_command,
+                                               command_decision_field="action_id",
+                                               results_function=get_endpoints_command,
+                                               polling_field="is_isolated",
+                                               polling_value=["AGENT_ISOLATED"],
+                                               stop_polling=True))
 
         elif command == 'core-unisolate-endpoint':
-            return_outputs(*unisolate_endpoint_command(client, args))
+            polling_args = {
+                **args,
+                "endpoint_id_list": args.get('endpoint_id')
+            }
+            return_results(run_polling_command(client=client,
+                                               args=polling_args,
+                                               cmd="core-unisolate-endpoint",
+                                               command_function=unisolate_endpoint_command,
+                                               command_decision_field="action_id",
+                                               results_function=get_endpoints_command,
+                                               polling_field="is_isolated",
+                                               polling_value=["AGENT_UNISOLATED"],
+                                               stop_polling=True))
 
         elif command == 'core-get-distribution-url':
             return_outputs(*get_distribution_url_command(client, args))
@@ -2682,19 +2759,48 @@ def main():
             return_outputs(*allowlist_files_command(client, args))
 
         elif command == 'core-quarantine-files':
-            return_outputs(*quarantine_files_command(client, args))
+            polling_args = {
+                **args,
+                "endpoint_id": argToList(args.get("endpoint_id_list"))[0]
+            }
+            return_results(run_polling_command(client=client,
+                                               args=polling_args,
+                                               cmd="core-quarantine-files",
+                                               command_function=quarantine_files_command,
+                                               command_decision_field="action_id",
+                                               results_function=get_quarantine_status_command,
+                                               polling_field="status",
+                                               polling_value=[False]))
 
         elif command == 'core-get-quarantine-status':
-            return_outputs(*get_quarantine_status_command(client, args))
+            return_results(get_quarantine_status_command(client, args))
 
         elif command == 'core-restore-file':
-            return_outputs(*restore_file_command(client, args))
+            return_results(run_polling_command(client=client,
+                                               args=args,
+                                               cmd="core-retrieve-files",
+                                               command_function=restore_file_command,
+                                               command_decision_field="action_id",
+                                               results_function=action_status_get_command,
+                                               polling_field="status",
+                                               polling_value=["PENDING",
+                                                              "IN_PROGRESS",
+                                                              "PENDING_ABORT"]))
 
         elif command == 'core-endpoint-scan':
-            return_outputs(*endpoint_scan_command(client, args))
+            return_results(run_polling_command(client=client,
+                                               args=args,
+                                               cmd="core-retrieve-files",
+                                               command_function=endpoint_scan_command,
+                                               command_decision_field="action_id",
+                                               results_function=action_status_get_command,
+                                               polling_field="status",
+                                               polling_value=["PENDING",
+                                                              "IN_PROGRESS",
+                                                              "PENDING_ABORT"]))
 
         elif command == 'core-endpoint-scan-abort':
-            return_outputs(*endpoint_scan_abort_command(client, args))
+            return_results(endpoint_scan_abort_command(client, args))
 
         elif command == 'update-remote-system':
             return_results(update_remote_system_command(client, args))
@@ -2709,7 +2815,16 @@ def main():
             return_outputs(*get_endpoint_device_control_violations_command(client, args))
 
         elif command == 'core-retrieve-files':
-            return_outputs(*retrieve_files_command(client, args))
+            return_results(run_polling_command(client=client,
+                                               args=args,
+                                               cmd="core-retrieve-files",
+                                               command_function=retrieve_files_command,
+                                               command_decision_field="action_id",
+                                               results_function=action_status_get_command,
+                                               polling_field="status",
+                                               polling_value=["PENDING",
+                                                              "IN_PROGRESS",
+                                                              "PENDING_ABORT"]))
 
         elif command == 'core-retrieve-file-details':
             return_entry, file_results = retrieve_file_details_command(client, args)
@@ -2727,13 +2842,22 @@ def main():
             return_outputs(*get_script_code_command(client, args))
 
         elif command == 'core-action-status-get':
-            return_outputs(*action_status_get_command(client, args))
+            return_results(action_status_get_command(client, args))
 
         elif command == 'core-run-script':
             return_results(run_script_command(client, args))
 
         elif command == 'core-run-snippet-code-script':
-            return_results(run_snippet_code_script_command(client, args))
+            return_results(run_polling_command(client=client,
+                                               args=args,
+                                               cmd="core-run-snippet-code-script",
+                                               command_function=run_snippet_code_script_command,
+                                               command_decision_field="action_id",
+                                               results_function=action_status_get_command,
+                                               polling_field="status",
+                                               polling_value=["PENDING",
+                                                              "IN_PROGRESS",
+                                                              "PENDING_ABORT"]))
 
         elif command == 'core-get-script-execution-status':
             return_results(get_script_execution_status_command(client, args))
@@ -2745,16 +2869,52 @@ def main():
             return_results(get_script_execution_result_files_command(client, args))
 
         elif command == 'core-run-script-execute-commands':
-            return_results(run_script_execute_commands_command(client, args))
+            return_results(run_polling_command(client=client,
+                                               args=args,
+                                               cmd="core-run-script-execute-commands",
+                                               command_function=run_script_execute_commands_command,
+                                               command_decision_field="action_id",
+                                               results_function=action_status_get_command,
+                                               polling_field="status",
+                                               polling_value=["PENDING",
+                                                              "IN_PROGRESS",
+                                                              "PENDING_ABORT"]))
 
         elif command == 'core-run-script-delete-file':
-            return_results(run_script_delete_file_command(client, args))
+            return_results(run_polling_command(client=client,
+                                               args=args,
+                                               cmd="core-run-script-delete-file",
+                                               command_function=run_script_delete_file_command,
+                                               command_decision_field="action_id",
+                                               results_function=action_status_get_command,
+                                               polling_field="status",
+                                               polling_value=["PENDING",
+                                                              "IN_PROGRESS",
+                                                              "PENDING_ABORT"]))
 
         elif command == 'core-run-script-file-exists':
-            return_results(run_script_file_exists_command(client, args))
+            return_results(run_polling_command(client=client,
+                                               args=args,
+                                               cmd="core-run-script-file-exists",
+                                               command_function=run_script_file_exists_command,
+                                               command_decision_field="action_id",
+                                               results_function=action_status_get_command,
+                                               polling_field="status",
+                                               polling_value=["PENDING",
+                                                              "IN_PROGRESS",
+                                                              "PENDING_ABORT"]))
 
         elif command == 'core-run-script-kill-process':
-            return_results(run_script_kill_process_command(client, args))
+            return_results(run_polling_command(client=client,
+                                               args=args,
+                                               cmd="core-run-script-kill-process",
+                                               command_function=run_script_kill_process_command,
+                                               command_decision_field="action_id",
+                                               results_function=action_status_get_command,
+                                               polling_field="status",
+                                               polling_value=["PENDING",
+                                                              "IN_PROGRESS",
+                                                              "PENDING_ABORT"]))
 
         elif command == 'endpoint':
             return_results(endpoint_command(client, args))
