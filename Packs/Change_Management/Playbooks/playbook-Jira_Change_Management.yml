@@ -201,8 +201,8 @@ tasks:
       id: c352a37a-bc4e-45dd-80e1-46497f1d65b7
       version: -1
       name: Test configuration?
-      description: This task checks whether to exam the change request in the DEV environment
-        first.
+      description: This task checks whether to exam the change request in the DEV
+        environment first.
       type: condition
       iscommand: false
       brand: ""
@@ -362,10 +362,10 @@ tasks:
       id: d2e0d734-5c12-4350-8139-398dcd73e167
       version: -1
       name: PAN-OS create or edit policy
-      description: "This playbook will automate the process of creating or editing a\
-        \ policy.\nThe first task in the playbook checks if there is a security policy\
-        \ that matches the playbook inputs. If there is no security policy that\
-        \ matches, a new policy is created. If there is a security policy that\
+      description: "This playbook will automate the process of creating or editing\
+        \ a policy.\nThe first task in the playbook checks if there is a security\
+        \ policy that matches the playbook inputs. If there is no security policy\
+        \ that matches, a new policy is created. If there is a security policy that\
         \ matches, the user will be able to modify the existing policy or create a\
         \ new hardened policy."
       playbookName: PAN-OS create or edit policy
@@ -535,8 +535,8 @@ tasks:
       id: 84220764-4fb2-448b-879e-292b476368ad
       version: -1
       name: Ask security team to review the test results
-      description: Ask the security team to review the test results of the deployed rule
-        in the DEV environment.
+      description: Ask the security team to review the test results of the deployed
+        rule in the DEV environment.
       tags:
       - comment
       - verdict
@@ -720,8 +720,8 @@ tasks:
       id: 1dac7413-31bd-43b7-8456-8e519a544fac
       version: -1
       name: Are there logs?
-      description: 'This task checks if there are logs as a result of the "Panorama Query
-        Logs" playbook.'
+      description: 'This task checks if there are logs as a result of the "Panorama
+        Query Logs" playbook.'
       type: condition
       iscommand: false
       brand: ""
@@ -1023,8 +1023,8 @@ tasks:
       id: 6971ee47-07b0-43be-89e3-0d6f521ba544
       version: -1
       name: Did the test in DEV environment passed?
-      description: Check whether the values provided in the arguments are equal. If either
-        of the arguments are missing, no is returned.
+      description: Check whether the values provided in the arguments are equal. If
+        either of the arguments are missing, no is returned.
       type: condition
       iscommand: false
       brand: ""
@@ -1142,8 +1142,8 @@ inputs:
   value:
     simple: "No"
   required: false
-  description: 'By providing YES to this input, the requested firewall rule will be tested
-    in your test environment.'
+  description: 'By providing YES to this input, the requested firewall rule will be
+    tested in your test environment.'
   playbookInputQuery:
 - key: zone-src
   value:
@@ -1164,8 +1164,8 @@ inputs:
 - key: TestInstance
   value: {}
   required: false
-  description: The instance name of the firewall in the DEV environment for testing the new
-    rule.
+  description: The instance name of the firewall in the DEV environment for testing
+    the new rule.
   playbookInputQuery:
 - key: Action
   value:
@@ -1238,14 +1238,14 @@ inputs:
 - key: Closing_status_rejected
   value: {}
   required: false
-  description: 'The closing status in Jira is changing in the project templates.
-    Please provide the relevant closing status if the issue was rejected.'
+  description: 'The closing status in Jira is changing in the project templates. Please
+    provide the relevant closing status if the issue was rejected.'
   playbookInputQuery:
 - key: Closing_status_approved
   value: {}
   required: false
-  description: 'The closing status in Jira is changing in the project templates.
-    Please provide the relevant closing status if the issue was approved.
+  description: 'The closing status in Jira is changing in the project templates. Please
+    provide the relevant closing status if the issue was approved.'
   playbookInputQuery:
 - key: Target
   value: {}

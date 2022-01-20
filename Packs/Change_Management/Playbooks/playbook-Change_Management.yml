@@ -390,8 +390,8 @@ inputs:
   value:
     simple: "Yes"
   required: false
-  description: By providing the value "Yes" to this input, the "Panorama Query
-    Logs" playbook will be activated.
+  description: By providing the value "Yes" to this input, the "Panorama Query Logs"
+    playbook will be activated.
   playbookInputQuery:
 - key: addr-src
   value:
@@ -511,14 +511,14 @@ inputs:
 - key: TestConfigurations
   value: {}
   required: false
-  description: 'By providing YES to this input, the requested firewall rule will be tested
-    in your test environment. '
+  description: 'By providing YES to this input, the requested firewall rule will be
+    tested in your test environment. '
   playbookInputQuery:
 - key: TestInstance
   value: {}
   required: false
-  description: The instance name of the firewall in the DEV environment for testing the new
-    rule.
+  description: The instance name of the firewall in the DEV environment for testing
+    the new rule.
   playbookInputQuery:
 - key: Closing_status_approved
   value: {}
