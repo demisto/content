@@ -721,10 +721,9 @@ script:
       - RAW
       - USER_ENTERED
     - name: major_dimension
-      description: description
+      description: The major dimension of the values.
       required: true
       isArray: false
-      defaultValue: The major dimension of the values.
       auto: PREDEFINED
       predefined:
       - ROWS
@@ -733,8 +732,9 @@ script:
       description: The data that was read or to be written. This is an array of arrays,
         the outer array representing all the data and each inner array representing
         a major dimension. Each item in the inner array corresponds with one cell.
-        to be intered in the following way [1,2,3],[4,5,6] - where each bracket will
-        the row or columen, and each value inside will corresponde with a cell.
+        to be entered in the following way-
+        [1,2,3],[4,5,6]
+        where each bracket will be the row or columen, and each value inside will corresponde with a cell.
       required: true
       isArray: false
       defaultValue: ""
@@ -792,8 +792,9 @@ script:
       description: The data that was read or to be written. This is an array of arrays,
         the outer array representing all the data and each inner array representing
         a major dimension. Each item in the inner array corresponds with one cell.
-        to be intered in the following way [1,2,3],[4,5,6] - where each bracket will
-        the row or columen, and each value inside will corresponde with a cell.
+        to be entered in the following way-
+        [1,2,3],[4,5,6]
+        where each bracket will be the row or columen, and each value inside will corresponde with a cell.
       required: true
       isArray: false
       defaultValue: ""

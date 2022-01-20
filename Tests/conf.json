@@ -5446,7 +5446,7 @@
             "demisto/py3-tools": {
                 "memory_threshold": 105
             },
-            "demisto/googleapi-python3:1.0.0.25823": {
+            "demisto/googleapi-python3": {
                 "memory_threshold" : 150
             }
         }
