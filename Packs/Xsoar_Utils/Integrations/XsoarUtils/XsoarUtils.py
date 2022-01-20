@@ -75,8 +75,7 @@ def create_entry(obj: Main_Object, data: string, inv_id: string):
     }
     send_request(obj, path="/entry", method="Post", data=json.dumps(req_args))
 
-
-    def main():
+def main():
     obj = Main_Object()
     commands_list: Dict[str, Callable] = {"xsoar-create-entry": create_entry}
     if obj.run_env == "terminal":
