@@ -326,11 +326,11 @@ def parse_nesting_level(nesting_level_to_parse, output):
 
     elif nesting_level_to_parse == 'Inner file':
         # the last file in list it is the inner attached file
-        # todo: ask what about hr?
         email = output[-1]
         output = output[-1]
 
     return email, output
+
 
 def get_multi_value_offsets(data_value):
     ul_count = unpack('I', data_value[:4])[0]

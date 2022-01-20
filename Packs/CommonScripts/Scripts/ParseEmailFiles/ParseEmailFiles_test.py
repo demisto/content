@@ -6,7 +6,7 @@ import pytest
 import demistomock as demisto
 from CommonServerPython import entryTypes
 from ParseEmailFiles import MsOxMessage, main, convert_to_unicode, unfold, handle_msg, get_msg_mail_format, \
-    data_to_md, create_headers_map, DataModel
+    data_to_md, create_headers_map, DataModel, parse_nesting_level
 
 
 def exec_command_for_file(
@@ -1259,3 +1259,8 @@ def test_decode_attachment_payload_base64(payload, answer):
 
     from ParseEmailFiles import decode_attachment_payload
     assert answer == decode_attachment_payload(MockedMessage(payload))
+
+
+@pytest.mark.parametrize('nesting_level_to_parse, output, res', [('All files', ['output1'], ('output1', ['output1']))])
+def test_parse_nesting_level(nesting_level_to_parse, output, res):
+    assert parse_nesting_level(nesting_level_to_parse, output) == res
