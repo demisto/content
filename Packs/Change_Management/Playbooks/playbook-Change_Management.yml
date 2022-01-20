@@ -2,8 +2,8 @@ id: 'Change Management'
 version: -1
 name: 'Change Management'
 description: |-
-  If you are using Pan-os/panorama firewall and Jira or ServiceNow as a ticketing system this playbook will be a perfect match for your change management for FW process.
-  This playbook can be triggered by 2 different options fetch from ServiceNow or Jira and will help you manage and automate you change management process
+  If you are using PAN-OS/Panorama firewall and Jira or ServiceNow as a ticketing system this playbook is a perfect match for your change management for Firewall process.
+  This playbook can be triggered by 2 different options - a fetch from ServiceNow or Jira - and will help you manage and automate your change management process.
 starttaskid: "0"
 tasks:
   "0":
@@ -43,9 +43,9 @@ tasks:
       id: 8be6bb83-2565-455c-8b84-0b36de101cc7
       version: -1
       name: ServiceNow Change Management
-      description: "If you are using Pan-os/panorama firewall and ServiceNow as a\
-        \ ticketing system this playbook will be a perfect match for your change management\
-        \ for FW process.\nThis playbook will be triggered by fetch from ServiceNow\
+      description: "If you are using PAN-OS/Panorama firewall and ServiceNow as a\
+        \ ticketing system, this playbook is a perfect match for your change management\
+        \ for firewall process.\nThis playbook is triggered by a fetch from ServiceNow\
         \ and will help you manage and automate your change management process.  \
         \   "
       playbookName: ServiceNow Change Management
@@ -237,8 +237,8 @@ tasks:
       version: -1
       name: Jira Change Management
       description: |-
-        If you are using Pan-os/panorama firewall and Jira as a ticketing system this playbook will be a perfect match for your change management for FW process.
-        This playbook will be triggered by fetch from Jira and will help you manage and automate you change management process.
+        If you are using PAN-OS/Panorama firewall and Jira as a ticketing system, this playbook will be a perfect match for your change management for firewall process.
+        This playbook is triggered by a fetch from Jira and will help you manage and automate you change management process.
       playbookName: Jira Change Management
       type: playbook
       iscommand: false
@@ -371,7 +371,7 @@ inputs:
 - key: SecurityTeamEmail
   value: {}
   required: false
-  description: The email of the security team that approves the FW requests.
+  description: The email of the security team that approves the firewall requests.
   playbookInputQuery:
 - key: log_type
   value:
@@ -390,8 +390,8 @@ inputs:
   value:
     simple: "Yes"
   required: false
-  description: By providing the value "Yes" to this input the playbook "Panorama Query
-    Logs" will be activated.
+  description: By providing the value "Yes" to this input, the "Panorama Query
+    Logs" playbook will be activated.
   playbookInputQuery:
 - key: addr-src
   value:
@@ -476,12 +476,12 @@ inputs:
 - key: Target
   value: {}
   required: false
-  description: Target number of the firewall. Use only on a Panorama instance.
+  description: Target number of the firewall. Use only for a Panorama instance.
   playbookInputQuery:
 - key: Vsys
   value: {}
   required: false
-  description: Target vsys of the firewall. Use only on a Panorama instance.
+  description: Target vsys of the firewall. Use only for a Panorama instance.
   playbookInputQuery:
 - key: Rulename
   value: {}
@@ -511,31 +511,31 @@ inputs:
 - key: TestConfigurations
   value: {}
   required: false
-  description: 'By providing YES to this input the requested FW rule will be tested
+  description: 'By providing YES to this input, the requested firewall rule will be tested
     in your test environment. '
   playbookInputQuery:
 - key: TestInstance
   value: {}
   required: false
-  description: The instance name of the FW in DEV environment for testing the new
+  description: The instance name of the firewall in the DEV environment for testing the new
     rule.
   playbookInputQuery:
 - key: Closing_status_approved
   value: {}
   required: false
-  description: The closing status in Jira is changing by the  project templates, please
+  description: The closing status in Jira is changing in the project templates. Please
     provide the relevant closing status if the issue was approved.
   playbookInputQuery:
 - key: Closing_status_rejected
   value: {}
   required: false
-  description: The closing status in Jira is changing by the  project templates, please
+  description: The closing status in Jira is changing in the  project templates. Please
     provide the relevant closing status if the issue was rejected.
   playbookInputQuery:
 - key: Limit
   value: {}
   required: false
-  description: "Max number of API requests that the \nPanoramaSecurityPolicyMatchWrapper\
+  description: "Maximum number of API requests that the \nPanoramaSecurityPolicyMatchWrapper\
     \ script will send.\nThe default is 500."
   playbookInputQuery:
 outputs: []
