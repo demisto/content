@@ -290,10 +290,12 @@ def get_indicators_to_format(indicator_searcher: IndicatorsSearcher, request_arg
     list_fields = replace_field_name_to_output_format(request_args.fields_to_present)
     headers_was_writen = False
     files_by_category = {}  # type:Dict
+    ioc_counter = 0
     try:
         for ioc_res in indicator_searcher:
             fetched_iocs = ioc_res.get('iocs') or []
             for ioc in fetched_iocs:
+                ioc_counter += 1
                 if request_args.out_format == FORMAT_PROXYSG:
                     files_by_category = create_proxysg_out_format(ioc, files_by_category, request_args)
 
@@ -313,6 +315,8 @@ def get_indicators_to_format(indicator_searcher: IndicatorsSearcher, request_arg
                 elif request_args.out_format == FORMAT_CSV:
                     f.write(create_csv_out_format(headers_was_writen, list_fields, ioc, request_args))
                     headers_was_writen = True
+                if ioc_counter >= indicator_searcher.limit:
+                    break
 
     except Exception as e:
         demisto.error(f'Error parsing the following indicator: {ioc.get("value")}\n{e}')
