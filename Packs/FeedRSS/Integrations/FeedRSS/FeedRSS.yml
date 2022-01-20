@@ -119,7 +119,7 @@ script:
     description: Gets the reports from the RSS feed.
     execution: false
     name: rss-get-indicators
-  dockerimage: demisto/py3-tools:0.0.1.25751
+  dockerimage: demisto/feed-parser-html:1.0.0.24037
   feed: true
   isfetch: false
   longRunning: false
