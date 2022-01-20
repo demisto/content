@@ -43,7 +43,7 @@ script:
     description: Creates an entry into an investigation warroom or  by default on
       the playground.
     name: xsoar-create-entry
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.1.25933
   runonce: false
   script: ''
   subtype: python3
