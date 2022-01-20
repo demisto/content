@@ -1,0 +1,28 @@
+{
+    "name": "Change Management",
+    "description": "If you use Pan-Os or Panorama as your enterprise firewall and Jira or ServiceNow as your enterprise ticketing system, this pack will assist you to perform a well coordinated and documented process.",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2020-01-19T08:30:00Z",
+    "categories": [
+        "Case Management"
+    ],
+    "tags": [
+        "Use Case",
+        "Network"
+    ],
+    "useCases": [
+        "Network Security"
+    ],
+    "keywords": [
+        "Change Management",
+        "FireWall",
+        "Network"
+    ],
+    "marketplaces": [
+        "xsoar"
+    ]
+}
