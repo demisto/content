@@ -1,4 +1,5 @@
-If you are using Pan-os/panorama firewall and Jira as a ticketing system this playbook will be a perfect match for your change management for FW process.
+If you are using Pan-os/panorama firewall and Jira or ServiceNow as a ticketing system this playbook will be a perfect match for your change management for FW process.
+This playbook can be triggered by 2 different options fetch from ServiceNow or Jira and will help you manage and automate you change management process
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -47,6 +48,7 @@ This playbook does not use any commands.
 | TestInstance | The instance name of the FW in DEV environment for testing the new rule. |  | Optional |
 | Closing_status_approved | The closing status in Jira is changing by the  project templates, please provide the relevant closing status if the issue was approved. |  | Optional |
 | Closing_status_rejected | The closing status in Jira is changing by the  project templates, please provide the relevant closing status if the issue was rejected. |  | Optional |
+| Limit | Max number of API requests that the <br/>PanoramaSecurityPolicyMatchWrapper script will send.<br/>The default is 500. |  | Optional |
 
 ## Playbook Outputs
 ---
@@ -54,4 +56,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Change management](../doc_files/Change_management.png)
+![Change Management](../doc_files/Change_management.png)

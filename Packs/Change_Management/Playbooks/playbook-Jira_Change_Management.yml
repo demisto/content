@@ -356,10 +356,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: f7c5c6fe-2699-4599-8497-6613c1ea474c
+    taskid: d2e0d734-5c12-4350-8139-398dcd73e167
     type: playbook
     task:
-      id: f7c5c6fe-2699-4599-8497-6613c1ea474c
+      id: d2e0d734-5c12-4350-8139-398dcd73e167
       version: -1
       name: PAN-OS create or edit policy
       description: "This playbook will automate the process of creating or editing\
@@ -394,6 +394,9 @@ tasks:
       Email:
         complex:
           root: inputs.SecurityTeamEmail
+      Limit:
+        complex:
+          root: inputs.Limit
       Log_forwarding:
         complex:
           root: inputs.Log_forwarding
@@ -418,6 +421,12 @@ tasks:
       Source_zone:
         complex:
           root: inputs.zone-src
+      Target:
+        complex:
+          root: inputs.Target
+      Vsys:
+        complex:
+          root: inputs.Vsys
     separatecontext: true
     loop:
       iscommand: false
@@ -651,7 +660,7 @@ tasks:
       - "4"
     scriptarguments:
       closeReason:
-        simple: 'Request was rejected'
+        simple: 'Request was rejected '
       id:
         complex:
           root: incident
@@ -1085,12 +1094,12 @@ inputs:
       root: incident
       accessor: details
   required: false
-  description: 'Provide a summery for your firewall request.'
+  description: 'Provide a summery for your firewall request. '
   playbookInputQuery:
 - key: SecurityTeamEmail
   value: {}
   required: false
-  description: 'The email of the security team that approves the FW requests.'
+  description: 'The email of the security team that approves the FW requests. '
   playbookInputQuery:
 - key: log_type
   value:
@@ -1134,7 +1143,7 @@ inputs:
     simple: "No"
   required: false
   description: 'By providing YES to this input the requested FW rule will be tested
-    in your test environment.'
+    in your test environment. '
   playbookInputQuery:
 - key: zone-src
   value:
@@ -1248,7 +1257,13 @@ inputs:
   required: false
   description: Target vsys of the firewall. Use only on a Panorama instance.
   playbookInputQuery:
+- key: Limit
+  value: {}
+  required: false
+  description: "Max number of API requests that the \nPanoramaSecurityPolicyMatchWrapper\
+    \ script will send.\nThe default is 500."
+  playbookInputQuery:
 outputs: []
 tests:
 - No tests (auto formatted)
-fromversion: 6.0.0
+fromversion: 6.1.0

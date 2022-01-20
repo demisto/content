@@ -5,8 +5,8 @@ This playbook will be triggered by fetch from ServiceNow and will help you manag
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Panorama Query Logs
 * PAN-OS create or edit policy
+* Panorama Query Logs
 
 ### Integrations
 This playbook does not use any integrations.
@@ -15,11 +15,11 @@ This playbook does not use any integrations.
 * ExportToCSV
 
 ### Commands
+* servicenow-update-ticket
 * setIncident
+* servicenow-upload-file
 * panorama-create-rule
 * servicenow-add-link
-* servicenow-upload-file
-* servicenow-update-ticket
 * closeInvestigation
 
 ## Playbook Inputs
@@ -50,6 +50,7 @@ This playbook does not use any integrations.
 | Rule_position | Pre rule or Post rule \(Panorama instances\).<br/>Possible options:<br/>- post-rulebase<br/>- pre-rulebase |  | Optional |
 | Target | Target number of the firewall. Use only on a Panorama instance. |  | Optional |
 | Vsys | Target number of the firewall. Use only on a Panorama instance. |  | Optional |
+| Limit | Max number of API requests that the <br/>PanoramaSecurityPolicyMatchWrapper script will send.<br/>The default is 500. |  | Optional |
 
 ## Playbook Outputs
 ---

@@ -5,8 +5,8 @@ This playbook will be triggered by fetch from Jira and will help you manage and 
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Panorama Query Logs
 * PAN-OS create or edit policy
+* Panorama Query Logs
 
 ### Integrations
 This playbook does not use any integrations.
@@ -15,10 +15,10 @@ This playbook does not use any integrations.
 * ExportToCSV
 
 ### Commands
+* jira-issue-upload-file
 * panorama-create-rule
 * setIncident
 * closeInvestigation
-* jira-issue-upload-file
 * jira-edit-issue
 * jira-issue-add-comment
 
@@ -27,14 +27,14 @@ This playbook does not use any integrations.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| TicketSummary | Provide a summery for your firewall request. | incident.details | Optional |
-| SecurityTeamEmail | The email of the security team that approves the FW requests. |  | Optional |
+| TicketSummary | Provide a summery for your firewall request.  | incident.details | Optional |
+| SecurityTeamEmail | The email of the security team that approves the FW requests.  |  | Optional |
 | log_type | Log type to query. Can be: traffic, threat, wildfire, url or data-filtering. | traffic | Optional |
 | query | The query string by which to match criteria for the logs. This is similar to the query provided in the web interface under the Monitor tab when viewing the logs. |  | Optional |
 | addr-src | Source address. | incident.sourceips | Optional |
 | addr-dst | Destination address. | incident.destinationips | Optional |
 | port-dst | Destination port. | incident.dstports | Optional |
-| TestConfigurations | By providing YES to this input the requested FW rule will be tested in your test environment. | No | Optional |
+| TestConfigurations | By providing YES to this input the requested FW rule will be tested in your test environment.  | No | Optional |
 | zone-src | Firewall source zone. | incident.sourcenetworks | Optional |
 | zone-dst | Firewall destination zone. | incident.destinationnetworks | Optional |
 | TestInstance | The instance name of the FW in DEV environment for testing the new rule. |  | Optional |
@@ -52,6 +52,7 @@ This playbook does not use any integrations.
 | Closing_status_approved | The closing status in Jira is changing by the  project templates, please provide the relevant closing status if the issue was approved. |  | Optional |
 | Target | Target number of the firewall. Use only on a Panorama instance. |  | Optional |
 | Vsys | Target vsys of the firewall. Use only on a Panorama instance. |  | Optional |
+| Limit | Max number of API requests that the <br/>PanoramaSecurityPolicyMatchWrapper script will send.<br/>The default is 500. |  | Optional |
 
 ## Playbook Outputs
 ---

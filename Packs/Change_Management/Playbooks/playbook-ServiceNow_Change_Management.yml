@@ -326,10 +326,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: f0c58ac0-2364-489e-89a8-2ba527d10817
+    taskid: 4587a861-3b58-41c5-811f-f1ff7e05780f
     type: playbook
     task:
-      id: f0c58ac0-2364-489e-89a8-2ba527d10817
+      id: 4587a861-3b58-41c5-811f-f1ff7e05780f
       version: -1
       name: PAN-OS create or edit policy
       description: "This playbook will automate the process of creating or editing\
@@ -364,6 +364,9 @@ tasks:
       Email:
         complex:
           root: inputs.SecurityTeamEmail
+      Limit:
+        complex:
+          root: inputs.Limit
       Log_forwarding:
         complex:
           root: inputs.Log_forwarding
@@ -388,6 +391,12 @@ tasks:
       Source_zone:
         complex:
           root: inputs.zone-src
+      Target:
+        complex:
+          root: inputs.Target
+      Vsys:
+        complex:
+          root: inputs.Vsys
     separatecontext: true
     loop:
       iscommand: false
@@ -1352,7 +1361,13 @@ inputs:
   required: false
   description: Target number of the firewall. Use only on a Panorama instance.
   playbookInputQuery:
+- key: Limit
+  value: {}
+  required: false
+  description: "Max number of API requests that the \nPanoramaSecurityPolicyMatchWrapper\
+    \ script will send.\nThe default is 500."
+  playbookInputQuery:
 outputs: []
 tests:
 - No tests (auto formatted)
-fromversion: 6.0.0
+fromversion: 6.1.0

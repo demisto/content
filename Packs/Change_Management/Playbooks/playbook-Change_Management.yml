@@ -1,6 +1,9 @@
 id: 'Change Management'
 version: -1
 name: 'Change Management'
+description: |-
+  If you are using Pan-os/panorama firewall and Jira or ServiceNow as a ticketing system this playbook will be a perfect match for your change management for FW process.
+  This playbook can be triggered by 2 different options fetch from ServiceNow or Jira and will help you manage and automate you change management process
 starttaskid: "0"
 tasks:
   "0":
@@ -34,17 +37,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: db2c9d86-10d4-4fdd-84a0-e6a9999e025d
+    taskid: 8be6bb83-2565-455c-8b84-0b36de101cc7
     type: playbook
     task:
-      id: db2c9d86-10d4-4fdd-84a0-e6a9999e025d
+      id: 8be6bb83-2565-455c-8b84-0b36de101cc7
       version: -1
       name: ServiceNow Change Management
-      description: "If you are using Pan-os/panorama firewall and ServiceNow or Jira\
-        \ as a ticketing system this playbook will be a perfect match for your change\
-        \ management for FW process.\nThis playbook will be triggered by fetch from\
-        \ ServiceNow and will help you manage and automate your change management\
-        \ process.     "
+      description: "If you are using Pan-os/panorama firewall and ServiceNow as a\
+        \ ticketing system this playbook will be a perfect match for your change management\
+        \ for FW process.\nThis playbook will be triggered by fetch from ServiceNow\
+        \ and will help you manage and automate your change management process.  \
+        \   "
       playbookName: ServiceNow Change Management
       type: playbook
       iscommand: false
@@ -62,6 +65,9 @@ tasks:
       Description:
         complex:
           root: inputs.Description
+      Limit:
+        complex:
+          root: inputs.Limit
       Log_forwarding:
         complex:
           root: inputs.Log_forwarding
@@ -224,10 +230,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 97cfbfdf-4c3f-433b-8a35-fbeadaf3a61d
+    taskid: dcbca05c-4279-4a7b-894d-d89707e77035
     type: playbook
     task:
-      id: 97cfbfdf-4c3f-433b-8a35-fbeadaf3a61d
+      id: dcbca05c-4279-4a7b-894d-d89707e77035
       version: -1
       name: Jira Change Management
       description: |-
@@ -256,6 +262,9 @@ tasks:
       Description:
         complex:
           root: inputs.Description
+      Limit:
+        complex:
+          root: inputs.Limit
       Log_forwarding:
         complex:
           root: inputs.Log_forwarding
@@ -523,9 +532,13 @@ inputs:
   description: The closing status in Jira is changing by the  project templates, please
     provide the relevant closing status if the issue was rejected.
   playbookInputQuery:
+- key: Limit
+  value: {}
+  required: false
+  description: "Max number of API requests that the \nPanoramaSecurityPolicyMatchWrapper\
+    \ script will send.\nThe default is 500."
+  playbookInputQuery:
 outputs: []
 tests:
 - No tests (auto formatted)
-fromversion: 6.0.0
-description: If you are using Pan-os/panorama firewall and Jira as a ticketing system
-  this playbook will be a perfect match for your change management for FW process.
+fromversion: 6.1.0
