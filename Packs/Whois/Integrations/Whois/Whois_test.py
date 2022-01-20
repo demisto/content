@@ -189,9 +189,8 @@ def test_ip_command(mocker):
     assert result[0].outputs.get('query') == '4.4.4.4'
     assert result[0].indicator.to_context() == {
         'IP(val.Address && val.Address == obj.Address)': {
-            'Organization': {'Name': u'LEVEL3, US'},
+            'Organization': {'Name': u'LVLT-STATIC-4-4-16'},
             'FeedRelatedIndicators': [{'type': 'CIDR', 'description': None, 'value': u'4.4.0.0/16'}],
-            'Geo': {'Country': u'US'},
             'ASN': u'3356',
             'Address': '4.4.4.4'},
         'DBotScore('

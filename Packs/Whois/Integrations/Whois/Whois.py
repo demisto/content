@@ -8391,6 +8391,17 @@ def create_outputs(whois_result, domain, reliability, query=None):
     return md, standard_ec, dbot_score.to_context()
 
 
+def prepare_readable_ip_data(response):
+    network_data = response.get('network', {})
+    return {'query': response.get('query'),
+            'asn': response.get('asn'),
+            'asn_cidr': response.get('asn_cidr'),
+            'asn_date': response.get('asn_date'),
+            'country_code': network_data.get('country'),
+            'network_name': network_data.get('name')
+            }
+
+
 '''COMMANDS'''
 
 
@@ -8440,21 +8451,21 @@ def ip_command(ips, reliability):
             value=response.get('network', {}).get('cidr'),
             indicator_type='CIDR'
         )
+        network_data = response.get('network', {})
         ip_output = Common.IP(
             ip=ip,
             asn=response.get('asn'),
-            geo_country=response.get('asn_country_code'),
-            organization_name=response.get('asn_description'),
+            geo_country=network_data.get('country'),
+            organization_name=network_data.get('name'),
             dbot_score=dbot_score,
             feed_related_indicators=[related_feed]
         )
+        readable_data = prepare_readable_ip_data(response)
         result = CommandResults(
             outputs_prefix='Whois.IP',
             outputs_key_field='query',
             outputs=response,
-            readable_output=tableToMarkdown('Whois results:', response,
-                                            ['query', 'asn', 'asn_cidr', 'asn_country_code', 'asn_date',
-                                             'asn_description']),
+            readable_output=tableToMarkdown('Whois results:', readable_data),
             raw_response=response,
             indicator=ip_output
         )
@@ -8516,6 +8527,7 @@ def setup_proxy():
         raise ValueError("Un supported proxy scheme: {}".format(scheme))
     socks.set_default_proxy(proxy_type[0], host, port, proxy_type[1])
     socket.socket = socks.socksocket  # type: ignore
+
 
 ''' EXECUTION CODE '''
 
