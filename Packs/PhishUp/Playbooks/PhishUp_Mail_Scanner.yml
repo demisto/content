@@ -15,7 +15,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
+      description: ""
     nexttasks:
       '#none#':
       - "1"
@@ -36,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 8cb679ca-c36a-47b4-8608-56ef50d2576a
+    taskid: fbfebd3b-becd-4f59-84ed-e7636bc2b4eb
     type: regular
     task:
-      id: 8cb679ca-c36a-47b4-8608-56ef50d2576a
+      id: fbfebd3b-becd-4f59-84ed-e7636bc2b4eb
       version: -1
       name: Extracting URLs from Email
       description: commands.local.cmd.extract.indicators
@@ -52,7 +52,7 @@ tasks:
       - "12"
     scriptarguments:
       text:
-        simple: ${incident.labels.Email/html}
+        simple: ${inputs.EmailBodyHtml}
     separatecontext: false
     view: |-
       {
@@ -104,10 +104,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: da33748b-4416-412a-8854-0e3a7118523b
+    taskid: 29526a20-cfa9-42fd-8c4b-138f068b275a
     type: condition
     task:
-      id: da33748b-4416-412a-8854-0e3a7118523b
+      id: 29526a20-cfa9-42fd-8c4b-138f068b275a
       version: -1
       name: Evaluate PhishUp Response
       description: Evaluate PhishUp Service Result
@@ -115,12 +115,8 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      '#default#':
-      - "20"
       Clean:
       - "4"
-      Error:
-      - "11"
       Phish:
       - "7"
     separatecontext: false
@@ -145,16 +141,6 @@ tasks:
           right:
             value:
               simple: Phish
-    - label: Error
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: PhishUp.AverageResult
-            iscontext: true
-          right:
-            value:
-              simple: Error
     view: |-
       {
         "position": {
@@ -180,7 +166,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
+      description: ""
     nexttasks:
       '#none#':
       - "6"
@@ -210,7 +196,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
+      description: ""
     separatecontext: false
     view: |-
       {
@@ -237,7 +223,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
+      description: ""
     nexttasks:
       '#none#':
       - "15"
@@ -337,36 +323,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "11":
-    id: "11"
-    taskid: e06a2dbc-7027-481e-8e44-28a4765def0a
-    type: title
-    task:
-      id: e06a2dbc-7027-481e-8e44-28a4765def0a
-      version: -1
-      name: If there is a system error
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "6"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 490,
-          "y": 880
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "12":
     id: "12"
     taskid: 520cb2df-1a4b-4864-811c-49d5a90512be
@@ -418,7 +374,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
+      description: ""
     nexttasks:
       '#none#':
       - "6"
@@ -426,7 +382,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 920,
+          "x": 630,
           "y": 880
         }
       }
@@ -439,10 +395,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: f1dd1aee-db50-4649-8ea6-dd2a37e9990a
+    taskid: d123bcfc-9f9b-4ea6-88a1-5792745d2da2
     type: condition
     task:
-      id: f1dd1aee-db50-4649-8ea6-dd2a37e9990a
+      id: d123bcfc-9f9b-4ea6-88a1-5792745d2da2
       version: -1
       name: Should PhishUp Action Work?
       description: Should PhishUp Action Work?
@@ -463,7 +419,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: inputs.Should PhishUp Action Work?
+              simple: inputs.ShouldPhishUpActionWork
             iscontext: true
           right:
             value:
@@ -473,7 +429,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: inputs.Should PhishUp Action Work?
+              simple: inputs.ShouldPhishUpActionWork
             iscontext: true
           right:
             value:
@@ -525,10 +481,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 40f18e5b-e866-4a0d-80eb-fcebfc8c58d1
+    taskid: dd209e4d-1533-47e6-8e63-d12ed2ec9abf
     type: condition
     task:
-      id: 40f18e5b-e866-4a0d-80eb-fcebfc8c58d1
+      id: dd209e4d-1533-47e6-8e63-d12ed2ec9abf
       version: -1
       name: Execute PhishUp Action
       description: Execute PhishUp Action
@@ -629,7 +585,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
+      description: ""
     nexttasks:
       '#none#':
       - "6"
@@ -639,36 +595,6 @@ tasks:
         "position": {
           "x": -1390,
           "y": 2420
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "20":
-    id: "20"
-    taskid: fc63608b-d05e-4adc-880c-8e03a7581be1
-    type: title
-    task:
-      id: fc63608b-d05e-4adc-880c-8e03a7581be1
-      version: -1
-      name: If there is a system error
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "6"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1370,
-          "y": 880
         }
       }
     note: false
@@ -689,7 +615,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
+      description: ""
     nexttasks:
       '#none#':
       - "6"
@@ -714,20 +640,20 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 2815,
-        "width": 3140,
+        "width": 2400,
         "x": -1390,
         "y": -130
       }
     }
   }
 inputs:
-- key: Email Body Html
+- key: EmailBodyHtml
   value:
-    simple: ${incident.emailbodyhtml}
+    simple: ${incident.labels.Email/html}
   required: true
-  description: Email Mail Body for extracting URLs. Default Value is ${incident.details}
+  description: Email Mail Body for extracting URLs. Default Value is "${incident.emailbodyhtml}"
   playbookInputQuery:
-- key: Should PhishUp Action Work?
+- key: ShouldPhishUpActionWork
   value:
     simple: "True"
   required: true
