@@ -379,8 +379,8 @@ jobs:
           when: always
           command: |
             ./Tests/scripts/is_file_up_to_date.sh .circleci/config.yml
-            ./Tests/scripts/is_file_up_to_date.sh .dev-requirements-py2.txt
-            ./Tests/scripts/is_file_up_to_date.sh .dev-requirements-py3.txt
+            ./Tests/scripts/is_file_up_to_date.sh dev-requirements-py2.txt
+            ./Tests/scripts/is_file_up_to_date.sh dev-requirements-py3.txt
       - run:
           name: Verify Base Branch for Contribution
           when: always
