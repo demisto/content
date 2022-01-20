@@ -3,15 +3,15 @@ commonfields:
   id: Xsoar_Utils
   version: -1
 configuration:
-- display: 'XSOAR Server URL '
+- display: 'XSOAR SERVER URL '
   name: url
   required: true
   type: 0
-- display: XSOAR Server API_Key
+- display: XSOAR SERVER API KEY
   name: apikey
   required: true
   type: 4
-- display: XSOAR Server playground-id
+- display: XSOAR Server PLAYGROUND ID
   name: playground-id
   required: true
   type: 0
