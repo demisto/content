@@ -723,7 +723,8 @@
         },
         {
             "integrations": "Vertica",
-            "playbookID": "Vertica Test"
+            "playbookID": "failing-playbook",
+            "is_mockable": false
         },
         {
             "integrations": "Server Message Block (SMB) v2",

@@ -60,6 +60,7 @@ def connect_db():
         'database': DATABASE,
         'connection_timeout': 5
     }
+
     try:
         connection = vertica_python.connect(**DB_PARAMS)
         return connection

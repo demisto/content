@@ -50,5 +50,5 @@ script:
   runonce: false
   subtype: python3
 tests:
-- Vertica Test
+- failing-playbook
 fromversion: 5.0.0
