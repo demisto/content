@@ -3,7 +3,7 @@
     "description": "Maps incoming ServiceNow incidents fields.",
     "feed": false,
     "fromVersion": "6.0.0",
-    "id": "ServiceNow-incoming-mapper",
+    "id": "ServiceNow - Incoming Mapper",
     "mapping": {
         "ServiceNow Ticket": {
             "dontMapEventToLabels": false,
@@ -42,10 +42,10 @@
                                 "args": {
                                     "dayfirst": {
                                         "isContext": false,
-                                         "value": {
-                                                  "complex": null,
-                                                  "simple": "false"
-                                                }
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "false"
+                                        }
                                     },
                                     "fuzzy": {
                                         "isContext": false,
@@ -604,9 +604,9 @@
                                     "dayfirst": {
                                         "isContext": false,
                                         "value": {
-                                                  "complex": null,
-                                                  "simple": "false"
-                                                }
+                                            "complex": null,
+                                            "simple": "false"
+                                        }
                                     },
                                     "fuzzy": {
                                         "isContext": false,
@@ -650,10 +650,10 @@
                                 "args": {
                                     "dayfirst": {
                                         "isContext": false,
-                                         "value": {
-                                                  "complex": null,
-                                                  "simple": "false"
-                                                }
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "false"
+                                        }
                                     },
                                     "fuzzy": {
                                         "isContext": false,
@@ -764,9 +764,9 @@
                     "simple": ""
                 },
                 "ServiceNow Ticket ID": {
-					"complex": null,
-					"simple": "sys_id"
-				}
+                    "complex": null,
+                    "simple": "sys_id"
+                }
             }
         },
         "dbot_classification_incident_type_all": {
@@ -827,6 +827,606 @@
                         ]
                     },
                     "simple": ""
+                }
+            }
+        },
+        "ServiceNow SIR Incident": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Assignment Group": {
+                    "simple": "assignment_group"
+                },
+                "ServiceNow Caller": {
+                    "simple": "caller"
+                },
+                "Destination IP": {
+                    "simple": "dest_ip"
+                },
+                "Escalation": {
+                    "simple": "escalation"
+                },
+                "Remediation SLA": {
+                    "simple": "sla_due"
+                },
+                "Risk score": {
+                    "simple": "risk_score"
+                },
+                "ServiceNow Assigned To": {
+                    "simple": "assigned_to"
+                },
+                "ServiceNow Category": {
+                    "simple": "category"
+                },
+                "ServiceNow Closed By": {
+                    "simple": "closed_by"
+                },
+                "ServiceNow Due Date": {
+                    "complex": {
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "due_date"
+                                        }
+                                    },
+                                    "operator": "isNotEmpty"
+                                }
+                            ]
+                        ],
+                        "root": "due_date",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "dayfirst": {
+                                        "value": {
+                                            "simple": "false"
+                                        }
+                                    },
+                                    "fuzzy": {},
+                                    "yearfirst": {}
+                                },
+                                "operator": "DateStringToISOFormat"
+                            },
+                            {
+                                "args": {
+                                    "formatter": {}
+                                },
+                                "operator": "FormattedDateToEpoch"
+                            },
+                            {
+                                "operator": "TimeStampToDate"
+                            }
+                        ]
+                    }
+                },
+                "ServiceNow Impact": {
+                    "complex": {
+                        "filters": [],
+                        "root": "impact",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "1 - High"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "1"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "2 - Medium"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "2"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "3 - Low"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "3"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            }
+                        ]
+                    },
+                    "simple": "impact"
+                },
+                "ServiceNow Notify": {
+                    "complex": {
+                        "filters": [],
+                        "root": "notify",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "1 - Do Not Notify"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "1"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "2 - Send Email"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "2"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "3 - Telephone"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "3"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            }
+                        ]
+                    }
+                },
+                "ServiceNow Opened Date": {
+                    "complex": {
+                        "filters": [],
+                        "root": "sys_created_on",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "dayfirst": {
+                                        "value": {
+                                            "simple": "false"
+                                        }
+                                    },
+                                    "fuzzy": {},
+                                    "yearfirst": {}
+                                },
+                                "operator": "DateStringToISOFormat"
+                            },
+                            {
+                                "args": {
+                                    "formatter": {}
+                                },
+                                "operator": "FormattedDateToEpoch"
+                            },
+                            {
+                                "operator": "TimeStampToDate"
+                            }
+                        ]
+                    }
+                },
+                "ServiceNow Priority": {
+                    "complex": {
+                        "filters": [],
+                        "root": "priority",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "1 - Critical"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "1"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "2 - High"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "2"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "3 - Moderate"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "3"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "4 - Low"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "4"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "5 - Planning"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "5"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            }
+                        ]
+                    }
+                },
+                "ServiceNow Resolution Notes": {
+                    "simple": "close_notes"
+                },
+                "ServiceNow State": {
+                    "complex": {
+                        "filters": [],
+                        "root": "state",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "Closed"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "3"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "Cancelled"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "7"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "Analysis"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "16"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "Contain"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "18"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "Eradicate"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "19"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "Recover"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "20"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "Review"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "100"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "New"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "1"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            }
+                        ]
+                    }
+                },
+                "ServiceNow Ticket ID": {
+                    "simple": "sys_id"
+                },
+                "ServiceNow Urgency": {
+                    "complex": {
+                        "filters": [],
+                        "root": "urgency",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "1 - High"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "1"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "2 - Medium"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "2"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "3 - Low"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "3"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            }
+                        ]
+                    }
+                },
+                "Source IP": {
+                    "simple": "source_ip"
+                },
+                "State": {
+                    "simple": "state"
+                },
+                "Sub Category": {
+                    "simple": "subcategory"
+                },
+                "Ticket Closed Date": {
+                    "complex": {
+                        "filters": [],
+                        "root": "closed_at",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "dayfirst": {
+                                        "value": {
+                                            "simple": "false"
+                                        }
+                                    },
+                                    "fuzzy": {},
+                                    "yearfirst": {}
+                                },
+                                "operator": "DateStringToISOFormat"
+                            },
+                            {
+                                "args": {
+                                    "formatter": {}
+                                },
+                                "operator": "FormattedDateToEpoch"
+                            },
+                            {
+                                "operator": "TimeStampToDate"
+                            }
+                        ]
+                    }
+                },
+                "Ticket Number": {
+                    "simple": "number"
+                },
+                "dbotMirrorDirection": {
+                    "simple": "mirror_direction"
+                },
+                "dbotMirrorId": {
+                    "simple": "sys_id"
+                },
+                "dbotMirrorInstance": {
+                    "simple": "mirror_instance"
+                },
+                "dbotMirrorTags": {
+                    "simple": "mirror_tags"
+                },
+                "details": {
+                    "simple": "description"
+                },
+                "name": {
+                    "simple": "short_description"
+                },
+                "severity": {
+                    "complex": {
+                        "filters": [],
+                        "root": "severity",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "3"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "1"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "1"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "3"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            }
+                        ]
+                    }
                 }
             }
         }
