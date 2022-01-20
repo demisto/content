@@ -413,6 +413,12 @@ script:
       name: attach_cids
       required: false
       secret: false
+    - default: false
+      description: The email address from which to reply.
+      isArray: false
+      name: from
+      required: false
+      secret: false
     deprecated: false
     description: Sends an email using Microsoft Graph.
     execution: false
