@@ -533,17 +533,17 @@
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
-							{
-								"dropEffect": "move",
-								"endCol": 2,
-								"fieldId": "saassecurityasseturl",
-								"height": 53,
-								"id": "417a1bf0-46d6-11ec-a2fc-a7b522c8a67e",
-								"index": 1,
-								"listId": "caseinfoid-56502550-2c33-11ec-890f-9fd8e3babc6e",
-								"sectionItemType": "field",
-								"startCol": 0
-							},
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "saassecurityasseturl",
+                                "height": 53,
+                                "id": "417a1bf0-46d6-11ec-a2fc-a7b522c8a67e",
+                                "index": 1,
+                                "listId": "caseinfoid-56502550-2c33-11ec-890f-9fd8e3babc6e",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
                             {
                                 "endCol": 2,
                                 "fieldId": "saassecurityremediationtype",
