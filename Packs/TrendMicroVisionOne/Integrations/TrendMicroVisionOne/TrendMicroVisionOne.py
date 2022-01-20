@@ -313,7 +313,6 @@ def run_polling_command(
         "taskStatus") not in (
             "success", "failed", "timeout", "skipped"):
         # schedule next poll
-        demisto.results(POLLING_MESSAGE)
         polling_args = {
             'actionId': args.get("actionId"),
             'interval_in_seconds': interval_in_secs,
@@ -403,10 +402,10 @@ def add_or_remove_from_block_list(
     if not description:
         description = EMPTY_STRING
     body = {
-        VALUE_TYPE: value_type,
-        TARGET_VALUE: target_value,
-        PRODUCT_ID: product_id,
-        DESCRIPTION: description,
+        'valueType': value_type,
+        'targetValue': target_value,
+        'productId': product_id,
+        'description': description,
     }
     if command == ADD_BLOCKLIST_COMMAND:
         response = client.http_request(

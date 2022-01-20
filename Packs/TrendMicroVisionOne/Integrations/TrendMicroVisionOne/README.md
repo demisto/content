@@ -344,5 +344,17 @@ Note: The URL received from the 'trendmicro-visionone-download-information-for-c
 | VisionOne.Submit_File_to_Sandbox.task_id | String | Task ID of the running task |
 | VisionOne.Submit_File_to_Sandbox.digest | Object | Sha value of the file |
 
+17. `trendmicro-visionone-check-task-status`
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| polling | If the command is to run at the polling interval. | Optional | 
+| actionId | Action ID of the task you would like to get the status of. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| VisionOne.Task_Status.taskStatus | String | Status of the task queried. |
 ---
 [View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/trend-micro-vision-one)
