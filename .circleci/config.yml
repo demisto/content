@@ -159,7 +159,11 @@ references:
         # store in bash env so we load our venv in each step
         echo 'source /home/circleci/project/venv/bin/activate' >> $BASH_ENV
         git config diff.renameLimit 6000
+        
+        echo "test remotes"
+        git remote -v 
 
+        
         echo "========== Build Parameters =========="
         set | grep -E "^NIGHTLY=|^CONTRIB_BRANCH=|^SDK_REF"
         python --version
