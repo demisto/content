@@ -8687,7 +8687,11 @@ def get_size_of_object(input_object):
     :return: Size of input_object in bytes.
     :rtype: ``int``
     """
-    from collections import deque, Mapping
+    if IS_PY3 and PY_VER_MINOR >= 10:
+        from collections.abc import Mapping
+    else:
+        from collections import Mapping
+    from collections import deque
     from numbers import Number
     # IS_PY3:
     # ZERO_DEPTH_BASES = (str, bytes, Number, range, bytearray) if IS_PY3 else (str, bytes, Number, bytearray)
