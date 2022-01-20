@@ -4462,7 +4462,8 @@
                 
             ],
             "instance_names": [
-                "ews_mail_sender_srtest02"
+                "ews_mail_sender_srtest02",
+                "virus_total_v3"
             ],
             "external_playbook_config": 
             {
