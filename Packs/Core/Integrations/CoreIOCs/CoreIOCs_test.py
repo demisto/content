@@ -646,15 +646,6 @@ class TestCommands:
         tim_insert_jsons(client)
         assert http_request.call_args.kwargs['url_suffix'] == 'tim_insert_jsons/', 'tim_insert_jsons command url changed'
 
-    def test_get_changes(self, mocker):
-        mocker.patch.object(demisto, 'getIntegrationContext', return_value={'ts': 1591142400000})
-        mocker.patch.object(demisto, 'createIndicators')
-        mocker.patch.object(demisto, 'searchIndicators', return_value={})
-        core_res = {'reply': list(map(lambda core_ioc: core_ioc[0], TestCoreIOCToDemisto.data_test_core_ioc_to_demisto))}
-        mocker.patch.object(Client, 'http_request', return_value=core_res)
-        get_changes(client)
-        core_ioc_to_timeline(list(map(lambda x: str(x[0].get('RULE_INDICATOR')), TestCoreIOCToDemisto.data_test_core_ioc_to_demisto)))    # noqa: E501
-
 
 class TestParams:
     tags_test = [
@@ -683,30 +674,6 @@ class TestParams:
             'AMBER'
         )
     ]
-
-    @pytest.mark.parametrize('demisto_ioc, core_ioc, param_value, expected_tags, expected_tlp_color', tags_test)
-    def test_feed_tags_and_tlp_color(self, demisto_ioc, core_ioc, param_value, expected_tags, expected_tlp_color, mocker):
-        """
-            Given:
-                - IOC in Core format.
-
-            Then:
-                - IOC in demisto format.
-        """
-        mocker.patch.object(demisto, 'searchIndicators', return_value={})
-        mocker.patch.object(demisto, 'params', return_value=param_value)
-        mocker.patch.object(demisto, 'getIntegrationContext', return_value={'ts': 1591142400000})
-        mocker.patch.object(demisto, 'searchIndicators', return_value={})
-        outputs = mocker.patch.object(demisto, 'createIndicators')
-        Client.tag = demisto.params().get('feedTags', demisto.params().get('tag', Client.tag))
-        Client.tlp_color = demisto.params().get('tlp_color')
-        client = Client({'url': 'yana'})
-        core_res = {'reply': list(map(lambda core_ioc: core_ioc[0], TestCoreIOCToDemisto.data_test_core_ioc_to_demisto))}
-        mocker.patch.object(Client, 'http_request', return_value=core_res)
-        get_changes(client)
-        output = outputs.call_args.args[0]
-        assert output[0]['fields']['tags'] == expected_tags
-        assert output[0]['fields'].get('trafficlightprotocol') == expected_tlp_color
 
 
 def test_file_deleted_for_create_file_sync(mocker):

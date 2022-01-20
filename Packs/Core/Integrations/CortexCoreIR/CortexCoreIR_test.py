@@ -167,9 +167,7 @@ def test_isolate_endpoint(requests_mock):
     }
 
     res = isolate_endpoint_command(client, args)
-    assert res.readable_output == 'The isolation request has been submitted successfully on Endpoint 1111.\n' \
-                              'To check the endpoint isolation status please run:' \
-                              ' !core-get-endpoints endpoint_id_list=1111 and look at the [is_isolated] field.'
+    assert res.readable_output == 'The isolation request has been submitted successfully on Endpoint 1111.\n'
 
 
 def test_isolate_endpoint_unconnected_machine(requests_mock, mocker):
@@ -228,9 +226,7 @@ def test_unisolate_endpoint(requests_mock):
     }
 
     res = unisolate_endpoint_command(client, args)
-    assert res.readable_output == 'The un-isolation request has been submitted successfully on Endpoint 1111.\n' \
-                              'To check the endpoint isolation status please run:' \
-                              ' !core-get-endpoints endpoint_id_list=1111 and look at the [is_isolated] field.'
+    assert res.readable_output == 'The un-isolation request has been submitted successfully on Endpoint 1111.\n'
 
 
 def test_unisolate_endpoint_unconnected_machine(requests_mock):
@@ -259,8 +255,8 @@ def test_unisolate_endpoint_unconnected_machine(requests_mock):
         "suppress_disconnected_endpoint_error": True
     }
 
-    readable_output, _, _ = unisolate_endpoint_command(client, args)
-    assert readable_output == 'Warning: un-isolation action is pending for the following disconnected endpoint: 1111.'
+    res = unisolate_endpoint_command(client, args)
+    assert res.readable_output == 'Warning: un-isolation action is pending for the following disconnected endpoint: 1111.'
 
 
 def test_unisolate_endpoint_pending_isolation(requests_mock):
@@ -624,9 +620,9 @@ def test_quarantine_files_command(requests_mock):
         base_url=f'{Core_URL}/public_api/v1', headers={}
     )
     client._headers = {}
-    markdown, context, raw = quarantine_files_command(client, test_data['command_args'])
+    res = quarantine_files_command(client, test_data['command_args'])
 
-    assert quarantine_files_expected_tesult == context
+    assert quarantine_files_expected_tesult == res.outputs
 
 
 def test_get_quarantine_status_command(requests_mock):
@@ -650,9 +646,9 @@ def test_get_quarantine_status_command(requests_mock):
         base_url=f'{Core_URL}/public_api/v1', headers={}
     )
     client._headers = {}
-    markdown, context, raw = get_quarantine_status_command(client, test_data['command_args'])
+    res = get_quarantine_status_command(client, test_data['command_args'])
 
-    assert quarantine_files_expected_tesult == context
+    assert quarantine_files_expected_tesult == res.outputs
 
 
 def test_restore_file_command(requests_mock):
@@ -673,9 +669,9 @@ def test_restore_file_command(requests_mock):
         base_url=f'{Core_URL}/public_api/v1', headers={}
     )
     client._headers = {}
-    markdown, context, raw = restore_file_command(client, {"file_hash": "123"})
+    res = restore_file_command(client, {"file_hash": "123"})
 
-    assert restore_expected_tesult == context
+    assert restore_expected_tesult == res.outputs
 
 
 def test_endpoint_scan_command(requests_mock):
@@ -698,9 +694,9 @@ def test_endpoint_scan_command(requests_mock):
         base_url=f'{Core_URL}/public_api/v1', headers={}
     )
     client._headers = {}
-    markdown, context, raw = endpoint_scan_command(client, test_data['command_args'])
+    res = endpoint_scan_command(client, test_data['command_args'])
 
-    assert scan_expected_tesult == context
+    assert scan_expected_tesult == res.outputs
 
 
 def test_endpoint_scan_command_scan_all_endpoints(requests_mock):
@@ -722,9 +718,9 @@ def test_endpoint_scan_command_scan_all_endpoints(requests_mock):
         base_url=f'{Core_URL}/public_api/v1', headers={}
     )
     client._headers = {}
-    markdown, context, raw = endpoint_scan_command(client, test_data['command_args'])
+    res = endpoint_scan_command(client, test_data['command_args'])
 
-    assert scan_expected_tesult == context
+    assert scan_expected_tesult == res.outputs
 
 
 def test_endpoint_scan_command_scan_all_endpoints_no_filters_error(requests_mock):
@@ -793,9 +789,9 @@ def test_endpoint_scan_abort_command(requests_mock):
         base_url=f'{Core_URL}/public_api/v1', headers={}
     )
     client._headers = {}
-    markdown, context, raw = endpoint_scan_abort_command(client, test_data['command_args'])
+    res = endpoint_scan_abort_command(client, test_data['command_args'])
 
-    assert scan_expected_tesult == context
+    assert scan_expected_tesult == res.outputs
 
 
 def test_endpoint_scan_abort_command_all_endpoints(requests_mock):
@@ -817,9 +813,9 @@ def test_endpoint_scan_abort_command_all_endpoints(requests_mock):
         base_url=f'{Core_URL}/public_api/v1', headers={}
     )
     client._headers = {}
-    markdown, context, raw = endpoint_scan_abort_command(client, test_data['command_args'])
+    res = endpoint_scan_abort_command(client, test_data['command_args'])
 
-    assert scan_expected_tesult == context
+    assert scan_expected_tesult == res.outputs
 
 
 def test_get_update_args_unassgning_user():
@@ -973,12 +969,12 @@ def test_retrieve_files_command(requests_mock):
     client = Client(
         base_url=f'{Core_URL}/public_api/v1', headers={}
     )
-    hr, context, raw_response = retrieve_files_command(client, {'endpoint_ids': 'aeec6a2cc92e46fab3b6f621722e9916',
+    res = retrieve_files_command(client, {'endpoint_ids': 'aeec6a2cc92e46fab3b6f621722e9916',
                                                                 'windows_file_paths': 'C:\\Users\\demisto\\Desktop\\demisto.txt'})
 
-    assert hr == tableToMarkdown(name='Retrieve files', t=result, headerTransform=string_to_table_header)
-    assert context == retrieve_expected_result
-    assert raw_response == {'action_id': 1773}
+    assert res.readable_output == tableToMarkdown(name='Retrieve files', t=result, headerTransform=string_to_table_header)
+    assert res.outputs == retrieve_expected_result
+    assert res.raw_response == {'action_id': 1773}
 
 
 def test_retrieve_files_command_using_general_file_path(requests_mock):
@@ -1005,12 +1001,12 @@ def test_retrieve_files_command_using_general_file_path(requests_mock):
     client = Client(
         base_url=f'{Core_URL}/public_api/v1', headers={}
     )
-    hr, context, raw_response = retrieve_files_command(client, {'endpoint_ids': 'aeec6a2cc92e46fab3b6f621722e9916',
+    res = retrieve_files_command(client, {'endpoint_ids': 'aeec6a2cc92e46fab3b6f621722e9916',
                                                                 'generic_file_path': 'C:\\Users\\demisto\\Desktop\\demisto.txt'})
 
-    assert hr == tableToMarkdown(name='Retrieve files', t=result, headerTransform=string_to_table_header)
-    assert context == retrieve_expected_result
-    assert raw_response == {'action_id': 1773}
+    assert res.readable_output == tableToMarkdown(name='Retrieve files', t=result, headerTransform=string_to_table_header)
+    assert res.outputs == retrieve_expected_result
+    assert res.raw_response == {'action_id': 1773}
 
 
 def test_retrieve_files_command_using_general_file_path_without_valid_endpint(requests_mock):
@@ -1223,10 +1219,10 @@ def test_action_status_get_command(requests_mock):
         'action_id': '1810'
     }
 
-    hr, context, raw_response = action_status_get_command(client, args)
-    assert hr == tableToMarkdown(name='Get Action Status', t=result, removeNull=True)
-    assert context == action_status_get_command_expected_result
-    assert raw_response == result
+    res = action_status_get_command(client, args)
+    assert res.readable_output == tableToMarkdown(name='Get Action Status', t=result, removeNull=True)
+    assert res.outputs == action_status_get_command_expected_result
+    assert res.raw_response == result
 
 
 def test_sort_by_key__only_main_key():
