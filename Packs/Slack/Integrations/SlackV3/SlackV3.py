@@ -1344,7 +1344,7 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
                             name = file_obj.get('name')
                             file_ = fileResult(name, data, investigation_id=investigation_id)
                             demisto.debug('sending file')
-                            # demisto.createFile()
+                            demisto.createFile()
                             await handle_file(
                                 investigation_id,
                                 file_,
@@ -1701,6 +1701,7 @@ def slack_send():
             except Exception:
                 demisto.info('Slack - could not parse JSON from entitlement message.')
     file_dict = MirrorInvestigation.get_file_from_incoming_entry(args)
+    demisto.debug(f'file found {file_dict}')
     response = slack_send_request(to, channel, group, entry, ignore_add_url, thread_id, message=message, blocks=blocks,
                                   channel_id=channel_id, file_dict=file_dict)
 
