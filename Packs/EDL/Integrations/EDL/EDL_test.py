@@ -92,7 +92,7 @@ class TestHelperFunctions:
             - return the edl from the system file
         """
         import EDL as edl
-        edl.EDL_ON_DEMAND_CACHE_PATH = 'EDL_test/TestHelperFunctions/iocs_cache_values_text.txt'
+        edl.EDL_ON_DEMAND_CACHE_PATH = 'test_data/iocs_cache_values_text.txt'
         mocker.patch.object(edl, 'get_integration_context', return_value={})
         actual_edl = edl.get_edl_on_demand()
         with open(edl.EDL_ON_DEMAND_CACHE_PATH, 'r') as f:
@@ -210,7 +210,7 @@ class TestHelperFunctions:
         """
         from EDL import create_json_out_format, RequestArguments
         returned_output = []
-        with open('EDL_test/TestHelperFunctions/demisto_url_iocs.json', 'r') as iocs_json_f:
+        with open('test_data/demisto_url_iocs.json', 'r') as iocs_json_f:
             iocs_json = json.loads(iocs_json_f.read())
 
             # strips port numbers
@@ -239,7 +239,7 @@ class TestHelperFunctions:
           - assert the result
         """
         from EDL import create_csv_out_format, RequestArguments
-        with open('EDL_test/TestHelperFunctions/demisto_url_iocs.json', 'r') as iocs_json_f:
+        with open('test_data/demisto_url_iocs.json', 'r') as iocs_json_f:
             iocs_json = json.loads(iocs_json_f.read())
             request_args = RequestArguments(query='', drop_invalids=True, url_port_stripping=True,
                                             url_protocol_stripping=True)
@@ -264,7 +264,7 @@ class TestHelperFunctions:
           - assert the result
         """
         from EDL import create_mwg_out_format, RequestArguments
-        with open('EDL_test/TestHelperFunctions/demisto_url_iocs.json', 'r') as iocs_json_f:
+        with open('test_data/demisto_url_iocs.json', 'r') as iocs_json_f:
             iocs_json = json.loads(iocs_json_f.read())
             request_args = RequestArguments(query='', drop_invalids=True, url_port_stripping=True,
                                             url_protocol_stripping=True)
@@ -292,7 +292,7 @@ class TestHelperFunctions:
         """
         from EDL import create_proxysg_out_format, RequestArguments, create_proxysg_all_category_out_format
         files_by_category = {}
-        with open('EDL_test/TestHelperFunctions/demisto_url_iocs.json', 'r') as iocs_json_f:
+        with open('test_data/demisto_url_iocs.json', 'r') as iocs_json_f:
             iocs_json = json.loads(iocs_json_f.read())
 
         request_args = RequestArguments(query='', drop_invalids=True, url_port_stripping=True,
