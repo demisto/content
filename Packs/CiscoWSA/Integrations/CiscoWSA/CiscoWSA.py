@@ -16,6 +16,7 @@ class Client(BaseClient):
                        raise_on_redirect=False, raise_on_status=False, error_handler=None, empty_valid_codes=None,
                        **kwargs):
         try:
+            print("Guy ha meleh !")
             # Replace params if supplied
             address = full_url if full_url else urljoin(self._base_url, url_suffix)
             headers = headers if headers else self._headers
