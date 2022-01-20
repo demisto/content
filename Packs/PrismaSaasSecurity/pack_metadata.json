@@ -1,5 +1,5 @@
 {
-    "name": "Saas Security (Beta)",
+    "name": "SaaS Security (Beta)",
     "description": "Provides unparalleled visibility and precise control of SaaS applications using an extensive library of application signatures.",
     "support": "xsoar",
     "currentVersion": "1.2.4",
