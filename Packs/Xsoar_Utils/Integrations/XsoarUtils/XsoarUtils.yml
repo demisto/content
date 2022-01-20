@@ -3,7 +3,7 @@ commonfields:
   id: Xsoar_Utils
   version: -1
 configuration:
-- display: 'XSOAR SERVER URL '
+- display: XSOAR SERVER URL
   name: url
   required: true
   type: 0
