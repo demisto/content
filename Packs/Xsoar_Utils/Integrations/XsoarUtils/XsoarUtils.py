@@ -62,7 +62,7 @@ def send_request(obj: Main_Object, path: str, method="get", data="",test=False):
         if (res.status_code == 200):
             demisto.results('ok')
         else:
-            return_error('Authentication error, please validate your credentials.')
+            return_error(f"please validate your credentials.{res.text}")
 
 
 def create_entry(obj: Main_Object, data: string, inv_id: string):
