@@ -5,6 +5,8 @@ import tempfile
 import pytest
 import os
 from tempfile import mkdtemp
+import demistomock as demisto
+from EDL import DONT_COLLAPSE, initialize_edl_context
 
 IOC_RES_LEN = 38
 
@@ -176,6 +178,15 @@ class TestHelperFunctions:
                            'rtyuiopqwertyuiopqwertyuiop\n'
 
     def test_create_json_out_format(self):
+        """
+        Given:
+          - RequestArguments
+          - Indicator info
+        When:
+          - request json outbound format
+        Then:
+          - assert the result
+        """
         from EDL import create_json_out_format, RequestArguments
         returned_output = []
         with open('EDL_test/TestHelperFunctions/demisto_url_iocs.json', 'r') as iocs_json_f:
@@ -197,6 +208,15 @@ class TestHelperFunctions:
             assert json.loads(returned_output) == iocs_json
 
     def test_create_csv_out_format(self):
+        """
+        Given:
+          - RequestArguments
+          - Indicator info With CustomFields
+        When:
+          - request csv outbound format
+        Then:
+          - assert the result
+        """
         from EDL import create_csv_out_format, RequestArguments
         with open('EDL_test/TestHelperFunctions/demisto_url_iocs.json', 'r') as iocs_json_f:
             iocs_json = json.loads(iocs_json_f.read())
@@ -205,14 +225,23 @@ class TestHelperFunctions:
             returned_output = ''
             not_first_call = False
             for ioc in iocs_json:
-                returned_output += (create_csv_out_format(not_first_call, ['value', 'indicator_type'], ioc,
+                returned_output += (create_csv_out_format(not_first_call, ['value', 'indicator_type', 'test'], ioc,
                                                           request_args))
                 not_first_call = True
 
-            assert returned_output == 'name,type\n"1.2.3.4/wget","URL"\n"www.demisto.com/cool","URL"\n' \
-                                      '"www.demisto.com/*cool","URL"\n'
+            assert returned_output == 'name,type\n"1.2.3.4/wget","URL","test"\n"www.demisto.com/cool","URL","test"\n' \
+                                      '"www.demisto.com/*cool","URL","None"\n'
 
     def test_create_mwg_out_format(self):
+        """
+        Given:
+          - RequestArguments
+          - Indicator info
+        When:
+          - request mwg outbound format
+        Then:
+          - assert the result
+        """
         from EDL import create_mwg_out_format, RequestArguments
         with open('EDL_test/TestHelperFunctions/demisto_url_iocs.json', 'r') as iocs_json_f:
             iocs_json = json.loads(iocs_json_f.read())
@@ -228,6 +257,35 @@ class TestHelperFunctions:
             assert returned_output == 'type=string\n"1.2.3.4/wget" "AutoFocus Feed"\n"www.demisto.com/cool" ' \
                                       '"AutoFocus V2,VirusTotal,Alien Vault OTX TAXII Feed"\n"www.demisto.com/*cool" ' \
                                       '"AutoFocus V2,VirusTotal,Alien Vault OTX TAXII Feed"\n'
+
+    def test_create_proxysg_out_format(self):
+        """
+        Given:
+          - RequestArguments
+          - Indicator info
+        When:
+          - request proxysg outbound format
+        Then:
+          - assert files_by_category as 3 keys
+          - assert the result
+        """
+        from EDL import create_proxysg_out_format, RequestArguments, create_proxysg_all_category_out_format
+        files_by_category = {}
+        with open('EDL_test/TestHelperFunctions/demisto_url_iocs.json', 'r') as iocs_json_f:
+            iocs_json = json.loads(iocs_json_f.read())
+
+        request_args = RequestArguments(query='', drop_invalids=True, url_port_stripping=True,
+                                        url_protocol_stripping=True)
+        for ioc in iocs_json:
+            files_by_category = create_proxysg_out_format(ioc, files_by_category, request_args)
+
+        assert len(files_by_category) == 3
+        result_file = tempfile.TemporaryFile(mode='w+t')
+        result_file = create_proxysg_all_category_out_format(result_file, files_by_category)
+        result_file.seek(0)
+        assert result_file.read() == 'define category category1\n1.2.3.4/wget\nend\ndefine category category2\n' \
+                                     'www.demisto.com/cool\nend\ndefine category bc_category\nwww.demisto.com/*cool\n' \
+                                     'end\n'
 
     def test_validate_basic_authentication(self):
         """Test Authentication"""
@@ -427,3 +485,47 @@ class TestHelperFunctions:
         assert res.drop_invalids == request_args["di"]
         assert res.collapse_ips == COLLAPSE_TO_RANGES
         assert res.add_comment_if_empty == request_args["ce"]
+
+
+def test_initialize_edl_context():
+    """
+    Given:
+      - the params
+    When:
+      - config the instance
+    Then:
+      - assert the integrationContext is saved properly
+    """
+    params = {'edl_size': '200',
+              'indicators_query': '*',
+              'collapse_ips': DONT_COLLAPSE,
+              'url_port_stripping': False,
+              'url_protocol_stripping': True,
+              'drop_invalids': True,
+              'add_comment_if_empty': False,
+              'mwg_type': "string",
+              'category_default': 'bc_category',
+              'category_attribute': 'test1,test2',
+              'fields_filter': 'value,type',
+              'format': 'CSV',
+              'csv_text': True,
+              'url_truncate': False}
+
+    initialize_edl_context(params)
+    assert demisto.integrationContext == {'last_query': '*',
+                                          'out_format': 'CSV',
+                                          'last_limit': 200,
+                                          'last_offset': 0,
+                                          'drop_invalids': True,
+                                          'url_port_stripping': False,
+                                          'collapse_ips': "Don't Collapse",
+                                          'add_comment_if_empty': False,
+                                          'mwg_type': 'string',
+                                          'bc_category': 'bc_category',
+                                          'category_attribute': ['test1', 'test2'],
+                                          'fields_to_present': 'name,type',
+                                          'csv_text': True,
+                                          'url_protocol_stripping': True,
+                                          'url_truncate': False,
+                                          'UpdateEDL': True
+                                          }
