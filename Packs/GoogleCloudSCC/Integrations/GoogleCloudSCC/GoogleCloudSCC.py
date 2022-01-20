@@ -1301,7 +1301,7 @@ def finding_state_update_command(client: GoogleSccClient, args: Dict) -> Command
 
     :param client: SccClient Object.
     :param args: Command argument(s).
-    :return: CommandResults object with context and human-readable.
+    :return: The updated state.
     """
 
     # Get validated command args
