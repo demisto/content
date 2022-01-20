@@ -140,11 +140,11 @@
                     "complex": null,
                     "simple": "in_mirror_error"
                 },
-                "SaaS Security Asset Owner": {
+                "Saas Security Asset Owner": {
                     "complex": null,
                     "simple": "asset_owner_name"
                 },
-                "SaaS Security Asset Owner Email": {
+                "Saas Security Asset Owner Email": {
                     "complex": null,
                     "simple": "asset_owner_email"
                 }
