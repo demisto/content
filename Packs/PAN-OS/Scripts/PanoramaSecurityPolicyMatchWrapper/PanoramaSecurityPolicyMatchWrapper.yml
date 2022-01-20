@@ -29,11 +29,11 @@ args:
 - description: A comma-separated list of destination ports.
   name: destination_port
   isArray: true
-- description: Maximum number of API calls that script sends.
+- description: Maximum number of API calls the script sends.
   name: limit
   defaultValue: '500'
 comment: 'A wrapper script for the panorama-security-policy-match command that receives
-  multiple values for the source, destination and destination port arguments and performs
+  multiple values for the source, destination, and destination port arguments and performs
   the policy match for each combination of the inputs.'
 commonfields:
   id: PanoramaSecurityPolicyMatchWrapper
