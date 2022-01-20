@@ -983,7 +983,7 @@ def initialize_edl_context(params: dict):
     category_attribute = params.get('category_attribute', '')
     fields_to_present = params.get('fields_filter', '')
     out_format = params.get('format', FORMAT_TEXT)
-    csv_text = argToBoolean(params.get('csv_text'))
+    csv_text = argToBoolean(params.get('csv_text', False))
     url_truncate = params.get('url_truncate', False)
 
     if params.get('use_legacy_query'):
