@@ -304,4 +304,3 @@ def test_get_raw_response_with_a_refer_server_that_fails(mocker):
     domain = "test.plus"
     response = get_whois_raw(domain=domain, server=server)
     assert response == [mock_response]
-
