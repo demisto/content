@@ -13,6 +13,7 @@ Configuring the Trend Micro Vision One integration requires API credentials gene
 4. Click on the **Permissions** button and assign the following permissions to the role:
 
 | **Category** | **Application** | **Permission** |
+| --- | --- | --- |
 | Threat Intelligence | Suspicious Object Management | View, filter, and search |
 | Threat Intelligence | Suspicious Object Management | Manage lists and configure settings |
 | Threat Intelligence | Suspicious Object Management | View object in Sandbox Analysis |
