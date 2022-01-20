@@ -17,7 +17,7 @@
         },
         {
             "integrations": "LogRhythmRest V2",
-            "playbookID": "LogRhythmRestV2-test",
+            "playbookID": "LogRhythmRestV2-test"
         },
         {
             "playbookID": "Base64Decode - Test"
