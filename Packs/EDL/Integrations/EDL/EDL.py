@@ -449,7 +449,7 @@ def create_csv_out_format(headers_was_writen: bool, list_fields: List, ioc, requ
     """format the ioc to csv format.
 
     Args:
-        headers_was_writen (bool): .
+        headers_was_writen (bool): Whether if the headers was writen to the file.
         list_fields (list): the fields to return.
         ioc (dict): the indicator info
         request_args (RequestArguments): all the request arguments.

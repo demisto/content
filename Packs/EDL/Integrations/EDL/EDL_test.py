@@ -167,6 +167,7 @@ class TestHelperFunctions:
                 'zxqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwert'
                 'yuiopqwertyuiopqwertyuiopqwertyuiop", "indicator_type": "URL"}\n'
                 '{"value": "demisto.com", "indicator_type": "URL"}')
+
         mocker.patch.object(edl, 'get_indicators_to_format', return_value=f)
         request_args = edl.RequestArguments(query='', limit=3, url_port_stripping=True, url_protocol_stripping=True,
                                             url_truncate=True)
@@ -176,6 +177,26 @@ class TestHelperFunctions:
                            'wertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwert' \
                            'yuiopqwertyuiopqwertyuiopyuioplkjhgfdsazxqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwe' \
                            'rtyuiopqwertyuiopqwertyuiop\n'
+        f = tempfile.TemporaryFile(mode='w+t')
+        f.write('{"value": "https://google.com", "indicator_type": "URL"}\n'
+                '{"value": "demisto.com:7000", "indicator_type": "URL"}\n'
+                '{"value": "demisto.com/qwertqwertyuioplkjhgfdsazxqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyu'
+                'iopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopyuioplkjhgfdsa'
+                'zxqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwert'
+                'yuiopqwertyuiopqwertyuiopqwertyuiop", "indicator_type": "URL"}\n'
+                '{"value": "demisto.com", "indicator_type": "URL"}')
+        mocker.patch.object(edl, 'get_indicators_to_format', return_value=f)
+        request_args = edl.RequestArguments(out_format='CSV', query='', limit=3, url_port_stripping=True,
+                                            url_protocol_stripping=True, url_truncate=True)
+        edl_v = edl.create_new_edl(request_args)
+        assert edl_v == '{"value": "https://google.com", "indicator_type": "URL"}\n' \
+                        '{"value": "demisto.com:7000", "indicator_type": "URL"}\n' \
+                        '{"value": "demisto.com/qwertqwertyuioplkjhgfdsazxqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyu' \
+                        'iopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopyuioplkjhgfdsa' \
+                        'zxqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwert' \
+                        'yuiopqwertyuiopqwertyuiopqwertyuiop", "indicator_type": "URL"}\n' \
+                        '{"value": "demisto.com", "indicator_type": "URL"}' \
+
 
     def test_create_json_out_format(self):
         """
