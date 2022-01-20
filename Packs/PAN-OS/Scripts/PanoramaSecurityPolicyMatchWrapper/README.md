@@ -1,4 +1,4 @@
-A wrapper script for the panorama-security-policy-match command that receives multiple values for the source, destination and destination port arguments and performs the policy match for each combination of the inputs.
+A wrapper script for the ***panorama-security-policy-match*** command that receives multiple values for the source, destination, and destination port arguments and performs the policy match for each combination of the inputs.
 
 ## Script Data
 ---
