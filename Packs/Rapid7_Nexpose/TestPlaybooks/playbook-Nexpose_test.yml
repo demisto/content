@@ -268,7 +268,7 @@ tasks:
       assets:
         simple: ${Nexpose.Asset.AssetId}
       format:
-        simple: xml
+        simple: nexpose-simple-xml
       name: {}
       template: {}
     separatecontext: false
@@ -315,7 +315,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: xml
+              simple: nexpose-simple-xml
       - - operator: isEqualString
           left:
             value:

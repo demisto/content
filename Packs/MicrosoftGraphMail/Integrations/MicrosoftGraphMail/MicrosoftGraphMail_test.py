@@ -5,7 +5,8 @@ import requests_mock
 
 from CommonServerPython import *
 from MicrosoftGraphMail import MsGraphClient, build_mail_object, assert_pages, build_folders_path, \
-    add_second_to_str_date, list_mails_command, item_result_creator, create_attachment, reply_email_command
+    add_second_to_str_date, list_mails_command, item_result_creator, create_attachment, reply_email_command, \
+    send_email_command, list_attachments_command
 from MicrosoftApiModule import MicrosoftClient
 import demistomock as demisto
 
@@ -420,6 +421,62 @@ def test_create_attachment(mocker, function_name, attachment_type):
 
 
 @pytest.mark.parametrize('client', [oproxy_client(), self_deployed_client()])
+def test_list_attachments_with_name(mocker, client):
+    """
+    Given:
+        - list attachments command
+        - all attachments has a name
+
+    When:
+        - parsing email attachments
+
+    Then:
+        - Validate that the attachments are being parsed correctly
+
+    """
+    output_prefix = 'MSGraphMailAttachment(val.ID === obj.ID)'
+    with open('test_data/list_attachment_result.json') as attachment_result:
+        args = {"user_id": "example"}
+        raw_response = json.load(attachment_result)
+        mocker.patch.object(client, 'list_attachments', return_value=raw_response)
+        mocker.patch.object(demisto, 'results')
+        list_attachments_command(client, args)
+        context = demisto.results.call_args[0][0].get('EntryContext')
+
+        assert context.get(output_prefix).get('Attachment')[0].get('ID') == 'someID'
+        assert context.get(output_prefix).get('Attachment')[0].get('Name') == 'someName'
+        assert context.get(output_prefix).get('Attachment')[0].get('Type') == 'application/octet-stream'
+
+
+@pytest.mark.parametrize('client', [oproxy_client(), self_deployed_client()])
+def test_list_attachments_without_name(mocker, client):
+    """
+    Given:
+        - list attachments command
+        - there is an attachment without a name
+
+    When:
+        - parsing email attachments
+
+    Then:
+        - Validate that the attachments are being parsed correctly and the name is equal to the ID
+
+    """
+    output_prefix = 'MSGraphMailAttachment(val.ID === obj.ID)'
+    with open('test_data/list_attachment_result_no_name.json') as attachment_result:
+        args = {"user_id": "example"}
+        raw_response = json.load(attachment_result)
+        mocker.patch.object(client, 'list_attachments', return_value=raw_response)
+        mocker.patch.object(demisto, 'results')
+        list_attachments_command(client, args)
+        context = demisto.results.call_args[0][0].get('EntryContext')
+
+        assert context.get(output_prefix).get('Attachment')[0].get('ID') == 'someID'
+        assert context.get(output_prefix).get('Attachment')[0].get('Name') == 'someID'
+        assert context.get(output_prefix).get('Attachment')[0].get('Type') == 'application/octet-stream'
+
+
+@pytest.mark.parametrize('client', [oproxy_client(), self_deployed_client()])
 def test_reply_mail_command(client, mocker):
     """
     Given:
@@ -444,3 +501,91 @@ def test_reply_mail_command(client, mocker):
     assert reply_message.outputs['subject'] == 'Re: ' + args['subject']
     assert reply_message.outputs['toRecipients'] == args['to']
     assert reply_message.outputs['bodyPreview'] == args['body']
+
+
+SEND_MAIL_COMMAND_ARGS = [
+    (
+        oproxy_client(),
+        {
+            'to': ['ex@example.com'],
+            'htmlBody': "<b>This text is bold</b>",
+            'subject': "test subject",
+            'from': "ex1@example.com"
+        },
+    ),
+    (
+        self_deployed_client(),
+        {
+            'to': ['ex@example.com'],
+            'htmlBody': "<b>This text is bold</b>",
+            'subject': "test subject",
+            'from': "ex1@example.com"
+        },
+    ),
+    (
+        oproxy_client(),
+        {
+            'to': ['ex@example.com'],
+            'body': "test body",
+            'subject': "test subject",
+            'from': "ex1@example.com"
+        }
+    ),
+    (
+        self_deployed_client(),
+        {
+            'to': ['ex@example.com'],
+            'body': "test body",
+            'subject': "test subject",
+            'from': "ex1@example.com"
+        }
+    )
+]
+
+
+@pytest.mark.parametrize('client, args', SEND_MAIL_COMMAND_ARGS)
+def test_send_mail_command(mocker, client, args):
+    """
+        Given:
+            - send-mail command's arguments
+
+        When:
+            - sending a mail
+
+        Then:
+            - validates that http request to send-mail was called with the correct values.
+    """
+    with requests_mock.Mocker() as request_mocker:
+        from_email = args.get('from')
+
+        mocker.patch.object(client.ms_client, 'get_access_token')
+        send_mail_mocker = request_mocker.post(
+            f'https://graph.microsoft.com/v1.0/users/{from_email}/SendMail'
+        )
+
+        send_email_command(client, args)
+
+        assert send_mail_mocker.called
+        message = send_mail_mocker.last_request.json().get('message')
+        assert message
+        assert message.get('toRecipients')[0].get('emailAddress').get("address") == args.get('to')[0]
+        assert message.get('body').get('content') == args.get('htmlBody') or args.get('body')
+        assert message.get('subject') == args.get('subject')
+
+
+@pytest.mark.parametrize('server_url, expected_endpoint', [('https://graph.microsoft.us', 'gcc-high'),
+                                                           ('https://dod-graph.microsoft.us', 'dod'),
+                                                           ('https://graph.microsoft.de', 'de'),
+                                                           ('https://microsoftgraph.chinacloudapi.cn', 'cn')])
+def test_server_to_endpoint(server_url, expected_endpoint):
+    """
+    Given:
+        - Host address for national endpoints
+    When:
+        - Creating a new MsGraphClient
+    Then:
+        - Verify that the host address is translated to the correct endpoint code, i.e. com/gcc-high/dod/de/cn
+    """
+    from MicrosoftApiModule import GRAPH_BASE_ENDPOINTS
+
+    assert GRAPH_BASE_ENDPOINTS[server_url] == expected_endpoint

@@ -2,7 +2,7 @@
     "name": "DevSecOps",
     "description": "DevSecOps CI/CD Orchestration Integration Pack.",
     "support": "community",
-    "currentVersion": "1.0.4",
+    "currentVersion": "1.0.6",
     "author": "Ayman Mahmoud",
     "githubUser": [
         "ayman-m"
@@ -15,5 +15,9 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": []
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

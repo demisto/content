@@ -1,0 +1,23 @@
+commonfields:
+  id: UnEscapeURLs
+  version: -1
+name: UnEscapeURLs
+script: ''
+type: javascript
+tags:
+- indicator-format
+comment: |-
+  Extract URLs redirected by security tools like Proofpoint.
+  Changes https://urldefense.proofpoint.com/v2/url?u=https-3A__example.com_something.html -> https://example.com/something.html
+  Also, un-escape URLs that are escaped for safety with formats like hxxps://www[.]demisto[.]com
+enabled: true
+args:
+- name: input
+  description: The URL(s) to process
+  isArray: true
+scripttarget: 0
+runonce: false
+runas: DBotWeakRole
+tests:
+- UnEscapeURL-Test
+fromversion: 5.0.0

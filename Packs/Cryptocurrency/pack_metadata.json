@@ -2,13 +2,19 @@
     "name": "Cryptocurrency",
     "description": "This Content Pack enables you to add a reputation for cryptocurrency addresses.",
     "support": "xsoar",
-    "currentVersion": "1.1.11",
+    "currentVersion": "1.1.12",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "created": "2020-11-10T09:28:10Z",
-    "categories": [],
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
     "tags": [],
     "useCases": [],
-    "keywords": []
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

@@ -1,0 +1,279 @@
+category: IT Services
+commonfields:
+  id: Azure Storage Table
+  version: -1
+configuration:
+- display: Storage account name
+  displaypassword: Account SAS Token
+  name: credentials
+  required: true
+  type: 9
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+description: Create and Manage Azure Storage Tables and Entities.
+display: Azure Storage Table
+name: Azure Storage Table
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: 'The name of the new table to create. Rules for naming tables can
+        be found here: https://docs.microsoft.com/en-us/rest/api/storageservices/understanding-the-table-service-data-model'
+      isArray: false
+      name: table_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Creates a new table in a storage account.
+    execution: false
+    name: azure-storage-table-create
+    outputs:
+    - contextPath: AzureStorageTable.Table.name
+      description: Table name.
+      type: String
+  - arguments:
+    - default: false
+      description: The name of the table to delete.
+      isArray: false
+      name: table_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Delete the specified table and any data it contains.
+    execution: true
+    name: azure-storage-table-delete
+  - arguments:
+    - default: false
+      defaultValue: '50'
+      description: Number of Tables to retrieve. Default is 50.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: "Filter Tables Query expression. \nInformation about Query expression\
+        \ structure can be found here: https://docs.microsoft.com/en-us/rest/api/storageservices/querying-tables-and-entities#constructing-filter-strings"
+      isArray: false
+      name: filter
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '1'
+      description: Page Number.  Default is 1.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    deprecated: false
+    description: List tables under the specified account.
+    execution: false
+    name: azure-storage-table-query
+    outputs:
+    - contextPath: AzureStorageTable.Table.name
+      description: Table name.
+      type: String
+  - arguments:
+    - default: false
+      description: Table name.
+      isArray: false
+      name: table_name
+      required: true
+      secret: false
+    - default: false
+      description: Unique identifier for the partition within a given table.
+      isArray: false
+      name: partition_key
+      required: true
+      secret: false
+    - default: false
+      description: Unique identifier for an entity within a given partition.
+      isArray: false
+      name: row_key
+      required: true
+      secret: false
+    - default: false
+      description: 'Entity fields in JSON format: { "Key1": Value1, "Key2": Value2}'
+      isArray: false
+      name: entity_fields
+      required: true
+      secret: false
+    deprecated: false
+    description: Insert a new entity into a table.
+    execution: false
+    name: azure-storage-table-entity-insert
+    outputs:
+    - contextPath: AzureStorageTable.Table.Entity.PartitionKey
+      description: Entity partition key.
+      type: String
+    - contextPath: AzureStorageTable.Table.Entity.RowKey
+      description: Entity row key.
+      type: String
+    - contextPath: AzureStorageTable.Table.Entity.Timestamp
+      description: Entity last update UTC time.
+      type: Date
+    - contextPath: AzureStorageTable.Table.name
+      description: Entity table name.
+      type: String
+  - arguments:
+    - default: false
+      description: Entity table name.
+      isArray: false
+      name: table_name
+      required: true
+      secret: false
+    - default: false
+      description: Unique identifier for the partition within a given table.
+      isArray: false
+      name: partition_key
+      required: true
+      secret: false
+    - default: false
+      description: Unique identifier for an entity within a given partition.
+      isArray: false
+      name: row_key
+      required: true
+      secret: false
+    - default: false
+      description: 'Entity fields in JSON format: { "Key1": Value1, "Key2": Value2}'
+      isArray: false
+      name: entity_fields
+      required: true
+      secret: false
+    deprecated: false
+    description: Update an existing entity in a table. The Update Entity command does
+      not replace the existing entity.
+    execution: false
+    name: azure-storage-table-entity-update
+  - arguments:
+    - default: false
+      description: Table name.
+      isArray: false
+      name: table_name
+      required: true
+      secret: false
+    - default: false
+      description: Unique identifier for the partition within a given table.
+      isArray: false
+      name: partition_key
+      required: true
+      secret: false
+    - default: false
+      description: Unique identifier for an entity within a given partition.
+      isArray: false
+      name: row_key
+      required: true
+      secret: false
+    - default: false
+      description: 'Entity records in JSON format: { "Key1": Value1, "Key2": Value2}'
+      isArray: false
+      name: entity_fields
+      required: true
+      secret: false
+    deprecated: false
+    description: Replace an existing entity in a table. The Replace Entity command
+      replace the entire entity and can be used to remove properties.
+    execution: true
+    name: azure-storage-table-entity-replace
+  - arguments:
+    - default: false
+      description: Entity table name.
+      isArray: false
+      name: table_name
+      required: true
+      secret: false
+    - default: false
+      description: Unique identifier for the partition within a given table. If specified,
+        'row_key' argument must also be specified.
+      isArray: false
+      name: partition_key
+      required: false
+      secret: false
+    - default: false
+      description: Unique identifier for an entity within a given partition. If specified,
+        'partition_key' argument must also be specified.
+      isArray: false
+      name: row_key
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Filter Entities query expression.
+        Information about Query expression structure can be found here: https://docs.microsoft.com/en-us/rest/api/storageservices/querying-tables-and-entities#constructing-filter-strings
+      isArray: false
+      name: filter
+      required: false
+      secret: false
+    - default: false
+      description: Comma-separated Entity properties to return. If not specified -
+        all fields will be retrieved.
+      isArray: true
+      name: select
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: |-
+        Number of entities to retrieve. Default is 50.
+        This argument is will be ignored when 'partition_key' or 'row_key' arguments are provided.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '1'
+      description: |-
+        Page number. Default is 1.
+        This argument is will be ignored when 'partition_key' or 'row_key' arguments are provided.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    deprecated: false
+    description: Query Entities in a table.
+    execution: false
+    name: azure-storage-table-entity-query
+    outputs:
+    - contextPath: AzureStorageTable.Table.name
+      description: Entity table Name.
+      type: String
+  - arguments:
+    - default: false
+      description: Entity table name.
+      isArray: false
+      name: table_name
+      required: true
+      secret: false
+    - default: false
+      description: Unique identifier for the partition within a given table
+      isArray: false
+      name: partition_key
+      required: true
+      secret: false
+    - default: false
+      description: Unique identifier for an entity within a given partition.
+      isArray: false
+      name: row_key
+      required: true
+      secret: false
+    deprecated: false
+    description: Delete an existing entity in a table.
+    execution: true
+    name: azure-storage-table-entity-delete
+  dockerimage: demisto/python3:3.10.1.25933
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

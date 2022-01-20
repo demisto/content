@@ -111,7 +111,7 @@ configuration:
 description: The Office 365 IP Address and URL web service is a read-only API provided
   by Microsoft to expose the URLs and IPs used by Office 365. The Office 365 Feed
   integration fetches indicators from the service, with which you can create a list
-  (whitelist, blacklist, EDL, etc.) for your SIEM or firewall service to ingest and
+  (allow list, block list, EDL, etc.) for your SIEM or firewall service to ingest and
   apply to its policy rules.
 display: Office 365 Feed
 name: Office 365 Feed
@@ -142,7 +142,7 @@ script:
     description: Gets indicators from the feed.
     execution: false
     name: office365-get-indicators
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.9.9.25564
   feed: true
   isfetch: false
   longRunning: false

@@ -7,12 +7,18 @@
     "url": "",
     "email": "support@infinipoint.io",
     "created": "2020-06-07T11:55:44Z",
-    "categories": [],
+    "categories": [
+        "Network Security"
+    ],
     "tags": [],
     "useCases": [],
     "keywords": [],
     "githubUser": [
         "etInfp"
     ],
-    "certification": "certified"
+    "certification": "certified",
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

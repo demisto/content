@@ -2,7 +2,7 @@
     "name": "Okta",
     "description": "Integration with Okta's cloud-based identity management service",
     "support": "xsoar",
-    "currentVersion": "2.2.6",
+    "currentVersion": "2.2.10",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -12,5 +12,9 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": []
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

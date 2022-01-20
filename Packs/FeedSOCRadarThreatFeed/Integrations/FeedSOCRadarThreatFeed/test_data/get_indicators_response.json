@@ -1,0 +1,20 @@
+{
+  "data": {
+    "MockCollectionName": {
+      "collection_data_list": [
+        {
+          "feed": "mock_domain.com",
+          "feed_type": "hostname",
+          "first_seen_date": "1453-05-29 09:05:00",
+          "latest_seen_date": "1923-10-29 09:05:00",
+          "maintainer_name": "MockMaintainerName"
+        }
+      ],
+      "collection_date": "2021-10-30",
+      "collection_feed_type": "hostname"
+    }
+  },
+  "is_success": true,
+  "message": "Success",
+  "response_code": 200
+}

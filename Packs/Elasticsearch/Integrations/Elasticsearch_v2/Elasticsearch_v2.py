@@ -4,9 +4,6 @@ from CommonServerUserPython import *
 
 '''IMPORTS'''
 from typing import List
-from elasticsearch import Elasticsearch, RequestsHttpConnection, NotFoundError
-from elasticsearch_dsl import Search
-from elasticsearch_dsl.query import QueryString
 from datetime import datetime
 import json
 import requests
@@ -16,6 +13,16 @@ from dateutil.parser import parse
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 warnings.filterwarnings(action="ignore", message='.*using SSL with verify_certs=False is insecure.')
+
+ELASTIC_SEARCH_CLIENT = demisto.params().get('client_type')
+if ELASTIC_SEARCH_CLIENT == 'OpenSearch':
+    from opensearchpy import OpenSearch as Elasticsearch, RequestsHttpConnection, NotFoundError
+    from opensearch_dsl import Search
+    from opensearch_dsl.query import QueryString
+else:
+    from elasticsearch import Elasticsearch, RequestsHttpConnection, NotFoundError
+    from elasticsearch_dsl import Search
+    from elasticsearch_dsl.query import QueryString
 
 API_KEY_PREFIX = '_api_key_id:'
 SERVER = demisto.params().get('url', '').rstrip('/')
@@ -666,6 +673,10 @@ def main():
         elif demisto.command() == 'get-mapping-fields':
             get_mapping_fields_command()
     except Exception as e:
+        if 'The client noticed that the server is not a supported distribution of Elasticsearch' in str(e):
+            return_error('Failed executing {}. Seems that the client does not support the server\'s distribution, '
+                         'Please try using the Open Search client in the instance configuration.'
+                         '\nError message: {}'.format(demisto.command(), str(e)), error=e)
         return_error("Failed executing {}.\nError message: {}".format(demisto.command(), str(e)), error=e)
 
 

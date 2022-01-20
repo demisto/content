@@ -1,0 +1,474 @@
+category: Network Security
+commonfields:
+  id: Picus
+  version: -1
+configuration:
+- display: Picus Manager URL
+  name: picus_server
+  required: true
+  type: 0
+- additionalinfo: The refresh token will be used to generate access token.
+  display: Picus Refresh Token
+  name: picus_apikey
+  required: true
+  type: 4
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Run commands on Picus and automate security validation with playbooks.
+display: Picus Security
+name: Picus
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: Add vector's assigned user details to the response.
+      isArray: false
+      name: add_user_details
+      required: false
+      secret: false
+    - default: false
+      description: Requested page number.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      description: Requested data size.
+      isArray: false
+      name: size
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns the list of the vectors all disabled and enabled ones have
+      optional parameters for pagination.
+    execution: false
+    name: picus-get-vector-list
+    outputs:
+    - contextPath: Picus.vectorlist.description
+      description: Description info of the vector
+      type: String
+    - contextPath: Picus.vectorlist.heartbeat_results.is_successful
+      description: Was the heartbeat end successfully?
+      type: Boolean
+    - contextPath: Picus.vectorlist.heartbeat_results.module
+      description: On which module did the heartbeat executed?
+      type: String
+    - contextPath: Picus.vectorlist.heartbeat_results.result_time
+      description: When the heartbeat is executed? (End time)
+      type: Date
+    - contextPath: Picus.vectorlist.heartbeat_results.variant
+      description: On which variant did the heartbeat executed?
+      type: String
+    - contextPath: Picus.vectorlist.is_disabled
+      description: Is the vector status disabled?
+      type: Boolean
+    - contextPath: Picus.vectorlist.name
+      description: Name of the vector
+      type: String
+    - contextPath: Picus.vectorlist.trusted
+      description: Trusted peer name
+      type: String
+    - contextPath: Picus.vectorlist.type
+      description: 'Type of the vector, if error is encountered, "Unknown" is returned.
+        Other valid values are: "Network", "Email, "Endpoint"'
+      type: String
+    - contextPath: Picus.vectorlist.untrusted
+      description: Untrusted peer name
+      type: String
+    - contextPath: Picus.vectorlist.users
+      description: Users assigned to this vector
+      type: Unknown
+  - deprecated: false
+    description: Returns the peer list with current statuses.
+    execution: false
+    name: picus-get-peer-list
+    outputs:
+    - contextPath: Picus.peerlist.is_alive
+      description: Is Peer Alive?
+      type: Boolean
+    - contextPath: Picus.peerlist.latest_attack
+      description: Latest Attack Time of the Peer
+      type: Date
+    - contextPath: Picus.peerlist.name
+      description: Peer Name
+      type: String
+    - contextPath: Picus.peerlist.registered_ip
+      description: IP of the peer
+      type: String
+    - contextPath: Picus.peerlist.type
+      description: Peer's Type
+      type: String
+  - arguments:
+    - default: false
+      description: Untrusted peer name.
+      isArray: false
+      name: attacker_peer
+      required: true
+      secret: false
+    - default: false
+      description: Trusted peer name.
+      isArray: false
+      name: victim_peer
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '3'
+      description: Set days parameter.
+      isArray: false
+      name: days
+      required: false
+      secret: false
+    - default: false
+      defaultValue: all
+      description: This setting can only be insecure,secure and all.
+      isArray: false
+      name: result
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns the list of the attack results have optional parameters for
+      filtration.
+    execution: false
+    name: picus-get-attack-results
+    outputs:
+    - contextPath: Picus.attackresults.results.threat_ids
+      description: Threat ID List
+      type: String
+    - contextPath: Picus.attackresults.results.begin_time
+      description: begin time of the attack
+      type: Date
+    - contextPath: Picus.attackresults.results.destination_port
+      description: Value "0" indicates it is not applicable such as all vector types
+        except network
+      type: Number
+    - contextPath: Picus.attackresults.results.end_time
+      description: end time of the attack
+      type: Date
+    - contextPath: Picus.attackresults.results.id
+      description: id
+      type: Number
+    - contextPath: Picus.attackresults.results.l1_category_name
+      description: Level 1 Category Name of the attack
+      type: String
+    - contextPath: Picus.attackresults.results.scenario_details.action_id
+      description: Action ID of the threat scenario action
+      type: Number
+    - contextPath: Picus.attackresults.results.scenario_details.action_name
+      description: Action Name of the threat scenario action
+      type: String
+    - contextPath: Picus.attackresults.results.scenario_details.end
+      description: The time attack ended
+      type: Date
+    - contextPath: Picus.attackresults.results.scenario_details.id
+      description: Primary key
+      type: Number
+    - contextPath: Picus.attackresults.results.scenario_details.process_results
+      description: ' Process Results(play and rewind)'
+      type: Unknown
+    - contextPath: Picus.attackresults.results.scenario_details.result
+      description: Final result of the scenario action
+      type: String
+    - contextPath: Picus.attackresults.results.scenario_details.technique_id
+      description: Technique ID of the threat scenario action
+      type: String
+    - contextPath: Picus.attackresults.results.source_port
+      description: Value "0" indicates it is not applicable such as all vector types
+        except network and wats attacks
+      type: Number
+    - contextPath: Picus.attackresults.results.string
+      description: Attack Result
+      type: String
+    - contextPath: Picus.attackresults.results.threat_id
+      description: Threat ID of the attack
+      type: Number
+    - contextPath: Picus.attackresults.results.threat_name
+      description: Threat Name of the attack
+      type: String
+    - contextPath: Picus.attackresults.results.trusted
+      description: Trusted peer name
+      type: String
+    - contextPath: Picus.attackresults.results.untrusted
+      description: Untrusted peer name
+      type: String
+    - contextPath: Picus.attackresults.results.variant
+      description: Variant info
+      type: String
+  - arguments:
+    - default: false
+      description: Threat ID list ("111,222,333,...") or single threat ID can be given.
+      isArray: false
+      name: threat_ids
+      required: true
+      secret: false
+    - default: false
+      description: Untrusted peer name.
+      isArray: false
+      name: attacker_peer
+      required: true
+      secret: false
+    - default: false
+      description: Trusted peer name.
+      isArray: false
+      name: victim_peer
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: This parameter can be HTTP or HTTPS. Example variant=HTTP
+      isArray: false
+      name: variant
+      predefined:
+      - HTTP
+      - HTTPS
+      required: true
+      secret: false
+    deprecated: false
+    description: Schedules a single attack on requested vector.
+    execution: false
+    name: picus-run-attacks
+    outputs:
+    - contextPath: Picus.runattacks
+      description: IDs of the assessed attacks
+      type: String
+  - arguments:
+    - default: false
+      description: Threat ID list ("111,222,333,...") or single threat ID can be given.
+      isArray: false
+      name: threat_ids
+      required: true
+      secret: false
+    - default: false
+      description: Untrusted peer name.
+      isArray: false
+      name: attacker_peer
+      required: true
+      secret: false
+    - default: false
+      description: Trusted peer name.
+      isArray: false
+      name: victim_peer
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: This parameter can be HTTP or HTTPS. Example variant=HTTP
+      isArray: false
+      name: variant
+      predefined:
+      - HTTP
+      - HTTPS
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns the list of the attack results of a single threat have optional
+      parameters for filtration.
+    execution: false
+    name: picus-get-threat-results
+    outputs:
+    - contextPath: Picus.threatresults.results.threat_results
+      description: Threat Results(ID and result combination)
+      type: String
+    - contextPath: Picus.threatresults.results.l1_category
+      description: Level 1 Category Name of the attack
+      type: String
+    - contextPath: Picus.threatresults.results.last_time
+      description: Last Threat Result Time
+      type: Date
+    - contextPath: Picus.threatresults.results.result
+      description: Threat Result
+      type: String
+    - contextPath: Picus.threatresults.results.status
+      description: Status
+      type: String
+    - contextPath: Picus.threatresults.results.threat_id
+      description: Threat ID of the attack
+      type: Number
+  - arguments:
+    - default: false
+      description: Untrusted peer name.
+      isArray: false
+      name: attacker_peer
+      required: true
+      secret: false
+    - default: false
+      description: Trusted peer name.
+      isArray: false
+      name: victim_peer
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: This parameter can be HTTP or HTTPS. Example variant=HTTP
+      isArray: false
+      name: variant
+      predefined:
+      - HTTP
+      - HTTPS
+      required: true
+      secret: false
+    - default: false
+      description: Products info of the mitigation. This parameter can be Check Point
+        NGFW, ForcepointNGFW, McAfee IPS, PaloAlto IPS, SourceFire IPS, TippingPoint,
+        F5 BIG-IP, Fortigate WAF, FortiWeb, Fortigate IPS, Snort, CitrixWAF, and ModSecurity.
+      isArray: false
+      name: mitigation_product
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '3'
+      description: Set days parameter.
+      isArray: false
+      name: days
+      required: false
+      secret: false
+    deprecated: false
+    description: Set parameter on playbook. (This command is only used on playbook)
+    execution: false
+    name: picus-set-paramPB
+    outputs:
+    - contextPath: Picus.param.attacker_peer
+      description: Untrusted peer name
+      type: String
+    - contextPath: Picus.param.days
+      description: days
+      type: Number
+    - contextPath: Picus.param.mitigation_product
+      description: Products info of the mitigation
+      type: String
+    - contextPath: Picus.param.variant
+      description: This parameter can be HTTP or HTTPS. Example variant=HTTP
+      type: String
+    - contextPath: Picus.param.victim_peer
+      description: Trusted peer name
+      type: String
+  - arguments:
+    - default: false
+      description: Threat id and result combine. Used for playbook.
+      isArray: false
+      name: threatinfo
+      required: true
+      secret: false
+    deprecated: false
+    description: Filter insecure attacks on playbook. (This command is only used on
+      playbook)
+    execution: false
+    name: picus-filter-insecure-attacks
+    outputs:
+    - contextPath: Picus.filterinsecure
+      description: Insecure Attack List
+      type: String
+  - arguments:
+    - default: false
+      description: Threat ID list ("111,222,333,...") or single threat ID can be given.
+      isArray: false
+      name: threat_ids
+      required: true
+      secret: false
+    - default: false
+      description: Products info of the mitigation. This parameter can be Check Point
+        NGFW, ForcepointNGFW, McAfee IPS, PaloAlto IPS, SourceFire IPS, TippingPoint,
+        F5 BIG-IP, Fortigate WAF, FortiWeb, Fortigate IPS, Snort, CitrixWAF, and ModSecurity.
+      isArray: false
+      name: product
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns the list of the mitigations of threats have optional parameters
+      for filtration, this route may not be used associated with your license.
+    execution: false
+    name: picus-get-mitigation-list
+    outputs:
+    - contextPath: Picus.mitigationresults.signature_id
+      description: ID of the signature
+      type: String
+    - contextPath: Picus.mitigationresults.signature_name
+      description: Name of the signature
+      type: String
+    - contextPath: Picus.mitigationresults.threat_id
+      description: Threat ID of Picus Attack
+      type: Number
+    - contextPath: Picus.mitigationresults.vendor
+      description: Product name of the mitigation
+      type: String
+  - arguments:
+    - default: false
+      description: Untrusted peer name.
+      isArray: false
+      name: attacker_peer
+      required: true
+      secret: false
+    - default: false
+      description: Trusted peer name.
+      isArray: false
+      name: victim_peer
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '3'
+      description: Set days parameter.
+      isArray: false
+      name: days
+      required: false
+      secret: false
+    deprecated: false
+    description: Makes a comparison of the given vector's results.
+    execution: false
+    name: picus-get-vector-compare
+    outputs:
+    - contextPath: Picus.vectorresults.name
+      description: Name of Picus Attack
+      type: String
+    - contextPath: Picus.vectorresults.status
+      description: Compare Result
+      type: String
+    - contextPath: Picus.vectorresults.threat_id
+      description: Threat ID of Picus Attack
+      type: String
+  - deprecated: false
+    description: Returns the current Picus version and the update time config.
+    execution: false
+    name: picus-version
+    outputs:
+    - contextPath: Picus.versioninfo.last_update_date
+      description: When was the last update?
+      type: Date
+    - contextPath: Picus.versioninfo.update_time
+      description: When to update?
+      type: Number
+    - contextPath: Picus.versioninfo.version
+      description: Current version
+      type: Number
+  - deprecated: false
+    description: Triggers the Picus product update mechanism manually.
+    execution: false
+    name: picus-trigger-update
+    outputs:
+    - contextPath: Picus.triggerupdate.data
+      description: Collected data that will be returned
+      type: Boolean
+    - contextPath: Picus.triggerupdate.success
+      description: Is the operation Succeed?
+      type: Boolean
+  - deprecated: false
+    description: Generates an access token for api usage. Looks for X-Refresh-Token
+      on header or refresh-token cookie.
+    execution: false
+    name: picus-get-access-token
+  dockerimage: demisto/python3:3.9.8.24399
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

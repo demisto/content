@@ -2,7 +2,7 @@
     "name": "Carbon Black Endpoint Standard",
     "description": "Next-generation antivirus + EDR in one cloud-delivered platform that stops commodity malware, advanced malware, non-malware attacks and ransomware.",
     "support": "xsoar",
-    "currentVersion": "3.0.6",
+    "currentVersion": "3.0.8",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -12,5 +12,9 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": []
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

@@ -1,0 +1,74 @@
+category: Case Management
+commonfields:
+  id: Penfield
+  version: -1
+configuration:
+- defaultvalue: https://example.com/
+  display: Your server URL
+  name: url
+  required: true
+  type: 0
+- display: API Key
+  additionalinfo: The API Key to use for connection
+  name: apikey
+  required: true
+  type: 4
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: "The penfield-get-assignee command takes in necessary context data, and\
+  \ returns the analyst that Penfield believes the incident should be assigned to\
+  \ based on Penfield's models of skill and process. The test command verfies that\
+  \ the endpoint is reachable."
+display: 'Penfield'
+name: Penfield
+script:
+  commands:
+  - name: penfield-get-assignee
+    description: 'Calls the Penfield API and returns the analyst Penfield recommends
+      assigning the incident to. This information is saved in the output, but the
+      incident will not be automatically assigned.'
+    outputs:
+    - contextPath: Penfield.Recommended.Analyst
+      description: The XSOAR analyst Penfield recommends assigning the incident to.
+      type: String
+    arguments:
+    - name: analyst_ids
+      description: 'An array of XSOAR analyst IDs for Penfield to choose from when
+        determining who to assign to.'
+      required: true
+      isArray: true
+    - name: category
+      required: true
+      description: 'The category of the incident to assign. Can be taken from incident
+        Context Data.'
+    - name: created
+      required: true
+      description: 'The creation_date of the incident to assign. Can be taken from
+        incident Context Data.'
+    - name: id
+      required: true
+      description: 'The id of the incident to assign. Can be taken from incident Context
+        Data.'
+    - name: name
+      required: true
+      description: 'The name of the incident to assign. Can be taken from incident
+        Context Data.'
+    - name: severity
+      required: true
+      description: 'The severity of the incident to assign. Can be taken from incident
+        Context Data.'
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.9.8.24399
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

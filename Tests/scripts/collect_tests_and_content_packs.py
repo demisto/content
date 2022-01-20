@@ -108,9 +108,10 @@ class TestConf(object):
         for integration in tested_integrations:
             try:
                 int_path = id_set__get_integration_file_path(id_set, integration)
-                pack = tools.get_pack_name(int_path)
-                if pack:
-                    packs.add(pack)
+                if int_path:
+                    pack = tools.get_pack_name(int_path)
+                    if pack:
+                        packs.add(pack)
             except TypeError:
                 err_msg = f'Error occurred when trying to determine the pack of integration "{integration}"'
                 err_msg += f' with path "{int_path}"' if int_path else ''
@@ -140,6 +141,9 @@ CONF: TestConf = None  # type: ignore[assignment]
 
 if os.path.isfile('./artifacts/id_set.json'):
     with open('./artifacts/id_set.json', 'r') as conf_file:
+        ID_SET = json.load(conf_file)
+elif os.path.isfile('./artifacts/id_set_mp_v2.json'):
+    with open('./artifacts/id_set_mp_v2.json', 'r') as conf_file:
         ID_SET = json.load(conf_file)
 
 if os.path.isfile('./artifacts/conf.json'):

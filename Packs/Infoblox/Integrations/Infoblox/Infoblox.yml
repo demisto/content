@@ -731,7 +731,7 @@ script:
       required: true
     description: Deletes a given response policy zone.
     name: infoblox-delete-response-policy-zone
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.9.8.24399
   runonce: false
   script: ''
   subtype: python3

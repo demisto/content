@@ -2,16 +2,22 @@
     "name": "iLert",
     "description": "iLert is an IT alerting, on-call management and uptime monitoring platform that helps DevOps teams respond to incidents faster. Use this iLert content pack to alert and notify users more efficiently.",
     "support": "partner",
-    "currentVersion": "1.0.3",
+    "currentVersion": "1.0.4",
     "author": "yacut",
     "url": "https://www.ilert.com/",
     "email": "support@ilert.com",
     "created": "2021-04-06T17:54:48Z",
-    "categories": [],
+    "categories": [
+        "Messaging"
+    ],
     "tags": [],
     "useCases": [],
     "keywords": [],
     "githubUser": [
         "yacut"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }

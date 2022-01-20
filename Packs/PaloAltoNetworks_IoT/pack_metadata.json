@@ -2,7 +2,7 @@
     "name": "Palo Alto Networks IoT",
     "description": "Palo Alto Networks IoT",
     "support": "xsoar",
-    "currentVersion": "1.0.8",
+    "currentVersion": "1.0.10",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -14,5 +14,9 @@
         "IoT"
     ],
     "useCases": [],
-    "keywords": []
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

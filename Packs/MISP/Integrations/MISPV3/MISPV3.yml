@@ -2788,7 +2788,7 @@ script:
     - contextPath: MISP.Attribute.Comment
       description: Attribute comment.
       type: string
-  dockerimage: demisto/pymisp2:1.0.0.23423
+  dockerimage: demisto/pymisp2:1.0.0.25484
   feed: false
   isfetch: false
   longRunning: false

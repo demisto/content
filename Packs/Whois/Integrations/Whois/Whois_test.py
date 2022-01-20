@@ -234,3 +234,10 @@ def test_indian_tld():
     from Whois import get_root_server
     result = get_root_server("google.in")
     assert result == "in.whois-servers.net"
+
+
+def test_parse_raw_whois():
+    with open('test_data/EU domains.text', 'r') as f:
+        raw_data = f.read()
+    result = Whois.parse_raw_whois([raw_data], [], never_query_handles=False, handle_server='whois.eu')
+    assert result['registrar'] == ['IONOS SE']

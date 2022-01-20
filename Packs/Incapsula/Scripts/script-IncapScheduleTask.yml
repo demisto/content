@@ -35,7 +35,7 @@ args:
 - name: SSHValidationServer
   required: true
   default: true
-  description: Name of the non-whitelisted server RemoteAccess instance
+  description: Name of the non-allow listed server RemoteAccess instance
 - name: cron
   required: true
   description: The interval between each check (in cron format)
@@ -48,6 +48,6 @@ dependson:
   - IncapWhitelistCompliance
 timeout: 0s
 fromversion: 5.0.0
-dockerimage: demisto/python:2.7.18.24066
+dockerimage: demisto/python:2.7.18.24398
 tests:
 - No tests (auto formatted)

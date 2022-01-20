@@ -1,0 +1,48 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Rapid Breach Response"
+    ],
+    "caseInsensitive": true,
+    "cliName": "sourceofindicators",
+    "closeForm": false,
+    "columns": [
+        {
+            "displayName": "Source URL",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "sourceurl",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        }
+    ],
+    "content": true,
+    "defaultRows": [
+        {},
+        {},
+        {}
+    ],
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_sourceofindicators",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Source Of Indicators",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "grid",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

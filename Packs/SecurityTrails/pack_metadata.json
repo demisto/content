@@ -7,11 +7,17 @@
     "url": "",
     "email": "",
     "created": "2021-05-24T14:15:33Z",
-    "categories": [],
+    "categories": [
+        "Utilities"
+    ],
     "tags": [],
     "useCases": [],
     "keywords": [],
     "githubUser": [
         "aburt-demisto"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }

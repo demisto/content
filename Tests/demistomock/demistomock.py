@@ -457,12 +457,13 @@ def log(msg):
     logging.getLogger().info(msg)
 
 
-def get(obj, field):
+def get(obj, field, defaultParam=None):
     """Extracts field value from nested object
 
     Args:
       obj (dict): The object to extract the field from
       field (str): The field to extract from the object, given in dot notation
+      defaultParam (object): The default value to return in case the field doesn't exist in obj
 
     Returns:
       str: The value of the extracted field
@@ -473,7 +474,7 @@ def get(obj, field):
         if obj and part in obj:
             obj = obj[part]
         else:
-            return None
+            return defaultParam
     return obj
 
 
@@ -1146,3 +1147,28 @@ def parentEntry():
 
 def getLicenseCustomField(api_key):
     return api_key
+
+
+def getLastMirrorRun():
+    """(Integration only)
+    Retrieves the LastMirrorRun object
+
+    Returns:
+      dict: LastMirrorRun object
+
+    """
+    return {}
+
+
+def setLastMirrorRun(obj):
+    """(Integration only)
+    Stores given object in the LastMirrorRun object
+
+    Args:
+      obj (dict): The object to store
+
+    Returns:
+      None: No data returned
+
+    """
+    return None

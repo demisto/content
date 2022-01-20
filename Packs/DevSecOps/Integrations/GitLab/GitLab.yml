@@ -727,72 +727,72 @@ script:
       description: The merge request squash commit SHA.
       type: String
   - arguments:
-      - default: false
-        description: Project ID from which to retrieve the Merge Requests.
-        isArray: false
-        name: project_id
-        required: true
-        secret: false
-      - default: false
-        description: Merge Request IID.
-        isArray: false
-        name: merge_request_iid
-        required: true
-        secret: false
+    - default: false
+      description: Project ID from which to retrieve the Merge Requests.
+      isArray: false
+      name: project_id
+      required: true
+      secret: false
+    - default: false
+      description: Merge Request IID.
+      isArray: false
+      name: merge_request_iid
+      required: true
+      secret: false
     description: Get a Merge Request
     name: gitlab-merge-request-get
     outputs:
-      - contextPath: GitLab.MergeRequest.id
-        description: The merge request ID.
-        type: Number
-      - contextPath: GitLab.MergeRequest.iid
-        description: The merge request IID.
-        type: Number
-      - contextPath: GitLab.MergeRequest.project_id
-        description: The project ID of the merge request.
-        type: Number
-      - contextPath: GitLab.MergeRequest.title
-        description: The merge request title.
-        type: String
-      - contextPath: GitLab.MergeRequest.description
-        description: The merge request description
-        type: String
-      - contextPath: GitLab.MergeRequest.state
-        description: The merge request state.
-        type: String
-      - contextPath: GitLab.MergeRequest.created_at
-        description: The time the merge request was created.
-        type: Date
-      - contextPath: GitLab.MergeRequest.updated_at
-        description: The time the merge request was updated.
-        type: Date
-      - contextPath: GitLab.MergeRequest.merged_at
-        description: The time the merge request was merged.
-        type: Date
-      - contextPath: GitLab.MergeRequest.closed_by
-        description: The user who closed the merge request.
-        type: String
-      - contextPath: GitLab.MergeRequest.closed_at
-        description: The time the merge request was closed.
-        type: Date
-      - contextPath: GitLab.MergeRequest.target_branch
-        description: The merge request target branch.
-        type: String
-      - contextPath: GitLab.MergeRequest.source_branch
-        description: The merge request source branch.
-        type: String
-      - contextPath: GitLab.MergeRequest.assignee
-        description: The merge request assignee.
-        type: String
-      - contextPath: GitLab.MergeRequest.sha
-        description: The merge request commit SHA.
-        type: String
-      - contextPath: GitLab.MergeRequest.merge_commit_sha
-        description: The merge request merge commit SHA.
-        type: String
-      - contextPath: GitLab.MergeRequest.squash_commit_sha
-        description: The merge request squash commit SHA.
-        type: String
+    - contextPath: GitLab.MergeRequest.id
+      description: The merge request ID.
+      type: Number
+    - contextPath: GitLab.MergeRequest.iid
+      description: The merge request IID.
+      type: Number
+    - contextPath: GitLab.MergeRequest.project_id
+      description: The project ID of the merge request.
+      type: Number
+    - contextPath: GitLab.MergeRequest.title
+      description: The merge request title.
+      type: String
+    - contextPath: GitLab.MergeRequest.description
+      description: The merge request description
+      type: String
+    - contextPath: GitLab.MergeRequest.state
+      description: The merge request state.
+      type: String
+    - contextPath: GitLab.MergeRequest.created_at
+      description: The time the merge request was created.
+      type: Date
+    - contextPath: GitLab.MergeRequest.updated_at
+      description: The time the merge request was updated.
+      type: Date
+    - contextPath: GitLab.MergeRequest.merged_at
+      description: The time the merge request was merged.
+      type: Date
+    - contextPath: GitLab.MergeRequest.closed_by
+      description: The user who closed the merge request.
+      type: String
+    - contextPath: GitLab.MergeRequest.closed_at
+      description: The time the merge request was closed.
+      type: Date
+    - contextPath: GitLab.MergeRequest.target_branch
+      description: The merge request target branch.
+      type: String
+    - contextPath: GitLab.MergeRequest.source_branch
+      description: The merge request source branch.
+      type: String
+    - contextPath: GitLab.MergeRequest.assignee
+      description: The merge request assignee.
+      type: String
+    - contextPath: GitLab.MergeRequest.sha
+      description: The merge request commit SHA.
+      type: String
+    - contextPath: GitLab.MergeRequest.merge_commit_sha
+      description: The merge request merge commit SHA.
+      type: String
+    - contextPath: GitLab.MergeRequest.squash_commit_sha
+      description: The merge request squash commit SHA.
+      type: String
   - arguments:
     - name: labels
       description: Comma seperated values of labels to search issues by.
@@ -868,71 +868,71 @@ script:
       description: The status of the issue's tasks.
       type: String
   - arguments:
-      - name: labels
-        description: Comma separated values of labels to add to the issue.
-      - name: title
-        description: The issue title.
-        isArray: false
-        required: true
-        secret: false
-        default: false
-      - name: description
-        description: The issue description.
-        isArray: false
-        required: true
-        secret: false
-        default: false
-      - default: false
-        description: Project ID of the created issue.
-        isArray: false
-        name: project_id
-        required: true
-        secret: false
+    - name: labels
+      description: Comma separated values of labels to add to the issue.
+    - name: title
+      description: The issue title.
+      isArray: false
+      required: true
+      secret: false
+      default: false
+    - name: description
+      description: The issue description.
+      isArray: false
+      required: true
+      secret: false
+      default: false
+    - default: false
+      description: Project ID of the created issue.
+      isArray: false
+      name: project_id
+      required: true
+      secret: false
     description: Create an issue
     name: gitlab-issue-create
     outputs:
-      - contextPath: GitLab.Issue.id
-        description: The issue ID.
-        type: Number
-      - contextPath: GitLab.Issue.iid
-        description: The issue IID.
-        type: Number
-      - contextPath: GitLab.Issue.project_id
-        description: The project ID of the issue.
-        type: Number
-      - contextPath: GitLab.Issue.title
-        description: The issue title.
-        type: String
-      - contextPath: GitLab.Issue.description
-        description: The issue description.
-        type: String
-      - contextPath: GitLab.Issue.state
-        description: The issue state.
-        type: String
-      - contextPath: GitLab.Issue.created_at
-        description: The time the issue was created.
-        type: Date
-      - contextPath: GitLab.Issue.updated_at
-        description: The time the issue was updated.
-        type: Date
-      - contextPath: GitLab.Issue.closed_at
-        description: The time the issue was closed.
-        type: Date
-      - contextPath: GitLab.Issue.closed_by
-        description: The user who closed the issue.
-        type: String
-      - contextPath: GitLab.Issue.labels
-        description: Comma seperated values of the issue's labels.
-        type: String
-      - contextPath: GitLab.Issue.merge_requests_count
-        description: merge requests count
-        type: Number
-      - contextPath: GitLab.Issue.has_tasks
-        description: Whether the issue has tasks or not.
-        type: Boolean
-      - contextPath: GitLab.Issue.task_status
-        description: The status of the issue's tasks.
-        type: String
+    - contextPath: GitLab.Issue.id
+      description: The issue ID.
+      type: Number
+    - contextPath: GitLab.Issue.iid
+      description: The issue IID.
+      type: Number
+    - contextPath: GitLab.Issue.project_id
+      description: The project ID of the issue.
+      type: Number
+    - contextPath: GitLab.Issue.title
+      description: The issue title.
+      type: String
+    - contextPath: GitLab.Issue.description
+      description: The issue description.
+      type: String
+    - contextPath: GitLab.Issue.state
+      description: The issue state.
+      type: String
+    - contextPath: GitLab.Issue.created_at
+      description: The time the issue was created.
+      type: Date
+    - contextPath: GitLab.Issue.updated_at
+      description: The time the issue was updated.
+      type: Date
+    - contextPath: GitLab.Issue.closed_at
+      description: The time the issue was closed.
+      type: Date
+    - contextPath: GitLab.Issue.closed_by
+      description: The user who closed the issue.
+      type: String
+    - contextPath: GitLab.Issue.labels
+      description: Comma seperated values of the issue's labels.
+      type: String
+    - contextPath: GitLab.Issue.merge_requests_count
+      description: merge requests count
+      type: Number
+    - contextPath: GitLab.Issue.has_tasks
+      description: Whether the issue has tasks or not.
+      type: Boolean
+    - contextPath: GitLab.Issue.task_status
+      description: The status of the issue's tasks.
+      type: String
   - arguments:
     - name: add_labels
       description: The labels to add to the issue.
@@ -1007,47 +1007,58 @@ script:
     description: Get the list of projects of a given group.
     name: gitlab-group-projects-list
     outputs:
-      - contextPath: GitLab.Project.id
-        description: The project ID.
-        type: Number
-      - contextPath: GitLab.Project.name
-        description: The project name.
-        type: String
-      - contextPath: GitLab.Project.path_with_namespace
-        description: The project path with namespace.
-        type: String
+    - contextPath: GitLab.Project.id
+      description: The project ID.
+      type: Number
+    - contextPath: GitLab.Project.name
+      description: The project name.
+      type: String
+    - contextPath: GitLab.Project.path_with_namespace
+      description: The project path with namespace.
+      type: String
   - arguments:
-      - default: false
-        description: Project ID to get the file from.
-        isArray: false
-        name: project_id
-        required: true
-        secret: false
-      - default: false
-        description: The file path.
-        isArray: false
-        name: file_path
-        required: true
-        secret: false
-      - default: false
-        description: The branch to retrieve the file from.
-        isArray: false
-        name: ref
-        required: true
-        secret: false
+    - default: false
+      description: Project ID to get the file from.
+      isArray: false
+      name: project_id
+      required: true
+      secret: false
+    - default: false
+      description: The file path.
+      isArray: false
+      name: file_path
+      required: true
+      secret: false
+    - default: false
+      description: The branch to retrieve the file from, default is master
+      isArray: false
+      name: ref
+      required: false
+      secret: false
+    - default: false
+      defaultValue: false
+      description: 'Whether to create a file entry in the War Room with the file contents.
+        Possible values are: "true" and "false". Default value is "false".'
+      isArray: false
+      name: create_file_from_content
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
     description: Get raw file
     name: gitlab-raw-file-get
     outputs:
-      - contextPath: GitLab.File.ref
-        description: The branch the file's content was taken from.
-        type: String
-      - contextPath: GitLab.File.path
-        description: The file path.
-        type: String
-      - contextPath: GitLab.File.content
-        description: The file content.
-        type: String
-  dockerimage: demisto/python3:3.9.7.24076
+    - contextPath: GitLab.File.ref
+      description: The branch the file's content was taken from.
+      type: String
+    - contextPath: GitLab.File.path
+      description: The file path.
+      type: String
+    - contextPath: GitLab.File.content
+      description: The file content.
+      type: String
+  dockerimage: demisto/python3:3.9.8.24399
   feed: false
   isfetch: false
   longRunning: false

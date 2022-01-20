@@ -1,0 +1,15 @@
+[
+    {
+        "Brand": "Builtin",
+        "Category": "Builtin",
+        "Type": 1,
+        "Contents": {
+            "data": [
+                {
+                    "id": "1234567",
+                    "severity": 3
+                }
+            ]
+        }
+    }
+]

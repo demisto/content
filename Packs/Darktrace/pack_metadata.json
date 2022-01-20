@@ -2,7 +2,7 @@
     "name": "Darktrace",
     "description": "Populates Darktrace Model Breaches in Cortex XSOAR, allowing for cross-platform automated investigation and response.",
     "support": "partner",
-    "currentVersion": "1.0.6",
+    "currentVersion": "1.0.9",
     "fromVersion": "6.0.0",
     "author": "Darktrace",
     "githubUser": "",
@@ -19,5 +19,9 @@
     "keywords": [
         "Darktrace"
     ],
-    "certification": "certified"
+    "certification": "certified",
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

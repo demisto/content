@@ -21,6 +21,15 @@ configuration:
   name: proxy
   required: false
   type: 8
+- defaultvalue: Elasticsearch
+  additionalinfo: In some hosted ElasticSearch environments, the standard ElasticSearch client is not supported. If you encounter any related client issues, please consider using the OpenSearch client type.
+  display: Client type
+  name: client_type
+  options:
+  - Elasticsearch
+  - OpenSearch
+  required: false
+  type: 15
 - display: Index from which to fetch incidents (CSV)
   name: fetch_index
   required: false
@@ -306,7 +315,7 @@ script:
     name: get-mapping-fields
     description: Returns the schema of the index to fetch from. This commmand should
       be used for debugging purposes.
-  dockerimage: demisto/elasticsearch:1.0.0.24411
+  dockerimage: demisto/elasticsearch:1.0.0.26046
   feed: false
   isfetch: true
   longRunning: false

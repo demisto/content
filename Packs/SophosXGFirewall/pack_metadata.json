@@ -2,7 +2,7 @@
     "name": "Sophos XG Firewall",
     "description": "Use the Sophos XG Firewall to manage your firewall, detect and respond to threats on your network.",
     "support": "xsoar",
-    "currentVersion": "1.0.6",
+    "currentVersion": "1.0.8",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -14,5 +14,9 @@
     "useCases": [
         "Network Security"
     ],
-    "keywords": []
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

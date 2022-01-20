@@ -1865,25 +1865,25 @@ script:
       description: |-
         Unique identifier for a rule or specific version of a rule, defined and returned by the server. You can specify exactly one rule identifier.
         Use the following format to specify the id:
-        ru_{UUID} or {ruleId}@v_{int64}_{int64}
+         ru_{UUID} or {ruleId}@v_{int64}_{int64}. If not specified then detections for all versions of all rules are returned.
       isArray: false
       name: id
-      required: true
+      required: false
       secret: false
     - default: false
-      description: 'Time to begin returning detections, filtering on a detection''s
-        detectionTime. If not specified, the start time is treated as open-ended.
-        Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours. Example: 2020-05-01T00:00:00Z,
-        2020-05-01, 2 days, 5 hours.'
+      description: |-
+        (Deprecated: use `start_time` instead) Time to begin returning detections, filtering on a detection's "detectionTime". If not specified, the start time is treated as open-ended.
+        Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours.
+        Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours.
       isArray: false
       name: detection_start_time
       required: false
       secret: false
     - default: false
-      description: 'Time to stop returning detections, filtering on a detection''s
-        detectionTime. If not specified, the end time is treated as open-ended. Formats:
-        YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours. Example: 2020-05-01T00:00:00Z,
-        2020-05-01, 2 days, 5 hours.'
+      description: |-
+        (Deprecated: use `end_time` instead) Time to stop returning detections, filtering on a detection's "detectionTime". If not specified, the end time is treated as open-ended.
+        Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours.
+        Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours.
       isArray: false
       name: detection_end_time
       required: false
@@ -1916,8 +1916,54 @@ script:
       name: page_token
       required: false
       secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'False'
+      description: |-
+        Whether the user wants to retrieve detections for all versions of a rule with a given rule identifier.
+
+        Note: If this option is set to true, rule id is required.
+      isArray: false
+      name: detection_for_all_versions
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: |-
+        Sort detections by "DETECTION_TIME" or by "CREATED_TIME". If not specified, it defaults to "DETECTION_TIME". Detections are returned in descending order of the timestamp.
+
+        Note: Requires either "start_time" or "end_time" argument.
+      isArray: false
+      name: list_basis
+      predefined:
+      - DETECTION_TIME
+      - CREATED_TIME
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Time to begin returning detections, filtering by the detection field specified in the listBasis parameter. If not specified, the start time is treated as open-ended.
+        Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours.
+        Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours.
+      isArray: false
+      name: start_time
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Time to stop returning detections, filtering by the detection field specified by the listBasis parameter. If not specified, the end time is treated as open-ended.
+        Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours.
+        Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours.
+      isArray: false
+      name: end_time
+      required: false
+      secret: false
     deprecated: false
-    description: Return the detections for the specified version of a rule.
+    description: Return the detections for the specified version of a rule, the latest
+      version of a rule, all versions of a rule, or all versions of all rules.
     execution: false
     name: gcb-list-detections
     outputs:
@@ -3132,7 +3178,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'To filter live rules.'
+      description: To filter live rules.
       isArray: false
       name: live_rule
       predefined:

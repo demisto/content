@@ -18,23 +18,25 @@ from typing import List, Tuple, Union
 
 from urllib.parse import quote_plus
 import demisto_client
+
+from demisto_sdk.commands.common.constants import FileType
+from demisto_sdk.commands.common.tools import run_threads_list, run_command, get_yaml, \
+    str2bool, format_version, find_type
 from demisto_sdk.commands.test_content.constants import SSH_USER
+from demisto_sdk.commands.test_content.mock_server import MITMProxy, run_with_mock, RESULT
+from demisto_sdk.commands.test_content.tools import update_server_configuration, is_redhat_instance
+from demisto_sdk.commands.test_content.TestContentClasses import BuildContext
+from demisto_sdk.commands.validate.validate_manager import ValidateManager
 from ruamel import yaml
 
 from Tests.Marketplace.search_and_install_packs import search_and_install_packs_and_their_dependencies, \
     upload_zipped_packs, install_all_content_packs_for_nightly
 from Tests.scripts.utils.log_util import install_logging
 from Tests.scripts.utils import logging_wrapper as logging
-from Tests.test_content import extract_filtered_tests, get_server_numeric_version
+from Tests.test_content import get_server_numeric_version
 from Tests.test_integration import __get_integration_config, __test_integration_instance, disable_all_integrations
 from Tests.tools import run_with_proxy_configured
 from Tests.update_content_data import update_content
-from demisto_sdk.commands.common.constants import FileType
-from demisto_sdk.commands.common.tools import run_threads_list, run_command, get_yaml, \
-    str2bool, format_version, find_type
-from demisto_sdk.commands.test_content.mock_server import MITMProxy, run_with_mock, RESULT
-from demisto_sdk.commands.test_content.tools import update_server_configuration, is_redhat_instance
-from demisto_sdk.commands.validate.validate_manager import ValidateManager
 
 MARKET_PLACE_MACHINES = ('master',)
 SKIPPED_PACKS = ['NonSupported', 'ApiModules']
@@ -754,7 +756,7 @@ def update_content_on_demisto_instance(client, server, ami_name):
                 f'"{cd_release}" and assetId "{cd_asset_id}" but release "{release}" and assetId "{asset_id}" '
                 f'were retrieved from the instance post installation.')
             if ami_name not in MARKET_PLACE_MACHINES:
-                os._exit(1)
+                sys.exit(1)
 
 
 def report_tests_status(preupdate_fails, postupdate_fails, preupdate_success, postupdate_success,
@@ -841,17 +843,18 @@ def get_env_conf():
     if Build.run_environment == Running.CI_RUN:
         return get_json_file(Build.env_results_path)
 
-    elif Build.run_environment == Running.WITH_LOCAL_SERVER:
+    if Build.run_environment == Running.WITH_LOCAL_SERVER:
         # START CHANGE ON LOCAL RUN #
         return [{
             "InstanceDNS": "http://localhost:8080",
             "Role": "Server Master"  # e.g. 'Server Master'
         }]
-    elif Build.run_environment == Running.WITH_OTHER_SERVER:
+    if Build.run_environment == Running.WITH_OTHER_SERVER:
         return [{
             "InstanceDNS": "DNS NANE",  # without http prefix
             "Role": "DEMISTO EVN"  # e.g. 'Server Master'
         }]
+
     #  END CHANGE ON LOCAL RUN  #
     return None
 
@@ -915,7 +918,7 @@ def get_tests(build: Build) -> List[dict]:
     server_numeric_version: str = build.server_numeric_version
     tests: dict = build.tests
     if Build.run_environment == Running.CI_RUN:
-        filtered_tests = extract_filtered_tests()
+        filtered_tests = BuildContext._extract_filtered_tests()
         if build.is_nightly:
             # skip test button testing
             logging.debug('Not running instance tests in nightly flow')
@@ -926,21 +929,21 @@ def get_tests(build: Build) -> List[dict]:
 
         tests_for_iteration = filter_tests_with_incompatible_version(tests_for_iteration, server_numeric_version)
         return tests_for_iteration
-    else:
-        # START CHANGE ON LOCAL RUN #
-        return [
-            {
-                "playbookID": "Docker Hardening Test",
-                "fromversion": "5.0.0"
-            },
-            {
-                "integrations": "SplunkPy",
-                "playbookID": "SplunkPy-Test-V2",
-                "memory_threshold": 500,
-                "instance_names": "use_default_handler"
-            }
-        ]
-        #  END CHANGE ON LOCAL RUN  #
+
+    # START CHANGE ON LOCAL RUN #
+    return [
+        {
+            "playbookID": "Docker Hardening Test",
+            "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "SplunkPy",
+            "playbookID": "SplunkPy-Test-V2",
+            "memory_threshold": 500,
+            "instance_names": "use_default_handler"
+        }
+    ]
+    #  END CHANGE ON LOCAL RUN  #
 
 
 def get_changed_integrations(build: Build) -> tuple:
@@ -986,7 +989,7 @@ def nightly_install_packs(build, install_method=None, pack_path=None, service_ac
         raise Exception('Install method was not provided.')
 
     # For each server url we install pack/ packs
-    for thread_index, server in enumerate(build.servers):
+    for server in build.servers:
         kwargs = {'client': server.client, 'host': server.internal_ip}
         if service_account:
             kwargs['service_account'] = service_account
@@ -1077,7 +1080,7 @@ def configure_server_instances(build: Build, tests_for_iteration, all_new_integr
 def configure_modified_and_new_integrations(build: Build,
                                             modified_integrations_to_configure: list,
                                             new_integrations_to_configure: list,
-                                            demisto_client: demisto_client) -> tuple:
+                                            demisto_client_: demisto_client) -> tuple:
     """
     Configures old and new integrations in the server configured in the demisto_client.
     Args:
@@ -1095,12 +1098,12 @@ def configure_modified_and_new_integrations(build: Build,
     new_modules_instances = []
     for integration in modified_integrations_to_configure:
         placeholders_map = {'%%SERVER_HOST%%': build.servers[0]}
-        module_instance = configure_integration_instance(integration, demisto_client, placeholders_map)
+        module_instance = configure_integration_instance(integration, demisto_client_, placeholders_map)
         if module_instance:
             modified_modules_instances.append(module_instance)
     for integration in new_integrations_to_configure:
         placeholders_map = {'%%SERVER_HOST%%': build.servers[0]}
-        module_instance = configure_integration_instance(integration, demisto_client, placeholders_map)
+        module_instance = configure_integration_instance(integration, demisto_client_, placeholders_map)
         if module_instance:
             new_modules_instances.append(module_instance)
     return modified_modules_instances, new_modules_instances
@@ -1154,7 +1157,7 @@ def instance_testing(build: Build,
     if failed_instances and not pre_update and first_call:
         logging.info("some post-update tests failed, sleeping for 15 seconds, then running the failed tests again")
         sleep(15)
-        succeeded, failed_tests = instance_testing(build, failed_instances, pre_update=False, first_call=False)
+        _, failed_tests = instance_testing(build, failed_instances, pre_update=False, first_call=False)
 
     return successful_tests, failed_tests
 
@@ -1196,7 +1199,7 @@ def test_integration_with_mock(build: Build, instance: dict, pre_update: bool):
 def update_content_till_v6(build: Build):
     threads_list = []
     # For each server url we install content
-    for thread_index, server in enumerate(build.servers):
+    for server in build.servers:
         t = Thread(target=update_content_on_demisto_instance,
                    kwargs={'client': server.client, 'server': server.internal_ip, 'ami_name': build.ami_env})
         threads_list.append(t)
@@ -1304,7 +1307,7 @@ def get_non_added_packs_ids(build: Build):
 
 
 def set_marketplace_url(servers, branch_name, ci_build_number):
-    url_suffix = quote_plus(f'{branch_name}/{ci_build_number}')
+    url_suffix = quote_plus(f'{branch_name}/{ci_build_number}/xsoar')
     config_path = 'marketplace.bootstrap.bypass.url'
     config = {config_path: f'https://storage.googleapis.com/marketplace-ci-build/content/builds/{url_suffix}'}
     for server in servers:

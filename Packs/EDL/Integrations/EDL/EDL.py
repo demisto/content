@@ -12,6 +12,7 @@ from math import ceil
 import urllib3
 import dateparser
 import hashlib
+import ipaddress
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -31,6 +32,7 @@ EDL_MISSING_REFRESH_ERR_MSG: str = 'Refresh Rate must be "number date_range_unit
 EDL_FILTER_FIELDS: Optional[str] = "name,type"
 EDL_ON_DEMAND_KEY: str = 'UpdateEDL'
 EDL_ON_DEMAND_CACHE_PATH: str = ''
+EDL_SEARCH_LOOP_LIMIT: int = 10
 
 ''' REFORMATTING REGEXES '''
 _PROTOCOL_REMOVAL = re.compile('^(?:[a-z]+:)*//')
@@ -131,17 +133,15 @@ def create_new_edl(request_args: RequestArguments) -> str:
         size=PAGE_SIZE,
         limit=limit
     )
-    iocs = []
+    iocs: List[dict] = []
     formatted_iocs: set = set()
-    while True:
-        current_limit = limit + (limit - len(formatted_iocs))
-        indicator_searcher.limit = current_limit
+    loop_counter = 0
+    while not indicator_searcher.is_search_done() and loop_counter < EDL_SEARCH_LOOP_LIMIT:
         new_iocs = find_indicators_to_limit(indicator_searcher)
         iocs.extend(new_iocs)
         formatted_iocs = format_indicators(iocs, request_args)
-        # continue searching iocs if 1) iocs was truncated or 2) got all available iocs
-        if len(formatted_iocs) >= len(iocs) or indicator_searcher.total <= current_limit:
-            break
+        indicator_searcher.limit += limit - len(formatted_iocs)
+        loop_counter += 1
     return iterable_to_str(list(formatted_iocs)[request_args.offset:limit])
 
 
@@ -217,14 +217,60 @@ def ips_to_ranges(ips: Iterable, collapse_ips: str):
     Returns:
         Set. a list to Ranges or CIDRs.
     """
+    invalid_ips = []
+    valid_ips = []
+
+    for ip_or_cidr in ips:
+        if is_valid_cidr(ip_or_cidr) or is_valid_ip(ip_or_cidr):
+            valid_ips.append(ip_or_cidr)
+        else:
+            invalid_ips.append(ip_or_cidr)
 
     if collapse_ips == COLLAPSE_TO_RANGES:
-        ips_range_groups = IPSet(ips).iter_ipranges()
-        return ip_groups_to_ranges(ips_range_groups)
-
+        ips_range_groups = IPSet(valid_ips).iter_ipranges()
+        collapsed_list = ip_groups_to_ranges(ips_range_groups)
     else:
-        cidrs = IPSet(ips).iter_cidrs()
-        return ip_groups_to_cidrs(cidrs)
+        cidrs = IPSet(valid_ips).iter_cidrs()
+        collapsed_list = ip_groups_to_cidrs(cidrs)
+
+    collapsed_list.update(invalid_ips)
+    return collapsed_list
+
+
+def is_valid_ip(ip: str) -> bool:
+    """
+    Args:
+        ip: IP address
+    Returns: True if the string represents an IPv4 or an IPv6 address, false otherwise.
+    """
+    try:
+        ipaddress.IPv4Address(ip)
+        return True
+    except ValueError:
+        try:
+            ipaddress.IPv6Address(ip)
+            return True
+        except ValueError:
+            return False
+
+
+def is_valid_cidr(cidr: str) -> bool:
+    """
+    Args:
+        cidr: CIDR string
+    Returns: True if the string represents an IPv4 network or an IPv6 network, false otherwise.
+    """
+    if '/' not in cidr:
+        return False
+    try:
+        ipaddress.IPv4Network(cidr, strict=False)
+        return True
+    except ValueError:
+        try:
+            ipaddress.IPv6Network(cidr, strict=False)
+            return True
+        except ValueError:
+            return False
 
 
 def format_indicators(iocs: list, request_args: RequestArguments) -> set:

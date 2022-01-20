@@ -1,0 +1,150 @@
+id: EWS Mail Sender Test 3
+version: -1
+name: EWS Mail Sender Test 3
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 58af508d-4279-497c-8bd7-dc890b3e05d2
+    type: start
+    task:
+      id: 58af508d-4279-497c-8bd7-dc890b3e05d2
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: b5ce19bb-a341-4d5a-865f-b26aa592cae2
+    type: regular
+    task:
+      id: b5ce19bb-a341-4d5a-865f-b26aa592cae2
+      version: -1
+      name: Smime encrypt
+      description: Encrypts an email message with S/MIME protocol by using a public
+        RSA certificate.
+      script: '|||smime-encrypt-email-body'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      message:
+        simple: "123"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 37f83931-00ca-4006-86a6-dbc4bb0f03ce
+    type: regular
+    task:
+      id: 37f83931-00ca-4006-86a6-dbc4bb0f03ce
+      version: -1
+      name: Send mail
+      description: Sends an email using EWS.
+      script: EWS Mail Sender|||send-mail
+      type: regular
+      iscommand: true
+      brand: EWS Mail Sender
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      raw_message:
+        simple: ${SMIME.Encrypted.Message}
+      subject:
+        simple: EWS Mail Sender Test 3
+      to:
+        simple: buildtests@demisto.int
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 9ba3bae1-2228-49f7-8118-b386da331ba8
+    type: title
+    task:
+      id: 9ba3bae1-2228-49f7-8118-b386da331ba8
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 560,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0
+description: ''

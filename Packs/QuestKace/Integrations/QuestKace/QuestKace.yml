@@ -590,7 +590,7 @@ script:
     description: Deletes the specified ticket.
     execution: false
     name: kace-ticket-delete
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.9.9.25564
   isfetch: true
   longRunning: false
   longRunningPort: false

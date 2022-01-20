@@ -1,0 +1,25 @@
+commonfields:
+  id: ContextSearchForString
+  version: -1
+name: ContextSearchForString
+script: ''
+type: javascript
+tags: []
+comment: |
+  Searches for string in a path in context. If path is null, string will be searched in full context.
+enabled: true
+args:
+- name: path
+  description: Path in context to search the string in
+- name: str
+  required: true
+  description: String to search for in context
+outputs:
+- contextPath: true
+  description: if given string exists in context
+- contextPath: false
+  description: if given string does not exist in context
+scripttarget: 0
+fromversion: 5.0.0
+tests:
+- No tests

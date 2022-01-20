@@ -2568,9 +2568,10 @@ tasks:
     task:
       id: 2e087af1-2953-447a-8fa6-8f22c263ef8b
       version: -1
-      name: Blacklist file that have already been added to the allow or block list
-      description: Blacklists requested files which have not already been blacklisted
-        or whitelisted.
+      name: Adds requested files to block list if they are not already added to the block list
+        or allow list
+      description: Adds requested files to block list if they are not already added to the block list
+        or allow list.
       script: '|||xdr-blacklist-files'
       type: regular
       iscommand: true

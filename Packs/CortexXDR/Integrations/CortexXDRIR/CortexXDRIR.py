@@ -25,7 +25,7 @@ INTEGRATION_NAME = 'Cortex XDR - IR'
 
 XDR_INCIDENT_FIELDS = {
     "status": {"description": "Current status of the incident: \"new\",\"under_"
-                              "investigation\",\"resolved_threat_handled\",\"resolved_known_issue\","
+                              "investigation\",\"resolved_known_issue\","
                               "\"resolved_duplicate\",\"resolved_false_positive\","
                               "\"resolved_true_positive\",\"resolved_security_testing\",\"resolved_other\"",
                "xsoar_field_name": 'xdrstatusv2'},
@@ -41,7 +41,6 @@ XDR_INCIDENT_FIELDS = {
 }
 
 XDR_RESOLVED_STATUS_TO_XSOAR = {
-    'resolved_threat_handled': 'Resolved',
     'resolved_known_issue': 'Other',
     'resolved_duplicate': 'Duplicate',
     'resolved_false_positive': 'False Positive',
@@ -2984,7 +2983,7 @@ def fetch_incidents(client, first_fetch_time, integration_instance, last_run: di
             description = raw_incident.get('description')
             occurred = timestamp_to_datestring(raw_incident['creation_time'], TIME_FORMAT + 'Z')
             incident = {
-                'name': f'#{incident_id} - {description}',
+                'name': f'XDR Incident {incident_id} - {description}',
                 'occurred': occurred,
                 'rawJSON': json.dumps(incident_data),
             }

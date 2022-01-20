@@ -18,6 +18,7 @@
     "locked": false,
     "neverSetAsRequired": false,
     "ownerOnly": false,
+    "openEnded": true,
     "required": false,
     "sla": 0,
     "system": false,

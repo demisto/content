@@ -23,19 +23,14 @@ class WordParser:
         self.all_data = ""
 
     def get_file_details(self):
-        cmd_res = demisto.executeCommand('getFilePath', {'id': demisto.args().get("entryID")})
-        file_res = cmd_res[0]
-        if isError(file_res):
-            file_res["Contents"] = "Error fetching entryID: " + file_res["Contents"]
-            self.res = file_res
-        else:  # Got file path:
-            self.file_path = file_res.get('Contents').get('path')
-            self.file_name = file_res.get('Contents').get('name')
-            file = demisto.dt(demisto.context(), "File(val.EntryID === '{}')".format(demisto.args().get('entryID')))
-            if isinstance(file, list):
-                file = file[0]
+        file_path_data = demisto.getFilePath(demisto.args().get("entryID"))
+        self.file_path = file_path_data.get('path')
+        self.file_name = file_path_data.get('name')
+        file_entry = demisto.dt(self.get_context(), "File(val.EntryID === '{}')".format(demisto.args().get('entryID')))
+        if isinstance(file_entry, list):
+            file_entry = file_entry[0]
 
-            self.file_type = file.get("Type")
+        self.file_type = file_entry.get("Type")
 
     def convert_doc_to_docx(self):
         output = subprocess.check_output(
@@ -106,6 +101,11 @@ class WordParser:
             self.extract_indicators()
         else:
             return_error("Input file is not a doc file.")
+
+    def get_context(self):
+        incident_id = demisto.incident()['id']
+        res = execute_command('getContext', {'id': incident_id})
+        return demisto.get(res, 'context')
 
 
 def main():

@@ -2,7 +2,7 @@
     "name": "Intezer",
     "description": "Malware detection and analysis based on code reuse",
     "support": "partner",
-    "currentVersion": "1.2.4",
+    "currentVersion": "1.2.6",
     "author": "Intezer",
     "url": "",
     "email": "support@intezer.com",
@@ -14,5 +14,9 @@
     "useCases": [],
     "keywords": [],
     "githubUser": [],
-    "certification": "certified"
+    "certification": "certified",
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

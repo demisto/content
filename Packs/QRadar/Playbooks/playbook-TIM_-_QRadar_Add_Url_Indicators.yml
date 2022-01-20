@@ -140,7 +140,7 @@ tasks:
     task:
       id: e4fc4908-2e40-4aa3-8e09-d5e174c96535
       version: -1
-      name: Add urls to QRadar black list Url reference set
+      name: Add urls to QRadar block list Url reference set
       description: Add or update a value in a reference set.
       script: '|||qradar-update-reference-set-value'
       type: regular
@@ -202,7 +202,7 @@ tasks:
     task:
       id: 7eed9a8b-352e-4eb9-85cc-3281501bf0fa
       version: -1
-      name: Is there a Qradar black list Url Reference Set and values?
+      name: Is there a Qradar block list Url Reference Set and values?
       type: condition
       iscommand: false
       brand: ""
@@ -264,7 +264,7 @@ tasks:
     task:
       id: 1c35b4d2-3a71-4d34-8e4b-f3f95a147c96
       version: -1
-      name: Is there a Qradar white list Url Reference Set and values?
+      name: Is there a Qradar allow list Url Reference Set and values?
       type: condition
       iscommand: false
       brand: ""
@@ -326,7 +326,7 @@ tasks:
     task:
       id: 8d116308-62e4-4275-88ab-75fae486c9d5
       version: -1
-      name: Add urls to QRadar white list url reference set
+      name: Add urls to QRadar allow list url reference set
       description: Add or update a value in a reference set.
       script: '|||qradar-update-reference-set-value'
       type: regular
@@ -864,7 +864,7 @@ inputs:
 - key: QRadarBlackListUrlReferenceSetName
   value: {}
   required: false
-  description: The name of the QRadar black list Url reference set to insert the data
+  description: The name of the QRadar block list Url reference set to insert the data
     in to.
   playbookInputQuery: null
 - key: ""

@@ -2,7 +2,7 @@
     "name": "Netscout Arbor Sightline",
     "description": "Identify Potential Network Outages & Gain Business Insights to Solve Your Problems",
     "support": "xsoar",
-    "currentVersion": "1.0.4",
+    "currentVersion": "1.0.6",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -11,6 +11,12 @@
         "Network Security"
     ],
     "tags": [],
-    "useCases": ["Network Security"],
-    "keywords": []
+    "useCases": [
+        "Network Security"
+    ],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

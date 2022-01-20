@@ -90,7 +90,7 @@ script:
       description: The threat corresponding to this malware URL.
       type: string
     - contextPath: URLhaus.URL.Blacklist.Name
-      description: Name of the blacklist.
+      description: Name of the block list.
       type: String
     - contextPath: URLhaus.URL.Tags
       description: A list of tags associated with the queried malware URL.
@@ -123,7 +123,7 @@ script:
       description: Reliability of the source providing the intelligence data.
       type: String
     - contextPath: URLhaus.URL.Blacklist.Status
-      description: Status of the URL in the blacklist.
+      description: Status of the URL in the block list.
       type: String
     - contextPath: URLhaus.URL.Payload.VT.Link
       description: Link to the VirusTotal report.
@@ -162,7 +162,7 @@ script:
       description: Date that the IP was seen for the first time (UTC).
       type: Date
     - contextPath: URLhaus.Domain.Blacklist.Name
-      description: The status of the domain in different blacklists.
+      description: The status of the domain in different block lists.
       type: String
     - contextPath: URLhaus.Domain.URL
       description: URLs observed on this domain.
@@ -174,7 +174,7 @@ script:
       description: Description of the malicious domain.
       type: String
     - contextPath: URLhaus.Domain.Blacklist.Status
-      description: Status of the URL in the blacklist.
+      description: Status of the URL in the block list.
       type: String
   - arguments:
     - default: true
@@ -287,7 +287,7 @@ script:
     - contextPath: File.Extension
       description: File extension.
       type: string
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.9.9.25564
   feed: false
   isfetch: false
   longRunning: false

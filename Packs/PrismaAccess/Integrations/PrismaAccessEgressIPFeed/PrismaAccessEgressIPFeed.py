@@ -196,7 +196,9 @@ def main():
     PARSE AND VALIDATE INTEGRATION PARAMS
     """
     params = demisto.params()
-    param_api_key = params.get('api_key')
+    param_api_key = params.get('api_key') or (params.get('credentials') or {}).get('password')
+    if not param_api_key:
+        raise Exception('API Key must be provided.')
     insecure = params.get('insecure', False)
     proxy = params.get('proxy')
     tags = argToList(params.get('feedTags'))

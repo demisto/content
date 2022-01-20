@@ -4,6 +4,7 @@ This integration was integrated and tested with Slack.
 
 Slack V3 utilizes ["Socket Mode"](https://api.slack.com/apis/connections/socket) to enable the integration to communicate directly with Slack for mirroring. This requires a dedicated Slack app to be created for the XSOAR integration. See [Creating a Custom App](#creating-a-custom-app) on how to create your App in Slack.
 
+Please refer to the video tutorial [found here](https://live.paloaltonetworks.com/t5/cortex-xsoar-how-to-videos/cortex-xsoar-how-to-video-slack-v3-configuration/ta-p/445226) to learn about configuring SlackV3 using the app manifest.
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for SlackV3.
@@ -27,8 +28,26 @@ Slack V3 utilizes ["Socket Mode"](https://api.slack.com/apis/connections/socket)
     | `proxy_url` | Proxy URL to use in Slack API calls. | False |
     | `filtered_tags` | Comma-separated list of tags by which to filter the messages sent from XSOAR. Only supported in Cortex XSOAR V6.1 and above. | False |
     | `permitted_notifications` | Types of Notifications to send in the dedicated channel. | False |
+    | `common_channels` | For workspaces where a handful of channels are consistently being used, you may add them as a CSV in the format ChannelName:ChannelID. | False |
+    | `disable_caching` | When configured, Disable Caching will prevent the integration from paginating to search for Users or Conversations. Additionally, it will prevent excess data from being stored to the integration context. If this parameter is disabled, the instance may create high memory usage. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
+### Caching
+
+When the `Disable Caching of Users and Channels` parameter is configured, there are no pagination calls made to Slack. This is to avoid rate limiting which can occur in workspaces where there are excessive amounts of channels or users. If there were no timeout issues with running commands on your environment prior to pack version 2.3.0, there is no direct need to enable this mode.
+
+Additionally. with the `Common Channels` parameter configured, channels, and their ID's found in this parameter will be accessible to the integration to use while caching is disabled.
+
+#### Finding a Channel ID
+`Common Channels` follows the format, `First ChannelName:FirstChannelID, Second ChannelName:SecondChannelID`. To find the channel ID for the channels that are frequently used, please refer to the following steps:
+1. Navigate to the channel you wish to retrieve an ID for.
+2. Click the name of the channel.
+3. On the bottom of the presented menu, the channel ID can be found.
+
+Channel IDs typically follow the format `C` + Alphanumeric string.
+
+![locate-channel-id](../../doc_files/SlackDocs_channel_id.png)
 
 ### Creating a Custom App
 1. Navigate to: https://api.slack.com/apps/ .
@@ -153,6 +172,7 @@ Sends a message to a user, group, or channel.
 | message | The message content. When mentioning another Slack user, make sure to do so in the following format: &lt;@user_name&gt;. | Optional | 
 | to | The user to whom to send the message. Can be either the username or email address. | Optional | 
 | channel | The name of the Slack channel to which to send the message. | Optional | 
+| channel_id | The ID of the Slack channel to which to send the message. | Optional | 
 | entry | An entry ID to send as a link. | Optional | 
 | ignoreAddURL | Whether to include a URL to the relevant component in Cortex XSOAR. Can be "true" or "false". Default value is "false". | Optional | 
 | threadID | The ID of the thread to which to reply. Can be retrieved from a previous send-notification command. | Optional | 
@@ -198,6 +218,7 @@ Archives a Slack channel.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | channel | The name of the channel to archive. If not provided, the mirrored investigation channel is archived (if the channel exists). | Optional | 
+| channel_id | The ID of the channel to archive. If not provided, the mirrored investigation channel is archived (if the channel exists). | Optional | 
 
 
 #### Context Output
@@ -229,6 +250,7 @@ Sends a file to a user, channel, or group. If not specified, the file is sent to
 | to | The user to whom to send the file. Can be the username or the email address. | Optional | 
 | group | The name of the Slack group (private channel) to which to send the file. | Optional | 
 | channel | The name of the Slack channel to which to send the file. | Optional | 
+| channel_id | The ID of the Slack channel to which to send the file. | Optional | 
 | threadID | The ID of the thread to which to reply. Can be retrieved from a previous send-notification command. | Optional | 
 | comment | A comment to add to the file. | Optional | 
 
@@ -259,6 +281,7 @@ Sets the topic for a channel.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | channel | The channel name. If not specified, the topic of the mirrored investigation channel is set (if the channel exists). | Optional | 
+| channel_id | The ID of the channel. If not specified, the topic of the mirrored investigation channel is set (if the channel exists). | Optional | 
 | topic | The topic for the channel. | Required | 
 
 
@@ -294,7 +317,22 @@ Creates a channel in Slack.
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Slack.Channel.ID | String | The ID of the channel. | 
+| Slack.Channel.Name | String | The name of the channel. | 
+
+#### Context Example
+```json
+{
+    "Slack": {
+        "Channel": {
+            "ID": "C0R2D2C3PO",
+            "Name": "random"
+        }
+    }
+}
+```
 
 #### Command Example
 ```
@@ -319,6 +357,7 @@ Invites users to join a channel.
 | --- | --- | --- |
 | users | A CSV list of usernames or email addresses to invite to join the channel. For example: "user1, user2...". | Required | 
 | channel | The name of the channel to which to invite the users. If the name of the channel is not specified, the name of the mirrored investigation channel is used (if the channel exists). | Optional | 
+| channel_id | The ID of the channel to which to invite the users. If the ID of the channel is not specified, the name of the mirrored investigation channel is used (if the channel exists). | Optional | 
 
 
 #### Context Output
@@ -349,6 +388,7 @@ Removes users from the specified channel.
 | --- | --- | --- |
 | users | A CSV list of usernames or email addresses to remove from the a channel. For example: "user1, user2...". | Required | 
 | channel | The name of the channel from which to remove the users. If the name of the channel is not specified, the mirrored investigation channel is used (if the channel exists). | Optional | 
+| channel_id | The ID of the channel from which to remove the users. If the ID of the channel is not specified, the mirrored investigation channel is used (if the channel exists). | Optional | 
 
 
 #### Context Output
@@ -378,6 +418,7 @@ Renames a channel in Slack.
 | --- | --- | --- |
 | name | The new name of the channel. | Required | 
 | channel | The current name of the channel. If the name of the channel is not specified, the mirrored investigation channel is used (if the channel exists). | Optional | 
+| channel_id | The current ID of the channel. If the ID of the channel is not specified, the mirrored investigation channel is used (if the channel exists). | Optional | 
 
 
 #### Context Output
@@ -456,6 +497,7 @@ Edit an existing Slack message.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | channel | The channel the message is posted in. | Optional |
+| channel_id | The ID of the channel the message is posted in. | Optional |
 | threadID | The ID of the thread of which to edit - can be retrieved from a previous send-notification command. | Required | 
 | message | The updated message. | Optional | 
 | blocks | A JSON string of the block to send. | Optional | 
@@ -505,6 +547,7 @@ Pins a selected message to the given channel.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | channel | The channel the message is posted in. | Optional |
+| channel_id | The ID of the channel the message is posted in. | Optional |
 | threadID | The ID of the thread of which to pin - can be retrieved from a previous send-notification command. | Required | 
 
 
@@ -521,8 +564,9 @@ There is no context output for this command.
 >The message was successfully pinned.
 
 ### Known Limitations
-SlackV3 mirrors incidents by listening to messages being sent in channels the bot has been added to.
+- All commands which use `channel` as a parameter, it is now advised to use `channel-id` using the channel ID found in the incident's context under the `Slack.Channels.ID` value. Using `channel-id` as opposed to `channel` will improve the performance of the integration.
+- SlackV3 mirrors incidents by listening to messages being sent in channels the bot has been added to.
 Because of this, you may have some users in Slack who are not users in XSOAR. This will occasionally cause the module 
 health to indicate that an error has occurred because a user was unable to be found. In this circumstance, the error is expected and is purely cosmetic in nature.
-
-Please note: If a dedicated channel is configured, however there are no notifications being sent, please verify that the **Types of Notifications** to send parameter is populated.
+- In some cases when mirroring an investigation, kicking the admin will cause no further actions to be able to be performed by the bot. Any subsequent actions taken on the channel (such as mirror out) will result in a "not in channel" error.
+- Please note: If a dedicated channel is configured, however there are no notifications being sent, please verify that the **Types of Notifications** to send parameter is populated.

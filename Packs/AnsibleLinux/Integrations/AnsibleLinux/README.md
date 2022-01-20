@@ -2026,7 +2026,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 ### linux-kernel-blacklist
 ***
-Blacklist kernel modules
+Deny list kernel modules
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/kernel_blacklist_module.html
 
 
@@ -2038,9 +2038,9 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | host | hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance. | Required | 
-| name | Name of kernel module to black- or whitelist. | Required | 
-| state | Whether the module should be present in the blacklist or absent. Possible values are: absent, present. Default is present. | Optional | 
-| blacklist_file | If specified, use this blacklist file instead of `/etc/modprobe.d/blacklist-ansible.conf`. | Optional | 
+| name | Name of kernel module to add to block list or allow list. | Required | 
+| state | Whether the module should be present in the block list or absent. Possible values are: absent, present. Default is present. | Optional | 
+| blacklist_file | If specified, use this block list file instead of `/etc/modprobe.d/blacklist-ansible.conf`. | Optional | 
 
 
 #### Context Output

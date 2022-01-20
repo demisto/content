@@ -142,7 +142,7 @@ tasks:
     task:
       id: cfce5c74-05e4-4119-8b56-36b7af7e6bd9
       version: -1
-      name: Is there an ArcSight Black list Url Active List and values?
+      name: Is there an ArcSight Block list Url Active List and values?
       type: condition
       iscommand: false
       brand: ""
@@ -209,7 +209,7 @@ tasks:
     task:
       id: 85867485-236a-42ee-861e-c0a8af184917
       version: -1
-      name: Add Url to ArcSight Active list black list
+      name: Add Url to ArcSight Active list block list
       description: Adds new entries to the Active List.
       script: ArcSight ESM v2|||as-add-entries
       type: regular
@@ -305,7 +305,7 @@ tasks:
     task:
       id: b0fa0dd1-44a2-43b3-8d12-4a0f7126e492
       version: -1
-      name: Is there an ArcSight White list Url Active List and values?
+      name: Is there an ArcSight allow list Url Active List and values?
       type: condition
       iscommand: false
       brand: ""
@@ -372,7 +372,7 @@ tasks:
     task:
       id: 658489eb-f20a-425a-89fe-72df6b3ff2dd
       version: -1
-      name: Add Url to ArcSight Active list white list
+      name: Add Url to ArcSight Active list allow list
       description: Adds new entries to the Active List.
       script: ArcSight ESM v2|||as-add-entries
       type: regular
@@ -836,23 +836,23 @@ inputs:
 - key: ArcSightBlackListUrlActiveListID
   value: {}
   required: false
-  description: ID of the black list Url Active List resource as appears in ArcSight.
+  description: ID of the block list Url Active List resource as appears in ArcSight.
   playbookInputQuery: null
 - key: ArcsightBlackUrlValueFieldName
   value: {}
   required: false
-  description: The name of the black list Active List field to insert the Url value
+  description: The name of the block list Active List field to insert the Url value
     to.
   playbookInputQuery: null
 - key: ArcSightWhiteListUrlActiveListID
   value: {}
   required: false
-  description: ID of the white list Url Active List resource as appears in ArcSight.
+  description: ID of the allow list Url Active List resource as appears in ArcSight.
   playbookInputQuery: null
 - key: ArcsightWhiteListUrlValueFieldName
   value: {}
   required: false
-  description: The name of the white list Active List field to insert the Url value
+  description: The name of the allow list Active List field to insert the Url value
     to.
   playbookInputQuery: null
 - key: ArcSightWatchListUrlActiveListID

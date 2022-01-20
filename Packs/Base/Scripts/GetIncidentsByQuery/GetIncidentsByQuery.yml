@@ -90,9 +90,13 @@ args:
   name: pageSize
   required: false
   secret: false
-comment: Gets a list of incident objects and the associated incident outputs that
-  match the specified query and filters. The results are returned in a structured
-  data file.
+comment: |-
+  Gets a list of incident objects and the associated incident outputs that
+  match the specified query and filters. The results are returned in a structured data file.
+
+  This automation runs using the default Limited User role, unless you explicitly change the permissions.
+  For more information, see the section about permissions here:
+  https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
 commonfields:
   id: GetIncidentsByQuery
   version: -1
@@ -112,7 +116,7 @@ tags:
 - ml
 timeout: 60µs
 type: python
-dockerimage: demisto/python3:3.9.7.24076
+dockerimage: demisto/python3:3.9.8.24399
 tests:
 - Create Phishing Classifier V2 ML Test
 - DBot Build Phishing Classifier Test - Multiple Algorithms

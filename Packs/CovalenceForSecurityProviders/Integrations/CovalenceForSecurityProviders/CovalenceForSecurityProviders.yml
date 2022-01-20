@@ -60,15 +60,18 @@ configuration:
   name: first_fetch
   required: false
   type: 0
-- defaultvalue: '50'
-  name: max_fetch
-  required: false
-  type: 0
 - display: Incident type
   name: incidentType
   required: false
   type: 13
-description: Triggers by any alert from endpoint, cloud, and network security monitoring, with mitigation steps where applicable. Query Covalence for more detail.
+- defaultvalue: '50'
+  display: Fetch limit
+  name: max_fetch
+  required: false
+  type: 0
+  hidden: true
+description: Triggers by any alert from endpoint, cloud, and network security monitoring,
+  with mitigation steps where applicable. Query Covalence for more detail.
 display: Covalence For Security Providers
 fromversion: 5.0.0
 name: Covalence For Security Providers
@@ -1292,11 +1295,12 @@ script:
     - contextPath: Covalence.Organization.org_name
       description: Org_name
       type: String
-  dockerimage: demisto/xsoar-tools:1.0.0.19258
+  dockerimage: demisto/xsoar-tools:1.0.0.25075
   isfetch: true
   runonce: false
   script: '-'
   subtype: python3
   type: python
+beta: false
 tests:
 - No tests (auto formatted)

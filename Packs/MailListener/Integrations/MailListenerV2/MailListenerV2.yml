@@ -37,6 +37,12 @@ configuration:
   name: permittedFromDomain
   required: false
   type: 0
+- defaultvalue: 'false'
+  additionalinfo: Whether to query search with headers when filtering by sender's email address.
+  display: Query search with headers
+  name: with_headers
+  required: false
+  type: 8
 - defaultvalue: 1 hour
   display: First fetch time
   name: first_fetch
@@ -147,7 +153,7 @@ script:
       eml file format.
     execution: false
     name: mail-listener-get-email-as-eml
-  dockerimage: demisto/imap:1.0.0.24037
+  dockerimage: demisto/py3-tools:0.0.1.25751
   feed: false
   isfetch: true
   longRunning: false

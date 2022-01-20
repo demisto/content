@@ -4,7 +4,7 @@
         "id": "4c15efed1e048d98c884f6b8041b27ab",
         "adviceType": "remediationAdvice",
         "adviceTypeDisplayName": "Remediation",
-        "displayName": "Use application whitelisting software (e.g AppLocker) to restrict password dumping tools"
+        "displayName": "Use application allow list software (e.g AppLocker) to restrict password dumping tools"
     },
     {
         "schemeDisplayName": "Remediation parameters",

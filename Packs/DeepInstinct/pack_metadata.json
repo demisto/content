@@ -2,7 +2,7 @@
     "name": "DeepInstinct",
     "description": "At Deep Instinct, we prevent what others can't find.",
     "support": "partner",
-    "currentVersion": "1.0.7",
+    "currentVersion": "1.0.9",
     "author": "Deep Instinct",
     "url": "",
     "email": "support@deepinstinct.com",
@@ -13,8 +13,10 @@
     "created": "2020-04-13T09:41:59Z",
     "useCases": [],
     "keywords": [],
-    "githubUser": [
-        "asiadeepinstinct"
-    ],
-    "certification": "certified"
+    "githubUser": [],
+    "certification": "certified",
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

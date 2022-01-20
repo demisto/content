@@ -2,7 +2,7 @@
     "name": "CSV Feed",
     "description": "Indicators feed from a CSV file",
     "support": "xsoar",
-    "currentVersion": "1.1.6",
+    "currentVersion": "1.1.10",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -15,5 +15,9 @@
     "keywords": [
         "CSV",
         "Feed"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }

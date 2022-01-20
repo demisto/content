@@ -517,7 +517,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.9.9.25564
 defaultmapperin: Saas Security - Incoming Mapper
 defaultmapperout: Saas Security - Outgoing Mapper
 fromversion: 6.0.0
