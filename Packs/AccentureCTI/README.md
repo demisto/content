@@ -1,7 +1,8 @@
 # **Accenture CTI v2**
  
-This pack has 1 sub-pack/integration namely:
+This pack has 2 sub-pack/integration namely:
 - ACTI Indicator Query
+- ACTI Vulnerability Query
 _____
 
 <p>&nbsp;</p>
