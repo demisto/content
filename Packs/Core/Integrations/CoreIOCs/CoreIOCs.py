@@ -362,37 +362,12 @@ def core_ioc_to_demisto(ioc: Dict) -> Dict:
     return entry
 
 
-def get_changes(client: Client):
-    from_time: Dict = get_integration_context()
-    if not from_time:
-        raise DemistoException('XDR is not synced.')
-    path, requests_kwargs = prepare_get_changes(from_time['ts'])
-    requests_kwargs: Dict = get_requests_kwargs(_json=requests_kwargs)
-    iocs: List = client.http_request(url_suffix=path, requests_kwargs=requests_kwargs).get('reply', [])
-    if iocs:
-        from_time['ts'] = iocs[-1].get('RULE_MODIFY_TIME', from_time) + 1
-        set_integration_context(from_time)
-        demisto.createIndicators(list(map(core_ioc_to_demisto, iocs)))
-
-
 def module_test(client: Client):
     ts = int(datetime.now(timezone.utc).timestamp() * 1000) - 1
     path, requests_kwargs = prepare_get_changes(ts)
     requests_kwargs: Dict = get_requests_kwargs(_json=requests_kwargs)
     client.http_request(url_suffix=path, requests_kwargs=requests_kwargs).get('reply', [])
     demisto.results('ok')
-
-
-def fetch_indicators(client: Client, auto_sync: bool = False):
-    if not get_integration_context() and auto_sync:
-        core_iocs_sync_command(client, first_time=True)
-    else:
-        get_changes(client)
-        if auto_sync:
-            tim_insert_jsons(client)
-            if iocs_to_keep_time():
-                # first_time=False will call iocs_to_keep
-                core_iocs_sync_command(client)
 
 
 def core_iocs_sync_command(client: Client, first_time: bool = False):
@@ -483,9 +458,7 @@ def main():
     }
     command = demisto.command()
     try:
-        if command == 'fetch-indicators':
-            fetch_indicators(client, params.get('autoSync', False))
-        elif command == 'core-iocs-set-sync-time':
+        if command == 'core-iocs-set-sync-time':
             set_sync_time(demisto.args()['time'])
         elif command == 'core-iocs-create-sync-file':
             get_sync_file()

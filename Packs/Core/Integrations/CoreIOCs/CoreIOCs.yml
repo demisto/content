@@ -15,18 +15,6 @@ configuration:
   name: apikey
   required: true
   type: 4
-- defaultvalue: 'true'
-  display: Fetch indicators
-  name: feed
-  required: false
-  type: 8
-- defaultvalue: 'true'
-  additionalinfo: When enabled, indicators will be synced from Cortex XSOAR to Cortex
-    XDR. Disable if you prefer to use a playbook to sync indicators.
-  display: Auto Sync
-  name: autoSync
-  required: false
-  type: 8
 - additionalinfo: Map the severity of each indicator that will be synced to Cortex
     XDR.
   display: Cortex XDR Severity
@@ -62,73 +50,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-- additionalinfo: Indicators from this integration instance will be marked with this
-    reputation
-  display: Indicator Reputation
-  name: feedReputation
-  options:
-  - None
-  - Good
-  - Suspicious
-  - Bad
-  required: false
-  type: 18
-- additionalinfo: Reliability of the source providing the intelligence data
-  defaultvalue: A - Completely reliable
-  display: Source Reliability
-  name: feedReliability
-  options:
-  - A - Completely reliable
-  - B - Usually reliable
-  - C - Fairly reliable
-  - D - Not usually reliable
-  - E - Unreliable
-  - F - Reliability cannot be judged
-  required: true
-  type: 15
-- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
-    fetched from the feed
-  display: Traffic Light Protocol Color
-  name: tlp_color
-  options:
-  - RED
-  - AMBER
-  - GREEN
-  - WHITE
-  required: false
-  type: 15
-- display: ''
-  name: feedExpirationPolicy
-  options:
-  - never
-  - interval
-  - indicatorType
-  - suddenDeath
-  required: false
-  type: 17
-- display: ''
-  name: feedExpirationInterval
-  required: false
-  type: 1
-- display: Incremental Feed
-  defaultvalue: 'true'
-  hidden: true
-  name: feedIncremental
-  required: false
-  type: 8
-- defaultvalue: '1'
-  display: Feed Fetch Interval
-  name: feedFetchInterval
-  required: false
-  type: 19
-- additionalinfo: When selected, the exclusion list is ignored for indicators from
-    this feed. This means that if an indicator from this feed is on the exclusion
-    list, the indicator might still be added to the system.
-  display: Bypass exclusion list
-  name: feedBypassExclusionList
-  required: false
-  type: 8
-description: Use the Cortex XDR - IOCs feed integration to sync indicators from Cortex
+description: Use the Cortex XDR - IOCs integration to sync indicators from Cortex
   XSOAR to Cortex XDR and back to Cortex XSOAR. Cortex XDR is the world's first detection
   and response app that natively integrates network, endpoint and cloud data to stop
   sophisticated attacks.
@@ -206,7 +128,7 @@ script:
     execution: false
     name: core-iocs-disable
   dockerimage: demisto/python3:3.10.1.25933
-  feed: true
+  feed: false
   isfetch: false
   longRunning: false
   longRunningPort: false
