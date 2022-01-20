@@ -1,5 +1,17 @@
 Use the Generic Export Indicators Service integration to provide an endpoint with a list of indicators as a service for the system indicators.
 
+## PAN-OS EDL Management to Export Indicators Service (PAN-OS EDL Service) migration steps
+Unlike `PAN-OS EDL Management`, this integration hosts the EDL on the Cortex XSOAR server. Follow these steps to migrate your EDLs.
+1. Convert existing EDL lists to indicators in Cortex XSOAR. This can be done automatically:
+   1. Extract your EDL as a text file from the web server it's currently hosted on.
+   2. Upload it as a file to the Playground and use the `ExtractIndicatorsFromTextFile` automation. e.g, `!ExtractIndicatorsFromTextFile entryID=<entry_id>` 
+2. Go to the `Indicators` page and [filter](https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/manage-indicators/understand-indicators/indicators-page.html) to find all of the indicators you extracted from the text file.
+3. If needed, batch select the indicators and add a tag to the indicators you want to host as a specific EDL. Use this tag in the `Indicator Query` integration parameter when configuring the integration. For example, if you want to create an allowed list of indicators and a blocked list of indicators.
+4. Edit the EDL object on the PAN-OS device to pull from the `Export Indicators Service (PAN-OS EDL Service)` instance, as explained in [### Access the Export Indicators Service by Instance Name (HTTPS)](#access-the-export-indicators-service-by-instance-name-(https)). You can edit the EDL object using the [panorama-edit-edl](https://xsoar.pan.dev/docs/reference/integrations/panorama#panorama-edit-edl) command in the `Palo Alto Networks PAN-OS` integration.
+5. Commit and push the configuration from the Panorama device to its respective Firewalls using the [PAN-OS Commit Configuration](https://xsoar.pan.dev/docs/reference/playbooks/pan-os-commit-configuration) playbook.
+6. If you have a deployment with 100 firewalls or more, we recommend using your Panorama device and creating an EDL object there, which will be populated from the `PAN-OS EDL Service`. Then push the EDL object to the respective firewalls.
+7. Follow the instructions in the rest of this guide to make sure that the PAN-OS device is connected to the EDL service.
+
 ## Use Cases
 ---
 1. Export a list of malicious IPs to block via a firewall.

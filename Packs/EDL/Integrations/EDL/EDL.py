@@ -240,11 +240,11 @@ def create_new_edl(request_args: RequestArguments) -> str:
     )
     formatted_indicators = ''
     if request_args.out_format == FORMAT_TEXT:
-        #
         if request_args.drop_invalids or request_args.collapse_ips != "Don't Collapse":
+            # Because there may be illegal indicators or they may turn into cider, the limit is increased
             indicator_searcher.limit = int(limit * INCREASE_LIMIT)
         new_iocs_file = get_indicators_to_format(indicator_searcher, request_args)
-
+        # we collect first all indicators because we ned all ips to collapse_ips
         new_iocs_file = create_text_out_format(new_iocs_file, request_args)
         new_iocs_file.seek(0)
         for count, line in enumerate(new_iocs_file):
@@ -332,16 +332,16 @@ def create_json_out_format(list_fields: List, indicator: Dict, request_args: Req
     """format the indicator to json format.
 
     Args:
-        not_first_call (bool): Whether if this is the first call to the function.
         list_fields (list): the fields to return.
         indicator (dict): the indicator info
         request_args (RequestArguments): all the request arguments.
+        not_first_call (bool): Indicates if this is the first call to the function.
 
     Returns:
         An indicator to add to the file in json format.
     """
-    if indicator.get('value') and indicator.get('indicator_type') == 'URL':
-        indicator['value'] = url_handler(indicator.get('value', ''), request_args.url_protocol_stripping,
+    if (indicator_value := indicator.get('value')) and indicator.get('indicator_type') == 'URL':
+        indicator['value'] = url_handler(indicator_value, request_args.url_protocol_stripping,
                                          request_args.url_port_stripping, request_args.url_truncate)
     filtered_json = {}
     if list_fields:
@@ -365,8 +365,8 @@ def create_mwg_out_format(indicator: dict, request_args: RequestArguments, heade
     Returns:
         An indicator to add to the file in mwg format.
     """
-    if indicator.get('value') and indicator.get('indicator_type') == 'URL':
-        indicator['value'] = url_handler(indicator.get('value', ''), request_args.url_protocol_stripping,
+    if (indicator_value := indicator.get('value')) and indicator.get('indicator_type') == 'URL':
+        indicator['value'] = url_handler(indicator_value, request_args.url_protocol_stripping,
                                          request_args.url_port_stripping, request_args.url_truncate)
 
     value = "\"" + indicator.get('value', '') + "\""
@@ -415,9 +415,7 @@ def create_proxysg_out_format(indicator: dict, files_by_category: dict, request_
     Returns:
         a dict of the formatted indicators by category.
     """
-
-    if indicator.get('indicator_type') in ['URL', 'Domain', 'DomainGlob'] and indicator.get('value'):
-        indicator_value = indicator.get('value', '')
+    if (indicator_value := indicator.get('value')) and indicator.get('indicator_type') in ['URL', 'Domain', 'DomainGlob']:
         stripped_indicator = url_handler(indicator_value, True, request_args.url_port_stripping,
                                          request_args.url_truncate)
         indicator_proxysg_category = indicator.get('CustomFields', {}).get('proxysgcategory')
@@ -457,8 +455,9 @@ def create_csv_out_format(headers_was_writen: bool, list_fields: List, ioc, requ
     Returns:
         a one indicator to add to the file in csv format.
     """
-    if ioc.get('value') and ioc.get('indicator_type') == 'URL':
-        ioc['value'] = url_handler(ioc.get('value', ''), request_args.url_protocol_stripping,
+
+    if (indicator_value := ioc.get('value')) and ioc.get('indicator_type') == 'URL':
+        ioc['value'] = url_handler(indicator_value, request_args.url_protocol_stripping,
                                    request_args.url_port_stripping, request_args.url_truncate)
     if not list_fields:
         values = list(ioc.values())

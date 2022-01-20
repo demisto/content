@@ -184,7 +184,7 @@ configuration:
   name: timeout
   required: false
   type: 0
-- additionalinfo: 'When enabled, the integration will query the server using full queries (will overwrite the "Exported Fields" configuration). Advanced configuration to be used only if instructed by XSOAR Support, or youve encountered log errors in the form of: msgpack: invalid code.'
+- additionalinfo: 'When enabled, the integration will query the server using full queries (will overwrite the "Exported Fields" parameter). Advanced configuration to be used only if instructed by XSOAR Support, or you have encountered log errors in the form of: msgpack: invalid code.'
   display: 'Advanced: Use Legacy Queries'
   hidden: false
   name: use_legacy_query
