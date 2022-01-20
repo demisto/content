@@ -47,6 +47,7 @@ Sends an email using EWS.
 | attachIDs | A CSV list of War Room entry IDs that contain files, and are used to attach files to the outgoing email. For example: attachIDs=15@8,19@8. | Optional | 
 | attachNames | A CSV list of names of attachments to send. Should be the same number of elements as attachIDs. | Optional | 
 | attachCIDs | A CSV list of CIDs to embed attachments within the email itself. | Optional | 
+| from_address | The email address from which to reply. | Optional |
 
 
 #### Context Output

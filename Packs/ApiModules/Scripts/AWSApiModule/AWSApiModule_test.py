@@ -100,3 +100,5 @@ def test_get_timeout():
     assert read == 200 and connect == 2
     (read, connect) = AWSClient.get_timeout(60)
     assert read == 60 and connect == 10
+    (read, connect) = AWSClient.get_timeout(u"60, 10")  # testing for unicode variable
+    assert read == 60 and connect == 10
