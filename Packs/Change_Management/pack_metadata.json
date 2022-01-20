@@ -24,5 +24,6 @@
     ],
     "marketplaces": [
         "xsoar"
-    ]
+    ],
+    "itemPrefix": ["Change_Management"] 
 }
