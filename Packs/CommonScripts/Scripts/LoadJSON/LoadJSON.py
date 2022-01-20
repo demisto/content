@@ -8,6 +8,7 @@ def load_json(args):
     json_str = args['input']
     obj = json.loads(json_str, strict=False)
 
+
     return {
         "EntryContext": {"JsonObject": obj},
         "Type": entryTypes['note'],
