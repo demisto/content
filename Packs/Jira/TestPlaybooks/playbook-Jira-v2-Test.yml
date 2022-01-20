@@ -87,7 +87,11 @@ tasks:
         simple: '"delete - this is test"'
       dueDate: {}
       issueJson:
-        simple: '{"fields":{"issuetype":{"name":"Request for Action"}}}'
+        simple: |-
+          {"fields":
+            {"issuetype":{"name":"Request for Action"}},
+            {"customfield_10040":123456}
+          }
       issueTypeId:
         simple: "10008"
       issueTypeName: {}
@@ -910,6 +914,84 @@ tasks:
         "position": {
           "x": 50,
           "y": 3850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "33":
+    id: "33"
+    taskid: bd5b068a-cefc-47ef-8600-8280879b3fd1
+    type: regular
+    task:
+      id: bd5b068a-cefc-47ef-8600-8280879b3fd1
+      version: -1
+      name: jira-issue-query with custom field
+      description: Query Jira issues
+      script: '|||jira-issue-query'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      extraFields:
+        simple: Ticket Number
+      query:
+        simple: id = ${Ticket.[0].Id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "34":
+    id: "34"
+    taskid: 39a663f7-65ff-45ed-8740-a2ec9775df31
+    type: condition
+    task:
+      id: 39a663f7-65ff-45ed-8740-a2ec9775df31
+      version: -1
+      name: VerifyContextFields
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Ticket
+                accessor: Ticket Number
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Ticket
+                accessor: Creator
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
         }
       }
     note: false
