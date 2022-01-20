@@ -196,7 +196,8 @@ display: Generic Export Indicators Service
 name: EDL
 script:
   commands:
-  - arguments:
+  - name: edl-update
+    arguments:
     - default: false
       description: The query to run to update the indicators list. To view expected results, you can run the following command from the Cortex XSOAR CLI `!findIndicators query=<your query>`
       isArray: false
@@ -330,8 +331,8 @@ script:
     deprecated: true
     description: Updates values stored in the EDL (only available On-Demand).
     execution: false
-    name: edl-update
-  - arguments:
+  - name: export-indicators-list-update
+    arguments:
     - default: false
       description: The query to run to update the indicators list. To view expected results, you can run the following command from the Cortex XSOAR CLI `!findIndicators query=<your query>`
       isArray: false
@@ -463,9 +464,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Updates values stored in the EDL (only available On-Demand).
+    description: Updates values stored in the List (only available On-Demand).
     execution: false
-    name: export-indicators-list-update
   dockerimage: demisto/flask-nginx:1.0.0.23674
   feed: false
   isfetch: false
