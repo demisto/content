@@ -1,6 +1,6 @@
 {
     "name": "Xsoar_Utils",
-    "description": "This is a wrapper on top of XSOAR API. Can be used to implement commands that call the XSOAR API in the background."
+    "description": "This is a wrapper on top of XSOAR API. Can be used to implement commands that call the XSOAR API in the background.",
     "support": "community",
     "currentVersion": "1.0.0",
     "author": "Arun Narayanan",
