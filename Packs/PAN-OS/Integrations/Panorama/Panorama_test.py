@@ -367,7 +367,7 @@ def test_edit_url_filter_non_valid_args_8_x(mocker):
     element_value = 'gambling'
     add_remove_element = 'remove'
 
-    err_msg = 'Only the override_allow_list, override_block_list, description properties can be' \
+    err_msg = 'Only the override_allow_list, override_block_list, description properties can be'\
               ' changed in PAN-OS 8.x or earlier versions.'
     with pytest.raises(DemistoException, match=err_msg):
         panorama_edit_url_filter(url_filter_name, element_to_change, element_value, add_remove_element)
@@ -413,38 +413,6 @@ def test_edit_url_filter_non_valid_args_9_x(mocker):
               ' later versions.'
     with pytest.raises(DemistoException, match=err_msg):
         panorama_edit_url_filter(url_filter_name, element_to_change, element_value, add_remove_element)
-
-
-def http_mock(url: str, method: str, body: dict = {}):
-    return body
-
-
-@pytest.mark.parametrize('category_name, items', [('category_name', ['www.good.com'],)])
-def test_remove_from_custom_url_category(category_name, items, mocker):
-    """
-    Given:
-     - a valid argument for edit custom url group
-
-    When:
-     - running the custom_url_category_remove_items function
-
-    Then:
-     - checks an assertion
-    """
-    import Panorama
-    from Panorama import panorama_custom_url_category_remove_items
-
-    return_results_mock = mocker.patch.object(Panorama, 'return_results')
-
-    mocker.patch('Panorama.panorama_get_custom_url_category', return_value={'description': 'description',
-                                                                            'list': {'member': "www.test.com"}
-                                                                            })
-    mocker.patch('Panorama.get_pan_os_major_version', return_value=9)
-    mocker.patch('Panorama.http_request', side_effect=http_mock)
-
-    panorama_custom_url_category_remove_items(category_name, items, "URL List")
-    demisto_result_got = return_results_mock.call_args.args[0]['Contents']
-    assert "www.test.com" in demisto_result_got['element']
 
 
 def test_prettify_edl():
@@ -734,7 +702,7 @@ class TestPanoramaEditRuleCommand:
                     '@total-count': '1',
                     '@count': '1',
                     'source': {
-                        'member': ['1.1.1.1', '3.3.3.3', '2.3.4.5'],
+                         'member': ['1.1.1.1', '3.3.3.3', '2.3.4.5'],
                     }
                 }
             }
@@ -930,8 +898,7 @@ def test_panorama_commit_command(mocker, args, expected_request_params, request_
                                                                                   'Status': 'Pending'}},
                                        id='do not include template')
                           ])
-def test_panorama_push_to_device_group_command(mocker, args, expected_request_params, request_result,
-                                               expected_demisto_result):
+def test_panorama_push_to_device_group_command(mocker, args, expected_request_params, request_result, expected_demisto_result):
     """
     Given:
         - command args
@@ -1005,20 +972,19 @@ class TestDevices:
 
     def test_with_specific_target_and_vsys(self):
         import Panorama
-        Panorama.VSYS = None  # this a Panorama instance
-        assert list(Panorama.devices(targets=['target'], vsys_s=['vsys1', 'vsys2'])) == [('target', 'vsys1'),
-                                                                                         ('target', 'vsys2')]
+        Panorama.VSYS = None    # this a Panorama instance
+        assert list(Panorama.devices(targets=['target'], vsys_s=['vsys1', 'vsys2'])) == [('target', 'vsys1'), ('target', 'vsys2')]
 
     def test_with_specific_target_only(self, requests_mock):
         import Panorama
         with open('test_data/devices_list.xml', 'r') as data_file:
             requests_mock.get(Panorama.URL, text=data_file.read())
-        Panorama.VSYS = None  # this a Panorama instance
+        Panorama.VSYS = None    # this a Panorama instance
         assert list(Panorama.devices(targets=['target1'])) == [('target1', 'vsys1'), ('target1', 'vsys2')]
 
     def test_without_specify(self, requests_mock):
         import Panorama
         with open('test_data/devices_list.xml', 'r') as data_file:
             requests_mock.get(Panorama.URL, text=data_file.read())
-        Panorama.VSYS = None  # this a Panorama instance
+        Panorama.VSYS = None    # this a Panorama instance
         assert list(Panorama.devices()) == [('target1', 'vsys1'), ('target1', 'vsys2'), ('target2', None)]
