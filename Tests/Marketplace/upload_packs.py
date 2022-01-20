@@ -1,6 +1,5 @@
 import json
 import os
-import subprocess
 import sys
 import argparse
 import shutil
@@ -28,6 +27,7 @@ from demisto_sdk.commands.common.tools import run_command, str2bool
 from Tests.scripts.utils.log_util import install_logging
 from Tests.scripts.utils import logging_wrapper as logging
 import traceback
+
 
 def get_packs_names(target_packs: str, previous_commit_hash: str = "HEAD^") -> set:
     """Detects and returns packs names to upload.
@@ -954,7 +954,7 @@ def get_all_packs(packs_dict, extract_destination_path, id_set_path, marketplace
     """
     Collect all packs from the id_set that are not packs_dict
     """
-    if not id_set_path:
+    if not id_set_path or not os.path.isfile(id_set_path):
         return packs_dict
     packs_dict = dict(packs_dict)
     with open(id_set_path) as f:
