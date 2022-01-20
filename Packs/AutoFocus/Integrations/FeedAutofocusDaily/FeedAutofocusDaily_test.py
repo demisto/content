@@ -167,7 +167,7 @@ def test_get_indicators_command(mocker, auto_focus_client):
     - getting all the indicators
 
     Then
-    - make sure the indicator type and values are returned correctly. 
+    - make sure the indicator type and values are returned correctly.
     """
     mocker.patch.object(auto_focus_client, 'daily_http_request', return_value=INDICATORS)
     _, _, indicators = get_indicators_command(auto_focus_client, {}, feed_tags=[], tlp_color=None)

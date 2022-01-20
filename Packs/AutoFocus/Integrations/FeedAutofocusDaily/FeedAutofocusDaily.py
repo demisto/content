@@ -57,7 +57,7 @@ class Client(BaseClient):
         """
         if ip_type := FeedIndicatorType.ip_to_indicator_type(indicator):
             # catch URLs of type X.X.X.X/path/url or X.X.X.X:portNum/path/url or X.X.X.X/cidrNumber/path/url
-            # or X.X.X.X/path
+            # or X.X.X.X:portNum/path
             if indicator.count('/') > 1 or (
                 ip_type in (FeedIndicatorType.IP, FeedIndicatorType.IPv6) and indicator.count('/') == 1
             ):
