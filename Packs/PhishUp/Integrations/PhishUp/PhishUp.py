@@ -15,149 +15,104 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
 
 class Client(BaseClient):
-    """
-    Client will implement the service API, and should not contain any Demisto logic.
-    Should only do requests and return data.
-    """
-
     def investigate_url_http_request(self, apikey, target_url):
         """
-        initiates a http request to a test url
+        initiates a http request to target investigate url
         """
-        try:
-            data = self._http_request(
-                method='POST',
-                url_suffix='/sherlock/investigate?apikey=' + apikey,
-                json_data={"Url": target_url},
-                timeout=20
-            )
-            return data
-        except Exception as e:
-            demisto.log(f"""http request error: {e}""")
-            return "Error"
+        data = self._http_request(
+            method='POST',
+            url_suffix='/sherlock/investigate?apikey=' + apikey,
+            json_data={"Url": target_url},
+            timeout=20
+        )
+        return data
 
     def investigate_bulk_url_http_request(self, apikey, target_url_list):
         """
-        initiates a http request to a test url
+        initiates a http request to bulk target investigate url
         """
-
-        try:
-            data = self._http_request(
-                method='POST',
-                url_suffix="/sherlock/bulk?apikey=" + apikey,
-                json_data={"Urls": target_url_list},
-                timeout=20
-            )
-            return data
-        except Exception as e:
-            demisto.log(f"""http request error: {e}""")
-            return "Error"
+        data = self._http_request(
+            method='POST',
+            url_suffix="/sherlock/bulk?apikey=" + apikey,
+            json_data={"Urls": target_url_list},
+            timeout=20
+        )
+        return data
 
     def check_api_key_test_module_http_request(self, apikey):
-        try:
-            data = self._http_request(
-                method='POST',
-                url_suffix="/sherlock/ValidateApiKey?apikey=" + apikey,
-                timeout=20
-            )
-            return data
-        except Exception as e:
-            demisto.log(f"""http request error: {e}""")
-            return "Error"
+        """
+        initiates a http request to validateapikey endpoint for test-module
+        """
+        data = self._http_request(
+            method='POST',
+            url_suffix="/sherlock/ValidateApiKey?apikey=" + apikey,
+            timeout=20
+        )
+        return data
 
 
-def investigate_url_command(client: Client, args, params):
-    result = client.investigate_url_http_request(params.get("apikey"), args.get("Url"))
+def investigate_url_command(client: Client, args, apikey):
+    result = client.investigate_url_http_request(apikey, args.get("Url"))
 
     if result != "Error" and "Url" in result:
-        return (
-            f"PhishUp Result: {result}",  # readable_output,
-            {
+        return CommandResults(
+            readable_output=f"PhishUp Result: {result}",
+            outputs={
                 "Result": result["PhishUpStatus"],
                 "Score": result["PhishUpScore"]
-            },  # outputs,
-            result  # raw response - the original response
+            },
+            raw_response=result
         )
     else:
-        return (
-            "An error occurred...",  # readable_output,
-            {
-                "Result": "Error",
-                "Score": "Error"
-            },  # outputs,
-            "Error"  # raw response - the original response
-        )
+        raise Exception(f"PhishUp Response Error: ")
 
 
-def investigate_bulk_url_command(client: Client, args, params):
+def investigate_bulk_url_command(client: Client, args, apikey):
     if isinstance(args.get("Urls"), str):
         if "[" in args.get("Urls"):
-            try:
-                urls = json.loads(args.get("Urls"))
-            except Exception as e:
-                return (
-                    "String List Parsing Error",  # readable_output,
-                    {
-                        "PhishUp.AverageResult": "Error",
-                        "PhishUp.Results": "Error"
-                    },  # outputs,
-                    f"String List Parsing Error {e} "  # raw response - the original response
-                )
+            urls = json.loads(args.get("Urls"))
         else:
             urls = [args.get("Urls")]
-    else:
-        urls = list(set(args.get("Urls")))
 
     if len(urls) == 0:
-        return (
-            "Empty Urls List",  # readable_output,
-            {
-                "PhishUp.AverageResult": "Error",
-                "PhishUp.Results": "Error"
-            },
-            "Empty Urls List"  # raw response - the original response
-        )
+        raise Exception("Empty Urls List")
 
-    result = client.investigate_bulk_url_http_request(params.get("apikey"), urls)
+    # for getting unique Urls
+    urls = list(set(args.get("Urls")))
 
-    if result != "Error" and "Results" in result and result["Results"] is not None:
+    result = client.investigate_bulk_url_http_request(apikey, urls)
+
+    if "Results" in result and result["Results"] is not None:
         any_phish = "Clean"
         for r in result["Results"]:
             if r["PhishUpStatus"] == "Phish":
                 any_phish = "Phish"
                 break
 
-        return (
-            result,  # readable_output,
-            {
+        return CommandResults(
+            readable_output=result,
+            outputs={
                 "PhishUp.AverageResult": any_phish,
                 "PhishUp.Results": result["Results"]
-            },  # outputs,
-            result  # raw response - the original response
+            },
+            raw_response=result
         )
     else:
-        return (
-            "An error occurred...",  # readable_output,
-            {
-                "PhishUp.AverageResult": "Error",
-                "PhishUp.Results": "Error"
-            },  # outputs,
-            "Error"  # raw response - the original response
-        )
+        raise Exception("PhishUp Response Error: ")
 
 
 def get_chosen_phishup_action_command(params):
-    return (
-        f"""Chosen Action: {params.get("phishup-playbook-action")}""",  # readable_output,
-        {
+    return CommandResults(
+        readable_output=f"""Chosen Action: {params.get("phishup-playbook-action")}""",
+        outputs={
             "PhishUp.Action": params.get("phishup-playbook-action"),
-        },  # outputs,
-        params.get("phishup-playbook-action")  # raw response - the original response
+        },
+        raw_response=params.get("phishup-playbook-action")
     )
 
 
-def test_module(client, params):
-    result = client.check_api_key_test_module_http_request(params.get("apikey"))
+def test_module(client, apikey):
+    result = client.check_api_key_test_module_http_request(apikey)
     if result["Status"] == "Success":
         return 'ok'
     else:
@@ -168,9 +123,10 @@ def main():
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
-
     # get the service API url
     base_url = "https://apiv2.phishup.co"
+
+    apikey = demisto.params().get('credentials').get('password')
 
     verify_certificate = not demisto.params().get('insecure', False)
     proxy = demisto.params().get('proxy', False)
@@ -183,15 +139,15 @@ def main():
 
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
-            result = test_module(client, demisto.params())
+            result = test_module(client, apikey)
             demisto.results(result)
 
         elif demisto.command() == 'phishup-investigate-url':
-            return_outputs(*investigate_url_command(client, demisto.args(), demisto.params()))
+            return_results(investigate_url_command(client, demisto.args(), apikey))
         elif demisto.command() == 'phishup-investigate-bulk-url':
-            return_outputs(*investigate_bulk_url_command(client, demisto.args(), demisto.params()))
+            return_results(investigate_bulk_url_command(client, demisto.args(), apikey))
         elif demisto.command() == 'phishup-get-chosen-action':
-            return_outputs(*get_chosen_phishup_action_command(demisto.params()))
+            return_results(get_chosen_phishup_action_command(demisto.params()))
 
     # Log exceptions
     except Exception as e:

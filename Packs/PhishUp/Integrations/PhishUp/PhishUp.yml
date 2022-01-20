@@ -3,10 +3,11 @@ commonfields:
   id: 6437c006-1d86-4cdc-89d5-23305f207e3a
   version: -1
 configuration:
-- display: API KEY
-  name: apikey
-  required: true
-  type: 0
+- additionalinfo: PhishUp Api Key
+  display: Username
+  name: credentials
+  required: false
+  type: 9
 - display: Incident type
   name: incidentType
   required: false
