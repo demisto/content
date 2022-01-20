@@ -958,7 +958,7 @@ def get_all_packs(packs_dict, extract_destination_path, id_set_path, marketplace
         return packs_dict
     packs_dict = dict(packs_dict)
     with open(id_set_path) as f:
-        id_set_packs = json.load(f).get('Packs')
+        id_set_packs = json.load(f).get('Packs', [])
     for pack_name in id_set_packs.keys():
         if pack_name not in packs_dict:
             pack = Pack(pack_name, os.path.join(extract_destination_path, pack_name), marketplace)
@@ -974,7 +974,7 @@ def upload_packs_with_dependencies_zip(extract_destination_path, packs_dependenc
     logging.info("Starting to collect pack with dependencies zips")
     packs_dict = {pack.name: pack for pack in packs_list}
     packs_dict = get_all_packs(packs_dict, extract_destination_path, id_set_path, marketplace)
-    full_deps_graph = {}
+    full_deps_graph: dict = {}
     try:
         for pack in packs_dict.values():
             logging.info(f"Collecting dependencies of {pack.name}")
@@ -1070,7 +1070,7 @@ def option_handler():
     parser.add_argument('-c', '--ci_branch', help="CI branch of current build", required=True)
     parser.add_argument('-f', '--force_upload', help="is force upload build?", type=str2bool, required=True)
     parser.add_argument('-dz', '--create_dependencies_zip', help="Upload packs with dependencies zip", type=str2bool,
-                        required=False)
+                        required=False, default='false')
     parser.add_argument('-mp', '--marketplace', help="marketplace version", default='xsoar')
     # disable-secrets-detection-end
     return parser.parse_args()

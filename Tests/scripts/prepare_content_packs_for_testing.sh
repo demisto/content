@@ -7,7 +7,6 @@ CI_COMMIT_BRANCH=${CI_COMMIT_BRANCH:-unknown}
 CI_BUILD_ID=${CI_BUILD_ID:-00000}
 PACK_ARTIFACTS=$ARTIFACTS_FOLDER/content_packs.zip
 ID_SET=$ARTIFACTS_FOLDER/id_set.json
-CREATE_DEPENDENCIES_ZIP=true # TODO: debug. change to false
 EXTRACT_FOLDER=$(mktemp -d)
 
 if [[ ! -f "$GCS_MARKET_KEY" ]]; then
@@ -83,7 +82,6 @@ else
   # In Upload-Flow, we exclude test-pbs in the zipped packs
   REMOVE_PBS=true
   BUCKET_UPLOAD_FLOW=true
-  CREATE_DEPENDENCIES_ZIP=true
   GCS_PRIVATE_BUCKET="marketplace-dist-private"
   if [ -n "${FORCE_PACK_UPLOAD}" ] && [ -n "${PACKS_TO_UPLOAD}" ]; then
     # In case the workflow is force upload, we override the forced packs
