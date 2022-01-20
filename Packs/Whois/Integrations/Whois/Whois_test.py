@@ -269,7 +269,7 @@ def test_get_raw_response_with_a_refer_server_that_fails(mocker):
     server argument, and the responses of the recursive calls are concatenating.
 
     This test simulates a case in which the call to get_whois_raw(domain, server) returns a response that includes a
-    refer whois server but the call to the refer server fails wih an exception. The purpose of the test is to verify
+    refer whois server but the call to the refer server fails with an exception. The purpose of the test is to verify
     that the final response of the get_whois_raw() includes the response of the first server which was queried although
     that the recursive call to the refer server failed.
 
