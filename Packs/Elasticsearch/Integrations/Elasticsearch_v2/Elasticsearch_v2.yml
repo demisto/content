@@ -51,6 +51,11 @@ configuration:
   - Timestamp-Milliseconds
   required: false
   type: 15
+- display: Map JSON fields into labels
+  defaultvalue: true
+  name: map_labels
+  required: false
+  type: 8
 - defaultvalue: 3 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: fetch_time
@@ -315,7 +320,7 @@ script:
     name: get-mapping-fields
     description: Returns the schema of the index to fetch from. This commmand should
       be used for debugging purposes.
-  dockerimage: demisto/elasticsearch:1.0.0.25554
+  dockerimage: demisto/elasticsearch:1.0.0.26046
   feed: false
   isfetch: true
   longRunning: false

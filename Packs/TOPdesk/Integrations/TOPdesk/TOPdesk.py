@@ -59,7 +59,7 @@ class Client(BaseClient):
     def get_list_with_query(self, list_type: str, start: Optional[int] = None, page_size: Optional[int] = None,
                             query: Optional[str] = None, modification_date_start: Optional[str] = None,
                             modification_date_end: Optional[str] = None, creation_date_start: Optional[str] = None,
-                            creation_date_end: Optional[str] = None) -> List[Dict[str, Any]]:
+                            creation_date_end: Optional[str] = None, fields: Optional[str] = None) -> List[Dict[str, Any]]:
         """Get list of objects that support start, page_size and query arguments.
 
         Args:
@@ -75,6 +75,7 @@ class Client(BaseClient):
                 this day 00:00:00, using time zone of the logged in user or operator. <yyyy-mm-dd>
             creation_date_end: Retrieve only incidents with creation date smaller or equal to
                 this day 00:00:00, using time zone of the logged in user or operator. <yyyy-mm-dd>
+            fields: Option to select fields for persons, branches and incidents.
 
         Return List of requested objects.
         """
@@ -103,6 +104,17 @@ class Client(BaseClient):
 
         else:
             new_query = True
+
+        if fields:
+            qfield = "fields"
+            if list_type == "persons" or list_type == "branches":
+                qfield = "$" + qfield
+
+            if inline_parameters:
+                url_suffix = f"{url_suffix}&{qfield}={fields}"
+            else:
+                url_suffix = f"{url_suffix}?{qfield}={fields}"
+                inline_parameters = True
 
         query = self.convert_query_types(query, new_query)
 
@@ -593,7 +605,8 @@ def get_incidents_with_pagination(client: Client, max_fetch: int, query: str,
                                   modification_date_start: Optional[str] = None,
                                   modification_date_end: Optional[str] = None,
                                   creation_date_start: Optional[str] = None,
-                                  creation_date_end: Optional[str] = None) -> List[Dict[str, Any]]:
+                                  creation_date_end: Optional[str] = None,
+                                  fields: Optional[str] = None) -> List[Dict[str, Any]]:
     """Implement pagination for fetching incidents.
 
     Args:
@@ -604,6 +617,8 @@ def get_incidents_with_pagination(client: Client, max_fetch: int, query: str,
         modification_date_end: The end modification date from which to fetch.
         creation_date_start: The start creation date from which to fetch.
         creation_date_end: The end creation date from which to fetch.
+        fields: Option to select fields for persons, branches and incidents.
+
 
     Return all incidents fetched.
     """
@@ -624,7 +639,8 @@ def get_incidents_with_pagination(client: Client, max_fetch: int, query: str,
                                                 modification_date_start=modification_date_start,
                                                 modification_date_end=modification_date_end,
                                                 creation_date_start=creation_date_start,
-                                                creation_date_end=creation_date_end)
+                                                creation_date_end=creation_date_end,
+                                                fields=fields)
         start += page_size
     return incidents
 
@@ -675,7 +691,8 @@ def get_incidents_list(client: Client, modification_date_start: str = None, modi
                                                    page_size=args.get('page_size', None),
                                                    query=query,
                                                    modification_date_start=modification_date_start,
-                                                   modification_date_end=modification_date_end)
+                                                   modification_date_end=modification_date_end,
+                                                   fields=args.get('fields', None))
 
     return incidents
 
@@ -761,7 +778,8 @@ def list_persons_command(client: Client, args: Dict[str, Any]) -> CommandResults
     persons = client.get_list_with_query(list_type="persons",
                                          start=args.get('start', None),
                                          page_size=args.get('page_size', None),
-                                         query=args.get('query', None))
+                                         query=args.get('query', None),
+                                         fields=args.get('fields', None))
     if len(persons) == 0:
         return CommandResults(readable_output='No persons found')
 
@@ -804,7 +822,7 @@ def list_operators_command(client: Client, args: Dict[str, Any]) -> CommandResul
         client: The client to preform command on.
         args: The arguments of the operators command.
 
-    Return CommadResults of list of operators.
+    Return CommandResults of list of operators.
     """
 
     operators = client.get_list_with_query(list_type="operators",
@@ -1048,7 +1066,8 @@ def branches_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     branches = client.get_list_with_query(list_type="branches",
                                           start=args.get('start', None),
                                           page_size=args.get('page_size', None),
-                                          query=args.get('query', None))
+                                          query=args.get('query', None),
+                                          fields=args.get('fields', None))
     if len(branches) == 0:
         return CommandResults(readable_output='No branches found')
 

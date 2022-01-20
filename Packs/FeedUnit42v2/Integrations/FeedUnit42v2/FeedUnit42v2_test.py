@@ -1,14 +1,16 @@
 import pytest
+
 from FeedUnit42v2 import Client, fetch_indicators, get_indicators_command, handle_multiple_dates_in_one_field, \
     get_indicator_publication, get_attack_id_and_value_from_name, parse_indicators, parse_campaigns, \
     parse_reports_and_report_relationships, create_attack_pattern_indicator, create_course_of_action_indicators, \
     get_ioc_type, get_ioc_value, create_list_relationships, get_ioc_value_from_ioc_name, \
-    change_attack_pattern_to_stix_attack_pattern
+    change_attack_pattern_to_stix_attack_pattern, DemistoException
 
 from test_data.feed_data import INDICATORS_DATA, ATTACK_PATTERN_DATA, MALWARE_DATA, RELATIONSHIP_DATA, REPORTS_DATA, \
     REPORTS_INDICATORS, ID_TO_OBJECT, INDICATORS_RESULT, CAMPAIGN_RESPONSE, CAMPAIGN_INDICATOR, COURSE_OF_ACTION_DATA, \
     PUBLICATIONS, ATTACK_PATTERN_INDICATOR, COURSE_OF_ACTION_INDICATORS, RELATIONSHIP_OBJECTS, INTRUSION_SET_DATA, \
-    DUMMY_INDICATOR_WITH_RELATIONSHIP_LIST, STIX_ATTACK_PATTERN_INDICATOR, SUB_TECHNIQUE_INDICATOR, SUB_TECHNIQUE_DATA
+    DUMMY_INDICATOR_WITH_RELATIONSHIP_LIST, STIX_ATTACK_PATTERN_INDICATOR, SUB_TECHNIQUE_INDICATOR, \
+    SUB_TECHNIQUE_DATA, INVALID_ATTACK_PATTERN_STRUCTURE
 
 
 @pytest.mark.parametrize('command, args, response, length', [
@@ -46,6 +48,17 @@ TYPE_TO_RESPONSE = {
     'intrusion-set': INTRUSION_SET_DATA
 }
 
+TYPE_TO_RESPONSE_WIITH_INVALID_ATTACK_PATTERN_DATA = {
+    'indicator': INDICATORS_DATA,
+    'report': REPORTS_DATA,
+    'attack-pattern': INVALID_ATTACK_PATTERN_STRUCTURE,
+    'malware': MALWARE_DATA,
+    'campaign': CAMPAIGN_RESPONSE,
+    'relationship': RELATIONSHIP_DATA,
+    'course-of-action': COURSE_OF_ACTION_DATA,
+    'intrusion-set': INTRUSION_SET_DATA
+}
+
 
 def test_fetch_indicators_command(mocker):
     """
@@ -71,6 +84,43 @@ def test_fetch_indicators_command(mocker):
     indicators = fetch_indicators(client, create_relationships=True)
     assert len(indicators) == 17
     assert DUMMY_INDICATOR_WITH_RELATIONSHIP_LIST in indicators
+
+
+def test_fetch_indicators_fails_on_invalid_attack_pattern_structure(mocker):
+    """
+    Given
+        - Invalid attack pattern indicator structure
+
+    When
+        - fetching indicators
+
+    Then
+        - DemistoException is raised.
+    """
+    def mock_get_stix_objects(test, **kwargs):
+        type_ = kwargs.get('type')
+        client.objects_data[type_] = TYPE_TO_RESPONSE_WIITH_INVALID_ATTACK_PATTERN_DATA[type_]
+
+    client = Client(api_key='1234', verify=False)
+    mocker.patch.object(client, 'fetch_stix_objects_from_api', side_effect=mock_get_stix_objects)
+
+    with pytest.raises(DemistoException, match=r"Failed parsing attack indicator"):
+        fetch_indicators(client, create_relationships=True)
+
+
+def test_get_attack_id_and_value_from_name_on_invalid_indicator():
+    """
+    Given
+        - Invalid attack indicator structure
+
+    When
+        - parsing the indicator name.
+
+    Then
+        - DemistoException is raised.
+    """
+    with pytest.raises(DemistoException, match=r"Failed parsing attack indicator"):
+        get_attack_id_and_value_from_name({"name": "test"})
 
 
 def test_feed_tags_param(mocker):

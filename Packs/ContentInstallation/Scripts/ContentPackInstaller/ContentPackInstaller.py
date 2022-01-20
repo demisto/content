@@ -214,7 +214,7 @@ class ContentPackInstaller:
             if pack_data['version'] in ['latest', '*']:
                 return parse(self.get_latest_version_for_pack(pack_data['id'])) == self.installed_packs[pack_data['id']]
 
-            return parse(pack_data['version']) <= self.installed_packs[pack_data['id']]
+            return parse(pack_data['version']) == self.installed_packs[pack_data['id']]
         except Exception:
             return parse(self.get_latest_version_for_pack(pack_data['id'])) == self.installed_packs[pack_data['id']]
 
