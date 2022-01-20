@@ -96,7 +96,7 @@ script:
     description: Returns a list of sample events fetched from the stream.
     execution: false
     name: crowdstrike-falcon-streaming-get-sample-events
-  dockerimage: demisto/aiohttp:1.0.0.13810
+  dockerimage: demisto/py3-tools:0.0.1.25751
   feed: false
   isfetch: false
   longRunning: true
