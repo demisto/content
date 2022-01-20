@@ -2,8 +2,8 @@ id: Jira Change Management
 version: -1
 name: Jira Change Management
 description: |-
-  If you are using Pan-os/panorama firewall and Jira as a ticketing system this playbook will be a perfect match for your change management for FW process.
-  This playbook will be triggered by fetch from Jira and will help you manage and automate you change management process.
+  If you are using PAN-OS/Panorama firewall and Jira as a ticketing system, this playbook will be a perfect match for your change management for firewall process.
+  This playbook is triggered by afetch from Jira and will help you manage and automate your change management process.
 starttaskid: "0"
 tasks:
   "0":
@@ -70,7 +70,7 @@ tasks:
       id: 6849ceab-4527-40e0-8122-732088e461bf
       version: -1
       name: 'Deploy the configuration to test environment '
-      description: Deploy the configuration to test environment.
+      description: Deploy the configuration to the test environment.
       script: '|||panorama-create-rule'
       type: regular
       iscommand: true
@@ -134,7 +134,7 @@ tasks:
       id: b046d585-1122-4204-8c9a-c0cdb8d28de5
       version: -1
       name: Panorama Query Logs
-      description: 'Query Panorama Logs of types: traffic, threat, url, data-filtering
+      description: 'Query Panorama logs of types: traffic, threat, url, data-filtering
         and wildfire.'
       playbookName: Panorama Query Logs
       type: playbook
@@ -201,7 +201,7 @@ tasks:
       id: c352a37a-bc4e-45dd-80e1-46497f1d65b7
       version: -1
       name: Test configuration?
-      description: This task check if to exam the change request in DEV environment
+      description: This task checks whether to exam the change request in the DEV environment
         first.
       type: condition
       iscommand: false
@@ -244,8 +244,8 @@ tasks:
     task:
       id: 22470c84-b48a-44ec-8dd5-a290b3fab4d5
       version: -1
-      name: Close Jira Issue with a rejection
-      description: Closing the issue in Jira with rejection status.
+      name: Close Jira issue with a rejection
+      description: Close the issue in Jira with a rejection status.
       script: '|||jira-edit-issue'
       type: regular
       iscommand: true
@@ -281,7 +281,7 @@ tasks:
       id: 8681dac6-aef5-4808-8154-f8127ae24055
       version: -1
       name: export to CSV
-      description: Export given array to csv file
+      description: Export given array to a CSV file.
       scriptName: ExportToCSV
       type: regular
       iscommand: false
@@ -362,12 +362,12 @@ tasks:
       id: d2e0d734-5c12-4350-8139-398dcd73e167
       version: -1
       name: PAN-OS create or edit policy
-      description: "This playbook will automate the process of creating or editing\
-        \ policy.\nFirst task in the playbook will check if there is security policy\
-        \ that matches the playbook inputs in case there is no security policy that\
-        \ matches a new policy will be created, in case there is security policy that\
-        \ matches the user will be able to modify the existing policy or create a\
-        \ new hardened policy "
+      description: "This playbook will automate the process of creating or editing a\
+        \ policy.\nThe first task in the playbook checks if there is a security policy\
+        \ that matches the playbook inputs. If there is no security policy that\
+        \ matches, a new policy is created. If there is a security policy that\
+        \ matches, the user will be able to modify the existing policy or create a\
+        \ new hardened policy."
       playbookName: PAN-OS create or edit policy
       type: playbook
       iscommand: false
@@ -455,7 +455,7 @@ tasks:
       id: c020c6e1-dfcb-40e9-8a76-47f83d18953e
       version: -1
       name: Ask for FW change request review
-      description: Ask for FW change request review.
+      description: Ask for a firewall change request review.
       tags:
       - comment
       - verdict
@@ -505,7 +505,7 @@ tasks:
       - id: "0"
         label: ""
         labelarg:
-          simple: Do you approve the FW change request?
+          simple: Do you approve the firewall change request?
         required: false
         gridcolumns: []
         defaultrows: []
@@ -535,7 +535,7 @@ tasks:
       id: 84220764-4fb2-448b-879e-292b476368ad
       version: -1
       name: Ask security team to review the test results
-      description: Ask security team to review the test results of the deployed rule
+      description: Ask the security team to review the test results of the deployed rule
         in the DEV environment.
       tags:
       - comment
@@ -562,9 +562,9 @@ tasks:
         complex:
           root: inputs.SecurityTeamEmail
       subject:
-        simple: Please review the configuration test
+        simple: Please review the configuration test.
       body:
-        simple: Approve or reject the configuration test
+        simple: Approve or reject the configuration test.
       methods:
       - email
       format: ""
@@ -595,8 +595,8 @@ tasks:
         placeholder: ""
         tooltip: ""
         readonly: false
-      title: Please review the configuration test in DEV environment
-      description: Approve or reject the configuration test
+      title: Review the configuration test in DEV environment
+      description: Approve or reject the configuration test.
       sender: Your SOC team
       expired: false
       totalanswers: 0
@@ -612,7 +612,7 @@ tasks:
       id: 66ce4e5d-8909-478e-8470-1cd72e360047
       version: -1
       name: Add XSOAR link to issue
-      description: Adds a link of XSOR incident to Jira issue.
+      description: Adds a link of the Cortex XSOAR incident to the Jira issue.
       script: '|||jira-issue-add-comment'
       type: regular
       iscommand: true
@@ -660,7 +660,7 @@ tasks:
       - "4"
     scriptarguments:
       closeReason:
-        simple: 'Request was rejected '
+        simple: 'Request was rejected.'
       id:
         complex:
           root: incident
@@ -687,8 +687,8 @@ tasks:
     task:
       id: 2f199984-9350-4a95-8d8a-ec44099c8278
       version: -1
-      name: 'Notify the request owner  to validate the change '
-      description: Request from the request owner  to validate the change.
+      name: 'Notify the request owner to validate the change'
+      description: Request to the request owner to validate the change.
       tags:
       - comment
       type: regular
@@ -720,8 +720,8 @@ tasks:
       id: 1dac7413-31bd-43b7-8456-8e519a544fac
       version: -1
       name: Are there logs?
-      description: 'This task check if there is logs as a result of "Panorama Query
-        Logs" playbook. '
+      description: 'This task checks if there are logs as a result of the "Panorama Query
+        Logs" playbook.'
       type: condition
       iscommand: false
       brand: ""
@@ -933,7 +933,7 @@ tasks:
       id: 4102fc0c-618b-4497-8bf8-baa62b7caa7f
       version: -1
       name: Close Jira Issue with a approval
-      description: Closing the issue in Jira with approval status.
+      description: Close the issue in Jira with an approval status.
       script: '|||jira-edit-issue'
       type: regular
       iscommand: true
@@ -968,8 +968,8 @@ tasks:
     task:
       id: 4d67d4fb-0c70-47bd-85dc-7d9d2bff97d1
       version: -1
-      name: Did the request was approved?
-      description: Conditional task that check if the request for change was approved
+      name: Was the request approved?
+      description: Conditional task that check if the request for change was approved.
         or rejected.
       type: condition
       iscommand: false
@@ -1023,7 +1023,7 @@ tasks:
       id: 6971ee47-07b0-43be-89e3-0d6f521ba544
       version: -1
       name: Did the test in DEV environment passed?
-      description: Check whether the values provided in arguments are equal. If either
+      description: Check whether the values provided in the arguments are equal. If either
         of the arguments are missing, no is returned.
       type: condition
       iscommand: false
@@ -1094,12 +1094,12 @@ inputs:
       root: incident
       accessor: details
   required: false
-  description: 'Provide a summery for your firewall request. '
+  description: 'Provide a summery for your firewall request.'
   playbookInputQuery:
 - key: SecurityTeamEmail
   value: {}
   required: false
-  description: 'The email of the security team that approves the FW requests. '
+  description: 'The email of the security team that approves the firewall requests.'
   playbookInputQuery:
 - key: log_type
   value:
@@ -1142,8 +1142,8 @@ inputs:
   value:
     simple: "No"
   required: false
-  description: 'By providing YES to this input the requested FW rule will be tested
-    in your test environment. '
+  description: 'By providing YES to this input, the requested firewall rule will be tested
+    in your test environment.'
   playbookInputQuery:
 - key: zone-src
   value:
@@ -1164,7 +1164,7 @@ inputs:
 - key: TestInstance
   value: {}
   required: false
-  description: The instance name of the FW in DEV environment for testing the new
+  description: The instance name of the firewall in the DEV environment for testing the new
     rule.
   playbookInputQuery:
 - key: Action
@@ -1173,7 +1173,7 @@ inputs:
       root: incident
       accessor: policyactions
   required: false
-  description: The action for the change request
+  description: The action for the change request.
   playbookInputQuery:
 - key: Protocol
   value:
@@ -1238,29 +1238,29 @@ inputs:
 - key: Closing_status_rejected
   value: {}
   required: false
-  description: 'The closing status in Jira is changing by the  project templates,
-    please provide the relevant closing status if the issue was rejected. '
+  description: 'The closing status in Jira is changing in the project templates.
+    Please provide the relevant closing status if the issue was rejected.'
   playbookInputQuery:
 - key: Closing_status_approved
   value: {}
   required: false
-  description: The closing status in Jira is changing by the  project templates, please
-    provide the relevant closing status if the issue was approved.
+  description: 'The closing status in Jira is changing in the project templates.
+    Please provide the relevant closing status if the issue was approved.
   playbookInputQuery:
 - key: Target
   value: {}
   required: false
-  description: Target number of the firewall. Use only on a Panorama instance.
+  description: Target number of the firewall. Use only for a Panorama instance.
   playbookInputQuery:
 - key: Vsys
   value: {}
   required: false
-  description: Target vsys of the firewall. Use only on a Panorama instance.
+  description: Target vsys of the firewall. Use only for a Panorama instance.
   playbookInputQuery:
 - key: Limit
   value: {}
   required: false
-  description: "Max number of API requests that the \nPanoramaSecurityPolicyMatchWrapper\
+  description: "Maximum number of API requests that the \nPanoramaSecurityPolicyMatchWrapper\
     \ script will send.\nThe default is 500."
   playbookInputQuery:
 outputs: []
