@@ -950,7 +950,7 @@ def prepare_and_zip_pack(pack, signature_key, delete_test_playbooks=True):
     return True
 
 
-def get_all_packs(packs_dict, extract_destination_path, id_set_path):
+def get_all_packs(packs_dict, extract_destination_path, id_set_path, marketplace):
     """
     Collect all packs from the id_set that are not packs_dict
     """
@@ -961,19 +961,19 @@ def get_all_packs(packs_dict, extract_destination_path, id_set_path):
         id_set_packs = json.load(f).get('Packs')
     for pack_name in id_set_packs.keys():
         if pack_name not in packs_dict:
-            pack = Pack(pack_name, os.path.join(extract_destination_path, pack_name))
+            pack = Pack(pack_name, os.path.join(extract_destination_path, pack_name), marketplace)
             packs_dict[pack_name] = pack
     return packs_dict
 
 
 def upload_packs_with_dependencies_zip(extract_destination_path, packs_dependencies_mapping, signature_key,
-                                       storage_bucket, storage_base_path, id_set_path, packs_list):
+                                       storage_bucket, storage_base_path, id_set_path, packs_list, marketplace):
     """
     Uploads packs with mandatory dependencies zip for all packs
     """
     logging.info("Starting to collect pack with dependencies zips")
     packs_dict = {pack.name: pack for pack in packs_list}
-    packs_dict = get_all_packs(packs_dict, extract_destination_path, id_set_path)
+    packs_dict = get_all_packs(packs_dict, extract_destination_path, id_set_path, marketplace)
     full_deps_graph = {}
     try:
         for pack in packs_dict.values():
@@ -994,7 +994,7 @@ def upload_packs_with_dependencies_zip(extract_destination_path, packs_dependenc
             shutil.copy(pack.zip_path, os.path.join(pack_with_dep_path, pack.name + ".zip"))
             for dep_name in pack_deps:
                 if dep_name not in packs_dict:
-                    dep_pack = Pack(dep_name, os.path.join(extract_destination_path, dep_name))
+                    dep_pack = Pack(dep_name, os.path.join(extract_destination_path, dep_name), marketplace)
                     packs_dict[dep_name] = dep_pack
                 else:
                     dep_pack = packs_dict[dep_name]
@@ -1292,7 +1292,7 @@ def main():
     if is_create_dependencies_zip:
         # handle packs with dependencies zip
         upload_packs_with_dependencies_zip(extract_destination_path, packs_dependencies_mapping, signature_key,
-                                           storage_bucket, storage_base_path, id_set_path, packs_list)
+                                           storage_bucket, storage_base_path, id_set_path, packs_list, marketplace)
 
 
 if __name__ == '__main__':
