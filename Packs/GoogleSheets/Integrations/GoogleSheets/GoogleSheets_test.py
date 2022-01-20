@@ -179,7 +179,7 @@ def test_create_spreadsheet():
     api_key = 'your_api_key'
     service = build('sheets', 'v4', http=http, developerKey=api_key)
     args = util_load_json(path + 'args.json')
-    command_result = GoogleSheets.spreadsheet_create(service, args)
+    command_result = GoogleSheets.create_spreadsheet(service, args)
     assert command_result.readable_output == util_load_json(path + 'command_results_readable_output.json')
     assert command_result.outputs == util_load_json(path + 'command_results_outputs.json')
 
@@ -203,7 +203,7 @@ def test_get_single_spreadsheet():
     http = HttpMock(path + 'response.json', {'status': '200'})
     api_key = 'your_api_key'
     service = build('sheets', 'v4', http=http, developerKey=api_key)
-    command_result = GoogleSheets.spreadsheet_get(service,
+    command_result = GoogleSheets.get_spreadsheet(service,
                                                   {'spreadsheet_id': "13YRXawxY54RI0uPjD_BQmw31zwaAYQ53I0mxbWlhTy8"})
     with open(path + 'markdown.md', 'r') as file:
         markdown_assert = file.read()
@@ -235,7 +235,7 @@ def test_get_multiple_spreadsheets():
     service = build('sheets', 'v4',
                     http=http,
                     developerKey=api_key)
-    command_result = GoogleSheets.spreadsheet_get(service, args)
+    command_result = GoogleSheets.get_spreadsheet(service, args)
     with open(path + 'markdown.md', 'r') as file:
         markdown_assert = file.read()
     assert command_result.readable_output == markdown_assert
@@ -260,7 +260,7 @@ def test_value_update():
     api_key = 'your_api_key'
     service = build('sheets', 'v4', http=http, developerKey=api_key)
     args = util_load_json("test_data/update_spreadsheet/test_value_update/command_mock.json")
-    command_result = GoogleSheets.sheets_value_update(service, args)
+    command_result = GoogleSheets.value_update_sheets(service, args)
     assert command_result.readable_output == '### Success\n'
 
 
@@ -285,7 +285,7 @@ def test_sheet_create_both_ways(path):
     api_key = 'your_api_key'
     service = build('sheets', 'v4', http=http, developerKey=api_key)
     args = util_load_json(path + 'args.json')
-    command_result = GoogleSheets.sheet_create(service, args)
+    command_result = GoogleSheets.create_sheet(service, args)
     assert command_result.outputs == util_load_json(path + 'command_result_output.json')
     with open(path + 'readable_output.md', 'r') as file:
         markdown_assert = file.read()

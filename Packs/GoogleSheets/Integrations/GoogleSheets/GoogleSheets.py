@@ -149,7 +149,7 @@ def markdown_single_get(response: dict) -> str:
 # COMMANDS
 
 
-def spreadsheet_create(service: Resource, args: dict) -> CommandResults:
+def create_spreadsheet(service: Resource, args: dict) -> CommandResults:
     '''
         Args:
             service (Google Resource): google-api discovery resource (google api client)
@@ -210,7 +210,7 @@ def spreadsheet_create(service: Resource, args: dict) -> CommandResults:
     return results
 
 
-def spreadsheet_update(service: Resource, args: dict) -> CommandResults:
+def update_spreadsheet(service: Resource, args: dict) -> CommandResults:
     '''
        Args:
             service (discovery Resource):  google-api discovery resource (google api client)
@@ -226,7 +226,7 @@ def spreadsheet_update(service: Resource, args: dict) -> CommandResults:
     return prepare_result(response, args)
 
 
-def spreadsheet_get(service: Resource, args: dict) -> CommandResults:
+def get_spreadsheet(service: Resource, args: dict) -> CommandResults:
     '''
         Args:
             service - google-api discovery resource (google api client)
@@ -268,7 +268,7 @@ def spreadsheet_get(service: Resource, args: dict) -> CommandResults:
     # This parameter is ignored if a field mask was set in the request.
 
 
-def sheet_create(service: Resource, args: dict) -> CommandResults:
+def create_sheet(service: Resource, args: dict) -> CommandResults:
     '''
        Args:
             service (discovery Resource):  google-api discovery resource (google api client)
@@ -310,7 +310,7 @@ def sheet_create(service: Resource, args: dict) -> CommandResults:
     return results
 
 
-def sheet_duplicate(service: Resource, args: dict) -> CommandResults:
+def duplicate_sheet(service: Resource, args: dict) -> CommandResults:
     '''
         Args:
             service (discovery Resource):  google-api discovery resource (google api client)
@@ -338,7 +338,7 @@ def sheet_duplicate(service: Resource, args: dict) -> CommandResults:
     return results
 
 
-def sheet_copy_to(service: Resource, args: dict) -> CommandResults:
+def copy_to_sheet(service: Resource, args: dict) -> CommandResults:
     '''
         Args:
             service (discovery Resource):  google-api discovery resource (google api client)
@@ -368,7 +368,7 @@ def sheet_copy_to(service: Resource, args: dict) -> CommandResults:
     return results
 
 
-def sheet_delete(service: Resource, args: dict) -> CommandResults:
+def delete_sheet(service: Resource, args: dict) -> CommandResults:
     '''
        Args:
             service (discovery Resource):  google-api discovery resource (google api client)
@@ -395,7 +395,7 @@ def sheet_delete(service: Resource, args: dict) -> CommandResults:
     return results
 
 
-def sheet_clear(service: Resource, args: dict) -> CommandResults:
+def clear_sheet(service: Resource, args: dict) -> CommandResults:
     '''
        Args:
             service (discovery Resource):  google-api discovery resource (google api client)
@@ -418,7 +418,7 @@ def sheet_clear(service: Resource, args: dict) -> CommandResults:
     return results
 
 
-def sheet_dimension_delete(service: Resource, args: dict) -> CommandResults:
+def dimension_delete_sheet(service: Resource, args: dict) -> CommandResults:
     '''
         Args:
             service (discovery Resource):  google-api discovery resource (google api client)
@@ -451,7 +451,7 @@ def sheet_dimension_delete(service: Resource, args: dict) -> CommandResults:
     return results
 
 
-def sheet_range_delete(service: Resource, args: dict) -> CommandResults:
+def range_delete_sheet(service: Resource, args: dict) -> CommandResults:
     '''
        Args:
             service (discovery Resource):  google-api discovery resource (google api client)
@@ -486,7 +486,7 @@ def sheet_range_delete(service: Resource, args: dict) -> CommandResults:
     return results
 
 
-def sheets_data_paste(service: Resource, args: dict) -> CommandResults:
+def data_paste_sheets(service: Resource, args: dict) -> CommandResults:
     '''
        Args:
             service (discovery Resource):  google-api discovery resource (google api client)
@@ -530,7 +530,7 @@ def sheets_data_paste(service: Resource, args: dict) -> CommandResults:
     return results
 
 
-def sheets_find_replace(service: Resource, args: dict) -> CommandResults:
+def find_replace_sheets(service: Resource, args: dict) -> CommandResults:
     '''
        Args:
             service (discovery Resource):  google-api discovery resource (google api client)
@@ -570,7 +570,7 @@ def sheets_find_replace(service: Resource, args: dict) -> CommandResults:
     return results
 
 
-def sheets_value_update(service: Resource, args: dict) -> CommandResults:
+def value_update_sheets(service: Resource, args: dict) -> CommandResults:
     '''
        Args:
             service (discovery Resource):  google-api discovery resource (google api client)
@@ -594,7 +594,7 @@ def sheets_value_update(service: Resource, args: dict) -> CommandResults:
     return CommandResults(readable_output=markdown)
 
 
-def sheets_value_append(service: Resource, args: dict) -> CommandResults:
+def value_append_sheets(service: Resource, args: dict) -> CommandResults:
     '''
          Args:
             service (discovery Resource):  google-api discovery resource (google api client)
@@ -700,33 +700,33 @@ def main() -> None:
         if command == 'test-module':
             return_results(test_module())
         elif command == 'google-sheets-spreadsheet-create':
-            return_results(spreadsheet_create(service, demisto.args()))
+            return_results(create_spreadsheet(service, demisto.args()))
         elif command == 'google-sheets-spreadsheet-get':
-            return_results(spreadsheet_get(service, demisto.args()))
+            return_results(get_spreadsheet(service, demisto.args()))
         elif command == 'google-sheets-spreadsheet-update':
-            return_results(spreadsheet_update(service, demisto.args()))
+            return_results(update_spreadsheet(service, demisto.args()))
         elif command == 'google-sheets-sheet-create':
-            return_results(sheet_create(service, demisto.args()))
+            return_results(create_sheet(service, demisto.args()))
         elif command == 'google-sheets-sheet-duplicate':
-            return_results(sheet_duplicate(service, demisto.args()))
+            return_results(duplicate_sheet(service, demisto.args()))
         elif command == 'google-sheets-sheet-copy-to':
-            return_results(sheet_copy_to(service, demisto.args()))
+            return_results(copy_to_sheet(service, demisto.args()))
         elif command == 'google-sheets-sheet-delete':
-            return_results(sheet_delete(service, demisto.args()))
+            return_results(delete_sheet(service, demisto.args()))
         elif command == 'google-sheets-sheet-clear':
-            return_results(sheet_clear(service, demisto.args()))
+            return_results(clear_sheet(service, demisto.args()))
         elif command == 'google-sheets-dimension-delete':
-            return_results(sheet_dimension_delete(service, demisto.args()))
+            return_results(dimension_delete_sheet(service, demisto.args()))
         elif command == 'google-sheets-range-delete':
-            return_results(sheet_range_delete(service, demisto.args()))
+            return_results(range_delete_sheet(service, demisto.args()))
         elif command == 'google-sheets-data-paste':
-            return_results(sheets_data_paste(service, demisto.args()))
+            return_results(data_paste_sheets(service, demisto.args()))
         elif command == 'google-sheets-find-replace':
-            return_results(sheets_find_replace(service, demisto.args()))
+            return_results(find_replace_sheets(service, demisto.args()))
         elif command == 'google-sheets-value-update':
-            return_results(sheets_value_update(service, demisto.args()))
+            return_results(value_update_sheets(service, demisto.args()))
         elif command == 'google-sheets-value-append':
-            return_results(sheets_value_append(service, demisto.args()))
+            return_results(value_append_sheets(service, demisto.args()))
         else:
             raise NotImplementedError('Command "{}" is not implemented.'.format(demisto.command()))
 
