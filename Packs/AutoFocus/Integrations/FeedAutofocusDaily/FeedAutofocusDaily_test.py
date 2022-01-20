@@ -41,12 +41,6 @@ def test_fetch_indicators_command(mocker, auto_focus_client):
         assert indicators[i]['type'] == TYPES[i]
 
 
-def test_type_finder(auto_focus_client):
-    for i in range(0, 9):
-        indicator_type = auto_focus_client.find_indicator_type(INDICATORS[i])
-        assert indicator_type == TYPES[i]
-
-
 @pytest.mark.parametrize('tlp_color', ['', None, 'AMBER'])
 def test_feed_tags_param(mocker, auto_focus_client, tlp_color):
     """Unit test
