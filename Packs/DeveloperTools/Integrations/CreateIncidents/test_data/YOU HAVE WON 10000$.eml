@@ -1,8 +1,8 @@
 Received: from AM4PR0201MB2081.eurprd02.prod.outlook.com
- (2603:10a6:200:4b::18) by PR3PR02MB6027.eurprd02.prod.outlook.com with HTTPS;
+ (someadress) by PR3PR02MB6027.eurprd02.prod.outlook.com with HTTPS;
  Wed, 20 Oct 2021 15:03:21 +0000
-Received: from AM9PR02MB6673.eurprd02.prod.outlook.com (2603:10a6:20b:2d0::19)
- by AM4PR0201MB2081.eurprd02.prod.outlook.com (2603:10a6:200:4b::18) with
+Received: from AM9PR02MB6673.eurprd02.prod.outlook.com (someadress)
+ by AM4PR0201MB2081.eurprd02.prod.outlook.com (someadress) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4608.17; Wed, 20 Oct
  2021 15:03:20 +0000
@@ -14,7 +14,7 @@ From: "example, XAVIER" <xavier.example@example.com>
 To: "somename, Christophe" <christophe.somename@example.com>
 Subject: YOU HAVE WON 10000$
 Date: Wed, 20 Oct 2021 17:03:20 +0200
-Message-ID: <AM9PR02MB667301744EA03A6264C264BAE6BE9@AM9PR02MB6673.eurprd02.prod.outlook.com>
+Message-ID: <someadress>
 MIME-Version: 1.0
 X-Mailer: Microsoft Outlook 16.0
 Thread-Index: AdfFwrLQidlHbd7aQ1+MaZBFSww0Qg==
@@ -22,7 +22,7 @@ Authentication-Results: example.com; dkim=none (message not signed)
  header.d=none;example.com; dmarc=none action=none header.from=example.com;
 X-MS-Has-Attach: yes
 X-MS-Exchange-Organization-SCL: -1
-X-MS-TNEF-Correlator: <AM9PR02MB667301744EA03A6264C264BAE6BE9@AM9PR02MB6673.eurprd02.prod.outlook.com>
+X-MS-TNEF-Correlator: <someadress>
 X-MS-Exchange-Organization-MessageDirectionality: Originating
 X-MS-Exchange-Organization-AuthSource: AM9PR02MB6673.eurprd02.prod.outlook.com
 X-MS-Exchange-Organization-AuthAs: Internal
@@ -164,7 +164,7 @@ lang=3DEN-GB>Congratulation you have wrong =
 100000$<o:p></o:p></span></p><p class=3DMsoNormal><span =
 lang=3DEN-GB><o:p>&nbsp;</o:p></span></p><p class=3DMsoNormal><img =
 width=3D212 height=3D156 style=3D'width:2.2083in;height:1.625in' =
-id=3D"Image_x0020_2" src=3D"cid:image001.png@01D7C5D4.61D003C0"><span =
+id=3D"Image_x0020_2" src=3D"cid:image001.png@numbers"><span =
 lang=3DEN-GB><o:p></o:p></span></p><p class=3DMsoNormal><span =
 lang=3DEN-GB><o:p>&nbsp;</o:p></span></p><p class=3DMsoNormal><span =
 lang=3DEN-GB><a =
@@ -184,7 +184,7 @@ example<o:p></o:p></p></div></body></html>
 Content-Type: image/png;
 	name="image001.png"
 Content-Transfer-Encoding: base64
-Content-ID: <image001.png@01D7C5D4.61D003C0>
+Content-ID: <image001.png@numbers>
 
 iVBORw0KGgoAAAANSUhEUgAAANQAAACcCAIAAACItxJOAAAAAXNSR0IArs4c6QAA/8pJREFUeF6M
 /WeTZHeW5om5+3X3e11r7aF1ZEbqBJDQhQJQqovVVS2mezjdQ1tuj3FJ4xt+FRrXjC9oRtrY7pLL
