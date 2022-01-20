@@ -205,7 +205,7 @@ references:
         fi
 
         ./Tests/scripts/linters_runner.sh
-        ./כ
+        ./Tests/scripts/validate.sh
 
   run_unit_testing_and_lint: &run_unit_testing_and_lint
     run:
