@@ -238,8 +238,10 @@ def test_epo_find_systems_command(requests_mock):
 
     assert len(result) == 7
     assert result[0].outputs[0] == {'AutoID': 2, 'CPUSerialNum': '', 'CPUSpeed': 0, 'CPUType': '',
-                                    'ComputerName': '10.0.0.1', 'DefaultLangID': '', 'Description': None, 'DomainName': '',
-                                    'FreeDiskSpace': 0, 'FreeMemory': 0, 'IPAddress': '', 'Hostname': '', 'IPSubnet': None,
+                                    'ComputerName': '10.0.0.1', 'DefaultLangID': '', 'Description': None,
+                                    'DomainName': '',
+                                    'FreeDiskSpace': 0, 'FreeMemory': 0, 'IPAddress': '', 'Hostname': '',
+                                    'IPSubnet': None,
                                     'IPSubnetMask': None, 'IPV4x': None, 'IPV6': None, 'IPXAddress': '',
                                     'NetAddress': '', 'NumOfCPU': 0, 'OSBuildNum': 0, 'OSOEMID': '',
                                     'OSPlatform': '', 'OSServicePackVer': '', 'OSType': '', 'OSVersion': '',
@@ -565,6 +567,9 @@ def test_epo_advanced_command(requests_mock):
        test Passed or Failed
     """
     epo_advanced_command_command_response = load_test_data_txt('test_data/epo_advanced_command_command.txt')
+    epo_advanced_command_command_response_second = load_test_data_txt(
+        'test_data/epo_advanced_command_command_second.txt')
+
     requests_mock.get(f'{EPO_URL}/remote/clienttask.find?searchText=On-demand&%3Aoutput=json',
                       text=epo_advanced_command_command_response)
 
@@ -580,6 +585,20 @@ def test_epo_advanced_command(requests_mock):
 
     assert result.outputs is None
     assert result.readable_output.find('### ePO command *clienttask.find* results:') >= -1
+
+    requests_mock.get(f'{EPO_URL}/remote/clienttask.run?names=TIE&productId=ENDP_AM_1000&taskId=28&retryAttempts=2'
+                      f'&retryIntervalInSeconds=120&useAllAgentHandlers=False&stopAfterMinutes=180&%3Aoutput=json',
+                      text=epo_advanced_command_command_response_second)
+
+    args = {
+        'command': 'clienttask.run',
+        'commandArgs': 'names:TIE,productId:ENDP_AM_1000,taskId:28,retryAttempts:2,retryIntervalInSeconds:120,'
+                       'useAllAgentHandlers:False,stopAfterMinutes:180'
+    }
+    result = epo_advanced_command_command(client, args)
+
+    assert result.outputs is None
+    assert result.readable_output == '#### ePO command *clienttask.run * results:\n  Succeeded'
 
 
 def test_epo_find_client_task_command(requests_mock):

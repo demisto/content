@@ -862,7 +862,7 @@ script:
       required: false
       description: Properties of the issue.
     description: Update an issue.
-  dockerimage: demisto/python3:3.10.1.25933
+  dockerimage: demisto/python3:3.9.9.25564
   feed: false
   isfetch: false
   longRunning: false
