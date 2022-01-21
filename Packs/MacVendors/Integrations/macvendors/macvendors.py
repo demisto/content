@@ -1,3 +1,4 @@
+from ast import Str
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
@@ -32,7 +33,7 @@ def test_module(client: BaseClient):
 
 
 def lookup_mac_command(client: BaseClient, params: Dict[str, Any], args: Dict[str, Any]):
-    mac_address = args.get('mac')
+    mac_address: Str = args.get('mac')
     res = client._http_request(
         'GET',
         url_suffix=urllib.parse.quote(mac_address),
