@@ -66,7 +66,7 @@ def investigate_url_command(client: Client, args, apikey):
             raw_response=result
         )
     else:
-        raise Exception(f"PhishUp Response Error")
+        raise Exception("PhishUp Response Error")
 
 
 def investigate_bulk_url_command(client: Client, args, apikey):
