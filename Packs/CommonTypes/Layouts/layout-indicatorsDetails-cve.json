@@ -560,7 +560,41 @@
                         "w": 1,
                         "x": 2,
                         "y": 0
-                    }
+                    },
+                    {
+						"displayType": "ROW",
+						"h": 5,
+						"hideName": false,
+						"i": "kopixekjqw-b8918c40-7aad-11ec-bd57-af095e750cab",
+						"items": [
+							{
+								"endCol": 6,
+								"fieldId": "cvssv2details",
+								"height": 106,
+								"id": "cvssv2details",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 6,
+								"fieldId": "cvssv3details",
+								"height": 106,
+								"id": "cvssv3details",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "CVSS Details",
+						"static": false,
+						"w": 3,
+						"x": 0,
+						"y": 9
+					}
                 ],
                 "type": "custom"
             }
