@@ -1,0 +1,271 @@
+{
+	"incidentFields": [
+		{
+			"id": "indicator_cvssv3details",
+			"version": 1,
+			"modified": "2022-01-21T11:17:14.942058514Z",
+			"packID": "",
+			"itemVersion": "",
+			"fromServerVersion": "",
+			"toServerVersion": "",
+			"definitionId": "indicator",
+			"vcShouldIgnore": false,
+			"vcShouldKeepItemLegacyProdMachine": false,
+			"commitMessage": "",
+			"shouldCommit": false,
+			"name": "CVSS V3 Details",
+			"prevName": "CVSS V3 Details",
+			"ownerOnly": false,
+			"placeholder": "",
+			"template": "",
+			"description": "",
+			"cliName": "cvssv3details",
+			"type": "grid",
+			"closeForm": false,
+			"editForm": true,
+			"required": false,
+			"script": "",
+			"runScriptAfterUpdate": false,
+			"fieldCalcScript": "",
+			"neverSetAsRequired": false,
+			"isReadOnly": true,
+			"selectValues": null,
+			"validationRegex": "",
+			"useAsKpi": false,
+			"locked": false,
+			"system": false,
+			"content": false,
+			"group": 2,
+			"mergeStrategy": "",
+			"hidden": false,
+			"openEnded": false,
+			"associatedTypes": null,
+			"systemAssociatedTypes": null,
+			"associatedToAll": true,
+			"unmapped": false,
+			"unsearchable": false,
+			"caseInsensitive": true,
+			"columns": [
+				{
+					"key": "attackcomplexity",
+					"displayName": "Attack Complexity",
+					"type": "singleSelect",
+					"required": false,
+					"script": "",
+					"width": 150,
+					"isDefault": true,
+					"fieldCalcScript": "",
+					"isReadOnly": false,
+					"selectValues": [
+						"",
+						"LOW",
+						"HIGH"
+					]
+				},
+				{
+					"key": "attackvector",
+					"displayName": "Attack Vector",
+					"type": "singleSelect",
+					"required": false,
+					"script": "",
+					"width": 150,
+					"isDefault": true,
+					"fieldCalcScript": "",
+					"isReadOnly": false,
+					"selectValues": [
+						"",
+						"NETWORK",
+						"ADJACENT NETWORK",
+						"LOCAL",
+						"PHYSICAL"
+					]
+				},
+				{
+					"key": "availabilityimpact",
+					"displayName": "Availability Impact",
+					"type": "singleSelect",
+					"required": false,
+					"script": "",
+					"width": 150,
+					"isDefault": true,
+					"fieldCalcScript": "",
+					"isReadOnly": false,
+					"selectValues": [
+						"",
+						"NONE",
+						"LOW",
+						"HIGH"
+					]
+				},
+				{
+					"key": "basescore",
+					"displayName": "Base Score",
+					"type": "number",
+					"required": false,
+					"script": "",
+					"width": 150,
+					"isDefault": true,
+					"fieldCalcScript": "",
+					"isReadOnly": false,
+					"selectValues": null
+				},
+				{
+					"key": "baseseverity",
+					"displayName": "Base Severity",
+					"type": "singleSelect",
+					"required": false,
+					"script": "",
+					"width": 150,
+					"isDefault": true,
+					"fieldCalcScript": "",
+					"isReadOnly": false,
+					"selectValues": [
+						"",
+						"LOW",
+						"MEDIUM",
+						"HIGH",
+						"CRITICAL"
+					]
+				},
+				{
+					"key": "confidentialityimpact",
+					"displayName": "Confidentiality Impact",
+					"type": "singleSelect",
+					"required": false,
+					"script": "",
+					"width": 150,
+					"isDefault": true,
+					"fieldCalcScript": "",
+					"isReadOnly": false,
+					"selectValues": [
+						"",
+						"NONE",
+						"LOW",
+						"HIGH"
+					]
+				},
+				{
+					"key": "integrityimpact",
+					"displayName": "Integrity Impact",
+					"type": "singleSelect",
+					"required": false,
+					"script": "",
+					"width": 150,
+					"isDefault": true,
+					"fieldCalcScript": "",
+					"isReadOnly": false,
+					"selectValues": [
+						"",
+						"NONE",
+						"LOW",
+						"HIGH"
+					]
+				},
+				{
+					"key": "privilegesrequired",
+					"displayName": "Privileges Required",
+					"type": "singleSelect",
+					"required": false,
+					"script": "",
+					"width": 150,
+					"isDefault": true,
+					"fieldCalcScript": "",
+					"isReadOnly": false,
+					"selectValues": [
+						"",
+						"NONE",
+						"LOW",
+						"HIGH"
+					]
+				},
+				{
+					"key": "scope",
+					"displayName": "Scope",
+					"type": "singleSelect",
+					"required": false,
+					"script": "",
+					"width": 150,
+					"isDefault": true,
+					"fieldCalcScript": "",
+					"isReadOnly": false,
+					"selectValues": [
+						"",
+						"UNCHANGED",
+						"CHANGED"
+					]
+				},
+				{
+					"key": "userinteraction",
+					"displayName": "User Interaction",
+					"type": "singleSelect",
+					"required": false,
+					"script": "",
+					"width": 150,
+					"isDefault": true,
+					"fieldCalcScript": "",
+					"isReadOnly": false,
+					"selectValues": [
+						"",
+						"NONE",
+						"REQUIRED"
+					]
+				},
+				{
+					"key": "vectorstring",
+					"displayName": "Vector String",
+					"type": "shortText",
+					"required": false,
+					"script": "",
+					"width": 150,
+					"isDefault": true,
+					"fieldCalcScript": "",
+					"isReadOnly": false,
+					"selectValues": null
+				},
+				{
+					"key": "version",
+					"displayName": "Version",
+					"type": "number",
+					"required": false,
+					"script": "",
+					"width": 150,
+					"isDefault": true,
+					"fieldCalcScript": "",
+					"isReadOnly": false,
+					"selectValues": null
+				},
+				{
+					"key": "exploitabilityscore",
+					"displayName": "Exploitability Score",
+					"type": "number",
+					"required": false,
+					"script": "",
+					"width": 150,
+					"isDefault": true,
+					"fieldCalcScript": "",
+					"isReadOnly": false,
+					"selectValues": null
+				},
+				{
+					"key": "impactscore",
+					"displayName": "Impact Score",
+					"type": "number",
+					"required": false,
+					"script": "",
+					"width": 150,
+					"isDefault": true,
+					"fieldCalcScript": "",
+					"isReadOnly": false,
+					"selectValues": null
+				}
+			],
+			"defaultRows": [
+				{}
+			],
+			"sla": 0,
+			"threshold": 72,
+			"breachScript": "",
+			"validatedError": ""
+		}
+	]
+}
