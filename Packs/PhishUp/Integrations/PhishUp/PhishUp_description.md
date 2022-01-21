@@ -4,7 +4,7 @@ If you don't have [PhishUp](https://phishup.co) Api Key
 please create account on PhishUp and get an Api Key. 
 Also you can visit and test [PhishUp Web Demo](https://phishup.co).
 
-If you have any question feel free to concat us: [info@diatics.com](info@phishup.co)
+If you have any question feel free to concat us: [info@phishup.com](info@phishup.co)
 
 
 ------
@@ -12,10 +12,10 @@ If you have any question feel free to concat us: [info@diatics.com](info@phishup
 
 1. PhishUp Integration Requirements.
 
-| **Parameter**           | **Required** | 
-|-------------------------|--------------|
-| PhishUp Api Key         | True         | 
-| PhishUp Playbook Action | True         |
+| **Parameter**           | **Required** | **Description**                        |
+|-------------------------|--------------|----------------------------------------|
+| Password (Api Key)      | True         | Enter your PhishUp Api Key as Password |
+| PhishUp Playbook Action | True         | PhishUp Playbook Mail Action           |
 
 2. Click **Test** to Api Key and connection.
 ## Commands
