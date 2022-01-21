@@ -1,0 +1,17 @@
+{
+    "name": "McAfee Web Gateway",
+    "description": "McAfee Web Gateway V3",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Stefan Pricope",
+    "url": "",
+    "email": "",
+    "created": "2022-01-21T08:34:33Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "PricopeStefan"
+    ]
+}
