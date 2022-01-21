@@ -1,0 +1,276 @@
+{
+	"incidentFields": [
+		{
+			"id": "indicator_cvssv2details",
+			"version": 3,
+			"modified": "2022-01-21T11:05:35.191086867Z",
+			"packID": "",
+			"itemVersion": "",
+			"fromServerVersion": "",
+			"toServerVersion": "",
+			"definitionId": "indicator",
+			"vcShouldIgnore": false,
+			"vcShouldKeepItemLegacyProdMachine": false,
+			"commitMessage": "",
+			"shouldCommit": false,
+			"name": "CVSS V2 Details",
+			"prevName": "CVSS V2 Details",
+			"ownerOnly": false,
+			"placeholder": "",
+			"template": "",
+			"description": "",
+			"cliName": "cvssv2details",
+			"type": "grid",
+			"closeForm": false,
+			"editForm": true,
+			"required": false,
+			"script": "",
+			"runScriptAfterUpdate": false,
+			"fieldCalcScript": "",
+			"neverSetAsRequired": false,
+			"isReadOnly": true,
+			"selectValues": [],
+			"validationRegex": "",
+			"useAsKpi": false,
+			"locked": false,
+			"system": false,
+			"content": false,
+			"group": 2,
+			"mergeStrategy": "",
+			"hidden": false,
+			"openEnded": false,
+			"associatedTypes": [
+				"CVE"
+			],
+			"systemAssociatedTypes": null,
+			"associatedToAll": false,
+			"unmapped": false,
+			"unsearchable": false,
+			"caseInsensitive": true,
+			"columns": [
+				{
+					"key": "accesscomplexity",
+					"displayName": "Access Complexity",
+					"type": "singleSelect",
+					"required": false,
+					"script": "",
+					"width": 150,
+					"isDefault": true,
+					"fieldCalcScript": "",
+					"isReadOnly": false,
+					"selectValues": [
+						"",
+						"LOW",
+						"MEDIUM",
+						"HIGH"
+					]
+				},
+				{
+					"key": "accessvector",
+					"displayName": "Access Vector",
+					"type": "singleSelect",
+					"required": false,
+					"script": "",
+					"width": 150,
+					"isDefault": true,
+					"fieldCalcScript": "",
+					"isReadOnly": false,
+					"selectValues": [
+						"",
+						"LOCAL",
+						"ADJACENT NETWORK",
+						"NETWORK"
+					]
+				},
+				{
+					"key": "authentication",
+					"displayName": "Authentication",
+					"type": "singleSelect",
+					"required": false,
+					"script": "",
+					"width": 150,
+					"isDefault": true,
+					"fieldCalcScript": "",
+					"isReadOnly": false,
+					"selectValues": [
+						"",
+						"MULTIPLE",
+						"SINGLE",
+						"NONE"
+					]
+				},
+				{
+					"key": "availabilityimpact",
+					"displayName": "Availability Impact",
+					"type": "singleSelect",
+					"required": false,
+					"script": "",
+					"width": 150,
+					"isDefault": true,
+					"fieldCalcScript": "",
+					"isReadOnly": false,
+					"selectValues": [
+						"",
+						"NONE",
+						"PARTIAL",
+						"COMPLETE"
+					]
+				},
+				{
+					"key": "basescore",
+					"displayName": "Base Score",
+					"type": "number",
+					"required": false,
+					"script": "",
+					"width": 150,
+					"isDefault": true,
+					"fieldCalcScript": "",
+					"isReadOnly": false,
+					"selectValues": null
+				},
+				{
+					"key": "confidentialityimpact",
+					"displayName": "Confidentiality Impact",
+					"type": "singleSelect",
+					"required": false,
+					"script": "",
+					"width": 150,
+					"isDefault": true,
+					"fieldCalcScript": "",
+					"isReadOnly": false,
+					"selectValues": [
+						"",
+						"NONE",
+						"PARTIAL",
+						"COMPLETE"
+					]
+				},
+				{
+					"key": "integrityimpact",
+					"displayName": "Integrity Impact",
+					"type": "singleSelect",
+					"required": false,
+					"script": "",
+					"width": 150,
+					"isDefault": true,
+					"fieldCalcScript": "",
+					"isReadOnly": false,
+					"selectValues": [
+						"",
+						"NONE",
+						"PARTIAL",
+						"COMPLETE"
+					]
+				},
+				{
+					"key": "vectorstring",
+					"displayName": "Vector String",
+					"type": "shortText",
+					"required": false,
+					"script": "",
+					"width": 150,
+					"isDefault": true,
+					"fieldCalcScript": "",
+					"isReadOnly": false,
+					"selectValues": null
+				},
+				{
+					"key": "exploitabilitybasescore",
+					"displayName": "Exploitability Base Score",
+					"type": "number",
+					"required": false,
+					"script": "",
+					"width": 150,
+					"isDefault": true,
+					"fieldCalcScript": "",
+					"isReadOnly": false,
+					"selectValues": null
+				},
+				{
+					"key": "impactscore",
+					"displayName": "Impact Score",
+					"type": "number",
+					"required": false,
+					"script": "",
+					"width": 150,
+					"isDefault": true,
+					"fieldCalcScript": "",
+					"isReadOnly": false,
+					"selectValues": null
+				},
+				{
+					"key": "obtainallprivilege",
+					"displayName": "Obtain All Privilege",
+					"type": "boolean",
+					"required": false,
+					"script": "",
+					"width": 150,
+					"isDefault": true,
+					"fieldCalcScript": "",
+					"isReadOnly": false,
+					"selectValues": null
+				},
+				{
+					"key": "obtainotherprivilege",
+					"displayName": "Obtain Other Privilege",
+					"type": "boolean",
+					"required": false,
+					"script": "",
+					"width": 150,
+					"isDefault": true,
+					"fieldCalcScript": "",
+					"isReadOnly": false,
+					"selectValues": null
+				},
+				{
+					"key": "obtainuserprivilege",
+					"displayName": "Obtain User Privilege",
+					"type": "boolean",
+					"required": false,
+					"script": "",
+					"width": 150,
+					"isDefault": true,
+					"fieldCalcScript": "",
+					"isReadOnly": false,
+					"selectValues": null
+				},
+				{
+					"key": "severity",
+					"displayName": "Severity",
+					"type": "singleSelect",
+					"required": false,
+					"script": "",
+					"width": 150,
+					"isDefault": true,
+					"fieldCalcScript": "",
+					"isReadOnly": false,
+					"selectValues": [
+						"",
+						"LOW",
+						"MEDIUM",
+						"HIGH"
+					]
+				},
+				{
+					"key": "userinteractionrequired",
+					"displayName": "User Interaction Required",
+					"type": "boolean",
+					"required": false,
+					"script": "",
+					"width": 150,
+					"isDefault": true,
+					"fieldCalcScript": "",
+					"isReadOnly": false,
+					"selectValues": null
+				}
+			],
+			"defaultRows": [
+				{}
+			],
+			"sla": 0,
+			"threshold": 72,
+			"breachScript": "",
+			"validatedError": ""
+		}
+	]
+}
