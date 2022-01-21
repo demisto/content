@@ -7,6 +7,7 @@ import json
 import requests
 # import dateparser
 
+
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
@@ -23,7 +24,7 @@ class Client(BaseClient):
             method='POST',
             url_suffix='/sherlock/investigate?apikey=' + apikey,
             json_data={"Url": target_url},
-            timeout=20
+            timeout=40
         )
         return data
 
@@ -31,11 +32,12 @@ class Client(BaseClient):
         """
         initiates a http request to bulk target investigate url
         """
+        demisto.log(f"""WTF DUDE APİKEY: {apikey}, URLS: {target_url_list}""")
         data = self._http_request(
             method='POST',
             url_suffix="/sherlock/bulk?apikey=" + apikey,
             json_data={"Urls": target_url_list},
-            timeout=20
+            timeout=40
         )
         return data
 
@@ -64,21 +66,26 @@ def investigate_url_command(client: Client, args, apikey):
             raw_response=result
         )
     else:
-        raise Exception(f"PhishUp Response Error: ")
+        raise Exception(f"PhishUp Response Error")
 
 
 def investigate_bulk_url_command(client: Client, args, apikey):
     if isinstance(args.get("Urls"), str):
         if "[" in args.get("Urls"):
             urls = json.loads(args.get("Urls"))
+
         else:
             urls = [args.get("Urls")]
+    elif isinstance(args.get("Urls"), list):
+        urls = args.get("Urls")
 
     if len(urls) == 0:
         raise Exception("Empty Urls List")
 
     # for getting unique Urls
-    urls = list(set(args.get("Urls")))
+    urls = list(set(urls))
+
+    demisto.log(f"""apikey: {apikey}""")
 
     result = client.investigate_bulk_url_http_request(apikey, urls)
 
@@ -98,7 +105,7 @@ def investigate_bulk_url_command(client: Client, args, apikey):
             raw_response=result
         )
     else:
-        raise Exception("PhishUp Response Error: ")
+        raise Exception("PhishUp Response Error")
 
 
 def get_chosen_phishup_action_command(params):
