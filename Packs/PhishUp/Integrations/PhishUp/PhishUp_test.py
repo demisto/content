@@ -29,7 +29,7 @@ def test_error_investigate_url_command(requests_mock):
         "Url": "https://www.paloaltonetworks.com/"
     }
     with raises(Exception, match="PhishUp Response Error"):
-        response = investigate_url_command(client, args, MOCK_APIKEY)
+        investigate_url_command(client, args, MOCK_APIKEY)
 
 
 def test_success_investigate_url_command(requests_mock):
@@ -58,7 +58,7 @@ def test_error_investigate_bulk_url_command(requests_mock):
         "Urls": ["https://www.paloaltonetworks.com/cortex/xsoar", "paloaltonetworks.com"]
     }
     with raises(Exception, match="PhishUp Response Error"):
-        response = investigate_bulk_url_command(client, args, MOCK_APIKEY)
+        investigate_bulk_url_command(client, args, MOCK_APIKEY)
 
 
 def test_success_investigate_bulk_url_command(requests_mock):
@@ -85,7 +85,7 @@ def test_empty_urls_list_in_investigate_bulk_url_command():
         "Urls": []
     }
     with raises(Exception, match="Empty Urls List"):
-        response = investigate_bulk_url_command(client, args, MOCK_APIKEY)
+        investigate_bulk_url_command(client, args, MOCK_APIKEY)
 
 
 def test_string_list_success_investigate_bulk_url_command(requests_mock):
@@ -113,7 +113,7 @@ def test_bad_string_parsing_in_investigate_bulk_url_command():
     }
 
     with raises(json.decoder.JSONDecodeError):
-        response = investigate_bulk_url_command(client, args, MOCK_APIKEY)
+        investigate_bulk_url_command(client, args, MOCK_APIKEY)
 
 
 def test_get_chosen_nothing_phishup_action_command():
