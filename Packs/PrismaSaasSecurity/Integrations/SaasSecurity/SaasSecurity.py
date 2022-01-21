@@ -484,7 +484,9 @@ def get_remote_data_command(client, args):
             )
 
         entries = []
-        if delta.get('state', '').lower() == 'closed':
+
+        state = delta and delta.get('state')
+        if state and state.lower() == 'closed':
             if demisto.params().get('close_incident'):
 
                 demisto.debug(f'Incident is closed: {remote_args.remote_incident_id}')
