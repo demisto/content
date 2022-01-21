@@ -1,9 +1,9 @@
 {
-    "name": "Accessdata",
-    "description": "Use the Accessdata integration to protect against and provide additional visibility into phishing and other malicious email attacks.",
+    "name": "AccessData",
+    "description": "Use the AccessData integration to automate platform procedures, ingesting evidence, browsing/exporting data and running endpoint collections.",
     "support": "partner",
-    "currentVersion": "1.0.8",
-    "author": "Accessdata",
+    "currentVersion": "2.0.0",
+    "author": "AccessData",
     "url": "https://support.accessdata.com/hc/en-us",
     "email": "support@accessdata.com",
     "created": "2020-04-14T00:00:00Z",
@@ -14,7 +14,7 @@
     "useCases": [],
     "keywords": [],
     "githubUser": [
-        "Ngobo"
+        "ThomasVieth"
     ],
     "certification": "certified",
     "marketplaces": [

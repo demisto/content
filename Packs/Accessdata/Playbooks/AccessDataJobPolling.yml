@@ -1,0 +1,361 @@
+id: AccessDataJobPolling
+version: -1
+fromversion: 6.0.0
+name: 'AccessData: Job Polling'
+description: |-
+  Use this playbook as a sub-playbook to block execution of the master playbook until a job task is complete.
+  This playbook awaits job completion by continuously running get-job-status until the operation finishes.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: c644af04-2cd7-4462-83e3-5f55bc12aa73
+    type: start
+    task:
+      id: c644af04-2cd7-4462-83e3-5f55bc12aa73
+      version: -1
+      name: ""
+      description: '-'
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 8294a5c2-8d86-487c-8b3c-638f2b7a0250
+    type: regular
+    task:
+      id: 8294a5c2-8d86-487c-8b3c-638f2b7a0250
+      version: -1
+      name: Schedule Polling Task
+      description: Schedule Polling Task
+      tags:
+      - polling
+      scriptName: ScheduleGenericPolling
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      additionalPollingCommandArgNames:
+        simple: caseid
+      additionalPollingCommandArgValues:
+        complex:
+          root: inputs.CaseID
+          transformers:
+          - operator: Stringify
+      dt:
+        simple: Accessdata.Case.Job(val.State == 'JobState.Submitted' || val.State
+          == 'JobState.InProgress').ID
+      ids:
+        simple: ${inputs.JobID}
+      interval:
+        simple: ${inputs.Interval}
+      playbookId:
+        simple: ${currentPlaybookID}
+      pollingCommand:
+        simple: accessdata-api-get-job-status
+      pollingCommandArgName:
+        simple: jobid
+      timeout:
+        simple: ${inputs.Timeout}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 156abdbe-586e-4241-8ae6-364fe3d9d76a
+    type: condition
+    task:
+      id: 156abdbe-586e-4241-8ae6-364fe3d9d76a
+      version: -1
+      name: Waiting for polling to complete (Automated Task)
+      description: This task will complete automatically when polling is complete.
+      tags:
+      - polling
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "Yes":
+      - "8"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: d3797021-db95-4737-8085-0eb6fb575e27
+    type: regular
+    task:
+      id: d3797021-db95-4737-8085-0eb6fb575e27
+      version: -1
+      name: RunPollingCommand
+      description: RunPollingCommand
+      scriptName: RunPollingCommand
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      additionalPollingCommandArgNames:
+        simple: caseid
+      additionalPollingCommandArgValues:
+        complex:
+          root: inputs.CaseID
+          transformers:
+          - operator: Stringify
+      ids:
+        simple: ${inputs.JobID}
+      pollingCommand:
+        simple: accessdata-api-get-job-status
+      pollingCommandArgName:
+        simple: jobid
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 778e1007-f7ea-4ff6-89c4-cffc067165c4
+    type: title
+    task:
+      id: 778e1007-f7ea-4ff6-89c4-cffc067165c4
+      version: -1
+      name: Done
+      description: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1085
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 6b5519a9-28a3-483d-8b94-8328cd04bce2
+    type: regular
+    task:
+      id: 6b5519a9-28a3-483d-8b94-8328cd04bce2
+      version: -1
+      name: Scheduled Task Failed
+      description: Scheduled Task Failed
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: Accessdata Job Awaiting has encountered an error. Check the context
+          at Accessdata.Case.Job for further details.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: cd1ba360-5ed6-44d8-8c85-84ef269f2ab7
+    type: condition
+    task:
+      id: cd1ba360-5ed6-44d8-8c85-84ef269f2ab7
+      version: -1
+      name: Check If Failed
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "5"
+      "yes":
+      - "6"
+    scriptarguments:
+      left:
+        simple: ${Accessdata.Case.Job.State}
+      right:
+        simple: JobState.Failed
+    results:
+    - AreValuesEqual
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: d008d970-6c7b-4894-8935-10661bd16f0f
+    type: regular
+    task:
+      id: d008d970-6c7b-4894-8935-10661bd16f0f
+      version: -1
+      name: RunPollingCommand
+      description: RunPollingCommand
+      scriptName: RunPollingCommand
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      additionalPollingCommandArgNames:
+        simple: caseid
+      additionalPollingCommandArgValues:
+        complex:
+          root: inputs.CaseID
+          transformers:
+          - operator: Stringify
+      ids:
+        simple: ${inputs.JobID}
+      pollingCommand:
+        simple: accessdata-api-get-job-status
+      pollingCommandArgName:
+        simple: jobid
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "2_6_#default#": 0.28,
+      "7_6_yes": 0.37
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1115,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: Interval
+  value:
+    simple: "1"
+  required: false
+  description: Frequency that the polling command will run (minutes).
+  playbookInputQuery: null
+- key: Timeout
+  value:
+    simple: "10"
+  required: false
+  description: Amount of time to poll before declaring a timeout and resuming the
+    playbook (in minutes).
+  playbookInputQuery: null
+- key: CaseID
+  value:
+    simple: "16"
+  required: true
+  description: The id number of the case  to query for the job status.
+  playbookInputQuery: null
+- key: JobID
+  value:
+    simple: "116"
+  required: true
+  description: The id number of the job to query for the status data of.
+  playbookInputQuery: null
+outputs: []
+sourceplaybookid: GenericPolling

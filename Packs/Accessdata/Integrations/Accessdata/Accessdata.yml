@@ -2,9 +2,10 @@ commonfields:
   id: Accessdata
   version: -1
 name: Accessdata
-display: Accessdata
+display: Accessdata (Deprecated)
 category: Forensics & Malware Analysis
-description: Use the Accessdata integration to protect against and provide additional visibility into phishing and other malicious email attacks.
+description: Use the Accessdata integration to protect against and provide additional visibility into phishing and other malicious email attacks. Deprecated. Use AccessdataV2 instead.
+deprecated: true
 configuration:
 - display: Server URL with scheme (FQDN or IP address in X.X.X.X format with scheme specified)
   name: server_name
@@ -29,6 +30,7 @@ configuration:
 script:
   commands:
   - name: accessdata-legacyagent-get-processlist
+    deprecated: true
     arguments:
     - name: caseid
       description: The ID of the case.
@@ -54,6 +56,7 @@ script:
       type: string
     description: Returns a list of processes from the legacy agent.
   - name: accessdata-legacyagent-get-memorydump
+    deprecated: true
     arguments:
     - name: caseid
       description: The ID of the case.
@@ -79,6 +82,7 @@ script:
       type: string
     description: Creates a legacy agent memory dump.
   - name: accessdata-read-casefile
+    deprecated: true
     arguments:
     - name: filepath
       required: true
@@ -90,6 +94,7 @@ script:
       type: string
     description: Reads the file from a case folder and returns the contents to the current context.
   - name: accessdata-jobstatus-scan
+    deprecated: true
     arguments:
     - name: caseJobID
       required: true
@@ -110,6 +115,7 @@ script:
       type: string
     description: Checks status of the job.
   - name: accessdata-get-jobstatus-processlist
+    deprecated: true
     arguments:
     - name: caseID
       required: true
@@ -137,6 +143,7 @@ script:
       type: string
     description: Returns a snapshot path from the results of the process list job.
   - name: accessdata-get-jobstatus-memorydump
+    deprecated: true
     arguments:
     - name: caseID
       required: true
@@ -164,6 +171,7 @@ script:
       type: string
     description: Returns the memory dump path from the result of the memory dump job.
   - name: accessdata-get-processing-case-id
+    deprecated: true
     arguments: []
     outputs:
     - contextPath: Accessdata.ProcessingCaseId

@@ -1,0 +1,654 @@
+id: AccessDataProcessEvidenceAndExport
+version: -1
+fromversion: 6.0.0
+name: 'AccessData: Process Evidence and Export'
+description: Creates a new case and processes targetted evidence.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 5bb4a8f5-e250-4612-8156-779de32e115e
+    type: start
+    task:
+      id: 5bb4a8f5-e250-4612-8156-779de32e115e
+      version: -1
+      name: Client construction.
+      description: Provides the client with all relevant information to communicate
+        with the AccessData API.
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 68df9d39-e5bb-4f2d-81bb-15e233dc7932
+    type: regular
+    task:
+      id: 68df9d39-e5bb-4f2d-81bb-15e233dc7932
+      version: -1
+      name: Locate Case
+      description: Returns a case's information determined by matching names.
+      script: AccessData|||accessdata-api-get-case-by-name
+      type: regular
+      iscommand: true
+      brand: AccessData
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      name:
+        simple: ${inputs.casename}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: b99308ca-1f4c-441f-829f-ba342f5cf9b5
+    type: regular
+    task:
+      id: b99308ca-1f4c-441f-829f-ba342f5cf9b5
+      version: -1
+      name: Process Evidence
+      description: Processes evidence of file, directory or image type within the
+        specified case.
+      script: AccessData|||accessdata-api-process-evidence
+      type: regular
+      iscommand: true
+      brand: AccessData
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      caseid:
+        simple: ${Accessdata.Case.ID}
+      evidence_path:
+        simple: ${inputs.evidencepath}
+      evidence_type:
+        simple: "2"
+      options:
+        simple: ${inputs.processingoptions}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 03fbf504-48fc-490b-8b71-4d430a724380
+    type: regular
+    task:
+      id: 03fbf504-48fc-490b-8b71-4d430a724380
+      version: -1
+      name: Export Native Files
+      description: Exports native files from the case to a directory reduced by the
+        filter specified.
+      script: AccessData|||accessdata-api-export-natives
+      type: regular
+      iscommand: true
+      brand: AccessData
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      caseid:
+        simple: ${Accessdata.Case.ID}
+      filter_json:
+        simple: ${Accessdata.Filter}
+      path:
+        simple: ${inputs.destinationpath}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: b2731cdd-ec5e-4015-891e-bb785ac16f53
+    type: regular
+    task:
+      id: b2731cdd-ec5e-4015-891e-bb785ac16f53
+      version: -1
+      name: Create Filter
+      description: Create a filter to export data.
+      script: AccessData|||accessdata-api-create-filter
+      type: regular
+      iscommand: true
+      brand: AccessData
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      column:
+        simple: ObjectName
+      comparator:
+        simple: startswith
+      value:
+        simple: S
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: f861bbf2-e122-42a3-8c6e-3dfe3417098b
+    type: title
+    task:
+      id: f861bbf2-e122-42a3-8c6e-3dfe3417098b
+      version: -1
+      name: Done
+      description: Is Complete.
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 0a1d736a-d805-47c6-8456-13cef44f34f8
+    type: condition
+    task:
+      id: 0a1d736a-d805-47c6-8456-13cef44f34f8
+      version: -1
+      name: Validate Integration
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "1"
+    scriptarguments:
+      brandname:
+        simple: Accessdata
+    results:
+    - brandInstances
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 00a27e16-1d22-4b52-8bc0-f85dc5afd538
+    type: playbook
+    task:
+      id: 00a27e16-1d22-4b52-8bc0-f85dc5afd538
+      version: -1
+      name: 'AccessData: Job Polling'
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: 'AccessData: Job Polling'
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      CaseID:
+        simple: ${Accessdata.Case.ID}
+      Interval:
+        simple: "1"
+      JobID:
+        simple: ${Accessdata.Case.Job.ID}
+      Timeout:
+        simple: "10"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: d9a70ebb-26b1-4d06-8ae5-a7826d532a2a
+    type: playbook
+    task:
+      id: d9a70ebb-26b1-4d06-8ae5-a7826d532a2a
+      version: -1
+      name: 'AccessData: Job Polling'
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: 'AccessData: Job Polling'
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      CaseID:
+        simple: ${Accessdata.Case.ID}
+      Interval:
+        simple: "1"
+      JobID:
+        complex:
+          root: Accessdata.Case.Job
+          accessor: ID
+          transformers:
+          - operator: LastArrayElement
+      Timeout:
+        simple: "10"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1435,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: casename
+  value:
+    simple: Playbook Test Case
+  required: true
+  description: The name of the case to process evidence within.
+  playbookInputQuery: null
+- key: processingoptions
+  value:
+    simple: |-
+      <?xml version="1.0" encoding="utf-16"?>
+      <processingOptions>
+        <evidenceProcesses>
+          <PreProcessing>
+            <dropIndexes />
+            <dematerializeViews />
+          </PreProcessing>
+          <MD5 />
+          <SHA1 />
+          <FlagBadExtension />
+          <storeThumbnails />
+          <FileBoundFS>
+            <TAR />
+            <ZIP />
+            <GZIP />
+            <BZIP2 />
+            <MSG />
+            <RAR />
+            <PST />
+            <DBX />
+            <MBOX />
+            <EMAIL />
+            <EXCHANGE />
+            <PKCS7 />
+            <SEVENZIP />
+            <PDF />
+            <MRADBS />
+          </FileBoundFS>
+          <identify />
+          <undelete />
+          <indexing>
+            <dtSearchOptions>
+              <maxMem>250</maxMem>
+              <maxWordLength>32</maxWordLength>
+              <autoCommitInterval>0</autoCommitInterval>
+              <hyphens>LQ==</hyphens>
+              <ignores>AQIDBAUGBwgLDg8QERITFBUWFxgZ</ignores>
+              <spaces>CQoMDSAhQCIjJCUmJygpKissLi86Ozw9Pj9bXF1eYHt8fX4=</spaces>
+              <binaryFilteringOption>
+                <filterBinaryUnicode />
+              </binaryFilteringOption>
+              <dateRecognition>
+                <Off />
+              </dateRecognition>
+              <hyphenTreatment>
+                <hyphenSpace />
+              </hyphenTreatment>
+              <letters>
+                <letter>0 0 0 0</letter>
+                <letter>1 1 1 1</letter>
+                <letter>2 2 2 2</letter>
+                <letter>3 3 3 3</letter>
+                <letter>4 4 4 4</letter>
+                <letter>5 5 5 5</letter>
+                <letter>6 6 6 6</letter>
+                <letter>7 7 7 7</letter>
+                <letter>8 8 8 8</letter>
+                <letter>9 9 9 9</letter>
+                <letter>A a A A</letter>
+                <letter>B b B B</letter>
+                <letter>C c C C</letter>
+                <letter>D d D D</letter>
+                <letter>E e E E</letter>
+                <letter>F f F F</letter>
+                <letter>G g G G</letter>
+                <letter>H h H H</letter>
+                <letter>I i I I</letter>
+                <letter>J j J J</letter>
+                <letter>K k K K</letter>
+                <letter>L l L L</letter>
+                <letter>M m M M</letter>
+                <letter>N n N N</letter>
+                <letter>O o O O</letter>
+                <letter>P p P P</letter>
+                <letter>Q q Q Q</letter>
+                <letter>R r R R</letter>
+                <letter>S s S S</letter>
+                <letter>T t T T</letter>
+                <letter>U u U U</letter>
+                <letter>V v V V</letter>
+                <letter>W w W W</letter>
+                <letter>X x X X</letter>
+                <letter>Y y Y Y</letter>
+                <letter>Z z Z Z</letter>
+                <letter>_ _ _ _</letter>
+                <letter>a a A a</letter>
+                <letter>b b B b</letter>
+                <letter>c c C c</letter>
+                <letter>d d D d</letter>
+                <letter>e e E e</letter>
+                <letter>f f F f</letter>
+                <letter>g g G g</letter>
+                <letter>h h H h</letter>
+                <letter>i i I i</letter>
+                <letter>j j J j</letter>
+                <letter>k k K k</letter>
+                <letter>l l L l</letter>
+                <letter>m m M m</letter>
+                <letter>n n N n</letter>
+                <letter>o o O o</letter>
+                <letter>p p P p</letter>
+                <letter>q q Q q</letter>
+                <letter>r r R r</letter>
+                <letter>s s S s</letter>
+                <letter>t t T t</letter>
+                <letter>u u U u</letter>
+                <letter>v v V v</letter>
+                <letter>w w W w</letter>
+                <letter>x x X x</letter>
+                <letter>y y Y y</letter>
+                <letter>z z Z z</letter>
+              </letters>
+              <noiseWords>
+                <noiseWord>YQ==</noiseWord>
+                <noiseWord>YWJvdXQ=</noiseWord>
+                <noiseWord>YWZ0ZXI=</noiseWord>
+                <noiseWord>YWxs</noiseWord>
+                <noiseWord>YWxzbw==</noiseWord>
+                <noiseWord>YW4=</noiseWord>
+                <noiseWord>YW5k</noiseWord>
+                <noiseWord>YW55</noiseWord>
+                <noiseWord>YXJl</noiseWord>
+                <noiseWord>YXM=</noiseWord>
+                <noiseWord>YXQ=</noiseWord>
+                <noiseWord>YmU=</noiseWord>
+                <noiseWord>YmVlbg==</noiseWord>
+                <noiseWord>YnV0</noiseWord>
+                <noiseWord>Ynk=</noiseWord>
+                <noiseWord>Y2Fu</noiseWord>
+                <noiseWord>Y29tZQ==</noiseWord>
+                <noiseWord>Y291bGQ=</noiseWord>
+                <noiseWord>ZGlk</noiseWord>
+                <noiseWord>ZG8=</noiseWord>
+                <noiseWord>ZXZlbg==</noiseWord>
+                <noiseWord>Zm9y</noiseWord>
+                <noiseWord>ZnJvbQ==</noiseWord>
+                <noiseWord>Z2V0</noiseWord>
+                <noiseWord>Z290</noiseWord>
+                <noiseWord>aGU=</noiseWord>
+                <noiseWord>aGVy</noiseWord>
+                <noiseWord>aGlt</noiseWord>
+                <noiseWord>aGlz</noiseWord>
+                <noiseWord>aG93</noiseWord>
+                <noiseWord>aQ==</noiseWord>
+                <noiseWord>aWY=</noiseWord>
+                <noiseWord>aW4=</noiseWord>
+                <noiseWord>aW50bw==</noiseWord>
+                <noiseWord>aXQ=</noiseWord>
+                <noiseWord>aXRz</noiseWord>
+                <noiseWord>anVzdA==</noiseWord>
+                <noiseWord>bGlrZQ==</noiseWord>
+                <noiseWord>bWU=</noiseWord>
+                <noiseWord>bXk=</noiseWord>
+                <noiseWord>bm90</noiseWord>
+                <noiseWord>bm93</noiseWord>
+                <noiseWord>b2Y=</noiseWord>
+                <noiseWord>b24=</noiseWord>
+                <noiseWord>b25seQ==</noiseWord>
+                <noiseWord>b3I=</noiseWord>
+                <noiseWord>b3RoZXI=</noiseWord>
+                <noiseWord>b3Vy</noiseWord>
+                <noiseWord>b3V0</noiseWord>
+                <noiseWord>b3Zlcg==</noiseWord>
+                <noiseWord>c2Vl</noiseWord>
+                <noiseWord>c2hl</noiseWord>
+                <noiseWord>c29tZQ==</noiseWord>
+                <noiseWord>dGFrZQ==</noiseWord>
+                <noiseWord>dGhhbg==</noiseWord>
+                <noiseWord>dGhhdA==</noiseWord>
+                <noiseWord>dGhl</noiseWord>
+                <noiseWord>dGhlaXI=</noiseWord>
+                <noiseWord>dGhlbQ==</noiseWord>
+                <noiseWord>dGhlbg==</noiseWord>
+                <noiseWord>dGhlcmU=</noiseWord>
+                <noiseWord>dGhlc2U=</noiseWord>
+                <noiseWord>dGhleQ==</noiseWord>
+                <noiseWord>dGhpcw==</noiseWord>
+                <noiseWord>dGhvc2U=</noiseWord>
+                <noiseWord>dG8=</noiseWord>
+                <noiseWord>dG9v</noiseWord>
+                <noiseWord>dW5kZXI=</noiseWord>
+                <noiseWord>dXA=</noiseWord>
+                <noiseWord>dmVyeQ==</noiseWord>
+                <noiseWord>d2Fz</noiseWord>
+                <noiseWord>d2F5</noiseWord>
+                <noiseWord>d2U=</noiseWord>
+                <noiseWord>d2VsbA==</noiseWord>
+                <noiseWord>d2VyZQ==</noiseWord>
+                <noiseWord>d2hhdA==</noiseWord>
+                <noiseWord>d2hlbg==</noiseWord>
+                <noiseWord>d2hlcmU=</noiseWord>
+                <noiseWord>d2hpY2g=</noiseWord>
+                <noiseWord>d2hpbGU=</noiseWord>
+                <noiseWord>d2hv</noiseWord>
+                <noiseWord>d2lsbA==</noiseWord>
+                <noiseWord>d2l0aA==</noiseWord>
+                <noiseWord>d291bGQ=</noiseWord>
+                <noiseWord>eW91</noiseWord>
+                <noiseWord>eW91cg==</noiseWord>
+              </noiseWords>
+            </dtSearchOptions>
+            <indexRefinement>
+              <excludedFileCategoryList />
+              <conditionalAdd relationship="OR">
+                <fileType>
+                  <archives />
+                  <databases />
+                  <documents />
+                  <emailMessages />
+                  <executables />
+                  <graphics />
+                  <spreadsheets />
+                  <others />
+                  <unknown />
+                  <multimedia />
+                  <internetChat />
+                  <osFiles />
+                  <mobileDeviceFiles />
+                </fileType>
+                <fileStatus />
+              </conditionalAdd>
+              <indexDateSizeOptions />
+            </indexRefinement>
+          </indexing>
+          <evidenceRefinement>
+            <applicationData />
+            <excludedFileCategoryList />
+            <conditionalAdd relationship="OR">
+              <fileStatus />
+              <fileType>
+                <archives />
+                <databases />
+                <documents />
+                <emailMessages />
+                <executables />
+                <graphics />
+                <spreadsheets />
+                <others />
+                <unknown />
+                <multimedia />
+                <internetChat />
+                <osFiles />
+                <mobileDeviceFiles />
+              </fileType>
+            </conditionalAdd>
+            <evidenceDateSizeOptions />
+          </evidenceRefinement>
+          <PostProcessing>
+            <createMaterializedViews />
+            <generateDatabaseStatistics />
+            <createIndexes />
+            <quinC />
+          </PostProcessing>
+        </evidenceProcesses>
+      </processingOptions>
+  required: true
+  description: The processing options to supply to the engine.
+  playbookInputQuery: null
+- key: destinationpath
+  value:
+    simple: \\localhost\E$\Export\PrefixSFiles
+  required: true
+  description: The path to which to export the native files.
+  playbookInputQuery: null
+- key: evidencepath
+  value:
+    simple: \\localhost\E$\EvidenceShare\2018 Eyes Data.ad1
+  required: false
+  description: The path to the evidence file to process.
+  playbookInputQuery: null
+outputs: []

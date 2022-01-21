@@ -1,0 +1,258 @@
+commonfields:
+  id: AccessData
+  version: -1
+
+name: AccessData
+display: AccessData
+category: Forensics & Malware Analysis
+description: Use the AccessData package to integrate with the AccessData platform enabling the automation of case/evidence management and endpoint collection.
+
+configuration:
+- display: Web Protocol
+  name: PROTOCOL
+  defaultvalue: http
+  type: 0
+  required: true
+- display: Service URL (FQDN or IP Address.)
+  name: SERVER
+  defaultvalue: localhost
+  type: 0
+  required: true
+- display: Service Listening Port
+  name: PORT
+  defaultvalue: 4443
+  type: 0
+  required: true
+- display: "The API authentication key. http://support.accessdata.com/hc/en-us/articles/360053994573-Generating-API-Keys"
+  name: APIKEY
+  type: 0
+  required: true
+  additionalinfo: The API authentication key has the following format `00000000-abcd-1234-5678-000000000000`
+- display: "The path to the public certificate required to authenticate."
+  name: PUBLIC_CERT
+  type: 0
+  required: false
+
+script:
+  commands:
+
+  - name: accessdata-api-get-case-by-name
+    arguments:
+    - name: name
+      required: true
+      description: The name of the case.
+    outputs:
+    - contextPath: Accessdata.Case.ID
+      description: The identifier of the case.
+      type: integer
+    - contextPath: Accessdata.Case.Name
+      description: The name of the case.
+      type: string
+    - contextPath: Accessdata.Case.CaseFolder
+      description: The path to the case data.
+      type: string
+    description: Returns a case's information determined by matching names.
+
+  - name: accessdata-api-create-case
+    arguments:
+    - name: name
+      required: true
+      description: The name of the case.
+    outputs:
+    - contextPath: Accessdata.Case.ID
+      description: The identifier of the case.
+      type: number
+    - contextPath: Accessdata.Case.name
+      description: The name of the case.
+      type: string
+    - contextPath: Accessdata.Case.CaseFolder
+      description: The path to the case data.
+      type: string
+    description: Creates a new case with the provided arguments and returns the new case's information.
+
+  - name: accessdata-api-process-evidence
+    arguments:
+    - name: caseid
+      required: true
+      description: The identifier of the case.
+    - name: evidence_path
+      required: true
+      description: The path to the evidence file/directory.
+      defaultValue: file.ext
+    - name: evidence_type
+      required: true
+      description: The type of the evidence being provided. 0 = File, 1 = Directory, 2 = Disk Image
+      defaultValue: 2
+    - name: options
+      required: true
+      description: The processing options to process using. Either XML (exported from FTK) or JSON.
+      defaultValue: "<processingOptions></processingOptions>"
+    outputs:
+    - contextPath: Accessdata.Case.Job.ID
+      description: A identifier of the job started.
+      type: number
+    description: Processes evidence of file, directory or image type within the specified case.
+
+  - name: accessdata-api-get-job-status
+    arguments:
+    - name: caseid
+      required: true
+      description: The identifier of the case.
+    - name: jobid
+      required: true
+      description: The identifier of the job.
+    outputs:
+    - contextPath: Accessdata.Case.Job.ID
+      description: A identifier of the job started.
+      type: number
+    - contextPath: Accessdata.Case.Job.State
+      description: The state that the job is currently in.
+      type: string
+    - contextPath: Accessdata.Case.Job.ResultData
+      description: A JSON representation of the job information.
+      type: string
+    description: Gathers state and information about the specified job.
+
+  - name: accessdata-api-export-natives
+    arguments:
+    - name: caseid
+      required: true
+      description: The identifier of the case.
+    - name: path
+      required: true
+      description: The path to export native files too.
+    - name: filter_json
+      required: true
+      description: The JSON representation of the filter to apply.
+    outputs:
+    - contextPath: Accessdata.Case.Job.ID
+      description: A identifier of the job started.
+      type: number
+    description: Exports native files from the case to a directory reduced by the filter specified.
+
+  - name: accessdata-api-label-search-term
+    arguments:
+    - name: caseid
+      required: true
+      description: The identifier of the case.
+    - name: keyword
+      required: true
+      description: The term to label object upon. The same label name is used.
+    - name: filter_json
+      required: true
+      description: The JSON representation of the filter to apply.
+    outputs:
+    - contextPath: Accessdata.Case.Label.Name
+      description: A name of the label created.
+      type: number
+    description: Labels items that contain the keyword specified from the case evidence.
+
+  - name: accessdata-api-endpoint-volatile-analysis
+    arguments:
+    - name: caseid
+      required: true
+      description: The identifier of the case.
+    - name: target
+      required: true
+      description: The IP or FQDN of the target endpoint.
+    outputs:
+    - contextPath: Accessdata.Case.Job.ID
+      description: A identifier of the job started.
+      type: number
+    description: Executes a volatile analysis against the endpoint and places results in the specified case.
+
+  - name: accessdata-api-endpoint-memory-collect
+    arguments:
+    - name: caseid
+      required: true
+      description: The identifier of the case.
+    - name: target
+      required: true
+      description: The IP or FQDN of the target endpoint.
+    outputs:
+    - contextPath: Accessdata.Case.Job.ID
+      description: A identifier of the job started.
+      type: number
+    description: Executes a memory collection against the endpoint and places the image in the specified case.
+
+  - name: accessdata-api-endpoint-disk-collect
+    arguments:
+    - name: caseid
+      required: true
+      description: The identifier of the case.
+    - name: target
+      required: true
+      description: The IP or FQDN of the target endpoint.
+    - name: driveid
+      required: true
+      description: The identifying int of the drive.
+    - name: drivetype
+      required: true
+      description: The identifying type of the drive. 0 = Physical, 1 = Logical
+    - name: imagebasefilename
+      required: true
+      description: The filename of the output image file.
+    - name: imagetype
+      required: true
+      description: The identifying type of the output image. 0 = RAW, 1 = AD1
+    outputs:
+    - contextPath: Accessdata.Case.Job.ID
+      description: A identifier of the job started.
+      type: number
+    description: Executes a disk collection against the endpoint and places the image in the specified case.
+
+  - name: accessdata-api-create-filter
+    arguments:
+    - name: column
+      required: true
+      description: The name of the attribute.
+    - name: comparator
+      required: true
+      description: The comparator to use within, startswith, endswith.
+    - name: value
+      required: true
+      description: The value of the attribute.
+    outputs:
+    - contextPath: Accessdata.Filter
+      description: A JSON representation of the filter created.
+      type: string
+    description: Creates an internal filter to be used with other API endpoint calls.
+
+  - name: accessdata-api-combine-filter-and
+    arguments:
+    - name: filter1
+      required: true
+      description: The JSON of the first filter to AND together.
+    - name: filter2
+      required: true
+      description: The JSON of the second filter to AND together.
+    outputs:
+    - contextPath: Accessdata.Filter
+      description: A JSON representation of the filter created.
+      type: string
+    description: Combines 2 internal filters together enforcing both.
+
+  - name: accessdata-api-combine-filter-or
+    arguments:
+    - name: filter1
+      required: true
+      description: The JSON of the first filter to OR together.
+    - name: filter2
+      required: true
+      description: The JSON of the second filter to OR together.
+    outputs:
+    - contextPath: Accessdata.Filter
+      description: A JSON representation of the filter created.
+      type: string
+    description: Combines 2 internal filters together enforcing either.
+
+  dockerimage: demisto/accessdata:1.1.0.25771
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+
+tests:
+- No test
+
+fromversion: 6.0.0
