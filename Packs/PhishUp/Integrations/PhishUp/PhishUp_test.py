@@ -1,9 +1,13 @@
 import json
 import io
+from pytest import raises
+
 
 MOCK_APIKEY = "not"
 MOCK_PARAMS = {
-    "apikey": MOCK_APIKEY
+    "credentials": {
+        "password": MOCK_APIKEY
+    }
 }
 
 BASE_URL = "https://apiv2.phishup.co"
@@ -24,9 +28,8 @@ def test_error_investigate_url_command(requests_mock):
     args = {
         "Url": "https://www.paloaltonetworks.com/"
     }
-    response = investigate_url_command(client, args, MOCK_PARAMS)
-    mock_response = util_load_json('test_data/error.json')
-    assert mock_response == list(response)
+    with raises(Exception, match="PhishUp Response Error"):
+        response = investigate_url_command(client, args, MOCK_APIKEY)
 
 
 def test_success_investigate_url_command(requests_mock):
@@ -40,9 +43,8 @@ def test_success_investigate_url_command(requests_mock):
     args = {
         "Url": "https://www.paloaltonetworks.com/"
     }
-    response = investigate_url_command(client, args, MOCK_PARAMS)
-    # json.dump(response, open("test_data/investigate-success.json", "w"))
-    assert list(response) == util_load_json("test_data/investigate-success.json")
+    response = investigate_url_command(client, args, MOCK_APIKEY)
+    assert response.__dict__ == util_load_json("test_data/investigate-success.json")
 
 
 def test_error_investigate_bulk_url_command(requests_mock):
@@ -55,9 +57,8 @@ def test_error_investigate_bulk_url_command(requests_mock):
     args = {
         "Urls": ["https://www.paloaltonetworks.com/cortex/xsoar", "paloaltonetworks.com"]
     }
-    response = investigate_bulk_url_command(client, args, MOCK_PARAMS)
-    mock_response = util_load_json('test_data/bulk_error_url.json')
-    assert mock_response == list(response)
+    with raises(Exception, match="PhishUp Response Error"):
+        response = investigate_bulk_url_command(client, args, MOCK_APIKEY)
 
 
 def test_success_investigate_bulk_url_command(requests_mock):
@@ -70,9 +71,9 @@ def test_success_investigate_bulk_url_command(requests_mock):
     args = {
         "Urls": ["https://www.paloaltonetworks.com/cortex/xsoar", "paloaltonetworks.com"]
     }
-    response = investigate_bulk_url_command(client, args, MOCK_PARAMS)
+    response = investigate_bulk_url_command(client, args, MOCK_APIKEY)
     mock_response = util_load_json('test_data/bulk_investigate_success_return.json')
-    assert list(response) == mock_response
+    assert response.__dict__ == mock_response
 
 
 def test_empty_urls_list_in_investigate_bulk_url_command():
@@ -83,9 +84,8 @@ def test_empty_urls_list_in_investigate_bulk_url_command():
     args = {
         "Urls": []
     }
-    response = investigate_bulk_url_command(client, args, MOCK_PARAMS)
-    mock_response = util_load_json('test_data/bulk_empty_url_error.json')
-    assert mock_response == list(response)
+    with raises(Exception, match="Empty Urls List"):
+        response = investigate_bulk_url_command(client, args, MOCK_APIKEY)
 
 
 def test_string_list_success_investigate_bulk_url_command(requests_mock):
@@ -98,9 +98,9 @@ def test_string_list_success_investigate_bulk_url_command(requests_mock):
     args = {
         "Urls": "\"https://www.paloaltonetworks.com/cortex/xsoar\", \"paloaltonetworks.com\"]"
     }
-    response = investigate_bulk_url_command(client, args, MOCK_PARAMS)
+    response = investigate_bulk_url_command(client, args, MOCK_APIKEY)
     mock_response = util_load_json('test_data/bulk_investigate_success_return.json')
-    assert list(response) == mock_response
+    assert response.__dict__ == mock_response
 
 
 def test_bad_string_parsing_in_investigate_bulk_url_command():
@@ -109,11 +109,11 @@ def test_bad_string_parsing_in_investigate_bulk_url_command():
         base_url=BASE_URL,
         verify=False)
     args = {
-        "Urls": "\"https://www.paloaltonetworks.com/cortex/xsoar\", \"paloaltonetworks.com\""
+        "Urls": "[\"https://www.paloaltonetworks.com/cortex/xsoar\", \"paloaltonetworks.com\""
     }
-    response = investigate_bulk_url_command(client, args, MOCK_PARAMS)
-    mock_response = util_load_json("test_data/bulk_bad_string_parsing_error.json")
-    assert mock_response == list(response)
+
+    with raises(json.decoder.JSONDecodeError):
+        response = investigate_bulk_url_command(client, args, MOCK_APIKEY)
 
 
 def test_get_chosen_nothing_phishup_action_command():
@@ -122,7 +122,9 @@ def test_get_chosen_nothing_phishup_action_command():
         "phishup-playbook-action": "Nothing"
     }
     result = get_chosen_phishup_action_command(params)
-    assert list(result)[1]["PhishUp.Action"] == "Nothing"
+    assert result.__dict__["outputs"] == {"PhishUp.Action": "Nothing"}
+    assert result.__dict__["raw_response"] == "Nothing"
+    assert result.__dict__["readable_output"] == "Chosen Action: Nothing"
 
 
 def test_auth_success_test_module(requests_mock):
@@ -132,7 +134,7 @@ def test_auth_success_test_module(requests_mock):
     client = Client(
         base_url=BASE_URL,
         verify=False)
-    r = test_module(client, MOCK_PARAMS)
+    r = test_module(client, apikey=MOCK_APIKEY)
     assert r == "ok"
 
 
