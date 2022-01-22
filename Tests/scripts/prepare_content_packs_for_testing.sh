@@ -19,6 +19,8 @@ else
   MARKETPLACE_TYPE=$3
   if [[ "$MARKETPLACE_TYPE" == "marketplacev2" ]]; then
     GCS_PRODUCTION_BUCKET=$GCS_PRODUCTION_V2_BUCKET
+    ARTIFACTS_FOLDER=$ARTIFACTS_FOLDER/marketplacev2
+    PACK_ARTIFACTS=$ARTIFACTS_FOLDER/content_packs.zip
   fi
 fi
 
