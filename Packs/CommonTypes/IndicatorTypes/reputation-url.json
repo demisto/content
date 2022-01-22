@@ -13,8 +13,7 @@
   "reputationScriptName": "",
   "reputationCommand": "url",
   "enhancementScriptNames": [
-    "URLReputation",
-    "SplunkPySearch"
+    "URLReputation"
   ],
   "system": true,
   "locked": false,
