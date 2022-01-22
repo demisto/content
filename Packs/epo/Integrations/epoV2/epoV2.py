@@ -14,7 +14,7 @@ urllib3.disable_warnings()
 
 GET = 'GET'
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
-EPO_SYSTEM_ATTRIBUTE_MAP: dict[str:str] = {  # type: ignore
+EPO_SYSTEM_ATTRIBUTE_MAP = {
     'Name': 'EPOComputerProperties.ComputerName',
     'Domain': 'EPOComputerProperties.DomainName',
     'Hostname': 'EPOComputerProperties.IPHostName',
@@ -1162,15 +1162,15 @@ def epo_find_systems_command(client: Client, args: Dict[str, Any]) -> List[Comma
             count = 0
             for endpoint_info in endpoints:
                 endpoint = Common.Endpoint(
-                    id=endpoint_info.get(EPO_SYSTEM_ATTRIBUTE_MAP.get('Hostname').split('.')[1], ''),
-                    hostname=endpoint_info.get(EPO_SYSTEM_ATTRIBUTE_MAP.get('Hostname').split('.')[1], ''),
-                    ip_address=endpoint_info.get(EPO_SYSTEM_ATTRIBUTE_MAP.get('IPAddress').split('.')[1], ''),
-                    domain=endpoint_info.get(EPO_SYSTEM_ATTRIBUTE_MAP.get('Domain').split('.')[1], ''),
-                    os=endpoint_info.get(EPO_SYSTEM_ATTRIBUTE_MAP.get('OS').split('.')[1], ''),
-                    os_version=endpoint_info.get(EPO_SYSTEM_ATTRIBUTE_MAP.get('OSVersion').split('.')[1], ''),
-                    processor=endpoint_info.get(EPO_SYSTEM_ATTRIBUTE_MAP.get('Processor').split('.')[1], ''),
-                    processors=endpoint_info.get(EPO_SYSTEM_ATTRIBUTE_MAP.get('Processors').split('.')[1], ''),
-                    memory=endpoint_info.get(EPO_SYSTEM_ATTRIBUTE_MAP.get('Memory').split('.')[1], ''))
+                    id=endpoint_info.get(EPO_SYSTEM_ATTRIBUTE_MAP.get('Hostname', str).split('.')[1], ''),
+                    hostname=endpoint_info.get(EPO_SYSTEM_ATTRIBUTE_MAP.get('Hostname', str).split('.')[1], ''),
+                    ip_address=endpoint_info.get(EPO_SYSTEM_ATTRIBUTE_MAP.get('IPAddress', str).split('.')[1], ''),
+                    domain=endpoint_info.get(EPO_SYSTEM_ATTRIBUTE_MAP.get('Domain', str).split('.')[1], ''),
+                    os=endpoint_info.get(EPO_SYSTEM_ATTRIBUTE_MAP.get('OS', str).split('.')[1], ''),
+                    os_version=endpoint_info.get(EPO_SYSTEM_ATTRIBUTE_MAP.get('OSVersion', str).split('.')[1], ''),
+                    processor=endpoint_info.get(EPO_SYSTEM_ATTRIBUTE_MAP.get('Processor', str).split('.')[1], ''),
+                    processors=endpoint_info.get(EPO_SYSTEM_ATTRIBUTE_MAP.get('Processors', str).split('.')[1], ''),
+                    memory=endpoint_info.get(EPO_SYSTEM_ATTRIBUTE_MAP.get('Memory', str).split('.')[1], ''))
 
                 md = tableToMarkdown('Endpoint information:',
                                      prettify_find_system([response_json[count]], False), removeNull=True)
@@ -1205,15 +1205,15 @@ def epo_find_system_command(client: Client, args: Dict[str, Any]) -> CommandResu
         md += systems_to_md(response_json, verbose)
         endpoint_info = prettify_find_system(list(response_json))
         endpoint = Common.Endpoint(
-            id=endpoint_info[0].get(EPO_SYSTEM_ATTRIBUTE_MAP.get('Hostname').split('.')[1], ''),
-            hostname=endpoint_info[0].get(EPO_SYSTEM_ATTRIBUTE_MAP.get('Hostname').split('.')[1], ''),
-            ip_address=endpoint_info[0].get(EPO_SYSTEM_ATTRIBUTE_MAP.get('IPAddress').split('.')[1], ''),
-            domain=endpoint_info[0].get(EPO_SYSTEM_ATTRIBUTE_MAP.get('Domain').split('.')[1], ''),
-            os=endpoint_info[0].get(EPO_SYSTEM_ATTRIBUTE_MAP.get('OS').split('.')[1], ''),
-            os_version=endpoint_info[0].get(EPO_SYSTEM_ATTRIBUTE_MAP.get('OSVersion').split('.')[1], ''),
-            processor=endpoint_info[0].get(EPO_SYSTEM_ATTRIBUTE_MAP.get('Processor').split('.')[1], ''),
-            processors=endpoint_info[0].get(EPO_SYSTEM_ATTRIBUTE_MAP.get('Processors').split('.')[1], ''),
-            memory=endpoint_info[0].get(EPO_SYSTEM_ATTRIBUTE_MAP.get('Memory').split('.')[1], ''))
+            id=endpoint_info[0].get(EPO_SYSTEM_ATTRIBUTE_MAP.get('Hostname', str).split('.')[1], ''),
+            hostname=endpoint_info[0].get(EPO_SYSTEM_ATTRIBUTE_MAP.get('Hostname', str).split('.')[1], ''),
+            ip_address=endpoint_info[0].get(EPO_SYSTEM_ATTRIBUTE_MAP.get('IPAddress', str).split('.')[1], ''),
+            domain=endpoint_info[0].get(EPO_SYSTEM_ATTRIBUTE_MAP.get('Domain', str).split('.')[1], ''),
+            os=endpoint_info[0].get(EPO_SYSTEM_ATTRIBUTE_MAP.get('OS', str).split('.')[1], ''),
+            os_version=endpoint_info[0].get(EPO_SYSTEM_ATTRIBUTE_MAP.get('OSVersion', str).split('.')[1], ''),
+            processor=endpoint_info[0].get(EPO_SYSTEM_ATTRIBUTE_MAP.get('Processor', str).split('.')[1], ''),
+            processors=endpoint_info[0].get(EPO_SYSTEM_ATTRIBUTE_MAP.get('Processors', str).split('.')[1], ''),
+            memory=endpoint_info[0].get(EPO_SYSTEM_ATTRIBUTE_MAP.get('Memory', str).split('.')[1], ''))
         return CommandResults(
             raw_response=response,
             readable_output=md,
