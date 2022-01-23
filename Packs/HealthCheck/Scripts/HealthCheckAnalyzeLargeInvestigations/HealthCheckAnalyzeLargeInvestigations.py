@@ -55,8 +55,7 @@ def main(args):
         incidentsbiggerthan1mb.append(formatted_incident)
 
     numberofincidentsbiggerthan1mb = len(incidentsbiggerthan1mb)
-    #numberofincidentsbiggerthan10mb = len(incidentsbiggerthan10mb)
-    #numberofincidentswithmorethan500entries = len(incidentswithmorethan500entries)
+    numberofincidentswithmorethan500entries = len(incidentswithmorethan500entries)
 
     analyze_fields = {
         'healthchecklargeinvestigations': incidentsbiggerthan1mb,
@@ -72,14 +71,6 @@ def main(args):
             'severity': 'High',
             'description': DESCRIPTION[0],
             'resolution': '{}'.format(RESOLUTION[0]),
-        })
-
-    if numberofincidentsbiggerthan10mb > thresholds['numberofincidentsbiggerthan10mb']:
-        action_items.append({
-            'category': 'DB Analysis',
-            'severity': 'High',
-            'description': DESCRIPTION[1],
-            'resolution': '{} \n{}'.format(RESOLUTION[0], RESOLUTION[1]),
         })
 
     if numberofincidentsbiggerthan1mb > thresholds['numberofincidentsbiggerthan1mb']:
