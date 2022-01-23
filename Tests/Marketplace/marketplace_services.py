@@ -915,8 +915,8 @@ class Pack(object):
         source_path = self._pack_path
         source_name = self._pack_name
         task_status = self.zip_folder_items(source_path, source_name, self._zip_path)
-        zip_pack_path = f"{source_path}.zip"
-        if encryption_key:
+        # if failed to zip, skip encryption
+        if task_status and encryption_key:
             try:
                 Pack.encrypt_pack(self._zip_path, source_name, encryption_key, extract_destination_path,
                                   private_artifacts_dir, secondary_encryption_key)
@@ -924,7 +924,8 @@ class Pack(object):
             except Exception:
                 task_status = False
                 logging.exception(f"Failed in encrypting {source_name} folder")
-        return task_status, zip_pack_path
+        final_path_to_zipped_pack = f"{source_path}.zip"
+        return task_status, final_path_to_zipped_pack
 
     def detect_modified(self, content_repo, index_folder_path, current_commit_hash, previous_commit_hash):
         """ Detects pack modified files.

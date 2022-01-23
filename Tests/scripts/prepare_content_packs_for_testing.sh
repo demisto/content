@@ -8,6 +8,7 @@ CI_BUILD_ID=${CI_BUILD_ID:-00000}
 PACK_ARTIFACTS=$ARTIFACTS_FOLDER/content_packs.zip
 ID_SET=$ARTIFACTS_FOLDER/id_set.json
 EXTRACT_FOLDER=$(mktemp -d)
+CREATE_DEPENDENCIES_ZIP=true  # TODO: for debug purposes
 
 if [[ ! -f "$GCS_MARKET_KEY" ]]; then
     echo "GCS_MARKET_KEY not set aborting!"

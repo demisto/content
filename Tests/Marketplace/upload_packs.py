@@ -746,6 +746,54 @@ Total number of packs: {len(successful_packs + skipped_packs + failed_packs)}
         add_pr_comment(pr_comment)
 
 
+def option_handler():
+    """Validates and parses script arguments.
+
+    Returns:
+        Namespace: Parsed arguments object.
+
+    """
+    parser = argparse.ArgumentParser(description="Store packs in cloud storage.")
+    # disable-secrets-detection-start
+    parser.add_argument('-pa', '--packs_artifacts_path', help="The full path of packs artifacts", required=True)
+    parser.add_argument('-idp', '--id_set_path', help="The full path of id_set.json", required=False)
+    parser.add_argument('-e', '--extract_path', help="Full path of folder to extract wanted packs", required=True)
+    parser.add_argument('-b', '--bucket_name', help="Storage bucket name", required=True)
+    parser.add_argument('-s', '--service_account',
+                        help=("Path to gcloud service account, is for circleCI usage. "
+                              "For local development use your personal account and "
+                              "authenticate using Google Cloud SDK by running: "
+                              "`gcloud auth application-default login` and leave this parameter blank. "
+                              "For more information go to: "
+                              "https://googleapis.dev/python/google-api-core/latest/auth.html"),
+                        required=False)
+    parser.add_argument('-d', '--pack_dependencies', help="Full path to pack dependencies json file.", required=False)
+    parser.add_argument('-p', '--pack_names',
+                        help=("Target packs to upload to gcs. Optional values are: `All`, "
+                              "`Modified` or csv list of packs "
+                              "Default is set to `All`"),
+                        required=False, default="All")
+    parser.add_argument('-n', '--ci_build_number',
+                        help="CircleCi build number (will be used as hash revision at index file)", required=False)
+    parser.add_argument('-o', '--override_all_packs', help="Override all existing packs in cloud storage",
+                        type=str2bool, default=False, required=True)
+    parser.add_argument('-k', '--key_string', help="Base64 encoded signature key used for signing packs.",
+                        required=False)
+    parser.add_argument('-sb', '--storage_base_path', help="Storage base path of the directory to upload to.",
+                        required=False)
+    parser.add_argument('-rt', '--remove_test_playbooks', type=str2bool,
+                        help='Should remove test playbooks from content packs or not.', default=True)
+    parser.add_argument('-bu', '--bucket_upload', help='is bucket upload build?', type=str2bool, required=True)
+    parser.add_argument('-pb', '--private_bucket_name', help="Private storage bucket name", required=False)
+    parser.add_argument('-c', '--ci_branch', help="CI branch of current build", required=True)
+    parser.add_argument('-f', '--force_upload', help="is force upload build?", type=str2bool, required=True)
+    parser.add_argument('-dz', '--create_dependencies_zip', help="Upload packs with dependencies zip",
+                        required=False, default='false')
+    parser.add_argument('-mp', '--marketplace', help="marketplace version", default='xsoar')
+    # disable-secrets-detection-end
+    return parser.parse_args()
+
+
 def add_pr_comment(comment: str):
     """Add comment to the pull request.
 
@@ -923,6 +971,11 @@ def prepare_and_zip_pack(pack, signature_key, delete_test_playbooks=True):
         (bool): Whether the zip was successful
     """
     task_status = pack.load_user_metadata()
+    if not pack.should_upload_to_marketplace:
+        logging.warning(f"Skipping {pack.name} pack as it is not supported in the current marketplace.")
+        pack.status = PackStatus.NOT_RELEVANT_FOR_MARKETPLACE.name
+        pack.cleanup()
+        return False
     if not task_status:
         pack.status = PackStatus.FAILED_LOADING_USER_METADATA.value
         pack.cleanup()
@@ -952,7 +1005,7 @@ def prepare_and_zip_pack(pack, signature_key, delete_test_playbooks=True):
 
 def get_all_packs(packs_dict, extract_destination_path, id_set_path, marketplace):
     """
-    Collect all packs from the id_set that are not packs_dict
+    Collect all packs from the id_set that are not in packs_dict
     """
     if not id_set_path or not os.path.isfile(id_set_path):
         return packs_dict
@@ -1028,54 +1081,6 @@ def upload_packs_with_dependencies_zip(extract_destination_path, packs_dependenc
         logging.error(f"Failed uploading packs with dependencies: {e}")
 
 
-def option_handler():
-    """Validates and parses script arguments.
-
-    Returns:
-        Namespace: Parsed arguments object.
-
-    """
-    parser = argparse.ArgumentParser(description="Store packs in cloud storage.")
-    # disable-secrets-detection-start
-    parser.add_argument('-pa', '--packs_artifacts_path', help="The full path of packs artifacts", required=True)
-    parser.add_argument('-idp', '--id_set_path', help="The full path of id_set.json", required=False)
-    parser.add_argument('-e', '--extract_path', help="Full path of folder to extract wanted packs", required=True)
-    parser.add_argument('-b', '--bucket_name', help="Storage bucket name", required=True)
-    parser.add_argument('-s', '--service_account',
-                        help=("Path to gcloud service account, is for circleCI usage. "
-                              "For local development use your personal account and "
-                              "authenticate using Google Cloud SDK by running: "
-                              "`gcloud auth application-default login` and leave this parameter blank. "
-                              "For more information go to: "
-                              "https://googleapis.dev/python/google-api-core/latest/auth.html"),
-                        required=False)
-    parser.add_argument('-d', '--pack_dependencies', help="Full path to pack dependencies json file.", required=False)
-    parser.add_argument('-p', '--pack_names',
-                        help=("Target packs to upload to gcs. Optional values are: `All`, "
-                              "`Modified` or csv list of packs "
-                              "Default is set to `All`"),
-                        required=False, default="All")
-    parser.add_argument('-n', '--ci_build_number',
-                        help="CircleCi build number (will be used as hash revision at index file)", required=False)
-    parser.add_argument('-o', '--override_all_packs', help="Override all existing packs in cloud storage",
-                        type=str2bool, default=False, required=True)
-    parser.add_argument('-k', '--key_string', help="Base64 encoded signature key used for signing packs.",
-                        required=False)
-    parser.add_argument('-sb', '--storage_base_path', help="Storage base path of the directory to upload to.",
-                        required=False)
-    parser.add_argument('-rt', '--remove_test_playbooks', type=str2bool,
-                        help='Should remove test playbooks from content packs or not.', default=True)
-    parser.add_argument('-bu', '--bucket_upload', help='is bucket upload build?', type=str2bool, required=True)
-    parser.add_argument('-pb', '--private_bucket_name', help="Private storage bucket name", required=False)
-    parser.add_argument('-c', '--ci_branch', help="CI branch of current build", required=True)
-    parser.add_argument('-f', '--force_upload', help="is force upload build?", type=str2bool, required=True)
-    parser.add_argument('-dz', '--create_dependencies_zip', help="Upload packs with dependencies zip",
-                        required=False, default='false')
-    parser.add_argument('-mp', '--marketplace', help="marketplace version", default='xsoar')
-    # disable-secrets-detection-end
-    return parser.parse_args()
-
-
 def main():
     install_logging('Prepare_Content_Packs_For_Testing.log', logger=logging)
     option = option_handler()
@@ -1143,10 +1148,7 @@ def main():
 
     # starting iteration over packs
     for pack in packs_list:
-        if not pack.should_upload_to_marketplace:
-            logging.warning(f"Skipping {pack.name} pack as it is not supported in the current marketplace.")
-            pack.status = PackStatus.NOT_RELEVANT_FOR_MARKETPLACE.name
-            pack.cleanup()
+        if not prepare_and_zip_pack(pack, signature_key, remove_test_playbooks):
             continue
         task_status = pack.upload_integration_images(storage_bucket, storage_base_path, diff_files_list, True)
         if not task_status:
@@ -1159,9 +1161,6 @@ def main():
         if not task_status:
             pack.status = PackStatus.FAILED_AUTHOR_IMAGE_UPLOAD.name
             pack.cleanup()
-            continue
-
-        if not prepare_and_zip_pack(pack, signature_key, remove_test_playbooks):
             continue
 
         task_status, modified_rn_files_paths, pack_was_modified = pack.detect_modified(
@@ -1289,7 +1288,7 @@ def main():
     # summary of packs status
     print_packs_summary(successful_packs, skipped_packs, failed_packs, not is_bucket_upload_flow)
 
-    if is_create_dependencies_zip and is_create_dependencies_zip != 'false':
+    if is_create_dependencies_zip and is_create_dependencies_zip != 'false' and marketplace == 'xsoar':
         # handle packs with dependencies zip
         upload_packs_with_dependencies_zip(extract_destination_path, packs_dependencies_mapping, signature_key,
                                            storage_bucket, storage_base_path, id_set_path, packs_list, marketplace)
