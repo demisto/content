@@ -65,6 +65,7 @@ create-instances:
     - !reference [.download-demisto-conf]
     - !reference [.create-id-set]
     - !reference [.create-release-notes-and-common-docs]
+    - echo "$ARTIFACTS_FOLDER"
     - section_start "Create Content Artifacts and Update Conf" --collapsed
     - demisto-sdk create-content-artifacts -a $ARTIFACTS_FOLDER --cpus 8 --content_version $CONTENT_VERSION >> $ARTIFACTS_FOLDER/logs/create_content_artifacts.log
     - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY"
