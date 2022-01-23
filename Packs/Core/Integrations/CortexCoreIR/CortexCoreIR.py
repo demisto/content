@@ -400,11 +400,11 @@ class Client(BaseClient):
             request_data['incident_id'] = incident_id
 
         reply = self._http_request(
-                                    method='POST',
-                                    url_suffix='/endpoints/isolate',
-                                    json_data={'request_data': request_data},
-                                    timeout=self.timeout
-                                )
+            method='POST',
+            url_suffix='/endpoints/isolate',
+            json_data={'request_data': request_data},
+            timeout=self.timeout
+        )
         return reply.get('reply')
 
     def unisolate_endpoint(self, endpoint_id, incident_id=None):
@@ -415,10 +415,10 @@ class Client(BaseClient):
             request_data['incident_id'] = incident_id
 
         reply = self._http_request(
-                                    method='POST',
-                                    url_suffix='/endpoints/unisolate',
-                                    json_data={'request_data': request_data},
-                                    timeout=self.timeout
+            method='POST',
+            url_suffix='/endpoints/unisolate',
+            json_data={'request_data': request_data},
+            timeout=self.timeout
         )
         return reply.get('reply')
 
@@ -1521,7 +1521,7 @@ def isolate_endpoint_command(client, args):
             return CommandResults(
                 readable_output=f'Warning: isolation action is pending for the following disconnected endpoint: {endpoint_id}.',
                 outputs={f'{INTEGRATION_CONTEXT_BRAND}.Isolation.endpoint_id(val.endpoint_id == obj.endpoint_id)': endpoint_id}
-                )
+            )
     if is_isolated == 'AGENT_PENDING_ISOLATION_CANCELLATION':
         raise ValueError(
             f'Error: Endpoint {endpoint_id} is pending isolation cancellation and therefore can not be isolated.'
@@ -1562,11 +1562,12 @@ def unisolate_endpoint_command(client, args):
             raise ValueError(f'Error: Endpoint {endpoint_id} is disconnected and therefore can not be un-isolated.')
         else:
             return CommandResults(
-                readable_output=f'Warning: un-isolation action is pending for the following disconnected endpoint: {endpoint_id}.',
+                readable_output=f'Warning: un-isolation action is pending for the following disconnected '
+                                f'endpoint: {endpoint_id}.',
                 outputs={
                     f'{INTEGRATION_CONTEXT_BRAND}.UnIsolation.endpoint_id(val.endpoint_id == obj.endpoint_id)'
                     f'': endpoint_id}
-                )
+            )
     if is_isolated == 'AGENT_PENDING_ISOLATION':
         raise ValueError(
             f'Error: Endpoint {endpoint_id} is pending isolation and therefore can not be un-isolated.'
@@ -2564,19 +2565,19 @@ def report_incorrect_wildfire_command(client: Client, args: Dict) -> CommandResu
     reason = args.get('reason')
     email = args.get('email')
     new_verdict = arg_to_int(
-                                arg=args.get('new_verdict'),
-                                arg_name='Failed to parse "new_verdict". Must be a number.',
-                                required=True
-                            )
+        arg=args.get('new_verdict'),
+        arg_name='Failed to parse "new_verdict". Must be a number.',
+        required=True
+    )
 
     response = client.report_incorrect_wildfire(file_hash, new_verdict, reason, email)
     reply = response.get('reply')
     return CommandResults(
-            readable_output=tableToMarkdown(f'Reported incorrect WildFire on {hash}', reply),
-            outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.WildFire',
-            outputs=reply,
-            raw_response=response,
-        )
+        readable_output=tableToMarkdown(f'Reported incorrect WildFire on {hash}', reply),
+        outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.WildFire',
+        outputs=reply,
+        raw_response=response,
+    )
 
 
 def run_polling_command(client: Client,

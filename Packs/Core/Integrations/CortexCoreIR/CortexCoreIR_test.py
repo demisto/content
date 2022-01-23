@@ -970,7 +970,7 @@ def test_retrieve_files_command(requests_mock):
         base_url=f'{Core_URL}/public_api/v1', headers={}
     )
     res = retrieve_files_command(client, {'endpoint_ids': 'aeec6a2cc92e46fab3b6f621722e9916',
-                                                                'windows_file_paths': 'C:\\Users\\demisto\\Desktop\\demisto.txt'})
+                                          'windows_file_paths': 'C:\\Users\\demisto\\Desktop\\demisto.txt'})
 
     assert res.readable_output == tableToMarkdown(name='Retrieve files', t=result, headerTransform=string_to_table_header)
     assert res.outputs == retrieve_expected_result
@@ -1002,7 +1002,7 @@ def test_retrieve_files_command_using_general_file_path(requests_mock):
         base_url=f'{Core_URL}/public_api/v1', headers={}
     )
     res = retrieve_files_command(client, {'endpoint_ids': 'aeec6a2cc92e46fab3b6f621722e9916',
-                                                                'generic_file_path': 'C:\\Users\\demisto\\Desktop\\demisto.txt'})
+                                          'generic_file_path': 'C:\\Users\\demisto\\Desktop\\demisto.txt'})
 
     assert res.readable_output == tableToMarkdown(name='Retrieve files', t=result, headerTransform=string_to_table_header)
     assert res.outputs == retrieve_expected_result
