@@ -2,7 +2,7 @@ id: PAN-OS edit policy
 version: -1
 name: PAN-OS edit policy
 description: This playbook guides the user in the process of editing an existing
-  policy. The playbook sends a data collection form that will retrieve the relevant
+  policy. The playbook sends a data collection form to retrieve the relevant
   parameters for editing the existing rule.
 starttaskid: "0"
 tasks:
