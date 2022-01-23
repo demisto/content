@@ -1054,6 +1054,40 @@ def delete_group(client, data_args):
     return human_readable, outputs, raw_response
 
 
+def get_action_result(client, data_args):
+    actions_ids = argToList(data_args.get('id'))
+    action_res_outputs: List = []
+    action_res_hr: List = []
+
+    for action_id in actions_ids:
+        endpoint_url = '/result_data/action/' + str(action_id)
+        raw_response = client.do_request('GET', endpoint_url)
+        try:
+            all_devices_results = raw_response['data']['result_sets'][0]['rows']
+            device_results = []
+            for device_res in all_devices_results:
+                formatted_device = {
+                    'HostName': device_res['data'][0][0]['text'],
+                    'Status': str(device_res['data'][1][0]['text']).split(':')[1],
+                    'ComputerID': device_res['cid']
+                }
+                device_results.append(formatted_device)
+            raw_response = raw_response.get('data')
+            raw_response['ID'] = action_id
+            action_res_outputs.append(raw_response)
+            if device_results:
+                action_res_hr.extend(device_results)
+        except Exception:
+            continue
+
+    human_readable = tableToMarkdown('Device Statuses', t=action_res_hr, removeNull=True,
+                                     headers=['HostName', "Status" "ComputerID"])
+
+    context = createContext(action_res_outputs, removeNull=True)
+    outputs = {'Tanium.ActionResult(val.ID && val.ID === obj.ID)': context}
+    return human_readable, outputs, action_res_outputs
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
@@ -1103,7 +1137,8 @@ def main():
         'tn-create-manual-group': create_manual_group,
         'tn-get-group': get_group,
         'tn-list-groups': get_groups,
-        'tn-delete-group': delete_group
+        'tn-delete-group': delete_group,
+        'tn-get-action-result': get_action_result
     }
 
     try:
