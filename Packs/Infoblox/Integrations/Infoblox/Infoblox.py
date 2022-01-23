@@ -445,7 +445,7 @@ def parse_demisto_exception(error: DemistoException, field_in_error: str = 'text
     return DemistoException(err_msg)
 
 
-def results_to_context_data(results: Dict, to_list: bool) -> Union[Dict[str, Any], List[Dict[str, Any]]]:
+def results_to_context_data(results: Union[Dict, List], to_list: bool) -> Union[Dict[str, Any], List[Dict[str, Any]]]:
     if to_list:
         context_data = []
         for result in results:
@@ -1060,7 +1060,7 @@ def create_a_record_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict
     ipv4addr = args.get('ipv4addr')
     infoblox_object_type = 'record:a'
     raw_response = client.create_record(infoblox_object_type, name=name, ipv4addr=ipv4addr)
-    results = str(raw_response.get('result'))
+    results = raw_response.get('result')
     context_data = results_to_context_data(results, to_list=False)
     title = f'{INTEGRATION_NAME} - A Record: {name} has been created:'
     context = {
