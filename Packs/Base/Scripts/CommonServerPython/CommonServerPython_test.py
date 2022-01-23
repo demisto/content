@@ -273,24 +273,6 @@ class TestTableToMarkdown:
     | a2 | b2 | c2 |
     | a3 | b3 | c3 |
     '''
-        ),
-        (
-            [
-                {
-                    'header_1|with_pipe': 'a1',
-                    'header_2': 'b1',
-                },
-                {
-                    'header_1|with_pipe': 'a2',
-                    'header_2': 'b2',
-                }
-            ],
-            '''### tableToMarkdown test
-    |header_1\\|with_pipe|header_2|
-    |---|---|
-    | a1 | b1 |
-    | a2 | b2 |
-    '''
         )])
     @staticmethod
     def test_sanity(data, expected_table):
