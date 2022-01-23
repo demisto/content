@@ -7210,10 +7210,10 @@ def get_whois_raw(domain, server="", previous=None, rfc3490=True, never_cut=Fals
             if referral_server != server and "://" not in referral_server:  # We want to ignore anything non-WHOIS (eg. HTTP) for now.
                 # Referral to another WHOIS server...
                 try:
-                    new_list = get_whois_raw(domain, referral_server, new_list, server_list=server_list,
-                                            with_server_list=with_server_list, is_refer_server=True)
-                except:
-                    demisto.info("Failed for querying a referral server {}".format(referral_server))
+                    return get_whois_raw(domain, referral_server, new_list, server_list=server_list,
+                                         with_server_list=with_server_list, is_refer_server=True)
+                except Exception as msg:
+                    demisto.info("Failed for querying a referral server {} : {}".format(referral_server, msg))
 
     if with_server_list:
         return new_list, server_list
