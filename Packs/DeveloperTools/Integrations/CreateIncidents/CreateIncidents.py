@@ -36,13 +36,20 @@ class GitClient(Client):
 
     def http_request(self, file_path: str, response_type: str = 'json') -> Union[dict, str, list]:
         file_path = urljoin(self.base_url, file_path)
-        data = self._http_request(
-            method='GET',
-            full_url=file_path,
-            resp_type=response_type,
-            return_empty_response=True,
-        )
-        return data
+        try:
+            data = self._http_request(
+                method='GET',
+                full_url=file_path,
+                resp_type=response_type,
+                return_empty_response=True,
+            )
+            return data
+        except Exception as e:
+            if '404' in str(e):
+                raise DemistoException('The file could not be found. '
+                                       'Make sure you uploaded it to master branch in content repository')
+            else:
+                raise e
 
 
 def test_module(client) -> str:
@@ -78,8 +85,6 @@ def fetch_incidents_command(client):
     set_integration_context({'incidents': []})
     return incidents
 
-def _get_context():
-    return CommandResults(readable_output=get_integration_context())
 
 def _add_attachment(client, incident: dict):
     """
@@ -115,12 +120,7 @@ def get_incidents(client: Client, incidents_path: str, attachment_path: str = No
     This function retrieves the incidents from the file provided using the relevant client,
     handling the case of a single incident, it returns formatted incidents.
     """
-    try:
-        incidents = client.http_request(file_path=incidents_path, response_type='json')
-    except Exception as e:
-        if '404' in e:
-            raise("Incident does not exist.")
-        raise(e)
+    incidents = client.http_request(file_path=incidents_path, response_type='json')
 
     if not isinstance(incidents, list):
         incidents = [incidents]  # type: ignore

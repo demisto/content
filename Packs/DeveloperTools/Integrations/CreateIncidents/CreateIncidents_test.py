@@ -1,4 +1,3 @@
-
 import json
 import io
 from collections import namedtuple
@@ -6,6 +5,8 @@ from collections import namedtuple
 import CreateIncidents
 
 import pytest
+
+from CommonServerPython import DemistoException
 
 Attachment = namedtuple('Attachment', ['name', 'content'])
 
@@ -283,3 +284,30 @@ def test_create_test_incident_command_happy(mocker, incidents, attachment, expec
                                                             'attachment_path': attachment})
     assert type(parse_mock.call_args[0][0]) == list
     assert len(parse_mock.call_args[0][0]) == expected
+
+
+def test_gitClient_http_request_bad_link(mocker):
+    """
+         Given: a file with list-format of valid incidents with labels
+                a file with single valid incident without labels
+                a list of valid incidents with labels with attachment,
+                an empty file without incidents
+        When:   creating an incident object from the incident retrieved
+        Then:   Makes sure the incidents we read are in correct format (list)
+        """
+
+    class DemistoExceptionMock(DemistoException):
+        def __init__(self):
+            self.value = 'Error in API call [404] - Not Found\n404: Not Found'
+
+        def __str__(self):
+            return self.value
+
+    def http_mock(method, full_url, resp_type, return_empty_response):
+        raise DemistoExceptionMock()
+
+    mocker.patch.object(CreateIncidents.GitClient, '_http_request', side_effect=http_mock)
+    expected_err_msg = 'The file could not be found. Make sure you uploaded it to master branch in content repository'
+    with pytest.raises(Exception) as e:
+        CreateIncidents.GitClient(False, False).http_request(file_path='bad_example.json', response_type='json')
+    assert str(e.value) == expected_err_msg
