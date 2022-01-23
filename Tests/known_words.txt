@@ -62,4 +62,5 @@ unicode
 CloudWatchLogs
 GuardDuty
 NetWitness
+ASN
 Qualys
