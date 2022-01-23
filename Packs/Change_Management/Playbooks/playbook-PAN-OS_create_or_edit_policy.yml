@@ -2,8 +2,8 @@ id: PAN-OS create or edit policy
 version: -1
 name: PAN-OS create or edit policy
 description: "This playbook will automate the process of creating or editing a policy.\n\
-  The first task in the playbook checks if there is a security policy that matches the\
-  \ playbook inputs. If there is no security policy that matches, a new policy\
+  The first task in the playbook checks if there is a security policy that matches\
+  \ the playbook inputs. If there is no security policy that matches, a new policy\
   \ will be created. If there is a security policy that matches, the user will be\
   \ able to modify the existing policy or create a new hardened policy."
 starttaskid: "0"
@@ -39,15 +39,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: cd54b67a-bc94-448d-89f1-a1d30a36b429
+    taskid: 9b462c6e-8e91-4e39-8275-92c1b75e7155
     type: regular
     task:
-      id: cd54b67a-bc94-448d-89f1-a1d30a36b429
+      id: 9b462c6e-8e91-4e39-8275-92c1b75e7155
       version: -1
       name: Search for matching security policy?
-      description: Wrapper script for the panorama-security-policy-match command that
-        receives multiple values (array) in the DST, SRC, and port arguments and performs
-        the policy match on each of the values.
+      description: A wrapper script for the panorama-security-policy-match command
+        that receives multiple values (array) in the DST, SRC, and port arguments
+        and performs the policy match for each combination of the inputs.
       tags:
       - comment
       - comments
@@ -61,7 +61,7 @@ tasks:
     scriptarguments:
       application:
         complex:
-          root: 'inputs.Application '
+          root: 'inputs.Application'
       destination:
         complex:
           root: inputs.Destination
@@ -78,7 +78,7 @@ tasks:
           root: inputs.Limit
       protocol:
         complex:
-          root: 'inputs.Protocol '
+          root: 'inputs.Protocol'
       source:
         complex:
           root: inputs.Source
@@ -436,7 +436,7 @@ tasks:
       type: collection
       iscommand: false
       brand: ""
-      description: ''
+      description: ""
     nexttasks:
       '#none#':
       - "22"
@@ -783,7 +783,7 @@ tasks:
       id: b2f637e5-ee39-4ba5-845d-601d3a9eab21
       version: -1
       name: Update incident state
-      description: Set the incident state in the layout.
+      description: Set the incident state to the layout
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -817,9 +817,9 @@ tasks:
       id: 44cfc485-17c2-4c51-8f0b-6f3092abafb9
       version: -1
       name: PAN-OS edit policy
-      description: This playbook will guide the user in the process of editing an existing
-        policy. The playbook will send a data collection form that will retrieve the
-        relevant parameters for editing the existing rule.
+      description: This playbook will guide the user in the process of editing an
+        existing policy. The playbook will send a data collection form that will retrieve
+        the relevant parameters for editing the existing rule.
       playbookName: PAN-OS edit policy
       type: playbook
       iscommand: false
@@ -870,7 +870,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ''
+      description: ""
     nexttasks:
       Create:
       - "12"
