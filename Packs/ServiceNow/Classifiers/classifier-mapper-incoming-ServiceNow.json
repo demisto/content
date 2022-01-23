@@ -848,7 +848,7 @@
                 "Remediation SLA": {
                     "simple": "sla_due"
                 },
-                "Risk score": {
+                "Risk Score": {
                     "simple": "risk_score"
                 },
                 "ServiceNow Assigned To": {
