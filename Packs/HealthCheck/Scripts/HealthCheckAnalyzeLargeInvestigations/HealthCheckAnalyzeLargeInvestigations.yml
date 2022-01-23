@@ -1,20 +1,14 @@
 args:
-- default: false
-  description: Define the thresholds.
-  isArray: false
+- description: Define the thresholds.
   name: Thresholds
-  required: false
-  secret: false
 comment: Analyze large investigation from previous month until current month.
 commonfields:
   id: HealthCheckAnalyzeLargeInvestigations
   version: -1
 enabled: true
 name: HealthCheckAnalyzeLargeInvestigations
-script: '-'
+script: ''
 subtype: python3
-system: false
-timeout: '0'
 type: python
 dockerimage: demisto/python3:3.10.1.25933
 runas: DBotWeakRole
@@ -22,3 +16,5 @@ runonce: false
 tests:
 - No tests (auto formatted)
 fromversion: 6.0.0
+scripttarget: 0
+tags: []

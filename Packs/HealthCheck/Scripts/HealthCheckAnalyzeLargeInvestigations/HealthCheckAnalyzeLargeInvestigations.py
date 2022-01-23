@@ -1,6 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
+
 import dateutil.relativedelta
 
 THRESHOLDS = {
@@ -43,25 +44,24 @@ def main(args):
     incidentsbiggerthan1mb = []
     incidentsbiggerthan10mb = []
     incidentswithmorethan500entries = []
+
     for incident in res['data']:
         formatted_incident = format_dict_keys(incident)
         if incident['AmountOfEntries'] >= 500:
             incidentswithmorethan500entries.append(formatted_incident)
-        if round(incident['Size(MB)']) >= 10:
-            incidentsbiggerthan10mb.append(formatted_incident)
-        else:
-            incidentsbiggerthan1mb.append(formatted_incident)
+            continue
+        # if round(incident['Size(MB)']) >= 10:
+        #     incidentsbiggerthan10mb.append(formatted_incident)
+        incidentsbiggerthan1mb.append(formatted_incident)
 
     numberofincidentsbiggerthan1mb = len(incidentsbiggerthan1mb)
-    numberofincidentsbiggerthan10mb = len(incidentsbiggerthan10mb)
-    numberofincidentswithmorethan500entries = len(incidentswithmorethan500entries)
+    #numberofincidentsbiggerthan10mb = len(incidentsbiggerthan10mb)
+    #numberofincidentswithmorethan500entries = len(incidentswithmorethan500entries)
 
     analyze_fields = {
-        'healthcheckinvestigationsbiggerthan1mb': incidentsbiggerthan1mb,
-        'healthcheckinvestigationsbiggerthan10mb': incidentsbiggerthan10mb,
+        'healthchecklargeinvestigations': incidentsbiggerthan1mb,
         'healthchecknumberofinvestigationsbiggerthan1mb': numberofincidentsbiggerthan1mb,
-        'healthchecknumberofinvestigationsbiggerthan10mb': numberofincidentsbiggerthan10mb,
-        'healthchecknumberofinvestigationswithmorethan500entries': numberofincidentswithmorethan500entries,
+        'healthcheckincidentslargenumberofentries': incidentswithmorethan500entries
     }
     execute_command('setIncident', analyze_fields)
 
