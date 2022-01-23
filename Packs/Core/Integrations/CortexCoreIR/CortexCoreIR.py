@@ -462,6 +462,7 @@ class Client(BaseClient):
         return reply.get('reply')
 
     def create_distribution(self, name, platform, package_type, agent_version, description):
+        request_data = {}
         if package_type == 'standalone':
             request_data = {
                 'name': name,
@@ -872,6 +873,21 @@ class Client(BaseClient):
 
         return reply.get('reply')
 
+    def report_incorrect_wildfire(self, file_hash: str, new_verdict: int, reason: str, email: str) -> Dict[str, Any]:
+        request_data: Dict[str, Any] = {
+            "hash": file_hash,
+            "new_verdict": new_verdict,
+            "reason": reason,
+            "email": email,
+        }
+        reply = self._http_request(
+            method='POST',
+            url_suffix='/wildfire/report_as_incorrect/',
+            json_data={'request_data': request_data},
+            timeout=self.timeout
+        )
+        return reply
+
     def get_endpoint_device_control_violations(self, endpoint_ids: list, type_of_violation, timestamp_gte: int,
                                                timestamp_lte: int,
                                                ip_list: list, vendor: list, vendor_id: list, product: list,
@@ -1180,21 +1196,6 @@ class Client(BaseClient):
             full_url=file_link,
             timeout=self.timeout,
             resp_type='content'
-        )
-        return reply
-
-    def report_incorrect_wildfire(self, file_hash: str, new_verdict: int, reason: str, email: str):
-        request_data: Dict[str, Any] = {
-            "hash": file_hash,
-            "new_verdict": new_verdict,
-            "reason": reason,
-            "email": email,
-        }
-        reply = self._http_request(
-            method='POST',
-            url_suffix='/wildfire/report_as_incorrect/',
-            json_data={'request_data': request_data},
-            timeout=self.timeout
         )
         return reply
 
@@ -2560,7 +2561,7 @@ def run_script_kill_process_command(client: Client, args: Dict) -> List[CommandR
     return all_processes_response
 
 
-def report_incorrect_wildfire_command(client: Client, args: Dict) -> CommandResults:
+def report_incorrect_wildfire_command(client: Client, args) -> CommandResults:
     file_hash = args.get('file_hash')
     reason = args.get('reason')
     email = args.get('email')
@@ -2609,7 +2610,7 @@ def run_polling_command(client: Client,
             outputs = [command_results.raw_response] if command_results.raw_response else []
         else:
             outputs = [c.raw_response for c in command_results]
-        command_decision_values = [o.get(command_decision_field) for o in outputs] if outputs else []
+        command_decision_values = [o.get(command_decision_field) for o in outputs] if outputs else []  # type: ignore
         if outputs and command_decision_values:
             polling_args = {
                 command_decision_field: command_decision_values,
@@ -2629,13 +2630,13 @@ def run_polling_command(client: Client,
             if command_results.readable_output:
                 demisto.error(f"{command_results.readable_output}")
             else:
-                demisto.error(f"Command {command_function} didn't succeeded, returned "
-                              f"{command_decision_field} = {outputs.get(command_decision_field)}")
+                demisto.error(f"Command {command_function} didn't succeeded, returned {outputs}")
             return command_results
     # get polling result
     command_results = results_function(client, args)
-    outputs = command_results.raw_response
-    result = outputs.get(polling_field) if isinstance(outputs, dict) else outputs[0].get(polling_field)
+    outputs_result_func = command_results.raw_response
+    result = outputs_result_func.get(polling_field) if isinstance(outputs_result_func, dict) else\
+        outputs_result_func[0].get(polling_field)
     cond = result not in polling_value if stop_polling else result in polling_value
     if cond:
         # schedule next poll
