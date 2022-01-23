@@ -155,9 +155,11 @@ configuration:
   name: nginx_server_conf
   required: false
   type: 12
-description: Use the Export Indicators Service integration to provide an endpoint
+description: Deprecated. Use the Generic Export Indicators Service integration instead.
+  Use the Export Indicators Service integration to provide an endpoint
   with a list of indicators as a service for the system indicators.
-display: Export Indicators Service
+display: Export Indicators Service (Deprecated)
+deprecated: true
 name: ExportIndicators
 script:
   commands:
