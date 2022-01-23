@@ -1,7 +1,6 @@
 [
     {
         "id": "18110",
-        "proxysgcategory": "category2",
         "version": 11,
         "modified": "2020-02-04T16:44:52.358425+02:00",
         "sortValues": null,
@@ -204,14 +203,15 @@
         "lastReputationRun": "0001-01-01T00:00:00Z",
         "comment": "",
         "manuallyEditedFields": null,
-        "modifiedTime": "2020-02-04T16:44:15+02:00"
+        "modifiedTime": "2020-02-04T16:44:15+02:00",
+        "CustomFields": {"proxysgcategory": "category1", "test": "test"}
     },
     {
         "id": "235529",
-        "proxysgcategory": "category1",
         "version": 1,
         "modified": "2020-03-01T11:54:00.537455+02:00",
         "sortValues": null,
+        "CustomFields": {"proxysgcategory": "category2", "test": "test"},
         "comments": [
             {
                 "id": "db27537a-b396-4ec2-8e7a-19c8e08f2e3c",
