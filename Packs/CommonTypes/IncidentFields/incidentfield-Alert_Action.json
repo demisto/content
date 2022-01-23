@@ -74,10 +74,6 @@
     {
       "cliName": "safebreachremediationaction",
       "type": "shortText"
-    },
-    {
-      "cliName": "safebreachremediationaction",
-      "type": "singleSelect"
     }
   ]
 }

@@ -67,10 +67,6 @@
       "type": "shortText"
     },
     {
-      "cliName": "f5silverlinetranslateddestport",
-      "type": "shortText"
-    },
-    {
       "cliName": "fireeyec2port",
       "type": "shortText"
     },
