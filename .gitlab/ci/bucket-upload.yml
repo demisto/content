@@ -47,6 +47,7 @@ create-instances-upload-flow:
     - create-instances
   variables:
     IFRA_ENV_TYPE: "Bucket-Upload"
+    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
   rules:
     - if: '$CI_COMMIT_BRANCH =~ /pull\/[0-9]+/'
       when: never
@@ -58,6 +59,7 @@ create-instances-upload-flow:
 #    - create-instances-mpv2
 #  variables:
 #    IFRA_ENV_TYPE: "Bucket-Upload"
+#    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
 #  rules:
 #    - if: '$CI_COMMIT_BRANCH =~ /pull\/[0-9]+/'
 #      when: never
@@ -76,6 +78,7 @@ create-instances-upload-flow:
       - /builds/xsoar/content/artifacts/*
     when: always
   variables:
+    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
     INSTANCE_CREATED: "true"
     SSH_TUNNEL_TIMEOUT: 10
     TIME_TO_LIVE: ""
@@ -133,6 +136,7 @@ upload-packs-to-marketplace:
       - /builds/xsoar/content/artifacts/*
     when: always
   variables:
+    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
     INSTANCE_ROLE: "Server Master"
     INSTANCE_CREATED: "true"
     SSH_TUNNEL_TIMEOUT: 10
