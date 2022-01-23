@@ -1,5 +1,5 @@
 {
-    "name": "XSOAR CI/CD (Beta)",
+    "name": "XSOAR CI/CD",
     "description": "This pack enables you to orchestrate your XSOAR system configuration.",
     "support": "xsoar",
     "currentVersion": "1.0.13",
