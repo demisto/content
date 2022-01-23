@@ -17,7 +17,7 @@
             "script": "",
             "selectValues": null,
             "type": "shortText",
-            "width": 150
+            "width": 100
         },
         {
             "displayName": "Date",
@@ -29,7 +29,7 @@
             "script": "",
             "selectValues": null,
             "type": "shortText",
-            "width": 150
+            "width": 100
         },
         {
             "displayName": "Details",
@@ -53,7 +53,7 @@
             "script": "",
             "selectValues": null,
             "type": "shortText",
-            "width": 150
+            "width": 100
         }
     ],
     "content": true,

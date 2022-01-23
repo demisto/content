@@ -17,7 +17,7 @@
             "script": "",
             "selectValues": null,
             "type": "shortText",
-            "width": 150
+            "width": 100
         },
         {
             "displayName": "Amount of Entries",
@@ -41,7 +41,7 @@
             "script": "",
             "selectValues": null,
             "type": "shortText",
-            "width": 150
+            "width": 100
         },
         {
             "displayName": "Size",

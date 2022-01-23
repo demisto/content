@@ -753,10 +753,10 @@
                         "w": 1,
                         "x": 0,
                         "y": 2,
-                        "description": "Presting the large investigations larger than 1 MB"
+                        "description": "Presenting the large investigations larger than 1 MB"
                     },
                     {
-                        "description": "Presting all large investigations in the last 2 months with playbook Input or Output tasks larger than 1 MB.",
+                        "description": "Presenting all large investigations in the last 2 months with playbook Input or Output tasks larger than 1 MB.",
                         "displayType": "ROW",
                         "h": 5,
                         "hideName": false,
