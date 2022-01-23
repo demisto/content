@@ -19,6 +19,7 @@
     "disabled": false,
     "reputationCalc": 0,
     "onChangeRepAlg": 0,
+    "layout": "ServiceNow SIR Incident",
     "detached": false,
     "extractSettings": {
         "mode": "All",
