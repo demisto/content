@@ -1,8 +1,8 @@
 id: PAN-OS edit policy
 version: -1
 name: PAN-OS edit policy
-description: This playbook will guide the user in the process of editing existing
-  policy, the playbook will send a data collection form that will retrieve the relevant
+description: This playbook guides the user in the process of editing an existing
+  policy. The playbook sends a data collection form to retrieve the relevant
   parameters for editing the existing rule.
 starttaskid: "0"
 tasks:
@@ -43,8 +43,8 @@ tasks:
       id: 1ebaf0ef-a356-4680-86cc-eb81d6514f81
       version: -1
       name: Which parameters to edit in the policy?
-      description: This task query the user which object to modify in the current
-        policy
+      description: This task queries the user about which object to modify in the current
+        policy.
       type: collection
       iscommand: false
       brand: ""
@@ -68,7 +68,7 @@ tasks:
       subject:
         simple: Parameters to edit in the policy
       body:
-        simple: 'Please provide the following parameters for editing the current policy '
+        simple: 'Please provide the following parameters for editing the current policy.'
       methods:
       - email
       format: ""
@@ -101,7 +101,7 @@ tasks:
       - id: "1"
         label: ""
         labelarg:
-          simple: 'Element value to be edit '
+          simple: 'Element value to be edit.'
         required: true
         gridcolumns: []
         defaultrows: []
@@ -115,7 +115,7 @@ tasks:
       - id: "2"
         label: ""
         labelarg:
-          simple: Rule position (should be the exact position as defined in Panorama)
+          simple: Rule position. (Should be the exact position as defined in Panorama.)
         required: false
         gridcolumns: []
         defaultrows: []
@@ -147,7 +147,7 @@ tasks:
           rule object value.
         readonly: false
       title: Which parameters to edit in the policy?
-      description: 'Please provide the following paraments '
+      description: 'Please provide the following parameters.'
       sender: ""
       expired: false
       totalanswers: 0
@@ -232,8 +232,8 @@ tasks:
       id: 97f707a9-2681-45e9-8d89-f5c137e452aa
       version: -1
       name: PAN-OS Commit Configuration
-      description: Commit the PAN-OS Panorama or Firewall configuration.\nIf specified
-        as Panorama, it also pushes the Policies to the specified Device Group in
+      description: Commit the PAN-OS/Panorama Firewall configuration.\nIf specified
+        as Panorama, it also pushes the policies to the specified device group in
         the instance.
       playbookName: PAN-OS Commit Configuration
       type: playbook
@@ -309,8 +309,8 @@ tasks:
     task:
       id: e884484a-7226-4a09-8833-bdef0f6ec1c9
       version: -1
-      name: Panorama or Pan-os?
-      description: 'This task which instance is available Panorama or Pan-os? '
+      name: Panorama or PAN-OS?
+      description: 'Which instance is available - Panorama or PAN-OS? '
       type: condition
       iscommand: false
       brand: ""
@@ -395,8 +395,8 @@ tasks:
       id: d0b934cc-37de-4c3e-8aef-7dcd6e1aa29a
       version: -1
       name: Which parameters to edit in the policy?
-      description: This task query the user which object to modify in the current
-        policy
+      description: This task queries the user about which object to modify in the current
+        policy.
       type: collection
       iscommand: false
       brand: ""
@@ -420,7 +420,7 @@ tasks:
       subject:
         simple: Parameters to edit in the policy
       body:
-        simple: 'Please provide the following parameters for editing the current policy '
+        simple: 'Please provide the following parameters for editing the current policy.'
       methods:
       - email
       format: ""
@@ -453,7 +453,7 @@ tasks:
       - id: "1"
         label: ""
         labelarg:
-          simple: 'Element value to be edit '
+          simple: 'Element value to be edit.'
         required: true
         gridcolumns: []
         defaultrows: []
@@ -462,7 +462,7 @@ tasks:
         optionsarg: []
         fieldassociated: ""
         placeholder: ""
-        tooltip: Please provide value for the element
+        tooltip: Please provide a value for the element.
         readonly: false
       - id: "2"
         label: ""
@@ -483,7 +483,7 @@ tasks:
           rule object value.
         readonly: false
       title: Which parameters to edit in the policy?
-      description: 'Please provide the following paraments '
+      description: 'Please provide the following parameters.'
       sender: ""
       expired: false
       totalanswers: 0
@@ -539,8 +539,8 @@ tasks:
     task:
       id: c1495577-e895-4009-8aa9-28f1096fc62d
       version: -1
-      name: 'Was the rule modify? '
-      description: 'Was the rule modify? '
+      name: 'Was the rule modified? '
+      description: 'Was the rule modified?'
       type: condition
       iscommand: false
       brand: ""
@@ -579,8 +579,8 @@ tasks:
     task:
       id: 69d27a21-a0c2-4f85-8bb7-7c86c909b92c
       version: -1
-      name: Rule wasn't edit please verify inputs
-      description: Rule wasn't edit please verify inputs.
+      name: Rule wasn't edited. Please verify inputs.
+      description: Rule wasn't edited. Please verify inputs.
       type: regular
       iscommand: false
       brand: ""
@@ -621,7 +621,7 @@ inputs:
 - key: SecurityTeamEmail
   value: {}
   required: false
-  description: The email of the relevant security team for FW change management approval.
+  description: The email of the relevant security team for firewall change management approval.
   playbookInputQuery:
 - key: rulename
   value: {}

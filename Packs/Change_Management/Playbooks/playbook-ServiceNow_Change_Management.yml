@@ -1,10 +1,10 @@
 id: ServiceNow Change Management
 version: -1
 name: ServiceNow Change Management
-description: "If you are using Pan-os/panorama firewall and ServiceNow as a ticketing\
-  \ system this playbook will be a perfect match for your change management for FW\
-  \ process.\nThis playbook will be triggered by fetch from ServiceNow and will help\
-  \ you manage and automate your change management process.     "
+description: "If you are using a PAN-OS/Panorama firewall and ServiceNow as a ticketing\
+  \ system this playbook is a perfect match for your change management for firewall\
+  \ process.\nThis playbook is triggered by a fetch from ServiceNow and will help\
+  \ you manage and automate your change management process."
 starttaskid: "0"
 tasks:
   "0":
@@ -70,8 +70,8 @@ tasks:
     task:
       id: b5efbd18-906e-435f-84f9-60058ed434bd
       version: -1
-      name: Deploy the configuration to test environment
-      description: Deploy the configuration to test environment.
+      name: Deploy the configuration to a test environment
+      description: Deploy the configuration to a test environment.
       tags:
       - comments
       - work_notes
@@ -138,7 +138,7 @@ tasks:
       id: 236a76c9-4f87-4598-8f17-14ec04844e92
       version: -1
       name: Panorama Query Logs
-      description: 'Query Panorama Logs of types: traffic, threat, url, data-filtering
+      description: 'Query Panorama logs of types: traffic, threat, url, data-filtering
         and wildfire.'
       playbookName: Panorama Query Logs
       type: playbook
@@ -205,7 +205,7 @@ tasks:
       id: 2a7732ad-e0bb-4f7d-8767-61542d505a48
       version: -1
       name: Test configuration?
-      description: This task check if to exam the change request in DEV environment
+      description: This task checks whether to exam the change request in a DEV environment
         first.
       type: condition
       iscommand: false
@@ -249,7 +249,7 @@ tasks:
       id: bb9d9446-c76e-4895-896b-746815179a1f
       version: -1
       name: export to CSV
-      description: Export given array to csv file
+      description: Export the given array to a CSV file.
       scriptName: ExportToCSV
       type: regular
       iscommand: false
@@ -332,12 +332,12 @@ tasks:
       id: 4587a861-3b58-41c5-811f-f1ff7e05780f
       version: -1
       name: PAN-OS create or edit policy
-      description: "This playbook will automate the process of creating or editing\
-        \ policy.\nFirst task in the playbook will check if there is security policy\
-        \ that matches the playbook inputs in case there is no security policy that\
-        \ matches a new policy will be created, in case there is security policy that\
-        \ matches the user will be able to modify the existing policy or create a\
-        \ new hardened policy "
+      description: "This playbook automates the process of creating or editing\
+        \ a policy.\nTHe first task in the playbook checks if there is a security policy\
+        \ that matches the playbook inputs. If there is no security policy that\
+        \ matches, a new policy is created. If there is a security policy that\
+        \ matches, the user can modify the existing policy or create a\
+        \ new hardened policy."
       playbookName: PAN-OS create or edit policy
       type: playbook
       iscommand: false
@@ -425,7 +425,7 @@ tasks:
       id: 3062dc77-a186-4718-89e2-2b911cec4437
       version: -1
       name: Ask for FW change request review
-      description: Ask for FW change request review.
+      description: Ask for a firewall change request review.
       tags:
       - comments
       - verdict
@@ -453,7 +453,7 @@ tasks:
         simple: FW change request
       body:
         simple: |-
-          Please see the following FW change request and approve or reject accordingly:
+          Please see the following firewall change request and approve or reject accordingly:
           ${inputs.TickedSummery}
           SRC:${inputs.addr-src}
           DST:${inputs.addr-dst}
@@ -475,7 +475,7 @@ tasks:
       - id: "0"
         label: ""
         labelarg:
-          simple: Do you approve the FW change request?
+          simple: Do you approve the firewall change request?
         required: false
         gridcolumns: []
         defaultrows: []
@@ -505,7 +505,7 @@ tasks:
       id: ccd3e95a-1648-4ebf-866f-f9178cbc8111
       version: -1
       name: Ask security team to review the test results
-      description: Ask security team to review the test results of the deployed rule
+      description: Ask the security team to review the test results of the deployed rule
         in the DEV environment.
       tags:
       - comments
@@ -532,9 +532,9 @@ tasks:
         complex:
           root: inputs.SecurityTeamEmail
       subject:
-        simple: Please review the the configuration test
+        simple: Please review the the configuration test.
       body:
-        simple: Approve or reject the configuration test
+        simple: Approve or reject the configuration test.
       methods:
       - email
       format: ""
@@ -565,8 +565,8 @@ tasks:
         placeholder: ""
         tooltip: ""
         readonly: false
-      title: Please review the configuration test  in DEV environment
-      description: Approve or reject the configuration test
+      title: Please review the configuration test in the DEV environment
+      description: Approve or reject the configuration test in the DEV environment.
       sender: ""
       expired: false
       totalanswers: 0
@@ -581,8 +581,8 @@ tasks:
     task:
       id: cbe06129-c60d-4b21-88f2-6709da448719
       version: -1
-      name: Add XSOAR link to ticket
-      description: Adds a link to the specified ticket.
+      name: Add Cortex XSOAR link to ticket
+      description: Adds a Cortex XSOAR link to the specified ticket.
       script: '|||servicenow-add-link'
       type: regular
       iscommand: true
@@ -596,7 +596,7 @@ tasks:
       link:
         simple: ${demistoUrls.investigation}
       text:
-        simple: Link to XSOAR change request incident
+        simple: Link to Cortex XSOAR change request incident.
     separatecontext: false
     view: |-
       {
@@ -620,7 +620,7 @@ tasks:
       id: 94e91620-f0b6-4705-86cf-5db34b9c1d37
       version: -1
       name: 'Details for ServiceNow '
-      description: Asking from the user details for closing the incident in ServiceNow.
+      description: Provide details for closing the incident in ServiceNow.
       tags:
       - comments
       type: collection
@@ -647,8 +647,8 @@ tasks:
         simple: 'Details for ServiceNow '
       body:
         simple: |-
-          Please provide details for closing the ServiceNow ticket
-          Warning: without those details the ticket in ServiceNow  will not closed.
+          Please provide details for closing the ServiceNow ticket.
+          Warning: Without the details, the ticket in ServiceNow will not be closed.
       methods:
       - email
       format: ""
@@ -725,7 +725,7 @@ tasks:
         readonly: false
       title: Details for ServiceNow
       description: "Please provide details for closing the ServiceNow ticket\nWarning:\
-        \ without those details the ticket in ServiceNow  will not closed. "
+        \ without the detailsm the ticket in ServiceNow will not be closed. "
       sender: Your SOC team
       expired: false
       totalanswers: 0
@@ -806,7 +806,7 @@ tasks:
       - "4"
     scriptarguments:
       closeReason:
-        simple: 'Request was rejected '
+        simple: 'Request was rejected.'
       id:
         complex:
           root: incident
@@ -833,8 +833,8 @@ tasks:
     task:
       id: c5bf0d16-6594-4c9a-8c47-814d922b4ce1
       version: -1
-      name: Notify the request owner  to validate the change
-      description: Request from the request owner  to validate the change.
+      name: Notify the request owner to validate the change
+      description: Ask the request owner to validate the change.
       tags:
       - comments
       type: regular
@@ -866,8 +866,8 @@ tasks:
       id: 5e501a0f-10ea-4ff2-8914-84adff1188a0
       version: -1
       name: Are there logs?
-      description: 'This task check if there is logs as a result of "Panorama Query
-        Logs" playbook.  '
+      description: 'This task checks if there are logs as a result of "Panorama Query
+        Logs" playbook.'
       type: condition
       iscommand: false
       brand: ""
@@ -909,7 +909,7 @@ tasks:
       id: b9db5be0-9181-4abe-8536-af4f93aaf1f6
       version: -1
       name: Update incident state
-      description: Set the incident state to the layout
+      description: Set the incident state in the layout.
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -977,7 +977,7 @@ tasks:
       id: 274ea0d3-a343-4641-82f6-3099d10b2f2a
       version: -1
       name: Update incident state
-      description: Set the incident state to the layout
+      description: Set the incident state in the layout.
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -1011,7 +1011,7 @@ tasks:
       id: bd422084-3ba2-4de6-870b-a13c24b8efc6
       version: -1
       name: Update incident state
-      description: Set the incident state to the layout
+      description: Set the incident state in the layout.
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -1045,7 +1045,7 @@ tasks:
       id: 3584e3fc-6b0a-4a31-8e52-89b2b0a693fe
       version: -1
       name: Update incident state
-      description: Set the incident state to the layout.
+      description: Set the incident state in the layout.
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -1078,8 +1078,8 @@ tasks:
     task:
       id: a0257c8a-91b2-436b-8fed-873f4e23c56d
       version: -1
-      name: Did the request was approved?
-      description: Conditional task that check if the request for change was approved
+      name: Was the request approved?
+      description: Checks if the request for change was approved
         or rejected.
       tags:
       - comments
@@ -1134,8 +1134,8 @@ tasks:
     task:
       id: c3f880d1-f0f2-43c0-84ab-0d14c2f68366
       version: -1
-      name: Did the test in DEV environment passed?
-      description: Check whether the values provided in arguments are equal. If either
+      name: Did the test pass in the DEV environment?
+      description: Checks whether the values provided in the arguments are equal. If either
         of the arguments are missing, no is returned.
       tags:
       - comments
@@ -1154,7 +1154,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: Please review the configuration test  in DEV environment.Answers.0
+              simple: Please review the configuration test in DEV environment.Answers.0
             iscontext: true
           right:
             value:
@@ -1164,7 +1164,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: Please review the configuration test  in DEV environment.Answers.0
+              simple: Please review the configuration test in DEV environment.Answers.0
             iscontext: true
           right:
             value:
@@ -1210,18 +1210,18 @@ inputs:
       root: incident
       accessor: details
   required: false
-  description: 'Provide a summery for your firewall request. '
+  description: 'Provide a summary for your firewall request.'
   playbookInputQuery:
 - key: SecurityTeamEmail
   value: {}
   required: false
-  description: 'The email of the security team that approves the FW requests. '
+  description: 'The email address of the security team that approves the firewall requests.'
   playbookInputQuery:
 - key: log_type
   value:
     simple: traffic
   required: false
-  description: 'Log type to query. Can be: traffic, threat, wildfire, url or data-filtering.'
+  description: 'Log type to query. Can be: traffic, threat, wildfire, url, or data-filtering.'
   playbookInputQuery:
 - key: query
   value: {}
@@ -1258,8 +1258,8 @@ inputs:
   value:
     simple: "No"
   required: false
-  description: 'By providing YES to this input the requested FW rule will be tested
-    in your test environment. '
+  description: 'By providing YES to this input the requested firewall rule will be tested
+    in your test environment.'
   playbookInputQuery:
 - key: zone-src
   value:
@@ -1280,7 +1280,7 @@ inputs:
 - key: TestInstance
   value: {}
   required: false
-  description: The instance name of the FW in DEV environment for testing the new
+  description: The instance name of the firewall in the DEV environment for testing the new
     rule.
   playbookInputQuery:
 - key: Action
@@ -1289,7 +1289,7 @@ inputs:
       root: incident
       accessor: policyactions
   required: false
-  description: The action for the change request
+  description: The action for the change request.
   playbookInputQuery:
 - key: Protocol
   value:
@@ -1354,17 +1354,17 @@ inputs:
 - key: Target
   value: {}
   required: false
-  description: Target number of the firewall. Use only on a Panorama instance.
+  description: Target number of the firewall. Use only for a Panorama instance.
   playbookInputQuery:
 - key: Vsys
   value: {}
   required: false
-  description: Target number of the firewall. Use only on a Panorama instance.
+  description: Target number of the firewall. Use only for a Panorama instance.
   playbookInputQuery:
 - key: Limit
   value: {}
   required: false
-  description: "Max number of API requests that the \nPanoramaSecurityPolicyMatchWrapper\
+  description: "Maximum number of API requests that the \nPanoramaSecurityPolicyMatchWrapper\
     \ script will send.\nThe default is 500."
   playbookInputQuery:
 outputs: []
