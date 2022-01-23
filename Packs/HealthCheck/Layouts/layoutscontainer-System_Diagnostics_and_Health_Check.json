@@ -186,6 +186,7 @@
                                 "startCol": 2
                             }
                         ],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -253,6 +254,7 @@
                                 "startCol": 0
                             }
                         ],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -314,6 +316,7 @@
                                 "startCol": 2
                             }
                         ],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -327,6 +330,7 @@
                         "h": 3,
                         "i": "fwrsfiljze-9391ae10-c212-11eb-9118-13a43afba38c",
                         "items": [],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -343,6 +347,7 @@
                         "h": 3,
                         "i": "fwrsfiljze-b6f93f80-c212-11eb-9118-13a43afba38c",
                         "items": [],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -359,6 +364,7 @@
                         "h": 3,
                         "i": "fwrsfiljze-e5261450-c212-11eb-9118-13a43afba38c",
                         "items": [],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -387,6 +393,7 @@
                                 "startCol": 0
                             }
                         ],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -402,7 +409,7 @@
             {
                 "hidden": false,
                 "id": "nowlmpv4ir",
-                "name": "Packs \u0026 Integrations",
+                "name": "Custom Content \u0026 Packs",
                 "sections": [
                     {
                         "displayType": "ROW",
@@ -436,7 +443,8 @@
                         "static": false,
                         "w": 3,
                         "x": 0,
-                        "y": 2
+                        "y": 2,
+                        "maxH": null
                     },
                     {
                         "h": 2,
@@ -452,7 +460,8 @@
                         "type": "dynamic",
                         "w": 1,
                         "x": 0,
-                        "y": 0
+                        "y": 0,
+                        "maxH": null
                     },
                     {
                         "h": 2,
@@ -468,7 +477,8 @@
                         "type": "dynamic",
                         "w": 1,
                         "x": 1,
-                        "y": 0
+                        "y": 0,
+                        "maxH": null
                     },
                     {
                         "h": 2,
@@ -484,7 +494,8 @@
                         "type": "dynamic",
                         "w": 1,
                         "x": 2,
-                        "y": 0
+                        "y": 0,
+                        "maxH": null
                     },
                     {
                         "displayType": "ROW",
@@ -504,6 +515,7 @@
                                 "startCol": 0
                             }
                         ],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -512,6 +524,36 @@
                         "w": 2,
                         "x": 0,
                         "y": 5
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 4,
+                        "hideName": false,
+                        "i": "fwrsfiljze-adc32bf0-7c80-11ec-aea3-c16c38303a1f",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Docker Containers",
+                        "static": false,
+                        "w": 3,
+                        "x": 0,
+                        "y": 11
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 4,
+                        "hideName": false,
+                        "i": "fwrsfiljze-b8557870-7c80-11ec-aea3-c16c38303a1f",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Docker Images",
+                        "static": false,
+                        "w": 3,
+                        "x": 0,
+                        "y": 7
                     }
                 ],
                 "type": "custom"
@@ -535,7 +577,8 @@
                         "type": "dynamic",
                         "w": 3,
                         "x": 0,
-                        "y": 2
+                        "y": 2,
+                        "maxH": null
                     },
                     {
                         "h": 3,
@@ -551,7 +594,8 @@
                         "type": "dynamic",
                         "w": 3,
                         "x": 0,
-                        "y": 5
+                        "y": 5,
+                        "maxH": null
                     },
                     {
                         "h": 2,
@@ -568,7 +612,8 @@
                         "type": "dynamic",
                         "w": 1,
                         "x": 0,
-                        "y": 0
+                        "y": 0,
+                        "maxH": null
                     },
                     {
                         "h": 2,
@@ -585,7 +630,8 @@
                         "type": "dynamic",
                         "w": 1,
                         "x": 1,
-                        "y": 0
+                        "y": 0,
+                        "maxH": null
                     },
                     {
                         "description": "",
@@ -602,7 +648,8 @@
                         "type": "dynamic",
                         "w": 1,
                         "x": 2,
-                        "y": 0
+                        "y": 0,
+                        "maxH": null
                     },
                     {
                         "h": 3,
@@ -619,7 +666,8 @@
                         "type": "dynamic",
                         "w": 3,
                         "x": 0,
-                        "y": 8
+                        "y": 8,
+                        "maxH": null
                     }
                 ],
                 "type": "custom"
@@ -633,7 +681,7 @@
                         "displayType": "ROW",
                         "h": 3,
                         "hideName": false,
-                        "i": "fwrsfiljze-rkmpdfoedc-cgf7qh0fsv-rkmpdfoedc-fwrsfiljze-rkmpdfoedc-fwrsfiljze-caec9d60-c6a5-11eb-876c-112c3198e0e9",
+                        "i": "rkmpdfoedc-fwrsfiljze-rkmpdfoedc-fwrsfiljze-rkmpdfoedc-cgf7qh0fsv-rkmpdfoedc-fwrsfiljze-rkmpdfoedc-fwrsfiljze-caec9d60-c6a5-11eb-876c-112c3198e0e9",
                         "items": [
                             {
                                 "endCol": 6,
@@ -647,8 +695,10 @@
                                 "listId": "fwrsfiljze-rkmpdfoedc-fwrsfiljze-caec9d60-c6a5-11eb-876c-112c3198e0e9"
                             }
                         ],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
+                        "minW": 3,
                         "moved": false,
                         "name": "Large Files",
                         "static": false,
@@ -660,7 +710,7 @@
                         "displayType": "ROW",
                         "h": 5,
                         "hideName": false,
-                        "i": "fwrsfiljze-rkmpdfoedc-cgf7qh0fsv-rkmpdfoedc-fwrsfiljze-rkmpdfoedc-fwrsfiljze-e3dd80a0-c6a5-11eb-876c-112c3198e0e9",
+                        "i": "rkmpdfoedc-fwrsfiljze-rkmpdfoedc-fwrsfiljze-rkmpdfoedc-cgf7qh0fsv-rkmpdfoedc-fwrsfiljze-rkmpdfoedc-fwrsfiljze-e3dd80a0-c6a5-11eb-876c-112c3198e0e9",
                         "items": [
                             {
                                 "endCol": 2,
@@ -672,8 +722,10 @@
                                 "startCol": 0
                             }
                         ],
-                        "maxW": 3,
+                        "maxH": null,
+                        "maxW": 1,
                         "minH": 1,
+                        "minW": 1,
                         "moved": false,
                         "name": "Investigations with large number of entries",
                         "static": false,
@@ -683,10 +735,12 @@
                     },
                     {
                         "h": 2,
-                        "i": "fwrsfiljze-76cf7770-7c62-11ec-b6f9-7f86365346a6",
+                        "i": "rkmpdfoedc-fwrsfiljze-rkmpdfoedc-fwrsfiljze-76cf7770-7c62-11ec-b6f9-7f86365346a6",
                         "items": [],
-                        "maxW": 3,
+                        "maxH": null,
+                        "maxW": 1,
                         "minH": 1,
+                        "minW": 1,
                         "moved": false,
                         "name": "Partitions Number",
                         "static": false,
@@ -699,10 +753,12 @@
                     },
                     {
                         "h": 2,
-                        "i": "fwrsfiljze-4d7b68f0-7c64-11ec-b6f9-7f86365346a6",
+                        "i": "rkmpdfoedc-fwrsfiljze-rkmpdfoedc-fwrsfiljze-4d7b68f0-7c64-11ec-b6f9-7f86365346a6",
                         "items": [],
-                        "maxW": 3,
+                        "maxH": null,
+                        "maxW": 1,
                         "minH": 1,
+                        "minW": 1,
                         "moved": false,
                         "name": "Number Of Large Incidents",
                         "static": false,
@@ -715,10 +771,12 @@
                     },
                     {
                         "h": 2,
-                        "i": "fwrsfiljze-c59171e0-7c64-11ec-b6f9-7f86365346a6",
+                        "i": "rkmpdfoedc-fwrsfiljze-rkmpdfoedc-fwrsfiljze-c59171e0-7c64-11ec-b6f9-7f86365346a6",
                         "items": [],
-                        "maxW": 3,
+                        "maxH": null,
+                        "maxW": 1,
                         "minH": 1,
+                        "minW": 1,
                         "moved": false,
                         "name": "Number of incidents with Large inputs and outputs",
                         "static": false,
@@ -733,7 +791,7 @@
                         "displayType": "ROW",
                         "h": 5,
                         "hideName": false,
-                        "i": "fwrsfiljze-479486a0-7c65-11ec-b6f9-7f86365346a6",
+                        "i": "rkmpdfoedc-fwrsfiljze-rkmpdfoedc-fwrsfiljze-479486a0-7c65-11ec-b6f9-7f86365346a6",
                         "items": [
                             {
                                 "endCol": 2,
@@ -745,22 +803,24 @@
                                 "startCol": 0
                             }
                         ],
-                        "maxW": 3,
+                        "maxH": null,
+                        "maxW": 1,
                         "minH": 1,
+                        "minW": 1,
                         "moved": false,
                         "name": "Large Investigations",
                         "static": false,
                         "w": 1,
                         "x": 0,
                         "y": 2,
-                        "description": "Presenting the large investigations larger than 1 MB"
+                        "description": "Presting the large investigations larger than 1 MB"
                     },
                     {
-                        "description": "Presenting all large investigations in the last 2 months with playbook Input or Output tasks larger than 1 MB.",
+                        "description": "Presting all large investigations in the last 2 months with playbook Input or Output tasks larger than 1 MB.",
                         "displayType": "ROW",
                         "h": 5,
                         "hideName": false,
-                        "i": "fwrsfiljze-628dbd00-7c65-11ec-b6f9-7f86365346a6",
+                        "i": "rkmpdfoedc-fwrsfiljze-rkmpdfoedc-fwrsfiljze-628dbd00-7c65-11ec-b6f9-7f86365346a6",
                         "items": [
                             {
                                 "endCol": 2,
@@ -772,8 +832,10 @@
                                 "startCol": 0
                             }
                         ],
-                        "maxW": 3,
+                        "maxH": null,
+                        "maxW": 1,
                         "minH": 1,
+                        "minW": 1,
                         "moved": false,
                         "name": "Large Input / Output Investigations",
                         "static": false,
@@ -786,7 +848,7 @@
                         "displayType": "ROW",
                         "h": 5,
                         "hideName": false,
-                        "i": "fwrsfiljze-cc8ac3b0-7c65-11ec-b6f9-7f86365346a6",
+                        "i": "rkmpdfoedc-fwrsfiljze-rkmpdfoedc-fwrsfiljze-cc8ac3b0-7c65-11ec-b6f9-7f86365346a6",
                         "items": [
                             {
                                 "endCol": 6,
@@ -798,8 +860,10 @@
                                 "startCol": 0
                             }
                         ],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
+                        "minW": 3,
                         "moved": false,
                         "name": "Important Directories Paths",
                         "static": false,
@@ -819,7 +883,7 @@
                         "displayType": "ROW",
                         "h": 11,
                         "hideName": true,
-                        "i": "cgf7qh0fsv-rkmpdfoedc-fwrsfiljze-4f44c1e0-c215-11eb-9118-13a43afba38c",
+                        "i": "cgf7qh0fsv-fwrsfiljze-cgf7qh0fsv-rkmpdfoedc-fwrsfiljze-4f44c1e0-c215-11eb-9118-13a43afba38c",
                         "items": [
                             {
                                 "endCol": 6,
