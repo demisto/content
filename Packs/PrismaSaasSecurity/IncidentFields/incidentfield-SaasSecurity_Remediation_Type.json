@@ -2,7 +2,7 @@
     "id": "incident_saassecurityremediationtype",
     "version": -1,
     "modified": "2021-10-13T18:10:26.417643+03:00",
-    "name": "Saas Security Remediation Type",
+    "name": "SaaS Security Remediation Type",
     "ownerOnly": false,
     "cliName": "saassecurityremediationtype",
     "type": "singleSelect",
