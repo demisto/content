@@ -624,21 +624,22 @@ record:host/ZG5zLmhvc3QkLl9kZWZhdWx0LmxvY2FsLmluZm9ibG94LnBvYy5rb2tv:koko.poc.in
     }
     TEST_UPDATE_HOST_IP_DATA = {
         "args": {
-            'refid': 'record:host/ZG5zLmhvc3QkLl9kZWZhdWx0LmxvY2FsLmluZm9ibG94LnBvYy5rb2tv:koko.poc.infoblox.local/default',
-            'ipv4addr': 'xxx.xxx.xxx.xxx'},
-        "human_readable": """### Infoblox Integration - Updated a Host's IP with the ReferenceID: record:host/ZG5zLmhvc3QkLl9kZWZhdWx0LmxvY2FsLmluZm9ibG94LnBvYy5rb2tv:koko.poc.infoblox.local/default. New IP address is xxx.xxx.xxx.xxx
+            "ref_id": "record:host/ZG5zLmhvc3QkLl9kZWZhdWx0LmxvY2FsLmluZm9ibG94LnBvYy5tYWNhcmVuYQ:macarena.poc.infoblox.local/default",
+            "ipv4addr": "xxx.xxx.xxx.xxx"
+        },
+        "human_readable": """### Infoblox Integration - Updated a Host's IP with new IP address: xxx.xxx.xxx.xxx
 |Ipv 4 Addrs|Reference ID|
 |---|---|
-| {'_ref': 'record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQubG9jYWwuaW5mb2Jsb3gucG9jLmtva28uMS4yLjI1MC4yNTAu:xxx.xxx.xxx.xxx/koko.poc.infoblox.local/default', 'configure_for_dhcp': False, 'host': 'koko.poc.infoblox.local', 'ipv4addr': 'xxx.xxx.xxx.xxx'} | record:host/ZG5zLmhvc3QkLl9kZWZhdWx0LmxvY2FsLmluZm9ibG94LnBvYy5rb2tv:koko.poc.infoblox.local/default |
+| {'_ref': 'record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQubG9jYWwuaW5mb2Jsb3gucG9jLm1hY2FyZW5hLjEwLjEwLjEwLjQyLg:xxx.xxx.xxx.xxx/macarena.poc.infoblox.local/default', 'configure_for_dhcp': False, 'host': 'macarena.poc.infoblox.local', 'ipv4addr': 'xxx.xxx.xxx.xxx'} | record:host/ZG5zLmhvc3QkLl9kZWZhdWx0LmxvY2FsLmluZm9ibG94LnBvYy5tYWNhcmVuYQ:macarena.poc.infoblox.local/default |
 """,
         "context": {
             "Infoblox.Host(val.ReferenceID && val.ReferenceID === obj.ReferenceID)": {
-                "ReferenceID": "record:host/ZG5zLmhvc3QkLl9kZWZhdWx0LmxvY2FsLmluZm9ibG94LnBvYy5rb2tv:koko.poc.infoblox.local/default",
+                "ReferenceID": "record:host/ZG5zLmhvc3QkLl9kZWZhdWx0LmxvY2FsLmluZm9ibG94LnBvYy5tYWNhcmVuYQ:macarena.poc.infoblox.local/default",
                 "Ipv4addrs": [
                     {
-                        "_ref": "record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQubG9jYWwuaW5mb2Jsb3gucG9jLmtva28uMS4yLjI1MC4yNTAu:xxx.xxx.xxx.xxx/koko.poc.infoblox.local/default",
+                        "_ref": "record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQubG9jYWwuaW5mb2Jsb3gucG9jLm1hY2FyZW5hLjEwLjEwLjEwLjQyLg:xxx.xxx.xxx.xxx/macarena.poc.infoblox.local/default",
                         "configure_for_dhcp": False,
-                        "host": "koko.poc.infoblox.local",
+                        "host": "macarena.poc.infoblox.local",
                         "ipv4addr": "xxx.xxx.xxx.xxx"
                     }
                 ]
@@ -646,12 +647,12 @@ record:host/ZG5zLmhvc3QkLl9kZWZhdWx0LmxvY2FsLmluZm9ibG94LnBvYy5rb2tv:koko.poc.in
         },
         "raw_response": {
             "result": {
-                "_ref": "record:host/ZG5zLmhvc3QkLl9kZWZhdWx0LmxvY2FsLmluZm9ibG94LnBvYy5rb2tv:koko.poc.infoblox.local/default",
+                "_ref": "record:host/ZG5zLmhvc3QkLl9kZWZhdWx0LmxvY2FsLmluZm9ibG94LnBvYy5tYWNhcmVuYQ:macarena.poc.infoblox.local/default",
                 "ipv4addrs": [
                     {
-                        "_ref": "record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQubG9jYWwuaW5mb2Jsb3gucG9jLmtva28uMS4yLjI1MC4yNTAu:xxx.xxx.xxx.xxx/koko.poc.infoblox.local/default",
+                        "_ref": "record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQubG9jYWwuaW5mb2Jsb3gucG9jLm1hY2FyZW5hLjEwLjEwLjEwLjQyLg:xxx.xxx.xxx.xxx/macarena.poc.infoblox.local/default",
                         "configure_for_dhcp": False,
-                        "host": "koko.poc.infoblox.local",
+                        "host": "macarena.poc.infoblox.local",
                         "ipv4addr": "xxx.xxx.xxx.xxx"
                     }
                 ]
@@ -659,10 +660,26 @@ record:host/ZG5zLmhvc3QkLl9kZWZhdWx0LmxvY2FsLmluZm9ibG94LnBvYy5rb2tv:koko.poc.in
         }
     }
     TEST_UPDATE_A_RECORD_DATA = {
-        "args": {},
-        "human_readable": {},
-        "context": {},
-        "raw_response": {}
+        "args": {
+            "ref_id": "record:a/ZG5zLmJpbmRfYSQuX2RlZmF1bHQuY29tLmZvbyxrYWthLDEuMi4zLjQ:kaka.foo.com/default",
+            "ipv4addr": "xxx.xxx.xxx.xxx",
+            "name": "infoblw.foo.com",
+            "comment": "infotest!"
+        }
+        ,
+        "human_readable": """### Infoblox Integration - Updated a Host Record with the ReferenceID: record:a/ZG5zLmJpbmRfYSQuX2RlZmF1bHQuY29tLmZvbyxrYWthLDEuMi4zLjQ:kaka.foo.com/default with IP address: xxx.xxx.xxx.xxx
+|Reference ID|
+|---|
+| record:a/ZG5zLmJpbmRfYSQuX2RlZmF1bHQuY29tLmZvbyxpbmZvYmx3LDUuNi43Ljg:infoblw.foo.com/default |
+""",
+        "context": {
+            "Infoblox.ARecord(val.ReferenceID && val.ReferenceID === obj.ReferenceID)": {
+                "ReferenceID": "record:a/ZG5zLmJpbmRfYSQuX2RlZmF1bHQuY29tLmZvbyxpbmZvYmx3LDUuNi43Ljg:infoblw.foo.com/default"
+            }
+        },
+        "raw_response": {
+            "result": "record:a/ZG5zLmJpbmRfYSQuX2RlZmF1bHQuY29tLmZvbyxpbmZvYmx3LDUuNi43Ljg:infoblw.foo.com/default"
+        }
     }
 
     @pytest.mark.parametrize(
@@ -674,7 +691,7 @@ record:host/ZG5zLmhvc3QkLl9kZWZhdWx0LmxvY2FsLmluZm9ibG94LnBvYy5rb2tv:koko.poc.in
             (create_a_record_command, TEST_CREATE_A_RECORD_DATA),
             (add_host_record_command, TEST_ADD_HOST_RECORD_DATA),
             (update_host_ip_command, TEST_UPDATE_HOST_IP_DATA),
-            # (update_a_record_command, TEST_UPDATE_A_RECORD_DATA)
+            (update_a_record_command, TEST_UPDATE_A_RECORD_DATA)
         ]
     )
     def test_record(self, mocker, infoblox_function, test_data):

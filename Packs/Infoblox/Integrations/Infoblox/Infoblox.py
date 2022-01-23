@@ -1085,12 +1085,12 @@ def add_host_record_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict
 
 
 def update_host_ip_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    refid = str(args.get("refid"))
+    ref_id = str(args.get("ref_id"))
     ipv4addr = str(args.get("ipv4addr"))
-    raw_response = client.update_host_ip(refid, ipv4addr)
-    result_ref_id = raw_response.get('result')
-    context_data = {RESPONSE_TRANSLATION_DICTIONARY['_ref']: result_ref_id}
-    title = f"{INTEGRATION_NAME} - Updated a Host's IP with the ReferenceID: {refid}. New IP address is {ipv4addr}"
+    raw_response = client.update_host_ip(ref_id, ipv4addr)
+    results = raw_response.get('result')
+    context_data = results_to_context_data(results, to_list=False)
+    title = f"{INTEGRATION_NAME} - Updated a Host's IP with new IP address: {ipv4addr}"
     context = {
         f'{INTEGRATION_CONTEXT_NAME}.Host(val.ReferenceID && val.ReferenceID === obj.ReferenceID)': context_data}
     human_readable = tableToMarkdown(title, context_data, headerTransform=pascalToSpace)
@@ -1098,15 +1098,15 @@ def update_host_ip_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]
 
 
 def update_a_record_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    refid = str(args.get("refid"))
+    ref_id = str(args.get("ref_id"))
     ipv4addr = str(args.get("ipv4addr"))
     name = str(args.get("name"))
     comment = str(args.get("comment"))
 
-    raw_response = client.update_a_record(refid, ipv4addr, name, comment)
+    raw_response = client.update_a_record(ref_id, ipv4addr, name, comment)
     result_ref_id = raw_response.get('result')
     context_data = {RESPONSE_TRANSLATION_DICTIONARY['_ref']: result_ref_id}
-    title = f'{INTEGRATION_NAME} - Updated a Host Record with the ReferenceID: {refid} with IP address: {ipv4addr}'
+    title = f'{INTEGRATION_NAME} - Updated a Host Record with the ReferenceID: {ref_id} with IP address: {ipv4addr}'
     context = {
         f'{INTEGRATION_CONTEXT_NAME}.ARecord(val.ReferenceID && val.ReferenceID === obj.ReferenceID)': context_data}
     human_readable = tableToMarkdown(title, context_data, headerTransform=pascalToSpace)
@@ -1123,15 +1123,15 @@ def delete_host_record_command(client: Client, args: Dict) -> Tuple[str, Dict, D
         Outputs
     """
 
-    refid = args.get('refid')
+    ref_id = args.get('ref_id')
 
-    if "/" in str(refid):
-        refIDStr = str(refid).split("/")
+    if "/" in str(ref_id):
+        refIDStr = str(ref_id).split("/")
         refIDStr = refIDStr[1].split(":")
         refid = refIDStr[0]
 
-    if refid:
-        raw_response = client.delete_host(refid)
+    if ref_id:
+        raw_response = client.delete_host(ref_id)
         deleted_ref_id = raw_response.get('result')
         demisto.results(raw_response)
         title = f'{INTEGRATION_NAME} - Deleted a host successfully with reference id: {deleted_ref_id}'

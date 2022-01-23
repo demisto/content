@@ -1136,7 +1136,7 @@ script:
       defaultValue: ipv4addr
       description: object reference to update
       isArray: false
-      name: refid
+      name: ref_id
       predefined:
       - IP Address
       required: false
@@ -1156,7 +1156,7 @@ script:
     - default: false
       description: object reference to update
       isArray: false
-      name: refid
+      name: ref_id
       required: false
       secret: false
     deprecated: false
@@ -1167,7 +1167,7 @@ script:
     - default: false
       description: record reference
       isArray: false
-      name: refid
+      name: ref_id
       required: true
       secret: false
     - default: false
