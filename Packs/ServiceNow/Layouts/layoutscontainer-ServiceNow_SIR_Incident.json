@@ -35,7 +35,7 @@
         "tabs": [
             {
                 "id": "caseinfoid",
-                "name": "Incident Info",
+                "name": "SIR Incident Info",
                 "sections": [
                     {
                         "displayType": "ROW",
@@ -225,7 +225,7 @@
                             {
                                 "endCol": 1,
                                 "fieldId": "occurred",
-                                "height": 22,
+                                "height": 53,
                                 "id": "incident-occurred-field",
                                 "index": 0,
                                 "sectionItemType": "field",
@@ -234,25 +234,27 @@
                             {
                                 "endCol": 1,
                                 "fieldId": "dbotmodified",
-                                "height": 22,
+                                "height": 53,
                                 "id": "incident-modified-field",
                                 "index": 1,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
-                                "endCol": 2,
+                                "dropEffect": "move",
+                                "endCol": 1,
                                 "fieldId": "dbotduedate",
-                                "height": 22,
+                                "height": 53,
                                 "id": "incident-dueDate-field",
                                 "index": 2,
+                                "listId": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "endCol": 2,
                                 "fieldId": "dbotcreated",
-                                "height": 22,
+                                "height": 53,
                                 "id": "incident-created-field",
                                 "index": 0,
                                 "sectionItemType": "field",
@@ -261,9 +263,20 @@
                             {
                                 "endCol": 2,
                                 "fieldId": "dbotclosed",
-                                "height": 22,
+                                "height": 53,
                                 "id": "incident-closed-field",
                                 "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 1
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "servicenowduedate",
+                                "height": 53,
+                                "id": "edf976e0-7c5b-11ec-a763-73bcf9922af0",
+                                "index": 2,
+                                "listId": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
                                 "sectionItemType": "field",
                                 "startCol": 1
                             }
@@ -388,11 +401,22 @@
                                 "startCol": 0
                             },
                             {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "servicenowsircategory",
+                                "height": 22,
+                                "id": "a283d660-7c5b-11ec-a763-73bcf9922af0",
+                                "index": 4,
+                                "listId": "caseinfoid-b0edc980-c9a2-11ea-9075-c575f8e27f6d",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
                                 "endCol": 2,
                                 "fieldId": "servicenowsirstate",
                                 "height": 22,
                                 "id": "13294830-7c3b-11ec-bfe1-5b922443e691",
-                                "index": 4,
+                                "index": 5,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -401,7 +425,7 @@
                                 "fieldId": "servicenowurgency",
                                 "height": 22,
                                 "id": "f9e5bfd0-c9a2-11ea-9075-c575f8e27f6d",
-                                "index": 5,
+                                "index": 6,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -411,7 +435,7 @@
                                 "fieldId": "servicenowticketid",
                                 "height": 22,
                                 "id": "270d2b40-34a7-11ec-909f-631d034070e5",
-                                "index": 6,
+                                "index": 7,
                                 "listId": "caseinfoid-b0edc980-c9a2-11ea-9075-c575f8e27f6d",
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -482,6 +506,15 @@
                                 "height": 22,
                                 "id": "ae65a8f0-7c3d-11ec-bfe1-5b922443e691",
                                 "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "servicenowattackvector",
+                                "height": 22,
+                                "id": "b3534610-7c5b-11ec-a763-73bcf9922af0",
+                                "index": 5,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
@@ -650,19 +683,21 @@
                         "i": "caseinfoid-yyrfzsc55n-cdc358e0-f774-11ea-ba58-0ba474d6bf41",
                         "items": [
                             {
+                                "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "servicenowassignedto",
                                 "height": 22,
                                 "id": "9f735750-c9a3-11ea-9075-c575f8e27f6d",
                                 "index": 0,
+                                "listId": "caseinfoid-yyrfzsc55n-cdc358e0-f774-11ea-ba58-0ba474d6bf41",
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "assignmentgroup",
+                                "fieldId": "servicenowsircategory",
                                 "height": 22,
-                                "id": "dd343720-dbe2-11ea-85ad-19eb038846fa",
+                                "id": "abcc64d0-7c5b-11ec-a763-73bcf9922af0",
                                 "index": 1,
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -672,7 +707,7 @@
                                 "fieldId": "servicenowcategory",
                                 "height": 22,
                                 "id": "a35ffad0-c9a3-11ea-9075-c575f8e27f6d",
-                                "index": 2,
+                                "index": 3,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -682,8 +717,19 @@
                                 "fieldId": "subcategory",
                                 "height": 22,
                                 "id": "ae9230d0-c9a3-11ea-9075-c575f8e27f6d",
-                                "index": 3,
-                                "listId": "yyrfzsc55n-cdc358e0-f774-11ea-ba58-0ba474d6bf41",
+                                "index": 4,
+                                "listId": "caseinfoid-yyrfzsc55n-cdc358e0-f774-11ea-ba58-0ba474d6bf41",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "assignmentgroup",
+                                "height": 22,
+                                "id": "dd343720-dbe2-11ea-85ad-19eb038846fa",
+                                "index": 5,
+                                "listId": "caseinfoid-yyrfzsc55n-cdc358e0-f774-11ea-ba58-0ba474d6bf41",
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -692,7 +738,7 @@
                                 "fieldId": "ticketopeneddate",
                                 "height": 22,
                                 "id": "f7060480-dbe2-11ea-85ad-19eb038846fa",
-                                "index": 4,
+                                "index": 6,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
