@@ -1261,6 +1261,10 @@ def test_decode_attachment_payload_base64(payload, answer):
     assert answer == decode_attachment_payload(MockedMessage(payload))
 
 
-@pytest.mark.parametrize('nesting_level_to_parse, output, res', [('All files', ['output1'], ('output1', ['output1']))])
+@pytest.mark.parametrize('nesting_level_to_parse, output, res', [('All files', ['output1'], ('output1', ['output1'])),
+                                                                 ('Outer file', ['output1', 'output2', 'output3'],
+                                                                  ('output1', 'output1')),
+                                                                 ('Inner file', ['output1', 'output2', 'output3'],
+                                                                  ('output3', 'output3'))])
 def test_parse_nesting_level(nesting_level_to_parse, output, res):
     assert parse_nesting_level(nesting_level_to_parse, output) == res
