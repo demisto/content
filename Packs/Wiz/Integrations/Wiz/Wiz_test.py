@@ -427,6 +427,15 @@ def test_set_issue_due_date(checkAPIerrors):
     assert res == test_set_issue_due_data_response
 
 
+@patch('Wiz.checkAPIerrors', return_value="The date format is the incorrect. It should be YYYY-MM-DD")
+def test_set_issue_due_date_failed(checkAPIerrors, capfd):
+    with capfd.disabled():
+        from Wiz import set_issue_due_date
+
+        res = set_issue_due_date('12345678-2222-3333-1111-ff5fa2ff7f78', '01-20-2022')
+        assert res == "The date format is the incorrect. It should be YYYY-MM-DD"
+
+
 test_clear_issue_due_data_response = {
     "data": {
         "issue": {
@@ -446,3 +455,47 @@ def test_clear_issue_due_date(checkAPIerrors):
 
     res = clear_issue_due_date('12345678-2222-3333-1111-ff5fa2ff7f78')
     assert res == test_clear_issue_due_data_response
+
+
+test_clear_issue_due_data_failed_response = {
+    "errors": [
+        {
+            "message": "Resource not found",
+            "extensions": {
+                "code": "NOT_FOUND",
+                "exception": {
+                    "message": "Resource not found",
+                    "path": [
+                        "updateIssue"
+                    ]
+                }
+            }
+        }
+    ],
+    "data": None
+}
+
+
+@patch('Wiz.checkAPIerrors', return_value=test_clear_issue_due_data_failed_response)
+def test_clear_issue_due_date_no_issue_id(checkAPIerrors, capfd):
+    with capfd.disabled():
+        from Wiz import clear_issue_due_date
+
+        res = clear_issue_due_date('12345678-2222-3333-1111-ff5fa2ff7f71')
+        assert res == "Could not find Issue with ID 12345678-2222-3333-1111-ff5fa2ff7f71"
+
+
+test_bad_token_repsonse = {
+    "error": "access_denied",
+    "error_description": "Unauthorized"
+}
+
+
+def test_bad_get_token(response, capfd):
+    with capfd.disabled():
+        with patch('requests.post') as mocked_request:
+            mocked_request().return_value = test_bad_token_repsonse
+            from Wiz import get_token
+
+            res = get_token()
+            assert res == test_bad_token_repsonse
