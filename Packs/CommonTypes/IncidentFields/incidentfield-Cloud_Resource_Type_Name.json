@@ -1,17 +1,17 @@
 {
     "associatedToAll": true,
     "caseInsensitive": true,
-    "cliName": "cloudresourcesubtype",
+    "cliName": "cloudresourcetypename",
     "closeForm": false,
     "content": true,
-    "description": "A more specific classification used to map the types of resources. For example, DISK,VPC, Subnet are all mapped to Compute",
+    "description": "Classifications used to map similar types of resources across different cloud providers. For example, EC2, Google Compute Engine, and Microsoft Compute are all mapped to Compute",
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_cloudresourcesubtype",
+    "id": "incident_cloudresourcetypename",
     "isReadOnly": false,
     "locked": false,
-    "name": "Cloud Resource Sub Type",
+    "name": "Cloud Resource Type Name",
     "neverSetAsRequired": false,
     "openEnded": true,
     "ownerOnly": false,
@@ -28,5 +28,5 @@
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "5.5.0",
-	"x2_fields": "resource_sub_type"
+	"x2_fields": "resource_type"
 }

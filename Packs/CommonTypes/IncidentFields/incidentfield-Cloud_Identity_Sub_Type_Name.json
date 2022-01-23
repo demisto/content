@@ -1,17 +1,17 @@
 {
     "associatedToAll": true,
     "caseInsensitive": true,
-    "cliName": "modules",
+    "cliName": "cloudidentitysubtypename",
     "closeForm": false,
     "content": true,
-    "description": "For XDR Agent alerts, this field identifies the protection module that triggered the alert.",
+    "description": "A more specific classification of the identity initiated operation. For example, for Identity Type: Temporary Credentials the sub type could be Assumed Role",
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_modules",
+    "id": "incident_cloudidentitysubtypename",
     "isReadOnly": false,
     "locked": false,
-    "name": "Modules",
+    "name": "Cloud Identity Sub Type Name",
     "neverSetAsRequired": false,
     "openEnded": true,
     "ownerOnly": false,
@@ -28,5 +28,5 @@
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "5.5.0",
-	"x2_fields": "module_id"
+	"x2_fields": "identity_sub_type"
 }

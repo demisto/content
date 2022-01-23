@@ -1,17 +1,17 @@
 {
     "associatedToAll": true,
     "caseInsensitive": true,
-    "cliName": "cloudresourcetype",
+    "cliName": "osparentprocesscmd",
     "closeForm": false,
     "content": true,
-    "description": "Classifications used to map similar types of resources across different cloud providers. For example, EC2, Google Compute Engine, and Microsoft Compute are all mapped to Compute",
+    "description": "Command-line used to by the parent operating system to initiate the process including any arguments",
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_cloudresourcetype",
+    "id": "incident_osparentprocesscmd",
     "isReadOnly": false,
     "locked": false,
-    "name": "Cloud Resource type",
+    "name": "OS Parent Process CMD",
     "neverSetAsRequired": false,
     "openEnded": true,
     "ownerOnly": false,
@@ -28,5 +28,5 @@
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "5.5.0",
-	"x2_fields": "resource_type"
+	"x2_fields": "os_actor_process_command_line"
 }

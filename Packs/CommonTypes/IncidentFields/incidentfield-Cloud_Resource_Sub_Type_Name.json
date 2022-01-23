@@ -1,17 +1,17 @@
 {
     "associatedToAll": true,
     "caseInsensitive": true,
-    "cliName": "cloudidentitysubtype",
+    "cliName": "cloudresourcesubtypename",
     "closeForm": false,
     "content": true,
-    "description": "A more specific classification of the identity initiated operation. For example, for Identity Type: Temporary Credentials the sub type could be Assumed Role",
+    "description": "A more specific classification used to map the types of resources. For example, DISK,VPC, Subnet are all mapped to Compute",
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_cloudidentitysubtype",
+    "id": "incident_cloudresourcesubtypename",
     "isReadOnly": false,
     "locked": false,
-    "name": "Cloud Identity Sub Type",
+    "name": "Cloud Resource Sub Type Name",
     "neverSetAsRequired": false,
     "openEnded": true,
     "ownerOnly": false,
@@ -28,5 +28,5 @@
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "5.5.0",
-	"x2_fields": "identity_sub_type"
+	"x2_fields": "resource_sub_type"
 }
