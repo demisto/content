@@ -1,0 +1,73 @@
+args:
+- description: The application name.
+  name: application
+- description: The category name.
+  name: category
+- description: A comma-separated list of destination IP addresses.
+  name: destination
+  required: true
+  isArray: true
+- description: The from zone.
+  name: from
+- description: The to zone.
+  name: to
+- description: The IP protocol value.
+  name: protocol
+  required: true
+- description: A comma-separated list of source IP addresses.
+  name: source
+  required: true
+  isArray: true
+- description: Target number of the firewall. Use only on a Panorama instance.
+  name: target
+  isArray: true
+- description: Target vsys of the firewall. Use only on a Panorama instance.
+  name: vsys
+  isArray: true
+- description: The source user.
+  name: source_user
+- description: A comma-separated list of destination ports.
+  name: destination_port
+  isArray: true
+- description: Maximum number of API calls the script sends.
+  name: limit
+  defaultValue: '500'
+comment: 'A wrapper script for the panorama-security-policy-match command that receives
+  multiple values for the source, destination, and destination port arguments and performs
+  the policy match for each combination of the inputs.'
+commonfields:
+  id: PanoramaSecurityPolicyMatchWrapper
+  version: -1
+enabled: false
+name: PanoramaSecurityPolicyMatchWrapper
+outputs:
+- contextPath: Panorama.SecurityPolicyMatch.Rules.Name
+  description: The matching rule name.
+  type: String
+- contextPath: Panorama.SecurityPolicyMatch.Rules.Action
+  description: The matching rule action.
+  type: String
+- contextPath: Panorama.SecurityPolicyMatch.Rules.Category
+  description: The matching rule category.
+  type: String
+- contextPath: Panorama.SecurityPolicyMatch.Rules.Destination
+  description: The matching rule destination.
+  type: String
+- contextPath: Panorama.SecurityPolicyMatch.Rules.From
+  description: The matching rule from zone.
+  type: String
+- contextPath: Panorama.SecurityPolicyMatch.Rules.Source
+  description: The matching rule source.
+  type: String
+- contextPath: Panorama.SecurityPolicyMatch.Rules.To
+  description: The matching rule to zone.
+  type: String
+script: '-'
+system: false
+timeout: '0'
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.10.1.25933
+fromversion: 6.1.0
+tests:
+- No tests (auto formatted)
