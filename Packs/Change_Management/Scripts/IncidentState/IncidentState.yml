@@ -1,5 +1,5 @@
 comment: |
-  populates the value of the ServiceNow Ticket State field and display it in a layout widget.
+  Populates the value of the ServiceNow Ticket State field and displays it in a layout widget.
 commonfields:
   id: IncidentState
   version: -1
