@@ -1,4 +1,5 @@
 CreateIncidents fetches incident created manually
+This integration was integrated and tested with version xx of CreateIncidents
 
 ## Configure CreateIncidents on Cortex XSOAR
 
@@ -38,6 +39,9 @@ Creates incidents from json files provided, and stores it in the instance contex
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| BaseIntegration.Output | String | \[Enter a description of the data returned in this output.\] | 
+There is no context output for this command.
+#### Command example
+```!create-test-incident-from-file incidents_path=Packs/DeveloperTools/Integrations/CreateIncidents/test_data/incidents.json attachment_path="Packs/DeveloperTools/Integrations/CreateIncidents/test_data/YOU HAVE WON 10000$.eml"```
+#### Human Readable Output
+
+>Loaded 1 incidents from file.

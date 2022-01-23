@@ -62,10 +62,6 @@ script:
       instance context.
     execution: false
     name: create-test-incident-from-file
-    outputs:
-    - contextPath: BaseIntegration.Output
-      description: '[Enter a description of the data returned in this output.]'
-      type: String
   dockerimage: demisto/python3:3.10.1.25933
   feed: false
   isfetch: true

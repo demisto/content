@@ -31,7 +31,6 @@ class Client(BaseClient):
 
 class GitClient(Client):
     def __init__(self, use_ssl: bool = False, use_proxy: bool = False):
-        # self.base_url = 'https://raw.github.com/demisto/content/end_to_end_pb_create_incidents'
         self.base_url = 'https://raw.github.com/demisto/content/master'
         super().__init__(self.base_url, use_ssl, use_proxy)
 
@@ -71,12 +70,16 @@ def fetch_incidents_command(client):
 
     for incident in incidents:
         if 'attachment' in incident:
+            demisto.debug('Found incident, getting attachments')
+
             _add_attachment(client, incident)
 
     # clear the integration contex from already seen incidents
     set_integration_context({'incidents': []})
     return incidents
 
+def _get_context():
+    return CommandResults(readable_output=get_integration_context())
 
 def _add_attachment(client, incident: dict):
     """
@@ -112,7 +115,13 @@ def get_incidents(client: Client, incidents_path: str, attachment_path: str = No
     This function retrieves the incidents from the file provided using the relevant client,
     handling the case of a single incident, it returns formatted incidents.
     """
-    incidents = client.http_request(file_path=incidents_path, response_type='json')
+    try:
+        incidents = client.http_request(file_path=incidents_path, response_type='json')
+    except Exception as e:
+        if '404' in e:
+            raise("Incident does not exist.")
+        raise(e)
+
     if not isinstance(incidents, list):
         incidents = [incidents]  # type: ignore
 
@@ -168,7 +177,7 @@ def main() -> None:
 
         demisto.debug(f'Command being called is {command}')
         client = get_client(
-            ssl=not params.get('insecure', False),
+            ssl=not params.get('insecure', True),
             proxy=params.get('proxy', False)
         )
         if command == 'fetch-incidents':
@@ -177,6 +186,7 @@ def main() -> None:
         elif command == 'test-module':
             result = test_module(client)
             return_results(result)
+
         elif command == 'create-test-incident-from-file':
             return_results(create_test_incident_from_file_command(client, demisto.args()))
 

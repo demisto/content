@@ -1,8 +1,6 @@
-## BaseIntegration Help
+## CreateIncidents Help
 
-Markdown file for integration configuration  help snippet. In this file add:
-- Brief information about how to retrieve the API key of your product
-- Other useful information on how to configure your integration in XSOAR
-
-Since this is a Markdown file, we encourage you to use MD formatting for sections, sub-sections, lists, etc.
-
+#### Create a new instance
+1. Fill the field *source* with according to the platform you are using for storing files. 
+   Currently only Github is supported, with paths in the Content repository.
+2. Check *fetch-incidents* in order for incidents to be processes.
