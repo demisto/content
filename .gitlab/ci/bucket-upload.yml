@@ -53,16 +53,16 @@ create-instances-upload-flow:
     - if: '$BUCKET_UPLOAD == "true"'
     - if: '$FORCE_BUCKET_UPLOAD == "true"'
 
-create-instances-mpv2-upload-flow:
-  extends:
-    - create-instances-mpv2
-  variables:
-    IFRA_ENV_TYPE: "Bucket-Upload"
-  rules:
-    - if: '$CI_COMMIT_BRANCH =~ /pull\/[0-9]+/'
-      when: never
-    - if: '$BUCKET_UPLOAD == "true"'
-    - if: '$FORCE_BUCKET_UPLOAD == "true"'
+#create-instances-mpv2-upload-flow:
+#  extends:
+#    - create-instances-mpv2
+#  variables:
+#    IFRA_ENV_TYPE: "Bucket-Upload"
+#  rules:
+#    - if: '$CI_COMMIT_BRANCH =~ /pull\/[0-9]+/'
+#      when: never
+#    - if: '$BUCKET_UPLOAD == "true"'
+#    - if: '$FORCE_BUCKET_UPLOAD == "true"'
 
 
 .install_packs_in_server:
