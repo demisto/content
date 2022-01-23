@@ -102,82 +102,6 @@ def test_is_ip_valid():
     assert not is_ip_valid(invalid_not_ip_with_ip_structure)
 
 
-DATA = [
-    {
-        'header_1': 'a1',
-        'header_2': 'b1',
-        'header_3': 'c1'
-    },
-    {
-        'header_1': 'a2',
-        'header_2': 'b2',
-        'header_3': 'c2'
-    },
-    {
-        'header_1': 'a3',
-        'header_2': 'b3',
-        'header_3': 'c3'
-    }
-]
-
-TABLE_TO_MARKDOWN_ONLY_DATA_PACK = [
-    (
-        DATA,
-        '''### tableToMarkdown test
-|header_1|header_2|header_3|
-|---|---|---|
-| a1 | b1 | c1 |
-| a2 | b2 | c2 |
-| a3 | b3 | c3 |
-'''
-    ),
-    (
-        [
-            {
-                'header_1|with_pipe': 'a1',
-                'header_2': 'b1',
-            },
-            {
-                'header_1|with_pipe': 'a2',
-                'header_2': 'b2',
-            }
-        ],
-        '''### tableToMarkdown test
-|header_1\\|with_pipe|header_2|
-|---|---|
-| a1 | b1 |
-| a2 | b2 |
-'''
-    )
-]
-
-DATA_WITH_URLS = [(
-    [
-        {
-            'header_1': 'a1',
-            'url1': 'b1',
-            'url2': 'c1'
-        },
-        {
-            'header_1': 'a2',
-            'url1': 'b2',
-            'url2': 'c2'
-        },
-        {
-            'header_1': 'a3',
-            'url1': 'b3',
-            'url2': 'c3'
-        }
-    ],
-    '''### tableToMarkdown test
-|header_1|url1|url2|
-|---|---|---|
-| a1 | [b1](b1) | [c1](c1) |
-| a2 | [b2](b2) | [c2](c2) |
-| a3 | [b3](b3) | [c3](c3) |
-'''
-)]
-
 COMPLEX_DATA_WITH_URLS = [(
     [
         {'data':
@@ -246,7 +170,82 @@ COMPLEX_DATA_WITH_URLS = [(
 
 
 class TestTableToMarkdown:
+    DATA = [
+        {
+            'header_1': 'a1',
+            'header_2': 'b1',
+            'header_3': 'c1'
+        },
+        {
+            'header_1': 'a2',
+            'header_2': 'b2',
+            'header_3': 'c2'
+        },
+        {
+            'header_1': 'a3',
+            'header_2': 'b3',
+            'header_3': 'c3'
+        }
+    ]
+
+    TABLE_TO_MARKDOWN_ONLY_DATA_PACK = [
+        (
+            DATA,
+            '''### tableToMarkdown test
+    |header_1|header_2|header_3|
+    |---|---|---|
+    | a1 | b1 | c1 |
+    | a2 | b2 | c2 |
+    | a3 | b3 | c3 |
+    '''
+        ),
+        (
+            [
+                {
+                    'header_1|with_pipe': 'a1',
+                    'header_2': 'b1',
+                },
+                {
+                    'header_1|with_pipe': 'a2',
+                    'header_2': 'b2',
+                }
+            ],
+            '''### tableToMarkdown test
+    |header_1\\|with_pipe|header_2|
+    |---|---|
+    | a1 | b1 |
+    | a2 | b2 |
+    '''
+        )
+    ]
+    DATA_WITH_URLS = [(
+        [
+            {
+                'header_1': 'a1',
+                'url1': 'b1',
+                'url2': 'c1'
+            },
+            {
+                'header_1': 'a2',
+                'url1': 'b2',
+                'url2': 'c2'
+            },
+            {
+                'header_1': 'a3',
+                'url1': 'b3',
+                'url2': 'c3'
+            }
+        ],
+        '''### tableToMarkdown test
+    |header_1|url1|url2|
+    |---|---|---|
+    | a1 | [b1](b1) | [c1](c1) |
+    | a2 | [b2](b2) | [c2](c2) |
+    | a3 | [b3](b3) | [c3](c3) |
+    '''
+    )]
     @pytest.mark.parametrize('data, expected_table', TABLE_TO_MARKDOWN_ONLY_DATA_PACK)
+    @staticmethod
     def test_sanity(data, expected_table):
         """
         Given:
@@ -272,7 +271,7 @@ class TestTableToMarkdown:
           - return a valid table with updated headers.
         """
         # header transform
-        table = tableToMarkdown('tableToMarkdown test with headerTransform', DATA,
+        table = tableToMarkdown('tableToMarkdown test with headerTransform', TestTableToMarkdown.DATA,
                                 headerTransform=underscoreToCamelCase)
         expected_table = (
             '### tableToMarkdown test with headerTransform\n'
@@ -295,7 +294,7 @@ class TestTableToMarkdown:
         Then:
           - return a valid table with "br" tags instead of new lines and escaped pipe sign.
         """
-        data = copy.deepcopy(DATA)
+        data = copy.deepcopy(TestTableToMarkdown.DATA)
         for i, d in enumerate(data):
             d['header_2'] = 'b%d.1\nb%d.2' % (i + 1, i + 1,)
             d['header_3'] = 'c%d|1' % (i + 1,)
@@ -323,7 +322,7 @@ class TestTableToMarkdown:
         Then:
           - return a valid table.
         """
-        data = copy.deepcopy(DATA)
+        data = copy.deepcopy(TestTableToMarkdown.DATA)
         for d in data:
             d['header_2'] = None
             d['header_3'] = '[url](https:\\demisto.com)'
@@ -350,7 +349,7 @@ class TestTableToMarkdown:
           - return a valid column style table.
         """
         # single column table
-        table_single_column = tableToMarkdown('tableToMarkdown test with single column', DATA, ['header_1'])
+        table_single_column = tableToMarkdown('tableToMarkdown test with single column', TestTableToMarkdown.DATA, ['header_1'])
         expected_table_single_column = (
             '### tableToMarkdown test with single column\n'
             '|header_1|\n'
@@ -373,7 +372,7 @@ class TestTableToMarkdown:
           - return a valid table where the list values are comma-separated and each item in a new line.
         """
         # list values
-        data = copy.deepcopy(DATA)
+        data = copy.deepcopy(TestTableToMarkdown.DATA)
         for i, d in enumerate(data):
             d['header_3'] = [i + 1, 'second item']
             d['header_2'] = 'hi'
@@ -439,7 +438,7 @@ class TestTableToMarkdown:
           - return a valid table with the extra header.
         """
         # header not on first object
-        data = copy.deepcopy(DATA)
+        data = copy.deepcopy(TestTableToMarkdown.DATA)
         data[1]['extra_header'] = 'sample'
         table_extra_header = tableToMarkdown('tableToMarkdown test with extra header', data,
                                              headers=['header_1', 'header_2', 'extra_header'])
@@ -465,7 +464,7 @@ class TestTableToMarkdown:
           - return a "no result" message.
         """
         # no header
-        table_no_headers = tableToMarkdown('tableToMarkdown test with no headers', DATA,
+        table_no_headers = tableToMarkdown('tableToMarkdown test with no headers', TestTableToMarkdown.DATA,
                                            headers=['no', 'header', 'found'], removeNull=True)
         expected_table_no_headers = (
             '### tableToMarkdown test with no headers\n'
@@ -485,7 +484,7 @@ class TestTableToMarkdown:
           - return a valid table.
         """
         # dict value
-        data = copy.deepcopy(DATA)
+        data = copy.deepcopy(TestTableToMarkdown.DATA)
         data[1]['extra_header'] = {'sample': 'qwerty', 'sample2': '`asdf'}
         table_dict_record = tableToMarkdown('tableToMarkdown test with dict record', data,
                                             headers=['header_1', 'header_2', 'extra_header'])
@@ -511,7 +510,7 @@ class TestTableToMarkdown:
           - return a valid table.
         """
         # string header (instead of list)
-        table_string_header = tableToMarkdown('tableToMarkdown string header', DATA, 'header_1')
+        table_string_header = tableToMarkdown('tableToMarkdown string header', TestTableToMarkdown.DATA, 'header_1')
         expected_string_header_tbl = (
             '### tableToMarkdown string header\n'
             '|header_1|\n'
@@ -633,6 +632,7 @@ class TestTableToMarkdown:
         assert table_with_character == expected_string_with_special_character
 
     @pytest.mark.parametrize('data, expected_table', DATA_WITH_URLS)
+    @staticmethod
     def test_clickable_url(data, expected_table):
         """
         Given:
