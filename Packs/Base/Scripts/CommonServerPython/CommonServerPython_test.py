@@ -247,7 +247,6 @@ COMPLEX_DATA_WITH_URLS = [(
 
 class TestTableToMarkdown:
     @pytest.mark.parametrize('data, expected_table', TABLE_TO_MARKDOWN_ONLY_DATA_PACK)
-    @staticmethod
     def test_sanity(data, expected_table):
         """
         Given:
@@ -634,7 +633,6 @@ class TestTableToMarkdown:
         assert table_with_character == expected_string_with_special_character
 
     @pytest.mark.parametrize('data, expected_table', DATA_WITH_URLS)
-    @staticmethod
     def test_clickable_url(data, expected_table):
         """
         Given:
