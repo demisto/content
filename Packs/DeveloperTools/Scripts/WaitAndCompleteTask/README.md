@@ -14,21 +14,21 @@ Wait and complete tasks by given status. Used for test playbooks.
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| task_states | Comma separated list of states. Possible values: New, InProgress, Completed, Waiting, Error, Skipped, Blocked \(leave empty to get all tasks\) |
-| complete_option | The path to take in conditional tasks. For example, if your conditional task has "Yes" or "No", a possible value here may be "Yes". |
-| incident_id | The ID of the incident where the task should be completed. Leave empty to use current incident id. |
-| task_name | The name of the task that should be completed. If no task name entered, will complete all tasks which state is \`task_state\`. |
-| max_timeout | Timeout time in seconds, that the script will try to complete tasks. |
-| interval_between_tries | Time \(seconds\) to sleep between each check iteration.  |
-| complete_task | Whether to also complete the task, or just check if it's completed. Can be True or False. |
+| task_states | A comma separated list of states. Possible values: New, InProgress, Completed, Waiting, Error, Skipped, Blocked \(leave empty to get all tasks\). |
+| complete_option | Outcome for a conditional task. For example, "Yes". |
+| incident_id | The incident ID where the task should be completed. Leave empty to use current incident ID. |
+| task_name | The name of the task that should be completed. If no task name is entered, will complete all tasks with the state `task_state`. |
+| max_timeout | Timeout in seconds for the script to complete tasks. |
+| interval_between_tries | Time (seconds) to wait between each check iteration.  |
+| complete_task | Whether to complete the task in addition to checking if it is completed. |
 
 ## Outputs
 ---
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| WaitAndCompleteTask.CompletedTask | Task name that was completed by script. | String |
-| WaitAndCompleteTask.FoundTask | Tasks that were found by script. | Unknown |
+| WaitAndCompleteTask.CompletedTask | Task name that was completed by the script. | String |
+| WaitAndCompleteTask.FoundTask | Tasks that were found by the script. | Unknown |
 
 
 ## Script Examples
@@ -52,4 +52,3 @@ Wait and complete tasks by given status. Used for test playbooks.
 >|Completed Task|Found Task|
 >|---|---|
 >| Conditional task,<br/>manual task 1 |  |
-
