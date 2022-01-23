@@ -188,7 +188,7 @@
           echo -e  "----------\nLinting all because:\n${SHOULD_LINT_ALL}\n----------"
           demisto-sdk lint -p 12 -a -q --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER --coverage-report $ARTIFACTS_FOLDER/coverage_report -dt 120
         else
-          demisto-sdk lint -p 8 -g -v --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER --coverage-report $ARTIFACTS_FOLDER/coverage_report
+          demisto-sdk lint -p 6 -g -v --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER --coverage-report $ARTIFACTS_FOLDER/coverage_report
         fi
         if [[ -f $ARTIFACTS_FOLDER/coverage_report/.coverage ]]; then
           if [[ "$CI_PIPELINE_SOURCE" == "schedule" ||  -n "${NIGHTLY}" || -n "${BUCKET_UPLOAD}" || -n "${DEMISTO_SDK_NIGHTLY}" ]]; then
