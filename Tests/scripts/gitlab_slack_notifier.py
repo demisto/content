@@ -1,7 +1,7 @@
 import argparse
 import logging
 import os
-from typing import Tuple
+from typing import Tuple, Optional
 
 import gitlab
 from slack import WebClient as SlackClient
@@ -9,7 +9,6 @@ from slack import WebClient as SlackClient
 from Tests.Marketplace.marketplace_services import get_upload_data
 from Tests.Marketplace.marketplace_constants import BucketUploadFlow
 from Tests.scripts.utils.log_util import install_logging
-from Tests.scripts.slack_notifier import get_fields, get_artifact_data
 
 DEMISTO_GREY_ICON = 'https://3xqz5p387rui1hjtdv1up7lw-wpengine.netdna-ssl.com/wp-content/' \
                     'uploads/2018/07/Demisto-Icon-Dark.png'
@@ -46,6 +45,83 @@ def options_handler():
     options = parser.parse_args()
 
     return options
+
+
+def get_artifact_data(artifact_relative_path: str) -> Optional[str]:
+    """
+    Retrieves artifact data according to the artifact relative path from 'ARTIFACTS_FOLDER' given.
+    Args:
+        artifact_relative_path (str): Relative path of an artifact file.
+
+    Returns:
+        (Optional[str]): data of the artifact as str if exists, None otherwise.
+    """
+    artifact_data = None
+    try:
+        file_name = os.path.join(ARTIFACTS_FOLDER, artifact_relative_path)
+        if os.path.isfile(file_name):
+            logging.info(f'Extracting {artifact_relative_path}')
+            with open(file_name, 'r') as file_data:
+                artifact_data = file_data.read()
+        else:
+            logging.info(f'Did not find {artifact_relative_path} file')
+    except Exception:
+        logging.exception(f'Error getting {artifact_relative_path} file')
+    return artifact_data
+
+
+def get_fields():
+    failed_tests = []
+    # failed_tests.txt is copied into the artifacts directory
+    failed_tests_file_path = os.path.join(ARTIFACTS_FOLDER, 'failed_tests.txt')
+    if os.path.isfile(failed_tests_file_path):
+        logging.info('Extracting failed_tests')
+        with open(failed_tests_file_path, 'r') as failed_tests_file:
+            failed_tests = failed_tests_file.readlines()
+            failed_tests = [line.strip('\n') for line in failed_tests]
+
+    skipped_tests = []
+    if os.path.isfile('./Tests/skipped_tests.txt'):
+        logging.info('Extracting skipped_tests')
+        with open('./Tests/skipped_tests.txt', 'r') as skipped_tests_file:
+            skipped_tests = skipped_tests_file.readlines()
+            skipped_tests = [line.strip('\n') for line in skipped_tests]
+
+    skipped_integrations = []
+    if os.path.isfile('./Tests/skipped_integrations.txt'):
+        logging.info('Extracting skipped_integrations')
+        with open('./Tests/skipped_integrations.txt', 'r') as skipped_integrations_file:
+            skipped_integrations = skipped_integrations_file.readlines()
+            skipped_integrations = [line.strip('\n') for line in skipped_integrations]
+
+    content_team_fields = []
+    content_fields = []
+    if failed_tests:
+        field_failed_tests = {
+            "title": "Failed tests - ({})".format(len(failed_tests)),
+            "value": '\n'.join(failed_tests),
+            "short": False
+        }
+        content_team_fields.append(field_failed_tests)
+        content_fields.append(field_failed_tests)
+
+    if skipped_tests:
+        field_skipped_tests = {
+            "title": "Skipped tests - ({})".format(len(skipped_tests)),
+            "value": '',
+            "short": True
+        }
+        content_team_fields.append(field_skipped_tests)
+
+    if skipped_integrations:
+        field_skipped_integrations = {
+            "title": "Skipped integrations - ({})".format(len(skipped_integrations)),
+            "value": '',
+            "short": True
+        }
+        content_team_fields.append(field_skipped_integrations)
+
+    return content_team_fields, content_fields, failed_tests
 
 
 def unit_tests_results():
