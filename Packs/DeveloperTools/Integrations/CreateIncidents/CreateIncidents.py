@@ -52,7 +52,7 @@ class GitClient(Client):
                 raise e
 
 
-def test_module(client) -> str:
+def test_module(client) -> str:  # pragma: no cover
     """ Getting README file just to see we manage to get a basic file. """
     message: str = ''
     try:
@@ -170,7 +170,7 @@ def get_client(source: str = 'Git', ssl: bool = False, proxy: bool = False):
 ''' MAIN FUNCTION '''
 
 
-def main() -> None:
+def main() -> None:  # pragma: no cover
     try:
         params = demisto.params()
         command = demisto.command()
