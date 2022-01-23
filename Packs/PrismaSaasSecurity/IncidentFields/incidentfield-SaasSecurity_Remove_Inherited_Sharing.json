@@ -2,7 +2,7 @@
     "id": "incident_saassecurityremoveinheritedsharing",
     "version": -1,
     "modified": "2021-10-25T10:28:58.670203+03:00",
-    "name": "Saas Security Remove Inherited Sharing",
+    "name": "SaaS Security Remove Inherited Sharing",
     "ownerOnly": false,
     "cliName": "saassecurityremoveinheritedsharing",
     "type": "boolean",

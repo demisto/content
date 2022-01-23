@@ -2,7 +2,7 @@
     "id": "incident_saassecurityasseturl",
     "version": -1,
     "modified": "2021-11-16T09:24:06.872716Z",
-    "name": "Saas Security Asset URL",
+    "name": "SaaS Security Asset URL",
     "ownerOnly": false,
     "cliName": "saassecurityasseturl",
     "type": "shortText",
@@ -19,7 +19,7 @@
     "hidden": false,
     "openEnded": false,
     "associatedTypes": [
-        "Saas Security Incident"
+        "SaaS Security Incident"
     ],
     "associatedToAll": false,
     "unmapped": false,
