@@ -1,9 +1,12 @@
-# **iDefense (_A part of Accenture Security_)**
+This pack will be entering maintenance mode from **February 1st, 2022** and will reach end of life on **August 1st, 2022**
+# **Accenture CTI** \*
 
 This pack is integrated with our IntelGraph Intelligence Portal to provide threat intelligence. 
 Moreover this pack has 2 sub-packs named:
 - Accenture CTI
 - ACTI Feed
+
+*_formerly iDefense_
 _____
 
 <p>&nbsp;</p>
