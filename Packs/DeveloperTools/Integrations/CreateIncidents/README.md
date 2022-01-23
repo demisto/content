@@ -1,5 +1,4 @@
 CreateIncidents fetches incident created manually
-This integration was integrated and tested with version xx of CreateIncidents
 
 ## Configure CreateIncidents on Cortex XSOAR
 
