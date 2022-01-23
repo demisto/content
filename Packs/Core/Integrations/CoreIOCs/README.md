@@ -1,5 +1,5 @@
-Use the Cortex XDR - IOCs feed integration to sync indicators from Cortex XSOAR to Cortex XDR and back to Cortex XSOAR. Cortex XDR is the world's first detection and response app that natively integrates network, endpoint and cloud data to stop sophisticated attacks.
-This integration was integrated and tested with version xx of Cortex Core - IOC
+Use the Cortex XDR - IOCs integration to sync indicators from Cortex XSOAR to Cortex XDR and back to Cortex XSOAR. Cortex XDR is the world's first detection and response app that natively integrates network, endpoint and cloud data to stop sophisticated attacks.
+This integration was integrated and tested with Cortex Core - IOC
 
 ## Configure Indicators detection on Cortex XSOAR
 
@@ -12,21 +12,11 @@ This integration was integrated and tested with version xx of Cortex Core - IOC
     | Server URL (e.g. https://example.net) |  | True |
     | API Key ID |  | True |
     | API Key |  | True |
-    | Fetch indicators |  | False |
-    | Auto Sync | When enabled, indicators will be synced from Cortex XSOAR to Cortex XDR. Disable if you prefer to use a playbook to sync indicators. | False |
     | Cortex XDR Severity | Map the severity of each indicator that will be synced to Cortex XDR. | True |
     | Tags | Supports CSV values. | False |
     | Sync Query | The query used to collect indicators to sync from Cortex XSOAR to Cortex XDR. | True |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
-    | Indicator Reputation | Indicators from this integration instance will be marked with this reputation | False |
-    | Source Reliability | Reliability of the source providing the intelligence data | True |
-    | Traffic Light Protocol Color | The Traffic Light Protocol \(TLP\) designation to apply to indicators fetched from the feed | False |
-    |  |  | False |
-    |  |  | False |
-    | Incremental Feed |  | False |
-    | Feed Fetch Interval |  | False |
-    | Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -119,6 +109,12 @@ Enables IOCs in the XDR server.
 #### Context Output
 
 There is no context output for this command.
+#### Command example
+```!core-iocs-enable indicator=11.11.11.11```
+#### Human Readable Output
+
+>indicators 11.11.11.11 enabled.
+
 ### core-iocs-disable
 ***
 Disables IOCs in the XDR server.
@@ -137,3 +133,8 @@ Disables IOCs in the XDR server.
 #### Context Output
 
 There is no context output for this command.
+#### Command example
+```!core-iocs-disable indicator=22.22.22.22```
+#### Human Readable Output
+
+>indicators 22.22.22.22 disabled.

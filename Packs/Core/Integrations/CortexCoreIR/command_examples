@@ -32,4 +32,3 @@
 !core-run-script-delete-file endpoint_ids=23a86310665d413a958926fce5b794b3 file_path=test.txt
 !core-run-script-file-exists endpoint_ids=23a86310665d413a958926fce5b794b3 file_path=test.txt
 !core-run-script-kill-process endpoint_ids=23a86310665d413a958926fce5b794b3 process_name=calculator.exe
-!core-get-endpoints-by-status status=connected

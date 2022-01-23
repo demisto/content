@@ -1,5 +1,5 @@
 Cortex XDR is the world's first detection and response app that natively integrates network, endpoint, and cloud data to stop sophisticated attacks.
-This integration was integrated and tested with version xx of Cortex Core - IR
+This integration was integrated and tested with Cortex Core - IR
 
 ## Configure Investigation & Response on Cortex XSOAR
 
@@ -1022,28 +1022,4 @@ Returns information about an endpoint.
 | Endpoint.Status | String | The endpoint's status. | 
 | Endpoint.IsIsolated | String | The endpoint's isolation status. | 
 | Endpoint.MACAddress | String | The endpoint's MAC address. | 
-| Endpoint.Vendor | String | The integration name of the endpoint vendor. | 
-
-### core-get-endpoints-by-status
-***
-Returns the number of the connected\disconnected endpoints.
-
-
-#### Base Command
-
-`core-get-endpoints-by-status`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| status | The status of the endpoint to filter. Possible values are: connected, disconnected, lost, uninstalled. | Required | 
-| last_seen_gte | All the agents that were last seen before {last_seen_gte}. Supported<br/>        values: 1579039377301 (time in milliseconds) "3 days" (relative date) "2019-10-21T23:45:00"<br/>        (date). | Optional | 
-| last_seen_lte | All the agents that were last seen before {last_seen_lte}. Supported<br/>        values: 1579039377301 (time in milliseconds) "3 days" (relative date) "2019-10-21T23:45:00"<br/>        (date). | Optional | 
-
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| PaloAltoNetworksCore.EndpointsStatus.status | String | The endpoint's status. | 
-| PaloAltoNetworksCore.EndpointsStatus.count | Number | The number of endpoint's with this status. | 
+| Endpoint.Vendor | String | The integration name of the endpoint vendor. |

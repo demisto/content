@@ -2651,8 +2651,7 @@ def run_polling_command(client: Client,
             timeout_in_seconds=600)
 
         # result with scheduled_command only - no update to the war room
-        command_results = CommandResults(scheduled_command=scheduled_command,
-                                         readable_output=f"Polling again because {polling_field} = {result}")
+        command_results = CommandResults(scheduled_command=scheduled_command)
     return command_results
 
 
