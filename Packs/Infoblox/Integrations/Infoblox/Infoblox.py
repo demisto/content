@@ -445,7 +445,7 @@ def parse_demisto_exception(error: DemistoException, field_in_error: str = 'text
     return DemistoException(err_msg)
 
 
-def results_to_context_data(results: Dict, to_list: bool) -> Union[Dict, List]:
+def results_to_context_data(results: Dict, to_list: bool) -> Union[Dict[str, Any], List[Dict[str, Any]]]:
     if to_list:
         context_data = []
         for result in results:
@@ -475,7 +475,7 @@ def get_ip_command(client: Client, args: Dict[str, str]) -> Tuple[str, Dict, Dic
     Returns:
         Outputs
     """
-    ip = args.get('ip')
+    ip = str(args.get('ip'))
     raw_response = client.get_ip(ip)
     ip_list = raw_response.get('result')
 
@@ -500,7 +500,7 @@ def search_related_objects_by_ip_command(client: Client, args: Dict) -> Tuple[st
     Returns:
         Outputs
     """
-    ip = args.get('ip')
+    ip = str(args.get('ip'))
     max_results = args.get('max_results')
     raw_response = client.search_related_objects_by_ip(ip, max_results)
     results = raw_response.get('result')
@@ -524,8 +524,8 @@ def list_response_policy_zone_rules_command(client: Client, args: Dict) -> Tuple
     Returns:
         Outputs
     """
-    zone = args.get('response_policy_zone_name')
-    view = args.get('view')
+    zone = str(args.get('response_policy_zone_name'))
+    view = str(args.get('view'))
     max_results = args.get('page_size', 50)
     next_page_id = args.get('next_page_id')
     if not zone and not next_page_id:
@@ -918,7 +918,7 @@ def enable_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     raw_response = client.change_rule_status(reference_id, disable=False)
 
     results = raw_response.get('result', {})
-    context_data = results_to_context_data(results, to_list=False)
+    context_data: Dict = results_to_context_data(results, to_list=False)
     title = f'{INTEGRATION_NAME} - Response Policy Zone rule: {context_data.get("Name")} has been enabled'
     context = {
         f'{INTEGRATION_CONTEXT_NAME}.ModifiedResponsePolicyZoneRules(val.Name && val.Name === obj.Name)': context_data}
@@ -939,7 +939,7 @@ def disable_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     raw_response = client.change_rule_status(reference_id, disable=True)
 
     results = raw_response.get('result', {})
-    context_data = results_to_context_data(results, to_list=False)
+    context_data: Dict = results_to_context_data(results, to_list=False)
     title = f'{INTEGRATION_NAME} - Response Policy Zone rule: {context_data.get("Name")} has been disabled'
     context = {
         f'{INTEGRATION_CONTEXT_NAME}.ModifiedResponsePolicyZoneRules(val.Name && val.Name === obj.Name)': context_data}
@@ -1060,7 +1060,7 @@ def create_a_record_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict
     ipv4addr = args.get('ipv4addr')
     infoblox_object_type = 'record:a'
     raw_response = client.create_record(infoblox_object_type, name=name, ipv4addr=ipv4addr)
-    results = raw_response.get('result')
+    results = str(raw_response.get('result'))
     context_data = results_to_context_data(results, to_list=False)
     title = f'{INTEGRATION_NAME} - A Record: {name} has been created:'
     context = {
@@ -1128,7 +1128,7 @@ def delete_host_record_command(client: Client, args: Dict) -> Tuple[str, Dict, D
     if "/" in str(ref_id):
         refIDStr = str(ref_id).split("/")
         refIDStr = refIDStr[1].split(":")
-        refid = refIDStr[0]
+        ref_id = refIDStr[0]
 
     if ref_id:
         raw_response = client.delete_host(ref_id)
