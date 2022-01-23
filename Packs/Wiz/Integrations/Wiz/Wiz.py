@@ -938,7 +938,12 @@ def clear_issue_due_date(issue_id):
         issue_response = checkAPIerrors(issue_query, issue_variables)
     except DemistoException:
         demisto.debug(f"could not find Issue with ID {issue_id}")
-        return {}
+        return (f"could not find Issue with ID {issue_id}")
+
+    if 'errors' in issue_response:
+        demisto.error(f"Could not find Issue with ID {issue_id}")
+        demisto.error(f"Error: {issue_response}")
+        return (f"Could not find Issue with ID {issue_id}")
 
     variables = {
         'issueId': issue_id,
@@ -971,7 +976,7 @@ def clear_issue_due_date(issue_id):
         response = checkAPIerrors(query, variables)
     except DemistoException:
         demisto.debug(f"could not find Issue with ID {issue_id}")
-        return {}
+        return (f"could not find Issue with ID {issue_id}")
 
     if 'errors' in response:
         demisto.error(f"Could not find Issue with ID {issue_id}")
