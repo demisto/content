@@ -3557,6 +3557,11 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
         parser = HeaderParser()
         headers = parser.parsestr(file_data)
 
+        if "message-id" in headers:
+            message_id_content = headers["message-id"]
+            del headers["message-id"]
+            headers["Message-ID"] = message_id_content
+
         header_list = []
         headers_map = {}  # type: dict
         for item in headers.items():
