@@ -25,5 +25,5 @@
     "marketplaces": [
         "xsoar"
     ],
-    "itemPrefix": ["Change_Management"] 
+    "itemPrefix": ["Security Policy"] 
 }
