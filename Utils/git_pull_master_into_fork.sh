@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+#Be aware, only contributors should run this script.
+
 CONTENT_URL='https://github.com/demisto/content.git'
 
 if [ -z "$1" ]
