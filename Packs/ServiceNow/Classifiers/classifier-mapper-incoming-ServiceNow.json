@@ -1137,7 +1137,7 @@
                 "ServiceNow Resolution Notes": {
                     "simple": "close_notes"
                 },
-                "ServiceNow State": {
+                "ServiceNow SIR State": {
                     "complex": {
                         "filters": [],
                         "root": "state",
