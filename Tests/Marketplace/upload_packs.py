@@ -1070,7 +1070,7 @@ def option_handler():
     parser.add_argument('-c', '--ci_branch', help="CI branch of current build", required=True)
     parser.add_argument('-f', '--force_upload', help="is force upload build?", type=str2bool, required=True)
     parser.add_argument('-dz', '--create_dependencies_zip', help="Upload packs with dependencies zip", type=str2bool,
-                        required=False, default='false')
+                        required=False, default=False)
     parser.add_argument('-mp', '--marketplace', help="marketplace version", default='xsoar')
     # disable-secrets-detection-end
     return parser.parse_args()
