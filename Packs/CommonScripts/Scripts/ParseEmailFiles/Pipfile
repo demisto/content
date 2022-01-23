@@ -4,13 +4,20 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
-pylint = "*"
-pytest = "*"
-pytest-mock = "*"
-requests-mock = "*"
+pylint = "==1.9.5"
+pytest = "==4.6.5"
+pytest-mock = "==2.0.0"
+requests-mock = "==1.8.0"
 pytest-xdist = "*"
 pytest-json = "*"
-flake8 = "*"
+flake8 = "==3.9.2"
+bandit = "==1.6.2"
+demisto-py = ">=3.0.2"
+requests = "==2.23.0"
+pyyaml = "==5.3.1"
+pykwalify = "==1.7.0"
+beautifulsoup4 = "==4.8.1"
+pypdf2 = "==1.26.0"
 
 [packages]
 certifi = "==2017.11.5"
@@ -20,6 +27,7 @@ olefile = "==0.44"
 requests = "==2.18.4"
 urllib3 = "==1.22"
 PyYAML = "==3.12"
+pytest = "*"
 
 [requires]
 python_version = "2.7"
