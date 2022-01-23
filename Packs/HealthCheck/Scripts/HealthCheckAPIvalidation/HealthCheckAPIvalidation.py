@@ -40,10 +40,8 @@ errors = []
 if not isDemistoAPIIntegrationAvailable():
     errors.append('No API integration defined')
 
-print("done first validation")
-
 # Check if Demisto REST API integration defined with admin API key
-if not isAdminAPIInstance:
+if not isAdminAPIInstance():
     errors.append('API instance is not Admin')
 
 if errors:
