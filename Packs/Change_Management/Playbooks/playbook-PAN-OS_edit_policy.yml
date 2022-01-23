@@ -232,7 +232,7 @@ tasks:
       id: 97f707a9-2681-45e9-8d89-f5c137e452aa
       version: -1
       name: PAN-OS Commit Configuration
-      description: Commit the PAN-OS/Panorama or Firewall configuration.\nIf specified
+      description: Commit the PAN-OS/Panorama Firewall configuration.\nIf specified
         as Panorama, it also pushes the policies to the specified device group in
         the instance.
       playbookName: PAN-OS Commit Configuration
@@ -309,7 +309,7 @@ tasks:
     task:
       id: e884484a-7226-4a09-8833-bdef0f6ec1c9
       version: -1
-      name: Panorama or Pan-os?
+      name: Panorama or PAN-OS?
       description: 'Which instance is available - Panorama or PAN-OS? '
       type: condition
       iscommand: false
