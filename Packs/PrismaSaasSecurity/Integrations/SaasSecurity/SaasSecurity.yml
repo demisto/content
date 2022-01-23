@@ -113,7 +113,7 @@ description: Use the SaaS Security integration to protect against cloud‑based 
   by scanning and analyzing all your assets; applying Security policy to identify
   exposures, external collaborators, risky user behavior, and sensitive documents;
   and identifying the potential risks associated with each asset.
-display: SaaS Security
+display: SaasSecurity (Beta)
 name: SaasSecurity
 script:
   commands:
@@ -523,3 +523,4 @@ defaultmapperout: Saas Security - Outgoing Mapper
 fromversion: 6.0.0
 tests:
 - SaasSecurity-Test
+beta: true
