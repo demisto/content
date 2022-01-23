@@ -1081,7 +1081,7 @@ def get_action_result(client, data_args):
             continue
 
     human_readable = tableToMarkdown('Device Statuses', t=action_res_hr, removeNull=True,
-                                     headers=['HostName', "Status" "ComputerID"])
+                                     headers=['HostName', "Status", "ComputerID"])
 
     context = createContext(action_res_outputs, removeNull=True)
     outputs = {'Tanium.ActionResult(val.ID && val.ID === obj.ID)': context}
