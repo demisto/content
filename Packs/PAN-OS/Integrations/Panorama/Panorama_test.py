@@ -536,24 +536,6 @@ def test_build_policy_match_query():
     assert response == expected
 
 
-def test_panorama_security_policy_match_command_no_target():
-    """
-    Given:
-     - a Panorama instance(mocked parameter) without the target argument
-
-    When:
-     - running the panorama-security-policy-match command
-
-    Then:
-     - Validate a proper error is raised
-    """
-    from Panorama import panorama_security_policy_match_command
-    err_msg = "The 'panorama-security-policy-match' command is relevant for a Firewall instance " \
-              "or for a Panorama instance, to be used with the target argument."
-    with pytest.raises(DemistoException, match=err_msg):
-        panorama_security_policy_match_command(demisto.args())
-
-
 def test_panorama_register_ip_tag_command_wrongful_args(mocker):
     """
     Given:
@@ -979,3 +961,30 @@ def test_get_url_category__url_length_gt_1278(mocker):
 
     # validate
     assert 'URL Node can be at most 1278 characters.' == return_results_mock.call_args[0][0][1].readable_output
+
+
+class TestDevices:
+
+    def test_with_fw(self):
+        import Panorama
+        Panorama.VSYS = 'this is a FW instance'
+        assert list(Panorama.devices()) == [(None, None)]
+
+    def test_with_specific_target_and_vsys(self):
+        import Panorama
+        Panorama.VSYS = None    # this a Panorama instance
+        assert list(Panorama.devices(targets=['target'], vsys_s=['vsys1', 'vsys2'])) == [('target', 'vsys1'), ('target', 'vsys2')]
+
+    def test_with_specific_target_only(self, requests_mock):
+        import Panorama
+        with open('test_data/devices_list.xml', 'r') as data_file:
+            requests_mock.get(Panorama.URL, text=data_file.read())
+        Panorama.VSYS = None    # this a Panorama instance
+        assert list(Panorama.devices(targets=['target1'])) == [('target1', 'vsys1'), ('target1', 'vsys2')]
+
+    def test_without_specify(self, requests_mock):
+        import Panorama
+        with open('test_data/devices_list.xml', 'r') as data_file:
+            requests_mock.get(Panorama.URL, text=data_file.read())
+        Panorama.VSYS = None    # this a Panorama instance
+        assert list(Panorama.devices()) == [('target1', 'vsys1'), ('target1', 'vsys2'), ('target2', None)]
