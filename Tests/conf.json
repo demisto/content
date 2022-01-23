@@ -4891,11 +4891,6 @@
             "fromversion": "6.0.0"
         },
         {
-          "integrations": "Azure Key Vault",
-          "playbookID": "playbook-AzureKeyVault-Test",
-          "fromversion": "6.0.0"
-        },
-        {
             "integrations": "AzureDataExplorer",
             "playbookID": "playbook-AzureDataExplorer-Test",
             "fromversion": "6.0.0"
