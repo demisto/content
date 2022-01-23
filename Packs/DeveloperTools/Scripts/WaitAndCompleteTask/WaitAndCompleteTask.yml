@@ -2,7 +2,7 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: 'false'
-  description: 'Comma separated list of states. Possible values: New, InProgress, Completed, Waiting, Error, Skipped, Blocked (leave empty to get all tasks)'
+  description: 'A comma separated list of states. Possible values: New, InProgress, Completed, Waiting, Error, Skipped, Blocked (leave empty to get all tasks).'
   isArray: true
   name: task_states
   predefined:
@@ -16,35 +16,34 @@ args:
   required: false
   secret: false
 - default: false
-  description: 'The path to take in conditional tasks. For example, if your conditional
-    task has "Yes" or "No", a possible value here may be "Yes".'
+  description: 'Outcome for a conditional task. For example, "Yes".'
   isArray: false
   name: complete_option
   required: false
   secret: false
 - default: false
-  description: 'The ID of the incident where the task should be completed. Leave empty
-    to use current incident id.'
+  description: 'The incident ID where the task should be completed. Leave empty
+    to use current incident ID.'
   isArray: false
   name: incident_id
   required: false
   secret: false
 - default: false
-  description: 'The name of the task that should be completed. If no task name entered,
-    will complete all tasks which state is `task_state`.'
+  description: 'The name of the task that should be completed. If no task name is entered,
+    will complete all tasks with the state `task_state`.'
   isArray: false
   name: task_name
   required: false
   secret: false
 - default: false
-  description: 'Timeout time in seconds, that the script will try to complete tasks.'
+  description: 'Timeout in seconds for the script to complete tasks.'
   isArray: false
   name: max_timeout
   defaultValue: '60'
   required: false
   secret: false
 - default: false
-  description: 'Time (seconds) to sleep between each check iteration. '
+  description: 'Time (seconds) to wait between each check iteration. '
   isArray: false
   name: interval_between_tries
   required: false
@@ -53,8 +52,7 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: 'false'
-  description: "Whether to also complete the task, or just check if it's completed.\
-    \ Can be True or False."
+  description: "Whether to complete the task in addition to checking if it is completed."
   isArray: false
   name: complete_task
   predefined:
@@ -70,10 +68,10 @@ enabled: false
 name: WaitAndCompleteTask
 outputs:
 - contextPath: WaitAndCompleteTask.CompletedTask
-  description: 'Task name that was completed by script.'
+  description: 'Task name that was completed by the script.'
   type: String
 - contextPath: WaitAndCompleteTask.FoundTask
-  description: 'Tasks that were found by script.'
+  description: 'Tasks that were found by the script.'
 script: '-'
 system: false
 tags:
