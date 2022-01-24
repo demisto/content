@@ -1,10 +1,5 @@
-# coding=utf-8
-from __future__ import print_function
-
-import pytest
-
 import demistomock as demisto
-from CommonServerPython import entryTypes
+from CommonServerPython import *
 from ParseEmailFilesV2 import main, data_to_md
 
 
