@@ -735,8 +735,20 @@
                 },
                 "ServiceNow Due Date": {
                     "complex": {
-                        "filters": [],
-                        "root": "opened_at",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "due_date"
+                                        }
+                                    },
+                                    "operator": "isNotEmpty"
+                                }
+                            ]
+                        ],
+                        "root": "due_date",
                         "transformers": [
                             {
                                 "args": {
