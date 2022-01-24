@@ -439,8 +439,8 @@ script:
             if isinstance(image_type_dict, dict):
                 image_type_dict = image_type_dict.get('TYPE', {})
 
-                if isinstance(image_type_dict, dict):
-                    image_type = image_type_dict.get('#text', 'Unknown')
+                if isinstance(image_type_dict, dict) and '#text' in image_type_dict:
+                    image_type = image_type_dict['#text']
                 else:
                     image_type = 'Unknown'
 
