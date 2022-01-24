@@ -4,7 +4,7 @@ from unittest.mock import patch, Mock
 
 import pytest
 
-GCP_IAM = importlib.import_module("GCP-IAM")
+GCP_IAM = importlib.import_module("GCPIAM")
 
 
 def load_mock_response(file_path: str) -> str:
