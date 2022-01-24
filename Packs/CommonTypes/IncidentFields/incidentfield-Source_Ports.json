@@ -1,8 +1,6 @@
 {
-    "associatedToAll": false,
-    "associatedTypes": [
-        "Qradar Generic"
-    ],
+    "associatedToAll": true,
+    "associatedTypes": [],
     "caseInsensitive": true,
     "cliName": "srcports",
     "closeForm": false,
@@ -27,7 +25,7 @@
     "threshold": 72,
     "type": "multiSelect",
     "unmapped": false,
-    "unsearchable": true,
+    "unsearchable": false,
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "6.0.0",

@@ -1,8 +1,6 @@
 {
-    "associatedToAll": false,
-    "associatedTypes": [
-        "Qradar Generic"
-    ],
+    "associatedToAll": true,
+    "associatedTypes": [],
     "caseInsensitive": true,
     "cliName": "destinationips",
     "closeForm": false,
