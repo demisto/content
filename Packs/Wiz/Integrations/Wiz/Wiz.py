@@ -252,8 +252,8 @@ def get_filtered_issues(issue_type, resource_id, severity, limit):
     """
 
     if issue_type and resource_id or (not issue_type and not resource_id):
-        demisto.info("You should (only) pass one filter")
-        return "You should (only) pass one filter"
+        demisto.info("You should (only) pass either issue_type or resource_id filters")
+        return "You should (only) pass either issue_type or resource_id filters"
 
     query = ("""
         query IssuesTable(
