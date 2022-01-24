@@ -114,19 +114,19 @@ script:
       required: false
       secret: false
     - default: false
-      description: |-
-        Start detected time of element versions to fetch.
-        The format can be either relative e.g. "2 days" or date time "2020-11-24T17:07:27Z".
-        When using start time , please make sure to use end time too, if not end time will be set to current time by default.
+      description: "Start detected time of element versions to fetch.\nThe format\
+        \ can be either relative e.g. \"2 days\" or date time \"2020-11-24T17:07:27Z\"\
+        .\nWhen using start time , please make sure to use end time too, if not end\
+        \ time will be set to current time by default."
       isArray: false
       name: start_detected_time
       required: false
       secret: false
     - default: false
-      description: |-
-        Start received time of element versions to fetch.
-        The format can be either relative e.g. "2 days" or date time "2020-11-24T17:07:27Z".
-        When using start time , please make sure to use end time too, if not end time will be set to current time by default.
+      description: "Start received time of element versions to fetch.\nThe format\
+        \ can be either relative e.g. \"2 days\" or date time \"2020-11-24T17:07:27Z\"\
+        .\nWhen using start time , please make sure to use end time too, if not end\
+        \ time will be set to current time by default."
       isArray: false
       name: start_received_time
       required: false
@@ -145,17 +145,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: |-
-        End detected time of element versions to fetch.
-        The format can be either relative e.g. "2 days" or date time "2020-11-24T17:07:27Z"
+      description: "End detected time of element versions to fetch.\nThe format can\
+        \ be either relative e.g. \"2 days\" or date time \"2020-11-24T17:07:27Z\""
       isArray: false
       name: end_detected_time
       required: false
       secret: false
     - default: false
-      description: |-
-        End received time of element versions to fetch.
-        The format can be either relative e.g. "2 days" or date time "2020-11-24T17:07:27Z"
+      description: "End received time of element versions to fetch.\nThe format can\
+        \ be either relative e.g. \"2 days\" or date time \"2020-11-24T17:07:27Z\""
       isArray: false
       name: end_received_time
       required: false
@@ -552,3 +550,5 @@ script:
 defaultmapperin: Tripwire-mapper
 defaultclassifier: Tripwire
 fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
