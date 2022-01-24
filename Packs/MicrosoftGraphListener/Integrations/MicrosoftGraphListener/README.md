@@ -452,6 +452,11 @@ The following permissions are required for all commands:
       <td>The email address from which to reply.</td>
       <td>Optional</td>
     </tr>
+    <tr>
+      <td>replyTo</td>
+      <td>A comma separated list of email addresses that need to be used to reply to the message.</td>
+      <td>Optional</td>
+    </tr>
   </tbody>
 </table>
 
@@ -516,6 +521,11 @@ The following permissions are required for all commands:
       <td>MicrosoftGraph.Email.bccRecipients</td>
       <td>String</td>
       <td>The bcc recipients of the email.</td>
+    </tr>
+    <tr>
+      <td>MicrosoftGraph.Email.replyTo</td>
+      <td>String</td>
+      <td>The replyTo recipients of the email.</td>
     </tr>
   </tbody>
 </table>
