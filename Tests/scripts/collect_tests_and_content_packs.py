@@ -139,7 +139,7 @@ _FAILED = False
 ID_SET = {}
 CONF: TestConf = None  # type: ignore[assignment]
 
-ARTIFACTS_FOLDER = os.getenv('ARTIFACTS_FOLDER')
+ARTIFACTS_FOLDER = os.getenv('ARTIFACTS_FOLDER', './artifacts')
 if os.path.isfile(os.path.join(ARTIFACTS_FOLDER, 'id_set.json')):
     with open(os.path.join(ARTIFACTS_FOLDER, 'id_set.json'), 'r') as conf_file:
         ID_SET = json.load(conf_file)

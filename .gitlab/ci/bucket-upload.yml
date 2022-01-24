@@ -138,6 +138,7 @@ upload-packs-to-marketplace:
     when: always
   variables:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
+    ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_XSOAR}/env_results.json"
     INSTANCE_ROLE: "Server Master"
     INSTANCE_CREATED: "true"
     SSH_TUNNEL_TIMEOUT: 10
