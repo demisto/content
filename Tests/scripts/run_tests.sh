@@ -12,6 +12,7 @@ source $BASH_ENV
 
 # workaround for the hard-coded value in the sdk
 cp "$ARTIFACTS_FOLDER/env_results.json" "./artifacts/env_results.json"
+cp "$ARTIFACTS_FOLDER/filter_file.txt" "./artifacts/filter_file.txt"
 demisto-sdk test-content -k "$DEMISTO_API_KEY" -c "$CONF_PATH" -e "$SECRET_CONF_PATH" -n $IS_NIGHTLY -t "$SLACK_TOKEN" -a "$CIRCLECI_TOKEN" -b "$CI_BUILD_ID" -g "$CI_COMMIT_BRANCH" -m "$MEM_CHECK" --is-ami $IS_AMI_RUN -d "$1"
 
 RETVAL=$?
