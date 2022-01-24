@@ -55,8 +55,7 @@ Creates a new resource.
 
 
 #### Command Example
-```!pam360-create-resource resource_name="SOUTH-FIN-WINSERQA-09" resource_type="Windows" resource_url="https://remote-win-serv:8285/adminhome" domain_name="SOUTH-FIN-WINSERQA-09" resourcegroup_name="Remote Windows Servers" owner_name="admin" location="Plaza - South Wing" dnsname="SOUTH-FIN-WINSERQA-09" department="Finance" resource_description="Windows server resources reserved for testing API" notes="Windows server resources reserved for testing API" account_name="administrator" password="QA!K>35Hgg(x" resource_password_policy="Strong" account_password_policy="Strong"
-```
+```!pam360-create-resource resource_name="SOUTH-FIN-WINSERQA-09" resource_type="Windows" resource_url="https://remote-win-serv:8285/adminhome" domain_name="SOUTH-FIN-WINSERQA-09" resourcegroup_name="Remote Windows Servers" owner_name="admin" location="Plaza - South Wing" dnsname="SOUTH-FIN-WINSERQA-09" department="Finance" resource_description="Windows server resources reserved for testing API" notes="Windows server resources reserved for testing API" account_name="administrator" password="QA!K>35Hgg(x" resource_password_policy="Strong" account_password_policy="Strong"```
 
 #### Context Example
 ```
