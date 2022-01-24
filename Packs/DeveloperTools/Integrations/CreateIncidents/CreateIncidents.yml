@@ -3,10 +3,10 @@ commonfields:
   id: CreateIncidents
   version: -1
 configuration:
-- defaultvalue: Git
-  additionalinfo: The source where you will upload incidents and attachments file to.
-  display: Source for uploading and fetching files from
-  name: source
+- defaultvalue: https://raw.github.com/demisto/content/end_to_end_pb_create_incidents
+  additionalinfo: The base url of the source you wish to upload/ downlowd files from.
+  display: Source URL
+  name: url
   required: true
   type: 0
 - display: Trust any certificate (not secure)
@@ -25,19 +25,8 @@ configuration:
   name: isFetch
   required: false
   type: 8
-- defaultvalue: 7 days
-  additionalinfo: This field will be ignored as the fetch takes everything in the context.
-  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
-  name: first_fetch
-  required: false
-  type: 0
-- defaultvalue: '50'
-  additionalinfo: This field will be ignored as the fetch takes everything in the context.
-  name: max_fetch
-  required: false
-  type: 0
-description: CreateIncidents fetches incident created manually
-display: CreateIncidents
+description: CreateIncidents fetches incident created manually.
+display: Create Test Incidents
 name: CreateIncidents
 script:
   commands:
@@ -50,11 +39,11 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'The path of a file to be added to incidents as attachment. Would
+      description: 'The paths of the files to be added to incidents as attachment. Would
         be added to all incidents provided in the incident_path file. For example:
         Packs/somePack/TestPlaybooks/attach.eml'
       isArray: false
-      name: attachment_path
+      name: attachment_paths
       required: false
       secret: false
     deprecated: false

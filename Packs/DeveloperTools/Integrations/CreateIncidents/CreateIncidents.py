@@ -20,34 +20,24 @@ Attachment = namedtuple('Attachment', ['name', 'content'])
 
 class Client(BaseClient):
     def __init__(self, base_url: str, use_ssl: bool, use_proxy: bool):
+        self.base_url = base_url
         self.verify = use_ssl
         self.proxy = use_proxy
         headers = {'Accept': 'application/json', 'Content-Type': 'application/json'}
         super().__init__(base_url, headers=headers, verify=self.verify, proxy=self.proxy)
 
     def http_request(self, file_path: str, response_type: str = 'json') -> Union[dict, str, list]:
-        pass
-
-
-class GitClient(Client):
-    def __init__(self, use_ssl: bool = False, use_proxy: bool = False):
-        self.base_url = 'https://raw.github.com/demisto/content/master'
-        super().__init__(self.base_url, use_ssl, use_proxy)
-
-    def http_request(self, file_path: str, response_type: str = 'json') -> Union[dict, str, list]:
-        file_path = urljoin(self.base_url, file_path)
         try:
             data = self._http_request(
                 method='GET',
-                full_url=file_path,
+                url_suffix=file_path,
                 resp_type=response_type,
                 return_empty_response=True,
             )
             return data
         except Exception as e:
             if '404' in str(e):
-                raise DemistoException('The file could not be found. '
-                                       'Make sure you uploaded it to master branch in content repository')
+                raise DemistoException('The requested file could not be found.')
             else:
                 raise e
 
@@ -78,27 +68,28 @@ def fetch_incidents_command(client):
     for incident in incidents:
         if 'attachment' in incident:
             demisto.debug('Found incident, getting attachments')
-
-            _add_attachment(client, incident)
+            _add_attachments(client, incident)
 
     # clear the integration contex from already seen incidents
     set_integration_context({'incidents': []})
     return incidents
 
 
-def _add_attachment(client, incident: dict):
+def _add_attachments(client, incident: dict):
     """
      This function takes a formatted incident and add an attachments in case it has one.
     """
-    attachment_path = incident['attachment']
-    attachment = Attachment(content=client.http_request(file_path=attachment_path, response_type='content'),
-                            name=pathlib.Path(attachment_path).name)
-    file_result = fileResult(attachment.name, attachment.content)
+    attachment_paths = incident['attachment']
+    incident['attachment'] = []
+    for attachment_path in attachment_paths:
+        attachment = Attachment(content=client.http_request(file_path=attachment_path, response_type='content'),
+                                name=pathlib.Path(attachment_path).name)
+        file_result = fileResult(attachment.name, attachment.content)
 
-    incident['attachment'] = [{
-        'path': file_result['FileID'],
-        'name': attachment.name
-    }]
+        incident['attachment'].append({
+            'path': file_result['FileID'],
+            'name': attachment.name
+        })
 
 
 def create_test_incident_from_file_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -106,16 +97,16 @@ def create_test_incident_from_file_command(client: Client, args: Dict[str, Any])
     This function will get the incidents and save the formatted incidents to instance context, for the fetch.
     """
     incidents_path = args.get('incidents_path')
-    attachment_path = args.get('attachment_path')
+    attachment_path = argToList(args.get('attachment_paths'))
     if not incidents_path:
         raise ValueError('Incidents were not specified')
 
-    ready_incidents = get_incidents(attachment_path=attachment_path, incidents_path=incidents_path, client=client)
+    ready_incidents = get_incidents_from_file(attachment_path=attachment_path, incidents_path=incidents_path, client=client)
     set_integration_context({'incidents': ready_incidents})
     return CommandResults(readable_output=f'Loaded {len(ready_incidents)} incidents from file.')
 
 
-def get_incidents(client: Client, incidents_path: str, attachment_path: str = None):
+def get_incidents_from_file(client: Client, incidents_path: str, attachment_path: List[str] = None):
     """
     This function retrieves the incidents from the file provided using the relevant client,
     handling the case of a single incident, it returns formatted incidents.
@@ -129,7 +120,7 @@ def get_incidents(client: Client, incidents_path: str, attachment_path: str = No
     return ready_incidents
 
 
-def parse_incidents(incidents: List[dict], attachment_path: str = None) -> List[dict]:
+def parse_incidents(incidents: List[dict], attachment_path: List[str] = None) -> List[dict]:
     """
     This function will take a list of incidents and make them in the format of XSoar format,
      as a preparation for the fetch command.
@@ -154,19 +145,6 @@ def parse_incidents(incidents: List[dict], attachment_path: str = None) -> List[
     return ready_incidents
 
 
-def get_client(source: str = 'Git', ssl: bool = False, proxy: bool = False):
-    """
-    This function allows adding other client types so the url of the given files can be changed in the future.
-    In order to do so- add a relevant client class which inherits from Client, and in this function create an instance
-    and return it according to the source you want to add.
-    """
-    if source == 'Git':
-        return GitClient(ssl, proxy)
-
-    else:
-        raise Exception('Unauthorized source')
-
-
 ''' MAIN FUNCTION '''
 
 
@@ -176,13 +154,15 @@ def main() -> None:  # pragma: no cover
         command = demisto.command()
 
         demisto.debug(f'Command being called is {command}')
-        client = get_client(
-            ssl=not params.get('insecure', True),
-            proxy=params.get('proxy', False)
+        client = Client(
+            base_url=params.get('url'),
+            use_ssl=not params.get('insecure', True),
+            use_proxy=params.get('proxy', False)
         )
         if command == 'fetch-incidents':
             incidents = fetch_incidents_command(client)
             demisto.incidents(incidents)
+
         elif command == 'test-module':
             result = test_module(client)
             return_results(result)
