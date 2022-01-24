@@ -446,6 +446,7 @@ def test_build_iterator_with_version_6_2_0(mocker):
         )
         result = client.build_iterator()
         assert result[0]['https://api.github.com/meta']['no_update']
+        assert list(result[0]['https://api.github.com/meta']['result']) == []
         assert 'If-None-Match' not in client.headers
         assert 'If-Modified-Since' not in client.headers
 

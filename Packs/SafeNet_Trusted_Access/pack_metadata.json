@@ -1,6 +1,6 @@
 {
-    "name": "SafeNet Trusted Access",
-    "description": "SafeNet Trusted Access from Thales Group is an access management solution that allows organizations to centrally manage and secure access to business applications.",
+    "name": "Thales SafeNet Trusted Access",
+    "description": "SafeNet Trusted Access by Thales is an access management solution that allows organizations to centrally manage and secure access to business applications.",
     "support": "partner",
     "currentVersion": "2.0.2",
     "author": "Thales",
@@ -21,6 +21,7 @@
         "Fraud",
         "Account",
         "Authentication",
+        "Thales",
         "SafeNet"
     ],
     "dependencies": {

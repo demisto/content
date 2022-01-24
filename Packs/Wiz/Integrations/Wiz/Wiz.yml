@@ -1,0 +1,135 @@
+category: Utilities
+commonfields:
+  id: Wiz
+  version: -1
+defaultmapperin: Wiz Mapper
+configuration:
+- name: incidentType
+  display: Incident type
+  required: false
+  defaultvalue: Wiz Issue
+  type: 13
+- display: Service Account ID
+  name: credentials
+  type: 9
+  required: true
+- display: API Endpoint
+  name: api_endpoint
+  required: false
+  type: 0
+  defaultvalue: https://api.us1.app.wiz.io/graphql
+- defaultvalue: 7 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: first_fetch
+  required: false
+  type: 0
+- defaultvalue: '200'
+  display: Max Issues to Fetch
+  name: max_fetch
+  required: false
+  type: 0
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+description: Agentless cloud security.
+display: Wiz
+name: Wiz
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: Type of Issue to get
+      isArray: false
+      name: issue_type
+      predefined:
+      - ''
+      required: false
+      secret: false
+    - default: false
+      description: Get Issues of a specific resource
+      isArray: false
+      name: resource_id
+      required: false
+      secret: false
+    - name: severity
+      auto: PREDEFINED
+      predefined:
+      - CRITICAL
+      - HIGH
+      - MEDIUM
+      - LOW
+      - INFORMATIONAL
+      description: Get Issues of a specific severity and above
+    deprecated: false
+    description: Get the Issues on cloud resources
+    execution: false
+    name: wiz-get-issues
+    outputs:
+    - contextPath: Wiz.Manager.Issues.entitySnapshot
+      description: All resource details
+      type: String
+    - contextPath: Wiz.Manager.Issues.createdAt
+      description: Issue created at
+      type: String
+    - contextPath: Wiz.Manager.Issues.id
+      description: Wiz Issue ID
+      type: String
+    - contextPath: Wiz.Manager.Issues.control
+      description: Control details, that created this Issue
+      type: String
+    - contextPath: Wiz.Manager.Issues.severity
+      description: Wiz Issue severity
+      type: String
+    - contextPath: Wiz.Manager.Issues.status
+      description: Wiz Issue status (open, resolved, rejected)
+      type: String
+    - contextPath: Wiz.Manager.Issues.note
+      description: Wiz Issue note
+      type: String
+  - arguments:
+    - default: false
+      description: resource external id
+      isArray: false
+      name: resource_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Get details of a resource
+    execution: false
+    name: wiz-get-resource
+    outputs:
+    - contextPath: Wiz.Manager.Resource.id
+      description: Resource ID in Wiz
+      type: String
+    - contextPath: Wiz.Manager.Resource.name
+      description: Resource name
+      type: String
+    - contextPath: Wiz.Manager.Resource.properties
+      description: Resource properties
+      type: String
+    - contextPath: Wiz.Manager.Resource.publicExposures
+      description: Calculated public exposure for resource
+      type: String
+    - contextPath: Wiz.Manager.Resource.type
+      description: Resource type
+      type: String
+    - contextPath: Wiz.Manager.Resource.userMetadata
+      description: User metadata for the resource
+      type: String
+  dockerimage: demisto/python3:3.9.9.25564
+  feed: false
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- No tests
+fromversion: 6.0.0
