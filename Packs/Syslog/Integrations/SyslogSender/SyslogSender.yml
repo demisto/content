@@ -210,7 +210,7 @@ script:
     description: Sends a message to Syslog.
     execution: false
     name: syslog-send
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.9.9.25564
   feed: false
   isfetch: false
   longRunning: false

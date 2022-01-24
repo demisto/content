@@ -52,7 +52,6 @@
         "MicrosoftTeams"
     ],
     "marketplaces": [
-        "xsoar",
-        "marketplacev2"
+        "xsoar"
     ]
 }

@@ -72,6 +72,9 @@ parameters:
   sdk_ref:
     type: string
     default: "master"
+  gcs_market_bucket:
+    type: string
+    default: "marketplace-dist"
 
 references:
   environment: &environment
@@ -86,6 +89,8 @@ references:
       # is done in 'Setup Environment' step.
       PULL_REQUEST_NUMBER: << pipeline.parameters.pr_number >>
       NIGHTLY_PARAMETER: << pipeline.parameters.nightly >>
+      GCS_MARKET_BUCKET: << pipeline.parameters.gcs_market_bucket >>
+
 
   container_config: &container_config
     docker:
@@ -340,16 +345,6 @@ jobs:
       - *generate_coverage_reports
       - store_test_results:
           path: ./unit-tests
-      - run:
-          name: Slack Notifier
-          shell: /bin/bash
-          command: |
-            if [ -n "${BUCKET_UPLOAD}" ]; then
-              ./Tests/scripts/slack_notifier.sh 'bucket_upload_flow' '' "$SLACK_CHANNEL"
-            else
-              ./Tests/scripts/slack_notifier.sh 'unittests' $ENV_RESULTS_PATH
-            fi
-          when: always
       - *store_artifacts
 
   Run Validations:
@@ -401,14 +396,6 @@ jobs:
             unzip $INDEX_PATH -d $UNZIP_PATH
 
             python3 Tests/Marketplace/validate_landing_page_sections.py -i $UNZIP_PATH
-      - run:
-          name: Slack Notifier
-          shell: /bin/bash
-          command: |
-            if [ -n "${BUCKET_UPLOAD}" ]; then
-              ./Tests/scripts/slack_notifier.sh 'bucket_upload_flow' '' "$SLACK_CHANNEL"
-            fi
-          when: always
       - *store_artifacts
 
 

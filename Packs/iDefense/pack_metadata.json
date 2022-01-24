@@ -2,9 +2,9 @@
     "name": "Accenture CTI",
     "description": "Accenture Security",
     "support": "partner",
-    "currentVersion": "3.2.0",
+    "currentVersion": "3.2.2",
     "author": "Accenture",
-    "url": "https://in.accenture.com/cyberdefense/cyber-threat-intelligence/",
+    "url": "https://www.accenture.com/us-en/services/security/cyber-defense",
     "email": "CTI.AcctManagement@accenture.com",
     "created": "2020-04-14T00:00:00Z",
     "categories": [

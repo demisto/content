@@ -1,4 +1,4 @@
-Use the Zscaler integration to block manage domains using allow lists and block lists.
+Use the Zscaler Internet Access integration to block manage domains using allow lists and block lists.
 
 For the integration to work properly, the Zscaler user must have admin permissions.
 
@@ -6,10 +6,10 @@ Category ID is the same as the category name, except all letters are capitalized
 
 A custom category ID has the format `CUSTOM_01`, which is not indicative of the category. Use the `zscaler-get-categories` command to get a custom category and its configured name.
 
-## Configure Zscaler on Cortex XSOAR
+## Configure Zscaler Internet Access on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Zscaler.
+2. Search for Zscaler Internet Access.
 3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |

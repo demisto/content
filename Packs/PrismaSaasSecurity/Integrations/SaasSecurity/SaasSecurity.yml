@@ -120,7 +120,7 @@ configuration:
   name: proxy
   type: 8
   required: false
-  additionalinfo: Uses the system proxy server to communicate with the  integration.
+  additionalinfo: Uses the system proxy server to communicate with the integration.
     If not selected, the integration will not use the system proxy server.
 description: SaaS Security API is a cloud-based service that you can connect directly to
   your sanctioned SaaS applications using the cloud app’s API to provide data classification,
@@ -529,9 +529,10 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.1.25933
 defaultmapperin: Saas Security - Incoming Mapper
 defaultmapperout: Saas Security - Outgoing Mapper
 fromversion: 6.0.0
 tests:
 - SaasSecurity-Test
+beta: true
