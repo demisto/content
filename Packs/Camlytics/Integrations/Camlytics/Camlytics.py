@@ -116,17 +116,16 @@ def main() -> None:
 
     params: Dict[str, Any] = demisto.params()
     args: Dict[str, Any] = demisto.args()
-    url = params.get('url') + '/v1/json/'
+    url = str(params.get('url')) + '/v1/json/'
     verify_certificate: bool = not params.get('insecure', False)
     proxy = params.get('proxy', False)
-    headers = {}
 
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
 
     try:
         requests.packages.urllib3.disable_warnings()
-        client: Client = Client(urljoin(url, ''), verify_certificate, proxy, headers=headers)
+        client: Client = Client(urljoin(url, ''), verify_certificate, proxy, headers={})
         commands = {
             'camlytics-get-channels': get_channels_command,
             'camlytics-get-events-totals-by-rule': get_events_totals_by_rule_command,
