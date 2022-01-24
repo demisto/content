@@ -28,5 +28,5 @@
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "5.5.0",
-	"x2_fields": "fw_serial_number"
+    "x2_fields": "fw_serial_number"
 }
