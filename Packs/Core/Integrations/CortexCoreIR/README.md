@@ -43,7 +43,7 @@ Isolates the specified endpoint.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PaloAltoNetworksCore.Isolation.endpoint_id | String | The endpoint ID. | 
+| Core.Isolation.endpoint_id | String | The endpoint ID. | 
 
 ### core-unisolate-endpoint
 ***
@@ -66,7 +66,7 @@ Reverses the isolation of an endpoint.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PaloAltoNetworksCore.UnIsolation.endpoint_id | String | Isolates the specified endpoint. | 
+| Core.UnIsolation.endpoint_id | String | Isolates the specified endpoint. | 
 
 ### core-get-endpoints
 ***
@@ -102,24 +102,24 @@ Gets a list of endpoints, according to the passed filters. If there are no filte
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PaloAltoNetworksCore.Endpoint.endpoint_id | String | The endpoint ID. | 
-| PaloAltoNetworksCore.Endpoint.endpoint_name | String | The endpoint name. | 
-| PaloAltoNetworksCore.Endpoint.endpoint_type | String | The endpoint type. | 
-| PaloAltoNetworksCore.Endpoint.endpoint_status | String | The status of the endpoint. | 
-| PaloAltoNetworksCore.Endpoint.os_type | String | The endpoint OS type. | 
-| PaloAltoNetworksCore.Endpoint.ip | Unknown | A list of IP addresses. | 
-| PaloAltoNetworksCore.Endpoint.users | Unknown | A list of users. | 
-| PaloAltoNetworksCore.Endpoint.domain | String | The endpoint domain. | 
-| PaloAltoNetworksCore.Endpoint.alias | String | The endpoint's aliases. | 
-| PaloAltoNetworksCore.Endpoint.first_seen | Unknown | First seen date/time in Epoch \(milliseconds\). | 
-| PaloAltoNetworksCore.Endpoint.last_seen | Date | Last seen date/time in Epoch \(milliseconds\). | 
-| PaloAltoNetworksCore.Endpoint.content_version | String | Content version. | 
-| PaloAltoNetworksCore.Endpoint.installation_package | String | Installation package. | 
-| PaloAltoNetworksCore.Endpoint.active_directory | String | Active directory. | 
-| PaloAltoNetworksCore.Endpoint.install_date | Date | Install date in Epoch \(milliseconds\). | 
-| PaloAltoNetworksCore.Endpoint.endpoint_version | String | Endpoint version. | 
-| PaloAltoNetworksCore.Endpoint.is_isolated | String | Whether the endpoint is isolated. | 
-| PaloAltoNetworksCore.Endpoint.group_name | String | The name of the group to which the endpoint belongs. | 
+| Core.Endpoint.endpoint_id | String | The endpoint ID. | 
+| Core.Endpoint.endpoint_name | String | The endpoint name. | 
+| Core.Endpoint.endpoint_type | String | The endpoint type. | 
+| Core.Endpoint.endpoint_status | String | The status of the endpoint. | 
+| Core.Endpoint.os_type | String | The endpoint OS type. | 
+| Core.Endpoint.ip | Unknown | A list of IP addresses. | 
+| Core.Endpoint.users | Unknown | A list of users. | 
+| Core.Endpoint.domain | String | The endpoint domain. | 
+| Core.Endpoint.alias | String | The endpoint's aliases. | 
+| Core.Endpoint.first_seen | Unknown | First seen date/time in Epoch \(milliseconds\). | 
+| Core.Endpoint.last_seen | Date | Last seen date/time in Epoch \(milliseconds\). | 
+| Core.Endpoint.content_version | String | Content version. | 
+| Core.Endpoint.installation_package | String | Installation package. | 
+| Core.Endpoint.active_directory | String | Active directory. | 
+| Core.Endpoint.install_date | Date | Install date in Epoch \(milliseconds\). | 
+| Core.Endpoint.endpoint_version | String | Endpoint version. | 
+| Core.Endpoint.is_isolated | String | Whether the endpoint is isolated. | 
+| Core.Endpoint.group_name | String | The name of the group to which the endpoint belongs. | 
 | Endpoint.Hostname | String | The hostname that is mapped to this endpoint. | 
 | Endpoint.ID | String | The unique ID within the tool retrieving the endpoint. | 
 | Endpoint.IPAddress | String | The IP address of the endpoint. | 
@@ -148,9 +148,9 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PaloAltoNetworksCore.DistributionVersions.windows | Unknown | A list of Windows agent versions. | 
-| PaloAltoNetworksCore.DistributionVersions.linux | Unknown | A list of Linux agent versions. | 
-| PaloAltoNetworksCore.DistributionVersions.macos | Unknown | A list of Mac agent versions. | 
+| Core.DistributionVersions.windows | Unknown | A list of Windows agent versions. | 
+| Core.DistributionVersions.linux | Unknown | A list of Linux agent versions. | 
+| Core.DistributionVersions.macos | Unknown | A list of Mac agent versions. | 
 
 ### core-create-distribution
 ***
@@ -175,11 +175,11 @@ Creates an installation package. This is an asynchronous call that returns the d
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PaloAltoNetworksCore.Distribution.id | String | The installation package ID. | 
-| PaloAltoNetworksCore.Distribution.name | String | The name of the installation package. | 
-| PaloAltoNetworksCore.Distribution.platform | String | The installation OS. | 
-| PaloAltoNetworksCore.Distribution.agent_version | String | Agent version. | 
-| PaloAltoNetworksCore.Distribution.description | String | Information about the package. | 
+| Core.Distribution.id | String | The installation package ID. | 
+| Core.Distribution.name | String | The name of the installation package. | 
+| Core.Distribution.platform | String | The installation OS. | 
+| Core.Distribution.agent_version | String | Agent version. | 
+| Core.Distribution.description | String | Information about the package. | 
 
 ### core-get-distribution-url
 ***
@@ -201,8 +201,8 @@ Gets the distribution URL for downloading the installation package.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PaloAltoNetworksCore.Distribution.id | String | Distribution ID. | 
-| PaloAltoNetworksCore.Distribution.url | String | URL for downloading the installation package. | 
+| Core.Distribution.id | String | Distribution ID. | 
+| Core.Distribution.url | String | URL for downloading the installation package. | 
 
 ### core-get-create-distribution-status
 ***
@@ -223,8 +223,8 @@ Gets the status of the installation package.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PaloAltoNetworksCore.Distribution.id | String | Distribution ID. | 
-| PaloAltoNetworksCore.Distribution.status | String | The status of installation package. | 
+| Core.Distribution.id | String | Distribution ID. | 
+| Core.Distribution.status | String | The status of installation package. | 
 
 ### core-get-audit-management-logs
 ***
@@ -254,19 +254,19 @@ Gets management logs. You can filter by multiple fields, which will be concatena
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PaloAltoNetworksCore.AuditManagementLogs.AUDIT_ID | Number | Audit log ID. | 
-| PaloAltoNetworksCore.AuditManagementLogs.AUDIT_OWNER_NAME | String | Audit owner name. | 
-| PaloAltoNetworksCore.AuditManagementLogs.AUDIT_OWNER_EMAIL | String | Audit owner email address. | 
-| PaloAltoNetworksCore.AuditManagementLogs.AUDIT_ASSET_JSON | String | Asset JSON. | 
-| PaloAltoNetworksCore.AuditManagementLogs.AUDIT_ASSET_NAMES | String | Audit asset names. | 
-| PaloAltoNetworksCore.AuditManagementLogs.AUDIT_HOSTNAME | String | Host name. | 
-| PaloAltoNetworksCore.AuditManagementLogs.AUDIT_RESULT | String | Audit result. | 
-| PaloAltoNetworksCore.AuditManagementLogs.AUDIT_REASON | String | Audit reason. | 
-| PaloAltoNetworksCore.AuditManagementLogs.AUDIT_DESCRIPTION | String | Description of the audit. | 
-| PaloAltoNetworksCore.AuditManagementLogs.AUDIT_ENTITY | String | Audit entity \(e.g., AUTH, DISTRIBUTIONS\). | 
-| PaloAltoNetworksCore.AuditManagementLogs.AUDIT_ENTITY_SUBTYPE | String | Entity subtype \(e.g., Login, Create\). | 
-| PaloAltoNetworksCore.AuditManagementLogs.AUDIT_CASE_ID | Number | Audit case ID. | 
-| PaloAltoNetworksCore.AuditManagementLogs.AUDIT_INSERT_TIME | Date | Log's insert time. | 
+| Core.AuditManagementLogs.AUDIT_ID | Number | Audit log ID. | 
+| Core.AuditManagementLogs.AUDIT_OWNER_NAME | String | Audit owner name. | 
+| Core.AuditManagementLogs.AUDIT_OWNER_EMAIL | String | Audit owner email address. | 
+| Core.AuditManagementLogs.AUDIT_ASSET_JSON | String | Asset JSON. | 
+| Core.AuditManagementLogs.AUDIT_ASSET_NAMES | String | Audit asset names. | 
+| Core.AuditManagementLogs.AUDIT_HOSTNAME | String | Host name. | 
+| Core.AuditManagementLogs.AUDIT_RESULT | String | Audit result. | 
+| Core.AuditManagementLogs.AUDIT_REASON | String | Audit reason. | 
+| Core.AuditManagementLogs.AUDIT_DESCRIPTION | String | Description of the audit. | 
+| Core.AuditManagementLogs.AUDIT_ENTITY | String | Audit entity \(e.g., AUTH, DISTRIBUTIONS\). | 
+| Core.AuditManagementLogs.AUDIT_ENTITY_SUBTYPE | String | Entity subtype \(e.g., Login, Create\). | 
+| Core.AuditManagementLogs.AUDIT_CASE_ID | Number | Audit case ID. | 
+| Core.AuditManagementLogs.AUDIT_INSERT_TIME | Date | Log's insert time. | 
 
 ### core-get-audit-agent-reports
 ***
@@ -297,18 +297,18 @@ Gets agent event reports. You can filter by multiple fields, which will be conca
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PaloAltoNetworksCore.AuditAgentReports.ENDPOINTID | String | Endpoint ID. | 
-| PaloAltoNetworksCore.AuditAgentReports.ENDPOINTNAME | String | Endpoint name. | 
-| PaloAltoNetworksCore.AuditAgentReports.DOMAIN | String | Agent domain. | 
-| PaloAltoNetworksCore.AuditAgentReports.TRAPSVERSION | String | Traps version. | 
-| PaloAltoNetworksCore.AuditAgentReports.RECEIVEDTIME | Date | Received time in Epoch time. | 
-| PaloAltoNetworksCore.AuditAgentReports.TIMESTAMP | Date | Timestamp in Epoch time. | 
-| PaloAltoNetworksCore.AuditAgentReports.CATEGORY | String | Report category \(e.g., Audit\). | 
-| PaloAltoNetworksCore.AuditAgentReports.TYPE | String | Report type \(e.g., Action, Policy\). | 
-| PaloAltoNetworksCore.AuditAgentReports.SUBTYPE | String | Report subtype \(e.g., Fully Protected,Policy Update,Cancel Isolation\). | 
-| PaloAltoNetworksCore.AuditAgentReports.RESULT | String | Report result. | 
-| PaloAltoNetworksCore.AuditAgentReports.REASON | String | Report reason. | 
-| PaloAltoNetworksCore.AuditAgentReports.DESCRIPTION | String | Agent report description. | 
+| Core.AuditAgentReports.ENDPOINTID | String | Endpoint ID. | 
+| Core.AuditAgentReports.ENDPOINTNAME | String | Endpoint name. | 
+| Core.AuditAgentReports.DOMAIN | String | Agent domain. | 
+| Core.AuditAgentReports.TRAPSVERSION | String | Traps version. | 
+| Core.AuditAgentReports.RECEIVEDTIME | Date | Received time in Epoch time. | 
+| Core.AuditAgentReports.TIMESTAMP | Date | Timestamp in Epoch time. | 
+| Core.AuditAgentReports.CATEGORY | String | Report category \(e.g., Audit\). | 
+| Core.AuditAgentReports.TYPE | String | Report type \(e.g., Action, Policy\). | 
+| Core.AuditAgentReports.SUBTYPE | String | Report subtype \(e.g., Fully Protected,Policy Update,Cancel Isolation\). | 
+| Core.AuditAgentReports.RESULT | String | Report result. | 
+| Core.AuditAgentReports.REASON | String | Report reason. | 
+| Core.AuditAgentReports.DESCRIPTION | String | Agent report description. | 
 | Endpoint.ID | String | The unique ID within the tool retrieving the endpoint. | 
 | Endpoint.Hostname | String | The hostname that is mapped to this endpoint. | 
 | Endpoint.Domain | String | The domain of the endpoint. | 
@@ -446,8 +446,8 @@ Runs a scan on a selected endpoint. To scan all endpoints, run this command with
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PaloAltoNetworksCore.endpointScan.actionId | Number | The action ID of the scan request. | 
-| PaloAltoNetworksCore.endpointScan.aborted | Boolean | Was the scan aborted. | 
+| Core.endpointScan.actionId | Number | The action ID of the scan request. | 
+| Core.endpointScan.aborted | Boolean | Was the scan aborted. | 
 
 ### core-endpoint-scan-abort
 ***
@@ -481,8 +481,8 @@ Cancel the scan of selected endpoints. A scan can only be aborted if the selecte
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PaloAltoNetworksCore.endpointScan.actionId | Unknown | The action id of the abort scan request. | 
-| PaloAltoNetworksCore.endpointScan.aborted | Boolean | Was the scan aborted. | 
+| Core.endpointScan.actionId | Unknown | The action id of the abort scan request. | 
+| Core.endpointScan.aborted | Boolean | Was the scan aborted. | 
 
 ### core-get-policy
 ***
@@ -503,9 +503,9 @@ Gets the policy name for a specific endpoint.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PaloAltoNetworksCore.Policy | string | The policy allocated with the endpoint. | 
-| PaloAltoNetworksCore.Policy.policy_name | string | Name of the policy allocated with the endpoint. | 
-| PaloAltoNetworksCore.Policy.endpoint_id | string | Endpoint ID. | 
+| Core.Policy | string | The policy allocated with the endpoint. | 
+| Core.Policy.policy_name | string | Name of the policy allocated with the endpoint. | 
+| Core.Policy.endpoint_id | string | Endpoint ID. | 
 
 ### core-get-scripts
 ***
@@ -534,17 +534,17 @@ Gets a list of scripts available in the scripts library.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PaloAltoNetworksCore.Scripts | Unknown | The scripts command results. | 
-| PaloAltoNetworksCore.Scripts.script_id | Unknown | Script ID. | 
-| PaloAltoNetworksCore.Scripts.name | string | Name of the script. | 
-| PaloAltoNetworksCore.Scripts.description | string | Description of the script. | 
-| PaloAltoNetworksCore.Scripts.modification_date | Unknown | Timestamp of when the script was last modified. | 
-| PaloAltoNetworksCore.Scripts.created_by | string | Name of the user who created the script. | 
-| PaloAltoNetworksCore.Scripts.windows_supported | boolean | Whether the script can be executed on a Windows operating system. | 
-| PaloAltoNetworksCore.Scripts.linux_supported | boolean | Whether the script can be executed on a Linux operating system. | 
-| PaloAltoNetworksCore.Scripts.macos_supported | boolean | Whether the script can be executed on Mac operating system. | 
-| PaloAltoNetworksCore.Scripts.is_high_risk | boolean | Whether the script has a high-risk outcome. | 
-| PaloAltoNetworksCore.Scripts.script_uid | string | Globally Unique Identifier of the script, used to identify the script when executing. | 
+| Core.Scripts | Unknown | The scripts command results. | 
+| Core.Scripts.script_id | Unknown | Script ID. | 
+| Core.Scripts.name | string | Name of the script. | 
+| Core.Scripts.description | string | Description of the script. | 
+| Core.Scripts.modification_date | Unknown | Timestamp of when the script was last modified. | 
+| Core.Scripts.created_by | string | Name of the user who created the script. | 
+| Core.Scripts.windows_supported | boolean | Whether the script can be executed on a Windows operating system. | 
+| Core.Scripts.linux_supported | boolean | Whether the script can be executed on a Linux operating system. | 
+| Core.Scripts.macos_supported | boolean | Whether the script can be executed on Mac operating system. | 
+| Core.Scripts.is_high_risk | boolean | Whether the script has a high-risk outcome. | 
+| Core.Scripts.script_uid | string | Globally Unique Identifier of the script, used to identify the script when executing. | 
 
 ### core-delete-endpoints
 ***
@@ -595,21 +595,21 @@ Gets a list of device control violations filtered by selected fields. You can re
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PaloAltoNetworksCore.EndpointViolations | Unknown | Endpoint violations command results. | 
-| PaloAltoNetworksCore.EndpointViolations.violations | Unknown | A list of violations. | 
-| PaloAltoNetworksCore.EndpointViolations.violations.os_type | string | Type of the operating system. | 
-| PaloAltoNetworksCore.EndpointViolations.violations.hostname | string | Hostname of the violation. | 
-| PaloAltoNetworksCore.EndpointViolations.violations.username | string | Username of the violation. | 
-| PaloAltoNetworksCore.EndpointViolations.violations.ip | string | IP address of the violation. | 
-| PaloAltoNetworksCore.EndpointViolations.violations.timestamp | number | Timestamp of the violation. | 
-| PaloAltoNetworksCore.EndpointViolations.violations.violation_id | number | Violation ID. | 
-| PaloAltoNetworksCore.EndpointViolations.violations.type | string | Type of violation. | 
-| PaloAltoNetworksCore.EndpointViolations.violations.vendor_id | string | Vendor ID of the violation. | 
-| PaloAltoNetworksCore.EndpointViolations.violations.vendor | string | Name of the vendor of the violation. | 
-| PaloAltoNetworksCore.EndpointViolations.violations.product_id | string | Product ID of the violation. | 
-| PaloAltoNetworksCore.EndpointViolations.violations.product | string | Name of the product of the violation. | 
-| PaloAltoNetworksCore.EndpointViolations.violations.serial | string | Serial number of the violation. | 
-| PaloAltoNetworksCore.EndpointViolations.violations.endpoint_id | string | Endpoint ID of the violation. | 
+| Core.EndpointViolations | Unknown | Endpoint violations command results. | 
+| Core.EndpointViolations.violations | Unknown | A list of violations. | 
+| Core.EndpointViolations.violations.os_type | string | Type of the operating system. | 
+| Core.EndpointViolations.violations.hostname | string | Hostname of the violation. | 
+| Core.EndpointViolations.violations.username | string | Username of the violation. | 
+| Core.EndpointViolations.violations.ip | string | IP address of the violation. | 
+| Core.EndpointViolations.violations.timestamp | number | Timestamp of the violation. | 
+| Core.EndpointViolations.violations.violation_id | number | Violation ID. | 
+| Core.EndpointViolations.violations.type | string | Type of violation. | 
+| Core.EndpointViolations.violations.vendor_id | string | Vendor ID of the violation. | 
+| Core.EndpointViolations.violations.vendor | string | Name of the vendor of the violation. | 
+| Core.EndpointViolations.violations.product_id | string | Product ID of the violation. | 
+| Core.EndpointViolations.violations.product | string | Name of the product of the violation. | 
+| Core.EndpointViolations.violations.serial | string | Serial number of the violation. | 
+| Core.EndpointViolations.violations.endpoint_id | string | Endpoint ID of the violation. | 
 
 ### core-retrieve-files
 ***
@@ -635,7 +635,7 @@ Retrieves files from selected endpoints. You can retrieve up to 20 files, from n
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PaloAltoNetworksCore.RetrievedFiles.action_id | string | ID of the action to retrieve files from selected endpoints. | 
+| Core.RetrievedFiles.action_id | string | ID of the action to retrieve files from selected endpoints. | 
 
 ### core-retrieve-file-details
 ***
@@ -686,20 +686,20 @@ Gets the full definition of a specific script in the scripts library.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PaloAltoNetworksCore.ScriptMetadata | Unknown | The script metadata command results. | 
-| PaloAltoNetworksCore.ScriptMetadata.script_id | number | Script ID. | 
-| PaloAltoNetworksCore.ScriptMetadata.name | string | Script name. | 
-| PaloAltoNetworksCore.ScriptMetadata.description | string | Script description. | 
-| PaloAltoNetworksCore.ScriptMetadata.modification_date | unknown | Timestamp of when the script was last modified. | 
-| PaloAltoNetworksCore.ScriptMetadata.created_by | string | Name of the user who created the script. | 
-| PaloAltoNetworksCore.ScriptMetadata.is_high_risk | boolean | Whether the script has a high-risk outcome. | 
-| PaloAltoNetworksCore.ScriptMetadata.windows_supported | boolean | Whether the script can be executed on a Windows operating system. | 
-| PaloAltoNetworksCore.ScriptMetadata.linux_supported | boolean | Whether the script can be executed on a Linux operating system. | 
-| PaloAltoNetworksCore.ScriptMetadata.macos_supported | boolean | Whether the script can be executed on a Mac operating system. | 
-| PaloAltoNetworksCore.ScriptMetadata.entry_point | string | Name of the entry point selected for the script. An empty string indicates  the script defined as just run. | 
-| PaloAltoNetworksCore.ScriptMetadata.script_input | string | Name and type for the specified entry point. | 
-| PaloAltoNetworksCore.ScriptMetadata.script_output_type | string | Type of the output. | 
-| PaloAltoNetworksCore.ScriptMetadata.script_output_dictionary_definitions | Unknown | If the script_output_type is a dictionary, an array with friendly name, name, and type for each output. | 
+| Core.ScriptMetadata | Unknown | The script metadata command results. | 
+| Core.ScriptMetadata.script_id | number | Script ID. | 
+| Core.ScriptMetadata.name | string | Script name. | 
+| Core.ScriptMetadata.description | string | Script description. | 
+| Core.ScriptMetadata.modification_date | unknown | Timestamp of when the script was last modified. | 
+| Core.ScriptMetadata.created_by | string | Name of the user who created the script. | 
+| Core.ScriptMetadata.is_high_risk | boolean | Whether the script has a high-risk outcome. | 
+| Core.ScriptMetadata.windows_supported | boolean | Whether the script can be executed on a Windows operating system. | 
+| Core.ScriptMetadata.linux_supported | boolean | Whether the script can be executed on a Linux operating system. | 
+| Core.ScriptMetadata.macos_supported | boolean | Whether the script can be executed on a Mac operating system. | 
+| Core.ScriptMetadata.entry_point | string | Name of the entry point selected for the script. An empty string indicates  the script defined as just run. | 
+| Core.ScriptMetadata.script_input | string | Name and type for the specified entry point. | 
+| Core.ScriptMetadata.script_output_type | string | Type of the output. | 
+| Core.ScriptMetadata.script_output_dictionary_definitions | Unknown | If the script_output_type is a dictionary, an array with friendly name, name, and type for each output. | 
 
 ### core-get-script-code
 ***
@@ -720,9 +720,9 @@ Gets the code of a specific script in the script library.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PaloAltoNetworksCore.ScriptCode | Unknown | The script code command results. | 
-| PaloAltoNetworksCore.ScriptCode.code | string | The code of a specific script in the script library. | 
-| PaloAltoNetworksCore.ScriptCode.script_uid | string | Unique identifier of the script. | 
+| Core.ScriptCode | Unknown | The script code command results. | 
+| Core.ScriptCode.code | string | The code of a specific script in the script library. | 
+| Core.ScriptCode.script_uid | string | Unique identifier of the script. | 
 
 ### core-action-status-get
 ***
@@ -743,10 +743,10 @@ Retrieves the status of the requested actions according to the action ID.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PaloAltoNetworksCore.GetActionStatus | Unknown | The action status command results. | 
-| PaloAltoNetworksCore.GetActionStatus.endpoint_id | string | Endpoint ID. | 
-| PaloAltoNetworksCore.GetActionStatus.status | string | The status of the specific endpoint ID. | 
-| PaloAltoNetworksCore.GetActionStatus.action_id | number | The specified action ID. | 
+| Core.GetActionStatus | Unknown | The action status command results. | 
+| Core.GetActionStatus.endpoint_id | string | Endpoint ID. | 
+| Core.GetActionStatus.status | string | The status of the specific endpoint ID. | 
+| Core.GetActionStatus.action_id | number | The specified action ID. | 
 
 ### core-run-script
 ***
@@ -771,8 +771,8 @@ Initiates a new endpoint script execution action using a script from the script 
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PaloAltoNetworksCore.ScriptRun.action_id | Number | ID of the action initiated. | 
-| PaloAltoNetworksCore.ScriptRun.endpoints_count | Number | Number of endpoints the action was initiated on. | 
+| Core.ScriptRun.action_id | Number | ID of the action initiated. | 
+| Core.ScriptRun.endpoints_count | Number | Number of endpoints the action was initiated on. | 
 
 ### core-run-snippet-code-script
 ***
@@ -795,8 +795,8 @@ Initiates a new endpoint script execution action using the provided snippet code
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PaloAltoNetworksCore.ScriptRun.action_id | Number | ID of the action initiated. | 
-| PaloAltoNetworksCore.ScriptRun.endpoints_count | Number | Number of endpoints the action was initiated on. | 
+| Core.ScriptRun.action_id | Number | ID of the action initiated. | 
+| Core.ScriptRun.endpoints_count | Number | Number of endpoints the action was initiated on. | 
 
 ### core-get-script-execution-status
 ***
@@ -817,18 +817,18 @@ Retrieves the status of a script execution action.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PaloAltoNetworksCore.ScriptStatus.general_status | String | General status of the action, considering the status of all the endpoints. | 
-| PaloAltoNetworksCore.ScriptStatus.error_message | String | Error message regarding permissions for running APIs or the action doesn’t exist. | 
-| PaloAltoNetworksCore.ScriptStatus.endpoints_timeout | Number | Number of endpoints in "timeout" status. | 
-| PaloAltoNetworksCore.ScriptStatus.action_id | Number | ID of the action initiated. | 
-| PaloAltoNetworksCore.ScriptStatus.endpoints_pending_abort | Number | Number of endpoints in "pending abort" status. | 
-| PaloAltoNetworksCore.ScriptStatus.endpoints_pending | Number | Number of endpoints in "pending" status. | 
-| PaloAltoNetworksCore.ScriptStatus.endpoints_in_progress | Number | Number of endpoints in "in progress" status. | 
-| PaloAltoNetworksCore.ScriptStatus.endpoints_failed | Number | Number of endpoints in "failed" status. | 
-| PaloAltoNetworksCore.ScriptStatus.endpoints_expired | Number | Number of endpoints in "expired" status. | 
-| PaloAltoNetworksCore.ScriptStatus.endpoints_completed_successfully | Number | Number of endpoints in "completed successfully" status. | 
-| PaloAltoNetworksCore.ScriptStatus.endpoints_canceled | Number | Number of endpoints in "canceled" status. | 
-| PaloAltoNetworksCore.ScriptStatus.endpoints_aborted | Number | Number of endpoints in "aborted" status. | 
+| Core.ScriptStatus.general_status | String | General status of the action, considering the status of all the endpoints. | 
+| Core.ScriptStatus.error_message | String | Error message regarding permissions for running APIs or the action doesn’t exist. | 
+| Core.ScriptStatus.endpoints_timeout | Number | Number of endpoints in "timeout" status. | 
+| Core.ScriptStatus.action_id | Number | ID of the action initiated. | 
+| Core.ScriptStatus.endpoints_pending_abort | Number | Number of endpoints in "pending abort" status. | 
+| Core.ScriptStatus.endpoints_pending | Number | Number of endpoints in "pending" status. | 
+| Core.ScriptStatus.endpoints_in_progress | Number | Number of endpoints in "in progress" status. | 
+| Core.ScriptStatus.endpoints_failed | Number | Number of endpoints in "failed" status. | 
+| Core.ScriptStatus.endpoints_expired | Number | Number of endpoints in "expired" status. | 
+| Core.ScriptStatus.endpoints_completed_successfully | Number | Number of endpoints in "completed successfully" status. | 
+| Core.ScriptStatus.endpoints_canceled | Number | Number of endpoints in "canceled" status. | 
+| Core.ScriptStatus.endpoints_aborted | Number | Number of endpoints in "aborted" status. | 
 
 ### core-get-script-execution-results
 ***
@@ -849,18 +849,18 @@ Retrieve the results of a script execution action.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PaloAltoNetworksCore.ScriptResult.action_id | Number | ID of the action initiated. | 
-| PaloAltoNetworksCore.ScriptResult.results.retrieved_files | Number | Number of successfully retrieved files. | 
-| PaloAltoNetworksCore.ScriptResult.results.endpoint_ip_address | String | Endpoint IP address. | 
-| PaloAltoNetworksCore.ScriptResult.results.endpoint_name | String | Number of successfully retrieved files. | 
-| PaloAltoNetworksCore.ScriptResult.results.failed_files | Number | Number of files failed to retrieve. | 
-| PaloAltoNetworksCore.ScriptResult.results.endpoint_status | String | Endpoint status. | 
-| PaloAltoNetworksCore.ScriptResult.results.domain | String | Domain to which the endpoint belongs. | 
-| PaloAltoNetworksCore.ScriptResult.results.endpoint_id | String | Endpoint ID. | 
-| PaloAltoNetworksCore.ScriptResult.results.execution_status | String | Execution status of this endpoint. | 
-| PaloAltoNetworksCore.ScriptResult.results.return_value | String | Value returned by the script in case the type is not a dictionary. | 
-| PaloAltoNetworksCore.ScriptResult.results.standard_output | String | The STDOUT and the STDERR logged by the script during the execution. | 
-| PaloAltoNetworksCore.ScriptResult.results.retention_date | Date | Timestamp in which the retrieved files will be deleted from the server. | 
+| Core.ScriptResult.action_id | Number | ID of the action initiated. | 
+| Core.ScriptResult.results.retrieved_files | Number | Number of successfully retrieved files. | 
+| Core.ScriptResult.results.endpoint_ip_address | String | Endpoint IP address. | 
+| Core.ScriptResult.results.endpoint_name | String | Number of successfully retrieved files. | 
+| Core.ScriptResult.results.failed_files | Number | Number of files failed to retrieve. | 
+| Core.ScriptResult.results.endpoint_status | String | Endpoint status. | 
+| Core.ScriptResult.results.domain | String | Domain to which the endpoint belongs. | 
+| Core.ScriptResult.results.endpoint_id | String | Endpoint ID. | 
+| Core.ScriptResult.results.execution_status | String | Execution status of this endpoint. | 
+| Core.ScriptResult.results.return_value | String | Value returned by the script in case the type is not a dictionary. | 
+| Core.ScriptResult.results.standard_output | String | The STDOUT and the STDERR logged by the script during the execution. | 
+| Core.ScriptResult.results.retention_date | Date | Timestamp in which the retrieved files will be deleted from the server. | 
 
 ### core-get-script-execution-result-files
 ***
@@ -916,8 +916,8 @@ Initiate a new endpoint script execution of shell commands.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PaloAltoNetworksCore.ScriptRun.action_id | Number | ID of the action initiated. | 
-| PaloAltoNetworksCore.ScriptRun.endpoints_count | Number | Number of endpoints the action was initiated on. | 
+| Core.ScriptRun.action_id | Number | ID of the action initiated. | 
+| Core.ScriptRun.endpoints_count | Number | Number of endpoints the action was initiated on. | 
 
 ### core-run-script-delete-file
 ***
@@ -941,8 +941,8 @@ Initiates a new endpoint script execution to delete the specified file.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PaloAltoNetworksCore.ScriptRun.action_id | Number | ID of the action initiated. | 
-| PaloAltoNetworksCore.ScriptRun.endpoints_count | Number | Number of endpoints the action was initiated on. | 
+| Core.ScriptRun.action_id | Number | ID of the action initiated. | 
+| Core.ScriptRun.endpoints_count | Number | Number of endpoints the action was initiated on. | 
 
 ### core-run-script-file-exists
 ***
@@ -966,8 +966,8 @@ Initiates a new endpoint script execution to check if file exists.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PaloAltoNetworksCore.ScriptRun.action_id | Number | ID of the action initiated. | 
-| PaloAltoNetworksCore.ScriptRun.endpoints_count | Number | Number of endpoints the action was initiated on. | 
+| Core.ScriptRun.action_id | Number | ID of the action initiated. | 
+| Core.ScriptRun.endpoints_count | Number | Number of endpoints the action was initiated on. | 
 
 ### core-run-script-kill-process
 ***
@@ -991,8 +991,8 @@ Initiates a new endpoint script execution kill process.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PaloAltoNetworksCore.ScriptRun.action_id | Number | ID of the action initiated. | 
-| PaloAltoNetworksCore.ScriptRun.endpoints_count | Number | Number of endpoints the action was initiated on. | 
+| Core.ScriptRun.action_id | Number | ID of the action initiated. | 
+| Core.ScriptRun.endpoints_count | Number | Number of endpoints the action was initiated on. | 
 
 ### endpoint
 ***

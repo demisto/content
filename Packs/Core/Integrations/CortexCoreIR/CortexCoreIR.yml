@@ -92,7 +92,7 @@ script:
     name: core-isolate-endpoint
     polling: true
     outputs:
-    - contextPath: PaloAltoNetworksCore.Isolation.endpoint_id
+    - contextPath: Core.Isolation.endpoint_id
       description: The endpoint ID.
       type: String
   - arguments:
@@ -135,7 +135,7 @@ script:
     name: core-unisolate-endpoint
     polling: true
     outputs:
-    - contextPath: PaloAltoNetworksCore.UnIsolation.endpoint_id
+    - contextPath: Core.UnIsolation.endpoint_id
       description: Isolates the specified endpoint.
       type: String
   - arguments:
@@ -289,6 +289,18 @@ script:
       - desc
       required: false
       secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The status of the endpoint to filter.
+      isArray: false
+      name: status
+      predefined:
+        - connected
+        - disconnected
+        - lost
+        - uninstalled
+      required: false
+      secret: false
     deprecated: false
     description: Gets a list of endpoints, according to the passed filters. If there
       are no filters, all endpoints are returned. Filtering by multiple fields will
@@ -298,58 +310,58 @@ script:
     execution: false
     name: core-get-endpoints
     outputs:
-    - contextPath: PaloAltoNetworksCore.Endpoint.endpoint_id
+    - contextPath: Core.Endpoint.endpoint_id
       description: The endpoint ID.
       type: String
-    - contextPath: PaloAltoNetworksCore.Endpoint.endpoint_name
+    - contextPath: Core.Endpoint.endpoint_name
       description: The endpoint name.
       type: String
-    - contextPath: PaloAltoNetworksCore.Endpoint.endpoint_type
+    - contextPath: Core.Endpoint.endpoint_type
       description: The endpoint type.
       type: String
-    - contextPath: PaloAltoNetworksCore.Endpoint.endpoint_status
+    - contextPath: Core.Endpoint.endpoint_status
       description: The status of the endpoint.
       type: String
-    - contextPath: PaloAltoNetworksCore.Endpoint.os_type
+    - contextPath: Core.Endpoint.os_type
       description: The endpoint OS type.
       type: String
-    - contextPath: PaloAltoNetworksCore.Endpoint.ip
+    - contextPath: Core.Endpoint.ip
       description: A list of IP addresses.
       type: Unknown
-    - contextPath: PaloAltoNetworksCore.Endpoint.users
+    - contextPath: Core.Endpoint.users
       description: A list of users.
       type: Unknown
-    - contextPath: PaloAltoNetworksCore.Endpoint.domain
+    - contextPath: Core.Endpoint.domain
       description: The endpoint domain.
       type: String
-    - contextPath: PaloAltoNetworksCore.Endpoint.alias
+    - contextPath: Core.Endpoint.alias
       description: The endpoint's aliases.
       type: String
-    - contextPath: PaloAltoNetworksCore.Endpoint.first_seen
+    - contextPath: Core.Endpoint.first_seen
       description: First seen date/time in Epoch (milliseconds).
       type: Unknown
-    - contextPath: PaloAltoNetworksCore.Endpoint.last_seen
+    - contextPath: Core.Endpoint.last_seen
       description: Last seen date/time in Epoch (milliseconds).
       type: Date
-    - contextPath: PaloAltoNetworksCore.Endpoint.content_version
+    - contextPath: Core.Endpoint.content_version
       description: Content version.
       type: String
-    - contextPath: PaloAltoNetworksCore.Endpoint.installation_package
+    - contextPath: Core.Endpoint.installation_package
       description: Installation package.
       type: String
-    - contextPath: PaloAltoNetworksCore.Endpoint.active_directory
+    - contextPath: Core.Endpoint.active_directory
       description: Active directory.
       type: String
-    - contextPath: PaloAltoNetworksCore.Endpoint.install_date
+    - contextPath: Core.Endpoint.install_date
       description: Install date in Epoch (milliseconds).
       type: Date
-    - contextPath: PaloAltoNetworksCore.Endpoint.endpoint_version
+    - contextPath: Core.Endpoint.endpoint_version
       description: Endpoint version.
       type: String
-    - contextPath: PaloAltoNetworksCore.Endpoint.is_isolated
+    - contextPath: Core.Endpoint.is_isolated
       description: Whether the endpoint is isolated.
       type: String
-    - contextPath: PaloAltoNetworksCore.Endpoint.group_name
+    - contextPath: Core.Endpoint.group_name
       description: The name of the group to which the endpoint belongs.
       type: String
     - contextPath: Endpoint.Hostname
@@ -391,13 +403,13 @@ script:
     execution: false
     name: core-get-distribution-versions
     outputs:
-    - contextPath: PaloAltoNetworksCore.DistributionVersions.windows
+    - contextPath: Core.DistributionVersions.windows
       description: A list of Windows agent versions.
       type: Unknown
-    - contextPath: PaloAltoNetworksCore.DistributionVersions.linux
+    - contextPath: Core.DistributionVersions.linux
       description: A list of Linux agent versions.
       type: Unknown
-    - contextPath: PaloAltoNetworksCore.DistributionVersions.macos
+    - contextPath: Core.DistributionVersions.macos
       description: A list of Mac agent versions.
       type: Unknown
   - arguments:
@@ -453,19 +465,19 @@ script:
     execution: false
     name: core-create-distribution
     outputs:
-    - contextPath: PaloAltoNetworksCore.Distribution.id
+    - contextPath: Core.Distribution.id
       description: The installation package ID.
       type: String
-    - contextPath: PaloAltoNetworksCore.Distribution.name
+    - contextPath: Core.Distribution.name
       description: The name of the installation package.
       type: String
-    - contextPath: PaloAltoNetworksCore.Distribution.platform
+    - contextPath: Core.Distribution.platform
       description: The installation OS.
       type: String
-    - contextPath: PaloAltoNetworksCore.Distribution.agent_version
+    - contextPath: Core.Distribution.agent_version
       description: Agent version.
       type: String
-    - contextPath: PaloAltoNetworksCore.Distribution.description
+    - contextPath: Core.Distribution.description
       description: Information about the package.
       type: String
   - arguments:
@@ -506,10 +518,10 @@ script:
     execution: false
     name: core-get-distribution-url
     outputs:
-    - contextPath: PaloAltoNetworksCore.Distribution.id
+    - contextPath: Core.Distribution.id
       description: Distribution ID.
       type: String
-    - contextPath: PaloAltoNetworksCore.Distribution.url
+    - contextPath: Core.Distribution.url
       description: URL for downloading the installation package.
       type: String
   - arguments:
@@ -524,10 +536,10 @@ script:
     execution: false
     name: core-get-create-distribution-status
     outputs:
-    - contextPath: PaloAltoNetworksCore.Distribution.id
+    - contextPath: Core.Distribution.id
       description: Distribution ID.
       type: String
-    - contextPath: PaloAltoNetworksCore.Distribution.status
+    - contextPath: Core.Distribution.status
       description: The status of installation package.
       type: String
   - arguments:
@@ -655,43 +667,43 @@ script:
     execution: false
     name: core-get-audit-management-logs
     outputs:
-    - contextPath: PaloAltoNetworksCore.AuditManagementLogs.AUDIT_ID
+    - contextPath: Core.AuditManagementLogs.AUDIT_ID
       description: Audit log ID.
       type: Number
-    - contextPath: PaloAltoNetworksCore.AuditManagementLogs.AUDIT_OWNER_NAME
+    - contextPath: Core.AuditManagementLogs.AUDIT_OWNER_NAME
       description: Audit owner name.
       type: String
-    - contextPath: PaloAltoNetworksCore.AuditManagementLogs.AUDIT_OWNER_EMAIL
+    - contextPath: Core.AuditManagementLogs.AUDIT_OWNER_EMAIL
       description: Audit owner email address.
       type: String
-    - contextPath: PaloAltoNetworksCore.AuditManagementLogs.AUDIT_ASSET_JSON
+    - contextPath: Core.AuditManagementLogs.AUDIT_ASSET_JSON
       description: Asset JSON.
       type: String
-    - contextPath: PaloAltoNetworksCore.AuditManagementLogs.AUDIT_ASSET_NAMES
+    - contextPath: Core.AuditManagementLogs.AUDIT_ASSET_NAMES
       description: Audit asset names.
       type: String
-    - contextPath: PaloAltoNetworksCore.AuditManagementLogs.AUDIT_HOSTNAME
+    - contextPath: Core.AuditManagementLogs.AUDIT_HOSTNAME
       description: Host name.
       type: String
-    - contextPath: PaloAltoNetworksCore.AuditManagementLogs.AUDIT_RESULT
+    - contextPath: Core.AuditManagementLogs.AUDIT_RESULT
       description: Audit result.
       type: String
-    - contextPath: PaloAltoNetworksCore.AuditManagementLogs.AUDIT_REASON
+    - contextPath: Core.AuditManagementLogs.AUDIT_REASON
       description: Audit reason.
       type: String
-    - contextPath: PaloAltoNetworksCore.AuditManagementLogs.AUDIT_DESCRIPTION
+    - contextPath: Core.AuditManagementLogs.AUDIT_DESCRIPTION
       description: Description of the audit.
       type: String
-    - contextPath: PaloAltoNetworksCore.AuditManagementLogs.AUDIT_ENTITY
+    - contextPath: Core.AuditManagementLogs.AUDIT_ENTITY
       description: Audit entity (e.g., AUTH, DISTRIBUTIONS).
       type: String
-    - contextPath: PaloAltoNetworksCore.AuditManagementLogs.AUDIT_ENTITY_SUBTYPE
+    - contextPath: Core.AuditManagementLogs.AUDIT_ENTITY_SUBTYPE
       description: Entity subtype (e.g., Login, Create).
       type: String
-    - contextPath: PaloAltoNetworksCore.AuditManagementLogs.AUDIT_CASE_ID
+    - contextPath: Core.AuditManagementLogs.AUDIT_CASE_ID
       description: Audit case ID.
       type: Number
-    - contextPath: PaloAltoNetworksCore.AuditManagementLogs.AUDIT_INSERT_TIME
+    - contextPath: Core.AuditManagementLogs.AUDIT_INSERT_TIME
       description: Log's insert time.
       type: Date
   - arguments:
@@ -845,40 +857,40 @@ script:
     execution: false
     name: core-get-audit-agent-reports
     outputs:
-    - contextPath: PaloAltoNetworksCore.AuditAgentReports.ENDPOINTID
+    - contextPath: Core.AuditAgentReports.ENDPOINTID
       description: Endpoint ID.
       type: String
-    - contextPath: PaloAltoNetworksCore.AuditAgentReports.ENDPOINTNAME
+    - contextPath: Core.AuditAgentReports.ENDPOINTNAME
       description: Endpoint name.
       type: String
-    - contextPath: PaloAltoNetworksCore.AuditAgentReports.DOMAIN
+    - contextPath: Core.AuditAgentReports.DOMAIN
       description: Agent domain.
       type: String
-    - contextPath: PaloAltoNetworksCore.AuditAgentReports.TRAPSVERSION
+    - contextPath: Core.AuditAgentReports.TRAPSVERSION
       description: Traps version.
       type: String
-    - contextPath: PaloAltoNetworksCore.AuditAgentReports.RECEIVEDTIME
+    - contextPath: Core.AuditAgentReports.RECEIVEDTIME
       description: Received time in Epoch time.
       type: Date
-    - contextPath: PaloAltoNetworksCore.AuditAgentReports.TIMESTAMP
+    - contextPath: Core.AuditAgentReports.TIMESTAMP
       description: Timestamp in Epoch time.
       type: Date
-    - contextPath: PaloAltoNetworksCore.AuditAgentReports.CATEGORY
+    - contextPath: Core.AuditAgentReports.CATEGORY
       description: Report category (e.g., Audit).
       type: String
-    - contextPath: PaloAltoNetworksCore.AuditAgentReports.TYPE
+    - contextPath: Core.AuditAgentReports.TYPE
       description: Report type (e.g., Action, Policy).
       type: String
-    - contextPath: PaloAltoNetworksCore.AuditAgentReports.SUBTYPE
+    - contextPath: Core.AuditAgentReports.SUBTYPE
       description: Report subtype (e.g., Fully Protected,Policy Update,Cancel Isolation).
       type: String
-    - contextPath: PaloAltoNetworksCore.AuditAgentReports.RESULT
+    - contextPath: Core.AuditAgentReports.RESULT
       description: Report result.
       type: String
-    - contextPath: PaloAltoNetworksCore.AuditAgentReports.REASON
+    - contextPath: Core.AuditAgentReports.REASON
       description: Report reason.
       type: String
-    - contextPath: PaloAltoNetworksCore.AuditAgentReports.DESCRIPTION
+    - contextPath: Core.AuditAgentReports.DESCRIPTION
       description: Agent report description.
       type: String
     - contextPath: Endpoint.ID
@@ -1157,10 +1169,10 @@ script:
     name: core-endpoint-scan
     polling: true
     outputs:
-    - contextPath: PaloAltoNetworksCore.endpointScan.actionId
+    - contextPath: Core.endpointScan.actionId
       description: The action ID of the scan request.
       type: Number
-    - contextPath: PaloAltoNetworksCore.endpointScan.aborted
+    - contextPath: Core.endpointScan.aborted
       description: Was the scan aborted.
       type: Boolean
   - arguments:
@@ -1273,10 +1285,10 @@ script:
     execution: true
     name: core-endpoint-scan-abort
     outputs:
-    - contextPath: PaloAltoNetworksCore.endpointScan.actionId
+    - contextPath: Core.endpointScan.actionId
       description: The action id of the abort scan request.
       type: Unknown
-    - contextPath: PaloAltoNetworksCore.endpointScan.aborted
+    - contextPath: Core.endpointScan.aborted
       description: Was the scan aborted.
       type: Boolean
   - arguments:
@@ -1292,13 +1304,13 @@ script:
     execution: false
     name: core-get-policy
     outputs:
-    - contextPath: PaloAltoNetworksCore.Policy
+    - contextPath: Core.Policy
       description: The policy allocated with the endpoint.
       type: string
-    - contextPath: PaloAltoNetworksCore.Policy.policy_name
+    - contextPath: Core.Policy.policy_name
       description: Name of the policy allocated with the endpoint.
       type: string
-    - contextPath: PaloAltoNetworksCore.Policy.endpoint_id
+    - contextPath: Core.Policy.endpoint_id
       description: Endpoint ID.
       type: string
   - arguments:
@@ -1378,37 +1390,37 @@ script:
     execution: false
     name: core-get-scripts
     outputs:
-    - contextPath: PaloAltoNetworksCore.Scripts
+    - contextPath: Core.Scripts
       description: The scripts command results.
       type: Unknown
-    - contextPath: PaloAltoNetworksCore.Scripts.script_id
+    - contextPath: Core.Scripts.script_id
       description: Script ID.
       type: Unknown
-    - contextPath: PaloAltoNetworksCore.Scripts.name
+    - contextPath: Core.Scripts.name
       description: Name of the script.
       type: string
-    - contextPath: PaloAltoNetworksCore.Scripts.description
+    - contextPath: Core.Scripts.description
       description: Description of the script.
       type: string
-    - contextPath: PaloAltoNetworksCore.Scripts.modification_date
+    - contextPath: Core.Scripts.modification_date
       description: Timestamp of when the script was last modified.
       type: Unknown
-    - contextPath: PaloAltoNetworksCore.Scripts.created_by
+    - contextPath: Core.Scripts.created_by
       description: Name of the user who created the script.
       type: string
-    - contextPath: PaloAltoNetworksCore.Scripts.windows_supported
+    - contextPath: Core.Scripts.windows_supported
       description: Whether the script can be executed on a Windows operating system.
       type: boolean
-    - contextPath: PaloAltoNetworksCore.Scripts.linux_supported
+    - contextPath: Core.Scripts.linux_supported
       description: Whether the script can be executed on a Linux operating system.
       type: boolean
-    - contextPath: PaloAltoNetworksCore.Scripts.macos_supported
+    - contextPath: Core.Scripts.macos_supported
       description: Whether the script can be executed on Mac operating system.
       type: boolean
-    - contextPath: PaloAltoNetworksCore.Scripts.is_high_risk
+    - contextPath: Core.Scripts.is_high_risk
       description: Whether the script has a high-risk outcome.
       type: boolean
-    - contextPath: PaloAltoNetworksCore.Scripts.script_uid
+    - contextPath: Core.Scripts.script_uid
       description: Globally Unique Identifier of the script, used to identify the
         script when executing.
       type: string
@@ -1524,49 +1536,49 @@ script:
     execution: false
     name: core-get-endpoint-device-control-violations
     outputs:
-    - contextPath: PaloAltoNetworksCore.EndpointViolations
+    - contextPath: Core.EndpointViolations
       description: Endpoint violations command results.
       type: Unknown
-    - contextPath: PaloAltoNetworksCore.EndpointViolations.violations
+    - contextPath: Core.EndpointViolations.violations
       description: A list of violations.
       type: Unknown
-    - contextPath: PaloAltoNetworksCore.EndpointViolations.violations.os_type
+    - contextPath: Core.EndpointViolations.violations.os_type
       description: Type of the operating system.
       type: string
-    - contextPath: PaloAltoNetworksCore.EndpointViolations.violations.hostname
+    - contextPath: Core.EndpointViolations.violations.hostname
       description: Hostname of the violation.
       type: string
-    - contextPath: PaloAltoNetworksCore.EndpointViolations.violations.username
+    - contextPath: Core.EndpointViolations.violations.username
       description: Username of the violation.
       type: string
-    - contextPath: PaloAltoNetworksCore.EndpointViolations.violations.ip
+    - contextPath: Core.EndpointViolations.violations.ip
       description: IP address of the violation.
       type: string
-    - contextPath: PaloAltoNetworksCore.EndpointViolations.violations.timestamp
+    - contextPath: Core.EndpointViolations.violations.timestamp
       description: Timestamp of the violation.
       type: number
-    - contextPath: PaloAltoNetworksCore.EndpointViolations.violations.violation_id
+    - contextPath: Core.EndpointViolations.violations.violation_id
       description: Violation ID.
       type: number
-    - contextPath: PaloAltoNetworksCore.EndpointViolations.violations.type
+    - contextPath: Core.EndpointViolations.violations.type
       description: Type of violation.
       type: string
-    - contextPath: PaloAltoNetworksCore.EndpointViolations.violations.vendor_id
+    - contextPath: Core.EndpointViolations.violations.vendor_id
       description: Vendor ID of the violation.
       type: string
-    - contextPath: PaloAltoNetworksCore.EndpointViolations.violations.vendor
+    - contextPath: Core.EndpointViolations.violations.vendor
       description: Name of the vendor of the violation.
       type: string
-    - contextPath: PaloAltoNetworksCore.EndpointViolations.violations.product_id
+    - contextPath: Core.EndpointViolations.violations.product_id
       description: Product ID of the violation.
       type: string
-    - contextPath: PaloAltoNetworksCore.EndpointViolations.violations.product
+    - contextPath: Core.EndpointViolations.violations.product
       description: Name of the product of the violation.
       type: string
-    - contextPath: PaloAltoNetworksCore.EndpointViolations.violations.serial
+    - contextPath: Core.EndpointViolations.violations.serial
       description: Serial number of the violation.
       type: string
-    - contextPath: PaloAltoNetworksCore.EndpointViolations.violations.endpoint_id
+    - contextPath: Core.EndpointViolations.violations.endpoint_id
       description: Endpoint ID of the violation.
       type: string
   - arguments:
@@ -1627,7 +1639,7 @@ script:
     name: core-retrieve-files
     polling: true
     outputs:
-    - contextPath: PaloAltoNetworksCore.RetrievedFiles.action_id
+    - contextPath: Core.RetrievedFiles.action_id
       description: ID of the action to retrieve files from selected endpoints.
       type: string
   - arguments:
@@ -1688,47 +1700,47 @@ script:
     execution: false
     name: core-get-script-metadata
     outputs:
-    - contextPath: PaloAltoNetworksCore.ScriptMetadata
+    - contextPath: Core.ScriptMetadata
       description: The script metadata command results.
       type: Unknown
-    - contextPath: PaloAltoNetworksCore.ScriptMetadata.script_id
+    - contextPath: Core.ScriptMetadata.script_id
       description: Script ID.
       type: number
-    - contextPath: PaloAltoNetworksCore.ScriptMetadata.name
+    - contextPath: Core.ScriptMetadata.name
       description: Script name.
       type: string
-    - contextPath: PaloAltoNetworksCore.ScriptMetadata.description
+    - contextPath: Core.ScriptMetadata.description
       description: Script description.
       type: string
-    - contextPath: PaloAltoNetworksCore.ScriptMetadata.modification_date
+    - contextPath: Core.ScriptMetadata.modification_date
       description: Timestamp of when the script was last modified.
       type: unknown
-    - contextPath: PaloAltoNetworksCore.ScriptMetadata.created_by
+    - contextPath: Core.ScriptMetadata.created_by
       description: Name of the user who created the script.
       type: string
-    - contextPath: PaloAltoNetworksCore.ScriptMetadata.is_high_risk
+    - contextPath: Core.ScriptMetadata.is_high_risk
       description: Whether the script has a high-risk outcome.
       type: boolean
-    - contextPath: PaloAltoNetworksCore.ScriptMetadata.windows_supported
+    - contextPath: Core.ScriptMetadata.windows_supported
       description: Whether the script can be executed on a Windows operating system.
       type: boolean
-    - contextPath: PaloAltoNetworksCore.ScriptMetadata.linux_supported
+    - contextPath: Core.ScriptMetadata.linux_supported
       description: Whether the script can be executed on a Linux operating system.
       type: boolean
-    - contextPath: PaloAltoNetworksCore.ScriptMetadata.macos_supported
+    - contextPath: Core.ScriptMetadata.macos_supported
       description: Whether the script can be executed on a Mac operating system.
       type: boolean
-    - contextPath: PaloAltoNetworksCore.ScriptMetadata.entry_point
+    - contextPath: Core.ScriptMetadata.entry_point
       description: Name of the entry point selected for the script. An empty string
         indicates  the script defined as just run.
       type: string
-    - contextPath: PaloAltoNetworksCore.ScriptMetadata.script_input
+    - contextPath: Core.ScriptMetadata.script_input
       description: Name and type for the specified entry point.
       type: string
-    - contextPath: PaloAltoNetworksCore.ScriptMetadata.script_output_type
+    - contextPath: Core.ScriptMetadata.script_output_type
       description: Type of the output.
       type: string
-    - contextPath: PaloAltoNetworksCore.ScriptMetadata.script_output_dictionary_definitions
+    - contextPath: Core.ScriptMetadata.script_output_dictionary_definitions
       description: If the script_output_type is a dictionary, an array with friendly
         name, name, and type for each output.
       type: Unknown
@@ -1745,13 +1757,13 @@ script:
     execution: false
     name: core-get-script-code
     outputs:
-    - contextPath: PaloAltoNetworksCore.ScriptCode
+    - contextPath: Core.ScriptCode
       description: The script code command results.
       type: Unknown
-    - contextPath: PaloAltoNetworksCore.ScriptCode.code
+    - contextPath: Core.ScriptCode.code
       description: The code of a specific script in the script library.
       type: string
-    - contextPath: PaloAltoNetworksCore.ScriptCode.script_uid
+    - contextPath: Core.ScriptCode.script_uid
       description: Unique identifier of the script.
       type: string
   - arguments:
@@ -1768,16 +1780,16 @@ script:
     execution: false
     name: core-action-status-get
     outputs:
-    - contextPath: PaloAltoNetworksCore.GetActionStatus
+    - contextPath: Core.GetActionStatus
       description: The action status command results.
       type: Unknown
-    - contextPath: PaloAltoNetworksCore.GetActionStatus.endpoint_id
+    - contextPath: Core.GetActionStatus.endpoint_id
       description: Endpoint ID.
       type: string
-    - contextPath: PaloAltoNetworksCore.GetActionStatus.status
+    - contextPath: Core.GetActionStatus.status
       description: The status of the specific endpoint ID.
       type: string
-    - contextPath: PaloAltoNetworksCore.GetActionStatus.action_id
+    - contextPath: Core.GetActionStatus.action_id
       description: The specified action ID.
       type: number
   - arguments:
@@ -1822,10 +1834,10 @@ script:
     execution: false
     name: core-run-script
     outputs:
-    - contextPath: PaloAltoNetworksCore.ScriptRun.action_id
+    - contextPath: Core.ScriptRun.action_id
       description: ID of the action initiated.
       type: Number
-    - contextPath: PaloAltoNetworksCore.ScriptRun.endpoints_count
+    - contextPath: Core.ScriptRun.endpoints_count
       description: Number of endpoints the action was initiated on.
       type: Number
   - arguments:
@@ -1864,10 +1876,10 @@ script:
     name: core-run-snippet-code-script
     polling: true
     outputs:
-    - contextPath: PaloAltoNetworksCore.ScriptRun.action_id
+    - contextPath: Core.ScriptRun.action_id
       description: ID of the action initiated.
       type: Number
-    - contextPath: PaloAltoNetworksCore.ScriptRun.endpoints_count
+    - contextPath: Core.ScriptRun.endpoints_count
       description: Number of endpoints the action was initiated on.
       type: Number
   - arguments:
@@ -1882,42 +1894,42 @@ script:
     execution: false
     name: core-get-script-execution-status
     outputs:
-    - contextPath: PaloAltoNetworksCore.ScriptStatus.general_status
+    - contextPath: Core.ScriptStatus.general_status
       description: General status of the action, considering the status of all the
         endpoints.
       type: String
-    - contextPath: PaloAltoNetworksCore.ScriptStatus.error_message
+    - contextPath: Core.ScriptStatus.error_message
       description: Error message regarding permissions for running APIs or the action
         doesn’t exist.
       type: String
-    - contextPath: PaloAltoNetworksCore.ScriptStatus.endpoints_timeout
+    - contextPath: Core.ScriptStatus.endpoints_timeout
       description: Number of endpoints in "timeout" status.
       type: Number
-    - contextPath: PaloAltoNetworksCore.ScriptStatus.action_id
+    - contextPath: Core.ScriptStatus.action_id
       description: ID of the action initiated.
       type: Number
-    - contextPath: PaloAltoNetworksCore.ScriptStatus.endpoints_pending_abort
+    - contextPath: Core.ScriptStatus.endpoints_pending_abort
       description: Number of endpoints in "pending abort" status.
       type: Number
-    - contextPath: PaloAltoNetworksCore.ScriptStatus.endpoints_pending
+    - contextPath: Core.ScriptStatus.endpoints_pending
       description: Number of endpoints in "pending" status.
       type: Number
-    - contextPath: PaloAltoNetworksCore.ScriptStatus.endpoints_in_progress
+    - contextPath: Core.ScriptStatus.endpoints_in_progress
       description: Number of endpoints in "in progress" status.
       type: Number
-    - contextPath: PaloAltoNetworksCore.ScriptStatus.endpoints_failed
+    - contextPath: Core.ScriptStatus.endpoints_failed
       description: Number of endpoints in "failed" status.
       type: Number
-    - contextPath: PaloAltoNetworksCore.ScriptStatus.endpoints_expired
+    - contextPath: Core.ScriptStatus.endpoints_expired
       description: Number of endpoints in "expired" status.
       type: Number
-    - contextPath: PaloAltoNetworksCore.ScriptStatus.endpoints_completed_successfully
+    - contextPath: Core.ScriptStatus.endpoints_completed_successfully
       description: Number of endpoints in "completed successfully" status.
       type: Number
-    - contextPath: PaloAltoNetworksCore.ScriptStatus.endpoints_canceled
+    - contextPath: Core.ScriptStatus.endpoints_canceled
       description: Number of endpoints in "canceled" status.
       type: Number
-    - contextPath: PaloAltoNetworksCore.ScriptStatus.endpoints_aborted
+    - contextPath: Core.ScriptStatus.endpoints_aborted
       description: Number of endpoints in "aborted" status.
       type: Number
   - arguments:
@@ -1932,40 +1944,40 @@ script:
     execution: false
     name: core-get-script-execution-results
     outputs:
-    - contextPath: PaloAltoNetworksCore.ScriptResult.action_id
+    - contextPath: Core.ScriptResult.action_id
       description: ID of the action initiated.
       type: Number
-    - contextPath: PaloAltoNetworksCore.ScriptResult.results.retrieved_files
+    - contextPath: Core.ScriptResult.results.retrieved_files
       description: Number of successfully retrieved files.
       type: Number
-    - contextPath: PaloAltoNetworksCore.ScriptResult.results.endpoint_ip_address
+    - contextPath: Core.ScriptResult.results.endpoint_ip_address
       description: Endpoint IP address.
       type: String
-    - contextPath: PaloAltoNetworksCore.ScriptResult.results.endpoint_name
+    - contextPath: Core.ScriptResult.results.endpoint_name
       description: Number of successfully retrieved files.
       type: String
-    - contextPath: PaloAltoNetworksCore.ScriptResult.results.failed_files
+    - contextPath: Core.ScriptResult.results.failed_files
       description: Number of files failed to retrieve.
       type: Number
-    - contextPath: PaloAltoNetworksCore.ScriptResult.results.endpoint_status
+    - contextPath: Core.ScriptResult.results.endpoint_status
       description: Endpoint status.
       type: String
-    - contextPath: PaloAltoNetworksCore.ScriptResult.results.domain
+    - contextPath: Core.ScriptResult.results.domain
       description: Domain to which the endpoint belongs.
       type: String
-    - contextPath: PaloAltoNetworksCore.ScriptResult.results.endpoint_id
+    - contextPath: Core.ScriptResult.results.endpoint_id
       description: Endpoint ID.
       type: String
-    - contextPath: PaloAltoNetworksCore.ScriptResult.results.execution_status
+    - contextPath: Core.ScriptResult.results.execution_status
       description: Execution status of this endpoint.
       type: String
-    - contextPath: PaloAltoNetworksCore.ScriptResult.results.return_value
+    - contextPath: Core.ScriptResult.results.return_value
       description: Value returned by the script in case the type is not a dictionary.
       type: String
-    - contextPath: PaloAltoNetworksCore.ScriptResult.results.standard_output
+    - contextPath: Core.ScriptResult.results.standard_output
       description: The STDOUT and the STDERR logged by the script during the execution.
       type: String
-    - contextPath: PaloAltoNetworksCore.ScriptResult.results.retention_date
+    - contextPath: Core.ScriptResult.results.retention_date
       description: Timestamp in which the retrieved files will be deleted from the
         server.
       type: Date
@@ -2063,10 +2075,10 @@ script:
     name: core-run-script-execute-commands
     polling: true
     outputs:
-    - contextPath: PaloAltoNetworksCore.ScriptRun.action_id
+    - contextPath: Core.ScriptRun.action_id
       description: ID of the action initiated.
       type: Number
-    - contextPath: PaloAltoNetworksCore.ScriptRun.endpoints_count
+    - contextPath: Core.ScriptRun.endpoints_count
       description: Number of endpoints the action was initiated on.
       type: Number
   - arguments:
@@ -2113,10 +2125,10 @@ script:
     name: core-run-script-delete-file
     polling: true
     outputs:
-    - contextPath: PaloAltoNetworksCore.ScriptRun.action_id
+    - contextPath: Core.ScriptRun.action_id
       description: ID of the action initiated.
       type: Number
-    - contextPath: PaloAltoNetworksCore.ScriptRun.endpoints_count
+    - contextPath: Core.ScriptRun.endpoints_count
       description: Number of endpoints the action was initiated on.
       type: Number
   - arguments:
@@ -2161,10 +2173,10 @@ script:
     name: core-run-script-file-exists
     polling: true
     outputs:
-    - contextPath: PaloAltoNetworksCore.ScriptRun.action_id
+    - contextPath: Core.ScriptRun.action_id
       description: ID of the action initiated.
       type: Number
-    - contextPath: PaloAltoNetworksCore.ScriptRun.endpoints_count
+    - contextPath: Core.ScriptRun.endpoints_count
       description: Number of endpoints the action was initiated on.
       type: Number
   - arguments:
@@ -2209,10 +2221,10 @@ script:
     name: core-run-script-kill-process
     polling: true
     outputs:
-    - contextPath: PaloAltoNetworksCore.ScriptRun.action_id
+    - contextPath: Core.ScriptRun.action_id
       description: ID of the action initiated.
       type: Number
-    - contextPath: PaloAltoNetworksCore.ScriptRun.endpoints_count
+    - contextPath: Core.ScriptRun.endpoints_count
       description: Number of endpoints the action was initiated on.
       type: Number
   - arguments:

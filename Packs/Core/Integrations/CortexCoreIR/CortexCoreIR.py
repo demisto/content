@@ -16,7 +16,7 @@ TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 NONCE_LENGTH = 64
 API_KEY_LENGTH = 128
 
-INTEGRATION_CONTEXT_BRAND = 'PaloAltoNetworksCore'
+INTEGRATION_CONTEXT_BRAND = 'Core'
 INTEGRATION_NAME = 'Cortex Core - IR'
 
 
@@ -1739,7 +1739,7 @@ def get_distribution_url_command(client, args):
     return (
         f'[Distribution URL]({url})',
         {
-            'PaloAltoNetworksCore.Distribution(val.id == obj.id)': {
+            'Core.Distribution(val.id == obj.id)': {
                 'id': distribution_id,
                 'url': url
             }

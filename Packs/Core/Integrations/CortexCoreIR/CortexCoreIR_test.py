@@ -90,7 +90,7 @@ def test_get_endpoints(requests_mock):
 
     res = get_endpoints_command(client, args)
     assert get_endpoints_response.get('reply').get('endpoints') == \
-           res.outputs['PaloAltoNetworksCore.Endpoint(val.endpoint_id == obj.endpoint_id)']
+           res.outputs['Core.Endpoint(val.endpoint_id == obj.endpoint_id)']
 
 
 def test_get_all_endpoints_using_limit(requests_mock):
@@ -110,7 +110,7 @@ def test_get_all_endpoints_using_limit(requests_mock):
     res = get_endpoints_command(client, args)
     expected_endpoint = get_endpoints_response.get('reply')[0]
 
-    assert [expected_endpoint] == res.outputs['PaloAltoNetworksCore.Endpoint(val.endpoint_id == obj.endpoint_id)']
+    assert [expected_endpoint] == res.outputs['Core.Endpoint(val.endpoint_id == obj.endpoint_id)']
 
 
 def test_endpoint_command(requests_mock):
@@ -306,7 +306,7 @@ def test_get_distribution_url(requests_mock):
     readable_output, outputs, _ = get_distribution_url_command(client, args)
     expected_url = get_distribution_url_response.get('reply').get('distribution_url')
     assert outputs == {
-        'PaloAltoNetworksCore.Distribution(val.id == obj.id)': {
+        'Core.Distribution(val.id == obj.id)': {
             'id': '1111',
             'url': expected_url
         }
@@ -334,7 +334,7 @@ def test_get_audit_management_logs(requests_mock):
     readable_output, outputs, _ = get_audit_management_logs_command(client, args)
 
     expected_outputs = get_audit_management_logs_response.get('reply').get('data')
-    assert outputs['PaloAltoNetworksCore.AuditManagementLogs(val.AUDIT_ID == obj.AUDIT_ID)'] == expected_outputs
+    assert outputs['Core.AuditManagementLogs(val.AUDIT_ID == obj.AUDIT_ID)'] == expected_outputs
 
 
 def test_get_audit_agent_reports(requests_mock):
@@ -355,7 +355,7 @@ def test_get_audit_agent_reports(requests_mock):
 
     readable_output, outputs, _ = get_audit_agent_reports_command(client, args)
     expected_outputs = get_audit_agent_reports_response.get('reply').get('data')
-    assert outputs['PaloAltoNetworksCore.AuditAgentReports'] == expected_outputs
+    assert outputs['Core.AuditAgentReports'] == expected_outputs
     assert outputs['Endpoint(val.ID && val.ID == obj.ID)'] == [{'ID': '1111', 'Hostname': '1111.eu-central-1'},
                                                                {'ID': '1111', 'Hostname': '1111.eu-central-1'},
                                                                {'ID': '1111', 'Hostname': '1111.eu-central-1'}]
@@ -378,7 +378,7 @@ def test_get_distribution_status(requests_mock):
     readable_output, outputs, _ = get_distribution_status_command(client, args)
 
     assert outputs == {
-        'PaloAltoNetworksCore.Distribution(val.id == obj.id)': [
+        'Core.Distribution(val.id == obj.id)': [
             {
                 'id': '588a56de313549b49d70d14d4c1fd0e3',
                 'status': 'Completed'
@@ -400,7 +400,7 @@ def test_get_distribution_versions(requests_mock):
     readable_output, outputs, _ = get_distribution_versions_command(client)
 
     assert outputs == {
-        'PaloAltoNetworksCore.DistributionVersions': {
+        'Core.DistributionVersions': {
             "windows": [
                 "7.0.0.27797"
             ],
@@ -435,7 +435,7 @@ def test_create_distribution(requests_mock):
 
     expected_distribution_id = create_distribution_response.get('reply').get('distribution_id')
     assert outputs == {
-        'PaloAltoNetworksCore.Distribution(val.id == obj.id)': {
+        'Core.Distribution(val.id == obj.id)': {
             'id': expected_distribution_id,
             "name": "dfslcxe",
             "platform": "windows",
@@ -459,7 +459,7 @@ def test_blocklist_files_command_with_more_than_one_file(requests_mock):
 
     from CortexCoreIR import blocklist_files_command, Client
     test_data = load_test_data('test_data/blocklist_allowlist_files_success.json')
-    expected_command_result = {'PaloAltoNetworksCore.blackList.fileHash(val.fileHash == obj.fileHash)': test_data[
+    expected_command_result = {'Core.blackList.fileHash(val.fileHash == obj.fileHash)': test_data[
         'multi_command_args']['hash_list']}
     requests_mock.post(f'{Core_URL}/public_api/v1/hash_exceptions/blocklist/', json=test_data['api_response'])
 
@@ -485,7 +485,7 @@ def test_blocklist_files_command_with_single_file(requests_mock):
     from CortexCoreIR import blocklist_files_command, Client
     test_data = load_test_data('test_data/blocklist_allowlist_files_success.json')
     expected_command_result = {
-        'PaloAltoNetworksCore.blackList.fileHash(val.fileHash == obj.fileHash)':
+        'Core.blackList.fileHash(val.fileHash == obj.fileHash)':
             test_data['single_command_args']['hash_list']}
     requests_mock.post(f'{Core_URL}/public_api/v1/hash_exceptions/blocklist/', json=test_data['api_response'])
 
@@ -511,7 +511,7 @@ def test_blocklist_files_command_with_no_comment_file(requests_mock):
     from CortexCoreIR import blocklist_files_command, Client
     test_data = load_test_data('test_data/blocklist_allowlist_files_success.json')
     expected_command_result = {
-        'PaloAltoNetworksCore.blackList.fileHash(val.fileHash == obj.fileHash)':
+        'Core.blackList.fileHash(val.fileHash == obj.fileHash)':
             test_data['no_comment_command_args']['hash_list']}
     requests_mock.post(f'{Core_URL}/public_api/v1/hash_exceptions/blocklist/', json=test_data['api_response'])
 
@@ -536,7 +536,7 @@ def test_allowlist_files_command_with_more_than_one_file(requests_mock):
 
     from CortexCoreIR import allowlist_files_command, Client
     test_data = load_test_data('test_data/blocklist_allowlist_files_success.json')
-    expected_command_result = {'PaloAltoNetworksCore.whiteList.fileHash(val.fileHash == obj.fileHash)': test_data[
+    expected_command_result = {'Core.whiteList.fileHash(val.fileHash == obj.fileHash)': test_data[
         'multi_command_args']['hash_list']}
     requests_mock.post(f'{Core_URL}/public_api/v1/hash_exceptions/allowlist/', json=test_data['api_response'])
 
@@ -562,7 +562,7 @@ def test_allowlist_files_command_with_single_file(requests_mock):
     from CortexCoreIR import allowlist_files_command, Client
     test_data = load_test_data('test_data/blocklist_allowlist_files_success.json')
     expected_command_result = {
-        'PaloAltoNetworksCore.whiteList.fileHash(val.fileHash == obj.fileHash)':
+        'Core.whiteList.fileHash(val.fileHash == obj.fileHash)':
             test_data['single_command_args']['hash_list']}
     requests_mock.post(f'{Core_URL}/public_api/v1/hash_exceptions/allowlist/', json=test_data['api_response'])
 
@@ -588,7 +588,7 @@ def test_allowlist_files_command_with_no_comment_file(requests_mock):
     from CortexCoreIR import allowlist_files_command, Client
     test_data = load_test_data('test_data/blocklist_allowlist_files_success.json')
     expected_command_result = {
-        'PaloAltoNetworksCore.whiteList.fileHash(val.fileHash == obj.fileHash)': test_data['no_comment_command_args'][
+        'Core.whiteList.fileHash(val.fileHash == obj.fileHash)': test_data['no_comment_command_args'][
             'hash_list']}
     requests_mock.post(f'{Core_URL}/public_api/v1/hash_exceptions/allowlist/', json=test_data['api_response'])
 
@@ -613,7 +613,7 @@ def test_quarantine_files_command(requests_mock):
     from CortexCoreIR import quarantine_files_command, Client
     test_data = load_test_data('test_data/quarantine_files.json')
     quarantine_files_expected_tesult = {
-        'PaloAltoNetworksCore.quarantineFiles.actionIds(val.actionId === obj.actionId)': test_data['context_data']}
+        'Core.quarantineFiles.actionIds(val.actionId === obj.actionId)': test_data['context_data']}
     requests_mock.post(f'{Core_URL}/public_api/v1/endpoints/quarantine/', json=test_data['api_response'])
 
     client = Client(
@@ -637,7 +637,7 @@ def test_get_quarantine_status_command(requests_mock):
     from CortexCoreIR import get_quarantine_status_command, Client
     test_data = load_test_data('test_data/get_quarantine_status.json')
     quarantine_files_expected_tesult = {
-        'PaloAltoNetworksCore.quarantineFiles.status(val.fileHash === obj.fileHash &&val.endpointId'
+        'Core.quarantineFiles.status(val.fileHash === obj.fileHash &&val.endpointId'
         ' === obj.endpointId && val.filePath === obj.filePath)':
             test_data['context_data']}
     requests_mock.post(f'{Core_URL}/public_api/v1/quarantine/status/', json=test_data['api_response'])
@@ -662,7 +662,7 @@ def test_restore_file_command(requests_mock):
     """
     from CortexCoreIR import restore_file_command, Client
 
-    restore_expected_tesult = {'PaloAltoNetworksCore.restoredFiles.actionId(val.actionId == obj.actionId)': 123}
+    restore_expected_tesult = {'Core.restoredFiles.actionId(val.actionId == obj.actionId)': 123}
     requests_mock.post(f'{Core_URL}/public_api/v1/endpoints/restore/', json={"reply": {"action_id": 123}})
 
     client = Client(
@@ -686,7 +686,7 @@ def test_endpoint_scan_command(requests_mock):
     """
     from CortexCoreIR import endpoint_scan_command, Client
     test_data = load_test_data('test_data/scan_endpoints.json')
-    scan_expected_tesult = {'PaloAltoNetworksCore.endpointScan(val.actionId == obj.actionId)': {'actionId': 123,
+    scan_expected_tesult = {'Core.endpointScan(val.actionId == obj.actionId)': {'actionId': 123,
                                                                                                 'aborted': False}}
     requests_mock.post(f'{Core_URL}/public_api/v1/endpoints/scan/', json={"reply": {"action_id": 123}})
 
@@ -710,7 +710,7 @@ def test_endpoint_scan_command_scan_all_endpoints(requests_mock):
     """
     from CortexCoreIR import endpoint_scan_command, Client
     test_data = load_test_data('test_data/scan_all_endpoints.json')
-    scan_expected_tesult = {'PaloAltoNetworksCore.endpointScan(val.actionId == obj.actionId)': {'actionId': 123,
+    scan_expected_tesult = {'Core.endpointScan(val.actionId == obj.actionId)': {'actionId': 123,
                                                                                                 'aborted': False}}
     requests_mock.post(f'{Core_URL}/public_api/v1/endpoints/scan/', json={"reply": {"action_id": 123}})
 
@@ -781,7 +781,7 @@ def test_endpoint_scan_abort_command(requests_mock):
     """
     from CortexCoreIR import endpoint_scan_abort_command, Client
     test_data = load_test_data('test_data/scan_endpoints.json')
-    scan_expected_tesult = {'PaloAltoNetworksCore.endpointScan(val.actionId == obj.actionId)': {'actionId': 123,
+    scan_expected_tesult = {'Core.endpointScan(val.actionId == obj.actionId)': {'actionId': 123,
                                                                                                 'aborted': True}}
     requests_mock.post(f'{Core_URL}/public_api/v1/endpoints/abort_scan/', json={"reply": {"action_id": 123}})
 
@@ -805,7 +805,7 @@ def test_endpoint_scan_abort_command_all_endpoints(requests_mock):
     """
     from CortexCoreIR import endpoint_scan_abort_command, Client
     test_data = load_test_data('test_data/scan_all_endpoints.json')
-    scan_expected_tesult = {'PaloAltoNetworksCore.endpointScan(val.actionId == obj.actionId)': {'actionId': 123,
+    scan_expected_tesult = {'Core.endpointScan(val.actionId == obj.actionId)': {'actionId': 123,
                                                                                                 'aborted': True}}
     requests_mock.post(f'{Core_URL}/public_api/v1/endpoints/abort_scan/', json={"reply": {"action_id": 123}})
 
@@ -891,7 +891,7 @@ def test_get_policy(requests_mock):
         'endpoint_id': 'aeec6a2cc92e46fab3b6f621722e9916',
         'policy_name': 'test'
     }
-    run_script_expected_result = {'PaloAltoNetworksCore.Policy(val.endpoint_id == obj.endpoint_id)': expected_context}
+    run_script_expected_result = {'Core.Policy(val.endpoint_id == obj.endpoint_id)': expected_context}
     requests_mock.post(f'{Core_URL}/public_api/v1/endpoints/get_policy/', json={'reply': {
         'policy_name': 'test'}})
 
@@ -926,7 +926,7 @@ def test_get_endpoint_device_control_violations_command(requests_mock):
         timestamp = violation.get('timestamp')
         violation['date'] = timestamp_to_datestring(timestamp, '%Y-%m-%dT%H:%M:%S')
     get_endpoint_violations_expected_result = {
-        'PaloAltoNetworksCore.EndpointViolations(val.violation_id==obj.violation_id)':
+        'Core.EndpointViolations(val.violation_id==obj.violation_id)':
             violations
     }
     headers = ['date', 'hostname', 'platform', 'username', 'ip', 'type', 'violation_id', 'vendor', 'product',
@@ -962,7 +962,7 @@ def test_retrieve_files_command(requests_mock):
     from CommonServerPython import tableToMarkdown, string_to_table_header
 
     retrieve_expected_result = {
-        'PaloAltoNetworksCore.RetrievedFiles(val.action_id == obj.action_id)': {'action_id': 1773}}
+        'Core.RetrievedFiles(val.action_id == obj.action_id)': {'action_id': 1773}}
     requests_mock.post(f'{Core_URL}/public_api/v1/endpoints/file_retrieval/', json={'reply': {'action_id': 1773}})
     result = {'action_id': 1773}
 
@@ -991,7 +991,7 @@ def test_retrieve_files_command_using_general_file_path(requests_mock):
     from CommonServerPython import tableToMarkdown, string_to_table_header
 
     retrieve_expected_result = {
-        'PaloAltoNetworksCore.RetrievedFiles(val.action_id == obj.action_id)': {'action_id': 1773}}
+        'Core.RetrievedFiles(val.action_id == obj.action_id)': {'action_id': 1773}}
     requests_mock.post(f'{Core_URL}/public_api/v1/endpoints/file_retrieval/', json={'reply': {'action_id': 1773}})
     result = {'action_id': 1773}
 
@@ -1089,7 +1089,7 @@ def test_get_scripts_command(requests_mock):
     headers: list = ['name', 'description', 'script_uid', 'modification_date', 'created_by',
                      'windows_supported', 'linux_supported', 'macos_supported', 'is_high_risk']
     get_scripts_expected_result = {
-        'PaloAltoNetworksCore.Scripts(val.script_uid == obj.script_uid)': scripts
+        'Core.Scripts(val.script_uid == obj.script_uid)': scripts
     }
     requests_mock.post(f'{Core_URL}/public_api/v1/scripts/get_scripts/', json=get_scripts_response)
 
@@ -1122,7 +1122,7 @@ def test_get_script_metadata_command(requests_mock):
 
     get_script_metadata_response = load_test_data('./test_data/get_script_metadata.json')
     get_scripts_expected_result = {
-        'PaloAltoNetworksCore.ScriptMetadata(val.script_uid == obj.script_uid)': get_script_metadata_response.get(
+        'Core.ScriptMetadata(val.script_uid == obj.script_uid)': get_script_metadata_response.get(
             'reply')
     }
     script_metadata = copy.deepcopy(get_script_metadata_response).get('reply')
@@ -1164,7 +1164,7 @@ def test_get_script_code_command(requests_mock):
         'code': get_script_code_command_reply.get('reply')
     }
     get_script_code_command_expected_result = {
-        'PaloAltoNetworksCore.ScriptCode(val.script_uid == obj.script_uid)':
+        'Core.ScriptCode(val.script_uid == obj.script_uid)':
             context}
     requests_mock.post(f'{Core_URL}/public_api/v1/scripts/get_script_code/',
                        json=get_script_code_command_reply)
@@ -1206,7 +1206,7 @@ def test_action_status_get_command(requests_mock):
             'status': data.get(item)
         })
     action_status_get_command_expected_result = {
-        'PaloAltoNetworksCore.GetActionStatus(val.action_id == obj.action_id)':
+        'Core.GetActionStatus(val.action_id == obj.action_id)':
             result}
 
     requests_mock.post(f'{Core_URL}/public_api/v1/actions/get_action_status/',
