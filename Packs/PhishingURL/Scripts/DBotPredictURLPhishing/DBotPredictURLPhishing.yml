@@ -74,7 +74,7 @@ outputs:
   type: String
 - contextPath: DBotPredictURLPhishing.UseOfSuspiciousLogo
   description: 'Whether a logo (from our list of top most use company for phishing)
-    has been fraudulently used. Our predefined list of logos is: Paypal, iInstagram,
+    has been fraudulently used. Our predefined list of logos is: Paypal, Instagram,
     Gmail, Outlook, Linkedin, Facebook, Ebay, amazon, Google, Microsoft.'
   type: String
 - contextPath: DBotPredictURLPhishing.HasLoginForm
@@ -106,7 +106,8 @@ tags:
 - ''
 timeout: '0'
 type: python
-dockerimage: demisto/mlurlphishing:1.0.0.25708
+dockerimage: demisto/mlurlphishing:1.0.0.26063
+runas: DBotRole
 runonce: false
 tests:
 - DBotPredictURLPhishing_test
