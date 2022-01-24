@@ -176,6 +176,14 @@ def test():
         client.disconnect()
 
 
+def safe_get_file_reputation(tie_client, hash_param):
+    try:
+        res = tie_client.get_file_reputation(hash_param)
+    except Exception as e:
+        raise Exception(f"McAfee failed to get file reputation with error: {e}")
+    return res
+
+
 def file(hash_inputs):
     hash_list = []
 
@@ -194,8 +202,7 @@ def file(hash_inputs):
 
             hash_param = {}
             hash_param[hash_type_key] = hash_value
-
-            res = tie_client.get_file_reputation(hash_param)
+            res = safe_get_file_reputation(tie_client, hash_param)
             reputations = res.values()
 
             table = reputations_to_table(reputations)

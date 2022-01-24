@@ -1,6 +1,7 @@
 import demistomock as demisto
 import importlib
 import pytest
+from dxltieclient import TieClient
 
 valid_private_key = """-----BEGIN PRIVATE KEY-----
 This is a vaild Private Key
@@ -55,3 +56,39 @@ def test_validate_certificate_format(mocker):
                     'broker_ca_bundle': spaces_in_certificate}
     mocker.patch.object(demisto, "params", return_value=valid_params)
     mcafee_tie.validate_certificates_format()
+
+
+def test_safe_get_file_reputation_returned_exception(mocker):
+    """
+    Given:
+        - tie client and hash parameter
+    When:
+        - The tie client returns some exception
+    Then:
+        - Raise error
+    """
+    with pytest.raises(Exception):
+        mcafee_tie = importlib.import_module("McAfee-TIE")
+        tie_client = TieClient(None)
+        hash_param = {'test': 'test'}
+
+        mocker.patch.object(tie_client, "get_file_reputation", side_effect=Exception())
+        mcafee_tie.safe_get_file_reputation(tie_client, hash_param)
+
+
+def test_safe_get_file_reputation_returned_rep(mocker):
+    """
+    Given:
+        - tie client and hash parameter
+    When:
+        - The tie client returns reputation
+    Then:
+        - return the reputation
+    """
+    mcafee_tie = importlib.import_module("McAfee-TIE")
+    tie_client = TieClient(None)
+    hash_param = {'test': 'test'}
+
+    mocker.patch.object(tie_client, "get_file_reputation", return_value='test_value')
+    assert mcafee_tie.safe_get_file_reputation(tie_client, hash_param)
+
