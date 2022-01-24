@@ -498,7 +498,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Download a resource belonging to a report. This can be the full report, dropped binaries, etc. The full report types list can be found in:\ https://jbxcloud.joesecurity.org/userguide?sphinxurl=usage/webapi.html#v2-analysis-download
+    description: Download a resource belonging to a report. This can be the full report, dropped binaries, etc.
     execution: false
     name: joe-download-report
     outputs:
