@@ -972,7 +972,7 @@ Sends an email using Microsoft Graph.
 | attachCIDs | The comma-separated list of CIDs to embed attachments within the actual email. | Optional |
 | from | The email address from which to send the email. | Optional |
 | htmlBody | The content (body) of the email (in HTML format). | Optional |
-
+| replyTo | Email addresses that need to be used to reply to the message. Supports comma-separated values. | Optional |
 
 ##### Context Output
 
@@ -987,6 +987,7 @@ Sends an email using Microsoft Graph.
 | MicrosoftGraph.Email.toRecipients | String | The 'to' recipients of the email. |
 | MicrosoftGraph.Email.ccRecipients | String | The CC recipients of the email. |
 | MicrosoftGraph.Email.bccRecipients | String | The BCC recipients of the email. |
+| MicrosoftGraph.Email.replyTo | String | The replyTo recipients of the email. |
 
 
 ##### Command Example
