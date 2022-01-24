@@ -101,49 +101,50 @@ create-instances:
     - section_end "Upload Artifacts to GCP"
 
 
-# create-instances-mpv2:
-#   tags:
-#     - gke
-#   extends:
-#     - .default-job-settings
-#   rules:
-#     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
-#     - if: '$NIGHTLY'
-#   cache:
-#     policy: pull-push
-#   variables:
-#     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
-#   needs: []
-#   stage: create-instances
-#   script:
-#     - !reference [.download-demisto-conf]
-#     - !reference [.create-id-set-mp-v2]
-#     - !reference [.create-release-notes-and-common-docs]
+create-instances-mpv2:
+  tags:
+    - gke
+  extends:
+    - .default-job-settings
+  rules:
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
+    - if: '$NIGHTLY'
+  cache:
+    policy: pull-push
+  variables:
+    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
+  needs: []
+  stage: create-instances
+  script:
+    - !reference [.download-demisto-conf]
+    - !reference [.create-id-set-mp-v2]
+    - !reference [.create-release-notes-and-common-docs]
+    - echo "$ARTIFACTS_FOLDER"
 
-#     - section_start "Create Content Artifacts and Update Conf" --collapsed
-#     - demisto-sdk create-content-artifacts -a $ARTIFACTS_FOLDER --cpus 8 --content_version $CONTENT_VERSION --marketplace "marketplacev2" -fbi -idp ./Tests/id_set_mp_v2.json >> $ARTIFACTS_FOLDER/logs/create_content_artifacts.log
-#     - zip -j $ARTIFACTS_FOLDER/uploadable_packs_mpv2.zip $ARTIFACTS_FOLDER/uploadable_packs/* >> $ARTIFACTS_FOLDER/logs/zipping_uploadable_packs.log || ((($? > 0)) && echo "failed to zip the uploadable packs, ignoring the failure")
-#     - rm -rf $ARTIFACTS_FOLDER/uploadable_packs
-#     - cp "./Tests/conf.json" "$ARTIFACTS_FOLDER/conf.json"
-#     - section_end "Create Content Artifacts and Update Conf"
+    - section_start "Create Content Artifacts and Update Conf" --collapsed
+    - demisto-sdk create-content-artifacts -a $ARTIFACTS_FOLDER --cpus 8 --content_version $CONTENT_VERSION --marketplace "marketplacev2" -fbi -idp ./Tests/id_set_mp_v2.json >> $ARTIFACTS_FOLDER/logs/create_content_artifacts.log
+    - zip -j $ARTIFACTS_FOLDER/uploadable_packs_mpv2.zip $ARTIFACTS_FOLDER/uploadable_packs/* >> $ARTIFACTS_FOLDER/logs/zipping_uploadable_packs.log || ((($? > 0)) && echo "failed to zip the uploadable packs, ignoring the failure")
+    - rm -rf $ARTIFACTS_FOLDER/uploadable_packs
+    - cp "./Tests/conf.json" "$ARTIFACTS_FOLDER/conf.json"
+    - section_end "Create Content Artifacts and Update Conf"
 
-#     - section_start "Calculate Packs Dependencies" --collapsed
-#     - demisto-sdk find-dependencies -idp Tests/id_set_mp_v2.json --all-packs-dependencies -o $ARTIFACTS_FOLDER/packs_dependencies.json
-#     - section_end "Calculate Packs Dependencies"
+    - section_start "Calculate Packs Dependencies" --collapsed
+    - demisto-sdk find-dependencies -idp Tests/id_set_mp_v2.json --all-packs-dependencies -o $ARTIFACTS_FOLDER/packs_dependencies.json
+    - section_end "Calculate Packs Dependencies"
 
-#     - section_start "Collect Tests and Content Packs"
-#     - |
-#       [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
-#       python3 ./Tests/scripts/collect_tests_and_content_packs.py -n $IS_NIGHTLY
-#     - section_end "Collect Tests and Content Packs"
+    - section_start "Collect Tests and Content Packs"
+    - |
+      [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
+      python3 ./Tests/scripts/collect_tests_and_content_packs.py -n $IS_NIGHTLY
+    - section_end "Collect Tests and Content Packs"
 
-#     - section_start "Prepare Content Packs for Testing"
-#     - ./Tests/scripts/prepare_content_packs_for_testing.sh "$GCS_MARKET_V2_BUCKET" "$STORAGE_BASE_PATH" "marketplacev2"
-#     - section_end "Prepare Content Packs for Testing"
+    - section_start "Prepare Content Packs for Testing"
+    - ./Tests/scripts/prepare_content_packs_for_testing.sh "$GCS_MARKET_V2_BUCKET" "$STORAGE_BASE_PATH" "marketplacev2"
+    - section_end "Prepare Content Packs for Testing"
 
-#     - section_start "Upload Artifacts to GCP" --collapsed
-#     - ./Tests/scripts/upload_artifacts.sh
-#     - section_end "Upload Artifacts to GCP"
+    - section_start "Upload Artifacts to GCP" --collapsed
+    - ./Tests/scripts/upload_artifacts.sh
+    - section_end "Upload Artifacts to GCP"
 
 .test_content_on_server_instances_base:
   tags:
