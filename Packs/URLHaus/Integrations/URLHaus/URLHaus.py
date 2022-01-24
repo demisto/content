@@ -86,8 +86,34 @@ def test_module(**kwargs):
     http_request('POST', 'url', kwargs.get('api_url'), kwargs.get('use_ssl'))
 
 
-def calculate_dbot_score(blacklists, threshold, compromised_is_malicious):
-    dbot_score = 0
+def url_calculate_score(status):
+    status_dict = {'online': (Common.DBotScore.BAD, "The URL is active (online) and currently serving a payload"),
+                   'offline': (Common.DBotScore.SUSPICIOUS, "The URL is inadctive (offline) and serving no payload"),
+                   'unknown': (Common.DBotScore.GOOD, "The URL status could not be determined")}
+    if status_dict.get(status):
+        return status_dict[status]
+    return Common.DBotScore.NONE, "The URL is not listed"
+
+
+# @todo: need to write function
+def domain_calculate_score(blacklist):
+    pass
+
+
+# @todo: need to write function
+def file_calculate_score():
+    pass
+
+
+def calculate_dbot_score(command, arg):
+    calculate_dbot_score_dic = {'url': url_calculate_score, 'domain': domain_calculate_score,
+                                'file': file_calculate_score}
+    func_to_run = calculate_dbot_score_dic.get(command)
+    if func_to_run:
+        return func_to_run(arg)
+
+    # Old calculate
+    """dbot_score = 0
     description = 'Not listed in any blacklist'
     blacklist_appearances = []
     for blacklist, status in blacklists.items():
@@ -110,12 +136,121 @@ def calculate_dbot_score(blacklists, threshold, compromised_is_malicious):
     else:
         dbot_score = 1
 
-    return dbot_score, description
+    return dbot_score, description"""
+
+
+def check_url(url):
+    if not url:
+        raise Exception('In order to query url,'
+                        'please provide url. ')
+
+
+def build_context_url_ok_status(url_information, uri, **kwargs):
+    # URLhaus output
+    blacklist_information = []
+    blacklists = url_information.get('blacklists', {})
+    for bl_name, bl_status in blacklists.items():
+        blacklist_information.append({'Name': bl_name,
+                                      'Status': bl_status})
+
+    date_added = reformat_date(url_information.get('date_added'))
+    payloads = []
+    for payload in url_information.get('payloads') or []:
+        vt_data = payload.get('virustotal', None)
+        vt_information = None
+        if vt_data:
+            vt_information = {
+                'Result': float(vt_data.get('percent', 0)),
+                'Link': vt_data.get('link', '')
+            }
+        payloads.append({
+            'Name': payload.get('filename', 'unknown'),
+            'Type': payload.get('file_type', ''),
+            'MD5': payload.get('response_md5', ''),
+            'VT': vt_information,
+        })
+    urlhaus_data = {
+        'ID': url_information.get('id', ''),
+        'Status': url_information.get('url_status', ''),
+        'Host': url_information.get('host', ''),
+        'DateAdded': date_added,
+        'Threat': url_information.get('threat', ''),
+        'Blacklist': blacklist_information,
+        'Tags': url_information.get('tags', []),
+        'Payload': payloads
+    }
+
+    # DBot score calculation
+    score, description = calculate_dbot_score('url', url_information.get('url_status', {}))
+    dbot_score = Common.DBotScore(
+        indicator=uri,
+        integration_name='URLhaus',
+        indicator_type=DBotScoreType.URL,
+        reliability=kwargs.get('reliability'),
+        score=score,
+        malicious_description=description
+    )
+    # {url_information.get('threat', ''), url_information.get('tags', [])}
+    url_indicator = Common.URL(url=uri, dbot_score=dbot_score, tags=urlhaus_data.get('Tags', ""))
+
+    human_readable = tableToMarkdown(f'URLhaus reputation for {uri}',
+                                     {
+                                         'URLhaus link': url_information.get("urlhaus_reference", "None"),
+                                         'Description': description,
+                                         'URLhaus ID': urlhaus_data['ID'],
+                                         'Status': urlhaus_data['Status'],
+                                         'Threat': url_information.get("threat", ""),
+                                         'Date added': date_added
+                                     })
+
+    return_results(CommandResults(
+            readable_output=human_readable,
+            outputs_prefix='URLhaus.URL',
+            outputs_key_field='url',
+            outputs=urlhaus_data,
+            raw_response=url_information,
+            indicator=url_indicator))
+
+
+def build_context_url_no_results_status(url_information, uri, **kwargs):
+    dbot_score = Common.DBotScore(
+        indicator=uri,
+        integration_name='URLhaus',
+        indicator_type=DBotScoreType.URL,
+        reliability=kwargs.get('reliability'),
+        score=Common.DBotScore.NONE
+    )
+    url_indicator = Common.URL(url=uri, dbot_score=dbot_score)
+    human_readable = f'## URLhaus reputation for {uri}\n' \
+                     f'No results!'
+    return_results(CommandResults(
+        readable_output=human_readable,
+        raw_response=url_information,
+        indicator=url_indicator
+    ))
+
+
+def process_query_url(url_information, uri, **kwargs):
+    if url_information['query_status'] == 'ok':
+        build_context_url_ok_status(url_information, uri, **kwargs)
+
+    elif url_information['query_status'] == 'no_results':
+        build_context_url_no_results_status(url_information, uri, **kwargs)
+
+    elif url_information['query_status'] == 'invalid_url':
+        human_readable = f'## URLhaus reputation for {uri}\n' \
+                         f'Invalid URL!'
+        return_results(CommandResults(
+            readable_output=human_readable,
+            raw_response=url_information,
+        ))
+    else:
+        raise DemistoException(f'Query results = {url_information["query_status"]}', res=url_information)
 
 
 def url_command(**kwargs):
     url = demisto.args().get('url')
-
+    check_url(url)  # check if the url argument exist.
     try:
         url_information = query_url_information(url, kwargs.get('api_url'), kwargs.get('use_ssl')).json()
     except UnicodeEncodeError:
@@ -123,97 +258,7 @@ def url_command(**kwargs):
             readable_output="Service Does not support special characters.",
         ))
         return
-
-    ec = {
-        'URL': {
-            'Data': url,
-        },
-        'DBotScore': {
-            'Type': 'url',
-            'Vendor': 'URLhaus',
-            'Indicator': url,
-            'Reliability': kwargs.get('reliability'),
-        },
-    }
-
-    if url_information['query_status'] == 'ok':
-        # URLhaus output
-        blacklist_information = []
-        blacklists = url_information.get('blacklists', {})
-        for bl_name, bl_status in blacklists.items():
-            blacklist_information.append({'Name': bl_name,
-                                          'Status': bl_status})
-
-        date_added = reformat_date(url_information.get('date_added'))
-        urlhaus_data = {
-            'ID': url_information.get('id', ''),
-            'Status': url_information.get('url_status', ''),
-            'Host': url_information.get('host', ''),
-            'DateAdded': date_added,
-            'Threat': url_information.get('threat', ''),
-            'Blacklist': blacklist_information,
-            'Tags': url_information.get('tags', []),
-        }
-
-        payloads = []
-        for payload in url_information.get('payloads') or []:
-            vt_data = payload.get('virustotal', None)
-            vt_information = None
-            if vt_data:
-                vt_information = {
-                    'Result': float(vt_data.get('percent', 0)),
-                    'Link': vt_data.get('link', '')
-                }
-            payloads.append({
-                'Name': payload.get('filename', 'unknown'),
-                'Type': payload.get('file_type', ''),
-                'MD5': payload.get('response_md5', ''),
-                'VT': vt_information,
-            })
-
-        urlhaus_data['Payload'] = payloads
-
-        # DBot score calculation
-        dbot_score, description = calculate_dbot_score(url_information.get('blacklists', {}),
-                                                       kwargs.get('threshold'), COMPROMISED_IS_MALICIOUS)
-
-        ec['DBotScore']['Score'] = dbot_score
-        if dbot_score == 3:
-            ec['URL']['Malicious'] = {
-                'Vendor': 'URLhaus',
-                'Description': description
-            }
-
-        ec['URLhaus.URL(val.ID && val.ID === obj.ID)'] = urlhaus_data
-
-        human_readable = tableToMarkdown(f'URLhaus reputation for {url}',
-                                         {
-                                             'URLhaus link': url_information.get("urlhaus_reference", "None"),
-                                             'Description': description,
-                                             'URLhaus ID': urlhaus_data['ID'],
-                                             'Status': urlhaus_data['Status'],
-                                             'Threat': url_information.get("threat", ""),
-                                             'Date added': date_added
-                                         })
-
-    elif url_information['query_status'] == 'no_results':
-        ec['DBotScore']['Score'] = 0
-
-        human_readable = f'## URLhaus reputation for {url}\n' \
-            f'No results!'
-
-    elif url_information['query_status'] == 'invalid_url':
-        human_readable = f'## URLhaus reputation for {url}\n' \
-            f'Invalid URL!'
-
-    else:
-        raise DemistoException(f'Query results = {url_information["query_status"]}', res=url_information)
-
-    return_results(CommandResults(
-        readable_output=human_readable,
-        outputs=ec,
-        raw_response=url_information,
-    ))
+    process_query_url(url_information, url, **kwargs)
 
 
 def domain_command(**kwargs):
@@ -252,7 +297,7 @@ def domain_command(**kwargs):
 
             # DBot score calculation
             dbot_score, description = calculate_dbot_score(domain_information.get('blacklists', {}),
-                                                           kwargs.get('threshold'), COMPROMISED_IS_MALICIOUS)
+                                                           )
 
             ec['DBotScore']['Score'] = dbot_score
             if dbot_score == 3:
@@ -281,7 +326,7 @@ def domain_command(**kwargs):
             ec['DBotScore']['Score'] = 0
 
             human_readable = f'## URLhaus reputation for {domain}\n' \
-                f'No results!'
+                             f'No results!'
 
             demisto.results({
                 'Type': entryTypes['note'],
@@ -293,7 +338,7 @@ def domain_command(**kwargs):
             })
         elif domain_information['query_status'] == 'invalid_host':
             human_readable = f'## URLhaus reputation for {domain}\n' \
-                f'Invalid domain!'
+                             f'Invalid domain!'
 
             demisto.results({
                 'Type': entryTypes['note'],
@@ -325,7 +370,8 @@ def file_command(**kwargs):
         return_error('Only accepting MD5 (32 bytes) or SHA256 (64 bytes) hash types')
 
     try:
-        file_information = query_payload_information(hash_type, kwargs.get('api_url'), kwargs.get('use_ssl'), hash).json()
+        file_information = query_payload_information(hash_type, kwargs.get('api_url'), kwargs.get('use_ssl'),
+                                                     hash).json()
 
         if file_information['query_status'] == 'ok' and file_information['md5_hash']:
             # URLhaus output
@@ -380,7 +426,7 @@ def file_command(**kwargs):
         elif (file_information['query_status'] == 'ok' and not file_information['md5_hash']) or \
                 file_information['query_status'] == 'no_results':
             human_readable = f'## URLhaus reputation for {hash_type.upper()} : {hash}\n' \
-                f'No results!'
+                             f'No results!'
 
             demisto.results({
                 'Type': entryTypes['note'],
@@ -391,7 +437,7 @@ def file_command(**kwargs):
             })
         elif file_information['query_status'] in ['invalid_md5', 'invalid_sha256']:
             human_readable = f'## URLhaus reputation for {hash_type.upper()} : {hash}\n' \
-                f'Invalid {file_information["query_status"].lstrip("invalid_").upper()}!'
+                             f'Invalid {file_information["query_status"].lstrip("invalid_").upper()}!'
 
             demisto.results({
                 'Type': entryTypes['note'],
