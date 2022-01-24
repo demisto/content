@@ -125,4 +125,4 @@ type: python
 fromversion: 5.0.0
 tests:
 - ParseEmailFiles-test
-dockerimage: devtesting/parse-emails:1.0.0.1643018354
+dockerimage: devdemisto/parse-emails:1.0.0.26298
