@@ -842,7 +842,8 @@ def test_gcp_iam_service_account_key_list_command(client):
     assert result.outputs_prefix == 'GCP.IAM.ServiceAccountKey'
     assert not result.outputs[1].get('disabled')
     assert result.outputs[1].get(
-        'name') == "projects/rich-agency-334609/serviceAccounts/integration-test-5@395661807466.iam.gserviceaccount.com/keys/service-account-key-1"
+        'name') == "projects/rich-agency-334609/serviceAccounts/" \
+                   "integration-test-5@395661807466.iam.gserviceaccount.com/keys/service-account-key-1"
 
 
 def test_gcp_iam_service_account_key_get_command(client):
@@ -860,7 +861,8 @@ def test_gcp_iam_service_account_key_get_command(client):
     mock_response = load_mock_response('service_account_key/service_account_key_get.json')
     client.gcp_iam_service_account_key_get_request = Mock(return_value=mock_response)
 
-    key_name = "projects/rich-agency-334609/serviceAccounts/integration-test-5@395661807466.iam.gserviceaccount.com/keys/service-account-key-1"
+    key_name = "projects/rich-agency-334609/serviceAccounts/" \
+               "integration-test-5@395661807466.iam.gserviceaccount.com/keys/service-account-key-1"
 
     command_args = dict(key_name=key_name)
 
@@ -871,7 +873,8 @@ def test_gcp_iam_service_account_key_get_command(client):
     assert result.outputs_prefix == 'GCP.IAM.ServiceAccountKey'
     assert not result.outputs[0].get('disabled')
     assert result.outputs[0].get(
-        'name') == "projects/rich-agency-334609/serviceAccounts/integration-test-5@395661807466.iam.gserviceaccount.com/keys/service-account-key-1"
+        'name') == "projects/rich-agency-334609/serviceAccounts/" \
+                   "integration-test-5@395661807466.iam.gserviceaccount.com/keys/service-account-key-1"
 
 
 def test_gcp_iam_service_account_key_enable_command(client):
@@ -886,7 +889,8 @@ def test_gcp_iam_service_account_key_enable_command(client):
     """
     client.gcp_iam_service_account_key_enable_request = Mock(return_value={})
 
-    key_name = "projects/rich-agency-334609/serviceAccounts/integration-test-5@395661807466.iam.gserviceaccount.com/keys/service-account-key-1"
+    key_name = "projects/rich-agency-334609/serviceAccounts/" \
+               "integration-test-5@395661807466.iam.gserviceaccount.com/keys/service-account-key-1"
 
     command_args = dict(key_name=key_name)
 
@@ -907,7 +911,8 @@ def test_gcp_iam_service_account_key_disable_command(client):
     """
     client.gcp_iam_service_account_key_disable_request = Mock(return_value={})
 
-    key_name = "projects/rich-agency-334609/serviceAccounts/integration-test-5@395661807466.iam.gserviceaccount.com/keys/service-account-key-1"
+    key_name = "projects/rich-agency-334609/serviceAccounts/" \
+               "integration-test-5@395661807466.iam.gserviceaccount.com/keys/service-account-key-1"
 
     command_args = dict(key_name=key_name)
 
@@ -928,7 +933,8 @@ def test_gcp_iam_service_account_key_delete_command(client):
     """
     client.gcp_iam_service_account_key_delete_request = Mock(return_value={})
 
-    key_name = "projects/rich-agency-334609/serviceAccounts/integration-test-5@395661807466.iam.gserviceaccount.com/keys/service-account-key-1"
+    key_name = "projects/rich-agency-334609/serviceAccounts/" \
+               "integration-test-5@395661807466.iam.gserviceaccount.com/keys/service-account-key-1"
 
     command_args = dict(key_name=key_name)
 

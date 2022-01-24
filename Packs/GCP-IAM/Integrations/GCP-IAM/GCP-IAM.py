@@ -1,4 +1,5 @@
 # type: ignore
+# pylint: disable=no-member
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import copy
@@ -2960,8 +2961,10 @@ def add_custom_role_permissions(client_request_get_method: Callable, client_requ
     """
     Add permissions to custom role.
     Args:
-        client_request_get_method (Callable): The GCP Client method which retrieved the required resource (organization/project) role.
-        client_request_update_method (Callable): The GCP Client method which update the required resource (organization/project) role.
+        client_request_get_method (Callable): The GCP Client method which retrieved
+                                              the required resource (organization/project) role.
+        client_request_update_method (Callable): The GCP Client method which update
+                                                 the required resource (organization/project) role.
         args (dict): Command arguments from XSOAR.
 
     Returns:
@@ -2988,8 +2991,10 @@ def remove_custom_role_permissions(client_request_get_method: Callable, client_r
     """
     Remove permissions from custom project role.
     Args:
-        client_request_get_method (Callable): The GCP Client method which retrieved the required resource (organization/project) role.
-        client_request_update_method (Callable): The GCP Client method which update the required resource (organization/project) role.
+        client_request_get_method (Callable): The GCP Client method which retrieved
+                                              the required resource (organization/project) role.
+        client_request_update_method (Callable): The GCP Client method which update
+                                                 the required resource (organization/project) role.
         args (dict): Command arguments from XSOAR.
 
     Returns:
@@ -3608,7 +3613,7 @@ def test_module(service_account_key: str) -> None:
     try:
         client: Client = Client(client_secret=service_account_key)
         client.gcp_iam_predefined_role_list_request(include_permissions=False, limit=1)
-    except Exception as exception:
+    except Exception:
         return return_results('Authorization Error: make sure API Service Account Key is valid.')
 
     return_results('ok')

@@ -48,4 +48,3 @@ Packs/**/__init__.py
 /coverage_report
 .coverage
 .demisto-sdk-report
-/Packs/GCP-IAM/Integrations/integration-GCP-IAM.yml
