@@ -2,7 +2,7 @@ id: PAN-OS EDL Service Configuration
 version: -1
 name: PAN-OS EDL Service Configuration
 deprecated: true
-description: "This single-run playbook enables Cortex XSOAR's built-in External Dynamic\
+description: "Deprecated. No available replacement. This single-run playbook enables Cortex XSOAR's built-in External Dynamic\
   \ List (EDL) as a service for system indicators, and configures PAN-OS EDL Objects\
   \ and the respective firewall policy rules.\nThe EDLs will continuously update for\
   \ each indicator that matches the query syntax input in the playbook \n(to validate to which indicators the query applied, 
