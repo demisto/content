@@ -1011,7 +1011,7 @@ def install_nightly_pack(build):
 
 
 def install_packs(build, pack_ids=None):
-    pack_ids = build.pack_ids_to_install() if pack_ids is None else pack_ids
+    pack_ids = build.pack_ids_to_install if pack_ids is None else pack_ids
     installed_content_packs_successfully = True
     for server in build.servers:
         try:
