@@ -15,7 +15,8 @@ script:
   commands:
   - arguments:
     - default: false
-      description: Comma-separated list of project names to retrieve. For example, projects/415104041262.
+      description: Comma-separated list of project names to retrieve. For example,
+        projects/415104041262.
       isArray: true
       name: project_name
       required: false
@@ -277,7 +278,8 @@ script:
     name: gcp-iam-project-iam-policy-remove
   - arguments:
     - default: false
-      description: Comma-separated list of folder names to retrieve.  For example, folders/12342.
+      description: Comma-separated list of folder names to retrieve.  For example,
+        folders/12342.
       isArray: true
       name: folder_name
       required: false
@@ -549,7 +551,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Comma-separated list of organization names to retrieve. For example, organizations/3456.
+      description: Comma-separated list of organization names to retrieve. For example,
+        organizations/3456.
       isArray: true
       name: organization_name
       required: false
@@ -1574,13 +1577,17 @@ script:
       required: false
       secret: false
     - default: false
-      description: Used to filter the retrieved roles by the rule title. The command will retrieve the rules which includes the provided argument in their title.
+      description: Used to filter the retrieved roles by the rule title. The command
+        will retrieve the rules which includes the provided argument in their title.
       isArray: false
       name: title_filter
       required: false
       secret: false
     - default: false
-      description: Comma-separated list of role permissions. Used to filter the retrieved roles by their permissions. The command will retrieve the rules which includes all the provided permissions in their permissions list. If the argument is provided, the command will include the role permissions in the output.
+      description: Comma-separated list of role permissions. Used to filter the retrieved
+        roles by their permissions. The command will retrieve the rules which includes
+        all the provided permissions in their permissions list. If the argument is
+        provided, the command will include the role permissions in the output.
       isArray: true
       name: permission_filter
       required: false
@@ -1815,13 +1822,17 @@ script:
       required: false
       secret: false
     - default: false
-      description: Used to filter the retrieved roles by the rule title. The command will retrieve the rules which includes the provided argument in their title.
+      description: Used to filter the retrieved roles by the rule title. The command
+        will retrieve the rules which includes the provided argument in their title.
       isArray: false
       name: title_filter
       required: false
       secret: false
     - default: false
-      description: Comma-separated list of role permissions. Used to filter the retrieved roles by their permissions. The command will retrieve the rules which includes all the provided permissions in their permissions list. If the argument is provided, the command will include the role permissions in the output.
+      description: Comma-separated list of role permissions. Used to filter the retrieved
+        roles by their permissions. The command will retrieve the rules which includes
+        all the provided permissions in their permissions list. If the argument is
+        provided, the command will include the role permissions in the output.
       isArray: true
       name: permission_filter
       required: false
@@ -1996,13 +2007,17 @@ script:
       required: false
       secret: false
     - default: false
-      description: Used to filter the retrieved roles by the rule title. The command will retrieve the rules which includes the provided argument in their title.
+      description: Used to filter the retrieved roles by the rule title. The command
+        will retrieve the rules which includes the provided argument in their title.
       isArray: false
       name: title_filter
       required: false
       secret: false
     - default: false
-      description: Comma-separated list of role permissions. Used to filter the retrieved roles by their permissions. The command will retrieve the rules which includes all the provided permissions in their permissions list. If the argument is provided, the command will include the role permissions in the output.
+      description: Comma-separated list of role permissions. Used to filter the retrieved
+        roles by their permissions. The command will retrieve the rules which includes
+        all the provided permissions in their permissions list. If the argument is
+        provided, the command will include the role permissions in the output.
       isArray: true
       name: permission_filter
       required: false
@@ -2015,7 +2030,7 @@ script:
     - contextPath: GCP.IAM.Role.name
       description: The resource name of the role.
       type: String
-  dockerimage: demisto/google-api-py3:1.0.0.13945
+  dockerimage: demisto/google-api-py3:1.0.0.26204
   feed: false
   isfetch: false
   longRunning: false
@@ -2024,4 +2039,6 @@ script:
   script: '-'
   subtype: python3
   type: python
-  fromversion: 6.0.0
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
