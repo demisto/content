@@ -439,8 +439,8 @@ script:
             if isinstance(image_type_dict, dict):
                 image_type_dict = image_type_dict.get('TYPE', {})
 
-                if isinstance(image_type_dict, dict) and '#text' in image_type_dict:
-                    image_type = image_type_dict['#text']
+                if isinstance(image_type_dict, dict):
+                    image_type = image_type_dict.get('#text', 'Unknown')
                 else:
                     image_type = 'Unknown'
 
@@ -612,7 +612,7 @@ script:
                     'SHA1': main_file_analyze_report['FileSHA1'],
                     'SHA256': main_file_analyze_report['FileSHA256'],
                     'Size': main_file_analyze_report['FileSize'],
-                    'Name': main_file_analyze_report['VirusName']['#text'] if '#text' in file_analyzed['VirusName'] else '',
+                    'Name': main_file_analyze_report['VirusName']['#text'] if '#text' in main_file_analyze_report['VirusName'] else '',
                 }
             #add data regarding the submission to the context if it is malicious
             if (reports['OVERALL_RISK_LEVEL'] >= threshold):
