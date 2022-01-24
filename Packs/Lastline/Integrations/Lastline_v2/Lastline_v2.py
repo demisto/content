@@ -1,5 +1,7 @@
 import hashlib
 from typing import Dict, List
+
+import requests
 from urllib3 import disable_warnings
 import demistomock as demisto
 from CommonServerPython import *
@@ -94,9 +96,15 @@ class Client(BaseClient):
         entry_id = self.command_params.get('EntryID')
         self.command_params['push_to_portal'] = True
         file_params = demisto.getFilePath(entry_id)
-        self.command_params['md5'] = file_hash(file_params.get('path'))
-        result = self.http_request('/analysis/submit/file',
-                                   file_to_upload=file_params.get('path'))
+        file_type = file_params.get('name', '').split('.')[-1]
+        if file_type == "csv":
+            result = self.http_request_for_csv(path='/analysis/submit/file',
+                                               file_to_upload=file_params.get('path'),
+                                               file_name=file_params.get('name', ''))
+        else:
+            self.command_params['md5'] = file_hash(file_params.get('path'))
+            result = self.http_request('/analysis/submit/file',
+                                       file_to_upload=file_params.get('path'))
         human_readable, context_entry = report_generator(result, self.threshold)
         return human_readable, context_entry, result
 
@@ -158,6 +166,31 @@ class Client(BaseClient):
             url_suffix = SUFFIX_TRANSFORMER[path]
             result = self._http_request(url_suffix['method'], url_suffix['url'], data=self.credentials,
                                         params=self.command_params, files=file_to_upload, timeout=2000)
+        else:
+            result = self._http_request('POST', path, params=self.command_params, headers=headers, files=file_to_upload)
+
+        lastline_exception_handler(result)
+        return result
+
+    def http_request_for_csv(self, path: str, headers=None, file_to_upload=None, file_name=None) -> Dict:
+        if file_to_upload:
+            with open(file_to_upload, 'rb') as _file:
+                file_to_upload = {'file': (file_to_upload, _file.read()),
+                                  'file_name': file_name}
+
+        if self.credentials:
+            url_suffix = SUFFIX_TRANSFORMER[path]
+            session = requests.Session()
+            login_url = self._base_url + '/login'
+            session.post(url=login_url, data=self.credentials)
+            cookies = session.cookies.get_dict()
+            submit_url = self._base_url + url_suffix['url']
+            result = requests.post(url=submit_url,
+                                   data=self.credentials,
+                                   cookies=cookies,
+                                   verify=False,
+                                   timeout=2000).json()
+
         else:
             result = self._http_request('POST', path, params=self.command_params, headers=headers, files=file_to_upload)
 
