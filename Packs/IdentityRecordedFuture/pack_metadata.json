@@ -4,7 +4,7 @@
     "support": "partner",
     "currentVersion": "1.0.0",
     "author": "Recorded Future",
-    "url": "https://www.recordedfuture.com/support/demisto-integration/",
+    "url": "https://www.recordedfuture.com/integrations/",
     "email": "support@recordedfuture.com",
     "categories": [
         "Data Enrichment & Threat Intelligence"

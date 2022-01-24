@@ -49,7 +49,7 @@ configuration:
   defaultvalue: "500"
   required: false
   type: 0
-- display: Domains list separated by semicolon. (e.g. yahoo.com; google.com )
+- display: Domains list separated by semicolon. (e.g. mycompany.com; othercompany.com )
   name: domains
   type: 12
   required: true

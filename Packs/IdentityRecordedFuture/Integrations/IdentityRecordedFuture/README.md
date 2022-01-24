@@ -3,11 +3,11 @@ Recorded Future Identity
 ## Configure Recorded Future Identity on Cortex XSOAR
 
 ## Information
-A valid API Token for XSOAR from Recorded Future needed to fetch information.
-[Get help with Recorded Future for Cortex XSOAR](https://www.recordedfuture.com/support/demisto-integration/).
+A valid API Token for Recorded Future Identity Intelligence needed to fetch information.
+[Get help with Recorded Future for Cortex XSOAR](https://www.recordedfuture.com/integrations/).
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Recorded Future v2.
+2. Search for Recorded Future Identity.
 3. Click **Add instance** to create and configure a new integration instance.
 
 ---
@@ -21,7 +21,7 @@ A valid API Token for XSOAR from Recorded Future needed to fetch information.
 | proxy                            | Use system proxy settings                                         |
 | Password properties              | Password properties that are used as a filter                     |
 | Limit Identities                 | Limit of identities to get min is 0 and max is 10 000             |
-| Domains                          | List of domains to use in search and lookup commands(e.g. yahoo.com; google.com )|
+| Domains                          | List of domains to use in search and lookup commands(e.g. mycompany.com; nextcompany.com )|
 
 
 
