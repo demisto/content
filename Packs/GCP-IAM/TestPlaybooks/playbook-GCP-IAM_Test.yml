@@ -1,0 +1,3919 @@
+id: playbook-GCP-IAM_Test
+version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: playbook-GCP-IAM_Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: a41ba87a-87e5-4227-8054-4375d6d6d493
+    type: start
+    task:
+      id: a41ba87a-87e5-4227-8054-4375d6d6d493
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 13d35781-6075-4cc6-88ee-5602e880d1c9
+    type: regular
+    task:
+      id: 13d35781-6075-4cc6-88ee-5602e880d1c9
+      version: -1
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "99"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 2e76669a-b86b-4e1e-86b6-eea050eb2334
+    type: regular
+    task:
+      id: 2e76669a-b86b-4e1e-86b6-eea050eb2334
+      version: -1
+      name: gcp-iam-projects-get
+      script: GCP-IAM|||gcp-iam-projects-get
+      type: regular
+      iscommand: true
+      brand: GCP-IAM
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      limit:
+        simple: "1"
+      page: {}
+      parent:
+        simple: ${GCP.IAM.Organization.name}
+      project_name: {}
+      show_deleted: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 7f3ba62f-2023-4d49-8a8d-624f4db7be4f
+    type: condition
+    task:
+      id: 7f3ba62f-2023-4d49-8a8d-624f4db7be4f
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.Project.createTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.Project.displayName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.Project.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.Project.parent
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.Project.projectId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.Project.state
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.Project.updateTime
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: ea61462c-97b1-4bf2-8dff-75b3b2acccf2
+    type: regular
+    task:
+      id: ea61462c-97b1-4bf2-8dff-75b3b2acccf2
+      version: -1
+      name: gcp-iam-project-iam-permission-test
+      script: GCP-IAM|||gcp-iam-project-iam-permission-test
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      permissions:
+        simple: compute.instances.create,aiplatform.dataItems.create
+      project_name:
+        simple: ${GCP.IAM.Project.name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: c7bea206-158c-4feb-83d9-663b18ccf50b
+    type: condition
+    task:
+      id: c7bea206-158c-4feb-83d9-663b18ccf50b
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.Permission
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 6bf90ebb-fd87-4e7d-8cb7-3f6a7eec4f9e
+    type: regular
+    task:
+      id: 6bf90ebb-fd87-4e7d-8cb7-3f6a7eec4f9e
+      version: -1
+      name: gcp-iam-project-iam-member-add
+      script: GCP-IAM|||gcp-iam-project-iam-member-add
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      members:
+        simple: group:poctest@fortresssecurity.ai
+      project_name:
+        simple: ${GCP.IAM.Project.name}
+      role:
+        simple: roles/browser
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 9ff548ea-b0cd-4b24-83e8-ddc7ee3071bb
+    type: regular
+    task:
+      id: 9ff548ea-b0cd-4b24-83e8-ddc7ee3071bb
+      version: -1
+      name: gcp-iam-project-iam-member-remove
+      script: GCP-IAM|||gcp-iam-project-iam-member-remove
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      members:
+        simple: group:poctest@fortresssecurity.ai
+      project_name:
+        simple: ${GCP.IAM.Project.name}
+      role:
+        simple: roles/browser
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: bad2a0a2-e7a9-4f6d-84d2-a153497afa83
+    type: regular
+    task:
+      id: bad2a0a2-e7a9-4f6d-84d2-a153497afa83
+      version: -1
+      name: gcp-iam-project-iam-policy-get
+      script: GCP-IAM|||gcp-iam-project-iam-policy-get
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      project_name:
+        simple: ${GCP.IAM.Project.name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: bdf7f4d3-c08d-415f-8233-9f5511cbd58e
+    type: condition
+    task:
+      id: bdf7f4d3-c08d-415f-8233-9f5511cbd58e
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.Policy.bindings.members
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.Policy.bindings.role
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.Policy.name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 4730b4fc-797a-4067-83f6-091f903d7468
+    type: regular
+    task:
+      id: 4730b4fc-797a-4067-83f6-091f903d7468
+      version: -1
+      name: gcp-iam-project-iam-policy-set
+      script: GCP-IAM|||gcp-iam-project-iam-policy-set
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      policy:
+        simple: ${GCP.IAM.Policy.bindings}
+      project_name:
+        simple: ${GCP.IAM.Project.name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 6d433e01-3727-4e57-8677-bf32a4289848
+    type: condition
+    task:
+      id: 6d433e01-3727-4e57-8677-bf32a4289848
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.Policy.bindings.members
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.Policy.bindings.role
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.Policy.name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: a10c4eb2-bbf0-4bc1-8fa0-a215914b9073
+    type: regular
+    task:
+      id: a10c4eb2-bbf0-4bc1-8fa0-a215914b9073
+      version: -1
+      name: gcp-iam-project-iam-policy-remove
+      script: GCP-IAM|||gcp-iam-project-iam-policy-remove
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      project_name:
+        simple: ${GCP.IAM.Project.name}
+      role:
+        simple: roles/browser
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 9c6c2534-18a9-4a62-82e6-5425d51b21a2
+    type: regular
+    task:
+      id: 9c6c2534-18a9-4a62-82e6-5425d51b21a2
+      version: -1
+      name: gcp-iam-project-iam-policy-create
+      script: GCP-IAM|||gcp-iam-project-iam-policy-create
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "91"
+    scriptarguments:
+      members:
+        simple: serviceAccount:test123@mystical-studio-330810.iam.gserviceaccount.com,user:yehuda@fortresssecurity.ai
+      project_name:
+        simple: ${GCP.IAM.Project.name}
+      role:
+        simple: roles/browser
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: ddceb71f-a36b-41c2-8c8b-178173c51854
+    type: regular
+    task:
+      id: ddceb71f-a36b-41c2-8c8b-178173c51854
+      version: -1
+      name: gcp-iam-folders-get
+      script: GCP-IAM|||gcp-iam-folders-get
+      type: regular
+      iscommand: true
+      brand: GCP-IAM
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      folder_name: {}
+      limit:
+        simple: "1"
+      page: {}
+      parent:
+        simple: ${GCP.IAM.Organization.name}
+      show_deleted: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 73f826ea-6e37-4e22-8685-4863b01f5b17
+    type: condition
+    task:
+      id: 73f826ea-6e37-4e22-8685-4863b01f5b17
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.Folder.createTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.Folder.displayName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.Folder.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.Folder.parent
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.Folder.state
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.Folder.updateTime
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: aafe590c-b6aa-4817-86d5-e9d1c25ce727
+    type: regular
+    task:
+      id: aafe590c-b6aa-4817-86d5-e9d1c25ce727
+      version: -1
+      name: gcp-iam-folder-iam-permission-test
+      script: GCP-IAM|||gcp-iam-folder-iam-permission-test
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      folder_name:
+        simple: ${GCP.IAM.Folder.name}
+      permissions:
+        simple: compute.instances.create,aiplatform.dataItems.create
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: 5c014f73-c35a-47d9-8add-7494e3391f49
+    type: condition
+    task:
+      id: 5c014f73-c35a-47d9-8add-7494e3391f49
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.Permission
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: 0c67a65b-920a-4b5c-8b1d-f200d902c402
+    type: regular
+    task:
+      id: 0c67a65b-920a-4b5c-8b1d-f200d902c402
+      version: -1
+      name: gcp-iam-folder-iam-member-add
+      script: GCP-IAM|||gcp-iam-folder-iam-member-add
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      folder_name:
+        simple: ${GCP.IAM.Folder.name}
+      members:
+        simple: group:poctest@fortresssecurity.ai
+      role:
+        simple: roles/resourcemanager.folderEditor
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: 4afbce50-0d88-4cf3-8bdd-c56aa484077e
+    type: regular
+    task:
+      id: 4afbce50-0d88-4cf3-8bdd-c56aa484077e
+      version: -1
+      name: gcp-iam-folder-iam-member-remove
+      script: GCP-IAM|||gcp-iam-folder-iam-member-remove
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      folder_name:
+        simple: ${GCP.IAM.Folder.name}
+      members:
+        simple: group:poctest@fortresssecurity.ai
+      role:
+        simple: roles/resourcemanager.folderEditor
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: 5675ed87-8e0f-44ca-8c0a-fc0aed79fa5f
+    type: regular
+    task:
+      id: 5675ed87-8e0f-44ca-8c0a-fc0aed79fa5f
+      version: -1
+      name: gcp-iam-folder-iam-policy-get
+      script: GCP-IAM|||gcp-iam-folder-iam-policy-get
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      folder_name:
+        simple: ${GCP.IAM.Folder.name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: 9f51229e-394d-40da-81d7-36fbb80603d3
+    type: condition
+    task:
+      id: 9f51229e-394d-40da-81d7-36fbb80603d3
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.Policy.bindings.members
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.Policy.bindings.role
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.Policy.name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: 7c84974f-e124-46e2-81e7-81954ce92dd5
+    type: regular
+    task:
+      id: 7c84974f-e124-46e2-81e7-81954ce92dd5
+      version: -1
+      name: gcp-iam-folder-iam-policy-set
+      script: GCP-IAM|||gcp-iam-folder-iam-policy-set
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      folder_name:
+        simple: ${GCP.IAM.Folder.name}
+      policy:
+        simple: ${GCP.IAM.Policy.bindings}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: 0cbb2053-7c32-44d9-8398-1178e644ec9c
+    type: condition
+    task:
+      id: 0cbb2053-7c32-44d9-8398-1178e644ec9c
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "24"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.Policy.bindings.members
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.Policy.bindings.role
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.Policy.name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: a80c89e8-2cb9-40f2-88ff-08f9ee3899ee
+    type: regular
+    task:
+      id: a80c89e8-2cb9-40f2-88ff-08f9ee3899ee
+      version: -1
+      name: gcp-iam-folder-iam-policy-remove
+      script: GCP-IAM|||gcp-iam-folder-iam-policy-remove
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      folder_name:
+        simple: ${GCP.IAM.Folder.name}
+      role:
+        simple: roles/resourcemanager.folderEditor
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: 5ed78ae1-af17-45e7-8568-deb109350810
+    type: regular
+    task:
+      id: 5ed78ae1-af17-45e7-8568-deb109350810
+      version: -1
+      name: gcp-iam-folder-iam-policy-create
+      script: GCP-IAM|||gcp-iam-folder-iam-policy-create
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "88"
+    scriptarguments:
+      folder_name:
+        simple: ${GCP.IAM.Folder.name}
+      members:
+        simple: serviceAccount:yehuda-test-service-account@mystical-studio-330810.iam.gserviceaccount.com
+      role:
+        simple: roles/resourcemanager.folderEditor
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: a7631c68-eb26-443b-829b-e771a6385454
+    type: regular
+    task:
+      id: a7631c68-eb26-443b-829b-e771a6385454
+      version: -1
+      name: gcp-iam-organizations-get
+      script: GCP-IAM|||gcp-iam-organizations-get
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      limit:
+        simple: "1"
+      page:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: c9761813-89c0-4f8a-8a80-187392d64856
+    type: condition
+    task:
+      id: c9761813-89c0-4f8a-8a80-187392d64856
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.Organization.createTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.Organization.directoryCustomerId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.Organization.displayName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.Organization.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.Organization.state
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.Organization.updateTime
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: 236a412f-6181-476f-813c-3fb52aab9bc6
+    type: regular
+    task:
+      id: 236a412f-6181-476f-813c-3fb52aab9bc6
+      version: -1
+      name: gcp-iam-organization-iam-permission-test
+      script: GCP-IAM|||gcp-iam-organization-iam-permission-test
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      organization_name:
+        simple: ${GCP.IAM.Organization.name}
+      permissions:
+        simple: compute.instances.create,aiplatform.dataItems.create
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: 4d678b76-d102-4235-8f3f-918bbf9d1be0
+    type: condition
+    task:
+      id: 4d678b76-d102-4235-8f3f-918bbf9d1be0
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "30"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.Permission
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "30":
+    id: "30"
+    taskid: 0a344372-6fe8-44d7-8664-07f10554a8c2
+    type: regular
+    task:
+      id: 0a344372-6fe8-44d7-8664-07f10554a8c2
+      version: -1
+      name: gcp-iam-organization-iam-member-add
+      script: GCP-IAM|||gcp-iam-organization-iam-member-add
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      members:
+        simple: group:poctest@fortresssecurity.ai
+      organization_name:
+        simple: ${GCP.IAM.Organization.name}
+      role:
+        simple: roles/compute.viewer
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "31":
+    id: "31"
+    taskid: 40a2f754-2fff-4c49-87ca-c154f6cfb986
+    type: regular
+    task:
+      id: 40a2f754-2fff-4c49-87ca-c154f6cfb986
+      version: -1
+      name: gcp-iam-organization-iam-member-remove
+      script: GCP-IAM|||gcp-iam-organization-iam-member-remove
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      members:
+        simple: group:poctest@fortresssecurity.ai
+      organization_name:
+        simple: ${GCP.IAM.Organization.name}
+      role:
+        simple: roles/compute.viewer
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "32":
+    id: "32"
+    taskid: 6b20a96d-d95e-4407-81aa-b4343a46dc65
+    type: regular
+    task:
+      id: 6b20a96d-d95e-4407-81aa-b4343a46dc65
+      version: -1
+      name: gcp-iam-organization-iam-policy-get
+      script: GCP-IAM|||gcp-iam-organization-iam-policy-get
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      organization_name:
+        simple: ${GCP.IAM.Organization.name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "33":
+    id: "33"
+    taskid: ce3be953-244c-436e-84d3-54b15d5ef7e2
+    type: condition
+    task:
+      id: ce3be953-244c-436e-84d3-54b15d5ef7e2
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "89"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.Policy.bindings.members
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.Policy.bindings.role
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.Policy.name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "34":
+    id: "34"
+    taskid: a047c79c-d3f7-4c4b-8a15-2c5333eef6d4
+    type: regular
+    task:
+      id: a047c79c-d3f7-4c4b-8a15-2c5333eef6d4
+      version: -1
+      name: gcp-iam-group-create
+      script: GCP-IAM|||gcp-iam-group-create
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      display_name:
+        simple: integration-test
+      group_email_address:
+        simple: xsoar-test123@fortresssecurity.ai
+      parent:
+        simple: customers/${GCP.IAM.Organization.directoryCustomerId}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 590,
+          "y": 6880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "35":
+    id: "35"
+    taskid: 3bf743c7-b41d-43a0-8e8e-6206193f3e9f
+    type: condition
+    task:
+      id: 3bf743c7-b41d-43a0-8e8e-6206193f3e9f
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "36"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.Group.createTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.Group.displayName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.Group.groupKey.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.Group.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.Group.parent
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.Group.updateTime
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "36":
+    id: "36"
+    taskid: ce9483db-5750-400e-85a5-0ba24993f9af
+    type: regular
+    task:
+      id: ce9483db-5750-400e-85a5-0ba24993f9af
+      version: -1
+      name: gcp-iam-group-list
+      script: GCP-IAM|||gcp-iam-group-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      limit:
+        simple: "1"
+      page:
+        simple: "1"
+      parent:
+        simple: customers/${GCP.IAM.Organization.directoryCustomerId}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "37":
+    id: "37"
+    taskid: 18e0ee26-e783-4b62-827d-df32771b4d04
+    type: condition
+    task:
+      id: 18e0ee26-e783-4b62-827d-df32771b4d04
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "38"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.Group.displayName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.Group.groupKey.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.Group.name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "38":
+    id: "38"
+    taskid: 0514126a-3ffc-4888-888b-48acb912c8cb
+    type: regular
+    task:
+      id: 0514126a-3ffc-4888-888b-48acb912c8cb
+      version: -1
+      name: gcp-iam-group-get
+      script: GCP-IAM|||gcp-iam-group-get
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      group_name:
+        simple: ${GCP.IAM.Group.name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "39":
+    id: "39"
+    taskid: 2bf6b690-29ea-415f-8623-872f96898202
+    type: condition
+    task:
+      id: 2bf6b690-29ea-415f-8623-872f96898202
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "40"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.Group.createTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.Group.displayName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.Group.groupKey.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.Group.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.Group.parent
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.Group.updateTime
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "40":
+    id: "40"
+    taskid: 72836b1c-70fb-4e04-8087-d14b68fe4aee
+    type: regular
+    task:
+      id: 72836b1c-70fb-4e04-8087-d14b68fe4aee
+      version: -1
+      name: gcp-iam-group-membership-create
+      script: GCP-IAM|||gcp-iam-group-membership-create
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      groups_name:
+        simple: ${GCP.IAM.Group.name}
+      member_email:
+        simple: yehuda@fortresssecurity.ai
+      role:
+        simple: MEMBER
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "41":
+    id: "41"
+    taskid: dad028ba-c29e-4218-8c44-05716b6c5486
+    type: condition
+    task:
+      id: dad028ba-c29e-4218-8c44-05716b6c5486
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "42"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.Membership.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.Membership.preferredMemberKey.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.Membership.roles.name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "42":
+    id: "42"
+    taskid: fc4bb641-ea91-4fef-83b2-e2c4dd464419
+    type: regular
+    task:
+      id: fc4bb641-ea91-4fef-83b2-e2c4dd464419
+      version: -1
+      name: gcp-iam-group-membership-list
+      script: GCP-IAM|||gcp-iam-group-membership-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      group_name:
+        simple: ${GCP.IAM.Group.name}
+      limit:
+        simple: "1"
+      page:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "43":
+    id: "43"
+    taskid: 656bbace-2acb-4a72-8178-4b533bf44cc0
+    type: condition
+    task:
+      id: 656bbace-2acb-4a72-8178-4b533bf44cc0
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "44"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.Membership.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.Membership.preferredMemberKey.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.Membership.roles.name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "44":
+    id: "44"
+    taskid: e9cde2d9-3050-4f01-8a81-f23a128fe4b2
+    type: regular
+    task:
+      id: e9cde2d9-3050-4f01-8a81-f23a128fe4b2
+      version: -1
+      name: gcp-iam-group-membership-get
+      script: GCP-IAM|||gcp-iam-group-membership-get
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "45"
+    scriptarguments:
+      membership_name:
+        simple: ${GCP.IAM.Membership.name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "45":
+    id: "45"
+    taskid: 89497648-36a8-4e47-8b38-61ae3c7b00e1
+    type: condition
+    task:
+      id: 89497648-36a8-4e47-8b38-61ae3c7b00e1
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "46"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.Membership.createTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.Membership.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.Membership.preferredMemberKey.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.Membership.roles.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.Membership.updateTime
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "46":
+    id: "46"
+    taskid: 792719cb-535e-48a4-8427-54afb25c2150
+    type: regular
+    task:
+      id: 792719cb-535e-48a4-8427-54afb25c2150
+      version: -1
+      name: gcp-iam-group-membership-role-add
+      script: GCP-IAM|||gcp-iam-group-membership-role-add
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "47"
+    scriptarguments:
+      membership_name:
+        simple: ${GCP.IAM.Membership.name}
+      role:
+        simple: OWNER
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "47":
+    id: "47"
+    taskid: 4a43e8a7-3439-4faf-8e95-db36e745d795
+    type: regular
+    task:
+      id: 4a43e8a7-3439-4faf-8e95-db36e745d795
+      version: -1
+      name: gcp-iam-group-membership-role-remove
+      script: GCP-IAM|||gcp-iam-group-membership-role-remove
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "48"
+    scriptarguments:
+      membership_name:
+        simple: ${GCP.IAM.Membership.name}
+      role:
+        simple: OWNER
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "48":
+    id: "48"
+    taskid: c180814b-4c39-49a6-844b-d4677a0a35e1
+    type: regular
+    task:
+      id: c180814b-4c39-49a6-844b-d4677a0a35e1
+      version: -1
+      name: gcp-iam-group-membership-delete
+      script: GCP-IAM|||gcp-iam-group-membership-delete
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "51"
+    scriptarguments:
+      membership_names:
+        simple: ${GCP.IAM.Membership.name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "49":
+    id: "49"
+    taskid: da92c0e0-da65-4876-88ec-860a20cd7d4e
+    type: regular
+    task:
+      id: da92c0e0-da65-4876-88ec-860a20cd7d4e
+      version: -1
+      name: gcp-iam-service-account-create
+      script: GCP-IAM|||gcp-iam-service-account-create
+      type: regular
+      iscommand: true
+      brand: GCP-IAM
+    nexttasks:
+      '#none#':
+      - "50"
+    scriptarguments:
+      description:
+        simple: Test playbook service account
+      display_name:
+        simple: Test Playbook service account
+      project_name:
+        simple: ${GCP.IAM.Project.name}
+      service_account_id:
+        simple: my-service-account-test
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 10055
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "50":
+    id: "50"
+    taskid: 21d848c1-e7e8-4324-8bb0-dcf2e7a8c8fd
+    type: condition
+    task:
+      id: 21d848c1-e7e8-4324-8bb0-dcf2e7a8c8fd
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "52"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.ServiceAccount.email
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.ServiceAccount.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.ServiceAccount.oauth2ClientId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.ServiceAccount.projectId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.ServiceAccount.uniqueId
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: GCP.IAM.ServiceAccount.disabled
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 10220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "51":
+    id: "51"
+    taskid: a93c67e1-86a5-4fa8-832e-816c163f0208
+    type: regular
+    task:
+      id: a93c67e1-86a5-4fa8-832e-816c163f0208
+      version: -1
+      name: gcp-iam-group-delete
+      script: GCP-IAM|||gcp-iam-group-delete
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "90"
+    scriptarguments:
+      group_name:
+        simple: ${GCP.IAM.Group.name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "52":
+    id: "52"
+    taskid: 8d95843d-358b-47b4-894f-60ac769cd4e1
+    type: regular
+    task:
+      id: 8d95843d-358b-47b4-894f-60ac769cd4e1
+      version: -1
+      name: gcp-iam-service-account-update
+      script: GCP-IAM|||gcp-iam-service-account-update
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "53"
+    scriptarguments:
+      display_name:
+        simple: xsoar-service-account-1
+      fields_to_update:
+        simple: displayName
+      service_account_name:
+        simple: ${GCP.IAM.ServiceAccount.name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 10400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "53":
+    id: "53"
+    taskid: be883ac2-0a0b-415c-84d8-9eb0b0808fb4
+    type: regular
+    task:
+      id: be883ac2-0a0b-415c-84d8-9eb0b0808fb4
+      version: -1
+      name: gcp-iam-service-accounts-get
+      script: GCP-IAM|||gcp-iam-service-accounts-get
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "54"
+    scriptarguments:
+      service_account_name:
+        simple: ${GCP.IAM.ServiceAccount.name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 10600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "54":
+    id: "54"
+    taskid: a4794180-c25e-4332-87a0-66fd94f1be2e
+    type: condition
+    task:
+      id: a4794180-c25e-4332-87a0-66fd94f1be2e
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "55"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.ServiceAccount.email
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.ServiceAccount.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.ServiceAccount.oauth2ClientId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.ServiceAccount.projectId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.ServiceAccount.uniqueId
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: GCP.IAM.ServiceAccount.disabled
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 10800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "55":
+    id: "55"
+    taskid: 968f353e-7d40-4202-8d11-733f443d414f
+    type: regular
+    task:
+      id: 968f353e-7d40-4202-8d11-733f443d414f
+      version: -1
+      name: gcp-iam-service-account-disable
+      script: GCP-IAM|||gcp-iam-service-account-disable
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "56"
+    scriptarguments:
+      service_account_name:
+        simple: ${GCP.IAM.ServiceAccount.name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 11000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "56":
+    id: "56"
+    taskid: 18b9b84c-1d6a-4f71-8d8b-123d8a982ee1
+    type: regular
+    task:
+      id: 18b9b84c-1d6a-4f71-8d8b-123d8a982ee1
+      version: -1
+      name: gcp-iam-service-account-enable
+      script: GCP-IAM|||gcp-iam-service-account-enable
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "57"
+    scriptarguments:
+      service_account_name:
+        simple: ${GCP.IAM.ServiceAccount.name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 11200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "57":
+    id: "57"
+    taskid: 0ae972c1-ccd1-4a0b-8bd1-dcb40e87f9d3
+    type: regular
+    task:
+      id: 0ae972c1-ccd1-4a0b-8bd1-dcb40e87f9d3
+      version: -1
+      name: gcp-iam-service-account-key-create
+      script: GCP-IAM|||gcp-iam-service-account-key-create
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "58"
+    scriptarguments:
+      service_account_name:
+        simple: ${GCP.IAM.ServiceAccount.name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 11400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "58":
+    id: "58"
+    taskid: 6fbd1e02-fece-4acc-87ed-582e61f7559a
+    type: condition
+    task:
+      id: 6fbd1e02-fece-4acc-87ed-582e61f7559a
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "59"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.ServiceAccountKey.keyAlgorithm
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.ServiceAccountKey.keyOrigin
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.ServiceAccountKey.keyType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.ServiceAccountKey.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.ServiceAccountKey.privateKeyData
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.ServiceAccountKey.privateKeyType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.ServiceAccountKey.validAfterTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.ServiceAccountKey.validBeforeTime
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: GCP.IAM.ServiceAccountKey.disabled
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 11600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "59":
+    id: "59"
+    taskid: 9f9dfc9c-ca68-4a55-8b54-3c6a46c704cf
+    type: regular
+    task:
+      id: 9f9dfc9c-ca68-4a55-8b54-3c6a46c704cf
+      version: -1
+      name: gcp-iam-service-account-keys-get
+      script: GCP-IAM|||gcp-iam-service-account-keys-get
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "60"
+    scriptarguments:
+      limit:
+        simple: "1"
+      service_account_name:
+        simple: ${GCP.IAM.ServiceAccount.name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 11800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "60":
+    id: "60"
+    taskid: 4f731bcf-9964-4e19-862a-d1916ad8803e
+    type: condition
+    task:
+      id: 4f731bcf-9964-4e19-862a-d1916ad8803e
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "61"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.ServiceAccountKey.keyAlgorithm
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.ServiceAccountKey.keyOrigin
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.ServiceAccountKey.keyType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.ServiceAccountKey.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.ServiceAccountKey.validAfterTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.ServiceAccountKey.validBeforeTime
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: GCP.IAM.ServiceAccountKey.disabled
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 12000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "61":
+    id: "61"
+    taskid: 8c10098d-f54f-47b8-84fd-4410d2814406
+    type: regular
+    task:
+      id: 8c10098d-f54f-47b8-84fd-4410d2814406
+      version: -1
+      name: gcp-iam-service-account-key-enable
+      script: GCP-IAM|||gcp-iam-service-account-key-enable
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "62"
+    scriptarguments:
+      key_name:
+        simple: ${GCP.IAM.ServiceAccountKey.name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 12200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "62":
+    id: "62"
+    taskid: ba0f6d23-208a-40d4-84e8-97406d2817b6
+    type: regular
+    task:
+      id: ba0f6d23-208a-40d4-84e8-97406d2817b6
+      version: -1
+      name: gcp-iam-service-account-key-disable
+      script: GCP-IAM|||gcp-iam-service-account-key-disable
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "63"
+    scriptarguments:
+      key_name:
+        simple: ${GCP.IAM.ServiceAccountKey.name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 12400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "63":
+    id: "63"
+    taskid: 26a1bca4-d64e-4572-8d87-8e16d795e202
+    type: regular
+    task:
+      id: 26a1bca4-d64e-4572-8d87-8e16d795e202
+      version: -1
+      name: gcp-iam-service-account-key-delete
+      script: GCP-IAM|||gcp-iam-service-account-key-delete
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "64"
+    scriptarguments:
+      key_name:
+        simple: ${GCP.IAM.ServiceAccountKey.name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 12550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "64":
+    id: "64"
+    taskid: 50696c92-d001-4388-8c7b-7f9f430215a2
+    type: regular
+    task:
+      id: 50696c92-d001-4388-8c7b-7f9f430215a2
+      version: -1
+      name: gcp-iam-service-account-delete
+      script: GCP-IAM|||gcp-iam-service-account-delete
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "92"
+    scriptarguments:
+      service_account_name:
+        simple: ${GCP.IAM.ServiceAccount.name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 12710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "65":
+    id: "65"
+    taskid: 01d51af4-9f50-42f7-828d-42dd4d65c793
+    type: regular
+    task:
+      id: 01d51af4-9f50-42f7-828d-42dd4d65c793
+      version: -1
+      name: gcp-iam-organization-role-list
+      script: GCP-IAM|||gcp-iam-organization-role-list
+      type: regular
+      iscommand: true
+      brand: GCP-IAM
+    nexttasks:
+      '#none#':
+      - "66"
+    scriptarguments:
+      include_permissions: {}
+      limit:
+        simple: "1"
+      organization_name:
+        simple: ${GCP.IAM.Organization.name}
+      page: {}
+      show_deleted: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 13030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "66":
+    id: "66"
+    taskid: 042007a2-8031-4c2c-81f4-6e1a2c4aeda1
+    type: condition
+    task:
+      id: 042007a2-8031-4c2c-81f4-6e1a2c4aeda1
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "67"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.Role.name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 13200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "67":
+    id: "67"
+    taskid: fdf2ba75-e822-4367-857a-65eac721e4ba
+    type: regular
+    task:
+      id: fdf2ba75-e822-4367-857a-65eac721e4ba
+      version: -1
+      name: gcp-iam-organization-role-update
+      script: GCP-IAM|||gcp-iam-organization-role-update
+      type: regular
+      iscommand: true
+      brand: GCP-IAM
+    nexttasks:
+      '#none#':
+      - "68"
+    scriptarguments:
+      description: {}
+      fields_to_update:
+        simple: title
+      permissions: {}
+      role_name:
+        simple: ${GCP.IAM.Role.name}
+      stage: {}
+      title:
+        simple: Test playbook organization role
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 13400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "68":
+    id: "68"
+    taskid: dfdd2fdb-c436-4bb2-876b-8c427830a8b3
+    type: regular
+    task:
+      id: dfdd2fdb-c436-4bb2-876b-8c427830a8b3
+      version: -1
+      name: gcp-iam-organization-role-get
+      script: GCP-IAM|||gcp-iam-organization-role-get
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "69"
+    scriptarguments:
+      role_name:
+        simple: ${GCP.IAM.Role.name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 13600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "69":
+    id: "69"
+    taskid: 7960858b-a6c8-429a-85b1-51a0f4afa881
+    type: condition
+    task:
+      id: 7960858b-a6c8-429a-85b1-51a0f4afa881
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "70"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.Role.name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 13800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "70":
+    id: "70"
+    taskid: 7141fbb5-5f9d-4a79-8bfe-c3c0d4dda9f8
+    type: regular
+    task:
+      id: 7141fbb5-5f9d-4a79-8bfe-c3c0d4dda9f8
+      version: -1
+      name: gcp-iam-organization-role-permission-add
+      script: GCP-IAM|||gcp-iam-organization-role-permission-add
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "71"
+    scriptarguments:
+      permissions:
+        simple: aiplatform.artifacts.get
+      role_name:
+        simple: ${GCP.IAM.Role.name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 14000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "71":
+    id: "71"
+    taskid: 7d36f378-9228-4e9d-8f77-bf051d31c220
+    type: regular
+    task:
+      id: 7d36f378-9228-4e9d-8f77-bf051d31c220
+      version: -1
+      name: gcp-iam-organization-role-permission-remove
+      script: GCP-IAM|||gcp-iam-organization-role-permission-remove
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "93"
+    scriptarguments:
+      permissions:
+        simple: aiplatform.artifacts.get
+      role_name:
+        simple: ${GCP.IAM.Role.name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 14150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "72":
+    id: "72"
+    taskid: 0a892c5e-4eca-48e1-8c1f-c028f5d41823
+    type: regular
+    task:
+      id: 0a892c5e-4eca-48e1-8c1f-c028f5d41823
+      version: -1
+      name: gcp-iam-project-role-list
+      script: GCP-IAM|||gcp-iam-project-role-list
+      type: regular
+      iscommand: true
+      brand: GCP-IAM
+    nexttasks:
+      '#none#':
+      - "73"
+    scriptarguments:
+      include_permissions: {}
+      limit:
+        simple: "1"
+      page: {}
+      project_id:
+        simple: ${GCP.IAM.Project.projectId}
+      show_deleted: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 14460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "73":
+    id: "73"
+    taskid: 28025b95-e39c-4f9f-81b7-ceb1c2546d64
+    type: condition
+    task:
+      id: 28025b95-e39c-4f9f-81b7-ceb1c2546d64
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "74"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.Role.name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 14620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "74":
+    id: "74"
+    taskid: 4198e984-a463-400e-8c44-a030c1b1013f
+    type: regular
+    task:
+      id: 4198e984-a463-400e-8c44-a030c1b1013f
+      version: -1
+      name: gcp-iam-project-role-update
+      script: GCP-IAM|||gcp-iam-project-role-update
+      type: regular
+      iscommand: true
+      brand: GCP-IAM
+    nexttasks:
+      '#none#':
+      - "75"
+    scriptarguments:
+      description: {}
+      fields_to_update:
+        simple: title
+      permissions: {}
+      role_name:
+        simple: ${GCP.IAM.Role.name}
+      stage: {}
+      title:
+        simple: Test playbook project role
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 14800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "75":
+    id: "75"
+    taskid: 538f1e82-d0a7-4452-886b-89f913a2d429
+    type: regular
+    task:
+      id: 538f1e82-d0a7-4452-886b-89f913a2d429
+      version: -1
+      name: gcp-iam-project-role-get
+      script: GCP-IAM|||gcp-iam-project-role-get
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "76"
+    scriptarguments:
+      role_name:
+        simple: ${GCP.IAM.Role.name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 15000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "76":
+    id: "76"
+    taskid: 40335fba-55ad-4ba9-8c2f-226f8cfc5ba2
+    type: condition
+    task:
+      id: 40335fba-55ad-4ba9-8c2f-226f8cfc5ba2
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "77"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.Role.name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 15200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "77":
+    id: "77"
+    taskid: b2aeb152-cacd-406a-8f39-dd668041ecfe
+    type: regular
+    task:
+      id: b2aeb152-cacd-406a-8f39-dd668041ecfe
+      version: -1
+      name: gcp-iam-project-role-permission-add
+      script: GCP-IAM|||gcp-iam-project-role-permission-add
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "78"
+    scriptarguments:
+      permissions:
+        simple: aiplatform.artifacts.get
+      role_name:
+        simple: ${GCP.IAM.Role.name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 15400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "78":
+    id: "78"
+    taskid: 154ccc68-7092-48ce-8503-9fb791d02829
+    type: regular
+    task:
+      id: 154ccc68-7092-48ce-8503-9fb791d02829
+      version: -1
+      name: gcp-iam-project-role-permission-remove
+      script: GCP-IAM|||gcp-iam-project-role-permission-remove
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "79"
+    scriptarguments:
+      permissions:
+        simple: aiplatform.artifacts.get
+      role_name:
+        simple: ${GCP.IAM.Role.name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 15600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "79":
+    id: "79"
+    taskid: 1a57627b-6954-4e33-800d-63761a6c4f17
+    type: regular
+    task:
+      id: 1a57627b-6954-4e33-800d-63761a6c4f17
+      version: -1
+      name: gcp-iam-testable-permission-list
+      script: GCP-IAM|||gcp-iam-testable-permission-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "80"
+    scriptarguments:
+      limit:
+        simple: "1"
+      page:
+        simple: "1"
+      resource_name:
+        simple: ${GCP.IAM.Project.name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 15800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "80":
+    id: "80"
+    taskid: 95d96628-779b-4986-800f-a19bcd456f2d
+    type: condition
+    task:
+      id: 95d96628-779b-4986-800f-a19bcd456f2d
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "81"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.Permission.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.Permission.stage
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 16000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "81":
+    id: "81"
+    taskid: 441b11c9-fc9a-4487-85e9-4041ec04f083
+    type: regular
+    task:
+      id: 441b11c9-fc9a-4487-85e9-4041ec04f083
+      version: -1
+      name: gcp-iam-grantable-role-list
+      script: GCP-IAM|||gcp-iam-grantable-role-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "82"
+    scriptarguments:
+      limit:
+        simple: "2"
+      resource_name:
+        simple: projects/${GCP.IAM.Project.projectId}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 16200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "82":
+    id: "82"
+    taskid: cf924a44-bd6e-43f9-8968-6206d2d5a164
+    type: condition
+    task:
+      id: cf924a44-bd6e-43f9-8968-6206d2d5a164
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "94"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.Role.name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 16350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "83":
+    id: "83"
+    taskid: a0dc8c4d-1ec4-4406-8844-6a0f37d6d287
+    type: regular
+    task:
+      id: a0dc8c4d-1ec4-4406-8844-6a0f37d6d287
+      version: -1
+      name: gcp-iam-role-list
+      script: GCP-IAM|||gcp-iam-role-list
+      type: regular
+      iscommand: true
+      brand: GCP-IAM
+    nexttasks:
+      '#none#':
+      - "84"
+    scriptarguments:
+      include_permissions: {}
+      limit:
+        simple: "1"
+      page: {}
+      show_deleted: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 16680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "84":
+    id: "84"
+    taskid: a2952c4d-9d02-433b-8e55-e90b73000281
+    type: condition
+    task:
+      id: a2952c4d-9d02-433b-8e55-e90b73000281
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "85"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.Role.name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 16840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "85":
+    id: "85"
+    taskid: 852ab38d-8062-41a5-8a26-59b5326a0751
+    type: regular
+    task:
+      id: 852ab38d-8062-41a5-8a26-59b5326a0751
+      version: -1
+      name: gcp-iam-role-get
+      script: GCP-IAM|||gcp-iam-role-get
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "86"
+    scriptarguments:
+      role_name:
+        simple: ${GCP.IAM.Role.name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 17000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "86":
+    id: "86"
+    taskid: 65086d32-e957-417a-80cb-9a13ff585408
+    type: condition
+    task:
+      id: 65086d32-e957-417a-80cb-9a13ff585408
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "87"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.Role.name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 17200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "87":
+    id: "87"
+    taskid: 47b98f29-f182-488e-8bbc-942991c34fbb
+    type: title
+    task:
+      id: 47b98f29-f182-488e-8bbc-942991c34fbb
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 17400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "88":
+    id: "88"
+    taskid: 5cd9af66-d0cf-4928-8bfd-3db1997bcbca
+    type: regular
+    task:
+      id: 5cd9af66-d0cf-4928-8bfd-3db1997bcbca
+      version: -1
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "89":
+    id: "89"
+    taskid: 6696d5ec-02f6-4467-8fd2-36fdc81e332d
+    type: regular
+    task:
+      id: 6696d5ec-02f6-4467-8fd2-36fdc81e332d
+      version: -1
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "95"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "90":
+    id: "90"
+    taskid: d582893c-4955-46c9-82fc-27ef471eef2c
+    type: regular
+    task:
+      id: d582893c-4955-46c9-82fc-27ef471eef2c
+      version: -1
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "103"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "91":
+    id: "91"
+    taskid: 190815dc-3e45-41e1-8b3b-906dbfe779b6
+    type: regular
+    task:
+      id: 190815dc-3e45-41e1-8b3b-906dbfe779b6
+      version: -1
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "101"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2685
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "92":
+    id: "92"
+    taskid: b78a39c3-d67e-458b-8781-1082074c1cf1
+    type: regular
+    task:
+      id: b78a39c3-d67e-458b-8781-1082074c1cf1
+      version: -1
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "97"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": 12700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "93":
+    id: "93"
+    taskid: 22cfa6ec-9ba4-4bba-834b-e067f0b5a63a
+    type: regular
+    task:
+      id: 22cfa6ec-9ba4-4bba-834b-e067f0b5a63a
+      version: -1
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "102"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 600,
+          "y": 14010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "94":
+    id: "94"
+    taskid: ced1307b-be6e-4db1-81d2-300d25825aee
+    type: regular
+    task:
+      id: ced1307b-be6e-4db1-81d2-300d25825aee
+      version: -1
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "83"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 16520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "95":
+    id: "95"
+    taskid: 49aba043-b6c2-426e-8c84-c6ca55613a56
+    type: regular
+    task:
+      id: 49aba043-b6c2-426e-8c84-c6ca55613a56
+      version: -1
+      name: gcp-iam-organizations-get
+      script: GCP-IAM|||gcp-iam-organizations-get
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      limit:
+        simple: "1"
+      page:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 590,
+          "y": 6710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "96":
+    id: "96"
+    taskid: 917a3496-b979-43dd-8976-4f0fa9c8114a
+    type: regular
+    task:
+      id: 917a3496-b979-43dd-8976-4f0fa9c8114a
+      version: -1
+      name: gcp-iam-projects-get
+      script: GCP-IAM|||gcp-iam-projects-get
+      type: regular
+      iscommand: true
+      brand: GCP-IAM
+    nexttasks:
+      '#none#':
+      - "49"
+    scriptarguments:
+      limit:
+        simple: "1"
+      page: {}
+      parent:
+        simple: ${GCP.IAM.Organization.name}
+      project_name: {}
+      show_deleted: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 620,
+          "y": 9950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "97":
+    id: "97"
+    taskid: bf72706b-c485-4263-8598-930da20c19e4
+    type: regular
+    task:
+      id: bf72706b-c485-4263-8598-930da20c19e4
+      version: -1
+      name: gcp-iam-organizations-get
+      script: GCP-IAM|||gcp-iam-organizations-get
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "65"
+    scriptarguments:
+      limit:
+        simple: "1"
+      page:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": 12900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "98":
+    id: "98"
+    taskid: 57ef63c9-1a91-4e10-80f5-cf8acc9e03a6
+    type: regular
+    task:
+      id: 57ef63c9-1a91-4e10-80f5-cf8acc9e03a6
+      version: -1
+      name: gcp-iam-projects-get
+      script: GCP-IAM|||gcp-iam-projects-get
+      type: regular
+      iscommand: true
+      brand: GCP-IAM
+    nexttasks:
+      '#none#':
+      - "72"
+    scriptarguments:
+      limit:
+        simple: "1"
+      page: {}
+      parent:
+        simple: ${GCP.IAM.Organization.name}
+      project_name: {}
+      show_deleted: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 600,
+          "y": 14395
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "99":
+    id: "99"
+    taskid: bef63eb2-3066-4150-8263-cf49398f4621
+    type: regular
+    task:
+      id: bef63eb2-3066-4150-8263-cf49398f4621
+      version: -1
+      name: gcp-iam-organizations-get
+      script: GCP-IAM|||gcp-iam-organizations-get
+      type: regular
+      iscommand: true
+      brand: GCP-IAM
+    nexttasks:
+      '#none#':
+      - "100"
+    scriptarguments:
+      limit:
+        simple: "1"
+      organization_name: {}
+      page:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -30
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "100":
+    id: "100"
+    taskid: 03a00a79-3690-4e27-864c-e04ca0ab877d
+    type: condition
+    task:
+      id: 03a00a79-3690-4e27-864c-e04ca0ab877d
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.Organization.createTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.Organization.directoryCustomerId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.Organization.displayName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.Organization.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.Organization.state
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GCP.IAM.Organization.updateTime
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "101":
+    id: "101"
+    taskid: f1860ede-c96f-497c-8221-4ac80e176dc7
+    type: regular
+    task:
+      id: f1860ede-c96f-497c-8221-4ac80e176dc7
+      version: -1
+      name: gcp-iam-organizations-get
+      script: GCP-IAM|||gcp-iam-organizations-get
+      type: regular
+      iscommand: true
+      brand: GCP-IAM
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      limit:
+        simple: "1"
+      organization_name: {}
+      page:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 610,
+          "y": 2780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "102":
+    id: "102"
+    taskid: d1207a17-75d2-4b24-831b-3632e85bc504
+    type: regular
+    task:
+      id: d1207a17-75d2-4b24-831b-3632e85bc504
+      version: -1
+      name: gcp-iam-organizations-get
+      script: GCP-IAM|||gcp-iam-organizations-get
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "98"
+    scriptarguments:
+      limit:
+        simple: "1"
+      page:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 600,
+          "y": 14190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "103":
+    id: "103"
+    taskid: 7b2c9ba7-d748-4f05-8853-d0747acbbf5c
+    type: regular
+    task:
+      id: 7b2c9ba7-d748-4f05-8853-d0747acbbf5c
+      version: -1
+      name: gcp-iam-organizations-get
+      script: GCP-IAM|||gcp-iam-organizations-get
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "96"
+    scriptarguments:
+      limit:
+        simple: "1"
+      page:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 620,
+          "y": 9785
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 17875,
+        "width": 950,
+        "x": 50,
+        "y": -410
+      }
+    }
+  }
+inputs: []
+outputs: []
