@@ -1146,35 +1146,31 @@
                 "description": "",
                 "fields": [
                     {
-                        "fieldId": "incident_requestsummary",
+                        "fieldId": "incident_name",
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_requestdescription",
+                        "fieldId": "incident_details",
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_fwpolicyaction",
+                        "fieldId": "incident_description",
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_fwsourcezone",
+                        "fieldId": "incident_sourceips",
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_fwdestinationzone",
+                        "fieldId": "incident_destinationips",
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_protocol",
+                        "fieldId": "incident_sourcenetworks",
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_fwservice",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_destinationports",
+                        "fieldId": "incident_destinationnetworks",
                         "isVisible": true
                     },
                     {
@@ -1182,15 +1178,15 @@
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_requestdst",
+                        "fieldId": "incident_policyactions",
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_requestsrc",
+                        "fieldId": "incident_protocolnames",
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_name",
+                        "fieldId": "incident_protocol",
                         "isVisible": true
                     }
                 ],
@@ -1303,14 +1299,6 @@
                     },
                     {
                         "fieldId": "incident_assigneduser",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_dbotprediction",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_dbotpredictionprobability",
                         "isVisible": true
                     },
                     {
