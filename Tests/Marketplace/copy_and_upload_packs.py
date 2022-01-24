@@ -209,7 +209,8 @@ def download_and_extract_index(build_bucket: Bucket, extract_destination_path: s
         sys.exit(1)
 
 
-def copy_id_set(production_bucket: Bucket, build_bucket: Bucket, storage_base_path: str, build_bucket_base_path: str):
+def copy_id_set(production_bucket: Bucket, build_bucket: Bucket, storage_base_path: str, build_bucket_base_path: str,
+                marketplace: str):
     """ Copies the id_set.json artifact from the build bucket to the production bucket.
 
     Args:
@@ -217,27 +218,33 @@ def copy_id_set(production_bucket: Bucket, build_bucket: Bucket, storage_base_pa
         build_bucket (google.cloud.storage.bucket.Bucket): gcs bucket where id_set is copied from.
         storage_base_path (str): the path to upload the id_set.json to.
         build_bucket_base_path (str): the path in the build bucket of the id_set.json.
+        marketplace (str): the marketplace type. possible values: xsoar, marketplacev2
     """
+    marketplace_to_id_set_name = {
+        'xsoar': 'id_set.json',
+        'marketplacev2': 'id_set_mp_v2.json',
+    }
+    id_set_file_name = marketplace_to_id_set_name.get(marketplace, 'id_set.json')
 
-    build_id_set_path = os.path.join(os.path.dirname(build_bucket_base_path), 'id_set.json')
+    build_id_set_path = os.path.join(os.path.dirname(build_bucket_base_path), id_set_file_name)
     build_id_set_blob = build_bucket.blob(build_id_set_path)
 
     if not build_id_set_blob.exists():
-        logging.error(f"id_set.json file does not exists in build bucket in path: {build_id_set_path}")
+        logging.error(f'{id_set_file_name} file does not exists in build bucket in path: {build_id_set_path}')
         sys.exit(1)
 
-    prod_id_set_path = os.path.join(os.path.dirname(storage_base_path), 'id_set.json')
+    prod_id_set_path = os.path.join(os.path.dirname(storage_base_path), id_set_file_name)
     try:
         copied_blob = build_bucket.copy_blob(
             blob=build_id_set_blob, destination_bucket=production_bucket, new_name=prod_id_set_path
         )
         if not copied_blob.exists():
-            logging.error(f"Failed to upload id_set.json to {prod_id_set_path}")
+            logging.error(f'Failed to upload {id_set_file_name} to {prod_id_set_path}')
             sys.exit(1)
         else:
-            logging.success("Finished uploading id_set.json to storage.")
+            logging.success('Finished uploading {id_set_file_name} to storage.')
     except Exception as e:
-        logging.exception(f"Failed copying ID Set. Additional Info: {str(e)}")
+        logging.exception(f'Failed copying ID Set. Additional Info: {str(e)}')
         sys.exit(1)
 
 
@@ -417,7 +424,7 @@ def main():
                build_bucket, production_base_path, build_bucket_base_path)
 
     # upload id_set.json to bucket
-    copy_id_set(production_bucket, build_bucket, production_base_path, build_bucket_base_path)
+    copy_id_set(production_bucket, build_bucket, production_base_path, build_bucket_base_path, marketplace)
 
     # get the lists of packs divided by their status
     successful_packs, skipped_packs, failed_packs = get_packs_summary(packs_list)
