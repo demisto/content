@@ -13,6 +13,8 @@ jobs:
       - name: Get changed files
         id: changed-files
         uses: tj-actions/changed-files@v2.0.0
+        with:
+          separator: ';'
       - name: Setup Python
         uses: actions/setup-python@v2
         with:
@@ -23,15 +25,8 @@ jobs:
         run: pip install demisto-sdk
       - name: Review Release Notes
         run: |
-          overall_exit_code=0
-          file_exit_code=0
-          for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
-            echo ""
-            echo "  Checking File: $file"
-            demisto-sdk doc-review --release-notes -i "$file" || file_exit_code=$?
-            if [ ! $file_exit_code -eq 0 ]; then
-              echo "  Setting Overall Exit Code to 1"
-              overall_exit_code=1
-            fi
-          done
-          exit $overall_exit_code
+          changed_files="${{ steps.changed-files.outputs.all_changed_files }}"
+          delim=';'
+          echo "Starting docs review"
+          python Utils/github_workflow_scripts/run_docs_review.py --changed_files "$changed_files" --delimiter $delim
+          echo "Finished docs review successfully"

@@ -1,0 +1,45 @@
+{
+  "value": [
+    {
+      "id": "XXXX",
+      "name": "xsoar",
+      "url": "https://dev.azure.com/xsoar/xsoar-project/_apis/git/repositories/XXXX",
+      "project": {
+        "id": "xsoar-project",
+        "name": "xsoar",
+        "url": "https://dev.azure.com/xsoar/_apis/projects/xsoar-project",
+        "state": "wellFormed",
+        "revision": 11,
+        "visibility": "private",
+        "lastUpdateTime": "2021-10-13T15:46:18.017Z"
+      },
+      "defaultBranch": "refs/heads/main",
+      "size": 6339,
+      "remoteUrl": "https://xsoar@dev.azure.com/xsoar/xsoar/_git/xsoar",
+      "sshUrl": "git@ssh.dev.azure.com:v3/xsoar/xsoar/xsoar",
+      "webUrl": "https://dev.azure.com/xsoar/xsoar/_git/xsoar",
+      "isDisabled": "False"
+    },
+    {
+      "id": "XXXX",
+      "name": "test",
+      "url": "https://dev.azure.com/xsoar/xsoar-project/_apis/git/repositories/XXXX",
+      "project": {
+        "id": "xsoar-project",
+        "name": "xsoar",
+        "url": "https://dev.azure.com/xsoar/_apis/projects/xsoar-project",
+        "state": "wellFormed",
+        "revision": 11,
+        "visibility": "private",
+        "lastUpdateTime": "2021-10-13T15:46:18.017Z"
+      },
+      "defaultBranch": "refs/heads/main",
+      "size": 727,
+      "remoteUrl": "https://xsoar@dev.azure.com/xsoar/xsoar/_git/test",
+      "sshUrl": "git@ssh.dev.azure.com:v3/xsoar/xsoar/test",
+      "webUrl": "https://dev.azure.com/xsoar/xsoar/_git/test",
+      "isDisabled": "False"
+    }
+  ],
+  "count": 2
+}

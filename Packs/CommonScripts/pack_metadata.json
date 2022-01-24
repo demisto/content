@@ -2,7 +2,7 @@
     "name": "Common Scripts",
     "description": "Frequently used scripts pack.",
     "support": "xsoar",
-    "currentVersion": "1.6.13",
+    "currentVersion": "1.6.27",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -39,6 +39,10 @@
         "MicrosoftGraphListener": {
             "mandatory": false,
             "display_name": "Microsoft Graph Mail Single User"
+        },
+        "RemoteAccess": {
+            "mandatory": false,
+            "display_name": "RemoteAccess v2"
         }
     },
     "marketplaces": [

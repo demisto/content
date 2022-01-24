@@ -10,7 +10,7 @@ from pytest import raises, mark
 import pytest
 import warnings
 
-from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToMarkdown, underscoreToCamelCase, \
+from CommonServerPython import set_to_integration_context_with_retries, xml2json, json2xml, entryTypes, formats, tableToMarkdown, underscoreToCamelCase, \
     flattenCell, date_to_timestamp, datetime, camelize, pascalToSpace, argToList, \
     remove_nulls_from_dictionary, is_error, get_error, hash_djb2, fileResult, is_ip_valid, get_demisto_version, \
     IntegrationLogger, parse_date_string, IS_PY3, DebugLogger, b64_encode, parse_date_range, return_outputs, \
@@ -1167,7 +1167,8 @@ def test_logger_replace_strs(mocker):
     ilog('special chars like ZAQ!@#$%&* should be replaced even when url-encoded like ZAQ%21%40%23%24%25%26%2A')
     assert ('' not in ilog.replace_strs)
     assert ilog.messages[0] == '<XX_REPLACED> is <XX_REPLACED> and b64: <XX_REPLACED>'
-    assert ilog.messages[1] == 'special chars like <XX_REPLACED> should be replaced even when url-encoded like <XX_REPLACED>'
+    assert ilog.messages[1] == \
+           'special chars like <XX_REPLACED> should be replaced even when url-encoded like <XX_REPLACED>'
 
 
 TEST_SSH_KEY_ESC = '-----BEGIN OPENSSH PRIVATE KEY-----\\nb3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAACFw' \
@@ -2703,6 +2704,56 @@ class TestBaseClient:
             resp_json = json.loads(e.res.text)
             assert e.res.status_code == 400
             assert resp_json.get('error') == 'additional text'
+
+    def test_http_request_timeout_default(self, requests_mock):
+        requests_mock.get('http://example.com/api/v2/event', text=json.dumps(self.text))
+        self.client._http_request('get', 'event')
+        assert requests_mock.last_request.timeout == self.client.REQUESTS_TIMEOUT
+
+    def test_http_request_timeout_given_func(self, requests_mock):
+        requests_mock.get('http://example.com/api/v2/event', text=json.dumps(self.text))
+        timeout = 120
+        self.client._http_request('get', 'event', timeout=timeout)
+        assert requests_mock.last_request.timeout == timeout
+
+    def test_http_request_timeout_given_class(self, requests_mock):
+        from CommonServerPython import BaseClient
+        requests_mock.get('http://example.com/api/v2/event', text=json.dumps(self.text))
+        timeout = 44
+        new_client = BaseClient('http://example.com/api/v2/', timeout=timeout)
+        new_client._http_request('get', 'event')
+        assert requests_mock.last_request.timeout == timeout
+
+    def test_http_request_timeout_environ_system(self, requests_mock, mocker):
+        from CommonServerPython import BaseClient
+        requests_mock.get('http://example.com/api/v2/event', text=json.dumps(self.text))
+        timeout = 10
+        mocker.patch.dict(os.environ, {'REQUESTS_TIMEOUT': str(timeout)})
+        new_client = BaseClient('http://example.com/api/v2/')
+        new_client._http_request('get', 'event')
+        assert requests_mock.last_request.timeout == timeout
+
+    def test_http_request_timeout_environ_integration(self, requests_mock, mocker):
+        requests_mock.get('http://example.com/api/v2/event', text=json.dumps(self.text))
+        timeout = 180.1
+        # integration name is set to Test in the fixture handle_calling_context
+        mocker.patch.dict(os.environ, {'REQUESTS_TIMEOUT.Test': str(timeout)})
+        from CommonServerPython import BaseClient
+        new_client = BaseClient('http://example.com/api/v2/')
+        new_client._http_request('get', 'event')
+        assert requests_mock.last_request.timeout == timeout
+
+    def test_http_request_timeout_environ_script(self, requests_mock, mocker):
+        requests_mock.get('http://example.com/api/v2/event', text=json.dumps(self.text))
+        timeout = 23.4
+        script_name = 'TestScript'
+        mocker.patch.dict(os.environ, {'REQUESTS_TIMEOUT.' + script_name: str(timeout)})
+        mocker.patch.dict(demisto.callingContext, {'context': {'ScriptName': script_name}})
+        mocker.patch.object(CommonServerPython, 'get_integration_name', return_value='')
+        from CommonServerPython import BaseClient
+        new_client = BaseClient('http://example.com/api/v2/')
+        new_client._http_request('get', 'event')
+        assert requests_mock.last_request.timeout == timeout
 
     def test_is_valid_ok_codes_empty(self):
         from requests import Response
@@ -5877,4 +5928,211 @@ def test_get_message_memory_dump():
     assert ' Globals by Size ' in result
     assert ' End Top ' in result
     assert ' End Variables Dump ' in result
-    assert '<class \'' in result
+
+
+def test_shorten_string_for_printing():
+    from CommonServerPython import shorten_string_for_printing
+    assert shorten_string_for_printing(None, None) is None
+    assert shorten_string_for_printing('1', 9) == '1'
+    assert shorten_string_for_printing('123456789', 9) == '123456789'
+    assert shorten_string_for_printing('1234567890', 9) == '123...890'
+    assert shorten_string_for_printing('12345678901', 9) == '123...901'
+    assert shorten_string_for_printing('123456789012', 9) == '123...012'
+
+    assert shorten_string_for_printing('1234567890', 10) == '1234567890'
+    assert shorten_string_for_printing('12345678901', 10) == '1234...901'
+    assert shorten_string_for_printing('123456789012', 10) == '1234...012'
+
+
+def test_get_size_of_object():
+    from CommonServerPython import get_size_of_object
+
+    class Object(object):
+        pass
+
+    level_3 = Object()
+    level_3.key3 = 'val3'
+
+    level_2 = Object()
+    level_2.key2 = 'val2'
+    level_2.child = level_3
+
+    level_1 = Object()
+    level_1.key1 = 'val1'
+    level_1.child = level_2
+
+    level_1_sys_size = sys.getsizeof(level_1)
+    level_1_deep_size = get_size_of_object(level_1)
+
+    # 3 levels, so shoulod be at least 3 times as large
+    assert level_1_deep_size > 3 * level_1_sys_size
+
+
+class TestSetAndGetLastMirrorRun:
+
+    def test_get_last_mirror_run_in_6_6(self, mocker):
+        """
+        Given: 6.6.0 environment and getLastMirrorRun returns results
+        When: Execute mirroring run
+        Then: Returning demisto.getLastRun object
+        """
+        import demistomock as demisto
+        from CommonServerPython import get_last_mirror_run
+        mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.6.0"})
+        mocker.patch.object(demisto, 'getLastMirrorRun', return_value={"lastMirrorRun": "2018-10-24T14:13:20+00:00"})
+        result = get_last_mirror_run()
+        assert result == {"lastMirrorRun": "2018-10-24T14:13:20+00:00"}
+
+    def test_get_last_mirror_run_in_6_6_when_return_empty_results(self, mocker):
+        """
+        Given: 6.6.0 environment and getLastMirrorRun returns empty results
+        When: Execute mirroring run
+        Then: Returning demisto.getLastRun empty object
+        """
+        import demistomock as demisto
+        from CommonServerPython import get_last_mirror_run
+        mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.6.0"})
+        mocker.patch.object(demisto, 'getLastMirrorRun', return_value={})
+        result = get_last_mirror_run()
+        assert result == {}
+
+    def test_get_last_run_in_6_5(self, mocker):
+        """
+        Given: 6.5.0 environment and getLastMirrorRun returns results
+        When: Execute mirroring run
+        Then: Get a string which represent we can't use this function
+        """
+        import demistomock as demisto
+        from CommonServerPython import get_last_mirror_run
+        mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.5.0"})
+        get_last_run = mocker.patch.object(demisto, 'getLastMirrorRun')
+        with raises(DemistoException, match='You cannot use getLastMirrorRun as your version is below 6.6.0'):
+            get_last_mirror_run()
+            assert get_last_run.called is False
+
+    def test_set_mirror_last_run_in_6_6(self, mocker):
+        """
+        Given: 6.6.0 environment
+        When: Execute mirroring run
+        Then: Using demisto.setLastMirrorRun to save results
+        """
+        import demistomock as demisto
+        from CommonServerPython import set_last_mirror_run
+        mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.6.0"})
+        set_last_run = mocker.patch.object(demisto, 'setLastMirrorRun', return_value={})
+        set_last_mirror_run({"lastMirrorRun": "2018-10-24T14:13:20+00:00"})
+        set_last_run.assert_called_with({"lastMirrorRun": "2018-10-24T14:13:20+00:00"})
+
+    def test_set_mirror_last_run_in_6_5(self, mocker):
+        """
+        Given: 6.5.0 environment
+        When: Execute mirroring run
+        Then: Don't use demisto.setLastMirrorRun
+        """
+        import demistomock as demisto
+        from CommonServerPython import set_last_mirror_run
+        mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.5.0"})
+        set_last_run = mocker.patch.object(demisto, 'setLastMirrorRun', return_value={})
+        with raises(DemistoException, match='You cannot use setLastMirrorRun as your version is below 6.6.0'):
+            set_last_mirror_run({"lastMirrorRun": "2018-10-24T14:13:20+00:00"})
+            assert set_last_run.called is False
+
+
+class TestTracebackLineNumberAdgustment:
+    @staticmethod
+    def test_module_line_number_mapping():
+        from CommonServerPython import _MODULES_LINE_MAPPING
+        assert _MODULES_LINE_MAPPING['CommonServerPython']['start'] == 0
+
+    @staticmethod
+    def test_register_module_line_sanity():
+        """
+        Given:
+            A module with a start and an end boundries.
+        When:
+            registering a module.
+        Then:
+            * module exists in the mapping with valid boundries.
+        """
+        import CommonServerPython
+        CommonServerPython.register_module_line('Sanity', 'start', 5)
+        CommonServerPython.register_module_line('Sanity', 'end', 50)
+        assert CommonServerPython._MODULES_LINE_MAPPING['Sanity'] == {
+            'start': 5,
+            'start_wrapper': 5,
+            'end': 50,
+            'end_wrapper': 50,
+        }
+
+    @staticmethod
+    def test_register_module_line_single_boundry():
+        """
+        Given:
+            * A module with only an end boundry.
+            * A module with only a start boundry.
+        When:
+            registering a module.
+        Then:
+            * both modules exists in the mapping.
+            * the missing boundry is 0 for start and infinity for end.
+        """
+        import CommonServerPython
+        CommonServerPython.register_module_line('NoStart', 'end', 4)
+        CommonServerPython.register_module_line('NoEnd', 'start', 100)
+
+        assert CommonServerPython._MODULES_LINE_MAPPING['NoStart'] == {
+            'start': 0,
+            'start_wrapper': 0,
+            'end': 4,
+            'end_wrapper': 4,
+        }
+        assert CommonServerPython._MODULES_LINE_MAPPING['NoEnd'] == {
+            'start': 100,
+            'start_wrapper': 100,
+            'end': float('inf'),
+            'end_wrapper': float('inf'),
+        }
+
+    @staticmethod
+    def test_register_module_line_invalid_inputs():
+        """
+        Given:
+            * invalid start_end flag.
+            * invalid line number.
+        When:
+            registering a module.
+        Then:
+            function exits quietly
+        """
+        import CommonServerPython
+        CommonServerPython.register_module_line('Cactus', 'statr', 5)
+        CommonServerPython.register_module_line('Cactus', 'start', '5')
+        CommonServerPython.register_module_line('Cactus', 'statr', -5)
+        CommonServerPython.register_module_line('Cactus', 'statr', 0, -1)
+
+
+    @staticmethod
+    def test_fix_traceback_line_numbers():
+        import CommonServerPython
+        CommonServerPython._MODULES_LINE_MAPPING = {
+            'CommonServerPython': {'start': 200, 'end': 865, 'end_wrapper': 900},
+            'TestTracebackLines': {'start': 901, 'end': float('inf'), 'start_wrapper': 901},
+            'TestingApiModule': {'start': 1004, 'end': 1032, 'start_wrapper': 1001, 'end_wrapper': 1033},
+        }
+        traceback = '''Traceback (most recent call last):
+  File "<string>", line 1043, in <module>
+  File "<string>", line 986, in main
+  File "<string>", line 600, in func_wrapper
+  File "<string>", line 1031, in api_module_call_script
+  File "<string>", line 927, in call_func
+Exception: WTF?!!!'''
+        expected_traceback = '''Traceback (most recent call last):
+  File "<TestTracebackLines>", line 110, in <module>
+  File "<TestTracebackLines>", line 85, in main
+  File "<CommonServerPython>", line 400, in func_wrapper
+  File "<TestingApiModule>", line 27, in api_module_call_script
+  File "<TestTracebackLines>", line 26, in call_func
+Exception: WTF?!!!'''
+        result = CommonServerPython.fix_traceback_line_numbers(traceback)
+        assert result == expected_traceback
+

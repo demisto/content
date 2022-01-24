@@ -1,7 +1,20 @@
+
 {
     "testTimeout": 160,
     "testInterval": 20,
     "tests": [
+        {
+            "integrations": "RSANetWitnessv115",
+            "playbookID": "RSANetWitnessv115-Test"
+        },
+        {
+            "integrations": ["FeedMandiant", "Demisto REST API"],
+            "playbookID": "Fetch Indicators Test",
+            "fromversion": "6.1.0",
+            "is_mockable": false,
+            "instance_names": "FeedMandiant",
+            "timeout": 2400
+        },
         {
             "integrations": "LogRhythmRest V2",
             "playbookID": "LogRhythmRestV2-test"
@@ -140,6 +153,26 @@
             "timeout": 1500
         },
         {
+            "integrations": "Azure Storage Container",
+            "playbookID": "playbook-AzureStorageContainer-Test",
+            "fromVersion": "6.0.0"
+        },
+        {
+            "integrations": "Azure Storage FileShare",
+            "playbookID": "playbook-AzureStorageFileShare-Test",
+            "fromVersion": "6.0.0"
+        },
+        {
+            "integrations": "Azure Storage Queue",
+            "playbookID": "playbook-AzureStorageQueue-Test",
+            "fromVersion": "6.0.0"
+        },
+        {
+            "integrations": "Azure Storage Table",
+            "playbookID": "playbook-AzureStorageTable-Test",
+            "fromVersion": "6.0.0"
+        },
+        {
             "integrations": "EwsExtension",
             "playbookID": "O365 - EWS - Extension - Test",
             "fromversion": "6.0.0",
@@ -244,6 +277,11 @@
             "integrations": "URLhaus",
             "playbookID": "Test_URLhaus",
             "timeout": 1000
+        },
+        {
+            "integrations": "AzureDevOps",
+            "playbookID": "playbook-AzureDevOps-Test",
+            "fromversion": "6.2.0"
         },
         {
             "integrations": "Microsoft Intune Feed",
@@ -619,6 +657,15 @@
         {
             "integrations": "SlackV3",
             "playbookID": "SlackV3 TestPB",
+            "instance_names": "cached",
+            "timeout": 400,
+            "pid_threshold": 8,
+            "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "SlackV3",
+            "playbookID": "Test_SlackV3_NonCaching",
+            "instance_names": "non_cached",
             "timeout": 400,
             "pid_threshold": 8,
             "fromversion": "5.5.0"
@@ -1421,6 +1468,17 @@
             "playbookID": "EWS Mail Sender Test 2"
         },
         {
+            "integrations": [
+                "EWS Mail Sender",
+                "SMIME Messaging"
+            ],
+            "instance_names": [
+                "ews_mail_sender_labdemisto",
+                "SMIME Messaging"
+            ],
+            "playbookID": "EWS Mail Sender Test 3"
+        },
+        {
             "playbookID": "decodemimeheader_-_test"
         },
         {
@@ -1529,6 +1587,9 @@
             "fromversion": "6.0.0",
             "integrations": "Rasterize",
             "timeout": 240
+        },
+        {
+            "playbookID": "Process Email - Generic - Test - Actual Incident"
         },
         {
             "integrations": "CrowdstrikeFalcon",
@@ -1982,7 +2043,9 @@
         },
         {
             "integrations": "VMware",
-            "playbookID": "VMWare Test"
+            "playbookID": "VMWare Test",
+            "memory_threshold": 300,
+            "timeout": 1000
         },
         {
             "integrations": "carbonblack-v2",
@@ -2263,6 +2326,10 @@
             ],
             "memory_threshold": 160,
             "pid_threshold": 80
+        },
+        {
+            "playbookID": "Phishing - Core - Test - Actual Incident",
+            "fromversion": "6.0.0"
         },
         {
             "integrations": "duo",
@@ -4302,6 +4369,13 @@
             ]
         },
         {
+            "playbookID": "Atlassian Confluence Cloud-Test",
+            "fromversion": "6.2.0",
+            "integrations": [
+                "Atlassian Confluence Cloud"
+            ]
+        },
+        {
             "playbookID": "CrowdStrike_Falcon_X_-Test-Detonate_URL",
             "fromversion": "5.0.0",
             "integrations": [
@@ -4316,6 +4390,21 @@
             ]
         },
         {
+            "playbookID": "Phishing - Core - Test - Actual Incident",
+            "fromversion": "6.0.0",
+            "timeout": 4600,
+            "integrations": [
+                "EWS Mail Sender",
+                "Demisto REST API",
+                "Rasterize"
+            ],
+            "memory_threshold": 200
+        },
+        {
+            "playbookID": "Phishing v2 - Test - Actual Incident",
+            "fromversion": "6.0.0"
+        },
+        {
             "playbookID": "Phishing Investigation - Generic v2 - Campaign Test",
             "fromversion": "6.0.0",
             "timeout": 7000,
@@ -4328,7 +4417,9 @@
             "instance_names": [
                 "no_sync_long_timeout",
                 "ews_mail_sender_labdemisto"
-            ]
+            ],
+            "memory_threshold": 160,
+            "pid_threshold": 80
         },
         {
             "playbookID": "PCAP Search test",
@@ -4570,6 +4661,15 @@
             "fromversion": "5.0.0"
         },
         {
+            "playbookID": "Process Email - Generic - Test - Actual Incident",
+            "fromversion": "6.0.0",
+            "integrations": [
+                "XsoarPowershellTesting",
+                "Create-Mock-Feed-Relationships"
+            ],
+            "memory_threshold": 160
+        },
+        {
             "playbookID": "Analyst1 Integration Demonstration - Test",
             "fromversion": "5.0.0",
             "integrations": [
@@ -4796,6 +4896,13 @@
             "fromversion": "6.0.0"
         },
         {
+            "integrations": [
+                "Demisto REST API"
+            ],
+            "playbookID": "TestDemistoRestAPI",
+            "fromversion": "5.5.0"
+        },
+        {
             "scripts": [
                 "SplunkShowAsset",
                 "SplunkShowDrilldown",
@@ -4822,6 +4929,13 @@
             "fromversion": "5.5.0"
         },
         {
+            "integrations": [
+                "RemoteAccess v2"
+            ],
+            "playbookID": "RemoteAccessTest",
+            "fromversion": "6.0.0"
+        },
+        {
             "playbookID": "AzureRiskyUsers",
             "fromversion": "6.0.0",
             "integrations": "AzureRiskyUsers"
@@ -4829,6 +4943,55 @@
         {
             "integrations": "KafkaV3",
             "playbookID": "KafkaV3 Test"
+        },
+        {
+            "playbookID": "FormatURL-Test"
+        },
+        {
+            "playbookID": "Grafana-Test",
+            "fromversion": "6.0.0",
+            "integrations": [
+                "Grafana",
+                "Demisto REST API"
+            ],
+            "is_mockable": false,
+            "timeout": 2400
+        },
+        {
+            "integrations": "McAfee ePO v2",
+            "playbookID": "McAfee ePO v2 Test"
+        },
+        {
+            "playbookID": "Dedup - Generic v3",
+            "fromversion": "5.5.0"
+        },
+        {
+            "playbookID": "DBotPredictURLPhishing_test",
+            "integrations": [
+                "Whois",
+                "Rasterize"
+            ]
+        },
+        {
+            "playbookID": "TAXII2 Server Performance Test",
+            "instance_names": "taxii2server",
+            "integrations": [
+                "TAXII2 Server",
+                "Create-Mock-Feed-Relationships"
+            ],
+            "fromversion": "6.2.0",
+            "timeout": 6000,
+            "memory_threshold": 900,
+            "pid_threshold": 12,
+            "is_mockable": false
+        },
+        {
+            "playbookID": "TAXII2 Indicator Performance Test",
+            "fromversion": "6.1.0"
+        },
+        {
+            "playbookID": "TAXII2 Performance Test - Concurrency",
+            "fromversion": "6.1.0"
         }
     ],
     "skipped_tests": {
@@ -4880,6 +5043,7 @@
         "JoeSecurityTestPlaybook": "Issue 25649",
         "Cortex Data Lake Test": "Issue 24346",
         "Phishing - Core - Test - Incident Starter": "Issue 26784",
+        "Phishing - Core - Test - Actual Incident": "Issue 45227",
         "Test Playbook McAfee ATD": "Issue 33409",
         "Detonate Remote File From URL -McAfee-ATD - Test": "Issue 33407",
         "Test Playbook McAfee ATD Upload File": "Issue 33408",
@@ -4924,13 +5088,13 @@
         "Phishing v2 - Test - Actual Incident": "Issue 41322",
         "Kaspersky Security Center - Test": "Issue 36487",
         "carbonBlackEndpointStandardTestPlaybook": "Issue 36936",
+        "RemoteAccessTest": "Issue 44245",
         "test_Qradar_v2": "the integration is deprecated as we released Qradar V3",
         "XsoarPowershellTesting-Test": "Issue 32689",
         "Unit42 Intel Objects Feed - Test": "Issue 44100",
         "RedCanaryTest": "Issue 43818",
         "MailListener-POP3 - Test": "Issue 44199",
         "MicrosoftManagementActivity - Test": "Issue 43922",
-        "VMWare Test": "Issue 43823",
         "Google-Vault-Generic-Test": "Issue 24347",
         "Google_Vault-Search_And_Display_Results_test": "Issue 24348",
         "Tenable.io Scan Test": "Issue 26728",
@@ -4946,10 +5110,10 @@
         "Cofense Intelligence v2 test": "Issue 44499",
         "Endpoint Malware Investigation - Generic - Test": "Issue 44779",
         "Mimecast test": "Issue 26906",
-        "RedLockTest": "Issue 24600",
         "AutoFocus V2 test": "Issue 26464",
         "SplunkPy_KV_commands_default_handler": "Issue 41419",
-        "LogRhythm REST test": "Issue 40654"
+        "LogRhythm REST test": "Issue 40654",
+        "Process Email - Generic - Test - Actual Incident": "Issue 45227"
     },
     "skipped_integrations": {
         
@@ -5040,6 +5204,7 @@
         "FraudWatch": "Issue 34299",
         "Cisco Stealthwatch": "No instance - developed by Qmasters",
         "AzureRiskyUsers": "No instance - developed by Qmasters",
+        "AzureKeyVault": "No instance - developed by Qmasters",
         "Armis": "No instance - developed by SOAR Experts",
         
         "_comment2": "~~~ UNSTABLE ~~~",
@@ -5278,6 +5443,9 @@
             },
             "demisto/flask-nginx": {
                 "pid_threshold": 11
+            },
+            "demisto/py3-tools": {
+                "memory_threshold": 105
             }
         }
     }

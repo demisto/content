@@ -55,9 +55,10 @@ class Pack(object):
     EXCLUDE_DIRECTORIES = [PackFolders.TEST_PLAYBOOKS.value]
     RELEASE_NOTES = "ReleaseNotes"
 
-    def __init__(self, pack_name, pack_path):
+    def __init__(self, pack_name, pack_path, marketplace):
         self._pack_name = pack_name
         self._pack_path = pack_path
+        self._marketplace = marketplace
         self._status = None
         self._public_storage_path = ""
         self._remove_files_list = []  # tracking temporary files, in order to delete in later step
@@ -105,6 +106,7 @@ class Pack(object):
         self._contains_transformer = False  # initialized in collect_content_items function
         self._contains_filter = False  # initialized in collect_content_items function
         self._is_missing_dependencies = False  # a flag that specifies if pack is missing dependencies
+        self.should_upload_to_marketplace = True  # initialized in load_user_metadata function
 
     @property
     def name(self):
@@ -989,7 +991,11 @@ class Pack(object):
             version_pack_path = os.path.join(storage_base_path, self._pack_name, latest_version)
             existing_files = [f.name for f in storage_bucket.list_blobs(prefix=version_pack_path)]
 
-            if existing_files and not override_pack:
+            if override_pack:
+                logging.warning(f"Uploading {self._pack_name} pack to storage and overriding the existing pack "
+                                f"files already in storage.")
+
+            elif existing_files:
                 logging.warning(f"The following packs already exist at storage: {', '.join(existing_files)}")
                 logging.warning(f"Skipping step of uploading {self._pack_name}.zip to storage.")
                 return task_status, True, None
@@ -1715,7 +1721,7 @@ class Pack(object):
             self._content_items = content_items_result
             return task_status
 
-    def load_user_metadata(self):
+    def load_user_metadata(self, marketplace='xsoar'):
         """ Loads user defined metadata and stores part of it's data in defined properties fields.
 
         Returns:
@@ -1743,6 +1749,7 @@ class Pack(object):
             self.display_name = user_metadata.get(Metadata.NAME, '')  # type: ignore[misc]
             self._user_metadata = user_metadata
             self.eula_link = user_metadata.get(Metadata.EULA_LINK, Metadata.EULA_URL)
+            self.should_upload_to_marketplace = marketplace in user_metadata.get('marketplaces', ['xsoar'])
 
             logging.info(f"Finished loading {self._pack_name} pack user metadata")
             task_status = True
@@ -1867,6 +1874,7 @@ class Pack(object):
         """
         task_status = False
         pack_names = pack_names if pack_names else []
+        is_missing_dependencies = False
 
         try:
             self.set_pack_dependencies(packs_dependencies_mapping)
@@ -1955,12 +1963,14 @@ class Pack(object):
         if Metadata.DEPENDENCIES not in self.user_metadata and self._user_metadata:
             self._user_metadata[Metadata.DEPENDENCIES] = {}
 
+        core_packs = GCPConfig.get_core_packs(self._marketplace)
+
         # If it is a core pack, check that no new mandatory packs (that are not core packs) were added
         # They can be overridden in the user metadata to be not mandatory so we need to check there as well
-        if self._pack_name in GCPConfig.CORE_PACKS_LIST:
+        if self._pack_name in core_packs:
             mandatory_dependencies = [k for k, v in pack_dependencies.items()
                                       if v.get(Metadata.MANDATORY, False) is True
-                                      and k not in GCPConfig.CORE_PACKS_LIST
+                                      and k not in core_packs
                                       and k not in self.user_metadata[Metadata.DEPENDENCIES].keys()]
             if mandatory_dependencies:
                 raise Exception(f'New mandatory dependencies {mandatory_dependencies} were '
