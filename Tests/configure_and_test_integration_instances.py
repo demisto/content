@@ -969,19 +969,6 @@ def get_changed_integrations(build: Build) -> tuple:
     return new_integrations_names, modified_integrations_names
 
 
-# def get_pack_ids_to_install():
-#     if Build.run_environment == Running.CI_RUN:
-#         with open('./artifacts/content_packs_to_install.txt', 'r') as packs_stream:
-#             pack_ids = packs_stream.readlines()
-#             return [pack_id.rstrip('\n') for pack_id in pack_ids]
-#     else:
-#         # START CHANGE ON LOCAL RUN #
-#         return [
-#             'SplunkPy'
-#         ]
-#         #  END CHANGE ON LOCAL RUN  #
-
-
 def nightly_install_packs(build, install_method=None, pack_path=None, service_account=None):
     threads_list = []
 
