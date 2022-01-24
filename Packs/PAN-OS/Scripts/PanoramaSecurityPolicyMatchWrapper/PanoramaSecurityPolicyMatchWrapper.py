@@ -81,7 +81,7 @@ def wrapper_command(args: Dict[str, Any]):
     from_ = args.get('from')
     category = args.get('category')
     application = args.get('application')
-    limit = arg_to_number(args.get('limit', 500))
+    limit = arg_to_number(args.get('limit')) or 500
 
     vsys_num = len(argToList(vsys)) if vsys else 1
     target_num = len(argToList(target)) if target else 1
