@@ -88,7 +88,7 @@ script:
       description: Results of the twitter-get-tweets command
       type: string
     description: Search for tweets on Twitter.
-  dockerimage: demisto/tweepy:1.0.0.23810
+  dockerimage: demisto/py3-tools:0.0.1.25751
   runonce: false
   subtype: python3
 fromversion: 6.0.0

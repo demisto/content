@@ -447,7 +447,7 @@ script:
     - contextPath: Synapse.Model.Valu
       description: The given value of the Synapse object type.
       type: String
-  dockerimage: demisto/aiohttp:1.0.0.13810
+  dockerimage: demisto/py3-tools:0.0.1.25751
   feed: false
   isfetch: false
   longRunning: false
