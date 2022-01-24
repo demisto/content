@@ -206,9 +206,9 @@ Dismiss the alerts matching the given filter. Must provide either policy IDs or 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alert-id | comma separated list of string IDs to be dismissed | Optional | 
-| dismissal-note | Reason for dismissal | Required | 
-| snooze-value | The amount of time to snooze. Both snooze value and unit must be specified | Optional | 
+| alert-id | Comma-separated list of string IDs to be dismissed | Optional | 
+| dismissal-note | Reason for dismissal. | Required | 
+| snooze-value | The amount of time to snooze. Both snooze value and unit must be specified. | Optional | 
 | snooze-unit | The time unit for if snoozing alert.  Both snooze value and unit must be specified if snoozing. | Optional | 
 | time-range-date-from | Start time for search in the following string format -  MM/DD/YYYY | Optional | 
 | time-range-date-to | End time for search in the following format -  MM/DD/YYYY | Optional | 
@@ -228,7 +228,7 @@ Dismiss the alerts matching the given filter. Must provide either policy IDs or 
 | risk-grade | The risk grade | Optional | 
 | policy-type | The policy type | Optional | 
 | policy-severity | The policy severity | Optional | 
-| policy-id | comma separated string of policy IDs | Optional | 
+| policy-id | Comma-separated string of policy IDs | Optional | 
 
 
 #### Context Output
@@ -1025,7 +1025,7 @@ Search events on the Prisma Cloud (RedLock) platform using RQL language.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| time-range-date-from | Start time for the search, in the following string format -  MM/DD/YYYY. | Optional | 
+| time-range-date-from | Start time for the search, in the following format -  MM/DD/YYYY. | Optional | 
 | time-range-date-to | End time for the search, in the following format -  MM/DD/YYYY. | Optional | 
 | time-range-value | The number of time range value units for the search. For example, 3 days, 5 weeks, etc. | Optional | 
 | time-range-unit | The search unit. Possible values are: "hour", "week", "month", "year", "login", or "epoch". The "login" and "epoch" options are only available if timeRangeValue<br/>is not provided. Possible values are: hour, day, week, month, year, login, epoch. | Optional | 
@@ -1037,7 +1037,7 @@ Search events on the Prisma Cloud (RedLock) platform using RQL language.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Redlock.Event | Unknown | Cloud Audit Events | 
+| Redlock.Event | Unknown | Cloud audit events. | 
 
 
 #### Command Example
@@ -1098,7 +1098,7 @@ Search networks on the Prisma Cloud (RedLock) platform using RQL language.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| time-range-date-from | Start time for the search, in the following string format -  MM/DD/YYYY. | Optional | 
+| time-range-date-from | Start time for the search, in the following format -  MM/DD/YYYY. | Optional | 
 | time-range-date-to | End time for the search, in the following format -  MM/DD/YYYY. | Optional | 
 | time-range-value | The number of time range value units for the search. For example, 3 days, 5 weeks, etc. | Optional | 
 | time-range-unit | The search unit. Possible values are: "hour", "week", "month", "year", "login", or "epoch". The "login" and "epoch" options are only available if timeRangeValue<br/>is not provided. Possible values are: hour, day, week, month, year, login, epoch. | Optional | 
@@ -1110,8 +1110,8 @@ Search networks on the Prisma Cloud (RedLock) platform using RQL language.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Redlock.Network.Node | Unknown | Cloud Network Node | 
-| Redlock.Network.Connection | Unknown | Cloud Network Connection | 
+| Redlock.Network.Node | Unknown | Cloud network node. | 
+| Redlock.Network.Connection | Unknown | Cloud network connection. | 
 
 
 #### Command Example
@@ -1255,13 +1255,13 @@ List DevOps Scans
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| group_by | Aggregate scan results by group. Possible values are: scanId,  assetType, assetName, resourceList. Default is scanId. | Optional | 
+| group_by | Group by which to aggregate scan results. Possible values are: scanId,  assetType, assetName, resourceList. Default is scanId. | Optional | 
 | page_size | Pagination size. Default is 25. | Optional | 
 | page_number | Pagination number. Default is 1. | Optional | 
 | sort | Sorting parameters. The sort order is ascending unless the field is prefixed with minus (-), in which case it is descending. | Optional | 
 | filter_type |  Time filter type. Possible values are: to_now, absolute, relative. Default is relative. | Optional | 
 | filter_time_amount | Number of time units. Default is 1. | Optional | 
-| to_now_time_unit | To Now Time unit. Possible values are: epoch, login, hour, day, week, month, year. Default is day. | Optional | 
+| to_now_time_unit | The time unit for retrieving the list of IaC scans. Possible values are: epoch, login, hour, day, week, month, year. Default is day. | Optional | 
 | filter_start_time | Start time , for example: 11/01/2021 10:10:10. | Optional | 
 | filter_end_time | End time in Unix time (the number of seconds that have elapsed since the Unix epoch) for the absolute time type. | Optional | 
 | filter_asset_type | Asset type to search with. | Optional | 
