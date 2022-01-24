@@ -308,6 +308,33 @@ def test_get_remote_data_command(client, requests_mock, mocker, close_incident,
     assert result.entries == expected_entries
 
 
+@pytest.mark.parametrize('close_incident,expected_mirrored_object,expected_entries', [
+    (True, {'category': 'business_justified', 'status': 'Closed-Business Justified', 'resolved_by': 'api',
+            'state': 'Closed', 'asset_sha256': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'}, [
+        {'Type': EntryType.NOTE, 'ContentsFormat': EntryFormat.JSON,
+         'Contents': {'dbotIncidentClose': True, 'closeReason': 'From SaasSecurity: business_justified'}}
+    ])
+])
+def test_get_remote_data_closed_status_uppercase(client, requests_mock, mocker, close_incident,
+                                                 expected_mirrored_object, expected_entries):
+    from SaasSecurity import get_remote_data_command
+
+    args = {
+        'id': 1,
+        'lastUpdate': '2021-08-24T07:44:21.608Z'
+    }
+    incident = util_load_json('test_data/get-incident-by-id.json')
+    incident['state'] = 'Closed'
+
+    requests_mock.get('http://base_url/incident/api/incidents/1', json=incident)
+    mocker.patch.object(demisto, 'params', return_value={'close_incident': close_incident})
+
+    result = get_remote_data_command(client, args)
+
+    assert result.mirrored_object == expected_mirrored_object
+    assert result.entries == expected_entries
+
+
 def test_get_modified_remote_data_command(client, requests_mock):
 
     from SaasSecurity import get_modified_remote_data_command

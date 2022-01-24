@@ -7,5 +7,8 @@ ignore=BA101
 [file:CreateMockFeed.yml]
 ignore=DO102,DO107
 
+[file:CreateIncidents.yml]
+ignore=IN126
+
 [file:WaitAndCompleteTask.py]
 ignore=E9003
