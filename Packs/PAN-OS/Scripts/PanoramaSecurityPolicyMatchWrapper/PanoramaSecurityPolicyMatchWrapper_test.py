@@ -15,6 +15,30 @@ SECURITY_POLICY_MATCH = [
 SECURITY_POLICY_MATCH2 = ['The query for source: 1.1.1.1, destination: 8.8.8.8 did not match a Security policy.']
 
 
+def test_fix_nested_dicts():
+    from PanoramaSecurityPolicyMatchWrapper import fix_nested_dicts
+    expected_result = {
+        "Action": "drop",
+        "Category": "alcohol-and-tobacco,hacking,abortion,adult",
+        "Destination": "2.2.2.2,3.3.3.3",
+        "From": "E,D",
+        "Name": "block rule",
+        "Source": "8.8.4.4,1.1.1.1,8.8.8.8",
+        "To": "E,D"
+    }
+    rules = {
+        "Action": "drop",
+        "Category": "alcohol-and-tobacco,hacking,abortion,adult",
+        "Destination": {"member": ["2.2.2.2", "3.3.3.3"]},
+        "From": {"member": ["E", "D"]},
+        "Name": "block rule",
+        "Source": {"member": ["8.8.4.4", "1.1.1.1", "8.8.8.8"]},
+        "To": {"member": ["E", "D"]}
+    }
+    fix_nested_dicts(rules)
+    assert rules == expected_result
+
+
 def test_wrapper_command(mocker):
     """
     Given:
