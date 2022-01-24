@@ -63,4 +63,5 @@ CloudWatchLogs
 GuardDuty
 NetWitness
 ASN
+CreateIncidents
 Qualys
