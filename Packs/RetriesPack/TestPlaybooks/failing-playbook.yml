@@ -1,4 +1,4 @@
-id: c6003224-8805-42a3-8c07-74352c883773
+id: failing-playbook
 version: 3
 vcShouldKeepItemLegacyProdMachine: false
 name: failing-playbook
