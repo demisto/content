@@ -153,6 +153,7 @@ create-instances:
     - .push-rule
   variables:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
+    ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_XSOAR}/env_results.json"
   needs: ["create-instances"]
   stage: run-instances
   script:
