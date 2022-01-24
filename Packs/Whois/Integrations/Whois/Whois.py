@@ -8542,7 +8542,7 @@ def main():
     if DBotScoreReliability.is_valid_type(reliability):
         reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
     else:
-        raise Exception("Please provide a valid value for the Source Reliability parameter1111.")
+        raise Exception("Please provide a valid value for the Source Reliability parameter.")
 
     try:
         if command == 'ip':
