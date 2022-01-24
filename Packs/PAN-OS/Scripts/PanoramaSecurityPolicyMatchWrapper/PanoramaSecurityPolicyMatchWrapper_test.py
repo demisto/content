@@ -20,7 +20,7 @@ def test_fix_nested_dicts():
     expected_result = {
         "Action": "drop",
         "Category": "alcohol-and-tobacco,hacking,abortion,adult",
-        "Destination": "192.168.1.70,192.168.1.69",
+        "Destination": "2.2.2.2,3.3.3.3",
         "From": "E,D",
         "Name": "block rule",
         "Source": "8.8.4.4,1.1.1.1,8.8.8.8",
@@ -29,7 +29,7 @@ def test_fix_nested_dicts():
     rules = {
         "Action": "drop",
         "Category": "alcohol-and-tobacco,hacking,abortion,adult",
-        "Destination": {"member": ["192.168.1.70", "192.168.1.69"]},
+        "Destination": {"member": ["2.2.2.2", "3.3.3.3"]},
         "From": {"member": ["E", "D"]},
         "Name": "block rule",
         "Source": {"member": ["8.8.4.4", "1.1.1.1", "8.8.8.8"]},
