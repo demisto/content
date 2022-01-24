@@ -1025,6 +1025,7 @@ def wildfire_get_report_command(args):
     md5 = args.get('md5')
     inputs = urls if urls else hash_args_handler(sha256, md5)
 
+    status = ''
     for element in inputs:
         command_results, status = wildfire_get_url_report(element) if urls else wildfire_get_file_report(element, args)
         command_results_list.append(command_results)
