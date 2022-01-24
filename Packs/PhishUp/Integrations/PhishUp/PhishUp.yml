@@ -55,25 +55,6 @@ script:
     - contextPath: PhishUp.Score
       description: Phishup Engine Url Score
       type: Number
-  - arguments:
-    - default: false
-      description: Bulk Url Arry
-      isArray: true
-      name: Urls
-      required: false
-      secret: false
-    deprecated: false
-    description: Bulk url investigation
-    execution: false
-    name: phishup-investigate-bulk-url
-    outputs:
-    - contextPath: PhishUp.AverageResult
-      description: If any harmfull URL in list this value will return "Phish" otherwhise
-        will return "Clean", if any error happens will return "Error"
-      type: String
-    - contextPath: PhishUp.Results
-      description: Stringified Urls Result List
-      type: String
   - deprecated: false
     description: Get chosen action from PhishUp instance
     execution: false
@@ -81,6 +62,21 @@ script:
     outputs:
     - contextPath: PhishUp.Action
       description: Chosen action from PhishUp instance
+      type: String
+  - arguments:
+    - default: false
+      description: takes investigate-url command result
+      isArray: true
+      name: URLs
+      required: false
+      secret: false
+    deprecated: false
+    description: Evaluation PhishUp URLs Response
+    execution: false
+    name: phishup-evaluate-response
+    outputs:
+    - contextPath: PhishUp.Evaluation
+      description: returns "Phish" if any response has "Phish" result
       type: String
   dockerimage: demisto/python3:3.10.1.25933
   feed: false

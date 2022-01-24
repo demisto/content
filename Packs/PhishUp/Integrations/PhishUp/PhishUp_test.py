@@ -26,9 +26,23 @@ def test_error_investigate_url_command(requests_mock):
         base_url=BASE_URL,
         verify=False)
     args = {
-        "Url": "https://www.paloaltonetworks.com/"
+        "Url": ["https://www.paloaltonetworks.com/"]
     }
     with raises(Exception, match="PhishUp Response Error"):
+        investigate_url_command(client, args, MOCK_APIKEY)
+
+
+def test_empty_investigate_url_command(requests_mock):
+    from PhishUp import Client, investigate_url_command
+    requests_mock.post(f'{BASE_URL}/sherlock/investigate?apikey={MOCK_APIKEY}',
+                       json=util_load_json("test_data/mock_service_error.json"))
+    client = Client(
+        base_url=BASE_URL,
+        verify=False)
+    args = {
+        "Url": []
+    }
+    with raises(Exception, match="Empty URLs list"):
         investigate_url_command(client, args, MOCK_APIKEY)
 
 
@@ -44,76 +58,7 @@ def test_success_investigate_url_command(requests_mock):
         "Url": "https://www.paloaltonetworks.com/"
     }
     response = investigate_url_command(client, args, MOCK_APIKEY)
-    assert response.__dict__ == util_load_json("test_data/investigate-success.json")
-
-
-def test_error_investigate_bulk_url_command(requests_mock):
-    from PhishUp import Client, investigate_bulk_url_command
-    requests_mock.post(f'{BASE_URL}/sherlock/bulk?apikey={MOCK_APIKEY}',
-                       json=util_load_json("test_data/mock_service_error.json"))
-    client = Client(
-        base_url=BASE_URL,
-        verify=False)
-    args = {
-        "Urls": ["https://www.paloaltonetworks.com/cortex/xsoar", "paloaltonetworks.com"]
-    }
-    with raises(Exception, match="PhishUp Response Error"):
-        investigate_bulk_url_command(client, args, MOCK_APIKEY)
-
-
-def test_success_investigate_bulk_url_command(requests_mock):
-    from PhishUp import Client, investigate_bulk_url_command
-    requests_mock.post(f'{BASE_URL}/sherlock/bulk?apikey={MOCK_APIKEY}',
-                       json=util_load_json("test_data/bulk_investigate_success_response.json"))
-    client = Client(
-        base_url=BASE_URL,
-        verify=False)
-    args = {
-        "Urls": ["https://www.paloaltonetworks.com/cortex/xsoar", "paloaltonetworks.com"]
-    }
-    response = investigate_bulk_url_command(client, args, MOCK_APIKEY)
-    mock_response = util_load_json('test_data/bulk_investigate_success_return.json')
-    assert response.__dict__ == mock_response
-
-
-def test_empty_urls_list_in_investigate_bulk_url_command():
-    from PhishUp import Client, investigate_bulk_url_command
-    client = Client(
-        base_url=BASE_URL,
-        verify=False)
-    args = {
-        "Urls": []
-    }
-    with raises(Exception, match="Empty Urls List"):
-        investigate_bulk_url_command(client, args, MOCK_APIKEY)
-
-
-def test_string_list_success_investigate_bulk_url_command(requests_mock):
-    from PhishUp import Client, investigate_bulk_url_command
-    requests_mock.post(f'{BASE_URL}/sherlock/bulk?apikey={MOCK_APIKEY}',
-                       json=util_load_json("test_data/bulk_investigate_success_response.json"))
-    client = Client(
-        base_url=BASE_URL,
-        verify=False)
-    args = {
-        "Urls": "\"https://www.paloaltonetworks.com/cortex/xsoar\", \"paloaltonetworks.com\"]"
-    }
-    response = investigate_bulk_url_command(client, args, MOCK_APIKEY)
-    mock_response = util_load_json('test_data/bulk_investigate_success_return.json')
-    assert response.__dict__ == mock_response
-
-
-def test_bad_string_parsing_in_investigate_bulk_url_command():
-    from PhishUp import Client, investigate_bulk_url_command
-    client = Client(
-        base_url=BASE_URL,
-        verify=False)
-    args = {
-        "Urls": "[\"https://www.paloaltonetworks.com/cortex/xsoar\", \"paloaltonetworks.com\""
-    }
-
-    with raises(json.decoder.JSONDecodeError):
-        investigate_bulk_url_command(client, args, MOCK_APIKEY)
+    assert response[0].raw_response == util_load_json("test_data/investigate-success.json")
 
 
 def test_get_chosen_nothing_phishup_action_command():

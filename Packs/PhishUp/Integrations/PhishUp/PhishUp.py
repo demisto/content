@@ -54,58 +54,66 @@ class Client(BaseClient):
 
 
 def investigate_url_command(client: Client, args, apikey):
-    result = client.investigate_url_http_request(apikey, args.get("Url"))
 
-    if result != "Error" and "Url" in result:
-        return CommandResults(
-            readable_output=f"PhishUp Result: {result}",
-            outputs={
-                "Result": result["PhishUpStatus"],
-                "Score": result["PhishUpScore"]
-            },
-            raw_response=result
-        )
-    else:
-        raise Exception("PhishUp Response Error")
-
-
-def investigate_bulk_url_command(client: Client, args, apikey):
-    if isinstance(args.get("Urls"), str):
-        if "[" in args.get("Urls"):
-            urls = json.loads(args.get("Urls"))
-
-        else:
-            urls = [args.get("Urls")]
-    elif isinstance(args.get("Urls"), list):
-        urls = args.get("Urls")
-
+    urls = argToList(args.get("Url"))
     if len(urls) == 0:
-        raise Exception("Empty Urls List")
+        raise ValueError('Empty URLs list')
 
-    # for getting unique Urls
-    urls = list(set(urls))
+    command_results: List[CommandResults] = []
 
-    demisto.log(f"""apikey: {apikey}""")
+    for url in urls:
+        phishup_result = client.investigate_url_http_request(apikey, url)
 
-    result = client.investigate_bulk_url_http_request(apikey, urls)
+        score = 0
+        if "Url" in phishup_result:
+            if phishup_result["PhishUpStatus"] == "Phish":
+                score = Common.DBotScore.BAD
+            elif phishup_result["PhishUpStatus"] == "Clean":
+                score = Common.DBotScore.GOOD
+        else:
+            raise Exception("PhishUp Response Error")
 
-    if "Results" in result and result["Results"] is not None:
-        any_phish = "Clean"
-        for r in result["Results"]:
-            if r["PhishUpStatus"] == "Phish":
-                any_phish = "Phish"
-                break
-
-        return CommandResults(
-            readable_output=result,
-            outputs={
-                "PhishUp.AverageResult": any_phish,
-                "PhishUp.Results": result["Results"]
-            },
-            raw_response=result
+        dbot_score = Common.DBotScore(
+            indicator=url,
+            integration_name="PhishUp",
+            indicator_type=DBotScoreType.URL,
+            score=score
         )
-    else:
-        raise Exception("PhishUp Response Error")
+
+        url_standard_context = Common.URL(
+            url=url,
+            dbot_score=dbot_score
+        )
+
+        readable_output = tableToMarkdown("URL", phishup_result)
+
+        command_results.append(CommandResults(
+            readable_output=readable_output,
+            outputs_prefix="PhishUp.URLs",
+            outputs_key_field='URLs',
+            outputs={
+                "Result": phishup_result["PhishUpStatus"],
+                "Score": phishup_result["PhishUpScore"]
+            },
+            indicator=url_standard_context,
+            raw_response=phishup_result
+        ))
+    return command_results
+
+
+def evaluate_phishup_response_command(args):
+    phishup_result = "Clean"
+    for response in args.get("URLs"):
+        if response["Result"] == "Phish":
+            phishup_result = "Phish"
+
+    return CommandResults(
+        readable_output=f"""PhishUp Result Evaluation: {phishup_result}""",
+        outputs={
+            "PhishUp.Evaluation": phishup_result,
+        },
+        raw_response=phishup_result
+    )
 
 
 def get_chosen_phishup_action_command(params):
@@ -151,8 +159,8 @@ def main():
 
         elif demisto.command() == 'phishup-investigate-url':
             return_results(investigate_url_command(client, demisto.args(), apikey))
-        elif demisto.command() == 'phishup-investigate-bulk-url':
-            return_results(investigate_bulk_url_command(client, demisto.args(), apikey))
+        elif demisto.command() == 'phishup-evaluate-response':
+            return_results(evaluate_phishup_response_command(demisto.args()))
         elif demisto.command() == 'phishup-get-chosen-action':
             return_results(get_chosen_phishup_action_command(demisto.params()))
 
