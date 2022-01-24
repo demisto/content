@@ -950,7 +950,7 @@ def prepare_files_readable_items(items: List[Dict[str, Any]]) -> list:
             'Reputation': item.get('reputationStatus'),
             'Size': item.get('size'),
             'Signature': item.get('signature'),
-            'PE Resources': item.get('pe').get('resources') if item.get('pe') else None,
+            'PE Resources': item.get('pe', {}).get('resources') if item.get('pe') else None,
             'File Status': item.get('fileStatus'),
             'Remediation': item.get('remediationAction')
         } for item in items
