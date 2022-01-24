@@ -70,29 +70,29 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: bf372468-d729-4ec7-8767-f4cddf6a9ff2
+    taskid: 37da6639-78b7-418d-859d-fa6d3f0875dd
     type: regular
     task:
-      id: bf372468-d729-4ec7-8767-f4cddf6a9ff2
+      id: 37da6639-78b7-418d-859d-fa6d3f0875dd
       version: -1
       name: Sending URLs to PhishUp
-      description: bulk url investigation
-      script: '|||phishup-investigate-bulk-url'
+      description: Single url investigation
+      script: '|||phishup-investigate-url'
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+      - "22"
     scriptarguments:
-      Urls:
+      Url:
         simple: ${ExtractedIndicators.URL}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 420
+          "y": 370
         }
       }
     note: false
@@ -104,12 +104,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 29526a20-cfa9-42fd-8c4b-138f068b275a
+    taskid: 675e02ba-3abe-4bc2-8c5d-df682eae0d8a
     type: condition
     task:
-      id: 29526a20-cfa9-42fd-8c4b-138f068b275a
+      id: 675e02ba-3abe-4bc2-8c5d-df682eae0d8a
       version: -1
-      name: Evaluate PhishUp Response
+      name: Check Evaluation
       description: Evaluate PhishUp Service Result
       type: condition
       iscommand: false
@@ -121,31 +121,31 @@ tasks:
       - "7"
     separatecontext: false
     conditions:
+    - label: Phish
+      condition:
+      - - operator: inList
+          left:
+            value:
+              simple: PhishUp.Evaluation
+            iscontext: true
+          right:
+            value:
+              simple: Phish
     - label: Clean
       condition:
       - - operator: isEqualString
           left:
             value:
-              simple: PhishUp.AverageResult
+              simple: PhishUp.Evaluation
             iscontext: true
           right:
             value:
               simple: Clean
-    - label: Phish
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: PhishUp.AverageResult
-            iscontext: true
-          right:
-            value:
-              simple: Phish
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 580
+          "y": 690
         }
       }
     note: false
@@ -353,7 +353,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 190
+          "y": 160
         }
       }
     note: false
@@ -634,9 +634,45 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 45d85e8b-4c99-40e5-893c-afa0c606a2b2
+    type: regular
+    task:
+      id: 45d85e8b-4c99-40e5-893c-afa0c606a2b2
+      version: -1
+      name: Evaluate PhishUp Response for Mail
+      description: Evaluation PhishUp URLs Response
+      script: '|||phishup-evaluate-response'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      URLs:
+        simple: ${PhishUp.URLs}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "12_2_#default#": 0.84
+    },
     "paper": {
       "dimensions": {
         "height": 2815,
@@ -652,14 +688,14 @@ inputs:
     simple: ${incident.labels.Email/html}
   required: true
   description: Email Mail Body for extracting URLs. Default Value is "${incident.emailbodyhtml}"
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: ShouldPhishUpActionWork
   value:
     simple: "True"
   required: true
   description: If you do not want actions such as deleting mail and moving to spam
     in PhishUp playbook, you should set the value False. Default value is True
-  playbookInputQuery:
+  playbookInputQuery: null
 outputs:
 - contextPath: Phishup.Result
   description: Phishup Service Response (Clean, Phish, Error)
