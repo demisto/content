@@ -5,7 +5,7 @@ Parse an email from an eml or msg file and populate all relevant context data to
 
 | **Name** | **Description** |
 | --- | --- |
-| Script Type | python2 |
+| Script Type | python3 |
 | Tags | email, phishing, enhancement, file |
 
 ## Inputs

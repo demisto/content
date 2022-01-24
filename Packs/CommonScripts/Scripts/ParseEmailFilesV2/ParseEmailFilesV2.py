@@ -3,33 +3,9 @@ from CommonServerPython import *  # noqa: F401
 from parse_emails.parse_emails import EmailParser
 
 
-def recursive_convert_to_unicode(replace_to_utf):
-    """Converts object into UTF-8 characters
-    ignores errors
-    Args:
-        replace_to_utf (object): any object
-
-    Returns:
-        object converted to UTF-8
-    """
-    try:
-        if isinstance(replace_to_utf, dict):
-            return {recursive_convert_to_unicode(k): recursive_convert_to_unicode(v) for k, v in replace_to_utf.items()}
-        if isinstance(replace_to_utf, list):
-            return [recursive_convert_to_unicode(i) for i in replace_to_utf if i]
-        if not replace_to_utf:
-            return replace_to_utf
-        return replace_to_utf
-    except TypeError:
-        return replace_to_utf
-
-
 def data_to_md(email_data, email_file_name=None, parent_email_file=None, print_only_headers=False):
     if email_data is None:
         return 'No data extracted from email'
-    # email_data = recursive_convert_to_unicode(email_data)
-    # email_file_name = recursive_convert_to_unicode(email_file_name)
-    # parent_email_file = recursive_convert_to_unicode(parent_email_file)
 
     md = u"### Results:\n"
     if email_file_name:
@@ -119,7 +95,6 @@ def main():
         return_results(resultss)
 
     except Exception as e:
-        demisto.error(str(e) + "\n\nTrace:\n" + traceback.format_exc())
         return_error(str(e) + "\n\nTrace:\n" + traceback.format_exc())
 
 
