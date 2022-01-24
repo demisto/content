@@ -763,7 +763,8 @@ def test_outputs_enriches(mocker, enrich_func, mock_func_name, args, mock_respon
      - Ensure dict containing the enrichment is as expected.
     """
     mocker.patch.object(client, mock_func_name, return_value=mock_response)
-    assert (enrich_func(**args)) == expected
+    res = enrich_func(**args)
+    assert res == expected
 
 
 @pytest.mark.parametrize('command_func, command_name',

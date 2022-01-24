@@ -1,0 +1,30 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "iDSAR"
+    ],
+    "caseInsensitive": true,
+    "cliName": "inventanationalid",
+    "closeForm": false,
+    "content": true,
+    "description": "National ID for the PII. Can be used as a constraint",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_inventanationalid",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Inventa National ID",
+    "neverSetAsRequired": false,
+    "ownerOnly": true,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

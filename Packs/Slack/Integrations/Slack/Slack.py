@@ -1942,7 +1942,18 @@ def create_channel():
         send_slack_request_sync(CHANNEL_CLIENT, 'conversations.setTopic', body=body)
 
     created_channel_name = conversation.get('name')
+    created_channel_id = conversation.get('id')
     demisto.results(f'Successfully created the channel {created_channel_name}')
+
+    # Save the newly created channel to the context for fast future lookups
+    integration_context = get_integration_context(SYNC_CONTEXT)
+    context_conversations = integration_context.get('conversations', '[]')
+    conversations = json.loads(context_conversations)
+    conversations.append({
+        'name': created_channel_name,
+        'id': created_channel_id
+    })
+    set_to_integration_context_with_retries({'conversations': conversations}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
 
 
 def invite_to_channel():
