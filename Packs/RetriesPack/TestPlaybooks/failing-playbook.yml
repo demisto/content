@@ -1,0 +1,83 @@
+id: c6003224-8805-42a3-8c07-74352c883773
+version: 3
+vcShouldKeepItemLegacyProdMachine: false
+name: failing-playbook
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 29049e80-511c-4e28-8e5c-f7ac7f467620
+    type: start
+    task:
+      id: 29049e80-511c-4e28-8e5c-f7ac7f467620
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 120,
+          "y": 30
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: d88674c3-aa51-4df3-8847-0aff6ad36e20
+    type: regular
+    task:
+      id: d88674c3-aa51-4df3-8847-0aff6ad36e20
+      version: -1
+      name: failing-step
+      description: Adds/Replaces a key in key/value store backed by an XSOAR list.
+      scriptName: AddKeyToList
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      keyName:
+        simple: "3"
+      listName:
+        simple: "4"
+      value:
+        simple: "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 120,
+          "y": 240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 305,
+        "width": 380,
+        "x": 120,
+        "y": 30
+      }
+    }
+  }
+inputs: []
+outputs: []

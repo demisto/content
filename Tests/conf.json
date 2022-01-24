@@ -8,6 +8,10 @@
             "playbookID": "RSANetWitnessv115-Test"
         },
         {
+            "integrations": "RetriesIntegration",
+            "playbookID": "failing-playbook"
+        },
+        {
             "integrations": ["FeedMandiant", "Demisto REST API"],
             "playbookID": "Fetch Indicators Test",
             "fromversion": "6.1.0",
