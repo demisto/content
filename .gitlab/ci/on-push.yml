@@ -3,23 +3,23 @@
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
 
 
-trigger-private-build:
-  tags:
-    - gke
-  needs: []
-  stage: unittests-and-validations
-  extends:
-    - .default-job-settings
-  rules:
-    - if: '$CI_COMMIT_BRANCH =~ /pull\/[0-9]+/'
-      when: never
-    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
-    - if: '$NIGHTLY'
-  script:
-    - echo "====Trigger Private Build===="
-    - python3 Utils/trigger_private_build.py --github-token $GITHUB_TOKEN
-    - sleep 60
-    - python3 Utils/get_private_build_status.py --github-token $GITHUB_TOKEN
+#trigger-private-build:
+#  tags:
+#    - gke
+#  needs: []
+#  stage: unittests-and-validations
+#  extends:
+#    - .default-job-settings
+#  rules:
+#    - if: '$CI_COMMIT_BRANCH =~ /pull\/[0-9]+/'
+#      when: never
+#    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
+#    - if: '$NIGHTLY'
+#  script:
+#    - echo "====Trigger Private Build===="
+#    - python3 Utils/trigger_private_build.py --github-token $GITHUB_TOKEN
+#    - sleep 60
+#    - python3 Utils/get_private_build_status.py --github-token $GITHUB_TOKEN
 
 
 .create-release-notes-and-common-docs:
