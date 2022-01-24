@@ -22,12 +22,20 @@ trigger-private-build:
     - python3 Utils/get_private_build_status.py --github-token $GITHUB_TOKEN
 
 
+.create-release-notes-and-common-docs:
+  - section_start "Create Release Notes and Common Server Documentation" --collapsed
+  - echo "Creating Release Notes and Content Descriptor"
+  - python3 Utils/release_notes_generator.py $CONTENT_VERSION $GIT_SHA1 $CI_BUILD_ID --output $ARTIFACTS_FOLDER/packs-release-notes.md --github-token $GITHUB_TOKEN
+  - cp content-descriptor.json $ARTIFACTS_FOLDER
+  - ./Documentation/commonServerDocs.sh
+  - section_end "Create Release Notes and Common Server Documentation"
+
 # runs in circle for the on-push flow (because we need to run it there for contributors anyways)
 run-unittests-and-lint:
   extends:
     - .run-unittests-and-lint
   rules:
-    - if: '$NIGHTLY'
+    - if: '$BUCKET_UPLOAD != "true"'
 
 
 # runs in circle for the on-push flow (because we need to run it there for contributors anyways)
@@ -54,13 +62,8 @@ create-instances:
   script:
     - !reference [.download-demisto-conf]
     - !reference [.create-id-set]
-    - section_start "Create Release Notes and Common Server Documentation"
-    - echo "Creating Release Notes and Content Descriptor"
-    - python3 Utils/release_notes_generator.py $CONTENT_VERSION $GIT_SHA1 $CI_BUILD_ID --output $ARTIFACTS_FOLDER/packs-release-notes.md --github-token $GITHUB_TOKEN
-    - cp content-descriptor.json $ARTIFACTS_FOLDER
-    - ./Documentation/commonServerDocs.sh
-    - section_end "Create Release Notes and Common Server Documentation"
-    - section_start "Create Content Artifacts and Update Conf"
+    - !reference [.create-release-notes-and-common-docs]
+    - section_start "Create Content Artifacts and Update Conf" --collapsed
     - demisto-sdk create-content-artifacts -a $ARTIFACTS_FOLDER --cpus 8 --content_version $CONTENT_VERSION >> $ARTIFACTS_FOLDER/logs/create_content_artifacts.log
     - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY"
     - successful_feature_branch_build=$(gsutil ls "gs://xsoar-ci-artifacts/content/$FEATURE_BRANCH_NAME/*" | tail -n 1 | grep -o -E "content/$FEATURE_BRANCH_NAME/[0-9]*")
@@ -79,7 +82,7 @@ create-instances:
         python3 ./Tests/scripts/collect_tests_and_content_packs.py -n $IS_NIGHTLY
       fi
     - section_end "Collect Tests and Content Packs"
-    - section_start "Calculate Packs Dependencies"
+    - section_start "Calculate Packs Dependencies" --collapsed
     - python3 ./Tests/Marketplace/packs_dependencies.py -i ./Tests/id_set.json -o $ARTIFACTS_FOLDER/packs_dependencies.json
     - section_end "Calculate Packs Dependencies"
     - section_start "Prepare Content Packs for Testing"
@@ -90,10 +93,52 @@ create-instances:
       [ -n "${TIME_TO_LIVE}" ] && TTL=${TIME_TO_LIVE} || TTL=300
       python3 ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType "$IFRA_ENV_TYPE" -timetolive $TTL -outfile "$ARTIFACTS_FOLDER/env_results.json"
     - section_end "Create Instances"
-    - section_start "Upload Artifacts to GCP"
+    - section_start "Upload Artifacts to GCP" --collapsed
     - ./Tests/scripts/upload_artifacts.sh
     - section_end "Upload Artifacts to GCP"
 
+
+# create-instances-mpv2:
+#   tags:
+#     - gke
+#   extends:
+#     - .default-job-settings
+#   rules:
+#     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
+#     - if: '$NIGHTLY'
+#   cache:
+#     policy: pull-push
+#   needs: []
+#   stage: create-instances
+#   script:
+#     - !reference [.download-demisto-conf]
+#     - !reference [.create-id-set-mp-v2]
+#     - !reference [.create-release-notes-and-common-docs]
+
+#     - section_start "Create Content Artifacts and Update Conf" --collapsed
+#     - demisto-sdk create-content-artifacts -a $ARTIFACTS_FOLDER --cpus 8 --content_version $CONTENT_VERSION --marketplace "marketplacev2" -fbi -idp ./Tests/id_set_mp_v2.json >> $ARTIFACTS_FOLDER/logs/create_content_artifacts.log
+#     - zip -j $ARTIFACTS_FOLDER/uploadable_packs_mpv2.zip $ARTIFACTS_FOLDER/uploadable_packs/* >> $ARTIFACTS_FOLDER/logs/zipping_uploadable_packs.log || ((($? > 0)) && echo "failed to zip the uploadable packs, ignoring the failure")
+#     - rm -rf $ARTIFACTS_FOLDER/uploadable_packs
+#     - cp "./Tests/conf.json" "$ARTIFACTS_FOLDER/conf.json"
+#     - section_end "Create Content Artifacts and Update Conf"
+
+#     - section_start "Calculate Packs Dependencies" --collapsed
+#     - demisto-sdk find-dependencies -idp Tests/id_set_mp_v2.json --all-packs-dependencies -o $ARTIFACTS_FOLDER/packs_dependencies.json
+#     - section_end "Calculate Packs Dependencies"
+
+#     - section_start "Collect Tests and Content Packs"
+#     - |
+#       [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
+#       python3 ./Tests/scripts/collect_tests_and_content_packs.py -n $IS_NIGHTLY
+#     - section_end "Collect Tests and Content Packs"
+
+#     - section_start "Prepare Content Packs for Testing"
+#     - ./Tests/scripts/prepare_content_packs_for_testing.sh "$GCS_MARKET_V2_BUCKET" "$STORAGE_BASE_PATH" "marketplacev2"
+#     - section_end "Prepare Content Packs for Testing"
+
+#     - section_start "Upload Artifacts to GCP" --collapsed
+#     - ./Tests/scripts/upload_artifacts.sh
+#     - section_end "Upload Artifacts to GCP"
 
 .test_content_on_server_instances_base:
   tags:
@@ -123,6 +168,10 @@ create-instances:
     - |
       if [[ -f ./Tests/failed_tests.txt ]]; then
         cp ./Tests/failed_tests.txt $ARTIFACTS_FOLDER/failed_tests.txt
+      fi
+    - |
+      if [[ -f ./Tests/succeeded_tests.txt ]]; then
+        cp ./Tests/succeeded_tests.txt $ARTIFACTS_FOLDER/succeeded_tests.txt
       fi
     - |
       if [ -z "${TIME_TO_LIVE}" -a "$CI_PIPELINE_SOURCE" = "contrib" ]; then

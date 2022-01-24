@@ -1,0 +1,29 @@
+args:
+- description: EntryID of image
+  name: image
+  required: true
+comment: Script to create a  perceptual hash of an image (or file) stored in the incident.  Wrapps
+  https://pypi.org/project/ImageHash/
+commonfields:
+  id: PHash
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+dockerimage: demisto/python-phash:1.0.0.25389
+enabled: true
+name: PHash
+outputs:
+- contextPath: phash
+  description: Hash of the image
+  type: string
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

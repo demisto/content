@@ -7,6 +7,7 @@ if [ "$#" -lt "1" ]; then
   -ct, --ci-token             The ci token.
   [-b, --branch]              The branch name. Default is the current branch.
   [-gb, --bucket]             The name of the bucket to upload the packs to. Default is marketplace-dist-dev.
+  [-gb2, --bucket_v2]         The name of the bucket to upload the marketplace v2 packs to. Default is marketplace-v2-dist-dev.
   [-f, --force]               Whether to trigger the force upload flow.
   [-p, --packs]               CSV list of pack IDs. Mandatory when the --force flag is on.
   [-ch, --slack-channel]      A slack channel to send notifications to. Default is dmst-bucket-upload.
@@ -18,6 +19,7 @@ fi
 
 _branch="$(git branch  --show-current)"
 _bucket="marketplace-dist-dev"
+_bucket_v2="marketplace-v2-dist-dev"
 _bucket_upload="true"
 _slack_channel="dmst-bucket-upload"
 _storage_base_path=""
@@ -44,6 +46,15 @@ while [[ "$#" -gt 0 ]]; do
     shift
     shift;;
 
+  -gb2|--bucket_v2)
+  if [ "$(echo "$2" | tr '[:upper:]' '[:lower:]')" == "marketplace-v2-dist" ]; then
+    echo "Only test buckets are allowed to use. Using marketplace-v2-dist-dev instead."
+  else
+    _bucket_v2=$2
+  fi
+    shift
+    shift;;
+
   -f|--force) _force=true
     _bucket_upload=""
     shift;;
@@ -58,6 +69,9 @@ while [[ "$#" -gt 0 ]]; do
 
   -sbp|--storage-base-path) _storage_base_path="$2"
     shift
+    shift;;
+
+  -o|--override-all-packs) _override_all_packs=true
     shift;;
 
   -g|--gitlab) _gitlab=true
@@ -101,6 +115,12 @@ if [ -n "$_gitlab" ]; then
     _variables="variables[FORCE_BUCKET_UPLOAD]=true"
   fi
 
+  if [ -z "$_override_all_packs" ]; then
+    _override_all_packs=false
+  else
+    _override_all_packs=true
+  fi
+
   source Utils/gitlab_triggers/trigger_build_url.sh
 
   curl --request POST \
@@ -110,8 +130,10 @@ if [ -n "$_gitlab" ]; then
     --form "variables[SLACK_CHANNEL]=${_slack_channel}" \
     --form "variables[PACKS_TO_UPLOAD]=${_packs}" \
     --form "variables[GCS_MARKET_BUCKET]=${_bucket}" \
+    --form "variables[GCS_MARKET_V2_BUCKET]=${_bucket_v2}" \
     --form "variables[IFRA_ENV_TYPE]=Bucket-Upload" \
     --form "variables[STORAGE_BASE_PATH]=${_storage_base_path}" \
+    --form "variables[OVERRIDE_ALL_PACKS]=${_override_all_packs}" \
     "$BUILD_TRIGGER_URL"
 
 else

@@ -42,9 +42,10 @@ def cve_to_context(cve) -> Dict[str, str]:
     Returns:
         The cve structure.
     """
+    cvss = cve.get('cvss')
     return {
         'ID': cve.get('id', ''),
-        'CVSS': cve.get('cvss', '0'),
+        'CVSS': cvss or 'N\\A',
         'Published': cve.get('Published', '').rstrip('Z'),
         'Modified': cve.get('Modified', '').rstrip('Z'),
         'Description': cve.get('summary', '')

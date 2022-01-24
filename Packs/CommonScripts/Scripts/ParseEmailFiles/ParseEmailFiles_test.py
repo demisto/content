@@ -814,6 +814,21 @@ def test_get_msg_mail_format():
     assert msg_mail_format == ''
 
 
+def test_handle_msg_with_attachments():
+    """
+    Given:
+     - A msg file with attachments
+
+    When:
+     - Running the 'handle_msg' method
+
+    Then:
+     - Ensure that the attachment name is in the results
+    """
+    result = handle_msg('test_data/html_attachment.msg', 'html_attachment.msg')
+    assert result[0]['Attachments'] == 'dummy-attachment.txt'
+
+
 def test_no_content_file(mocker):
     mocker.patch.object(demisto, 'args', return_value={'entryid': 'test'})
     mocker.patch.object(demisto, 'executeCommand',

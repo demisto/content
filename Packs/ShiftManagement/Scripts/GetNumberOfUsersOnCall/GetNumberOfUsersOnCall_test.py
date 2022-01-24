@@ -25,11 +25,9 @@ USERS_ON_CALL = [
 USERS_AWAY = [
     {
         'Type': 1,
-        'Contents': [
-            {
-                'username': 'user2'
-            }
-        ]
+        'EntryContext': {
+            'AwayUsers': [{'username': 'user2'}]
+        }
     }
 ]
 

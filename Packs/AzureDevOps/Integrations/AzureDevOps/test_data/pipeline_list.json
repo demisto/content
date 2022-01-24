@@ -1,0 +1,35 @@
+{
+  "count": 2,
+  "value": [
+    {
+      "_links": {
+        "self": {
+          "href": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/pipelines/2?revision=1"
+        },
+        "web": {
+          "href": "https://dev.azure.com/xsoar-organization/xsoar-project/_build/definition?definitionId=2"
+        }
+      },
+      "url": "https://dev.azure.com/xsoar-organization/xsoar-project/_apis/pipelines/2?revision=1",
+      "id": "2",
+      "revision": 1,
+      "name": "xsoar (1)",
+      "folder": "\\"
+    },
+    {
+      "_links": {
+        "self": {
+          "href": "https: //dev.azure.com/xsoar-organization/xsoar-project/_apis/pipelines/1?revision=1"
+        },
+        "web": {
+          "href": "https: //dev.azure.com/xsoar-organization/xsoar-project/_build/definition?definitionId=1"
+        }
+      },
+      "url": "https: //dev.azure.com/xsoar-organization/xsoar-project/_apis/pipelines/1?revision=1",
+      "id": "1",
+      "revision": 1,
+      "name": "xsoar",
+      "folder": "\\"
+    }
+  ]
+}
