@@ -281,7 +281,7 @@ Sets the IAM access control policy for the specified project. This operation wil
 | --- | --- | --- |
 | GCP.IAM.Policy.bindings.members | String | The members that associates to the role. | 
 | GCP.IAM.Policy.bindings.role | String | The role that is assigned to the list of members. | 
-| GCP.IAM.Policy.Policy.name | String | The unique resource name of the project. Please note that this output was added manually. | 
+| GCP.IAM.Policy.name | String | The unique resource name of the project. Please note that this output was added manually. | 
 
 
 #### Command Example
