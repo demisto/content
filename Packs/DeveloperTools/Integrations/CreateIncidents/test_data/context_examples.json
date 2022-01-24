@@ -14,16 +14,16 @@
             "value": "example@example.com"
           }
         ],
-        "attachment": "example_path.eml"
+        "attachment": ["example_path.eml"]
       }
     ]
   },
-  "CONTEXT_WITHOUT_LABEL_WITH_FILE": {
+  "CONTEXT_WITHOUT_LABEL_WITH_FILES": {
     "incidents": [
       {
         "name": "Potential phishing I received",
         "occurred": "0001-01-01T00:00:00Z",
-        "attachment": "example_path.eml"
+        "attachment": ["example_path.eml", "example_path2.eml"]
       }
     ]
   },
@@ -32,7 +32,7 @@
       {
         "name": "Potential phishing I received",
         "occurred": "0001-01-01T00:00:00Z",
-        "attachment": "example_path.eml"
+        "attachment": ["example_path.eml"]
       },
       {
         "name": "Potential phishing I received",

@@ -101,7 +101,8 @@ def create_test_incident_from_file_command(client: Client, args: Dict[str, Any])
     if not incidents_path:
         raise ValueError('Incidents were not specified')
 
-    ready_incidents = get_incidents_from_file(attachment_path=attachment_path, incidents_path=incidents_path, client=client)
+    ready_incidents = get_incidents_from_file(attachment_path=attachment_path, incidents_path=incidents_path,
+                                              client=client)
     set_integration_context({'incidents': ready_incidents})
     return CommandResults(readable_output=f'Loaded {len(ready_incidents)} incidents from file.')
 

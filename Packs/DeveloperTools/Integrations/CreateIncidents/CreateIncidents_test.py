@@ -6,8 +6,6 @@ import CreateIncidents
 
 import pytest
 
-from CommonServerPython import DemistoException
-
 Attachment = namedtuple('Attachment', ['name', 'content'])
 
 
@@ -24,6 +22,7 @@ def util_loaf_file(path):
 incident_list = util_load_json('test_data/incidents_examples.json')
 context_list = util_load_json('test_data/context_examples.json')
 attachment_content = util_loaf_file('test_data/YOU HAVE WON 10000$.eml')
+CLIENT_MOCK = CreateIncidents.Client('example_url.com', False, False)
 
 CONTEXT_EXAMPLES = [
     (
@@ -34,9 +33,10 @@ CONTEXT_EXAMPLES = [
              'attachment': [{'path': 'example_id', 'name': 'example_path.eml'}]}]
     ),
     (
-        context_list.get("CONTEXT_WITHOUT_LABEL_WITH_FILE"), [
+        context_list.get("CONTEXT_WITHOUT_LABEL_WITH_FILES"), [
             {'name': 'Potential phishing I received', 'occurred': '0001-01-01T00:00:00Z',
-             'attachment': [{'path': 'example_id', 'name': 'example_path.eml'}]}]
+             'attachment': [{'path': 'example_id', 'name': 'example_path.eml'},
+                            {'path': 'example_id', 'name': 'example_path2.eml'}]}]
     ),
     (
         context_list.get("CONTEXT_MULTIPLE"), [
@@ -73,10 +73,10 @@ def test_fetch_incident_command(mocker, context, expected):
 
     set_context_mock = mocker.patch.object(CreateIncidents, 'set_integration_context')
     mocker.patch.object(CreateIncidents, 'get_integration_context', return_value=context)
-    mocker.patch.object(CreateIncidents.GitClient, 'http_request', side_effect=http_mock)
+    mocker.patch.object(CreateIncidents.Client, 'http_request', side_effect=http_mock)
     mocker.patch.object(CreateIncidents, 'fileResult', return_value={'FileID': 'example_id'})
 
-    incidents = CreateIncidents.fetch_incidents_command(CreateIncidents.GitClient(False, False))
+    incidents = CreateIncidents.fetch_incidents_command(CLIENT_MOCK)
     assert set_context_mock.call_args[0][0] == {"incidents": []}
     assert incidents == expected
 
@@ -96,28 +96,28 @@ CASES = [
                                                     'occurred': '0001-01-01T00:00:00Z'}]
     ),
     (
-        incident_list.get('WITH_LABEL'), "example_path.eml",
+        incident_list.get('WITH_LABEL'), ["example_path.eml"],
         [{'name': 'Potential phishing I received',
           'occurred': '0001-01-01T00:00:00Z',
           'labels': [{'type': 'Email/subject',
                       'value': 'Potential phishing I received'},
                      {'type': 'Email', 'value': 'example@example.com'}],
-          "attachment": "example_path.eml"
+          "attachment": ["example_path.eml"]
           }]
     ),
     (
-        incident_list.get('WITHOUT_LABEL'), "example_path.eml",
+        incident_list.get('WITHOUT_LABEL'), ["example_path.eml", "example_path2.eml"],
         [{'name': 'Potential phishing I received',
           'occurred': '0001-01-01T00:00:00Z',
-          "attachment": "example_path.eml"
+          "attachment": ["example_path.eml", "example_path2.eml"]
           }]
     ),
     (
-        incident_list.get('MULTIPLE_INCIDENTS'), "example_path.eml",
+        incident_list.get('MULTIPLE_INCIDENTS'), ["example_path.eml"],
         [{'name': 'Potential phishing I received', 'occurred': '0001-01-01T00:00:00Z',
-          "attachment": "example_path.eml"},
+          "attachment": ["example_path.eml"]},
          {'name': 'Potential phishing I received 2', 'occurred': '0001-01-01T00:00:00Z',
-          "attachment": "example_path.eml"}]
+          "attachment": ["example_path.eml"]}]
     ),
     (
         incident_list.get('EMPTY_INCIDENTS'), 'example_path.eml', []
@@ -146,68 +146,13 @@ def test_parse_incidents_happy(mocker, incidents, attachment, expected):
             return ''
 
     mocker.patch.object(CreateIncidents, 'fileResult', return_value={'FileID': 'example_id'} if attachment else None)
-    mocker.patch.object(CreateIncidents.GitClient, 'http_request', side_effect=http_mock)
+    mocker.patch.object(CreateIncidents.Client, 'http_request', side_effect=http_mock)
     res = CreateIncidents.parse_incidents(incidents, attachment)
     # removing raw json for reading comfortability
     for item in res:
         item.pop('rawJSON')
 
     assert res == expected
-
-
-# Attachment('YOU HAVE WON 10000$.eml', attachment_content)
-CLIENT_CASES = [
-    (
-        'Git', False, False
-    ),
-    (
-        'Git', True, False
-    ),
-    (
-        None, True, False
-    ),
-
-]
-
-
-@pytest.mark.parametrize('source, ssl, proxy', CLIENT_CASES)
-def test_get_client_happy(source, ssl, proxy):
-    """
-    Given: source, ssl and proxy
-    When: creating a client to use in integration
-    Then: Makes sure client is correct (Git source should go to master branch!)
-    """
-    if source:
-        client = CreateIncidents.get_client(source, ssl, proxy)
-    else:
-        client = CreateIncidents.get_client(ssl=ssl, proxy=proxy)
-
-    assert client.base_url == 'https://raw.github.com/demisto/content/master'
-    assert client.verify == ssl
-    assert client.proxy == proxy
-
-
-CLIENT_CASES_BAD = [
-    (
-        'Other', False, False
-    ),
-    (
-        None, False, False
-    ),
-]
-
-
-@pytest.mark.parametrize('source, ssl, proxy', CLIENT_CASES_BAD)
-def test_get_client_bad(source, ssl, proxy):
-    """
-    Given: invalid source, ssl and proxy
-    When: creating a client to use in integration
-    Then: Makes sure client fails with correct error
-    """
-
-    with pytest.raises(Exception) as e:
-        CreateIncidents.get_client(source, ssl, proxy)
-    assert str(e.value) == 'Unauthorized source'
 
 
 INCIDENT_PATH_CASES_BAD = [
@@ -229,16 +174,16 @@ def test_create_test_incident_command_bad(incident_path):
     """
 
     with pytest.raises(ValueError) as e:
-        CreateIncidents.create_test_incident_from_file_command(CreateIncidents.GitClient(False, False),
-                                                               {'incidents_path': incident_path})
+        CreateIncidents.create_test_incident_from_file_command(
+            CreateIncidents.Client('example_base_url.com', False, False),
+            {'incidents_path': incident_path})
     assert str(e.value) == 'Incidents were not specified'
 
 
 def test_http_request(mocker):
-    http_mock = mocker.patch.object(CreateIncidents.GitClient, '_http_request')
-    client = CreateIncidents.GitClient(False, False)
-    client.http_request('file.json', response_type='json')
-    assert http_mock.call_args[1]['full_url'] == 'https://raw.github.com/demisto/content/master/file.json'
+    http_mock = mocker.patch.object(CreateIncidents.Client, '_http_request')
+    CLIENT_MOCK.http_request('file.json', response_type='json')
+    assert http_mock.call_args[1]['url_suffix'] == 'file.json'
     assert http_mock.call_args[1]['resp_type'] == 'json'
     assert http_mock.call_args[1]['return_empty_response'] is True
 
@@ -278,36 +223,9 @@ def test_create_test_incident_command_happy(mocker, incidents, attachment, expec
             return ''
 
     parse_mock = mocker.patch.object(CreateIncidents, 'parse_incidents')
-    mocker.patch.object(CreateIncidents.GitClient, 'http_request', side_effect=http_mock)
-    CreateIncidents.create_test_incident_from_file_command(CreateIncidents.GitClient(False, False),
+    mocker.patch.object(CreateIncidents.Client, 'http_request', side_effect=http_mock)
+    CreateIncidents.create_test_incident_from_file_command(CLIENT_MOCK,
                                                            {'incidents_path': 'example.json',
-                                                            'attachment_path': attachment})
+                                                            'attachment_paths': attachment})
     assert type(parse_mock.call_args[0][0]) == list
     assert len(parse_mock.call_args[0][0]) == expected
-
-
-def test_gitClient_http_request_bad_link(mocker):
-    """
-         Given: a file with list-format of valid incidents with labels
-                a file with single valid incident without labels
-                a list of valid incidents with labels with attachment,
-                an empty file without incidents
-        When:   creating an incident object from the incident retrieved
-        Then:   Makes sure the incidents we read are in correct format (list)
-        """
-
-    class DemistoExceptionMock(DemistoException):
-        def __init__(self):
-            self.value = 'Error in API call [404] - Not Found\n404: Not Found'
-
-        def __str__(self):
-            return self.value
-
-    def http_mock(method, full_url, resp_type, return_empty_response):
-        raise DemistoExceptionMock()
-
-    mocker.patch.object(CreateIncidents.GitClient, '_http_request', side_effect=http_mock)
-    expected_err_msg = 'The file could not be found. Make sure you uploaded it to master branch in content repository'
-    with pytest.raises(Exception) as e:
-        CreateIncidents.GitClient(False, False).http_request(file_path='bad_example.json', response_type='json')
-    assert str(e.value) == expected_err_msg
