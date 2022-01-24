@@ -13,8 +13,6 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
 ''' CONSTANTS '''
 
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
-
 Attachment = namedtuple('Attachment', ['name', 'content'])
 
 
@@ -62,12 +60,11 @@ def fetch_incidents_command(client):
     The fetch runs on instance's context, gets the formatted incidents, and add attachments if needed.
     It then clears the context so incident would not be duplicated.
     """
-    data = get_integration_context()
-    incidents = data.pop('incidents') if 'incidents' in data else []
-
+    data: dict = get_integration_context()
+    incidents = data.pop('incidents', [])
+    demisto.debug(f'Found {len(incidents)} incidents to fetch.')
     for incident in incidents:
         if 'attachment' in incident:
-            demisto.debug('Found incident, getting attachments')
             _add_attachments(client, incident)
 
     # clear the integration contex from already seen incidents
@@ -82,6 +79,8 @@ def _add_attachments(client, incident: dict):
     attachment_paths = incident['attachment']
     incident['attachment'] = []
     for attachment_path in attachment_paths:
+        demisto.debug(f'Adding attachments from link {attachment_path}')
+
         attachment = Attachment(content=client.http_request(file_path=attachment_path, response_type='content'),
                                 name=pathlib.Path(attachment_path).name)
         file_result = fileResult(attachment.name, attachment.content)

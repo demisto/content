@@ -45,7 +45,10 @@ CONTEXT_EXAMPLES = [
             {'name': 'Potential phishing I received', 'occurred': '0001-01-01T00:00:00Z'}]
     ),
     (
-        context_list.get("CONTEXT_EMPTY"), []
+        context_list.get("CONTEXT_EMPTY_WITHOUT_INCIDENTS"), []
+    ),
+    (
+        context_list.get("CONTEXT_EMPTY_WITH_INCIDENTS"), []
     ),
 
 ]

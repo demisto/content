@@ -25,7 +25,7 @@ configuration:
   name: isFetch
   required: false
   type: 8
-description: CreateIncidents fetches incident created manually.
+description: CreateIncidents fetches custom incidents that are created manually.
 display: Create Test Incidents
 name: CreateIncidents
 script:
