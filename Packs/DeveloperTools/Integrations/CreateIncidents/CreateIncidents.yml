@@ -3,7 +3,7 @@ commonfields:
   id: CreateIncidents
   version: -1
 configuration:
-- defaultvalue: https://raw.github.com/demisto/content/end_to_end_pb_create_incidents
+- defaultvalue: https://raw.github.com/demisto/content/master
   additionalinfo: The base url of the source you wish to upload/ downlowd files from.
   display: Source URL
   name: url
