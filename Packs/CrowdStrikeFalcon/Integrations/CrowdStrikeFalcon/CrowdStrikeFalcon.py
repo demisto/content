@@ -2800,9 +2800,13 @@ def detections_to_human_readable(detections):
 
 
 def list_detection_summaries_command():
-    fetch_query = demisto.args().get('fetch_query')
+    args = demisto.args()
+    fetch_query = args.get('fetch_query')
 
-    if fetch_query:
+    args_ids = args.get('ids')
+    if args_ids:
+        detections_ids = argToList(args_ids)
+    elif fetch_query:
         fetch_query = "{query}".format(query=fetch_query)
         detections_ids = demisto.get(get_fetch_detections(filter_arg=fetch_query), 'resources')
     else:
@@ -2833,9 +2837,13 @@ def incidents_to_human_readable(incidents):
 
 
 def list_incident_summaries_command():
-    fetch_query = demisto.args().get('fetch_query')
+    args = demisto.args()
+    fetch_query = args.get('fetch_query')
 
-    if fetch_query:
+    args_ids = args.get('ids')
+    if args_ids:
+        incidents_ids = argToList(args_ids)
+    elif fetch_query:
         fetch_query = "{query}".format(query=fetch_query)
         incidents_ids = get_incidents_ids(filter_arg=fetch_query)
     else:
