@@ -1,6 +1,5 @@
 import json
 import os
-import string
 import sys
 import demistomock as demisto  # noqa: F401
 import requests
@@ -21,7 +20,7 @@ class Main_Object():
             self.ssl_verify = not bool(demisto.params().get('insecure', False))
             self.run_env = "demisto"
             self.log_response = log_response_demisto
-        except:
+        except Exception:
             self.endpoint = os.environ.get('DEMISTO_BASE_URL')
             self.api_key = os.environ.get('DEMISTO_API_KEY')
             if os.environ.get('DEMISTO_VERIFY_SSL') == "true":
