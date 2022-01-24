@@ -66,6 +66,7 @@ script:
       name: action_id
       required: false
       secret: false
+      deprecated: true
     - default: false
       description: The endpoint ID (string) to isolate. You can retrieve the string
         from the core-get-endpoints command.
@@ -127,6 +128,7 @@ script:
       name: action_id
       required: false
       secret: false
+      deprecated: true
     deprecated: false
     description: Reverses the isolation of an endpoint.
     execution: true
@@ -973,6 +975,7 @@ script:
       name: action_id
       required: false
       secret: false
+      deprecated: true
     deprecated: false
     description: Quarantines a file on selected endpoints. You can select up to 1000
       endpoints.
@@ -1031,6 +1034,7 @@ script:
       name: action_id
       required: false
       secret: false
+      deprecated: true
     deprecated: false
     description: Restores a quarantined file on requested endpoints.
     execution: false
@@ -1144,6 +1148,7 @@ script:
       name: action_id
       required: false
       secret: false
+      deprecated: true
     deprecated: false
     description: Runs a scan on a selected endpoint. To scan all endpoints, run this
       command with argument all=true. Do note that scanning all the endpoints may
@@ -1611,6 +1616,7 @@ script:
       name: action_id
       required: false
       secret: false
+      deprecated: true
     deprecated: false
     description: Retrieves files from selected endpoints. You can retrieve up to 20
       files, from no more than 10 endpoints. At least one endpoint ID and one file
@@ -1850,6 +1856,7 @@ script:
       name: action_id
       required: false
       secret: false
+      deprecated: true
     deprecated: false
     description: Initiates a new endpoint script execution action using the provided
       snippet code.
@@ -2049,6 +2056,7 @@ script:
       name: action_id
       required: false
       secret: false
+      deprecated: true
     deprecated: false
     description: Initiate a new endpoint script execution of shell commands.
     execution: false
@@ -2097,6 +2105,7 @@ script:
       name: action_id
       required: false
       secret: false
+      deprecated: true
     deprecated: false
     description: Initiates a new endpoint script execution to delete the specified
       file.
@@ -2145,6 +2154,7 @@ script:
       name: action_id
       required: false
       secret: false
+      deprecated: true
     deprecated: false
     description: Initiates a new endpoint script execution to check if file exists.
     execution: false
@@ -2192,6 +2202,7 @@ script:
       name: action_id
       required: false
       secret: false
+      deprecated: true
     deprecated: false
     description: Initiates a new endpoint script execution kill process.
     execution: false
@@ -2223,12 +2234,6 @@ script:
       name: hostname
       required: false
       secret: false
-    - default: true
-      description: ''
-      isArray: true
-      name: endpoint
-      required: true
-      secret: false
     deprecated: false
     description: Returns information about an endpoint.
     execution: false
@@ -2259,44 +2264,44 @@ script:
       description: The integration name of the endpoint vendor.
       type: String
   - arguments:
-      - default: false
-        description: String that represents the Master Key.
-        isArray: false
-        name: master_key
-        required: true
-        secret: false
-      - default: false
-        description: String that represents the file’s hash. Must be a valid SHA256 hash.
-        isArray: false
-        name: file_hash
-        required: true
-        secret: false
-      - default: false
-        description: The new verdict of the file. 0 - benign, 1 - malware.
-        predefined:
-          - '0'
-          - '1'
-        isArray: false
-        name: new_verdict
-        required: true
-        secret: false
-      - default: false
-        description: String that represents the reason of the report
-        isArray: false
-        name: reason
-        required: true
-        secret: false
-      - default: false
-        description: User’s email address.
-        isArray: false
-        name: email
-        required: true
-        secret: false
+    - default: false
+      description: String that represents the Master Key.
+      isArray: false
+      name: master_key
+      required: true
+      secret: true
+    - default: false
+      description: String that represents the file’s hash. Must be a valid SHA256
+        hash.
+      isArray: false
+      name: file_hash
+      required: true
+      secret: false
+    - default: false
+      description: The new verdict of the file. 0 - benign, 1 - malware.
+      predefined:
+      - '0'
+      - '1'
+      isArray: false
+      name: new_verdict
+      required: true
+      secret: false
+    - default: false
+      description: String that represents the reason of the report
+      isArray: false
+      name: reason
+      required: true
+      secret: false
+    - default: false
+      description: User’s email address.
+      isArray: false
+      name: email
+      required: true
+      secret: false
     deprecated: false
-    description:
+    description: report FP to wildfire through XDR
     execution: true
     name: core-report-incorrect-wildfire
-  dockerimage: demisto/python3:3.10.1.25933
   feed: false
   isfetch: false
   longRunning: false
@@ -2305,6 +2310,7 @@ script:
   script: '-'
   subtype: python3
   type: python
+  dockerimage: demisto/python3:3.10.1.25933
 tests:
 - No tests
-fromversion: 5.0.0
+fromversion: 6.2.0

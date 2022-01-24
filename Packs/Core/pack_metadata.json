@@ -1,14 +1,14 @@
 {
-    "name": "Core",
-    "description": "",
+    "name": "Core - Investigation and Response",
+    "description": "Automates incident response",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
-    "categories": [],
+    "categories": ["Endpoint", "Data Enrichment & Threat Intelligence"],
     "tags": [],
-    "useCases": [],
+    "useCases": ["Malware"],
     "keywords": [],
     "marketplaces": [
         "xsoar",
