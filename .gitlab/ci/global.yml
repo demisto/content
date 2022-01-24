@@ -205,6 +205,8 @@
           else
             demisto-sdk coverage-analyze -i $ARTIFACTS_FOLDER/coverage_report/.coverage --report-dir $ARTIFACTS_FOLDER/coverage_report --report-type html,xml --previous-coverage-report-url https://storage.googleapis.com/marketplace-dist-dev/code-coverage-reports/coverage-min.json
           fi
+            echo "send a comment"
+            python3 ./Tests/scripts/add_pr_comment.py
         fi
       fi
     - section_end "Run Unit Testing and Lint"
