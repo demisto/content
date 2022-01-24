@@ -1,8 +1,12 @@
 """Imports"""
 import json
+import tempfile
+
 import pytest
 import os
 from tempfile import mkdtemp
+import demistomock as demisto
+from EDL import DONT_COLLAPSE, initialize_edl_context
 
 IOC_RES_LEN = 38
 
@@ -18,7 +22,15 @@ class TestRequestArguments:
         RequestArguments.CTX_INVALIDS_KEY: True,
         RequestArguments.CTX_PORT_STRIP_KEY: True,
         RequestArguments.CTX_COLLAPSE_IPS_KEY: "collapse",
-        RequestArguments.CTX_EMPTY_EDL_COMMENT_KEY: True
+        RequestArguments.CTX_EMPTY_EDL_COMMENT_KEY: True,
+        RequestArguments.CTX_OUT_FORMAT: 'text',
+        RequestArguments.CTX_MWG_TYPE: 'string',
+        RequestArguments.CTX_CATEGORY_DEFAULT: 'bc_category',
+        RequestArguments.CTX_CATEGORY_ATTRIBUTE: [],
+        RequestArguments.CTX_FIELDS_TO_PRESENT: 'name,type',
+        RequestArguments.CTX_CSV_TEXT: False,
+        RequestArguments.CTX_PROTOCOL_STRIP_KEY: False,
+        RequestArguments.CTX_URL_TRUNCATE_KEY: False
     }
 
     request_args = RequestArguments(
@@ -27,7 +39,17 @@ class TestRequestArguments:
         offset=context_json[RequestArguments.CTX_OFFSET_KEY],
         url_port_stripping=context_json[RequestArguments.CTX_PORT_STRIP_KEY],
         drop_invalids=context_json[RequestArguments.CTX_PORT_STRIP_KEY],
-        collapse_ips=context_json[RequestArguments.CTX_COLLAPSE_IPS_KEY])
+        collapse_ips=context_json[RequestArguments.CTX_COLLAPSE_IPS_KEY],
+        add_comment_if_empty=context_json[RequestArguments.CTX_EMPTY_EDL_COMMENT_KEY],
+        out_format=context_json[RequestArguments.CTX_OUT_FORMAT],
+        mwg_type=context_json[RequestArguments.CTX_MWG_TYPE],
+        category_default=context_json[RequestArguments.CTX_CATEGORY_DEFAULT],
+        category_attribute='',
+        fields_to_present=context_json[RequestArguments.CTX_FIELDS_TO_PRESENT],
+        csv_text=context_json[RequestArguments.CTX_CSV_TEXT],
+        url_protocol_stripping=context_json[RequestArguments.CTX_PROTOCOL_STRIP_KEY],
+        url_truncate=context_json[RequestArguments.CTX_URL_TRUNCATE_KEY]
+    )
 
     def test_to_context_json(self):
         """
@@ -70,7 +92,7 @@ class TestHelperFunctions:
             - return the edl from the system file
         """
         import EDL as edl
-        edl.EDL_ON_DEMAND_CACHE_PATH = 'EDL_test/TestHelperFunctions/iocs_cache_values_text.txt'
+        edl.EDL_ON_DEMAND_CACHE_PATH = 'test_data/iocs_cache_values_text.txt'
         mocker.patch.object(edl, 'get_integration_context', return_value={})
         actual_edl = edl.get_edl_on_demand()
         with open(edl.EDL_ON_DEMAND_CACHE_PATH, 'r') as f:
@@ -137,92 +159,154 @@ class TestHelperFunctions:
     def test_create_new_edl(self, mocker):
         """Sanity"""
         import EDL as edl
-        with open('EDL_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
-            iocs_json = json.loads(iocs_json_f.read())
-            mocker.patch.object(edl, 'find_indicators_to_limit', return_value=iocs_json)
-            request_args = edl.RequestArguments(query='', limit=38, url_port_stripping=True)
-            edl_vals = edl.create_new_edl(request_args)
-            for ioc in iocs_json:
-                ip = ioc.get('value')
-                stripped_ip = edl._PORT_REMOVAL.sub(edl._URL_WITHOUT_PORT, ip)
-                if stripped_ip != ip:
-                    assert stripped_ip.replace('https://', '') in edl_vals
-                else:
-                    assert ip in edl_vals
+        f = tempfile.TemporaryFile(mode='w+t')
+        f.write('{"value": "https://google.com", "indicator_type": "URL"}\n'
+                '{"value": "demisto.com:7000", "indicator_type": "URL"}\n'
+                '{"value": "demisto.com/qwertqwertyuioplkjhgfdsazxqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyu'
+                'iopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopyuioplkjhgfdsa'
+                'zxqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwert'
+                'yuiopqwertyuiopqwertyuiopqwertyuiop", "indicator_type": "URL"}\n'
+                '{"value": "demisto.com", "indicator_type": "URL"}')
 
-    def test_find_indicators_to_limit(self, mocker):
-        """Test find indicators limit"""
-        import EDL as edl
-        with open('EDL_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
-            iocs_json = json.loads(iocs_json_f.read())
-            indicator_searcher_res = [{'iocs': iocs_json}, {'iocs': []}]
-            limit = 37
-            indicator_searcher = edl.IndicatorsSearcher()
-            indicator_searcher.limit = limit
-            mocker.patch.object(indicator_searcher, 'search_indicators_by_version', side_effect=indicator_searcher_res)
-            edl_vals = edl.find_indicators_to_limit(indicator_searcher=indicator_searcher)
-            assert len(edl_vals) == limit
+        mocker.patch.object(edl, 'get_indicators_to_format', return_value=f)
+        request_args = edl.RequestArguments(query='', limit=3, url_port_stripping=True, url_protocol_stripping=True,
+                                            url_truncate=True)
+        edl_vals = edl.create_new_edl(request_args)
 
-    def test_format_indicators(self):
-        from EDL import format_indicators, RequestArguments, COLLAPSE_TO_RANGES
-        with open('EDL_test/TestHelperFunctions/demisto_url_iocs.json', 'r') as iocs_json_f:
+        assert edl_vals == 'google.com\ndemisto.com\ndemisto.com/qwertqwertyuioplkjhgfdsazxqwertyuiopqwertyuiopq' \
+                           'wertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwert' \
+                           'yuiopqwertyuiopqwertyuiopyuioplkjhgfdsazxqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwe' \
+                           'rtyuiopqwertyuiopqwertyuiop\n'
+        f = tempfile.TemporaryFile(mode='w+t')
+        f.write('{"value": "https://google.com", "indicator_type": "URL"}\n'
+                '{"value": "demisto.com:7000", "indicator_type": "URL"}\n'
+                '{"value": "demisto.com/qwertqwertyuioplkjhgfdsazxqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyu'
+                'iopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopyuioplkjhgfdsa'
+                'zxqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwert'
+                'yuiopqwertyuiopqwertyuiopqwertyuiop", "indicator_type": "URL"}\n'
+                '{"value": "demisto.com", "indicator_type": "URL"}')
+        mocker.patch.object(edl, 'get_indicators_to_format', return_value=f)
+        request_args = edl.RequestArguments(out_format='CSV', query='', limit=3, url_port_stripping=True,
+                                            url_protocol_stripping=True, url_truncate=True)
+        edl_v = edl.create_new_edl(request_args)
+        assert edl_v == '{"value": "https://google.com", "indicator_type": "URL"}\n' \
+                        '{"value": "demisto.com:7000", "indicator_type": "URL"}\n' \
+                        '{"value": "demisto.com/qwertqwertyuioplkjhgfdsazxqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyu' \
+                        'iopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopyuioplkjhgfdsa' \
+                        'zxqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwert' \
+                        'yuiopqwertyuiopqwertyuiopqwertyuiop", "indicator_type": "URL"}\n' \
+                        '{"value": "demisto.com", "indicator_type": "URL"}' \
+
+
+    def test_create_json_out_format(self):
+        """
+        Given:
+          - RequestArguments
+          - Indicator info
+        When:
+          - request json outbound format
+        Then:
+          - assert the result
+        """
+        from EDL import create_json_out_format, RequestArguments
+        returned_output = []
+        with open('test_data/demisto_url_iocs.json', 'r') as iocs_json_f:
             iocs_json = json.loads(iocs_json_f.read())
 
             # strips port numbers
             request_args = RequestArguments(query='', drop_invalids=True, url_port_stripping=True)
-            returned_output = format_indicators(iocs_json, request_args)
-            assert returned_output == {'1.2.3.4/wget', 'www.demisto.com/cool'}
+            for ioc in iocs_json:
+                returned_output.append(create_json_out_format(['value', 'indicator_type'], ioc, request_args, True))
+            assert returned_output == [', {"value": "1.2.3.4/wget", "indicator_type": "URL"}',
+                                       ', {"value": "https://www.demisto.com/cool", "indicator_type": "URL"}',
+                                       ', {"value": "https://www.demisto.com/*cool", "indicator_type": "URL"}']
+            returned_output = ''
+            not_first_call = False
+            for ioc in iocs_json:
+                returned_output += (create_json_out_format([], ioc, request_args, not_first_call))
+                not_first_call = True
+            returned_output += ']'
+            assert json.loads(returned_output) == iocs_json
 
-            # should ignore indicators with port numbers
-            request_args = RequestArguments(query='', drop_invalids=True, url_port_stripping=False)
-            returned_output = format_indicators(iocs_json, request_args)
-            assert returned_output == {'www.demisto.com/cool'}
+    def test_create_csv_out_format(self):
+        """
+        Given:
+          - RequestArguments
+          - Indicator info With CustomFields
+        When:
+          - request csv outbound format
+        Then:
+          - assert the result
+        """
+        from EDL import create_csv_out_format, RequestArguments
+        with open('test_data/demisto_url_iocs.json', 'r') as iocs_json_f:
+            iocs_json = json.loads(iocs_json_f.read())
+            request_args = RequestArguments(query='', drop_invalids=True, url_port_stripping=True,
+                                            url_protocol_stripping=True)
+            returned_output = ''
+            not_first_call = False
+            for ioc in iocs_json:
+                returned_output += (create_csv_out_format(not_first_call, ['value', 'indicator_type', 'test'], ioc,
+                                                          request_args))
+                not_first_call = True
 
-            # should not ignore indicators with '*' in them
-            request_args = RequestArguments(query='', drop_invalids=False, url_port_stripping=False)
-            returned_output = format_indicators(iocs_json, request_args)
-            assert returned_output == {'www.demisto.com/cool', 'www.demisto.com/*'}
+            assert returned_output == 'name,type\n"1.2.3.4/wget","URL","test"\n"www.demisto.com/cool","URL","test"\n' \
+                                      '"www.demisto.com/*cool","URL","None"\n'
 
-        with open('EDL_test/TestHelperFunctions/simplified_demisto_ip_iocs.json', 'r') as iocs_json_f:
+    def test_create_mwg_out_format(self):
+        """
+        Given:
+          - RequestArguments
+          - Indicator info
+        When:
+          - request mwg outbound format
+        Then:
+          - assert the result
+        """
+        from EDL import create_mwg_out_format, RequestArguments
+        with open('test_data/demisto_url_iocs.json', 'r') as iocs_json_f:
+            iocs_json = json.loads(iocs_json_f.read())
+            request_args = RequestArguments(query='', drop_invalids=True, url_port_stripping=True,
+                                            url_protocol_stripping=True)
+            returned_output = ''
+            not_first_call = False
+            for ioc in iocs_json:
+                returned_output += (
+                    create_mwg_out_format(ioc, request_args, not_first_call))
+                not_first_call = True
+
+            assert returned_output == 'type=string\n"1.2.3.4/wget" "AutoFocus Feed"\n"www.demisto.com/cool" ' \
+                                      '"AutoFocus V2,VirusTotal,Alien Vault OTX TAXII Feed"\n"www.demisto.com/*cool" ' \
+                                      '"AutoFocus V2,VirusTotal,Alien Vault OTX TAXII Feed"\n'
+
+    def test_create_proxysg_out_format(self):
+        """
+        Given:
+          - RequestArguments
+          - Indicator info
+        When:
+          - request proxysg outbound format
+        Then:
+          - assert files_by_category as 3 keys
+          - assert the result
+        """
+        from EDL import create_proxysg_out_format, RequestArguments, create_proxysg_all_category_out_format
+        files_by_category = {}
+        with open('test_data/demisto_url_iocs.json', 'r') as iocs_json_f:
             iocs_json = json.loads(iocs_json_f.read())
 
-            # collapse IPs to CIDRs
-            request_args = RequestArguments(query='', collapse_ips=True)
-            returned_output = format_indicators(iocs_json, request_args)
-            assert returned_output == {'1.1.1.2/31', '1.1.1.1'}
+        request_args = RequestArguments(query='', drop_invalids=True, url_port_stripping=True,
+                                        url_protocol_stripping=True)
+        for ioc in iocs_json:
+            files_by_category = create_proxysg_out_format(ioc, files_by_category, request_args)
 
-            # collapse IPs to ranges
-            request_args = RequestArguments(query='', collapse_ips=COLLAPSE_TO_RANGES)
-            returned_output = format_indicators(iocs_json, request_args)
-            assert returned_output == {'1.1.1.1-1.1.1.3'}
-
-        with open('EDL_test/TestHelperFunctions/simplified_demisto_ip_v6_iocs.json', 'r') as iocs_json_f:
-            iocs_json = json.loads(iocs_json_f.read())
-
-            # collapse IPv6
-            request_args = RequestArguments(query='', collapse_ips=True)
-            returned_output = format_indicators(iocs_json, request_args)
-            assert returned_output == {'1:1:1:1:1:1:1:2/127', '1:1:1:1:1:1:1:1'}
-
-    def test_format_indicators__filters(self):
-        from EDL import format_indicators, RequestArguments
-        iocs = [
-            {'value': '2603:1006:1400::/40', 'indicator_type': 'IPv6'},
-            {'value': '2002:ac8:b8d:0:0:0:0:0', 'indicator_type': 'IPv6'},
-            {'value': 'demisto.com:369/rest/of/path', 'indicator_type': 'URL'},
-            {'value': 'panw.com/path', 'indicator_type': 'URL'},
-            {'value': '*.domain.com', 'indicator_type': 'URL'},
-        ]
-
-        request_args = RequestArguments(query='', drop_invalids=True, url_port_stripping=True)
-        returned_output = format_indicators(iocs, request_args)
-        assert '2603:1006:1400::/40' in returned_output
-        assert '2002:ac8:b8d:0:0:0:0:0' in returned_output
-        assert 'demisto.com/rest/of/path' in returned_output  # port stripping
-        assert 'panw.com/path' in returned_output
-        assert '*.domain.com' in returned_output
-        assert 'domain.com' in returned_output  # PAN-OS URLs
-        assert len(returned_output) == 6
+        assert len(files_by_category) == 3
+        result_file = tempfile.TemporaryFile(mode='w+t')
+        result_file = create_proxysg_all_category_out_format(result_file, files_by_category)
+        result_file.seek(0)
+        assert result_file.read() == 'define category category1\n1.2.3.4/wget\nend\ndefine category category2\n' \
+                                     'www.demisto.com/cool\nend\ndefine category bc_category\nwww.demisto.com/*cool\n' \
+                                     'end\n'
 
     def test_validate_basic_authentication(self):
         """Test Authentication"""
@@ -393,6 +477,7 @@ class TestHelperFunctions:
             'di': drop_invalids,
             'tr': 1,
             'ce': add_comment_if_empty,
+            'v': 'CSV'
         }
         params = {
             'edl_size': limit + 1,
@@ -400,7 +485,8 @@ class TestHelperFunctions:
             'url_port_stripping': not strip_port,
             'drop_invalids': not drop_invalids,
             'collapse_ips': 2,
-            'add_comment_if_empty': not add_comment_if_empty
+            'add_comment_if_empty': not add_comment_if_empty,
+            'format': 'CSV'
         }
 
         # request with no request_args
@@ -420,3 +506,47 @@ class TestHelperFunctions:
         assert res.drop_invalids == request_args["di"]
         assert res.collapse_ips == COLLAPSE_TO_RANGES
         assert res.add_comment_if_empty == request_args["ce"]
+
+
+def test_initialize_edl_context():
+    """
+    Given:
+      - the params
+    When:
+      - config the instance
+    Then:
+      - assert the integrationContext is saved properly
+    """
+    params = {'edl_size': '200',
+              'indicators_query': '*',
+              'collapse_ips': DONT_COLLAPSE,
+              'url_port_stripping': False,
+              'url_protocol_stripping': True,
+              'drop_invalids': True,
+              'add_comment_if_empty': False,
+              'mwg_type': "string",
+              'category_default': 'bc_category',
+              'category_attribute': 'test1,test2',
+              'fields_filter': 'value,type',
+              'format': 'CSV',
+              'csv_text': True,
+              'url_truncate': False}
+
+    initialize_edl_context(params)
+    assert demisto.integrationContext == {'last_query': '*',
+                                          'out_format': 'CSV',
+                                          'last_limit': 200,
+                                          'last_offset': 0,
+                                          'drop_invalids': True,
+                                          'url_port_stripping': False,
+                                          'collapse_ips': "Don't Collapse",
+                                          'add_comment_if_empty': False,
+                                          'mwg_type': 'string',
+                                          'bc_category': 'bc_category',
+                                          'category_attribute': ['test1', 'test2'],
+                                          'fields_to_present': 'name,type',
+                                          'csv_text': True,
+                                          'url_protocol_stripping': True,
+                                          'url_truncate': False,
+                                          'UpdateEDL': True
+                                          }
