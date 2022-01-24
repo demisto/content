@@ -162,7 +162,7 @@ upload-packs-to-marketplace:
         fi
 
         if [[ $GCS_MARKET_BUCKET != $GCS_PRODUCTION_BUCKET ]] && [[ -z $STORAGE_BASE_PATH ]]; then
-         STORAGE_BASE_PATH="upload-flow/builds/$CI_COMMIT_BRANCH/$CI_PIPELINE_ID/xsoar/content"
+         STORAGE_BASE_PATH="upload-flow/builds/$CI_COMMIT_BRANCH/$CI_PIPELINE_ID/content"
         fi
 
         python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb "$GCS_MARKET_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_MARKET_KEY -n $CI_PIPELINE_ID -c $CI_COMMIT_BRANCH -pbp "$STORAGE_BASE_PATH/packs" --marketplace xsoar
@@ -174,7 +174,7 @@ upload-packs-to-marketplace:
         STORAGE_BASE_PATH="content"
       fi
       if [[ $GCS_MARKET_BUCKET != $GCS_PRODUCTION_BUCKET ]] && [[ -z $STORAGE_BASE_PATH ]]; then
-        STORAGE_BASE_PATH="upload-flow/builds/$CI_COMMIT_BRANCH/$CI_PIPELINE_ID/xsoar/content"
+        STORAGE_BASE_PATH="upload-flow/builds/$CI_COMMIT_BRANCH/$CI_PIPELINE_ID/content"
       fi
 
       PACKS_SRC="gs://$GCS_MARKET_BUCKET/$STORAGE_BASE_PATH/packs"
