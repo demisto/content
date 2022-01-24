@@ -1191,6 +1191,12 @@ script:
       name: from
       required: false
       secret: false
+    - default: false
+      description: Email addresses that need to be used to reply to the message. Supports comma-separated values.
+      isArray: true
+      name: replyTo
+      required: false
+      secret: false
     deprecated: false
     description: Sends an email.
     execution: false
