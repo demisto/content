@@ -32,5 +32,39 @@
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "6.0.0",
-    "openEnded": true
+    "openEnded": true,
+    "Aliases": [
+        {
+            "cliName": "f5silverlinetranslateddestport",
+            "type": "shortText"
+        },
+        {
+            "cliName": "fireeyenxeventdestinationport",
+            "type": "shortText"
+        },
+        {
+            "cliName": "destinationport",
+            "type": "shortText"
+        },
+        {
+            "cliName": "destinationports",
+            "type": "shortText"
+        },
+        {
+            "cliName": "digitalguardianremoteport",
+            "type": "shortText"
+        },
+        {
+            "cliName": "fireeyec2port",
+            "type": "shortText"
+        },
+        {
+            "cliName": "fireeyenxalerttargetport",
+            "type": "shortText"
+        },
+        {
+            "cliName": "irondefensedstport",
+            "type": "number"
+        }
+    ]
 }

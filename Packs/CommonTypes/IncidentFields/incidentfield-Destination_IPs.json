@@ -32,5 +32,31 @@
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "6.0.0",
-    "openEnded": true
+    "openEnded": true,
+    "Aliases": [
+        {
+            "cliName": "digitalguardiandestinationaddress",
+            "type": "shortText"
+        },
+        {
+            "cliName": "f5silverlinetranslateddestip",
+            "type": "shortText"
+        },
+        {
+            "cliName": "irondefensedstip",
+            "type": "shortText"
+        },
+        {
+            "cliName": "destinationip",
+            "type": "shortText"
+        },
+        {
+            "cliName": "destinationipoffense",
+            "type": "multiSelect"
+        },
+        {
+            "cliName": "fireeyenxeventattackerip",
+            "type": "shortText"
+        }
+    ]
 }
