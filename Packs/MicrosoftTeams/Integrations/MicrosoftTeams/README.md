@@ -28,6 +28,10 @@ The web server for the integration runs within a long-running Docker container. 
     ```
  - Microsoft does not support self-signed certificates and requires a chain-trusted certificate issued by a trusted CA.
  
+### Using National Cloud
+This integration allows the user to select the national cloud that should be used for the integration. Please refer to the [Microsoft Documentation](https://docs.microsoft.com/en-us/graph/deployments) for more information about national clouds.
+By default, the integration uses the worldwide endpoint. In order to use a different endpoint, under ***Instance Configuration***, select from the `National Cloud` dropdown the required endpoint. 
+ 
 ## Setup Examples
 
 ### 1. Using Cortex XSOAR rerouting
