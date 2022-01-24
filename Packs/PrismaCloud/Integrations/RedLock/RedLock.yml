@@ -423,14 +423,14 @@ script:
       type: string
   - arguments:
     - default: false
-      description: comma separated list of string IDs to be dismissed
+      description: Comma-separated list of string IDs to be dismissed.
       isArray: false
       name: alert-id
       required: false
       secret: false
     - default: false
       description: The amount of time to snooze. Both snooze value and unit must be
-        specified
+        specified.
       isArray: false
       name: snooze-value
       required: false
@@ -451,7 +451,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Reason for dismissal
+      description: Reason for dismissal.
       isArray: false
       name: dismissal-note
       required: true
@@ -633,7 +633,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: comma separated string of policy IDs
+      description: Comma-separated string of policy IDs.
       isArray: false
       name: policy-id
       required: false
@@ -982,13 +982,13 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Start time for the search, in the following string format -  MM/DD/YYYY
+      description: Start time for the search, in the following format -  MM/DD/YYYY.
       isArray: false
       name: time-range-date-from
       required: false
       secret: false
     - default: false
-      description: End time for the search, in the following format -  MM/DD/YYYY
+      description: End time for the search, in the following format -  MM/DD/YYYY.
       isArray: false
       name: time-range-date-to
       required: false
@@ -1036,17 +1036,17 @@ script:
     name: redlock-search-event
     outputs:
     - contextPath: Redlock.Event
-      description: Cloud Audit Events
+      description: Cloud audit events.
       type: Unknown
   - arguments:
     - default: false
-      description: Start time for the search, in the following string format -  MM/DD/YYYY
+      description: Start time for the search, in the following format -  MM/DD/YYYY.
       isArray: false
       name: time-range-date-from
       required: false
       secret: false
     - default: false
-      description: End time for the search, in the following format -  MM/DD/YYYY
+      description: End time for the search, in the following format -  MM/DD/YYYY.
       isArray: false
       name: time-range-date-to
       required: false
@@ -1101,16 +1101,16 @@ script:
     name: redlock-search-network
     outputs:
     - contextPath: Redlock.Network.Node
-      description: Cloud Network Node
+      description: Cloud network node.
       type: Unknown
     - contextPath: Redlock.Network.Connection
-      description: Cloud Network Connection
+      description: Cloud network connection.
       type: Unknown
   - arguments:
     - auto: PREDEFINED
       default: false
       defaultValue: scanId
-      description: Aggregate scan results by group
+      description: Group by which to aggregate scan results.
       isArray: false
       name: group_by
       predefined:
@@ -1122,21 +1122,21 @@ script:
       secret: false
     - default: false
       defaultValue: '25'
-      description: Pagination size
+      description: Pagination size.
       isArray: false
       name: page_size
       required: false
       secret: false
     - default: false
       defaultValue: '1'
-      description: Pagination number
+      description: Pagination number.
       isArray: false
       name: page_number
       required: false
       secret: false
     - default: false
       description: Sorting parameters. The sort order is ascending unless the field
-        is prefixed with minus (-), in which case it is descending
+        is prefixed with minus (-), in which case it is descending.
       isArray: false
       name: sort
       required: false
@@ -1144,7 +1144,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: relative
-      description: Time filter type
+      description: Time filter type.
       isArray: false
       name: filter_type
       predefined:
@@ -1155,7 +1155,7 @@ script:
       secret: false
     - default: false
       defaultValue: '1'
-      description: Number of time units
+      description: Number of time units.
       isArray: false
       name: filter_time_amount
       required: false
@@ -1163,7 +1163,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: day
-      description: To Now Time unit
+      description: The time unit for retrieving the list of IaC scans.
       isArray: false
       name: to_now_time_unit
       predefined:
@@ -1173,26 +1173,26 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Start time , for example: 11/01/2021 10:10:10'
+      description: 'Start time, for example: 11/01/2021 10:10:10'.
       isArray: false
       name: filter_start_time
       required: false
       secret: false
     - default: false
       description: End time in Unix time (the number of seconds that have elapsed
-        since the Unix epoch) for the absolute time type
+        since the Unix epoch) for the absolute time type.
       isArray: false
       name: filter_end_time
       required: false
       secret: false
     - default: false
-      description: Asset type to search with
+      description: Asset type to search with.
       isArray: false
       name: filter_asset_type
       required: false
       secret: false
     - default: false
-      description: Asset name to search with
+      description: Asset name to search with.
       isArray: false
       name: filter_asset_name
       required: false
@@ -1319,7 +1319,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The scan ID. Scan Id can be retrieved by the redlock-list-scans
+      description: The scan ID. The scan ID can be retrieved by the redlock-list-scans
         command.
       isArray: false
       name: scan_id
