@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "etag": "BwXRhXVWM5o=",
+  "bindings": [
+    {
+      "role": "roles/resourcemanager.folderAdmin",
+      "members": [
+        "user:user-1@xsoar.com"
+      ]
+    },
+    {
+      "role": "roles/resourcemanager.folderEditor",
+      "members": [
+        "user:user-1@xsoar.com"
+      ]
+    }
+  ]
+}

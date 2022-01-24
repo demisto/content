@@ -15,8 +15,8 @@ script:
   commands:
   - arguments:
     - default: false
-      description: The project name to retrieve. For example, projects/415104041262.
-      isArray: false
+      description: Comma-separated list of project names to retrieve. For example, projects/415104041262.
+      isArray: true
       name: project_name
       required: false
       secret: false
@@ -221,10 +221,10 @@ script:
     execution: true
     name: gcp-iam-project-iam-policy-set
     outputs:
-    - contextPath: GCP.IAM.bindings.members
+    - contextPath: GCP.IAM.Policy.bindings.members
       description: The members that associates to the role.
       type: String
-    - contextPath: GCP.IAM.bindings.role
+    - contextPath: GCP.IAM.Policy.bindings.role
       description: The role that is assigned to the list of members.
       type: String
     - contextPath: GCP.IAM.Policy.name
@@ -259,8 +259,26 @@ script:
     name: gcp-iam-project-iam-policy-create
   - arguments:
     - default: false
-      description: The name of the folder to retrieve.  For example, folders/12342.
+      description: The name of the project for which the policy is being specified.  For
+        example, projects/415104041262.
       isArray: false
+      name: project_name
+      required: true
+      secret: false
+    - default: false
+      description: Comma-separated list of policy role names to remove.
+      isArray: true
+      name: role
+      required: true
+      secret: false
+    deprecated: false
+    description: Remove policy from project IAM policies.
+    execution: false
+    name: gcp-iam-project-iam-policy-remove
+  - arguments:
+    - default: false
+      description: Comma-separated list of folder names to retrieve.  For example, folders/12342.
+      isArray: true
       name: folder_name
       required: false
       secret: false
@@ -451,7 +469,7 @@ script:
             ]
           }
         ]
-      isArray: false
+      isArray: true
       name: policy
       required: true
       secret: false
@@ -499,6 +517,24 @@ script:
     name: gcp-iam-folder-iam-policy-create
   - arguments:
     - default: false
+      description: The name of the folder for which the policy is being specified.  For
+        example, folders/12342.
+      isArray: false
+      name: folder_name
+      required: true
+      secret: false
+    - default: false
+      description: Comma-separated list of policy role names to remove.
+      isArray: true
+      name: role
+      required: true
+      secret: false
+    deprecated: false
+    description: Remove policy from folder IAM policies.
+    execution: false
+    name: gcp-iam-folder-iam-policy-remove
+  - arguments:
+    - default: false
       defaultValue: '50'
       description: The number of results to retrieve. Minimum value is 1.
       isArray: false
@@ -513,8 +549,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The name of the organization to retrieve. For example, organizations/3456.
-      isArray: false
+      description: Comma-separated list of organization names to retrieve. For example, organizations/3456.
+      isArray: true
       name: organization_name
       required: false
       secret: false
@@ -534,7 +570,7 @@ script:
       description: Organizatio display name.
       type: String
     - contextPath: GCP.IAM.Organization.name
-      description: The unique resource name of the Organizatio.
+      description: The unique resource name of the Organization.
       type: String
     - contextPath: GCP.IAM.Organization.state
       description: The organizatio lifecycle state.
@@ -600,7 +636,7 @@ script:
     execution: false
     name: gcp-iam-organization-iam-permission-test
     outputs:
-    - contextPath: GCP.IAM.permission
+    - contextPath: GCP.IAM.Permission
       description: The caller allowed permissions.
       type: String
   - arguments:
@@ -718,6 +754,24 @@ script:
     description: Add new organization IAM policy.
     execution: false
     name: gcp-iam-organization-iam-policy-create
+  - arguments:
+    - default: false
+      description: The name of the organization for which the policy is being specified.
+        For example, organizations/3456.
+      isArray: false
+      name: organization_name
+      required: true
+      secret: false
+    - default: false
+      description: Comma-separated list of policy role names to remove.
+      isArray: true
+      name: role
+      required: true
+      secret: false
+    deprecated: false
+    description: Remove policy from organization IAM policies.
+    execution: false
+    name: gcp-iam-organization-iam-policy-remove
   - arguments:
     - default: false
       description: The parent resource of the groups to create. Must be of the form
@@ -1511,13 +1565,24 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'False'
-      description: Indicate that roles that have been deleted should also
-        be retrieved.
+      description: Indicate that roles that have been deleted should also be retrieved.
       isArray: false
       name: show_deleted
       predefined:
       - 'False'
       - 'True'
+      required: false
+      secret: false
+    - default: false
+      description: Used to filter the retrieved roles by the rule title. The command will retrieve the rules which includes the provided argument in their title.
+      isArray: false
+      name: title_filter
+      required: false
+      secret: false
+    - default: false
+      description: Comma-separated list of role permissions. Used to filter the retrieved roles by their permissions. The command will retrieve the rules which includes all the provided permissions in their permissions list. If the argument is provided, the command will include the role permissions in the output.
+      isArray: true
+      name: permission_filter
       required: false
       secret: false
     deprecated: false
@@ -1741,13 +1806,24 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'False'
-      description: Indicate that roles that have been deleted should also
-        be retrieved.
+      description: Indicate that roles that have been deleted should also be retrieved.
       isArray: false
       name: show_deleted
       predefined:
       - 'False'
       - 'True'
+      required: false
+      secret: false
+    - default: false
+      description: Used to filter the retrieved roles by the rule title. The command will retrieve the rules which includes the provided argument in their title.
+      isArray: false
+      name: title_filter
+      required: false
+      secret: false
+    - default: false
+      description: Comma-separated list of role permissions. Used to filter the retrieved roles by their permissions. The command will retrieve the rules which includes all the provided permissions in their permissions list. If the argument is provided, the command will include the role permissions in the output.
+      isArray: true
+      name: permission_filter
       required: false
       secret: false
     deprecated: false
@@ -1772,6 +1848,7 @@ script:
     name: gcp-iam-project-role-get
     outputs:
     - contextPath: GCP.IAM.Role.name
+      description: The name of the role.
       type: String
   - arguments:
     - default: false
@@ -1873,8 +1950,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Lists every predefined Role that IAM supports, or retrieve GCP IAM
-      predefined role information.
+    description: Retrieve GCP IAM predefined role information.
     execution: false
     name: gcp-iam-role-get
     outputs:
@@ -1911,8 +1987,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'False'
-      description: Indicate that roles that have been deleted should also
-        be retrieved.
+      description: Indicate that roles that have been deleted should also be retrieved.
       isArray: false
       name: show_deleted
       predefined:
@@ -1920,8 +1995,20 @@ script:
       - 'True'
       required: false
       secret: false
+    - default: false
+      description: Used to filter the retrieved roles by the rule title. The command will retrieve the rules which includes the provided argument in their title.
+      isArray: false
+      name: title_filter
+      required: false
+      secret: false
+    - default: false
+      description: Comma-separated list of role permissions. Used to filter the retrieved roles by their permissions. The command will retrieve the rules which includes all the provided permissions in their permissions list. If the argument is provided, the command will include the role permissions in the output.
+      isArray: true
+      name: permission_filter
+      required: false
+      secret: false
     deprecated: false
-    description: List GCP IAM predefined roles.
+    description: Lists every predefined Role that IAM supports.
     execution: false
     name: gcp-iam-role-list
     outputs:

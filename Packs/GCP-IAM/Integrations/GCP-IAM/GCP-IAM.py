@@ -1,16 +1,13 @@
 # type: ignore
-import copy
-from typing import Callable
-
-from googleapiclient import discovery
-# from google.oauth2 import service_account
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-# from googleapiclient import discovery
+import copy
+from typing import Callable
+from googleapiclient import discovery
 from oauth2client import service_account
 
 
-class Client(BaseClient):
+class Client:
     def __init__(self, client_secret: str):
         client_secret = json.loads(client_secret)
         scopes = ['https://www.googleapis.com/auth/cloud-platform', 'https://www.googleapis.com/auth/cloud-identity',
@@ -119,115 +116,191 @@ class Client(BaseClient):
 
         return response
 
-    def gcp_iam_folder_list_request(self, limit, page):
-        # TODO
+    def gcp_iam_folder_list_request(self, parent: str, limit: int = None, page_token=None,
+                                    show_deleted: bool = False) -> dict:
+        """
+        List folders under the specified parent.
+        Args:
+            parent (str): The name of the parent resource to list folders under.
+            limit (int): The number of results to retrieve.
+            page_token (str): Pagination token returned from a previous request.
+            show_deleted (bool): Indicate that folders in the DELETE_REQUESTED state should also be retrieved.
 
-        response = self._http_request('GET')
+        Returns:
+            dict: API response from GCP.
 
-        return response
+        """
+        params = assign_params(parent=parent, pageSize=limit, pageToken=page_token, showDeleted=show_deleted)
 
-    def gcp_iam_folder_get_request(self, folder_name):
-        # TODO
-
-        response = self._http_request('GET')
-
-        return response
-
-    def gcp_iam_folder_iam_policy_get_request(self, folder_name):
-        # TODO
-
-        response = self._http_request('GET')
-
-        return response
-
-    def gcp_iam_folder_iam_test_permission_request(self, folder_name, permissions):
-        # TODO
-
-        response = self._http_request('GET')
+        request = self.cloud_resource_manager_service.folders().list(**params)
+        response = request.execute()
 
         return response
 
-    def gcp_iam_folder_iam_member_add_request(self, folder_name, role, members):
-        # TODO
+    def gcp_iam_folder_get_request(self, folder_name: str) -> dict:
+        """
+        Retrieve folder information.
+        Args:
+            folder_name (str): The name of the folder to retrieve.
 
-        response = self._http_request('GET')
+        Returns:
+            dict: API response from GCP.
 
-        return response
-
-    def gcp_iam_folder_iam_member_remove_request(self, folder_name, role, members):
-        # TODO
-
-        response = self._http_request('GET')
-
-        return response
-
-    def gcp_iam_folder_iam_policy_set_request(self, folder_name, policy):
-        # TODO
-
-        response = self._http_request('GET')
+        """
+        request = self.cloud_resource_manager_service.folders().get(name=folder_name)
+        response = request.execute()
 
         return response
 
-    def gcp_iam_folder_iam_policy_add_request(self, folder_name, role, members):
-        # TODO
+    def gcp_iam_folder_iam_policy_get_request(self, folder_name: str) -> dict:
+        """
+        Retrieve the IAM access control policy for the specified folder.
+        Args:
+            folder_name (str): The folder name for which the policy is being requested.
 
-        response = self._http_request('GET')
+        Returns:
+            dict: API response from GCP.
 
-        return response
+        """
 
-    def gcp_iam_organization_list_request(self, limit, page):
-        # TODO
+        params = assign_params(resource=folder_name)
 
-        response = self._http_request('GET')
-
-        return response
-
-    def gcp_iam_organization_get_request(self, organization_name):
-        # TODO
-
-        response = self._http_request('GET')
+        request = self.cloud_resource_manager_service.folders().getIamPolicy(**params)
+        response = request.execute()
 
         return response
 
-    def gcp_iam_organization_iam_policy_get_request(self, organization_name):
-        # TODO
+    def gcp_iam_folder_iam_test_permission_request(self, folder_name: str, permissions: list) -> dict:
+        """
+        Returns permissions that a caller has on the specified folder.
+        Args:
+            folder_name (str): The folder name for which the permissions is being tested.
+            permissions (list): Permissions names to validate.
 
-        response = self._http_request('GET')
+        Returns:
+            dict: API response from GCP.
 
-        return response
+        """
+        body = {
+            "permissions": permissions
+        }
 
-    def gcp_iam_organization_iam_test_permission_request(self, organization_name, permissions):
-        # TODO
-
-        response = self._http_request('GET')
-
-        return response
-
-    def gcp_iam_organization_iam_member_add_request(self, organization_name, role, members):
-        # TODO
-
-        response = self._http_request('GET')
-
-        return response
-
-    def gcp_iam_organization_iam_member_remove_request(self, organization_name, role, members):
-        # TODO
-
-        response = self._http_request('GET')
+        request = self.cloud_resource_manager_service.folders().testIamPermissions(resource=folder_name, body=body)
+        response = request.execute()
 
         return response
 
-    def gcp_iam_organization_iam_policy_set_request(self, organization_name, policy):
-        # TODO
+    def gcp_iam_folder_iam_policy_set_request(self, folder_name: str, policy: list) -> dict:
+        """
+        Sets the IAM access control policy for the specified folder.
+        Args:
+            folder_name (str): The name of the folder for which the policy is being specified.
+            policy (list): Policy objects to set.
 
-        response = self._http_request('GET')
+        Returns:
+            dict: API response from GCP.
+
+        """
+        body = {
+            "policy": {
+                "bindings": policy
+            }
+        }
+
+        request = self.cloud_resource_manager_service.folders().setIamPolicy(resource=folder_name, body=body)
+        response = request.execute()
 
         return response
 
-    def gcp_iam_organization_iam_policy_add_request(self, organization_name, role, members):
-        # TODO
+    def gcp_iam_organization_list_request(self, limit: int = None, page_token=None) -> dict:
+        """
+        List organization resources that are visible to the caller.
+        Args:
+            limit (int): The number of results to retrieve.
+            page_token (str): Pagination token returned from a previous request.
 
-        response = self._http_request('GET')
+        Returns:
+            dict: API response from GCP.
+
+        """
+        params = assign_params(pageSize=limit, pageToken=page_token)
+
+        request = self.cloud_resource_manager_service.organizations().search(**params)
+        response = request.execute()
+
+        return response
+
+    def gcp_iam_organization_get_request(self, organization_name: str) -> dict:
+        """
+        Retrieve organization information.
+        Args:
+            organization_name (str): The name of the organization to retrieve.
+
+        Returns:
+            dict: API response from GCP.
+
+        """
+        request = self.cloud_resource_manager_service.organizations().get(name=organization_name)
+        response = request.execute()
+
+        return response
+
+    def gcp_iam_organization_iam_policy_get_request(self, organization_name: str) -> dict:
+        """
+        Retrieve the IAM access control policy for the specified organization.
+        Args:
+            organization_name (str): The organization name for which the policy is being requested.
+
+        Returns:
+            dict: API response from GCP.
+
+        """
+        request = self.cloud_resource_manager_service.organizations().getIamPolicy(resource=organization_name)
+        response = request.execute()
+
+        return response
+
+    def gcp_iam_organization_iam_test_permission_request(self, organization_name: str, permissions: list) -> dict:
+        """
+        Returns permissions that a caller has on the specified organization.
+        Args:
+            organization_name (str): The organization name for which the permissions is being tested.
+            permissions (list): Permissions names to validate.
+
+        Returns:
+            dict: API response from GCP.
+
+        """
+        body = {
+            "permissions": permissions
+        }
+
+        request = self.cloud_resource_manager_service.organizations().testIamPermissions(resource=organization_name,
+                                                                                         body=body)
+        response = request.execute()
+
+        return response
+
+    def gcp_iam_organization_iam_policy_set_request(self, organization_name: str, policy: list) -> dict:
+        """
+        Sets the IAM access control policy for the specified organization.
+        Args:
+            organization_name (str): The name of the organization for which the policy is being specified.
+            policy (list): Policy objects to set.
+
+        Returns:
+            dict: API response from GCP.
+
+        """
+        body = {
+            "policy": {
+                "bindings": policy
+            }
+        }
+
+        request = self.cloud_resource_manager_service.organizations().setIamPolicy(resource=organization_name,
+                                                                                   body=body)
+        response = request.execute()
 
         return response
 
@@ -264,12 +337,12 @@ class Client(BaseClient):
 
         return response
 
-    def gcp_iam_group_list_request(self, parent: str, limit: int, page_token: str = None) -> dict:
+    def gcp_iam_group_list_request(self, parent: str, limit: int = None, page_token: str = None) -> dict:
         """
         List groups under the specified parent.
         Args:
-            parent (): The parent resource of the groups to retrieve
-            limit (): The number of results to retrieve.
+            parent (str): The parent resource of the groups to retrieve
+            limit (int): The number of results to retrieve.
             page_token (str): Pagination token returned from a previous request.
 
         Returns:
@@ -313,45 +386,122 @@ class Client(BaseClient):
 
         return response
 
-    def gcp_iam_group_membership_create_request(self, name, member_email, role):
-        # TODO
+    def gcp_iam_group_membership_create_request(self, group_name, member_email, roles: list) -> dict:
+        """
+        Create a group membership
+        Args:
+            group_name (str): The name of the group which will contain the membership.
+            member_email (str): The email address of the user to add to the group.
+            roles (list): Roles to apply to the membership.
 
-        response = self._http_request('GET')
+         Returns:
+             dict: API response from GCP.
 
-        return response
+        """
+        body_roles = [{"name": role} for role in roles]
+        body = {
+            "preferredMemberKey": {
+                "id": member_email
+            },
+            "roles": body_roles
+        }
 
-    def gcp_iam_group_membership_list_request(self, name, limit, page):
-        # TODO
-
-        response = self._http_request('GET')
-
-        return response
-
-    def gcp_iam_group_membership_get_request(self, name):
-        # TODO
-
-        response = self._http_request('GET')
-
-        return response
-
-    def gcp_iam_group_membership_role_add_request(self, membership_name, role):
-        # TODO
-
-        response = self._http_request('GET')
+        request = self.cloud_identity_service.groups().memberships().create(parent=group_name, body=body)
+        response = request.execute()
 
         return response
 
-    def gcp_iam_group_membership_role_remove_request(self, membership_name, role):
-        # TODO
+    def gcp_iam_group_membership_list_request(self, group_name, limit: int, page_token=None) -> dict:
+        """
+        List group memberships.
+        Args:
+            group_name (str): The name of the group which contains the membership.
+            limit (int): The number of results to retrieve.
+            page_token (str): Pagination token returned from a previous request.
 
-        response = self._http_request('GET')
+        Returns:
+            dict: API response from GCP.
+
+        """
+        params = assign_params(parent=group_name, pageSize=limit, pageToken=page_token)
+
+        request = self.cloud_identity_service.groups().memberships().list(**params)
+        response = request.execute()
 
         return response
 
-    def gcp_iam_group_membership_delete_request(self, membership_name):
-        # TODO
+    def gcp_iam_group_membership_get_request(self, membership_name: str):
+        """
+        Retrieve group membership information.
+        Args:
+            membership_name (str): The name of the group membership to retrieve.
 
-        response = self._http_request('GET')
+        Returns:
+            dict: API response from GCP.
+
+        """
+
+        request = self.cloud_identity_service.groups().memberships().get(name=membership_name)
+        response = request.execute()
+
+        return response
+
+    def gcp_iam_group_membership_role_add_request(self, membership_name: str, roles: list) -> dict:
+        """
+        Add group membership role.
+        Args:
+            membership_name (str): The name of the group membership to update.
+            roles (list): Membership roles to add to the membership.
+
+        Returns:
+            dict: API response from GCP.
+
+        """
+        body_roles = [{"name": role} for role in roles]
+        body = {
+            "addRoles": body_roles
+        }
+
+        request = self.cloud_identity_service.groups().memberships().modifyMembershipRoles(name=membership_name,
+                                                                                           body=body)
+        response = request.execute()
+
+        return response
+
+    def gcp_iam_group_membership_role_remove_request(self, membership_name: str, roles: list) -> dict:
+        """
+        Remove group membership role.
+        Args:
+            membership_name (str): The name of the group membership to update.
+            roles (list): Membership roles to remove from the membership.
+
+        Returns:
+            dict: API response from GCP.
+
+        """
+        body = {
+            "removeRoles": roles
+        }
+
+        request = self.cloud_identity_service.groups().memberships().modifyMembershipRoles(name=membership_name,
+                                                                                           body=body)
+        response = request.execute()
+
+        return response
+
+    def gcp_iam_group_membership_delete_request(self, membership_name: str) -> dict:
+        """
+        Delete group membership.
+        Args:
+            membership_name (str): The resource name of the membership to delete.
+
+        Returns:
+            dict: API response from GCP.
+
+        """
+
+        request = self.cloud_identity_service.groups().memberships().delete(name=membership_name)
+        response = request.execute()
 
         return response
 
@@ -585,115 +735,309 @@ class Client(BaseClient):
 
         return response
 
-    def gcp_iam_organization_role_create_request(self, organization_name, role_id, description, title, permission):
-        # TODO
+    def gcp_iam_organization_role_create_request(self, organization_name: str, role_id: str, stage: str = None,
+                                                 description: str = None, title: str = None,
+                                                 permissions: list = None) -> dict:
+        """
+        Create a custom organization role.
+        Args:
+            organization_name (str): The name of the organization which contains the custom role.
+            role_id (str): The unique ID of the role to create.
+            stage (str): The current launch stage of the role.
+            description (str): The description of the role to create.
+            title (str): The title of the role to create.
+            permissions (list): Permissions the role grants when bound in an IAM policy.
 
-        response = self._http_request('GET')
+        Returns:
+            dict: API response from GCP.
 
-        return response
+        """
+        body = remove_empty_elements({
+            "roleId": role_id,
+            "role": {
+                "title": title,
+                "description": description,
+                "includedPermissions": permissions,
+                "stage": stage
+            }
+        })
 
-    def gcp_iam_organization_role_update_request(self, role_name, description, title, permission):
-        # TODO
-
-        response = self._http_request('GET')
-
-        return response
-
-    def gcp_iam_organization_role_permission_add_request(self, role_name, permission):
-        # TODO
-
-        response = self._http_request('GET')
-
-        return response
-
-    def gcp_iam_organization_role_permission_remove_request(self, role_name, permission):
-        # TODO
-
-        response = self._http_request('GET')
-
-        return response
-
-    def gcp_iam_organization_role_list_request(self, organization_name, included_permissions, limit, page):
-        # TODO
-
-        response = self._http_request('GET')
+        request = self.iam_service.organizations().roles().create(parent=organization_name, body=body)
+        response = request.execute()
 
         return response
 
-    def gcp_iam_organization_role_get_request(self, role_name):
-        # TODO
+    def gcp_iam_organization_role_update_request(self, role_name: str, description: str = None,
+                                                 title: str = None, permissions: list = None,
+                                                 stage: str = None, fields_to_update: str = None) -> dict:
+        """
+        Update a custom organization role.
+        Args:
+            role_name (str): The name of the role to update.
+            description (str): The updated description of the role.
+            title (str): The updated title of the role.
+            permissions (list): Permissions the role grants when bound in an IAM policy.
+            stage (str): The current launch stage of the role.
+            fields_to_update (str): Comma-separated names of the fields to update.
 
-        response = self._http_request('GET')
+        Returns:
+            dict: API response from GCP.
 
-        return response
+        """
+        body = remove_empty_elements({
+            "title": title,
+            "description": description,
+            "includedPermissions": permissions,
+            "stage": stage
+        })
 
-    def gcp_iam_organization_role_delete_request(self, role_name):
-        # TODO
-
-        response = self._http_request('GET')
-
-        return response
-
-    def gcp_iam_project_role_create_request(self, project_name, role_id, description, title, permission):
-        # TODO
-
-        response = self._http_request('GET')
-
-        return response
-
-    def gcp_iam_project_role_update_request(self, role_name, description, title, permission):
-        # TODO
-
-        response = self._http_request('GET')
-
-        return response
-
-    def gcp_iam_project_role_permission_add_request(self, role_name, permission):
-        # TODO
-
-        response = self._http_request('GET')
+        request = self.iam_service.organizations().roles().patch(name=role_name, body=body, updateMask=fields_to_update)
+        response = request.execute()
 
         return response
 
-    def gcp_iam_project_role_permission_remove_request(self, role_name, permission):
-        # TODO
+    def gcp_iam_organization_role_list_request(self, parent: str, include_permissions: bool,
+                                               limit: int, page_token: str = None, show_deleted: bool = False) -> dict:
+        """
+        List organization custom roles.
+        Args:
+            parent (str): The name of the organization which contains the custom roles.
+            include_permissions (bool): Indicates whether to include permissions in the response.
+            limit (int): The number of results to retrieve.
+            page_token (str): Pagination token returned from a previous request.
+            show_deleted (bool): Indicate that roles that have been deleted should also be retrieved.
 
-        response = self._http_request('GET')
+        Returns:
+            dict: API response from GCP.
 
-        return response
+        """
+        params = assign_params(parent=parent, pageSize=limit, pageToken=page_token, showDeleted=show_deleted,
+                               view="FULL" if include_permissions else "BASIC")
 
-    def gcp_iam_project_role_list_request(self, project_name, included_permissions, limit, page):
-        # TODO
-
-        response = self._http_request('GET')
-
-        return response
-
-    def gcp_iam_project_role_get_request(self, role_name):
-        # TODO
-
-        response = self._http_request('GET')
-
-        return response
-
-    def gcp_iam_project_role_delete_request(self, role_name):
-        # TODO
-
-        response = self._http_request('GET')
+        request = self.iam_service.organizations().roles().list(**params)
+        response = request.execute()
 
         return response
 
-    def gcp_iam_testable_permission_list_request(self, resource_name, limit, page):
-        # TODO
+    def gcp_iam_predefined_role_list_request(self, include_permissions: bool,
+                                             limit: int, page_token: str = None, show_deleted: bool = False) -> dict:
+        """
+        List GCP IAM predefined roles.
+        Args:
+            include_permissions (bool): Indicates whether to include permissions in the response.
+            limit (int): The number of results to retrieve.
+            page_token (str): Pagination token returned from a previous request.
+            show_deleted (bool): Indicate that roles that have been deleted should also be retrieved.
 
-        response = self._http_request('GET')
+        Returns:
+            dict: API response from GCP.
+
+        """
+        params = assign_params(pageSize=limit, pageToken=page_token, showDeleted=show_deleted,
+                               view="FULL" if include_permissions else "BASIC")
+
+        request = self.iam_service.roles().list(**params)
+        response = request.execute()
 
         return response
 
-    def gcp_iam_service_account_delete_request(self, service_account_name):
-        # TODO
+    def gcp_iam_organization_role_get_request(self, role_name: str) -> dict:
+        """
+        Retrieve organization role information.
+        Args:
+            role_name (str): The resource name of the role to retrieve.
 
-        response = self._http_request('GET')
+        Returns:
+            dict: API response from GCP.
+
+        """
+        request = self.iam_service.organizations().roles().get(name=role_name)
+        response = request.execute()
+
+        return response
+
+    def gcp_iam_organization_role_delete_request(self, role_name: str) -> dict:
+        """
+        Delete a custom organization role.
+        Args:
+            (str): The name of the role to delete.
+
+        Returns:
+            dict: API response from GCP.
+
+        """
+        request = self.iam_service.organizations().roles().delete(name=role_name)
+        response = request.execute()
+
+        return response
+
+    def gcp_iam_project_role_create_request(self, project_id: str, role_id: str, stage: str = None,
+                                            description: str = None, title: str = None,
+                                            permissions: list = None) -> dict:
+        """
+        Create a custom project role.
+        Args:
+            project_id (str): The ID of the project which contains the custom role.
+            role_id (str): The unique ID of the role to create.
+            stage (str): The current launch stage of the role.
+            description (str): The description of the role to create.
+            title (str): The title of the role to create.
+            permissions (list): Permissions the role grants when bound in an IAM policy.
+
+        Returns:
+            dict: API response from GCP.
+
+        """
+        body = remove_empty_elements({
+            "roleId": role_id,
+            "role": {
+                "title": title,
+                "description": description,
+                "includedPermissions": permissions,
+                "stage": stage
+            }
+        })
+
+        request = self.iam_service.projects().roles().create(parent=f'projects/{project_id}', body=body)
+        response = request.execute()
+
+        return response
+
+    def gcp_iam_project_role_update_request(self, role_name: str, description: str = None,
+                                            title: str = None, permissions: list = None,
+                                            stage: str = None, fields_to_update: str = None) -> dict:
+        """
+        Update a custom project role.
+        Args:
+            role_name (str): The name of the role to update.
+            description (str): The updated description of the role.
+            title (str): The updated title of the role.
+            permissions (list): Permissions the role grants when bound in an IAM policy.
+            stage (str): The current launch stage of the role.
+            fields_to_update (str): Comma-separated names of the fields to update.
+
+        Returns:
+            dict: API response from GCP.
+
+        """
+        body = remove_empty_elements({
+            "title": title,
+            "description": description,
+            "includedPermissions": permissions,
+            "stage": stage
+        })
+
+        request = self.iam_service.projects().roles().patch(name=role_name, body=body, updateMask=fields_to_update)
+        response = request.execute()
+
+        return response
+
+    def gcp_iam_project_role_list_request(self, parent: str, include_permissions: bool,
+                                          limit: int, page_token: str = None, show_deleted: bool = False) -> dict:
+        """
+        List project custom roles.
+        Args:
+            parent (str): The ID of the project which contains the custom roles.
+            include_permissions (bool): Indicates whether to include permissions in the response.
+            limit (int): The number of results to retrieve.
+            page_token (str): Pagination token returned from a previous request.
+            show_deleted (bool): Indicate that roles that have been deleted should also be retrieved.
+
+        Returns:
+            dict: API response from GCP.
+
+        """
+        params = assign_params(parent=f'projects/{parent}', pageSize=limit, pageToken=page_token,
+                               showDeleted=show_deleted,
+                               view="FULL" if include_permissions else "BASIC")
+
+        request = self.iam_service.projects().roles().list(**params)
+        response = request.execute()
+
+        return response
+
+    def gcp_iam_project_role_get_request(self, role_name: str) -> dict:
+        """
+        Retrieve project role information.
+        Args:
+            role_name (str): The resource name of the role to retrieve.
+
+        Returns:
+            dict: API response from GCP.
+
+        """
+        request = self.iam_service.projects().roles().get(name=role_name)
+        response = request.execute()
+
+        return response
+
+    def gcp_iam_predefined_role_get_request(self, role_name: str) -> dict:
+        """
+        Retrieve GCP IAM predefined role information.
+        Args:
+            role_name (str): The resource name of the role to retrieve.
+
+        Returns:
+            dict: API response from GCP.
+
+        """
+        request = self.iam_service.roles().get(name=role_name)
+        response = request.execute()
+
+        return response
+
+    def gcp_iam_project_role_delete_request(self, role_name: str) -> dict:
+        """
+        Delete a custom project role.
+        Args:
+            (str): The name of the role to delete.
+
+        Returns:
+            dict: API response from GCP.
+
+        """
+        request = self.iam_service.projects().roles().delete(name=role_name)
+        response = request.execute()
+
+        return response
+
+    def gcp_iam_testable_permission_list_request(self, full_resource_name: str, limit: int = None,
+                                                 page_token: str = None) -> dict:
+        """
+        Lists permissions that can be tested on a resource.
+        Args:
+            full_resource_name (str): The full resource name to query from the list of testable permissions.
+            limit (int): The number of results to retrieve.
+            page_token (str): Pagination token returned from a previous request.
+
+        Returns:
+            dict: API response from GCP.
+
+        """
+        body = assign_params(fullResourceName=full_resource_name, pageSize=limit, pageToken=page_token)
+
+        request = self.iam_service.permissions().queryTestablePermissions(body=body)
+        response = request.execute()
+
+        return response
+
+    def gcp_iam_grantable_role_list_request(self, full_resource_name: str, limit: int = None,
+                                            page_token: str = None) -> dict:
+        """
+        Lists roles that can be granted on a Google Cloud resource.
+        Args:
+            full_resource_name (str): The full resource name to query from the list of grantable roles.
+            limit (int): The number of results to retrieve.
+            page_token (str): Pagination token returned from a previous request.
+
+        Returns:
+            dict: API response from GCP.
+
+        """
+        body = assign_params(fullResourceName=full_resource_name, pageSize=limit, pageToken=page_token)
+
+        request = self.iam_service.roles().queryGrantableRoles(body=body)
+        response = request.execute()
 
         return response
 
@@ -710,7 +1054,7 @@ def get_pagination_readable_message(header: str, limit: int, page: int) -> str:
         str: Readable message.
 
     """
-    readable_message = f'{header}\n Current page size: {limit}\n Showing page {page} out others that may exist.'
+    readable_message = f'{header}\n Current page size: {limit}\n Showing page {page} out of others that may exist.'
 
     return readable_message
 
@@ -805,6 +1149,75 @@ def generate_iam_policy_command_output(response: dict, resource_name: str = None
     command_results = CommandResults(
         readable_output=readable_output,
         outputs_prefix='GCP.IAM.Policy',
+        outputs_key_field='name',
+        outputs=outputs,
+        raw_response=response
+    )
+
+    return command_results
+
+
+def generate_group_membership_readable_output(outputs: list, readable_header: str) -> tableToMarkdown:
+    """
+    Generate command readable output for group membership commands.
+    Args:
+        outputs (dict): API response from GCP.
+        readable_header (str): Readable message header for XSOAR war room.
+
+    Returns:
+        tableToMarkdown: XSOAR war room output.
+
+    """
+    readable_information = []
+    for membership in outputs:
+        readable_information.append({
+            "name": membership.get('name'),
+            "roles": [role.get('name') for role in membership.get('roles')],
+            "preferredMemberKey": dict_safe_get(membership, ['preferredMemberKey', 'id'])
+        })
+
+    headers = ['name', 'roles']
+
+    if len(readable_information) > 0 and readable_information[0].get("preferredMemberKey"):
+        headers.append("preferredMemberKey")
+
+    readable_output = tableToMarkdown(readable_header,
+                                      readable_information,
+                                      headers=headers,
+                                      headerTransform=pascalToSpace
+                                      )
+
+    return readable_output
+
+
+def generate_group_membership_command_output(response: dict, output_key: str = None,
+                                             readable_header: str = 'Membership information:') -> CommandResults:
+    """
+    Generate command output for group membership commands.
+    Args:
+        response (dict): API response from GCP.
+        output_key (str): Used to access to required data in the response.
+        readable_header (str): Readable message header for XSOAR war room.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+
+    """
+    if output_key:
+        outputs = copy.deepcopy(response.get(output_key, []))
+    else:
+        outputs = copy.deepcopy(response)
+
+    if not isinstance(outputs, list):
+        outputs = [outputs]
+
+    outputs = update_time_format(outputs, ['createTime', 'updateTime'])
+
+    readable_output = generate_group_membership_readable_output(outputs, readable_header)
+
+    command_results = CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='GCP.IAM.Membership',
         outputs_key_field='name',
         outputs=outputs,
         raw_response=response
@@ -913,7 +1326,48 @@ def generate_service_account_command_output(response: dict, output_key: str = No
     return command_results
 
 
-def gcp_iam_projects_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def generate_project_command_output(response: dict, output_key: str = None,
+                                    readable_header: str = 'Project information:') -> CommandResults:
+    """
+    Generate command output for project commands.
+    Args:
+        response (dict): API response from GCP.
+        output_key (str): Used to access to required data in the response.
+        readable_header (str): Readable message header for XSOAR war room.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+
+    """
+    if output_key:
+        outputs = copy.deepcopy(response.get(output_key, []))
+    else:
+        outputs = copy.deepcopy(response)
+
+    if not isinstance(outputs, list):
+        outputs = [outputs]
+
+    outputs = update_time_format(outputs, ['createTime', 'updateTime', 'deleteTime'])
+
+    readable_output = tableToMarkdown(
+        readable_header,
+        outputs,
+        headers=['name', 'parent', 'projectId', 'displayName', 'createTime', 'updateTime'],
+        headerTransform=pascalToSpace
+    )
+
+    command_results = CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='GCP.IAM.Project',
+        outputs_key_field='name',
+        outputs=outputs,
+        raw_response=response
+    )
+
+    return command_results
+
+
+def gcp_iam_projects_get_command(client: Client, args: Dict[str, Any]) -> list:
     """
     List projects under the specified parent, or retrieve specific project information.
     Args:
@@ -921,16 +1375,30 @@ def gcp_iam_projects_get_command(client: Client, args: Dict[str, Any]) -> Comman
         args (dict): Command arguments from XSOAR.
 
     Returns:
-        CommandResults: outputs, readable outputs and raw response for XSOAR.
+        list[CommandResults]: outputs, readable outputs and raw response for XSOAR.
 
     """
 
-    project_name = args.get('project_name')
+    project_name = argToList(args.get('project_name'))
+
+    command_results_list: List[CommandResults] = []
 
     if project_name:  # Retrieve specific project information.
-        readable_message = f'Project {project_name} information:'
-        response = client.gcp_iam_project_get_request(project_name)
-        outputs = copy.deepcopy(response)
+
+        for project in project_name:
+            readable_message = f'Project {project} information:'
+            try:
+                response = client.gcp_iam_project_get_request(project)
+
+                command_results = generate_project_command_output(response=response, readable_header=readable_message)
+
+                command_results_list.append(command_results)
+
+            except Exception as exception:
+                error = CommandResults(
+                    readable_output=f'An error occurred while retrieving {project}.\n {exception}'
+                )
+                command_results_list.append(error)
 
     else:  # List project resources.
         parent = args.get('parent')
@@ -957,26 +1425,12 @@ def gcp_iam_projects_get_command(client: Client, args: Dict[str, Any]) -> Comman
         else:
             response = client.gcp_iam_project_list_request(parent=parent, limit=limit, show_deleted=show_deleted)
 
-        outputs = copy.deepcopy(response.get('projects', []))
+        command_results = generate_project_command_output(response=response, output_key='projects',
+                                                          readable_header=readable_message)
 
-    outputs = update_time_format(outputs, ['createTime', 'updateTime', 'deleteTime'])
+        command_results_list.append(command_results)
 
-    readable_output = tableToMarkdown(
-        readable_message,
-        outputs,
-        headers=['name', 'parent', 'projectId', 'displayName', 'createTime', 'updateTime'],
-        headerTransform=pascalToSpace
-    )
-
-    command_results = CommandResults(
-        readable_output=readable_output,
-        outputs_prefix='GCP.IAM.Project',
-        outputs_key_field='name',
-        outputs=outputs,
-        raw_response=response
-    )
-
-    return command_results
+    return command_results_list
 
 
 def gcp_iam_project_iam_policy_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -1120,10 +1574,11 @@ def gcp_iam_project_iam_policy_set_command(client: Client, args: Dict[str, Any])
     """
     project_name = args.get('project_name')
     policy = args.get('policy')
-    if policy and not policy.startswith('['):
-        policy = '[' + policy + ']'
+    if isinstance(policy, str):
+        if policy and not policy.startswith('['):
+            policy = '[' + policy + ']'
 
-    policy = json.loads(policy)
+        policy = json.loads(policy)
 
     response = client.gcp_iam_project_iam_policy_set_request(project_name, policy)
     return generate_iam_policy_command_output(response, project_name,
@@ -1160,245 +1615,512 @@ def gcp_iam_project_iam_policy_add_command(client: Client, args: Dict[str, Any])
     return command_results
 
 
-def gcp_iam_folder_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    limit = arg_to_number(args.get('limit') or '50')
-    page = arg_to_number(args.get('page') or '1')
+def generate_folder_command_output(response: dict, output_key: str = None,
+                                   readable_header: str = 'Folder information:') -> CommandResults:
+    """
+    Generate command output for folder commands.
+    Args:
+        response (dict): API response from GCP.
+        output_key (str): Used to access to required data in the response.
+        readable_header (str): Readable message header for XSOAR war room.
 
-    response = client.gcp_iam_folder_list_request(limit, page)
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+
+    """
+    if output_key:
+        outputs = copy.deepcopy(response.get(output_key, []))
+    else:
+        outputs = copy.deepcopy(response)
+
+    if not isinstance(outputs, list):
+        outputs = [outputs]
+
+    outputs = update_time_format(outputs, ['createTime', 'updateTime', 'deleteTime'])
+
+    readable_output = tableToMarkdown(
+        readable_header,
+        outputs,
+        headers=['name', 'parent', 'displayName', 'createTime', 'updateTime'],
+        headerTransform=pascalToSpace
+    )
+
     command_results = CommandResults(
-        outputs_prefix='GCP.IAM',
-        outputs_key_field='',
-        outputs=response,
+        readable_output=readable_output,
+        outputs_prefix='GCP.IAM.Folder',
+        outputs_key_field='name',
+        outputs=outputs,
         raw_response=response
     )
 
     return command_results
 
 
-def gcp_iam_folder_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    folder_name = args.get('folder_name')
+def gcp_iam_folders_get_command(client: Client, args: Dict[str, Any]) -> list:
+    """
+    List folders under the specified parent, or retrieve specific folder information.
+    Args:
+        client (Client): GCP API client.
+        args (dict): Command arguments from XSOAR.
 
-    response = client.gcp_iam_folder_get_request(folder_name)
-    command_results = CommandResults(
-        outputs_prefix='GCP.IAM',
-        outputs_key_field='',
-        outputs=response,
-        raw_response=response
-    )
+    Returns:
+        list[CommandResults]: outputs, readable outputs and raw response for XSOAR.
 
-    return command_results
+    """
+    folder_name = argToList(args.get('folder_name'))
+
+    command_results_list: List[CommandResults] = []
+
+    if folder_name:  # Retrieve specific folder information
+
+        for folder in folder_name:
+            readable_message = f'Folder {folder} information:'
+            try:
+                response = client.gcp_iam_folder_get_request(folder)
+
+                command_results = generate_folder_command_output(response=response, readable_header=readable_message)
+
+                command_results_list.append(command_results)
+
+            except Exception as exception:
+                error = CommandResults(
+                    readable_output=f'An error occurred while retrieving {folder}.\n {exception}'
+                )
+                command_results_list.append(error)
+
+    else:  # List folder under the specified parent.
+
+        parent = args.get('parent')
+        show_deleted = argToBoolean(args.get('show_deleted', False))
+
+        if not parent:
+            raise Exception('One of the arguments: ''parent'' or ''folder_name'' must be provided.')
+
+        limit = arg_to_number(args.get('limit') or '50')
+        page = arg_to_number(args.get('page') or '1')
+        max_limit = 100
+
+        validate_pagination_arguments(limit, page)
+        if limit > max_limit:
+            raise Exception("The limit argument is out of range. It must be between 1 and 100.")
+
+        readable_message = get_pagination_readable_message(header='Folders List:', limit=limit, page=page)
+
+        if page > 1:
+            response = get_pagination_request_result(limit, page, max_limit,
+                                                     client.gcp_iam_folder_list_request,
+                                                     parent=parent,
+                                                     show_deleted=show_deleted)
+
+        else:
+            response = client.gcp_iam_folder_list_request(parent=parent, limit=limit, show_deleted=show_deleted)
+
+        command_results = generate_folder_command_output(response=response, output_key='folders',
+                                                         readable_header=readable_message)
+
+        command_results_list.append(command_results)
+
+    return command_results_list
 
 
 def gcp_iam_folder_iam_policy_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Retrieve the IAM access control policy for the specified folder.
+    Args:
+        client (Client): GCP API client.
+        args (dict): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+
+    """
     folder_name = args.get('folder_name')
+    limit = arg_to_number(args.get('limit') or '50')
+    page = arg_to_number(args.get('page') or '1')
+    validate_pagination_arguments(limit, page)
+
+    readable_message = get_pagination_readable_message(header=f'Folder {folder_name} IAM Policy List:',
+                                                       limit=limit, page=page)
 
     response = client.gcp_iam_folder_iam_policy_get_request(folder_name)
-    command_results = CommandResults(
-        outputs_prefix='GCP.IAM',
-        outputs_key_field='',
-        outputs=response,
-        raw_response=response
-    )
-
-    return command_results
+    return generate_iam_policy_command_output(response, folder_name, readable_header=readable_message,
+                                              limit=limit, page=page)
 
 
 def gcp_iam_folder_iam_test_permission_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Retrieve permissions that a caller has on the specified folder.
+    Args:
+        client (Client): GCP API client.
+        args (dict): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+
+    """
     folder_name = args.get('folder_name')
-    permissions = args.get('permissions')
+    permissions = argToList(args.get('permissions'))
 
     response = client.gcp_iam_folder_iam_test_permission_request(folder_name, permissions)
-    command_results = CommandResults(
-        outputs_prefix='GCP.IAM',
-        outputs_key_field='',
-        outputs=response,
-        raw_response=response
-    )
-
-    return command_results
+    return generate_test_permission_command_output(response, readable_header=f'Folder {folder_name} permissions:')
 
 
 def gcp_iam_folder_iam_member_add_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Add members to folder policy.
+    Args:
+        client (Client): GCP API client.
+        args (dict): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+
+    """
     folder_name = args.get('folder_name')
     role = args.get('role')
-    members = args.get('members')
+    members = argToList(args.get('members'))
 
-    response = client.gcp_iam_folder_iam_member_add_request(folder_name, role, members)
+    iam_policy = client.gcp_iam_folder_iam_policy_get_request(folder_name).get("bindings", [])
+    updated_policies = add_members_to_policy(role=role, iam_policy=iam_policy, members=members,
+                                             command_name='gcp-iam-folder-iam-policy-create')
+
+    client.gcp_iam_folder_iam_policy_set_request(folder_name, updated_policies)
+
     command_results = CommandResults(
-        outputs_prefix='GCP.IAM',
-        outputs_key_field='',
-        outputs=response,
-        raw_response=response
+        readable_output=f'Role {role} updated successfully.'
     )
-
     return command_results
 
 
 def gcp_iam_folder_iam_member_remove_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Remove members from folder policy.
+    Args:
+        client (Client): GCP API client.
+        args (dict): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+
+    """
     folder_name = args.get('folder_name')
     role = args.get('role')
-    members = args.get('members')
+    members = argToList(args.get('members'))
 
-    response = client.gcp_iam_folder_iam_member_remove_request(folder_name, role, members)
+    iam_policy = client.gcp_iam_folder_iam_policy_get_request(folder_name).get("bindings", [])
+    updated_policies = remove_members_from_policy(role=role, iam_policy=iam_policy, members=members,
+                                                  command_name='gcp-iam-folder-iam-policy-create')
+
+    client.gcp_iam_folder_iam_policy_set_request(folder_name, updated_policies)
+
     command_results = CommandResults(
-        outputs_prefix='GCP.IAM',
-        outputs_key_field='',
-        outputs=response,
-        raw_response=response
+        readable_output=f'Role {role} updated successfully.'
     )
-
     return command_results
 
 
 def gcp_iam_folder_iam_policy_set_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Sets the IAM access control policy for the specified folder.
+    Args:
+        client (Client): GCP API client.
+        args (dict): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+
+    """
     folder_name = args.get('folder_name')
     policy = args.get('policy')
+    if isinstance(policy, str):
+        if policy and not policy.startswith('['):
+            policy = '[' + policy + ']'
+
+        policy = json.loads(policy)
 
     response = client.gcp_iam_folder_iam_policy_set_request(folder_name, policy)
-    command_results = CommandResults(
-        outputs_prefix='GCP.IAM',
-        outputs_key_field='',
-        outputs=response,
-        raw_response=response
-    )
-
-    return command_results
+    return generate_iam_policy_command_output(response, folder_name,
+                                              readable_header=f'{folder_name} IAM policy updated successfully.')
 
 
 def gcp_iam_folder_iam_policy_add_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Add new folder IAM policy.
+    Args:
+        client (Client): GCP API client.
+        args (dict): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+
+    """
     folder_name = args.get('folder_name')
     role = args.get('role')
-    members = args.get('members')
+    members = argToList(args.get('members'))
 
-    response = client.gcp_iam_folder_iam_policy_add_request(folder_name, role, members)
+    iam_policy = client.gcp_iam_folder_iam_policy_get_request(folder_name).get("bindings", [])
+    policy = {
+        "role": role,
+        "members": members
+    }
+
+    iam_policy.append(policy)
+
+    client.gcp_iam_folder_iam_policy_set_request(folder_name, iam_policy)
     command_results = CommandResults(
-        outputs_prefix='GCP.IAM',
-        outputs_key_field='',
-        outputs=response,
+        readable_output=f'Role {role} updated successfully.'
+    )
+    return command_results
+
+
+def generate_organization_command_output(response: dict, output_key: str = None,
+                                         readable_header: str = 'Organization information:') -> CommandResults:
+    """
+    Generate command output for group commands.
+    Args:
+        response (dict): API response from GCP.
+        output_key (str): Used to access to required data in the response.
+        readable_header (str): Readable message header for XSOAR war room.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+
+    """
+    if output_key:
+        outputs = copy.deepcopy(response.get(output_key, []))
+    else:
+        outputs = copy.deepcopy(response)
+
+    if not isinstance(outputs, list):
+        outputs = [outputs]
+
+    outputs = update_time_format(outputs, ['createTime', 'updateTime'])
+
+    readable_output = tableToMarkdown(
+        readable_header,
+        outputs,
+        headers=['name', 'displayName', 'directoryCustomerId', 'createTime', 'updateTime'],
+        headerTransform=pascalToSpace
+    )
+
+    command_results = CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='GCP.IAM.Organization',
+        outputs_key_field='name',
+        outputs=outputs,
         raw_response=response
     )
 
     return command_results
 
 
-def gcp_iam_organization_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    limit = arg_to_number(args.get('limit') or '50')
-    page = arg_to_number(args.get('page') or '1')
+def gcp_iam_organizations_get_command(client: Client, args: Dict[str, Any]) -> list:
+    """
+    List organization resources that are visible to the caller, or retrieve organization information.
+    Args:
+        client (Client): GCP API client.
+        args (dict): Command arguments from XSOAR.
 
-    response = client.gcp_iam_organization_list_request(limit, page)
-    command_results = CommandResults(
-        outputs_prefix='GCP.IAM',
-        outputs_key_field='',
-        outputs=response,
-        raw_response=response
-    )
+    Returns:
+        list[CommandResults]: outputs, readable outputs and raw response for XSOAR.
 
-    return command_results
+    """
+    organization_name = argToList(args.get('organization_name'))
+    command_results_list: List[CommandResults] = []
 
+    if organization_name:  # Retrieve specific organization information
 
-def gcp_iam_organization_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    organization_name = args.get('organization_name')
+        for organization in organization_name:
+            readable_message = f'Organizations {organization} information:'
+            try:
+                response = client.gcp_iam_organization_get_request(organization)
+                command_results = generate_organization_command_output(response=response,
+                                                                       readable_header=readable_message)
 
-    response = client.gcp_iam_organization_get_request(organization_name)
-    command_results = CommandResults(
-        outputs_prefix='GCP.IAM',
-        outputs_key_field='',
-        outputs=response,
-        raw_response=response
-    )
+                command_results_list.append(command_results)
 
-    return command_results
+            except Exception as exception:
+                error = CommandResults(
+                    readable_output=f'An error occurred while retrieving {organization}.\n {exception}'
+                )
+                command_results_list.append(error)
+
+    else:  # List organization resources that are visible to the caller.
+        limit = arg_to_number(args.get('limit') or '50')
+        page = arg_to_number(args.get('page') or '1')
+        max_limit = 50
+
+        validate_pagination_arguments(limit, page)
+        if limit > max_limit:
+            raise Exception("The limit argument is out of range. It must be between 1 and 100.")
+
+        readable_message = get_pagination_readable_message(header='Organizations List:', limit=limit, page=page)
+
+        if page > 1:
+            response = get_pagination_request_result(limit, page, max_limit,
+                                                     client.gcp_iam_organization_list_request)
+
+        else:
+            response = client.gcp_iam_organization_list_request(limit=limit)
+
+        command_results = generate_organization_command_output(response=response, output_key='organizations',
+                                                               readable_header=readable_message)
+
+        command_results_list.append(command_results)
+
+    return command_results_list
 
 
 def gcp_iam_organization_iam_policy_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Retrieve the IAM access control policy for the specified organization.
+    Args:
+        client (Client): GCP API client.
+        args (dict): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+
+    """
     organization_name = args.get('organization_name')
+    limit = arg_to_number(args.get('limit') or '50')
+    page = arg_to_number(args.get('page') or '1')
+    validate_pagination_arguments(limit, page)
+
+    readable_message = get_pagination_readable_message(header=f'Organization {organization_name} IAM Policy List:',
+                                                       limit=limit, page=page)
 
     response = client.gcp_iam_organization_iam_policy_get_request(organization_name)
-    command_results = CommandResults(
-        outputs_prefix='GCP.IAM',
-        outputs_key_field='',
-        outputs=response,
-        raw_response=response
-    )
 
-    return command_results
+    return generate_iam_policy_command_output(response, organization_name, readable_header=readable_message,
+                                              limit=limit, page=page)
 
 
 def gcp_iam_organization_iam_test_permission_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Retrieve permissions that a caller has on the specified organization.
+    Args:
+        client (Client): GCP API client.
+        args (dict): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+
+    """
     organization_name = args.get('organization_name')
-    permissions = args.get('permissions')
+    permissions = argToList(args.get('permissions'))
 
     response = client.gcp_iam_organization_iam_test_permission_request(organization_name, permissions)
-    command_results = CommandResults(
-        outputs_prefix='GCP.IAM',
-        outputs_key_field='',
-        outputs=response,
-        raw_response=response
-    )
 
-    return command_results
+    return generate_test_permission_command_output(response,
+                                                   readable_header=f'Organization {organization_name} permissions:')
 
 
 def gcp_iam_organization_iam_member_add_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Add members to organization policy.
+    Args:
+        client (Client): GCP API client.
+        args (dict): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+
+    """
     organization_name = args.get('organization_name')
     role = args.get('role')
-    members = args.get('members')
+    members = argToList(args.get('members'))
 
-    response = client.gcp_iam_organization_iam_member_add_request(organization_name, role, members)
+    iam_policy = client.gcp_iam_organization_iam_policy_get_request(organization_name).get("bindings", [])
+    updated_policies = add_members_to_policy(role=role, iam_policy=iam_policy, members=members,
+                                             command_name='gcp-iam-organization-iam-policy-create')
+
+    client.gcp_iam_organization_iam_policy_set_request(organization_name, updated_policies)
+
     command_results = CommandResults(
-        outputs_prefix='GCP.IAM',
-        outputs_key_field='',
-        outputs=response,
-        raw_response=response
+        readable_output=f'Role {role} updated successfully.'
     )
-
     return command_results
 
 
 def gcp_iam_organization_iam_member_remove_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Remove members from organization policy.
+    Args:
+        client (Client): GCP API client.
+        args (dict): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+
+    """
     organization_name = args.get('organization_name')
     role = args.get('role')
-    members = args.get('members')
+    members = argToList(args.get('members'))
 
-    response = client.gcp_iam_organization_iam_member_remove_request(organization_name, role, members)
+    iam_policy = client.gcp_iam_organization_iam_policy_get_request(organization_name).get("bindings", [])
+    updated_policies = remove_members_from_policy(role=role, iam_policy=iam_policy, members=members,
+                                                  command_name='gcp-iam-organization-iam-policy-create')
+
+    client.gcp_iam_organization_iam_policy_set_request(organization_name, updated_policies)
+
     command_results = CommandResults(
-        outputs_prefix='GCP.IAM',
-        outputs_key_field='',
-        outputs=response,
-        raw_response=response
+        readable_output=f'Role {role} updated successfully.'
     )
-
     return command_results
 
 
 def gcp_iam_organization_iam_policy_set_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Sets the IAM access control policy for the specified organization.
+    Args:
+        client (Client): GCP API client.
+        args (dict): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+
+    """
     organization_name = args.get('organization_name')
     policy = args.get('policy')
+    if isinstance(policy, str):
+        if policy and not policy.startswith('['):
+            policy = '[' + policy + ']'
+
+        policy = json.loads(policy)
 
     response = client.gcp_iam_organization_iam_policy_set_request(organization_name, policy)
-    command_results = CommandResults(
-        outputs_prefix='GCP.IAM',
-        outputs_key_field='',
-        outputs=response,
-        raw_response=response
-    )
-
-    return command_results
+    return generate_iam_policy_command_output(response, organization_name,
+                                              readable_header=f'{organization_name} IAM policy updated successfully.')
 
 
 def gcp_iam_organization_iam_policy_add_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Add new organization IAM policy.
+    Args:
+        client (Client): GCP API client.
+        args (dict): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+
+    """
     organization_name = args.get('organization_name')
     role = args.get('role')
-    members = args.get('members')
+    members = argToList(args.get('members'))
 
-    response = client.gcp_iam_organization_iam_policy_add_request(organization_name, role, members)
+    iam_policy = client.gcp_iam_organization_iam_policy_get_request(organization_name).get("bindings", [])
+    policy = {
+        "role": role,
+        "members": members
+    }
+
+    iam_policy.append(policy)
+
+    client.gcp_iam_organization_iam_policy_set_request(organization_name, iam_policy)
     command_results = CommandResults(
-        outputs_prefix='GCP.IAM',
-        outputs_key_field='',
-        outputs=response,
-        raw_response=response
+        readable_output=f'Role {role} updated successfully.'
     )
-
     return command_results
 
 
@@ -1421,10 +2143,11 @@ def gcp_iam_group_create_command(client: Client, args: Dict[str, Any]) -> Comman
     response = client.gcp_iam_group_create_request(parent, display_name, group_email_address, description)
 
     outputs = copy.deepcopy(response.get('response'))
+    created_group_name = outputs.get("name")
     outputs = update_time_format(outputs, ['createTime', 'updateTime'])
 
     readable_output = tableToMarkdown(
-        'Group information:',
+        f'Successfully Created Group "{created_group_name}"',
         outputs,
         headers=['name', 'groupKey', 'parent', 'displayName', 'createTime', 'updateTime'],
         headerTransform=pascalToSpace
@@ -1539,7 +2262,10 @@ def gcp_iam_group_delete_command(client: Client, args: Dict[str, Any]) -> Comman
     """
     group_name = args.get('group_name')
 
-    client.gcp_iam_group_delete_request(group_name)
+    result = client.gcp_iam_group_delete_request(group_name)
+
+    if not result.get('done'):
+        raise Exception('Operation failed.')
     readable_output = f'Group {group_name} was successfully deleted.'
     command_results = CommandResults(
         readable_output=readable_output
@@ -1548,94 +2274,159 @@ def gcp_iam_group_delete_command(client: Client, args: Dict[str, Any]) -> Comman
     return command_results
 
 
-def gcp_iam_group_membership_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    group_name = args.get('group_name')
+def gcp_iam_group_membership_create_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+    """
+    Create a group membership.
+    Args:
+        client (Client): GCP API client.
+        args (dict): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+
+    """
+
+    groups_name = argToList(args.get('groups_name'))
     member_email = args.get('member_email')
-    role = args.get('role')
+    role = argToList(args.get('role'))
 
-    response = client.gcp_iam_group_membership_create_request(group_name, member_email, role)
-    command_results = CommandResults(
-        outputs_prefix='GCP.IAM',
-        outputs_key_field='',
-        outputs=response,
-        raw_response=response
-    )
+    command_results_list: List[CommandResults] = []
+    for name in groups_name:
+        try:
+            response = client.gcp_iam_group_membership_create_request(name, member_email, role)
+            command_results_list.append(generate_group_membership_command_output(response, 'response'))
 
-    return command_results
+        except Exception as exception:
+            error = CommandResults(
+                readable_output=f'An error occurred while creating membership in group {name}.\n {exception}'
+            )
+            command_results_list.append(error)
+
+    return command_results_list
 
 
 def gcp_iam_group_membership_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    name = args.get('name')
+    """
+    List group memberships.
+    Args:
+        client (Client): GCP API client.
+        args (dict): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+
+    """
+    group_name = args.get('group_name')
     limit = arg_to_number(args.get('limit') or '50')
     page = arg_to_number(args.get('page') or '1')
+    page_token = None
+    readable_message = get_pagination_readable_message(header='Membership List:', limit=limit, page=page)
 
-    response = client.gcp_iam_group_membership_list_request(name, limit, page)
-    command_results = CommandResults(
-        outputs_prefix='GCP.IAM',
-        outputs_key_field='',
-        outputs=response,
-        raw_response=response
-    )
+    validate_pagination_arguments(limit, page)
+    if page > 1:
+        page_token = get_next_page_token(limit, page, client.gcp_iam_group_membership_list_request,
+                                         args={"group_name": group_name})
 
-    return command_results
+        if not page_token:
+            return CommandResults(
+                readable_output=readable_message,
+                outputs_prefix='GCP.IAM.Membership',
+                outputs=[],
+                raw_response=[]
+            )
+
+    response = client.gcp_iam_group_membership_list_request(group_name, limit, page_token)
+
+    return generate_group_membership_command_output(response, "memberships", readable_message)
 
 
 def gcp_iam_group_membership_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    name = args.get('name')
+    """
+    Retrieve group membership information.
+    Args:
+        client (Client): GCP API client.
+        args (dict): Command arguments from XSOAR.
 
-    response = client.gcp_iam_group_membership_get_request(name)
-    command_results = CommandResults(
-        outputs_prefix='GCP.IAM',
-        outputs_key_field='',
-        outputs=response,
-        raw_response=response
-    )
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
 
-    return command_results
+    """
+    membership_name = args.get('membership_name')
+
+    response = client.gcp_iam_group_membership_get_request(membership_name)
+    return generate_group_membership_command_output(response)
 
 
 def gcp_iam_group_membership_role_add_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Add group membership role.
+    Args:
+        client (Client): GCP API client.
+        args (dict): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+
+    """
     membership_name = args.get('membership_name')
-    role = args.get('role')
+    role = argToList(args.get('role'))
 
-    response = client.gcp_iam_group_membership_role_add_request(membership_name, role)
+    client.gcp_iam_group_membership_role_add_request(membership_name, role)
     command_results = CommandResults(
-        outputs_prefix='GCP.IAM',
-        outputs_key_field='',
-        outputs=response,
-        raw_response=response
+        readable_output=f'Membership {membership_name} updated successfully.'
     )
-
     return command_results
 
 
 def gcp_iam_group_membership_role_remove_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Remove group membership role.
+    Args:
+        client (Client): GCP API client.
+        args (dict): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+
+    """
     membership_name = args.get('membership_name')
-    role = args.get('role')
+    role = argToList(args.get('role'))
 
-    response = client.gcp_iam_group_membership_role_remove_request(membership_name, role)
+    client.gcp_iam_group_membership_role_remove_request(membership_name, role)
     command_results = CommandResults(
-        outputs_prefix='GCP.IAM',
-        outputs_key_field='',
-        outputs=response,
-        raw_response=response
+        readable_output=f'Membership {membership_name} updated successfully.'
     )
-
     return command_results
 
 
-def gcp_iam_group_membership_delete_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    membership_name = args.get('membership_name')
+def gcp_iam_group_membership_delete_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+    """
+    Delete group membership.
+    Args:
+        client (Client): GCP API client.
+        args (dict): Command arguments from XSOAR.
 
-    response = client.gcp_iam_group_membership_delete_request(membership_name)
-    command_results = CommandResults(
-        outputs_prefix='GCP.IAM',
-        outputs_key_field='',
-        outputs=response,
-        raw_response=response
-    )
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
 
-    return command_results
+    """
+    membership_names = argToList(args.get('membership_names'))
+    command_results_list: List[CommandResults] = []
+
+    for membership in membership_names:
+        try:
+            client.gcp_iam_group_membership_delete_request(membership)
+            command_results = CommandResults(
+                readable_output=f'Membership {membership} deleted successfully.'
+            )
+            command_results_list.append(command_results)
+        except Exception as exception:
+            error = CommandResults(
+                readable_output=f'An error occurred while deleting the membership {membership}.\n {exception}'
+            )
+            command_results_list.append(error)
+
+    return command_results_list
 
 
 def gcp_iam_service_account_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -2066,222 +2857,621 @@ def gcp_iam_service_account_key_delete_command(client: Client, args: Dict[str, A
 
     return command_results_list
 
-def gcp_iam_organization_role_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    # TODO
-    pass
 
-def gcp_iam_organization_role_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    role_name = args.get('role_name')
-    description = args.get('description')
-    title = args.get('title')
-    permission = args.get('permission')
+def generate_role_command_output(response: dict, output_key: str = None,
+                                 readable_header: str = 'Role information:',
+                                 outputs: list = None) -> CommandResults:
+    """
+    Generate command output for role commands.
+    Args:
+        response (dict): API response from GCP.
+        output_key (str): Used to access to required data in the response.
+        readable_header (str): Readable message header for XSOAR war room.
+        outputs (list): Command output. If not provided, the command will set this argument.
 
-    response = client.gcp_iam_organization_role_update_request(role_name, description, title, permission)
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+
+    """
+    if not outputs and not isinstance(outputs, list):
+        if output_key:
+            outputs = copy.deepcopy(response.get(output_key, []))
+        else:
+            outputs = copy.deepcopy(response)
+
+    if not isinstance(outputs, list):
+        outputs = [outputs]
+
+    for role in outputs:
+        role["stage"] = role.get('stage', 'ALPHA')
+        role["includedPermissions"] = role.get('includedPermissions', [])
+        role["deleted"] = role.get('deleted', False)
+
+    readable_output = tableToMarkdown(readable_header,
+                                      outputs,
+                                      headers=["name", "includedPermissions", "title", "description"],
+                                      headerTransform=pascalToSpace
+                                      )
+
     command_results = CommandResults(
-        outputs_prefix='GCP.IAM',
-        outputs_key_field='',
-        outputs=response,
+        readable_output=readable_output,
+        outputs_prefix='GCP.IAM.Role',
+        outputs_key_field='name',
+        outputs=outputs,
         raw_response=response
     )
 
     return command_results
 
 
-def gcp_iam_organization_role_permission_add_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    role_name = args.get('role_name')
-    permission = args.get('permission')
+def create_custom_role(client_request_method: Callable, resource_identifier_key: str, args: Dict[str, Any]):
+    """
+    Create a custom role.
+    Args:
+        client_request_method (Callable): The GCP Client method which create the required resource (organization/project) role.
+        resource_identifier_key (str): The ID of the required resource which contains the custom role.
+        args (dict): Command arguments from XSOAR.
 
-    response = client.gcp_iam_organization_role_permission_add_request(role_name, permission)
-    command_results = CommandResults(
-        outputs_prefix='GCP.IAM',
-        outputs_key_field='',
-        outputs=response,
-        raw_response=response
-    )
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
 
-    return command_results
-
-
-def gcp_iam_organization_role_permission_remove_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    role_name = args.get('role_name')
-    permission = args.get('permission')
-
-    response = client.gcp_iam_organization_role_permission_remove_request(role_name, permission)
-    command_results = CommandResults(
-        outputs_prefix='GCP.IAM',
-        outputs_key_field='',
-        outputs=response,
-        raw_response=response
-    )
-
-    return command_results
-
-
-def gcp_iam_organization_role_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    organization_name = args.get('organization_name')
-    included_permissions = args.get('included_permissions')
-    limit = arg_to_number(args.get('limit') or '50')
-    page = arg_to_number(args.get('page') or '1')
-
-    response = client.gcp_iam_organization_role_list_request(organization_name, included_permissions, limit, page)
-    command_results = CommandResults(
-        outputs_prefix='GCP.IAM',
-        outputs_key_field='',
-        outputs=response,
-        raw_response=response
-    )
-
-    return command_results
-
-
-def gcp_iam_organization_role_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    role_name = args.get('role_name')
-
-    response = client.gcp_iam_organization_role_get_request(role_name)
-    command_results = CommandResults(
-        outputs_prefix='GCP.IAM',
-        outputs_key_field='',
-        outputs=response,
-        raw_response=response
-    )
-
-    return command_results
-
-
-def gcp_iam_organization_role_delete_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    role_name = args.get('role_name')
-
-    response = client.gcp_iam_organization_role_delete_request(role_name)
-    command_results = CommandResults(
-        outputs_prefix='GCP.IAM',
-        outputs_key_field='',
-        outputs=response,
-        raw_response=response
-    )
-
-    return command_results
-
-
-def gcp_iam_project_role_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    project_name = args.get('project_name')
+    """
+    resource_identifier = args.get(resource_identifier_key)
     role_id = args.get('role_id')
     description = args.get('description')
     title = args.get('title')
-    permission = args.get('permission')
+    stage = args.get('stage')
+    permissions = argToList(args.get('permissions'))
 
-    response = client.gcp_iam_project_role_create_request(project_name, role_id, description, title, permission)
-    command_results = CommandResults(
-        outputs_prefix='GCP.IAM',
-        outputs_key_field='',
-        outputs=response,
-        raw_response=response
-    )
+    response = client_request_method(resource_identifier, role_id, stage, description, title, permissions)
 
-    return command_results
+    role_name = response.get('name')
+
+    return generate_role_command_output(response, readable_header=f'Role {role_name} information:')
 
 
-def gcp_iam_project_role_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def update_custom_role(client_request_method: Callable, args: Dict[str, Any]):
+    """
+    Update custom role.
+    Args:
+        client_request_method (Callable): The GCP Client method which update the required resource (organization/project) role.
+        args (dict): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+
+    """
     role_name = args.get('role_name')
     description = args.get('description')
     title = args.get('title')
-    permission = args.get('permission')
+    permissions = argToList(args.get('permissions'))
+    stage = args.get('stage')
+    fields_to_update = args.get('fields_to_update')
 
-    response = client.gcp_iam_project_role_update_request(role_name, description, title, permission)
+    client_request_method(role_name, description, title, permissions, stage, fields_to_update)
     command_results = CommandResults(
-        outputs_prefix='GCP.IAM',
-        outputs_key_field='',
-        outputs=response,
-        raw_response=response
+        readable_output=f'Role {role_name} updated successfully.'
     )
-
     return command_results
+
+
+def add_custom_role_permissions(client_request_get_method: Callable, client_request_update_method: Callable,
+                                args: Dict[str, Any]):
+    """
+    Add permissions to custom role.
+    Args:
+        client_request_get_method (Callable): The GCP Client method which retrieved the required resource (organization/project) role.
+        client_request_update_method (Callable): The GCP Client method which update the required resource (organization/project) role.
+        args (dict): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+
+    """
+    role_name = args.get('role_name')
+    permissions = argToList(args.get('permissions'))
+
+    role_permissions = client_request_get_method(role_name).get('includedPermissions', [])
+
+    for permission in permissions:
+        role_permissions.append(permission)
+
+    client_request_update_method(role_name, permissions=role_permissions, fields_to_update="includedPermissions")
+    command_results = CommandResults(
+        readable_output=f'Role {role_name} updated successfully.'
+    )
+    return command_results
+
+
+def remove_custom_role_permissions(client_request_get_method: Callable, client_request_update_method: Callable,
+                                   args: Dict[str, Any]):
+    """
+    Remove permissions from custom project role.
+    Args:
+        client_request_get_method (Callable): The GCP Client method which retrieved the required resource (organization/project) role.
+        client_request_update_method (Callable): The GCP Client method which update the required resource (organization/project) role.
+        args (dict): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+
+    """
+    role_name = args.get('role_name')
+    permissions = argToList(args.get('permissions'))
+
+    role_permissions = client_request_get_method(role_name).get('includedPermissions', [])
+
+    for permission in permissions:
+        try:
+            role_permissions.remove(permission)
+        except ValueError:
+            raise Exception(f'The permission {permission} is not part of the custom resource permissions.'
+                            f'If you wish to add a new permission, '
+                            f'consider using gcp-iam-organization-role-permission-add '
+                            f'or gcp-iam-project-role-permission-add command.')
+
+    client_request_update_method(role_name, permissions=role_permissions, fields_to_update="includedPermissions")
+    command_results = CommandResults(
+        readable_output=f'Role {role_name} updated successfully.'
+    )
+    return command_results
+
+
+def list_filtered_role(client_request_method: Callable, command_arguments: dict, limit: int, page: int,
+                       max_limit: int, title_filter: str = None, permission_filter: list = None) -> tuple:
+    """
+    List and filter roles.
+    Args:
+        client_request_method (Callable): The GCP Client method which list the required resource
+                                          (predefined/organization/project) role.
+        command_arguments (dict): Client method arguments.
+        limit (int): The number of results to retrieve.
+        page (int): The page number of the results to retrieve.
+        max_limit (int): GCP API max limit.
+        title_filter (str): Used to filter the retrieved roles by the rule title.
+        permission_filter (list): Used to filter the retrieved roles by their permissions.
+
+    Returns:
+        response , outputs.
+
+    """
+    if permission_filter:
+        command_arguments["include_permissions"] = True
+
+    response = client_request_method(limit=max_limit, **command_arguments)
+
+    max_result_offset = page * limit
+    offset = (page - 1) * limit
+    outputs = []
+    response_roles = response.get("roles", [])
+
+    for role in response_roles:
+        if (title_filter and title_filter.lower() in role.get("title", "").lower()) or (permission_filter and all(
+                item in role.get("includedPermissions", []) for item in permission_filter)):
+            outputs.append(role)
+
+        if len(outputs) >= max_result_offset:
+            break
+
+    return response, outputs[offset: max_result_offset]
+
+
+def list_roles(client_request_method: Callable, args: Dict[str, Any],
+               readable_header: str, resource_identifier_key: str = None):
+    """
+    List custom roles.
+    Args:
+        client_request_method (Callable): The GCP Client method which list the required resource
+                                          (predefined/organization/project) role.
+        resource_identifier_key (str): The ID of the required resource which contains the custom role.
+        args (dict): Command arguments from XSOAR.
+        readable_header (str): Readable message header for XSOAR war room.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+
+    """
+    if resource_identifier_key:
+        resource_identifier = args.get(resource_identifier_key)
+    include_permissions = argToBoolean(args.get('include_permissions', True))
+    limit = arg_to_number(args.get('limit') or '50')
+    page = arg_to_number(args.get('page') or '1')
+    show_deleted = argToBoolean(args.get('show_deleted', False))
+
+    title_filter = args.get('title_filter')
+    permission_filter = argToList(args.get('permission_filter'))
+
+    max_limit = 1000
+
+    validate_pagination_arguments(limit, page)
+    if limit > max_limit:
+        raise Exception("The limit argument is out of range. It must be between 1 and 1000.")
+
+    readable_message = get_pagination_readable_message(header=readable_header, limit=limit, page=page)
+
+    if resource_identifier_key:
+        command_arguments = dict(parent=resource_identifier, include_permissions=include_permissions,
+                                 show_deleted=show_deleted)
+    else:
+        command_arguments = dict(include_permissions=include_permissions, show_deleted=show_deleted)
+
+    if title_filter or permission_filter:
+        response, outputs = list_filtered_role(client_request_method, command_arguments, limit, page, max_limit,
+                                               title_filter, permission_filter)
+
+        return generate_role_command_output(response, readable_header=readable_message, outputs=outputs)
+
+    if page > 1:
+        response = get_pagination_request_result(limit, page, max_limit,
+                                                 client_request_method,
+                                                 **command_arguments)
+    else:
+        response = client_request_method(limit=limit, **command_arguments)
+
+    return generate_role_command_output(response, output_key="roles", readable_header=readable_message)
+
+
+def gcp_iam_organization_role_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Create a custom organization role.
+    Args:
+        client (Client): GCP API client.
+        args (dict): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+
+    """
+    return create_custom_role(client_request_method=client.gcp_iam_organization_role_create_request,
+                              resource_identifier_key='organization_name', args=args)
+
+
+def gcp_iam_organization_role_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Update an organization custom role.
+    Args:
+        client (Client): GCP API client.
+        args (dict): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+
+    """
+    return update_custom_role(client_request_method=client.gcp_iam_organization_role_update_request, args=args)
+
+
+def gcp_iam_organization_role_permission_add_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Add permissions to custom organization role.
+    Args:
+        client (Client): GCP API client.
+        args (dict): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+
+    """
+    return add_custom_role_permissions(client_request_get_method=client.gcp_iam_organization_role_get_request,
+                                       client_request_update_method=client.gcp_iam_organization_role_update_request,
+                                       args=args)
+
+
+def gcp_iam_organization_role_permission_remove_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Remove permissions from custom organization role.
+    Args:
+        client (Client): GCP API client.
+        args (dict): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+
+    """
+    return remove_custom_role_permissions(client_request_get_method=client.gcp_iam_organization_role_get_request,
+                                          client_request_update_method=client.gcp_iam_organization_role_update_request,
+                                          args=args)
+
+
+def gcp_iam_organization_role_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    List organization custom roles.
+    Args:
+        client (Client): GCP API client.
+        args (dict): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+
+    """
+    return list_roles(client_request_method=client.gcp_iam_organization_role_list_request,
+                      resource_identifier_key='organization_name', args=args,
+                      readable_header='Custom Organization Roles list:')
+
+
+def gcp_iam_organization_role_get_command(client: Client, args: Dict[str, Any]) -> list:
+    """
+    Retrieve organization role information.
+    Args:
+        client (Client): GCP API client.
+        args (dict): Command arguments from XSOAR.
+
+    Returns:
+        list[CommandResults]: outputs, readable outputs and raw response for XSOAR.
+
+    """
+    role_name = argToList(args.get('role_name'))
+    command_results_list: List[CommandResults] = []
+
+    for role in role_name:
+        try:
+            response = client.gcp_iam_organization_role_get_request(role)
+            retrieved_role_name = response.get('name')
+            command_results_list.append(
+                generate_role_command_output(response, readable_header=f'Role {retrieved_role_name} information:'))
+        except Exception as exception:
+            error = CommandResults(
+                readable_output=f'An error occurred while trying to retrieve {role}.\n {exception}'
+            )
+            command_results_list.append(error)
+
+    return command_results_list
+
+
+def gcp_iam_organization_role_delete_command(client: Client, args: Dict[str, Any]) -> list:
+    """
+    Delete a custom organization role.
+    Args:
+        client (Client): GCP API client.
+        args (dict): Command arguments from XSOAR.
+
+    Returns:
+        list[CommandResults]: outputs, readable outputs and raw response for XSOAR.
+
+    """
+    role_name = argToList(args.get('role_name'))
+    command_results_list: List[CommandResults] = []
+
+    for role in role_name:
+        try:
+            client.gcp_iam_organization_role_delete_request(role)
+            command_results_list.append(CommandResults(
+                readable_output=f'Role {role} deleted successfully.'
+            ))
+        except Exception as exception:
+            error = CommandResults(
+                readable_output=f'An error occurred while trying to delete {role}.\n {exception}'
+            )
+            command_results_list.append(error)
+
+    return command_results_list
+
+
+def gcp_iam_project_role_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Create a custom project role.
+    Args:
+        client (Client): GCP API client.
+        args (dict): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+
+    """
+    return create_custom_role(client_request_method=client.gcp_iam_project_role_create_request,
+                              resource_identifier_key='project_id', args=args)
+
+
+def gcp_iam_project_role_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Update an project custom role.
+    Args:
+        client (Client): GCP API client.
+        args (dict): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+
+    """
+    return update_custom_role(client_request_method=client.gcp_iam_project_role_update_request, args=args)
 
 
 def gcp_iam_project_role_permission_add_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    role_name = args.get('role_name')
-    permission = args.get('permission')
+    """
+    Add permissions to custom project role.
+    Args:
+        client (Client): GCP API client.
+        args (dict): Command arguments from XSOAR.
 
-    response = client.gcp_iam_project_role_permission_add_request(role_name, permission)
-    command_results = CommandResults(
-        outputs_prefix='GCP.IAM',
-        outputs_key_field='',
-        outputs=response,
-        raw_response=response
-    )
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
 
-    return command_results
+    """
+
+    return add_custom_role_permissions(client_request_get_method=client.gcp_iam_project_role_get_request,
+                                       client_request_update_method=client.gcp_iam_project_role_update_request,
+                                       args=args)
 
 
 def gcp_iam_project_role_permission_remove_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    role_name = args.get('role_name')
-    permission = args.get('permission')
+    """
+    Remove permissions from custom project role.
+    Args:
+        client (Client): GCP API client.
+        args (dict): Command arguments from XSOAR.
 
-    response = client.gcp_iam_project_role_permission_remove_request(role_name, permission)
-    command_results = CommandResults(
-        outputs_prefix='GCP.IAM',
-        outputs_key_field='',
-        outputs=response,
-        raw_response=response
-    )
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
 
-    return command_results
+    """
+    return remove_custom_role_permissions(client_request_get_method=client.gcp_iam_project_role_get_request,
+                                          client_request_update_method=client.gcp_iam_project_role_update_request,
+                                          args=args)
 
 
 def gcp_iam_project_role_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    project_name = args.get('project_name')
-    included_permissions = args.get('included_permissions')
-    limit = arg_to_number(args.get('limit') or '50')
-    page = arg_to_number(args.get('page') or '1')
+    """
+    List custom project roles.
+    Args:
+        client (Client): GCP API client.
+        args (dict): Command arguments from XSOAR.
 
-    response = client.gcp_iam_project_role_list_request(project_name, included_permissions, limit, page)
-    command_results = CommandResults(
-        outputs_prefix='GCP.IAM',
-        outputs_key_field='',
-        outputs=response,
-        raw_response=response
-    )
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
 
-    return command_results
-
-
-def gcp_iam_project_role_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    role_name = args.get('role_name')
-
-    response = client.gcp_iam_project_role_get_request(role_name)
-    command_results = CommandResults(
-        outputs_prefix='GCP.IAM',
-        outputs_key_field='',
-        outputs=response,
-        raw_response=response
-    )
-
-    return command_results
+    """
+    return list_roles(client_request_method=client.gcp_iam_project_role_list_request,
+                      resource_identifier_key='project_id', args=args,
+                      readable_header='Custom Project Roles list:')
 
 
-def gcp_iam_project_role_delete_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    role_name = args.get('role_name')
+def gcp_iam_project_role_get_command(client: Client, args: Dict[str, Any]) -> list:
+    """
+    Retrieve project role information.
+    Args:
+        client (Client): GCP API client.
+        args (dict): Command arguments from XSOAR.
 
-    response = client.gcp_iam_project_role_delete_request(role_name)
-    command_results = CommandResults(
-        outputs_prefix='GCP.IAM',
-        outputs_key_field='',
-        outputs=response,
-        raw_response=response
-    )
+    Returns:
+        list[CommandResults]: outputs, readable outputs and raw response for XSOAR.
 
-    return command_results
+    """
+    role_name = argToList(args.get('role_name'))
+    command_results_list: List[CommandResults] = []
+
+    for role in role_name:
+        try:
+            response = client.gcp_iam_project_role_get_request(role)
+            retrieved_role_name = response.get('name')
+            command_results_list.append(
+                generate_role_command_output(response, readable_header=f'Role {retrieved_role_name} information:'))
+        except Exception as exception:
+            error = CommandResults(
+                readable_output=f'An error occurred while trying to retrieve {role}.\n {exception}'
+            )
+            command_results_list.append(error)
+
+    return command_results_list
+
+
+def gcp_iam_project_role_delete_command(client: Client, args: Dict[str, Any]) -> list:
+    """
+    Delete custom project role.
+    Args:
+        client (Client): GCP API client.
+        args (dict): Command arguments from XSOAR.
+
+    Returns:
+        list[CommandResults]: outputs, readable outputs and raw response for XSOAR.
+
+    """
+    role_name = argToList(args.get('role_name'))
+    command_results_list: List[CommandResults] = []
+
+    for role in role_name:
+        try:
+            client.gcp_iam_project_role_delete_request(role)
+            command_results_list.append(CommandResults(
+                readable_output=f'Role {role} deleted successfully.'
+            ))
+        except Exception as exception:
+            error = CommandResults(
+                readable_output=f'An error occurred while trying to delete {role}.\n {exception}'
+            )
+            command_results_list.append(error)
+
+    return command_results_list
+
+
+def gcp_iam_predefined_role_get_command(client: Client, args: Dict[str, Any]) -> list:
+    """
+    Retrieve GCP IAM predefined role information.
+    Args:
+        client (Client): GCP API client.
+        args (dict): Command arguments from XSOAR.
+
+    Returns:
+        list[CommandResults]: outputs, readable outputs and raw response for XSOAR.
+
+    """
+    role_name = argToList(args.get('role_name'))
+    command_results_list: List[CommandResults] = []
+
+    for role in role_name:
+        try:
+            response = client.gcp_iam_predefined_role_get_request(role)
+            retrieved_role_name = response.get('name')
+            command_results_list.append(
+                generate_role_command_output(response, readable_header=f'Role {retrieved_role_name} information:'))
+        except Exception as exception:
+            error = CommandResults(
+                readable_output=f'An error occurred while trying to retrieve {role}.\n {exception}'
+            )
+            command_results_list.append(error)
+
+    return command_results_list
+
+
+def gcp_iam_predefined_role_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Lists every predefined Role that IAM supports.
+    Args:
+        client (Client): GCP API client.
+        args (dict): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+
+    """
+    return list_roles(client_request_method=client.gcp_iam_predefined_role_list_request, args=args,
+                      readable_header='GCP IAM Predefined Roles list:')
 
 
 def gcp_iam_testable_permission_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Lists permissions that can be tested on a resource.
+    Args:
+        client (Client): GCP API client.
+        args (dict): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+
+    """
     resource_name = args.get('resource_name')
     limit = arg_to_number(args.get('limit') or '50')
     page = arg_to_number(args.get('page') or '1')
+    full_resource_name = f'//cloudresourcemanager.googleapis.com/{resource_name}'
+    page_token = None
+    readable_message = get_pagination_readable_message(header=f'{resource_name} testable permissions list:',
+                                                       limit=limit, page=page)
 
-    response = client.gcp_iam_testable_permission_list_request(resource_name, limit, page)
+    validate_pagination_arguments(limit, page)
+    if page > 1:
+        page_token = get_next_page_token(limit, page, client.gcp_iam_testable_permission_list_request,
+                                         args={"full_resource_name": full_resource_name})
+
+        if not page_token:
+            return CommandResults(
+                readable_output=readable_message,
+                outputs_prefix='GCP.IAM.Permission',
+                outputs=[],
+                raw_response=[]
+            )
+
+    response = client.gcp_iam_testable_permission_list_request(full_resource_name, limit, page_token)
+
+    readable_output = tableToMarkdown(
+        readable_message,
+        response.get("permissions"),
+        headers=['name', 'stage'],
+        headerTransform=pascalToSpace
+    )
+
     command_results = CommandResults(
-        outputs_prefix='GCP.IAM',
-        outputs_key_field='',
-        outputs=response,
+        readable_output=readable_output,
+        outputs_prefix='GCP.IAM.Permission',
+        outputs_key_field='name',
+        outputs=response.get("permissions"),
         raw_response=response
     )
 
@@ -2339,8 +3529,88 @@ def gcp_iam_grantable_role_list_command(client: Client, args: Dict[str, Any]) ->
     return command_results
 
 
-def test_module(client: Client) -> None:
-    # Test functions here
+def gcp_iam_project_iam_policy_remove_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Remove policy from project IAM policies.
+    Args:
+        client (Client): GCP API client.
+        args (dict): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+
+    """
+    project_name = args.get('project_name')
+    role = argToList(args.get('role'))
+
+    iam_policy = client.gcp_iam_project_iam_policy_get_request(project_name).get("bindings", [])
+
+    updated_policies = [policy for policy in iam_policy if not policy.get("role") in role]
+
+    client.gcp_iam_project_iam_policy_set_request(project_name, updated_policies)
+    command_results = CommandResults(
+        readable_output=f'Project {project_name} IAM policies updated successfully.'
+    )
+    return command_results
+
+
+def gcp_iam_organization_iam_policy_remove_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Remove policy from organization IAM policies.
+    Args:
+        client (Client): GCP API client.
+        args (dict): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+
+    """
+    organization_name = args.get('organization_name')
+    role = argToList(args.get('role'))
+
+    iam_policy = client.gcp_iam_organization_iam_policy_get_request(organization_name).get("bindings", [])
+
+    updated_policies = [policy for policy in iam_policy if not policy.get("role") in role]
+
+    client.gcp_iam_organization_iam_policy_set_request(organization_name, updated_policies)
+    command_results = CommandResults(
+        readable_output=f'Organization {organization_name} IAM policies updated successfully.'
+    )
+    return command_results
+
+
+def gcp_iam_folder_iam_policy_remove_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Remove policy from folder IAM policies.
+    Args:
+        client (Client): GCP API client.
+        args (dict): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+
+    """
+    folder_name = args.get('folder_name')
+    role = argToList(args.get('role'))
+
+    iam_policy = client.gcp_iam_folder_iam_policy_get_request(folder_name).get("bindings", [])
+
+    updated_policies = [policy for policy in iam_policy if not policy.get("role") in role]
+
+    client.gcp_iam_folder_iam_policy_set_request(folder_name, updated_policies)
+    command_results = CommandResults(
+        readable_output=f'Folder {folder_name} IAM policies updated successfully.'
+    )
+    return command_results
+
+
+def test_module(service_account_key: str) -> None:
+    try:
+        client: Client = Client(client_secret=service_account_key)
+        client.gcp_iam_predefined_role_list_request(include_permissions=False, limit=1)
+    except Exception as exception:
+        return return_results('Authorization Error: make sure API Service Account Key is valid.')
+
     return_results('ok')
 
 
@@ -2366,20 +3636,23 @@ def main() -> None:
             'gcp-iam-project-iam-member-remove': gcp_iam_project_iam_member_remove_command,
             'gcp-iam-project-iam-policy-set': gcp_iam_project_iam_policy_set_command,
             'gcp-iam-project-iam-policy-create': gcp_iam_project_iam_policy_add_command,
-            'gcp-iam-folders-get': gcp_iam_folder_get_command,
+            'gcp-iam-project-iam-policy-remove': gcp_iam_project_iam_policy_remove_command,
+            'gcp-iam-folders-get': gcp_iam_folders_get_command,
             'gcp-iam-folder-iam-policy-get': gcp_iam_folder_iam_policy_get_command,
             'gcp-iam-folder-iam-permission-test': gcp_iam_folder_iam_test_permission_command,
             'gcp-iam-folder-iam-member-add': gcp_iam_folder_iam_member_add_command,
             'gcp-iam-folder-iam-member-remove': gcp_iam_folder_iam_member_remove_command,
             'gcp-iam-folder-iam-policy-set': gcp_iam_folder_iam_policy_set_command,
             'gcp-iam-folder-iam-policy-create': gcp_iam_folder_iam_policy_add_command,
-            'gcp-iam-organizations-get': gcp_iam_organization_get_command,
+            'gcp-iam-folder-iam-policy-remove': gcp_iam_folder_iam_policy_remove_command,
+            'gcp-iam-organizations-get': gcp_iam_organizations_get_command,
             'gcp-iam-organization-iam-policy-get': gcp_iam_organization_iam_policy_get_command,
             'gcp-iam-organization-iam-permission-test': gcp_iam_organization_iam_test_permission_command,
             'gcp-iam-organization-iam-member-add': gcp_iam_organization_iam_member_add_command,
             'gcp-iam-organization-iam-member-remove': gcp_iam_organization_iam_member_remove_command,
             'gcp-iam-organization-iam-policy-set': gcp_iam_organization_iam_policy_set_command,
             'gcp-iam-organization-iam-policy-create': gcp_iam_organization_iam_policy_add_command,
+            'gcp-iam-organization-iam-policy-remove': gcp_iam_organization_iam_policy_remove_command,
             'gcp-iam-group-create': gcp_iam_group_create_command,
             'gcp-iam-group-list': gcp_iam_group_list_command,
             'gcp-iam-group-get': gcp_iam_group_get_command,
@@ -2417,6 +3690,8 @@ def main() -> None:
             'gcp-iam-project-role-delete': gcp_iam_project_role_delete_command,
             'gcp-iam-testable-permission-list': gcp_iam_testable_permission_list_command,
             'gcp-iam-grantable-role-list': gcp_iam_grantable_role_list_command,
+            'gcp-iam-role-get': gcp_iam_predefined_role_get_command,
+            'gcp-iam-role-list': gcp_iam_predefined_role_list_command
         }
 
         if command in commands:

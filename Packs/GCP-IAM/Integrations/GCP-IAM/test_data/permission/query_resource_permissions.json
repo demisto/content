@@ -1,0 +1,17 @@
+{
+  "permissions": [
+    {
+      "name": "accessapproval.requests.approve",
+      "stage": "BETA"
+    },
+    {
+      "name": "accessapproval.requests.dismiss",
+      "stage": "BETA"
+    },
+    {
+      "name": "accessapproval.requests.get",
+      "stage": "BETA"
+    }
+  ],
+  "nextPageToken": "CoHBdMs86ZXsaXN0"
+}
