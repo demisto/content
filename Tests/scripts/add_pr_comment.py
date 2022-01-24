@@ -20,6 +20,8 @@ def add_pr_comment():
         response = requests.get(url + query, headers=headers)
         res_dict = response.json()
 
+        print(res_dict)
+
         if res_dict and res_dict.get('total_count', 0) == 1:
             issue_url = res_dict['items'][0].get('comments_url') if res_dict.get('items', []) else None
             if issue_url:
