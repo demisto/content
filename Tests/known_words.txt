@@ -64,3 +64,4 @@ GuardDuty
 NetWitness
 ASN
 NoneType
+CreateIncidents
