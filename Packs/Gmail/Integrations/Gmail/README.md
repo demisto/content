@@ -60,9 +60,6 @@ In order to revoke/fetch a user role, you need an Immutable Google Apps ID param
 | Search user mailboxes | [https://www.googleapis.com/auth/gmail.readonly](https://www.googleapis.com/auth/gmail.readonly) |
 | Delete emails from user mailbox | [https://mail.google.com](https://mail.google.com), [https://www.googleapis.com/auth/gmail.modify](https://www.googleapis.com/auth/gmail.modify) |
 | Fetch user security tokens | [https://www.googleapis.com/auth/admin.directory.user.security](https://www.googleapis.com/auth/admin.directory.user.security) |
-| Fetch mobile info | [https://www.googleapis.com/auth/admin.directory.device.mobile.readonly](https://www.googleapis.com/auth/admin.directory.device.mobile.readonly) |
-| Perform actions on mobile devices | [https://www.googleapis.com/auth/admin.directory.device.mobile.action](https://www.googleapis.com/auth/admin.directory.device.mobile.action) |
-| Perform actions on Chrome devices | [https://www.googleapis.com/auth/admin.directory.device.chromeos](https://www.googleapis.com/auth/admin.directory.device.chromeos) |
 | Block email addresses | [https://www.googleapis.com/auth/gmail.settings.basic](https://www.googleapis.com/auth/gmail.settings.basic) |
 | Get auto-replay messages from a user | [https://mail.google.com](https://mail.google.com), [https://www.googleapis.com/auth/gmail.modify](https://www.googleapis.com/auth/gmail.modify), [https://www.googleapis.com/auth/gmail.readonly](https://www.googleapis.com/auth/gmail.readonly) and [https://www.googleapis.com/auth/gmail.settings.basic](https://www.googleapis.com/auth/gmail.settings.basic) |
 | Set auto-replay messages | [https://www.googleapis.com/auth/gmail.settings.basic](https://www.googleapis.com/auth/gmail.settings.basic) |
