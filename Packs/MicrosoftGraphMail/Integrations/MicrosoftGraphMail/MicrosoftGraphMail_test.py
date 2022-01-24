@@ -325,6 +325,7 @@ def test_build_message(client):
         'to_recipients': ['dummy@recipient.com'],  # disable-secrets-detection
         'cc_recipients': ['dummyCC@recipient.com'],  # disable-secrets-detection
         'bcc_recipients': ['dummyBCC@recipient.com'],  # disable-secrets-detection
+        'reply_to': ['dummyreplyTo@recipient.com'],  # disable-secrets-detection
         'subject': 'Dummy Subject',
         'body': 'Dummy Body',
         'body_type': 'text',
@@ -342,6 +343,8 @@ def test_build_message(client):
                         'ccRecipients': [{'emailAddress': {'address': 'dummyCC@recipient.com'}}],
                         # disable-secrets-detection
                         'bccRecipients': [{'emailAddress': {'address': 'dummyBCC@recipient.com'}}],
+                        # disable-secrets-detection
+                        'replyTo': [{'emailAddress': {'address': 'dummyreplyTo@recipient.com'}}],
                         # disable-secrets-detection
                         'subject': 'Dummy Subject', 'body': {'content': 'Dummy Body', 'contentType': 'text'},
                         'bodyPreview': 'Dummy Body', 'importance': 'Normal', 'flag': {'flagStatus': 'flagged'},
@@ -510,7 +513,7 @@ SEND_MAIL_COMMAND_ARGS = [
             'to': ['ex@example.com'],
             'htmlBody': "<b>This text is bold</b>",
             'subject': "test subject",
-            'replyTo': "ex2@example.com,ex3@example.com",
+            'replyTo': ["ex2@example.com","ex3@example.com"],
             'from': "ex1@example.com"
         },
     ),
@@ -520,7 +523,7 @@ SEND_MAIL_COMMAND_ARGS = [
             'to': ['ex@example.com'],
             'htmlBody': "<b>This text is bold</b>",
             'subject': "test subject",
-            'replyTo': "ex2@example.com,ex3@example.com",
+            'replyTo': ["ex2@example.com","ex3@example.com"],
             'from': "ex1@example.com"
         },
     ),
@@ -530,7 +533,7 @@ SEND_MAIL_COMMAND_ARGS = [
             'to': ['ex@example.com'],
             'body': "test body",
             'subject': "test subject",
-            'replyTo': "ex2@example.com,ex3@example.com",
+            'replyTo': ["ex2@example.com","ex3@example.com"],
             'from': "ex1@example.com"
         }
     ),
@@ -540,7 +543,7 @@ SEND_MAIL_COMMAND_ARGS = [
             'to': ['ex@example.com'],
             'body': "test body",
             'subject': "test subject",
-            'replyTo': "ex2@example.com,ex3@example.com",
+            'replyTo': ["ex2@example.com","ex3@example.com"],
             'from': "ex1@example.com"
         }
     )
@@ -575,8 +578,8 @@ def test_send_mail_command(mocker, client, args):
         assert message.get('toRecipients')[0].get('emailAddress').get("address") == args.get('to')[0]
         assert message.get('body').get('content') == args.get('htmlBody') or args.get('body')
         assert message.get('subject') == args.get('subject')
-        assert message.get('replyTo')[0].get('emailAddress').get("address") == args.get('replyTo')
-        assert message.get('replyTo')[1].get('emailAddress').get("address") == args.get('replyTo')
+        assert message.get('replyTo')[0].get('emailAddress').get("address") == args.get('replyTo')[0]
+        assert message.get('replyTo')[1].get('emailAddress').get("address") == args.get('replyTo')[1]
 
 
 @pytest.mark.parametrize('server_url, expected_endpoint', [('https://graph.microsoft.us', 'gcc-high'),
