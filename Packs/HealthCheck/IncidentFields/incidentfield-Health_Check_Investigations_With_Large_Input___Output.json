@@ -17,30 +17,18 @@
             "script": "",
             "selectValues": null,
             "type": "shortText",
-            "width": 100
+            "width": 112
         },
         {
-            "displayName": "Date",
+            "displayName": "Size",
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,
-            "key": "date",
+            "key": "size",
             "required": false,
             "script": "",
             "selectValues": null,
             "type": "shortText",
-            "width": 100
-        },
-        {
-            "displayName": "Details",
-            "fieldCalcScript": "",
-            "isDefault": true,
-            "isReadOnly": false,
-            "key": "details",
-            "required": false,
-            "script": "",
-            "selectValues": null,
-            "type": "longText",
             "width": 150
         },
         {
@@ -53,7 +41,19 @@
             "script": "",
             "selectValues": null,
             "type": "shortText",
-            "width": 100
+            "width": 120
+        },
+        {
+            "displayName": "Details",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "details",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "longText",
+            "width": 150
         }
     ],
     "content": true,

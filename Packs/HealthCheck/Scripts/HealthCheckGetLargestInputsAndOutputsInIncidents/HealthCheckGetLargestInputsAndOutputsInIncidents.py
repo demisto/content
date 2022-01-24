@@ -156,17 +156,17 @@ def main():
             numIncidentsList = len(incidentsList)
             numIncidentsListBiggerThan10 = len(incidentsListBiggerThan10)
             analyzeFields = {
-                "healthcheckinvestigationsinputoutputbiggerthan1mb": format_table(incidentsList),
-                "healthcheckinvestigationsinputoutputbiggerthan10mb": format_table(incidentsListBiggerThan10),
-                "healthchecknumberofinvestigationsinputoutputbiggerthan1mb": numIncidentsList,
-                "healthchecknumberofinvestigationsinputoutputbiggerthan10mb": numIncidentsListBiggerThan10,
+                "healthcheckinvestigationswithlargeinputoutput": format_table(incidentsList),
+                #"healthcheckinvestigationsinputoutputbiggerthan10mb": format_table(incidentsListBiggerThan10),
+                #"healthchecknumberofinvestigationsinputoutputbiggerthan1mb": numIncidentsList,
+                #"healthchecknumberofinvestigationsinputoutputbiggerthan10mb": numIncidentsListBiggerThan10,
             }
             demisto.executeCommand('setIncident', analyzeFields)
 
             # Add actionable items
             DESCRIPTION = [
-                "incidents were found with large and input and output, improve your task configuration",
-                "incidents were found with large and input and output bigger than 10 MB, improve your task configuration"
+                "incidents were found with large input and output, improve your task configuration",
+                "incidents were found with very large input and output bigger than 10 MB, improve your task configuration"
             ]
             RESOLUTION = [
                 "Extending Context and Ignore Outputs: https://xsoar.pan.dev/docs/playbooks/playbooks-extend-context",
