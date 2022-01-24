@@ -9,4 +9,4 @@ This Agari Phishing Defense content pack contains an APD integration that provid
 - Does email authenticity check
 - Does remediation if malicious
  
-_For more information, visit (https://www.agari.com/email-security-blog/integration-cortex-xsoar/)_
+*For more information, visit (https://www.agari.com/email-security-blog/integration-cortex-xsoar)*
