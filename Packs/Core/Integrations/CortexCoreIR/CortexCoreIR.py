@@ -2603,6 +2603,7 @@ def run_polling_command(client: Client,
 
     ScheduledCommand.raise_error_if_not_supported()
     interval_in_secs = int(args.get('interval_in_seconds', 60))
+    timeout_in_seconds = int(args.get('timeout_in_seconds', 600))
     if command_decision_field not in args:
         # create new command run
         command_results = command_function(client, args)
@@ -2621,7 +2622,7 @@ def run_polling_command(client: Client,
                 command=cmd,
                 next_run_in_seconds=interval_in_secs,
                 args=polling_args,
-                timeout_in_seconds=600)
+                timeout_in_seconds=timeout_in_seconds)
             if isinstance(command_results, list):
                 command_results = command_results[0]
             command_results.scheduled_command = scheduled_command
@@ -2648,7 +2649,7 @@ def run_polling_command(client: Client,
             command=cmd,
             next_run_in_seconds=interval_in_secs,
             args=polling_args,
-            timeout_in_seconds=600)
+            timeout_in_seconds=timeout_in_seconds)
 
         # result with scheduled_command only - no update to the war room
         command_results = CommandResults(scheduled_command=scheduled_command)

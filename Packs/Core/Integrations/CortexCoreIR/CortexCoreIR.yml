@@ -61,6 +61,18 @@ script:
       required: false
       secret: false
     - default: false
+      description: Interval in seconds between each poll.
+      isArray: false
+      name: interval_in_seconds
+      required: false
+      secret: false
+    - default: false
+      description: Polling timeout in seconds.
+      isArray: false
+      name: timeout_in_seconds
+      required: false
+      secret: false
+    - default: false
       description: For polling use
       isArray: true
       name: action_id
@@ -129,6 +141,18 @@ script:
       required: false
       secret: false
       deprecated: true
+    - default: false
+      description: Interval in seconds between each poll.
+      isArray: false
+      name: interval_in_seconds
+      required: false
+      secret: false
+    - default: false
+      description: Polling timeout in seconds.
+      isArray: false
+      name: timeout_in_seconds
+      required: false
+      secret: false
     deprecated: false
     description: Reverses the isolation of an endpoint.
     execution: true
@@ -988,6 +1012,18 @@ script:
       required: false
       secret: false
       deprecated: true
+    - default: false
+      description: Interval in seconds between each poll.
+      isArray: false
+      name: interval_in_seconds
+      required: false
+      secret: false
+    - default: false
+      description: Polling timeout in seconds.
+      isArray: false
+      name: timeout_in_seconds
+      required: false
+      secret: false
     deprecated: false
     description: Quarantines a file on selected endpoints. You can select up to 1000
       endpoints.
@@ -1047,6 +1083,18 @@ script:
       required: false
       secret: false
       deprecated: true
+    - default: false
+      description: Interval in seconds between each poll.
+      isArray: false
+      name: interval_in_seconds
+      required: false
+      secret: false
+    - default: false
+      description: Polling timeout in seconds.
+      isArray: false
+      name: timeout_in_seconds
+      required: false
+      secret: false
     deprecated: false
     description: Restores a quarantined file on requested endpoints.
     execution: false
@@ -1161,6 +1209,18 @@ script:
       required: false
       secret: false
       deprecated: true
+    - default: false
+      description: Interval in seconds between each poll.
+      isArray: false
+      name: interval_in_seconds
+      required: false
+      secret: false
+    - default: false
+      description: Polling timeout in seconds.
+      isArray: false
+      name: timeout_in_seconds
+      required: false
+      secret: false
     deprecated: false
     description: Runs a scan on a selected endpoint. To scan all endpoints, run this
       command with argument all=true. Do note that scanning all the endpoints may
@@ -1629,6 +1689,18 @@ script:
       required: false
       secret: false
       deprecated: true
+    - default: false
+      description: Interval in seconds between each poll.
+      isArray: false
+      name: interval_in_seconds
+      required: false
+      secret: false
+    - default: false
+      description: Polling timeout in seconds.
+      isArray: false
+      name: timeout_in_seconds
+      required: false
+      secret: false
     deprecated: false
     description: Retrieves files from selected endpoints. You can retrieve up to 20
       files, from no more than 10 endpoints. At least one endpoint ID and one file
@@ -1869,6 +1941,18 @@ script:
       required: false
       secret: false
       deprecated: true
+    - default: false
+      description: Interval in seconds between each poll.
+      isArray: false
+      name: interval_in_seconds
+      required: false
+      secret: false
+    - default: false
+      description: Polling timeout in seconds.
+      isArray: false
+      name: timeout_in_seconds
+      required: false
+      secret: false
     deprecated: false
     description: Initiates a new endpoint script execution action using the provided
       snippet code.
@@ -2069,6 +2153,18 @@ script:
       required: false
       secret: false
       deprecated: true
+    - default: false
+      description: Interval in seconds between each poll.
+      isArray: false
+      name: interval_in_seconds
+      required: false
+      secret: false
+    - default: false
+      description: Polling timeout in seconds.
+      isArray: false
+      name: timeout_in_seconds
+      required: false
+      secret: false
     deprecated: false
     description: Initiate a new endpoint script execution of shell commands.
     execution: false
@@ -2118,6 +2214,18 @@ script:
       required: false
       secret: false
       deprecated: true
+    - default: false
+      description: Interval in seconds between each poll.
+      isArray: false
+      name: interval_in_seconds
+      required: false
+      secret: false
+    - default: false
+      description: Polling timeout in seconds.
+      isArray: false
+      name: timeout_in_seconds
+      required: false
+      secret: false
     deprecated: false
     description: Initiates a new endpoint script execution to delete the specified
       file.
@@ -2167,6 +2275,18 @@ script:
       required: false
       secret: false
       deprecated: true
+    - default: false
+      description: Interval in seconds between each poll.
+      isArray: false
+      name: interval_in_seconds
+      required: false
+      secret: false
+    - default: false
+      description: Polling timeout in seconds.
+      isArray: false
+      name: timeout_in_seconds
+      required: false
+      secret: false
     deprecated: false
     description: Initiates a new endpoint script execution to check if file exists.
     execution: false
@@ -2215,6 +2335,18 @@ script:
       required: false
       secret: false
       deprecated: true
+    - default: false
+      description: Interval in seconds between each poll.
+      isArray: false
+      name: interval_in_seconds
+      required: false
+      secret: false
+    - default: false
+      description: Polling timeout in seconds.
+      isArray: false
+      name: timeout_in_seconds
+      required: false
+      secret: false
     deprecated: false
     description: Initiates a new endpoint script execution kill process.
     execution: false
