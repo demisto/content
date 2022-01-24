@@ -139,15 +139,16 @@ _FAILED = False
 ID_SET = {}
 CONF: TestConf = None  # type: ignore[assignment]
 
-if os.path.isfile('./artifacts/id_set.json'):
-    with open('./artifacts/id_set.json', 'r') as conf_file:
+ARTIFACTS_FOLDER = os.getenv('ARTIFACTS_FOLDER', './artifacts')
+if os.path.isfile(os.path.join(ARTIFACTS_FOLDER, 'id_set.json')):
+    with open(os.path.join(ARTIFACTS_FOLDER, 'id_set.json'), 'r') as conf_file:
         ID_SET = json.load(conf_file)
-elif os.path.isfile('./artifacts/id_set_mp_v2.json'):
-    with open('./artifacts/id_set_mp_v2.json', 'r') as conf_file:
+elif os.path.isfile(os.path.join(ARTIFACTS_FOLDER, 'id_set_mp_v2.json')):
+    with open(os.path.join(ARTIFACTS_FOLDER, 'id_set_mp_v2.json'), 'r') as conf_file:
         ID_SET = json.load(conf_file)
 
-if os.path.isfile('./artifacts/conf.json'):
-    with open('./artifacts/conf.json', 'r') as conf_file:
+if os.path.isfile(os.path.join(ARTIFACTS_FOLDER, 'conf.json')):
+    with open(os.path.join(ARTIFACTS_FOLDER, 'conf.json'), 'r') as conf_file:
         CONF = TestConf(json.load(conf_file))
 
 
@@ -1358,7 +1359,7 @@ def create_filter_envs_file(from_version: str, to_version: str, documentation_ch
         }
 
     logging.info("Creating filter_envs.json with the following envs: {}".format(envs_to_test))
-    with open("./artifacts/filter_envs.json", "w") as filter_envs_file:
+    with open(os.path.join(ARTIFACTS_FOLDER, 'filter_envs.json'), 'w') as filter_envs_file:
         json.dump(envs_to_test, filter_envs_file)
 
 
@@ -1421,11 +1422,11 @@ def create_test_file(is_nightly, skip_save=False, path_to_pack=''):
 
     if not skip_save:
         logging.info("Creating filter_file.txt")
-        with open("./artifacts/filter_file.txt", "w") as filter_file:
+        with open(os.path.join(ARTIFACTS_FOLDER, 'filter_file.txt'), 'w') as filter_file:
             filter_file.write(tests_string)
         # content_packs_to_install.txt is not used in nightly build
         logging.info("Creating content_packs_to_install.txt")
-        with open("./artifacts/content_packs_to_install.txt", "w") as content_packs_to_install:
+        with open(os.path.join(ARTIFACTS_FOLDER, 'content_packs_to_install.txt'), 'w') as content_packs_to_install:
             content_packs_to_install.write(packs_to_install_string)
 
     if is_nightly:
