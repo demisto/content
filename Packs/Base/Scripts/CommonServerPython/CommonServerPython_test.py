@@ -14,7 +14,7 @@ from CommonServerPython import set_to_integration_context_with_retries, xml2json
     flattenCell, date_to_timestamp, datetime, camelize, pascalToSpace, argToList, \
     remove_nulls_from_dictionary, is_error, get_error, hash_djb2, fileResult, is_ip_valid, get_demisto_version, \
     IntegrationLogger, parse_date_string, IS_PY3, DebugLogger, b64_encode, parse_date_range, return_outputs, \
-    argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, ipv6Regex, batch, FeedIndicatorType, \
+    argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, ipv6Regex, urlRegex, batch, FeedIndicatorType, \
     encode_string_results, safe_load_json, remove_empty_elements, aws_table_to_markdown, is_demisto_version_ge, \
     appendContext, auto_detect_indicator_type, handle_proxy, get_demisto_version_as_str, get_x_content_info_headers, \
     url_to_clickable_markdown, WarningsHandler, DemistoException, SmartGetDict, JsonTransformer
@@ -3097,7 +3097,7 @@ def test_batch(iterable, sz, expected):
         assert expected[i] == item
 
 
-regexes_test = [
+ip_regexes_test = [
     (ipv4Regex, '192.168.1.1', True),
     (ipv4Regex, '192.168.1.1/24', False),
     (ipv4Regex, '192.168.a.1', False),
@@ -3119,7 +3119,7 @@ regexes_test = [
 ]
 
 
-@pytest.mark.parametrize('pattern, string, expected', regexes_test)
+@pytest.mark.parametrize('pattern, string, expected', ip_regexes_test)
 def test_regexes(pattern, string, expected):
     # (str, str, bool) -> None
     # emulates re.fullmatch from py3.4
@@ -3298,8 +3298,23 @@ INDICATOR_VALUE_AND_TYPE = [
     ('a', None),
     ('*castaneda-thornton.com', 'DomainGlob'),
     (
-        '53e6baa124f54462786f1122e98e38ff1be3de82fe2a96b1849a8637043fd847eec7e0f53307bddf7a066565292d500c36c941f1f3bb9dcac807b2f4a0bfce1b',
-        'File')
+        '53e6baa124f54462786f1122e98e38ff1be3de82fe2a96b1849a8637043f'
+        'd847eec7e0f53307bddf7a066565292d500c36c941f1f3bb9dcac807b2f4a0bfce1b', 'File'
+    ),
+    ('3.21.32.65/path', 'URL'),
+    ('19.117.63.253:28/other/path', 'URL'),
+    ('19.117.63.253:28/path', 'URL'),
+    ('1.1.1.1/7/server/somestring/something.php?fjjasjkfhsjasofds=sjhfhdsfhasld', 'URL'),
+    ('flake8.pycqa.org/en/latest', 'URL'),
+    ('2001:db8:85a3:8d3:1319:8a2e:370:7348/path/path', 'URL'),
+    ('2001:db8:85a3:8d3:1319:8a2e:370:7348/32/path/path', 'URL'),
+    ('https://google.com/sdlfdshfkle3247239elkxszmcdfdstgk4e5pt0/path/path/oatdsfk/sdfjjdf', 'URL'),
+    ('www.123.43.6.89/path', 'URL'),
+    ('https://15.12.76.123', 'URL'),
+    ('www.google.com/path', 'URL'),
+    ('2001:db8:85a3:8d3:1319:8a2e:370:7348/65/path/path', 'URL'),
+    ('2001:db8:3333:4444:5555:6666:7777:8888//32/path/path', 'URL'),
+    ('1.1.1.1/7/server', 'URL')
 ]
 
 
@@ -3324,6 +3339,38 @@ def test_auto_detect_indicator_type(indicator_value, indicatory_type):
         except Exception as e:
             assert str(e) == "Missing tldextract module, In order to use the auto detect function please" \
                              " use a docker image with it installed such as: demisto/jmespath"
+
+
+INVALID_INDICATOR_VALUES = [
+    "test",
+    "httn://bla.com/path",
+    "google.com*",
+    "1.1.1.1",
+    "1.1.1.1/32",
+    "path/path",
+    "1.1.1.1:8080",
+    "1.1.1.1:8080/",
+    "1.1.1.1:4lll/",
+    "2001:db8:85a3:8d3:1319:8a2e:370:7348/64/",
+    "2001:db8:85a3:8d3:1319:8a2e:370:7348/64",
+    "2001:db8:85a3:8d3:1319:8a2e:370:7348/32",
+    "flake8.pycqa.org",
+    "https://test",
+    "ftp://test",
+    "ftps:test",
+    "a.a.a.a",
+    "b.b.b",
+    "https:/1.1.1.1.1/path",
+    "wwww.test",
+    "help.test.com",
+    "help-test/com"
+    "wwww.path.com/path",
+]
+
+
+@pytest.mark.parametrize('indicator_value', INVALID_INDICATOR_VALUES)
+def test_invalid_url_indicator_types(indicator_value):
+    assert not re.match(urlRegex, indicator_value)
 
 
 def test_auto_detect_indicator_type_tldextract(mocker):
