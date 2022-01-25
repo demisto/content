@@ -1,0 +1,32 @@
+{
+    "associatedToAll": true,
+    "caseInsensitive": true,
+    "cliName": "cloudidentitytypename",
+    "closeForm": false,
+    "content": true,
+    "description": "Classification used to map identity type that initiated an operation which triggered an alert. For example, Service, Application and Temporary Credentials",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_cloudidentitytypename",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Cloud Identity Type Name",
+    "neverSetAsRequired": false,
+    "openEnded": true,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "multiSelect",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "5.5.0",
+	"x2_fields": "identity_type"
+}

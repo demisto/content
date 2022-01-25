@@ -1,0 +1,32 @@
+{
+    "associatedToAll": true,
+    "caseInsensitive": true,
+    "cliName": "mitreattcktechnique",
+    "closeForm": false,
+    "content": true,
+    "description": "Displays the type of MITRE ATT&CK technique and sub-technique on which the alert was triggered",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_mitreattcktechnique",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Mitre ATT&CK Technique",
+    "neverSetAsRequired": false,
+    "openEnded": true,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "multiSelect",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "5.5.0",
+    "x2_fields": "mitre_technique_id_and_name"
+}

@@ -1,0 +1,43 @@
+{
+    "associatedToAll": true,
+    "caseInsensitive": true,
+    "cliName": "protocolnames",
+    "closeForm": false,
+    "content": true,
+    "description": "Network traffic classification system that determines what an application is irrespective of port, protocol, encryption (SSH or SSL) or any other evasive tactic used by the application",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_protocolnames",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Protocol names",
+    "neverSetAsRequired": false,
+    "openEnded": true,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "multiSelect",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "5.5.0",
+	"x2_fields": "fw_app_id",
+    "Aliases": [
+        {
+          "cliName": "protocol",
+          "type": "shortText"
+        },
+        {
+          "cliName": "protocols",
+          "type": "shortText"  
+        }
+    ]
+
+}

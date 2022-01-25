@@ -1,0 +1,38 @@
+{
+    "associatedToAll": true,
+    "caseInsensitive": true,
+    "cliName": "appliancenames",
+    "closeForm": false,
+    "content": true,
+    "description": "Name of appliance on which the alert was raised.",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_appliancenames",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Appliance Names",
+    "neverSetAsRequired": false,
+    "openEnded": true,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "multiSelect",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "5.5.0",
+    "x2_fields": "fw_device_name",
+    "Aliases": [
+        {
+          "cliName": "appliancename",
+          "type": "shortText"
+        }
+      ]
+}

@@ -1,0 +1,37 @@
+{
+    "associatedToAll": true,
+    "caseInsensitive": true,
+    "cliName": "emailrecipients",
+    "closeForm": false,
+    "content": true,
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_emailrecipients",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Email Recipients",
+    "neverSetAsRequired": false,
+    "openEnded": true,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "multiSelect",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "5.5.0",
+	"x2_fields": "fw_email_recipient",
+    "Aliases": [
+        {
+          "cliName": "emailto",
+          "type": "shortText"
+        }
+      ]
+}

@@ -1,0 +1,32 @@
+{
+    "associatedToAll": true,
+    "caseInsensitive": true,
+    "cliName": "osparentprocesssigner",
+    "closeForm": false,
+    "content": true,
+    "description": "Parent operating system signer",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_osparentprocesssigner",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "OS Parent Process Signer",
+    "neverSetAsRequired": false,
+    "openEnded": true,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "multiSelect",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "5.5.0",
+	"x2_fields": "os_actor_process_signature_vendor"
+}

@@ -1,0 +1,115 @@
+{
+    "associatedToAll": true,
+    "caseInsensitive": true,
+    "cliName": "sourcehostnames",
+    "closeForm": false,
+    "content": true,
+    "description": "The hostname of the endpoint or server on which this alert triggered.",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_sourcehostnames",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Source Hostnames",
+    "neverSetAsRequired": false,
+    "openEnded": true,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "multiSelect",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "5.5.0",
+	"x2_fields": "agent_hostname",
+    "Aliases": [
+        {
+          "cliName": "sourcehostname",
+          "type": "multiSelect"
+        },
+        {
+            "cliName": "hostname",
+            "type": "shortText"
+          },
+          {
+            "cliName": "illusivenetworkshostname",
+            "type": "shortText"
+          },
+          {
+            "cliName": "infectedhostnames",
+            "type": "shortText"
+          },
+          {
+            "cliName": "infectedhosts",
+            "type": "grid"
+          },
+          {
+            "cliName": "infinipointhostname",
+            "type": "shortText"
+          },
+          {
+            "cliName": "prismacloudcomputehost",
+            "type": "shortText"
+          },
+          {
+            "cliName": "shadowitfqdn",
+            "type": "shortText"
+          },
+          {
+            "cliName": "sourcehostname",
+            "type": "shortText"
+          },
+          {
+            "cliName": "srchostname",
+            "type": "shortText"
+          },
+          {
+            "cliName": "threathuntingdetectedhostnames",
+            "type": "multiSelect"
+          },
+          {
+            "cliName": "tidyhost",
+            "type": "shortText"
+          },
+          {
+            "cliName": "bitsightassets",
+            "type": "longText"
+          },
+          {
+            "cliName": "bmcremedyforceclientname",
+            "type": "shortText"
+          },
+          {
+            "cliName": "darktracedevicehostname",
+            "type": "shortText"
+          },
+          {
+            "cliName": "digitalguardiancomputername",
+            "type": "shortText"
+          },
+          {
+            "cliName": "dnsname",
+            "type": "multiSelect"
+          },
+          {
+            "cliName": "expanseasset",
+            "type": "grid"
+          },
+          {
+            "cliName": "extrahophostname",
+            "type": "shortText"
+          },
+          {
+            "cliName": "googlecloudsccfindingsourcepropertieshostname",
+            "type": "shortText"
+          }
+    ]
+
+}

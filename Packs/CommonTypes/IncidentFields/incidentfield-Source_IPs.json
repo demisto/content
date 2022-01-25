@@ -1,8 +1,5 @@
 {
-  "associatedToAll": false,
-  "associatedTypes": [
-    "Qradar Generic"
-  ],
+  "associatedToAll": true,
   "breachScript": "",
   "caseInsensitive": true,
   "cliName": "sourceips",
@@ -27,7 +24,7 @@
   "ownerOnly": false,
   "placeholder": "",
   "propagationLabels": [
-    "all"
+      "all"
   ],
   "required": false,
   "script": "",
@@ -45,19 +42,13 @@
   "version": -1,
   "fromVersion": "6.0.0",
   "openEnded": true,
+  "x2_fields": "action_local_ip",
   "Aliases": [
     {
       "cliName": "sourceipoffense",
       "type": "multiSelect"
     },
-    {
-      "cliName": "digitalguardiansourceaddress",
-      "type": "shortText"
-    },
-    {
-      "cliName": "digitalguardiansourceip",
-      "type": "shortText"
-    },
+
     {
       "cliName": "f5silverlinegeolocationsourceip",
       "type": "shortText"
@@ -68,10 +59,6 @@
     },
     {
       "cliName": "f5silverlinetranslatedsourceip",
-      "type": "shortText"
-    },
-    {
-      "cliName": "irondefensesrcip",
       "type": "shortText"
     },
     {

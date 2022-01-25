@@ -1,8 +1,5 @@
 {
-  "associatedToAll": false,
-  "associatedTypes": [
-    "Qradar Generic"
-  ],
+  "associatedToAll": true,
   "breachScript": "",
   "caseInsensitive": true,
   "cliName": "destinationips",
@@ -45,6 +42,7 @@
   "version": -1,
   "fromVersion": "6.0.0",
   "openEnded": true,
+  "x2_fields": "action_remote_ip",
   "Aliases": [
     {
       "cliName": "digitalguardiandestinationaddress",

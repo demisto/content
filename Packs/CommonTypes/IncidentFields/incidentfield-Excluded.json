@@ -1,0 +1,32 @@
+{
+    "associatedToAll": true,
+    "caseInsensitive": true,
+    "cliName": "excluded",
+    "closeForm": false,
+    "content": true,
+    "description": "Whether the alert is excluded by an exclusion configuration",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_excluded",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Excluded",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "boolean",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "5.5.0",
+	"x2_fields": "is_whitelisted"
+}

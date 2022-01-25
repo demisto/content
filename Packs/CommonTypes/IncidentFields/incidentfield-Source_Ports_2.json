@@ -1,0 +1,52 @@
+{
+    "associatedToAll": true,
+    "associatedTypes": [],
+    "caseInsensitive": true,
+    "cliName": "sourceports",
+    "closeForm": false,
+    "content": true,
+    "description": "The source ports of the event.",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_sourceports",
+    "isExtractingSpecificIndicatorTypes": false,
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Source Ports",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "multiSelect",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0",
+    "openEnded": true,
+	"x2_fields": "action_local_port",
+    "Aliases": [
+        {
+          "cliName": "fireeyenxalertvictimport",
+          "type": "shortText"
+        },
+        {
+          "cliName": "fireeyenxeventvictimport",
+          "type": "shortText"
+        },
+        {
+          "cliName": "sourceport",
+          "type": "shortText"
+        },
+        {
+        "cliName": "srcports",
+        "type": "shortText" 
+        }      
+      ]
+}

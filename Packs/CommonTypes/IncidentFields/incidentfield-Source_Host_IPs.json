@@ -1,0 +1,46 @@
+{
+    "associatedToAll": true,
+    "caseInsensitive": true,
+    "cliName": "sourcehostips",
+    "closeForm": false,
+    "content": true,
+    "description": "IP address of the endpoint or server on which this alert triggered",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_sourcehostips",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Source Host IPs",
+    "neverSetAsRequired": false,
+    "openEnded": true,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "multiSelect",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "5.5.0",
+    "x2_fields": "agent_ip_addresses",
+    "Aliases": [
+      {
+        "cliName": "digitalguardiansourceaddress",
+        "type": "shortText"
+      },
+      {
+        "cliName": "digitalguardiansourceip",
+        "type": "shortText"
+      },
+      {
+        "cliName": "irondefensesrcip",
+        "type": "shortText"
+      }
+    ]
+}

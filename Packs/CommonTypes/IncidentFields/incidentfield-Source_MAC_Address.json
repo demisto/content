@@ -1,11 +1,5 @@
 {
-  "associatedToAll": false,
-  "associatedTypes": [
-    "Qradar Generic",
-    "FireEye NX IPS Event",
-    "FireEye NX Alert",
-    "FireEye EX Alert"
-  ],
+  "associatedToAll": true,
   "breachScript": "",
   "caseInsensitive": true,
   "cliName": "sourcemacaddress",
@@ -47,5 +41,6 @@
   "validationRegex": "",
   "version": -1,
   "fromVersion": "6.0.0",
-  "openEnded": true
+  "openEnded": true,
+  "x2_fields": "mac"
 }

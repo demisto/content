@@ -1,0 +1,32 @@
+{
+    "associatedToAll": true,
+    "caseInsensitive": true,
+    "cliName": "processsha256",
+    "closeForm": false,
+    "content": true,
+    "description": "The SHA256 hash value of the initiator.",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_processsha256",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Process SHA256",
+    "neverSetAsRequired": false,
+    "openEnded": true,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "multiSelect",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "5.5.0",
+	"x2_fields": "actor_process_image_sha256"
+}

@@ -1,8 +1,5 @@
 {
-  "associatedToAll": false,
-  "associatedTypes": [
-    "Qradar Generic"
-  ],
+  "associatedToAll": true,
   "breachScript": "",
   "caseInsensitive": true,
   "cliName": "srcports",
@@ -45,18 +42,7 @@
   "version": -1,
   "fromVersion": "6.0.0",
   "openEnded": true,
-  "Aliases": [
-    {
-      "cliName": "fireeyenxalertvictimport",
-      "type": "shortText"
-    },
-    {
-      "cliName": "fireeyenxeventvictimport",
-      "type": "shortText"
-    },
-    {
-      "cliName": "sourceport",
-      "type": "shortText"
-    }
-  ]
+  "marketplaces": [
+    "xsoar"
+ ]
 }

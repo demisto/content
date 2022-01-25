@@ -26,5 +26,12 @@
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "5.5.0",
-    "openEnded": true
+    "openEnded": true,
+    "x2_fields": "action_file_path",
+    "Aliases": [
+        {
+          "cliName": "filepath",
+          "type": "shortText"
+        }
+      ]
 }
