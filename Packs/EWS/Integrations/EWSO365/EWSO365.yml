@@ -1203,7 +1203,7 @@ script:
     description: Sends an email.
     execution: false
     name: send-mail
-  dockerimage: demisto/py3ews:1.0.0.26172
+  dockerimage: demisto/py3ews:1.0.0.23229
   feed: false
   isfetch: true
   longRunning: false
