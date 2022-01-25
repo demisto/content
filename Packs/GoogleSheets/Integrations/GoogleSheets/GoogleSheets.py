@@ -145,12 +145,59 @@ def markdown_single_get(response: dict) -> str:
     return markdown
 
 
+def markdown_new_single_get(response: dict) -> dict:
+    human_readable = {
+        'spreadsheet Id': response.get('spreadsheetId', {}),
+        'spreadsheet url': response.get('spreadsheetUrl', {}),
+    }
+
+    markdown = tableToMarkdown(response.get('properties', {}).get('title', {}), human_readable,
+                               headers=['spreadsheet Id', 'spreadsheet url'])
+    markdown += '\n'
+    markdown += make_markdown_matrix(response.get('Sheets'))
+
+
+def make_markdown_matrix(sheets : list) -> str:
+    markdown = ""
+    for sheet in sheets:
+        markdown += f'#{sheets.get("Title")}'
+
+        # find the max number of columns in the table
+        max_row_len = max(list(map(lambda elem: len(elem.get('Values')), sheet.get('RowData'))))
+        markdown += "\n|"
+        # this will form a header with no content
+        for i in range(max_row_len):
+            markdown += " |"
+        markdown += "\n"
+
+        markdown += '|'
+        for i in range(max_row_len):
+            markdown += str("-------------- | ")
+        markdown += "\n"
+
+        row_data = sheets.get('RowData')
+        for row in row_data:
+            markdown += '|'
+            # this is the list of values
+            values = row.get('Values')
+            for value in values:
+                markdown += value + ' |'
+            markdown += '\n'
+    return markdown
+
+
+
+
+
+
+
+
 def context_single_get_output(response: dict) -> dict:
     output_dict = {
-            "spreadsheetId": response.get('spreadsheetId'),
-            "spreadsheetUrl": response.get('spreadsheetUrl'),
-            "spreadsheetTitle": response.get('properties').get('title'),
-            "sheets": parse_sheets_for_get_response(response.get('sheets')),  # this is the array of sheets
+            "SpreadsheetId": response.get('spreadsheetId'),
+            "SpreadsheetUrl": response.get('spreadsheetUrl'),
+            "SpreadsheetTitle": response.get('properties').get('title'),
+            "Sheets": parse_sheets_for_get_response(response.get('sheets')),  # this is the array of sheets
     }
 
 
@@ -168,11 +215,11 @@ def parse_sheets_for_get_response(sheets: list) -> list:
             output_row_values = {"Values": []}
             # here we build the values per row list of the output
             if not response_values:     # if the row is empty append none
-                output_sheet.get('RowData').append(None)
+                output_sheet.get('RowData').append({'Values': {}})
             else:
                 for response_cell_data in response_values.get('values'):
                     if not response_cell_data:
-                        output_row_values.get('Values').append(None)
+                        output_row_values.get('Values').append('')
                     else:
                         output_row_values.get('Values').append(response_cell_data.get('formattedValue'))
                 output_sheet.get('RowData').append(output_row_values)
