@@ -1013,20 +1013,22 @@ def epo_command_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     header_list: List[Any]
     if 'headers' in args:
         headers_list = list(args['headers'].split(','))
+        md = tableToMarkdown(f'ePO command *{args["command"]}* results:', response_json, headers=headers_list)
     else:
         if isinstance(response_json, dict):
             headers_list = list(response_json.keys())
+            md = tableToMarkdown(f'ePO command *{args["command"]}* results:', response_json, headers=headers_list)
         elif isinstance(response_json, str):
-            md = f'#### ePO command *{args["command"]} * results:\n  {raw_response}'
-            headers_list = []
+            md = f'#### ePO command *{args["command"]} * results:\n  {response_json}'
         elif isinstance(response_json, list) and len(response_json) and isinstance(response_json[0], str):
             headers_list = "output"
+            md = tableToMarkdown(f'ePO command *{args["command"]}* results:', response_json, headers_list)
         else:
             try:
                 headers_list = list(set().union(*(entry.keys() for entry in response_json)))
+                md = tableToMarkdown(f'ePO command *{args["command"]}* results:', response_json, headers_list)
             except Exception:
-                headers_list = []
-    md = tableToMarkdown(f'ePO command *{args["command"]}* results:', response_json, headers=headers_list)
+                md = tableToMarkdown(f'ePO command *{args["command"]}* results:', response_json)
 
     return CommandResults(
         raw_response=raw_response,
