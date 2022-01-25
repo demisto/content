@@ -977,6 +977,7 @@ def enrich_offense_with_assets(client: Client, offense_ips: List[str]) -> List[D
             return client.assets_list(filter_=filter_query)
         except Exception as e:
             demisto.info(f'Failed getting assets for filter_query: {filter_query}. {e}')
+            return []
 
     offense_ips = [offense_ip for offense_ip in offense_ips if is_valid_ip(offense_ip)]
     # Submit addresses in batches to avoid overloading QRadar service
