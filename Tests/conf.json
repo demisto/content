@@ -1096,6 +1096,9 @@
             "playbookID": "ParseEmailFiles-test"
         },
         {
+            "playbookID": "ParseEmailFilesV2-test"
+        },
+        {
             "playbookID": "PAN-OS - Block IP and URL - External Dynamic List v2 Test",
             "integrations": [
                 "Panorama",
