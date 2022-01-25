@@ -1,6 +1,6 @@
-id: ParseEmailFiles-test
+id: ParseEmailFilesV2-test
 version: -1
-name: ParseEmailFiles-test
+name: ParseEmailFilesV2-test
 starttaskid: "0"
 tasks:
   "0":

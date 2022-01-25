@@ -124,5 +124,5 @@ tags:
 type: python
 fromversion: 5.0.0
 tests:
-- ParseEmailFiles-test
+- ParseEmailFilesV2-test
 dockerimage: devdemisto/parse-emails:1.0.0.26298
