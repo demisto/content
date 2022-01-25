@@ -18,8 +18,8 @@ jobs:
           python-version: '3.9'
       - name: Install Python Dependencies
         run: |
-          echo ${{ secrets.SECRET_CHECK_USER }}
-          echo ${{ secrets.SECRET_CHECK_PASS }}
+          echo ${{ secrets.TRIGGER_BUILD_USER }}
+          echo ${{ secrets.TRIGGER_BUILD_PASSWORD }}
           python -m pip install --upgrade pip
           pip install requests
           pip install -r dev-requirements-py3.txt
