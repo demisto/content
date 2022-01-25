@@ -1,6 +1,7 @@
 {
   "regex": "^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$",
   "details": "MAC Address",
+  "name": "SOME NAME",
   "disabled": false,
   "shouldPublish": true,
   "shouldCommit": true,
