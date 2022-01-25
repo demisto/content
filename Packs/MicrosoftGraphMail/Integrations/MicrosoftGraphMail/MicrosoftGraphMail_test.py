@@ -513,7 +513,7 @@ SEND_MAIL_COMMAND_ARGS = [
             'to': ['ex@example.com'],
             'htmlBody': "<b>This text is bold</b>",
             'subject': "test subject",
-            'replyTo': ["ex2@example.com","ex3@example.com"],
+            'replyTo': ["ex2@example.com", "ex3@example.com"],
             'from': "ex1@example.com"
         },
     ),
@@ -523,7 +523,7 @@ SEND_MAIL_COMMAND_ARGS = [
             'to': ['ex@example.com'],
             'htmlBody': "<b>This text is bold</b>",
             'subject': "test subject",
-            'replyTo': ["ex2@example.com","ex3@example.com"],
+            'replyTo': ["ex2@example.com", "ex3@example.com"],
             'from': "ex1@example.com"
         },
     ),
@@ -533,7 +533,7 @@ SEND_MAIL_COMMAND_ARGS = [
             'to': ['ex@example.com'],
             'body': "test body",
             'subject': "test subject",
-            'replyTo': ["ex2@example.com","ex3@example.com"],
+            'replyTo': ["ex2@example.com", "ex3@example.com"],
             'from': "ex1@example.com"
         }
     ),
@@ -543,7 +543,7 @@ SEND_MAIL_COMMAND_ARGS = [
             'to': ['ex@example.com'],
             'body': "test body",
             'subject': "test subject",
-            'replyTo': ["ex2@example.com","ex3@example.com"],
+            'replyTo': ["ex2@example.com", "ex3@example.com"],
             'from': "ex1@example.com"
         }
     )
