@@ -89,7 +89,7 @@ tasks:
       issueJson:
         simple: |-
           {"fields":
-            {"issuetype":{"name":"Request for Action"}},
+            {"issuetype":{"name":"Request for Action"},
             {"customfield_10040":123456}
           }
       issueTypeId:
