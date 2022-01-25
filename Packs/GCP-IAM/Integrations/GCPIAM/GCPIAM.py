@@ -1576,6 +1576,7 @@ def gcp_iam_project_iam_policy_set_command(client: Client, args: Dict[str, Any])
     project_name = args.get('project_name')
     policy = args.get('policy')
     if isinstance(policy, str):
+        policy = policy.replace("\'", "\"")
         if policy and not policy.startswith('['):
             policy = '[' + policy + ']'
 
@@ -1834,6 +1835,7 @@ def gcp_iam_folder_iam_policy_set_command(client: Client, args: Dict[str, Any]) 
     folder_name = args.get('folder_name')
     policy = args.get('policy')
     if isinstance(policy, str):
+        policy = policy.replace("\'", "\"")
         if policy and not policy.startswith('['):
             policy = '[' + policy + ']'
 
@@ -2085,6 +2087,7 @@ def gcp_iam_organization_iam_policy_set_command(client: Client, args: Dict[str, 
     organization_name = args.get('organization_name')
     policy = args.get('policy')
     if isinstance(policy, str):
+        policy = policy.replace("\'", "\"")
         if policy and not policy.startswith('['):
             policy = '[' + policy + ']'
 
