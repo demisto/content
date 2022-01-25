@@ -1,0 +1,83 @@
+{
+    "id": "indicator_cvss3",
+    "version": -1,
+    "modified": "2022-01-25T10:49:21.178513777Z",
+    "fromVersion": "5.5.0",
+    "name": "CVSS3",
+    "ownerOnly": false,
+    "cliName": "cvss3",
+    "type": "grid",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": true,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 2,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "CVE"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "columns": [
+        {
+            "key": "cvss31",
+            "displayName": "CVSS 3.1",
+            "type": "shortText",
+            "required": false,
+            "script": "",
+            "width": 167,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": true,
+            "selectValues": null
+        },
+        {
+            "key": "metrics",
+            "displayName": "Metrics",
+            "type": "shortText",
+            "required": false,
+            "script": "",
+            "width": 154,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        }
+    ],
+    "defaultRows": [
+        {
+            "cvss31": "Attack Vector"
+        },
+        {
+            "cvss31": "Attack Complexity"
+        },
+        {
+            "cvss31": "Privileges Required "
+        },
+        {
+            "cvss31": "User Interaction"
+        },
+        {
+            "cvss31": "Scope"
+        },
+        {
+            "cvss31": "Confidentiality"
+        },
+        {
+            "cvss31": "Integrity"
+        },
+        {
+            "cvss31": "Availibility"
+        }
+    ],
+    "sla": 0,
+    "threshold": 72
+}
