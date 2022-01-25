@@ -132,6 +132,7 @@ def prepare_args(command, args):
             'to_recipients': argToList(args.get('to')),
             'cc_recipients': argToList(args.get('cc')),
             'bcc_recipients': argToList(args.get('bcc')),
+            'replyTo': argToList(args.get('replyTo')),
             'subject': args.get('subject', ''),
             'body': email_body,
             'body_type': args.get('body_type', 'html'),
