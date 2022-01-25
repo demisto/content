@@ -13,6 +13,11 @@
             "is_mockable": false
         },
         {
+            "integrations": "RetriesIntegrationValid",
+            "playbookID": "valid-playbook",
+            "is_mockable": false
+        },
+        {
             "integrations": ["FeedMandiant", "Demisto REST API"],
             "playbookID": "Fetch Indicators Test",
             "fromversion": "6.1.0",
