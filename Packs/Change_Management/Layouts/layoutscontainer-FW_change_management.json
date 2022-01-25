@@ -1350,10 +1350,6 @@
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_lastmirroredintime",
-                        "isVisible": true
-                    },
-                    {
                         "fieldId": "incident_outgoingmirrorerror",
                         "isVisible": true
                     },
