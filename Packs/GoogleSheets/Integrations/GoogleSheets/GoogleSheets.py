@@ -57,7 +57,7 @@ def prepare_result(response: dict, args: dict) -> CommandResults:
 
     results = CommandResults(
         readable_output=markdown,
-        outputs_prefix='Spreadsheet',
+        outputs_prefix='GoogleSheets.Spreadsheet',
         outputs_key_field='spreadsheetId',
         outputs=outputs
     )
@@ -105,7 +105,6 @@ def handle_values_input(values: str) -> list:
     Returns:
          (list) A list of lists of the values for this example [[1,2,3],[4,5,6]...]
     """
-    # TODO check if this is none
     if not values:
         raise ValueError('Wrong format of values entered, please check the documentation')
     split_by_brackets = re.findall("\[(.*?)\]", values)
@@ -144,6 +143,58 @@ def markdown_single_get(response: dict) -> str:
     sheets_titles = create_list_id_title(list(sheets))
     markdown += tableToMarkdown('Content', sheets_titles, headers=['SheetId', 'Sheet title'])
     return markdown
+
+
+def context_single_get_output(response: dict) -> dict:
+    output_dict = {
+            "spreadsheetId": response.get('spreadsheetId'),
+            "spreadsheetUrl": response.get('spreadsheetUrl'),
+            "spreadsheetTitle": response.get('properties').get('title'),
+            "sheets": parse_sheets_for_get_response(response.get('sheets')),  # this is the array of sheets
+    }
+
+
+def parse_sheets_for_get_response(sheets: list) -> list:
+    sheet_lst = []
+    for sheet in sheets:
+        # take the properties and remove the sheetType property
+        output_sheet = sheet.get('properties', {})
+        del output_sheet['sheetType']
+        output_sheet['RowData'] = []
+        # take the rowData from the response
+        response_rows_data = sheet.get('data', {})[0].get('rowData')
+        # values is an array of CellData object
+        for response_values in response_rows_data:
+            output_row_values = {"Values": []}
+            # here we build the values per row list of the output
+            if not response_values:     # if the row is empty append none
+                output_sheet.get('RowData').append(None)
+            else:
+                for response_cell_data in response_values.get('values'):
+                    if not response_cell_data:
+                        output_row_values.get('Values').append(None)
+                    else:
+                        output_row_values.get('Values').append(response_cell_data.get('formattedValue'))
+                output_sheet.get('RowData').append(output_row_values)
+        sheet_lst.append(output_sheet)
+    return sheet_lst
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 # COMMANDS
@@ -203,7 +254,7 @@ def create_spreadsheet(service: Resource, args: dict) -> CommandResults:
     markdown = tableToMarkdown('Success', human_readable, headers=['spreadsheet Id', 'spreadsheet title'])
     results = CommandResults(
         readable_output=markdown,
-        outputs_prefix='Spreadsheet',
+        outputs_prefix='GoogleSheets.Spreadsheet',
         outputs_key_field='spreadsheetId',
         outputs=response
     )
@@ -258,7 +309,7 @@ def get_spreadsheet(service: Resource, args: dict) -> CommandResults:
 
         results = CommandResults(
             readable_output=markdown,
-            outputs_prefix='Spreadsheet',
+            outputs_prefix='GoogleSheets.Spreadsheet',
             outputs_key_field='spreadsheetId',
             outputs=response
         )
@@ -664,6 +715,8 @@ def build_and_authenticate(params: dict):
     """
     service_account_credentials = params.get('service_account_credentials', {})
     service_account_credentials = json.loads(service_account_credentials.get('password'))
+    if not isinstance(service_account_credentials, dict):
+        raise DemistoException('The service account credentials must be of type dict')
     credentials = service_account.ServiceAccountCredentials.from_json_keyfile_dict(service_account_credentials,
                                                                                    scopes=SCOPES)
     # add delegation to help manage the UI - link to a google-account

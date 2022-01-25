@@ -141,8 +141,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: The ranges to retrieve from the spreadsheet, Ranges are specified
-        using A1 notation.
+      description: The ranges to retrieve from the spreadsheet, Ranges are specified. using A1 notation.
+        A1 notation example Sheet1!A1:D5
+        For further explanation and examples - https://developers.google.com/sheets/api/guides/concepts#expandable-1
       isArray: true
       name: ranges
       required: false
@@ -366,7 +367,9 @@ script:
       isArray: false
       defaultValue: ""
     - name: range
-      description: TA1 notation or R1C1 notation of the values to clear.
+      description: A1 notation or R1C1 notation of the values to clear. 
+        A1 notation example Sheet1!A1:D5 
+        For further explanation and examples - https://developers.google.com/sheets/api/guides/concepts#expandable-1
       required: true
       isArray: false
       defaultValue: ""
@@ -707,7 +710,8 @@ script:
       isArray: false
       defaultValue: ""
     - name: range
-      description: The A1 notation of the values to update.
+      description: The A1 notation of the values to update. example - Sheet1!A1:D5
+        For further explanation and examples - https://developers.google.com/sheets/api/guides/concepts#expandable-1
       required: true
       isArray: false
       defaultValue: ""
@@ -757,7 +761,9 @@ script:
       defaultValue: ""
     - name: range
       description: The A1 notation of a range to search for a logical table of data.
-        Values are appended after the last row of the table.
+        Values are appended after the last row of the table. 
+        A1 notation example Sheet1!A1:D5 
+        For further explanation and examples - https://developers.google.com/sheets/api/guides/concepts#expandable-1
       required: true
       isArray: false
       defaultValue: ""

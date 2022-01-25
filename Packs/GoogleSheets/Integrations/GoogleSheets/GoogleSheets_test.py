@@ -27,6 +27,14 @@ def util_load_json(path):
 
 # HELPER FUNCTIONS
 
+def test_parse_get_response(mocker):
+    response = util_load_json('test_data/googleGetResponse.json')
+    sheets = response.get('sheets')
+    GoogleSheets.parse_sheets_for_get_response(sheets)
+
+
+
+
 def test_prepare_result_with_echo(mocker):
     '''
 
