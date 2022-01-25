@@ -29,6 +29,7 @@ TaskIDsInLogic = []
 TaskIDsInLogic.append('0')
 OutPutType = ""
 ConditionBranch = ""
+PlaybookIndex = -1
 NodesVisitedInThisSection = []
 NodesVisitedInAllSections = {}
 #  This is a 2 level associative array. First level is the ID of the section task and
@@ -85,7 +86,7 @@ def StartTable():
 
 def TraverseTasks(TaskID):
 
-    global retVal, document, Table, Paragraph, NodesVisitedInAllSections
+    global retVal, document, Table, Paragraph, NodesVisitedInAllSections, PlaybookIndex
     global OutPutType, ConditionBranch, NodesVisitedInThisSection, SectionID
 
     if (TaskID in NodesVisitedInThisSection):
@@ -97,6 +98,7 @@ def TraverseTasks(TaskID):
         return
 
     else:
+
         NodesVisitedInThisSection.append(TaskID)
         NodesVisitedInAllSections[SectionID] = NodesVisitedInThisSection
 
@@ -104,7 +106,8 @@ def TraverseTasks(TaskID):
         return
 
     else:
-        curTask = retVal[0]['tasks'][str(TaskID)]
+
+        curTask = retVal[PlaybookIndex]['tasks'][str(TaskID)]
 
         if 'description' in curTask['task'].keys():
             taskDescription = curTask['task']['description']
@@ -133,7 +136,7 @@ def TraverseTasks(TaskID):
         if (Type == 'title' or Type == 'start'):
 
             if (Type == 'title'):
-                if (curTask['nextTasks'] is not None):
+                if (curTask.get('nextTasks') is not None):
                     EnterHeader(Name)
                     if (OutPutType == 'TABLE'):
                         StartTable()
@@ -155,12 +158,12 @@ def TraverseTasks(TaskID):
             else:
                 StartParagraph(Name, Description)
 
-        if (curTask['nextTasks'] is not None):
+        if (curTask.get('nextTasks') is not None):
 
             if (curTask['type'] != 'condition'):
                 for NextTaskID in curTask['nextTasks']['#none#']:
-                    TypeOfNextTask = retVal[0]['tasks'][str(NextTaskID)]['task']['type']
-                    NameOfNextTask = retVal[0]['tasks'][str(NextTaskID)]['task']['name']
+                    TypeOfNextTask = retVal[PlaybookIndex]['tasks'][str(NextTaskID)]['task']['type']
+                    NameOfNextTask = retVal[PlaybookIndex]['tasks'][str(NextTaskID)]['task']['name']
 
                     if (TypeOfNextTask == 'title'):
                         NameOfNextTask = NameOfNextTask + " - Section "
@@ -169,6 +172,7 @@ def TraverseTasks(TaskID):
                         NameOfNextTask = NameOfNextTask + " (Condition branch->" + ConditionBranch + ")"
 
                     if (TypeOfNextTask != 'title'):
+
                         TraverseTasks(NextTaskID)
 
                     else:
@@ -181,10 +185,11 @@ def TraverseTasks(TaskID):
                         if (str(NextTaskID) not in TaskIDsInLogic):
                             TaskIDsInLogic.append(str(NextTaskID))
             else:
-                for TempKeys in curTask['nextTasks']:
+                for TempKeys in curTask.get('nextTasks'):
+
                     for NextTaskID in curTask['nextTasks'][TempKeys]:
-                        TypeOfNextTask = retVal[0]['tasks'][str(NextTaskID)]['task']['type']
-                        NameOfNextTask = retVal[0]['tasks'][str(NextTaskID)]['task']['name']
+                        TypeOfNextTask = retVal[PlaybookIndex]['tasks'][str(NextTaskID)]['task']['type']
+                        NameOfNextTask = retVal[PlaybookIndex]['tasks'][str(NextTaskID)]['task']['name']
 
                         ConditionBranch = TempKeys
 
@@ -197,6 +202,7 @@ def TraverseTasks(TaskID):
                         NameOfNextTask = NameOfNextTask + " (Condition branch->" + ConditionBranch + ")"
 
                         if (TypeOfNextTask != 'title'):
+
                             TraverseTasks(NextTaskID)
 
                         else:
@@ -219,7 +225,8 @@ def TraverseTasks(TaskID):
 
 def main():
 
-    global retVal, TaskIDsInLogic, NodesVisitedInThisSection
+    # print ("Test")
+    global retVal, TaskIDsInLogic, NodesVisitedInThisSection, PlaybookIndex
     global document, SectionID
     global OutPutType
     global ConditionBranch
@@ -247,7 +254,26 @@ def main():
 
     document.add_heading(TempStr, 0)
     retVal = post_api_request(DEMISTO_PLAYBOOKS_PATH, {"query": PlaybookName}).get("playbooks")
+
+    if (retVal is None):
+        demisto.results("Playbook not found. Please check the Playbook name.")
+        return
+
     i = 0
+    j = 0
+
+    while j < len(retVal):
+
+        PlaybookNameTempStr = retVal[j].get('id')
+
+        if (PlaybookNameTempStr == PlaybookName):
+            PlaybookIndex = j
+
+        j = j + 1
+
+    if (PlaybookIndex == -1):
+        demisto.results("Playbook not found. Please check the Playbook name.")
+        return
 
     while (TaskIDsInLogic[i] is not None):
         ConditionBranch = ""
