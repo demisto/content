@@ -3,6 +3,5 @@ ignore=RM106
 
 [file:pack_metadata.json]
 ignore=PA129
-ignore=RN106
 
 
