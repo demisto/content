@@ -1,0 +1,160 @@
+id: majority-valid-playbook
+version: 5
+vcShouldKeepItemLegacyProdMachine: false
+name: majority-valid-playbook
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: afef7137-3200-4e95-8fa8-3158a7d2a9c5
+    type: start
+    task:
+      id: afef7137-3200-4e95-8fa8-3158a7d2a9c5
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 6f403049-7b84-4ba6-8eb8-e39e75e85723
+    type: regular
+    task:
+      id: 6f403049-7b84-4ba6-8eb8-e39e75e85723
+      version: -1
+      name: majority-valid-playbook
+      description: |-
+        Searches Demisto incidents.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: SearchIncidentsV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      query:
+        simple: name:"majority-valid-playbook"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 706b77d2-829b-46ac-8b94-486932c850cc
+    type: condition
+    task:
+      id: 706b77d2-829b-46ac-8b94-486932c850cc
+      version: -1
+      name: check num of incidents
+      description: "Gets a value and return it. This is to be used in playbook conditional
+        tasks - get a value from incident field, label or context, and act accordingly.
+        \nIf an array is returned. the first value will be the decision making value."
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              complex:
+                root: foundIncidents
+                accessor: id
+                transformers:
+                - operator: count
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 8530efdc-8bf4-472e-8537-1a57d6828147
+    type: title
+    task:
+      id: 8530efdc-8bf4-472e-8537-1a57d6828147
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
