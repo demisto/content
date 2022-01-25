@@ -50,6 +50,10 @@
                     "complex": null,
                     "simple": "resource.type"
                 },
+                "Wiz Resource Native Type": {
+                    "complex": null,
+                    "simple": "resource.nativeType"
+                },
                 "severity": {
                     "complex": {
                         "accessor": "severity",
