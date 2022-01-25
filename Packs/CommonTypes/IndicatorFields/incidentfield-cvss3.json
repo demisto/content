@@ -28,8 +28,8 @@
     "caseInsensitive": true,
     "columns": [
         {
-            "key": "cvss31",
-            "displayName": "CVSS 3.1",
+            "key": "metric",
+            "displayName": "Metric",
             "type": "shortText",
             "required": false,
             "script": "",
@@ -40,8 +40,8 @@
             "selectValues": null
         },
         {
-            "key": "metrics",
-            "displayName": "Metrics",
+            "key": "values",
+            "displayName": "Values",
             "type": "shortText",
             "required": false,
             "script": "",
