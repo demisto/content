@@ -1068,28 +1068,36 @@ def reformat_filter(fields_to_filter_by):
     return filter_req
 
 
-def get_file_related_machines_command(client: MsClient, args: dict):
+def get_file_related_machines_command(client: MsClient, args: dict) -> CommandResults:
     """Retrieves a collection of Machines related to a given file hash.
 
     Returns:
-        (str, dict, dict). Human readable, context, raw response
+       CommandResults. Human readable, context, raw response
     """
     headers = ['ID', 'ComputerDNSName', 'OSPlatform', 'LastIPAddress', 'LastExternalIPAddress', 'HealthStatus',
                'RiskScore', 'ExposureLevel']
-    file = args.get('file_hash')
-    machines_response = client.get_file_related_machines(file)
-    machines_list = get_machines_list(machines_response)
+    files = argToList(args.get('file_hash'))
+    raw_response = []
+    context_outputs = []
+    all_machines_outputs = []
+    for file in files:
+        machines_response = client.get_file_related_machines(file)
+        raw_response.append(machines_response)
 
-    context_output = {
-        'File': file,
-        'Machines': machines_list
-    }
-    entry_context = {
-        'MicrosoftATP.FileMachine(val.ID === obj.ID)': context_output
-    }
-    human_readable = tableToMarkdown(f'Microsoft Defender ATP machines related to file {file}', machines_list,
+        for machine in machines_response['value']:
+            all_machines_outputs.append(get_machine_data(machine))
+
+        context_outputs.append({
+            'File': file,
+            'Machines': get_machines_list(machines_response)
+        })
+
+    human_readable = tableToMarkdown(f'Microsoft Defender ATP machines related to files {files}', all_machines_outputs,
                                      headers=headers, removeNull=True)
-    return human_readable, entry_context, machines_response
+    return CommandResults(readable_output=human_readable,
+                          outputs=context_outputs,
+                          outputs_prefix="MicrosoftATP.FileMachine",
+                          raw_response=raw_response)
 
 
 def parse_ip_addresses(ip_addresses: List[Dict]) -> List[Dict]:
@@ -2619,7 +2627,7 @@ def main():
             return_outputs(*get_machines_command(client, args))
 
         elif command == 'microsoft-atp-get-file-related-machines':
-            return_outputs(*get_file_related_machines_command(client, args))
+            return_results(get_file_related_machines_command(client, args))
 
         elif command == 'microsoft-atp-get-machine-details':
             return_results(get_machine_details_command(client, args))

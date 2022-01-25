@@ -318,8 +318,8 @@ script:
       type: String
   - arguments:
     - default: false
-      description: File SHA1 hash to get the related machines.
-      isArray: false
+      description: A comma-separated list of file SHA1 hash to get the related machines.
+      isArray: true
       name: file_hash
       required: true
       secret: false

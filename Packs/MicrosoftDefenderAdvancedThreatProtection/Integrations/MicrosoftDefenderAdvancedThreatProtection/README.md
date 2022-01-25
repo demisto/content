@@ -421,104 +421,167 @@ Gets a collection of machines related to a given file's SHA1 hash.
 ##### Required Permissions
 Machine.ReadWrite.All
 
-##### Base Command
+#### Base Command
 
 `microsoft-atp-get-file-related-machines`
-##### Input
+#### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| file_hash | The file's SHA1 hash to get the related machines. | Required | 
+| file_hash | A comma-separated list of file SHA1 hash to get the related machines. | Required | 
 
 
-##### Context Output
+#### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftATP.FileMachine.Machines.ID | String | The ID of the machine. | 
-| MicrosoftATP.FileMachine.Machines.ComputerDNSName | String | The DNS name of the machine. | 
-| MicrosoftATP.FileMachine.Machines.FirstSeen | Date | The first date and time when the machine was observed by Microsoft Defender ATP. | 
-| MicrosoftATP.FileMachine.Machines.LastSeen | Date | The last date and time when the machine was observed by Microsoft Defender ATP. | 
+| MicrosoftATP.FileMachine.Machines.ID | String | The machine ID. | 
+| MicrosoftATP.FileMachine.Machines.ComputerDNSName | String | The machine DNS name. | 
+| MicrosoftATP.FileMachine.Machines.FirstSeen | Date | The first date and time where the machine was observed by Microsoft Defender ATP. | 
+| MicrosoftATP.FileMachine.Machines.LastSeen | Date | The last date and time where the machine was observed by Microsoft Defender ATP. | 
 | MicrosoftATP.FileMachine.Machines.OSPlatform | String | The operating system platform. | 
 | MicrosoftATP.FileMachine.Machines.OSVersion | String | The operating system version. | 
 | MicrosoftATP.Machine.OSProcessor | String | The operating system processor. | 
-| MicrosoftATP.FileMachine.Machines.OSBuild | Number | The operating system build number. | 
-| MicrosoftATP.FileMachine.Machines.LastIPAddress | String | The last IP address on the machine. | 
-| MicrosoftATP.FileMachine.Machines.LastExternalIPAddress | String | The last machine IP address to access the internet. | 
-| MicrosoftATP.FileMachine.Machines.HelathStatus | String | The health status of the machine. | 
-| MicrosoftATP.FileMachine.Machines.RBACGroupID | Number | The RBAC group ID of the machine.| 
-| MicrosoftATP.FileMachine.Machines.RBACGroupName | String | The RBAC group name of the machine. | 
-| MicrosoftATP.FileMachine.Machines.RiskScore | String | The risk score of the machine. | 
-| MicrosoftATP.FileMachine.Machines.ExposureLevel | String | The exposure score of the machine. | 
-| MicrosoftATP.FileMachine.Machines.IsAADJoined | Boolean | Whether the machine is AAD joined. | 
-| MicrosoftATP.FileMachine.Machines.AADDeviceID | string | The AAD device ID. | 
-| MicrosoftATP.FileMachine.Machines.MachineTags | String | The set of machine tags. | 
+| MicrosoftATP.FileMachine.Machines.OSBuild | Number | Operating system build number. | 
+| MicrosoftATP.FileMachine.Machines.LastIPAddress | String | The last IP on the machine. | 
+| MicrosoftATP.FileMachine.Machines.LastExternalIPAddress | String | The last machine IP to access the internet. | 
+| MicrosoftATP.FileMachine.Machines.HelathStatus | String | The machine health status. | 
+| MicrosoftATP.FileMachine.Machines.RBACGroupID | Number | The machine RBAC group ID. | 
+| MicrosoftATP.FileMachine.Machines.RBACGroupName | String | The machine RBAC group name. | 
+| MicrosoftATP.FileMachine.Machines.RiskScore | String | The machine risk score. | 
+| MicrosoftATP.FileMachine.Machines.ExposureLevel | String | The machine exposure score. | 
+| MicrosoftATP.FileMachine.Machines.IsAADJoined | Boolean | True if machine is AAD joined, False otherwise. | 
+| MicrosoftATP.FileMachine.Machines.AADDeviceID | string | The AAD Device ID. | 
+| MicrosoftATP.FileMachine.Machines.MachineTags | String | Set of machine tags. | 
 | MicrosoftATP.FileMachine.File | String | The machine related file hash. | 
 
-
-##### Command Example
-```!microsoft-atp-get-file-related-machines file_hash=36c5d12033b2eaf251bae61c00690ffb17fddc87```
-
-##### Context Example
-```
+#### Command example
+```!microsoft-atp-get-file-related-machines file_hash=3395856ce81f2b7382dee72602f798b642f14140,4c2a702b1d4222d1c7acffdeee5b90cdbf135918```
+#### Context Example
+```json
 {
-    "MicrosoftATP.FileMachine": {
-        "Machines": [
+    "MicrosoftATP": {
+        "FileMachine": [
             {
-                "OSBuild": 18363, 
-                "ExposureLevel": "Medium", 
-                "OSPlatform": "Windows10", 
-                "MachineTags": [
-                    "test Tag 2", 
-                    "test Tag 5"
-                ], 
-                "AADDeviceID": "cfcf4177-227e-4cdb-ac8e-f9a3da1ca30c", 
-                "ComputerDNSName": "desktop-s2455r8", 
-                "RBACGroupID": 0, 
-                "OSProcessor": "x64", 
-                "HealthStatus": "Active", 
-                "AgentVersion": "10.6940.18362.693", 
-                "LastExternalIPAddress": "81.166.99.236", 
-                "LastIPAddress": "192.168.1.73", 
-                "OSVersion": "1909", 
-                "RiskScore": "High", 
-                "ID": "4899036531e374137f63289c3267bad772c13fef", 
-                "FirstSeen": "2020-02-17T08:30:07.2415577Z", 
-                "LastSeen": "2020-03-23T08:10:41.473428Z"
-            }, 
+                "File": "3395856ce81f2b7382dee72602f798b642f14140",
+                "Machines": [
+                    {
+                        "AgentVersion": "10.8040.19041.1466",
+                        "ComputerDNSName": "desktop-s2455r9",
+                        "ExposureLevel": "Medium",
+                        "FirstSeen": "2020-02-20T14:44:11.4627779Z",
+                        "HealthStatus": "Active",
+                        "ID": "f70f9fe6b29cd9511652434919c6530618f06606",
+                        "IPAddresses": [
+                            {
+                                "ipAddress": "192.168.1.78",
+                                "macAddress": "00505694D20C",
+                                "operationalStatus": "Up",
+                                "type": "Ethernet"
+                            },
+                            {
+                                "ipAddress": "fe80::f9e6:df59:3177:11dc",
+                                "macAddress": "00505694D20C",
+                                "operationalStatus": "Up",
+                                "type": "Ethernet"
+                            },
+                            {
+                                "ipAddress": "127.0.0.1",
+                                "macAddress": "",
+                                "operationalStatus": "Up",
+                                "type": "SoftwareLoopback"
+                            },
+                            {
+                                "ipAddress": "::1",
+                                "macAddress": "",
+                                "operationalStatus": "Up",
+                                "type": "SoftwareLoopback"
+                            }
+                        ],
+                        "IsAADJoined": true,
+                        "LastExternalIPAddress": "82.166.99.236",
+                        "LastIPAddress": "192.168.1.78",
+                        "LastSeen": "2022-01-25T11:14:39.7435843Z",
+                        "MachineTags": [
+                            "new test",
+                            "test add tag",
+                            "testing123"
+                        ],
+                        "OSBuild": 19042,
+                        "OSPlatform": "Windows10",
+                        "OSProcessor": "x64",
+                        "OSVersion": "20H2",
+                        "RBACGroupID": 0,
+                        "RiskScore": "Medium"
+                    }
+                ]
+            },
             {
-                "OSBuild": 18363, 
-                "ExposureLevel": "Medium", 
-                "OSPlatform": "Windows10", 
-                "MachineTags": [
-                    "test add tag", 
-                    "testing123"
-                ], 
-                "ComputerDNSName": "desktop-s2455r9", 
-                "RBACGroupID": 0, 
-                "OSProcessor": "x64", 
-                "HealthStatus": "Active", 
-                "AgentVersion": "10.6940.18362.693", 
-                "LastExternalIPAddress": "81.166.99.236", 
-                "LastIPAddress": "192.168.1.73", 
-                "OSVersion": "1909", 
-                "RiskScore": "Medium", 
-                "ID": "f70f9fe6b29cd9511652434919c6530618f06606", 
-                "FirstSeen": "2020-02-20T14:44:11.4627779Z", 
-                "LastSeen": "2020-03-23T07:55:50.9986715Z"
+                "File": "4c2a702b1d4222d1c7acffdeee5b90cdbf135918",
+                "Machines": [
+                    {
+                        "AADDeviceID": "cfcf4177-227e-4cdb-ac8e-f9a3da1ca30c",
+                        "AgentVersion": "10.8040.19041.1466",
+                        "ComputerDNSName": "desktop-s2455r8",
+                        "ExposureLevel": "Medium",
+                        "FirstSeen": "2020-02-17T08:30:07.2415577Z",
+                        "HealthStatus": "Active",
+                        "ID": "4899036531e374137f63289c3267bad772c13fef",
+                        "IPAddresses": [
+                            {
+                                "ipAddress": "192.168.1.77",
+                                "macAddress": "005056941386",
+                                "operationalStatus": "Up",
+                                "type": "Ethernet"
+                            },
+                            {
+                                "ipAddress": "fe80::5c79:dd40:bc6e:23e1",
+                                "macAddress": "005056941386",
+                                "operationalStatus": "Up",
+                                "type": "Ethernet"
+                            },
+                            {
+                                "ipAddress": "127.0.0.1",
+                                "macAddress": "",
+                                "operationalStatus": "Up",
+                                "type": "SoftwareLoopback"
+                            },
+                            {
+                                "ipAddress": "::1",
+                                "macAddress": "",
+                                "operationalStatus": "Up",
+                                "type": "SoftwareLoopback"
+                            }
+                        ],
+                        "IsAADJoined": true,
+                        "LastExternalIPAddress": "82.166.99.236",
+                        "LastIPAddress": "192.168.1.77",
+                        "LastSeen": "2022-01-25T11:19:44.718919Z",
+                        "MachineTags": [
+                            "test Tag 2",
+                            "test Tag 5"
+                        ],
+                        "OSBuild": 19043,
+                        "OSPlatform": "Windows10",
+                        "OSProcessor": "x64",
+                        "OSVersion": "21H1",
+                        "RBACGroupID": 0,
+                        "RiskScore": "Low"
+                    }
+                ]
             }
-        ], 
-        "File": "36c5d12033b2eaf251bae61c00690ffb17fddc87"
+        ]
     }
 }
 ```
 
-##### Human Readable Output
-##### Microsoft Defender ATP machines related to file 36c5d12033b2eaf251bae61c00690ffb17fddc87
-|ID|ComputerDNSName|OSPlatform|LastIPAddress|LastExternalIPAddress|HealthStatus|RiskScore|ExposureLevel|
-|---|---|---|---|---|---|---|---|
-| 4899036531e374137f63289c3267bad772c13fef | desktop-s2455r8 | Windows10 | 192.168.1.71 | 81.166.99.236 | Active | High | Medium |
-| f70f9fe6b29cd9511652434919c6530618f06606 | desktop-s2455r9 | Windows10 | 192.168.1.73 | 81.166.99.236 | Active | Medium | Medium |
+#### Human Readable Output
+
+>### Microsoft Defender ATP machines related to files ['3395856ce81f2b7382dee72602f798b642f14140', '4c2a702b1d4222d1c7acffdeee5b90cdbf135918']
+>|ID|ComputerDNSName|OSPlatform|LastIPAddress|LastExternalIPAddress|HealthStatus|RiskScore|ExposureLevel|
+>|---|---|---|---|---|---|---|---|
+>| f70f9fe6b29cd9511652434919c6530618f06606 | desktop-s2455r9 | Windows10 | 192.168.1.78 | 82.166.99.236 | Active | Medium | Medium |
+>| 4899036531e374137f63289c3267bad772c13fef | desktop-s2455r8 | Windows10 | 192.168.1.77 | 82.166.99.236 | Active | Low | Medium |
 
 
 ### 5. microsoft-atp-get-machine-details
