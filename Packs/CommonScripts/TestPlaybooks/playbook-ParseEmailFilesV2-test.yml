@@ -750,7 +750,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: Email.Headers.value
+              simple: Email.HeadersMap.X-Sender
             iscontext: true
           right:
             value:
@@ -758,7 +758,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: Email.Headers.value
+              simple: Email.HeadersMap.X-Receiver
             iscontext: true
           right:
             value:
@@ -766,7 +766,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: Email.Headers.value
+              simple: Email.HeadersMap.Received
             iscontext: true
           right:
             value:
