@@ -91,4 +91,3 @@ def test_safe_get_file_reputation_returned_rep(mocker):
 
     mocker.patch.object(tie_client, "get_file_reputation", return_value='test_value')
     assert mcafee_tie.safe_get_file_reputation(tie_client, hash_param)
-
