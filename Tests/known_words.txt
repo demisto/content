@@ -62,4 +62,9 @@ unicode
 CloudWatchLogs
 GuardDuty
 NetWitness
+ASN
+NoneType
+CreateIncidents
+EML
+
 Gitlab

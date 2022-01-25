@@ -4941,6 +4941,11 @@
             "integrations": "AzureRiskyUsers"
         },
         {
+            "playbookID": "playbook-AzureKeyVault-Test",
+            "fromversion": "6.0.0",
+            "integrations": "AzureKeyVault"
+        },
+        {
             "integrations": "KafkaV3",
             "playbookID": "KafkaV3 Test"
         },
@@ -5204,6 +5209,7 @@
         "FraudWatch": "Issue 34299",
         "Cisco Stealthwatch": "No instance - developed by Qmasters",
         "AzureRiskyUsers": "No instance - developed by Qmasters",
+        "AzureKeyVault": "No instance - developed by Qmasters",
         "Armis": "No instance - developed by SOAR Experts",
         
         "_comment2": "~~~ UNSTABLE ~~~",
