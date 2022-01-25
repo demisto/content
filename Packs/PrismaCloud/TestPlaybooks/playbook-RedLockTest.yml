@@ -1089,7 +1089,7 @@ tasks:
       time-range-unit:
         simple: hour
       time-range-value:
-        simple: "3"
+        simple: "1"
     separatecontext: false
     view: |-
       {
@@ -1128,7 +1128,7 @@ tasks:
       time-range-unit:
         simple: day
       time-range-value:
-        simple: "2"
+        simple: "1"
     separatecontext: false
     view: |-
       {
