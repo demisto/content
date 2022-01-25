@@ -2,6 +2,7 @@ from typing import List, Tuple, Optional
 
 # IMPORTS
 import requests
+import regex
 from CommonServerUserPython import *
 
 from CommonServerPython import *
@@ -55,20 +56,12 @@ class Client(BaseClient):
         Returns:
             str: The type of the indicator.
         """
-        if ip_type := FeedIndicatorType.ip_to_indicator_type(indicator):
-            # catch URLs of type X.X.X.X/path/url or X.X.X.X:portNum/path/url or X.X.X.X/cidrNumber/path/url
-            # or X.X.X.X:portNum/path
-            if indicator.count('/') > 1 or (
-                ip_type in (FeedIndicatorType.IP, FeedIndicatorType.IPv6) and indicator.count('/') == 1
-            ):
-                return FeedIndicatorType.URL
+        if re.match(urlRegex, indicator):
+            return FeedIndicatorType.URL
+        elif ip_type := FeedIndicatorType.ip_to_indicator_type(indicator):
             return ip_type
         elif re.match(sha256Regex, indicator):
             return FeedIndicatorType.File
-        # in AutoFocus, URLs include a path while domains do not - so '/' is a good sign for us to catch URLs.
-        # catch URLs of type X.X.X.X/path
-        elif '/' in indicator:
-            return FeedIndicatorType.URL
         else:
             return FeedIndicatorType.Domain
 
