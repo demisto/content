@@ -1,3 +1,4 @@
+import copy
 from typing import Tuple, List, Dict
 from CommonServerPython import *
 import urllib3
@@ -1145,39 +1146,40 @@ def print_ip_addresses(parsed_ip_addresses: List[Dict]) -> str:
     return '\n'.join(string_rows)
 
 
-def get_machine_details_command(client: MsClient, args: dict):
+def get_machine_details_command(client: MsClient, args: dict) -> CommandResults:
     """Retrieves specific Machine by its machine ID or computer name.
 
     Returns:
-        (str, dict, dict). Human readable, context, raw response
+        CommandResults. Human readable, context, raw response
     """
     headers = ['ID', 'ComputerDNSName', 'OSPlatform', 'LastIPAddress', 'LastExternalIPAddress', 'HealthStatus',
                'RiskScore', 'ExposureLevel', 'IPAddresses']
-    machine_id = args.get('machine_id')
-    machine_response = client.get_machine_details(machine_id)
-    machine_data = get_machine_data(machine_response)
-    raw_ip_addresses = machine_data.get('IPAddresses', [])
+    machine_ids = argToList(args.get('machine_id'))
+    raw_response = []
+    machines_outputs = []
+    machines_readable_outputs = []
+    for machine_id in machine_ids:
+        machine_response = client.get_machine_details(machine_id)
+        machine_data = get_machine_data(machine_response)
 
-    parsed_ip_address = parse_ip_addresses(raw_ip_addresses)
-    human_readable_ip_addresses = print_ip_addresses(parsed_ip_address)
+        machine_data_to_readable_outputs = copy.deepcopy(machine_data)
+        raw_ip_addresses = machine_data_to_readable_outputs.get('IPAddresses', [])
+        parsed_ip_address = parse_ip_addresses(raw_ip_addresses)
+        human_readable_ip_addresses = print_ip_addresses(parsed_ip_address)
+        machine_data_to_readable_outputs['IPAddresses'] = human_readable_ip_addresses
 
-    machine_data['IPAddresses'] = human_readable_ip_addresses
-    human_readable = tableToMarkdown(
-        f'Microsoft Defender ATP machine {machine_id} details:',
-        machine_data,
-        headers=headers,
-        removeNull=True)
+        machines_outputs.append(machine_data)
+        machines_readable_outputs.append(machine_data_to_readable_outputs)
+        raw_response.append(machine_response)
 
-    machine_data['IPAddresses'] = raw_ip_addresses
-    results = CommandResults(
+    human_readable = tableToMarkdown(f'Microsoft Defender ATP machines {machine_ids} details:',
+                                     machines_readable_outputs, headers=headers, removeNull=True)
+    return CommandResults(
         outputs_prefix='MicrosoftATP.Machine',
         outputs_key_field='ID',
-        outputs=machine_data,
+        outputs=machines_outputs,
         readable_output=human_readable,
-        raw_response=machine_response
-    )
-
-    return results
+        raw_response=raw_response)
 
 
 def run_antivirus_scan_command(client: MsClient, args: dict):
