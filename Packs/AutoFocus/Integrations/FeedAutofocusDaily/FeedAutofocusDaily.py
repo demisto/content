@@ -2,7 +2,6 @@ from typing import List, Tuple, Optional
 
 # IMPORTS
 import requests
-import regex
 from CommonServerUserPython import *
 
 from CommonServerPython import *
