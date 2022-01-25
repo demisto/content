@@ -1,5 +1,5 @@
 comment: |
-  Populates the value of the ServiceNow Ticket State field and displays it in a layout widget.
+  This script is used as dynamic section to desplay in the layout one of the incident state.
 commonfields:
   id: IncidentState
   version: -1

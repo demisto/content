@@ -25,5 +25,36 @@
     "marketplaces": [
         "xsoar"
     ],
-    "itemPrefix": ["Security Policy"] 
+    "itemPrefix": [
+        "Security Policy"
+    ],
+    "dependencies": {
+        "CommonTypes": {
+            "mandatory": true,
+            "display_name": "Common Types"
+        },
+        "PAN-OS": {
+            "mandatory": true,
+            "display_name": "PAN-OS"
+        },
+        "ServiceNow": {
+            "mandatory": false,
+            "display_name": "ServiceNow"
+        },
+        "Jira": {
+            "mandatory": false,
+            "display_name": "Atlassian Jira"
+        },
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
+        }
+    },
+    "displayedImages": [
+        "CommonTypes",
+        "PAN-OS",
+        "ServiceNow",
+        "Jira",
+        "CommonScripts"
+    ]
 }
