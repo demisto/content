@@ -63,3 +63,7 @@ CloudWatchLogs
 GuardDuty
 NetWitness
 ASN
+NoneType
+CreateIncidents
+EML
+SCC
