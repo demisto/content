@@ -57,12 +57,15 @@ create-instances:
     - if: '$INSTANCE_TESTS'
   cache:
     policy: pull-push
+  variables:
+    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
   needs: []
   stage: create-instances
   script:
     - !reference [.download-demisto-conf]
     - !reference [.create-id-set]
     - !reference [.create-release-notes-and-common-docs]
+    - echo "$ARTIFACTS_FOLDER"
     - section_start "Create Content Artifacts and Update Conf" --collapsed
     - demisto-sdk create-content-artifacts -a $ARTIFACTS_FOLDER --cpus 8 --content_version $CONTENT_VERSION >> $ARTIFACTS_FOLDER/logs/create_content_artifacts.log
     - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY"
@@ -108,6 +111,8 @@ create-instances:
 #     - if: '$NIGHTLY'
 #   cache:
 #     policy: pull-push
+#   variables:
+#     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
 #   needs: []
 #   stage: create-instances
 #   script:
@@ -146,6 +151,9 @@ create-instances:
   extends:
     - .default-job-settings
     - .push-rule
+  variables:
+    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
+    ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_XSOAR}/env_results.json"
   needs: ["create-instances"]
   stage: run-instances
   script:
@@ -160,10 +168,16 @@ create-instances:
       fi
     - !reference [.open-ssh-tunnel]
     - python3 ./Tests/scripts/wait_until_server_ready.py "$INSTANCE_ROLE"
+    - |
+      # workaround for the hard-coded value in the sdk
+      cp "$ARTIFACTS_FOLDER/env_results.json" "./artifacts/env_results.json"
+      cp "$ARTIFACTS_FOLDER/filter_file.txt" "./artifacts/filter_file.txt"
+
     - ./Tests/scripts/install_content_and_test_integrations.sh "$INSTANCE_ROLE" || EXIT_CODE=$?
     - cp -f $ARTIFACTS_FOLDER/conf.json Tests/conf.json
     - echo Going to sleep for 60 seconds to allow server finish indexing
     - sleep 60
+
     - ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE" || EXIT_CODE=$?
     - |
       if [[ -f ./Tests/failed_tests.txt ]]; then
@@ -173,6 +187,7 @@ create-instances:
       if [[ -f ./Tests/succeeded_tests.txt ]]; then
         cp ./Tests/succeeded_tests.txt $ARTIFACTS_FOLDER/succeeded_tests.txt
       fi
+
     - |
       if [ -z "${TIME_TO_LIVE}" -a "$CI_PIPELINE_SOURCE" = "contrib" ]; then
         TIME_TO_LIVE=300
