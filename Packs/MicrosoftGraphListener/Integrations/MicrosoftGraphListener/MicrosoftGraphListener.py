@@ -148,7 +148,9 @@ def prepare_args(command, args):
         return {
             'to_recipients': argToList(args.get('to')),
             'message_id': args.get('message_id', ''),
-            'comment': args.get('comment')
+            'comment': args.get('comment'),
+            'attach_ids': argToList(args.get('attach_ids')),
+            'attach_names': argToList(args.get('attach_names'))
         }
 
     return args
@@ -608,7 +610,7 @@ class MsGraphClient:
         return message
 
     @staticmethod
-    def _build_reply(to_recipients, comment):
+    def _build_reply(to_recipients, comment, attach_ids, attach_names):
         """
         Builds the reply message that includes recipients to reply and reply message.
 
@@ -623,7 +625,8 @@ class MsGraphClient:
         """
         return {
             'message': {
-                'toRecipients': MsGraphClient._build_recipient_input(to_recipients)
+                'toRecipients': MsGraphClient._build_recipient_input(to_recipients),
+                'attachments': MsGraphClient._build_file_attachments_input(attach_ids, attach_names, [], [])
             },
             'comment': comment
         }
@@ -784,7 +787,7 @@ class MsGraphClient:
 
         return human_readable, ec
 
-    def reply_to(self, to_recipients, comment, message_id):
+    def reply_to(self, to_recipients, comment, message_id, attach_ids, attach_names):
         """
         Sends reply message to recipients.
 
@@ -801,7 +804,7 @@ class MsGraphClient:
         rtype: ``str``
         """
         suffix_endpoint = f'/users/{self._mailbox_to_fetch}/messages/{message_id}/reply'
-        reply = MsGraphClient._build_reply(to_recipients, comment)
+        reply = MsGraphClient._build_reply(to_recipients, comment, attach_ids, attach_names)
         self.ms_client.http_request('POST', suffix_endpoint, json_data=reply, resp_type="text")
 
         return f'### Replied to: {", ".join(to_recipients)} with comment: {comment}'

@@ -470,6 +470,20 @@ script:
       name: to
       required: true
       secret: false
+    - default: false
+      description: A comma-separated list of War Room entry IDs that contain files,
+        which are used to attach files for the email to send. For example, attachIDs=15@8,19@8.
+      isArray: true
+      name: attach_ids
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of names of attachments to display in the
+        email to send. Must be the same number of elements as attachIDs.
+      isArray: true
+      name: attach_names
+      required: false
+      secret: false
     deprecated: false
     description: The replies to the recipients of a message.
     execution: false
