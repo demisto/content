@@ -238,17 +238,18 @@ def test_epo_find_systems_command(requests_mock):
 
     assert len(result) == 7
     assert result[0].outputs[0] == {'AutoID': 2, 'CPUSerialNum': '', 'CPUSpeed': 0, 'CPUType': '',
-                                    'ComputerName': '10.0.0.1', 'DefaultLangID': '', 'Description': None, 'DomainName': '',
-                                    'FreeDiskSpace': 0, 'FreeMemory': 0, 'IPAddress': '', 'Hostname': '', 'IPSubnet': None,
-                                    'IPSubnetMask': None, 'IPV4x': None, 'IPV6': None, 'IPXAddress': '',
-                                    'NetAddress': '', 'NumOfCPU': 0, 'OSBuildNum': 0, 'OSOEMID': '',
+                                    'ComputerName': '10.0.0.1', 'DefaultLangID': '', 'Description': None,
+                                    'DomainName': '', 'FreeDiskSpace': 0, 'FreeMemory': 0, 'IPAddress': '',
+                                    'IPHostName': '', 'IPSubnet': None, 'IPSubnetMask': None, 'IPV4x': None,
+                                    'IPV6': None, 'IPXAddress': '', 'IsPortable': -1, 'LastAgentHandler': None,
+                                    'NetAddress': '', 'NumOfCPU': 0, 'OSBitMode': -1, 'OSBuildNum': 0, 'OSOEMID': '',
                                     'OSPlatform': '', 'OSServicePackVer': '', 'OSType': '', 'OSVersion': '',
                                     'ParentID': 7, 'SubnetAddress': '', 'SubnetMask': '', 'SystemDescription': None,
                                     'SysvolFreeSpace': 0, 'SysvolTotalSpace': 0, 'TimeZone': '', 'TotalDiskSpace': 0,
                                     'TotalPhysicalMemory': 0, 'UserName': '', 'UserProperty1': None,
                                     'UserProperty2': None, 'UserProperty3': None, 'UserProperty4': None,
                                     'AgentGUID': None, 'AgentVersion': None, 'ExcludedTags': '', 'LastUpdate': None,
-                                    'ManagedState': 0, 'Tags': 'Scan Now'}
+                                    'ManagedState': 0, 'Tags': 'Scan Now', 'Vdi': -1}
 
 
 def test_epo_find_system_command(requests_mock):
@@ -260,9 +261,12 @@ def test_epo_find_system_command(requests_mock):
     test Passed or Failed
     """
     epo_find_system_command_response = load_test_data_txt('test_data/epo_find_system_command.txt')
+    epo_find_system_command_response_key_renamed = load_test_data_txt('test_data/epo_find_system_command_key_renamed.txt')
 
     requests_mock.get(f'{EPO_URL}/remote/system.find?%3Aoutput=json&searchText=192.168.1.102',
                       text=epo_find_system_command_response)
+    requests_mock.get(f'{EPO_URL}/remote/system.find?%3Aoutput=json&searchText=192.168.1.103',
+                      text=epo_find_system_command_response_key_renamed)
     requests_mock.get(f'{EPO_URL}/remote/system.find?%3Aoutput=json&searchText=192.168.1.105',
                       text='OK:\n[ ]')
 
@@ -278,22 +282,22 @@ def test_epo_find_system_command(requests_mock):
     result = epo_find_system_command(client, args)
 
     assert len(result.outputs) == 1
-    assert result.outputs[0] == {'AutoID': 3, 'CPUSerialNum': 'N/A', 'CPUSpeed': 2600,
+    assert result.outputs[0] == {'AgentGUID': 'E0F52A7C-A841-11E7-0467-000C2936A49A', 'AgentVersion': '', 'AutoID': 3,
+                                 'CPUSerialNum': 'N/A', 'CPUSpeed': 2600,
                                  'CPUType': 'Intel(R) Xeon(R) CPU E5-2697A v4 @ 2.60GHz', 'ComputerName': 'tie',
                                  'DefaultLangID': '0409', 'Description': None, 'DomainName': '(none)',
-                                 'FreeDiskSpace': 93781, 'FreeMemory': 261951488, 'IPAddress': '',
-                                 'Hostname': 'tie', 'IPSubnet': '', 'IPSubnetMask': '', 'IPV4x': 1084752230,
-                                 'IPV6': '', 'IPXAddress': 'N/A', 'NetAddress': '000C29B1EE8E', 'NumOfCPU': 8,
-                                 'OSBuildNum': 0, 'OSOEMID': 'McAfee TIE Platform Server 3.0.0.480',
-                                 'OSPlatform': 'Server', 'OSServicePackVer': '189-1.mlos2.x86_64',
-                                 'OSType': 'Linux', 'OSVersion': '4.9', 'ParentID': 2, 'SubnetAddress': '',
-                                 'SubnetMask': '', 'SystemDescription': 'N/A', 'SysvolFreeSpace': 0,
-                                 'SysvolTotalSpace': 0, 'TimeZone': 'UTC', 'TotalDiskSpace': 104488,
-                                 'TotalPhysicalMemory': 8364199936, 'UserName': 'root', 'UserProperty1': None,
-                                 'UserProperty2': None, 'UserProperty3': None, 'UserProperty4': None,
-                                 'AgentGUID': 'E0F52A7C-A841-11E7-0467-000C2936A49A', 'AgentVersion': '',
-                                 'ExcludedTags': '', 'LastUpdate': '2021-11-21T13:11:42-08:00', 'ManagedState': 1,
-                                 'Tags': 'DXLBROKER, Server, TIESERVER'}
+                                 'ExcludedTags': '', 'FreeDiskSpace': 93781, 'FreeMemory': 261951488, 'IPAddress': '',
+                                 'IPHostName': 'tie', 'IPSubnet': '', 'IPSubnetMask': '', 'IPV4x': 1084752230,
+                                 'IPV6': '', 'IPXAddress': 'N/A', 'IsPortable': -1, 'LastAgentHandler': 1,
+                                 'LastUpdate': '2021-11-21T13:11:42-08:00', 'ManagedState': 1,
+                                 'NetAddress': '000C29B1EE8E', 'NumOfCPU': 8, 'OSBitMode': 1, 'OSBuildNum': 0,
+                                 'OSOEMID': 'McAfee TIE Platform Server 3.0.0.480', 'OSPlatform': 'Server',
+                                 'OSServicePackVer': '189-1.mlos2.x86_64', 'OSType': 'Linux', 'OSVersion': '4.9',
+                                 'ParentID': 2, 'SubnetAddress': '', 'SubnetMask': '', 'SystemDescription': 'N/A',
+                                 'SysvolFreeSpace': 0, 'SysvolTotalSpace': 0, 'Tags': 'DXLBROKER, Server, TIESERVER',
+                                 'TimeZone': 'UTC', 'TotalDiskSpace': 104488, 'TotalPhysicalMemory': 8364199936,
+                                 'UserName': 'root', 'UserProperty1': None, 'UserProperty2': None,
+                                 'UserProperty3': None, 'UserProperty4': None, 'Vdi': 0}
 
     args = {
         ':output': 'json',
@@ -314,23 +318,49 @@ def test_epo_find_system_command(requests_mock):
     result = epo_find_system_command(client, args)
 
     assert result.outputs
-    assert result.outputs[0] == {'AutoID': 3, 'CPUSerialNum': 'N/A', 'CPUSpeed': 2600,
+    assert result.outputs[0] == {'AgentGUID': 'E0F52A7C-A841-11E7-0467-000C2936A49A', 'AgentVersion': '', 'AutoID': 3,
+                                 'CPUSerialNum': 'N/A', 'CPUSpeed': 2600,
                                  'CPUType': 'Intel(R) Xeon(R) CPU E5-2697A v4 @ 2.60GHz', 'ComputerName': 'tie',
                                  'DefaultLangID': '0409', 'Description': None, 'DomainName': '(none)',
-                                 'FreeDiskSpace': 93781, 'FreeMemory': 261951488, 'IPAddress': '',
-                                 'Hostname': 'tie', 'IPSubnet': '', 'IPSubnetMask': '', 'IPV4x': 1084752230,
-                                 'IPV6': '', 'IPXAddress': 'N/A', 'NetAddress': '000C29B1EE8E', 'NumOfCPU': 8,
-                                 'OSBuildNum': 0, 'OSOEMID': 'McAfee TIE Platform Server 3.0.0.480',
-                                 'OSPlatform': 'Server', 'OSServicePackVer': '189-1.mlos2.x86_64',
-                                 'OSType': 'Linux', 'OSVersion': '4.9', 'ParentID': 2, 'SubnetAddress': '',
-                                 'SubnetMask': '', 'SystemDescription': 'N/A', 'SysvolFreeSpace': 0,
-                                 'SysvolTotalSpace': 0, 'TimeZone': 'UTC', 'TotalDiskSpace': 104488,
-                                 'TotalPhysicalMemory': 8364199936, 'UserName': 'root', 'UserProperty1': None,
-                                 'UserProperty2': None, 'UserProperty3': None, 'UserProperty4': None,
-                                 'AgentGUID': 'E0F52A7C-A841-11E7-0467-000C2936A49A', 'AgentVersion': '',
-                                 'ExcludedTags': '', 'LastUpdate': '2021-11-21T13:11:42-08:00', 'ManagedState': 1,
-                                 'Tags': 'DXLBROKER, Server, TIESERVER'}
+                                 'ExcludedTags': '', 'FreeDiskSpace': 93781, 'FreeMemory': 261951488, 'IPAddress': '',
+                                 'IPHostName': 'tie', 'IPSubnet': '', 'IPSubnetMask': '', 'IPV4x': 1084752230,
+                                 'IPV6': '', 'IPXAddress': 'N/A', 'IsPortable': -1, 'LastAgentHandler': 1,
+                                 'LastUpdate': '2021-11-21T13:11:42-08:00', 'ManagedState': 1,
+                                 'NetAddress': '000C29B1EE8E', 'NumOfCPU': 8, 'OSBitMode': 1, 'OSBuildNum': 0,
+                                 'OSOEMID': 'McAfee TIE Platform Server 3.0.0.480', 'OSPlatform': 'Server',
+                                 'OSServicePackVer': '189-1.mlos2.x86_64', 'OSType': 'Linux', 'OSVersion': '4.9',
+                                 'ParentID': 2, 'SubnetAddress': '', 'SubnetMask': '', 'SystemDescription': 'N/A',
+                                 'SysvolFreeSpace': 0, 'SysvolTotalSpace': 0, 'Tags': 'DXLBROKER, Server, TIESERVER',
+                                 'TimeZone': 'UTC', 'TotalDiskSpace': 104488, 'TotalPhysicalMemory': 8364199936,
+                                 'UserName': 'root', 'UserProperty1': None, 'UserProperty2': None,
+                                 'UserProperty3': None, 'UserProperty4': None, 'Vdi': 0}
+
     assert result.readable_output.find('EPOLeafNode.AgentVersion | ') >= 0
+
+    args = {
+        ':output': 'json',
+        'searchText': '192.168.1.103'
+    }
+
+    result = epo_find_system_command(client, args)
+
+    assert len(result.outputs) == 1
+    assert result.outputs[0] == {'AgentGUID': 'E0F52A7C-A841-11E7-0467-000C2936A49A', 'AgentVersion': '', 'AutoID': 3,
+                                 'CPUSerialNumber': 'N/A', 'CPUSpeed': 2600,
+                                 'CPUType': 'Intel(R) Xeon(R) CPU E5-2697A v4 @ 2.60GHz', 'ComputerName': 'tie',
+                                 'DefaultLangID': '0409', 'Description': None, 'DomainName': '(none)',
+                                 'ExcludedTags': '', 'FreeDiskSpace': 93781, 'FreeMemory': 261951488, 'IPAddress': '',
+                                 'IPHostName': 'tie', 'IPSubnet': '', 'IPSubnetMask': '', 'IPV4x': 1084752230,
+                                 'IPV6': '', 'IPXAddress': 'N/A', 'IsPortable': -1, 'LastAgentHandler': 1,
+                                 'LastUpdate': '2021-11-21T13:11:42-08:00', 'ManagedState': 1,
+                                 'NetAddress': '000C29B1EE8E', 'NumOfCPU': 8, 'OSBitMode': 1, 'OSBuildNum': 0,
+                                 'OSOEMID': 'McAfee TIE Platform Server 3.0.0.480', 'OSPlatform': 'Server',
+                                 'OSServicePackVer': '189-1.mlos2.x86_64', 'OSType': 'Linux', 'OSVersion': '4.9',
+                                 'ParentID': 2, 'SubnetAddress': '', 'SubnetMask': '', 'SystemDescription': 'N/A',
+                                 'SysvolFreeSpace': 0, 'SysvolTotalSpace': 0, 'Tags': 'DXLBROKER, Server, TIESERVER',
+                                 'TimeZone': 'UTC', 'TotalDiskSpace': 104488, 'TotalPhysicalMemory': 8364199936,
+                                 'UserName': 'root', 'UserProperty1': None, 'UserProperty2': None,
+                                 'UserProperty3': None, 'UserProperty4': None, 'Vdi': 0}
 
 
 def test_epo_wakeup_agent_command(requests_mock):
