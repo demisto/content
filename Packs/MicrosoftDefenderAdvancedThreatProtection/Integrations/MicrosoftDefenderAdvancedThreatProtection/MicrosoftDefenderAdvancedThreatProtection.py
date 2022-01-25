@@ -1189,19 +1189,23 @@ def run_antivirus_scan_command(client: MsClient, args: dict):
         (str, dict, dict). Human readable, context, raw response
     """
     headers = ['ID', 'Type', 'Requestor', 'RequestorComment', 'Status', 'MachineID', 'ComputerDNSName']
-    machine_id = args.get('machine_id')
+    machine_ids = argToList(args.get('machine_id'))
     scan_type = args.get('scan_type')
     comment = args.get('comment')
+    machine_actions_data = []
+    raw_response = []
 
-    machine_action_response = client.run_antivirus_scan(machine_id, comment, scan_type)
-    machine_action_data = get_machine_action_data(machine_action_response)
+    for machine_id in machine_ids:
+        machine_action_response = client.run_antivirus_scan(machine_id, comment, scan_type)
+        machine_actions_data.append(get_machine_action_data(machine_action_response))
+        raw_response.append(machine_action_response)
 
     entry_context = {
-        'MicrosoftATP.MachineAction(val.ID === obj.ID)': machine_action_data
+        'MicrosoftATP.MachineAction(val.ID === obj.ID)': machine_actions_data
     }
-    human_readable = tableToMarkdown('Antivirus scan successfully triggered', machine_action_data, headers=headers,
+    human_readable = tableToMarkdown('Antivirus scan successfully triggered', machine_actions_data, headers=headers,
                                      removeNull=True)
-    return human_readable, entry_context, machine_action_response
+    return human_readable, entry_context, raw_response
 
 
 def list_alerts_command(client: MsClient, args: dict):

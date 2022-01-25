@@ -754,66 +754,86 @@ Initiates Microsoft Defender Antivirus scan on a machine.
 ##### Required Permissions
 Machine.Scan	
 
-##### Base Command
+#### Base Command
 
 `microsoft-atp-run-antivirus-scan`
-##### Input
+#### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| machine_id | The machine ID to run the scan on. | Required | 
-| comment | The comment to associate with the action. | Required | 
-| scan_type | Defines the type of the scan. Possible values: "Quick" and "Full". | Required | 
+| machine_id | A comma-separated list of machine IDs to run the scan on. | Required | 
+| comment | A comment to associate with the action. | Required | 
+| scan_type | Defines the type of the scan. Possible values: "Quick" and "Full". Possible values are: Quick, Full. | Required | 
 
 
-##### Context Output
+#### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftATP.MachineAction.ID | String | The action ID of the machine. | 
+| MicrosoftATP.MachineAction.ID | String | The machine action ID. | 
 | MicrosoftATP.MachineAction.Type | String | The type of the action. | 
 | MicrosoftATP.MachineAction.Scope | Unknown | The scope of the action. | 
 | MicrosoftATP.MachineAction.Requestor | String | The ID of the user that executed the action. | 
 | MicrosoftATP.MachineAction.RequestorComment | String | The comment that was written when issuing the action. | 
 | MicrosoftATP.MachineAction.Status | String | The current status of the command. | 
-| MicrosoftATP.MachineAction.MachineID | String | The machine ID the action was executed on. | 
-| MicrosoftATP.MachineAction.ComputerDNSName | String | The machine DNS name the action was executed on. | 
+| MicrosoftATP.MachineAction.MachineID | String | The machine ID on which the action was executed. | 
+| MicrosoftATP.MachineAction.ComputerDNSName | String | The machine DNS name on which the action was executed. | 
 | MicrosoftATP.MachineAction.CreationDateTimeUtc | Date | The date and time when the action was created. | 
 | MicrosoftATP.MachineAction.LastUpdateTimeUtc | Date | The last date and time when the action status was updated. | 
 | MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifier | String | The file identifier. | 
-| MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType | String | The type of the file identifier. Possible values: "SHA1", "SHA256", and "MD5".| 
+| MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType | String | The type of the file identifier. Possible values: "SHA1" ,"SHA256", and "MD5". | 
 
-
-##### Command Example
-```!microsoft-atp-run-antivirus-scan machine_id=f70f9fe6b29cd9511652434919c6530618f06606 comment="testing anti virus" scan_type=Quick```
-
-##### Context Example
-```
+#### Command example
+```!microsoft-atp-run-antivirus-scan machine_id=f70f9fe6b29cd9511652434919c6530618f06606,4899036531e374137f63289c3267bad772c13fef comment=test3 scan_type=Quick```
+#### Context Example
+```json
 {
-    "MicrosoftATP.MachineAction": {
-        "Status": "Pending", 
-        "CreationDateTimeUtc": "2020-03-23T10:07:54.3942786Z", 
-        "MachineID": "f70f9fe6b29cd9511652434919c6530618f06606", 
-        "LastUpdateTimeUtc": null, 
-        "ComputerDNSName": null, 
-        "Requestor": "2f48b784-5da5-4e61-9957-012d2630f1e4", 
-        "RelatedFileInfo": {
-            "FileIdentifier": null, 
-            "FileIdentifierType": null
-        }, 
-        "Scope": null, 
-        "Type": "RunAntiVirusScan", 
-        "ID": "55680be3-162c-49d1-a4d6-37f9dc47e9d8", 
-        "RequestorComment": "testing anti virus"
+    "MicrosoftATP": {
+        "MachineAction": [
+            {
+                "ComputerDNSName": "desktop-s2455r9",
+                "CreationDateTimeUtc": "2022-01-25T17:57:18.7944822Z",
+                "ID": "98cf0adc-8053-47a1-8c24-ef58a43ee1ab",
+                "LastUpdateTimeUtc": null,
+                "MachineID": "f70f9fe6b29cd9511652434919c6530618f06606",
+                "RelatedFileInfo": {
+                    "FileIdentifier": null,
+                    "FileIdentifierType": null
+                },
+                "Requestor": "2f48b784-5da5-4e61-9957-012d2630f1e4",
+                "RequestorComment": "test3",
+                "Scope": "Quick",
+                "Status": "Pending",
+                "Type": "RunAntiVirusScan"
+            },
+            {
+                "ComputerDNSName": "desktop-s2455r8",
+                "CreationDateTimeUtc": "2022-01-25T17:57:20.0458595Z",
+                "ID": "ecee8124-e24b-4fe1-9c59-df14cfc9fb51",
+                "LastUpdateTimeUtc": null,
+                "MachineID": "4899036531e374137f63289c3267bad772c13fef",
+                "RelatedFileInfo": {
+                    "FileIdentifier": null,
+                    "FileIdentifierType": null
+                },
+                "Requestor": "2f48b784-5da5-4e61-9957-012d2630f1e4",
+                "RequestorComment": "test3",
+                "Scope": "Quick",
+                "Status": "Pending",
+                "Type": "RunAntiVirusScan"
+            }
+        ]
     }
 }
 ```
 
-##### Human Readable Output
-##### Antivirus scan successfully triggered
-|ID|Type|Requestor|RequestorComment|Status|MachineID|
-|---|---|---|---|---|---|
-| 55680be3-162c-49d1-a4d6-37f9dc47e9d8 | RunAntiVirusScan | 2f48b784-5da5-4e61-9957-012d2630f1e4 | testing anti virus | Pending | f70f9fe6b29cd9511652434919c6530618f06606 |
+#### Human Readable Output
+
+>### Antivirus scan successfully triggered
+>|ID|Type|Requestor|RequestorComment|Status|MachineID|ComputerDNSName|
+>|---|---|---|---|---|---|---|
+>| 98cf0adc-8053-47a1-8c24-ef58a43ee1ab | RunAntiVirusScan | 2f48b784-5da5-4e61-9957-012d2630f1e4 | test3 | Pending | f70f9fe6b29cd9511652434919c6530618f06606 | desktop-s2455r9 |
+>| ecee8124-e24b-4fe1-9c59-df14cfc9fb51 | RunAntiVirusScan | 2f48b784-5da5-4e61-9957-012d2630f1e4 | test3 | Pending | 4899036531e374137f63289c3267bad772c13fef | desktop-s2455r8 |
 
 
 ### 7. microsoft-atp-list-alerts
