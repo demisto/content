@@ -53,6 +53,14 @@ def exec_command_for_file(
 
 
 def test_eml_type(mocker):
+    """
+    Given:
+        - A eml file
+    When:
+        - run the ParseEmailFilesV2 script
+    Then:
+        - Ensure its was parsed successfully
+    """
     def executeCommand(name, args=None):
         if name == 'getFilePath':
             return [
@@ -92,6 +100,16 @@ def test_eml_type(mocker):
 
 
 def test_eml_contains_eml(mocker):
+    """
+    Given:
+        - A eml file contains eml
+    When:
+        - run the ParseEmailFilesV2 script
+    Then:
+        - Ensure the was parsed successfully
+        - Ensure both files was parsed
+        - Ensure the attachments was returned
+    """
     def executeCommand(name, args=None):
         if name == 'getFilePath':
             return [
@@ -148,6 +166,16 @@ def test_eml_contains_eml(mocker):
 
 
 def test_eml_contains_msg(mocker):
+    """
+    Given:
+        - A eml file contains msg
+    When:
+        - run the ParseEmailFilesV2 script
+    Then:
+        - Ensure the was parsed successfully
+        - Ensure both files was parsed
+        - Ensure the attachments was returned
+    """
     def executeCommand(name, args=None):
         if name == 'getFilePath':
             return [
@@ -196,6 +224,16 @@ def test_eml_contains_msg(mocker):
 
 
 def test_eml_contains_eml_depth(mocker):
+    """
+    Given:
+        - A eml file contains eml
+        - depth = 1
+    When:
+        - run the ParseEmailFilesV2 script
+    Then:
+        - Ensure only the first mail is parsed
+        - Ensure the attachments of the first mail was returned
+    """
     def executeCommand(name, args=None):
         if name == 'getFilePath':
             return [
@@ -244,6 +282,14 @@ def test_eml_contains_eml_depth(mocker):
 
 
 def test_msg(mocker):
+    """
+    Given:
+        - A msg file
+    When:
+        - run the ParseEmailFilesV2 script
+    Then:
+        - Ensure its was parsed successfully
+    """
     info = 'CDFV2 Microsoft Outlook Message'
     mocker.patch.object(demisto, 'args', return_value={'entryid': 'test'})
     mocker.patch.object(demisto, 'executeCommand', side_effect=exec_command_for_file('smime-p7s.msg', info=info))
@@ -260,6 +306,14 @@ def test_msg(mocker):
 
 
 def test_no_content_type_file(mocker):
+    """
+    Given:
+        - A eml with no_content_type
+    When:
+        - run the ParseEmailFilesV2 script
+    Then:
+        - Ensure its was parsed successfully
+    """
     mocker.patch.object(demisto, 'args', return_value={'entryid': 'test'})
     mocker.patch.object(demisto, 'executeCommand',
                         side_effect=exec_command_for_file('no_content_type.eml', info="ascii text"))
@@ -272,6 +326,14 @@ def test_no_content_type_file(mocker):
 
 
 def test_no_content_file(mocker):
+    """
+    Given:
+        - A eml without content
+    When:
+        - run the ParseEmailFilesV2 script
+    Then:
+        - Ensure a error is returned
+    """
     mocker.patch.object(demisto, 'args', return_value={'entryid': 'test'})
     mocker.patch.object(demisto, 'executeCommand',
                         side_effect=exec_command_for_file('no_content.eml', info="ascii text"))
