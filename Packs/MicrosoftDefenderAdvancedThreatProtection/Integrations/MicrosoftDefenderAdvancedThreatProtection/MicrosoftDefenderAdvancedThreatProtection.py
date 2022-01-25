@@ -1480,7 +1480,7 @@ def get_alert_related_domains_command(client: MsClient, args: dict):
 
 
 def get_machine_action_by_id_command(client: MsClient, args: dict):
-    """Returns machine's actions, if machine ID is None, return all actions.
+    """Returns machine's actions, if action ID is None, return all actions.
 
     Returns:
         (str, dict, dict). Human readable, context, raw response
@@ -1488,9 +1488,10 @@ def get_machine_action_by_id_command(client: MsClient, args: dict):
     headers = ['ID', 'Type', 'Requestor', 'RequestorComment', 'Status', 'MachineID', 'ComputerDNSName']
     action_id = args.get('id', '')
     status = args.get('status', '')
-    machine_id = args.get('machine_id', '')
+    machine_ids = argToList(args.get('machine_id', ''))
     type = args.get('type', '')
     requestor = args.get('requestor', '')
+    raw_response = []
     if action_id:
         for index in range(3):
             try:
@@ -1503,30 +1504,33 @@ def get_machine_action_by_id_command(client: MsClient, args: dict):
                 else:
                     raise Exception(f'Machine action {action_id} was not found')
         response = client.get_machine_action_by_id(action_id)
+        raw_response.append(response)
         action_data = get_machine_action_data(response)
         human_readable = tableToMarkdown(f'Action {action_id} Info:', action_data, headers=headers, removeNull=True)
         context_output = action_data
     else:
-        # A dictionary that contains all of the fields the user want to filter results by.
-        # It will be sent in the request so the requested filters are applied on the results
-        fields_to_filter_by = {
-            'status': status,
-            'machineId': machine_id,
-            'type': type,
-            'requestor': requestor
-        }
-        filter_req = reformat_filter(fields_to_filter_by)
-        response = client.get_machine_actions(filter_req)
         machine_actions_list = []
-        for machine_action in response['value']:
-            machine_actions_list.append(get_machine_action_data(machine_action))
+        for machine_id in machine_ids:
+            # A dictionary that contains all of the fields the user want to filter results by.
+            # It will be sent in the request so the requested filters are applied on the results
+            fields_to_filter_by = {
+                'status': status,
+                'machineId': machine_id,
+                'type': type,
+                'requestor': requestor
+            }
+            filter_req = reformat_filter(fields_to_filter_by)
+            response = client.get_machine_actions(filter_req)
+            raw_response.append(response)
+            for machine_action in response['value']:
+                machine_actions_list.append(get_machine_action_data(machine_action))
         human_readable = tableToMarkdown('Machine actions Info:', machine_actions_list, headers=headers,
                                          removeNull=True)
         context_output = machine_actions_list
     entry_context = {
         'MicrosoftATP.MachineAction(val.ID === obj.ID)': context_output
     }
-    return human_readable, entry_context, response
+    return human_readable, entry_context, raw_response
 
 
 def get_machine_action_data(machine_action_response):

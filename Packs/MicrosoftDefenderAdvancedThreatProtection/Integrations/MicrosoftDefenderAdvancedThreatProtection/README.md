@@ -1281,87 +1281,122 @@ Filtering can only be done on a single argument.
 ##### Required Permissions
 Machine.ReadWrite.All
 
-##### Base Command
+#### Base Command
 
 `microsoft-atp-list-machine-actions-details`
-##### Input
+#### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | The ID of the action. | Optional | 
-| status | The action status of the machine. Possible values: "Pending", "InProgress", "Succeeded", "Failed", "TimeOut", "Cancelled". | Optional | 
-| machine_id | The machine's ID which the action was executed on. Only one can be added. | Optional | 
-| type | The action type of the machine. Possible values: "RunAntiVirusScan", "Offboard", "CollectInvestigationPackage", "Isolate", "Unisolate", "StopAndQuarantineFile", "RestrictCodeExecution", and "UnrestrictCodeExecution".| Optional | 
-| requestor | The ID of the user that executed the action. Only one can be added. | Optional | 
+| id | ID of the action. | Optional | 
+| status | The machine action status. Possible values: "Pending", "InProgress", "Succeeded", "Failed", "TimeOut", "Cancelled". Possible values are: Pending, InProgress, Succeeded, Failed, TimeOut, Cancelled. | Optional | 
+| machine_id | A comma-separated list of machine IDs on which the action was executed. | Optional | 
+| type | The machine action type. Possible values: "RunAntiVirusScan", "Offboard", "CollectInvestigationPackage", "Isolate", "Unisolate", "StopAndQuarantineFile", "RestrictCodeExecution", and "UnrestrictCodeExecution". Possible values are: RunAntiVirusScan, Offboard, CollectInvestigationPackage, Isolate, Unisolate, StopAndQuarantineFile, RestrictCodeExecution, UnrestrictCodeExecution. | Optional | 
+| requestor | The ID of the user that executed the action, only one can be added. | Optional | 
 
 
-##### Context Output
+#### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftATP.MachineAction.ID | String | The action ID of the machine. | 
+| MicrosoftATP.MachineAction.ID | String | The machine action ID. | 
 | MicrosoftATP.MachineAction.Type | String | The type of the action. | 
 | MicrosoftATP.MachineAction.Scope | String | The scope of the action. | 
 | MicrosoftATP.MachineAction.Requestor | String | The ID of the user that executed the action. | 
 | MicrosoftATP.MachineAction.RequestorComment | String | The comment that was written when issuing the action. | 
-| MicrosoftATP.MachineAction.Status | String | The current status of the command. Possible values: "Pending", "InProgress", "Succeeded", "Failed", "TimeOut", "Cancelled". | 
+| MicrosoftATP.MachineAction.Status | String | The current status of the command. | 
 | MicrosoftATP.MachineAction.MachineID | String | The machine ID on which the action was executed. | 
-| MicrosoftATP.MachineAction.ComputerDNSName | String | The machine DNS name which the action was executed on. | 
+| MicrosoftATP.MachineAction.ComputerDNSName | String | The machine DNS name on which the action was executed. | 
 | MicrosoftATP.MachineAction.CreationDateTimeUtc | Date | The date and time when the action was created. | 
 | MicrosoftATP.MachineAction.LastUpdateTimeUtc | Date | The last date and time when the action status was updated. | 
 | MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifier | String | The file identifier. | 
-| MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType | String | The type of the file identifier. Possible values: "SHA1", "SHA256", and "MD5". | 
+| MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType | String | The type of the file identifier. Possible values: "SHA1" ,"SHA256", and "MD5". | 
 
-
-##### Command Example
-```!microsoft-atp-list-machine-actions-details type=RestrictCodeExecution```
-
-##### Context Example
-```
+#### Command example
+```!microsoft-atp-list-machine-actions-details machine_id="f70f9fe6b29cd9511652434919c6530618f06606,4899036531e374137f63289c3267bad772c13fef" type=RunAntiVirusScan```
+#### Context Example
+```json
 {
-    "MicrosoftATP.MachineAction": [
-        {
-            "Status": "Succeeded", 
-            "CreationDateTimeUtc": "2020-03-23T10:00:26.5923766Z", 
-            "MachineID": "f70f9fe6b29cd9511652434919c6530618f06606", 
-            "LastUpdateTimeUtc": null, 
-            "ComputerDNSName": "desktop-s2455r9", 
-            "Requestor": "2f48b784-5da5-4e61-9957-012d2630f1e4", 
-            "RelatedFileInfo": {
-                "FileIdentifier": null, 
-                "FileIdentifierType": null
-            }, 
-            "Scope": null, 
-            "Type": "RestrictCodeExecution", 
-            "ID": "655b9413-0f41-49bc-a811-1aadc2c827d6", 
-            "RequestorComment": "test restrict app"
-        }, 
-        {
-            "Status": "Cancelled", 
-            "CreationDateTimeUtc": "2020-02-10T13:32:03.0534738Z", 
-            "MachineID": "f3bba49af4d3bacedc62ca0fe580a4d5925af8aa", 
-            "LastUpdateTimeUtc": null, 
-            "ComputerDNSName": "ec2amaz-ua9hieu", 
-            "Requestor": "7bb424e0-d74b-47c8-816f-21955e7a30d3", 
-            "RelatedFileInfo": {
-                "FileIdentifier": null, 
-                "FileIdentifierType": null
-            }, 
-            "Scope": null, 
-            "Type": "RestrictCodeExecution", 
-            "ID": "a57cd8a4-8d21-49e5-9a67-9fda06e1e637", 
-            "RequestorComment": "Restrict code execution due to alert 1234"
-        }
-    ]
+    "MicrosoftATP": {
+        "MachineAction": [
+            {
+                "ComputerDNSName": "desktop-s2455r9",
+                "CreationDateTimeUtc": "2021-08-17T09:53:09.8374593Z",
+                "ID": "5b8f2459-5c8d-4844-a01c-4568d12b9ebd",
+                "LastUpdateTimeUtc": null,
+                "MachineID": "f70f9fe6b29cd9511652434919c6530618f06606",
+                "RelatedFileInfo": {
+                    "FileIdentifier": null,
+                    "FileIdentifierType": null
+                },
+                "Requestor": "1281a70f-8ffb-4b3c-bc82-eef2a44dbb2a",
+                "RequestorComment": "testing anti virus",
+                "Scope": "Quick",
+                "Status": "Succeeded",
+                "Type": "RunAntiVirusScan"
+            },
+            {
+                "ComputerDNSName": "desktop-s2455r9",
+                "CreationDateTimeUtc": "2021-08-17T09:13:31.825993Z",
+                "ID": "b1f39c11-0b9f-44b2-9dc6-bc48aa9e2b3d",
+                "LastUpdateTimeUtc": null,
+                "MachineID": "f70f9fe6b29cd9511652434919c6530618f06606",
+                "RelatedFileInfo": {
+                    "FileIdentifier": null,
+                    "FileIdentifierType": null
+                },
+                "Requestor": "1281a70f-8ffb-4b3c-bc82-eef2a44dbb2a",
+                "RequestorComment": "testing anti virus",
+                "Scope": "Quick",
+                "Status": "Succeeded",
+                "Type": "RunAntiVirusScan"
+            },
+            {
+                "ComputerDNSName": "desktop-s2455r9",
+                "CreationDateTimeUtc": "2021-08-17T09:09:19.0465708Z",
+                "ID": "6ac9f2ea-0e00-45cf-a03f-23276dee29ee",
+                "LastUpdateTimeUtc": null,
+                "MachineID": "f70f9fe6b29cd9511652434919c6530618f06606",
+                "RelatedFileInfo": {
+                    "FileIdentifier": null,
+                    "FileIdentifierType": null
+                },
+                "Requestor": "1281a70f-8ffb-4b3c-bc82-eef2a44dbb2a",
+                "RequestorComment": "testing anti virus",
+                "Scope": "Quick",
+                "Status": "Succeeded",
+                "Type": "RunAntiVirusScan"
+            },
+            {
+                "ComputerDNSName": "desktop-s2455r8",
+                "CreationDateTimeUtc": "2022-01-02T19:32:19.064948Z",
+                "ID": "3abc0bbc-2516-452d-9f57-f312e437d4df",
+                "LastUpdateTimeUtc": null,
+                "MachineID": "4899036531e374137f63289c3267bad772c13fef",
+                "RelatedFileInfo": {
+                    "FileIdentifier": null,
+                    "FileIdentifierType": null
+                },
+                "Requestor": "avishai@demistodev.onmicrosoft.com",
+                "RequestorComment": "test tomer",
+                "Scope": "Quick",
+                "Status": "Succeeded",
+                "Type": "RunAntiVirusScan"
+            }
+        ]
+    }
 }
 ```
 
-##### Human Readable Output
-##### Machine actions Info:
-|ID|Type|Requestor|RequestorComment|Status|MachineID|ComputerDNSName|
-|---|---|---|---|---|---|---|
-| 655b9413-0f41-49bc-a811-1aadc2c827d6 | RestrictCodeExecution | 2f48b784-5da5-4e61-9957-012d2630f1e4 | test restrict app | Succeeded | f70f9fe6b29cd9511652434919c6530618f06606 | desktop-s2455r9 |
-| a57cd8a4-8d21-49e5-9a67-9fda06e1e637 | RestrictCodeExecution | 7bb424e0-d74b-47c8-816f-21955e7a30d3 | Restrict code execution due to alert 1234 | Cancelled | f3bba49af4d3bacedc62ca0fe580a4d5925af8aa | ec2amaz-ua9hieu |
+#### Human Readable Output
+
+>### Machine actions Info:
+>|ID|Type|Requestor|RequestorComment|Status|MachineID|ComputerDNSName|
+>|---|---|---|---|---|---|---|
+>| 5b8f2459-5c8d-4844-a01c-4568d12b9ebd | RunAntiVirusScan | 1281a70f-8ffb-4b3c-bc82-eef2a44dbb2a | testing anti virus | Succeeded | f70f9fe6b29cd9511652434919c6530618f06606 | desktop-s2455r9 |
+>| b1f39c11-0b9f-44b2-9dc6-bc48aa9e2b3d | RunAntiVirusScan | 1281a70f-8ffb-4b3c-bc82-eef2a44dbb2a | testing anti virus | Succeeded | f70f9fe6b29cd9511652434919c6530618f06606 | desktop-s2455r9 |
+>| 6ac9f2ea-0e00-45cf-a03f-23276dee29ee | RunAntiVirusScan | 1281a70f-8ffb-4b3c-bc82-eef2a44dbb2a | testing anti virus | Succeeded | f70f9fe6b29cd9511652434919c6530618f06606 | desktop-s2455r9 |
+>| 3abc0bbc-2516-452d-9f57-f312e437d4df | RunAntiVirusScan | avishai@demistodev.onmicrosoft.com | test tomer | Succeeded | 4899036531e374137f63289c3267bad772c13fef | desktop-s2455r8 |
 
 
 ### 16. microsoft-atp-collect-investigation-package

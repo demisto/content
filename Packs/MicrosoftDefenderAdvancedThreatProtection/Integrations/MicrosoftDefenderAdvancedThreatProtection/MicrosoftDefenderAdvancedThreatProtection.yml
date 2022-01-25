@@ -1200,9 +1200,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The machine ID on which the action was executed, only one can be
-        added.
-      isArray: false
+      description: A comma-separated list of machine IDs on which the action was executed.
+      isArray: true
       name: machine_id
       required: false
       secret: false
