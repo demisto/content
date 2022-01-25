@@ -1173,7 +1173,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Start time, for example: 11/01/2021 10:10:10'.
+      description: 'Start time, for example: 11/01/2021 10:10:10.'
       isArray: false
       name: filter_start_time
       required: false
