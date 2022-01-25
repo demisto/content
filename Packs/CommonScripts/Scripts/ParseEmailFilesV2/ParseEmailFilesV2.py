@@ -3,7 +3,20 @@ from CommonServerPython import *  # noqa: F401
 from parse_emails.parse_emails import EmailParser
 
 
-def data_to_md(email_data, email_file_name=None, parent_email_file=None, print_only_headers=False):
+def data_to_md(email_data, email_file_name=None, parent_email_file=None, print_only_headers=False) -> str:
+    """
+    create Markdown with the data.
+
+    Args:
+      email_data (dict): all the email data.
+      email_file_name (str): the email file name.
+      parent_email_file (str): the parent email file name (for attachment mail).
+      print_only_headers (bool): Whether to only the headers.
+
+    Returns:
+      str: the parsed Markdown
+
+    """
     if email_data is None:
         return 'No data extracted from email'
 
@@ -32,7 +45,18 @@ def data_to_md(email_data, email_file_name=None, parent_email_file=None, print_o
     return md
 
 
-def save_file(file_name, file_content):
+def save_file(file_name, file_content) -> str:
+    """
+    save attachment to the war room and return the file internal path.
+
+    Args:
+      file_name (str): The name of the file to be created.
+      file_content (str/bytes): the file data.
+
+    Returns:
+      str: the file internal path
+
+    """
     created_file = fileResult(file_name, file_content)
     file_id = created_file.get('FileID')
     attachment_internal_path = demisto.investigation().get('id') + '_' + file_id
