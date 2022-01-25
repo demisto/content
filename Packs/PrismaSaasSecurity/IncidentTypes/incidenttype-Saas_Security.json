@@ -1,6 +1,5 @@
 {
   "id": "Saas Security Incident",
-  "description": "Incidents discovered by SaaS Security.",
   "version": -1,
   "vcShouldIgnore": false,
   "locked": false,

@@ -22,20 +22,15 @@ configuration:
   name: isFetch
   type: 8
   required: false
-  additionalinfo: If selected, fetches incidents from SaaS Security.
 - display: Incidents Fetch Interval
   name: incidentFetchInterval
   defaultvalue: "1"
   type: 19
   required: false
-  additionalinfo: Frequency (in hours and minutes) by which Cortex XSOAR fetches incidents
-    from SaaS Security when **Fetch Incidents** is selected.
 - display: Incident type
   name: incidentType
   type: 13
   required: false
-  additionalinfo: Incident type is set by this field if a classifier does not exist.
-    If a  classifier is selected, it takes precedence.
 - additionalinfo: 'Selects which direction you want the incidents mirrored.
  You can mirror Incoming only (from SaaS Security to Cortex XSOAR),
   **Outgoing** only (from Cortex XSOAR to SaaS Security), or both **Incoming And Outgoing**.'
@@ -127,7 +122,7 @@ description: SaaS Security API is a cloud-based service that you can connect dir
   sharing and permission visibility, and threat detection. This Content Pack provides insights
   into risks posed by data exposure and policy violations and enables you to use Cortex XSOAR
   to effectively manage the incidents discovered by SaaS Security API.
-display: SaaS Security
+display: SaaS Security (Beta)
 name: SaasSecurity
 script:
   commands:
