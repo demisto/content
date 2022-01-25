@@ -1818,7 +1818,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: External analysis
+              simple: Person
       - - operator: isEqualString
           left:
             value:
@@ -1826,7 +1826,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: test-add-attribute
+              simple: updated comment
       - - operator: isNotEmpty
           left:
             value:
