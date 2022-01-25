@@ -150,9 +150,9 @@ Machine.Isolate
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| machine_id | The machine ID to be used for isolation. For example, "0a3250e0693a109f1affc9217be9459028aa8426". | Required | 
-| comment | The comment to associate with the action. | Required | 
-| isolation_type | Whether to fully isolate or selectively isolate. Selectively restricting only limits a set of applications from accessing the network. | Required | 
+| machine_id | A comma-separated list of machine IDs to be used for isolation. e.g., 0a3250e0693a109f1affc9217be9459028aa8426,0a3250e0693a109f1affc9217be9459028aa8424. | Required | 
+| comment | A comment to associate with the action. | Required | 
+| isolation_type | Full isolation or Selective isolation. (Restrict only limited set of applications from accessing the network). Possible values are: Full, Selective. | Required | 
 
 
 ##### Context Output
@@ -160,49 +160,69 @@ Machine.Isolate
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | MicrosoftATP.MachineAction.ID | String | The machine action ID. | 
-| MicrosoftATP.MachineAction.Type | String | The type of the machine action. | 
-| MicrosoftATP.MachineAction.Scope | Unknown | The scope of the action. | 
+| MicrosoftATP.MachineAction.Type | String | Type of the machine action. | 
+| MicrosoftATP.MachineAction.Scope | Unknown | Scope of the action. | 
 | MicrosoftATP.MachineAction.Requestor | String | The ID of the user that executed the action. | 
-| MicrosoftATP.MachineAction.RequestorComment | String | The comment that was written when issuing the action. | 
+| MicrosoftATP.MachineAction.RequestorComment | String | Comment that was written when issuing the action. | 
 | MicrosoftATP.MachineAction.Status | String | The current status of the command. | 
 | MicrosoftATP.MachineAction.MachineID | String | The machine ID on which the action was executed. | 
 | MicrosoftATP.MachineAction.ComputerDNSName | String | The machine DNS name on which the action was executed. | 
-| MicrosoftATP.MachineAction.CreationDateTimeUtc | Date | The date and time the action was created. | 
+| MicrosoftATP.MachineAction.CreationDateTimeUtc | Date | The date and time when the action was created. | 
 | MicrosoftATP.MachineAction.LastUpdateTimeUtc | Date | The last date and time when the action status was updated. | 
 | MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifier | String | The file identifier. | 
-| MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType | String | The type of the file identifier. Possible values: "SHA1", "SHA256", and "MD5".| 
+| MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType | String | The type of the file identifier. Possible values: "SHA1" ,"SHA256", and "MD5". | 
 
-
-##### Command Example
-```!microsoft-atp-isolate-machine machine_id=a70f9fe6b29cd9511652434919c6530618f06606 comment="test isolate machine" isolation_type=Selective```
-
+##### Command example
+```!microsoft-atp-isolate-machine comment=isolate_test_3 isolation_type=Full machine_id="4899036531e374137f63289c3267bad772c13fef,f70f9fe6b29cd9511652434919c6530618f06606"```
 ##### Context Example
-```
+```json
 {
-    "MicrosoftATP.MachineAction": {
-        "Status": "Pending", 
-        "CreationDateTimeUtc": "2020-03-23T10:07:48.6818309Z", 
-        "MachineID": "a70f9fe6b29cd9511652434919c6530618f06606", 
-        "LastUpdateTimeUtc": null, 
-        "ComputerDNSName": null, 
-        "Requestor": "2f48b784-5da5-4e61-9957-012d2630f1e4", 
-        "RelatedFileInfo": {
-            "FileIdentifier": null, 
-            "FileIdentifierType": null
-        }, 
-        "Scope": null, 
-        "Type": "Isolate", 
-        "ID": "70ab787a-0719-4493-b98d-2535c8fe6817", 
-        "RequestorComment": "test isolate machine"
+    "MicrosoftATP": {
+        "MachineAction": [
+            {
+                "ComputerDNSName": "desktop-s2455r8",
+                "CreationDateTimeUtc": "2022-01-25T14:25:52.6227941Z",
+                "ID": "ecc76ec4-c918-4df5-9a6b-1f3098e20464",
+                "LastUpdateTimeUtc": null,
+                "MachineID": "4899036531e374137f63289c3267bad772c13fef",
+                "RelatedFileInfo": {
+                    "FileIdentifier": null,
+                    "FileIdentifierType": null
+                },
+                "Requestor": "2f48b784-5da5-4e61-9957-012d2630f1e4",
+                "RequestorComment": "isolate_test_3",
+                "Scope": "Full",
+                "Status": "Pending",
+                "Type": "Isolate"
+            },
+            {
+                "ComputerDNSName": "desktop-s2455r9",
+                "CreationDateTimeUtc": "2022-01-25T14:25:53.2395007Z",
+                "ID": "7d9a0a30-683d-4908-8451-6d39a3da0744",
+                "LastUpdateTimeUtc": null,
+                "MachineID": "f70f9fe6b29cd9511652434919c6530618f06606",
+                "RelatedFileInfo": {
+                    "FileIdentifier": null,
+                    "FileIdentifierType": null
+                },
+                "Requestor": "2f48b784-5da5-4e61-9957-012d2630f1e4",
+                "RequestorComment": "isolate_test_3",
+                "Scope": "Full",
+                "Status": "Pending",
+                "Type": "Isolate"
+            }
+        ]
     }
 }
 ```
 
 ##### Human Readable Output
-##### The isolation request has been submitted successfully:
-|ID|Type|Requestor|RequestorComment|Status|MachineID|
-|---|---|---|---|---|---|
-| 70ab787a-0719-4493-b98d-2535c8fe6817 | Isolate | 2f48b784-5da5-4e61-9957-012d2630f1e4 | test isolate machine | Pending | a70f9fe6b29cd9511652434919c6530618f06606 |
+
+>##### The isolation request has been submitted successfully:
+>|ID|Type|Requestor|RequestorComment|Status|MachineID|ComputerDNSName|
+>|---|---|---|---|---|---|---|
+>| ecc76ec4-c918-4df5-9a6b-1f3098e20464 | Isolate | 2f48b784-5da5-4e61-9957-012d2630f1e4 | isolate_test_3 | Pending | 4899036531e374137f63289c3267bad772c13fef | desktop-s2455r8 |
+>| 7d9a0a30-683d-4908-8451-6d39a3da0744 | Isolate | 2f48b784-5da5-4e61-9957-012d2630f1e4 | isolate_test_3 | Pending | f70f9fe6b29cd9511652434919c6530618f06606 | desktop-s2455r9 |
 
 
 ### 2. microsoft-atp-unisolate-machine
@@ -219,58 +239,78 @@ Machine.Isolate
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| machine_id | Machine ID to be used to stop the isolation. For example, "0a3250e0693a109f1affc9217be9459028aa8426". | Required | 
-| comment | The comment to associate with the action. | Required | 
+| machine_id | A comma-separated list of machine IDs to be used to stop the isolation. e.g., 0a3250e0693a109f1affc9217be9459028aa8426,0a3250e0693a109f1affc9217be9459028aa8424. | Required | 
+| comment | Comment to associate with the action. | Required | 
 
 
 ##### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftATP.MachineAction.ID | String | The action ID of the machine. | 
-| MicrosoftATP.MachineAction.Type | String | The type of the action. | 
-| MicrosoftATP.MachineAction.Scope | Unknown | The scope of the action. | 
+| MicrosoftATP.MachineAction.ID | String | The machine action ID. | 
+| MicrosoftATP.MachineAction.Type | String | Type of the action. | 
+| MicrosoftATP.MachineAction.Scope | Unknown | Scope of the action. | 
 | MicrosoftATP.MachineAction.Requestor | String | The ID of the user that executed the action. | 
 | MicrosoftATP.MachineAction.RequestorComment | String | The comment that was written when issuing the action. | 
 | MicrosoftATP.MachineAction.Status | String | The current status of the command. | 
 | MicrosoftATP.MachineAction.MachineID | String | The machine ID on which the action was executed. | 
-| MicrosoftATP.MachineAction.ComputerDNSName | String | The machine DNS name on which the action was executed. | 
+| MicrosoftATP.MachineAction.ComputerDNSName | String | The machine DNS name on which the action was executed | 
 | MicrosoftATP.MachineAction.CreationDateTimeUtc | Date | The date and time when the action was created. | 
 | MicrosoftATP.MachineAction.LastUpdateTimeUtc | Date | The last date and time when the action status was updated. | 
 | MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifier | String | The fileIdentifier. | 
-| MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType | String | The type of the file identifier. Possible values: "SHA1", "SHA256", and "MD5". | 
+| MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType | String | The type of the file identifier. Possible values: "SHA1" ,"SHA256", and "MD5". | 
 
-
-##### Command Example
-```!microsoft-atp-unisolate-machine machine_id=f70f9fe6b29cd9511652434919c6530618f06606 comment="test unisolate machine"```
-
+##### Command example
+```!microsoft-atp-unisolate-machine comment=unisolate_test machine_id="4899036531e374137f63289c3267bad772c13fef,f70f9fe6b29cd9511652434919c6530618f06606"```
 ##### Context Example
-```
+```json
 {
-    "MicrosoftATP.MachineAction": {
-        "Status": "Pending", 
-        "CreationDateTimeUtc": "2020-03-23T10:07:50.7692907Z", 
-        "MachineID": "f70f9fe6b29cd9511652434919c6530618f06606", 
-        "LastUpdateTimeUtc": null, 
-        "ComputerDNSName": null, 
-        "Requestor": "2f48b784-5da5-4e61-9957-012d2630f1e4", 
-        "RelatedFileInfo": {
-            "FileIdentifier": null, 
-            "FileIdentifierType": null
-        }, 
-        "Scope": null, 
-        "Type": "Unisolate", 
-        "ID": "3d30f7c9-e41c-4839-a678-f528a201778c", 
-        "RequestorComment": "test unisolate machine"
+    "MicrosoftATP": {
+        "MachineAction": [
+            {
+                "ComputerDNSName": "desktop-s2455r8",
+                "CreationDateTimeUtc": "2022-01-25T14:23:01.3053556Z",
+                "ID": "488176cc-ff10-49ec-aabb-1edc79424f4e",
+                "LastUpdateTimeUtc": null,
+                "MachineID": "4899036531e374137f63289c3267bad772c13fef",
+                "RelatedFileInfo": {
+                    "FileIdentifier": null,
+                    "FileIdentifierType": null
+                },
+                "Requestor": "2f48b784-5da5-4e61-9957-012d2630f1e4",
+                "RequestorComment": "unisolate_test",
+                "Scope": null,
+                "Status": "Pending",
+                "Type": "Unisolate"
+            },
+            {
+                "ComputerDNSName": "desktop-s2455r9",
+                "CreationDateTimeUtc": "2022-01-25T14:23:01.8421701Z",
+                "ID": "a6422c40-62e6-4988-8b99-51dfadf44855",
+                "LastUpdateTimeUtc": null,
+                "MachineID": "f70f9fe6b29cd9511652434919c6530618f06606",
+                "RelatedFileInfo": {
+                    "FileIdentifier": null,
+                    "FileIdentifierType": null
+                },
+                "Requestor": "2f48b784-5da5-4e61-9957-012d2630f1e4",
+                "RequestorComment": "unisolate_test",
+                "Scope": null,
+                "Status": "Pending",
+                "Type": "Unisolate"
+            }
+        ]
     }
 }
 ```
 
 ##### Human Readable Output
-##### The request to stop the isolation has been submitted successfully:
-|ID|Type|Requestor|RequestorComment|Status|MachineID|
-|---|---|---|---|---|---|
-| 3d30f7c9-e41c-4839-a678-f528a201778c | Unisolate | 2f48b784-5da5-4e61-9957-012d2630f1e4 | test unisolate machine | Pending | f70f9fe6b29cd9511652434919c6530618f06606 |
+
+>### The request to stop the isolation has been submitted successfully:
+>|ID|Type|Requestor|RequestorComment|Status|MachineID|ComputerDNSName|
+>|---|---|---|---|---|---|---|
+>| 488176cc-ff10-49ec-aabb-1edc79424f4e | Unisolate | 2f48b784-5da5-4e61-9957-012d2630f1e4 | unisolate_test | Pending | 4899036531e374137f63289c3267bad772c13fef | desktop-s2455r8 |
+>| a6422c40-62e6-4988-8b99-51dfadf44855 | Unisolate | 2f48b784-5da5-4e61-9957-012d2630f1e4 | unisolate_test | Pending | f70f9fe6b29cd9511652434919c6530618f06606 | desktop-s2455r9 |
 
 
 ### 3. microsoft-atp-get-machines
