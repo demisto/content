@@ -4951,6 +4951,11 @@
             "integrations": "AzureRiskyUsers"
         },
         {
+            "playbookID": "playbook-AzureKeyVault-Test",
+            "fromversion": "6.0.0",
+            "integrations": "AzureKeyVault"
+        },
+        {
             "integrations": "KafkaV3",
             "playbookID": "KafkaV3 Test"
         },
