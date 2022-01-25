@@ -70,7 +70,7 @@ tasks:
     task:
       id: c62d4496-3f83-4efe-847c-0d4d4083d396
       version: -1
-      name: Retrieve All Alerts from Last 1 week
+      name: Retrieve All Alerts from Last 1 day
       description: Search alerts on the RedLock platform
       script: '|||redlock-search-alerts'
       type: regular
@@ -83,7 +83,7 @@ tasks:
       alert-status:
         simple: resolved
       time-range-unit:
-        simple: week
+        simple: day
       time-range-value:
         simple: "1"
     separatecontext: false
@@ -235,7 +235,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4395
+          "y": 5095
         }
       }
     note: false
@@ -999,7 +999,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "22"
+      - "47"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1023,6 +1023,171 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: cf9316f4-6820-4e58-899c-5490ee43ea4b
+    type: condition
+    task:
+      id: cf9316f4-6820-4e58-899c-5490ee43ea4b
+      version: -1
+      name: Verify Response
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "48"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Redlock
+                accessor: Event
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: 7c0bec34-9edc-47ba-8faf-9c95eb497b31
+    type: regular
+    task:
+      id: 7c0bec34-9edc-47ba-8faf-9c95eb497b31
+      version: -1
+      name: Search for Events
+      description: Search events on the Prisma Cloud (RedLock) platform using RQL
+        language.
+      script: '|||redlock-search-event'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "46"
+    scriptarguments:
+      limit:
+        simple: "2"
+      query:
+        simple: event from cloud.audit_logs where ip EXISTS
+      time-range-unit:
+        simple: hour
+      time-range-value:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4395
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "48":
+    id: "48"
+    taskid: 1470eccd-7f70-4ece-8d58-f0bc69cdcf1d
+    type: regular
+    task:
+      id: 1470eccd-7f70-4ece-8d58-f0bc69cdcf1d
+      version: -1
+      name: Search for networks
+      description: Search networks on the Prisma Cloud (RedLock) platform using RQL
+        language.
+      script: '|||redlock-search-network'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "49"
+    scriptarguments:
+      query:
+        simple: network from vpc.flow_record where bytes > 0
+      time-range-unit:
+        simple: day
+      time-range-value:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4745
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "49":
+    id: "49"
+    taskid: b3ea4813-757f-4f85-8117-4e0d6d9896c8
+    type: condition
+    task:
+      id: b3ea4813-757f-4f85-8117-4e0d6d9896c8
+      version: -1
+      name: Verify Response
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Redlock.Network
+                accessor: Node
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Redlock.Network.Connection
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -1036,7 +1201,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 4410,
+        "height": 5110,
         "width": 810,
         "x": 50,
         "y": 50

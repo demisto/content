@@ -3,8 +3,10 @@ commonfields:
   id: GoogleCloudSCC
   version: -1
 configuration:
-- additionalinfo: Service Account JSON
-  display: Service Account JSON
+- additionalinfo: If the application runs on cloud provider (AWS, Azure) use workload
+    identity federation configuration setup file otherwise use service account credential
+    file.
+  display: Service Account Configuration
   name: service_account_json
   required: true
   type: 4
@@ -328,6 +330,7 @@ script:
         6) externalUri: =, :
         7) eventTime: =, >, <, >=, <=
         8) severity: =, :
+        9) findingClass: =
 
         Examples: "sourceProperties.browser="chrome" AND sourceProperties.event_type="proximity""
         Use a negated partial match on the empty string to filter based on a property not existing: "-severity=LOW".
@@ -763,7 +766,74 @@ script:
       description: Specifies the identities that do not cause logging for this type
         of permission.
       type: String
-  dockerimage: demisto/google-api-py3:1.0.0.24037
+  - arguments:
+    - default: false
+      description: |-
+        The relative resource name of the finding.
+
+        Format: organizations/{organization_id}/sources/{source_id}/finding/{findingId}
+
+        Example: organizations/595779152576/sources/14801394649435054450/findings/bc5a86da657611ebb979005056a5924e
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The desired state of the finding.
+      isArray: false
+      name: state
+      predefined:
+      - ACTIVE
+      - INACTIVE
+      required: true
+      secret: false
+    deprecated: false
+    description: Update the state of organization's or source's finding.
+    execution: false
+    name: google-cloud-scc-finding-state-update
+    outputs:
+    - contextPath: GoogleCloudSCC.Finding.name
+      description: The relative resource name of this finding.
+      type: String
+    - contextPath: GoogleCloudSCC.Finding.parent
+      description: The relative resource name of the source the finding belongs to.
+      type: String
+    - contextPath: GoogleCloudSCC.Finding.resourceName
+      description: For findings on Google Cloud resources, the full resource name
+        of the Google Cloud resource this finding is for.
+      type: String
+    - contextPath: GoogleCloudSCC.Finding.state
+      description: The state of the finding.
+      type: String
+    - contextPath: GoogleCloudSCC.Finding.category
+      description: The additional taxonomy group within findings from a given source.
+      type: String
+    - contextPath: GoogleCloudSCC.Finding.externalUri
+      description: The URI that, if available, points to a web page outside of Security
+        Command Center where additional information about the finding can be found.
+      type: String
+    - contextPath: GoogleCloudSCC.Finding.createTime
+      description: The time at which the finding was created in Security Command Center.
+      type: String
+    - contextPath: GoogleCloudSCC.Finding.eventTime
+      description: The time at which the event took place, or when an update to the
+        finding occurred.
+      type: String
+    - contextPath: GoogleCloudSCC.Finding.sourceProperties
+      description: Source specific properties. These properties are managed by the
+        source that writes the finding. Properties are varying from finding to finding.
+      type: Unknown
+    - contextPath: GoogleCloudSCC.Finding.severity
+      description: Severity of the finding.
+      type: String
+    - contextPath: GoogleCloudSCC.Finding.securityMarks.name
+      description: The relative resource name of the SecurityMarks.
+      type: String
+    - contextPath: GoogleCloudSCC.Finding.securityMarks.marks
+      description: Mutable user specified security marks belonging to the parent resource.
+      type: String
+  dockerimage: demisto/google-api-py3:1.0.0.26204
   feed: false
   isfetch: true
   longRunning: false
