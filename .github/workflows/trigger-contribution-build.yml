@@ -6,7 +6,7 @@ on:
 jobs:
   trigget_contrib_build:
     runs-on: ubuntu-latest
-    if: github.repository == 'demisto/content' && github.event.action == 'labeled' && github.event.pull_request.head.repo.fork == true && contains( github.event.pull_request.labels, 'ready-for-instance-test')
+    if: github.event.action == 'labeled' && github.event.pull_request.head.repo.fork == false
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -30,5 +30,7 @@ jobs:
           USERNAME: ${{ secrets.TRIGGER_BUILD_USER }}
           PASSWORD: ${{ secrets.TRIGGER_BUILD_PASSWORD }}
         run: |
+          echo ${{ secrets.SECRET_CHECK_USER }}
+          echo ${{ secrets.SECRET_CHECK_PASS }}
           echo "Trigger contribution build for PR: $PR_NUMBER with base branch: $BASE_BRANCH contrib branch: $CONTRIB_BRANCH"
           python Utils/github_workflow_scripts/trigger_contribution_build.py --pr_number $PR_NUMBER --base_branch $BASE_BRANCH --contrib_branch $CONTRIB_BRANCH --username $USERNAME --password $PASSWORD
