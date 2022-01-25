@@ -89,8 +89,8 @@ tasks:
       issueJson:
         simple: |-
           {"fields":
-            {"issuetype":{"name":"Request for Action"},
-            {"customfield_10040":123456}
+            {"issuetype":{"name":"Request for Action"}},
+            {"customfield_10040":"123456"}
           }
       issueTypeId:
         simple: "10008"
