@@ -181,7 +181,7 @@ class Client(BaseClient):
         if self.credentials:
             url_suffix = SUFFIX_TRANSFORMER[path]
             session = requests.Session()
-            login_url = self._base_url + '/login'
+            login_url = self._base_url + '/papi/login'
             session.post(url=login_url, data=self.credentials)
             cookies = session.cookies.get_dict()
             submit_url = self._base_url + url_suffix['url']
