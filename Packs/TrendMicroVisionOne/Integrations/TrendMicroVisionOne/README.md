@@ -4,7 +4,7 @@ Support and maintenance for this integration are provided by the author. Please 
 ***
 Trend Micro Vision One is a purpose-built threat defense platform that provides added value and new benefits beyond XDR solutions, allowing you to see more and respond faster. Providing deep and broad extended detection and response (XDR) capabilities that collect and automatically correlate data across multiple security layers—email, endpoints, servers, cloud workloads, and networks—Trend Micro Vision One prevents the majority of attacks with automated protection.
 
-## Configure Vision One on Cortex XSOAR
+## Configure Trend Micro Vision One on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for Trend Micro Vision One.
@@ -12,9 +12,9 @@ Trend Micro Vision One is a purpose-built threat defense platform that provides 
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Name | Unique name for this Vision One instance | True |
+| Name | Unique name for this Trend Micro Vision One instance | True |
 | Fetch Incidents | Choose if the integration should sync incidents | True |
-| API URL | Base URL for Vision One API | True |
+| API URL | Base URL for Trend Micro Vision One API | True |
 | API Key | API token for authentication  | True |
 | Incidents Fetch Interval (minutes) | How often do you want to check for new incidents | False |
 | Sync On First Run (days) | How many days to go back during first sync | False |
@@ -72,7 +72,7 @@ Note: To get the complete task status run polling command `trendmicro-visionone-
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| message_id | Email Message ID from Vision One message activity data | Required | 
+| message_id | Email Message ID from Trend Micro Vision One message activity data | Required | 
 | mail_box | Email mailbox where the message will be quarantied from | Required | 
 | message_delivery_time | Email message's original delivery time | Required |
 | product_id | Target product | Optional |
@@ -93,7 +93,7 @@ Note: To get the complete task status run polling command `trendmicro-visionone-
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| message_id | Email Message ID from Vision One message activity data | Required | 
+| message_id | Email Message ID from Trend Micro Vision One message activity data | Required | 
 | mail_box | Email mailbox where the message will be deleted from | Required | 
 | message_delivery_time | Email message's original delivery time | Required |
 | product_id | Target product | Optional |

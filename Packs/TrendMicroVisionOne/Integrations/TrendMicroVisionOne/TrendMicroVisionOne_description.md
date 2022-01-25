@@ -4,7 +4,7 @@ Support and maintenance for this integration are provided by the author. Please 
 ***
 Trend Micro Vision One is a purpose-built threat defense platform that provides added value and new benefits beyond XDR solutions, allowing you to see more and respond faster. Providing deep and broad extended detection and response (XDR) capabilities that collect and automatically correlate data across multiple security layers—email, endpoints, servers, cloud workloads, and networks—Trend Micro Vision One prevents the majority of attacks with automated protection.
 
-## Obtaining Vision One API Credentials
+## Obtaining Trend Micro Vision One API Credentials
 Configuring the Trend Micro Vision One integration requires API credentials generated in Trend Micro Vision One. It is recommended that a new role be created with just the permissions required for this integration. You can create a new role for this integration by following these steps in Trend Micro Vision One.
 
 1. Navigate to **Administration** > **User Roles**
@@ -41,7 +41,7 @@ You can then create a user account and generate an API key to be used for the Co
 4. Complete the account creation process by following the steps in the email sent
 4. This will generate an **Authentication token** that can then be used to configure the Cortex XSOAR integration
 
-## Configure Vision One on Cortex XSOAR
+## Configure Trend Micro Vision One on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for Trend Micro Vision One.
@@ -49,10 +49,10 @@ You can then create a user account and generate an API key to be used for the Co
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Name | Unique name for this Vision One instance | True |
+| Name | Unique name for this Trend Micro Vision One instance | True |
 | Fetch Incidents | Choose if the integration should sync incidents | True |
 | Incident Type | Choose the "Trend Micro Vision One XDR Incident" type | True |
-| API URL | Base URL for Vision One API | True |
+| API URL | Base URL for Trend Micro Vision One API | True |
 | API Key | API token for authentication  | True |
 | Incidents Fetch Interval (minutes) | How often do you want to check for new incidents | False |
 | Sync On First Run (days) | How many days to go back during first sync | False |
