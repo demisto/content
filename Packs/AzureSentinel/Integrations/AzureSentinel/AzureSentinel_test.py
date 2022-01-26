@@ -12,7 +12,7 @@ from AzureSentinel import AzureSentinelClient, list_incidents_command, list_inci
     delete_incident_command, XSOAR_USER_AGENT, incident_delete_comment_command, \
     query_threat_indicators_command, create_threat_indicator_command, delete_threat_indicator_command, \
     append_tags_threat_indicator_command, replace_tags_threat_indicator_command, update_threat_indicator_command, \
-    list_threat_indicator_command, NEXTLINK_DESCRIPTION, test_module
+    list_threat_indicator_command, NEXTLINK_DESCRIPTION
 
 TEST_ITEM_ID = 'test_watchlist_item_id_1'
 
@@ -21,12 +21,7 @@ NEXT_LINK_CONTEXT_KEY = 'AzureSentinel.NextLink(val.Description == "NextLink for
 API_VERSION = '2021-04-01'
 
 
-@pytest.fixture()
-def client():
-    return mock_client()
-
-
-def test_valid_error_is_raised_when_empty_api_response_is_returned(mocker, client):
+def test_valid_error_is_raised_when_empty_api_response_is_returned(mocker):
     """
     Given
     - Empty api response and invalid status code returned from the api response.
@@ -37,6 +32,8 @@ def test_valid_error_is_raised_when_empty_api_response_is_returned(mocker, clien
     Then
     - ValueError is raised.
     """
+    from AzureSentinel import test_module
+    client = mock_client()
     api_response = requests.Response()
     api_response.status_code = 403
     api_response._content = None
