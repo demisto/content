@@ -645,6 +645,21 @@ The following permissions are required for all commands:
       <td>A comma separated list of email addresses for the 'to' field.</td>
       <td>Required</td>
     </tr>
+        <tr>
+      <td>attach_ids</td>
+      <td>A comma separated list of War Room entry IDs that contain files, which are used to attach files for the email to send. For example, attachIDs=15@8,19@8.</td>
+      <td>Optional</td>
+    </tr>
+    <tr>
+      <td>attach_names</td>
+      <td>A comma separated list of names of attachments to be displayed in the email to send. Must be the same number of elements as attachIDs.</td>
+      <td>Optional</td>
+    </tr>
+    <tr>
+      <td>attach_cids</td>
+      <td>A comma separated list of CIDs to embed attachments within the email.</td>
+      <td>Optional</td>
+    </tr>
   </tbody>
 </table>
 
