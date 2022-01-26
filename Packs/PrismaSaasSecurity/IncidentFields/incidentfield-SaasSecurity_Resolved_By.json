@@ -2,7 +2,7 @@
     "id": "incident_saassecurityresolvedby",
     "version": -1,
     "modified": "2021-10-13T10:52:14.208197+03:00",
-    "name": "Saas Security Resolved By",
+    "name": "SaaS Security Resolved By",
     "ownerOnly": true,
     "cliName": "saassecurityresolvedby",
     "type": "shortText",

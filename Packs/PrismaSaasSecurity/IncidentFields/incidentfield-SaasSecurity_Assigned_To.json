@@ -2,7 +2,7 @@
     "id": "incident_saassecurityassignedto",
     "version": -1,
     "modified": "2021-10-13T10:51:37.549677+03:00",
-    "name": "Saas Security Assigned To",
+    "name": "SaaS Security Assigned To",
     "ownerOnly": true,
     "cliName": "saassecurityassignedto",
     "type": "shortText",

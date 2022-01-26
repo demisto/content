@@ -3,7 +3,7 @@
     "version": -1,
     "modified": "2021-10-27T22:56:13.134377204Z",
     "fromVersion": "6.0.0",
-    "name": "Saas Security Incident Id",
+    "name": "SaaS Security Incident Id",
     "ownerOnly": false,
     "cliName": "saassecurityincidentid",
     "type": "number",
@@ -20,7 +20,7 @@
     "hidden": false,
     "openEnded": false,
     "associatedTypes": [
-        "Saas Security Incident"
+        "SaaS Security Incident"
     ],
     "associatedToAll": false,
     "unmapped": false,
