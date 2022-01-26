@@ -103,76 +103,80 @@ def test_is_ip_valid():
 
 
 DATA = [
-        {
-            'header_1': 'a1',
-            'header_2': 'b1',
-            'header_3': 'c1'
-        },
-        {
-            'header_1': 'a2',
-            'header_2': 'b2',
-            'header_3': 'c2'
-        },
-        {
-            'header_1': 'a3',
-            'header_2': 'b3',
-            'header_3': 'c3'
-        }
-    ]
+    {
+        'header_1': 'a1',
+        'header_2': 'b1',
+        'header_3': 'c1'
+    },
+    {
+        'header_1': 'a2',
+        'header_2': 'b2',
+        'header_3': 'c2'
+    },
+    {
+        'header_1': 'a3',
+        'header_2': 'b3',
+        'header_3': 'c3'
+    }
+]
 
 TABLE_TO_MARKDOWN_ONLY_DATA_PACK = [
-        (
-            DATA,
-            '''### tableToMarkdown test
+    (
+        DATA,
+        '''### tableToMarkdown test
 |header_1|header_2|header_3|
 |---|---|---|
 | a1 | b1 | c1 |
 | a2 | b2 | c2 |
 | a3 | b3 | c3 |
-'''),
-        (
-            [
-                {
-                    'header_1|with_pipe': 'a1',
-                    'header_2': 'b1',
-                },
-                {
-                    'header_1|with_pipe': 'a2',
-                    'header_2': 'b2',
-                }
-            ],
-            '''### tableToMarkdown test
+'''
+    ),
+    (
+        [
+            {
+                'header_1|with_pipe': 'a1',
+                'header_2': 'b1',
+            },
+            {
+                'header_1|with_pipe': 'a2',
+                'header_2': 'b2',
+            }
+        ],
+        '''### tableToMarkdown test
 |header_1\\|with_pipe|header_2|
 |---|---|
 | a1 | b1 |
 | a2 | b2 |
-''')]
+'''
+    )
+]
 
 DATA_WITH_URLS = [(
-        [
-            {
-                'header_1': 'a1',
-                'url1': 'b1',
-                'url2': 'c1'
-            },
-            {
-                'header_1': 'a2',
-                'url1': 'b2',
-                'url2': 'c2'
-            },
-            {
-                'header_1': 'a3',
-                'url1': 'b3',
-                'url2': 'c3'
-            }
-        ],
-        '''### tableToMarkdown test
+    [
+        {
+            'header_1': 'a1',
+            'url1': 'b1',
+            'url2': 'c1'
+        },
+        {
+            'header_1': 'a2',
+            'url1': 'b2',
+            'url2': 'c2'
+        },
+        {
+            'header_1': 'a3',
+            'url1': 'b3',
+            'url2': 'c3'
+        }
+    ],
+    '''### tableToMarkdown test
 |header_1|url1|url2|
 |---|---|---|
 | a1 | [b1](b1) | [c1](c1) |
 | a2 | [b2](b2) | [c2](c2) |
 | a3 | [b3](b3) | [c3](c3) |
-''')]
+'''
+)]
 
 COMPLEX_DATA_WITH_URLS = [(
     [
@@ -242,6 +246,19 @@ COMPLEX_DATA_WITH_URLS = [(
 
 
 class TestTableToMarkdown:
+    @pytest.mark.parametrize('data, expected_table', TABLE_TO_MARKDOWN_ONLY_DATA_PACK)
+    def test_sanity(self, data, expected_table):
+        """
+        Given:
+          - list of objects.
+        When:
+          - calling tableToMarkdown.
+        Then:
+          - return a valid table.
+        """
+        table = tableToMarkdown('tableToMarkdown test', data)
+
+        assert table == expected_table
 
     @staticmethod
     def test_header_transform_underscoreToCamelCase():
@@ -615,6 +632,20 @@ class TestTableToMarkdown:
         )
         assert table_with_character == expected_string_with_special_character
 
+    @pytest.mark.parametrize('data, expected_table', DATA_WITH_URLS)
+    def test_clickable_url(self, data, expected_table):
+        """
+        Given:
+          - list of objects.
+          - some values are URLs.
+        When:
+          - calling tableToMarkdown.
+        Then:
+          - return a valid table with clickable URLs.
+        """
+        table = tableToMarkdown('tableToMarkdown test', data, url_keys=['url1', 'url2'])
+        assert table == expected_table
+
     @staticmethod
     def test_keep_headers_list():
         """
@@ -785,36 +816,6 @@ class TestTableToMarkdown:
 | Active Directory Query | 1.0.4, 1.0.5, 1.0.6 |
 """
         assert expected_table == table
-
-
-@pytest.mark.parametrize('data, expected_table', DATA_WITH_URLS)
-def test_clickable_url(data, expected_table):
-    """
-    Given:
-      - list of objects.
-      - some values are URLs.
-    When:
-      - calling tableToMarkdown.
-    Then:
-      - return a valid table with clickable URLs.
-    """
-    table = tableToMarkdown('tableToMarkdown test', data, url_keys=['url1', 'url2'])
-    assert table == expected_table
-
-
-@pytest.mark.parametrize('data, expected_table', TABLE_TO_MARKDOWN_ONLY_DATA_PACK)
-def test_sanity(data, expected_table):
-    """
-    Given:
-      - list of objects.
-    When:
-      - calling tableToMarkdown.
-    Then:
-      - return a valid table.
-    """
-    table = tableToMarkdown('tableToMarkdown test', data)
-
-    assert table == expected_table
 
 
 @pytest.mark.parametrize('data, expected_data', COMPLEX_DATA_WITH_URLS)
