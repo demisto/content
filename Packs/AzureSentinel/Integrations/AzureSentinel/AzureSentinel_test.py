@@ -33,7 +33,6 @@ def test_valid_error_is_raised_when_empty_api_response_is_returned(mocker):
     Then
     - ValueError is raised.
     """
-    import json
     client = mock_client()
     api_response = requests.Response()
     api_response.status_code = 403
@@ -42,8 +41,8 @@ def test_valid_error_is_raised_when_empty_api_response_is_returned(mocker):
     mocker.patch.object(client._client, 'get_access_token')
     mocker.patch.object(client._client._session, 'request', return_value=api_response)
 
-    test_module(client)
-
+    with pytest.raises(ValueError):
+        test_module(client)
 
 
 def mock_client():
