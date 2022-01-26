@@ -173,7 +173,7 @@ Machine.Isolate
 | MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType | String | The type of the file identifier. Possible values: "SHA1" ,"SHA256", and "MD5". | 
 
 ##### Command example
-```!microsoft-atp-isolate-machine comment=isolate_test_3 isolation_type=Full machine_id="4899036531e374137f63289c3267bad772c13fef,f70f9fe6b29cd9511652434919c6530618f06606"```
+```!microsoft-atp-isolate-machine comment=isolate_test_3 isolation_type=Full machine_id="12342c13fef,12342c13fef8f06606"```
 ##### Context Example
 ```json
 {
@@ -182,9 +182,9 @@ Machine.Isolate
             {
                 "ComputerDNSName": "desktop-s2455r8",
                 "CreationDateTimeUtc": "2022-01-25T14:25:52.6227941Z",
-                "ID": "ecc76ec4-c918-4df5-9a6b-1f3098e20464",
+                "ID": "1f3098e20464",
                 "LastUpdateTimeUtc": null,
-                "MachineID": "4899036531e374137f63289c3267bad772c13fef",
+                "MachineID": "12342c13fef",
                 "RelatedFileInfo": {
                     "FileIdentifier": null,
                     "FileIdentifierType": null
@@ -198,9 +198,9 @@ Machine.Isolate
             {
                 "ComputerDNSName": "desktop-s2455r9",
                 "CreationDateTimeUtc": "2022-01-25T14:25:53.2395007Z",
-                "ID": "7d9a0a30-683d-4908-8451-6d39a3da0744",
+                "ID": "6d39a3da0744",
                 "LastUpdateTimeUtc": null,
-                "MachineID": "f70f9fe6b29cd9511652434919c6530618f06606",
+                "MachineID": "12342c13fef8f06606",
                 "RelatedFileInfo": {
                     "FileIdentifier": null,
                     "FileIdentifierType": null
@@ -221,8 +221,8 @@ Machine.Isolate
 >##### The isolation request has been submitted successfully:
 >|ID|Type|Requestor|RequestorComment|Status|MachineID|ComputerDNSName|
 >|---|---|---|---|---|---|---|
->| ecc76ec4-c918-4df5-9a6b-1f3098e20464 | Isolate | 2f48b784-5da5-4e61-9957-012d2630f1e4 | isolate_test_3 | Pending | 4899036531e374137f63289c3267bad772c13fef | desktop-s2455r8 |
->| 7d9a0a30-683d-4908-8451-6d39a3da0744 | Isolate | 2f48b784-5da5-4e61-9957-012d2630f1e4 | isolate_test_3 | Pending | f70f9fe6b29cd9511652434919c6530618f06606 | desktop-s2455r9 |
+>| 1f3098e20464 | Isolate | 2f48b784-5da5-4e61-9957-012d2630f1e4 | isolate_test_3 | Pending | 12342c13fef | desktop-s2455r8 |
+>| 6d39a3da0744 | Isolate | 2f48b784-5da5-4e61-9957-012d2630f1e4 | isolate_test_3 | Pending | 12342c13fef8f06606 | desktop-s2455r9 |
 
 
 ### 2. microsoft-atp-unisolate-machine
@@ -261,7 +261,7 @@ Machine.Isolate
 | MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType | String | The type of the file identifier. Possible values: "SHA1" ,"SHA256", and "MD5". | 
 
 ##### Command example
-```!microsoft-atp-unisolate-machine comment=unisolate_test machine_id="4899036531e374137f63289c3267bad772c13fef,f70f9fe6b29cd9511652434919c6530618f06606"```
+```!microsoft-atp-unisolate-machine comment=unisolate_test machine_id="4899036531e3,f70f9fe6b29"```
 ##### Context Example
 ```json
 {
@@ -270,9 +270,9 @@ Machine.Isolate
             {
                 "ComputerDNSName": "desktop-s2455r8",
                 "CreationDateTimeUtc": "2022-01-25T14:23:01.3053556Z",
-                "ID": "488176cc-ff10-49ec-aabb-1edc79424f4e",
+                "ID": "488176cc",
                 "LastUpdateTimeUtc": null,
-                "MachineID": "4899036531e374137f63289c3267bad772c13fef",
+                "MachineID": "4899036531e3",
                 "RelatedFileInfo": {
                     "FileIdentifier": null,
                     "FileIdentifierType": null
@@ -286,9 +286,9 @@ Machine.Isolate
             {
                 "ComputerDNSName": "desktop-s2455r9",
                 "CreationDateTimeUtc": "2022-01-25T14:23:01.8421701Z",
-                "ID": "a6422c40-62e6-4988-8b99-51dfadf44855",
+                "ID": "a6422c40",
                 "LastUpdateTimeUtc": null,
-                "MachineID": "f70f9fe6b29cd9511652434919c6530618f06606",
+                "MachineID": "f70f9fe6b29",
                 "RelatedFileInfo": {
                     "FileIdentifier": null,
                     "FileIdentifierType": null
@@ -309,8 +309,8 @@ Machine.Isolate
 >### The request to stop the isolation has been submitted successfully:
 >|ID|Type|Requestor|RequestorComment|Status|MachineID|ComputerDNSName|
 >|---|---|---|---|---|---|---|
->| 488176cc-ff10-49ec-aabb-1edc79424f4e | Unisolate | 2f48b784-5da5-4e61-9957-012d2630f1e4 | unisolate_test | Pending | 4899036531e374137f63289c3267bad772c13fef | desktop-s2455r8 |
->| a6422c40-62e6-4988-8b99-51dfadf44855 | Unisolate | 2f48b784-5da5-4e61-9957-012d2630f1e4 | unisolate_test | Pending | f70f9fe6b29cd9511652434919c6530618f06606 | desktop-s2455r9 |
+>| 488176cc | Unisolate | 2f48b784-5da5-4e61-9957-012d2630f1e4 | unisolate_test | Pending | 4899036531e3 | desktop-s2455r8 |
+>| a6422c40 | Unisolate | 2f48b784-5da5-4e61-9957-012d2630f1e4 | unisolate_test | Pending | f70f9fe6b29 | desktop-s2455r9 |
 
 
 ### 3. microsoft-atp-get-machines
@@ -356,28 +356,28 @@ Retrieves a collection of machines that have communicated with WDATP cloud in th
 | MicrosoftATP.Machine.MachineTags | String | Set of machine tags. | 
 
 #### Command example
-```!microsoft-atp-get-machines hostname=desktop-s2455r9 health_status=Active os_platform=Windows10 ip=192.168.1.78,192.168.1.69```
+```!microsoft-atp-get-machines hostname=desktop-s health_status=Active os_platform=Windows10 ip=1.2.3.4,1.2.3.5```
 #### Context Example
 ```json
 {
     "MicrosoftATP": {
         "Machine": {
             "AgentVersion": "10.8040.19041.1466",
-            "ComputerDNSName": "desktop-s2455r9",
+            "ComputerDNSName": "desktop-s",
             "ExposureLevel": "Medium",
             "FirstSeen": "2020-02-20T14:44:11.4627779Z",
             "HealthStatus": "Active",
-            "ID": "f70f9fe6b29cd9511652434919c6530618f06606",
+            "ID": "f70f9fe6b29",
             "IPAddresses": [
                 {
-                    "ipAddress": "192.168.1.78",
-                    "macAddress": "00505694D20C",
+                    "ipAddress": "1.2.3.4",
+                    "macAddress": "1213123",
                     "operationalStatus": "Up",
                     "type": "Ethernet"
                 },
                 {
-                    "ipAddress": "fe80::f9e6:df59:3177:11dc",
-                    "macAddress": "00505694D20C",
+                    "ipAddress": "1234::1234:1234:1234:1234",
+                    "macAddress": "1213123",
                     "operationalStatus": "Up",
                     "type": "Ethernet"
                 },
@@ -395,8 +395,8 @@ Retrieves a collection of machines that have communicated with WDATP cloud in th
                 }
             ],
             "IsAADJoined": true,
-            "LastExternalIPAddress": "82.166.99.236",
-            "LastIPAddress": "192.168.1.78",
+            "LastExternalIPAddress": "127.0.0.1",
+            "LastIPAddress": "1.2.3.4",
             "LastSeen": "2022-01-26T11:14:22.9649216Z",
             "MachineTags": [
                 "new test",
@@ -419,7 +419,7 @@ Retrieves a collection of machines that have communicated with WDATP cloud in th
 >### Microsoft Defender ATP Machines:
 >|ID|ComputerDNSName|OSPlatform|LastIPAddress|LastExternalIPAddress|HealthStatus|RiskScore|ExposureLevel|
 >|---|---|---|---|---|---|---|---|
->| f70f9fe6b29cd9511652434919c6530618f06606 | desktop-s2455r9 | Windows10 | 192.168.1.78 | 82.166.99.236 | Active | Medium | Medium |
+>| f70f9fe6b29 | desktop-s | Windows10 | 1.2.3.4 | 127.0.0.1 | Active | Medium | Medium |
 
 
 ### 4. microsoft-atp-get-file-related-machines
@@ -464,32 +464,32 @@ Machine.ReadWrite.All
 | MicrosoftATP.FileMachine.File | String | The machine related file hash. | 
 
 #### Command example
-```!microsoft-atp-get-file-related-machines file_hash=3395856ce81f2b7382dee72602f798b642f14140,4c2a702b1d4222d1c7acffdeee5b90cdbf135918```
+```!microsoft-atp-get-file-related-machines file_hash=1234567891acvgfdertukthgfdertyjhgfdset54,1234567891acvgfdertukthgfdertyjhgfdset53```
 #### Context Example
 ```json
 {
     "MicrosoftATP": {
         "FileMachine": [
             {
-                "File": "3395856ce81f2b7382dee72602f798b642f14140",
+                "File": "1234567891acvgfdertukthgfdertyjhgfdset54",
                 "Machines": [
                     {
                         "AgentVersion": "10.8040.19041.1466",
-                        "ComputerDNSName": "desktop-s2455r9",
+                        "ComputerDNSName": "desktop-s9",
                         "ExposureLevel": "Medium",
                         "FirstSeen": "2020-02-20T14:44:11.4627779Z",
                         "HealthStatus": "Active",
-                        "ID": "f70f9fe6b29cd9511652434919c6530618f06606",
+                        "ID": "f70f9fe6",
                         "IPAddresses": [
                             {
-                                "ipAddress": "192.168.1.78",
-                                "macAddress": "00505694D20C",
+                                "ipAddress": "1.2.3.4",
+                                "macAddress": "123456789121",
                                 "operationalStatus": "Up",
                                 "type": "Ethernet"
                             },
                             {
-                                "ipAddress": "fe80::f9e6:df59:3177:11dc",
-                                "macAddress": "00505694D20C",
+                                "ipAddress": "123::1223:1234:3177:11dc",
+                                "macAddress": "123456789121",
                                 "operationalStatus": "Up",
                                 "type": "Ethernet"
                             },
@@ -507,8 +507,8 @@ Machine.ReadWrite.All
                             }
                         ],
                         "IsAADJoined": true,
-                        "LastExternalIPAddress": "82.166.99.236",
-                        "LastIPAddress": "192.168.1.78",
+                        "LastExternalIPAddress": "127.0.0.1",
+                        "LastIPAddress": "1.2.3.4",
                         "LastSeen": "2022-01-25T11:14:39.7435843Z",
                         "MachineTags": [
                             "new test",
@@ -525,26 +525,26 @@ Machine.ReadWrite.All
                 ]
             },
             {
-                "File": "4c2a702b1d4222d1c7acffdeee5b90cdbf135918",
+                "File": "1234567891acvgfdertukthgfdertyjhgfdset53",
                 "Machines": [
                     {
                         "AADDeviceID": "cfcf4177-227e-4cdb-ac8e-f9a3da1ca30c",
                         "AgentVersion": "10.8040.19041.1466",
-                        "ComputerDNSName": "desktop-s2455r8",
+                        "ComputerDNSName": "desktop-s8",
                         "ExposureLevel": "Medium",
                         "FirstSeen": "2020-02-17T08:30:07.2415577Z",
                         "HealthStatus": "Active",
-                        "ID": "4899036531e374137f63289c3267bad772c13fef",
+                        "ID": "48990365",
                         "IPAddresses": [
                             {
-                                "ipAddress": "192.168.1.77",
+                                "ipAddress": "1.2.3.5",
                                 "macAddress": "005056941386",
                                 "operationalStatus": "Up",
                                 "type": "Ethernet"
                             },
                             {
-                                "ipAddress": "fe80::5c79:dd40:bc6e:23e1",
-                                "macAddress": "005056941386",
+                                "ipAddress": "123::1234:dd40:bc6e:23e1",
+                                "macAddress": "123456789123",
                                 "operationalStatus": "Up",
                                 "type": "Ethernet"
                             },
@@ -562,8 +562,8 @@ Machine.ReadWrite.All
                             }
                         ],
                         "IsAADJoined": true,
-                        "LastExternalIPAddress": "82.166.99.236",
-                        "LastIPAddress": "192.168.1.77",
+                        "LastExternalIPAddress": "127.0.0.1",
+                        "LastIPAddress": "1.2.3.5",
                         "LastSeen": "2022-01-25T11:19:44.718919Z",
                         "MachineTags": [
                             "test Tag 2",
@@ -585,11 +585,11 @@ Machine.ReadWrite.All
 
 #### Human Readable Output
 
->### Microsoft Defender ATP machines related to files ['3395856ce81f2b7382dee72602f798b642f14140', '4c2a702b1d4222d1c7acffdeee5b90cdbf135918']
+>### Microsoft Defender ATP machines related to files ['1234567891acvgfdertukthgfdertyjhgfdset54', '1234567891acvgfdertukthgfdertyjhgfdset53']
 >|ID|ComputerDNSName|OSPlatform|LastIPAddress|LastExternalIPAddress|HealthStatus|RiskScore|ExposureLevel|
 >|---|---|---|---|---|---|---|---|
->| f70f9fe6b29cd9511652434919c6530618f06606 | desktop-s2455r9 | Windows10 | 192.168.1.78 | 82.166.99.236 | Active | Medium | Medium |
->| 4899036531e374137f63289c3267bad772c13fef | desktop-s2455r8 | Windows10 | 192.168.1.77 | 82.166.99.236 | Active | Low | Medium |
+>| f70f9fe6 | desktop-s9 | Windows10 | 1.2.3.4 | 127.0.0.1 | Active | Medium | Medium |
+>| 48990365 | desktop-s8 | Windows10 | 1.2.3.5 | 127.0.0.1 | Active | Low | Medium |
 
 
 ### 5. microsoft-atp-get-machine-details
@@ -637,7 +637,7 @@ Machine.ReadWrite.All
 | MicrosoftATP.Machine.NetworkInterfaces.Status | String | Status for the Network interface \(e.g. Up, Down\) | 
 
 #### Command example
-```!microsoft-atp-get-machine-details machine_id=f70f9fe6b29cd9511652434919c6530618f06606,4899036531e374137f63289c3267bad772c13fef```
+```!microsoft-atp-get-machine-details machine_id=f70f9fe6b29,4899036531e```
 #### Context Example
 ```json
 {
@@ -645,21 +645,21 @@ Machine.ReadWrite.All
         "Machine": [
             {
                 "AgentVersion": "10.8040.19041.1466",
-                "ComputerDNSName": "desktop-s2455r9",
+                "ComputerDNSName": "desktop-s9",
                 "ExposureLevel": "Medium",
                 "FirstSeen": "2020-02-20T14:44:11.4627779Z",
                 "HealthStatus": "Active",
-                "ID": "f70f9fe6b29cd9511652434919c6530618f06606",
+                "ID": "f70f9fe6",
                 "IPAddresses": [
                     {
-                        "ipAddress": "192.168.1.78",
-                        "macAddress": "00505694D20C",
+                        "ipAddress": "1.2.3.4",
+                        "macAddress": "1234645645",
                         "operationalStatus": "Up",
                         "type": "Ethernet"
                     },
                     {
-                        "ipAddress": "fe80::f9e6:df59:3177:11dc",
-                        "macAddress": "00505694D20C",
+                        "ipAddress": "1234::1234:1234:3177:11dc",
+                        "macAddress": "1234645645",
                         "operationalStatus": "Up",
                         "type": "Ethernet"
                     },
@@ -677,8 +677,8 @@ Machine.ReadWrite.All
                     }
                 ],
                 "IsAADJoined": true,
-                "LastExternalIPAddress": "82.166.99.236",
-                "LastIPAddress": "192.168.1.78",
+                "LastExternalIPAddress": "127.0.0.1",
+                "LastIPAddress": "1.2.3.4",
                 "LastSeen": "2022-01-25T11:14:39.7435843Z",
                 "MachineTags": [
                     "new test",
@@ -695,21 +695,21 @@ Machine.ReadWrite.All
             {
                 "AADDeviceID": "cfcf4177-227e-4cdb-ac8e-f9a3da1ca30c",
                 "AgentVersion": "10.8040.19041.1466",
-                "ComputerDNSName": "desktop-s2455r8",
+                "ComputerDNSName": "desktop-s8",
                 "ExposureLevel": "Medium",
                 "FirstSeen": "2020-02-17T08:30:07.2415577Z",
                 "HealthStatus": "Active",
-                "ID": "4899036531e374137f63289c3267bad772c13fef",
+                "ID": "48990365",
                 "IPAddresses": [
                     {
-                        "ipAddress": "192.168.1.77",
-                        "macAddress": "005056941386",
+                        "ipAddress": "1.2.3.5",
+                        "macAddress": "1234645645",
                         "operationalStatus": "Up",
                         "type": "Ethernet"
                     },
                     {
-                        "ipAddress": "fe80::5c79:dd40:bc6e:23e1",
-                        "macAddress": "005056941386",
+                        "ipAddress": "1234::1234:1234:bc6e:23e1",
+                        "macAddress": "1234645645",
                         "operationalStatus": "Up",
                         "type": "Ethernet"
                     },
@@ -727,8 +727,8 @@ Machine.ReadWrite.All
                     }
                 ],
                 "IsAADJoined": true,
-                "LastExternalIPAddress": "82.166.99.236",
-                "LastIPAddress": "192.168.1.77",
+                "LastExternalIPAddress": "127.0.0.1",
+                "LastIPAddress": "1.2.3.5",
                 "LastSeen": "2022-01-25T11:19:44.718919Z",
                 "MachineTags": [
                     "test Tag 2",
@@ -748,11 +748,11 @@ Machine.ReadWrite.All
 
 #### Human Readable Output
 
->### Microsoft Defender ATP machines ['f70f9fe6b29cd9511652434919c6530618f06606', '4899036531e374137f63289c3267bad772c13fef'] details:
+>### Microsoft Defender ATP machines ['f70f9fe6b29','4899036531e'] details:
 >|ID|ComputerDNSName|OSPlatform|LastIPAddress|LastExternalIPAddress|HealthStatus|RiskScore|ExposureLevel|IPAddresses|
 >|---|---|---|---|---|---|---|---|---|
->| f70f9fe6b29cd9511652434919c6530618f06606 | desktop-s2455r9 | Windows10 | 192.168.1.78 | 82.166.99.236 | Active | Medium | Medium | 1. \| MAC : 00505694D20C \| IP Addresses : 192.168.1.78,fe80::f9e6:df59:3177:11dc \| Type : Ethernet         \| Status : Up<br/>2. \| MAC :              \| IP Addresses : 127.0.0.1,::1                          \| Type : SoftwareLoopback \| Status : Up |
->| 4899036531e374137f63289c3267bad772c13fef | desktop-s2455r8 | Windows10 | 192.168.1.77 | 82.166.99.236 | Active | Low | Medium | 1. \| MAC : 005056941386 \| IP Addresses : 192.168.1.77,fe80::5c79:dd40:bc6e:23e1 \| Type : Ethernet         \| Status : Up<br/>2. \| MAC :              \| IP Addresses : 127.0.0.1,::1                          \| Type : SoftwareLoopback \| Status : Up |
+>| f70f9fe6 | desktop-s9 | Windows10 | 1.2.3.4 | 127.0.0.1 | Active | Medium | Medium | 1. \| MAC : 1234645645 \| IP Addresses : 1.2.3.4,1234::1234:1234:3177:11dc \| Type : Ethernet         \| Status : Up<br/>2. \| MAC :              \| IP Addresses : 127.0.0.1,::1                          \| Type : SoftwareLoopback \| Status : Up |
+>| 48990365 | desktop-s8 | Windows10 | 1.2.3.5 | 127.0.0.1 | Active | Low | Medium | 1. \| MAC : 1234645645 \| IP Addresses : 1.2.3.5,1234::1234:1234:bc6e:23e1 \| Type : Ethernet         \| Status : Up<br/>2. \| MAC :              \| IP Addresses : 127.0.0.1,::1                          \| Type : SoftwareLoopback \| Status : Up |
 
 
 ### 6. microsoft-atp-run-antivirus-scan
@@ -792,18 +792,18 @@ Machine.Scan
 | MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType | String | The type of the file identifier. Possible values: "SHA1" ,"SHA256", and "MD5". | 
 
 #### Command example
-```!microsoft-atp-run-antivirus-scan machine_id=f70f9fe6b29cd9511652434919c6530618f06606,4899036531e374137f63289c3267bad772c13fef comment=test3 scan_type=Quick```
+```!microsoft-atp-run-antivirus-scan machine_id=f70f9fe6,48990365 comment=test3 scan_type=Quick```
 #### Context Example
 ```json
 {
     "MicrosoftATP": {
         "MachineAction": [
             {
-                "ComputerDNSName": "desktop-s2455r9",
+                "ComputerDNSName": "desktop-s9",
                 "CreationDateTimeUtc": "2022-01-25T17:57:18.7944822Z",
-                "ID": "98cf0adc-8053-47a1-8c24-ef58a43ee1ab",
+                "ID": "98cf0adc",
                 "LastUpdateTimeUtc": null,
-                "MachineID": "f70f9fe6b29cd9511652434919c6530618f06606",
+                "MachineID": "f70f9fe6",
                 "RelatedFileInfo": {
                     "FileIdentifier": null,
                     "FileIdentifierType": null
@@ -815,11 +815,11 @@ Machine.Scan
                 "Type": "RunAntiVirusScan"
             },
             {
-                "ComputerDNSName": "desktop-s2455r8",
+                "ComputerDNSName": "desktop-s8",
                 "CreationDateTimeUtc": "2022-01-25T17:57:20.0458595Z",
-                "ID": "ecee8124-e24b-4fe1-9c59-df14cfc9fb51",
+                "ID": "ecee8124",
                 "LastUpdateTimeUtc": null,
-                "MachineID": "4899036531e374137f63289c3267bad772c13fef",
+                "MachineID": "48990365",
                 "RelatedFileInfo": {
                     "FileIdentifier": null,
                     "FileIdentifierType": null
@@ -840,8 +840,8 @@ Machine.Scan
 >### Antivirus scan successfully triggered
 >|ID|Type|Requestor|RequestorComment|Status|MachineID|ComputerDNSName|
 >|---|---|---|---|---|---|---|
->| 98cf0adc-8053-47a1-8c24-ef58a43ee1ab | RunAntiVirusScan | 2f48b784-5da5-4e61-9957-012d2630f1e4 | test3 | Pending | f70f9fe6b29cd9511652434919c6530618f06606 | desktop-s2455r9 |
->| ecee8124-e24b-4fe1-9c59-df14cfc9fb51 | RunAntiVirusScan | 2f48b784-5da5-4e61-9957-012d2630f1e4 | test3 | Pending | 4899036531e374137f63289c3267bad772c13fef | desktop-s2455r8 |
+>| 98cf0adc | RunAntiVirusScan | 2f48b784-5da5-4e61-9957-012d2630f1e4 | test3 | Pending | f70f9fe6 | desktop-s9 |
+>| ecee8124 | RunAntiVirusScan | 2f48b784-5da5-4e61-9957-012d2630f1e4 | test3 | Pending | 48990365 | desktop-s8 |
 
 
 ### 7. microsoft-atp-list-alerts
@@ -1489,18 +1489,18 @@ Machine.ReadWrite.All
 | MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType | String | The type of the file identifier. Possible values: "SHA1" ,"SHA256", and "MD5". | 
 
 #### Command example
-```!microsoft-atp-list-machine-actions-details machine_id="f70f9fe6b29cd9511652434919c6530618f06606,4899036531e374137f63289c3267bad772c13fef" type=RunAntiVirusScan status=Succeeded```
+```!microsoft-atp-list-machine-actions-details machine_id="f70f9fe6,48990365" type=RunAntiVirusScan status=Succeeded```
 #### Context Example
 ```json
 {
     "MicrosoftATP": {
         "MachineAction": [
             {
-                "ComputerDNSName": "desktop-s2455r9",
+                "ComputerDNSName": "desktop-s9",
                 "CreationDateTimeUtc": "2022-01-25T17:57:18.7944822Z",
-                "ID": "98cf0adc-8053-47a1-8c24-ef58a43ee1ab",
+                "ID": "98cf0adc",
                 "LastUpdateTimeUtc": null,
-                "MachineID": "f70f9fe6b29cd9511652434919c6530618f06606",
+                "MachineID": "f70f9fe6",
                 "RelatedFileInfo": {
                     "FileIdentifier": null,
                     "FileIdentifierType": null
@@ -1512,113 +1512,17 @@ Machine.ReadWrite.All
                 "Type": "RunAntiVirusScan"
             },
             {
-                "ComputerDNSName": "desktop-s2455r8",
+                "ComputerDNSName": "desktop-s8",
                 "CreationDateTimeUtc": "2022-01-25T17:56:04.3073008Z",
-                "ID": "99a29fc5-7362-491f-b320-220b9e8c3d73",
+                "ID": "99a29fc5",
                 "LastUpdateTimeUtc": null,
-                "MachineID": "4899036531e374137f63289c3267bad772c13fef",
+                "MachineID": "48990365",
                 "RelatedFileInfo": {
                     "FileIdentifier": null,
                     "FileIdentifierType": null
                 },
                 "Requestor": "2f48b784-5da5-4e61-9957-012d2630f1e4",
                 "RequestorComment": "test2",
-                "Scope": "Quick",
-                "Status": "Succeeded",
-                "Type": "RunAntiVirusScan"
-            },
-            {
-                "ComputerDNSName": "desktop-s2455r9",
-                "CreationDateTimeUtc": "2022-01-25T17:55:22.4280126Z",
-                "ID": "dbf3115f-4571-4f7a-a26f-789e165b22c0",
-                "LastUpdateTimeUtc": null,
-                "MachineID": "f70f9fe6b29cd9511652434919c6530618f06606",
-                "RelatedFileInfo": {
-                    "FileIdentifier": null,
-                    "FileIdentifierType": null
-                },
-                "Requestor": "2f48b784-5da5-4e61-9957-012d2630f1e4",
-                "RequestorComment": "test1",
-                "Scope": "Quick",
-                "Status": "Succeeded",
-                "Type": "RunAntiVirusScan"
-            },
-            {
-                "ComputerDNSName": "desktop-s2455r9",
-                "CreationDateTimeUtc": "2022-01-25T17:50:18.2657585Z",
-                "ID": "071c5ed3-91e4-4407-b7fb-3bf5630d1ef9",
-                "LastUpdateTimeUtc": null,
-                "MachineID": "f70f9fe6b29cd9511652434919c6530618f06606",
-                "RelatedFileInfo": {
-                    "FileIdentifier": null,
-                    "FileIdentifierType": null
-                },
-                "Requestor": "2f48b784-5da5-4e61-9957-012d2630f1e4",
-                "RequestorComment": "test1",
-                "Scope": "Quick",
-                "Status": "Succeeded",
-                "Type": "RunAntiVirusScan"
-            },
-            {
-                "ComputerDNSName": "desktop-s2455r8",
-                "CreationDateTimeUtc": "2022-01-02T19:32:19.064948Z",
-                "ID": "3abc0bbc-2516-452d-9f57-f312e437d4df",
-                "LastUpdateTimeUtc": null,
-                "MachineID": "4899036531e374137f63289c3267bad772c13fef",
-                "RelatedFileInfo": {
-                    "FileIdentifier": null,
-                    "FileIdentifierType": null
-                },
-                "Requestor": "avishai@demistodev.onmicrosoft.com",
-                "RequestorComment": "test tomer",
-                "Scope": "Quick",
-                "Status": "Succeeded",
-                "Type": "RunAntiVirusScan"
-            },
-            {
-                "ComputerDNSName": "desktop-s2455r9",
-                "CreationDateTimeUtc": "2021-08-17T09:53:09.8374593Z",
-                "ID": "5b8f2459-5c8d-4844-a01c-4568d12b9ebd",
-                "LastUpdateTimeUtc": null,
-                "MachineID": "f70f9fe6b29cd9511652434919c6530618f06606",
-                "RelatedFileInfo": {
-                    "FileIdentifier": null,
-                    "FileIdentifierType": null
-                },
-                "Requestor": "1281a70f-8ffb-4b3c-bc82-eef2a44dbb2a",
-                "RequestorComment": "testing anti virus",
-                "Scope": "Quick",
-                "Status": "Succeeded",
-                "Type": "RunAntiVirusScan"
-            },
-            {
-                "ComputerDNSName": "desktop-s2455r9",
-                "CreationDateTimeUtc": "2021-08-17T09:13:31.825993Z",
-                "ID": "b1f39c11-0b9f-44b2-9dc6-bc48aa9e2b3d",
-                "LastUpdateTimeUtc": null,
-                "MachineID": "f70f9fe6b29cd9511652434919c6530618f06606",
-                "RelatedFileInfo": {
-                    "FileIdentifier": null,
-                    "FileIdentifierType": null
-                },
-                "Requestor": "1281a70f-8ffb-4b3c-bc82-eef2a44dbb2a",
-                "RequestorComment": "testing anti virus",
-                "Scope": "Quick",
-                "Status": "Succeeded",
-                "Type": "RunAntiVirusScan"
-            },
-            {
-                "ComputerDNSName": "desktop-s2455r9",
-                "CreationDateTimeUtc": "2021-08-17T09:09:19.0465708Z",
-                "ID": "6ac9f2ea-0e00-45cf-a03f-23276dee29ee",
-                "LastUpdateTimeUtc": null,
-                "MachineID": "f70f9fe6b29cd9511652434919c6530618f06606",
-                "RelatedFileInfo": {
-                    "FileIdentifier": null,
-                    "FileIdentifierType": null
-                },
-                "Requestor": "1281a70f-8ffb-4b3c-bc82-eef2a44dbb2a",
-                "RequestorComment": "testing anti virus",
                 "Scope": "Quick",
                 "Status": "Succeeded",
                 "Type": "RunAntiVirusScan"
@@ -1633,14 +1537,8 @@ Machine.ReadWrite.All
 >### Machine actions Info:
 >|ID|Type|Requestor|RequestorComment|Status|MachineID|ComputerDNSName|
 >|---|---|---|---|---|---|---|
->| 98cf0adc-8053-47a1-8c24-ef58a43ee1ab | RunAntiVirusScan | 2f48b784-5da5-4e61-9957-012d2630f1e4 | test3 | Succeeded | f70f9fe6b29cd9511652434919c6530618f06606 | desktop-s2455r9 |
->| 99a29fc5-7362-491f-b320-220b9e8c3d73 | RunAntiVirusScan | 2f48b784-5da5-4e61-9957-012d2630f1e4 | test2 | Succeeded | 4899036531e374137f63289c3267bad772c13fef | desktop-s2455r8 |
->| dbf3115f-4571-4f7a-a26f-789e165b22c0 | RunAntiVirusScan | 2f48b784-5da5-4e61-9957-012d2630f1e4 | test1 | Succeeded | f70f9fe6b29cd9511652434919c6530618f06606 | desktop-s2455r9 |
->| 071c5ed3-91e4-4407-b7fb-3bf5630d1ef9 | RunAntiVirusScan | 2f48b784-5da5-4e61-9957-012d2630f1e4 | test1 | Succeeded | f70f9fe6b29cd9511652434919c6530618f06606 | desktop-s2455r9 |
->| 3abc0bbc-2516-452d-9f57-f312e437d4df | RunAntiVirusScan | avishai@demistodev.onmicrosoft.com | test tomer | Succeeded | 4899036531e374137f63289c3267bad772c13fef | desktop-s2455r8 |
->| 5b8f2459-5c8d-4844-a01c-4568d12b9ebd | RunAntiVirusScan | 1281a70f-8ffb-4b3c-bc82-eef2a44dbb2a | testing anti virus | Succeeded | f70f9fe6b29cd9511652434919c6530618f06606 | desktop-s2455r9 |
->| b1f39c11-0b9f-44b2-9dc6-bc48aa9e2b3d | RunAntiVirusScan | 1281a70f-8ffb-4b3c-bc82-eef2a44dbb2a | testing anti virus | Succeeded | f70f9fe6b29cd9511652434919c6530618f06606 | desktop-s2455r9 |
->| 6ac9f2ea-0e00-45cf-a03f-23276dee29ee | RunAntiVirusScan | 1281a70f-8ffb-4b3c-bc82-eef2a44dbb2a | testing anti virus | Succeeded | f70f9fe6b29cd9511652434919c6530618f06606 | desktop-s2455r9 |
+>| 98cf0adc | RunAntiVirusScan | 2f48b784-5da5-4e61-9957-012d2630f1e4 | test3 | Succeeded | f70f9fe6 | desktop-s9 |
+>| 99a29fc5 | RunAntiVirusScan | 2f48b784-5da5-4e61-9957-012d2630f1e4 | test2 | Succeeded | 48990365 | desktop-s8 |
 
 
 ### 16. microsoft-atp-collect-investigation-package
