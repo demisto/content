@@ -13,6 +13,12 @@ args:
   required: false
   secret: false
 - default: false
+  description: The Slack channel ID to which to send the message.
+  isArray: false
+  name: channel_id
+  required: false
+  secret: false
+- default: false
   description: The message to send to the user or channel.
   isArray: false
   name: message
