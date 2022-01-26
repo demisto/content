@@ -50,10 +50,30 @@ script:
       required: false
       secret: false
     - default: false
-      description: Content of the uploaded sample in binary format.
+      description: Content of the uploaded sample in binary format, This arg can also receive entry ID from war room.
       isArray: false
       name: file
       required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Whether to use Cortex XSOAR's built-in polling to retrieve the result when it's ready.
+      isArray: false
+      name: polling
+      predefined:
+        - 'true'
+        - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: If set to true, the report will return extended data which includes mitre attacks and signature information.
+      isArray: false
+      name: extended_data
+      predefined:
+        - 'true'
+        - 'false'
+      required: false
       secret: false
     - auto: PREDEFINED
       default:
@@ -152,6 +172,26 @@ script:
       name: system_date
       required: false
       secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Whether to use Cortex XSOAR's built-in polling to retrieve the result when it's ready, Note - This command counts against the submission quota.
+      isArray: false
+      name: polling
+      predefined:
+        - 'true'
+        - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: If set to true, the report will return extended data which includes mitre attacks and signature information.
+      isArray: false
+      name: extended_data
+      predefined:
+        - 'true'
+        - 'false'
+      required: false
+      secret: false
     - default: false
       description: Sets a custom time for the sandbox environment in the format HH:mm.
       isArray: false
@@ -191,6 +231,180 @@ script:
     execution: false
     name: cs-fx-get-full-report
     outputs:
+    - contextPath: csfalconx.resource.tags
+      description: Analysis tags.
+      type: String
+    - contextPath: csfalconx.resource.sandbox.processes.command_line
+      description: The sandbox process command line.
+      type: String
+    - contextPath: csfalconx.resource.sandbox.processes.handles.id
+      description: The sandbox handled ID.
+      type: String
+    - contextPath: csfalconx.resource.sandbox.processes.handles.type
+      description: The sandbox handled type.
+      type: String
+    - contextPath: csfalconx.resource.sandbox.processes.handles.path
+      description: The sandbox handled path.
+      type: String
+    - contextPath: csfalconx.resource.sandbox.processes.name
+      description: The sandbox process name.
+      type: String
+    - contextPath: csfalconx.resource.sandbox.processes.normalized_path
+      description: The sandbox process normalized path.
+      type: String
+    - contextPath: csfalconx.resource.sandbox.processes.pid
+      description: The sandbox process pid.
+      type: Number
+    - contextPath: csfalconx.resource.sandbox.processes.sha256
+      description: The sandbox process sha256.
+      type: String
+    - contextPath: csfalconx.resource.sandbox.architecture
+      description: The sandbox architecture.
+      type: String
+    - contextPath: csfalconx.resource.sandbox.classification
+      description: The sandbox classification.
+      type: String
+    - contextPath: csfalconx.resource.sandbox.classification_tags
+      description: The sandbox classification tags.
+      type: String
+    - contextPath: csfalconx.resource.sandbox.extracted_files.name
+      description: The sandbox extracted file name.
+      type: String
+    - contextPath: csfalconx.resource.sandbox.extracted_files.file_size
+      description: The sandbox extracted file size.
+      type: Number
+    - contextPath: csfalconx.resource.sandbox.extracted_files.sha256
+      description: The sandbox extracted file sha256.
+      type: String
+    - contextPath: csfalconx.resource.sandbox.extracted_files.md5
+      description: The sandbox extracted file md5.
+      type: String
+    - contextPath: csfalconx.resource.sandbox.extracted_files.sha1
+      description: The sandbox extracted file sha1.
+      type: String
+    - contextPath: csfalconx.resource.sandbox.extracted_files.runtime_process
+      description: The sandbox extracted file runtime process.
+      type: String
+    - contextPath: csfalconx.resource.sandbox.extracted_files.type_tags
+      description: The sandbox extracted file tags type.
+      type: String
+    - contextPath: csfalconx.resource.sandbox.extracted_files.threat_level_readable
+      description: The sandbox extracted file threat level readable.
+      type: String
+    - contextPath: csfalconx.resource.sandbox.extracted_files.description
+      description: The sandbox extracted file description.
+      type: String
+    - contextPath: csfalconx.resource.sandbox.file_metadata.file_compositions
+      description: The sandbox file metadata compositions.
+      type: Unknown
+    - contextPath: csfalconx.resource.sandbox.file_metadata.imported_objects
+      description: The sandbox file metadata imported objects.
+      type: Unknown
+    - contextPath: csfalconx.resource.sandbox.file_metadata.file_analysis
+      description: The sandbox file metadata analysis.
+      type: Unknown
+    - contextPath: csfalconx.resource.sandbox.file_size
+      description: The sandbox file size.
+      type: Number
+    - contextPath: csfalconx.resource.sandbox.file_type
+      description: The sandbox file type.
+      type: String
+    - contextPath: csfalconx.resource.sandbox.file_type_short
+      description: The sandbox file type short.
+      type: String
+    - contextPath: csfalconx.resource.sandbox.packer
+      description: The sandbox packer.
+      type: String
+    - contextPath: csfalconx.resource.sandbox.screenshots_artifact_ids
+      description: The sandbox screenshots artifact ids.
+      type: String
+    - contextPath: csfalconx.resource.sandbox.dns_requests.address
+      description: The sandbox dns requests address.
+      type: String
+    - contextPath: csfalconx.resource.sandbox.dns_requests.country
+      description: The sandbox dns requests country.
+      type: String
+    - contextPath: csfalconx.resource.sandbox.dns_requests.domain
+      description: The sandbox dns requests domain.
+      type: String
+    - contextPath: csfalconx.resource.sandbox.dns_requests.registrar_creation_timestamp
+      description: The sandbox dns requests registrar creation timestamp.
+      type: String
+    - contextPath: csfalconx.resource.sandbox.dns_requests.registrar_name
+      description: The sandbox dns requests registrar name.
+      type: String
+    - contextPath: csfalconx.resource.sandbox.dns_requests.registrar_organization
+      description: The sandbox dns requests registrar organization.
+      type: String
+    - contextPath: csfalconx.resource.sandbox.contacted_hosts.address
+      description: The sandbox contacted hosts naddress.
+      type: String
+    - contextPath: csfalconx.resource.sandbox.contacted_hosts.country
+      description: The sandbox contacted hosts country.
+      type: String
+    - contextPath: csfalconx.resource.sandbox.contacted_hosts.port
+      description: The sandbox contacted hosts port.
+      type: Number
+    - contextPath: csfalconx.resource.sandbox.contacted_hosts.protocol
+      description: The sandbox contacted hosts protocol.
+      type: String
+    - contextPath: csfalconx.resource.sandbox.contacted_hosts.associated_runtime.name
+      description: The sandbox contacted hosts associated runtime name.
+      type: String
+    - contextPath: csfalconx.resource.sandbox.contacted_hosts.associated_runtime.pid
+      description: The sandbox contacted hosts associated runtime pid.
+      type: String
+    - contextPath: csfalconx.resource.sandbox.incidents
+      description: The sandbox incidents.
+      type: String
+    - contextPath: csfalconx.resource.sandbox.mitre_attacks.tactic
+      description: The sndbox MITRE tactic name.
+      type: String
+    - contextPath: csfalconx.resource.sandbox.mitre_attacks.technique
+      description: The sndbox MITRE technique name.
+      type: String
+    - contextPath: csfalconx.resource.sandbox.mitre_attacks.attack_id
+      description: The sndbox MITRE technique ID.
+      type: String
+    - contextPath: csfalconx.resource.sandbox.mitre_attacks.malicious_identifiers
+      description: The sndbox MITRE malicious identifiers.
+      type: String
+    - contextPath: csfalconx.resource.sandbox.mitre_attacks.parent.technique
+      description: The sndbox MITRE parent technique name.
+      type: String
+    - contextPath: csfalconx.resource.sandbox.mitre_attacks.parent.attack_id
+      description: The sndbox MITRE parent technique ID.
+      type: String
+    - contextPath: csfalconx.resource.sandbox.mitre_attacks.parent.attack_id_wiki
+      description: The sndbox MITRE parent technique wiki URL link.
+      type: String
+    - contextPath: csfalconx.resource.sandbox.signatures.threat_level_human
+      description: The sndbox signatures threat level.
+      type: String
+    - contextPath: csfalconx.resource.sandbox.signatures.category
+      description: The sndbox signatures category.
+      type: String
+    - contextPath: csfalconx.resource.sandbox.signatures.identifier
+      description: The sndbox signatures identifier.
+      type: String
+    - contextPath: csfalconx.resource.sandbox.signatures.type
+      description: The sndbox signatures type.
+      type: Number
+    - contextPath: csfalconx.resource.sandbox.signatures.relevance
+      description: The sndbox signatures relevance.
+      type: Number
+    - contextPath: csfalconx.resource.sandbox.signatures.name
+      description: The sndbox signatures name.
+      type: String
+    - contextPath: csfalconx.resource.sandbox.signatures.description
+      description: The sndbox signatures description.
+      type: String
+    - contextPath: csfalconx.resource.sandbox.signatures.origin
+      description: The sndbox signatures origin.
+      type: String
+    - contextPath: csfalconx.resource.intel.malware_families
+      description: The malware families of the resource.
+      type: Unknown
     - contextPath: csfalconx.resource.submitted_id
       description: Analysis ID received after submitting the file.
       type: String
@@ -203,7 +417,7 @@ script:
     - contextPath: csfalconx.resource.environment_id
       description: Environment ID.
       type: String
-    - contextPath: csfalconx.resource.snadbox.environment_description
+    - contextPath: csfalconx.resource.sandbox.environment_description
       description: Environment description.
       type: String
     - contextPath: csfalconx.resource.threat_score
@@ -263,6 +477,9 @@ script:
     outputs:
     - contextPath: csfalconx.resource.id
       description: Analysis ID.
+      type: String
+    - contextPath: csfalconx.resource.tags
+      description: Analysis tags.
       type: String
     - contextPath: csfalconx.resource.verdict
       description: Analysis verdict.
@@ -551,6 +768,26 @@ script:
       description: Sets a custom date for the sandbox environment in the format yyyy-MM-dd.
       isArray: false
       name: system_date
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Whether to use Cortex XSOAR's built-in polling to retrieve the result when it's ready, Note - This command counts against the submission quota.
+      isArray: false
+      name: polling
+      predefined:
+        - 'true'
+        - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: If set to true, the report will return extended data which includes mitre attacks and signature information.
+      isArray: false
+      name: extended_data
+      predefined:
+        - 'true'
+        - 'false'
       required: false
       secret: false
     - default: false
