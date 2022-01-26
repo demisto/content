@@ -1,0 +1,289 @@
+commonfields:
+  id: Trend Micro Deep Discovery Analyzer Beta
+  version: -1
+name: Trend Micro Deep Discovery Analyzer Beta
+display: Trend Micro Deep Discovery Analyzer (Beta)
+category: Forensics & Malware Analysis
+description: Deep Discovery Analyzer is a turnkey appliance that uses virtual images
+  of endpoint configurations to analyze and detect targeted attacks.
+configuration:
+- display: DDA Server and Port  (e.g https://192.168.0.1:<port>)
+  name: server
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Internal IP address (only needed if the server URL is external)
+  name: ip_address
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: API Key
+  name: apiKey
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Protocol Version
+  name: protocol_version
+  defaultvalue: "1.5"
+  type: 0
+  required: false
+script:
+  script: ''
+  type: python
+  subtype: python2
+  commands:
+  - name: trendmicro-dda-get-sample
+    arguments:
+    - name: sha1
+      required: true
+      description: The SHA1 of the sample to get
+    - name: type
+      auto: PREDEFINED
+      predefined:
+      - tgz
+      - zip
+      description: The export data type
+      defaultValue: zip
+    - name: encrypted
+      auto: PREDEFINED
+      predefined:
+      - "0"
+      - "1"
+      description: '0 (not encrypted) or 1 (Encrypted with password "virus")'
+      defaultValue: "0"
+    - name: archive_name
+      description: A name for the retrieved archive
+    outputs:
+    - contextPath: File.EntryID
+      description: Demisto entry ID of archive
+      type: string
+    - contextPath: File.Size
+      description: File size
+      type: number
+    - contextPath: File.SHA1
+      description: File SHA1
+      type: string
+    - contextPath: File SHA256
+      description: File SHA256
+      type: string
+    - contextPath: File.Name
+      description: File name
+      type: string
+    - contextPath: File.SSDeep
+      description: File SSDeep
+      type: string
+    - contextPath: File.Info
+      description: File info
+      type: string
+    - contextPath: File.Type
+      description: File type
+      type: string
+    - contextPath: File.MD5
+      description: File MD5
+      type: string
+    - contextPath: File.Extension
+      description: File extension
+      type: string
+    description: Retrieves a sample
+  - name: trendmicro-dda-get-openioc
+    deprecated: true
+    arguments:
+    - name: sha1
+      description: SHA1 of the submission
+    description: Retrieves IOC for a given submission, returns an error if submission
+      has no IOC
+  - name: trendmicro-dda-get-report
+    arguments:
+    - name: sha1
+      required: true
+      description: The SHA1 of the submission
+    - name: threshold
+      auto: PREDEFINED
+      predefined:
+      - "0"
+      - "1"
+      - "2"
+      - "3"
+      description: DDA severity score (greater or equal to) for which the submission
+        will be considered malicious
+      defaultValue: "1"
+    - name: verbose
+      auto: PREDEFINED
+      predefined:
+      - "false"
+      - "true"
+      description: Return detailed report
+      defaultValue: "false"
+    outputs:
+    - contextPath: TrendMicroDDA.Submission.Status
+      description: The status of the submission
+      type: string
+    - contextPath: TrendMicroDDA.Submission.SHA1
+      description: SHA1 of the submission
+      type: string
+    - contextPath: TrendMicroDDA.Submission.RiskLevel
+      description: The Risk Level of the submission
+      type: number
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+      type: string
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: InfoFile.MD5
+      description: MD5 hash of the report file
+      type: string
+    - contextPath: InfoFile.SHA1
+      description: SHA1 hash of the report file
+      type: string
+    - contextPath: InfoFile.SHA256
+      description: SHA256 hash of the report  file
+      type: string
+    - contextPath: InfoFile.Name
+      description: Report file name
+      type: string
+    - contextPath: InfoFile.Type
+      description: Report file type e.g. "PE"
+      type: string
+    - contextPath: InfoFile.Size
+      description: Report file size
+      type: number
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision
+      type: string
+    - contextPath: File.Malicious.Description
+      description: For malicious files, the reason for the vendor to make the decision
+      type: string
+    - contextPath: IP.Address
+      description: IPs relevant to the submission
+      type: string
+    - contextPath: Domain.Name
+      description: Domains relevant to the submission
+      type: string
+    - contextPath: URL.Data
+      description: URL data
+      type: string
+    - contextPath: File.MD5
+      description: MD5 hash of the file
+      type: string
+    - contextPath: File.SHA1
+      description: SHA1 hash of the file
+      type: string
+    - contextPath: File.SHA256
+      description: SHA256 hash of the file
+      type: string
+    - contextPath: File.Size
+      description: File size
+      type: number
+    - contextPath: File.Name
+      description: File name
+      type: string
+    - contextPath: TrendMicroDDA.Submission.SHA256
+      description: SHA256 of the submission
+      type: string
+    - contextPath: TrendMicroDDA.Submission.MD5
+      description: MD5 of the submission
+      type: string
+    - contextPath: TrendMicroDDA.Submission.VirusDetected
+      description: True if virus detected, else Flase
+      type: boolean
+    - contextPath: TrendMicroDDA.Submission.DownloadURL
+      description: Download URL address of files
+      type: string
+    description: Retrieves XML report of a given submission
+  - name: trendmicro-dda-get-sample-list
+    arguments:
+    - name: interval_start
+      required: true
+      description: Interval start time, given in format ~~YYYY-MM-DD HH:MM:SS, e.g.
+        2008-11-22 19:53:42
+    - name: interval_end
+      required: true
+      description: Interval end time, given in format YYYY-MM-DD HH:MM:SS, e.g. 2008-11-22
+        19:53:42
+    - name: interval_type
+      auto: PREDEFINED
+      predefined:
+      - "0"
+      - "1"
+      description: '0: Submission time, 1: Completion time'
+      defaultValue: "0"
+    description: Retrieves a list of SHA1 of samples submitted within the given time
+      interval
+  - name: trendmicro-dda-check-status
+    arguments:
+    - name: sha1
+      required: true
+      description: 'The SHA1 of the submissions. Example: "2492A18532745251FBC5DAF7160DAA49B90DBBE1,  52483514F07EB14570142F6927B77DEB7B4DA99F"'
+      isArray: true
+    outputs:
+    - contextPath: TrendMicroDDA.Submission.Status
+      description: The status of the submission
+      type: string
+    - contextPath: TrendMicroDDA.Submission.SHA1
+      description: The SHA1 of the submission
+      type: string
+    description: Checks the analysis status of the submissions
+  - name: trendmicro-dda-upload-url
+    arguments:
+    - name: url
+      required: true
+      description: The URL to upload
+      isArray: true
+    outputs:
+    - contextPath: TrendMicroDDA.Submission.SHA1
+      description: The SHA1 of the submission
+      type: string
+    - contextPath: TrendMicroDDA.Submission.URL
+      description: The submitted URL
+      type: string
+    description: 'Upload a URL to Trend Micro DDA '
+  - name: trendmicro-dda-upload-file
+    arguments:
+    - name: entryID
+      required: true
+      description: EntryID of the file to upload
+      isArray: true
+    outputs:
+    - contextPath: TrendMicroDDA.Submission.SHA1
+      description: The SHA1 of the submission
+      type: string
+    description: 'Upload a file to Trend Micro DDA '
+  - name: trendmicro-dda-get-brief-report
+    arguments:
+    - name: sha1
+      required: true
+      description: SHA1 of the submission
+    - name: threshold
+      auto: PREDEFINED
+      predefined:
+      - "0"
+      - "1"
+      - "2"
+      - "3"
+      description: DDA severity score (greater or equal to) for which the submission
+        will be considered malicious
+      defaultValue: "1"
+    description: Retrieves a brief XML report of a given submission
+  runonce: false
+  dockerimage: demisto/python:2.7.18.24398
+beta: true
+tests:
+- No Test - run "Test Playbook TrendMicroDDA" manually
+fromversion: 5.0.0
