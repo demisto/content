@@ -1,0 +1,17 @@
+commonfields:
+  id: TestDetachScript
+  version: -1
+dockerimage: demisto/python3:3.10.1.25933
+enabled: true
+name: TestDetachScript
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+detached: true
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)
