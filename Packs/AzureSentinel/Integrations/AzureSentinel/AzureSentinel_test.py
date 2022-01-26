@@ -3,7 +3,7 @@ import json
 import pytest
 import requests
 import demistomock as demisto
-
+from requests.adapters import Response
 from AzureSentinel import AzureSentinelClient, list_incidents_command, list_incident_relations_command, \
     incident_add_comment_command, \
     get_update_incident_request_data, list_incident_entities_command, list_incident_comments_command, \
@@ -13,13 +13,37 @@ from AzureSentinel import AzureSentinelClient, list_incidents_command, list_inci
     delete_incident_command, XSOAR_USER_AGENT, incident_delete_comment_command, \
     query_threat_indicators_command, create_threat_indicator_command, delete_threat_indicator_command, \
     append_tags_threat_indicator_command, replace_tags_threat_indicator_command, update_threat_indicator_command, \
-    list_threat_indicator_command, NEXTLINK_DESCRIPTION
+    list_threat_indicator_command, NEXTLINK_DESCRIPTION, test_module
 
 TEST_ITEM_ID = 'test_watchlist_item_id_1'
 
 NEXT_LINK_CONTEXT_KEY = 'AzureSentinel.NextLink(val.Description == "NextLink for listing commands")'
 
 API_VERSION = '2021-04-01'
+
+
+def test_valid_error_is_raised_when_empty_api_response_is_returned(mocker):
+    """
+    Given
+    - Empty api response and invalid status code returned from the api response.
+
+    When
+    - running 'test-module'.
+
+    Then
+    - ValueError is raised.
+    """
+    import json
+    client = mock_client()
+    api_response = requests.Response()
+    api_response.status_code = 403
+    api_response._content = None
+
+    mocker.patch.object(client._client, 'get_access_token')
+    mocker.patch.object(client._client._session, 'request', return_value=api_response)
+
+    test_module(client)
+
 
 
 def mock_client():
