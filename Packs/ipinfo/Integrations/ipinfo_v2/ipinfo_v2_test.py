@@ -48,9 +48,12 @@ def test_ipinfo_ip_command(mocker):
 
     expected_parsed_context = util_load_json('test_data/ip_1.1.1.1_command_results.json')
     assert command_results.call_args[1].get("readable_output") == expected_parsed_context[1].get("HumanReadable")
+    assert command_results.call_args[1].get("outputs").get("Address") == "1.1.1.1"
+    assert command_results.call_args[1].get("outputs").get("Hostname") == "one.one.one.one"
 
 
-def test_ip_command(mocker):
+
+def test_check_columns_exists(mocker):
     """
     Given:
         A mock response of a call to https://ipinfo.io/1.1.1.1/json,
@@ -58,7 +61,8 @@ def test_ip_command(mocker):
     When:
         Calling ip on ip=1.1.1.1
     Then:
-        Validate the output compared to the mock output
+        Validate that the output have the desired columns that were missing from thr readable output.
+        related issue: https://github.com/demisto/etc/issues/46061
     """
     from ipinfo_v2 import Client, ipinfo_ip_command
 
