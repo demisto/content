@@ -205,7 +205,7 @@ def file(hash_inputs):
             hash_param[hash_type_key] = hash_value
             res = safe_get_file_reputation(tie_client, hash_param)
             if not res:
-                entry_context = {'DBotScore': [{'Indicator': hash_value,
+                ec = {'DBotScore': [{'Indicator': hash_value,
                                                 'Type': 'hash',
                                                 'Vendor': VENDOR_NAME,
                                                 'Score': 0
@@ -239,7 +239,7 @@ def file(hash_inputs):
                         'Score': tl_score['score'],
                         'Description': 'Trust level is ' + str(tl_score['trust_level'])
                     }
-                entry_context = {'DBotScore': dbot_score, outputPaths['file']: context_file}
+                ec = {'DBotScore': dbot_score, outputPaths['file']: context_file}
 
         table = reputations_to_table(reputations)
         hash_list.append({
@@ -248,7 +248,7 @@ def file(hash_inputs):
             'Contents': reputations,
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown('McAfee TIE Hash Reputations For %s:' % (hash_value,), table),
-            'EntryContext': entry_context
+            'EntryContext': ec
         })
     return hash_list
 
