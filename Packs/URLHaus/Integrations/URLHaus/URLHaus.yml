@@ -30,12 +30,25 @@ configuration:
   name: proxy
   required: false
   type: 8
+- defaultvalue: 'true'
+  display: Create relationships
+  name: create_relationships
+  required: false
+  type: 8
+- additionalinfo: Maximum relationships to display(Max 1000).
+  defaultvalue: '1'
+  display: Maximum number of relationships to fetch per indicator
+  name: max_num_of_relationships
+  required: false
+  type: 0
 - defaultvalue: '1'
+  hidden: true
   display: Blacklists appearances threshold
   name: threshold
   required: false
   type: 0
 - display: Compromised (is malicious)
+  hidden: true
   name: compromised_is_malicious
   required: false
   type: 8

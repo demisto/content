@@ -8,6 +8,7 @@ import requests
 import zipfile
 import io
 from datetime import datetime as dt
+from urllib.parse import urlparse
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -139,21 +140,51 @@ def calculate_dbot_score(command, arg):
     return dbot_score, description"""
 
 
-def check_url(url):
-    if not url:
-        raise Exception('In order to query url,'
-                        'please provide url. ')
+def parse_host(host):
+    return "ip" if is_ip_valid(host) else "domain"
 
 
-def build_context_url_ok_status(url_information, uri, **kwargs):
-    # URLhaus output
-    blacklist_information = []
-    blacklists = url_information.get('blacklists', {})
-    for bl_name, bl_status in blacklists.items():
-        blacklist_information.append({'Name': bl_name,
-                                      'Status': bl_status})
+# @todo: need add support for param create_relationships
+def url_create_relationships(uri, host, files, **kwargs):
+    relationships = []
+    max_num_of_realationships_counter = 0
+    if kwargs.get('create_relationships'):
+        if host:
+            parsed_host = parse_host(host)
+            max_num_of_realationships_counter += 1
+            if parsed_host == "domain":
+                relationships.extend([EntityRelationship(
+                    name=EntityRelationship.Relationships.RELATIONSHIPS_NAMES.get('hosts'), entity_a=uri, entity_a_type=FeedIndicatorType.URL,
+                    entity_b=host, entity_b_type=FeedIndicatorType.Domain,
+                    reverse_name=EntityRelationship.Relationships.HOSTS)])
+            if parsed_host == "ip":
+                relationships.extend([EntityRelationship(
+                    name=EntityRelationship.Relationships.RELATED_TO, entity_a=uri, entity_a_type=FeedIndicatorType.URL,
+                    entity_b=host, entity_b_type=FeedIndicatorType.IP,
+                    reverse_name=EntityRelationship.Relationships.RELATED_TO)])
+        if files:
+            for file in files:
+                if max_num_of_realationships_counter >= kwargs.get('max_num_of_relationships'):
+                    break
 
-    date_added = reformat_date(url_information.get('date_added'))
+                file_sh256 = file.get('SHA256')
+                if file_sh256:
+                    relationships.extend([EntityRelationship(
+                        name=EntityRelationship.Relationships.RELATIONSHIPS_NAMES.get('related-to'), entity_a=uri, entity_a_type=FeedIndicatorType.URL,
+                        entity_b=file_sh256, entity_b_type=FeedIndicatorType.File,
+                        reverse_name=EntityRelationship.Relationships.RELATED_TO)])
+                    max_num_of_realationships_counter += 1
+    return relationships
+
+
+def url_create_tags(urlhaus_data):
+    tags = urlhaus_data.get('Tags', [])
+    if urlhaus_data.get("Threat"):
+        tags.append(urlhaus_data.get("Threat"))
+    return tags
+
+
+def url_create_payloads(url_information):
     payloads = []
     for payload in url_information.get('payloads') or []:
         vt_data = payload.get('virustotal', None)
@@ -167,8 +198,27 @@ def build_context_url_ok_status(url_information, uri, **kwargs):
             'Name': payload.get('filename', 'unknown'),
             'Type': payload.get('file_type', ''),
             'MD5': payload.get('response_md5', ''),
+            'SHA256': payload.get('response_sha256', ''),
             'VT': vt_information,
         })
+    return payloads
+
+
+def url_create_blacklist(url_information):
+    blacklist_information = []
+    blacklists = url_information.get('blacklists', {})
+    for bl_name, bl_status in blacklists.items():
+        blacklist_information.append({'Name': bl_name,
+                                      'Status': bl_status})
+    return blacklist_information
+
+
+def build_context_url_ok_status(url_information, uri, **kwargs):
+    # URLhaus output
+
+    blacklist_information = url_create_blacklist(url_information)
+    date_added = reformat_date(url_information.get('date_added'))
+    payloads = url_create_payloads(url_information)
     urlhaus_data = {
         'ID': url_information.get('id', ''),
         'Status': url_information.get('url_status', ''),
@@ -190,9 +240,11 @@ def build_context_url_ok_status(url_information, uri, **kwargs):
         score=score,
         malicious_description=description
     )
-    # {url_information.get('threat', ''), url_information.get('tags', [])}
-    url_indicator = Common.URL(url=uri, dbot_score=dbot_score, tags=urlhaus_data.get('Tags', ""))
-
+    relationships = url_create_relationships(uri, url_information.get('host'), payloads, **kwargs)
+    url_indicator = Common.URL(url=uri, dbot_score=dbot_score, tags=url_create_tags(urlhaus_data),
+                               relationships=relationships) if relationships else Common.URL(url=uri,
+                                                                                             dbot_score=dbot_score,
+                                                                                             tags=url_create_tags(urlhaus_data))
     human_readable = tableToMarkdown(f'URLhaus reputation for {uri}',
                                      {
                                          'URLhaus link': url_information.get("urlhaus_reference", "None"),
@@ -203,13 +255,13 @@ def build_context_url_ok_status(url_information, uri, **kwargs):
                                          'Date added': date_added
                                      })
 
-    return_results(CommandResults(
-            readable_output=human_readable,
-            outputs_prefix='URLhaus.URL',
-            outputs_key_field='url',
-            outputs=urlhaus_data,
-            raw_response=url_information,
-            indicator=url_indicator))
+    return CommandResults(
+        readable_output=human_readable,
+        outputs_prefix='URLhaus.URL',
+        outputs_key_field='url',
+        outputs=urlhaus_data,
+        raw_response=url_information,
+        indicator=url_indicator)
 
 
 def build_context_url_no_results_status(url_information, uri, **kwargs):
@@ -223,34 +275,33 @@ def build_context_url_no_results_status(url_information, uri, **kwargs):
     url_indicator = Common.URL(url=uri, dbot_score=dbot_score)
     human_readable = f'## URLhaus reputation for {uri}\n' \
                      f'No results!'
-    return_results(CommandResults(
+    return CommandResults(
         readable_output=human_readable,
         raw_response=url_information,
         indicator=url_indicator
-    ))
+    )
 
 
-def process_query_url(url_information, uri, **kwargs):
+def process_query_info(url_information, uri, **kwargs):
     if url_information['query_status'] == 'ok':
-        build_context_url_ok_status(url_information, uri, **kwargs)
+        return build_context_url_ok_status(url_information, uri, **kwargs)
 
     elif url_information['query_status'] == 'no_results':
-        build_context_url_no_results_status(url_information, uri, **kwargs)
+        return build_context_url_no_results_status(url_information, uri, **kwargs)
 
     elif url_information['query_status'] == 'invalid_url':
         human_readable = f'## URLhaus reputation for {uri}\n' \
                          f'Invalid URL!'
-        return_results(CommandResults(
+        return CommandResults(
             readable_output=human_readable,
             raw_response=url_information,
-        ))
+        )
     else:
         raise DemistoException(f'Query results = {url_information["query_status"]}', res=url_information)
 
 
 def url_command(**kwargs):
     url = demisto.args().get('url')
-    check_url(url)  # check if the url argument exist.
     try:
         url_information = query_url_information(url, kwargs.get('api_url'), kwargs.get('use_ssl')).json()
     except UnicodeEncodeError:
@@ -258,7 +309,7 @@ def url_command(**kwargs):
             readable_output="Service Does not support special characters.",
         ))
         return
-    process_query_url(url_information, url, **kwargs)
+    return process_query_info(url_information, url, **kwargs)
 
 
 def domain_command(**kwargs):
@@ -509,10 +560,12 @@ def main():
             'api_url': demisto_params['url'].rstrip('/'),
             'use_ssl': not demisto_params.get('insecure', False),
             'threshold': int(demisto_params.get('threshold', 1)),
+            'create_relationships': bool(demisto_params.get('create_relationships', True)),
+            'max_num_of_relationships': int(demisto_params.get('max_num_of_relationships', 1)) if int(
+                demisto_params.get('max_num_of_relationships', 1)) < 1000 else 1000,
         }
 
-        reliability = params.get('integrationReliability')
-        reliability = reliability if reliability else DBotScoreReliability.C
+        reliability = demisto_params.get('integrationReliability', DBotScoreReliability.C)
 
         if DBotScoreReliability.is_valid_type(reliability):
             params['reliability'] = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
@@ -527,7 +580,7 @@ def main():
             test_module(**params)
             demisto.results('ok')
         elif command == 'url':
-            url_command(**params)
+            return_results(url_command(**params))
         elif command == 'domain':
             domain_command(**params)
         elif command == 'file':
