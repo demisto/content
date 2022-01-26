@@ -5113,7 +5113,8 @@
         "AutoFocus V2 test": "Issue 26464",
         "SplunkPy_KV_commands_default_handler": "Issue 41419",
         "LogRhythm REST test": "Issue 40654",
-        "Process Email - Generic - Test - Actual Incident": "Issue 45227"
+        "Process Email - Generic - Test - Actual Incident": "Issue 45227",
+        "Jira-v2-Test": "Issue 33313"
     },
     "skipped_integrations": {
         
@@ -5339,7 +5340,7 @@
         "Create-Mock-Feed-Relationships": "recording is redundant for this integration",
         "RSA Archer v2": "cannot connect to proxy",
         "Anomali ThreatStream v3": "recording is not working",
-        "LogRhythmRest V2": "Submits a file - tests that send files shouldn't be mocked."
+        "LogRhythmRest V2": "Submits a file - tests that send files shouldn't be mocked.",
     },
     "parallel_integrations": [
         "AWS - EC2",

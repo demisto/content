@@ -87,7 +87,11 @@ tasks:
         simple: '"delete - this is test"'
       dueDate: {}
       issueJson:
-        simple: '{"fields":{"issuetype":{"name":"Request for Action"}}}'
+        simple: |-
+          {"fields":
+            {"issuetype":{"name":"Request for Action"}},
+            "customfield_10040":"123456"
+          }
       issueTypeId:
         simple: "10008"
       issueTypeName: {}
