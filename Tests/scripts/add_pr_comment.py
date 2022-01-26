@@ -10,5 +10,5 @@ COVERAGE_LINK = f'https://xsoar.docs.pan.run/-/content/-/jobs/{JOB_ID}/artifacts
 
 
 if __name__ == "__main__":
-    logging_manager = ParallelLoggingManager('Run_Tests.log')
+    logging_manager = ParallelLoggingManager('UT_coverage_report.log')
     _add_pr_comment(COVERAGE_REPORT_COMMENT + COVERAGE_LINK, logging_manager)
