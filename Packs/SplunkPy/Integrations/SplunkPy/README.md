@@ -74,7 +74,7 @@ where the **$ASSETS_VALUE** is replaced with the **src**, **dest**, **src_ip** a
 where the **$IDENTITY_VALUE** is replaced with the **user** and **src_user** from the fetched notable event. The results are stored in the context of the incident under the **Identity** field.
 
 #### How to configure
-1. Configure the integration to fetch incidents (see the Integration documentation for details).
+1. Configure the integration to fetch incidents.
 2. *Enrichment Types*: Select the enrichment types you want to enrich each fetched notable with. If none are selected, the integration will fetch notables as usual (without enrichment).
 3. *Fetch events query*: The query for fetching events. The default query is for fetching notable events. You can edit this query to fetch other types of events. Note that to fetch notable events, make sure the query uses the \`notable\` macro.  
 4. *Enrichment Timeout (Minutes)*:  The timeout for each enrichment (default is 5min). When the selected timeout was reached, notable events that were not enriched will be saved without the enrichment.
@@ -258,6 +258,8 @@ Searches Splunk for events.
 
 ##### Command Example
 ```!splunk-search query="* | head 3" earliest_time="-1000d"```
+
+**Note:** To display empty columns as well, the following should be added to the query: `| fillnull value=`
 
 ##### Human Readable Output
 ### Splunk Search results for query: * | head 3

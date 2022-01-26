@@ -1,0 +1,18 @@
+commonfields:
+  id: GetSendEmailInstances
+  version: -1
+dockerimage: demisto/python3:3.9.9.25564
+enabled: true
+name: GetSendEmailInstances
+runas: DBotWeakRole
+runonce: false
+script: ''
+comment: Gets all the enabled instances of integrations that have a send-mail command, in the output format of a single select field.
+scripttarget: 0
+subtype: python3
+tags:
+- field-display
+type: python
+fromversion: 6.1.0
+tests:
+- No tests (auto formatted)

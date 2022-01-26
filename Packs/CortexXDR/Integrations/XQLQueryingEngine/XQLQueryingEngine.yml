@@ -41,8 +41,9 @@ script:
       required: true
       secret: false
     - default: false
-      description: |-
-        Time in relative date format (for example: "1 day", "3 weeks ago"). The default is the last 24 hours.
+      description: 'Time in relative date or range format (for example: "1 day", "3
+        weeks ago", "between 2021-01-01 12:34:56 +02:00 and 2021-02-01 12:34:56 +02:00").
+        The default is the last 24 hours.'
       isArray: false
       name: time_frame
       required: false
@@ -387,8 +388,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: |-
-        Time in relative date format (for example: "1 day", "3 weeks ago"). The default is the last 24 hours.
+      description: 'Time in relative date or range format (for example: "1 day", "3
+        weeks ago", "between 2021-01-01 12:34:56 +02:00 and 2021-02-01 12:34:56 +02:00").
+        The default is the last 24 hours.'
       isArray: false
       name: time_frame
       required: false
@@ -516,8 +518,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: |-
-        Time in relative date format (for example: "1 day", "3 weeks ago"). The default is the last 24 hours.
+      description: 'Time in relative date or range format (for example: "1 day", "3
+        weeks ago", "between 2021-01-01 12:34:56 +02:00 and 2021-02-01 12:34:56 +02:00").
+        The default is the last 24 hours.'
       isArray: false
       name: time_frame
       required: false
@@ -672,8 +675,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: |-
-        Time in relative date format (for example: "1 day", "3 weeks ago"). The default is the last 24 hours.
+      description: 'Time in relative date or range format (for example: "1 day", "3
+        weeks ago", "between 2021-01-01 12:34:56 +02:00 and 2021-02-01 12:34:56 +02:00").
+        The default is the last 24 hours.'
       isArray: false
       name: time_frame
       required: false
@@ -837,8 +841,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: |-
-        Time in relative date format (for example: "1 day", "3 weeks ago").The default is the last 24 hours.
+      description: 'Time in relative date or range format (for example: "1 day", "3
+        weeks ago", "between 2021-01-01 12:34:56 +02:00 and 2021-02-01 12:34:56 +02:00").
+        The default is the last 24 hours.'
       isArray: false
       name: time_frame
       required: false
@@ -995,8 +1000,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: |-
-        Time in relative date format (for example: "1 day", "3 weeks ago"). The default is the last 24 hours.
+      description: 'Time in relative date or range format (for example: "1 day", "3
+        weeks ago", "between 2021-01-01 12:34:56 +02:00 and 2021-02-01 12:34:56 +02:00").
+        The default is the last 24 hours.'
       isArray: false
       name: time_frame
       required: false
@@ -1144,8 +1150,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: |-
-        Time in relative date format (for example: "1 day", "3 weeks ago"). The default is the last 24 hours.
+      description: 'Time in relative date or range format (for example: "1 day", "3
+        weeks ago", "between 2021-01-01 12:34:56 +02:00 and 2021-02-01 12:34:56 +02:00").
+        The default is the last 24 hours.'
       isArray: false
       name: time_frame
       required: false
@@ -1291,8 +1298,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: |-
-        Time in relative date format (for example: "1 day", "3 weeks ago"). The default is the last 24 hours.
+      description: 'Time in relative date or range format (for example: "1 day", "3
+        weeks ago", "between 2021-01-01 12:34:56 +02:00 and 2021-02-01 12:34:56 +02:00").
+        The default is the last 24 hours.'
       isArray: false
       name: time_frame
       required: false
@@ -1465,8 +1473,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: |-
-        Time in relative date format (for example: "1 day", "3 weeks ago"). The default is the last 24 hours.
+      description: 'Time in relative date or range format (for example: "1 day", "3
+        weeks ago", "between 2021-01-01 12:34:56 +02:00 and 2021-02-01 12:34:56 +02:00").
+        The default is the last 24 hours.'
       isArray: false
       name: time_frame
       required: false
@@ -1637,8 +1646,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: |-
-        Time in relative date format (for example: "1 day", "3 weeks ago"). The default is the last 24 hours.
+      description: 'Time in relative date or range format (for example: "1 day", "3
+        weeks ago", "between 2021-01-01 12:34:56 +02:00 and 2021-02-01 12:34:56 +02:00").
+        The default is the last 24 hours.'
       isArray: false
       name: time_frame
       required: false
@@ -1812,8 +1822,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: |-
-        Time in relative date format (for example: "1 day", "3 weeks ago"). The default is the last 24 hours.
+      description: 'Time in relative date or range format (for example: "1 day", "3
+        weeks ago", "between 2021-01-01 12:34:56 +02:00 and 2021-02-01 12:34:56 +02:00").
+        The default is the last 24 hours.'
       isArray: false
       name: time_frame
       required: false
@@ -1967,7 +1978,7 @@ script:
     - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results._product
       description: The result product.
       type: String
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.1.25933
   feed: false
   isfetch: false
   longRunning: false

@@ -1,5 +1,5 @@
 [file:MicrosoftDefenderAdvancedThreatProtection.yml]
-ignore=IN126,IN136,DS107,IN145
+ignore=IN126,IN136,DS107,IN145,IN124
 
 [file:README.md]
 ignore=RM102,RM104,RM106

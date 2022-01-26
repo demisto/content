@@ -1,0 +1,34 @@
+{
+  "results": [
+    {
+      "queryToken": "xsoar-organization@xsoar",
+      "identities": [
+        {
+          "entityId": "vss.ds.v1.aad.user.13423bdd9b6941429f872dd4dcf74bda",
+          "entityType": "User",
+          "originDirectory": "aad",
+          "originId": "13423bdd-9b69-4142-9f87-2dd4dcf74bda",
+          "localDirectory": "vsd",
+          "localId": "XXXX",
+          "displayName": "XSOAR Test",
+          "scopeName": "Palo Alto Networks",
+          "samAccountName": "xsoar@xsoar.com",
+          "active": "True",
+          "subjectDescriptor": "aad.ZWFlMjk2ZGYtMzYwOS03YWY3LWFkNzMtYzNlYmRhZDM3ZmQ5",
+          "department": "None",
+          "jobTitle": "None",
+          "mail": "user2@xsoar.com",
+          "mailNickname": "xsoar-organization",
+          "physicalDeliveryOfficeName": "None",
+          "signInAddress": "xsoar@xsoar.com",
+          "surname": "Pashay",
+          "guest": "False",
+          "telephoneNumber": "None",
+          "description": "None",
+          "isMru": "False"
+        }
+      ],
+      "pagingToken": ""
+    }
+  ]
+}

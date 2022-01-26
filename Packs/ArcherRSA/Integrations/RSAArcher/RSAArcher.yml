@@ -1,0 +1,388 @@
+commonfields:
+  id: RSA Archer
+  version: -1
+name: RSA Archer
+display: RSA Archer (Deprecated)
+deprecated: true
+category: Case Management
+description: Deprecated. Use the RSA Archer v2 integration instead.
+configuration:
+- display: Server URL (e.g. https://192.168.0.1/rsaarcher/)
+  name: server
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Instance name
+  name: instanceName
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Username
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: true
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  type: 13
+  required: false
+- display: Timezone offset in minutes of the RSA Archer server machine (+60, -60,
+    in minutes)
+  name: timeZone
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Application ID for fetch
+  name: fetchApplicationId
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: The application's base ID. For example "Incident ID"
+  name: fieldsToDisplay
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: fetchFilter - Specific filters for fetching in the form of an xml string
+  name: fetchFilter
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Use Archer's REST API instead of its SOAP API
+  name: useRest
+  defaultvalue: "false"
+  type: 8
+  required: false
+- display: Use European Time format (dd/mm/yyyy) instead of the American one
+  name: useEuropeanTime
+  defaultvalue: "false"
+  type: 8
+  required: false
+script:
+  script: ''
+  type: javascript
+  commands:
+  - name: archer-create-record
+    deprecated: true
+    arguments:
+    - name: applicationId
+      required: true
+      description: ID of the application to create record in
+    - name: fieldsToValues
+      required: true
+      description: 'Record fields in JSON format: { Name1: Value1, Name2: Value2 }.
+        Field name is case sensitive.'
+    outputs:
+    - contextPath: Archer.Record.Id
+      description: Content Id
+      type: number
+    - contextPath: Archer.Record.Fields
+      description: Content property fields
+    description: Creates a new content record in the given application.
+  - name: archer-update-record
+    deprecated: true
+    arguments:
+    - name: contentId
+      description: The Content (record) ID to update
+    - name: applicationId
+      required: true
+      description: ID of the application to update record in
+    - name: fieldsToValues
+      required: true
+      description: 'Record fields in JSON format: { Name1: Value1, Name2: Value2 }.
+        Field name is case sensitive.'
+    - name: incidentId
+      description: 'The incident id of the record. For example: id=12345 for INC-12345'
+    description: Updates existing content record in the given application.
+  - name: archer-get-record
+    deprecated: true
+    arguments:
+    - name: contentId
+      description: The incident (record) ID to get details for
+    - name: applicationId
+      required: true
+      description: ID of the application to get record from
+    - name: incidentId
+      description: 'The incident id of the record. For example: id=12345 for INC-12345'
+    outputs:
+    - contextPath: Archer.Record.Id
+      description: Content Id of the record
+      type: number
+    - contextPath: Archer.Record
+      description: Content property fields
+    - contextPath: Archer.Record.Incident Status
+      description: Incident Status
+    - contextPath: Archer.Record.Record Status
+      description: Record Status
+    - contextPath: Archer.Record.Last Updated
+      description: Last Updated
+      type: date
+    - contextPath: Archer.Record.Days Open
+      description: Days Open
+    - contextPath: Archer.Record.Date Created
+      description: Date Created
+      type: date
+    - contextPath: Archer.Record.Title
+      description: Title
+      type: string
+    - contextPath: Archer.Record.Incident Summary
+      description: Incident Summary
+      type: string
+    - contextPath: Archer.Record.Threat Category
+      description: Threat Category
+    - contextPath: Archer.Record.Threat Valid
+      description: Threat Valid
+    description: Gets information about a content record in the given application.
+  - name: archer-search-applications
+    deprecated: true
+    arguments:
+    - name: findByName
+      default: true
+      description: Get application by name (leave empty to get all applications)
+    - name: findById
+      description: Get application by ID (leave empty to get all applications)
+    outputs:
+    - contextPath: Archer.Applications.Id
+      description: Application Id
+    - contextPath: Archer.Applications.Type
+      description: Application Type
+    - contextPath: Archer.Applications.Name
+      description: Application Name
+    - contextPath: Archer.Applications.Status
+      description: Application Status
+    - contextPath: Archer.Applications.Guid
+      description: Unique Id of application
+    description: Gets application details or list of all applications.
+  - name: archer-search-records
+    deprecated: true
+    arguments:
+    - name: applicationId
+      required: true
+      description: ID of the application to search records in
+    - name: fieldsToDisplay
+      description: 'Fields to present in the search results in array format (for example:
+        "Title,Incident Summary")'
+      isArray: true
+      defaultValue: Incident ID
+    - name: maxResults
+      description: Maximum results to return from the search (default is 10)
+      defaultValue: "10"
+    - name: searchValue
+      description: Search value (leave empty to search for all)
+    - name: fieldToSearchOn
+      description: Name of field to search on (leave empty to search for all)
+    - name: numericOperator
+      auto: PREDEFINED
+      predefined:
+      - Equals
+      - NotEqual
+      - GreaterThan
+      - LessThan
+      description: Numeric search operator
+    - name: dateOperator
+      auto: PREDEFINED
+      predefined:
+      - Equals
+      - DoesNotEqual
+      - GreaterThan
+      - LessThan
+      description: Date search operator
+    - name: isDescending
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Order by descending order
+    - name: getInnerRecords
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Get the inner records of the records found by the search
+    - name: fullData
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Get an extended responses with all of the data regarding this search.
+        For example, "fullData=true"
+    outputs:
+    - contextPath: Archer.Record.Id
+      description: Content Id
+      type: number
+    - contextPath: Archer.Record.ApplicationId
+      description: Application Id
+      type: number
+    - contextPath: Archer.Record.Fields
+      description: Content property fields
+    description: Search for records inside the given application.
+  - name: archer-get-application-fields
+    deprecated: true
+    arguments:
+    - name: applicationId
+      required: true
+      default: true
+      description: ID of the application to search fields in
+    outputs:
+    - contextPath: Archer.ApplicationFields
+      description: Content property fields
+    description: Gets all application fields by application ID
+  - name: archer-delete-record
+    deprecated: true
+    arguments:
+    - name: applicationId
+      required: true
+      description: ID of the application to delete record in
+    - name: contentId
+      description: The Content (record) ID to delete
+    - name: incidentId
+      description: 'The incident id of the record. For example: id=12345 for INC-12345'
+    description: Delete existing content record in the given application.
+  - name: archer-get-field
+    deprecated: true
+    arguments:
+    - name: fieldID
+      required: true
+      description: ID of the field
+    - name: applicationId
+      required: true
+      description: ID of the application to get field value from
+    description: Returns mapping from list value name to list value id
+  - name: archer-get-reports
+    deprecated: true
+    arguments: []
+    description: Gets all the reports from Archer
+  - name: archer-execute-statistic-search-by-report
+    deprecated: true
+    arguments:
+    - name: reportGuid
+      required: true
+      description: The GUID of the report
+    - name: maxResults
+      description: Maximum pages of the reports
+      defaultValue: "100"
+    outputs:
+    - contextPath: Archer.StatisticSearch
+      description: The results of the search
+    description: Performs statistic search by report Guid
+  - name: archer-get-search-options-by-guid
+    deprecated: true
+    arguments:
+    - name: reportGuid
+      required: true
+      description: The GUID of the report
+    description: 'Returns search criteria by report GUID '
+  - name: archer-search-records-by-report
+    deprecated: true
+    arguments:
+    - name: reportGuid
+      required: true
+      description: The GUID of the report
+    outputs:
+    - contextPath: Archer.SearchByReport.Records
+      description: The records found by the search
+    - contextPath: Archer.SearchByReport.RecordsAmount
+      description: Amount of records found by the search
+    - contextPath: Archer.SearchByReport.FieldDefinitions
+      description: Field definitions of the found records
+    description: Search records by report Guid
+  - name: archer-get-mapping-by-level
+    deprecated: true
+    arguments:
+    - name: level
+      required: true
+      description: Level ID
+    description: Return mapping of fields by level id
+  - name: archer-manually-fetch-incident
+    deprecated: true
+    arguments:
+    - name: applicationId
+      required: true
+      description: 'ID of the application to get the incident from. For example: applicationId="75"'
+    - name: incidentIds
+      required: true
+      description: 'The Incident IDs to get details for, separated by commas. For
+        example: IncidentIds="12345,67891" '
+    description: Fetch specific incident from Archer to the war room. Also used for
+      manual fetching automation
+  - name: archer-get-file
+    deprecated: true
+    arguments:
+    - name: fileId
+      required: true
+      description: Archer's file ID
+    description: Downloads file from Archer to Demisto's war room context
+  - name: archer-upload-file
+    deprecated: true
+    arguments:
+    - name: applicationId
+      required: true
+      description: ID of the application which we want to upload the file to
+    - name: contentId
+      description: The Content (record) ID to update
+    - name: incidentId
+      description: 'The incident id of the record. For example: id=12345 for INC-12345'
+    - name: entryId
+      description: The entry id of the file in Demisto's context
+    - name: associatedField
+      description: 'Archer field name to associate the file with. Initial value is:
+        "Supporting Documentation"'
+      defaultValue: Supporting Documentation
+    description: Uploads a file to Archer and adds its id to the context attached
+      files
+  - name: archer-add-to-detailed-analysis
+    deprecated: true
+    arguments:
+    - name: applicationId
+      required: true
+      description: ID of the application which we want to upload the file to
+    - name: contentId
+      description: The Content (record) ID to update
+    - name: incidentId
+      description: 'The incident id of the record. For example: id=12345 for INC-12345'
+    - name: value
+      required: true
+      description: 'The value you want to add to Detailed Analysis. For example: value="test
+        string"'
+    description: Add data to Archer's Detailed Analysis field
+  - name: archer-get-user-id
+    deprecated: true
+    arguments:
+    - name: userInfo
+      required: true
+      description: Username in the form of "Domain\username". For example, userInfo="mydomain\myusername"
+    outputs:
+    - contextPath: Archer.User.UserId
+      description: The user id of the Archer user
+    description: Get the user id of an Archer user
+  - name: archer-get-valuelist
+    deprecated: true
+    arguments:
+    - name: fieldID
+      required: true
+      description: Field Id
+    description: Returns a list of values for a specified field, e.g., fieldID=16114.
+      This command only works for value list fields (type 4).
+  - name: archer-reset-cache
+    deprecated: true
+    arguments: []
+    description: Reset Archer's integration cache. Run this command if you change
+      the fields of your Archer application
+  isfetch: true
+  runonce: false
+tests:
+- Archer-Test-Playbook
+fromversion: 5.0.0

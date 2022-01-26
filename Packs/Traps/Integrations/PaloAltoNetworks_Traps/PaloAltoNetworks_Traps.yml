@@ -24,15 +24,8 @@ configuration:
   required: false
   type: 8
 description: |-
-  Endpoint protection and response stops threats on endpoints and coordinates enforcement with network and cloud security to prevent successful cyberattacks.
-  The integration enables the following abilities:
-    - Initiate scans.
-    - Retrieve files from events.
-    - Isolate endpoints.
-    - Quarantine files.
-    - Add and remove hashes from block list.
-    - Getting endpoints info.
-display: Palo Alto Networks Traps
+  Deprecated. Use CortexXDR instead.
+display: Palo Alto Networks Traps (Deprecated)
 name: Traps
 script:
   commands:
@@ -43,7 +36,7 @@ script:
       name: endpoint_id
       required: true
       secret: false
-    deprecated: false
+    deprecated: true
     description: Returns details for the specified endpoint.
     execution: false
     name: traps-get-endpoint-by-id
@@ -112,7 +105,7 @@ script:
       name: event_id
       required: true
       secret: false
-    deprecated: false
+    deprecated: true
     description: Executes a file retrieve operation / SAM on the specified agent.
     execution: false
     name: traps-endpoint-files-retrieve
@@ -133,7 +126,7 @@ script:
       name: endpoint_id
       required: true
       secret: false
-    deprecated: false
+    deprecated: true
     description: Performs a scan operation on the specified endpoint.
     execution: false
     name: traps-endpoint-scan
@@ -171,7 +164,7 @@ script:
       name: comment
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Modifies the status and adds a comment to an existing event.
     execution: false
     name: traps-event-update
@@ -193,7 +186,7 @@ script:
       - closed
       required: true
       secret: false
-    deprecated: false
+    deprecated: true
     description: Modifies the status of multiple events.
     execution: false
     name: traps-event-bulk-update-status
@@ -204,7 +197,7 @@ script:
       name: hash_id
       required: true
       secret: false
-    deprecated: false
+    deprecated: true
     description: Adds the specified file hash to the block list.
     execution: false
     name: traps-hash-blacklist
@@ -222,7 +215,7 @@ script:
       name: hash_id
       required: true
       secret: false
-    deprecated: false
+    deprecated: true
     description: Removes the specified file hash from the block list.
     execution: false
     name: traps-hash-blacklist-remove
@@ -235,18 +228,20 @@ script:
       type: String
   - arguments:
     - default: false
-      description: A comma-separated list of SHA256 file hashes for which to return the block list status.
+      description: A comma-separated list of SHA256 file hashes for which to return
+        the block list status.
       isArray: true
       name: hash_ids
       required: true
       secret: false
-    deprecated: false
+    deprecated: true
     description: Returns the block list status of the specified file hashes.
     execution: false
     name: traps-hashes-blacklist-status
     outputs:
     - contextPath: Traps.File.BlacklistStatus
-      description: The block list status of the file hash. Can be "blacklisted" or "none".
+      description: The block list status of the file hash. Can be "blacklisted" or
+        "none".
       type: String
     - contextPath: Traps.File.SHA256
       description: The SHA256 hash of the file.
@@ -258,7 +253,7 @@ script:
       name: event_id
       required: true
       secret: false
-    deprecated: false
+    deprecated: true
     description: Creates a quarantine entry for the specified event.
     execution: false
     name: traps-event-quarantine
@@ -279,7 +274,7 @@ script:
       name: endpoint_id
       required: true
       secret: false
-    deprecated: false
+    deprecated: true
     description: Isolates the specified endpoint.
     execution: false
     name: traps-endpoint-isolate
@@ -295,12 +290,13 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The ID of the operation for which to get the result of the quarantine operation.
+      description: The ID of the operation for which to get the result of the quarantine
+        operation.
       isArray: false
       name: operation_id
       required: true
       secret: false
-    deprecated: false
+    deprecated: true
     description: Returns the result of the specified quarantine operation.
     execution: false
     name: traps-event-quarantine-result
@@ -324,7 +320,7 @@ script:
       name: operation_id
       required: true
       secret: false
-    deprecated: false
+    deprecated: true
     description: Returns the status of the specified endpoint isolate operation.
     execution: false
     name: traps-endpoint-isolate-status
@@ -342,7 +338,7 @@ script:
       name: operation_id
       required: true
       secret: false
-    deprecated: false
+    deprecated: true
     description: Returns the result of the endpoint file retrieve operation.
     execution: false
     name: traps-endpoint-files-retrieve-result
@@ -353,7 +349,7 @@ script:
       name: operation_id
       required: true
       secret: false
-    deprecated: false
+    deprecated: true
     description: Returns the results of an endpoint scan operation.
     execution: false
     name: traps-endpoint-scan-result
@@ -382,6 +378,7 @@ script:
   script: '-'
   subtype: python3
   type: python
-tests:
-- Traps test
+tests: 
+- No test
 fromversion: 5.0.0
+deprecated: true

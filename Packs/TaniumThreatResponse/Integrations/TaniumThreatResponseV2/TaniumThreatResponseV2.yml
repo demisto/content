@@ -2271,7 +2271,7 @@ script:
     - contextPath: Tanium.SystemStatus.status
       description: The host status.
       type: String
-  dockerimage: demisto/lxml:1.0.0.24133
+  dockerimage: demisto/lxml:1.0.0.25271
   feed: false
   isfetch: true
   longRunning: false

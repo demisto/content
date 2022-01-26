@@ -8,13 +8,10 @@ configuration:
   required: true
   type: 0
 - display: Username
-  name: username
-  required: true
-  type: 0
-- display: Password
-  name: password
-  required: true
-  type: 4
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: false
 - defaultvalue: ''
   display: 'Trust any certificate (not secure)'
   name: unsecure
@@ -24,6 +21,16 @@ configuration:
   name: proxy
   required: false
   type: 8
+- display: Username (Deprecated)
+  name: username
+  required: false
+  hidden: true
+  type: 0
+- display: Password (Deprecated)
+  name: password
+  required: false
+  hidden: true
+  type: 4
 description: 'Integrated advanced threat detection: Enhancing protection from network edge to endpoint'
 display: McAfee Advanced Threat Defense
 name: McAfee Advanced Threat Defense

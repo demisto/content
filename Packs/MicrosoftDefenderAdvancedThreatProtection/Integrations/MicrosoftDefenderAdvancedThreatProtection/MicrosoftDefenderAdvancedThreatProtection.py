@@ -2565,9 +2565,9 @@ def get_indicator_dbot_object(indicator):
 def main():
     params: dict = demisto.params()
     base_url: str = params.get('url', '').rstrip('/') + '/api'
-    tenant_id = params.get('tenant_id')
-    auth_id = params.get('auth_id')
-    enc_key = params.get('enc_key')
+    tenant_id = params.get('tenant_id') or params.get('_tenant_id')
+    auth_id = params.get('auth_id') or params.get('_auth_id')
+    enc_key = params.get('enc_key') or (params.get('credentials') or {}).get('password')
     use_ssl: bool = not params.get('insecure', False)
     proxy: bool = params.get('proxy', False)
     self_deployed: bool = params.get('self_deployed', False)
@@ -2575,6 +2575,13 @@ def main():
     alert_status_to_fetch = params.get('fetch_status')
     alert_time_to_fetch = params.get('first_fetch_timestamp', '3 days')
     last_run = demisto.getLastRun()
+
+    if not enc_key:
+        raise Exception('Key must be provided.')
+    if not auth_id:
+        raise Exception('Authentication ID must be provided.')
+    if not tenant_id:
+        raise Exception('Tenant ID must be provided.')
 
     command = demisto.command()
     args = demisto.args()

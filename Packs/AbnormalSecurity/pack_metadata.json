@@ -6,11 +6,24 @@
     "author": "Abnormal Security",
     "url": "",
     "email": "support@abnormalsecurity.com",
-    "categories": ["Data Enrichment & Threat Intelligence"],
-    "tags": ["Email"],
-    "useCases": ["Phishing"],
-    "keywords": ["email", "phishing"],
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [
+        "Email"
+    ],
+    "useCases": [
+        "Phishing"
+    ],
+    "keywords": [
+        "email",
+        "phishing"
+    ],
     "githubUser": [
         "dschuan"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }

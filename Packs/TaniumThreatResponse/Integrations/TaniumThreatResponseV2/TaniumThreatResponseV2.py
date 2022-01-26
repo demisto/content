@@ -110,7 +110,7 @@ class Client(BaseClient):
                 'password': self.password
             }
 
-            res = self._http_request('GET', '/api/v2/session/login', json_data=body, ok_codes=(200,))
+            res = self._http_request('POST', '/api/v2/session/login', json_data=body, ok_codes=(200,))
 
             self.session = res.get('data').get('session')
         else:  # no API token and no credentials were provided, raise an error:
@@ -376,6 +376,7 @@ def alarm_to_incident(client, alarm):
         'name': f'{host} found {intel_doc}',
         'occurred': alarm.get('alertedAt'),
         'starttime': alarm.get('createdAt'),
+        'alertid': alarm.get('id'),
         'rawJSON': json.dumps(alarm)}
 
 
@@ -413,6 +414,7 @@ def fetch_incidents(client, alerts_states_to_retrieve, last_run, fetch_time, max
     last_fetch = last_run.get('time')
     last_id = int(last_run.get('id', '0'))
     alerts_states = argToList(alerts_states_to_retrieve)
+    offset = 0
 
     # Handle first time fetch, fetch incidents retroactively
     if not last_fetch:
@@ -421,29 +423,48 @@ def fetch_incidents(client, alerts_states_to_retrieve, last_run, fetch_time, max
     demisto.debug(f'Get last run: last_id {last_id}, last_time: {last_fetch}.\n')
 
     last_fetch = parse(last_fetch)
-    current_fetch = last_fetch
 
-    url_suffix = '/plugin/products/detect3/api/v1/alerts?' + state_params_suffix(alerts_states) + '&limit=500'
-
-    raw_response = client.do_request('GET', url_suffix)
-
-    # convert the data/events to demisto incidents
+    alerts_states_suffix = state_params_suffix(alerts_states)
     incidents = []
-    for alarm in raw_response:
-        incident = alarm_to_incident(client, alarm)
-        temp_date = parse(incident.get('starttime'))
 
-        # update last run
-        if temp_date > last_fetch:
-            last_fetch = temp_date
+    while True:
+        demisto.debug(f'Sending new alerts api request with offset: {offset}.')
+        url_suffix = '/plugin/products/detect3/api/v1/alerts?' + alerts_states_suffix + \
+                     f'&sort=-createdAt&limit=500&offset={offset}'
 
-        # avoid duplication due to weak time query
-        if temp_date >= current_fetch and (new_id := alarm.get('id', last_id)) > last_id:
-            incidents.append(incident)
-            last_id = new_id
-
-        if len(incidents) >= max_fetch:
+        raw_response = client.do_request('GET', url_suffix)
+        if not raw_response:
+            demisto.debug('Stop fetch loop, no incidents in raw response.')
             break
+
+        # convert the data/events to demisto incidents
+        for alarm in raw_response:
+            incident = alarm_to_incident(client, alarm)
+            temp_date = parse(incident.get('starttime'))
+            new_id = incident.get('alertid')
+            demisto.debug(f'Fetched new alert, id: {new_id}, created_at: {temp_date}.\n')
+
+            if temp_date >= last_fetch and new_id > last_id:
+                demisto.debug(f'Adding new incident with id: {new_id}')
+                incidents.append(incident)
+            else:
+                demisto.debug(f'Stop fetch loop, temp date < last fetch: {temp_date} < {last_fetch}.')
+                break
+
+        if temp_date >= last_fetch:
+            offset += 500
+        else:
+            demisto.debug(f'Stop fetch loop, temp date < last fetch: {temp_date} < {last_fetch}.')
+            break
+
+    if len(incidents) > max_fetch:
+        demisto.debug('Re-sizing incidents list.')
+        incidents = incidents[len(incidents) - max_fetch:]
+
+    if incidents:
+        last_incident = incidents[0]
+        last_fetch = parse(last_incident.get('starttime'))
+        last_id = last_incident.get('alertid')
 
     next_run = {'time': datetime.strftime(last_fetch, DATE_FORMAT), 'id': str(last_id)}
 

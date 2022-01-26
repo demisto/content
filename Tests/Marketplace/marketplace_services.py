@@ -55,9 +55,10 @@ class Pack(object):
     EXCLUDE_DIRECTORIES = [PackFolders.TEST_PLAYBOOKS.value]
     RELEASE_NOTES = "ReleaseNotes"
 
-    def __init__(self, pack_name, pack_path):
+    def __init__(self, pack_name, pack_path, marketplace):
         self._pack_name = pack_name
         self._pack_path = pack_path
+        self._marketplace = marketplace
         self._status = None
         self._public_storage_path = ""
         self._remove_files_list = []  # tracking temporary files, in order to delete in later step
@@ -105,6 +106,7 @@ class Pack(object):
         self._contains_transformer = False  # initialized in collect_content_items function
         self._contains_filter = False  # initialized in collect_content_items function
         self._is_missing_dependencies = False  # a flag that specifies if pack is missing dependencies
+        self.should_upload_to_marketplace = True  # initialized in load_user_metadata function
 
     @property
     def name(self):
@@ -989,7 +991,11 @@ class Pack(object):
             version_pack_path = os.path.join(storage_base_path, self._pack_name, latest_version)
             existing_files = [f.name for f in storage_bucket.list_blobs(prefix=version_pack_path)]
 
-            if existing_files and not override_pack:
+            if override_pack:
+                logging.warning(f"Uploading {self._pack_name} pack to storage and overriding the existing pack "
+                                f"files already in storage.")
+
+            elif existing_files:
                 logging.warning(f"The following packs already exist at storage: {', '.join(existing_files)}")
                 logging.warning(f"Skipping step of uploading {self._pack_name}.zip to storage.")
                 return task_status, True, None
@@ -1546,9 +1552,10 @@ class Pack(object):
 
                     if current_directory == PackFolders.SCRIPTS.value:
                         folder_collected_items.append({
-                            'name': content_item.get('name', ""),
-                            'description': content_item.get('comment', ""),
-                            'tags': content_item_tags
+                            'id': content_item.get('commonfields', {}).get('id', ''),
+                            'name': content_item.get('name', ''),
+                            'description': content_item.get('comment', ''),
+                            'tags': content_item_tags,
                         })
 
                         if not self._contains_transformer and 'transformer' in content_item_tags:
@@ -1560,110 +1567,145 @@ class Pack(object):
                     elif current_directory == PackFolders.PLAYBOOKS.value:
                         self.is_feed_pack(content_item, 'Playbook')
                         folder_collected_items.append({
-                            'name': content_item.get('name', ""),
-                            'description': content_item.get('description', "")
+                            'id': content_item.get('id', ''),
+                            'name': content_item.get('name', ''),
+                            'description': content_item.get('description', ''),
                         })
+
                     elif current_directory == PackFolders.INTEGRATIONS.value:
                         integration_commands = content_item.get('script', {}).get('commands', [])
                         self.is_feed_pack(content_item, 'Integration')
                         folder_collected_items.append({
-                            'name': content_item.get('display', ""),
-                            'description': content_item.get('description', ""),
-                            'category': content_item.get('category', ""),
+                            'id': content_item.get('commonfields', {}).get('id', ''),
+                            'name': content_item.get('display', ''),
+                            'description': content_item.get('description', ''),
+                            'category': content_item.get('category', ''),
                             'commands': [
-                                {'name': c.get('name', ""), 'description': c.get('description', "")}
-                                for c in integration_commands]
+                                {'name': c.get('name', ''), 'description': c.get('description', '')}
+                                for c in integration_commands],
                         })
+
                     elif current_directory == PackFolders.INCIDENT_FIELDS.value:
                         folder_collected_items.append({
-                            'name': content_item.get('name', ""),
-                            'type': content_item.get('type', ""),
-                            'description': content_item.get('description', "")
+                            'id': content_item.get('id', ''),
+                            'name': content_item.get('name', ''),
+                            'type': content_item.get('type', ''),
+                            'description': content_item.get('description', ''),
                         })
+
                     elif current_directory == PackFolders.INCIDENT_TYPES.value:
                         folder_collected_items.append({
-                            'name': content_item.get('name', ""),
-                            'playbook': content_item.get('playbookId', ""),
-                            'closureScript': content_item.get('closureScript', ""),
+                            'id': content_item.get('id', ''),
+                            'name': content_item.get('name', ''),
+                            'playbook': content_item.get('playbookId', ''),
+                            'closureScript': content_item.get('closureScript', ''),
                             'hours': int(content_item.get('hours', 0)),
                             'days': int(content_item.get('days', 0)),
-                            'weeks': int(content_item.get('weeks', 0))
+                            'weeks': int(content_item.get('weeks', 0)),
                         })
+
                     elif current_directory == PackFolders.DASHBOARDS.value:
                         folder_collected_items.append({
-                            'name': content_item.get('name', "")
+                            'id': content_item.get('id', ''),
+                            'name': content_item.get('name', ''),
                         })
+
                     elif current_directory == PackFolders.INDICATOR_FIELDS.value:
                         folder_collected_items.append({
-                            'name': content_item.get('name', ""),
-                            'type': content_item.get('type', ""),
-                            'description': content_item.get('description', "")
+                            'id': content_item.get('id', ''),
+                            'name': content_item.get('name', ''),
+                            'type': content_item.get('type', ''),
+                            'description': content_item.get('description', ''),
                         })
+
                     elif current_directory == PackFolders.REPORTS.value:
                         folder_collected_items.append({
-                            'name': content_item.get('name', ""),
-                            'description': content_item.get('description', "")
+                            'id': content_item.get('id', ''),
+                            'name': content_item.get('name', ''),
+                            'description': content_item.get('description', ''),
                         })
+
                     elif current_directory == PackFolders.INDICATOR_TYPES.value:
                         folder_collected_items.append({
-                            'details': content_item.get('details', ""),
-                            'reputationScriptName': content_item.get('reputationScriptName', ""),
-                            'enhancementScriptNames': content_item.get('enhancementScriptNames', [])
+                            'id': content_item.get('id', ''),
+                            'details': content_item.get('details', ''),
+                            'reputationScriptName': content_item.get('reputationScriptName', ''),
+                            'enhancementScriptNames': content_item.get('enhancementScriptNames', []),
                         })
+
                     elif current_directory == PackFolders.LAYOUTS.value:
                         layout_metadata = {
-                            'name': content_item.get('name', '')
+                            'id': content_item.get('id', ''),
+                            'name': content_item.get('name', ''),
                         }
                         layout_description = content_item.get('description')
                         if layout_description is not None:
                             layout_metadata['description'] = layout_description
                         folder_collected_items.append(layout_metadata)
+
                     elif current_directory == PackFolders.CLASSIFIERS.value:
                         folder_collected_items.append({
-                            'name': content_item.get('name') or content_item.get('id', ""),
-                            'description': content_item.get('description', '')
+                            'id': content_item.get('id', ''),
+                            'name': content_item.get('name') or content_item.get('id', ''),
+                            'description': content_item.get('description', ''),
                         })
+
                     elif current_directory == PackFolders.WIDGETS.value:
                         folder_collected_items.append({
-                            'name': content_item.get('name', ""),
-                            'dataType': content_item.get('dataType', ""),
-                            'widgetType': content_item.get('widgetType', "")
+                            'id': content_item.get('id', ''),
+                            'name': content_item.get('name', ''),
+                            'dataType': content_item.get('dataType', ''),
+                            'widgetType': content_item.get('widgetType', ''),
                         })
+
                     elif current_directory == PackFolders.LISTS.value:
                         folder_collected_items.append({
-                            'name': content_item.get('name', "")
+                            'id': content_item.get('id', ''),
+                            'name': content_item.get('name', '')
                         })
+
                     elif current_directory == PackFolders.GENERIC_DEFINITIONS.value:
                         folder_collected_items.append({
-                            'name': content_item.get('name', ""),
-                            'description': content_item.get('description', ""),
+                            'id': content_item.get('id', ''),
+                            'name': content_item.get('name', ''),
+                            'description': content_item.get('description', ''),
                         })
+
                     elif parent_directory == PackFolders.GENERIC_FIELDS.value:
                         folder_collected_items.append({
-                            'name': content_item.get('name', ""),
-                            'description': content_item.get('description', ""),
-                            'type': content_item.get('type', ""),
+                            'id': content_item.get('id', ''),
+                            'name': content_item.get('name', ''),
+                            'description': content_item.get('description', ''),
+                            'type': content_item.get('type', ''),
                         })
+
                     elif current_directory == PackFolders.GENERIC_MODULES.value:
                         folder_collected_items.append({
-                            'name': content_item.get('name', ""),
-                            'description': content_item.get('description', ""),
+                            'id': content_item.get('id', ''),
+                            'name': content_item.get('name', ''),
+                            'description': content_item.get('description', ''),
                         })
+
                     elif parent_directory == PackFolders.GENERIC_TYPES.value:
                         folder_collected_items.append({
-                            'name': content_item.get('name', ""),
-                            'description': content_item.get('description', ""),
+                            'id': content_item.get('id', ''),
+                            'name': content_item.get('name', ''),
+                            'description': content_item.get('description', ''),
                         })
+
                     elif current_directory == PackFolders.PREPROCESS_RULES.value:
                         folder_collected_items.append({
-                            'name': content_item.get('name', ""),
-                            'description': content_item.get('description', ""),
+                            'id': content_item.get('id', ''),
+                            'name': content_item.get('name', ''),
+                            'description': content_item.get('description', ''),
                         })
+
                     elif current_directory == PackFolders.JOBS.value:
                         folder_collected_items.append({
+                            'id': content_item.get('id', ''),
                             # note that `name` may technically be blank, but shouldn't pass validations
-                            'name': content_item.get('name', ""),
-                            'details': content_item.get('details', ""),
+                            'name': content_item.get('name', ''),
+                            'details': content_item.get('details', ''),
                         })
 
                 if current_directory in PackFolders.pack_displayed_items():
@@ -1679,7 +1721,7 @@ class Pack(object):
             self._content_items = content_items_result
             return task_status
 
-    def load_user_metadata(self):
+    def load_user_metadata(self, marketplace='xsoar'):
         """ Loads user defined metadata and stores part of it's data in defined properties fields.
 
         Returns:
@@ -1707,6 +1749,7 @@ class Pack(object):
             self.display_name = user_metadata.get(Metadata.NAME, '')  # type: ignore[misc]
             self._user_metadata = user_metadata
             self.eula_link = user_metadata.get(Metadata.EULA_LINK, Metadata.EULA_URL)
+            self.should_upload_to_marketplace = marketplace in user_metadata.get('marketplaces', ['xsoar'])
 
             logging.info(f"Finished loading {self._pack_name} pack user metadata")
             task_status = True
@@ -1831,6 +1874,7 @@ class Pack(object):
         """
         task_status = False
         pack_names = pack_names if pack_names else []
+        is_missing_dependencies = False
 
         try:
             self.set_pack_dependencies(packs_dependencies_mapping)
@@ -1919,12 +1963,14 @@ class Pack(object):
         if Metadata.DEPENDENCIES not in self.user_metadata and self._user_metadata:
             self._user_metadata[Metadata.DEPENDENCIES] = {}
 
+        core_packs = GCPConfig.get_core_packs(self._marketplace)
+
         # If it is a core pack, check that no new mandatory packs (that are not core packs) were added
         # They can be overridden in the user metadata to be not mandatory so we need to check there as well
-        if self._pack_name in GCPConfig.CORE_PACKS_LIST:
+        if self._pack_name in core_packs:
             mandatory_dependencies = [k for k, v in pack_dependencies.items()
                                       if v.get(Metadata.MANDATORY, False) is True
-                                      and k not in GCPConfig.CORE_PACKS_LIST
+                                      and k not in core_packs
                                       and k not in self.user_metadata[Metadata.DEPENDENCIES].keys()]
             if mandatory_dependencies:
                 raise Exception(f'New mandatory dependencies {mandatory_dependencies} were '

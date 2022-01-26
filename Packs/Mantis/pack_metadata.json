@@ -2,7 +2,7 @@
     "name": "Mantis",
     "description": "Content pack includes integration for Mantis Bug tracker, Mantis Bug Tracker is a free and open source, web-based bug tracking system",
     "support": "community",
-    "currentVersion": "1.0.1",
+    "currentVersion": "1.0.2",
     "author": "ssudheerk99",
     "url": "",
     "email": "",
@@ -15,5 +15,9 @@
     "keywords": [],
     "githubUser": [
         "ssudheerk99"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }

@@ -107,6 +107,11 @@ GALAXY_MAP = {
 
 
 class Client(BaseClient):
+
+    def __init__(self, timeout, base_url, verify, proxy):
+        super().__init__(base_url=base_url, verify=verify, proxy=proxy)
+        self.timeout = timeout
+
     def search_query(self, body: Dict[str, Any]) -> Dict[str, Any]:
         """
         Creates a request to MISP to get all attributes filtered by query in the body argument
@@ -123,7 +128,8 @@ class Client(BaseClient):
                                       full_url=f'{self._base_url}attributes/restSearch',
                                       resp_type='json',
                                       headers=headers,
-                                      data=json.dumps(body))
+                                      data=json.dumps(body),
+                                      timeout=self.timeout)
         return response
 
 
@@ -155,12 +161,13 @@ def build_indicators_iterator(attributes: Dict[str, Any], url: Optional[str]) ->
     return indicators_iterator
 
 
-def handle_tags_fields(indicator_obj: Dict[str, Any], tags: List[Any]) -> None:
+def handle_tags_fields(indicator_obj: Dict[str, Any], tags: List[Any], feed_tags: Optional[List]) -> None:
     """
-    Adds tags from the attribute to the indicator if they're a valid tag
+    Adds tags to the indicator if they're a valid tag
     Args:
         indicator_obj: Indicator currently being built
         tags: List of tags of the attribute retrieved from MISP
+        feed_tags: custom tags to be added to the created indicator
     Returns: None
     """
     indicator_obj['fields']['Tags'] = []
@@ -168,6 +175,7 @@ def handle_tags_fields(indicator_obj: Dict[str, Any], tags: List[Any]) -> None:
         tag_name = tag.get('name', None)
         if tag_name and not get_galaxy_indicator_type(tag_name):
             indicator_obj['fields']['Tags'].append(tag_name)
+    indicator_obj['fields']['Tags'].extend(feed_tags)
 
 
 def handle_file_type_fields(raw_type: str, indicator_obj: Dict[str, Any]) -> None:
@@ -297,7 +305,7 @@ def update_indicators_iterator(indicators_iterator: List[Dict[str, Any]],
                                params_dict: Dict[str, Any],
                                is_fetch: bool) -> Optional[List[Dict[str, Any]]]:
     """
-    returns sorts the indicators by their timestamp and returns a list of only new indicators received from MISP
+    sorts the indicators by their timestamp and returns a list of only new indicators received from MISP
     Args:
         params_dict: user's params sent to misp
         indicators_iterator: list of indicators
@@ -329,6 +337,7 @@ def fetch_indicators(client: Client,
                      tlp_color: Optional[str],
                      url: Optional[str],
                      reputation: Optional[str],
+                     feed_tags: Optional[List],
                      limit: int = -1,
                      is_fetch: bool = True) -> List[Dict]:
     if query:
@@ -361,7 +370,7 @@ def fetch_indicators(client: Client,
 
         indicator_obj = build_indicator(value_, type_, indicator, reputation)
 
-        update_indicator_fields(indicator_obj, tlp_color, raw_type)
+        update_indicator_fields(indicator_obj, tlp_color, raw_type, feed_tags)
         galaxy_indicators = build_indicators_from_galaxies(indicator_obj, reputation)
         create_and_add_relationships(indicator_obj, galaxy_indicators)
 
@@ -431,13 +440,15 @@ def create_and_add_relationships(indicator_obj: Dict[str, Any], galaxy_indicator
         indicator_obj['Relationships'] = relationships_indicators
 
 
-def update_indicator_fields(indicator_obj: Dict[str, Any], tlp_color: Optional[str], raw_type: str) -> None:
+def update_indicator_fields(indicator_obj: Dict[str, Any], tlp_color: Optional[str],
+                            raw_type: str, feed_tags: Optional[List]) -> None:
     """
     Updating required fields of the indicator with values from the attribute
     Args:
         indicator_obj: Indicator being built
         tlp_color: Traffic Light Protocol color.
         raw_type: Type of the attribute
+        feed_tags: Custom tags to be added to the created indicator
     Returns: None
     """
     raw_json_value = indicator_obj['rawJSON']['value']
@@ -467,7 +478,7 @@ def update_indicator_fields(indicator_obj: Dict[str, Any], tlp_color: Optional[s
         indicator_obj['fields']['trafficlightprotocol'] = tlp_color
 
     if tags:
-        handle_tags_fields(indicator_obj, tags)
+        handle_tags_fields(indicator_obj, tags, feed_tags)
 
     if 'md5' in raw_type or 'sha1' in raw_type or 'sha256' in raw_type:
         handle_file_type_fields(raw_type, indicator_obj)
@@ -511,11 +522,12 @@ def get_attributes_command(client: Client, args: Dict[str, str], params: Dict[st
     tlp_color = params.get('tlp_color')
     reputation = params.get('feedReputation')
     tags = argToList(args.get('tags', ''))
+    feed_tags = argToList(params.get("feedTags", []))
     query = args.get('query', None)
     attribute_type = argToList(args.get('attribute_type', ''))
 
     indicators = fetch_indicators(client, tags, attribute_type,
-                                  query, tlp_color, params.get('url'), reputation, limit, False)
+                                  query, tlp_color, params.get('url'), reputation, feed_tags, limit, False)
 
     hr_indicators = []
     for indicator in indicators:
@@ -547,10 +559,12 @@ def fetch_attributes_command(client: Client, params: Dict[str, str]) -> List[Dic
     tlp_color = params.get('tlp_color')
     reputation = params.get('feedReputation')
     tags = argToList(params.get('attribute_tags', ''))
+    feed_tags = argToList(params.get("feedTags", []))
     attribute_types = argToList(params.get('attribute_types', ''))
     query = params.get('query', None)
 
-    indicators = fetch_indicators(client, tags, attribute_types, query, tlp_color, params.get('url'), reputation)
+    indicators = fetch_indicators(client, tags, attribute_types, query, tlp_color,
+                                  params.get('url'), reputation, feed_tags)
     return indicators
 
 
@@ -561,6 +575,7 @@ def main():
 
     params = demisto.params()
     base_url = urljoin(params.get('url').rstrip('/'), '/')
+    timeout = arg_to_number(params.get('timeout', 60))
     insecure = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     command = demisto.command()
@@ -568,7 +583,7 @@ def main():
 
     demisto.debug(f'Command being called is {command}')
     try:
-        client = Client(base_url=base_url, verify=insecure, proxy=proxy,)
+        client = Client(base_url=base_url, verify=insecure, proxy=proxy, timeout=timeout)
 
         if command == 'test-module':
             return_results(test_module(client, params))

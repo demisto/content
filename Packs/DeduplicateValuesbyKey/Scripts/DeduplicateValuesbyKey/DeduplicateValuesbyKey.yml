@@ -1,0 +1,43 @@
+args:
+- description: List of objects (dictionaries).
+  isArray: true
+  name: object_list
+  required: true
+- description: String representing key from which unique values should be retrieved.
+    Use dot notation to access subkeys (e.g. 'key.subkey')
+  name: key_of_interest
+  required: true
+- auto: PREDEFINED
+  default: true
+  defaultValue: "False"
+  description: Default is False. If set to True, will return None in the unique list
+    if the key is not found
+  name: keep_none
+  predefined:
+  - "True"
+  - "False"
+comment: 'Given a list of objects and a key found in each of those objects, return
+  a unique list of values associated with that key. Returns error if the objects provided
+  do not contain the key of interest. '
+commonfields:
+  id: DeduplicateValuesbyKey
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+dockerimage: demisto/python3:3.9.8.24399
+enabled: true
+name: DeduplicateValuesbyKey
+outputs:
+- contextPath: DeduplicatedValues
+  description: List of unique values for the specified key
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

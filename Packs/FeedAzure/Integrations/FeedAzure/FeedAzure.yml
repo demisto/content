@@ -128,34 +128,74 @@ configuration:
   name: services
   options:
   - All
+  - ActionGroup
+  - ApplicationInsightsAvailability
   - AzureAD
+  - AzureAdvancedThreatProtection
   - AzureApiManagement
+  - AzureAppConfiguration
   - AzureAppService
   - AzureAppServiceManagement
+  - AzureArcInfrastructure
+  - AzureAttestation
+  - AzureAutomation
   - AzureBackup
+  - AzureBotService
+  - AzureCognitiveSearch
   - AzureConnectors
   - AzureContainerRegistry
   - AzureCosmosDB
+  - AzureDataExplorerManagement
+  - AzureDatabricks
   - AzureDataLake
   - AzureDevOps
+  - AzureDevSpaces
+  - AzureDigitalTwins
+  - AzureEventGrid
   - AzureEventHub
   - AzureFrontDoor
   - AzureIdentity
+  - AzureInformationProtection
   - AzureIoTHub
   - AzureKeyVault
   - AzureMachineLearning
   - AzureMonitor
+  - AzureOpenDatasets
+  - AzurePortal
+  - AzureResourceManager
+  - AzureSecurityCenter
+  - AzureSignalR
+  - AzureSiteRecovery
+  - AzureSphereSecureService_Prod
   - AzureSQL
+  - AzureStack
   - AzureServiceBus
   - AzureStorage
   - AzureTrafficManager
+  - AzureUpdateDelivery
   - BatchNodeManagement
   - CognitiveServicesManagement
+  - DataFactory
   - Dynamics365ForMarketingEmail
+  - EOPExtPublished
+  - GatewayManager
   - HDInsight
+  - MicrosoftAzureFluidRelay
+  - MicrosoftCloudAppSecurity
   - MicrosoftContainerRegistry
+  - M365ManagementActivityApi
+  - M365ManagementActivityApiWebhook
+  - LogicApps
+  - OneDsCollector
+  - PowerBI
+  - PowerPlatformInfra
+  - PowerQueryOnline
+  - SCCservice
   - ServiceFabric
   - SqlManagement
+  - StorageSyncService
+  - WindowsAdminCenter
+  - WindowsVirtualDesktop
   required: true
   type: 16
 - additionalinfo: Supports CSV values.
@@ -195,7 +235,7 @@ script:
     description: Gets indicators from the feed.
     execution: false
     name: azure-get-indicators
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.1.25933
   feed: true
   isfetch: false
   longRunning: false

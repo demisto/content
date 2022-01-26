@@ -15,6 +15,7 @@
 <li><strong>The access key - can be created under "Settings"</strong></li>
 <li><strong>Use system proxy settings</strong></li>
 <li><strong>Trust any certificate (not secure)</strong></li>
+<li><strong>Escape URLs</strong> (add a \\ prefix to = chars when the value queried is a URL. Default is false.)</li>
 <li><strong>Seconds to sleep between checking for results</strong></li>
 <li><strong>Default limit for the number of records to retrieve</strong></li>
 <li><strong>Fetch incidents</strong></li>
@@ -29,6 +30,9 @@
 </li>
 <li>Click<span> </span><strong>Test</strong><span> </span>to validate the URLs, token, and connection.</li>
 </ol>
+
+Note: in versions preceding 1.1.0, URL escaping was performed as default. The `Escape URLs` param allows disabling the escaping when necessary by setting it to `true`. 
+
 <h2>Commands</h2>
 <p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>

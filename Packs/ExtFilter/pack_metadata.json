@@ -2,7 +2,7 @@
     "name": "Advanced Filter",
     "description": "This transformer enables you to make advanced filters with complex conditions.",
     "support": "community",
-    "currentVersion": "1.1.8",
+    "currentVersion": "1.1.9",
     "author": "Masahiko Inoue",
     "url": "",
     "email": "",
@@ -10,5 +10,9 @@
     "categories": [],
     "tags": [],
     "useCases": [],
-    "keywords": []
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

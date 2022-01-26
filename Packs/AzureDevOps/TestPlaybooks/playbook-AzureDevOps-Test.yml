@@ -1,0 +1,1722 @@
+id: playbook-AzureDevOps-Test
+version: 18
+fromversion: 6.0.0
+contentitemexportablefields:
+  contentitemfields:
+    packID: AzureDevOps
+    itemVersion: 1.0.0
+    fromServerVersion: 6.0.0
+    toServerVersion: ""
+    definitionid: ""
+vcShouldKeepItemLegacyProdMachine: false
+name: playbook-AzureDevOps-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 3279090e-b7dd-429a-8114-ad3a257d06c7
+    type: start
+    task:
+      id: 3279090e-b7dd-429a-8114-ad3a257d06c7
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 530,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: b38f068f-64ba-4985-8207-a839f4446300
+    type: regular
+    task:
+      id: b38f068f-64ba-4985-8207-a839f4446300
+      version: -1
+      name: azure-devops-pipeline-run
+      script: AzureDevOps|||azure-devops-pipeline-run
+      type: regular
+      iscommand: true
+      brand: AzureDevOps
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      branch_name:
+        simple: demisto-branch
+      pipeline_id:
+        simple: ${AzureDevOps.Pipeline.id}
+      project:
+        simple: ${AzureDevOps.Pipeline.project}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 530,
+          "y": 4240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 001fb7c7-4704-435b-886e-7eac4050808e
+    type: condition
+    task:
+      id: 001fb7c7-4704-435b-886e-7eac4050808e
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PipelineRun.project
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PipelineRun.pipeline.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PipelineRun.pipeline.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PipelineRun.state
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PipelineRun.createdDate
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PipelineRun.run_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PipelineRun.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PipelineRun.result
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 530,
+          "y": 4450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 1d9a3eb7-e2b6-46f8-874c-257f31d8e4ef
+    type: regular
+    task:
+      id: 1d9a3eb7-e2b6-46f8-874c-257f31d8e4ef
+      version: -1
+      name: azure-devops-user-add
+      script: AzureDevOps|||azure-devops-user-add
+      type: regular
+      iscommand: true
+      brand: AzureDevOps
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      account_license_type:
+        simple: express
+      group_type:
+        simple: projectContributor
+      project_id:
+        simple: ${AzureDevOps.Project.id}
+      user_email:
+        simple: bark@demistodev.onmicrosoft.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 530,
+          "y": 1650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 929b61a8-23da-40a0-864b-47cb70f5383d
+    type: condition
+    task:
+      id: 929b61a8-23da-40a0-864b-47cb70f5383d
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.User.id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 530,
+          "y": 1850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: a26dbcf1-0e9f-4180-8fe6-8c6d87adbbcf
+    type: regular
+    task:
+      id: a26dbcf1-0e9f-4180-8fe6-8c6d87adbbcf
+      version: -1
+      name: azure-devops-user-remove
+      script: AzureDevOps|||azure-devops-user-remove
+      type: regular
+      iscommand: true
+      brand: AzureDevOps
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      user_id:
+        complex:
+          root: AzureDevOps.User
+          filters:
+          - - operator: containsGeneral
+              left:
+                value:
+                  simple: AzureDevOps.User.user.displayName
+                iscontext: true
+              right:
+                value:
+                  simple: Bar
+          accessor: id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 530,
+          "y": 5430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: a363a803-06ba-430d-8816-30fa9b21dc62
+    type: regular
+    task:
+      id: a363a803-06ba-430d-8816-30fa9b21dc62
+      version: -1
+      name: azure-devops-pull-request-create
+      script: AzureDevOps|||azure-devops-pull-request-create
+      type: regular
+      iscommand: true
+      brand: AzureDevOps
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      description:
+        simple: test title
+      project:
+        simple: ${AzureDevOps.Project.id}
+      repository_id:
+        simple: ${AzureDevOps.Repository.id}
+      reviewers_ids:
+        complex:
+          root: AzureDevOps.User
+          filters:
+          - - operator: containsGeneral
+              left:
+                value:
+                  simple: AzureDevOps.User.user.displayName
+                iscontext: true
+              right:
+                value:
+                  simple: Bar
+          accessor: id
+      source_branch:
+        simple: demisto-branch
+      target_branch:
+        simple: main
+      title:
+        simple: test playbook title
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 530,
+          "y": 2240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 073ae9cc-9918-48cb-80ba-5d47273ed4e3
+    type: condition
+    task:
+      id: 073ae9cc-9918-48cb-80ba-5d47273ed4e3
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PullRequest.repository.project.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PullRequest.repository.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PullRequest.repository.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PullRequest.repository.url
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PullRequest.repository.size
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PullRequest.pullRequestId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PullRequest.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PullRequest.createdBy.displayName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PullRequest.createdBy.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PullRequest.createdBy.uniqueName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PullRequest.creationDate
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PullRequest.title
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PullRequest.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PullRequest.sourceRefName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PullRequest.targetRefName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PullRequest.mergeStatus
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: AzureDevOps.PullRequest.isDraft
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PullRequest.lastMergeSourceCommit.commitId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PullRequest.lastMergeSourceCommit.url
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PullRequest.lastMergeTargetCommit.commitId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PullRequest.lastMergeTargetCommit.url
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 530,
+          "y": 2440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 88a8b683-0e5b-4a8c-8551-989fdb501e28
+    type: regular
+    task:
+      id: 88a8b683-0e5b-4a8c-8551-989fdb501e28
+      version: -1
+      name: azure-devops-pull-request-update
+      script: AzureDevOps|||azure-devops-pull-request-update
+      type: regular
+      iscommand: true
+      brand: AzureDevOps
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      project:
+        simple: ${AzureDevOps.PullRequest.repository.project.name}
+      pull_request_id:
+        simple: ${AzureDevOps.PullRequest.pullRequestId}
+      repository_id:
+        simple: ${AzureDevOps.PullRequest.repository.id}
+      status:
+        simple: abandoned
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 530,
+          "y": 3420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 72f887e3-2a16-4a4f-8e8d-c337169d3efd
+    type: condition
+    task:
+      id: 72f887e3-2a16-4a4f-8e8d-c337169d3efd
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "30"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PullRequest.repository.project.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PullRequest.repository.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PullRequest.repository.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PullRequest.repository.url
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PullRequest.repository.size
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PullRequest.pullRequestId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PullRequest.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PullRequest.createdBy.displayName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PullRequest.createdBy.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PullRequest.createdBy.uniqueName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PullRequest.creationDate
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PullRequest.title
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PullRequest.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PullRequest.sourceRefName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PullRequest.targetRefName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PullRequest.mergeStatus
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: AzureDevOps.PullRequest.isDraft
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PullRequest.lastMergeSourceCommit.commitId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PullRequest.lastMergeSourceCommit.url
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PullRequest.lastMergeTargetCommit.commitId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PullRequest.lastMergeTargetCommit.url
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 530,
+          "y": 3610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 8049cf66-ef8f-47a4-8654-d63afc2fd349
+    type: regular
+    task:
+      id: 8049cf66-ef8f-47a4-8654-d63afc2fd349
+      version: -1
+      name: azure-devops-pull-request-list
+      script: AzureDevOps|||azure-devops-pull-request-list
+      type: regular
+      iscommand: true
+      brand: AzureDevOps
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      limit:
+        simple: "1"
+      project:
+        simple: ${AzureDevOps.PullRequest.repository.project.name}
+      repository:
+        simple: ${AzureDevOps.PullRequest.repository.name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 530,
+          "y": 2630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 067cd70a-da2b-4ee6-8aad-ca614ac2e18f
+    type: condition
+    task:
+      id: 067cd70a-da2b-4ee6-8aad-ca614ac2e18f
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "24"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PullRequest.repository.project.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PullRequest.repository.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PullRequest.repository.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PullRequest.repository.url
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PullRequest.pullRequestId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PullRequest.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PullRequest.createdBy.displayName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PullRequest.createdBy.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PullRequest.createdBy.uniqueName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PullRequest.creationDate
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PullRequest.title
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PullRequest.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PullRequest.sourceRefName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PullRequest.targetRefName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PullRequest.mergeStatus
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: AzureDevOps.PullRequest.isDraft
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PullRequest.lastMergeSourceCommit.commitId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PullRequest.lastMergeSourceCommit.url
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PullRequest.lastMergeTargetCommit.commitId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PullRequest.lastMergeTargetCommit.url
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 530,
+          "y": 2830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 27dbfbbd-58c7-409b-8706-39a9f7aa062a
+    type: regular
+    task:
+      id: 27dbfbbd-58c7-409b-8706-39a9f7aa062a
+      version: -1
+      name: azure-devops-project-list
+      script: AzureDevOps|||azure-devops-project-list
+      type: regular
+      iscommand: true
+      brand: AzureDevOps
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      limit:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 530,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 365bdb43-9e31-45cb-8572-76594b12033e
+    type: condition
+    task:
+      id: 365bdb43-9e31-45cb-8572-76594b12033e
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.state
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.revision
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.visibility
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.lastUpdateTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 530,
+          "y": 630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: f1253b9e-643a-4093-8592-300155f99e11
+    type: regular
+    task:
+      id: f1253b9e-643a-4093-8592-300155f99e11
+      version: -1
+      name: azure-devops-repository-list
+      script: AzureDevOps|||azure-devops-repository-list
+      type: regular
+      iscommand: true
+      brand: AzureDevOps
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      limit:
+        simple: "1"
+      project:
+        simple: ${AzureDevOps.Project.name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 530,
+          "y": 850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: f7105f54-8a98-4bbe-82a6-c0a825a8618d
+    type: condition
+    task:
+      id: f7105f54-8a98-4bbe-82a6-c0a825a8618d
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Project.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Repository.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Repository.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Repository.webUrl
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Repository.size
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 530,
+          "y": 1060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 24e8bb96-14eb-404f-88ad-933264baeae8
+    type: regular
+    task:
+      id: 24e8bb96-14eb-404f-88ad-933264baeae8
+      version: -1
+      name: azure-devops-user-list
+      script: AzureDevOps|||azure-devops-user-list
+      type: regular
+      iscommand: true
+      brand: AzureDevOps
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      query:
+        simple: avishai
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 530,
+          "y": 1260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: a51515f7-008e-495d-8e51-dd0b6dc2ef1d
+    type: condition
+    task:
+      id: a51515f7-008e-495d-8e51-dd0b6dc2ef1d
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.User.entityType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.User.localId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.User.signInAddress
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 530,
+          "y": 1460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 9c7f518a-767c-409c-8f53-c0d1f30eed0a
+    type: regular
+    task:
+      id: 9c7f518a-767c-409c-8f53-c0d1f30eed0a
+      version: -1
+      name: azure-devops-pull-request-get
+      script: AzureDevOps|||azure-devops-pull-request-get
+      type: regular
+      iscommand: true
+      brand: AzureDevOps
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      project:
+        simple: ${AzureDevOps.PullRequest.repository.project.name}
+      pull_request_id:
+        simple: ${AzureDevOps.PullRequest.pullRequestId}
+      repository_id:
+        simple: ${AzureDevOps.PullRequest.repository.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 530,
+          "y": 3040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 38c7d3f7-f676-43d7-8a73-6a12e3d606e8
+    type: condition
+    task:
+      id: 38c7d3f7-f676-43d7-8a73-6a12e3d606e8
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PullRequest.repository.project.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PullRequest.repository.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PullRequest.repository.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PullRequest.repository.url
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PullRequest.repository.size
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PullRequest.pullRequestId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PullRequest.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PullRequest.createdBy.displayName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PullRequest.createdBy.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PullRequest.createdBy.uniqueName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PullRequest.creationDate
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PullRequest.title
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PullRequest.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PullRequest.sourceRefName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PullRequest.targetRefName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PullRequest.mergeStatus
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: AzureDevOps.PullRequest.isDraft
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PullRequest.lastMergeSourceCommit.commitId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PullRequest.lastMergeSourceCommit.url
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PullRequest.lastMergeTargetCommit.commitId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PullRequest.lastMergeTargetCommit.url
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 530,
+          "y": 3240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: c17278fd-2218-407b-8dd7-b8b0170beb8c
+    type: regular
+    task:
+      id: c17278fd-2218-407b-8dd7-b8b0170beb8c
+      version: -1
+      name: azure-devops-pipeline-run-get
+      script: AzureDevOps|||azure-devops-pipeline-run-get
+      type: regular
+      iscommand: true
+      brand: AzureDevOps
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      pipeline_id:
+        simple: ${AzureDevOps.PipelineRun.pipeline.id}
+      project:
+        simple: ${AzureDevOps.PipelineRun.project}
+      run_id:
+        simple: ${AzureDevOps.PipelineRun.run_id}
+      scheduled:
+        simple: "True"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 530,
+          "y": 5050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 9220ba7c-7bc9-4c85-8394-eb575f7d52e6
+    type: condition
+    task:
+      id: 9220ba7c-7bc9-4c85-8394-eb575f7d52e6
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PipelineRun.project
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PipelineRun.pipeline.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PipelineRun.pipeline.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PipelineRun.state
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PipelineRun.createdDate
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PipelineRun.run_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PipelineRun.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PipelineRun.result
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 530,
+          "y": 5250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 70339cab-3b25-42ca-839b-5b8537754198
+    type: regular
+    task:
+      id: 70339cab-3b25-42ca-839b-5b8537754198
+      version: -1
+      name: azure-devops-pipeline-run-list
+      script: AzureDevOps|||azure-devops-pipeline-run-list
+      type: regular
+      iscommand: true
+      brand: AzureDevOps
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      limit:
+        simple: "1"
+      pipeline_id:
+        simple: ${AzureDevOps.PipelineRun.pipeline.id}
+      project:
+        simple: ${AzureDevOps.PipelineRun.project}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 530,
+          "y": 4650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: c987d21b-fee5-4f39-87a6-c133ee8f0739
+    type: condition
+    task:
+      id: c987d21b-fee5-4f39-87a6-c133ee8f0739
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "26"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PipelineRun.project
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PipelineRun.pipeline.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PipelineRun.pipeline.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PipelineRun.state
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PipelineRun.createdDate
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PipelineRun.run_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PipelineRun.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.PipelineRun.result
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 530,
+          "y": 4850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: ab4cd99f-0bf9-42dc-8c25-429c70ffcd14
+    type: regular
+    task:
+      id: ab4cd99f-0bf9-42dc-8c25-429c70ffcd14
+      version: -1
+      name: azure-devops-pipeline-list
+      script: AzureDevOps|||azure-devops-pipeline-list
+      type: regular
+      iscommand: true
+      brand: AzureDevOps
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      limit:
+        simple: "1"
+      page:
+        simple: "1"
+      project:
+        simple: ${AzureDevOps.PullRequest.repository.project.name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 530,
+          "y": 3860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 34b946b1-5ac9-4d4f-8fee-e87820aaae4f
+    type: condition
+    task:
+      id: 34b946b1-5ac9-4d4f-8fee-e87820aaae4f
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Pipeline.project
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Pipeline.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Pipeline.revision
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Pipeline.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Pipeline.folder
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 530,
+          "y": 4060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 0c082a58-896c-405e-85ac-2c8b208c6e3e
+    type: regular
+    task:
+      id: 0c082a58-896c-405e-85ac-2c8b208c6e3e
+      version: -1
+      name: azure-devops-branch-list
+      script: AzureDevOps|||azure-devops-branch-list
+      type: regular
+      iscommand: true
+      brand: AzureDevOps
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      limit:
+        simple: "1"
+      project:
+        simple: ${AzureDevOps.Project.name}
+      repository:
+        simple: ${AzureDevOps.Repository.name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 530,
+          "y": 5650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: ff705cea-b575-4090-8587-87847888d368
+    type: condition
+    task:
+      id: ff705cea-b575-4090-8587-87847888d368
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "34"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Branch.project
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Branch.repository
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureDevOps.Branch.name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 530,
+          "y": 5860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 49404693-31c8-4042-8da7-de59895fbee3
+    type: title
+    task:
+      id: 49404693-31c8-4042-8da7-de59895fbee3
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 530,
+          "y": 6060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: d53a1a5d-13d7-4d8f-8ffc-da241fbb239d
+    type: regular
+    task:
+      id: d53a1a5d-13d7-4d8f-8ffc-da241fbb239d
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 530,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 6075,
+        "width": 380,
+        "x": 530,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

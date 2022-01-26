@@ -19,7 +19,8 @@
     "group": 0,
     "hidden": false,
     "associatedTypes": [
-        "Phishing"
+        "Phishing",
+        "Phishing Alerts"
     ],
     "associatedToAll": false,
     "unmapped": false,
