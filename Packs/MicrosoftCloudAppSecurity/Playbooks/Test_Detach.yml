@@ -1,0 +1,107 @@
+id: f4fab4b5-f04e-4cb3-8251-0e101ab76502
+inputs: []
+name: Test Detach
+detached: true
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 78c49f33-a8b1-47e4-8960-207a83b625ec
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 78c49f33-a8b1-47e4-8960-207a83b625ec
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      input:
+        simple: "1234"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 49900b73-731f-49a7-891e-2b5969a0a467
+      iscommand: false
+      name: CIDR_TEST
+      script: cff27dbb-b739-4775-8a12-bdfd3df29a32
+      type: regular
+      version: -1
+    taskid: 49900b73-731f-49a7-891e-2b5969a0a467
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 48f7e0fa-19ad-4588-8485-8a5f982a018c
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 48f7e0fa-19ad-4588-8485-8a5f982a018c
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 410
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 425,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
