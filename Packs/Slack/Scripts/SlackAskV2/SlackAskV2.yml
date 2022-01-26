@@ -35,7 +35,6 @@ args:
   required: false
   secret: false
 - default: false
-  defaultValue: No#red
   description: The second reply option. The default is "No" with a red button. To
     change the button color, add the pound sign (#) followed by the name of the new
     color (green, red, or black). The default color is "red". For example, "No#red".
@@ -43,6 +42,7 @@ args:
   name: option2
   required: false
   secret: false
+  defaultValue: No#red
 - default: false
   description: The task to close with the reply. If empty, then no playbook tasks
     will be closed.
@@ -67,17 +67,17 @@ args:
   - 'false'
   required: false
   secret: false
-- auto: PREDEFINED
-  default: false
-  defaultValue: buttons
+- default: false
   description: How the user should respond to the question.
   isArray: false
   name: responseType
+  required: false
+  secret: false
+  auto: PREDEFINED
+  defaultValue: buttons
   predefined:
   - buttons
   - thread
-  required: false
-  secret: false
 - default: false
   description: A comma-separated list of additional options in the format of "option#color",
     for example, "maybe#red". The default color is "black".
@@ -103,12 +103,12 @@ args:
   required: false
   secret: false
 - default: false
-  defaultValue: NoResponse
   description: Default response in case the question expires.
   isArray: false
   name: defaultResponse
   required: false
   secret: false
+  defaultValue: NoResponse
 - default: false
   description: The instance of SlackV3 this script should use.
   isArray: false
@@ -137,7 +137,7 @@ tags:
 - slack
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.9.7.24076
+dockerimage: demisto/python3:3.10.1.25933
 runonce: false
 tests:
 - no test - Untestable
