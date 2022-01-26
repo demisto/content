@@ -42,7 +42,6 @@ def main(args):
     })
 
     incidentsbiggerthan1mb = []
-    incidentsbiggerthan10mb = []
     incidentswithmorethan500entries = []
 
     for incident in res['data']:
@@ -50,8 +49,6 @@ def main(args):
         if incident['AmountOfEntries'] >= 500:
             incidentswithmorethan500entries.append(formatted_incident)
             continue
-        # if round(incident['Size(MB)']) >= 10:
-        #     incidentsbiggerthan10mb.append(formatted_incident)
         incidentsbiggerthan1mb.append(formatted_incident)
 
     numberofincidentsbiggerthan1mb = len(incidentsbiggerthan1mb)

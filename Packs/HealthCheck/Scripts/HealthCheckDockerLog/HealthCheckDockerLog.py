@@ -74,13 +74,13 @@ def main(args):
         if len(item) == 11:
             container_array.append({"containerid": item[0], "name": item[1], 'cpu_usage': item[2],
                                     'mem_used': item[3], 'mem_limit': item[4],
-                                    'mem_percent': item[5], 'net_in': item[6],
+                                    'mem_usage': item[5], 'net_in': item[6],
                                     'net_out': item[7], 'block_in': item[8],
                                     'block_out': item[9], 'pids': item[10],
                                     })
 
     return_outputs(readable_output=tableToMarkdown("Containers", container_array,
-                                                   ['containerid', 'name', 'cpu_usage', 'mem_percent']))
+                                                   ['containerid', 'name', 'cpu_usage', 'mem_usage']))
     return_outputs(readable_output=tableToMarkdown("Images", image_array, [
         'imageid', 'image', 'version', 'last_update', 'size']))
 
@@ -109,8 +109,6 @@ def main(args):
 
     res = res + image_analytics(image_array)
     res = res + container_analytics(container_array)
-
-    demisto.executeCommand("setIncident", {'DockerStatsSettings': dataset})
 
     if 'Operating System' in dataset:
         demisto.executeCommand("setIncident", {

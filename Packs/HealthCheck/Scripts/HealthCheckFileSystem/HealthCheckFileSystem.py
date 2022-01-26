@@ -7,7 +7,7 @@ from CommonServerPython import *  # noqa: F401
 import os
 import sys
 import re
-import json
+
 
 LS_RE = br'(?P<type>^[d-])(?P<u>.{3})(?P<g>.{3})(?P<o>.{3})(?P<S>[.\s]+)(?P<hlinks>\d+)\s+(?P<uid>\S+)\s+' \
         br'(?P<gid>\S+)\s+(?P<size>[\w\d.]+)\s+(?P<modified>\w+\s+\d+\s+\d+:?\d+)\s+(?P<name>.*)'
