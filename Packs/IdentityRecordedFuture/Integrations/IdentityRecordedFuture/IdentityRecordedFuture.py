@@ -3,6 +3,7 @@ from typing import Dict, Any, List, Union
 import requests
 import json
 import re
+import dateparser
 from datetime import datetime, timedelta
 
 # flake8: noqa: F402,F405 lgtm
@@ -247,15 +248,15 @@ class Actions:
                         passwords_section.append(
                             f"__Rank__: {exposed_secret['details']['rank']}"
                         )
-                    if exposed_secret[
-                        "effectively_clear"
-                    ] and exposed_secret.get("details", {}).get(
+                    if exposed_secret.get(
+                        "effectively_clear", False
+                    ) and exposed_secret.get("details", {}).get(
                         "clear_text_hint"
                     ):
                         passwords_section.append(
                             f"{exposed_secret['details']['clear_text_hint']} (__{exposed_secret['type']}__)"
                         )
-                    if exposed_secret["hashes"]:
+                    if exposed_secret.get("hashes"):
                         for hash_password in exposed_secret["hashes"]:
                             # When user do not have permissions for domain
                             # we will receive hash_prefix instead of full hash.
@@ -271,8 +272,8 @@ class Actions:
                             f"Authorization service url: {credential['authorization_service']['url']}\n"
                         )
                     if credential.get("exfiltration_date"):
-                        exfiltration_date = datetime.strptime(
-                            credential["exfiltration_date"], ISO_DATE_FORMAT
+                        exfiltration_date = dateparser.parse(
+                            credential["exfiltration_date"]
                         ).strftime("%b %Y")
                         passwords_section.append(
                             f"Exfiltration date: {exfiltration_date}"
@@ -280,8 +281,8 @@ class Actions:
                     for dump in credential["dumps"]:
                         dump_downloaded = dump.get("downloaded", "")
                         if dump_downloaded:
-                            dump_downloaded = datetime.strptime(
-                                dump_downloaded, ISO_DATE_FORMAT
+                            dump_downloaded = dateparser.parse(
+                                dump_downloaded
                             ).strftime("%b %Y")
                             dump_text = f"__{dump['name']}__, {dump_downloaded},  {password_number_text}"
                         else:
@@ -301,8 +302,8 @@ class Actions:
                         for breach in dump.get("breaches", []):
                             breach_date = breach.get("breached")
                             if breach_date:
-                                breach_date = datetime.strptime(
-                                    breach_date, ISO_DATE_FORMAT
+                                breach_date = dateparser.parse(
+                                    breach_date
                                 ).strftime("%b %Y")
                                 breaches_section.append(
                                     f"__{breach['name']}__, {breach_date}, {password_number_text}"
