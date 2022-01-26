@@ -41,7 +41,7 @@ def test_valid_error_is_raised_when_empty_api_response_is_returned(mocker):
     mocker.patch.object(client._client, 'get_access_token')
     mocker.patch.object(client._client._session, 'request', return_value=api_response)
 
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match='[Forbidden 403]'):
         test_module(client)
 
 
