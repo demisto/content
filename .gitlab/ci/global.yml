@@ -23,8 +23,8 @@
 
 .create-id-set-mp-v2: &create-id-set-mp-v2
   - section_start "Create ID Set" --collapsed
-  - demisto-sdk create-id-set -o ./Tests/id_set_mp_v2.json --marketplace "marketplacev2" >> $ARTIFACTS_FOLDER/logs/create_id_set.log
-  - cp ./Tests/id_set_mp_v2.json $ARTIFACTS_FOLDER
+  - demisto-sdk create-id-set -o ./Tests/id_set.json --marketplace "marketplacev2" >> $ARTIFACTS_FOLDER/logs/create_id_set.log
+  - cp ./Tests/id_set.json $ARTIFACTS_FOLDER
   - section_end "Create ID Set"
 
 .download-demisto-conf:

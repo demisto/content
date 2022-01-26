@@ -112,11 +112,6 @@ else
   else
     echo "Skipping uploading id_set.json file."
   fi
-  if [ -f "$ARTIFACTS_FOLDER/id_set_mp_v2.json" ]; then
-    gsutil cp -z json "$ARTIFACTS_FOLDER/id_set_mp_v2.json" "gs://$BUILD_BUCKET_CONTENT_DIR_FULL_PATH"
-  else
-    echo "Skipping uploading id_set_mp_v2.json file."
-  fi
 
   echo "Finished updating content packs successfully."
 fi
