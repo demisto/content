@@ -1001,6 +1001,8 @@ class Pack(object):
             storage_bucket (google.cloud.storage.bucket.Bucket): google cloud storage bucket.
             override_pack (bool): whether to override existing pack.
             private_content (bool): Is being used in a private content build.
+            storage_base_path (str): The upload destination in the target bucket for all packs (in the format of <some_path_in_the_target_bucket>/content/Packs).
+
             pack_artifacts_path (str): Path to where we are saving pack artifacts.
             upload_path (str): Absolute path to the destination upload path.
 
