@@ -54,9 +54,9 @@ create-instances-upload-flow:
     - if: '$BUCKET_UPLOAD == "true"'
     - if: '$FORCE_BUCKET_UPLOAD == "true"'
 
-create-instances-mpv2-upload-flow:
+prepare-testing-bucket-mpv2-upload-flow:
  extends:
-   - create-instances-mpv2
+   - prepare-testing-bucket-mpv2
  variables:
    IFRA_ENV_TYPE: "Bucket-Upload"
    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
@@ -124,6 +124,10 @@ install-packs-in-server-master:
   extends: .install_packs_in_server
   variables:
     INSTANCE_ROLE: "Server Master"
+
+
+# TO-DO: Job to test installation of mpv2 packs - issue https://github.com/demisto/etc/issues/44769
+# install-mpv2-pack-on-mpv2-instances
 
 
 upload-packs-to-marketplace:
@@ -204,7 +208,7 @@ upload-packs-to-marketplace:
 upload-packs-to-marketplace-v2:
   tags:
     - gke
-  needs: ["run-validations-upload-flow", "run-unittests-and-lint-upload-flow", "create-instances-mpv2-upload-flow"]
+  needs: ["run-validations-upload-flow", "run-unittests-and-lint-upload-flow", "prepare-testing-bucket-mpv2-upload-flow"]
   stage: upload-to-marketplace
   artifacts:
     expire_in: 48 hrs

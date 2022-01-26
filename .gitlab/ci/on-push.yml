@@ -101,7 +101,7 @@ create-instances:
     - section_end "Upload Artifacts to GCP"
 
 
-create-instances-mpv2:
+prepare-testing-bucket-mpv2:
   tags:
     - gke
   extends:
