@@ -3339,6 +3339,7 @@ VALID_URL_INDICATORS = [
     'www.123.43.6.89/path',
     'https://15.12.76.123',
     'www.google.com/path',
+    'wwW.GooGle.com/path',
     '2001:db8:85a3:8d3:1319:8a2e:370:7348/65/path/path',
     '2001:db8:3333:4444:5555:6666:7777:8888//32/path/path',
     '1.1.1.1/7/server',
@@ -3352,15 +3353,31 @@ VALID_URL_INDICATORS = [
     'hxxps://www.xn--e1v2i3l4.tld',
     'hxxp://www.xn--e1v2i3l4.tld',
     'www.evil.tld:443/path/to/resource.html',
+    'WWW.evil.tld:443/path/to/resource.html',
+    'wWw.Evil.tld:443/path/to/resource.html',
     'https://1.2.3.4/path/to/resource.html',
+    'HTTPS://1.2.3.4/path/to/resource.html',
     '1.2.3.4/path',
     '1.2.3.4/path/to/resource.html',
     'http://1.2.3.4:8080/',
     'http://1.2.3.4:8080/resource.html',
-    'http://1.2.3.4',
+    'HTTP://1.2.3.4',
     'ftp://foo.bar/resource',
+    'FTP://foo.bar/resource',
     'http://☺.evil.tld/',
-    'ftps://foo.bar/resource'
+    'ftps://foo.bar/resource',
+    'ftps://foo.bar/Resource'
+    '5.6.7.8/fdsfs',
+    'https://serverName/deepLinkAction.do?userName=peter%40nable%2Ecom&password=Hello',
+    'http://serverName/deepLinkAction.do?userName=peter%40nable%2Ecom&password=Hello',
+    'https://1.1.1.1/deepLinkAction.do?userName=peter%40nable%2Ecom&password=Hello',
+    'https://google.com/deepLinkAction.do?userName=peter%40nable%2Ecom&password=Hello',
+    'www.google.com/deepLinkAction.do?userName=peter%40nable%2Ecom&password=Hello',
+    'www.63.4.6.1/integrations/test-playbooks',
+    'https://xsoar.pan.dev/docs/welcome'
+    '5.6.7.8/user/'
+    'https://1.1.1.1.1.1.1.1.1.1.1/path',  # invalid IPs should also be classified as URL indicators
+    'HTTPs://1.1.1.1.1.1.1.1.1.1.1/path',
 ]
 
 
@@ -3392,6 +3409,7 @@ INVALID_URL_INDICATORS = [
     "2001:db8:85a3:8d3:1319:8a2e:370:7348/64/",
     "2001:db8:85a3:8d3:1319:8a2e:370:7348/64",
     "2001:db8:85a3:8d3:1319:8a2e:370:7348/32",
+    "2001:db8:85a3:8d3:1319:8a2e:370:7348/32",
     "flake8.pycqa.org",
     "https://test",
     "ftp://test",
@@ -3403,6 +3421,10 @@ INVALID_URL_INDICATORS = [
     "help.test.com",
     "help-test/com"
     "wwww.path.com/path",
+    "fnvfdsbf/path",
+    "65.23.7.2",
+    "k.f.a.f",
+    "test/test/test/test",
 ]
 
 
