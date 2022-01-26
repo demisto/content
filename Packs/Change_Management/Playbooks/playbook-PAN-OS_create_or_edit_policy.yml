@@ -957,7 +957,7 @@ inputs:
   required: false
   description: ""
   playbookInputQuery:
-- key: 'Protocol '
+- key: 'Protocol'
   value:
     complex:
       root: incident

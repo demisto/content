@@ -293,7 +293,7 @@
                         "minH": 1,
                         "moved": false,
                         "name": "Incident State",
-                        "query": "PanoramaSecurityPolicyMatchWrapper",
+                        "query": "IncidentState",
                         "queryType": "script",
                         "static": false,
                         "type": "dynamic",

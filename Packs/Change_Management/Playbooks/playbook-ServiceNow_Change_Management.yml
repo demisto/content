@@ -153,12 +153,12 @@ tasks:
           root: inputs.Action
       addr-dst:
         complex:
-          root: incident
-          accessor: requestdst
+          root: inputs.addr-dst
+          accessor:
       addr-src:
         complex:
-          root: incident
-          accessor: requestsrc
+          root: inputs.addr-src
+          accessor:
       log_type:
         complex:
           root: inputs.log_type
@@ -332,12 +332,11 @@ tasks:
       id: 4587a861-3b58-41c5-811f-f1ff7e05780f
       version: -1
       name: PAN-OS create or edit policy
-      description: "This playbook automates the process of creating or editing\
-        \ a policy.\nTHe first task in the playbook checks if there is a security policy\
-        \ that matches the playbook inputs. If there is no security policy that\
-        \ matches, a new policy is created. If there is a security policy that\
-        \ matches, the user can modify the existing policy or create a\
-        \ new hardened policy."
+      description: "This playbook automates the process of creating or editing a policy.\n\
+        THe first task in the playbook checks if there is a security policy that matches\
+        \ the playbook inputs. If there is no security policy that matches, a new\
+        \ policy is created. If there is a security policy that matches, the user\
+        \ can modify the existing policy or create a new hardened policy."
       playbookName: PAN-OS create or edit policy
       type: playbook
       iscommand: false
@@ -505,8 +504,8 @@ tasks:
       id: ccd3e95a-1648-4ebf-866f-f9178cbc8111
       version: -1
       name: Ask security team to review the test results
-      description: Ask the security team to review the test results of the deployed rule
-        in the DEV environment.
+      description: Ask the security team to review the test results of the deployed
+        rule in the DEV environment.
       tags:
       - comments
       - verdict
@@ -1079,8 +1078,7 @@ tasks:
       id: a0257c8a-91b2-436b-8fed-873f4e23c56d
       version: -1
       name: Was the request approved?
-      description: Checks if the request for change was approved
-        or rejected.
+      description: Checks if the request for change was approved or rejected.
       tags:
       - comments
       type: condition
@@ -1135,8 +1133,8 @@ tasks:
       id: c3f880d1-f0f2-43c0-84ab-0d14c2f68366
       version: -1
       name: Did the test pass in the DEV environment?
-      description: Checks whether the values provided in the arguments are equal. If either
-        of the arguments are missing, no is returned.
+      description: Checks whether the values provided in the arguments are equal.
+        If either of the arguments are missing, no is returned.
       tags:
       - comments
       type: condition
@@ -1215,7 +1213,8 @@ inputs:
 - key: SecurityTeamEmail
   value: {}
   required: false
-  description: 'The email address of the security team that approves the firewall requests.'
+  description: 'The email address of the security team that approves the firewall
+    requests.'
   playbookInputQuery:
 - key: log_type
   value:
@@ -1258,8 +1257,8 @@ inputs:
   value:
     simple: "No"
   required: false
-  description: 'By providing YES to this input the requested firewall rule will be tested
-    in your test environment.'
+  description: 'By providing YES to this input the requested firewall rule will be
+    tested in your test environment.'
   playbookInputQuery:
 - key: zone-src
   value:
@@ -1280,8 +1279,8 @@ inputs:
 - key: TestInstance
   value: {}
   required: false
-  description: The instance name of the firewall in the DEV environment for testing the new
-    rule.
+  description: The instance name of the firewall in the DEV environment for testing
+    the new rule.
   playbookInputQuery:
 - key: Action
   value:

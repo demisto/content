@@ -149,12 +149,12 @@ tasks:
           root: inputs.Action
       addr-dst:
         complex:
-          root: incident
-          accessor: requestdst
+          root: inputs.addr-dst
+          accessor:
       addr-src:
         complex:
-          root: incident
-          accessor: requestsrc
+          root: inputs.addr-src
+          accessor:
       log_type:
         complex:
           root: inputs.log_type
