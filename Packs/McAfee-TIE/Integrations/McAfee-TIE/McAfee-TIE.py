@@ -205,15 +205,18 @@ def file(hash_inputs):
             reputations = {}
             context_file = {}
             hash_param[hash_type_key] = hash_value
+            hash_type_uppercase = hash_type.upper()
             res = safe_get_file_reputation(tie_client, hash_param)
             if not res:
                 dbot_score = [{'Indicator': hash_value, 'Type': 'hash', 'Vendor': VENDOR_NAME, 'Score': 0},
                               {'Indicator': hash_value, 'Type': 'file', 'Vendor': VENDOR_NAME, 'Score': 0}]
+                context_file[hash_type_uppercase] = hash_value
+                context_file['TrustLevel'] = 0
+                context_file['Vendor'] = VENDOR_NAME
             else:
                 reputations = res.values()
 
                 # create context
-                hash_type_uppercase = hash_type.upper()
                 tl_score = get_thrust_level_and_score(reputations)
 
                 context_file[hash_type_uppercase] = hash_value
