@@ -21,7 +21,12 @@ NEXT_LINK_CONTEXT_KEY = 'AzureSentinel.NextLink(val.Description == "NextLink for
 API_VERSION = '2021-04-01'
 
 
-def test_valid_error_is_raised_when_empty_api_response_is_returned(mocker):
+@pytest.fixture()
+def client():
+    return mock_client()
+
+
+def test_valid_error_is_raised_when_empty_api_response_is_returned(mocker, client):
     """
     Given
     - Empty api response and invalid status code returned from the api response.
@@ -32,7 +37,6 @@ def test_valid_error_is_raised_when_empty_api_response_is_returned(mocker):
     Then
     - ValueError is raised.
     """
-    client = mock_client()
     api_response = requests.Response()
     api_response.status_code = 403
     api_response._content = None
