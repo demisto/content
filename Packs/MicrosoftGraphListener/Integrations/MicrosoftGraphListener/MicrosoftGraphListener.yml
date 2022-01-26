@@ -484,6 +484,13 @@ script:
       name: attach_names
       required: false
       secret: false
+    - default: false
+      description: A comma-separated list of CIDs to embed attachments within the
+        actual email.
+      isArray: true
+      name: attach_cids
+      required: false
+      secret: false
     deprecated: false
     description: The replies to the recipients of a message.
     execution: false

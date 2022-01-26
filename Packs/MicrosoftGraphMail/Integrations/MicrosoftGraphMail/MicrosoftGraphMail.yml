@@ -1077,6 +1077,12 @@ script:
       name: attachNames
       required: false
       secret: false
+    - default: false
+      description: A CSV list of CIDs to embed attachments within the email itself.
+      isArray: true
+      name: attachCIDs
+      required: false
+      secret: false
     deprecated: false
     description: The replies to the recipients of a message.
     execution: false
