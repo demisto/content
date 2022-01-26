@@ -1,4 +1,3 @@
-from ast import Str
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
@@ -32,27 +31,30 @@ def test_module(client: BaseClient):
         raise DemistoException(err)
 
 
-def lookup_mac_command(client: BaseClient, params: Dict[str, Any], args: Dict[str, Any]):
-    mac_address: Str = args.get('mac')
+def lookup_mac_command(client: BaseClient, args: Dict[str, Any]):
+    mac_address = args.get('mac')
     res = client._http_request(
         'GET',
-        url_suffix=urllib.parse.quote(mac_address),
-        ok_codes=[200,404],
+        url_suffix=urllib.parse.quote(str(mac_address)),
+        ok_codes=[200, 404],
         resp_type="response"
     )
     command_results = CommandResults(
         outputs_prefix="MacVendors",
-        outputs_key_field="address",
-        outputs={
+        outputs_key_field="address"
+    )
+    if res.status_code == 200:
+        command_results.outputs = {
+            "address": mac_address,
+            "vendor": res.text
+        }
+        command_results.readable_output = f"{mac_address} - {res.text}"
+    else:
+        command_results.outputs = {
             "address": mac_address,
             "vendor": "Unknown"
         }
-    )
-    if res.status_code == 200:
-        command_results.outputs['vendor'] = res.text
-        command_results.readable_output = f"{mac_address} - {res.text}"
-    else:
-        command_results. readable_output = f"{mac_address} - Unknown"
+        command_results.readable_output = f"{mac_address} - Unknown"
     return_results(command_results)
 
 
@@ -79,7 +81,7 @@ def main() -> None:
         if command == "test-module":
             test_module(client)
         elif command == "macvendors-lookup-mac":
-            lookup_mac_command(client, params, args)
+            lookup_mac_command(client, args)
 
     # Log exceptions and return errors
     except Exception as e:
