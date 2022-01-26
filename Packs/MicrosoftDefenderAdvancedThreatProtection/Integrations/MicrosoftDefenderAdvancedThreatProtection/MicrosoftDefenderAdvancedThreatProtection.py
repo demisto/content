@@ -1069,6 +1069,49 @@ def reformat_filter(fields_to_filter_by):
     return filter_req
 
 
+def reformat_filter_with_list_arg(fields_to_filter_by, field_key_from_type_list):
+    """Get a dictionary with all of the fields to filter when one field is a list and create a DNF query.
+
+    Args:
+        fields_to_filter_by (dict): Dictionary with all the fields to filter
+        field_key_from_type_list (str): The arg field name from type list
+
+    Returns:
+        string. Filter to send in the API request
+
+    For example, when we get:
+    fields_to_filter_by: {
+                        'status': 'Succeeded',
+                        'machineId': [100,200] ,
+                        'type': 'RunAntiVirusScan',
+                        'requestor': ''
+                        }
+    and
+    field_key_from_type_list: 'machineId'
+
+    we build a query looks like:
+    " (machineId eq 100 and status eq Succeeded and type eq RunAntiVirusScan and requestor eq '') or
+    (machineId eq 200 and status eq Succeeded and type eq RunAntiVirusScan and requestor eq '') "
+
+    note: we have "or" operator between each clause in order to create a DNF query.
+    """
+    field_value_from_type_list = fields_to_filter_by.get(field_key_from_type_list)
+    if not field_value_from_type_list:
+        fields_to_filter_by[field_key_from_type_list] = ''
+        return reformat_filter(fields_to_filter_by)
+    elif len(field_value_from_type_list) == 1:
+        # in case the list is empty or includes only one item
+        fields_to_filter_by[field_key_from_type_list] = field_value_from_type_list[0]
+        return reformat_filter(fields_to_filter_by)
+    filter_all_req = []
+    for item in field_value_from_type_list:
+        current_fields_to_filter = {key: value for (key, value) in fields_to_filter_by.items() if
+                                    key != field_key_from_type_list}
+        current_fields_to_filter.update({field_key_from_type_list: item})
+        filter_all_req.append(reformat_filter(current_fields_to_filter))
+    return ' or '.join(f"({condition})" for condition in filter_all_req)
+
+
 def get_file_related_machines_command(client: MsClient, args: dict) -> CommandResults:
     """Retrieves a collection of Machines related to a given file hash.
 
@@ -1502,10 +1545,9 @@ def get_machine_action_by_id_command(client: MsClient, args: dict):
     headers = ['ID', 'Type', 'Requestor', 'RequestorComment', 'Status', 'MachineID', 'ComputerDNSName']
     action_id = args.get('id', '')
     status = args.get('status', '')
-    machine_ids = argToList(args.get('machine_id', ''))
+    machine_id = argToList(args.get('machine_id', ''))
     type = args.get('type', '')
     requestor = args.get('requestor', '')
-    raw_response = []
     if action_id:
         for index in range(3):
             try:
@@ -1518,33 +1560,30 @@ def get_machine_action_by_id_command(client: MsClient, args: dict):
                 else:
                     raise Exception(f'Machine action {action_id} was not found')
         response = client.get_machine_action_by_id(action_id)
-        raw_response.append(response)
         action_data = get_machine_action_data(response)
         human_readable = tableToMarkdown(f'Action {action_id} Info:', action_data, headers=headers, removeNull=True)
         context_output = action_data
     else:
+        # A dictionary that contains all of the fields the user want to filter results by.
+        # It will be sent in the request so the requested filters are applied on the results
+        fields_to_filter_by = {
+            'status': status,
+            'machineId': machine_id,
+            'type': type,
+            'requestor': requestor
+        }
+        filter_req = reformat_filter_with_list_arg(fields_to_filter_by, "machineId")
+        response = client.get_machine_actions(filter_req)
         machine_actions_list = []
-        for machine_id in machine_ids:
-            # A dictionary that contains all of the fields the user want to filter results by.
-            # It will be sent in the request so the requested filters are applied on the results
-            fields_to_filter_by = {
-                'status': status,
-                'machineId': machine_id,
-                'type': type,
-                'requestor': requestor
-            }
-            filter_req = reformat_filter(fields_to_filter_by)
-            response = client.get_machine_actions(filter_req)
-            raw_response.append(response)
-            for machine_action in response['value']:
-                machine_actions_list.append(get_machine_action_data(machine_action))
+        for machine_action in response['value']:
+            machine_actions_list.append(get_machine_action_data(machine_action))
         human_readable = tableToMarkdown('Machine actions Info:', machine_actions_list, headers=headers,
                                          removeNull=True)
         context_output = machine_actions_list
     entry_context = {
         'MicrosoftATP.MachineAction(val.ID === obj.ID)': context_output
     }
-    return human_readable, entry_context, raw_response
+    return human_readable, entry_context, response
 
 
 def get_machine_action_data(machine_action_response):

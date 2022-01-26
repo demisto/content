@@ -1481,12 +1481,92 @@ Machine.ReadWrite.All
 | MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType | String | The type of the file identifier. Possible values: "SHA1" ,"SHA256", and "MD5". | 
 
 #### Command example
-```!microsoft-atp-list-machine-actions-details machine_id="f70f9fe6b29cd9511652434919c6530618f06606,4899036531e374137f63289c3267bad772c13fef" type=RunAntiVirusScan```
+```!microsoft-atp-list-machine-actions-details machine_id="f70f9fe6b29cd9511652434919c6530618f06606,4899036531e374137f63289c3267bad772c13fef" type=RunAntiVirusScan status=Succeeded```
 #### Context Example
 ```json
 {
     "MicrosoftATP": {
         "MachineAction": [
+            {
+                "ComputerDNSName": "desktop-s2455r9",
+                "CreationDateTimeUtc": "2022-01-25T17:57:18.7944822Z",
+                "ID": "98cf0adc-8053-47a1-8c24-ef58a43ee1ab",
+                "LastUpdateTimeUtc": null,
+                "MachineID": "f70f9fe6b29cd9511652434919c6530618f06606",
+                "RelatedFileInfo": {
+                    "FileIdentifier": null,
+                    "FileIdentifierType": null
+                },
+                "Requestor": "2f48b784-5da5-4e61-9957-012d2630f1e4",
+                "RequestorComment": "test3",
+                "Scope": "Quick",
+                "Status": "Succeeded",
+                "Type": "RunAntiVirusScan"
+            },
+            {
+                "ComputerDNSName": "desktop-s2455r8",
+                "CreationDateTimeUtc": "2022-01-25T17:56:04.3073008Z",
+                "ID": "99a29fc5-7362-491f-b320-220b9e8c3d73",
+                "LastUpdateTimeUtc": null,
+                "MachineID": "4899036531e374137f63289c3267bad772c13fef",
+                "RelatedFileInfo": {
+                    "FileIdentifier": null,
+                    "FileIdentifierType": null
+                },
+                "Requestor": "2f48b784-5da5-4e61-9957-012d2630f1e4",
+                "RequestorComment": "test2",
+                "Scope": "Quick",
+                "Status": "Succeeded",
+                "Type": "RunAntiVirusScan"
+            },
+            {
+                "ComputerDNSName": "desktop-s2455r9",
+                "CreationDateTimeUtc": "2022-01-25T17:55:22.4280126Z",
+                "ID": "dbf3115f-4571-4f7a-a26f-789e165b22c0",
+                "LastUpdateTimeUtc": null,
+                "MachineID": "f70f9fe6b29cd9511652434919c6530618f06606",
+                "RelatedFileInfo": {
+                    "FileIdentifier": null,
+                    "FileIdentifierType": null
+                },
+                "Requestor": "2f48b784-5da5-4e61-9957-012d2630f1e4",
+                "RequestorComment": "test1",
+                "Scope": "Quick",
+                "Status": "Succeeded",
+                "Type": "RunAntiVirusScan"
+            },
+            {
+                "ComputerDNSName": "desktop-s2455r9",
+                "CreationDateTimeUtc": "2022-01-25T17:50:18.2657585Z",
+                "ID": "071c5ed3-91e4-4407-b7fb-3bf5630d1ef9",
+                "LastUpdateTimeUtc": null,
+                "MachineID": "f70f9fe6b29cd9511652434919c6530618f06606",
+                "RelatedFileInfo": {
+                    "FileIdentifier": null,
+                    "FileIdentifierType": null
+                },
+                "Requestor": "2f48b784-5da5-4e61-9957-012d2630f1e4",
+                "RequestorComment": "test1",
+                "Scope": "Quick",
+                "Status": "Succeeded",
+                "Type": "RunAntiVirusScan"
+            },
+            {
+                "ComputerDNSName": "desktop-s2455r8",
+                "CreationDateTimeUtc": "2022-01-02T19:32:19.064948Z",
+                "ID": "3abc0bbc-2516-452d-9f57-f312e437d4df",
+                "LastUpdateTimeUtc": null,
+                "MachineID": "4899036531e374137f63289c3267bad772c13fef",
+                "RelatedFileInfo": {
+                    "FileIdentifier": null,
+                    "FileIdentifierType": null
+                },
+                "Requestor": "avishai@demistodev.onmicrosoft.com",
+                "RequestorComment": "test tomer",
+                "Scope": "Quick",
+                "Status": "Succeeded",
+                "Type": "RunAntiVirusScan"
+            },
             {
                 "ComputerDNSName": "desktop-s2455r9",
                 "CreationDateTimeUtc": "2021-08-17T09:53:09.8374593Z",
@@ -1534,22 +1614,6 @@ Machine.ReadWrite.All
                 "Scope": "Quick",
                 "Status": "Succeeded",
                 "Type": "RunAntiVirusScan"
-            },
-            {
-                "ComputerDNSName": "desktop-s2455r8",
-                "CreationDateTimeUtc": "2022-01-02T19:32:19.064948Z",
-                "ID": "3abc0bbc-2516-452d-9f57-f312e437d4df",
-                "LastUpdateTimeUtc": null,
-                "MachineID": "4899036531e374137f63289c3267bad772c13fef",
-                "RelatedFileInfo": {
-                    "FileIdentifier": null,
-                    "FileIdentifierType": null
-                },
-                "Requestor": "avishai@demistodev.onmicrosoft.com",
-                "RequestorComment": "test tomer",
-                "Scope": "Quick",
-                "Status": "Succeeded",
-                "Type": "RunAntiVirusScan"
             }
         ]
     }
@@ -1561,10 +1625,14 @@ Machine.ReadWrite.All
 >### Machine actions Info:
 >|ID|Type|Requestor|RequestorComment|Status|MachineID|ComputerDNSName|
 >|---|---|---|---|---|---|---|
+>| 98cf0adc-8053-47a1-8c24-ef58a43ee1ab | RunAntiVirusScan | 2f48b784-5da5-4e61-9957-012d2630f1e4 | test3 | Succeeded | f70f9fe6b29cd9511652434919c6530618f06606 | desktop-s2455r9 |
+>| 99a29fc5-7362-491f-b320-220b9e8c3d73 | RunAntiVirusScan | 2f48b784-5da5-4e61-9957-012d2630f1e4 | test2 | Succeeded | 4899036531e374137f63289c3267bad772c13fef | desktop-s2455r8 |
+>| dbf3115f-4571-4f7a-a26f-789e165b22c0 | RunAntiVirusScan | 2f48b784-5da5-4e61-9957-012d2630f1e4 | test1 | Succeeded | f70f9fe6b29cd9511652434919c6530618f06606 | desktop-s2455r9 |
+>| 071c5ed3-91e4-4407-b7fb-3bf5630d1ef9 | RunAntiVirusScan | 2f48b784-5da5-4e61-9957-012d2630f1e4 | test1 | Succeeded | f70f9fe6b29cd9511652434919c6530618f06606 | desktop-s2455r9 |
+>| 3abc0bbc-2516-452d-9f57-f312e437d4df | RunAntiVirusScan | avishai@demistodev.onmicrosoft.com | test tomer | Succeeded | 4899036531e374137f63289c3267bad772c13fef | desktop-s2455r8 |
 >| 5b8f2459-5c8d-4844-a01c-4568d12b9ebd | RunAntiVirusScan | 1281a70f-8ffb-4b3c-bc82-eef2a44dbb2a | testing anti virus | Succeeded | f70f9fe6b29cd9511652434919c6530618f06606 | desktop-s2455r9 |
 >| b1f39c11-0b9f-44b2-9dc6-bc48aa9e2b3d | RunAntiVirusScan | 1281a70f-8ffb-4b3c-bc82-eef2a44dbb2a | testing anti virus | Succeeded | f70f9fe6b29cd9511652434919c6530618f06606 | desktop-s2455r9 |
 >| 6ac9f2ea-0e00-45cf-a03f-23276dee29ee | RunAntiVirusScan | 1281a70f-8ffb-4b3c-bc82-eef2a44dbb2a | testing anti virus | Succeeded | f70f9fe6b29cd9511652434919c6530618f06606 | desktop-s2455r9 |
->| 3abc0bbc-2516-452d-9f57-f312e437d4df | RunAntiVirusScan | avishai@demistodev.onmicrosoft.com | test tomer | Succeeded | 4899036531e374137f63289c3267bad772c13fef | desktop-s2455r8 |
 
 
 ### 16. microsoft-atp-collect-investigation-package
