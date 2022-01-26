@@ -270,7 +270,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": -150,
           "y": 1855
         }
       }
@@ -301,7 +301,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 265,
           "y": 1855
         }
       }
@@ -344,6 +344,7 @@ tasks:
       '#none#':
       - "7"
       - "6"
+      - "37"
     note: false
     quietmode: 0
     separatecontext: false
@@ -1200,6 +1201,38 @@ tasks:
           "y": 195
         }
       }
+  "37":
+    id: "37"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "13"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Parsing custom fields to detect indexed fields for risky field
+        types
+      id: bccdb317-810e-4812-8ec4-46e830552db1
+      iscommand: false
+      name: Fields settings
+      script: HealthCheckFields
+      type: regular
+      version: -1
+    taskid: bccdb317-810e-4812-8ec4-46e830552db1
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 1855
+        }
+      }
 version: -1
 view: |-
   {
@@ -1207,8 +1240,8 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 3850,
-        "width": 1250,
-        "x": 50,
+        "width": 1450,
+        "x": -150,
         "y": 50
       }
     }
