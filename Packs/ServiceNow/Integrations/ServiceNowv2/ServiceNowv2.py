@@ -2207,9 +2207,12 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
 
     if assigned_to:
         user_result = client.get('sys_user', assigned_to.get('value'))
-        user = user_result.get('result', {})
-        user_email = user.get('email')
-        ticket['assigned_to'] = user_email
+        if user_result:
+            user = user_result.get('result', {})
+            user_email = user.get('email')
+            ticket['assigned_to'] = user_email
+        else:
+            demisto.debug(f'Could not assign user {assigned_to.get("value")} since he does not exists in ServiceNow')
 
     if caller:
         user_result = client.get('sys_user', caller.get('value'))
