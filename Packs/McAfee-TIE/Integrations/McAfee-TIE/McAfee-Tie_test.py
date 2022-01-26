@@ -65,15 +65,14 @@ def test_safe_get_file_reputation_returned_exception(mocker):
     When:
         - The tie client returns some exception
     Then:
-        - Raise error
+        - Print to log and return empty dict
     """
-    with pytest.raises(Exception):
-        mcafee_tie = importlib.import_module("McAfee-TIE")
-        tie_client = TieClient(None)
-        hash_param = {'test': 'test'}
+    mcafee_tie = importlib.import_module("McAfee-TIE")
+    tie_client = TieClient(None)
+    hash_param = {'test': 'test'}
 
-        mocker.patch.object(tie_client, "get_file_reputation", side_effect=Exception())
-        mcafee_tie.safe_get_file_reputation(tie_client, hash_param)
+    mocker.patch.object(tie_client, "get_file_reputation", side_effect=Exception())
+    assert not mcafee_tie.safe_get_file_reputation(tie_client, hash_param)
 
 
 def test_safe_get_file_reputation_returned_rep(mocker):
