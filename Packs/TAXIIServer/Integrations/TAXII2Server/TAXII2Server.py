@@ -93,7 +93,7 @@ STIX2_TYPES_TO_XSOAR = {
 class TAXII2Server:
     def __init__(self, url_scheme: str, host: str, port: int, collections: dict, certificate: str, private_key: str,
                  http_server: bool, credentials: dict, version: str, service_address: Optional[str] = None,
-                 fields_to_present: Optional[set] = None):
+                 fields_to_present: Optional[set] = None, types_for_indicator_sdo: Optional[list] = None):
         """
         Class for a TAXII2 Server configuration.
         Args:
@@ -107,6 +107,7 @@ class TAXII2Server:
             credentials: The user credentials.
             version: API version.
             fields_to_present: indicator fields to return in the request.
+            types_for_indicator_sdo: The list of stix types to provide indicator stix domain objects.
         """
         self._url_scheme = url_scheme
         self._host = host
@@ -128,6 +129,7 @@ class TAXII2Server:
         self.collections_by_id: dict = dict()
         self.namespace_uuid = uuid.uuid5(PAWN_UUID, demisto.getLicenseID())
         self.create_collections(collections)
+        self.types_for_indicator_sdo = types_for_indicator_sdo if types_for_indicator_sdo else []
 
     @property
     def taxii_collections_media_type(self):
@@ -562,6 +564,8 @@ def find_indicators(query: str, types: list, added_after, limit: int, offset: in
                     iocs.append(manifest_entry)
             else:
                 stix_ioc, extension_definition = create_stix_object(xsoar_indicator, xsoar_type)
+                if XSOAR_TYPES_TO_STIX_SCO.get(xsoar_type) in SERVER.types_for_indicator_sdo:
+                    stix_ioc = convert_sco_to_indicator_sdo(stix_ioc, xsoar_indicator)
                 if SERVER.has_extension and stix_ioc:
                     iocs.append(stix_ioc)
                     extensions.append(extension_definition)
@@ -646,6 +650,40 @@ def create_manifest_entry(xsoar_indicator: dict, xsoar_type: str) -> dict:
     if SERVER.version == TAXII_VER_2_1:
         entry['version'] = parse(xsoar_indicator.get('modified')).strftime(STIX_DATE_FORMAT)  # type: ignore[arg-type]
     return entry
+
+
+def convert_sco_to_indicator_sdo(stix_object: dict, xsoar_indicator: dict) -> dict:
+    """
+    Create a STIX domain object of 'indicator' type from a STIX Cyber Observable Objects.
+
+    Args:
+        stix_object: The STIX Cyber Observable Object
+        xsoar_indicator: The stix object entry from which the 'stix_object' has been created.
+
+    Returns:
+        Stix indicator domain object for given indicator. Format described here:
+        https://docs.oasis-open.org/cti/stix/v2.1/cs01/stix-v2.1-cs01.html#_muftrcpnf89v
+    """
+    try:
+        expiration_parsed = parse(xsoar_indicator.get('expiration')).strftime(STIX_DATE_FORMAT)  # type: ignore[arg-type]
+    except Exception:
+        expiration_parsed = ''
+
+    indicator_value = xsoar_indicator.get('value')
+    object_type = stix_object['type']
+    stix_type = 'indicator'
+
+    stix_domain_object: Dict[str, Any] = {
+        'type': stix_type,
+        'id': create_sdo_stix_uuid(xsoar_indicator, stix_type),
+        'pattern': f"[{object_type}:value = '{indicator_value}']",
+        'valid_from': stix_object['created'],
+        'valid_until': expiration_parsed,
+        'description': xsoar_indicator.get('CustomFields', {}).get('description', ''),
+        'labels': []
+    }
+    return dict({k: v for k, v in stix_object.items()
+                if k in ('spec_version', 'created', 'modified')}, **stix_domain_object)
 
 
 def create_stix_object(xsoar_indicator: dict, xsoar_type: str) -> tuple:
@@ -1047,6 +1085,7 @@ def main():  # pragma: no cover
     command = demisto.command()
 
     fields_to_present = create_fields_list(params.get('fields_filter', ''))
+    types_for_indicator_sdo = argToList(params.get('provide_as_indicator'))
 
     try:
         port = int(params.get('longRunningPort'))
@@ -1077,7 +1116,8 @@ def main():  # pragma: no cover
 
     try:
         SERVER = TAXII2Server(scheme, str(host_name), port, collections, certificate,
-                              private_key, http_server, credentials, version, service_address, fields_to_present)
+                              private_key, http_server, credentials, version, service_address, fields_to_present,
+                              types_for_indicator_sdo)
 
         if command == 'long-running-execution':
             run_long_running(params)
