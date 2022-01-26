@@ -1,6 +1,6 @@
 {
     "name": "MAC Vendors",
-    "description": "Our list of vendors is provided directly from the IEEE Standards Association and is updated multiple times each day. The IEEE is the registration authority and provides us data on over 16,500 registered vendors.",
+    "description": "Mac Vendor's list of vendors is provided directly from the IEEE Standards Association and is updated multiple times each day. The IEEE is the registration authority and provides us data on over 16,500 registered vendors.",
     "support": "community",
     "currentVersion": "1.0.0",
     "author": "Adam Burt",
