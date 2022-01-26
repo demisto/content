@@ -243,6 +243,7 @@
     "name": "configuration setup",
     "system": true,
     "version": -1,
+    "detached": true,
     "fromVersion": "6.0.0",
     "description": ""
 }
