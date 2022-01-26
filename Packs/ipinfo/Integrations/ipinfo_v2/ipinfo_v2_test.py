@@ -20,7 +20,7 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-def test_ipinfo_ip_command(requests_mock):
+def test_ipinfo_ip_command(mocker):
     """
     Given:
         A mock response of a call to https://ipinfo.io/1.1.1.1/json,
@@ -35,22 +35,22 @@ def test_ipinfo_ip_command(requests_mock):
     ip = '1.1.1.1'
 
     mock_response = util_load_json('test_data/ip_1.1.1.1_response.json')
-    requests_mock.get(f'https://ipinfo.io/{ip}/json', json=mock_response)
 
     client = Client(api_key='',
                     base_url='https://ipinfo.io',
                     verify_certificate=False,
                     proxy=False,
                     reliability=DBotScoreReliability.C)
+    mocker.patch.object(client, 'http_request', return_value=mock_response)
 
-    command_results = ipinfo_ip_command(client, ip)
-    parsed_context = [command_result.to_context() for command_result in command_results]
+    command_results = mocker.patch('ipinfo_v2.CommandResults')
+    ipinfo_ip_command(client, ip)
 
     expected_parsed_context = util_load_json('test_data/ip_1.1.1.1_command_results.json')
-    assert parsed_context == expected_parsed_context
+    assert command_results.call_args[1].get("readable_output") == expected_parsed_context[1].get("HumanReadable")
 
 
-def test_ip_command(requests_mock):
+def test_ip_command(mocker):
     """
     Given:
         A mock response of a call to https://ipinfo.io/1.1.1.1/json,
@@ -65,15 +65,14 @@ def test_ip_command(requests_mock):
     ip = '1.1.1.1'
 
     mock_response = util_load_json('test_data/ip_1.1.1.1_response.json')
-    requests_mock.get(f'https://ipinfo.io/{ip}/json', json=mock_response)
-
     client = Client(api_key='',
                     base_url='https://ipinfo.io',
                     verify_certificate=False,
                     proxy=False,
                     reliability=DBotScoreReliability.C)
 
-    command_results = ipinfo_ip_command(client, ip)
-    parsed_context = [command_result.to_context() for command_result in command_results]
+    mocker.patch.object(client, 'http_request', return_value=mock_response)
+    command_results = mocker.patch('ipinfo_v2.CommandResults')
+    ipinfo_ip_command(client, ip)
 
-    assert "lat|lng" in parsed_context[1].get("HumanReadable")
+    assert "lat|lng" in command_results.call_args[1].get("readable_output")

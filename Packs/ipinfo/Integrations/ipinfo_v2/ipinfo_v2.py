@@ -163,6 +163,8 @@ def parse_results(ip: str, raw_result: Dict[str, Any], reliability: str) -> List
                                     indicator=indicator)
         command_results.append(map_output)
 
+    # do not change the order of the calls for CommandResults due to an issue where the ip command would not present
+    # all the information from the api.
     command_results.append(
         CommandResults(readable_output=tableToMarkdown(f'IPinfo results for {ip}', raw_result),
                        raw_response=raw_result,
