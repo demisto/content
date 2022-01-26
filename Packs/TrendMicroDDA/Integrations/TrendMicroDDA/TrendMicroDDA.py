@@ -1,18 +1,14 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import hashlib
-from datetime import datetime, timedelta
+from datetime import datetime
 import uuid
 import json
 import requests
-from requests.adapters import HTTPAdapter
-from requests.packages.urllib3.util.retry import Retry
 import re
 import platform
 import os.path
 import copy
-import requests
-from collections import OrderedDict
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -23,7 +19,7 @@ if not demisto.params().get("proxy", True):
     del os.environ["http_proxy"]
     del os.environ["https_proxy"]
 
-#HELPER FUNCTIONS#
+# HELPER FUNCTIONS #
 
 
 def load_host_url():
@@ -42,7 +38,7 @@ def hash_file(filename):
     '''Calculate the SHA1 of a file'''
     h = hashlib.sha1()
     with open(filename, 'rb') as f:
-        chunk = 0
+        chunk = ''
         while chunk != '':
             chunk = f.read(1024)
             h.update(chunk)
@@ -107,17 +103,17 @@ def http_request(uri, method, headers, body={}, params={}, files={}):
 
 def file_uploaded_to_incident(file, file_sha1):
     ''' Converts an uploaded file to a Demisto incident '''
-    incident = {}
+    incident = {}  # type: Dict[str, Any]
     incident["name"] = "Incident: %s " % (file_sha1)
-    incident["occurred"] = CURRENT_TIME
+    incident["occurred"] = str(CURRENT_TIME)
     incident["rawJSON"] = "TODO"
 
-    labels = []
+    labels = []  # type: list
     incident["labels"] = labels
     return incident
 
 
-def binary_to_booleanic_string(binary):
+def binary_to_boolean_str(binary):
     if (binary == '0'):
         return 'False'
     else:
@@ -131,7 +127,7 @@ def binary_to_boolean(binary):
         return True
 
 
-#GLOBAL VARIABLES#
+# GLOBAL VARIABLES #
 API_KEY = demisto.params()['apiKey']
 PROTOCOL_VERSION = demisto.params()['protocol_version']
 SERVER_URL = demisto.params()['server'][:-1] if demisto.params()['server'].endswith('/') else demisto.params()['server']
@@ -153,15 +149,17 @@ if HOST:
     DEFAULT_HEADERS['Host'] = HOST
 
 
-# for fetch incident CURRENT_TIME = datetime.utcnow()
+# for fetch incident
+CURRENT_TIME = datetime.utcnow()
 
-#COMMAND FUNCTIONS#
+# COMMAND FUNCTIONS #
+
 
 def register():
     headers_register = copy.deepcopy(DEFAULT_HEADERS)
     tmp_checksum = calculate_checksum(API_KEY, headers_register)
     headers_register['X-DTAS-Checksum'] = tmp_checksum.hexdigest()
-    res = http_request(
+    http_request(
         'web_service/sample_upload/register',
         'get',
         headers_register
@@ -172,7 +170,7 @@ def unregister():
     headers_unregister = copy.deepcopy(DEFAULT_HEADERS)
     tmp_checksum = calculate_checksum(API_KEY, headers_unregister)
     headers_unregister['X-DTAS-Checksum'] = tmp_checksum.hexdigest()
-    res = http_request(
+    http_request(
         'web_service/sample_upload/unregister',
         'get',
         headers_unregister
@@ -183,7 +181,7 @@ def test():
     headers_test = copy.deepcopy(DEFAULT_HEADERS)
     tmp_checksum = calculate_checksum(API_KEY, headers_test)
     headers_test['X-DTAS-Checksum'] = tmp_checksum.hexdigest()
-    res = http_request(
+    http_request(
         'web_service/sample_upload/test_connection',
         'get',
         headers_test
@@ -210,7 +208,8 @@ def simple_upload_sample_file(sample_file):
             'X-DTAS-Time': get_epoch_time(),
             'X-DTAS-SampleType': '0',  # 0 for file, 1 for URL
             'X-DTAS-Challenge': str(uuid.uuid4()),
-            'X-DTAS-ChecksumCalculatingOrder': "X-DTAS-ProtocolVersion,X-DTAS-ClientUUID,X-DTAS-SourceID,X-DTAS-SourceName,X-DTAS-SHA1,X-DTAS-Time,X-DTAS-SampleType,X-DTAS-Challenge",
+            'X-DTAS-ChecksumCalculatingOrder': "X-DTAS-ProtocolVersion,X-DTAS-ClientUUID,X-DTAS-SourceID,X-DTAS-SourceName," \
+                                               + "X-DTAS-SHA1,X-DTAS-Time,X-DTAS-SampleType,X-DTAS-Challenge",
         }
         tmp_checksum = calculate_checksum(API_KEY, headers_simple_upload_sample_file)
         headers_simple_upload_sample_file['X-DTAS-Checksum'] = tmp_checksum.hexdigest()
@@ -258,7 +257,8 @@ def simple_upload_sample_url(sample_url):
         'X-DTAS-Time': get_epoch_time(),
         'X-DTAS-SampleType': '1',  # 0 for file, 1 for URL
         'X-DTAS-Challenge': str(uuid.uuid4()),
-        'X-DTAS-ChecksumCalculatingOrder': "X-DTAS-ProtocolVersion,X-DTAS-ClientUUID,X-DTAS-SourceID,X-DTAS-SourceName,X-DTAS-SHA1,X-DTAS-Time,X-DTAS-SampleType,X-DTAS-Challenge",
+        'X-DTAS-ChecksumCalculatingOrder': "X-DTAS-ProtocolVersion,X-DTAS-ClientUUID,X-DTAS-SourceID,X-DTAS-SourceName," \
+                                           + "X-DTAS-SHA1,X-DTAS-Time,X-DTAS-SampleType,X-DTAS-Challenge",
     }
     tmp_checksum = calculate_checksum(API_KEY, headers_simple_upload_sample_url)
     headers_simple_upload_sample_url['X-DTAS-Checksum'] = tmp_checksum.hexdigest()
@@ -331,8 +331,9 @@ def get_sample_list(interval_start, interval_end, interval_type):
     try:
         interval_start_dt = datetime.strptime(interval_start, "%Y-%m-%d %H:%M:%S")
         interval_end_dt = datetime.strptime(interval_end, "%Y-%m-%d %H:%M:%S")
-    except:
-        return_error('Given interval times are not in the required format, which is: YYYY-MM-DD HH:MM:SS, e.g. 2008-11-22 19:53:42')
+    except BaseException:
+        return_error('Given interval times are not in the required format, which is: YYYY-MM-DD HH:MM:SS, '
+                     + 'e.g. 2008-11-22 19:53:42')
 
     headers_get_sample_list = copy.deepcopy(DEFAULT_HEADERS)
     headers_get_sample_list['X-DTAS-IntervalStartingPoint'] = get_epoch_from_datetime(interval_start_dt)
@@ -380,7 +381,7 @@ def build_report(res, threshold, status, verbose):
     reports = report_json['REPORTS']
     # true if list, false if dict
     reports_type_is_list = isinstance(reports['FILE_ANALYZE_REPORT'], list)
-    hr = {}
+    hr = {}  # type: Dict[str, Union[str, Dict[str, str]]]
 
     if isinstance(reports, dict):
         image_type_dict = reports.get('IMAGE_TYPE', {})
@@ -403,16 +404,18 @@ def build_report(res, threshold, status, verbose):
         'Sum of Files Analyzed': (len(reports['FILE_ANALYZE_REPORT'])) if reports_type_is_list else '1',
     }
 
-    context = {}
+    context = {}  # type: Dict[str, Any]
     dbot_score = 0
     context['DBotScore'] = {
         'Vendor': 'Trend Micro DDA',
         'Score': dbot_score,  # check that------------------ TODO --------------------
         'Type': 'hash',
-        'Indicator': reports['FILE_ANALYZE_REPORT']['FileSHA1'] if not reports_type_is_list else reports['FILE_ANALYZE_REPORT'][0]['FileSHA1']
+        'Indicator': reports['FILE_ANALYZE_REPORT']['FileSHA1'] if not reports_type_is_list
+        else reports['FILE_ANALYZE_REPORT'][0]['FileSHA1']
     }
     # if type is list, the submission was divided to sub-files and the first file_analyze_report is of the main submission
-    #context['DBotScore.Indicator'] = reports['FILE_ANALYZE_REPORT']['FileSHA1'] if not reports_type_is_list else reports['FILE_ANALYZE_REPORT'][0]['FileSHA1']
+    # context['DBotScore.Indicator'] = reports['FILE_ANALYZE_REPORT']['FileSHA1']
+    # if not reports_type_is_list else reports['FILE_ANALYZE_REPORT'][0]['FileSHA1']
 
     if not reports_type_is_list:  # if the submission doesn't have sub-files
         file_analyze_report = reports['FILE_ANALYZE_REPORT']
@@ -420,15 +423,15 @@ def build_report(res, threshold, status, verbose):
         hr['Malware Source IP'] = file_analyze_report['MalwareSourceIP']
         hr['Malware Source Host'] = file_analyze_report['MalwareSourceHost']
         hr['Total Dropped Files'] = file_analyze_report['DroppedFiles']['@Total']
-        hr['Deny List'] = binary_to_booleanic_string(file_analyze_report['IsDenylisted'])
-        hr['White List'] = binary_to_booleanic_string(file_analyze_report['IsWhitelisted'])
+        hr['Deny List'] = binary_to_boolean_str(file_analyze_report['IsDenylisted'])
+        hr['White List'] = binary_to_boolean_str(file_analyze_report['IsWhitelisted'])
 
         if '#text' in file_analyze_report['VirusName']:  # the submission has a detection
             hr['Detection Name'] = file_analyze_report['VirusName']['#text']
         # set the filename
         filename = hr['Detection Name'] if ('Detection Name' in hr) else file_analyze_report['FileSHA1']
-        if '.' not in filename:
-            filename = filename + ".txt"
+        if filename and '.' not in filename:
+            filename = str(filename) + ".txt"
 
         # add data regarding the submission to the context
         context['TrendMicroDDA.Submission(val.SHA1 && val.SHA1==obj.SHA1)'] = {
@@ -494,19 +497,19 @@ def build_report(res, threshold, status, verbose):
         # add data to the war room
         hr = copy.deepcopy(reports['FILE_ANALYZE_REPORT'])
         for item in hr:
-            item['File Name'] = item['OrigFileName']
-            item['Detection Name'] = item['VirusName']['#text'] if '#text' in item['VirusName'] else None
-            item['Malware Source IP'] = item['MalwareSourceIP']
-            item['Malware Source Host'] = item['MalwareSourceHost']
+            item['File Name'] = item['OrigFileName']  # type: ignore
+            item['Detection Name'] = item['VirusName']['#text'] if '#text' in item['VirusName'] else None  # type: ignore
+            item['Malware Source IP'] = item['MalwareSourceIP']  # type: ignore
+            item['Malware Source Host'] = item['MalwareSourceHost']  # type: ignore
             if verbose == 'true':
-                item['Download URL'] = item['DroppedFiles'].get('FileItem')
-            item['Deny List'] = binary_to_booleanic_string(item['IsDenylisted']) if item['IsDenylisted'] else None
-            item['White List'] = binary_to_booleanic_string(item['IsWhitelisted']) if item['IsWhitelisted'] else None
+                item['Download URL'] = item['DroppedFiles'].get('FileItem')  # type: ignore
+            item['Deny List'] = binary_to_boolean_str(item['IsDenylisted']) if item['IsDenylisted'] else None  # type: ignore
+            item['White List'] = binary_to_boolean_str(item['IsWhitelisted']) if item['IsWhitelisted'] else None  # type: ignore
 
         # set the filename
         filename = main_file_analyze_report['OrigFileName']
-        if '.' not in filename:
-            filename = filename + ".txt"
+        if filename and '.' not in filename:
+            filename = str(filename) + ".txt"
 
         # This section was commented out because it used an undefined variable download_url_list.
         # Need to check again if it should be moving to GA.
@@ -563,7 +566,8 @@ def build_report(res, threshold, status, verbose):
                 'SHA1': main_file_analyze_report['FileSHA1'],
                 'SHA256': main_file_analyze_report['FileSHA256'],
                 'Size': main_file_analyze_report['FileSize'],
-                'Name': main_file_analyze_report['VirusName']['#text'] if '#text' in main_file_analyze_report['VirusName'] else '',
+                'Name': main_file_analyze_report['VirusName']['#text'] if '#text' in main_file_analyze_report['VirusName']
+                else '',
             }
         # add data regarding the submission to the context if it is malicious
         if (reports['OVERALL_RISK_LEVEL'] >= threshold):
@@ -645,7 +649,6 @@ def get_report_command():
 
         tmp_file = fileResult(filename, res.text)
 
-        temp = demisto.uniqueFile()
         demisto.results({  # add context and the Report File to the war room
             'Type': entryTypes['file'],
             'FileID': tmp_file.get('FileID'),
