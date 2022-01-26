@@ -2979,6 +2979,11 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "Unit42v2 Feed",
+            "playbookID": "unit42_atoms",
+            "fromversion": "5.5.0"
+        },
+        {
             "integrations": "QRadar_v2",
             "playbookID": "QRadar Indicator Hunting Test",
             "timeout": 600,
@@ -4939,6 +4944,11 @@
             "playbookID": "AzureRiskyUsers",
             "fromversion": "6.0.0",
             "integrations": "AzureRiskyUsers"
+        },
+        {
+            "playbookID": "playbook-AzureKeyVault-Test",
+            "fromversion": "6.0.0",
+            "integrations": "AzureKeyVault"
         },
         {
             "integrations": "KafkaV3",
