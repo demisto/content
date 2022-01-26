@@ -284,6 +284,7 @@ class MsClient:
 
     def get_list_machines_by_vulnerability(self, cve_id):
         """Retrieves a list of devices affected by a vulnerability.
+        https://docs.microsoft.com/en-us/microsoft-365/security/defender-endpoint/get-machines-by-vulnerability?view=o365-worldwide#http-request
 
         Args:
             cve_id (str): Vulnerability ID
@@ -725,10 +726,10 @@ class MsClient:
         return self.ms_client.http_request(method='POST', url_suffix=cmd_url, json_data=new_tags)
 
     def get_file_data(self, file_hash):
-        """Retrieves a File by identifier SHA1.
-
+        """Retrieves a File by identifier SHA1 or SHA256.
+        https://docs.microsoft.com/en-us/microsoft-365/security/defender-endpoint/get-file-information?view=o365-worldwide#http-request
         Args:
-            file_hash(str): The file SHA1 hash
+            file_hash(str): The file hash.
 
         Returns:
             dict. File entities
@@ -1489,6 +1490,7 @@ def get_file_data(file_response):
     """
     file_data = assign_params(**{
         'Sha1': file_response.get('sha1'),
+        'Size': file_response.get('size'),
         'Sha256': file_response.get('sha256'),
         'Md5': file_response.get('md5'),
         'GlobalPrevalence': file_response.get('globalPrevalence'),
@@ -2683,6 +2685,47 @@ def list_machines_by_vulnerability_command(client: MsClient, args: dict) -> Comm
         raw_response=raw_response)
 
 
+def get_file_context(file_info_response: Dict[str,str], headers: list):
+    return {key.capitalize(): value for (key, value) in file_info_response.items() if key in headers}
+
+
+def get_file_info_command(client: MsClient, args: dict) -> dict:
+    """ Retrieves file info by a file hash (Sha1 or Sha256).
+
+    Returns:
+        CommandResults. Human readable, context, raw response
+    """
+    headers = ['Sha1', 'Sha256', 'Size', 'FileType']
+    file_context_path = 'File(val.SHA1 && val.SHA1 == obj.SHA1 || val.SHA256 && val.SHA256 == obj.SHA256 || ' \
+                        'val.Type && val.Type == obj.Type || val.Size && val.Size == obj.Size )'
+
+    file_hashes = argToList(args.get('hash'))
+    raw_response = []
+    file_outputs = []
+    file_context_outputs = []
+    for file_hash in file_hashes:
+        file_info_response = client.get_file_data(file_hash)
+        file_outputs.append(get_file_data(file_info_response))
+        raw_response.append(file_info_response)
+        file_context_outputs.append(get_file_context(file_info_response, ["sha1", "sha256", "filetype", "size"]))
+
+    human_readable = tableToMarkdown(f'Microsoft Defender ATP file info by hashes: {file_hashes}',
+                                     file_outputs, headers=headers, removeNull=True)
+
+    context = {
+        'MicrosoftATP.File(val.Sha1 === obj.Sha1)': file_outputs,
+        file_context_path: file_context_outputs
+    }
+    return {
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['text'],
+        'Contents': file_outputs,
+        'EntryContext': context,
+        'HumanReadable': human_readable,
+        'raw_response': raw_response
+    }
+
+
 ''' EXECUTION CODE '''
 
 
@@ -2819,6 +2862,9 @@ def main():
 
         elif command == 'microsoft-atp-list-machines-by-vulnerability':
             return_results(list_machines_by_vulnerability_command(client, args))
+
+        elif command == 'microsoft-atp-get-file-info':
+            demisto.results(get_file_info_command(client, args))
 
         elif command in ('microsoft-atp-indicator-list', 'microsoft-atp-indicator-get-by-id'):
             return_outputs(*list_indicators_command(client, args))

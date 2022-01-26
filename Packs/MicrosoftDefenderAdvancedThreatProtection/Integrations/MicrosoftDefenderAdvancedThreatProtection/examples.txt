@@ -37,3 +37,4 @@ microsoft-atp-sc-indicator-update action=Allowed indicator_description=test indi
 microsoft-atp-sc-indicator-get-by-id indicator_id=5142
 microsoft-atp-sc-indicator-delete indicator_id=5142
 microsoft-atp-list-machines-by-vulnerability cve_id=CVE-2021-32810,CVE-2020-12321
+microsoft-atp-get-file-info hash="3395856ce81f2b7382dee72602f798b642f14140,db79e9e669c42b5ac46fc6d6b590ca990687958b"

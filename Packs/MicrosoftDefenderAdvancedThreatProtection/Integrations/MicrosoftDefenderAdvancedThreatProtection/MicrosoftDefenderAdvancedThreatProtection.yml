@@ -4546,6 +4546,78 @@ script:
     - contextPath: MicrosoftATP.CveMachine.RBACGroupName
       description: The machine RBAC group name.
       type: String
+  - arguments:
+    - default: true
+      description: A comma-separated list of file hashs (Sha1 or Sha256) to be used for getting the file info.
+      isArray: true
+      name: hash
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieves file info by a file hash (Sha1 or Sha256).
+    execution: false
+    name: microsoft-atp-get-file-info
+    outputs:
+    - contextPath: MicrosoftATP.File.Sha1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: MicrosoftATP.File.Sha256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: MicrosoftATP.File.GlobalPrevalence
+      description: The file prevalence across organization.
+      type: Number
+    - contextPath: MicrosoftATP.File.GlobalFirstObserved
+      description: The first time the file was observed.
+      type: Date
+    - contextPath: MicrosoftATP.File.GlobalLastObserved
+      description: The last time the file was observed.
+      type: Date
+    - contextPath: MicrosoftATP.File.Size
+      description: The size of the file.
+      type: Number
+    - contextPath: MicrosoftATP.File.FileType
+      description: The type of the file.
+      type: String
+    - contextPath: MicrosoftATP.File.IsPeFile
+      description: True if the file is portable executable, False otherwise.
+      type: Boolean
+    - contextPath: MicrosoftATP.File.FilePublisher
+      description: The file's publisher.
+      type: String
+    - contextPath: MicrosoftATP.File.FileProductName
+      description: The file product name.
+      type: String
+    - contextPath: MicrosoftATP.File.Signer
+      description: The file signer.
+      type: String
+    - contextPath: MicrosoftATP.File.Issuer
+      description: The file issuer.
+      type: String
+    - contextPath: MicrosoftATP.File.SignerHash
+      description: The hash of the signing certificate.
+      type: String
+    - contextPath: MicrosoftATP.File.IsValidCertificate
+      description: Was signing certificate successfully verified by Microsoft Defender ATP agent.
+      type: Boolean
+    - contextPath: MicrosoftATP.File.DeterminationValue
+      description: The file determination value.
+      type: String
+    - contextPath: MicrosoftATP.File.DeterminationType
+      description: The file determination type.
+      type: String
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.Type
+      description: The file type.
+      type: String
+    - contextPath: File.Size
+      description: The file size.
+      type: Number
   dockerimage: demisto/crypto:1.0.0.24380
   feed: false
   isfetch: true

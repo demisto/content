@@ -4053,3 +4053,102 @@ Vulnerability.Read.All
 >|---|---|---|---|
 >| f3bba49a | ec2amaz | WindowsServer2016 | 0 |
 >| 48a62a74 | msde-agent-host-centos7 | Linux | 0 |
+
+### microsoft-atp-get-file-info
+***
+Retrieves file info by a file hash (Sha1 or Sha256).
+
+##### Required Permissions
+File.Read.All
+
+#### Base Command
+
+`microsoft-atp-get-file-info`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| hash | A comma-separated list of file hashs (Sha1 or Sha256) to be used for getting the file info. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftATP.File.Sha1 | String | The SHA1 hash of the file. | 
+| MicrosoftATP.File.Sha256 | String | The SHA256 hash of the file. | 
+| MicrosoftATP.File.GlobalPrevalence | Number | The file prevalence across organization. | 
+| MicrosoftATP.File.GlobalFirstObserved | Date | The first time the file was observed. | 
+| MicrosoftATP.File.GlobalLastObserved | Date | The last time the file was observed. | 
+| MicrosoftATP.File.Size | Number | The size of the file. | 
+| MicrosoftATP.File.FileType | String | The type of the file. | 
+| MicrosoftATP.File.IsPeFile | Boolean | True if the file is portable executable, False otherwise. | 
+| MicrosoftATP.File.FilePublisher | String | The file's publisher. | 
+| MicrosoftATP.File.FileProductName | String | The file product name. | 
+| MicrosoftATP.File.Signer | String | The file signer. | 
+| MicrosoftATP.File.Issuer | String | The file issuer. | 
+| MicrosoftATP.File.SignerHash | String | The hash of the signing certificate. | 
+| MicrosoftATP.File.IsValidCertificate | Boolean | Was signing certificate successfully verified by Microsoft Defender ATP agent. | 
+| MicrosoftATP.File.DeterminationValue | String | The file determination value. | 
+| MicrosoftATP.File.DeterminationType | String | The file determination type. | 
+| File.SHA1 | String | The SHA1 hash of the file. | 
+| File.SHA256 | String | The SHA256 hash of the file. | 
+| File.Type | String | The file type. | 
+| File.Size | Number | The file size. | 
+
+#### Command example
+```!microsoft-atp-get-file-info hash="3395856ce81,db79e9e669c"```
+#### Context Example
+```json
+{
+    "File": [
+        {
+            "Sha1": "3395856ce81",
+            "Sha256": "275a021bbfb648",
+            "Size": 68
+        },
+        {
+            "Sha1": "db79e9e669c",
+            "Sha256": "ef67e4b2bb4ee5",
+            "Size": 36768
+        }
+    ],
+    "MicrosoftATP": {
+        "File": [
+            {
+                "DeterminationType": "Unknown",
+                "DeterminationValue": "Virus:DOS/EICAR_Test_File",
+                "GlobalFirstObserved": "2013-03-03T14:00:34.8213548Z",
+                "GlobalLastObserved": "2022-01-26T17:31:27.4706316Z",
+                "GlobalPrevalence": 37933,
+                "IsPeFile": false,
+                "Md5": "44d88612fea8a8",
+                "Sha1": "3395856ce81",
+                "Sha256": "275a021bbfb648",
+                "Size": 68,
+                "SizeInBytes": 68
+            },
+            {
+                "DeterminationType": "Unknown",
+                "GlobalFirstObserved": "2022-01-14T18:04:15.9389909Z",
+                "GlobalLastObserved": "2022-01-26T17:36:07.8400883Z",
+                "GlobalPrevalence": 8418,
+                "IsPeFile": false,
+                "Md5": "b0c6a0cfdac",
+                "Sha1": "db79e9e669c",
+                "Sha256": "ef67e4b2bb4ee5",
+                "Size": 36768,
+                "SizeInBytes": 36768
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Microsoft Defender ATP file info by hashes: ['3395856ce81', 'db79e9e669c']
+>|Sha1|Sha256|Size|
+>|---|---|---|
+>| 3395856ce81 | 275a021bbfb648 | 68 |
+>| db79e9e669c | ef67e4b2bb4ee5 | 36768 |
