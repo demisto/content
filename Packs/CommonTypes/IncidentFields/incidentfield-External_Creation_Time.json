@@ -1,0 +1,39 @@
+{
+	"id": "incident_externalcreationtime",
+	"version": -1,
+	"modified": "2022-01-26T08:35:14.314902015Z",
+	"sortValues": null,
+	"name": "External Creation Time",
+	"ownerOnly": false,
+	"placeholder": "",
+	"description": "",
+	"cliName": "externalcreationtime",
+	"type": "date",
+	"closeForm": false,
+	"editForm": true,
+	"required": false,
+	"isReadOnly": false,
+	"selectValues": null,
+	"useAsKpi": false,
+	"locked": false,
+	"system": false,
+	"content": false,
+	"group": 0,
+	"hidden": false,
+	"associatedTypes": null,
+	"associatedToAll": true,
+	"unmapped": false,
+	"unsearchable": false,
+	"caseInsensitive": true,
+	"columns": null,
+	"defaultRows": null,
+	"sla": 0,
+	"threshold": 72,
+    "fromVersion": "6.1.0",
+    "Aliases": [
+        {
+          "cliName": "ticketopeneddate",
+          "type": "shortText"
+        }
+      ]
+}

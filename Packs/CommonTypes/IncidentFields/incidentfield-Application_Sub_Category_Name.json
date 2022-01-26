@@ -2,17 +2,17 @@
 {
     "associatedToAll": true,
     "caseInsensitive": true,
-    "cliName": "applicationcategoryname",
+    "cliName": "applicationsubcategoryname",
     "closeForm": false,
     "content": true,
-    "description": "APP-ID category name associated with a firewall alert",
+    "description": "APP-ID Sub category name associated with a firewall alert",
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_applicationcategoryname",
+    "id": "incident_applicationsubcategoryname",
     "isReadOnly": false,
     "locked": false,
-    "name": "Application Category Name",
+    "name": "Application Sub Category Name",
     "neverSetAsRequired": false,
     "openEnded": true,
     "ownerOnly": false,
@@ -29,5 +29,5 @@
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "5.5.0",
-	"x2_fields": "fw_app_category"
+	"x2_fields": "fw_app_subcategory"
 }

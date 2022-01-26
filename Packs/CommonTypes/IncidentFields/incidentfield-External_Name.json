@@ -1,11 +1,11 @@
 {
-    "id": "incident_incidentlink",
+    "id": "incident_externalname",
     "version": -1,
-    "modified": "2021-03-03T14:50:58.545449Z",
-    "name": "Incident Link",
+    "modified": "2022-01-12T08:13:44.844285695Z",
     "ownerOnly": false,
-    "cliName": "incidentlink",
-    "type": "url",
+    "cliName": "externalname",
+    "name": "External Name",
+    "type": "multiSelect",
     "closeForm": false,
     "editForm": true,
     "required": false,
@@ -17,14 +17,18 @@
     "content": true,
     "group": 0,
     "hidden": false,
+    "openEnded": true,
     "associatedToAll": true,
     "unmapped": false,
-    "unsearchable": false,
+    "unsearchable": true,
     "caseInsensitive": true,
     "sla": 0,
     "threshold": 72,
-    "fromVersion": "5.0.0",
-    "marketplaces": [
-		"xsoar"
-	]
+    "fromVersion": "6.1.0",
+    "Aliases": [
+        {
+          "cliName": "alertname",
+          "type": "shortText"
+        }
+      ]
 }

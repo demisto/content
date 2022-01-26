@@ -41,6 +41,10 @@
         {
           "cliName": "trapsid",
           "type": "shortText"
+        },
+        {
+          "cliName": "trapsid",
+          "type": "shortText"
         }
       ]
 }
