@@ -1344,7 +1344,7 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
                             name = file_obj.get('name')
                             file_ = fileResult(name, data, investigation_id=investigation_id)
                             demisto.debug('sending file')
-                            demisto.createFile()
+                            # demisto.createFile()
                             await handle_file(
                                 investigation_id,
                                 file_,
