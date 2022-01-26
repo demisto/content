@@ -1117,3 +1117,44 @@ def test_get_tasks_for_co_command(mocker):
         'ServiceNow.Tasks(val.ID===obj.ID)': CREATED_TICKET_CONTEXT_GET_TASKS_FOR_CO_COMMAND
     }
     assert result.raw_response == util_load_json('test_data/get_tasks_for_co_command.json')
+
+
+def test_get_ticket_attachment_entries_with_oauth_token(mocker):
+    """
+    Given:
+        - A client with 'oauth_params' - i.e a client that is configured with an OAuth 2.0 Authorization.
+        - Mock responses for 'get_ticket_attachments', 'get_access_token' and 'requests.get' functions.
+
+    When:
+        - Running the 'client.get_ticket_attachment_entries' function.
+
+    Then:
+        - Verify that the 'requests.get' function's arguments are arguments of a call with OAuth 2.0 Authorization.
+    """
+    # Preparations and mocking:
+    client = Client("url", 'sc_server_url', 'cr_server_url', 'username', 'password', 'verify', 'fetch_time',
+                    'sysparm_query', 'sysparm_limit', 'timestamp_field', 'ticket_type', 'get_attachments',
+                    'incident_name', oauth_params={'oauth_params': ''})
+
+    mock_res_for_get_ticket_attachments = \
+        {'result': [
+            {
+                'file_name': 'attachment for test.txt',
+                'download_link': 'https://ven03941.service-now.com/api/now/attachment/12b7ea411b15cd10042611b4bd4/file'
+            }]}
+
+    mock_res_for_get_access_token = '11111111'
+
+    mocker.patch.object(client, 'get_ticket_attachments', return_value=mock_res_for_get_ticket_attachments)
+    mocker.patch.object(client.snow_client, 'get_access_token', return_value=mock_res_for_get_access_token)
+    requests_get_mocker = mocker.patch('requests.get', return_value=None)
+
+    # Running get_ticket_attachment_entries function:
+    client.get_ticket_attachment_entries(ticket_id='id')
+
+    # Validate Results are as expected:
+    assert requests_get_mocker.call_args.kwargs.get('auth') is None,\
+        "A client configured with OAuth 2.0 Authorization shouldn't pass an 'auth' argument to 'requests.get' function"
+    assert requests_get_mocker.call_args.kwargs.get('headers').get('Authorization') ==\
+           f"Bearer {mock_res_for_get_access_token}", "A client configured with OAuth 2.0 Authorization should pass" \
+                                                      " the 'Authorization' Header argument to 'requests.get' function"
