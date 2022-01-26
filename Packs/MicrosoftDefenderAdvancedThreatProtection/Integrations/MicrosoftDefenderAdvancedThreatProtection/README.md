@@ -137,6 +137,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 42. microsoft-atp-sc-indicator-update
 43. microsoft-atp-sc-indicator-delete
 44. microsoft-atp-list-machines-by-vulnerability
+45. microsoft-atp-get-file-info
 
 ### 1. microsoft-atp-isolate-machine
 ---
