@@ -92,7 +92,7 @@ def main():
         except Exception as e:
             print(e)
             print("Calling /engines and printing results")
-            send_request(obj, path="/engines", method="get", test=True)
+            send_request(obj, path="/engines", method="get", test=False)
 
     else:
         demisto.info("Executing Xsoar_Utils, detected demisto as environment")
