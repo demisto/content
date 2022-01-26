@@ -7,6 +7,9 @@
     "caseInsensitive": true,
     "cliName": "dstports",
     "closeForm": false,
+    "systemAssociatedTypes": [
+        "FW change management"
+    ],
     "content": true,
     "description": "The destination ports of the event.",
     "editForm": true,
