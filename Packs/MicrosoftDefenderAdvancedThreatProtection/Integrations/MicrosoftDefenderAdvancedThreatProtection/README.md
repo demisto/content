@@ -488,7 +488,7 @@ Machine.ReadWrite.All
                                 "type": "Ethernet"
                             },
                             {
-                                "ipAddress": "123::1223:1234:3177:11dc",
+                                "ipAddress": "1234::1234:1234:3177:11dc",
                                 "macAddress": "123456789121",
                                 "operationalStatus": "Up",
                                 "type": "Ethernet"
