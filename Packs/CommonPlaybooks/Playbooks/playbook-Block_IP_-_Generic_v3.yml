@@ -12,28 +12,28 @@ description: "This playbook blocks malicious IP addresses using all integrations
   \ PAN-OS\n* Zscaler\n* FortiGate\n* Aria Packet Intelligence\n* Cisco Firepower\
   \ \n* Cisco Secure Cloud Analytics\n* Cisco ASA\n* Akamai WAF\n* F5 SilverLine\n\
   * ThreatX\n* Signal Sciences WAF\n* Sophos Firewall\n\n"
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: 1b9ca8cc-99d9-452a-8596-f70a1facd9a4
+  '0':
+    id: '0'
+    taskid: 2686e8f9-a0d6-4810-8750-99c1d6d9b510
     type: start
     task:
-      id: 1b9ca8cc-99d9-452a-8596-f70a1facd9a4
+      id: 2686e8f9-a0d6-4810-8750-99c1d6d9b510
       version: -1
-      name: ""
+      name: ''
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "36"
+      - '36'
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1040,
-          "y": -2840
+          "x": 2085,
+          "y": 50
         }
       }
     note: false
@@ -43,24 +43,24 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "2":
-    id: "2"
-    taskid: caaf68e5-e08c-4b17-8226-6a48db42b817
+  '2':
+    id: '2'
+    taskid: 8bb87842-de6e-47f4-8247-6d36c5b75225
     type: title
     task:
-      id: caaf68e5-e08c-4b17-8226-6a48db42b817
+      id: 8bb87842-de6e-47f4-8247-6d36c5b75225
       version: -1
       name: Done
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1040,
-          "y": 1700
+          "x": 3630,
+          "y": 4715
         }
       }
     note: false
@@ -70,40 +70,40 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "5":
-    id: "5"
-    taskid: c1e25c27-141b-4e5e-844b-37a8a21f673a
+  '5':
+    id: '5'
+    taskid: d7646141-09fa-4b2b-839b-fbaad3cf8486
     type: title
     task:
-      id: c1e25c27-141b-4e5e-844b-37a8a21f673a
+      id: d7646141-09fa-4b2b-839b-fbaad3cf8486
       version: -1
       name: Block IPs
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "17"
-      - "18"
-      - "20"
-      - "26"
-      - "30"
-      - "55"
-      - "60"
-      - "64"
-      - "63"
-      - "67"
-      - "71"
-      - "79"
-      - "74"
-      - "104"
+      - '17'
+      - '18'
+      - '20'
+      - '26'
+      - '30'
+      - '55'
+      - '60'
+      - '64'
+      - '63'
+      - '67'
+      - '71'
+      - '79'
+      - '74'
+      - '104'
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1040,
-          "y": 950
+          "x": 4182.5,
+          "y": 4075
         }
       }
     note: false
@@ -113,12 +113,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "7":
-    id: "7"
-    taskid: 7cfdf691-48c7-4f16-8fb3-8c132ac8645c
+  '7':
+    id: '7'
+    taskid: aa726b00-3476-4ff8-8f4e-abb4340d9b33
     type: condition
     task:
-      id: 7cfdf691-48c7-4f16-8fb3-8c132ac8645c
+      id: aa726b00-3476-4ff8-8f4e-abb4340d9b33
       version: -1
       name: Is Check Point Firewall enabled?
       description: Returns 'yes' if integration brand is available. Otherwise returns
@@ -126,12 +126,12 @@ tasks:
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "2"
-      "yes":
-      - "29"
+      - '2'
+      yes:
+      - '29'
     scriptarguments:
       brandname:
         simple: CheckPointFirewall_v2
@@ -141,8 +141,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1520,
-          "y": 1270
+          "x": 1547.5,
+          "y": 4375
         }
       }
     note: false
@@ -152,26 +152,26 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "8":
-    id: "8"
-    taskid: bbd31e8e-d8ea-46f2-843a-1c0cdc730944
+  '8':
+    id: '8'
+    taskid: f920f331-b63c-477e-84ed-f29e6d3a707f
     type: condition
     task:
-      id: bbd31e8e-d8ea-46f2-843a-1c0cdc730944
+      id: f920f331-b63c-477e-84ed-f29e6d3a707f
       version: -1
       name: Is there an IP to block?
       description: Verify that there is at least one IP to block.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "96"
-      "yes":
-      - "43"
+      - '96'
+      yes:
+      - '43'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isExists
           left:
@@ -191,8 +191,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1040,
-          "y": -860
+          "x": 2320,
+          "y": 3240
         }
       }
     note: false
@@ -202,12 +202,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "12":
-    id: "12"
-    taskid: 54f5666a-d679-4e74-88d9-ca307a13867d
+  '12':
+    id: '12'
+    taskid: 6cabaca1-2d12-4fa8-8b2b-c6c36185108c
     type: condition
     task:
-      id: 54f5666a-d679-4e74-88d9-ca307a13867d
+      id: 6cabaca1-2d12-4fa8-8b2b-c6c36185108c
       version: -1
       name: Is Zscaler enabled?
       description: Returns 'yes' if integration brand is available. Otherwise returns
@@ -215,12 +215,12 @@ tasks:
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "2"
-      "yes":
-      - "13"
+      - '2'
+      yes:
+      - '13'
     scriptarguments:
       brandname:
         simple: Zscaler
@@ -230,8 +230,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2010,
-          "y": 1270
+          "x": 1997.5,
+          "y": 4375
         }
       }
     note: false
@@ -241,12 +241,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "13":
-    id: "13"
-    taskid: 68f72a75-beef-42ef-8dfe-850a8a13bcce
+  '13':
+    id: '13'
+    taskid: 9a193649-8c46-48e9-82da-e6e2c7f8bca3
     type: regular
     task:
-      id: 68f72a75-beef-42ef-8dfe-850a8a13bcce
+      id: 9a193649-8c46-48e9-82da-e6e2c7f8bca3
       version: -1
       name: Block IP with Zscaler
       description: Block the IPs using Zscaler.
@@ -256,7 +256,7 @@ tasks:
       brand: Zscaler
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
     scriptarguments:
       ip:
         complex:
@@ -273,8 +273,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2010,
-          "y": 1450
+          "x": 2110,
+          "y": 4550
         }
       }
     note: false
@@ -284,24 +284,25 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "14":
-    id: "14"
-    taskid: f49f2985-90c6-4acd-8089-cdb0c39f3c4f
+  '14':
+    id: '14'
+    taskid: 43c7e602-f55f-4b3c-81fc-2f85f8a21528
     type: playbook
     task:
-      id: f49f2985-90c6-4acd-8089-cdb0c39f3c4f
+      id: 43c7e602-f55f-4b3c-81fc-2f85f8a21528
       version: -1
       name: PAN-OS - Block IP - Custom Block Rule
-      description: |-
-        This playbook blocks IP addresses using Custom Block Rules in Palo Alto Networks Panorama or Firewall.
-        The playbook receives malicious IP addresses as inputs, creates a custom bi-directional rule to block them, and commits the configuration.
+      description: "This playbook blocks IP addresses using Custom Block Rules in\
+        \ Palo Alto Networks Panorama or Firewall.\nThe playbook receives malicious\
+        \ IP addresses as inputs, creates a custom bi-directional rule to block them,\
+        \ and commits the configuration."
       playbookName: PAN-OS - Block IP - Custom Block Rule
       type: playbook
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
     scriptarguments:
       AutoCommit:
         simple: ${inputs.AutoCommit}
@@ -314,14 +315,14 @@ tasks:
     separatecontext: true
     loop:
       iscommand: false
-      exitCondition: ""
+      exitCondition: ''
       wait: 1
       max: 0
     view: |-
       {
         "position": {
-          "x": 610,
-          "y": 1450
+          "x": 310,
+          "y": 4550
         }
       }
     note: false
@@ -331,26 +332,27 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "15":
-    id: "15"
-    taskid: fe112934-f356-411d-831d-cb239ce181d8
+  '15':
+    id: '15'
+    taskid: 31aacd0b-e716-4f1f-8f32-3e218651f132
     type: playbook
     task:
-      id: fe112934-f356-411d-831d-cb239ce181d8
+      id: 31aacd0b-e716-4f1f-8f32-3e218651f132
       version: -1
       name: PAN-OS - Block IP - Static Address Group
-      description: |-
-        This playbook blocks IP addresses using Static Address Groups in Palo Alto Networks Panorama or Firewall.
-        The playbook receives malicious IP addresses and an address group name as inputs, verifies that the addresses are not already part of the address group, adds them and commits the configuration.
-
-        ***Note - The playbook does not block the address group communication using a policy block rule. This step will be taken once outside of the playbook.
+      description: "This playbook blocks IP addresses using Static Address Groups\
+        \ in Palo Alto Networks Panorama or Firewall.\nThe playbook receives malicious\
+        \ IP addresses and an address group name as inputs, verifies that the addresses\
+        \ are not already part of the address group, adds them and commits the configuration.\n\
+        \n***Note - The playbook does not block the address group communication using\
+        \ a policy block rule. This step will be taken once outside of the playbook."
       playbookName: PAN-OS - Block IP - Static Address Group
       type: playbook
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
     scriptarguments:
       AddressGroupName:
         simple: ${inputs.StaticAddressGroup}
@@ -365,14 +367,14 @@ tasks:
     separatecontext: true
     loop:
       iscommand: false
-      exitCondition: ""
+      exitCondition: ''
       wait: 1
       max: 0
     view: |-
       {
         "position": {
-          "x": 190,
-          "y": 1450
+          "x": 760,
+          "y": 4550
         }
       }
     note: false
@@ -382,29 +384,29 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "17":
-    id: "17"
-    taskid: cdbc9b17-3072-4082-85f2-f7130ff47233
+  '17':
+    id: '17'
+    taskid: 5ba1ed51-1d91-4e58-8218-5ee36149b73b
     type: title
     task:
-      id: cdbc9b17-3072-4082-85f2-f7130ff47233
+      id: 5ba1ed51-1d91-4e58-8218-5ee36149b73b
       version: -1
       name: PAN-OS
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "22"
-      - "23"
-      - "25"
+      - '22'
+      - '23'
+      - '25'
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 190,
-          "y": 1115
+          "x": 545,
+          "y": 4230
         }
       }
     note: false
@@ -414,27 +416,27 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "18":
-    id: "18"
-    taskid: 7f112cc6-966d-451b-8ac2-7f656f7816ed
+  '18':
+    id: '18'
+    taskid: 9ef28a8c-3d0c-4083-81a1-77fd00e673b3
     type: title
     task:
-      id: 7f112cc6-966d-451b-8ac2-7f656f7816ed
+      id: 9ef28a8c-3d0c-4083-81a1-77fd00e673b3
       version: -1
       name: CheckPoint FW
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "7"
+      - '7'
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1520,
-          "y": 1115
+          "x": 1547.5,
+          "y": 4230
         }
       }
     note: false
@@ -444,27 +446,27 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "20":
-    id: "20"
-    taskid: 50c1f43a-223e-4767-8ab3-66d2bced42e6
+  '20':
+    id: '20'
+    taskid: d5adc878-c262-4ba9-8c7a-c1bf4d81849c
     type: title
     task:
-      id: 50c1f43a-223e-4767-8ab3-66d2bced42e6
+      id: d5adc878-c262-4ba9-8c7a-c1bf4d81849c
       version: -1
       name: Zscaler
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "12"
+      - '12'
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 2010,
-          "y": 1115
+          "x": 1997.5,
+          "y": 4230
         }
       }
     note: false
@@ -474,12 +476,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "21":
-    id: "21"
-    taskid: 244c05b4-443c-4ab2-8ff3-730b0bfaa7a7
+  '21':
+    id: '21'
+    taskid: a734501c-ebf6-4a1f-8949-7f05057fe189
     type: playbook
     task:
-      id: 244c05b4-443c-4ab2-8ff3-730b0bfaa7a7
+      id: a734501c-ebf6-4a1f-8949-7f05057fe189
       version: -1
       name: PAN-OS DAG Configuration
       description: "This playbook utilizes the Dynamic Address Group (DAG) capability\
@@ -493,10 +495,10 @@ tasks:
       playbookName: PAN-OS DAG Configuration
       type: playbook
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
     scriptarguments:
       action-type:
         simple: drop
@@ -521,14 +523,14 @@ tasks:
     separatecontext: true
     loop:
       iscommand: false
-      exitCondition: ""
+      exitCondition: ''
       wait: 1
       max: 0
     view: |-
       {
         "position": {
-          "x": -220,
-          "y": 1450
+          "x": 1210,
+          "y": 4550
         }
       }
     note: false
@@ -538,26 +540,26 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "22":
-    id: "22"
-    taskid: 35af37ce-8a86-44ef-82b4-d11d3171dda4
+  '22':
+    id: '22'
+    taskid: 36852417-0dc1-46cf-806b-60c62154f9b8
     type: condition
     task:
-      id: 35af37ce-8a86-44ef-82b4-d11d3171dda4
+      id: 36852417-0dc1-46cf-806b-60c62154f9b8
       version: -1
       name: Use Custom Block Rules?
       description: Verify if custom block rule playbook input is set to true.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "2"
-      "yes":
-      - "14"
+      - '2'
+      yes:
+      - '14'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isEqualString
           left:
@@ -569,12 +571,12 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "true"
+              simple: 'true'
     view: |-
       {
         "position": {
-          "x": 610,
-          "y": 1270
+          "x": 197.5,
+          "y": 4375
         }
       }
     note: false
@@ -584,27 +586,27 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "23":
-    id: "23"
-    taskid: 92e6fb52-03c3-46e9-810e-37d7ec035e73
+  '23':
+    id: '23'
+    taskid: d2a9a096-543c-4531-875c-7e7dca19ad5a
     type: condition
     task:
-      id: 92e6fb52-03c3-46e9-810e-37d7ec035e73
+      id: d2a9a096-543c-4531-875c-7e7dca19ad5a
       version: -1
       name: Use Static Address Group?
       description: Verify if there is a static address group name set as a playbook
         input.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "2"
-      "yes":
-      - "15"
+      - '2'
+      yes:
+      - '15'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isNotEmpty
           left:
@@ -615,8 +617,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 190,
-          "y": 1270
+          "x": 647.5,
+          "y": 4375
         }
       }
     note: false
@@ -626,26 +628,26 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "24":
-    id: "24"
-    taskid: ee8f45ff-6077-4e92-83b4-6d3197c6b8ff
+  '24':
+    id: '24'
+    taskid: e702c4a7-153e-4aaa-8013-4f89845ddffc
     type: condition
     task:
-      id: ee8f45ff-6077-4e92-83b4-6d3197c6b8ff
+      id: e702c4a7-153e-4aaa-8013-4f89845ddffc
       version: -1
       name: Use External Dynamic List?
       description: Verify if there is a tag to mark IPs for an EDL/EIS query.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "2"
-      "yes":
-      - "103"
+      - '2'
+      yes:
+      - '103'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isNotEmpty
           left:
@@ -656,8 +658,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -640,
-          "y": 1270
+          "x": 7557.5,
+          "y": 4355
         }
       }
     note: false
@@ -667,27 +669,27 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "25":
-    id: "25"
-    taskid: 1053b74c-1705-48b4-8950-a1ce7f249bb3
+  '25':
+    id: '25'
+    taskid: 52e467e3-e7a1-4f15-8918-c89c704b8072
     type: condition
     task:
-      id: 1053b74c-1705-48b4-8950-a1ce7f249bb3
+      id: 52e467e3-e7a1-4f15-8918-c89c704b8072
       version: -1
       name: Use Dynamic Address Group?
       description: Verify if there is a dynamic address group name set as a playbook
         input.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "2"
-      "yes":
-      - "21"
+      - '2'
+      yes:
+      - '21'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isNotEmpty
           left:
@@ -698,8 +700,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -220,
-          "y": 1270
+          "x": 1097.5,
+          "y": 4375
         }
       }
     note: false
@@ -709,27 +711,27 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "26":
-    id: "26"
-    taskid: db7cd8b8-4b39-47a3-8fd7-11d8ad28fd15
+  '26':
+    id: '26'
+    taskid: 910e5dfd-3878-47ab-8648-f2f53bd0e0a4
     type: title
     task:
-      id: db7cd8b8-4b39-47a3-8fd7-11d8ad28fd15
+      id: 910e5dfd-3878-47ab-8648-f2f53bd0e0a4
       version: -1
       name: Fortinet
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "27"
+      - '27'
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 2460,
-          "y": 1115
+          "x": 2447.5,
+          "y": 4230
         }
       }
     note: false
@@ -739,12 +741,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "27":
-    id: "27"
-    taskid: 27338ac6-4586-4480-8224-e57338cf76a0
+  '27':
+    id: '27'
+    taskid: 6fded0d1-ce70-4798-8163-4cfda5e5f33a
     type: condition
     task:
-      id: 27338ac6-4586-4480-8224-e57338cf76a0
+      id: 6fded0d1-ce70-4798-8163-4cfda5e5f33a
       version: -1
       name: Is FortiGate enabled?
       description: Returns 'yes' if integration brand is available. Otherwise returns
@@ -752,12 +754,12 @@ tasks:
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "2"
-      "yes":
-      - "28"
+      - '2'
+      yes:
+      - '28'
     scriptarguments:
       brandname:
         simple: FortiGate
@@ -767,8 +769,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2460,
-          "y": 1270
+          "x": 2447.5,
+          "y": 4375
         }
       }
     note: false
@@ -778,22 +780,22 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "28":
-    id: "28"
-    taskid: e07dc4bf-3a28-474c-8bba-a16180b55201
+  '28':
+    id: '28'
+    taskid: af407ea4-dde4-4972-8580-573f9f63330b
     type: regular
     task:
-      id: e07dc4bf-3a28-474c-8bba-a16180b55201
+      id: af407ea4-dde4-4972-8580-573f9f63330b
       version: -1
       name: 'FortiGate Ban IP '
       description: Adds IP addresses to the banned list.
       script: '|||fortigate-ban-ip'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
     scriptarguments:
       ip_address:
         complex:
@@ -810,8 +812,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2460,
-          "y": 1450
+          "x": 2560,
+          "y": 4550
         }
       }
     note: false
@@ -821,24 +823,24 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "29":
-    id: "29"
-    taskid: c9d90409-c70d-4e12-8a96-fb0e18bc6159
+  '29':
+    id: '29'
+    taskid: 61c96685-4200-48e1-8fbb-e9ce882dbba4
     type: playbook
     task:
-      id: c9d90409-c70d-4e12-8a96-fb0e18bc6159
+      id: 61c96685-4200-48e1-8fbb-e9ce882dbba4
       version: -1
       name: Checkpoint - Block IP - Custom Block Rule
-      description: |-
-        This playbook blocks IP addresses using Custom Block Rules in Checkpoint Firewall.
-        The playbook receives malicious IP addresses as inputs, creates a custom bi-directional rule to block them, and publishes the configuration.
+      description: "This playbook blocks IP addresses using Custom Block Rules in\
+        \ Checkpoint Firewall.\nThe playbook receives malicious IP addresses as inputs,\
+        \ creates a custom bi-directional rule to block them, and publishes the configuration."
       playbookName: Checkpoint - Block IP - Custom Block Rule
       type: playbook
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
     scriptarguments:
       IP:
         simple: ${BlockList.Final}
@@ -855,16 +857,16 @@ tasks:
               condition: {}
               else:
                 value:
-                  simple: "False"
+                  simple: 'False'
               equals:
                 value:
-                  simple: "Yes"
+                  simple: Yes
               lhs: {}
               options: {}
               rhs: {}
               then:
                 value:
-                  simple: "True"
+                  simple: 'True'
       policy_package:
         simple: Standard
       rule_layer:
@@ -876,14 +878,14 @@ tasks:
     separatecontext: true
     loop:
       iscommand: false
-      exitCondition: ""
+      exitCondition: ''
       wait: 1
       max: 0
     view: |-
       {
         "position": {
-          "x": 1520,
-          "y": 1450
+          "x": 1660,
+          "y": 4550
         }
       }
     note: false
@@ -893,27 +895,27 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "30":
-    id: "30"
-    taskid: c9c58be2-092f-4bc6-8ee3-a087d7016c55
+  '30':
+    id: '30'
+    taskid: eb5c96df-b0b7-4bed-8c98-c4bf8bf48f38
     type: title
     task:
-      id: c9c58be2-092f-4bc6-8ee3-a087d7016c55
+      id: eb5c96df-b0b7-4bed-8c98-c4bf8bf48f38
       version: -1
       name: F5 Silverline
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "32"
+      - '32'
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 2930,
-          "y": 1115
+          "x": 2897.5,
+          "y": 4230
         }
       }
     note: false
@@ -923,12 +925,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "31":
-    id: "31"
-    taskid: 97b722a5-3f27-46d0-8bc6-91b4fffd05fd
+  '31':
+    id: '31'
+    taskid: 01bd0464-1a56-4ea6-8c0d-bbb35b08b8b5
     type: regular
     task:
-      id: 97b722a5-3f27-46d0-8bc6-91b4fffd05fd
+      id: 01bd0464-1a56-4ea6-8c0d-bbb35b08b8b5
       version: -1
       name: 'F5 Silverline - add IP to deny list '
       description: Adds a new particular threatening IP address object by its IP address.
@@ -938,7 +940,7 @@ tasks:
       brand: F5Silverline
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
     scriptarguments:
       cidr_range:
         complex:
@@ -958,8 +960,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2930,
-          "y": 1450
+          "x": 3010,
+          "y": 4550
         }
       }
     note: false
@@ -969,12 +971,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "32":
-    id: "32"
-    taskid: e7f5b5e3-b8f7-45f1-894c-f91ca947da00
+  '32':
+    id: '32'
+    taskid: 4c3fedae-b3ce-4d7b-85ac-df713046d1e2
     type: condition
     task:
-      id: e7f5b5e3-b8f7-45f1-894c-f91ca947da00
+      id: 4c3fedae-b3ce-4d7b-85ac-df713046d1e2
       version: -1
       name: Is F5 Silverline enabled?
       description: Returns 'yes' if integration brand is available. Otherwise returns
@@ -982,12 +984,12 @@ tasks:
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "2"
-      "yes":
-      - "31"
+      - '2'
+      yes:
+      - '31'
     scriptarguments:
       brandname:
         simple: F5Silverline
@@ -997,8 +999,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2930,
-          "y": 1270
+          "x": 2897.5,
+          "y": 4375
         }
       }
     note: false
@@ -1008,26 +1010,26 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "36":
-    id: "36"
-    taskid: 4122e78d-25df-42f0-8abb-08a57b206ce2
+  '36':
+    id: '36'
+    taskid: 814e2ba6-0274-4c60-843f-5469ff4ac961
     type: condition
     task:
-      id: 4122e78d-25df-42f0-8abb-08a57b206ce2
+      id: 814e2ba6-0274-4c60-843f-5469ff4ac961
       version: -1
       name: Are there IPs in Inputs?
       description: Check if there are any IPs mentioned in the inputs section.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "8"
-      "yes":
-      - "80"
+      - '8'
+      yes:
+      - '80'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isExists
           left:
@@ -1047,8 +1049,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1040,
-          "y": -2700
+          "x": 2085,
+          "y": 195
         }
       }
     note: false
@@ -1058,26 +1060,26 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "41":
-    id: "41"
-    taskid: 479724d2-4c86-443f-8a9d-b76ba1d57696
+  '41':
+    id: '41'
+    taskid: acfe5977-2735-48b3-8664-03f9be95d4fc
     type: condition
     task:
-      id: 479724d2-4c86-443f-8a9d-b76ba1d57696
+      id: acfe5977-2735-48b3-8664-03f9be95d4fc
       version: -1
       name: Are there any Malicious IPs?
       description: Check if there are any malicious IPs from the input IPs.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "8"
-      "yes":
-      - "42"
+      - '8'
+      yes:
+      - '42'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isExists
           left:
@@ -1097,8 +1099,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 110,
-          "y": -1480
+          "x": 1560,
+          "y": 1850
         }
       }
     note: false
@@ -1108,12 +1110,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "42":
-    id: "42"
-    taskid: dd5ecc0c-6f4f-429f-876e-982f48631ea5
+  '42':
+    id: '42'
+    taskid: d426cc42-ed05-44af-8e95-95b15ff76000
     type: regular
     task:
-      id: dd5ecc0c-6f4f-429f-876e-982f48631ea5
+      id: d426cc42-ed05-44af-8e95-95b15ff76000
       version: -1
       name: Append Context List with IPs
       description: Set a value in context under the key you entered. If no value is
@@ -1121,13 +1123,13 @@ tasks:
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "8"
+      - '8'
     scriptarguments:
       append:
-        simple: "true"
+        simple: 'true'
       key:
         simple: BlockList.Malicious
       value:
@@ -1156,8 +1158,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 110,
-          "y": -1050
+          "x": 1560,
+          "y": 2205
         }
       }
     note: false
@@ -1167,27 +1169,27 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "43":
-    id: "43"
-    taskid: bd833ed6-d790-48a7-86a2-e779c1f1572c
+  '43':
+    id: '43'
+    taskid: 79f69ebe-a058-48e1-8bd9-ada10a62c2a5
     type: title
     task:
-      id: bd833ed6-d790-48a7-86a2-e779c1f1572c
+      id: 79f69ebe-a058-48e1-8bd9-ada10a62c2a5
       version: -1
       name: User Verification Prompt
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "44"
+      - '44'
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1040,
-          "y": -605
+          "x": 4182.5,
+          "y": 2705
         }
       }
     note: false
@@ -1197,27 +1199,27 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "44":
-    id: "44"
-    taskid: 12ece825-4055-437b-8959-6bb1944130be
+  '44':
+    id: '44'
+    taskid: 64fd6824-ef2f-458f-8b3d-574b3fdfa04e
     type: condition
     task:
-      id: 12ece825-4055-437b-8959-6bb1944130be
+      id: 64fd6824-ef2f-458f-8b3d-574b3fdfa04e
       version: -1
       name: Is User Verification required?
       description: Check if user verification is needed. Otherwise, proceed without
         asking questions.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "86"
-      "yes":
-      - "95"
+      - '86'
+      yes:
+      - '95'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isEqualString
           left:
@@ -1226,12 +1228,12 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "True"
+              simple: 'True'
     view: |-
       {
         "position": {
-          "x": 1040,
-          "y": -485
+          "x": 4182.5,
+          "y": 2850
         }
       }
     note: false
@@ -1241,32 +1243,29 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "45":
-    id: "45"
-    taskid: 5200626d-4349-455e-8294-6aeed49bd574
+  '45':
+    id: '45'
+    taskid: a64c10cd-3cde-465b-8d1a-9aa30c0c60f2
     type: collection
     task:
-      id: 5200626d-4349-455e-8294-6aeed49bd574
+      id: a64c10cd-3cde-465b-8d1a-9aa30c0c60f2
       version: -1
       name: 'Analyst Verification Prompt '
-      description: |-
-        Ask the user what IPs should be blocked.
-        Note that in this task the following IPs are in your internal range:
-        ${BlockList.PIIP}
-
-        Remember that the direction you have decided is - ${inputs.RuleDirection}
+      description: "Ask the user what IPs should be blocked.\nNote that in this task\
+        \ the following IPs are in your internal range:\n${BlockList.PIIP}\n\nRemember\
+        \ that the direction you have decided is - ${inputs.RuleDirection}"
       type: collection
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "102"
+      - '102'
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 580,
-          "y": -15
+          "x": 4612.5,
+          "y": 3200
         }
       }
     note: false
@@ -1278,14 +1277,14 @@ tasks:
       subject:
         simple: Block IP Playbook - Analyst's Verification
       body:
-        simple: |-
-          <p>Dear XSOAR user,</p>
-          <p>This notification informs you that the following list of IPs will be blocked on your XSOAR's integrated network devices.</p>
-          <p><br />(<strong>Note</strong>: the IPs will be added to your company block list or be blocked in individual rules based on the XSOAR integrated devices).</p>
-          <p>Also, <strong>please note</strong> that the following IPs are part of the <strong>internal range</strong> mentioned in the playbook:</p>
-          <p>${BlockList.PIIP}</p>
-          <p>&nbsp;</p>
-          <p>For more information, click the link below.</p>
+        simple: "<p>Dear XSOAR user,</p>\n<p>This notification informs you that the\
+          \ following list of IPs will be blocked on your XSOAR's integrated network\
+          \ devices.</p>\n<p><br />(<strong>Note</strong>: the IPs will be added to\
+          \ your company block list or be blocked in individual rules based on the\
+          \ XSOAR integrated devices).</p>\n<p>Also, <strong>please note</strong>\
+          \ that the following IPs are part of the <strong>internal range</strong>\
+          \ mentioned in the playbook:</p>\n<p>${BlockList.PIIP}</p>\n<p>&nbsp;</p>\n\
+          <p>For more information, click the link below.</p>"
       methods:
       - email
       format: html
@@ -1296,10 +1295,12 @@ tasks:
         retriescount: 2
         retriesinterval: 360
         completeafterreplies: 1
+        completeafterv2: false
+        completeaftersla: false
     form:
       questions:
-      - id: "0"
-        label: ""
+      - id: '0'
+        label: ''
         labelarg:
           simple: Do you approve the blocking request for "Malicious IPs"?
         required: false
@@ -1311,12 +1312,12 @@ tasks:
         - complex:
             root: BlockList
             accessor: Malicious
-        fieldassociated: ""
-        placeholder: ""
-        tooltip: ""
+        fieldassociated: ''
+        placeholder: ''
+        tooltip: ''
         readonly: false
-      - id: "1"
-        label: ""
+      - id: '1'
+        label: ''
         labelarg:
           simple: Do you approve the blocking request for "Suspicious IPs"?
         required: false
@@ -1328,12 +1329,12 @@ tasks:
         - complex:
             root: BlockList
             accessor: Suspicious
-        fieldassociated: ""
-        placeholder: ""
-        tooltip: ""
+        fieldassociated: ''
+        placeholder: ''
+        tooltip: ''
         readonly: false
-      - id: "2"
-        label: ""
+      - id: '2'
+        label: ''
         labelarg:
           simple: Do you approve the blocking request for "Other IPs from Input"?
         required: false
@@ -1374,12 +1375,12 @@ tasks:
                     simple: BlockList.PIIP
                   iscontext: true
                 ignorecase: true
-        fieldassociated: ""
-        placeholder: ""
-        tooltip: ""
+        fieldassociated: ''
+        placeholder: ''
+        tooltip: ''
         readonly: false
-      - id: "3"
-        label: ""
+      - id: '3'
+        label: ''
         labelarg:
           simple: Do you approve the blocking request or "Internal Address"?
         required: false
@@ -1412,9 +1413,9 @@ tasks:
             transformers:
             - operator: uniq
         - {}
-        fieldassociated: ""
-        placeholder: ""
-        tooltip: ""
+        fieldassociated: ''
+        placeholder: ''
+        tooltip: ''
         readonly: false
       title: Please answer the following
       description: Please note that there are Internal IPs in this form!
@@ -1425,27 +1426,27 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "47":
-    id: "47"
-    taskid: b8c15c1f-d162-4b92-8cc6-8d39da478cc5
+  '47':
+    id: '47'
+    taskid: 774acb51-4033-4c3a-8b1a-047a41acb9e2
     type: condition
     task:
-      id: b8c15c1f-d162-4b92-8cc6-8d39da478cc5
+      id: 774acb51-4033-4c3a-8b1a-047a41acb9e2
       version: -1
       name: Are there any Suspicious IPs?
       description: Check if any suspicious IPs were found during the IP enrichment
         process.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "8"
-      "YES":
-      - "48"
+      - '8'
+      YES:
+      - '48'
     separatecontext: false
     conditions:
-    - label: "YES"
+    - label: YES
       condition:
       - - operator: isEqualString
           left:
@@ -1474,12 +1475,12 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "2"
+              simple: '2'
     view: |-
       {
         "position": {
-          "x": 580,
-          "y": -1480
+          "x": 2160,
+          "y": 1860
         }
       }
     note: false
@@ -1489,12 +1490,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "48":
-    id: "48"
-    taskid: f6235280-d48b-4e7a-8e27-9882b4336cdc
+  '48':
+    id: '48'
+    taskid: 7bbd1ba9-ce60-489b-8702-99e0f1d2e799
     type: regular
     task:
-      id: f6235280-d48b-4e7a-8e27-9882b4336cdc
+      id: 7bbd1ba9-ce60-489b-8702-99e0f1d2e799
       version: -1
       name: Append Context List with IPs
       description: Set a value in context under the key you entered. If no value is
@@ -1502,17 +1503,17 @@ tasks:
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "8"
+      - '8'
     scriptarguments:
       append:
-        simple: "true"
+        simple: 'true'
       key:
         simple: BlockList.Suspicious
       stringify:
-        simple: "false"
+        simple: 'false'
       value:
         complex:
           root: DBotScore
@@ -1524,7 +1525,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: "2"
+                  simple: '2'
           - - operator: match
               left:
                 value:
@@ -1549,8 +1550,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 580,
-          "y": -1050
+          "x": 2070,
+          "y": 2200
         }
       }
     note: false
@@ -1560,29 +1561,29 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "51":
-    id: "51"
-    taskid: 1d3bf4e7-1c97-4947-8faf-158c070b5eaf
+  '51':
+    id: '51'
+    taskid: 0f6503c8-e512-4601-8ac8-28b581362ffe
     type: title
     task:
-      id: 1d3bf4e7-1c97-4947-8faf-158c070b5eaf
+      id: 0f6503c8-e512-4601-8ac8-28b581362ffe
       version: -1
       name: Finalize Verdict For IP/s
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "41"
-      - "47"
-      - "85"
+      - '41'
+      - '47'
+      - '85'
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 340,
-          "y": -1630
+          "x": 2160,
+          "y": 1710
         }
       }
     note: false
@@ -1592,12 +1593,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "53":
-    id: "53"
-    taskid: 7a23e7e3-6f18-4341-8cd0-22c4778ef25e
+  '53':
+    id: '53'
+    taskid: d902efbe-8d9d-4d43-8556-9ada6a1fd915
     type: regular
     task:
-      id: 7a23e7e3-6f18-4341-8cd0-22c4778ef25e
+      id: d902efbe-8d9d-4d43-8556-9ada6a1fd915
       version: -1
       name: Enrich Indicators
       description: commands.local.cmd.enrich.indicators
@@ -1607,7 +1608,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "100"
+      - '100'
     scriptarguments:
       indicatorsValues:
         complex:
@@ -1620,7 +1621,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: "No"
+                  simple: No
               ignorecase: true
           - - operator: inList
               left:
@@ -1638,8 +1639,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 760,
-          "y": -1950
+          "x": 2630,
+          "y": 1320
         }
       }
     note: false
@@ -1649,27 +1650,27 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "55":
-    id: "55"
-    taskid: 1765bd0d-56e4-4020-8946-6755545e32cb
+  '55':
+    id: '55'
+    taskid: 5969c1d1-b897-48d6-8cb4-5ea02ed70614
     type: title
     task:
-      id: 1765bd0d-56e4-4020-8946-6755545e32cb
+      id: 5969c1d1-b897-48d6-8cb4-5ea02ed70614
       version: -1
       name: Cisco ASA
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "56"
+      - '56'
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": -1060,
-          "y": 1115
+          "x": 3407.5,
+          "y": 4220
         }
       }
     note: false
@@ -1679,12 +1680,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "56":
-    id: "56"
-    taskid: 53ce7e5a-f0fa-4c66-8399-dc5be22da139
+  '56':
+    id: '56'
+    taskid: 6df919d4-f43c-4958-80ac-2c42927d6ca3
     type: condition
     task:
-      id: 53ce7e5a-f0fa-4c66-8399-dc5be22da139
+      id: 6df919d4-f43c-4958-80ac-2c42927d6ca3
       version: -1
       name: Is Cisco ASA enabled?
       description: Returns 'yes' if integration brand is available. Otherwise returns
@@ -1692,12 +1693,12 @@ tasks:
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "2"
-      "yes":
-      - "57"
+      - '2'
+      yes:
+      - '57'
     scriptarguments:
       brandname:
         simple: Cisco ASA
@@ -1707,8 +1708,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1060,
-          "y": 1270
+          "x": 3420,
+          "y": 4370
         }
       }
     note: false
@@ -1718,22 +1719,22 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "57":
-    id: "57"
-    taskid: 20210a8c-8909-4780-8dc2-631494cdb0ff
+  '57':
+    id: '57'
+    taskid: 4b95bc79-65a6-466f-8757-6fc80f455142
     type: regular
     task:
-      id: 20210a8c-8909-4780-8dc2-631494cdb0ff
+      id: 4b95bc79-65a6-466f-8757-6fc80f455142
       version: -1
       name: Cisco ASA - Create Blocking Rule
       description: Creates a rule.
       script: '|||cisco-asa-create-rule'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
     scriptarguments:
       active:
         complex:
@@ -1744,10 +1745,10 @@ tasks:
               condition: {}
               else:
                 value:
-                  simple: "False"
+                  simple: 'False'
               equals:
                 value:
-                  simple: "Yes"
+                  simple: Yes
               lhs: {}
               options: {}
               rhs: {}
@@ -1779,7 +1780,7 @@ tasks:
       log_level:
         simple: Default
       permit:
-        simple: "False"
+        simple: 'False'
       position:
         simple: top
       source:
@@ -1806,8 +1807,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1060,
-          "y": 1450
+          "x": 3620,
+          "y": 4540
         }
       }
     note: false
@@ -1817,12 +1818,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "58":
-    id: "58"
-    taskid: 85777a30-ccae-40fa-872b-9263c25cf912
+  '58':
+    id: '58'
+    taskid: d22b840c-a735-4430-8fe5-19b43a7d891f
     type: condition
     task:
-      id: 85777a30-ccae-40fa-872b-9263c25cf912
+      id: d22b840c-a735-4430-8fe5-19b43a7d891f
       version: -1
       name: Is Cisco Secure Cloud Analytics enabled?
       description: Returns 'yes' if integration brand is available. Otherwise returns
@@ -1830,12 +1831,12 @@ tasks:
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "2"
-      "yes":
-      - "59"
+      - '2'
+      yes:
+      - '59'
     scriptarguments:
       brandname:
         simple: Stealthwatch Cloud
@@ -1845,8 +1846,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1480,
-          "y": 1270
+          "x": 3957.5,
+          "y": 4365
         }
       }
     note: false
@@ -1856,22 +1857,22 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "59":
-    id: "59"
-    taskid: f701bf9b-a74b-47c4-8256-d37ce5fc64fd
+  '59':
+    id: '59'
+    taskid: b8b1cfc2-4a27-4009-8315-4a7bf5a07c3c
     type: regular
     task:
-      id: f701bf9b-a74b-47c4-8256-d37ce5fc64fd
+      id: b8b1cfc2-4a27-4009-8315-4a7bf5a07c3c
       version: -1
       name: Cisco Secure Cloud Analytics - Add IP to Block List
       description: Add a domain or IP to the block list.
       script: '|||sw-block-domain-or-ip'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
     scriptarguments:
       ip:
         complex:
@@ -1883,8 +1884,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1480,
-          "y": 1450
+          "x": 4070,
+          "y": 4540
         }
       }
     note: false
@@ -1894,27 +1895,27 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "60":
-    id: "60"
-    taskid: 17953b80-448b-4a6d-8303-7691f8dd153c
+  '60':
+    id: '60'
+    taskid: a69684d6-d420-4dee-858d-a2698e0f6644
     type: title
     task:
-      id: 17953b80-448b-4a6d-8303-7691f8dd153c
+      id: a69684d6-d420-4dee-858d-a2698e0f6644
       version: -1
       name: Cisco Secure Cloud Analytics
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "58"
+      - '58'
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": -1480,
-          "y": 1115
+          "x": 3957.5,
+          "y": 4220
         }
       }
     note: false
@@ -1924,12 +1925,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "61":
-    id: "61"
-    taskid: 4af7fc28-2629-4560-8afa-60eb4fef42c3
+  '61':
+    id: '61'
+    taskid: 06e19b2c-0a7d-4bdd-801b-430145f62523
     type: condition
     task:
-      id: 4af7fc28-2629-4560-8afa-60eb4fef42c3
+      id: 06e19b2c-0a7d-4bdd-801b-430145f62523
       version: -1
       name: Is Cisco Firepower enabled?
       description: Returns 'yes' if integration brand is available. Otherwise returns
@@ -1937,12 +1938,12 @@ tasks:
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "2"
-      "yes":
-      - "89"
+      - '2'
+      yes:
+      - '89'
     scriptarguments:
       brandname:
         simple: Cisco Firepower
@@ -1952,8 +1953,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1900,
-          "y": 1270
+          "x": 4857.5,
+          "y": 4365
         }
       }
     note: false
@@ -1963,27 +1964,27 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "63":
-    id: "63"
-    taskid: 731d3137-a262-473d-8214-fb1dc19e66f3
+  '63':
+    id: '63'
+    taskid: ed014993-13ef-4cc9-8853-2578605393e1
     type: title
     task:
-      id: 731d3137-a262-473d-8214-fb1dc19e66f3
+      id: ed014993-13ef-4cc9-8853-2578605393e1
       version: -1
       name: 'Cisco Firepower '
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "61"
+      - '61'
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": -1900,
-          "y": 1115
+          "x": 4857.5,
+          "y": 4220
         }
       }
     note: false
@@ -1993,27 +1994,27 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "64":
-    id: "64"
-    taskid: d8adfdfb-21ea-4566-821d-289cb4f64631
+  '64':
+    id: '64'
+    taskid: 4dfbe12d-717b-477c-87fb-36cbde8083ac
     type: title
     task:
-      id: d8adfdfb-21ea-4566-821d-289cb4f64631
+      id: 4dfbe12d-717b-477c-87fb-36cbde8083ac
       version: -1
       name: Akamai WAF
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "65"
+      - '65'
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1040,
-          "y": 1110
+          "x": 4407.5,
+          "y": 4220
         }
       }
     note: false
@@ -2023,12 +2024,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "65":
-    id: "65"
-    taskid: b6e36f84-1604-42a0-8cd3-dfa1392db002
+  '65':
+    id: '65'
+    taskid: 7f8879bb-e9b1-4f60-80e3-fdff2de64bbf
     type: condition
     task:
-      id: b6e36f84-1604-42a0-8cd3-dfa1392db002
+      id: 7f8879bb-e9b1-4f60-80e3-fdff2de64bbf
       version: -1
       name: Is Akamai WAF enabled?
       description: Returns 'yes' if integration brand is available. Otherwise returns
@@ -2036,12 +2037,12 @@ tasks:
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "2"
-      "yes":
-      - "66"
+      - '2'
+      yes:
+      - '66'
     scriptarguments:
       brandname:
         simple: Akamai WAF
@@ -2051,8 +2052,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1040,
-          "y": 1270
+          "x": 4407.5,
+          "y": 4365
         }
       }
     note: false
@@ -2062,22 +2063,22 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "66":
-    id: "66"
-    taskid: a2efece2-222b-450f-816c-755b1f4f2c0f
+  '66':
+    id: '66'
+    taskid: f747c56f-0a61-4d02-8b89-8cf1adc53c8e
     type: regular
     task:
-      id: a2efece2-222b-450f-816c-755b1f4f2c0f
+      id: f747c56f-0a61-4d02-8b89-8cf1adc53c8e
       version: -1
       name: Akamai WAF - Add IP to a block list
       description: Adds elements to the specified network list.
       script: '|||akamai-add-elements-to-network-list'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
     scriptarguments:
       elements:
         complex:
@@ -2095,8 +2096,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1040,
-          "y": 1450
+          "x": 4520,
+          "y": 4540
         }
       }
     note: false
@@ -2106,27 +2107,27 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "67":
-    id: "67"
-    taskid: 9cf2364e-b829-4674-8ee2-a0987fa202ed
+  '67':
+    id: '67'
+    taskid: 699a1683-a1ca-4ca8-8771-811b530774c1
     type: title
     task:
-      id: 9cf2364e-b829-4674-8ee2-a0987fa202ed
+      id: 699a1683-a1ca-4ca8-8771-811b530774c1
       version: -1
       name: ThreatX
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "68"
+      - '68'
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 3580,
-          "y": 1115
+          "x": 5670,
+          "y": 4210
         }
       }
     note: false
@@ -2136,12 +2137,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "68":
-    id: "68"
-    taskid: 0b41f49c-283e-4f5c-88df-dd0f67b53214
+  '68':
+    id: '68'
+    taskid: dd03c187-5984-44fa-86c8-452789c71188
     type: condition
     task:
-      id: 0b41f49c-283e-4f5c-88df-dd0f67b53214
+      id: dd03c187-5984-44fa-86c8-452789c71188
       version: -1
       name: Is ThreatX enabled?
       description: Returns 'yes' if integration brand is available. Otherwise returns
@@ -2149,13 +2150,13 @@ tasks:
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "2"
-      "yes":
-      - "69"
-      - "93"
+      - '2'
+      yes:
+      - '69'
+      - '93'
     scriptarguments:
       brandname:
         simple: ThreatX
@@ -2165,8 +2166,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3580,
-          "y": 1270
+          "x": 5670,
+          "y": 4355
         }
       }
     note: false
@@ -2176,22 +2177,22 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "69":
-    id: "69"
-    taskid: 8c9d14e7-3ce9-4e0b-8e06-b8525c1399dd
+  '69':
+    id: '69'
+    taskid: ca109f77-0896-4c1d-8f34-53e91d62fd2d
     type: regular
     task:
-      id: 8c9d14e7-3ce9-4e0b-8e06-b8525c1399dd
+      id: ca109f77-0896-4c1d-8f34-53e91d62fd2d
       version: -1
       name: ThreatX - Block IP for 30 min
       description: Temporarily blocks an IP address or CIDR. Default is 30 minutes.
       script: '|||threatx-block-ip'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
     scriptarguments:
       description:
         simple: ${inputs.RuleName}
@@ -2209,8 +2210,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3380,
-          "y": 1450
+          "x": 5420,
+          "y": 4540
         }
       }
     note: false
@@ -2220,27 +2221,27 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "71":
-    id: "71"
-    taskid: 9f6bd7c3-4a06-46c3-82ec-fadab39c6658
+  '71':
+    id: '71'
+    taskid: 8802192f-9b17-47cb-8263-a175991a9e53
     type: title
     task:
-      id: 9f6bd7c3-4a06-46c3-82ec-fadab39c6658
+      id: 8802192f-9b17-47cb-8263-a175991a9e53
       version: -1
       name: 'Signal Sciences WAF '
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "72"
+      - '72'
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 4250,
-          "y": 1115
+          "x": 6207.5,
+          "y": 4210
         }
       }
     note: false
@@ -2250,12 +2251,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "72":
-    id: "72"
-    taskid: 1c5061d8-6f8a-47d6-8f44-7e0a7fa5f971
+  '72':
+    id: '72'
+    taskid: 39b851b8-fd3c-47a0-8579-2aa5185b45ed
     type: condition
     task:
-      id: 1c5061d8-6f8a-47d6-8f44-7e0a7fa5f971
+      id: 39b851b8-fd3c-47a0-8579-2aa5185b45ed
       version: -1
       name: Is Signal Sciences WAF  enabled?
       description: Returns 'yes' if integration brand is available. Otherwise returns
@@ -2263,12 +2264,12 @@ tasks:
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "2"
-      "yes":
-      - "73"
+      - '2'
+      yes:
+      - '73'
     scriptarguments:
       brandname:
         simple: Signal Sciences WAF
@@ -2278,8 +2279,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 4250,
-          "y": 1270
+          "x": 6207.5,
+          "y": 4355
         }
       }
     note: false
@@ -2289,22 +2290,22 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "73":
-    id: "73"
-    taskid: fa1b208d-09f5-46b0-8a0d-59c3a7d50374
+  '73':
+    id: '73'
+    taskid: 6389a4aa-7048-4c8a-88aa-a773b0bd15f6
     type: regular
     task:
-      id: fa1b208d-09f5-46b0-8a0d-59c3a7d50374
+      id: 6389a4aa-7048-4c8a-88aa-a773b0bd15f6
       version: -1
       name: Is Signal Sciences WAF   - Blacklist IPs
       description: Adding IPs to the Signal Sciences WAF integration.
       script: '|||sigsci-blacklist-add-ip'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
     scriptarguments:
       ip:
         complex:
@@ -2324,8 +2325,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 4250,
-          "y": 1450
+          "x": 6320,
+          "y": 4530
         }
       }
     note: false
@@ -2335,27 +2336,27 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "74":
-    id: "74"
-    taskid: fc9c3e1e-ad8c-4166-8aa8-8c6ef6c11638
+  '74':
+    id: '74'
+    taskid: 438c0e02-ea9d-4764-86bb-69dcb8c6340e
     type: title
     task:
-      id: fc9c3e1e-ad8c-4166-8aa8-8c6ef6c11638
+      id: 438c0e02-ea9d-4764-86bb-69dcb8c6340e
       version: -1
       name: Sophos Firewall
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "76"
+      - '76'
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 4730,
-          "y": 1115
+          "x": 7107.5,
+          "y": 4210
         }
       }
     note: false
@@ -2365,12 +2366,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "75":
-    id: "75"
-    taskid: 307dbc81-61b7-41c0-8f02-53aa5b88aeb6
+  '75':
+    id: '75'
+    taskid: 9232361d-d035-4423-8125-9b2d0db7a6ea
     type: regular
     task:
-      id: 307dbc81-61b7-41c0-8f02-53aa5b88aeb6
+      id: 9232361d-d035-4423-8125-9b2d0db7a6ea
       version: -1
       name: ARIA Packet Intelligence - Blacklist IPs
       description: Adds a rule that blocks packets destined for a specific IP address
@@ -2378,10 +2379,10 @@ tasks:
       script: '|||aria-block-dest-subnet'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
     scriptarguments:
       rule_name:
         simple: ${inputs.RuleName}
@@ -2399,8 +2400,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -2320,
-          "y": 1450
+          "x": 6770,
+          "y": 4530
         }
       }
     note: false
@@ -2410,12 +2411,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "76":
-    id: "76"
-    taskid: 13b01b09-e8d8-4582-8e91-446242b457d9
+  '76':
+    id: '76'
+    taskid: a4d5df6d-9ad0-4662-829b-0dd944d172de
     type: condition
     task:
-      id: 13b01b09-e8d8-4582-8e91-446242b457d9
+      id: a4d5df6d-9ad0-4662-829b-0dd944d172de
       version: -1
       name: Is Sophos Firewall enabled?
       description: Returns 'yes' if integration brand is available. Otherwise returns
@@ -2423,12 +2424,12 @@ tasks:
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "2"
-      "yes":
-      - "94"
+      - '2'
+      yes:
+      - '94'
     scriptarguments:
       brandname:
         simple: sophos_firewall
@@ -2438,8 +2439,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 4730,
-          "y": 1270
+          "x": 7107.5,
+          "y": 4355
         }
       }
     note: false
@@ -2449,12 +2450,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "78":
-    id: "78"
-    taskid: 11ff919b-bb96-43ad-8962-91c2580e0e14
+  '78':
+    id: '78'
+    taskid: 2e53e6e5-58e6-44a0-8690-5d7b5d4df0a1
     type: condition
     task:
-      id: 11ff919b-bb96-43ad-8962-91c2580e0e14
+      id: 2e53e6e5-58e6-44a0-8690-5d7b5d4df0a1
       version: -1
       name: Is ARIA Packet Intelligence enabled?
       description: Returns 'yes' if integration brand is available. Otherwise returns
@@ -2462,12 +2463,12 @@ tasks:
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "2"
-      "yes":
-      - "75"
+      - '2'
+      yes:
+      - '75'
     scriptarguments:
       brandname:
         simple: ARIA Packet Intelligence
@@ -2477,8 +2478,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -2320,
-          "y": 1270
+          "x": 6657.5,
+          "y": 4355
         }
       }
     note: false
@@ -2488,27 +2489,27 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "79":
-    id: "79"
-    taskid: f5578aea-9c8a-4fee-83d2-20435d16f12b
+  '79':
+    id: '79'
+    taskid: 52301443-47b7-44ce-8611-30f685c538ae
     type: title
     task:
-      id: f5578aea-9c8a-4fee-83d2-20435d16f12b
+      id: 52301443-47b7-44ce-8611-30f685c538ae
       version: -1
       name: 'ARIA Packet Intelligence '
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "78"
+      - '78'
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": -2320,
-          "y": 1115
+          "x": 6657.5,
+          "y": 4210
         }
       }
     note: false
@@ -2518,12 +2519,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "80":
-    id: "80"
-    taskid: ac83e071-6f18-426e-8cac-15c2689ee1e4
+  '80':
+    id: '80'
+    taskid: 986ad895-2b22-40dd-881d-6c9b30006e7c
     type: regular
     task:
-      id: ac83e071-6f18-426e-8cac-15c2689ee1e4
+      id: 986ad895-2b22-40dd-881d-6c9b30006e7c
       version: -1
       name: Check if there are internal IP addresses
       description: Returns 'yes' if the IP is in one of the ranges provided. Otherwise
@@ -2534,7 +2535,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "105"
+      - '105'
     scriptarguments:
       ip:
         complex:
@@ -2552,8 +2553,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 760,
-          "y": -2525
+          "x": 3160,
+          "y": 640
         }
       }
     note: false
@@ -2563,29 +2564,29 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "85":
-    id: "85"
-    taskid: c929bb43-10a2-44b8-8f73-e5640cdb882d
+  '85':
+    id: '85'
+    taskid: 9c8a48c6-17cd-4264-88de-80dfbf609e69
     type: regular
     task:
-      id: c929bb43-10a2-44b8-8f73-e5640cdb882d
+      id: 9c8a48c6-17cd-4264-88de-80dfbf609e69
       version: -1
       name: Append Context List with Input IPs
       description: Add the IPs from the input.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "8"
+      - '8'
     scriptarguments:
       append:
-        simple: "true"
+        simple: 'true'
       key:
         simple: BlockList.Input
       stringify:
-        simple: "false"
+        simple: 'false'
       value:
         complex:
           root: inputs.IP
@@ -2599,8 +2600,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 340,
-          "y": -1245
+          "x": 2690,
+          "y": 1850
         }
       }
     note: false
@@ -2610,12 +2611,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "86":
-    id: "86"
-    taskid: ca66421d-fbc6-4e84-8ae5-c54d80321888
+  '86':
+    id: '86'
+    taskid: f6367092-af8d-4cf8-845a-a832ee0a1e64
     type: regular
     task:
-      id: ca66421d-fbc6-4e84-8ae5-c54d80321888
+      id: f6367092-af8d-4cf8-845a-a832ee0a1e64
       version: -1
       name: Re-set the block list [Inputs]
       description: Set a value in context under the key you entered. If no value is
@@ -2623,13 +2624,13 @@ tasks:
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "5"
+      - '5'
     scriptarguments:
       append:
-        simple: "true"
+        simple: 'true'
       key:
         simple: BlockList.Final
       value:
@@ -2638,8 +2639,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 150,
-          "y": 385
+          "x": 3470,
+          "y": 3760
         }
       }
     note: false
@@ -2649,12 +2650,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "89":
-    id: "89"
-    taskid: 9c275081-8770-40c6-8c5d-9041e5da00bb
+  '89':
+    id: '89'
+    taskid: 5570b158-bac4-4f60-858d-fea675f5f800
     type: playbook
     task:
-      id: 9c275081-8770-40c6-8c5d-9041e5da00bb
+      id: 5570b158-bac4-4f60-858d-fea675f5f800
       version: -1
       name: Cisco FirePower- Append network group object
       description: This playbook will append a network group object with new elements
@@ -2662,10 +2663,10 @@ tasks:
       playbookName: Cisco FirePower- Append network group object
       type: playbook
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
     scriptarguments:
       IP:
         complex:
@@ -2678,18 +2679,18 @@ tasks:
                 value:
                   simple: ','
       Override:
-        simple: "False"
+        simple: 'False'
     separatecontext: true
     loop:
       iscommand: false
-      exitCondition: ""
+      exitCondition: ''
       wait: 1
       max: 100
     view: |-
       {
         "position": {
-          "x": -1900,
-          "y": 1450
+          "x": 4970,
+          "y": 4540
         }
       }
     note: false
@@ -2699,12 +2700,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "90":
-    id: "90"
-    taskid: a459d1a6-0fb3-423c-8c72-e2e65cb9f405
+  '90':
+    id: '90'
+    taskid: bb01d4ea-4a15-4a32-846f-25a478b853b1
     type: regular
     task:
-      id: a459d1a6-0fb3-423c-8c72-e2e65cb9f405
+      id: bb01d4ea-4a15-4a32-846f-25a478b853b1
       version: -1
       name: Re-set the block list [Inputs]
       description: Set a value in context under the key you entered. If no value is
@@ -2712,13 +2713,13 @@ tasks:
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "91"
+      - '91'
     scriptarguments:
       append:
-        simple: "true"
+        simple: 'true'
       key:
         simple: BlockList.Final
       value:
@@ -2727,8 +2728,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1040,
-          "y": 385
+          "x": 4397.5,
+          "y": 3550
         }
       }
     note: false
@@ -2738,12 +2739,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "91":
-    id: "91"
-    taskid: 56cab1f8-95e3-41e5-873e-a6bd8f554e01
+  '91':
+    id: '91'
+    taskid: 6b935c1d-2e59-4fa3-8526-aac2802b133e
     type: regular
     task:
-      id: 56cab1f8-95e3-41e5-873e-a6bd8f554e01
+      id: 6b935c1d-2e59-4fa3-8526-aac2802b133e
       version: -1
       name: Re-set the block list [Malicious]
       description: Set a value in context under the key you entered. If no value is
@@ -2751,13 +2752,13 @@ tasks:
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "92"
+      - '92'
     scriptarguments:
       append:
-        simple: "true"
+        simple: 'true'
       key:
         simple: BlockList.Final
       value:
@@ -2766,8 +2767,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1040,
-          "y": 555
+          "x": 4397.5,
+          "y": 3725
         }
       }
     note: false
@@ -2777,12 +2778,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "92":
-    id: "92"
-    taskid: dca0f1eb-2cce-461e-8f85-7da7174399f4
+  '92':
+    id: '92'
+    taskid: d2e02b76-c1fb-400c-8cf2-5aff986e6abd
     type: regular
     task:
-      id: dca0f1eb-2cce-461e-8f85-7da7174399f4
+      id: d2e02b76-c1fb-400c-8cf2-5aff986e6abd
       version: -1
       name: Re-set the block list [Suspicious]
       description: Set a value in context under the key you entered. If no value is
@@ -2790,13 +2791,13 @@ tasks:
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "5"
+      - '5'
     scriptarguments:
       append:
-        simple: "true"
+        simple: 'true'
       key:
         simple: BlockList.Final
       value:
@@ -2805,8 +2806,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1040,
-          "y": 720
+          "x": 4397.5,
+          "y": 3900
         }
       }
     note: false
@@ -2816,22 +2817,22 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "93":
-    id: "93"
-    taskid: 89c95e25-1341-459c-8cc7-d428e10b807d
+  '93':
+    id: '93'
+    taskid: 15d7e622-976c-4bbc-808e-40e2679a869f
     type: regular
     task:
-      id: 89c95e25-1341-459c-8cc7-d428e10b807d
+      id: 15d7e622-976c-4bbc-808e-40e2679a869f
       version: -1
       name: ThreatX - add IP to a block list
       description: Adds an IP address or CIDR to the block list.
       script: '|||threatx-blacklist-ip'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
     scriptarguments:
       description:
         simple: ${inputs.RuleName}
@@ -2849,8 +2850,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3780,
-          "y": 1450
+          "x": 5870,
+          "y": 4530
         }
       }
     note: false
@@ -2860,26 +2861,25 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "94":
-    id: "94"
-    taskid: 1e39e78d-dff6-4a4a-8d56-1e42f3d32b96
+  '94':
+    id: '94'
+    taskid: cfc74163-8e71-4a6c-8a8b-90026747203a
     type: playbook
     task:
-      id: 1e39e78d-dff6-4a4a-8d56-1e42f3d32b96
+      id: cfc74163-8e71-4a6c-8a8b-90026747203a
       version: -1
       name: Sophos Firewall - Block IP
-      description: |-
-        This playbook adds the IP address to a pre-configured firewall rule. (The target firewall rule can be changed as requested.)
-        Pre-Requisite:
-        1) Create an IP host group.
-        2) Create a firewall rule which refers to the IP host group created in the previous step.
+      description: "This playbook adds the IP address to a pre-configured firewall\
+        \ rule. (The target firewall rule can be changed as requested.)\nPre-Requisite:\n\
+        1) Create an IP host group.\n2) Create a firewall rule which refers to the\
+        \ IP host group created in the previous step."
       playbookName: Sophos Firewall - Block IP
       type: playbook
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
     scriptarguments:
       IP:
         complex:
@@ -2890,14 +2890,14 @@ tasks:
     separatecontext: true
     loop:
       iscommand: false
-      exitCondition: ""
+      exitCondition: ''
       wait: 1
       max: 100
     view: |-
       {
         "position": {
-          "x": 4730,
-          "y": 1450
+          "x": 7220,
+          "y": 4530
         }
       }
     note: false
@@ -2907,26 +2907,26 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "95":
-    id: "95"
-    taskid: 39f40c5a-7ef0-4a2d-8b80-5a9cbe5928e2
+  '95':
+    id: '95'
+    taskid: 3ee9c547-fc6d-4e60-8eea-8ab54030bfa7
     type: condition
     task:
-      id: 39f40c5a-7ef0-4a2d-8b80-5a9cbe5928e2
+      id: 3ee9c547-fc6d-4e60-8eea-8ab54030bfa7
       version: -1
       name: Are There Any Internal IPs?
       description: Check if there are any internal IPs in the block requested IPs.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "98"
-      "yes":
-      - "45"
+      - '98'
+      yes:
+      - '45'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isExists
           left:
@@ -2936,8 +2936,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1040,
-          "y": -250
+          "x": 4397.5,
+          "y": 3025
         }
       }
     note: false
@@ -2947,27 +2947,27 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "96":
-    id: "96"
-    taskid: d2db46dd-a1c0-4639-8e0a-85ca7db99498
+  '96':
+    id: '96'
+    taskid: 226a0ef3-9d2b-4a68-839c-1974fcbb4346
     type: title
     task:
-      id: d2db46dd-a1c0-4639-8e0a-85ca7db99498
+      id: 226a0ef3-9d2b-4a68-839c-1974fcbb4346
       version: -1
       name: No IP to block
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": -2750,
-          "y": 1115
+          "x": 2310,
+          "y": 3540
         }
       }
     note: false
@@ -2977,30 +2977,28 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "98":
-    id: "98"
-    taskid: 3a32993e-9fc7-4565-8ff2-196356a446c2
+  '98':
+    id: '98'
+    taskid: a766bce9-cd2d-4030-80b3-3d5601dbe007
     type: collection
     task:
-      id: 3a32993e-9fc7-4565-8ff2-196356a446c2
+      id: a766bce9-cd2d-4030-80b3-3d5601dbe007
       version: -1
       name: Analyst Verification Prompt (without IP Internal List)
-      description: |-
-        Ask the user what IPs should be blocked.
-
-        Remember that the direction you have decided is - ${inputs.RuleDirection}
+      description: "Ask the user what IPs should be blocked.\n\nRemember that the\
+        \ direction you have decided is - ${inputs.RuleDirection}"
       type: collection
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "90"
+      - '90'
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1040,
-          "y": -15
+          "x": 4157.5,
+          "y": 3295
         }
       }
     note: false
@@ -3012,12 +3010,12 @@ tasks:
       subject:
         simple: Block IP Playbook - Analyst's Verification
       body:
-        simple: |-
-          <p>Dear XSOAR user,</p>
-          <p>This notification informs you that the following list of IPs will be blocked on your XSOAR's integrated network devices.</p>
-          <p><br />(<strong>Note</strong>: the IPs will be added to your company block list or be blocked in individual rules based on the XSOAR integrated devices).</p>
-          <p>&nbsp;</p>
-          <p>For more information, click the link below.</p>
+        simple: "<p>Dear XSOAR user,</p>\n<p>This notification informs you that the\
+          \ following list of IPs will be blocked on your XSOAR's integrated network\
+          \ devices.</p>\n<p><br />(<strong>Note</strong>: the IPs will be added to\
+          \ your company block list or be blocked in individual rules based on the\
+          \ XSOAR integrated devices).</p>\n<p>&nbsp;</p>\n<p>For more information,\
+          \ click the link below.</p>"
       methods:
       - email
       format: html
@@ -3028,10 +3026,12 @@ tasks:
         retriescount: 2
         retriesinterval: 360
         completeafterreplies: 1
+        completeafterv2: false
+        completeaftersla: false
     form:
       questions:
-      - id: "0"
-        label: ""
+      - id: '0'
+        label: ''
         labelarg:
           simple: Do you approve the blocking request for "Malicious IPs"?
         required: false
@@ -3043,12 +3043,12 @@ tasks:
         - complex:
             root: BlockList
             accessor: Malicious
-        fieldassociated: ""
-        placeholder: ""
-        tooltip: ""
+        fieldassociated: ''
+        placeholder: ''
+        tooltip: ''
         readonly: false
-      - id: "1"
-        label: ""
+      - id: '1'
+        label: ''
         labelarg:
           simple: Do you approve the blocking request for "Suspiocus IPs"?
         required: false
@@ -3060,12 +3060,12 @@ tasks:
         - complex:
             root: BlockList
             accessor: Suspicious
-        fieldassociated: ""
-        placeholder: ""
-        tooltip: ""
+        fieldassociated: ''
+        placeholder: ''
+        tooltip: ''
         readonly: false
-      - id: "2"
-        label: ""
+      - id: '2'
+        label: ''
         labelarg:
           simple: Do you approve the blocking request for "Other IPs from Input"?
         required: false
@@ -3095,12 +3095,12 @@ tasks:
                   value:
                     simple: BlockList.Malicious
                   iscontext: true
-        fieldassociated: ""
-        placeholder: ""
-        tooltip: ""
+        fieldassociated: ''
+        placeholder: ''
+        tooltip: ''
         readonly: false
       title: Please answer the following
-      description: ""
+      description: ''
       sender: Your SOC team
       expired: false
       totalanswers: 0
@@ -3108,27 +3108,27 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "99":
-    id: "99"
-    taskid: c42ecec1-d24b-4c1a-83b6-fea82e62f889
+  '99':
+    id: '99'
+    taskid: 2e4c6b8b-fb7f-4fc4-88ba-46e3fa25776d
     type: condition
     task:
-      id: c42ecec1-d24b-4c1a-83b6-fea82e62f889
+      id: 2e4c6b8b-fb7f-4fc4-88ba-46e3fa25776d
       version: -1
       name: Should Inputs be enriched?
       description: Check if the user requests an IPs enrichment for determining if
         those are malicious or suspicious.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "100"
-      "yes":
-      - "53"
+      - '100'
+      yes:
+      - '53'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isEqualString
           left:
@@ -3137,12 +3137,12 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "True"
+              simple: 'True'
     view: |-
       {
         "position": {
-          "x": 760,
-          "y": -2170
+          "x": 3160,
+          "y": 1110
         }
       }
     note: false
@@ -3152,12 +3152,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "100":
-    id: "100"
-    taskid: 00211c6d-40d4-4cb0-8a33-76ac25dd3b05
+  '100':
+    id: '100'
+    taskid: ee8f5670-7ca1-4cd5-8d53-48a6c86e2e3e
     type: regular
     task:
-      id: 00211c6d-40d4-4cb0-8a33-76ac25dd3b05
+      id: ee8f5670-7ca1-4cd5-8d53-48a6c86e2e3e
       version: -1
       name: Append Internal IPs to a possible block list
       description: Set a value in context under the key you entered. If no value is
@@ -3165,13 +3165,13 @@ tasks:
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "51"
+      - '51'
     scriptarguments:
       append:
-        simple: "true"
+        simple: 'true'
       key:
         simple: BlockList.PIIP
       value:
@@ -3185,7 +3185,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: "Yes"
+                  simple: Yes
               ignorecase: true
           - - operator: inList
               left:
@@ -3204,8 +3204,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 340,
-          "y": -1780
+          "x": 3160,
+          "y": 1495
         }
       }
     note: false
@@ -3215,12 +3215,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "102":
-    id: "102"
-    taskid: 24aa26cf-65bc-4deb-8b15-8d2c3cc2dbea
+  '102':
+    id: '102'
+    taskid: 84560d5f-ff8d-44b8-8773-6e585906939f
     type: regular
     task:
-      id: 24aa26cf-65bc-4deb-8b15-8d2c3cc2dbea
+      id: 84560d5f-ff8d-44b8-8773-6e585906939f
       version: -1
       name: Re-set the block list [Internal Address]
       description: Set a value in context under the key you entered. If no value is
@@ -3228,13 +3228,13 @@ tasks:
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "90"
+      - '90'
     scriptarguments:
       append:
-        simple: "true"
+        simple: 'true'
       key:
         simple: BlockList.Final
       value:
@@ -3243,8 +3243,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 580,
-          "y": 170
+          "x": 4612.5,
+          "y": 3375
         }
       }
     note: false
@@ -3254,12 +3254,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "103":
-    id: "103"
-    taskid: 5b0e085d-9979-4117-883a-24f8146d867b
+  '103':
+    id: '103'
+    taskid: d3182d0b-6f84-491f-827a-4825b99c61d4
     type: regular
     task:
-      id: 5b0e085d-9979-4117-883a-24f8146d867b
+      id: d3182d0b-6f84-491f-827a-4825b99c61d4
       version: -1
       name: Update Indicator Tag for EDL
       description: commands.local.cmd.set.indicators
@@ -3269,7 +3269,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
     scriptarguments:
       indicatorsValues:
         complex:
@@ -3287,8 +3287,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -640,
-          "y": 1450
+          "x": 7670,
+          "y": 4530
         }
       }
     note: false
@@ -3298,27 +3298,27 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "104":
-    id: "104"
-    taskid: 664aaee7-a87a-47d8-89e9-5af93caa37c1
+  '104':
+    id: '104'
+    taskid: 10b5745d-44cb-4c26-8912-76cf72862950
     type: title
     task:
-      id: 664aaee7-a87a-47d8-89e9-5af93caa37c1
+      id: 10b5745d-44cb-4c26-8912-76cf72862950
       version: -1
       name: EDL/EIS
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "24"
+      - '24'
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": -640,
-          "y": 1115
+          "x": 7557.5,
+          "y": 4210
         }
       }
     note: false
@@ -3328,12 +3328,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "105":
-    id: "105"
-    taskid: fac2d139-f8b7-4e2d-81fc-ff0410ba1778
+  '105':
+    id: '105'
+    taskid: 1438bf7c-f448-49e0-8adc-a3067278e643
     type: regular
     task:
-      id: fac2d139-f8b7-4e2d-81fc-ff0410ba1778
+      id: 1438bf7c-f448-49e0-8adc-a3067278e643
       version: -1
       name: Create IP indicators in the system
       description: Create System indicators
@@ -3343,7 +3343,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "99"
+      - '99'
     scriptarguments:
       type:
         simple: IP
@@ -3361,8 +3361,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 760,
-          "y": -2340
+          "x": 3160,
+          "y": 865
         }
       }
     note: false
@@ -3384,7 +3384,7 @@ view: |-
       "32_2_#default#": 0.1,
       "36_8_#default#": 0.19,
       "41_42_yes": 0.65,
-      "41_8_#default#": 0.1,
+      "41_8_#default#": 0.38,
       "47_8_#default#": 0.12,
       "56_2_#default#": 0.11,
       "58_2_#default#": 0.14,
@@ -3403,10 +3403,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 4605,
-        "width": 7860,
-        "x": -2750,
-        "y": -2840
+        "height": 4730,
+        "width": 7852.5,
+        "x": 197.5,
+        "y": 50
       }
     }
   }
@@ -3419,7 +3419,7 @@ inputs:
   playbookInputQuery:
 - key: CustomBlockRule
   value:
-    simple: "True"
+    simple: 'True'
   required: false
   description: "This input determines whether Palo Alto Networks Panorama or Firewall\
     \ Custom Block Rules are used.\nSpecify \"True\" to create new Custom Block Rules\
@@ -3433,7 +3433,7 @@ inputs:
   playbookInputQuery:
 - key: AutoCommit
   value:
-    simple: "No"
+    simple: No
   required: false
   description: "This input determines whether to commit the configuration automatically\
     \ on PAN-OS devices and other FWs. \nYes - Commit automatically.\nNo - Commit\
@@ -3442,9 +3442,9 @@ inputs:
 - key: StaticAddressGroup
   value: {}
   required: false
-  description: |-
-    This input determines whether Palo Alto Networks Panorama or Firewall Static Address Groups are used.
-    Specify the Static Address Group name for IPs list handling.
+  description: "This input determines whether Palo Alto Networks Panorama or Firewall\
+    \ Static Address Groups are used.\nSpecify the Static Address Group name for IPs\
+    \ list handling."
   playbookInputQuery:
 - key: Tag
   value: {}
@@ -3456,13 +3456,13 @@ inputs:
 - key: DAG
   value: {}
   required: false
-  description: |-
-    This input determines whether Palo Alto Networks Panorama or Firewall Dynamic Address Groups are used.
-    Specify the Dynamic Address Group tag name for IPs list handling.
+  description: "This input determines whether Palo Alto Networks Panorama or Firewall\
+    \ Dynamic Address Groups are used.\nSpecify the Dynamic Address Group tag name\
+    \ for IPs list handling."
   playbookInputQuery:
 - key: UserVerification
   value:
-    simple: "True"
+    simple: 'True'
   required: false
   description: "Possible values: True/False.  Default: True.\nWhether to provide user\
     \ verification for blocking those IPs. \n\nFalse - No prompt will be displayed\
@@ -3499,30 +3499,26 @@ inputs:
   playbookInputQuery:
 - key: InputEnrichment
   value:
-    simple: "False"
+    simple: 'False'
   required: false
-  description: |-
-    Possible values: True/False . Default: False
-    Enrich the input IP address/es with reputation commands.
+  description: "Possible values: True/False . Default: False\nEnrich the input IP\
+    \ address/es with reputation commands."
   playbookInputQuery:
 - key: RuleName
   value:
     simple: XSOAR - Block IP playbook - ${incident.id}
   required: false
-  description: |-
-    The rule name/description that will be presented on the created rule in certain integrations (if there is a need).
-    The supported integrations: PAN-OS, CheckPoint.
-
-    Default input- "XSOAR - Block IP playbook - ${incident.id}"
+  description: "The rule name/description that will be presented on the created rule\
+    \ in certain integrations (if there is a need).\nThe supported integrations: PAN-OS,\
+    \ CheckPoint.\n\nDefault input- \"XSOAR - Block IP playbook - ${incident.id}\""
   playbookInputQuery:
 - key: RuleDirection
   value:
     simple: outbound
   required: false
-  description: |-
-    Determine if a newly created rule should be with the network direction of outbound or inbound blocked traffic.
-    Possible values: inbound or outbound
-    Default: outbound
+  description: "Determine if a newly created rule should be with the network direction\
+    \ of outbound or inbound blocked traffic.\nPossible values: inbound or outbound\n\
+    Default: outbound"
   playbookInputQuery:
 outputs:
 - contextPath: Aria.BlockDestSubnet.Rule
@@ -3561,3 +3557,4 @@ outputs:
 tests:
 - Block IP - Generic V3_Test
 fromversion: 6.0.0
+system: true
