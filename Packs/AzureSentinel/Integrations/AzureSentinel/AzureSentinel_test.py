@@ -3,7 +3,6 @@ import json
 import pytest
 import requests
 import demistomock as demisto
-from requests.adapters import Response
 from AzureSentinel import AzureSentinelClient, list_incidents_command, list_incident_relations_command, \
     incident_add_comment_command, \
     get_update_incident_request_data, list_incident_entities_command, list_incident_comments_command, \
