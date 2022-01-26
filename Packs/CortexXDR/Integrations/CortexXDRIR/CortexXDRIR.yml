@@ -82,7 +82,6 @@ configuration:
   options:
   - new
   - under_investigation
-  - resolved_threat_handled
   - resolved_known_issue
   - resolved_false_positive
   - resolved_true_positive
@@ -185,7 +184,7 @@ script:
       secret: false
     - default: false
       description: 'Filters only incidents in the specified status. The options are:
-        new, under_investigation, resolved_threat_handled, resolved_known_issue, resolved_false_positive, resolved_true_positive
+        new, under_investigation, resolved_known_issue, resolved_false_positive, resolved_true_positive
         resolved_security_testing, resolved_other, resolved_auto'
       isArray: false
       name: status
@@ -242,7 +241,7 @@ script:
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.status
       description: |
-        Current status of the incident. Valid values are: "new","under_investigation","resolved_threat_handled","resolved_known_issue","resolved_duplicate","resolved_false_positive","resolved_true_positive","resolved_security_testing" or "resolved_other".
+        Current status of the incident. Valid values are: "new","under_investigation","resolved_known_issue","resolved_duplicate","resolved_false_positive","resolved_true_positive","resolved_security_testing" or "resolved_other".
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.description
       description: Dynamic calculated description of the incident.
@@ -306,7 +305,7 @@ script:
     - contextPath: PaloAltoNetworksXDR.Incident.status
       description: |-
         Current status of the incident. Valid values are:
-        "new","under_investigation","resolved_threat_handled","resolved_known_issue","resolved_duplicate","resolved_false_positive","resolved_true_positive","resolved_security_testing","resolved_other"
+        "new","under_investigation","resolved_known_issue","resolved_duplicate","resolved_false_positive","resolved_true_positive","resolved_security_testing","resolved_other"
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.severity
       description: 'Calculated severity of the incident. Valid values are: "low","medium","high"'
@@ -650,14 +649,13 @@ script:
     - auto: PREDEFINED
       default: false
       description: 'Status of the incident. Valid values are: NEW, UNDER_INVESTIGATION,
-       RESOLVED_THREAT_HANDLED, RESOLVED_KNOWN_ISSUE, RESOLVED_DUPLICATE, RESOLVED_FALSE_POSITIVE,
+       RESOLVED_KNOWN_ISSUE, RESOLVED_DUPLICATE, RESOLVED_FALSE_POSITIVE,
        RESOLVED_TRUE_POSITIVE, RESOLVED_SECURITY_TESTING, RESOLVED_OTHER.'
       isArray: false
       name: status
       predefined:
       - NEW
       - UNDER_INVESTIGATION
-      - RESOLVED_THREAT_HANDLED
       - RESOLVED_KNOWN_ISSUE
       - RESOLVED_DUPLICATE
       - RESOLVED_FALSE_POSITIVE
@@ -3111,7 +3109,7 @@ script:
     - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.ingestion_time
       description: Ingestion time.
       type: String
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.1.25933
   feed: false
   isfetch: true
   longRunning: false

@@ -2703,7 +2703,7 @@ class Message(object):
     def _get_attachments_names(self):
         names = []
         for attachment in self.attachments:
-            names.append(attachment.DisplayName)
+            names.append(attachment.DisplayName or attachment.Filename)
 
         return names
 
@@ -3468,7 +3468,7 @@ def handle_msg(file_path, file_name, parse_only_headers=False, max_depth=3):
         'Text': msg_dict['Text'],
         'Headers': headers,
         'HeadersMap': headers_map,
-        'Attachments': '',
+        'Attachments': msg_dict.get('Attachments'),
         'Format': mail_format_type,
         'Depth': MAX_DEPTH_CONST - max_depth
     }
@@ -3556,6 +3556,15 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
 
         parser = HeaderParser()
         headers = parser.parsestr(file_data)
+
+        # headers is a Message object implementing magic methods of set/get item and contains.
+        # message object 'contains' method transforms its keys to lower-case, hence there is not a difference when
+        # approaching it with any casing type, for example, 'message-id' or 'Message-ID' or 'Message-id' or
+        # 'MeSSage_Id' are all searching for the same key in the headers object.
+        if "message-id" in headers:
+            message_id_content = headers["message-id"]
+            del headers["message-id"]
+            headers["Message-ID"] = message_id_content
 
         header_list = []
         headers_map = {}  # type: dict

@@ -174,6 +174,25 @@ configuration:
   additionalinfo: The limit of how many events to retrieve per each one of the enrichment
     types (Drilldown, Asset, and Identity). To retrieve all events, enter "0" (not
     recommended).
+- display: 'Advanced: Extensive logging (for debugging purposes) - Please use this option unless advised otherwise.'
+  name: extensive_logs
+  type: 8
+  required: false
+- display: 'Advanced: Fetch backwards window for the events occurrence time (minutes)'
+  name: occurrence_look_behind
+  defaultvalue: "15"
+  type: 0
+  required: false
+  additionalinfo: The fetch time range will be at least of the size specified here.
+    This will support events that have a gap between their occurrence time and their
+    index time in Splunk. To decide how long the backwards window should be, you need to analyze what is the average
+    time between them both on your splunk envorinment.
+- display: 'Advanced: Unique ID fields'
+  name: unique_id_fields
+  type: 0
+  required: false
+  additionalinfo: Use this parameter to specify a list of comma separated fields, which
+    together are a unique identifier for the events you wish to fetch.
 description: Runs queries on Splunk servers.
 display: SplunkPy
 name: SplunkPy

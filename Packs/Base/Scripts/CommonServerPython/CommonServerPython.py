@@ -3,6 +3,7 @@ This script will be appended to each server script before being executed.
 Please notice that to add custom common code, add it to the CommonServerUserPython script.
 Note that adding code to CommonServerUserPython can override functions in CommonServerPython
 """
+# If you change this section, make sure you update the line offset magic number
 from __future__ import print_function
 
 import base64
@@ -15,6 +16,7 @@ import socket
 import sys
 import time
 import traceback
+import types
 import urllib
 from random import randint
 import xml.etree.cElementTree as ET
@@ -23,9 +25,116 @@ from datetime import datetime, timedelta
 from abc import abstractmethod
 from distutils.version import LooseVersion
 from threading import Lock
+from inspect import currentframe
 
 import demistomock as demisto
 import warnings
+
+
+def __line__():
+    cf = currentframe()
+    return cf.f_back.f_lineno
+
+
+# 41 - The line offset from the beggining of the file.
+_MODULES_LINE_MAPPING = {
+    'CommonServerPython': {'start': __line__() - 41, 'end': float('inf')},
+}
+
+
+def register_module_line(module_name, start_end, line, wrapper=0):
+    """
+        Register a module in the line mapping for the traceback line correction algorithm.
+
+        :type module_name: ``str``
+        :param module_name: The name of the module. (required)
+
+        :type start_end: ``str``
+        :param start_end: Whether to register the line as the start or the end of the module.
+            Possible values: start, end. (required)
+
+        :type line: ``int``
+        :param line: the line number to record. (required)
+
+        :type wrapper: ``int``
+        :param wrapper: Wrapper size (used for inline replacements with headers such as ApiModules). (optional)
+
+        :return: None
+        :rtype: ``None``
+    """
+    global _MODULES_LINE_MAPPING
+    default_module_info = {'start': 0, 'start_wrapper': 0, 'end': float('inf'), 'end_wrapper': float('inf')}
+    try:
+        if start_end not in ('start', 'end'):
+            raise ValueError('Invalid start_end argument. Acceptable values are: start, end.')
+        if not isinstance(line, int) or line < 0:
+            raise ValueError('Invalid line argument. Expected non-negative integer, '
+                             'got {}({})'.format(type(line), line))
+
+        _MODULES_LINE_MAPPING.setdefault(module_name, default_module_info).update(
+            {start_end: line, '{}_wrapper'.format(start_end): line + wrapper}
+        )
+    except Exception as exc:
+        demisto.info(
+            'failed to register module line. '
+            'module: "{}" start_end: "{}" line: "{}".\nError: {}'.format(module_name, start_end, line, exc))
+
+
+def _find_relevant_module(line):
+    """
+    Find which module contains the given line number.
+
+    :type line: ``int``
+    :param trace_str: Line number to search. (required)
+
+    :return: The name of the module.
+    :rtype: ``str``
+    """
+    global _MODULES_LINE_MAPPING
+
+    relevant_module = ''
+    for module, info in _MODULES_LINE_MAPPING.items():
+        if info['start'] <= line <= info['end']:
+            if not relevant_module:
+                relevant_module = module
+            elif info['start'] > _MODULES_LINE_MAPPING[relevant_module]['start']:
+                relevant_module = module
+
+    return relevant_module
+
+
+def fix_traceback_line_numbers(trace_str):
+    """
+    Fixes the given traceback line numbers.
+
+    :type trace_str: ``str``
+    :param trace_str: The traceback string to edit. (required)
+
+    :return: The new formated traceback.
+    :rtype: ``str``
+    """
+    for number in re.findall(r'line (\d+)', trace_str):
+        line_num = int(number)
+        module = _find_relevant_module(line_num)
+        if module:
+            module_start_line = _MODULES_LINE_MAPPING.get(module, {'start': 0})['start']
+            actual_number = line_num - module_start_line
+
+            # in case of ApiModule injections, adjust the line numbers of the code after the injection.
+            for module_info in _MODULES_LINE_MAPPING.values():
+                block_start = module_info.get('start_wrapper', module_info['start'])
+                block_end = module_info.get('end_wrapper', module_info['end'])
+                if block_start > module_start_line and block_end < line_num:
+                    actual_number -= block_end - block_start
+
+            # a traceback line is of the form: File "<string>", line 8853, in func5
+            trace_str = trace_str.replace(
+                'File "<string>", line {},'.format(number),
+                'File "<{}>", line {},'.format(module, actual_number)
+            )
+
+    return trace_str
+
 
 OS_LINUX = False
 OS_MAC = False
@@ -6187,7 +6296,7 @@ def return_error(message, error='', outputs=None):
                                                              'long-running-execution',
                                                              'fetch-indicators')
     if is_debug_mode() and not is_server_handled and any(sys.exc_info()):  # Checking that an exception occurred
-        message = "{}\n\n{}".format(message, traceback.format_exc())
+        message = "{}\n\n{}".format(message, fix_traceback_line_numbers(traceback.format_exc()))
 
     message = LOG(message)
     if error:
@@ -8301,6 +8410,34 @@ def set_feed_last_run(last_run_indicators):
         demisto.setIntegrationContext(last_run_indicators)
 
 
+def set_last_mirror_run(last_mirror_run):  # type: (Dict[Any, Any]) -> None
+    """
+    This function sets the last run of the mirror, from XSOAR version 6.6.0, by using `demisto.setLastMirrorRun()`.
+    Before XSOAR version 6.6.0, we don't set the given data and an exception will be raised.
+    :type last_mirror_run: ``dict``
+    :param last_mirror_run: Data to save in the "LastMirrorRun" object.
+    :rtype: ``None``
+    :return: None
+    """
+    if is_demisto_version_ge('6.6.0'):
+        demisto.setLastMirrorRun(last_mirror_run)
+    else:
+        raise DemistoException("You cannot use setLastMirrorRun as your version is below 6.6.0")
+
+
+def get_last_mirror_run():  # type: () -> Optional[Dict[Any, Any]]
+    """
+    This function gets the last run of the mirror, from XSOAR version 6.6.0, using `demisto.getLastMirrorRun()`.
+    Before XSOAR version 6.6.0, the given data is not returned and an exception will be raised.
+    :rtype: ``dict``
+    :return: A dictionary representation of the data that was already set in the previous runs (or an empty dict if
+     we did not set anything yet).
+    """
+    if is_demisto_version_ge('6.6.0'):
+        return demisto.getLastMirrorRun() or {}
+    raise DemistoException("You cannot use getLastMirrorRun as your version is below 6.6.0")
+
+
 def support_multithreading():
     """Adds lock on the calls to the Cortex XSOAR server from the Demisto object to support integration which use multithreading.
 
@@ -8437,12 +8574,14 @@ def get_message_memory_dump(_sig, _frame):
     ret_value += get_message_global_vars()
     ret_value += '\n--- End Variables Dump ---\n\n'
 
+    ret_value += get_message_modules_sizes()
+
     return ret_value
 
 
 def get_message_classes_dump(classes_as_list):
     """
-    A function that prints the memory dump to log info
+    A function that returns the printable message about classes dump
 
     :type classes_as_list: ``list``
     :param classes_as_list: The classes to print to the log
@@ -8474,7 +8613,7 @@ def get_message_classes_dump(classes_as_list):
 
 def get_message_local_vars():
     """
-    A function that prints the local variables to log info
+    A function that returns the printable message about local variables
 
     :return: Message to print.
     :rtype: ``str``
@@ -8482,16 +8621,111 @@ def get_message_local_vars():
     local_vars = list(locals().items())
     ret_value = '\n\n--- Start Local Vars ---\n\n'
     for current_local_var in local_vars:
-        ret_value += str(current_local_var) + '\n'
+        ret_value += shorten_string_for_printing(str(current_local_var)) + '\n'
 
     ret_value += '\n--- End Local Vars ---\n\n'
 
     return ret_value
 
 
+def get_size_of_object(input_object):
+    """
+    A function that recursively iterate to sum size of object & members.
+
+    :type input_object: ``Any``
+    :param input_object: The object to calculate its memory footprint
+
+    :return: Size of input_object in bytes.
+    :rtype: ``int``
+    """
+    from collections import deque, Mapping
+    from numbers import Number
+    # IS_PY3:
+    # ZERO_DEPTH_BASES = (str, bytes, Number, range, bytearray) if IS_PY3 else (str, bytes, Number, bytearray)
+    ZERO_DEPTH_BASES = (str, bytes, Number, bytearray)
+    MAX_LEVEL = 20
+    _seen_ids = set()
+
+    def inner(obj, level):
+        """
+        A recursion that goes deep into objects, to calculate their deep memory footprint.
+
+        :type level: ``int``
+        :param level: Current level of the recursion (object)
+
+        :return: Size of obj in bytes.
+        :rtype: ``int``
+        """
+        if level == MAX_LEVEL:
+            # Stop at MAX_LEVEL
+            return sys.getsizeof(obj)
+        obj_id = id(obj)
+        if obj_id in _seen_ids:
+            return 0
+        _seen_ids.add(obj_id)
+        size = sys.getsizeof(obj)
+        if isinstance(obj, ZERO_DEPTH_BASES):
+            pass
+        elif isinstance(obj, (tuple, list, set, deque)):
+            size += sum(inner(i, level + 1) for i in obj)
+        elif isinstance(obj, Mapping):
+            mapping_items_keys = list(getattr(obj, 'keys')())
+            for current_key in mapping_items_keys:
+                if current_key in obj:
+                    size += (inner(current_key, level + 1) + inner(obj[current_key], level + 1))
+        # Check for custom object instances - may subclass above too
+        if hasattr(obj, '__dict__'):
+            size += inner(vars(obj), level + 1)
+        return size
+    return inner(input_object, 0)
+
+
+excluded_globals = ['__name__', '__doc__', '__package__', '__loader__',
+                    '__spec__', '__annotations__', '__builtins__',
+                    '__file__', '__cached__', '_Feature',
+                    ]
+excluded_types_names = ['MagicMock',  # When running tests locally
+                        ]
+
+
 def get_message_global_vars():
     """
-    A function that prints the global variables to log info
+    A function that returns the printable message about global variables
+
+    :return: Message to print.
+    :rtype: ``str``
+    """
+    excluded_types = [types.ModuleType, types.FunctionType,
+                      ]
+
+    globals_dict = dict(globals())
+    globals_dict_full = {}
+    for current_key in globals_dict.keys():
+        current_value = globals_dict[current_key]
+        if not type(current_value) in excluded_types \
+                and current_key not in excluded_globals \
+                and type(current_value).__name__ not in excluded_types_names:
+            globals_dict_full[current_key] = {
+                'name': current_key,
+                'value': current_value,
+                # Deep calculation. Better than sys.getsizeof(current_value)
+                'size': get_size_of_object(current_value)
+            }
+
+    ret_value = '\n\n--- Start Top {} Globals by Size ---\n'.format(PROFILING_DUMP_ROWS_LIMIT)
+    globals_sorted_by_size = sorted(globals_dict_full.values(), key=lambda d: d['size'], reverse=True)
+    ret_value += 'Size\t\tName\t\tValue\n'
+    for current_global in globals_sorted_by_size[:PROFILING_DUMP_ROWS_LIMIT]:
+        ret_value += '{}\t\t{}\t\t{}\n'.format(current_global["size"], current_global["name"],
+                                               shorten_string_for_printing(str(current_global["value"])))
+    ret_value += '\n--- End Top {} Globals by Size ---\n'.format(PROFILING_DUMP_ROWS_LIMIT)
+
+    return ret_value
+
+
+def get_message_modules_sizes():
+    """
+    A function that returns the printable message about the loaded modules by size
 
     :return: Message to print.
     :rtype: ``str``
@@ -8500,18 +8734,23 @@ def get_message_global_vars():
     globals_dict_full = {}
     for current_key in globals_dict.keys():
         current_value = globals_dict[current_key]
-        globals_dict_full[current_key] = {
-            'name': current_key,
-            'value': current_value,
-            'size': sys.getsizeof(current_value)
-        }
+        if isinstance(current_value, types.ModuleType) \
+                and current_key not in excluded_globals \
+                and type(current_value).__name__ not in excluded_types_names:
+            globals_dict_full[current_key] = {
+                'name': current_key,
+                'value': current_value,
+                # Deep calculation. Better than sys.getsizeof(current_value)
+                'size': get_size_of_object(current_value)
+            }
 
-    ret_value = '\n\n--- Start Top {} Globals by Size ---\n'.format(PROFILING_DUMP_ROWS_LIMIT)
+    ret_value = '\n\n--- Start Top {} Modules by Size ---\n'.format(PROFILING_DUMP_ROWS_LIMIT)
     globals_sorted_by_size = sorted(globals_dict_full.values(), key=lambda d: d['size'], reverse=True)
     ret_value += 'Size\t\tName\t\tValue\n'
     for current_global in globals_sorted_by_size[:PROFILING_DUMP_ROWS_LIMIT]:
-        ret_value += '{}\t\t{}\t\t{}\n'.format(current_global["size"], current_global["name"], current_global["value"])
-    ret_value += '\n--- End Top {} Globals by Size ---\n'.format(PROFILING_DUMP_ROWS_LIMIT)
+        ret_value += '{}\t\t{}\t\t{}\n'.format(current_global["size"], current_global["name"],
+                                               shorten_string_for_printing(str(current_global["value"])))
+    ret_value += '\n--- End Top {} Modules by Size ---\n'.format(PROFILING_DUMP_ROWS_LIMIT)
 
     return ret_value
 
@@ -8544,6 +8783,9 @@ def register_signal_handler_profiling_dump(signal_type=None, profiling_dump_rows
     :type profiling_dump_rows_limit: ``int``
     :param profiling_dump_rows_limit: The max number of profiling related rows to print to the log
 
+    :type profiling_dump_rows_limit: ``int``
+    :param profiling_dump_rows_limit: The max number of profiling related rows to print to the log
+
     :return: No data returned
     :rtype: ``None``
     """
@@ -8558,3 +8800,49 @@ def register_signal_handler_profiling_dump(signal_type=None, profiling_dump_rows
         signal.signal(requested_signal, signal_handler_profiling_dump)
     else:
         demisto.info('Not a Linux or Mac OS, profiling using a signal is not supported.')
+
+
+def shorten_string_for_printing(source_string, max_length=64):
+    """
+    Function that removes the middle of a long str, for printint or logging.
+    If needed, it will replace the middle with '...',
+    Examples:
+    >>> shorten_string_for_printing('123456789', 9)
+    '123456789'
+    >>> shorten_string_for_printing('1234567890', 9)
+    'abc...890'
+    >>> shorten_string_for_printing('123456789012', 10)
+    '1234...012'
+
+    :type source_string: ``str``
+    :param source_string: A long str that needs shortening.
+
+    :type max_length: ``int``
+    :param max_length: Maximum length of the returned str, should be higher than 0. Default is 64.
+
+    :return:: A string no longer than max_length.
+    :rtype: ``str``
+    """
+    if not source_string or max_length < 1 or len(source_string) <= max_length:
+        return source_string
+
+    extremeties_length = int((max_length - 3) / 2)
+    if max_length % 2 == 0:
+        # even max_length. Start with one more char than at the beginning
+        ret_value = source_string[:extremeties_length + 1] \
+            + '...' \
+            + source_string[-extremeties_length:]
+        return ret_value
+    else:
+        # odd max_length
+        ret_value = source_string[:extremeties_length] \
+            + '...' \
+            + source_string[-extremeties_length:]
+        return ret_value
+
+
+###########################################
+#     DO NOT ADD LINES AFTER THIS ONE     #
+###########################################
+register_module_line('CommonServerPython', 'end', __line__())
+register_module_line('CustomScriptIntegration', 'start', __line__())
