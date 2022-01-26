@@ -76,4 +76,4 @@ def test_ip_command(requests_mock):
     parsed_context = [command_result.to_context() for command_result in command_results]
 
     expected_parsed_context = util_load_json('test_data/ip_1.1.1.1_command_results.json')
-    assert "lat|lng" in parsed_context[1].get("HumanReadable")
+    assert "lat|lng" in parsed_context[0].get("HumanReadable")
