@@ -49,6 +49,7 @@ def test_ipinfo_ip_command(requests_mock):
     expected_parsed_context = util_load_json('test_data/ip_1.1.1.1_command_results.json')
     assert parsed_context == expected_parsed_context
 
+
 def test_ip_command(requests_mock):
     """
     Given:
@@ -75,5 +76,4 @@ def test_ip_command(requests_mock):
     command_results = ipinfo_ip_command(client, ip)
     parsed_context = [command_result.to_context() for command_result in command_results]
 
-    expected_parsed_context = util_load_json('test_data/ip_1.1.1.1_command_results.json')
-    assert "lat|lng" in parsed_context[0].get("HumanReadable")
+    assert "lat|lng" in parsed_context[1].get("HumanReadable")
