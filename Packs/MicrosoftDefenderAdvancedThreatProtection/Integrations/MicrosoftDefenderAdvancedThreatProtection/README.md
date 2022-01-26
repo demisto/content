@@ -34,6 +34,7 @@ For more details about the authentication used in this integration, see [Microso
 * Url.Read.All - Application
 * User.Read.All - Application
 * Ti.ReadWrite (Read and write IOCs belonging to the app) - Application
+* Vulnerability.Read.All - Application
 
 ## Configure Microsoft Defender for Endpoint on Cortex XSOAR
 ---
@@ -135,6 +136,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 41. microsoft-atp-sc-indicator-create
 42. microsoft-atp-sc-indicator-update
 43. microsoft-atp-sc-indicator-delete
+44. microsoft-atp-list-machines-by-vulnerability
 
 ### 1. microsoft-atp-isolate-machine
 ---
@@ -3997,6 +3999,8 @@ Creates a new indicator.
 ***
 Retrieves a list of machines affected by a vulnerability.
 
+##### Required Permissions
+Vulnerability.Read.All
 
 #### Base Command
 
