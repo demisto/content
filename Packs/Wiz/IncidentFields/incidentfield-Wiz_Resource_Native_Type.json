@@ -1,12 +1,11 @@
 {
-    "id": "incident_saassecurityincidentid",
+    "id": "incident_wizresourcenativetype",
     "version": -1,
-    "modified": "2021-10-27T22:56:13.134377204Z",
-    "fromVersion": "6.0.0",
-    "name": "Saas Security Incident Id",
+    "modified": "2021-12-30T16:04:19.37455948Z",
+    "name": "Wiz Resource Native Type",
     "ownerOnly": false,
-    "cliName": "saassecurityincidentid",
-    "type": "number",
+    "cliName": "wizresourcenativetype",
+    "type": "shortText",
     "closeForm": false,
     "editForm": true,
     "required": false,
@@ -18,14 +17,15 @@
     "content": true,
     "group": 0,
     "hidden": false,
-    "openEnded": false,
     "associatedTypes": [
-        "Saas Security Incident"
+        "Wiz Issue"
     ],
     "associatedToAll": false,
     "unmapped": false,
-    "unsearchable": false,
+    "unsearchable": true,
     "caseInsensitive": true,
+    "description": "Resource native type in Wiz, e.g. Microsoft.Compute/virtualMachineScaleSets/virtualMachines",
     "sla": 0,
-    "threshold": 72
+    "threshold": 72,
+    "fromVersion": "6.0.0"
 }
