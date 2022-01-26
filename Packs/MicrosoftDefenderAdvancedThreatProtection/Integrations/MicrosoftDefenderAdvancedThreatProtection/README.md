@@ -314,104 +314,112 @@ Machine.Isolate
 
 
 ### 3. microsoft-atp-get-machines
----
-Retrieves a collection of machines that has communicated with WDATP cloud in the last 30 days.
+***
+Retrieves a collection of machines that have communicated with WDATP cloud in the last 30 days. Note, only one of ip and hostname can be a comma separeted list. If both given as lists, an error will appear.
 
-##### Required Permissions
-Machine.ReadWrite.All	
 
-##### Base Command
+#### Base Command
 
 `microsoft-atp-get-machines`
-##### Input
+#### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| hostname | The DNS name of the computer. | Optional | 
-| ip | The last machine IP address to access the internet. | Optional | 
-| risk_score | The risk score of the machine. Possible values: "Low", "Medium", and "High". | Optional | 
-| health_status | The health status of the machine. Possible values: "Active" and "Inactive". | Optional | 
+| hostname | A comma-separated list of computer DNS name. | Optional | 
+| ip | A comma-separated list of the last machine IP to access the internet. | Optional | 
+| risk_score | The machine risk score. Possible values: "Low", "Medium", and "High". Possible values are: Low, Medium, High. | Optional | 
+| health_status | The machine health status. Possible values: "Active" and "Inactive". Possible values are: Active, Inactive. | Optional | 
 | os_platform | The machine's OS platform. Only a single platform can be added. | Optional | 
 
 
-##### Context Output
+#### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftATP.Machine.ID | String | The ID of the machine. | 
-| MicrosoftATP.Machine.ComputerDNSName | String | The DNS name of the machine. | 
+| MicrosoftATP.Machine.ID | String | The machine ID. | 
+| MicrosoftATP.Machine.ComputerDNSName | String | The machine DNS name. | 
 | MicrosoftATP.Machine.FirstSeen | Date | The first date and time where the machine was observed by Microsoft Defender ATP. | 
 | MicrosoftATP.Machine.LastSeen | Date | The last date and time where the machine was observed by Microsoft Defender ATP. | 
 | MicrosoftATP.Machine.OSPlatform | String | The operating system platform. | 
 | MicrosoftATP.Machine.OSVersion | String | The operating system version. | 
 | MicrosoftATP.Machine.OSProcessor | String | The operating system processor. | 
-| MicrosoftATP.Machine.LastIPAddress | String | The last IP address on the machine. | 
-| MicrosoftATP.Machine.LastExternalIPAddress | String | The last machine IP address to access the internet. | 
+| MicrosoftATP.Machine.LastIPAddress | String | The last IP on the machine. | 
+| MicrosoftATP.Machine.LastExternalIPAddress | String | The last machine IP to access the internet. | 
 | MicrosoftATP.Machine.OSBuild | Number | The operating system build number. | 
-| MicrosoftATP.Machine.HealthStatus | String | The health status of the machine. | 
-| MicrosoftATP.Machine.RBACGroupID | Number | The RBAC group ID of the machine. | 
-| MicrosoftATP.Machine.RBACGroupName | String | The RBAC group name of the machine. | 
-| MicrosoftATP.Machine.RiskScore | String | The risk score of the machine. | 
-| MicrosoftATP.Machine.ExposureLevel | String | The exposure score of the machine. | 
-| MicrosoftATP.Machine.IsAADJoined | Boolean | Whether the machine is AAD joined. | 
-| MicrosoftATP.Machine.AADDeviceID | String | The AAD device ID. | 
-| MicrosoftATP.Machine.MachineTags | String | The set of machine tags. | 
+| MicrosoftATP.Machine.HealthStatus | String | The machine health status. | 
+| MicrosoftATP.Machine.RBACGroupID | Number | The machine RBAC group ID. | 
+| MicrosoftATP.Machine.RBACGroupName | String | The machine RBAC group name. | 
+| MicrosoftATP.Machine.RiskScore | String | The machine risk score. | 
+| MicrosoftATP.Machine.ExposureLevel | String | The machine exposure score. | 
+| MicrosoftATP.Machine.IsAADJoined | Boolean | True if machine is AAD joined, False otherwise. | 
+| MicrosoftATP.Machine.AADDeviceID | String | The AAD Device ID. | 
+| MicrosoftATP.Machine.MachineTags | String | Set of machine tags. | 
 
-
-##### Command Example
-```!microsoft-atp-get-machines health_status=Active risk_score=Medium```
-
-##### Context Example
-```
+#### Command example
+```!microsoft-atp-get-machines hostname=desktop-s2455r9 health_status=Active os_platform=Windows10 ip=192.168.1.78,192.168.1.69```
+#### Context Example
+```json
 {
-    "MicrosoftATP.Machine": [
-        {
-            "OSBuild": 18363, 
-            "ExposureLevel": "Medium", 
-            "OSPlatform": "Windows10", 
+    "MicrosoftATP": {
+        "Machine": {
+            "AgentVersion": "10.8040.19041.1466",
+            "ComputerDNSName": "desktop-s2455r9",
+            "ExposureLevel": "Medium",
+            "FirstSeen": "2020-02-20T14:44:11.4627779Z",
+            "HealthStatus": "Active",
+            "ID": "f70f9fe6b29cd9511652434919c6530618f06606",
+            "IPAddresses": [
+                {
+                    "ipAddress": "192.168.1.78",
+                    "macAddress": "00505694D20C",
+                    "operationalStatus": "Up",
+                    "type": "Ethernet"
+                },
+                {
+                    "ipAddress": "fe80::f9e6:df59:3177:11dc",
+                    "macAddress": "00505694D20C",
+                    "operationalStatus": "Up",
+                    "type": "Ethernet"
+                },
+                {
+                    "ipAddress": "127.0.0.1",
+                    "macAddress": "",
+                    "operationalStatus": "Up",
+                    "type": "SoftwareLoopback"
+                },
+                {
+                    "ipAddress": "::1",
+                    "macAddress": "",
+                    "operationalStatus": "Up",
+                    "type": "SoftwareLoopback"
+                }
+            ],
+            "IsAADJoined": true,
+            "LastExternalIPAddress": "82.166.99.236",
+            "LastIPAddress": "192.168.1.78",
+            "LastSeen": "2022-01-26T11:14:22.9649216Z",
             "MachineTags": [
-                "test add tag", 
+                "new test",
+                "test add tag",
                 "testing123"
-            ], 
-            "ComputerDNSName": "desktop-s2455r9", 
-            "RBACGroupID": 0, 
-            "OSProcessor": "x64", 
-            "HealthStatus": "Active", 
-            "AgentVersion": "10.6940.18362.693", 
-            "LastExternalIPAddress": "81.166.99.236", 
-            "LastIPAddress": "192.168.1.73", 
-            "OSVersion": "1909", 
-            "RiskScore": "Medium", 
-            "ID": "f70f9fe6b29cd9511652434919c6530618f06606", 
-            "FirstSeen": "2020-02-20T14:44:11.4627779Z", 
-            "LastSeen": "2020-03-23T07:55:50.9986715Z"
-        }, 
-        {
-            "OSBuild": 14393, 
-            "ExposureLevel": "Medium", 
-            "OSPlatform": "WindowsServer2016", 
-            "ComputerDNSName": "ec2amaz-ua9hieu", 
-            "RBACGroupID": 0, 
-            "OSProcessor": "x64", 
-            "HealthStatus": "Active", 
-            "AgentVersion": "10.3720.16299.2010", 
-            "LastExternalIPAddress": "51.29.51.184", 
-            "LastIPAddress": "175.31.7.116", 
-            "RiskScore": "Medium", 
-            "ID": "f3bba49af4d3bacedc62ca0fe580a4d5925af8aa", 
-            "FirstSeen": "2020-01-26T14:02:55.1863281Z", 
-            "LastSeen": "2020-03-22T20:18:54.9792497Z"
+            ],
+            "OSBuild": 19042,
+            "OSPlatform": "Windows10",
+            "OSProcessor": "x64",
+            "OSVersion": "20H2",
+            "RBACGroupID": 0,
+            "RiskScore": "Medium"
         }
-    ]
+    }
 }
 ```
 
-##### Human Readable Output
-##### Microsoft Defender ATP Machines:
-|ID|ComputerDNSName|OSPlatform|LastIPAddress|LastExternalIPAddress|HealthStatus|RiskScore|ExposureLevel|
-|---|---|---|---|---|---|---|---|
-| f70f9fe6b29cd9511652434919c6530618f06606 | desktop-s2455r9 | Windows10 | 192.168.1.73 | 81.166.99.236 | Active | Medium | Medium |
-| f3bba49af4d3bacedc62ca0fe580a4d5925af8aa | ec2amaz-ua9hieu | WindowsServer2016 | 175.31.7.116 | 51.29.51.184 | Active | Medium | Medium |
+#### Human Readable Output
+
+>### Microsoft Defender ATP Machines:
+>|ID|ComputerDNSName|OSPlatform|LastIPAddress|LastExternalIPAddress|HealthStatus|RiskScore|ExposureLevel|
+>|---|---|---|---|---|---|---|---|
+>| f70f9fe6b29cd9511652434919c6530618f06606 | desktop-s2455r9 | Windows10 | 192.168.1.78 | 82.166.99.236 | Active | Medium | Medium |
 
 
 ### 4. microsoft-atp-get-file-related-machines

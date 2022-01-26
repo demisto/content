@@ -69,18 +69,20 @@ configuration:
   name: first_fetch_timestamp
   required: false
   type: 0
-- display: ID (received from the admin consent - see Detailed Instructions (?) section) (Deprecated)
+- display: ID (received from the admin consent - see Detailed Instructions (?) section)
+    (Deprecated)
   name: auth_id
   required: false
   type: 4
   hidden: true
-- display: Token (received from the admin consent - see Detailed Instructions (?) (Deprecated)
-    section)
+- display: Token (received from the admin consent - see Detailed Instructions (?)
+    (Deprecated) section)
   name: tenant_id
   required: false
   type: 4
   hidden: true
-- display: Key (received from the admin consent - see Detailed Instructions (?) section) (Deprecated)
+- display: Key (received from the admin consent - see Detailed Instructions (?) section)
+    (Deprecated)
   name: enc_key
   required: false
   type: 4
@@ -94,7 +96,8 @@ script:
   commands:
   - arguments:
     - default: true
-      description: A comma-separated list of machine IDs to be used for isolation. e.g., 0a3250e0693a109f1affc9217be9459028aa8426,0a3250e0693a109f1affc9217be9459028aa8424.
+      description: A comma-separated list of machine IDs to be used for isolation.
+        e.g., 0a3250e0693a109f1affc9217be9459028aa8426,0a3250e0693a109f1affc9217be9459028aa8424.
       isArray: true
       name: machine_id
       required: true
@@ -160,7 +163,8 @@ script:
       type: String
   - arguments:
     - default: false
-      description: A comma-separated list of machine IDs to be used to stop the isolation. e.g., 0a3250e0693a109f1affc9217be9459028aa8426,0a3250e0693a109f1affc9217be9459028aa8424.
+      description: A comma-separated list of machine IDs to be used to stop the isolation.
+        e.g., 0a3250e0693a109f1affc9217be9459028aa8426,0a3250e0693a109f1affc9217be9459028aa8424.
       isArray: true
       name: machine_id
       required: true
@@ -215,13 +219,13 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The computer DNS name.
-      isArray: false
+      description: A comma-separated list of computer DNS name.
+      isArray: true
       name: hostname
       required: false
       secret: false
     - default: false
-      description: The last machine IP to access the internet.
+      description: A comma-separated list of the last machine IP to access the internet.
       isArray: false
       name: ip
       required: false
@@ -230,7 +234,7 @@ script:
       default: false
       description: 'The machine risk score. Possible values: "Low", "Medium", and
         "High".'
-      isArray: false
+      isArray: true
       name: risk_score
       predefined:
       - Low
@@ -256,7 +260,8 @@ script:
       secret: false
     deprecated: false
     description: Retrieves a collection of machines that have communicated with WDATP
-      cloud in the last 30 days.
+      cloud in the last 30 days. Note, only one of ip and hostname can be a comma
+      separeted list. If both given as lists, an error will appear.
     execution: false
     name: microsoft-atp-get-machines
     outputs:
@@ -389,7 +394,8 @@ script:
       type: String
   - arguments:
     - default: true
-      description: A comma-separated list of machine IDs to be used for getting the machine details, e.g., 0a3250e0693a109f1affc9217be9459028aa8426,0a3250e0693a109f1affc9217be9459028aa8424.
+      description: A comma-separated list of machine IDs to be used for getting the
+        machine details, e.g., 0a3250e0693a109f1affc9217be9459028aa8426,0a3250e0693a109f1affc9217be9459028aa8424.
       isArray: true
       name: machine_id
       required: true

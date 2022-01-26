@@ -1008,17 +1008,34 @@ def unisolate_machine_command(client: MsClient, args: dict):
 
 def get_machines_command(client: MsClient, args: dict):
     """Retrieves a collection of machines that have communicated with WDATP cloud on the last 30 days
+    New: now the hostname and ip args can be from type list, but only one can be given as a list (not both).
 
     Returns:
         (str, dict, dict). Human readable, context, raw response
     """
     headers = ['ID', 'ComputerDNSName', 'OSPlatform', 'LastIPAddress', 'LastExternalIPAddress', 'HealthStatus',
                'RiskScore', 'ExposureLevel']
-    hostname = args.get('hostname', '')
-    ip = args.get('ip', '')
+    hostname = argToList(args.get('hostname', ''))
+    ip = argToList(args.get('ip', ''))
     risk_score = args.get('risk_score', '')
     health_status = args.get('health_status', '')
     os_platform = args.get('os_platform', '')
+
+    more_than_one_hostname = len(hostname) > 1
+    more_than_one_ip = len(ip) > 1
+    if more_than_one_hostname and more_than_one_ip:
+        raise DemistoException("Error: only hostname or ip can be an array, not both.")
+    if more_than_one_hostname:
+        ip = '' if not ip else ip[0]
+        field_from_type_list = 'computerDnsName'
+    elif more_than_one_ip:
+        hostname = '' if not hostname else hostname[0]
+        field_from_type_list = 'lastIpAddress'
+    else:
+        # both hostname and ip are not lists (each one is empty or includes only one value)
+        field_from_type_list = ''
+        ip = '' if not ip else ip[0]
+        hostname = '' if not hostname else hostname[0]
 
     fields_to_filter_by = {
         'computerDnsName': hostname,
@@ -1027,7 +1044,11 @@ def get_machines_command(client: MsClient, args: dict):
         'healthStatus': health_status,
         'osPlatform': os_platform
     }
-    filter_req = reformat_filter(fields_to_filter_by)
+
+    if field_from_type_list:
+        filter_req = reformat_filter_with_list_arg(fields_to_filter_by, field_from_type_list)
+    else:
+        filter_req = reformat_filter(fields_to_filter_by)
     machines_response = client.get_machines(filter_req)
     machines_list = get_machines_list(machines_response)
 
