@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: EDL
+  id: EDLv2
   version: -1
 configuration:
 - additionalinfo: Enabling this will prevent automatic list refresh.
@@ -192,8 +192,8 @@ configuration:
   type: 8
 description: Use the Generic Export Indicators Service integration to provide an endpoint
   with a list of indicators as a service for the system indicators.
-display: Generic Export Indicators Service
-name: EDL
+display: Generic Export Indicators Service v2
+name: EDLv2
 script:
   commands:
   - name: edl-update

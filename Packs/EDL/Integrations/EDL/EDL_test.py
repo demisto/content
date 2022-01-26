@@ -251,7 +251,7 @@ class TestHelperFunctions:
                 not_first_call = True
 
             assert returned_output == 'name,type\n"1.2.3.4/wget","URL","test"\n"www.demisto.com/cool","URL","test"\n' \
-                                      '"www.demisto.com/*cool","URL","None"\n'
+                                      '"www.demisto.com/*cool","URL","None"'
 
     def test_create_mwg_out_format(self):
         """
@@ -277,7 +277,7 @@ class TestHelperFunctions:
 
             assert returned_output == 'type=string\n"1.2.3.4/wget" "AutoFocus Feed"\n"www.demisto.com/cool" ' \
                                       '"AutoFocus V2,VirusTotal,Alien Vault OTX TAXII Feed"\n"www.demisto.com/*cool" ' \
-                                      '"AutoFocus V2,VirusTotal,Alien Vault OTX TAXII Feed"\n'
+                                      '"AutoFocus V2,VirusTotal,Alien Vault OTX TAXII Feed"'
 
     def test_create_proxysg_out_format(self):
         """
@@ -306,7 +306,7 @@ class TestHelperFunctions:
         result_file.seek(0)
         assert result_file.read() == 'define category category1\n1.2.3.4/wget\nend\ndefine category category2\n' \
                                      'www.demisto.com/cool\nend\ndefine category bc_category\nwww.demisto.com/*cool\n' \
-                                     'end\n'
+                                     'end'
 
     def test_validate_basic_authentication(self):
         """Test Authentication"""
