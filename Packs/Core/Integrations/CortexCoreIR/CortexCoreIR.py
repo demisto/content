@@ -880,12 +880,11 @@ class Client(BaseClient):
             "reason": reason,
             "email": email,
         }
-        reply = self._http_request(
-            method='POST',
-            url_suffix='/wildfire/report_as_incorrect/',
-            json_data={'request_data': request_data},
-            timeout=self.timeout
-        )
+
+        reply = demisto._apiCall(name="wfReportIncorrectVerdict",
+                                 params=None,
+                                 data=json.dumps(request_data))
+
         return reply
 
     def get_endpoint_device_control_violations(self, endpoint_ids: list, type_of_violation, timestamp_gte: int,
@@ -2662,10 +2661,14 @@ def main():
     """
     command = demisto.command()
     LOG(f'Command being called is {command}')
-
     args = demisto.args()
-
-    api_key = demisto.params().get('apikey') if command != "core-report-incorrect-wildfire" else demisto.args().get('master_key')
+    api_key = demisto.params().get('apikey')
+    if not api_key:
+        api_key = demisto.getLicenseCustomField('CortexCoreIR.api_key')
+        if not api_key:
+            raise DemistoException('Could not resolve the API key from the license nor the instance configuration.')
+        else:
+            raise DemistoException('An API key must be specified in order to use this integration')
     api_key_id = demisto.params().get('apikey_id')
     base_url = urljoin(demisto.params().get('url'), '/public_api/v1')
     proxy = demisto.params().get('proxy')

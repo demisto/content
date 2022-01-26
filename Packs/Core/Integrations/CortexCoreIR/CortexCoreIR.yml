@@ -2409,12 +2409,6 @@ script:
       type: String
   - arguments:
     - default: false
-      description: String that represents the Master Key.
-      isArray: false
-      name: master_key
-      required: true
-      secret: true
-    - default: false
       description: String that represents the file’s hash. Must be a valid SHA256
         hash.
       isArray: false
