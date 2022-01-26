@@ -282,6 +282,18 @@ class MsClient:
         cmd_url = f'/machines/{machine_id}'
         return self.ms_client.http_request(method='GET', url_suffix=cmd_url)
 
+    def get_list_machines_by_vulnerability(self, cve_id):
+        """Retrieves a list of devices affected by a vulnerability.
+
+        Args:
+            cve_id (str): Vulnerability ID
+
+        Returns:
+            dict. Machine's info
+        """
+        cmd_url = f'/vulnerabilities/{cve_id}/machineReferences'
+        return self.ms_client.http_request(method='GET', url_suffix=cmd_url)
+
     def run_antivirus_scan(self, machine_id, comment, scan_type):
         """Initiate Windows Defender Antivirus scan on a machine.
 
@@ -2645,6 +2657,32 @@ def get_indicator_dbot_object(indicator):
     return get_dbot_indicator(indicator_type, dbot, indicator_value)
 
 
+def list_machines_by_vulnerability_command(client: MsClient, args: dict) -> CommandResults:
+    """Retrieves a list of devices affected by a vulnerability (by the given CVE ID).
+
+    Returns:
+        CommandResults. Human readable, context, raw response
+    """
+    headers = ['ID', 'ComputerDNSName', 'OSPlatform', 'RBACGroupID', 'RBACGroupName']
+    cve_ids = argToList(args.get('cve_id'))
+    raw_response = []
+    machines_outputs = []
+    for cve_id in cve_ids:
+        machines_response = client.get_list_machines_by_vulnerability(cve_id)
+        for machine in machines_response['value']:
+            machines_outputs.append(get_machine_data(machine))
+        raw_response.append(machines_response)
+
+    human_readable = tableToMarkdown(f'Microsoft Defender ATP machines by vulnerabilities: {cve_ids}',
+                                     machines_outputs, headers=headers, removeNull=True)
+    return CommandResults(
+        outputs_prefix='MicrosoftATP.CveMachine',
+        outputs_key_field='ID',
+        outputs=machines_outputs,
+        readable_output=human_readable,
+        raw_response=raw_response)
+
+
 ''' EXECUTION CODE '''
 
 
@@ -2778,6 +2816,9 @@ def main():
 
         elif command == 'microsoft-atp-add-remove-machine-tag':
             return_outputs(*add_remove_machine_tag_command(client, args))
+
+        elif command == 'microsoft-atp-list-machines-by-vulnerability':
+            return_results(list_machines_by_vulnerability_command(client, args))
 
         elif command in ('microsoft-atp-indicator-list', 'microsoft-atp-indicator-get-by-id'):
             return_outputs(*list_indicators_command(client, args))

@@ -36,3 +36,4 @@ microsoft-atp-sc-indicator-create action=Allowed indicator_description=test indi
 microsoft-atp-sc-indicator-update action=Allowed indicator_description=test indicator_title=title indicator_type=IpAddress indicator_value=2.2.2.2 expiration_time="1 day" severity=Low
 microsoft-atp-sc-indicator-get-by-id indicator_id=5142
 microsoft-atp-sc-indicator-delete indicator_id=5142
+microsoft-atp-list-machines-by-vulnerability cve_id=CVE-2021-32810,CVE-2020-12321

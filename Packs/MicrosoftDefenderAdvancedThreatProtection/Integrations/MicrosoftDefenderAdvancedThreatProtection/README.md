@@ -3993,3 +3993,58 @@ Creates a new indicator.
 >|---|---|---|---|---|---|---|
 >| 5143 | Allowed | 2.2.2.2 | IpAddress | Informational | title | test |
 
+### microsoft-atp-list-machines-by-vulnerability
+***
+Retrieves a list of machines affected by a vulnerability.
+
+
+#### Base Command
+
+`microsoft-atp-list-machines-by-vulnerability`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| cve_id | A comma-separated list of CVE IDs to be used for getting the machines. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftATP.CveMachine.ID | String | The machine ID. | 
+| MicrosoftATP.CveMachine.ComputerDNSName | String | The machine hostname. | 
+| MicrosoftATP.CveMachine.OSPlatform | String | The operating system platform. | 
+| MicrosoftATP.CveMachine.RBACGroupName | String | The machine RBAC group name. | 
+
+#### Command example
+```!microsoft-atp-list-machines-by-vulnerability cve_id=CVE-2021-32810,CVE-2020-12321```
+#### Context Example
+```json
+{
+    "MicrosoftATP": {
+        "CveMachine": [
+            {
+                "ComputerDNSName": "ec2amaz",
+                "ID": "f3bba49a",
+                "OSPlatform": "WindowsServer2016",
+                "RBACGroupID": 0
+            },
+            {
+                "ComputerDNSName": "msde-agent-host-centos7",
+                "ID": "48a62a74",
+                "OSPlatform": "Linux",
+                "RBACGroupID": 0
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Microsoft Defender ATP machines by vulnerabilities: ['CVE-2021-32810', 'CVE-2020-12321']
+>|ID|ComputerDNSName|OSPlatform|RBACGroupID|
+>|---|---|---|---|
+>| f3bba49a | ec2amaz | WindowsServer2016 | 0 |
+>| 48a62a74 | msde-agent-host-centos7 | Linux | 0 |

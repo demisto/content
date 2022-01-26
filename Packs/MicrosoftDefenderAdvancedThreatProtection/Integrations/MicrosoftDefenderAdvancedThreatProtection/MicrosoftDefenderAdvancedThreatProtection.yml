@@ -4522,6 +4522,30 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score.
       type: Number
+  - arguments:
+    - default: true
+      description: A comma-separated list of CVE IDs to be used for getting the machines.
+      isArray: true
+      name: cve_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieves a list of machines affected by a vulnerability.
+    execution: false
+    name: microsoft-atp-list-machines-by-vulnerability
+    outputs:
+    - contextPath: MicrosoftATP.CveMachine.ID
+      description: The machine ID.
+      type: String
+    - contextPath: MicrosoftATP.CveMachine.ComputerDNSName
+      description: The machine hostname.
+      type: String
+    - contextPath: MicrosoftATP.CveMachine.OSPlatform
+      description: The operating system platform.
+      type: String
+    - contextPath: MicrosoftATP.CveMachine.RBACGroupName
+      description: The machine RBAC group name.
+      type: String
   dockerimage: demisto/crypto:1.0.0.24380
   feed: false
   isfetch: true
