@@ -13,6 +13,7 @@ INDICATOR_TYPES = {
     'File SHA-256': DBotScoreType.FILE,
     'Email': DBotScoreType.EMAIL,
     'URL': DBotScoreType.URL,
+    'IPv6': DBotScoreType.IP
 }
 
 

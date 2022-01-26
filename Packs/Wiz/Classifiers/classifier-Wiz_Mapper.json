@@ -44,6 +44,10 @@
                 },
                 "Wiz Resource Type": {
                     "complex": null,
+                    "simple": "entitySnapshot.type"
+                },
+                "Wiz Resource Native Type": {
+                    "complex": null,
                     "simple": "entitySnapshot.nativeType"
                 },
                 "severity": {
