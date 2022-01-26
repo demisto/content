@@ -989,11 +989,12 @@ class Pack(object):
             return task_status, modified_rn_files_paths, pack_was_modified
 
     def upload_to_storage(self, zip_pack_path, latest_version, storage_bucket, override_pack, storage_base_path,
-                          private_content=False, pack_artifacts_path=None, upload_path=None):
+                          private_content=False, pack_artifacts_path=None, overridden_upload_path=None):
         """ Manages the upload of pack zip artifact to correct path in cloud storage.
-        The zip pack will be uploaded to following path: /content/packs/pack_name/pack_latest_version.
+        The zip pack will be uploaded by defaualt to following path: /content/packs/pack_name/pack_latest_version.
         In case that zip pack artifact already exist at constructed path, the upload will be skipped.
         If flag override_pack is set to True, pack will forced for upload.
+        If item_upload_path is provided it will override said path, and will save the item to that destination.
 
         Args:
             zip_pack_path (str): full path to pack zip artifact.
@@ -1004,7 +1005,7 @@ class Pack(object):
             storage_base_path (str): The upload destination in the target bucket for all packs (in the format of <some_path_in_the_target_bucket>/content/Packs).
 
             pack_artifacts_path (str): Path to where we are saving pack artifacts.
-            upload_path (str): Absolute path to the destination upload path.
+            overridden_upload_path (str): If provided, will override version_pack_path calculation and will use this path instead
 
         Returns:
             bool: whether the operation succeeded.
@@ -1014,20 +1015,26 @@ class Pack(object):
         task_status = True
 
         try:
-            version_pack_path = os.path.join(storage_base_path, self._pack_name, latest_version)
-            existing_files = [f.name for f in storage_bucket.list_blobs(prefix=version_pack_path)]
+            if overridden_upload_path:
+                if private_content:
+                    logging.warning("Private content does not support overridden argument")
+                    return task_status, True, None
+                zip_to_upload_full_path = overridden_upload_path
+            else:
+                version_pack_path = os.path.join(storage_base_path, self._pack_name, latest_version)
+                existing_files = [f.name for f in storage_bucket.list_blobs(prefix=version_pack_path)]
 
-            if override_pack:
-                logging.warning(f"Uploading {self._pack_name} pack to storage and overriding the existing pack "
-                                f"files already in storage.")
+                if override_pack:
+                    logging.warning(f"Uploading {self._pack_name} pack to storage and overriding the existing pack "
+                                    f"files already in storage.")
 
-            elif existing_files:
-                logging.warning(f"The following packs already exist at storage: {', '.join(existing_files)}")
-                logging.warning(f"Skipping step of uploading {self._pack_name}.zip to storage.")
-                return task_status, True, None
+                elif existing_files:
+                    logging.warning(f"The following packs already exist at storage: {', '.join(existing_files)}")
+                    logging.warning(f"Skipping step of uploading {self._pack_name}.zip to storage.")
+                    return task_status, True, None
 
-            pack_full_path = upload_path if upload_path else os.path.join(version_pack_path, f"{self._pack_name}.zip")
-            blob = storage_bucket.blob(pack_full_path)
+                zip_to_upload_full_path = os.path.join(version_pack_path, f"{self._pack_name}.zip")
+            blob = storage_bucket.blob(zip_to_upload_full_path)
             blob.cache_control = "no-cache,max-age=0"  # disabling caching for pack blob
 
             with open(zip_pack_path, "rb") as pack_zip:
@@ -1058,9 +1065,9 @@ class Pack(object):
                             f'{_pack_artifacts_path}/packs/{self._pack_name}.zip')
 
             self.public_storage_path = blob.public_url
-            logging.success(f"Uploaded {self._pack_name} pack to {pack_full_path} path.")
+            logging.success(f"Uploaded {self._pack_name} pack to {zip_to_upload_full_path} path.")
 
-            return task_status, False, pack_full_path
+            return task_status, False, zip_to_upload_full_path
         except Exception:
             task_status = False
             logging.exception(f"Failed in uploading {self._pack_name} pack to gcs.")

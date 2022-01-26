@@ -787,8 +787,8 @@ def option_handler():
     parser.add_argument('-pb', '--private_bucket_name', help="Private storage bucket name", required=False)
     parser.add_argument('-c', '--ci_branch', help="CI branch of current build", required=True)
     parser.add_argument('-f', '--force_upload', help="is force upload build?", type=str2bool, required=True)
-    parser.add_argument('-dz', '--create_dependencies_zip', help="Upload packs with dependencies zip",
-                        required=False, default='false')
+    parser.add_argument('-dz', '--create_dependencies_zip', type=str2bool, help="Upload packs with dependencies zip",
+                        required=False)
     parser.add_argument('-mp', '--marketplace', help="marketplace version", default='xsoar')
     # disable-secrets-detection-end
     return parser.parse_args()
@@ -1003,33 +1003,49 @@ def prepare_and_zip_pack(pack, signature_key, delete_test_playbooks=True):
     return True
 
 
-def get_all_packs(packs_dict, extract_destination_path, id_set_path, marketplace):
+def get_all_packs(packs_list, extract_destination_path, id_set_path, marketplace):
     """
     Collect all packs from the id_set that are not in packs_dict
+    Args:
+        packs_list (List[Pack]): List of packs collected before
+        extract_destination_path (str): Base destination of Packs folder
+        id_set_path (str): Path of id_set.json.
+        marketplace (str): Marketplace version
+    Returns:
+         (dict, list): Dictionary of pack_name:Pack and list of all Pack in id_set.json
     """
+    packs_dict = {pack.name: pack for pack in packs_list}
     if not id_set_path or not os.path.isfile(id_set_path):
         return packs_dict
-    packs_dict = dict(packs_dict)
     with open(id_set_path) as f:
         id_set_packs = json.load(f).get('Packs', [])
     for pack_name in id_set_packs.keys():
         if pack_name not in packs_dict:
             pack = Pack(pack_name, os.path.join(extract_destination_path, pack_name), marketplace)
             packs_dict[pack_name] = pack
-    return packs_dict
+            packs_list.append(pack)
+    return packs_dict, packs_list
 
 
 def upload_packs_with_dependencies_zip(extract_destination_path, packs_dependencies_mapping, signature_key,
                                        storage_bucket, storage_base_path, id_set_path, packs_list, marketplace):
     """
     Uploads packs with mandatory dependencies zip for all packs
+    Args:
+        packs_list (List[Pack]): List of packs collected before
+        extract_destination_path (str): Base destination of Packs folder
+        id_set_path (str): Path of id_set.json.
+        marketplace (str): Marketplace version
+        packs_dependencies_mapping (dict): First level dependency mapping
+        signature_key (str): Signature key used for encrypting packs
+        storage_base_path (str): The upload destination in the target bucket for all packs (in the format of <some_path_in_the_target_bucket>/content/Packs).
+        storage_bucket (google.cloud.storage.bucket.Bucket): google cloud storage bucket.
     """
     logging.info("Starting to collect pack with dependencies zips")
-    packs_dict = {pack.name: pack for pack in packs_list}
-    packs_dict = get_all_packs(packs_dict, extract_destination_path, id_set_path, marketplace)
+    packs_dict, packs_list = get_all_packs(packs_list, extract_destination_path, id_set_path, marketplace)
     full_deps_graph: dict = {}
     try:
-        for pack in packs_dict.values():
+        for pack in packs_list:
             logging.info(f"Collecting dependencies of {pack.name}")
             pack_with_dep_path = os.path.join(pack.path, "with_dependencies")
             zip_with_deps_path = os.path.join(pack.path, pack.name + "_with_dependencies.zip")
@@ -1046,6 +1062,7 @@ def upload_packs_with_dependencies_zip(extract_destination_path, packs_dependenc
                     continue
             shutil.copy(pack.zip_path, os.path.join(pack_with_dep_path, pack.name + ".zip"))
             for dep_name in pack_deps:
+                # sanity - all packs should already be in packs_dict
                 if dep_name not in packs_dict:
                     dep_pack = Pack(dep_name, os.path.join(extract_destination_path, dep_name), marketplace)
                     packs_dict[dep_name] = dep_pack
@@ -1070,7 +1087,7 @@ def upload_packs_with_dependencies_zip(extract_destination_path, packs_dependenc
                 storage_bucket=storage_bucket,
                 override_pack=True,
                 storage_base_path=storage_base_path,
-                upload_path=upload_path
+                overridden_upload_path=upload_path
             )
             logging.info(f"{pack.name} with dependencies was{' not' if not task_status else ''} uploaded successfully")
             if not task_status:
@@ -1288,7 +1305,8 @@ def main():
     # summary of packs status
     print_packs_summary(successful_packs, skipped_packs, failed_packs, not is_bucket_upload_flow)
 
-    if is_create_dependencies_zip and is_create_dependencies_zip != 'false' and marketplace == 'xsoar':
+    # marketplace v2 isn't currently supported - dependencies zip should only be used for v1
+    if is_create_dependencies_zip and marketplace == 'xsoar':
         # handle packs with dependencies zip
         upload_packs_with_dependencies_zip(extract_destination_path, packs_dependencies_mapping, signature_key,
                                            storage_bucket, storage_base_path, id_set_path, packs_list, marketplace)
