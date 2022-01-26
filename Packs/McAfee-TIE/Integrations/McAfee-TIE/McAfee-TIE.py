@@ -202,26 +202,17 @@ def file(hash_inputs):
                                           ' or md5(32 charecters)')
 
             hash_param = {}
+            reputations = {}
+            context_file = {}
             hash_param[hash_type_key] = hash_value
             res = safe_get_file_reputation(tie_client, hash_param)
             if not res:
-                ec = {'DBotScore': [{'Indicator': hash_value,
-                                                'Type': 'hash',
-                                                'Vendor': VENDOR_NAME,
-                                                'Score': 0
-                                                },
-                                               {'Indicator': hash_value,
-                                                'Type': 'file',
-                                                'Vendor': VENDOR_NAME,
-                                                'Score': 0
-                                                }]
-                                 }
-                reputations = {}
+                dbot_score = [{'Indicator': hash_value, 'Type': 'hash', 'Vendor': VENDOR_NAME, 'Score': 0},
+                              {'Indicator': hash_value, 'Type': 'file', 'Vendor': VENDOR_NAME, 'Score': 0}]
             else:
                 reputations = res.values()
 
                 # create context
-                context_file = {}
                 hash_type_uppercase = hash_type.upper()
                 tl_score = get_thrust_level_and_score(reputations)
 
@@ -239,7 +230,7 @@ def file(hash_inputs):
                         'Score': tl_score['score'],
                         'Description': 'Trust level is ' + str(tl_score['trust_level'])
                     }
-                ec = {'DBotScore': dbot_score, outputPaths['file']: context_file}
+            ec = {'DBotScore': dbot_score, outputPaths['file']: context_file}
 
         table = reputations_to_table(reputations)
         hash_list.append({
