@@ -1,6 +1,6 @@
 category: Identity and Access Management
 commonfields:
-  id: RetriesIntegration
+  id: RetriesPackValidMajority
   version: -1
 configuration:
 - defaultvalue: https://example.com/
@@ -24,8 +24,8 @@ configuration:
   type: 8
 description: '[Enter a comprehensive, yet concise, description of what the integration
   does, what use cases it is designed for, etc.]'
-display: RetriesIntegration
-name: RetriesIntegration
+display: RetriesPackValidMajority
+name: RetriesPackValidMajority
 script:
   commands:
   - arguments:
