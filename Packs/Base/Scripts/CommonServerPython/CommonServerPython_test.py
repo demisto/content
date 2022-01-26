@@ -3341,7 +3341,26 @@ VALID_URL_INDICATORS = [
     'www.google.com/path',
     '2001:db8:85a3:8d3:1319:8a2e:370:7348/65/path/path',
     '2001:db8:3333:4444:5555:6666:7777:8888//32/path/path',
-    '1.1.1.1/7/server'
+    '1.1.1.1/7/server',
+    'http://öevil.tld/',
+    'https://evilö.tld/evil.html',
+    'www.evilö.tld/evil.aspx',
+    'https://www.evöl.tld/',
+    'www.evil.tld/resource',
+    'http://xn--e1v2i3l4.tld/evilagain.aspx',
+    'https://www.xn--e1v2i3l4.tld',
+    'hxxps://www.xn--e1v2i3l4.tld',
+    'hxxp://www.xn--e1v2i3l4.tld',
+    'www.evil.tld:443/path/to/resource.html',
+    'https://1.2.3.4/path/to/resource.html',
+    '1.2.3.4/path',
+    '1.2.3.4/path/to/resource.html',
+    'http://1.2.3.4:8080/',
+    'http://1.2.3.4:8080/resource.html',
+    'http://1.2.3.4',
+    'ftp://foo.bar/resource',
+    'http://☺.evil.tld/',
+    'ftps://foo.bar/resource'
 ]
 
 
