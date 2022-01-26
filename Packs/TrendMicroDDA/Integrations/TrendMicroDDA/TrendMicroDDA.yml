@@ -1,7 +1,7 @@
 commonfields:
-  id: Trend Micro Deep Discovery Analyzer Beta
+  id: Trend Micro Deep Discovery Analyzer
   version: -1
-name: Trend Micro Deep Discovery Analyzer Beta
+name: Trend Micro Deep Discovery Analyzer
 display: Trend Micro Deep Discovery Analyzer (Beta)
 category: Forensics & Malware Analysis
 description: Deep Discovery Analyzer is a turnkey appliance that uses virtual images
