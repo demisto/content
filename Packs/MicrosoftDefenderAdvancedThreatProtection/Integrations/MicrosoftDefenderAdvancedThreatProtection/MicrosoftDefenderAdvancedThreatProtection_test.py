@@ -223,8 +223,8 @@ def test_run_antivirus_scan_command(mocker):
     from MicrosoftDefenderAdvancedThreatProtection import run_antivirus_scan_command
     mocker.patch.object(client_mocker, 'run_antivirus_scan', return_value=MACHINE_ACTION_API_RESPONSE)
     mocker.patch.object(atp, 'get_machine_action_data', return_value=MACHINE_ACTION_DATA)
-    _, res, _ = run_antivirus_scan_command(client_mocker, {})
-    assert res['MicrosoftATP.MachineAction(val.ID === obj.ID)'] == MACHINE_ACTION_DATA
+    _, res, _ = run_antivirus_scan_command(client_mocker, {'machine_id': "123abc"})
+    assert res['MicrosoftATP.MachineAction(val.ID === obj.ID)'][0] == MACHINE_ACTION_DATA
 
 
 def test_check_limit_and_offset_values_no_error():
@@ -777,11 +777,11 @@ def test_print_ip_addresses():
     assert print_ip_addresses(ip_addresses_result) == print_ip_addresses_result
 
 
-human_readable_result = '### Microsoft Defender ATP machine None details:\n'\
+human_readable_result = '### Microsoft Defender ATP machines [\'123abc\'] details:\n' \
                         '|ID|ComputerDNSName|OSPlatform|LastIPAddress|LastExternalIPAddress|HealthStatus|RiskScore|' \
-                        'ExposureLevel|IPAddresses|\n'\
-                        '|---|---|---|---|---|---|---|---|---|\n'\
-                        '| 123 | test-node | Windows10 | 192.0.2.12 | 2.2.2.2 | Inactive | None | High |'\
+                        'ExposureLevel|IPAddresses|\n' \
+                        '|---|---|---|---|---|---|---|---|---|\n' \
+                        '| 123 | test-node | Windows10 | 192.0.2.12 | 2.2.2.2 | Inactive | None | High |' \
                         ' 1. \\| MAC : 001122334418 \\| IP Addresses : 192.0.2.135,fe80::2413:e4aa:a3f4:d5bf \\|' \
                         ' Type : Ethernet \\| Status : Up<br>' \
                         '2. \\| MAC : 001122334436 \\| IP Addresses : 192.0.2.10,fe80::55b9:7f5a:6e9c:30ed  \\|' \
@@ -812,6 +812,6 @@ outputs_result = """{"ID": "123", "ComputerDNSName": "test-node", "FirstSeen": "
 
 def test_get_machine_details_command(mocker):
     mocker.patch.object(client_mocker, 'get_machine_details', return_value=SINGLE_MACHINE_RESPONSE_API)
-    results = get_machine_details_command(client_mocker, {})
-    assert results.outputs == json.loads(outputs_result)
+    results = get_machine_details_command(client_mocker, {'machine_id': "123abc"})
+    assert results.outputs[0] == json.loads(outputs_result)
     assert results.readable_output == human_readable_result
