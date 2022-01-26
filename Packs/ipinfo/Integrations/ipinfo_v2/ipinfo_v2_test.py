@@ -52,7 +52,6 @@ def test_ipinfo_ip_command(mocker):
     assert command_results.call_args[1].get("outputs").get("Hostname") == "one.one.one.one"
 
 
-
 def test_check_columns_exists(mocker):
     """
     Given:
