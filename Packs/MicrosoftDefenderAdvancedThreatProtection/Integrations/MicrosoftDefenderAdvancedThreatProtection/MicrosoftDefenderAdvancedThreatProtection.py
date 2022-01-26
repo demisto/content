@@ -2685,7 +2685,7 @@ def list_machines_by_vulnerability_command(client: MsClient, args: dict) -> Comm
         raw_response=raw_response)
 
 
-def get_file_context(file_info_response: Dict[str,str], headers: list):
+def get_file_context(file_info_response: Dict[str, str], headers: list):
     return {key.capitalize(): value for (key, value) in file_info_response.items() if key in headers}
 
 
