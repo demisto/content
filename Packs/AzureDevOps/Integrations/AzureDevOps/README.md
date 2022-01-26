@@ -72,7 +72,7 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### Authorization instructions
->1. To sign in, use a web browser to open the page [https:<span>//</span>microsoft.com/devicelogin](https:<span>//</span>microsoft.com/devicelogin)
+>1. To sign in, use a web browser to open the page [https:<span>//</span>microsoft.com/devicelogin](https://microsoft.com/devicelogin)
 >and enter the code *XXXX** to authenticate.
 >2. Run the **!azure-devops-auth-complete** command in the War Room.
 
