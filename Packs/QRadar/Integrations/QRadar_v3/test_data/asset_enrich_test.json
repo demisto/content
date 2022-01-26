@@ -662,11 +662,6 @@
   ],
   "expected_full_enrichment": [
    {
-    "Endpoint": {
-     "IPAddress": [],
-     "MACAddress": [],
-     "Domain": null
-    },
     "Asset": {
      "domain_id": 15,
      "properties": [
@@ -693,27 +688,32 @@
        "ip_addresses": []
       }
      ]
-    }
-   },
-   {
+    },
     "Endpoint": {
      "IPAddress": [],
      "MACAddress": [],
-     "Domain": null
-    },
-    "Asset": {
-     "domain_id": 16,
-     "properties": [],
-     "interfaces": [
-      {
-       "ip_addresses": []
-      },
-      {
-       "ip_addresses": []
-      }
-     ]
+     "Domain": 15
     }
-   }
+    },
+    {
+     "Asset": {
+      "domain_id": 16,
+      "properties": [],
+      "interfaces": [
+       {
+        "ip_addresses": []
+       },
+       {
+        "ip_addresses": []
+       }
+      ]
+     },
+     "Endpoint": {
+      "IPAddress": [],
+      "MACAddress": [],
+      "Domain": 16
+     }
+    }
   ]
  }
 }
