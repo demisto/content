@@ -77,6 +77,9 @@ def extract_file_info(entry_id: str) -> tuple:
         file_path(str): the file path.
         file_name(str):the file name.
     """
+    file_type = ''
+    file_path = ''
+    file_name = ''
     try:
         result = demisto.executeCommand('getFilePath', {'id': entry_id})
         if is_error(result):
@@ -91,19 +94,19 @@ def extract_file_info(entry_id: str) -> tuple:
         file_metadata = result[0]['FileMetadata']
         file_type = file_metadata.get('info', '') or file_metadata.get('type', '')
 
-        return file_type, file_path, file_name
-
     except Exception as ex:
         return_error(
             "Failed to load file entry with entry id: {}. Error: {}".format(
                 entry_id, str(ex) + "\n\nTrace:\n" + traceback.format_exc()))
 
+    return file_type, file_path, file_name
+
 
 def main():
     args = demisto.args()
     entry_id = args.get('entryid')
-    max_depth = arg_to_number(args.get('max_depth', '3'), required=True)
-    if max_depth < 1:
+    max_depth = arg_to_number(args.get('max_depth', '3'))
+    if max_depth is None or max_depth < 1:
         return_error('Minimum max_depth is 1, the script will parse just the top email')
     parse_only_headers = argToBoolean(args.get('parse_only_headers', 'false'))
     forced_encoding = args.get('forced_encoding')
