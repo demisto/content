@@ -1121,8 +1121,8 @@ def test_get_tasks_for_co_command(mocker):
 
 def test_get_ticket_attachment_entries_with_oauth_token(mocker):
     """
-    This test purpose is to verify that it is possible to get a file attachment of a ServiceNow ticket by using an
-    OAuth 2.0 client.
+    This purpose of this test is to verify that it is possible to get a file attachment of a ServiceNow ticket by using
+    an OAuth 2.0 client.
 
     Given:
         - A client with 'oauth_params' - i.e a client that is configured with an OAuth 2.0 Authorization.

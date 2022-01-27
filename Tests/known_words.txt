@@ -71,4 +71,3 @@ IntelGraph
 Accenture
 CTI
 SCC
-ServiceNow
