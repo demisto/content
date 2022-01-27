@@ -4,7 +4,7 @@
     "cliName": "username",
     "closeForm": false,
     "content": true,
-    "description": "The name of the user that initiated the behavior that triggered the alert. If the user is a domain user account, this field also identifies the domain. Any alert triggered based on network, authentication, or login events, displays the User Name in the follow standardized format in the Alerts and Incidents pages.<company domain>\<username>",
+    "description": "The name of the user that initiated the behavior that triggered the alert. If the user is a domain user account, this field also identifies the domain. Any alert triggered based on network, authentication, or login events, displays the User Name in the follow standardized format in the Alerts and Incidents pages.<company domain>\\<username>",
     "editForm": true,
     "group": 0,
     "hidden": false,
