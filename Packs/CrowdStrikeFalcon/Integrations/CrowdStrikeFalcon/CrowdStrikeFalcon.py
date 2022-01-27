@@ -111,30 +111,6 @@ ENDPOINT_KEY_MAP = {
     'status': 'Status',
 }
 
-''' MIRRORING DICTIONARIES & PARAMS '''
-
-CS_FALCON_DETECTION_OUTGOING_ARGS = {'status':
-                                     'Updated detection status, one of new/in_progress/true_positive/false_positive/ignored'}
-
-CS_FALCON_INCIDENT_OUTGOING_ARGS = {'tag': 'A tag that have been added or removed from the incident',
-                                    'status': 'Updated incident status, one of New/Reopened/In Progress/Closed'}
-
-CS_FALCON_DETECTION_INCOMING_ARGS = ['status', 'severity', 'behaviors.tactic', 'behaviors.scenario', 'behaviors.objective',
-                                     'behaviors.technique', 'device.hostname']
-
-CS_FALCON_INCIDENT_INCOMING_ARGS = ['state', 'tactics', 'techniques', 'objectives', 'tags', 'hosts.hostname']
-
-MIRROR_DIRECTION_DICT = {
-    'None': None,
-    'Incoming': 'In',
-    'Outgoing': 'Out',
-    'Incoming And Outgoing': 'Both'
-}
-
-MIRROR_DIRECTION = MIRROR_DIRECTION_DICT.get(demisto.params().get('mirror_direction'))
-INCIDENT_TAG = demisto.params().get('incident_tag')
-MIRROR_INSTANCE = demisto.integrationInstance()
-
 ''' SPLIT KEY DICTIONARY '''
 
 """
@@ -180,6 +156,31 @@ STATUS_NUM_TO_TEXT = {20: 'New',
                       25: 'Reopened',
                       30: 'In Progress',
                       40: 'Closed'}
+
+''' MIRRORING DICTIONARIES & PARAMS '''
+
+DETECTION_STATUS = {'new', 'in_progress', 'true_positive', 'false_positive', 'ignored'}
+
+CS_FALCON_DETECTION_OUTGOING_ARGS = {'status': f'Updated detection status, one of {"/".join(DETECTION_STATUS)}'}
+
+CS_FALCON_INCIDENT_OUTGOING_ARGS = {'tag': 'A tag that have been added or removed from the incident',
+                                    'status': f'Updated incident status, one of {"/".join(STATUS_TEXT_TO_NUM.keys())}'}
+
+CS_FALCON_DETECTION_INCOMING_ARGS = ['status', 'severity', 'behaviors.tactic', 'behaviors.scenario', 'behaviors.objective',
+                                     'behaviors.technique', 'device.hostname']
+
+CS_FALCON_INCIDENT_INCOMING_ARGS = ['state', 'tactics', 'techniques', 'objectives', 'tags', 'hosts.hostname']
+
+MIRROR_DIRECTION_DICT = {
+    'None': None,
+    'Incoming': 'In',
+    'Outgoing': 'Out',
+    'Incoming And Outgoing': 'Both'
+}
+
+MIRROR_DIRECTION = MIRROR_DIRECTION_DICT.get(demisto.params().get('mirror_direction'))
+INCIDENT_TAG = demisto.params().get('incident_tag')
+MIRROR_INSTANCE = demisto.integrationInstance()
 
 ''' HELPER FUNCTIONS '''
 
