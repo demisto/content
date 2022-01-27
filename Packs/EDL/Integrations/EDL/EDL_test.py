@@ -594,7 +594,8 @@ def test_get_indicators_to_format_csv():
     f = get_indicators_to_format(indicator_searcher, request_args)
     f.seek(0)
     indicators = f.read()
-    assert indicators == 'name,type\n"google.com","URL"\n"demisto.com","URL"\n"demisto.com/qwertqwer","URL"\n"demisto.com","URL"'
+    assert indicators == 'name,type\n"google.com","URL"\n"demisto.com","URL"\n"demisto.com/qwertqwer","URL"\n' \
+                         '"demisto.com","URL"'
 
 
 def test_get_indicators_to_format_json():
@@ -614,7 +615,10 @@ def test_get_indicators_to_format_json():
     f = get_indicators_to_format(indicator_searcher, request_args)
     f.seek(0)
     indicators = f.read()
-    assert indicators == '[{"value": "google.com", "indicator_type": "URL"}, {"value": "demisto.com", "indicator_type": "URL"}, {"value": "demisto.com/qwertqwer", "indicator_type": "URL"}, {"value": "demisto.com", "indicator_type": "URL"}]'
+    assert indicators == '[{"value": "google.com", "indicator_type": "URL"},' \
+                         ' {"value": "demisto.com", "indicator_type": "URL"},' \
+                         ' {"value": "demisto.com/qwertqwer", "indicator_type": "URL"},' \
+                         ' {"value": "demisto.com", "indicator_type": "URL"}]'
 
 
 def test_get_indicators_to_format_mwg():
@@ -634,7 +638,8 @@ def test_get_indicators_to_format_mwg():
     f = get_indicators_to_format(indicator_searcher, request_args)
     f.seek(0)
     indicators = f.read()
-    assert indicators == 'type=string\n"google.com" "from CORTEX XSOAR"\n"demisto.com" "from CORTEX XSOAR"\n"demisto.com/qwertqwer" "from CORTEX XSOAR"\n"demisto.com" "from CORTEX XSOAR"'
+    assert indicators == 'type=string\n"google.com" "from CORTEX XSOAR"\n"demisto.com" "from CORTEX XSOAR"\n' \
+                         '"demisto.com/qwertqwer" "from CORTEX XSOAR"\n"demisto.com" "from CORTEX XSOAR"'
 
 
 def test_get_indicators_to_format_symantec():
