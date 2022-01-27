@@ -1,5 +1,3 @@
-from unittest.mock import Mock
-
 import pytest
 import json
 from ANYRUN import underscore_to_camel_case, images_from_report
@@ -7,10 +5,12 @@ from ANYRUN import make_capital, make_singular, make_upper
 from ANYRUN import generate_dbotscore
 from ANYRUN import taskid_from_url
 import requests
+
 HEADERS = {
     'Authorization': 'Authorization'
 }
 USE_SSL = False
+
 
 @pytest.fixture(scope="module")
 def get_response():
