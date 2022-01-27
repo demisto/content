@@ -90,15 +90,33 @@ def test_module(**kwargs):
 def url_calculate_score(status):
     status_dict = {'online': (Common.DBotScore.BAD, "The URL is active (online) and currently serving a payload"),
                    'offline': (Common.DBotScore.SUSPICIOUS, "The URL is inadctive (offline) and serving no payload"),
-                   'unknown': (Common.DBotScore.GOOD, "The URL status could not be determined")}
+                   'unknown': (Common.DBotScore.NONE, "The URL status could not be determined")}
     if status_dict.get(status):
         return status_dict[status]
-    return Common.DBotScore.NONE, "The URL is not listed"
+    return Common.DBotScore.GOOD, "The URL is not listed"
 
 
-# @todo: need to write function
 def domain_calculate_score(blacklist):
-    pass
+    spamhaus_dbl = blacklist.get('spamhaus_dbl', '')
+    surbl = blacklist.get('surbl', '')
+
+    if spamhaus_dbl:
+        if spamhaus_dbl == 'spammer_domain':
+            return Common.DBotScore.BAD, "The queried Domain is a known spammer domain"
+        if spamhaus_dbl == 'phishing_domain':
+            return Common.DBotScore.BAD, "The queried Domain is a known phishing domain"
+        if spamhaus_dbl == 'botnet_cc_domain':
+            return Common.DBotScore.BAD, "The queried Domain is a known botnet C&C domain"
+    if surbl:
+        if surbl == 'listed':
+            return Common.DBotScore.BAD, "The queried Domain is listed on SURBL"
+    if spamhaus_dbl:
+        if spamhaus_dbl == 'not_listed':
+            return Common.DBotScore.NONE, "The queried Domain is not listed on Spamhaus DBL"
+    if surbl:
+        if surbl == 'not_listed':
+            return Common.DBotScore.NONE, "The queried Domain is not listed on SURBL"
+    return Common.DBotScore.GOOD, "There is no information about Domain in the blacklist"
 
 
 # @todo: need to write function
@@ -144,7 +162,6 @@ def parse_host(host):
     return "ip" if is_ip_valid(host) else "domain"
 
 
-# @todo: need add support for param create_relationships
 def url_create_relationships(uri, host, files, **kwargs):
     relationships = []
     max_num_of_realationships_counter = 0
@@ -154,7 +171,8 @@ def url_create_relationships(uri, host, files, **kwargs):
             max_num_of_realationships_counter += 1
             if parsed_host == "domain":
                 relationships.extend([EntityRelationship(
-                    name=EntityRelationship.Relationships.RELATIONSHIPS_NAMES.get('hosts'), entity_a=uri, entity_a_type=FeedIndicatorType.URL,
+                    name=EntityRelationship.Relationships.RELATIONSHIPS_NAMES.get('hosts'), entity_a=uri,
+                    entity_a_type=FeedIndicatorType.URL,
                     entity_b=host, entity_b_type=FeedIndicatorType.Domain,
                     reverse_name=EntityRelationship.Relationships.HOSTS)])
             if parsed_host == "ip":
@@ -170,7 +188,8 @@ def url_create_relationships(uri, host, files, **kwargs):
                 file_sh256 = file.get('SHA256')
                 if file_sh256:
                     relationships.extend([EntityRelationship(
-                        name=EntityRelationship.Relationships.RELATIONSHIPS_NAMES.get('related-to'), entity_a=uri, entity_a_type=FeedIndicatorType.URL,
+                        name=EntityRelationship.Relationships.RELATIONSHIPS_NAMES.get('related-to'), entity_a=uri,
+                        entity_a_type=FeedIndicatorType.URL,
                         entity_b=file_sh256, entity_b_type=FeedIndicatorType.File,
                         reverse_name=EntityRelationship.Relationships.RELATED_TO)])
                     max_num_of_realationships_counter += 1
@@ -244,7 +263,8 @@ def build_context_url_ok_status(url_information, uri, **kwargs):
     url_indicator = Common.URL(url=uri, dbot_score=dbot_score, tags=url_create_tags(urlhaus_data),
                                relationships=relationships) if relationships else Common.URL(url=uri,
                                                                                              dbot_score=dbot_score,
-                                                                                             tags=url_create_tags(urlhaus_data))
+                                                                                             tags=url_create_tags(
+                                                                                                 urlhaus_data))
     human_readable = tableToMarkdown(f'URLhaus reputation for {uri}',
                                      {
                                          'URLhaus link': url_information.get("urlhaus_reference", "None"),
@@ -312,6 +332,22 @@ def url_command(**kwargs):
     return process_query_info(url_information, url, **kwargs)
 
 
+def domain_create_relationships(urls, domain, **kwargs):
+    relationships = []
+    max_num_of_realationships_counter = 0
+    if kwargs.get('create_relationships'):
+        for url in urls:
+            if max_num_of_realationships_counter >= kwargs.get('max_num_of_relationships'):
+                break
+            relationships.extend([EntityRelationship(
+                name=EntityRelationship.Relationships.HOSTS, entity_a=domain,
+                entity_a_type=FeedIndicatorType.Domain,
+                entity_b=url.get('url'), entity_b_type=FeedIndicatorType.URL,
+                reverse_name=EntityRelationship.Relationships.HOSTED_ON)])
+            max_num_of_realationships_counter += 1
+    return relationships
+
+
 def domain_command(**kwargs):
     domain = demisto.args()['domain']
 
@@ -330,6 +366,7 @@ def domain_command(**kwargs):
             }
         }
 
+        tags = []
         if domain_information['query_status'] == 'ok':
             # URLHaus output
             blacklist_information = []
@@ -337,7 +374,12 @@ def domain_command(**kwargs):
             for bl_name, bl_status in blacklists.items():
                 blacklist_information.append({'Name': bl_name,
                                               'Status': bl_status})
-
+                status_postfix = str(bl_status).split("_")[0] if bl_status.endswith("domain") else \
+                str(bl_status).split("_")[-1] if bl_status.startwith("abused") else ''
+                if status_postfix:
+                    tags.append(status_postfix)
+            if tags:
+                ec['Domain']['Tags'] = tags
             first_seen = reformat_date(domain_information.get('firstseen'))
 
             urlhaus_data = {
@@ -347,9 +389,8 @@ def domain_command(**kwargs):
             }
 
             # DBot score calculation
-            dbot_score, description = calculate_dbot_score(domain_information.get('blacklists', {}),
-                                                           )
-
+            dbot_score, description = calculate_dbot_score('domain', domain_information.get('blacklists', {}))
+            relationships = domain_create_relationships(urlhaus_data.get('URL'), domain, **kwargs)
             ec['DBotScore']['Score'] = dbot_score
             if dbot_score == 3:
                 ec['domain']['Malicious'] = {
@@ -374,7 +415,7 @@ def domain_command(**kwargs):
                 'EntryContext': ec
             })
         elif domain_information['query_status'] == 'no_results':
-            ec['DBotScore']['Score'] = 0
+            ec['DBotScore']['Score'] = Common.DBotScore.NONE
 
             human_readable = f'## URLhaus reputation for {domain}\n' \
                              f'No results!'
