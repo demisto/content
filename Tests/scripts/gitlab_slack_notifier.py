@@ -52,6 +52,7 @@ def get_artifact_data(artifact_folder, artifact_relative_path: str) -> Optional[
     """
     Retrieves artifact data according to the artifact relative path from 'ARTIFACTS_FOLDER' given.
     Args:
+        artifact_folder (str): Full path of the artifact root folder.
         artifact_relative_path (str): Relative path of an artifact file.
 
     Returns:
