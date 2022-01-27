@@ -4,7 +4,7 @@
     "modified": "2022-01-27T16:35:58.812794144Z",
     "name": "Content Instance Name",
     "ownerOnly": false,
-    "description": "Instance Name of the integration to use.",
+    "description": "Instance Name of the Demisto integration to use for checking for new contents.",
     "cliName": "contentinstancename",
     "type": "shortText",
     "closeForm": false,
