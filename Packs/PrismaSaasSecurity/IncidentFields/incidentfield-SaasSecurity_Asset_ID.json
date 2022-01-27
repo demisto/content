@@ -1,5 +1,6 @@
 {
     "id": "incident_saassecurityassetid",
+    "description": "Unique alphanumeric number assigned by SaaS Security when it discovers a policy violation and records an incident.\n\nUsed for troubleshooting purposes. If you need to contact SaaS Security Technical Support, a Support Engineer might ask for this ID in order to perform database searches  on that asset.\n\nFor example:\n61d7bb44539a741ce86stf3\n",
     "version": -1,
     "modified": "2021-10-13T17:42:08.551354+03:00",
     "name": "SaaS Security Asset ID",

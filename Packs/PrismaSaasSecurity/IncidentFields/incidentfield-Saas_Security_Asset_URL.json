@@ -1,5 +1,6 @@
 {
     "id": "incident_saassecurityasseturl",
+    "description": "Fully qualified URL to the **Assets Details** page on SaaS Security for the asset that triggered the incident. For security reasons, the link is not active, yet provides an efficient method to access the asset: simply  copy/paste the link in your browser.\n\nFor example: https://example.com/cloud_assets/61d7bb44539a741ce86stf3",
     "version": -1,
     "modified": "2021-11-16T09:24:06.872716Z",
     "name": "SaaS Security Asset URL",
