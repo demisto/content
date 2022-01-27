@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: Lastline v2
+  id: Lastline v2 test
   version: -1
 configuration:
 - defaultvalue: https://analysis.lastline.com
@@ -43,8 +43,8 @@ configuration:
 description: Use the Lastline v2 integration to provide threat analysts and incident
   response teams with the advanced malware isolation and inspection environment needed
   to safely execute advanced malware samples, and understand their behavior.
-display: Lastline v2
-name: Lastline v2
+display: Lastline v2 test
+name: Lastline v2 test
 script:
   commands:
   - arguments:
