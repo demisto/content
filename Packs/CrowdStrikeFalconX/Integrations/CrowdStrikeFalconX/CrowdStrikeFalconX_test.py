@@ -1,10 +1,10 @@
 from CrowdStrikeFalconX import Client,\
     send_uploaded_file_to_sandbox_analysis_command, send_url_to_sandbox_analysis_command,\
     get_full_report_command, get_report_summary_command, get_analysis_status_command,\
-    check_quota_status_command, find_sandbox_reports_command, find_submission_id_command
+    check_quota_status_command, find_sandbox_reports_command, find_submission_id_command, run_polling_command
 from TestsInput.context import SEND_UPLOADED_FILE_TO_SENDBOX_ANALYSIS_CONTEXT, SEND_URL_TO_SANDBOX_ANALYSIS_CONTEXT,\
     GET_FULL_REPORT_CONTEXT, GET_REPORT_SUMMARY_CONTEXT, GET_ANALYSIS_STATUS_CONTEXT, CHECK_QUOTA_STATUS_CONTEXT,\
-    FIND_SANDBOX_REPORTS_CONTEXT, FIND_SUBMISSION_ID_CONTEXT, MULTIPLE_ERRORS_RESULT
+    FIND_SANDBOX_REPORTS_CONTEXT, FIND_SUBMISSION_ID_CONTEXT, MULTIPLE_ERRORS_RESULT, GET_FULL_REPORT_CONTEXT_EXTENDED
 from TestsInput.http_responses import SEND_UPLOADED_FILE_TO_SENDBOX_ANALYSIS_HTTP_RESPONSE,\
     SEND_URL_TO_SANDBOX_ANALYSIS_HTTP_RESPONSE, GET_FULL_REPORT_HTTP_RESPONSE, GET_REPORT_SUMMARY_HTTP_RESPONSE,\
     CHECK_QUOTA_STATUS_HTTP_RESPONSE, FIND_SANDBOX_REPORTS_HTTP_RESPONSE, FIND_SUBMISSION_ID_HTTP_RESPONSE,\
@@ -46,9 +46,28 @@ SEND_URL_TO_SANDBOX_ANALYSIS_ARGS = {
     "system_time": ""
 }
 
+SEND_URL_TO_SANDBOX_ANALYSIS_ARGS_POLLING = {
+    "url": "https://www.google.com",
+    "environment_id": "160: Windows 10",
+    "enable_tor": "False",
+    "action_script": "",
+    "command_line": "",
+    "document_password": "",
+    "submit_name": "",
+    "system_date": "",
+    "system_time": "",
+    "polling": "true",
+    "interval_in_seconds": "10",
+    "extended_data": "true"
+}
+
 GET_FULL_REPORT_ARGS = {
     "ids": "ids",
-    "extended_data": "extended_data"
+    "extended_data": "false"
+}
+GET_FULL_REPORT_ARGS_EXTENDED = {
+    "ids": "ids",
+    "extended_data": "true"
 }
 
 GET_REPORT_SUMMARY_ARGS = {
@@ -110,7 +129,9 @@ def test_cs_falconx_commands(command, args, http_response, context, mocker):
      SEND_UPLOADED_FILE_TO_SENDBOX_ANALYSIS_HTTP_RESPONSE, SEND_UPLOADED_FILE_TO_SENDBOX_ANALYSIS_CONTEXT),
     (send_url_to_sandbox_analysis_command, SEND_URL_TO_SANDBOX_ANALYSIS_ARGS,
      SEND_URL_TO_SANDBOX_ANALYSIS_HTTP_RESPONSE, SEND_URL_TO_SANDBOX_ANALYSIS_CONTEXT),
-    (get_full_report_command, GET_FULL_REPORT_ARGS, GET_FULL_REPORT_HTTP_RESPONSE, GET_FULL_REPORT_CONTEXT)
+    (get_full_report_command, GET_FULL_REPORT_ARGS, GET_FULL_REPORT_HTTP_RESPONSE, GET_FULL_REPORT_CONTEXT),
+    (get_full_report_command, GET_FULL_REPORT_ARGS_EXTENDED, GET_FULL_REPORT_HTTP_RESPONSE,
+     GET_FULL_REPORT_CONTEXT_EXTENDED)
 ])
 def test_cs_falcon_x_polling_related_commands(command, args, http_response, context, mocker):
     """Unit test
@@ -172,20 +193,20 @@ def test_running_polling_command_success(mocker):
     Then:
         Return a command results object, without scheduling a new command.
     """
-    args = {'url': 'www.google.com'}
-    response_upload = util_load_json('./tests_data/upload_url_response.json')
-    upload_url_data = {'url': 'https://www.demisto.com',
-                       'sha256': 'c51a8231d1be07a2545ac99e86a25c5d68f88380b7ebf7ac91501661e6d678bb',
-                       'md5': '67632f32e6af123aa8ffd1fe8765a783'}
+    args = SEND_URL_TO_SANDBOX_ANALYSIS_ARGS_POLLING
     mocker.patch('CommonServerPython.ScheduledCommand.raise_error_if_not_supported')
-    mocker.patch('Palo_Alto_Networks_WildFire_v2.wildfire_upload_url', return_value=(response_upload, upload_url_data))
-    response_report = util_load_json('./tests_data/report_url_response_success.json')
-    mocker.patch('Palo_Alto_Networks_WildFire_v2.http_request', return_value=response_report)
-    expected_outputs = util_load_json('./tests_data/expected_outputs_upload_url_success.json')
-    command_results = run_polling_command(args, 'wildfire-upload-url', wildfire_upload_url_command,
-                                          wildfire_get_report_command, 'URL')
-    assert command_results[0].outputs.get('detection_reasons') == expected_outputs.get('detection_reasons')
-    assert command_results[0].scheduled_command is None
+    mocker.patch.object(Client, '_generate_token')
+    client = Client(server_url="https://api.crowdstrike.com/", username="user1", password="12345", use_ssl=False,
+                    proxy=False)
+
+    mocker.patch.object(Client, 'send_url_to_sandbox_analysis', return_value=SEND_URL_TO_SANDBOX_ANALYSIS_HTTP_RESPONSE)
+    mocker.patch.object(Client, 'get_full_report', return_value=GET_FULL_REPORT_HTTP_RESPONSE)
+
+    expected_outputs = GET_FULL_REPORT_CONTEXT_EXTENDED
+    command_results = run_polling_command(client, args, 'cs-fx-submit-url', send_url_to_sandbox_analysis_command,
+                                          get_full_report_command)
+    assert command_results.outputs == expected_outputs
+    assert command_results.scheduled_command is None
 
 
 def test_running_polling_command_pending(mocker):

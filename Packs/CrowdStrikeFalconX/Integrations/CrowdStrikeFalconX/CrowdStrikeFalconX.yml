@@ -81,6 +81,13 @@ script:
         - 'false'
       required: false
       secret: false
+    - default: false
+      defaultValue: '60'
+      description: Interval in seconds between each poll.
+      isArray: false
+      name: interval_in_seconds
+      required: false
+      secret: false
     - auto: PREDEFINED
       default:
       defaultValue: "no"
@@ -371,6 +378,13 @@ script:
       predefined:
         - 'true'
         - 'false'
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '60'
+      description: Interval in seconds between each poll.
+      isArray: false
+      name: interval_in_seconds
       required: false
       secret: false
     - default: false
@@ -1144,6 +1158,13 @@ script:
       predefined:
         - 'true'
         - 'false'
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '60'
+      description: Interval in seconds between each poll.
+      isArray: false
+      name: interval_in_seconds
       required: false
       secret: false
     - auto: PREDEFINED
