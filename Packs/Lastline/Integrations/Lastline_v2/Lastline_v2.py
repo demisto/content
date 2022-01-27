@@ -1,7 +1,5 @@
 import hashlib
 from typing import Dict, List
-
-import requests
 from urllib3 import disable_warnings
 import demistomock as demisto
 from CommonServerPython import *
