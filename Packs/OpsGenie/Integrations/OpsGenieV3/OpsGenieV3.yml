@@ -1068,6 +1068,7 @@ script:
     description: Create an incident in Opsgenie.
     deprecated: false
     name: opsgenie-create-incident
+    polling: true
     outputs:
     - contextPath: OpsGenie.Incident.action
       description: Action of this request.
