@@ -1,13 +1,22 @@
 import pytest
 import io
+
+from requests import Response
+
 from CommonServerPython import *
 import OpsGenieV3
 from unittest import mock
 
 
-def util_load_json(path):
+def util_load_json(path, wrap_in_response=False):
     with io.open(path, mode='r', encoding='utf-8') as f:
-        return json.loads(f.read())
+        jsonres = json.loads(f.read())
+        if wrap_in_response:
+            res = Response()
+            res.json = lambda: jsonres
+            return res
+        else:
+            return jsonres
 
 
 def test_create_alert_wrong_responders():
@@ -39,7 +48,7 @@ def test_create_alert(mocker):
     mocker.patch.object(mock_client, 'create_alert',
                         return_value=util_load_json('test_data/request.json'))
     mocker.patch.object(mock_client, 'get_request',
-                        return_value=util_load_json('test_data/create_alert.json'))
+                        return_value=util_load_json('test_data/create_alert.json', True))
     res = OpsGenieV3.create_alert(mock_client, {'responders': "team,id,123"})
     assert (res.raw_response == util_load_json('test_data/create_alert.json'))
 
@@ -99,7 +108,7 @@ def test_delete_alert(mocker):
     mocker.patch.object(mock_client, 'delete_alert',
                         return_value=util_load_json('test_data/request.json'))
     mocker.patch.object(mock_client, 'get_request',
-                        return_value=util_load_json('test_data/delete_alert.json'))
+                        return_value=util_load_json('test_data/delete_alert.json', True))
     res = OpsGenieV3.delete_alert(mock_client, {"alert-id": 1234})
     assert (res.raw_response == util_load_json('test_data/delete_alert.json'))
 
@@ -119,7 +128,7 @@ def test_ack_alert(mocker):
     mocker.patch.object(mock_client, 'ack_alert',
                         return_value=util_load_json('test_data/request.json'))
     mocker.patch.object(mock_client, 'get_request',
-                        return_value=util_load_json('test_data/ack_alert.json'))
+                        return_value=util_load_json('test_data/ack_alert.json', True))
     res = OpsGenieV3.ack_alert(mock_client, {"alert-id": 1234})
     assert (res.raw_response == util_load_json('test_data/ack_alert.json'))
 
@@ -139,7 +148,7 @@ def test_close_alert(mocker):
     mocker.patch.object(mock_client, 'close_alert',
                         return_value=util_load_json('test_data/request.json'))
     mocker.patch.object(mock_client, 'get_request',
-                        return_value=util_load_json('test_data/close_alert.json'))
+                        return_value=util_load_json('test_data/close_alert.json', True))
     res = OpsGenieV3.close_alert(mock_client, {"alert-id": 1234})
     assert (res.raw_response == util_load_json('test_data/close_alert.json'))
 
@@ -173,7 +182,7 @@ def test_assign_alert(mocker):
     mocker.patch.object(mock_client, 'assign_alert',
                         return_value=util_load_json('test_data/request.json'))
     mocker.patch.object(mock_client, 'get_request',
-                        return_value=util_load_json('test_data/assign_alert.json'))
+                        return_value=util_load_json('test_data/assign_alert.json', True))
     res = OpsGenieV3.assign_alert(mock_client, {"alert-id": 1234, "owner_id": 123})
     assert (res.raw_response == util_load_json('test_data/assign_alert.json'))
 
@@ -207,7 +216,7 @@ def test_add_responder_alert(mocker):
     mocker.patch.object(mock_client, 'add_responder_alert',
                         return_value=util_load_json('test_data/request.json'))
     mocker.patch.object(mock_client, 'get_request',
-                        return_value=util_load_json('test_data/add_responder_alert.json'))
+                        return_value=util_load_json('test_data/add_responder_alert.json', True))
     res = OpsGenieV3.add_responder_alert(mock_client, {"alert-id": 1234, "owner_id": 123})
     assert (res.raw_response == util_load_json('test_data/add_responder_alert.json'))
 
@@ -288,7 +297,7 @@ def test_escalate_alert(mocker):
     mocker.patch.object(mock_client, 'escalate_alert',
                         return_value=util_load_json('test_data/request.json'))
     mocker.patch.object(mock_client, 'get_request',
-                        return_value=util_load_json('test_data/escalate_alert.json'))
+                        return_value=util_load_json('test_data/escalate_alert.json', True))
     res = OpsGenieV3.escalate_alert(mock_client, {"alert-id": 1234, "escalation_id": 123})
     assert (res.raw_response == util_load_json('test_data/escalate_alert.json'))
 
@@ -309,7 +318,7 @@ def test_add_alert_tag(mocker):
     mocker.patch.object(mock_client, 'add_alert_tag',
                         return_value=util_load_json('test_data/request.json'))
     mocker.patch.object(mock_client, 'get_request',
-                        return_value=util_load_json('test_data/add_alert_tag.json'))
+                        return_value=util_load_json('test_data/add_alert_tag.json', True))
     res = OpsGenieV3.add_alert_tag(mock_client, {"alert-id": 1234, "tags": [1, 2]})
     assert (res.raw_response == util_load_json('test_data/add_alert_tag.json'))
 
@@ -330,7 +339,7 @@ def test_remove_alert_tag(mocker):
     mocker.patch.object(mock_client, 'remove_alert_tag',
                         return_value=util_load_json('test_data/request.json'))
     mocker.patch.object(mock_client, 'get_request',
-                        return_value=util_load_json('test_data/remove_alert_tag.json'))
+                        return_value=util_load_json('test_data/remove_alert_tag.json', True))
     res = OpsGenieV3.remove_alert_tag(mock_client, {"alert-id": 1234, "tags": [1, 2]})
     assert (res.raw_response == util_load_json('test_data/remove_alert_tag.json'))
 
@@ -483,7 +492,7 @@ def test_create_incident(mocker):
     mocker.patch.object(mock_client, 'create_incident',
                         return_value=util_load_json('test_data/request.json'))
     mocker.patch.object(mock_client, 'get_request',
-                        return_value=util_load_json('test_data/create_incident.json'))
+                        return_value=util_load_json('test_data/create_incident.json', True))
     res = OpsGenieV3.create_incident(mock_client, {})
     assert (res.raw_response == util_load_json('test_data/create_incident.json'))
 
@@ -502,7 +511,7 @@ def test_delete_incident(mocker):
     mocker.patch.object(mock_client, 'delete_incident',
                         return_value=util_load_json('test_data/request.json'))
     mocker.patch.object(mock_client, 'get_request',
-                        return_value=util_load_json('test_data/delete_incident.json'))
+                        return_value=util_load_json('test_data/delete_incident.json', True))
     res = OpsGenieV3.delete_incident(mock_client, {"incident_id": 1234})
     assert (res.raw_response == util_load_json('test_data/delete_incident.json'))
 
@@ -579,7 +588,7 @@ def test_close_incident(mocker):
     mocker.patch.object(mock_client, 'close_incident',
                         return_value=util_load_json('test_data/request.json'))
     mocker.patch.object(mock_client, 'get_request',
-                        return_value=util_load_json('test_data/close_incident.json'))
+                        return_value=util_load_json('test_data/close_incident.json', True))
     res = OpsGenieV3.close_incident(mock_client, {"incident_id": 1234})
     assert (res.raw_response == util_load_json('test_data/close_incident.json'))
 
@@ -599,7 +608,7 @@ def test_resolve_incident(mocker):
     mocker.patch.object(mock_client, 'resolve_incident',
                         return_value=util_load_json('test_data/request.json'))
     mocker.patch.object(mock_client, 'get_request',
-                        return_value=util_load_json('test_data/resolve_incident.json'))
+                        return_value=util_load_json('test_data/resolve_incident.json', True))
     res = OpsGenieV3.resolve_incident(mock_client, {"incident_id": 1234})
     assert (res.raw_response == util_load_json('test_data/resolve_incident.json'))
 
@@ -633,7 +642,7 @@ def test_add_responder_incident(mocker):
     mocker.patch.object(mock_client, 'add_responder_incident',
                         return_value=util_load_json('test_data/request.json'))
     mocker.patch.object(mock_client, 'get_request',
-                        return_value=util_load_json('test_data/add_responder_incident.json'))
+                        return_value=util_load_json('test_data/add_responder_incident.json', True))
     res = OpsGenieV3.add_responder_incident(mock_client, {"incident_id": 1234, "responders": ["team", "id", "name"]})
     assert (res.raw_response == util_load_json('test_data/add_responder_incident.json'))
 
@@ -654,7 +663,7 @@ def test_add_tag_incident(mocker):
     mocker.patch.object(mock_client, 'add_tag_incident',
                         return_value=util_load_json('test_data/request.json'))
     mocker.patch.object(mock_client, 'get_request',
-                        return_value=util_load_json('test_data/add_tag_incident.json'))
+                        return_value=util_load_json('test_data/add_tag_incident.json', True))
     res = OpsGenieV3.add_tag_incident(mock_client, {"incident_id": 1234, "tags": [1, 2]})
     assert (res.raw_response == util_load_json('test_data/add_tag_incident.json'))
 
@@ -675,7 +684,7 @@ def test_remove_tag_incident(mocker):
     mocker.patch.object(mock_client, 'remove_tag_incident',
                         return_value=util_load_json('test_data/request.json'))
     mocker.patch.object(mock_client, 'get_request',
-                        return_value=util_load_json('test_data/remove_tag_incident.json'))
+                        return_value=util_load_json('test_data/remove_tag_incident.json', True))
     res = OpsGenieV3.remove_tag_incident(mock_client, {"incident_id": 1234, "tags": [1, 2]})
     assert (res.raw_response == util_load_json('test_data/remove_tag_incident.json'))
 
@@ -919,3 +928,20 @@ def test_responders_to_json_empty_value():
     res = mock_client.responders_to_json(responders={},
                                          responder_key="responder")
     assert (res == {})
+
+
+def test_get_request_command(requests_mock, mocker):
+    output = {'hello': 'world'}
+    mocker.patch('CommonServerPython.ScheduledCommand.raise_error_if_not_supported')
+    requests_mock.get(url='http://example.com/v2/alert/requests/1', json={'data': output})
+    args = {'request_id': 1, 'request_type': 'alert'}
+    response = OpsGenieV3.get_request_command(OpsGenieV3.Client(base_url="http://example.com"), args)
+    assert response.outputs == output
+
+
+def test_get_request_command_404(requests_mock, mocker):
+    mocker.patch('CommonServerPython.ScheduledCommand.raise_error_if_not_supported')
+    requests_mock.get(url='http://example.com/v2/alert/requests/1', status_code=404)
+    args = {'request_id': 1, 'request_type': 'alert'}
+    response = OpsGenieV3.get_request_command(OpsGenieV3.Client(base_url="http://example.com"), args)
+    assert response.scheduled_command._args == {**args, 'polled_once': True}
