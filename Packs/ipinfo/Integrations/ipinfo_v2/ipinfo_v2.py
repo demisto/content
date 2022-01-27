@@ -155,6 +155,16 @@ def parse_results(ip: str, raw_result: Dict[str, Any], reliability: str) -> List
         tags=','.join(tags),
         relationships=relationships)
 
+    if lat and lon:
+        raw_result.update({'lat': lat, 'lng': lon})
+        map_output = CommandResults(raw_response={'lat': lat, 'lng': lon},
+                                    entry_type=EntryType.MAP_ENTRY_TYPE,
+                                    outputs_key_field=outputs_key_field,
+                                    indicator=indicator)
+        command_results.append(map_output)
+
+    # do not change the order of the calls for CommandResults due to an issue where the ip command would not
+    # present all of the information returned from the API.
     command_results.append(
         CommandResults(readable_output=tableToMarkdown(f'IPinfo results for {ip}', raw_result),
                        raw_response=raw_result,
@@ -166,12 +176,6 @@ def parse_results(ip: str, raw_result: Dict[str, Any], reliability: str) -> List
                        )
     )
 
-    if lat and lon:
-        map_output = CommandResults(raw_response={'lat': lat, 'lng': lon},
-                                    entry_type=EntryType.MAP_ENTRY_TYPE,
-                                    outputs_key_field=outputs_key_field,
-                                    indicator=indicator)
-        command_results.append(map_output)
     return command_results
 
 
