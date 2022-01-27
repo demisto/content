@@ -38,4 +38,4 @@ microsoft-atp-sc-indicator-get-by-id indicator_id=5142
 microsoft-atp-sc-indicator-delete indicator_id=5142
 microsoft-atp-list-machines-by-vulnerability cve_id=CVE-2021-32810,CVE-2020-12321
 microsoft-atp-get-file-info hash="3395856ce81f2b7382dee72602f798b642f14140,db79e9e669c42b5ac46fc6d6b590ca990687958b"
-endpoint id="f3bba49af4d3bacedc62ca0fe580a4d5925af8aa,48a62a741512515e356c6896d428ebddd0a04c0d"ip=172.31.7.116 hostname="ec2amaz-ua9hieu"
+endpoint id="f3bba49af4d3bacedc62ca0fe580a4d5925af8aa,48a62a741512515e356c6896d428ebddd0a04c0d"ip=1.2.3.4 hostname="ec2amaz-ua9hieu"
