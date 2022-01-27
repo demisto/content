@@ -159,6 +159,7 @@ script:
     description: Create an alert in Opsgenie.
     deprecated: false
     name: opsgenie-create-alert
+    polling: true
     outputs:
     - contextPath: OpsGenie.Alert.action
       description: Action of this request.
