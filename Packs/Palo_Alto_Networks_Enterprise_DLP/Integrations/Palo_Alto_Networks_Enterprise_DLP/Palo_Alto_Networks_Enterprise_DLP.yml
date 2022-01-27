@@ -54,7 +54,7 @@ script:
     - contextPath: DLP.Report.DataPatternMatches.LowConfidenceFrequency
       description: Number of occurrences at Medium confidence.
     description: Fetches DLP reports associated with a report ID.
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.1.25933
   isFetchSamples: true
   longRunning: false
   runonce: false
@@ -63,4 +63,4 @@ script:
   type: python
 fromversion: 5.0.0
 tests:
-- Palo_Alto_Networks_Enterprise_DLP - Test
+- Palo_Alto_Networks_Enterprise_DLP_-_Test
