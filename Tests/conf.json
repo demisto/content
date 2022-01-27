@@ -2979,6 +2979,11 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "Unit42v2 Feed",
+            "playbookID": "unit42_atoms",
+            "fromversion": "5.5.0"
+        },
+        {
             "integrations": "QRadar_v2",
             "playbookID": "QRadar Indicator Hunting Test",
             "timeout": 600,
@@ -4941,6 +4946,11 @@
             "integrations": "AzureRiskyUsers"
         },
         {
+            "playbookID": "playbook-AzureKeyVault-Test",
+            "fromversion": "6.0.0",
+            "integrations": "AzureKeyVault"
+        },
+        {
             "integrations": "KafkaV3",
             "playbookID": "KafkaV3 Test"
         },
@@ -5113,7 +5123,8 @@
         "AutoFocus V2 test": "Issue 26464",
         "SplunkPy_KV_commands_default_handler": "Issue 41419",
         "LogRhythm REST test": "Issue 40654",
-        "Process Email - Generic - Test - Actual Incident": "Issue 45227"
+        "Process Email - Generic - Test - Actual Incident": "Issue 45227",
+        "Jira-v2-Test": "Issue 33313"
     },
     "skipped_integrations": {
         

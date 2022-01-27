@@ -662,13 +662,19 @@ def get_indicators_command(client: Client, args: Dict[str, str], feed_tags: Opti
     Returns:
         Demisto Outputs.
     """
+    is_version_over_6_2 = is_demisto_version_ge('6.2.0')
     limit = arg_to_number(args.get('limit')) or 10
     if not feed_tags:
         feed_tags = []
 
-    indicators = client.fetch_stix_objects_from_api(test=True, type='indicator', limit=limit)
+    ind_type = args.get('indicators_type')
 
-    indicators = parse_indicators(indicators, feed_tags, tlp_color)
+    indicators = client.fetch_stix_objects_from_api(test=True, type=ind_type, limit=limit)
+
+    if ind_type == 'indicator':
+        indicators = parse_indicators(indicators, feed_tags, tlp_color)
+    else:
+        indicators = create_attack_pattern_indicator(indicators, feed_tags, tlp_color, is_version_over_6_2)
     limited_indicators = indicators[:limit]
 
     readable_output = tableToMarkdown('Unit42 Indicators:', t=limited_indicators, headers=['type', 'value', 'fields'])
