@@ -3,7 +3,7 @@
     "description": "Maps outgoing ServiceNow incident Fields.",
     "feed": false,
     "fromVersion": "6.0.0",
-    "id": "ServiceNow - Outgoing Mapper",
+    "id": "ServiceNow-outgoing-mapper",
     "mapping": {
         "ServiceNow Ticket": {
             "dontMapEventToLabels": false,
