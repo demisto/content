@@ -11,7 +11,7 @@ args:
   name: from
 - description: The to zone.
   name: to
-- description: The IP protocol value.
+- description: "The IP protocol value, E.g., ICMP=1, TCP=6 or UDP=17."
   name: protocol
   required: true
 - description: A comma-separated list of source IP addresses.
