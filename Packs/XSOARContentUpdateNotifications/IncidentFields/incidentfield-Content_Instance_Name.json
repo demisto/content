@@ -1,0 +1,33 @@
+{
+    "id": "incident_contentinstancename",
+    "version": -1,
+    "modified": "2022-01-27T16:35:58.812794144Z",
+    "name": "Content Instance Name",
+    "ownerOnly": false,
+    "description": "Instance Name of the integration to use.",
+    "cliName": "contentinstancename",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Content Update Manager"
+    ],
+    "associatedToAll": false,
+	"placeholder": "Instance name of Demisto API integration to use.",
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "5.5.0"
+}
