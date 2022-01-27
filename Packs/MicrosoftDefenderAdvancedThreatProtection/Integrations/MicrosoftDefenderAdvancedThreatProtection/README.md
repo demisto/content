@@ -138,6 +138,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 43. microsoft-atp-sc-indicator-delete
 44. microsoft-atp-list-machines-by-vulnerability
 45. microsoft-atp-get-file-info
+46. endpoint
 
 ### 1. microsoft-atp-isolate-machine
 ---
@@ -4152,3 +4153,208 @@ File.Read.All
 >|---|---|---|
 >| 3395856ce81 | 275a021bbfb648 | 68 |
 >| db79e9e669c | ef67e4b2bb4ee5 | 36768 |
+
+
+### endpoint
+***
+Gets machines that have communicated with Microsoft Defender for Endpoint cloud. At least one of the following arguments is required ip, hostanme ot id. Otherwise, an error appears.
+
+##### Required Permissions
+Machine.Read.All
+Machine.ReadWrite.All
+
+#### Base Command
+
+`endpoint`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | The endpoint ID. | Optional | 
+| ip | The endpoint IP address. | Optional | 
+| hostname | The endpoint hostname. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Endpoint.ID | String | The endpoint's identifier. | 
+| Endpoint.Hostname | String | The hostname of the endpoint. | 
+| Endpoint.OS | String | The endpoint's operating system. | 
+| Endpoint.OSVersion | String | The endpoint's operating system's version. | 
+| Endpoint.IPAddress | String | The endpoint's IP address. | 
+| Endpoint.Status | String | The health status of the endpoint. | 
+| Endpoint.MACAddress | String | The endpoint's MAC address. | 
+| Endpoint.Vendor | String | The integration name of the endpoint vendor. | 
+| MicrosoftATP.Machine.ID | String | The machine ID. | 
+| MicrosoftATP.Machine.ComputerDNSName | String | The machine DNS name. | 
+| MicrosoftATP.Machine.FirstSeen | Date | The first date and time where the machine was observed by Microsoft Defender ATP. | 
+| MicrosoftATP.Machine.LastSeen | Date | The last date and time where the machine was observed by Microsoft Defender ATP. | 
+| MicrosoftATP.Machine.OSPlatform | String | The operating system platform. | 
+| MicrosoftATP.Machine.OSVersion | String | The operating system version. | 
+| MicrosoftATP.Machine.OSProcessor | String | The operating system processor. | 
+| MicrosoftATP.Machine.LastIPAddress | String | The last IP on the machine. | 
+| MicrosoftATP.Machine.LastExternalIPAddress | String | The last machine IP to access the internet. | 
+| MicrosoftATP.Machine.OSBuild | Number | The operating system build number. | 
+| MicrosoftATP.Machine.HealthStatus | String | The machine health status. | 
+| MicrosoftATP.Machine.RBACGroupID | Number | The machine RBAC group ID. | 
+| MicrosoftATP.Machine.RBACGroupName | String | The machine RBAC group name. | 
+| MicrosoftATP.Machine.RiskScore | String | The machine risk score. | 
+| MicrosoftATP.Machine.ExposureLevel | String | The machine exposure score. | 
+| MicrosoftATP.Machine.IsAADJoined | Boolean | True if machine is AAD joined, False otherwise. | 
+| MicrosoftATP.Machine.AADDeviceID | String | The AAD Device ID. | 
+| MicrosoftATP.Machine.MachineTags | String | Set of machine tags. | 
+| MicrosoftATP.Machine.IPAddresses.ipAddress | String | The machine IP address. | 
+| MicrosoftATP.Machine.IPAddresses.MACAddress | String | The machine MAC address. | 
+| MicrosoftATP.Machine.IPAddresses.operationalStatus | String | The machine operational status. | 
+| MicrosoftATP.Machine.IPAddresses.type | String | The machine macine IP address type. | 
+| MicrosoftATP.Machine.AgentVersion | String | The machine Agent version. | 
+
+#### Command example
+```!endpoint id="f3bba49a,48a62a74"ip=1.2.3.4 hostname="ec2amaz-ua9hieu"```
+#### Context Example
+```json
+{
+    "Endpoint": [
+        {
+            "Hostname": "msde-agent-host-centos7.c.dmst-integrations.internal",
+            "ID": "48a62a74",
+            "IPAddress": "10.0.0.1",
+            "MACAddress": "123456789123",
+            "OS": "CentOS",
+            "OSVersion": "7.9 x64 bit",
+            "Status": "Online",
+            "Vendor": "Microsoft Defender ATP"
+        },
+        {
+            "Hostname": "ec2amaz-ua9hieu",
+            "ID": "f3bba49a",
+            "IPAddress": "1.2.3.4",
+            "MACAddress": "123456789123",
+            "OS": "WindowsServer2016",
+            "OSVersion": "1607 x64 bit",
+            "Status": "Online",
+            "Vendor": "Microsoft Defender ATP"
+        }
+    ],
+    "MicrosoftATP": {
+        "Machine": [
+            {
+                "AgentVersion": "30.121112.15302.0",
+                "ComputerDNSName": "msde-agent-host-centos7.c.dmst-integrations.internal",
+                "ExposureLevel": "Medium",
+                "FirstSeen": "2022-01-23T09:13:42.982Z",
+                "HealthStatus": "Active",
+                "ID": "48a62a74",
+                "IPAddresses": [
+                    {
+                        "ipAddress": "10.0.0.1",
+                        "macAddress": "123456789123",
+                        "operationalStatus": "Up",
+                        "type": "Other"
+                    },
+                    {
+                        "ipAddress": "fe80::178b:6498:fc7f:2856",
+                        "macAddress": "123456789123",
+                        "operationalStatus": "Up",
+                        "type": "Other"
+                    },
+                    {
+                        "ipAddress": "127.0.0.1",
+                        "macAddress": "000000000000",
+                        "operationalStatus": "Up",
+                        "type": "Other"
+                    },
+                    {
+                        "ipAddress": "::1",
+                        "macAddress": "000000000000",
+                        "operationalStatus": "Up",
+                        "type": "Other"
+                    }
+                ],
+                "IsAADJoined": false,
+                "LastExternalIPAddress": "127.0.0.1",
+                "LastIPAddress": "10.0.0.1",
+                "LastSeen": "2022-01-27T09:13:53.1394181Z",
+                "MACAddress": "123456789123",
+                "OSPlatform": "CentOS",
+                "OSProcessor": "x64",
+                "OSVersion": "7.9",
+                "RBACGroupID": 0,
+                "RiskScore": "Medium"
+            },
+            {
+                "AgentVersion": "10.3720.16299.2015",
+                "ComputerDNSName": "ec2amaz-ua9hieu",
+                "ExposureLevel": "High",
+                "FirstSeen": "2022-01-23T15:36:02.286Z",
+                "HealthStatus": "Active",
+                "ID": "f3bba49a",
+                "IPAddresses": [
+                    {
+                        "ipAddress": "1.2.3.4",
+                        "macAddress": "123456789123",
+                        "operationalStatus": "Up",
+                        "type": "Ethernet"
+                    },
+                    {
+                        "ipAddress": "fe80::a998:1c4a:7e1c:4865",
+                        "macAddress": "123456789123",
+                        "operationalStatus": "Up",
+                        "type": "Ethernet"
+                    },
+                    {
+                        "ipAddress": "127.0.0.1",
+                        "macAddress": "",
+                        "operationalStatus": "Up",
+                        "type": "SoftwareLoopback"
+                    },
+                    {
+                        "ipAddress": "::1",
+                        "macAddress": "",
+                        "operationalStatus": "Up",
+                        "type": "SoftwareLoopback"
+                    },
+                    {
+                        "ipAddress": "fe80::5efe:1.2.3.4",
+                        "macAddress": "00000000000000E0",
+                        "operationalStatus": "Down",
+                        "type": "Tunnel"
+                    },
+                    {
+                        "ipAddress": "127.0.0.1",
+                        "macAddress": "00000000000000E0",
+                        "operationalStatus": "Up",
+                        "type": "Tunnel"
+                    },
+                    {
+                        "ipAddress": "fe80::2412:1420:53e0:f88b",
+                        "macAddress": "00000000000000E0",
+                        "operationalStatus": "Up",
+                        "type": "Tunnel"
+                    }
+                ],
+                "IsAADJoined": false,
+                "LastExternalIPAddress": "127.0.0.1",
+                "LastIPAddress": "1.2.3.4",
+                "LastSeen": "2022-01-26T22:21:19.2024139Z",
+                "MACAddress": "123456789123",
+                "OSBuild": 14393,
+                "OSPlatform": "WindowsServer2016",
+                "OSProcessor": "x64",
+                "OSVersion": "1607",
+                "RBACGroupID": 0,
+                "RiskScore": "None"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Microsoft Defender ATP Machine:
+>|ID|ComputerDNSName|OSPlatform|LastIPAddress|LastExternalIPAddress|HealthStatus|RiskScore|ExposureLevel|
+>|---|---|---|---|---|---|---|---|
+>| f3bba49a | ec2amaz-ua9hieu | WindowsServer2016 | 1.2.3.4 | 127.0.0.1 | Active | None | High |

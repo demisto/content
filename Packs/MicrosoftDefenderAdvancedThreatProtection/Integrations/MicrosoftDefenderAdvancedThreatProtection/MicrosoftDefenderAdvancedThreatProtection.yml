@@ -4618,6 +4618,123 @@ script:
     - contextPath: File.Size
       description: The file size.
       type: Number
+  - arguments:
+    - default: false
+      description: The endpoint ID.
+      isArray: true
+      name: id
+      required: false
+      secret: false
+    - default: true
+      description: The endpoint IP address.
+      isArray: true
+      name: ip
+      required: false
+      secret: false
+    - default: false
+      description: The endpoint hostname.
+      isArray: true
+      name: hostname
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets machines that have communicated with Microsoft Defender for Endpoint cloud. At least one of the following arguments is required ip, hostanme ot id. Otherwise, an error appears.
+    execution: false
+    name: endpoint
+    outputs:
+    - contextPath: Endpoint.ID
+      description: The endpoint's identifier.
+      type: String
+    - contextPath: Endpoint.Hostname
+      description: The hostname of the endpoint.
+      type: String
+    - contextPath: Endpoint.OS
+      description: The endpoint's operating system.
+      type: String
+    - contextPath: Endpoint.OSVersion
+      description: The endpoint's operating system's version.
+      type: String
+    - contextPath: Endpoint.IPAddress
+      description: The endpoint's IP address.
+      type: String
+    - contextPath: Endpoint.Status
+      description: The health status of the endpoint.
+      type: String
+    - contextPath: Endpoint.MACAddress
+      description: The endpoint's MAC address.
+      type: String
+    - contextPath: Endpoint.Vendor
+      description: The integration name of the endpoint vendor.
+      type: String
+    - contextPath: MicrosoftATP.Machine.ID
+      description: The machine ID.
+      type: String
+    - contextPath: MicrosoftATP.Machine.ComputerDNSName
+      description: The machine DNS name.
+      type: String
+    - contextPath: MicrosoftATP.Machine.FirstSeen
+      description: The first date and time where the machine was observed by Microsoft Defender ATP.
+      type: Date
+    - contextPath: MicrosoftATP.Machine.LastSeen
+      description: The last date and time where the machine was observed by Microsoft Defender ATP.
+      type: Date
+    - contextPath: MicrosoftATP.Machine.OSPlatform
+      description: The operating system platform.
+      type: String
+    - contextPath: MicrosoftATP.Machine.OSVersion
+      description: The operating system version.
+      type: String
+    - contextPath: MicrosoftATP.Machine.OSProcessor
+      description: The operating system processor.
+      type: String
+    - contextPath: MicrosoftATP.Machine.LastIPAddress
+      description: The last IP on the machine.
+      type: String
+    - contextPath: MicrosoftATP.Machine.LastExternalIPAddress
+      description: The last machine IP to access the internet.
+      type: String
+    - contextPath: MicrosoftATP.Machine.OSBuild
+      description: The operating system build number.
+      type: Number
+    - contextPath: MicrosoftATP.Machine.HealthStatus
+      description: The machine health status.
+      type: String
+    - contextPath: MicrosoftATP.Machine.RBACGroupID
+      description: The machine RBAC group ID.
+      type: Number
+    - contextPath: MicrosoftATP.Machine.RBACGroupName
+      description: The machine RBAC group name.
+      type: String
+    - contextPath: MicrosoftATP.Machine.RiskScore
+      description: The machine risk score.
+      type: String
+    - contextPath: MicrosoftATP.Machine.ExposureLevel
+      description: The machine exposure score.
+      type: String
+    - contextPath: MicrosoftATP.Machine.IsAADJoined
+      description: True if machine is AAD joined, False otherwise.
+      type: Boolean
+    - contextPath: MicrosoftATP.Machine.AADDeviceID
+      description: The AAD Device ID.
+      type: String
+    - contextPath: MicrosoftATP.Machine.MachineTags
+      description: Set of machine tags.
+      type: String
+    - contextPath: MicrosoftATP.Machine.IPAddresses.ipAddress
+      description: The machine IP address.
+      type: String
+    - contextPath: MicrosoftATP.Machine.IPAddresses.MACAddress
+      description: The machine MAC address.
+      type: String
+    - contextPath: MicrosoftATP.Machine.IPAddresses.operationalStatus
+      description: The machine operational status.
+      type: String
+    - contextPath: MicrosoftATP.Machine.IPAddresses.type
+      description: The machine macine IP address type.
+      type: String
+    - contextPath: MicrosoftATP.Machine.AgentVersion
+      description: The machine Agent version.
+      type: String
   dockerimage: demisto/crypto:1.0.0.24380
   feed: false
   isfetch: true

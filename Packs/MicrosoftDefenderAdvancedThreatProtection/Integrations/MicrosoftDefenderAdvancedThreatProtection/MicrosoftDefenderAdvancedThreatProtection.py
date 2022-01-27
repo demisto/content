@@ -47,9 +47,20 @@ INDICATOR_TYPE_TO_DBOT_TYPE = {
     'IpAddress': DBotScoreType.IP,
 }
 
+HEALTH_STATUS_TO_ENDPOINT_STATUS = {
+    "Active": "Online",
+    "Inactive": "Offline",
+    "ImpairedCommunication": "Online",
+    "NoSensorData": "Online",
+    "NoSensorDataImpairedCommunication": "Online",
+    "Unknown": None,
+}
+
 SECURITY_CENTER_RESOURCE = 'https://api.securitycenter.microsoft.com'
 SECURITY_CENTER_INDICATOR_ENDPOINT = 'https://api.securitycenter.microsoft.com/api/indicators'
 GRAPH_INDICATOR_ENDPOINT = 'https://graph.microsoft.com/beta/security/tiIndicators'
+
+INTEGRATION_NAME = 'Microsoft Defender ATP'
 
 
 def file_standard(observable: Dict) -> Common.File:
@@ -1087,6 +1098,17 @@ def get_machines_list(machines_response):
         machine_data = get_machine_data(machine)
         machines_list.append(machine_data)
     return machines_list
+
+
+def get_machine_mac_address(machine):
+    """
+    return the machine MAC address where “ipAddresses[].ipAddress” = “lastIpAddress”
+    """
+    ip_addresses = machine.get('ipAddresses', [])
+    last_ip_address = machine.get('lastIpAddress', '')
+    for ip_object in ip_addresses:
+        if last_ip_address and ip_object.get('ipAddress') == last_ip_address:
+            return ip_object.get('macAddress')
 
 
 def reformat_filter(fields_to_filter_by):
@@ -2726,6 +2748,63 @@ def get_file_info_command(client: MsClient, args: dict) -> dict:
     }
 
 
+def create_endpoint_verdict(machine: dict):
+    return Common.Endpoint(
+        id=machine.get('ID'),
+        hostname=machine.get('ComputerDNSName'),
+        ip_address=machine.get('LastIPAddress'),
+        mac_address=machine.get('MACAddress'),
+        os=machine.get('OSPlatform'),
+        status=HEALTH_STATUS_TO_ENDPOINT_STATUS[machine.get('HealthStatus', 'Unknown')],
+        vendor=INTEGRATION_NAME,
+        os_version=f"{machine.get('OSVersion')} {machine.get('OSProcessor')} bit",
+    )
+
+
+def endpoint_command(client: MsClient, args: dict) -> List[CommandResults]:
+    """Retrieves a collection of machines that have communicated with WDATP cloud on the last 30 days
+
+    Returns:
+        CommandResults list.
+    """
+    headers = ['ID', 'ComputerDNSName', 'OSPlatform', 'LastIPAddress', 'LastExternalIPAddress', 'HealthStatus',
+               'RiskScore', 'ExposureLevel']
+    hostnames = argToList(args.get('hostname', ''))
+    ips = argToList(args.get('ip', ''))
+    ids = argToList(args.get('id', ''))
+
+    no_hostname = len(hostnames) == 0
+    no_ip = len(ips) == 0
+    no_id = len(ids) == 0
+    if no_hostname and no_ip and no_id:
+        raise DemistoException(
+            f'{INTEGRATION_NAME} - In order to run this command, please provide valid id, ip or hostname')
+
+    fields_to_values = {'computerDnsName': hostnames, 'lastIpAddress': ips, 'id': ids}
+    filter_req = ' or '.join(
+        f"{field_key} eq '{field_value}'" for (field_key, field_value_list) in fields_to_values.items() if
+        field_value_list for field_value in field_value_list)
+
+    machines_response = client.get_machines(filter_req)
+    machines_outputs = []
+    for machine in machines_response.get('value', []):
+        machine_data = get_machine_data(machine)
+        machine_data['MACAddress'] = get_machine_mac_address(machine)
+        human_readable = tableToMarkdown('Microsoft Defender ATP Machine:', machine_data, headers=headers,
+                                         removeNull=True)
+        endpoint_indicator = create_endpoint_verdict(machine_data)
+        machines_outputs.append(CommandResults(
+            readable_output=human_readable,
+            outputs_prefix='MicrosoftATP.Machine',
+            raw_response=machines_response,
+            outputs_key_field="ID",
+            outputs=machine_data,
+            indicator=endpoint_indicator,
+        ))
+
+    return machines_outputs
+
+
 ''' EXECUTION CODE '''
 
 
@@ -2865,6 +2944,9 @@ def main():
 
         elif command == 'microsoft-atp-get-file-info':
             demisto.results(get_file_info_command(client, args))
+
+        elif command == 'endpoint':
+            return_results(endpoint_command(client, args))
 
         elif command in ('microsoft-atp-indicator-list', 'microsoft-atp-indicator-get-by-id'):
             return_outputs(*list_indicators_command(client, args))
