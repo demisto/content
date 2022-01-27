@@ -1,5 +1,6 @@
 id: GoogleSheets-Test
 version: -1
+vcShouldKeepItemLegacyProdMachine: false
 name: GoogleSheets-Test
 description: Test play book for all the GoogleSheets commands - Notice the last task
   is from Google Drive integration to delete the created file
@@ -7,15 +8,14 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 06797aee-e22a-4a21-8ab3-4264637acec6
+    taskid: e001b15f-a10c-43ff-84fa-6932a7688416
     type: start
     task:
-      id: 06797aee-e22a-4a21-8ab3-4264637acec6
+      id: e001b15f-a10c-43ff-84fa-6932a7688416
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -36,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: a3aec899-ebd7-45ed-80e8-fd1a89d40b4c
+    taskid: 9d046c2c-7fdc-4563-8644-4bbe3675f041
     type: regular
     task:
-      id: a3aec899-ebd7-45ed-80e8-fd1a89d40b4c
+      id: 9d046c2c-7fdc-4563-8644-4bbe3675f041
       version: -1
       name: Delete Context
       description: |-
@@ -75,10 +75,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 7d5d3724-2b6a-411b-88d5-5acf6d6b225f
+    taskid: 74602c4d-d37b-4ed2-8c39-1e1f9873031f
     type: regular
     task:
-      id: 7d5d3724-2b6a-411b-88d5-5acf6d6b225f
+      id: 74602c4d-d37b-4ed2-8c39-1e1f9873031f
       version: -1
       name: google-sheets-spreadsheet-create
       description: Create a new Spreadsheet
@@ -115,10 +115,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 3b63ad61-f5ae-48c1-8c47-20e57c1a1c43
+    taskid: 79081de2-5d53-4b04-872b-c724091b14d0
     type: regular
     task:
-      id: 3b63ad61-f5ae-48c1-8c47-20e57c1a1c43
+      id: 79081de2-5d53-4b04-872b-c724091b14d0
       version: -1
       name: google-sheets-spreadsheet-get
       description: Returns the spreadsheet at the given ID
@@ -130,8 +130,10 @@ tasks:
       '#none#':
       - "11"
     scriptarguments:
+      include_grid_data:
+        simple: "true"
       spreadsheet_id:
-        simple: ${Spreadsheet.spreadsheetId}
+        simple: ${GoogleSheets.Spreadsheet.spreadsheetId}
     separatecontext: false
     view: |-
       {
@@ -149,10 +151,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 33300ae1-82ac-4f6c-8b86-38fc0cc70ff7
+    taskid: 7c5cc4bd-ab53-4fbb-852c-98d9c9f4d157
     type: regular
     task:
-      id: 33300ae1-82ac-4f6c-8b86-38fc0cc70ff7
+      id: 7c5cc4bd-ab53-4fbb-852c-98d9c9f4d157
       version: -1
       name: google-sheets-sheet-create
       description: Adds a new sheet. When a sheet is added at a given index, all subsequent
@@ -174,7 +176,7 @@ tasks:
       sheet_title:
         simple: Sheet2
       spreadsheet_id:
-        simple: ${Spreadsheet.spreadsheetId}
+        simple: ${GoogleSheets.Spreadsheet.spreadsheetId}
     separatecontext: false
     view: |-
       {
@@ -192,10 +194,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 88fcc2ba-655d-4435-8e99-6b590409dcfe
+    taskid: 3fdc0cf8-f294-4cbc-846a-92fdf7ec1a32
     type: regular
     task:
-      id: 88fcc2ba-655d-4435-8e99-6b590409dcfe
+      id: 3fdc0cf8-f294-4cbc-846a-92fdf7ec1a32
       version: -1
       name: google-sheets-value-update
       description: Sets values in a range of a spreadsheet. The caller must specify
@@ -215,7 +217,7 @@ tasks:
       range:
         simple: Sheet1!A1:D8
       spreadsheet_id:
-        simple: ${Spreadsheet.spreadsheetId}
+        simple: ${GoogleSheets.Spreadsheet.spreadsheetId}
       values:
         simple: '[1,2,3],[4,5,6]'
     separatecontext: false
@@ -235,10 +237,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 365f245a-6e36-475d-88e8-b1c188430a27
+    taskid: 8fd984be-19ad-4427-82e1-0065a226ae44
     type: regular
     task:
-      id: 365f245a-6e36-475d-88e8-b1c188430a27
+      id: 8fd984be-19ad-4427-82e1-0065a226ae44
       version: -1
       name: google-sheets-sheet-copy-to
       description: Copies a single sheet from a spreadsheet to another spreadsheet
@@ -251,19 +253,15 @@ tasks:
       - "9"
     scriptarguments:
       destination_spreadsheet_id:
-        simple: ${Spreadsheet.spreadsheetId}
+        simple: ${GoogleSheets.Spreadsheet.spreadsheetId}
       source_sheet_id:
         complex:
-          root: Spreadsheet.sheets.properties
+          root: GoogleSheets.Spreadsheet.sheets
           accessor: sheetId
           transformers:
-          - operator: atIndex
-            args:
-              index:
-                value:
-                  simple: "1"
+          - operator: FirstArrayElement
       source_spreadsheet_id:
-        simple: ${Spreadsheet.spreadsheetId}
+        simple: ${GoogleSheets.Spreadsheet.spreadsheetId}
     separatecontext: false
     view: |-
       {
@@ -281,10 +279,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 21958cbc-8974-46c1-8c93-caf1a1618732
+    taskid: 53381f19-fe30-4ef3-841a-8fe1ed0201ff
     type: regular
     task:
-      id: 21958cbc-8974-46c1-8c93-caf1a1618732
+      id: 53381f19-fe30-4ef3-841a-8fe1ed0201ff
       version: -1
       name: google-sheets-spreadsheet-get
       description: Returns the spreadsheet at the given ID
@@ -296,9 +294,11 @@ tasks:
       '#none#':
       - "10"
     scriptarguments:
+      include_grid_data:
+        simple: "true"
       spreadsheet_id:
         complex:
-          root: Spreadsheet
+          root: GoogleSheets.Spreadsheet
           accessor: spreadsheetId
           transformers:
           - operator: FirstArrayElement
@@ -319,10 +319,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: d10842c9-6d90-4944-8f86-89b69d2d04c8
+    taskid: 7c9d947c-bcef-414b-8a04-14bb5d6b1c34
     type: regular
     task:
-      id: d10842c9-6d90-4944-8f86-89b69d2d04c8
+      id: 7c9d947c-bcef-414b-8a04-14bb5d6b1c34
       version: -1
       name: google-sheets-sheet-duplicate
       description: Duplicates the contents of a sheet
@@ -340,12 +340,12 @@ tasks:
         simple: duplicatedSheet
       source_sheet_id:
         complex:
-          root: Spreadsheet.sheets.properties
+          root: GoogleSheets.Spreadsheet.sheets
           accessor: sheetId
           transformers:
           - operator: FirstArrayElement
       spreadsheet_id:
-        simple: ${Spreadsheet.spreadsheetId}
+        simple: ${GoogleSheets.Spreadsheet.spreadsheetId}
     separatecontext: false
     view: |-
       {
@@ -363,10 +363,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 33e3229f-3f4a-4e67-8bb3-49005c5808c2
+    taskid: 2f392a79-10ce-4663-87b0-56929fd73f98
     type: regular
     task:
-      id: 33e3229f-3f4a-4e67-8bb3-49005c5808c2
+      id: 2f392a79-10ce-4663-87b0-56929fd73f98
       version: -1
       name: google-sheets-sheet-delete
       description: Delete a sheet from a spreadsheet by id
@@ -382,13 +382,13 @@ tasks:
         simple: "false"
       sheet_id:
         complex:
-          root: Spreadsheet.sheets.properties
+          root: GoogleSheets.Spreadsheet.sheets
           accessor: sheetId
           transformers:
           - operator: FirstArrayElement
       spreadsheet_id:
         complex:
-          root: Spreadsheet
+          root: GoogleSheets.Spreadsheet
           accessor: spreadsheetId
           transformers:
           - operator: FirstArrayElement
@@ -409,10 +409,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: c695d173-627f-49f9-8790-32948d977121
+    taskid: 28376dc0-82ac-427a-84c6-340723a99f43
     type: regular
     task:
-      id: c695d173-627f-49f9-8790-32948d977121
+      id: 28376dc0-82ac-427a-84c6-340723a99f43
       version: -1
       name: google-sheets-value-append
       description: Appends values to a spreadsheet. The input range is used to search
@@ -441,7 +441,7 @@ tasks:
         simple: Sheet1!A1:D8
       spreadsheet_id:
         complex:
-          root: Spreadsheet
+          root: GoogleSheets.Spreadsheet
           accessor: spreadsheetId
           transformers:
           - operator: FirstArrayElement
@@ -464,10 +464,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: b80909f9-15a3-46e0-82f0-3eabcbc6904d
+    taskid: 98befb3f-26a7-40a0-8572-e737ee820c2d
     type: regular
     task:
-      id: b80909f9-15a3-46e0-82f0-3eabcbc6904d
+      id: 98befb3f-26a7-40a0-8572-e737ee820c2d
       version: -1
       name: google-sheets-find-replace
       description: Finds and replaces data in cells over a range, sheet, or all sheets.
@@ -491,7 +491,7 @@ tasks:
         simple: '@@'
       spreadsheet_id:
         complex:
-          root: Spreadsheet
+          root: GoogleSheets.Spreadsheet
           accessor: spreadsheetId
           transformers:
           - operator: FirstArrayElement
@@ -512,10 +512,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: e3b5bd4c-3108-48b9-8102-17bba94132ef
+    taskid: 75e2cc2d-a4cf-434c-812c-916c092fc6ca
     type: regular
     task:
-      id: e3b5bd4c-3108-48b9-8102-17bba94132ef
+      id: 75e2cc2d-a4cf-434c-812c-916c092fc6ca
       version: -1
       name: google-sheets-range-delete
       description: Deletes a range of cells, shifting other cells into the deleted
@@ -534,7 +534,7 @@ tasks:
         simple: "3"
       sheet_id:
         complex:
-          root: Spreadsheet.sheets.properties
+          root: GoogleSheets.Spreadsheet.sheets
           accessor: sheetId
           transformers:
           - operator: FirstArrayElement
@@ -542,7 +542,7 @@ tasks:
         simple: ROWS
       spreadsheet_id:
         complex:
-          root: Spreadsheet
+          root: GoogleSheets.Spreadsheet
           accessor: spreadsheetId
           transformers:
           - operator: FirstArrayElement
@@ -567,10 +567,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: a5e38809-49c5-4449-86ac-601cae0d60e4
+    taskid: a8722fd9-2fd2-46bb-8202-1a95f89cf248
     type: regular
     task:
-      id: a5e38809-49c5-4449-86ac-601cae0d60e4
+      id: a8722fd9-2fd2-46bb-8202-1a95f89cf248
       version: -1
       name: google-sheets-sheet-clear
       description: Clears values from a spreadsheet. The caller must specify the spreadsheet
@@ -588,7 +588,7 @@ tasks:
         simple: Sheet1!A1:D8
       spreadsheet_id:
         complex:
-          root: Spreadsheet
+          root: GoogleSheets.Spreadsheet
           accessor: spreadsheetId
           transformers:
           - operator: FirstArrayElement
@@ -609,10 +609,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: c8e2b62b-873f-409b-853e-26961d916fba
+    taskid: 4af63623-2df9-4b2e-897a-68d2e9590ab2
     type: regular
     task:
-      id: c8e2b62b-873f-409b-853e-26961d916fba
+      id: 4af63623-2df9-4b2e-897a-68d2e9590ab2
       version: -1
       name: google-sheets-data-paste
       description: Inserts data into the spreadsheet starting at the specified coordinate.
@@ -636,13 +636,13 @@ tasks:
         simple: "10"
       sheet_id:
         complex:
-          root: Spreadsheet.sheets.properties
+          root: GoogleSheets.Spreadsheet.sheets
           accessor: sheetId
           transformers:
           - operator: FirstArrayElement
       spreadsheet_id:
         complex:
-          root: Spreadsheet
+          root: GoogleSheets.Spreadsheet
           accessor: spreadsheetId
           transformers:
           - operator: FirstArrayElement
@@ -663,10 +663,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 0399753e-6817-40a0-8847-5dcc6480c283
+    taskid: b81a8acf-35dc-45f3-8dca-874645f9fa78
     type: regular
     task:
-      id: 0399753e-6817-40a0-8847-5dcc6480c283
+      id: b81a8acf-35dc-45f3-8dca-874645f9fa78
       version: -1
       name: google-sheets-dimension-delete
       description: Deletes the dimensions from the sheet. notice the indexing starts
@@ -687,13 +687,13 @@ tasks:
         simple: "2"
       sheet_id:
         complex:
-          root: Spreadsheet.sheets.properties
+          root: GoogleSheets.Spreadsheet.sheets
           accessor: sheetId
           transformers:
           - operator: FirstArrayElement
       spreadsheet_id:
         complex:
-          root: Spreadsheet
+          root: GoogleSheets.Spreadsheet
           accessor: spreadsheetId
           transformers:
           - operator: FirstArrayElement
@@ -716,10 +716,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 682d1737-6604-4b36-8cb5-86e34c8d8e95
+    taskid: 4b28146b-2532-4a39-816f-1e517feb8bed
     type: regular
     task:
-      id: 682d1737-6604-4b36-8cb5-86e34c8d8e95
+      id: 4b28146b-2532-4a39-816f-1e517feb8bed
       version: -1
       name: google-sheets-spreadsheet-get
       description: Returns the spreadsheet at the given ID
@@ -732,7 +732,7 @@ tasks:
       - "19"
     scriptarguments:
       spreadsheet_id:
-        simple: ${Spreadsheet.spreadsheetId}
+        simple: ${GoogleSheets.Spreadsheet.spreadsheetId}
     separatecontext: false
     view: |-
       {
@@ -750,10 +750,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 7c427882-b18d-4576-8578-769442ceb658
+    taskid: b4168938-ee66-48e4-85cd-4a6963f9134a
     type: regular
     task:
-      id: 7c427882-b18d-4576-8578-769442ceb658
+      id: b4168938-ee66-48e4-85cd-4a6963f9134a
       version: -1
       name: google-sheets-spreadsheet-update
       description: Applies one or more updates to the spreadsheet.  Each request is
@@ -794,7 +794,7 @@ tasks:
           }
       spreadsheet_id:
         complex:
-          root: Spreadsheet
+          root: GoogleSheets.Spreadsheet
           accessor: spreadsheetId
           transformers:
           - operator: FirstArrayElement
@@ -815,10 +815,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: d27a8841-88ff-464c-8dde-783150cb1222
+    taskid: 8549acd2-f0a7-42a4-8526-af57fd18f2ee
     type: regular
     task:
-      id: d27a8841-88ff-464c-8dde-783150cb1222
+      id: 8549acd2-f0a7-42a4-8526-af57fd18f2ee
       version: -1
       name: google-drive-file-delete
       description: Permanently deletes a file owned by the user without moving it
@@ -831,7 +831,7 @@ tasks:
       brand: GoogleDrive
     scriptarguments:
       file_id:
-        simple: ${Spreadsheet.spreadsheetId}
+        simple: ${GoogleSheets.Spreadsheet.spreadsheetId}
     separatecontext: false
     view: |-
       {

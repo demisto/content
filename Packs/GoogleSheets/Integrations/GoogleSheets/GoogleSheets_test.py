@@ -27,12 +27,39 @@ def util_load_json(path):
 
 # HELPER FUNCTIONS
 
-def test_parse_get_response(mocker):
-    response = util_load_json('test_data/googleGetResponse.json')
-    sheets = response.get('sheets')
-    GoogleSheets.parse_sheets_for_get_response(sheets)
+
+def test_parse_sheets_for_get_response():
+    '''
+
+    Given:
+        - The sheets list from the Google api response and an argument include_grid_data = True
+
+    When:
+        - We want to process the process and filter the sheets data given by the get_spreadsheet command
+
+    Then:
+        - return a filtered list of the sheets with the relevant data
+    '''
+    path = 'test_data/helper_functions/test_parse_sheets_for_get_response/'
+    result = util_load_json(path + 'res_parse.json')
+    assert result == GoogleSheets.parse_sheets_for_get_response(util_load_json(path + 'sheets.json'), True)
 
 
+def test_make_markdown_matrix():
+    '''
+    Given:
+         - The sheets after they have been processed by context_singe_get_parse
+
+    When:
+        - we prepare the human-readable response and include_grid_data is True
+
+    Then:
+        - return a Markdown table with the headers of the sheets and the data inside them
+    '''
+    path = 'test_data/helper_functions/test_make_markdown_matrix/'
+    with open(path + 'result.md', 'r') as file:
+        result = file.read()
+    assert GoogleSheets.make_markdown_matrix(util_load_json(path + 'sheets.json')) == result
 
 
 def test_prepare_result_with_echo(mocker):
@@ -160,10 +187,11 @@ def test_markdown_single_get(mocker):
         - return the markdown format
 
     '''
+    path = 'test_data/helper_functions/test_markdown_single_get/'
     mocker.patch.object(GoogleSheets, 'create_list_id_title', return_value=[{'SheetId': 0, 'Sheet title': 'Sheet1'}])
-    response = util_load_json('test_data/helper_functions/test_markdown_single_get/get_response.json')
+    response = util_load_json(path + 'get_response.json')
     markdown = GoogleSheets.markdown_single_get(response)
-    with open('test_data/helper_functions/test_markdown_single_get/markdown_assert.md', 'r') as file:
+    with open(path + 'markdown_assert.md', 'r') as file:
         markdown_assert = file.read()
     assert markdown == markdown_assert
 
@@ -193,7 +221,9 @@ def test_create_spreadsheet():
 
 
 # GET SPREADSHEET TESTS
-def test_get_single_spreadsheet():
+@pytest.mark.parametrize("path", ['test_data/get_spreadsheet/single_spreadsheet/',
+                                  'test_data/get_spreadsheet/single_spreadsheet_include_grid_data/'])
+def test_get_single_spreadsheet(path):
     '''
 
     Given:
@@ -207,16 +237,14 @@ def test_get_single_spreadsheet():
 
 
     '''
-    path = 'test_data/get_spreadsheet/single_spreadsheet/'
     http = HttpMock(path + 'response.json', {'status': '200'})
     api_key = 'your_api_key'
     service = build('sheets', 'v4', http=http, developerKey=api_key)
-    command_result = GoogleSheets.get_spreadsheet(service,
-                                                  {'spreadsheet_id': "13YRXawxY54RI0uPjD_BQmw31zwaAYQ53I0mxbWlhTy8"})
+    command_result = GoogleSheets.get_spreadsheet(service, util_load_json(path + 'args.json'))
     with open(path + 'markdown.md', 'r') as file:
         markdown_assert = file.read()
     assert command_result.readable_output == markdown_assert
-    assert command_result.outputs == util_load_json(path + 'response.json')
+    assert command_result.outputs == util_load_json(path + 'output.json')
 
 
 def test_get_multiple_spreadsheets():

@@ -129,6 +129,7 @@ def markdown_single_get(response: dict) -> str:
         creates for a single spreadsheet a mark down with 2 tables
         table 1: spreadsheet id and title
         table 2: all the sheets under this spreadsheet id and title
+        this function will be executed only for include_grid_data = False
     """
     human_readable = {
         'spreadsheet Id': response.get('spreadsheetId', {}),
@@ -145,103 +146,135 @@ def markdown_single_get(response: dict) -> str:
     return markdown
 
 
-def markdown_new_single_get(response: dict) -> dict:
+def markdown_single_get_include_grid_data(response: dict) -> dict:
+    """
+    Args:
+        response (dict): The response from the API call, after it was processed by context_single_get_output
+    Returns:
+        markdown to present the data of the spreadsheet including its sheets and their data.
+
+    When:
+        this function will be executed when the get_spreadsheet will be called
+        with the argument include_grid_data as True
+    """
     human_readable = {
         'spreadsheet Id': response.get('spreadsheetId', {}),
         'spreadsheet url': response.get('spreadsheetUrl', {}),
     }
 
-    markdown = tableToMarkdown(response.get('properties', {}).get('title', {}), human_readable,
+    markdown = tableToMarkdown(response.get('properties', {}).get('spreadsheetTitle', {}), human_readable,
                                headers=['spreadsheet Id', 'spreadsheet url'])
     markdown += '\n'
-    markdown += make_markdown_matrix(response.get('Sheets'))
-
-
-def make_markdown_matrix(sheets : list) -> str:
-    markdown = ""
-    for sheet in sheets:
-        markdown += f'#{sheets.get("Title")}'
-
-        # find the max number of columns in the table
-        max_row_len = max(list(map(lambda elem: len(elem.get('Values')), sheet.get('RowData'))))
-        markdown += "\n|"
-        # this will form a header with no content
-        for i in range(max_row_len):
-            markdown += " |"
-        markdown += "\n"
-
-        markdown += '|'
-        for i in range(max_row_len):
-            markdown += str("-------------- | ")
-        markdown += "\n"
-
-        row_data = sheets.get('RowData')
-        for row in row_data:
-            markdown += '|'
-            # this is the list of values
-            values = row.get('Values')
-            for value in values:
-                markdown += value + ' |'
-            markdown += '\n'
+    markdown += make_markdown_matrix(response.get('sheets'))
     return markdown
 
 
+def make_markdown_matrix(sheets: list) -> str:
+    """
+    Args:
+        sheets (list) : a list of the spreadsheets sheets after process of context_single_get_parse
+
+    Returns (str):
+        This function returns a table representation of the sheet.
+                if the sheet is empty the function will return EmptySheet.
+
+    Action:
+        The functions defines the table number of cols by finding the longest row.
+    """
+    markdown = ""
+    for sheet in sheets:
+        markdown += f'### ***{sheet.get("title", {})}***'
+
+        # find the max number of columns in the table
+        max_row_len = max(list(map(lambda elem: len(elem.get('values')), sheet.get('rowData'))))
+        if max_row_len == 0:
+            markdown += "\n**Empty Sheet**\n"
+        else:
+            markdown += "\n|"
+            # this will form a header with no content
+            for i in range(max_row_len):
+                markdown += f"col {i} |"
+            markdown += "\n"
+
+            markdown += '|'
+            for i in range(max_row_len):
+                markdown += str("-------------- | ")
+            markdown += "\n"
+
+            row_data = sheet.get('rowData')
+            for row in row_data:
+                markdown += '|'
+                # this is the list of values
+                values = row.get('values')
+                for value in values:
+                    markdown += value + ' |'
+                markdown += '\n'
+    return markdown
 
 
-
-
-
-
-def context_single_get_output(response: dict) -> dict:
+def context_single_get_parse(response: dict, include_grid_data: bool) -> dict:
+    """
+    Args:
+        response (dict): The response from the Google API call.
+        include_grid_data (bool): will determine in what manner to parse the response
+    Returns:
+        a filtered response with the desired data.
+        will parse differently for include_grid_data bool
+    """
     output_dict = {
-            "SpreadsheetId": response.get('spreadsheetId'),
-            "SpreadsheetUrl": response.get('spreadsheetUrl'),
-            "SpreadsheetTitle": response.get('properties').get('title'),
-            "Sheets": parse_sheets_for_get_response(response.get('sheets')),  # this is the array of sheets
+        "spreadsheetId": response.get('spreadsheetId'),
+        "spreadsheetUrl": response.get('spreadsheetUrl'),
+        "spreadsheetTitle": response.get('properties').get('title'),
+        # this is the array of sheets
+        "sheets": parse_sheets_for_get_response(response.get('sheets'), include_grid_data),
+
     }
+    return output_dict
 
 
-def parse_sheets_for_get_response(sheets: list) -> list:
+def parse_sheets_for_get_response(sheets: list, include_grid_data: bool) -> list:
+    """
+        Args:
+            sheets (list): this is the sheets list from the Google API response
+            include_grid_data (bool): will determine in what manner to parse the response
+        Returns:
+            list : The sheets after the relevant data was extracted.
+
+        This function will be called only upon include_grid_data = true
+    """
     sheet_lst = []
     for sheet in sheets:
         # take the properties and remove the sheetType property
-        output_sheet = sheet.get('properties', {})
-        del output_sheet['sheetType']
-        output_sheet['RowData'] = []
+        output_sheet = {}
+        properties = sheet.get('properties', {})
+        output_sheet['title'] = properties.get('title')
+        output_sheet['sheetId'] = properties.get('sheetId')
+        output_sheet['index'] = properties.get('index')
+        output_sheet['gridProperties'] = properties.get('gridProperties')
+        output_sheet['rowData'] = []
         # take the rowData from the response
-        response_rows_data = sheet.get('data', {})[0].get('rowData')
+        if not include_grid_data:
+            sheet_lst.append(output_sheet)
+            continue
+        response_rows_data = sheet.get('data', {})[0].get('rowData', None)
+        if not response_rows_data:
+            output_sheet.get('rowData').append({'values': {}})
         # values is an array of CellData object
-        for response_values in response_rows_data:
-            output_row_values = {"Values": []}
-            # here we build the values per row list of the output
-            if not response_values:     # if the row is empty append none
-                output_sheet.get('RowData').append({'Values': {}})
-            else:
-                for response_cell_data in response_values.get('values'):
-                    if not response_cell_data:
-                        output_row_values.get('Values').append('')
-                    else:
-                        output_row_values.get('Values').append(response_cell_data.get('formattedValue'))
-                output_sheet.get('RowData').append(output_row_values)
+        else:
+            for response_values in response_rows_data:
+                output_row_values = {"values": []}
+                # here we build the values per row list of the output
+                if not response_values:  # if the row is empty append none
+                    output_sheet.get('rowData').append({'values': {}})
+                else:
+                    for response_cell_data in response_values.get('values'):
+                        if not response_cell_data:
+                            output_row_values.get('values').append('')
+                        else:
+                            output_row_values.get('values').append(response_cell_data.get('formattedValue'))
+                    output_sheet.get('rowData').append(output_row_values)
         sheet_lst.append(output_sheet)
     return sheet_lst
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 # COMMANDS
@@ -333,7 +366,7 @@ def get_spreadsheet(service: Resource, args: dict) -> CommandResults:
         action : gets a single or multiple spreadsheets
     '''
     spread_sheets_ids = argToList(args.get('spreadsheet_id'))
-    include_grid_data = args.get('include_grid_data', False)
+    include_grid_data = argToBoolean(args.get('include_grid_data', False))
     # The ranges to retrieve from the spreadsheet.
     ranges = args.get('ranges')
     markdown = ""
@@ -345,20 +378,25 @@ def get_spreadsheet(service: Resource, args: dict) -> CommandResults:
             markdown += markdown_single_get(response)
             markdown += '---\n'
 
-        markdown = '### Success\n' + markdown
+        markdown = '### Success\n\n' + markdown
         return CommandResults(readable_output=markdown)
     else:
         request = service.spreadsheets().get(spreadsheetId=spread_sheets_ids[0], ranges=ranges,
                                              includeGridData=include_grid_data)
         response = request.execute()
-        markdown = markdown_single_get(response)
+        output_response = context_single_get_parse(response, include_grid_data)
+        if include_grid_data:
+            markdown = markdown_single_get_include_grid_data(output_response)
+        else:
+            markdown = markdown_single_get(response)
+
         markdown = '### Success\n' + markdown
 
         results = CommandResults(
             readable_output=markdown,
             outputs_prefix='GoogleSheets.Spreadsheet',
             outputs_key_field='spreadsheetId',
-            outputs=response
+            outputs=output_response
         )
         return results
 
