@@ -97,7 +97,7 @@ class Client(BaseClient):
         file_type = os.path.splitext(file_params['name'])[1]
         self.command_params['md5'] = file_hash(file_params.get('path'))
         # csv files requires different approach
-        if file_type in ['.csv', '.eml']:
+        if file_type == '.csv':
             result = self.handle_csv(file_params)
         else:
             result = self.http_request('/analysis/submit/file',
