@@ -8,7 +8,8 @@ from TestsInput.context import SEND_UPLOADED_FILE_TO_SENDBOX_ANALYSIS_CONTEXT, S
 from TestsInput.http_responses import SEND_UPLOADED_FILE_TO_SENDBOX_ANALYSIS_HTTP_RESPONSE,\
     SEND_URL_TO_SANDBOX_ANALYSIS_HTTP_RESPONSE, GET_FULL_REPORT_HTTP_RESPONSE, GET_REPORT_SUMMARY_HTTP_RESPONSE,\
     CHECK_QUOTA_STATUS_HTTP_RESPONSE, FIND_SANDBOX_REPORTS_HTTP_RESPONSE, FIND_SUBMISSION_ID_HTTP_RESPONSE,\
-    GET_ANALYSIS_STATUS_HTTP_RESPONSE, MULTI_ERRORS_HTTP_RESPONSE, NO_ERRORS_HTTP_RESPONSE
+    GET_ANALYSIS_STATUS_HTTP_RESPONSE, MULTI_ERRORS_HTTP_RESPONSE, NO_ERRORS_HTTP_RESPONSE, \
+    GET_FULL_REPORT_HTTP_RESPONSE_EMPTY
 import pytest
 
 
@@ -193,7 +194,7 @@ def test_running_polling_command_success(mocker):
     Then:
         Return a command results object, without scheduling a new command.
     """
-    args = SEND_URL_TO_SANDBOX_ANALYSIS_ARGS_POLLING
+    args = {'ids': "1234", "extended_data": "true"}
     mocker.patch('CommonServerPython.ScheduledCommand.raise_error_if_not_supported')
     mocker.patch.object(Client, '_generate_token')
     client = Client(server_url="https://api.crowdstrike.com/", username="user1", password="12345", use_ssl=False,
@@ -220,19 +221,18 @@ def test_running_polling_command_pending(mocker):
     Then:
         Return a command results object, with scheduling a new command.
     """
-    args = {'url': 'wwwdom'}
-    response_upload = util_load_json('./tests_data/upload_url_response.json')
-    upload_url_data = {'url': 'https://www.demisto.com',
-                       'sha256': 'c51a8231d1be07a2545ac99e86a25c5d68f88380b7ebf7ac91501661e6d678bb',
-                       'md5': '67632f32e6af123aa8ffd1fe8765a783'}
+    args = {'ids': "1234", "extended_data": "true"}
     mocker.patch('CommonServerPython.ScheduledCommand.raise_error_if_not_supported')
-    mocker.patch('Palo_Alto_Networks_WildFire_v2.wildfire_upload_url', return_value=(response_upload, upload_url_data))
-    response_report = util_load_json('./tests_data/report_url_response_pending.json')
-    mocker.patch('Palo_Alto_Networks_WildFire_v2.http_request', return_value=response_report)
-    command_results = run_polling_command(args, 'wildfire-upload-url', wildfire_upload_url_command,
-                                          wildfire_get_report_command, 'URL')
-    assert command_results[0].outputs is None
-    assert command_results[0].scheduled_command is not None
+    mocker.patch.object(Client, '_generate_token')
+    client = Client(server_url="https://api.crowdstrike.com/", username="user1", password="12345", use_ssl=False,
+                    proxy=False)
+
+    mocker.patch.object(Client, 'send_url_to_sandbox_analysis', return_value=SEND_URL_TO_SANDBOX_ANALYSIS_HTTP_RESPONSE)
+    mocker.patch.object(Client, 'get_full_report', return_value=GET_FULL_REPORT_HTTP_RESPONSE_EMPTY)
+    command_results = run_polling_command(client, args, 'cs-fx-submit-url', send_url_to_sandbox_analysis_command,
+                                          get_full_report_command)
+    assert command_results.outputs is None
+    assert command_results.scheduled_command is not None
 
 
 def test_running_polling_command_new_search(mocker):
@@ -246,19 +246,19 @@ def test_running_polling_command_new_search(mocker):
     Then:
         Return a command results object, with scheduling a new command.
     """
-    args = {'upload': 'https://www.demisto.com'}
+    args = SEND_URL_TO_SANDBOX_ANALYSIS_ARGS_POLLING
     mocker.patch('CommonServerPython.ScheduledCommand.raise_error_if_not_supported')
-    response_upload = util_load_json('./tests_data/upload_url_response.json')
-    upload_url_data = {'url': 'https://www.demisto.com',
-                       'sha256': 'c51a8231d1be07a2545ac99e86a25c5d68f88380b7ebf7ac91501661e6d678bb',
-                       'md5': '67632f32e6af123aa8ffd1fe8765a783'}
-    mocker.patch('Palo_Alto_Networks_WildFire_v2.wildfire_upload_url', return_value=(response_upload, upload_url_data))
-    response_report = util_load_json('./tests_data/report_url_response_pending.json')
-    mocker.patch('Palo_Alto_Networks_WildFire_v2.http_request', return_value=response_report)
-    command_results = run_polling_command(args, 'wildfire-upload-url', wildfire_upload_url_command,
-                                          wildfire_get_report_command, 'URL')
-    expected_outputs = {'MD5': '67632f32e6af123aa8ffd1fe8765a783',
-                        'SHA256': 'c51a8231d1be07a2545ac99e86a25c5d68f88380b7ebf7ac91501661e6d678bb',
-                        'Status': 'Pending', 'URL': 'https://www.demisto.com'}
-    assert command_results[0].outputs == expected_outputs
-    assert command_results[0].scheduled_command is not None
+    mocker.patch.object(Client, '_generate_token')
+    client = Client(server_url="https://api.crowdstrike.com/", username="user1", password="12345", use_ssl=False,
+                    proxy=False)
+
+    mocker.patch.object(Client, 'send_url_to_sandbox_analysis',
+                        return_value=SEND_UPLOADED_FILE_TO_SENDBOX_ANALYSIS_HTTP_RESPONSE)
+    mocker.patch.object(Client, 'get_full_report', return_value=GET_FULL_REPORT_HTTP_RESPONSE)
+
+    expected_outputs = SEND_UPLOADED_FILE_TO_SENDBOX_ANALYSIS_CONTEXT
+    command_results = run_polling_command(client, args, 'cs-fx-submit-url', send_url_to_sandbox_analysis_command,
+                                          get_full_report_command)
+
+    assert command_results.outputs == [expected_outputs]
+    assert command_results.scheduled_command is not None
