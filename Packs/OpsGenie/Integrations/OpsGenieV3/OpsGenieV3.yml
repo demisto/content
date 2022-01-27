@@ -364,6 +364,7 @@ script:
     description: Delete an alert from OpsGenie.
     execution: false
     name: opsgenie-delete-alert
+    polling: true
     outputs:
     - contextPath: OpsGenie.DeletedAlert.action
       description: Action of this request.
@@ -409,6 +410,7 @@ script:
     description: Acknowledge an alert in OpsGenie.
     execution: false
     name: opsgenie-ack-alert
+    polling: true
     outputs:
     - contextPath: OpsGenie.AckedAlert.action
       description: Action of this request.
@@ -455,6 +457,7 @@ script:
     description: Close an alert in OpsGenie.
     execution: false
     name: opsgenie-close-alert
+    polling: true
     outputs:
     - contextPath: OpsGenie.ClosedAlert.action
       description: Action of this request.
@@ -515,6 +518,7 @@ script:
     description: Assign an OpsGenie alert.
     execution: false
     name: opsgenie-assign-alert
+    polling: true
     outputs:
     - contextPath: OpsGenie.AssignAlert.action
       description: Action of this request.
@@ -582,6 +586,7 @@ script:
     description: Add a responder to an OpsGenie alert.
     execution: false
     name: opsgenie-add-responder-alert
+    polling: true
     outputs:
     - contextPath: OpsGenie.AddResponderAlert.action
       description: Action of this request.
@@ -695,6 +700,7 @@ script:
     description: Escalate an OpsGenie alert.
     execution: false
     name: opsgenie-escalate-alert
+    polling: true
     outputs:
     - contextPath: OpsGenie.EscalateAlert.action
       description: Action of this request.
@@ -750,6 +756,7 @@ script:
     description: Add tag to the OpsGenie alert.
     execution: false
     name: opsgenie-add-alert-tag
+    polling: true
     outputs:
     - contextPath: OpsGenie.AddTagAlert.action
       description: Action of this request.
@@ -802,6 +809,7 @@ script:
     description: Remove a tag from the OpsGenie alert.
     execution: false
     name: opsgenie-remove-alert-tag
+    polling: true
     outputs:
     - contextPath: OpsGenie.RemoveTagAlert.action
       description: Action of this request.
@@ -1095,6 +1103,7 @@ script:
     description: Delete an incident from OpsGenie.
     execution: false
     name: opsgenie-delete-incident
+    polling: true
     outputs:
     - contextPath: OpsGenie.DeletedIncident.action
       description: Action of this request.
@@ -1255,6 +1264,7 @@ script:
     description: Close an incident from OpsGenie.
     execution: false
     name: opsgenie-close-incident
+    polling: true
     outputs:
     - contextPath: OpsGenie.ClosedIncident.action
       description: Action of this request.
@@ -1298,6 +1308,7 @@ script:
     description: Resolve an incident from OpsGenie.
     execution: false
     name: opsgenie-resolve-incident
+    polling: true
     outputs:
     - contextPath: OpsGenie.ResolvedIncident.action
       description: Action of this request.
@@ -1351,6 +1362,7 @@ script:
     description: Add a responder to an OpsGenie incident.
     execution: false
     name: opsgenie-add-responder-incident
+    polling: true
     outputs:
     - contextPath: OpsGenie.AddResponderIncident.action
       description: Action of this request.
@@ -1400,6 +1412,7 @@ script:
     description: Add a tag to the OpsGenie incident.
     execution: false
     name: opsgenie-add-tag-incident
+    polling: true
     outputs:
     - contextPath: OpsGenie.AddTagIncident.action
       description: Action of this request.
@@ -1449,6 +1462,7 @@ script:
     description: Remove a tag from the OpsGenie alert.
     execution: false
     name: opsgenie-remove-tag-incident
+    polling: true
     outputs:
     - contextPath: OpsGenie.RemoveTagIncident.action
       description: Action of this request.
