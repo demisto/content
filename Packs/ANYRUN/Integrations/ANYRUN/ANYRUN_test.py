@@ -141,25 +141,23 @@ def http_mock(method, url, verify=USE_SSL, headers=None):
         raise ValueError("Permission denied")
     else:
         the_response = requests.Response()
-
         the_response.status_code = 200
-        the_response._content = b'{ "key" : "a" }'
+        the_response._content = b'{ "image" : "image" }'
         return the_response
 
 
 def test_get_image(mocker):
     """
     Given:
-        A mock response of a call to https://ipinfo.io/1.1.1.1/json,
-        And a json of the expected output objects
+        A mock response from the API
     When:
         Calling images_from_report
     Then:
-        Validate that the http request returns a 200 status
+        Validate that the http request gets called with authorization (headers)
     """
     response = {'data': {'analysis': {'content': {'screenshots': [{'permanentUrl': 'http://permanentUrl'}]}}}}
-    # requests_mock.get('http://permanentUrl', headers=HEADERS)
     mocker.patch('requests.request', side_effect=http_mock)
-    images_from_report(response)
-
-
+    try:
+        images_from_report(response)
+    except ValueError as e:
+        print(str(e))

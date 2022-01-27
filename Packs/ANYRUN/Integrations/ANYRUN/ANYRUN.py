@@ -398,6 +398,7 @@ def images_from_report(response):
     list
         List of images from ANYRUN report.
     """
+
     data = response.get('data', {})
     analysis = data.get('analysis', {})
     content = analysis.get('content', {})
@@ -406,7 +407,7 @@ def images_from_report(response):
     screen_captures = []
     for idx, shot in enumerate(screenshots):
         screen_cap_url = shot.get('permanentUrl')
-        img_response = requests.request('GET', screen_cap_url, verify=USE_SSL)
+        img_response = requests.request('GET', screen_cap_url, verify=USE_SSL, headers=HEADERS)
         stored_img = fileResult('screenshot{}.png'.format(idx), img_response.content)
         img_entry = {
             'Type': entryTypes['image'],
@@ -802,6 +803,7 @@ def get_report_command():
     args = demisto.args()
     task_id = args.get('task')
     response = get_report(task_id)
+
     images = images_from_report(response)
     contents = contents_from_report(response)
     formatting_funcs = [underscore_to_camel_case, make_capital, make_singular, make_upper]
