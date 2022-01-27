@@ -3342,12 +3342,16 @@ VALID_URL_INDICATORS = [
     'wwW.GooGle.com/path',
     '2001:db8:85a3:8d3:1319:8a2e:370:7348/65/path/path',
     '2001:db8:3333:4444:5555:6666:7777:8888//32/path/path',
+    '2001:db8:85a3:8d3:1319:8a2e:370:7348/h'
     '1.1.1.1/7/server',
     'http://öevil.tld/',
     'https://evilö.tld/evil.html',
+    'ftp://foo.bar/',
     'www.evilö.tld/evil.aspx',
     'https://www.evöl.tld/',
     'www.evil.tld/resource',
+    'www.1.2.3.4/?user=test%Email=demisto',
+    'www.1.2.3.4:8080/user=test%Email=demisto'
     'http://xn--e1v2i3l4.tld/evilagain.aspx',
     'https://www.xn--e1v2i3l4.tld',
     'hxxps://www.xn--e1v2i3l4.tld',
@@ -3355,6 +3359,7 @@ VALID_URL_INDICATORS = [
     'www.evil.tld:443/path/to/resource.html',
     'WWW.evil.tld:443/path/to/resource.html',
     'wWw.Evil.tld:443/path/to/resource.html',
+    'Https://wWw.Evil.tld:443/path/to/resource.html',
     'https://1.2.3.4/path/to/resource.html',
     'HTTPS://1.2.3.4/path/to/resource.html',
     '1.2.3.4/path',
@@ -3374,10 +3379,15 @@ VALID_URL_INDICATORS = [
     'https://google.com/deepLinkAction.do?userName=peter%40nable%2Ecom&password=Hello',
     'www.google.com/deepLinkAction.do?userName=peter%40nable%2Ecom&password=Hello',
     'www.63.4.6.1/integrations/test-playbooks',
-    'https://xsoar.pan.dev/docs/welcome'
-    '5.6.7.8/user/'
-    'https://1.1.1.1.1.1.1.1.1.1.1/path',  # invalid IPs should also be classified as URL indicators
-    'HTTPs://1.1.1.1.1.1.1.1.1.1.1/path',
+    'https://xsoar.pan.dev/docs/welcome',
+    '5.6.7.8/user/',
+    'https://1.1.1.1.1.1.1.1.1.1.1:8080',
+    'https://1.1.1.1.1.1.1.1.1.1.1:8080/path',
+    'https://1.1.1.1.1.1.1.1.1.1.1/',
+    'https://1.1.1.1.1.1.1.1.1.1.1/path',  # Http concatenated with invalid IPs should also be URL indicators
+    'HTTPs://1.1.1.1.1.1.1.1.1.1.1/test/another-test',
+    'https://1.1.1.1.1/path',
+    'http://www.example.com/and%26here.html'
 ]
 
 
@@ -3405,11 +3415,13 @@ INVALID_URL_INDICATORS = [
     "path/path",
     "1.1.1.1:8080",
     "1.1.1.1:8080/",
+    "3.4.6.92:8080:/test",
     "1.1.1.1:4lll/",
     "2001:db8:85a3:8d3:1319:8a2e:370:7348/64/",
     "2001:db8:85a3:8d3:1319:8a2e:370:7348/64",
     "2001:db8:85a3:8d3:1319:8a2e:370:7348/32",
     "2001:db8:85a3:8d3:1319:8a2e:370:7348/32",
+    "2001:db8:85a3:8d3:1319:8a2e:370:7348/80",
     "flake8.pycqa.org",
     "https://test",
     "ftp://test",
@@ -3425,6 +3437,17 @@ INVALID_URL_INDICATORS = [
     "65.23.7.2",
     "k.f.a.f",
     "test/test/test/test",
+    "http://www.example.com/ %20here.html"
+    "http ://www.example.com/ %20here.html",
+    "http://www.example .com/%20here.html"
+    "http://wwww.example.com/%20here.html",
+    "FTP://Google.test:",
+    "",
+    "dsjfshjdfgkjldsh32423123^^&*#@$#@$@!#4",
+    'aaa/1.1.1.1/path',
+    'domain*com/1.1.1.1/path',
+    'http:1.1.1.1/path',
+    'kfer93420932/path/path'
 ]
 
 
