@@ -2111,7 +2111,7 @@ def login_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Dict[Any, 
 
 def check_assigned_to_field(client: Client, assigned_to: dict, ticket: dict) -> Dict:
     if assigned_to:
-        user_result = client.get('sys_user', assigned_to.get('value'))
+        user_result = client.get('sys_user', assigned_to.get('value'))  # type: ignore[arg-type]
         user = user_result.get('result', {})
         if user:
             user_email = user.get('email')
