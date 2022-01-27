@@ -5127,7 +5127,8 @@
         "SplunkPy_KV_commands_default_handler": "Issue 41419",
         "LogRhythm REST test": "Issue 40654",
         "Process Email - Generic - Test - Actual Incident": "Issue 45227",
-        "Jira-v2-Test": "Issue 33313"
+        "Jira-v2-Test": "Issue 33313",
+        "Tanium Threat Response V2 Test": "Issue 44201"
     },
     "skipped_integrations": {
         
