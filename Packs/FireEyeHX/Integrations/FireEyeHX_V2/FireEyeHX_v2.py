@@ -20,18 +20,18 @@ https://github.com/demisto/content/blob/master/Packs/HelloWorld/Integrations/Hel
 # from sys import _OptExcInfo
 
 
-from xml.dom import ValidationErr
+
 from requests.adapters import Response
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
-# from CommonServerUserPython import *  # noqa
+#from CommonServerUserPython import *  # noqa
 
 import base64
 import json
 import os
 import re
 import time
-
+import urllib.parse
 import requests
 import traceback
 from typing import Dict, Any, Tuple
@@ -782,8 +782,7 @@ class Client(BaseClient):
 
         return self._http_request(
             method="GET",
-            url_suffix=f"hosts/{agentId}",
-            
+            url_suffix=f"hosts/{agentId}"    
         )
 
 
@@ -950,7 +949,7 @@ class Client(BaseClient):
 
     def get_alerts_request(self, has_share_mode=None, resolution=None, agent_id=None,
                        condition_id=None, limit=None, offset=None, sort=None, min_id=None,
-                       event_at=None, alert_id=None, matched_at=None, reported_at=None, source=None):
+                       event_at=None, alert_id=None, matched_at=None, reported_at=None, source=None, filterQuery=None):
         """
 
         returns the response body on successful request
@@ -975,13 +974,21 @@ class Client(BaseClient):
             params["agent._id"] = agent_id
         if condition_id:
             params["condition._id"] = condition_id
-
-        response = self._http_request(
-            'GET',
-            url_suffix="alerts",
-            params=params,
-            headers=self._headers
-        )
+        
+        if filterQuery:
+            response = self._http_request(
+                'GET',
+                url_suffix=f"alerts?filterQuery={filterQuery}",
+                params=params,
+                headers=self._headers
+            )
+        else:
+            response = self._http_request(
+                'GET',
+                url_suffix=f"alerts",
+                params=params,
+                headers=self._headers
+            )
         try:
             return response
         except Exception as e:
@@ -1167,7 +1174,8 @@ def get_alerts(client:Client, args:Dict[str,Any])->List:
             source=args.get("source"),
             offset=offset,
             limit=args.get("limit") or 100,
-            sort=args.get("sort")
+            sort=args.get("sort"),
+            filterQuery=args.get("filterQuery")
         )
         # empty list
         if not alerts_partial_results['data']['entries']:
@@ -1198,19 +1206,24 @@ def host_set_entry(host_sets: List[Dict])->List[Dict]:
 def general_context_from_event(alert:Dict):
 
     def file_context(values:Dict):
-
-        return {
-            'Name': values.get('fileWriteEvent/fileName'),
-            'MD5': values.get('fileWriteEvent/md5'),
-            'Extension': values.get('fileWriteEvent/fileExtension'),
-            'Path': values.get('fileWriteEvent/fullPath')
-        }
+        dbot = Common.DBotScore(None,DBotScoreType.FILE,integration_name="FireEye-HX",score=Common.DBotScore.NONE)
+        return Common.File(
+            dbot,
+            name=values.get('fileWriteEvent/fileName'),
+            md5=values.get('fileWriteEvent/md5'),
+            extension=values.get('fileWriteEvent/fileExtension'),
+            path=values.get('fileWriteEvent/fullPath')
+            )
 
     def ip_context(values:Dict):
 
-        return {
-            'Address': values.get('ipv4NetworkEvent/remoteIP')
-        }
+        dbot = Common.DBotScore(
+            values.get("ipv4NetworkEvent/remoteIP"),
+            DBotScoreType.IP,
+            integration_name="FireEye-HX",
+            score=Common.DBotScore.NONE
+            )
+        return Common.IP(values.get("ipv4NetworkEvent/remoteIP"),dbot_score=dbot)
 
     def registry_key_context(values:Dict):
 
@@ -1229,37 +1242,6 @@ def general_context_from_event(alert:Dict):
         f = context_map[alert['event_type']]
         return f(alert['event_values'])
     return None
-
-
-def parse_alert_to_incident(alert:Dict):#******************
-
-    event_type = alert.get('event_type')
-    event_type = 'NewEvent' if not event_type else event_type
-    event_values = alert.get('event_values', {})
-    event_indicators_map = {
-        'fileWriteEvent': 'fileWriteEvent/fileName',
-        'ipv4NetworkEvent': 'ipv4NetworkEvent/remoteIP',
-        'dnsLookupEvent': 'dnsLookupEvent/hostname',
-        'regKeyEvent': 'regKeyEvent/valueName'
-    }
-    event_indicator = event_indicators_map.get(event_type)
-    event_indicator = 'No Indicator' if not event_indicator else event_indicator
-
-    indicator = ''
-    if isinstance(event_values, dict):
-        indicator = event_values.get(event_indicator, '')
-
-    incident_name = u'{event_type_parsed}: {indicator}'.format(
-        event_type_parsed=re.sub("([a-z])([A-Z])", "\g<1> \g<2>", event_type).title(),
-        indicator=indicator
-    )
-
-    incident = {
-        'name': incident_name,
-        'occurred': alert.get("event_at").replace('T',' ').replace('Z',' '),
-        'rawJSON': json.dumps(alert)
-    }
-    return incident
 
 
 def oneFromList(listOfArgs,**args):
@@ -1332,25 +1314,6 @@ def organize_search_body_query(argForQuery: Tuple, **args):
         return query
     
 
-def collect_context(alerts:List[Dict]):
-
-    # collect_context
-    files = []
-    ips = []
-    registry_keys = []
-
-    for alert in alerts:
-        event_type = alert.get('event_type')
-        context = general_context_from_event(alert)
-        if event_type == 'fileWriteEvent':
-            files.append(context)
-        elif event_type == 'ipv4NetworkEvent':
-            ips.append(context)
-        elif event_type == 'regKeyEvent':
-            registry_keys.append(context)
-    return (files, ips, registry_keys)
-
-
 def collect_endpoint_contxt(host:Dict):
 
     return {
@@ -1376,10 +1339,10 @@ def data_acquisition(client:Client, args:Dict[str,Any])->Dict:
         raise ValueError('Please provide either agentId or hostName')
     
     if not defaultSystemScript and not script:
-        raise ValueError('If the script is not provided, defaultSystemScript must be specified.')
+        raise ValueError('If the script is not provided, defaultSystemScript must be specified')
 
     if script and not scriptName:
-        raise ValueError('If the script is provided, script name must be specified as well.')
+        raise ValueError('If the script is provided, script name must be specified as well')
     
     if not agentId:
         agentId=get_agent_id_by_host_name(client,hostName)
@@ -1510,7 +1473,66 @@ def get_indicator_conditions(client:Client, args:Dict[str,Any])->CommandResults:
         outputs=conditions,
         readable_output= md_table
     )
+
+"""helper fetch-incidents"""
+
+def organize_reportedAt(reportedAt):
+
+    milisecond = int(reportedAt[-4:-1])+1
+    if milisecond == 1000:
+        reportedAt = date_to_timestamp(reportedAt[:-5],date_format="%Y-%m-%dT%H:%M:%S")+1000
+        return timestamp_to_datestring(reportedAt)
+    else:
+        if milisecond<10:
+            return reportedAt[:-4]+'00'+str(milisecond)+reportedAt[-1]
+        if milisecond<100:
+            return reportedAt[:-4]+'0'+str(milisecond)+reportedAt[-1]
+        return reportedAt[:-4]+str(milisecond)+reportedAt[-1]
+
+
+def query_fetch(reportedAt=None):
     
+    query='{"operator":"between","arg":['
+    if reportedAt:
+        # reportedAt = reportedAt[:-2]+reportedAt[-2]
+        query += '"'+reportedAt+'"'+','
+    else:
+        query+='"'+timestamp_to_datestring(parse_date_range("3 day",to_timestamp=True,utc=False)[0])+'"'+','
+    query+='"'+timestamp_to_datestring(parse_date_range("3 day",to_timestamp=True,utc=False)[1])+'"'+'],"field":"reported_at"}'
+
+    return query
+
+
+def parse_alert_to_incident(alert:Dict)->Dict:
+
+    event_type = alert.get('event_type')
+    event_type = 'NewEvent' if not event_type else event_type
+    event_values = alert.get('event_values', {})
+    event_indicators_map = {
+        'fileWriteEvent': 'fileWriteEvent/fileName',
+        'ipv4NetworkEvent': 'ipv4NetworkEvent/remoteIP',
+        'dnsLookupEvent': 'dnsLookupEvent/hostname',
+        'regKeyEvent': 'regKeyEvent/valueName'
+    }
+    event_indicator = event_indicators_map.get(event_type)
+    event_indicator = 'No Indicator' if not event_indicator else event_indicator
+
+    indicator = ''
+    if isinstance(event_values, dict):
+        indicator = event_values.get(event_indicator, '')
+
+    incident_name = u'{event_type_parsed}: {indicator}'.format(
+        event_type_parsed=re.sub("([a-z])([A-Z])", "\g<1> \g<2>", event_type).title(),
+        indicator=indicator
+    )
+
+    incident = {
+        'name': incident_name,
+        'occurred': alert.get("event_at"),
+        'rawJSON': json.dumps(alert)
+    }
+    return incident
+
 
 ''' COMMAND FUNCTIONS '''
 
@@ -1569,7 +1591,7 @@ def list_host_set_policy_command(client:Client, args:Dict[str,Any])->CommandResu
     policyId=args.get("policyId")
 
     if hostSetId and policyId:
-        raise("Enter a Policy Id or Host Set Id but not both")
+        raise ValueError("Enter a Policy Id or Host Set Id but not both")
 
     if not offset:
         offset=0
@@ -1741,7 +1763,7 @@ def get_host_information_command(client:Client, args:Dict[str,Any])->CommandResu
 
     return CommandResults(
         outputs_prefix="FireEyeHX.Host",
-        outputs_key_field="",#***********
+        outputs_key_field="_id",
         outputs=host,
         readable_output=md
     )
@@ -1803,7 +1825,7 @@ def host_containment_command(client:Client,args:Dict[str,Any])->CommandResults:
     hostName=args.get("hostName")
 
     if not agentId and not hostName:
-        raise("Enter Agent ID or Host Name")#***************
+        raise ValueError("Please provide either agentId or hostName")#***************
     
     if not agentId:
         agentId=get_agent_id_by_host_name(client,hostName)#**********
@@ -1812,7 +1834,7 @@ def host_containment_command(client:Client,args:Dict[str,Any])->CommandResults:
 
     host=client.get_hosts_by_agentId_request(agentId)
     return [CommandResults(outputs_prefix="FireEyeHX.Hosts",outputs=host, readable_output="Containment rquest for the host was sent and approved successfully"),
-            CommandResults(outputs_prefix="Endpoint",outputs=collect_endpoint_contxt(host["data"]))]#************************    
+            CommandResults(outputs_prefix="Endpoint",outputs=collect_endpoint_contxt(host["data"]))]  
     
 
 def approve_containment_command(client:Client,args:Dict[str,Any])->CommandResults:
@@ -1820,10 +1842,10 @@ def approve_containment_command(client:Client,args:Dict[str,Any])->CommandResult
     agentId=args.get("agentId")
 
     if not agentId:
-        raise("Agent ID is required")#**********
+        raise ValueError("Agent ID is required")#**********
     
     try:
-        response=client.approve_containment_request(agentId)
+        client.approve_containment_request(agentId)
 
     except Exception as e:
         raise ValueError(e)
@@ -1840,7 +1862,7 @@ def cancel_containment_command(client:Client,args:Dict[str,Any])->CommandResults
     hostName=args.get("hostName")
 
     if not agentId and not hostName:
-        raise("One of the following arguments is required -> [agentId, hostName]")
+        raise ValueError("One of the following arguments is required -> [agentId, hostName]")
     
     if not agentId:
         agentId=get_agent_id_by_host_name(client, hostName)
@@ -1882,8 +1904,6 @@ fe-tst
 '''
 
 def data_acquisition_command(client:Client, args:Dict[str,Any])->CommandResults:
-    # TODO: need to add in the yaml command polling: true (see autofocus v2 for example)
-    # TODO: Add support for new arg "acquisition_id" - if provided, will return the acquisition without creating a new data acquistion request (can be hidden via deprecated: true)
     
     acquisition_id = args.get("acquisition_id")
     if 'acquisition_id' not in args:
@@ -2061,7 +2081,7 @@ def delete_file_acquisition_command(client:Client, args:Dict[str,Any])->CommandR
     returns a success message to the war room
 
     """
-    acquisition_id = demisto.args().get('acquisitionId')
+    acquisition_id = args.get('acquisitionId')
     client.delete_file_acquisition_request(acquisition_id)
     # successful request
 
@@ -2095,7 +2115,7 @@ def get_all_alerts_command(client:Client, args:Dict[str,Any])->CommandResults:
         'id': '_id',
         'reportedAt': 'reported_at'
     }
-
+    
     if args.get('sort'):
         args['sort'] = f"{sort_map.get(args['sort'])}+{args.get('sortOrder', 'ascending')}"
 
@@ -2111,23 +2131,26 @@ def get_all_alerts_command(client:Client, args:Dict[str,Any])->CommandResults:
     # parse each alert to a record displayed in the human readable table
     alerts_entries = [alert_entry(alert) for alert in alerts]
 
-    files, ips, registry_keys = collect_context(alerts)#*******need to find out*********
-
     headers_for_table=['Alert ID', 'Reported', 'Event Type', 'Agent ID']
     md_table = tableToMarkdown(
         name='FireEye HX Get Alerts',
         t=alerts_entries,
         headers=headers_for_table
     )
-
-
+    indicators = []
+    for alert in alerts:
+        indicators.append(general_context_from_event(alert))
+    
     return CommandResults(
         outputs_prefix="FireEyeHX.Alerts",
         outputs_key_field="",
         outputs=alerts,
-        readable_output=md_table
+        readable_output=md_table,
+        indicators=indicators
         )
+    
 
+    #return command_results
 
 def get_alert_command(client:Client,args:Dict[str,Any])->CommandResults:
 
@@ -2231,7 +2254,8 @@ def get_indicators_command(client:Client, args:Dict[str,Any])->CommandResults:
 
 def get_indicator_command(client:Client, args:Dict[str,Any])->CommandResults:
 
-    args = demisto.args()
+    if not args.get("category") or not args.get("name"):
+        raise ValueError("The category and name arguments are required")
 
     indicator = client.get_indicator_request(
         args.get('category'),
@@ -2386,6 +2410,7 @@ def get_search_list_command(client:Client, args:Dict[str,Any])->CommandResults:
 
     for_table=[]
     for search in response:
+        host_set = None
         if search["host_set"]:
             host_set = search["host_set"].copy()
             del host_set["url"]
@@ -2444,7 +2469,7 @@ def search_stop_command(client:Client, args:Dict[str, Any])->CommandResults:
 def search_result_get_command(client:Client, args:Dict[str,Any])->CommandResults:
 
     if not args.get("searchId"):
-        raise ValueError("")
+        raise ValueError("Search Id is must be")
     
     searchesIds = args.get("searchId").split(",")
 
@@ -2482,40 +2507,49 @@ def search_result_get_command(client:Client, args:Dict[str,Any])->CommandResults
 FETCH INCIDENT
 """
 
-def fetch_incident(client:Client,args:Dict[str,Any])->List:
+def fetch_incidents(client:Client,args:Dict[str,Any])->List:
 
     last_run = demisto.getLastRun()
     alerts = []  # type: List[Dict[str, str]]
     fetch_limit = int(args.get('fetch_limit') or '50')
+    
+    args={"sort":"reported_at+ascending","limit":fetch_limit}
 
-    args={"sort":"event_at+ascending","limit":fetch_limit}
-
-    if last_run and last_run.get('last_fetch'):
-        # get all alerts with id greater than min_id
-        args["eventAt"] = last_run.get('last_fetch')
+    # Checks if this is the first call to a function or not
+    if last_run and last_run.get('reported_at'):
+        
+        # Design the filterQuery argument with last reported_at, and convert it to urlEncoding
+        query=query_fetch(organize_reportedAt(last_run.get('reported_at')))
+        args["filterQuery"] = urllib.parse.quote_plus(query)
+        
+        # Get all alerts with reported_at greater than last reported_at
         alerts = get_alerts(client, args)
 
-        #results are sorted in ascending order - the last alert holds the greatest time *********
-        last_fetch = alerts[-1].get("event_at") if alerts else None
+        # Results are sorted in ascending order - the last alert holds the greatest time *********
+        reported_at = alerts[-1].get("reported_at") if alerts else None
 
     else:
-        args["eventAt"] = timestamp_to_datestring(datetime_to_string( parse_date_string("3 day")))
-        # get the last 100 alerts
+        # Design the filterQuery argument, and convert it to urlEncoding
+        query=query_fetch()
+        args["filterQuery"] = urllib.parse.quote_plus(query)
+        
+        # Receive alerts from last 3 days - if they are more than 50 return the 50 older alerts
         alerts = get_alerts(client, args)
 
-        # results are sorted in descending order - the first alert holds the greatest id
-        last_fetch = alerts[0].get("event_at") if alerts else None
-
+        # Results are sorted in ascending order - the last alert holds the greatest time
+        reported_at = alerts[-1].get("reported_at") if alerts else None
+    
+    # Parse the alerts as the incidents
     incidents = [parse_alert_to_incident(alert) for alert in alerts]
     
-    # if lastId is not None:
-    #     demisto.setLastRun({'lastId': lastId})
-    if last_fetch is not None:
-        demisto.setLastRun({'last_fetch':last_fetch})
-
+    # Keeps the last reported_at for next time
+    if reported_at is not None:
+        demisto.setLastRun({'reported_at':reported_at})
+    
     return incidents
 
 
+    
 ''' MAIN FUNCTION '''
 
 
@@ -2592,10 +2626,11 @@ def main() -> None:
             verify=verify_certificate,
             proxy=proxy,
             auth=(userName,password))
+        
         if command == 'test-module':
             return_results('ok')
-        if command == 'fetch-incident':
-            incidents=fetch_incident(client,params)
+        if command == 'fetch-incidents':
+            incidents=fetch_incidents(client,params)
             demisto.incidents(incidents)
         
         else:
@@ -2610,7 +2645,7 @@ def main() -> None:
 
 
 ''' ENTRY POINT '''
-
-
-if __name__ in ('__main__', '__builtin__', 'builtins'):    
+  
+if __name__ in ('__main__', '__builtin__', 'builtins'): 
+    
     main()

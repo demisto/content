@@ -1313,12 +1313,166 @@ script:
       type: Unknown
     - contextPath: FireEyeHX.Acquisitions.Data.host._id
       description: Agent ID
+  - arguments:
+    - auto: PREDEFINED
+      description: Identifies which alerts result from indicators with the specified
+        share mode.
+      name: hasShareMode
+      predefined:
+      - any
+      - restricted
+      - unrestricted
+    - auto: PREDEFINED
+      description: Sorts the results by the specified field.
+      name: resolution
+      predefined:
+      - active_threat
+      - alert
+      - block
+      - partial_block
+    - description: Filter by the agent ID.
+      name: agentId
+    - description: Filter by condition ID.
+      name: conditionId
+    - description: Filter event occurred time. ISO-8601 timestamp..
+      name: eventAt
+    - description: Filter by alert ID.
+      name: alertId
+    - description: Filter by match detection time. ISO-8601 timestamp.
+      name: matchedAt
+    - description: Filter that returns only records with an AlertId field value great
+        than the minId value.
+      name: minId
+    - description: Filter by reported time. ISO-8601 timestamp.
+      name: reportedAt
+    - auto: PREDEFINED
+      description: Source of alert- indicator of compromise
+      name: IOCsource
+      predefined:
+      - "yes"
+    - auto: PREDEFINED
+      description: Source of alert - exploit detection
+      name: EXDsource
+      predefined:
+      - "yes"
+    - auto: PREDEFINED
+      description: Source of alert - malware alert
+      name: MALsource
+      predefined:
+      - "yes"
+    - description: Limit the results returned
+      name: limit
+    - auto: PREDEFINED
+      description: Sorts the results by the specified field in ascending order.
+      name: sort
+      predefined:
+      - agentId
+      - conditionId
+      - eventAt
+      - alertId
+      - matchedAt
+      - id
+      - reportedAt
+    - auto: PREDEFINED
+      description: The sort order for the results.
+      name: sortOrder
+      predefined:
+      - ascending
+      - descending
+    description: Get a list of alerts, use the different arguments to filter the results
+      returned.
+    name: fireeye-hx-get-alerts
+    outputs:
+    - contextPath: FireEyeHX.Alerts._id
+      description: FireEye alert ID.
+      type: Unknown
+    - contextPath: FireEyeHX.Alerts.agent._id
+      description: FireEye agent ID.
+      type: Unknown
+    - contextPath: FireEyeHX.Alerts.agent.containment_state
+      description: Host containment state.
+      type: Unknown
+    - contextPath: FireEyeHX.Alerts.condition._id
+      description: The condition unique ID.
+      type: Unknown
+    - contextPath: FireEyeHX.Alerts.event_at
+      description: Time when the event occoured.
+      type: Unknown
+    - contextPath: FireEyeHX.Alerts.matched_at
+      description: Time when the event was matched.
+      type: Unknown
+    - contextPath: FireEyeHX.Alerts.reported_at
+      description: Time when the event was reported.
+      type: Unknown
+    - contextPath: FireEyeHX.Alerts.source
+      description: Source of alert.
+      type: Unknown
+    - contextPath: FireEyeHX.Alerts.matched_source_alerts._id
+      description: Source alert ID.
+      type: Unknown
+    - contextPath: FireEyeHX.Alerts.matched_source_alerts.appliance_id
+      description: Appliance ID
+      type: Unknown
+    - contextPath: FireEyeHX.Alerts.matched_source_alerts.meta
+      description: Source alert meta.
+      type: Unknown
+    - contextPath: FireEyeHX.Alerts.matched_source_alerts.indicator_id
+      description: Indicator ID.
+      type: Unknown
+    - contextPath: FireEyeHX.Alerts.resolution
+      description: Alert resulotion.
+      type: Unknown
+    - contextPath: FireEyeHX.Alerts.event_type
+      description: Event type.
+      type: Unknown
+  - arguments:
+    - description: The file name.
+      name: fileName
+      required: true
+    - description: The file path.
+      name: filePath
+      required: true
+    - auto: PREDEFINED
+      description: Whether to aqcuire the file using the API or RAW. By default, raw
+        file will be acquired. Use API option when file is encrypted.
+      name: acquireUsing
+      predefined:
+      - API
+      - RAW
+    - description: The agent ID associated with the host that holds the file. If the
+        hostName is not specified, the agentId must be specified.
+      name: agentId
+    - description: The host that holds the file. If the agentId is not specified,
+        hostName must be specified.
+      name: hostName
+    description: Aquire a specific file as a password protected zip file. The password
+      for unlocking the zip file is 'unzip-me'.
+    name: fireeye-hx-file-acquisition
+    outputs:
+    - contextPath: FireEyeHX.Acquisitions.Files._id
+      description: The acquisition unique ID.
+      type: Unknown
+    - contextPath: FireEyeHX.Acquisitions.Files.state
+      description: The acquisition state.
+      type: Unknown
+    - contextPath: FireEyeHX.Acquisitions.Files.md5
+      description: File md5.
+      type: Unknown
+    - contextPath: FireEyeHX.Acquisitions.Files.req_filename
+      description: The file name.
+      type: Unknown
+    - contextPath: FireEyeHX.Acquisitions.Files.req_path
+      description: The file path.
+      type: Unknown
+    - contextPath: FireEyeHX.Acquisitions.Files.host._id
+      description: FireEye HX agent ID.
+      type: Unknown
   isfetch: true
   runonce: false
   script: "-"
   type: python
   subtype: python3
   dockerimage: demisto/python3:3.9.8.24399
-fromversion: 6.2.0
+fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
