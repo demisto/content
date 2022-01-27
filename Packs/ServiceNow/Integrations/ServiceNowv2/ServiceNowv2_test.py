@@ -1121,6 +1121,9 @@ def test_get_tasks_for_co_command(mocker):
 
 def test_get_ticket_attachment_entries_with_oauth_token(mocker):
     """
+    This test purpose is to verify that it is possible to get a file attachment of a ServiceNow ticket by using an
+    OAuth 2.0 client.
+
     Given:
         - A client with 'oauth_params' - i.e a client that is configured with an OAuth 2.0 Authorization.
         - Mock responses for 'get_ticket_attachments', 'get_access_token' and 'requests.get' functions.
@@ -1143,7 +1146,7 @@ def test_get_ticket_attachment_entries_with_oauth_token(mocker):
                 'download_link': 'https://ven03941.service-now.com/api/now/attachment/12b7ea411b15cd10042611b4bd4/file'
             }]}
 
-    mock_res_for_get_access_token = '11111111'
+    mock_res_for_get_access_token = 'access_token'
 
     mocker.patch.object(client, 'get_ticket_attachments', return_value=mock_res_for_get_ticket_attachments)
     mocker.patch.object(client.snow_client, 'get_access_token', return_value=mock_res_for_get_access_token)
