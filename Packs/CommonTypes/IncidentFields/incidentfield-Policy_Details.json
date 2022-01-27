@@ -7,7 +7,7 @@
 		"AWS IAM Policy Misconfiguration",
 		"AWS EC2 Instance Misconfiguration",
 		"Trend Micro CAS Event",
-		"Saas Security Incident"
+		"SaaS Security Incident"
 	],
 	"breachScript": "",
 	"caseInsensitive": true,

@@ -1,7 +1,7 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "Saas Security Incident"
+        "SaaS Security Incident"
     ],
     "caseInsensitive": true,
     "cliName": "policyuri",
@@ -20,7 +20,7 @@
     "sla": 0,
     "system": false,
     "systemAssociatedTypes": [
-        "Saas Security Incident"
+        "SaaS Security Incident"
     ],
     "threshold": 72,
     "type": "shortText",

@@ -3,7 +3,7 @@
     "associatedTypes": [
         "Qradar Generic",
         "Guardicore Incident",
-        "Saas Security Incident"
+        "SaaS Security Incident"
     ],
     "breachScript": "",
     "caseInsensitive": true,

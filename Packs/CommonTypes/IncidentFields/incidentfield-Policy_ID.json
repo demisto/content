@@ -8,7 +8,7 @@
 		"AWS EC2 Instance Misconfiguration",
 		"Tripwire File Change",
 		"Carbon Black Endpoint Standard",
-		"Saas Security Incident"
+		"SaaS Security Incident"
 	],
 	"breachScript": "",
 	"caseInsensitive": true,
@@ -41,7 +41,7 @@
 		"AWS IAM Policy Misconfiguration",
 		"AWS EC2 Instance Misconfiguration",
         "Tripwire File Change",
-		"Saas Security Incident"
+		"SaaS Security Incident"
 	],
 	"threshold": 72,
 	"type": "shortText",
