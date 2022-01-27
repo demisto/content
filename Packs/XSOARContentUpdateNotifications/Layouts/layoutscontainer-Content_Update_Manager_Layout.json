@@ -188,7 +188,7 @@
  "edit": {
   "sections": [
    {
-    "description": "",
+    "description": "Please ensure to provide an instance name for which to use to check updates against.",
     "fields": [
      {
       "fieldId": "incident_name",
@@ -197,7 +197,11 @@
      {
       "fieldId": "incident_contentpackselection",
       "isVisible": true
-     }
+     },
+     {
+        "fieldId": "incident_contentinstancename",
+        "isVisible": true
+       }
     ],
     "isVisible": true,
     "name": "Pack Monitoring",
