@@ -42,3 +42,8 @@
 .gitlab/ci/* @avidan-H @DinaMeylakh
 .gitlab/* @avidan-H @DinaMeylakh
 .gitlab-ci.yml @avidan-H @DinaMeylakh
+
+# SDK Related
+.gitlab/ci/sdk-nightly.yml @dorschw
+Utils/trigger_nightly_sdk_build.sh @dorschw
+
