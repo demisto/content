@@ -65,15 +65,18 @@ def save_file(file_name, file_content) -> str:
     return attachment_internal_path
 
 
-def main():
-    file_type = ''
-    entry_id = demisto.args()['entryid']
-    max_depth = int(demisto.args().get('max_depth', '3'))
+def extract_file_info(entry_id: str) -> tuple:
+    """
+    extract from the entry id the file_type, file_path and file_name.
 
-    if max_depth < 1:
-        return_error('Minimum max_depth is 1, the script will parse just the top email')
+    Args:
+      entry_id (str): The entry id.
 
-    parse_only_headers = demisto.args().get('parse_only_headers', 'false').lower() == 'true'
+    Returns:
+        file_type(str): the file mime type.
+        file_path(str): the file path.
+        file_name(str):the file name.
+    """
     try:
         result = demisto.executeCommand('getFilePath', {'id': entry_id})
         if is_error(result):
@@ -88,35 +91,50 @@ def main():
         file_metadata = result[0]['FileMetadata']
         file_type = file_metadata.get('info', '') or file_metadata.get('type', '')
 
+        return file_type, file_path, file_name
+
     except Exception as ex:
         return_error(
             "Failed to load file entry with entry id: {}. Error: {}".format(
                 entry_id, str(ex) + "\n\nTrace:\n" + traceback.format_exc()))
 
+
+def main():
+    args = demisto.args()
+    entry_id = args.get('entryid')
+    max_depth = arg_to_number(args.get('max_depth', '3'), required=True)
+    if max_depth < 1:
+        return_error('Minimum max_depth is 1, the script will parse just the top email')
+    parse_only_headers = argToBoolean(args.get('parse_only_headers', 'false'))
+    forced_encoding = args.get('forced_encoding')
+    default_encoding = args.get('default_encoding')
+
+    file_type, file_path, file_name = extract_file_info(entry_id)
+
     try:
         email_parser = EmailParser(file_path=file_path, max_depth=max_depth, parse_only_headers=parse_only_headers,
-                                   file_info=file_type)
+                                   file_info=file_type, forced_encoding=forced_encoding,
+                                   default_encoding=default_encoding)
         output = email_parser.parse()
 
-        resultss = []
+        results = []
         if isinstance(output, dict):
             output = [output]
 
         for email in output:
             if email.get('AttachmentsData'):
                 for attachment in email.get('AttachmentsData'):
-                    if attachment.get('Name') and attachment.get('FileData'):
-                        content = attachment.get('FileData')
+                    if (name := attachment.get('Name')) and (content := attachment.get('FileData')):
                         del attachment['FileData']
-                        name = attachment.get('Name')
                         attachment['FilePath'] = save_file(name, content)
-            resultss.append(CommandResults(outputs_prefix='Email',
-                            outputs=email,
-                            readable_output=data_to_md(email, file_name, email.get('ParentFileName', None),
-                                                       print_only_headers=parse_only_headers),
-                            raw_response=email,
-                            entry_type=EntryType.NOTE))
-        return_results(resultss)
+            results.append(CommandResults(
+                outputs_prefix='Email',
+                outputs=email,
+                readable_output=data_to_md(email, file_name, email.get('ParentFileName', None),
+                                           print_only_headers=parse_only_headers),
+                raw_response=email))
+
+        return_results(results)
 
     except Exception as e:
         return_error(str(e) + "\n\nTrace:\n" + traceback.format_exc())
