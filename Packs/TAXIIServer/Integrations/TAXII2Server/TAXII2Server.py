@@ -673,7 +673,7 @@ def convert_sco_to_indicator_sdo(stix_object: dict, xsoar_indicator: dict) -> di
     if isinstance(indicator_value, str):
         indicator_pattern_value: Any = indicator_value.replace("'", "\\'")
     else:
-        indicator_pattern_value = indicator_value
+        indicator_pattern_value = json.dumps(indicator_value)
 
     object_type = stix_object['type']
     stix_type = 'indicator'
