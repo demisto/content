@@ -3350,6 +3350,9 @@ VALID_URL_INDICATORS = [
     'www.evilö.tld/evil.aspx',
     'https://www.evöl.tld/',
     'www.evil.tld/resource',
+    'https://google[.]com',
+    'https://google[.]com:443',
+    'https://google[.]com:443/path'
     'www.1.2.3.4/?user=test%Email=demisto',
     'www.1.2.3.4:8080/user=test%Email=demisto'
     'http://xn--e1v2i3l4.tld/evilagain.aspx',
@@ -3367,6 +3370,7 @@ VALID_URL_INDICATORS = [
     'http://1.2.3.4:8080/',
     'http://1.2.3.4:8080/resource.html',
     'HTTP://1.2.3.4',
+    'HTTP://1.2.3.4:80/path',
     'ftp://foo.bar/resource',
     'FTP://foo.bar/resource',
     'http://☺.evil.tld/',
@@ -3381,13 +3385,16 @@ VALID_URL_INDICATORS = [
     'www.63.4.6.1/integrations/test-playbooks',
     'https://xsoar.pan.dev/docs/welcome',
     '5.6.7.8/user/',
-    'https://1.1.1.1.1.1.1.1.1.1.1:8080',
-    'https://1.1.1.1.1.1.1.1.1.1.1:8080/path',
-    'https://1.1.1.1.1.1.1.1.1.1.1/',
-    'https://1.1.1.1.1.1.1.1.1.1.1/path',  # Http concatenated with invalid IPs should also be URL indicators
-    'HTTPs://1.1.1.1.1.1.1.1.1.1.1/test/another-test',
-    'https://1.1.1.1.1/path',
-    'http://www.example.com/and%26here.html'
+    'https://0330.0072.0307.0116',  # IP as octal number
+    'http://www.example.com/and%26here.html',
+    'https://1234',  # IP as integer 1234 = '0.0.4.210'
+    'hXXps://isc.sans[.]edu/',
+    'hXXps://1.1.1.1[.]edu/',
+    'hxxp://0[x]455e8c6f/0s19ef206s18s2f2s567s49a8s91f7s4s19fd61a',
+    'http://www.google.com:8080',
+    'http://www[.]google.com:8080',
+    'http://www.google.com:8080/path',
+    'http://www[.]google.com:8080/path'
 ]
 
 
@@ -3415,6 +3422,7 @@ INVALID_URL_INDICATORS = [
     "path/path",
     "1.1.1.1:8080",
     "1.1.1.1:8080/",
+    "1.1.1.1:111112243245/path",
     "3.4.6.92:8080:/test",
     "1.1.1.1:4lll/",
     "2001:db8:85a3:8d3:1319:8a2e:370:7348/64/",
@@ -3443,11 +3451,18 @@ INVALID_URL_INDICATORS = [
     "http://wwww.example.com/%20here.html",
     "FTP://Google.test:",
     "",
+    "somestring"
     "dsjfshjdfgkjldsh32423123^^&*#@$#@$@!#4",
     'aaa/1.1.1.1/path',
     'domain*com/1.1.1.1/path',
     'http:1.1.1.1/path',
-    'kfer93420932/path/path'
+    'kfer93420932/path/path',
+    '1.1.1.1.1/24',
+    '2.2.2.2.2/3sad',
+    'http://fdsfesd',
+    'FLAKE8.dds.asdfd/',
+    'FTP://Google.',
+    'https://www.'
 ]
 
 
