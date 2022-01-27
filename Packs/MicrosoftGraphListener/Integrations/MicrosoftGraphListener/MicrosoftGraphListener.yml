@@ -63,7 +63,7 @@ configuration:
   name: incidentType
   required: false
   type: 13
-description: Microsoft Graph grants Demisto authorized access to a user's Microsoft
+description: Microsoft Graph grants Cortex XSOAR authorized access to a user's Microsoft
   Outlook mail data in a personal account or organization account.
 display: O365 Outlook Mail Single User (Using Graph API)
 name: Microsoft Graph Mail Single User
@@ -479,7 +479,7 @@ script:
       secret: false
     - default: false
       description: A comma-separated list of names of attachments to display in the
-        email to send. Must be the same number of elements as attachIDs.
+        email to send. Must be the same number of elements as attach_ids.
       isArray: true
       name: attach_names
       required: false
