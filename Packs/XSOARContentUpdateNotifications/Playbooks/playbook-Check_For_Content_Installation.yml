@@ -94,6 +94,10 @@ tasks:
         simple: ContentDataPreCheck=response(val.updateAvailable==true).name
       uri:
         simple: /contentpacks/installed-expired
+      using:
+        complex:
+          root: incident
+          accessor: contentinstancename
     separatecontext: false
     skipunavailable: false
     task:
