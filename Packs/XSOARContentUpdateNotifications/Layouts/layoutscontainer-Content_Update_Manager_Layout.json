@@ -201,7 +201,11 @@
      {
         "fieldId": "incident_contentinstancename",
         "isVisible": true
-       }
+     },
+     {
+        "fieldId": "incident_contentupdatesautoinstall",
+        "isVisible": true
+     }
     ],
     "isVisible": true,
     "name": "Pack Monitoring",
