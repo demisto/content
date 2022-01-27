@@ -123,9 +123,12 @@ def main():
 
     to = demisto.get(demisto.args(), 'user')
     channel = demisto.get(demisto.args(), 'channel')
+    channel_id = demisto.get(demisto.args(), 'channel_id')
 
     if to:
         args['to'] = to
+    elif channel_id:
+        args['channel_id'] = channel_id
     elif channel:
         args['channel'] = channel
     else:

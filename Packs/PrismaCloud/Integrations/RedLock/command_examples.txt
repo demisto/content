@@ -1,6 +1,8 @@
 !redlock-list-alert-filters
 !redlock-get-alert-details alert-id=P-214016
 !redlock-search-alerts alert-id=P-214016
+!redlock-search-network query="network from vpc.flow_record where bytes > 0" time-range-unit=hour time-range-value=2
+!redlock-search-event query=`event from cloud.audit_logs where ip EXISTS` time-range-date-from=10/30/2021 time-range-date-to=12/31/2021
 !redlock-get-remediation-details alert-id=P-214016
 !redlock-dismiss-alerts dismissal-note="testing" alert-id=P-214016
 !redlock-reopen-alerts alert-id=P-214016
