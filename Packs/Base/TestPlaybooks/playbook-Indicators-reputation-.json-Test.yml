@@ -1068,14 +1068,6 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: hxxps://www.xn--e1v2i3l4.tld
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: ${URL.Data}
-            iscontext: true
-          right:
-            value:
               simple: www.evil.tld:443/path/to/resource.html
       - - operator: containsGeneral
           left:
@@ -1101,14 +1093,6 @@ tasks:
           right:
             value:
               simple: google.com/path
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: ${URL.Data}
-            iscontext: true
-          right:
-            value:
-              simple: 2001:db8:3333:4444:5555:6666:7777:8888/path/path
       - - operator: containsGeneral
           left:
             value:
