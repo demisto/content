@@ -23,7 +23,7 @@ args:
   name: default_encoding
   description: Use only the default encoding when parsing the message with the detected
     encoding fails, e.g 'utf-8'. Relevant to msg files only.
-comment: Parse an email from an eml or msg file and populate all relevant context
+comment: (Beta) Parse an email from an eml or msg file and populate all relevant context
   data to investigate the email. Also extracts inner attachments and returns them
   to the war room. The incident labels themselves are preserved and not modified -
   only the "Label/x" context items that originated from the labels, and the best practice
