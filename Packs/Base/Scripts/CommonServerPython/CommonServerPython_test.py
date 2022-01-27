@@ -13,8 +13,8 @@ import warnings
 from CommonServerPython import set_to_integration_context_with_retries, xml2json, json2xml, entryTypes, formats, tableToMarkdown, underscoreToCamelCase, \
     flattenCell, date_to_timestamp, datetime, camelize, pascalToSpace, argToList, \
     remove_nulls_from_dictionary, is_error, get_error, hash_djb2, fileResult, is_ip_valid, get_demisto_version, \
-    IntegrationLogger, parse_date_string, IS_PY3, DebugLogger, b64_encode, parse_date_range, return_outputs, \
-    argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, ipv6Regex, urlRegex, batch, FeedIndicatorType, \
+    IntegrationLogger, parse_date_string, IS_PY3, PY_VER_MINOR, DebugLogger, b64_encode, parse_date_range, return_outputs, \
+    argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, urlRegex, ipv6Regex, batch, FeedIndicatorType, \
     encode_string_results, safe_load_json, remove_empty_elements, aws_table_to_markdown, is_demisto_version_ge, \
     appendContext, auto_detect_indicator_type, handle_proxy, get_demisto_version_as_str, get_x_content_info_headers, \
     url_to_clickable_markdown, WarningsHandler, DemistoException, SmartGetDict, JsonTransformer
@@ -247,8 +247,7 @@ COMPLEX_DATA_WITH_URLS = [(
 
 class TestTableToMarkdown:
     @pytest.mark.parametrize('data, expected_table', TABLE_TO_MARKDOWN_ONLY_DATA_PACK)
-    @staticmethod
-    def test_sanity(data, expected_table):
+    def test_sanity(self, data, expected_table):
         """
         Given:
           - list of objects.
@@ -634,8 +633,7 @@ class TestTableToMarkdown:
         assert table_with_character == expected_string_with_special_character
 
     @pytest.mark.parametrize('data, expected_table', DATA_WITH_URLS)
-    @staticmethod
-    def test_clickable_url(data, expected_table):
+    def test_clickable_url(self, data, expected_table):
         """
         Given:
           - list of objects.
@@ -2395,6 +2393,20 @@ class TestCommandResults:
         assert results.to_context().get('Note') is True
 
 
+def test_http_request_ssl_ciphers_insecure():
+    if IS_PY3 and PY_VER_MINOR >= 10:
+        from CommonServerPython import BaseClient
+
+        client = BaseClient('https://www.google.com', ok_codes=(200, 201), verify=False)
+        adapter = client._session.adapters.get('https://')
+        ssl_context = adapter.poolmanager.connection_pool_kw['ssl_context']
+        ciphers_list = ssl_context.get_ciphers()
+
+        assert len(ciphers_list) == 42
+        assert next(cipher for cipher in ciphers_list if cipher['name'] == 'AES128-GCM-SHA256')
+    else:
+        assert True
+
 class TestBaseClient:
     from CommonServerPython import BaseClient
     text = {"status": "ok"}
@@ -3097,7 +3109,7 @@ def test_batch(iterable, sz, expected):
         assert expected[i] == item
 
 
-ip_regexes_test = [
+regexes_test = [
     (ipv4Regex, '192.168.1.1', True),
     (ipv4Regex, '192.168.1.1/24', False),
     (ipv4Regex, '192.168.a.1', False),
@@ -3119,7 +3131,7 @@ ip_regexes_test = [
 ]
 
 
-@pytest.mark.parametrize('pattern, string, expected', ip_regexes_test)
+@pytest.mark.parametrize('pattern, string, expected', regexes_test)
 def test_regexes(pattern, string, expected):
     # (str, str, bool) -> None
     # emulates re.fullmatch from py3.4
@@ -3298,9 +3310,8 @@ INDICATOR_VALUE_AND_TYPE = [
     ('a', None),
     ('*castaneda-thornton.com', 'DomainGlob'),
     (
-        '53e6baa124f54462786f1122e98e38ff1be3de82fe2a96b1849a8637043f'
-        'd847eec7e0f53307bddf7a066565292d500c36c941f1f3bb9dcac807b2f4a0bfce1b', 'File'
-    )
+        '53e6baa124f54462786f1122e98e38ff1be3de82fe2a96b1849a8637043fd847eec7e0f53307bddf7a066565292d500c36c941f1f3bb9dcac807b2f4a0bfce1b',
+        'File')
 ]
 
 
@@ -3325,6 +3336,30 @@ def test_auto_detect_indicator_type(indicator_value, indicatory_type):
         except Exception as e:
             assert str(e) == "Missing tldextract module, In order to use the auto detect function please" \
                              " use a docker image with it installed such as: demisto/jmespath"
+
+
+def test_auto_detect_indicator_type_tldextract(mocker):
+    """
+        Given
+            tldextract version is lower than 3.0.0
+
+        When
+            Trying to detect the type of an indicator.
+
+        Then
+            Run the auto_detect_indicator_type and validate that tldextract using `cache_file` arg and not `cache_dir`
+    """
+    if sys.version_info.major == 3 and sys.version_info.minor >= 8:
+        import tldextract as tlde
+        tlde.__version__ = '2.2.7'
+
+        mocker.patch.object(tlde, 'TLDExtract')
+
+        auto_detect_indicator_type('8')
+
+        res = tlde.TLDExtract.call_args
+        assert 'cache_file' in res[1].keys()
+
 
 
 VALID_URL_INDICATORS = [
@@ -3403,10 +3438,8 @@ def test_valid_url_indicator_types(indicator_value):
     """
     Given
     - Valid URL indicators.
-
     When
     - Trying to match those indicators with the URL regex.
-
     Then
     - The indicators are classified as URL indicators.
     """
@@ -3471,37 +3504,13 @@ def test_invalid_url_indicator_types(indicator_value):
     """
     Given
     - invalid URL indicators.
-
     When
     - Trying to match those indicators with the URL regex.
-
     Then
     - The indicators are not classified as URL indicators.
     """
     assert not re.match(urlRegex, indicator_value)
 
-
-def test_auto_detect_indicator_type_tldextract(mocker):
-    """
-        Given
-            tldextract version is lower than 3.0.0
-
-        When
-            Trying to detect the type of an indicator.
-
-        Then
-            Run the auto_detect_indicator_type and validate that tldextract using `cache_file` arg and not `cache_dir`
-    """
-    if sys.version_info.major == 3 and sys.version_info.minor >= 8:
-        import tldextract as tlde
-        tlde.__version__ = '2.2.7'
-
-        mocker.patch.object(tlde, 'TLDExtract')
-
-        auto_detect_indicator_type('8')
-
-        res = tlde.TLDExtract.call_args
-        assert 'cache_file' in res[1].keys()
 
 
 def test_handle_proxy(mocker):

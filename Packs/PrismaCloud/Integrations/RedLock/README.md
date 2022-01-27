@@ -206,9 +206,9 @@ Dismiss the alerts matching the given filter. Must provide either policy IDs or 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alert-id | comma separated list of string IDs to be dismissed | Optional | 
-| dismissal-note | Reason for dismissal | Required | 
-| snooze-value | The amount of time to snooze. Both snooze value and unit must be specified | Optional | 
+| alert-id | Comma-separated list of string IDs to be dismissed | Optional | 
+| dismissal-note | Reason for dismissal. | Required | 
+| snooze-value | The amount of time to snooze. Both snooze value and unit must be specified. | Optional | 
 | snooze-unit | The time unit for if snoozing alert.  Both snooze value and unit must be specified if snoozing. | Optional | 
 | time-range-date-from | Start time for search in the following string format -  MM/DD/YYYY | Optional | 
 | time-range-date-to | End time for search in the following format -  MM/DD/YYYY | Optional | 
@@ -228,7 +228,7 @@ Dismiss the alerts matching the given filter. Must provide either policy IDs or 
 | risk-grade | The risk grade | Optional | 
 | policy-type | The policy type | Optional | 
 | policy-severity | The policy severity | Optional | 
-| policy-id | comma separated string of policy IDs | Optional | 
+| policy-id | Comma-separated string of policy IDs | Optional | 
 
 
 #### Context Output
@@ -783,7 +783,7 @@ Run RQL query on Prisma Cloud
                     "RegionId": "eu-west-1",
                     "RegionName": "AWS Ireland",
                     "ResourceType": "Instance",
-                    "Rrn": "rrn:somthing"
+                    "Rrn": "rrn:somthing",
                     "Service": "Amazon EC2",
                     "StateId": "asdfghjklkjhgfdssaa"
                 }
@@ -1012,6 +1012,237 @@ Search configuration inventory on the Prisma Cloud (RedLock) platform using RQL 
 >| Felix - AWS - pan-lab | false | AWS Virginia | tl-console | Amazon EC2 |
 
 
+
+### redlock-search-event
+***
+Search events on the Prisma Cloud (RedLock) platform using RQL language.
+
+
+#### Base Command
+
+`redlock-search-event`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| time-range-date-from | Start time for the search, in the following format -  MM/DD/YYYY. | Optional | 
+| time-range-date-to | End time for the search, in the following format -  MM/DD/YYYY. | Optional | 
+| time-range-value | The number of time range value units for the search. For example, 3 days, 5 weeks, etc. | Optional | 
+| time-range-unit | The search unit. Possible values are: "hour", "week", "month", "year", "login", or "epoch". The "login" and "epoch" options are only available if timeRangeValue<br/>is not provided. Possible values are: hour, day, week, month, year, login, epoch. | Optional | 
+| query | Query to run in Prisma Cloud search API using RQL language. | Required | 
+| limit | Maximum number of entries to return. Default is 100. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Redlock.Event | Unknown | Cloud audit events. | 
+
+
+#### Command Example
+```!redlock-search-event query=`event from cloud.audit_logs where ip EXISTS AND ip IN (172.31.34.235)` time-range-date-from=10/29/2021 time-range-date-to=10/30/2021```
+
+#### Context Example
+```json
+{
+    "Redlock": {
+        "Event": [
+            {
+                "account": "712829893241",
+                "regionId": 4,
+                "eventTs": 1642051966000,
+                "subject": "ejb-iam-cloudops",
+                "type": "CREATE",
+                "source": "s3.amazonaws.com",
+                "name": "CreateBucket",
+                "id": 2557671673,
+                "ip": "172.31.34.235",
+                "accessKeyUsed": false,
+                "cityId": -4,
+                "cityName": "Private",
+                "stateId": -4,
+                "stateName": "Private",
+                "countryId": -4,
+                "countryName": "Private",
+                "cityLatitude": -1.0,
+                "cityLongitude": -1.0,
+                "success": false,
+                "internal": false,
+                "location": "Private",
+                "accountName": "aws-emea-tac",
+                "regionName": "AWS Oregon",
+                "dynamicData": {}
+            }
+        ]
+    }
+}
+```
+#### Human Readable Output
+>### Event Details
+> Showing 1 out of 1243 events
+>|accessKeyUsed|account|accountName|cityId|cityLatitude|cityLongitude|cityName|countryId|countryName|dynamicData|eventTs|id|internal|ip|location|name|regionId|regionName|source|stateId|stateName|subject|success|type|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| false | 712829893241 | aws-emea-tac | -4 | -1.0 | -1.0 | Private | -4 | Private |  | 1642051938000 | 2557671539 | false | 172.31.34.235 | Private | CreateBucket | 4 | AWS Oregon | s3.amazonaws.com | -4 | Private | ejb-iam-cloudops | false | CREATE |
+
+
+### redlock-search-network
+***
+Search networks on the Prisma Cloud (RedLock) platform using RQL language.
+
+
+#### Base Command
+
+`redlock-search-network`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| time-range-date-from | Start time for the search, in the following format -  MM/DD/YYYY. | Optional | 
+| time-range-date-to | End time for the search, in the following format -  MM/DD/YYYY. | Optional | 
+| time-range-value | The number of time range value units for the search. For example, 3 days, 5 weeks, etc. | Optional | 
+| time-range-unit | The search unit. Possible values are: "hour", "week", "month", "year", "login", or "epoch". The "login" and "epoch" options are only available if timeRangeValue<br/>is not provided. Possible values are: hour, day, week, month, year, login, epoch. | Optional | 
+| query | Query to run in Prisma Cloud search API using RQL language. | Required | 
+| cloud-type | The cloud in which the network should be searched. Possible values are: aws, azure, gcp, alibaba_cloud, oci. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Redlock.Network.Node | Unknown | Cloud network node. | 
+| Redlock.Network.Connection | Unknown | Cloud network connection. | 
+
+
+#### Command Example
+```!redlock-search-network query="network from vpc.flow_record where bytes > 0" time-range-unit=hour time-range-value=2```
+
+#### Context Example
+```json
+{
+    "Redlock": {
+        "Node": [
+              {
+                "id": 1422407688,
+                "name": "aqwe",
+                "ipAddr": "172.31.34.235",
+                "grouped": false,
+                "suspicious": false,
+                "vulnerable": true,
+                "iconId": "web_server",
+                "metadata": {
+                    "redlock_alert_count": 16,
+                    "host_vulnerability_count": 0,
+                    "vpc_name": [
+                        {
+                            "id": "vpc-ddf45bb4",
+                            "name": "defaultwala"
+                        }
+                    ],
+                    "initial": true,
+                    "vpc_id": [
+                        "vpc-ddf45bb4"
+                    ],
+                    "ip_addresses": [
+                        "172.31.34.235",
+                        "35.180.1.1"
+                    ],
+                    "inspector_rba_count": 0,
+                    "region_id": [
+                        "us-east-2"
+                    ],
+                    "guard_duty_iam_count": 0,
+                    "net_iface_id": [
+                        "eni-04fec4df10974b6fe"
+                    ],
+                    "guard_duty_host_count": 0,
+                    "tags": [
+                        "None"
+                    ],
+                    "rrn": "rrn::managedLb:us-east-2:274307705868:393ffce52a85f09fef1be815f4fe9ca3186b4540:arn%3Aaws%3Aelasticloadbalancing%3Aus-east-2%3A274307705868%3Aloadbalancer%2Fnet%2Faqwe%2Ffb23c6bcbaee17a1",
+                    "security_groups": [
+                        "Unavailable"
+                    ],
+                    "serverless_vulnerability_count": 0,
+                    "instance_id": [
+                        "N/A"
+                    ],
+                    "account_id": [
+                        "274307705868"
+                    ],
+                    "cloud_type": [
+                        "aws"
+                    ],
+                    "asset_role": [
+                        "Web Server"
+                    ],
+                    "account_name": [
+                        "RedlockSandbox"
+                    ],
+                    "resource_id": [
+                        "arn:aws:elasticloadbalancing:us-east-2:274307705868:loadbalancer/net/aqwe/fb23c6bcbaee17a1"
+                    ],
+                    "inspector_sbp_count": 0,
+                    "region_name": [
+                        "AWS Ohio"
+                    ],
+                    "compliance_count": 0
+                }
+            }
+        ],
+        "Connection": [
+            {
+                "from": 994246246,
+                "to": 1418248367,
+                "label": "Postgres",
+                "suspicious": false,
+                "metadata": {
+                    "account_id": [
+                        "274307705868"
+                    ],
+                    "cloud_type": [
+                        "aws"
+                    ],
+                    "bytes_attempted": 0,
+                    "connection_overview_table": [
+                        {
+                            "port": "Postgres",
+                            "traffic_volume": 83938,
+                            "accepted": "yes"
+                        }
+                    ],
+                    "region_id": [
+                        "us-east-2"
+                    ],
+                    "bytes_accepted": 83938,
+                    "to_ip_addresses": [
+                        "172.31.34.235"
+                    ],
+                    "flow_class": [
+                        "Postgres"
+                    ],
+                    "from_ip_addresses": [
+                        "172.31.34.235"
+                    ],
+                    "bytes_rejected": 0
+                }
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+>## Network Details
+>### Node
+>|grouped|id|ipAddr|metadata|name|suspicious|vulnerable|
+>|---|---|---|---|---|---|---|
+>| false | 1411487329 | 172.31.34.235 | redlock_alert_count: 5<br>vpc_name: {'id': 'https://www.googleapis.com/compute/v1/projects/tac-prisma-cloud-and-compute/global/networks/us-central1', 'name': 'us-central1'}<br>vpc_id: https://www.googleapis.com/compute/v1/projects/tac-prisma-cloud-and-compute/global/networks/us-central1<br>ip_addresses: 172.31.34.235<br>inspector_rba_count: 0<br>secgroup_ids: 7466735050281694697,<br>5386953130680217005<br>guard_duty_iam_count: 0<br>asset_role: VM Instance<br>account_name: gcp-emea-tac<br>region_name: GCP Iowa<br>compliance_count: 0<br>host_vulnerability_count: 0<br>initial: true<br>region_id: us-central1<br>net_iface_id: gke-oldtac-nopublicclust-default-pool-f08b69f0-6g3n#nic0<br>guard_duty_host_count: 0<br>tags: {'name': 'gke-oldtac-nopublicclusterhere-fc43a760-node', 'values': ['']},<br>{'name': 'goog-gke-node', 'values': ['']}<br>rrn: rrn::instance:us-central1:tac-prisma-cloud-and-compute:7040cac26d62fa19dea22bcb6cd52dba6c213212:1397701696990493277<br>security_groups: {'id': '7466735050281694697', 'name': 'allow-ingress-from-iap-tac'},<br>{'id': '5386953130680217005', 'name': 'gke-oldtac-nopublicclusterhere-fc43a760-all'}<br>serverless_vulnerability_count: 0<br>instance_id: 1397701696990493277<br>account_id: tac-prisma-cloud-and-compute<br>cloud_type: gcp<br>resource_id: 1397701696990493277<br>inspector_sbp_count: 0 | gke-oldtac-nopublicclust-default-pool-f08b69f0-6g3n | false | true |
+>### Connection
+>|from|label|metadata|suspicious|to|
+>|---|---|---|---|---|
+>| 1418600304 | Web | bytes_attempted: 1473<br>connection_overview_table: {'port': 'Web (443)', 'traffic_volume': 43694, 'accepted': 'yes'},<br>{'port': 'Web (443)', 'traffic_volume': 1473, 'accepted': 'no'}<br>region_id: us-central1<br>countries: N/A<br>to_ip_addresses: 0.0.0.0<br>flow_class: Web (443)<br>states: N/A<br>account_id: tac-prisma-cloud-and-compute<br>cloud_type: gcp<br>asset_role: Internet IPs<br>bytes_accepted: 43694<br>isps: N/A<br>from_ip_addresses: 10.128.0.5<br>bytes_rejected: 0 | false | -1977384788 |
+
 ### redlock-list-scans
 ***
 List DevOps Scans
@@ -1024,13 +1255,13 @@ List DevOps Scans
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| group_by | Aggregate scan results by group. Possible values are: scanId,  assetType, assetName, resourceList. Default is scanId. | Optional | 
+| group_by | Group by which to aggregate scan results. Possible values are: scanId,  assetType, assetName, resourceList. Default is scanId. | Optional | 
 | page_size | Pagination size. Default is 25. | Optional | 
 | page_number | Pagination number. Default is 1. | Optional | 
 | sort | Sorting parameters. The sort order is ascending unless the field is prefixed with minus (-), in which case it is descending. | Optional | 
 | filter_type |  Time filter type. Possible values are: to_now, absolute, relative. Default is relative. | Optional | 
 | filter_time_amount | Number of time units. Default is 1. | Optional | 
-| to_now_time_unit | To Now Time unit. Possible values are: epoch, login, hour, day, week, month, year. Default is day. | Optional | 
+| to_now_time_unit | The time unit for retrieving the list of IaC scans. Possible values are: epoch, login, hour, day, week, month, year. Default is day. | Optional | 
 | filter_start_time | Start time , for example: 11/01/2021 10:10:10. | Optional | 
 | filter_end_time | End time in Unix time (the number of seconds that have elapsed since the Unix epoch) for the absolute time type. | Optional | 
 | filter_asset_type | Asset type to search with. | Optional | 
