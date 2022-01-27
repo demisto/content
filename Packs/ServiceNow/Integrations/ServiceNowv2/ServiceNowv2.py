@@ -2109,6 +2109,19 @@ def login_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Dict[Any, 
     return hr, {}, {}, True
 
 
+def check_assigned_to_field(client, assigned_to, ticket):
+    if assigned_to:
+        user_result = client.get('sys_user', assigned_to.get('value'))
+        user = user_result.get('result', {})
+        if user:
+            user_email = user.get('email')
+            ticket['assigned_to'] = user_email
+        else:
+            demisto.debug(f'Could not assign user {assigned_to.get("value")} since he does not exists in Service Now')
+            ticket['assigned_to'] = ''
+    return ticket
+
+
 def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) -> Union[List[Dict[str, Any]], str]:
     """
     get-remote-data command: Returns an updated incident and entries
@@ -2205,14 +2218,16 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
         group_name = group.get('name')
         ticket['assignment_group'] = group_name
 
-    if assigned_to:
-        user_result = client.get('sys_user', assigned_to.get('value'))
-        if user_result:
-            user = user_result.get('result', {})
-            user_email = user.get('email')
-            ticket['assigned_to'] = user_email
-        else:
-            demisto.debug(f'Could not assign user {assigned_to.get("value")} since he does not exists in ServiceNow')
+    check_assigned_to_field(client, assigned_to, ticket)
+    # if assigned_to:
+    #     user_result = client.get('sys_user', assigned_to.get('value'))
+    #     user = user_result.get('result', {})
+    #     if user:
+    #         user_email = user.get('email')
+    #         ticket['assigned_to'] = user_email
+    #     else:
+    #         demisto.debug(f'Could not assign user {assigned_to.get("value")} since he does not exists in Service Now')
+    #         ticket['assigned_to'] = ''
 
     if caller:
         user_result = client.get('sys_user', caller.get('value'))

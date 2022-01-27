@@ -10,7 +10,8 @@ from ServiceNowv2 import get_server_url, get_ticket_context, get_ticket_human_re
     list_table_fields_command, query_computers_command, get_table_name_command, add_tag_command, query_items_command, \
     get_item_details_command, create_order_item_command, document_route_to_table, fetch_incidents, main, \
     get_mapping_fields_command, get_remote_data_command, update_remote_system_command, build_query_for_request_params, \
-    ServiceNowClient, oauth_test_module, login_command, get_modified_remote_data_command, parse_build_query, get_ticket_fields
+    ServiceNowClient, oauth_test_module, login_command, get_modified_remote_data_command, parse_build_query, \
+    get_ticket_fields, check_assigned_to_field
 from ServiceNowv2 import test_module as module
 from test_data.response_constants import RESPONSE_TICKET, RESPONSE_MULTIPLE_TICKET, RESPONSE_UPDATE_TICKET, \
     RESPONSE_UPDATE_TICKET_SC_REQ, RESPONSE_CREATE_TICKET, RESPONSE_CREATE_TICKET_WITH_OUT_JSON, RESPONSE_QUERY_TICKETS, \
@@ -22,7 +23,7 @@ from test_data.response_constants import RESPONSE_TICKET, RESPONSE_MULTIPLE_TICK
     RESPONSE_FETCH_ATTACHMENTS_TICKET, RESPONSE_TICKET_MIRROR, MIRROR_COMMENTS_RESPONSE, RESPONSE_MIRROR_FILE_ENTRY, \
     RESPONSE_ASSIGNMENT_GROUP, RESPONSE_MIRROR_FILE_ENTRY_FROM_XSOAR, MIRROR_COMMENTS_RESPONSE_FROM_XSOAR, \
     MIRROR_ENTRIES, RESPONSE_CLOSING_TICKET_MIRROR, RESPONSE_TICKET_ASSIGNED, OAUTH_PARAMS, \
-    RESPONSE_QUERY_TICKETS_EXCLUDE_REFERENCE_LINK, MIRROR_ENTRIES_WITH_EMPTY_USERNAME
+    RESPONSE_QUERY_TICKETS_EXCLUDE_REFERENCE_LINK, MIRROR_ENTRIES_WITH_EMPTY_USERNAME, USER_RESPONSE
 from test_data.result_constants import EXPECTED_TICKET_CONTEXT, EXPECTED_MULTIPLE_TICKET_CONTEXT, \
     EXPECTED_TICKET_HR, EXPECTED_MULTIPLE_TICKET_HR, EXPECTED_UPDATE_TICKET, EXPECTED_UPDATE_TICKET_SC_REQ, \
     EXPECTED_CREATE_TICKET, EXPECTED_CREATE_TICKET_WITH_OUT_JSON, EXPECTED_QUERY_TICKETS, EXPECTED_ADD_LINK_HR, \
@@ -705,6 +706,46 @@ def test_get_remote_data(mocker):
 
     assert res[1]['File'] == 'test.txt'
     assert res[2]['Contents'] == 'This is a comment'
+
+
+def test_assigned_to_field_no_user():
+    """
+    Given:
+        -  Client class
+        -  Assigned_to field for user that doesn't exist in SNOW
+    When
+        - run check_assigned_to_field command
+    Then
+        - Check that assign_to value is empty
+    """
+    class Client:
+        def get(self, table, value):
+            return {'results': {}}
+
+    assigned_to = {'link': 'https://dev113888.service-now.com/api/now/table/sys_user/oscar@example.com',
+                   'value': 'oscar@example.com'}
+    res = check_assigned_to_field(Client(), assigned_to, {})
+    assert res == {'assigned_to': ''}
+
+
+def test_assigned_to_field_user_exists():
+    """
+    Given:
+        -  Client class
+        -  Assigned_to field for user that does exist in SNOW
+    When
+        - run check_assigned_to_field command
+    Then
+        - Check that assign_to value is filled with the right email
+    """
+    class Client:
+        def get(self, table, value):
+            return USER_RESPONSE
+
+    assigned_to = {'link': 'https://dev113888.service-now.com/api/now/table/sys_user/oscar@example.com',
+                   'value': 'oscar@example.com'}
+    res = check_assigned_to_field(Client(), assigned_to, {})
+    assert res == {'assigned_to': 'oscar@example.com'}
 
 
 CLOSING_RESPONSE = {'dbotIncidentClose': True, 'closeReason': 'From ServiceNow: Test'}
