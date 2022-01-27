@@ -71,4 +71,5 @@ IntelGraph
 Accenture
 CTI
 SCC
+IPinfo
 Qualys
