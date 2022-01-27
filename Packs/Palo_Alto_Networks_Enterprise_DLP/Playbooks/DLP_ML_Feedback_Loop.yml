@@ -1,0 +1,453 @@
+id: DLP ML Feedback Loop
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: DLP ML Feedback Loop
+description: Collect feedback from user about blocked files to improve ML model
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: e0772674-d7ff-43df-8075-a871655a3f9b
+    type: start
+    task:
+      id: e0772674-d7ff-43df-8075-a871655a3f9b
+      version: -1
+      name: start_task
+      type: start
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 110,
+          "y": -40
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: c88e4528-46f7-4207-8998-dcc8a8b95acb
+    type: regular
+    task:
+      id: c88e4528-46f7-4207-8998-dcc8a8b95acb
+      version: -1
+      name: Set feedback to "true positive"
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      customFields:
+        simple: '{"mlFeedback": "true_positive"}'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 780,
+          "y": 1150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 8bb9fd11-d3d1-400f-838b-e93a122cf031
+    type: condition
+    task:
+      id: 8bb9fd11-d3d1-400f-838b-e93a122cf031
+      version: -1
+      name: Is Slack v2 enabled?
+      description: Checks whether the Slack V2 integration is enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "11"
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: SlackV2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 110,
+          "y": 130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: b1d07087-5ef5-40f1-8fd9-1d24294ddf53
+    type: title
+    task:
+      id: b1d07087-5ef5-40f1-8fd9-1d24294ddf53
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -270,
+          "y": 1810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 7367b22a-8c13-4152-836b-204c4c081a40
+    type: regular
+    task:
+      id: 7367b22a-8c13-4152-836b-204c4c081a40
+      version: -1
+      name: Set feedback to "false positive"
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      customFields:
+        simple: '{"mlFeedback": "false positive"}'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 20,
+          "y": 1150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 7aaad6d7-53d8-4d71-8c7e-942b7387c7e9
+    type: playbook
+    task:
+      id: 7aaad6d7-53d8-4d71-8c7e-942b7387c7e9
+      version: -1
+      name: Dedup - Generic v3
+      description: "This playbook identifies duplicate incidents using one of the\
+        \ supported methods.\nSelect one of the following methods to identify duplicate\
+        \ incidents in Cortex XSOAR.\n- ml: Machine learning model, which is trained\
+        \ mostly on phishing incidents.\n-rules: Rules help identify duplicate incidents\
+        \ when the logic is well defined, for example, the same label or custom fields.\n\
+        -text: Statistics algorithm that compares text, which is generally useful\
+        \ for phishing incidents.\nFor each method, the playbook will search for the\
+        \ oldest similar incident. when there is a match for a similar incident the\
+        \ playbook will close the current incident and will link it to the older incident. "
+      playbookName: Dedup - Generic v3
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      CloseAsDuplicate:
+        simple: "true"
+      DuplicateMethod:
+        simple: rules
+      DuplicateThreshold:
+        simple: "0.7"
+      IgnoreClosedIncidents:
+        simple: "yes"
+      MaxNumberOfCandidates:
+        simple: "1000"
+      TimeField:
+        simple: created
+      TimeFrameHours:
+        simple: "72"
+      exsitingIncidentsLookback:
+        simple: 1 hour ago
+      similarIncidentFields:
+        simple: reportId, userIdl, mlFeedback
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 350,
+          "y": 320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 80704bde-d8c4-4222-8268-ddbe518350bf
+    type: regular
+    task:
+      id: 80704bde-d8c4-4222-8268-ddbe518350bf
+      version: -1
+      name: Ask user for feedback
+      description: Ask user for feedback
+      scriptName: DlpAskFeedback
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      file_name:
+        simple: dummy_file.doc
+      policy_name:
+        simple: Test Policy
+      task:
+        simple: "17"
+      user:
+        simple: ${incident.sourceusername}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 350,
+          "y": 680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: 17fb1219-0545-4f65-8142-8249d9d5eafb
+    type: condition
+    task:
+      id: 17fb1219-0545-4f65-8142-8249d9d5eafb
+      version: -1
+      name: Received feedback
+      description: Received feedback from Slack
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      A:
+      - "12"
+      B:
+      - "18"
+    separatecontext: false
+    slareminder:
+      hours: 1
+      days: 0
+      weeks: 0
+    view: |-
+      {
+        "position": {
+          "x": 350,
+          "y": 870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: 9eaa5041-eb38-4919-80fa-f4ded698548d
+    type: regular
+    task:
+      id: 9eaa5041-eb38-4919-80fa-f4ded698548d
+      version: -1
+      name: Set feedback to "true positive" and create exemption
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      customFields:
+        simple: '{"mlFeedback": "authorized"}'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 350,
+          "y": 1280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: 40d95b7b-aff7-404a-8b6f-749b13ded08d
+    type: regular
+    task:
+      id: 40d95b7b-aff7-404a-8b6f-749b13ded08d
+      version: -1
+      name: Get DLP Incident
+      description: Fetches DLP reports associated with a report ID.
+      script: Palo Alto Networks Enterprise DLP|||pan-dlp-get-report
+      type: regular
+      iscommand: true
+      brand: Palo Alto Networks Enterprise DLP
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      report_id:
+        simple: ${incident.reportId}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 350,
+          "y": 490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: 2b2e9d60-8fbf-41f3-8783-9d35748e9a51
+    type: regular
+    task:
+      id: 2b2e9d60-8fbf-41f3-8783-9d35748e9a51
+      version: -1
+      name: Send notification about exemption
+      description: Sends a message to a user, group, or channel.
+      script: SlackV2|||send-notification
+      type: regular
+      iscommand: true
+      brand: SlackV2
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      blocks:
+        simple: "[\n\t\t{\n\t\t\t\"type\": \"section\",\n\t\t\t\"text\": {\n\t\t\t\
+          \t\"type\": \"mrkdwn\",\n\t\t\t\t\"text\": \"Exception created for dummy_file.doc\"\
+          \n\t\t\t}\n\t\t},\n\t\t{\n\t\t\t\"type\": \"section\",\n\t\t\t\"text\":\
+          \ {\n\t\t\t\t\"type\": \"mrkdwn\",\n\t\t\t\t\"text\": \"You can now send\
+          \ it.\"\n\t\t\t}\n\t\t},\n\t\t{\n\t\t\t\"type\": \"section\",\n\t\t\t\"\
+          text\": {\n\t\t\t\t\"type\": \"mrkdwn\",\n\t\t\t\t\"text\": \"The exception\
+          \ will last 12 hours\"\n\t\t\t}\n\t\t},\n\t\t{\n\t\t\t\"type\": \"actions\"\
+          ,\n\t\t\t\"elements\": [\n\t\t\t\t{\n\t\t\t\t\t\"type\": \"button\",\n\t\
+          \t\t\t\t\"text\": {\n\t\t\t\t\t\t\"type\": \"plain_text\",\n\t\t\t\t\t\t\
+          \"text\": \"OK\",\n\t\t\t\t\t\t\"emoji\": true\n\t\t\t\t\t},\n\t\t\t\t\t\
+          \"style\": \"primary\",\n\t\t\t\t\t\"value\": \"click_me_123\",\n\t\t\t\t\
+          \t\"action_id\": \"actionId-0\"\n\t\t\t\t}\n\t\t\t]"
+      to:
+        simple: ${incident.sourceusername}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 170,
+          "y": 1510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "10_11_#default#": 0.1,
+      "17_4_#default#": 0.6
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1915,
+        "width": 1430,
+        "x": -270,
+        "y": -40
+      }
+    }
+  }
+inputs:
+- key: UsernameOrEmail
+  value:
+    complex:
+      root: incident
+      accessor: sourceusername
+  required: true
+  description: The username or the email address of the user who failed to login.
+  playbookInputQuery:
+outputs: []
+tests:
+- Palo_Alto_Networks_Enterprise_DLP - Test
+fromversion: 5.5.0

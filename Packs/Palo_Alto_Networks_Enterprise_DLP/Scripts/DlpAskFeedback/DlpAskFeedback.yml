@@ -1,0 +1,35 @@
+commonfields:
+  id: DlpAskFeedback
+  version: -1
+name: DlpAskFeedback
+script: ''
+type: python
+tags: []
+enabled: true
+comment: Sends a message via Slack to the user whose upload of a file violated DLP
+  policies and triggered the incident
+args:
+- name: file_name
+  description: The file name that the user tried to upload
+  required: true
+- name: policy_name
+  description: The Data Profile policy that triggered the incident
+  required: true
+- name: task
+  description: A manual task that this task can close
+- name: user
+  required: true
+  description: The recipient to ask for feedback from
+scripttarget: 0
+subtype: python3
+dependson:
+  must:
+  - SlackV2|||send-notification
+  should:
+  - SlackV2|||send-notification
+runonce: false
+dockerimage: demisto/python3:3.10.1.25933
+runas: DBotWeakRole
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)
