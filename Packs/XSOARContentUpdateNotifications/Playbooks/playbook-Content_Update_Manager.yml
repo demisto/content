@@ -2476,7 +2476,10 @@ inputs:
   description: A CSV of packs to monitor.
   playbookInputQuery:
 - key: auto_update
-  value: {}
+  value:
+    complex:
+      root: incident
+      accessor: contentupdatesautoinstall
   required: false
   description: |-
     Establishes whether to automatically update the content packs if there are available updates or wait for an analyst's approval or the manual update process.
