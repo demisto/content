@@ -1121,7 +1121,7 @@ def test_get_tasks_for_co_command(mocker):
 
 def test_get_ticket_attachment_entries_with_oauth_token(mocker):
     """
-    This purpose of this test is to verify that it is possible to get a file attachment of a ServiceNow ticket by using
+    The purpose of this test is to verify that it is possible to get a file attachment of a ServiceNow ticket by using
     an OAuth 2.0 client.
 
     Given:
@@ -1157,7 +1157,7 @@ def test_get_ticket_attachment_entries_with_oauth_token(mocker):
 
     # Validate Results are as expected:
     assert requests_get_mocker.call_args.kwargs.get('auth') is None,\
-        "A client configured with OAuth 2.0 Authorization shouldn't pass an 'auth' argument to 'requests.get' function"
-    assert requests_get_mocker.call_args.kwargs.get('headers').get('Authorization') ==\
-           f"Bearer {mock_res_for_get_access_token}", "A client configured with OAuth 2.0 Authorization should pass" \
-                                                      " the 'Authorization' Header argument to 'requests.get' function"
+        "When An OAuth 2.0 client is configured the 'auth' argument shouldn't be passed to 'requests.get' function"
+    assert requests_get_mocker.call_args.kwargs.get('headers').get('Authorization') == \
+           f"Bearer {mock_res_for_get_access_token}", "When An OAuth 2.0 client is configured the 'Authorization'" \
+                                                      " Header argument should be passed to 'requests.get' function"
