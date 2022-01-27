@@ -1684,7 +1684,7 @@ Get a request in Opsgenie.
 | OpsGenie.[request_type].alias         | String | Alias of the created alert. | 
 | OpsGenie.[request_type].integrationId | String | Integration ID of the created alert. | 
 | OpsGenie.[request_type].isSuccess     | Boolean | Whether the request was successful. | 
-| OpsGenie.v.processedAt                | Date | When the request was processed. | 
+| OpsGenie.[request_type].processedAt                | Date | When the request was processed. | 
 | OpsGenie.[request_type].requestId              | String | The ID of the request. | 
 | OpsGenie.[request_type].status                 | String | The human readable result of the request. | 
 | OpsGenie.[request_type].success                | Boolean | Whether the request was successful. | 
