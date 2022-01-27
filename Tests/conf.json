@@ -3613,7 +3613,7 @@
             "integrations": "QualysV2",
             "playbookID": "QualysVulnerabilityManagement-Test",
             "fromversion": "5.5.0",
-            "timeout": 3000
+            "timeout": 4000
         },
         {
             "integrations": "ThreatExchange v2",
