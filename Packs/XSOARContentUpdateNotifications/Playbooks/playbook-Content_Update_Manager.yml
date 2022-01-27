@@ -59,6 +59,10 @@ tasks:
         simple: ContentPreData=response(val.updateAvailable==true)
       uri:
         simple: /contentpacks/installed-expired
+      using:
+        complex:
+          root: incident
+          accessor: contentinstancename
     separatecontext: false
     view: |-
       {
@@ -2323,7 +2327,7 @@ tasks:
     scriptarguments:
       content_data:
         complex:
-          root: ${ContentData}
+          root: ContentData
     separatecontext: false
     view: |-
       {
