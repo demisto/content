@@ -815,3 +815,19 @@ def test_get_machine_details_command(mocker):
     results = get_machine_details_command(client_mocker, {'machine_id': "123abc"})
     assert results.outputs[0] == json.loads(outputs_result)
     assert results.readable_output == human_readable_result
+
+
+@pytest.mark.parametrize('fields_to_filter_by, field_key_from_type_list, expected_query', [
+    # field_key_from_type_list does not exist
+    ({'ip': '1.2.3.4', 'host': 'example'}, 'id', "ip eq '1.2.3.4' and host eq 'example'"),
+    # field_key_from_type_list has only one value in the list
+    ({'ip': '1.2.3.4', 'id': ['1'], 'host': 'example'}, 'id', "ip eq '1.2.3.4' and id eq '1' and host eq 'example'"),
+    # field_key_from_type_list has more than one value in the list
+    ({'ip': '1.2.3.4', 'id': ['1', '2']}, 'id', "(ip eq '1.2.3.4' and id eq '1') or (ip eq '1.2.3.4' and id eq '2')"),
+    ({'ip': '1.2.3.4', 'id': ['1', '2'], 'host': 'example'}, 'id',
+     ("(ip eq '1.2.3.4' and host eq 'example' and id eq '1') or "
+      "(ip eq '1.2.3.4' and host eq 'example' and id eq '2')")),
+])
+def test_reformat_filter_with_list_arg(fields_to_filter_by, field_key_from_type_list, expected_query):
+    from MicrosoftDefenderAdvancedThreatProtection import reformat_filter_with_list_arg
+    assert reformat_filter_with_list_arg(fields_to_filter_by, field_key_from_type_list) == expected_query
