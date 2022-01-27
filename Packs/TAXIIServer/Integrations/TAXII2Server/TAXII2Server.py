@@ -678,15 +678,14 @@ def convert_sco_to_indicator_sdo(stix_object: dict, xsoar_indicator: dict) -> di
     object_type = stix_object['type']
     stix_type = 'indicator'
 
-    stix_domain_object: Dict[str, Any] = {
-        'type': stix_type,
-        'id': create_sdo_stix_uuid(xsoar_indicator, stix_type),
-        'pattern': f"[{object_type}:value = '{indicator_pattern_value}']",
-        'valid_from': stix_object['created'],
-        'valid_until': expiration_parsed,
-        'description': xsoar_indicator.get('CustomFields', {}).get('description', ''),
-        'labels': []
-    }
+    stix_domain_object: Dict[str, Any] = assign_params(
+        type=stix_type,
+        id=create_sdo_stix_uuid(xsoar_indicator, stix_type),
+        pattern=f"[{object_type}:value = '{indicator_pattern_value}']",
+        valid_from=stix_object['created'],
+        valid_until=expiration_parsed,
+        description=xsoar_indicator.get('CustomFields', {}).get('description', '')
+    )
     return dict({k: v for k, v in stix_object.items()
                 if k in ('spec_version', 'created', 'modified')}, **stix_domain_object)
 
