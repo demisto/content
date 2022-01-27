@@ -12,6 +12,6 @@ It also contains an auto-update flow that lets users decide via playbook inputs 
 
 As part of this pack, you also get out-of-the-box Content Update Manager incident views, a full layout, and automation scripts. All of these are easily customizable to suit the needs of your organization.
 
-_For more information, visit our [Content Update Manager](https://xsoar.pan.dev/docs/reference/packs/content-update-manager)._
+_For more information, visit our [Content Update Manager](https://xsoar.pan.dev/docs/reference/playbooks/content-update-manager)._
 
 ![Content_Update_Manager](https://github.com/demisto/content/raw/ec6fdf6bc123841f8ba688e6d7e21072327f0d9c/Packs/XSOARContentUpdateNotifications/doc_files/Content_Update_Manager.png?raw=true)
