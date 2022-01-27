@@ -155,7 +155,7 @@ def test_get_image(mocker):
     Then:
         Validate that the http request gets called with authorization (headers)
     """
-    response = {'data': {'analysis': {'content': {'screenshots': [{'permanentUrl': 'http://permanentUrl'}]}}}}
+    response = {'data': {'analysis': {'content': {'screenshots': [{'permanentUrl': 'www.test.com'}]}}}}
     mocker.patch('requests.request', side_effect=http_mock)
     try:
         images_from_report(response)
