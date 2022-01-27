@@ -1,10 +1,16 @@
+from unittest.mock import Mock
+
 import pytest
 import json
-from ANYRUN import underscore_to_camel_case
+from ANYRUN import underscore_to_camel_case, images_from_report
 from ANYRUN import make_capital, make_singular, make_upper
 from ANYRUN import generate_dbotscore
 from ANYRUN import taskid_from_url
-
+import requests
+HEADERS = {
+    'Authorization': 'Authorization'
+}
+USE_SSL = False
 
 @pytest.fixture(scope="module")
 def get_response():
@@ -128,3 +134,32 @@ class TestTaskIDFromURL(object):
         url = 'https://www.madeup.com/madeup/tasks/'  # disable-secrets-detection
         url += 'this-is-the-task-id/blah/&someotherstuff'
         assert taskid_from_url(url) == 'this-is-the-task-id'
+
+
+def http_mock(method, url, verify=USE_SSL, headers=None):
+    if not headers:
+        raise ValueError("Permission denied")
+    else:
+        the_response = requests.Response()
+
+        the_response.status_code = 200
+        the_response._content = b'{ "key" : "a" }'
+        return the_response
+
+
+def test_get_image(mocker):
+    """
+    Given:
+        A mock response of a call to https://ipinfo.io/1.1.1.1/json,
+        And a json of the expected output objects
+    When:
+        Calling images_from_report
+    Then:
+        Validate that the http request returns a 200 status
+    """
+    response = {'data': {'analysis': {'content': {'screenshots': [{'permanentUrl': 'http://permanentUrl'}]}}}}
+    # requests_mock.get('http://permanentUrl', headers=HEADERS)
+    mocker.patch('requests.request', side_effect=http_mock)
+    images_from_report(response)
+
+

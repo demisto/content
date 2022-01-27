@@ -398,28 +398,16 @@ def images_from_report(response):
     list
         List of images from ANYRUN report.
     """
-    demisto.debug("function: images_from_report")
     data = response.get('data', {})
     analysis = data.get('analysis', {})
     content = analysis.get('content', {})
     screenshots = content.get('screenshots', [])
-    demisto.debug(f"the number of screenshoots: {len(screenshots)}")
 
     screen_captures = []
     for idx, shot in enumerate(screenshots):
-        demisto.debug(f"the screenshoot number: {idx}")
         screen_cap_url = shot.get('permanentUrl')
-        demisto.debug(f"the screen_cap_url: {screen_cap_url}")
-        img_response = requests.request('GET', screen_cap_url, verify=USE_SSL, headers=HEADERS)
-        try:
-            img_response.raise_for_status()
-        except requests.exceptions.HTTPError as e:
-            demisto.debug(f"exception happend when trying to get screenshot, status:{img_response.status_code}")
-            continue
-        demisto.debug(f"the image response: {img_response}")
-        demisto.debug(f"the image content: {img_response.content}")
+        img_response = requests.request('GET', screen_cap_url, verify=USE_SSL)
         stored_img = fileResult('screenshot{}.png'.format(idx), img_response.content)
-        demisto.debug(f"the stored_img: {stored_img}")
         img_entry = {
             'Type': entryTypes['image'],
             'ContentsFormat': formats['text'],
@@ -427,7 +415,6 @@ def images_from_report(response):
             'FileID': stored_img['FileID'],
             'Contents': ''
         }
-        demisto.debug(f"the img_entry: {img_entry}")
         screen_captures.append(img_entry)
     return screen_captures
 
@@ -815,10 +802,7 @@ def get_report_command():
     args = demisto.args()
     task_id = args.get('task')
     response = get_report(task_id)
-    demisto.debug("before function: images_from_report")
     images = images_from_report(response)
-    demisto.debug("after function: images_from_report")
-    demisto.debug(f"after function images_from_report, images:{images}")
     contents = contents_from_report(response)
     formatting_funcs = [underscore_to_camel_case, make_capital, make_singular, make_upper]
     formatted_contents = travel_object(contents, key_functions=formatting_funcs)
