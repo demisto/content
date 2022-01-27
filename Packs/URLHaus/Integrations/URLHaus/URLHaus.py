@@ -170,16 +170,16 @@ def url_create_relationships(uri, host, files, **kwargs):
             parsed_host = parse_host(host)
             max_num_of_realationships_counter += 1
             if parsed_host == "domain":
-                relationships.extend([EntityRelationship(
+                relationships.append(EntityRelationship(
                     name=EntityRelationship.Relationships.RELATIONSHIPS_NAMES.get('hosts'), entity_a=uri,
                     entity_a_type=FeedIndicatorType.URL,
                     entity_b=host, entity_b_type=FeedIndicatorType.Domain,
-                    reverse_name=EntityRelationship.Relationships.HOSTS)])
+                    reverse_name=EntityRelationship.Relationships.HOSTS))
             if parsed_host == "ip":
-                relationships.extend([EntityRelationship(
+                relationships.append(EntityRelationship(
                     name=EntityRelationship.Relationships.RELATED_TO, entity_a=uri, entity_a_type=FeedIndicatorType.URL,
                     entity_b=host, entity_b_type=FeedIndicatorType.IP,
-                    reverse_name=EntityRelationship.Relationships.RELATED_TO)])
+                    reverse_name=EntityRelationship.Relationships.RELATED_TO))
         if files:
             for file in files:
                 if max_num_of_realationships_counter >= kwargs.get('max_num_of_relationships'):
@@ -187,11 +187,11 @@ def url_create_relationships(uri, host, files, **kwargs):
 
                 file_sh256 = file.get('SHA256')
                 if file_sh256:
-                    relationships.extend([EntityRelationship(
+                    relationships.append(EntityRelationship(
                         name=EntityRelationship.Relationships.RELATIONSHIPS_NAMES.get('related-to'), entity_a=uri,
                         entity_a_type=FeedIndicatorType.URL,
                         entity_b=file_sh256, entity_b_type=FeedIndicatorType.File,
-                        reverse_name=EntityRelationship.Relationships.RELATED_TO)])
+                        reverse_name=EntityRelationship.Relationships.RELATED_TO))
                     max_num_of_realationships_counter += 1
     return relationships
 
@@ -339,11 +339,11 @@ def domain_create_relationships(urls, domain, **kwargs):
         for url in urls:
             if max_num_of_realationships_counter >= kwargs.get('max_num_of_relationships'):
                 break
-            relationships.extend([EntityRelationship(
+            relationships.append(EntityRelationship(
                 name=EntityRelationship.Relationships.HOSTS, entity_a=domain,
                 entity_a_type=FeedIndicatorType.Domain,
                 entity_b=url.get('url'), entity_b_type=FeedIndicatorType.URL,
-                reverse_name=EntityRelationship.Relationships.HOSTED_ON)])
+                reverse_name=EntityRelationship.Relationships.HOSTED_ON).to_context())
             max_num_of_realationships_counter += 1
     return relationships
 
@@ -374,8 +374,8 @@ def domain_command(**kwargs):
             for bl_name, bl_status in blacklists.items():
                 blacklist_information.append({'Name': bl_name,
                                               'Status': bl_status})
-                status_postfix = str(bl_status).split("_")[0] if bl_status.endswith("domain") else \
-                str(bl_status).split("_")[-1] if bl_status.startwith("abused") else ''
+                status_postfix = bl_status.split("_")[0] if bl_status.endswith("domain") else \
+                bl_status.split("_")[-1] if bl_status.startswith("abused") else ''
                 if status_postfix:
                     tags.append(status_postfix)
             if tags:
@@ -390,14 +390,15 @@ def domain_command(**kwargs):
 
             # DBot score calculation
             dbot_score, description = calculate_dbot_score('domain', domain_information.get('blacklists', {}))
-            relationships = domain_create_relationships(urlhaus_data.get('URL'), domain, **kwargs)
             ec['DBotScore']['Score'] = dbot_score
             if dbot_score == 3:
                 ec['domain']['Malicious'] = {
                     'Vendor': 'URLhaus',
                     'Description': description
                 }
-
+            relationships = domain_create_relationships(urlhaus_data.get('URL'), domain, **kwargs)
+            if relationships:
+                ec['Domain']['Relationships'] = relationships
             ec['URLhaus.Domain(val.Name && val.Name === obj.Name)'] = urlhaus_data
 
             human_readable = tableToMarkdown(f'URLhaus reputation for {domain}',
@@ -406,46 +407,29 @@ def domain_command(**kwargs):
                                                  'Description': description,
                                                  'First seen': first_seen,
                                              })
-            demisto.results({
-                'Type': entryTypes['note'],
-                'ContentsFormat': formats['json'],
-                'Contents': domain_information,
-                'HumanReadable': human_readable,
-                'HumanReadableFormat': formats['markdown'],
-                'EntryContext': ec
-            })
+            return (CommandResults(
+                readable_output=human_readable,
+                outputs=ec,
+                raw_response=domain_information))
         elif domain_information['query_status'] == 'no_results':
             ec['DBotScore']['Score'] = Common.DBotScore.NONE
 
             human_readable = f'## URLhaus reputation for {domain}\n' \
                              f'No results!'
-
-            demisto.results({
-                'Type': entryTypes['note'],
-                'ContentsFormat': formats['json'],
-                'Contents': domain_information,
-                'HumanReadable': human_readable,
-                'HumanReadableFormat': formats['markdown'],
-                'EntryContext': ec
-            })
+            return (CommandResults(
+                readable_output=human_readable,
+                outputs=ec,
+                raw_response=domain_information))
         elif domain_information['query_status'] == 'invalid_host':
             human_readable = f'## URLhaus reputation for {domain}\n' \
                              f'Invalid domain!'
-
-            demisto.results({
-                'Type': entryTypes['note'],
-                'ContentsFormat': formats['json'],
-                'Contents': domain_information,
-                'HumanReadable': human_readable,
-                'HumanReadableFormat': formats['markdown'],
-                'EntryContext': ec
-            })
+            return (CommandResults(
+                readable_output=human_readable,
+                outputs=ec,
+                raw_response=domain_information))
         else:
-            demisto.results({
-                'Type': entryTypes['error'],
-                'ContentsFormat': formats['text'],
-                'Contents': f'Query results = {domain_information["query_status"]}'
-            })
+            raise DemistoException(f'Query results = {domain_information["query_status"]}', res=domain_information)
+
 
     except Exception:
         demisto.debug(traceback.format_exc())
@@ -488,13 +472,22 @@ def file_command(**kwargs):
                     'Percent': float(file_information.get('virustotal', {'percent': 0})['percent']),
                     'Link': file_information.get('virustotal', {'link': ''})['link']
                 }
-
+            dbot_score = Common.DBotScore(
+                indicator=hash,
+                integration_name='URLhaus',
+                indicator_type=DBotScoreType.FILE,
+                reliability=kwargs.get('reliability'),
+                score=Common.DBotScore.BAD,
+            ).to_context()
             ec = {
                 'File': {
                     'Size': urlhaus_data.get('Size', 0),
                     'MD5': urlhaus_data.get('MD5', ''),
-                    'SHA256': urlhaus_data.get('SHA256')
+                    'SHA256': urlhaus_data.get('SHA256'),
+                    'Type': urlhaus_data.get('Type'),
+                    'SSDeep': file_information.get('ssdeep', '')
                 },
+                'DBotScore': dbot_score,
                 'URLhaus.File(val.MD5 && val.MD5 === obj.MD5)': urlhaus_data
             }
 
@@ -621,9 +614,9 @@ def main():
             test_module(**params)
             demisto.results('ok')
         elif command == 'url':
-            return_results(url_command(**params))
+            return_results(results=url_command(**params))
         elif command == 'domain':
-            domain_command(**params)
+            return_results(results=domain_command(**params))
         elif command == 'file':
             file_command(**params)
         elif command == 'urlhaus-download-sample':

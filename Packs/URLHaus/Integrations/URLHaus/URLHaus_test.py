@@ -4,6 +4,7 @@ import URLHaus
 import pytest
 import demistomock as demisto
 from CommonServerPython import Common
+
 url_command_test = [
     ('ok', ["test_tag1", "test_tag2"]),
     ('ok', []),
@@ -76,9 +77,9 @@ def test_url_command(mocker, query_status, tags):
 url_command_test_reliability_dbot_score = [
     ('online', (3, "The URL is active (online) and currently serving a payload")),
     ('offline', (2, "The URL is inadctive (offline) and serving no payload")),
-    ('unknown', (1, "The URL status could not be determined")),
-    ('test_no_status', (0, "The URL is not listed")),
-    (None, (0, "The URL is not listed"))
+    ('unknown', (0, "The URL status could not be determined")),
+    ('test_no_status', (1, "The URL is not listed")),
+    (None, (1, "The URL is not listed"))
 ]
 
 
@@ -233,6 +234,75 @@ def test_url_command_create_relationships(host, host_type, create_relationship, 
     for i in range(len(results)):
         assert results[i].to_context() == excepted_output[i]
 
+#
+# domain_command_test = [
+#     ('ok', ["test_tag1", "test_tag2"]),
+#     ('ok', []),
+#     ('no_results', ["test_tag1", "test_tag2"]),
+#     ('no_results', []),
+#     ('invalid_url', ["test_tag1", "test_tag2"]),
+# ]
+#
+#
+# @pytest.mark.parametrize('query_status,tags', domain_command_test)
+# def test_domain_command(mocker, query_status, tags):
+#     """
+#         Given
+#         - An URL.
+#
+#         When
+#         - Running url_command with the url.
+#
+#         Then
+#         - Validate that the Tags were created
+#         - Validate that the URL and DBotScore entry context have the proper values.
+#         - Validate that the relationships were created
+#
+#     """
+#     response = requests.models.Response()
+#     response._content = json.dumps({'query_status': query_status,
+#                                     "id": "105821",
+#                                     "urlhaus_reference": "https:\/\/urlhaus.abuse.ch\/url\/105821\/",
+#                                     "url": "http:\/\/sskymedia.com\/VMYB-ht_JAQo-gi\/INV\/99401FORPO\/20673114777\/US\/Outstanding-Invoices\/",
+#                                     "url_status": "online",
+#                                     "host": "sskymedia.com",
+#                                     "date_added": "2019-01-19 01:33:26 UTC",
+#                                     "threat": "malware_download",
+#                                     "tags": tags,
+#                                     "blacklists": {
+#                                         "spamhaus_dbl": "not listed",
+#                                         "surbl": "not listed"
+#                                     },
+#                                     "payloads": [
+#                                         {
+#                                             "firstseen": "2019-01-19",
+#                                             "filename": "676860772178.doc",
+#                                             "file_type": "doc",
+#                                             "response_size": "172752",
+#                                             "response_md5": "cf6bc359bc8a667c1b8d241e9591f392",
+#                                             "response_sha256": "72820698de9b69166ab226b99ccf70f3f58345b88246f7d5e4e589c21dd44435",
+#                                             "urlhaus_download": "https:\/\/urlhaus-api.abuse.ch\/v1\/download\/72820698de9b69166ab226b99ccf70f3f58345b88246f7d5e4e589c21dd44435\/",
+#                                             "signature": "Heodo",
+#                                             "virustotal": {
+#                                                 "result": "18 \/ 58",
+#                                                 "percent": "31.03",
+#                                                 "link": "https:\/\/www.virustotal.com\/file\/72820698de9b69166ab226b99ccf70f3f58345b88246f7d5e4e589c21dd44435\/analysis\/1547876224\/"
+#                                             }
+#                                         }]}).encode('utf-8')
+#     mocker.patch.object(URLHaus, 'query_url_information', return_value=response)
+#     result = mocker.patch.object(demisto, 'results')
+#     URLHaus.main()
+#
+#     context = result.call_args[0][0]['EntryContext']
+#     URL = context.get('URL(val.Data && val.Data == obj.Data)', {})
+#     assert 'Data' in URL[0] if query_status == 'ok' or query_status == 'no_results' else 'Data' not in URL
+#     assert all(elem in URL[0]['Tags'] for elem in tags) if query_status == 'ok' else 'Tags' not in URL
+#     assert 'Relationships' in URL[0] if query_status == 'ok' else 'Relationships' not in URL
+#     Dbot_score = context.get(
+#         'DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)')
+#     assert Dbot_score[0]['Score'] == 3 if query_status == 'ok' else Dbot_score[0][
+#                                                                         'Score'] == 0 if query_status == 'no_results' else not Dbot_score
+
 
 domain_command_test_reliability_dbot_score = [
     ({'spamhaus_dbl': 'spammer_domain', 'surbl': 'test'},
@@ -319,7 +389,7 @@ def test_url_command_create_relationships(create_relationship, max_num_relations
     """
     urls = [{
         'url': f'test_url{i}',
-    } for i in range(10000)] # Large amounts of urls
+    } for i in range(10000)]  # Large amounts of urls
     domain = "test_domain"
     excepted_output = []
     if create_relationship:
@@ -334,4 +404,4 @@ def test_url_command_create_relationships(create_relationship, max_num_relations
     results = URLHaus.domain_create_relationships(urls, domain, **kwargs)
     assert len(results) == len(excepted_output)
     for i in range(len(results)):
-        assert results[i].to_context() == excepted_output[i]
+        assert results[i] == excepted_output[i]
