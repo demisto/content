@@ -38,10 +38,10 @@
 /Packs/CommonScripts/Scripts/ParseEmailFiles/* @moishce
 
 # Build related
-.circleci/config.yml @avidan-H @DinaMeylakh
-.gitlab/ci/* @avidan-H @DinaMeylakh
-.gitlab/* @avidan-H @DinaMeylakh
-.gitlab-ci.yml @avidan-H @DinaMeylakh
+.circleci/config.yml @esharf
+.gitlab/ci/* @esharf
+.gitlab/* @esharf
+.gitlab-ci.yml @esharf
 
 # SDK Related
 .gitlab/ci/sdk-nightly.yml @dorschw
