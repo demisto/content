@@ -119,7 +119,7 @@ def domain_calculate_score(blacklist):
     return Common.DBotScore.GOOD, "There is no information about Domain in the blacklist"
 
 
-def file_calculate_score():
+def file_calculate_score(args):
     return Common.DBotScore.BAD
 
 
@@ -129,33 +129,6 @@ def calculate_dbot_score(command, arg):
     func_to_run = calculate_dbot_score_dic.get(command)
     if func_to_run:
         return func_to_run(arg)
-
-    # Old calculate
-    """dbot_score = 0
-    description = 'Not listed in any blacklist'
-    blacklist_appearances = []
-    for blacklist, status in blacklists.items():
-        if blacklist == 'spamhaus_dbl':
-            if status.endswith('domain') or (status.startswith('abused') and compromised_is_malicious):
-                blacklist_appearances.append((blacklist, status))
-        elif status == 'listed':
-            blacklist_appearances.append((blacklist, None))
-
-    if len(blacklist_appearances) >= threshold:
-        description = ''
-        for appearance in blacklist_appearances:
-            if appearance[1] is not None:
-                description += f'Listed in {appearance[0]}. '
-            else:
-                description += f'Listed as {appearance[1]} in {appearance[0]}. '
-        dbot_score = 3
-    elif len(blacklist_appearances) > 0:
-        dbot_score = 2
-    else:
-        dbot_score = 1
-
-    return dbot_score, description"""
-
 
 def parse_host(host):
     return "ip" if is_ip_valid(host) else "domain"
@@ -502,7 +475,7 @@ def file_command(**kwargs):
                     'Type': urlhaus_data.get('Type'),
                     'SSDeep': file_information.get('ssdeep', '')
                 },
-                # 'DBotScore': dbot_score,
+                'DBotScore': dbot_score,
                 'URLhaus.File(val.MD5 && val.MD5 === obj.MD5)': urlhaus_data
             }
             relationships = file_create_relationships(urlhaus_data['URL'], urlhaus_data['Signature'], hash, **kwargs)
