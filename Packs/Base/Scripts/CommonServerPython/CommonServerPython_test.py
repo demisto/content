@@ -3414,7 +3414,7 @@ VALID_URL_INDICATORS = [
     'HTTP://1.2.3.4:80/path',
     'ftp://foo.bar/resource',
     'FTP://foo.bar/resource',
-    'http://☺.evil.tld/',
+    'http://test.evil.tld/',
     'ftps://foo.bar/resource',
     'ftps://foo.bar/Resource'
     '5.6.7.8/fdsfs',
@@ -3502,7 +3502,7 @@ INVALID_URL_INDICATORS = [
     '65.23.7.2',
     'k.f.a.f',
     'test/test/test/test',
-    'http://www.example.com/ %20here.html'
+    'http://www.example.com/ %20here.html',
     'http ://www.example.com/ %20here.html',
     'http://www.example .com/%20here.html'
     'http://wwww.example.com/%20here.html',
