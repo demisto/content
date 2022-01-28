@@ -76,7 +76,7 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### Authorization instructions
->1. To sign in, use a web browser to open the page [https://microsoft.com/devicelogin](https://microsoft.com/devicelogin)
+>1. To sign in, use a web browser to open the page [https:<span>//</span>microsoft.com/devicelogin](https:<span>//</span>microsoft.com/devicelogin)
 >and enter the code **EXAMPLE-CODE** to authenticate.
 >2. Run the **!azure-ad-auth-complete** command in the War Room.
 
