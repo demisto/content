@@ -3361,7 +3361,6 @@ def test_auto_detect_indicator_type_tldextract(mocker):
         assert 'cache_file' in res[1].keys()
 
 
-
 VALID_URL_INDICATORS = [
     '3.21.32.65/path',
     '19.117.63.253:28/other/path',
@@ -3376,22 +3375,29 @@ VALID_URL_INDICATORS = [
     'www.google.com/path',
     'wwW.GooGle.com/path',
     '2001:db8:85a3:8d3:1319:8a2e:370:7348/65/path/path',
-    '2001:db8:3333:4444:5555:6666:7777:8888//32/path/path',
+    '2001:db8:3333:4444:5555:6666:7777:8888/32/path/path',
     '2001:db8:85a3:8d3:1319:8a2e:370:7348/h'
     '1.1.1.1/7/server',
-    'http://öevil.tld/',
-    'https://evilö.tld/evil.html',
+    "1.1.1.1/32/path",
+    'http://evil.tld/',
+    'https://evil.tld/evil.html',
     'ftp://foo.bar/',
-    'www.evilö.tld/evil.aspx',
-    'https://www.evöl.tld/',
+    'www.evil.tld/evil.aspx',
+    'https://www.evil.tld/',
     'www.evil.tld/resource',
-    'https://google[.]com',
-    'https://google[.]com:443',
-    'https://google[.]com:443/path'
+    'hxxps://google[.]com',
+    'hxxps://google[.]com:443',
+    'hxxps://google[.]com:443/path'
     'www.1.2.3.4/?user=test%Email=demisto',
     'www.1.2.3.4:8080/user=test%Email=demisto'
     'http://xn--e1v2i3l4.tld/evilagain.aspx',
     'https://www.xn--e1v2i3l4.tld',
+    'https://0330.0072.0307.0116',
+    'https://0563.2437.2623.2222',  # IP as octal number
+    'https://2467.1461.3567.1434:443',
+    'https://3571.3633.2222.3576:443/path',
+    'https://4573.2436.1254.7423:443/p',
+    'https://0563.2437.2623.2222:443/path/path',
     'hxxps://www.xn--e1v2i3l4.tld',
     'hxxp://www.xn--e1v2i3l4.tld',
     'www.evil.tld:443/path/to/resource.html',
@@ -3412,24 +3418,38 @@ VALID_URL_INDICATORS = [
     'ftps://foo.bar/resource',
     'ftps://foo.bar/Resource'
     '5.6.7.8/fdsfs',
-    'https://serverName/deepLinkAction.do?userName=peter%40nable%2Ecom&password=Hello',
-    'http://serverName/deepLinkAction.do?userName=peter%40nable%2Ecom&password=Hello',
+    'https://serverName.com/deepLinkAction.do?userName=peter%40nable%2Ecom&password=Hello',
+    'http://serverName.org/deepLinkAction.do?userName=peter%40nable%2Ecom&password=Hello',
     'https://1.1.1.1/deepLinkAction.do?userName=peter%40nable%2Ecom&password=Hello',
     'https://google.com/deepLinkAction.do?userName=peter%40nable%2Ecom&password=Hello',
     'www.google.com/deepLinkAction.do?userName=peter%40nable%2Ecom&password=Hello',
     'www.63.4.6.1/integrations/test-playbooks',
     'https://xsoar.pan.dev/docs/welcome',
     '5.6.7.8/user/',
-    'https://0330.0072.0307.0116',  # IP as octal number
     'http://www.example.com/and%26here.html',
     'https://1234',  # IP as integer 1234 = '0.0.4.210'
+    'https://4657624',
+    'https://64123/path',
+    'https://0.0.0.1/path',
+    'https://1',  # same as 0.0.0.1
     'hXXps://isc.sans[.]edu/',
     'hXXps://1.1.1.1[.]edu/',
-    'hxxp://0[x]455e8c6f/0s19ef206s18s2f2s567s49a8s91f7s4s19fd61a',
+    'hxxp://0[x]455e8c6f/0s19ef206s18s2f2s567s49a8s91f7s4s19fd61a',  # defanged hexa-decimal IP.
+    'hxxp://0x325e5c7f/34823jdsasjfd/asdsafgf/324',  # hexa-decimal IP.
+    'hxxps://0xAA268BF1:8080/',
+    'hxxps://0xAB268DC1:8080/path',
+    'hxxps://0xAB268DC1/',
+    'hxxps://0xAB268DC1/p',
+    'hxxps://0xAB268DC1/32',
     'http://www.google.com:8080',
-    'http://www[.]google.com:8080',
-    'http://www.google.com:8080/path',
-    'http://www[.]google.com:8080/path'
+    'http://www[.]google.com:8080',  # defanged Domain
+    'http://www.google[.]com:8080/path',
+    'http://www[.]google.com:8080/path',
+    'www[.]google.com:8080/path',
+    'www.google[.]com:8080/path',
+    'google[.]com/path',
+    'google[.]com:443/path',
+    'hXXps://1.1.1.1[.]edu/path',
 ]
 
 
@@ -3447,45 +3467,49 @@ def test_valid_url_indicator_types(indicator_value):
 
 
 INVALID_URL_INDICATORS = [
-    "test",
-    "httn://bla.com/path",
-    "google.com*",
-    "1.1.1.1",
-    "1.1.1.1/32",
-    "path/path",
-    "1.1.1.1:8080",
-    "1.1.1.1:8080/",
-    "1.1.1.1:111112243245/path",
-    "3.4.6.92:8080:/test",
-    "1.1.1.1:4lll/",
-    "2001:db8:85a3:8d3:1319:8a2e:370:7348/64/",
-    "2001:db8:85a3:8d3:1319:8a2e:370:7348/64",
-    "2001:db8:85a3:8d3:1319:8a2e:370:7348/32",
-    "2001:db8:85a3:8d3:1319:8a2e:370:7348/32",
-    "2001:db8:85a3:8d3:1319:8a2e:370:7348/80",
-    "flake8.pycqa.org",
-    "https://test",
-    "ftp://test",
-    "ftps:test",
-    "a.a.a.a",
-    "b.b.b",
-    "https:/1.1.1.1.1/path",
-    "wwww.test",
-    "help.test.com",
-    "help-test/com"
-    "wwww.path.com/path",
-    "fnvfdsbf/path",
-    "65.23.7.2",
-    "k.f.a.f",
-    "test/test/test/test",
-    "http://www.example.com/ %20here.html"
-    "http ://www.example.com/ %20here.html",
-    "http://www.example .com/%20here.html"
-    "http://wwww.example.com/%20here.html",
-    "FTP://Google.test:",
-    "",
-    "somestring"
-    "dsjfshjdfgkjldsh32423123^^&*#@$#@$@!#4",
+    'test',
+    'httn://bla.com/path',
+    'google.com*',
+    '1.1.1.1',
+    '1.1.1.1/',
+    '1.1.1.1/32',
+    '1.1.1.1/32/',
+    'path/path',
+    '1.1.1.1:8080',
+    '1.1.1.1:8080/',
+    '1.1.1.1:111112243245/path',
+    '3.4.6.92:8080:/test',
+    '1.1.1.1:4lll/',
+    '2001:db8:85a3:8d3:1319:8a2e:370:7348/64/',
+    '2001:db8:85a3:8d3:1319:8a2e:370:7348/64',
+    '2001:db8:85a3:8d3:1319:8a2e:370:7348/32',
+    '2001:db8:85a3:8d3:1319:8a2e:370:7348/32',
+    '2001:db8:85a3:8d3:1319:8a2e:370:7348/80',
+    '2001:db8:3333:4444:5555:6666:7777:8888/',
+    'flake8.pycqa.org',
+    'google.com',
+    'https://test',
+    'ftp://test',
+    'ftps:test',
+    'a.a.a.a',
+    'b.b.b',
+    'https:/1.1.1.1.1/path',
+    'wwww.test',
+    'help.test.com',
+    'help-test/com'
+    'wwww.path.com/path',
+    'fnvfdsbf/path',
+    '65.23.7.2',
+    'k.f.a.f',
+    'test/test/test/test',
+    'http://www.example.com/ %20here.html'
+    'http ://www.example.com/ %20here.html',
+    'http://www.example .com/%20here.html'
+    'http://wwww.example.com/%20here.html',
+    'FTP://Google.test:',
+    '',
+    'somestring'
+    'dsjfshjdfgkjldsh32423123^^&*#@$#@$@!#4',
     'aaa/1.1.1.1/path',
     'domain*com/1.1.1.1/path',
     'http:1.1.1.1/path',
@@ -3493,9 +3517,21 @@ INVALID_URL_INDICATORS = [
     '1.1.1.1.1/24',
     '2.2.2.2.2/3sad',
     'http://fdsfesd',
+    'http://fdsfesd:8080',  # no tld
     'FLAKE8.dds.asdfd/',
     'FTP://Google.',
-    'https://www.'
+    'https://www.',
+    '1.1.1.1.1/path',
+    '2.2.2.2.2/3sad',
+    'HTTPS://1.1.1.1..1.1.1.1/path',
+    'https://1.1.1.1.1.1.1.1.1.1.1/path'
+    '1.1.1.1 .1/path',
+    '123.6.2.2/ path',
+    'hxxps://0xAB26:8080/path',  # must be 8 hexa-decimal chars
+    'hxxps://34543645356432234e:8080/path',  # too large integer IP
+    'https://35.12.5677.143423:443',  # invalid IP address
+    'https://4578.2436.1254.7423',  # invalid octal address (must be numbers between 0-7)
+    'https://4578.2436.1254.7423:443/p'
 ]
 
 
