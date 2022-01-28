@@ -117,7 +117,7 @@ def fetch_indicators_command(client, params, manual_run=False):
             search_criteria = f"{search_criteria} AND LastModifiedDate >= {last_run}"
     else:
         if last_run:
-            search_criteria = f"{search_criteria} AND LastModifiedDate >= {last_run}"
+            search_criteria = f"LastModifiedDate >= {last_run}"
         else:
             search_criteria = f"LastModifiedDate > {date_filter}"
     indicators_raw = client.query_object(object_fields, client.object_name, search_criteria)
@@ -154,7 +154,7 @@ def fetch_indicators_command(client, params, manual_run=False):
         # Update the last run time
         last_run = now.strftime("%Y-%m-%dT%H:%M:00Z")
         set_integration_context({"lastRun": last_run})
-        
+
         # We submit indicators in batches
         for b in batch(indicators, batch_size=2000):
             demisto.createIndicators(b)
