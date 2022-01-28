@@ -13,8 +13,9 @@ from Tests.scripts.utils.log_util import install_logging
 DEMISTO_GREY_ICON = 'https://3xqz5p387rui1hjtdv1up7lw-wpengine.netdna-ssl.com/wp-content/' \
                     'uploads/2018/07/Demisto-Icon-Dark.png'
 ARTIFACTS_FOLDER = os.getenv('ARTIFACTS_FOLDER', './artifacts')
-ENV_RESULTS_PATH = os.getenv('ENV_RESULTS_PATH', os.path.join(ARTIFACTS_FOLDER, 'env_results.json'))
-PACK_RESULTS_PATH = os.path.join(ARTIFACTS_FOLDER, BucketUploadFlow.PACKS_RESULTS_FILE)
+ARTIFACTS_FOLDER_XSOAR = os.getenv('ARTIFACTS_FOLDER_XSOAR', './artifacts')
+ENV_RESULTS_PATH = os.getenv('ENV_RESULTS_PATH', os.path.join(ARTIFACTS_FOLDER_XSOAR, 'env_results.json'))
+PACK_RESULTS_PATH = os.path.join(ARTIFACTS_FOLDER_XSOAR, BucketUploadFlow.PACKS_RESULTS_FILE)
 CONTENT_CHANNEL = 'dmst-content-team'
 GITLAB_PROJECT_ID = os.getenv('CI_PROJECT_ID') or 2596  # the default is the id of the content repo in code.pan.run
 GITLAB_SERVER_URL = os.getenv('CI_SERVER_URL', 'https://code.pan.run')  # disable-secrets-detection
@@ -47,10 +48,11 @@ def options_handler():
     return options
 
 
-def get_artifact_data(artifact_relative_path: str) -> Optional[str]:
+def get_artifact_data(artifact_folder, artifact_relative_path: str) -> Optional[str]:
     """
     Retrieves artifact data according to the artifact relative path from 'ARTIFACTS_FOLDER' given.
     Args:
+        artifact_folder (str): Full path of the artifact root folder.
         artifact_relative_path (str): Relative path of an artifact file.
 
     Returns:
@@ -58,7 +60,7 @@ def get_artifact_data(artifact_relative_path: str) -> Optional[str]:
     """
     artifact_data = None
     try:
-        file_name = os.path.join(ARTIFACTS_FOLDER, artifact_relative_path)
+        file_name = os.path.join(artifact_folder, artifact_relative_path)
         if os.path.isfile(file_name):
             logging.info(f'Extracting {artifact_relative_path}')
             with open(file_name, 'r') as file_data:
@@ -73,7 +75,7 @@ def get_artifact_data(artifact_relative_path: str) -> Optional[str]:
 def get_fields():
     failed_tests = []
     # failed_tests.txt is copied into the artifacts directory
-    failed_tests_file_path = os.path.join(ARTIFACTS_FOLDER, 'failed_tests.txt')
+    failed_tests_file_path = os.path.join(ARTIFACTS_FOLDER_XSOAR, 'failed_tests.txt')
     if os.path.isfile(failed_tests_file_path):
         logging.info('Extracting failed_tests')
         with open(failed_tests_file_path, 'r') as failed_tests_file:
@@ -125,7 +127,7 @@ def get_fields():
 
 
 def unit_tests_results():
-    failing_tests = get_artifact_data('failed_lint_report.txt')
+    failing_tests = get_artifact_data(ARTIFACTS_FOLDER, 'failed_lint_report.txt')
     slack_results = []
     if failing_tests:
         failing_test_list = failing_tests.split('\n')
@@ -231,8 +233,6 @@ def main():
     server_url = options.url
     slack_token = options.slack_token
     ci_token = options.ci_token
-    # env_results_file_name = options.env_results_file_name
-    # ci_artifacts_path = options.ci_artifacts
     project_id = options.gitlab_project_id
     pipeline_id = options.pipeline_id
     triggering_workflow = options.triggering_workflow  # ci workflow type that is triggering the slack notifier
