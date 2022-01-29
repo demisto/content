@@ -1,29 +1,31 @@
 args:
-- default: false
-  description: A comma-separated list of URL inputs.
+- description: A comma-separated list of URL inputs.
   isArray: true
   name: input
   required: true
-  secret: false
-comment: "Strips, unquotes and unescapes URLs. If the URL is a Proofpoint or ATP URL,\
-  \ extracts its redirect URL."
+comment: Strips, unquotes and unescapes URLs. If the URL is a FireEye, Proofpoint,
+  or ATP URL, extracts its redirect URL.
 commonfields:
   id: FormatURL
   version: -1
-enabled: false
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ''
+dockerimage: demisto/python3:3.10.1.25933
+enabled: true
 name: FormatURL
 outputs:
 - contextPath: URL
   description: URL formatted.
   type: String
-script: '-'
-system: false
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
 tags:
 - indicator-format
-timeout: '0'
 type: python
-subtype: python3
-dockerimage: demisto/python3:3.9.9.25564
 fromversion: 5.5.0
 tests:
 - FormatURL-Test

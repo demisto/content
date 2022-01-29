@@ -1,0 +1,38 @@
+fromversion: 5.0.0
+commonfields:
+  id: ChangeRemediationSLAOnSevChange
+  version: -1
+name: ChangeRemediationSLAOnSevChange
+script: ''
+type: python
+subtype: python2
+tags:
+- field-change-triggered
+- example
+comment: |-
+  Changes the remediation SLA once a change in incident severity occurs.
+  This is done automatically and the changes can be configured to your needs.
+enabled: true
+args:
+- name: old
+  auto: PREDEFINED
+  predefined:
+  - Low
+  - Medium
+  - High
+  - Critical
+  description: The old value of the field that was changed.
+- name: new
+  auto: PREDEFINED
+  predefined:
+  - Low
+  - Medium
+  - High
+  - Critical
+  description: The new value of the field that was changed.
+scripttarget: 0
+runonce: false
+runas: DBotRole
+tests:
+- SLA Scripts - Test
+dockerimage: demisto/python:2.7.18.24398

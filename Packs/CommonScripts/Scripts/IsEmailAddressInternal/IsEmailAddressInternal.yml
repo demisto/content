@@ -1,0 +1,45 @@
+commonfields:
+  id: IsEmailAddressInternal
+  version: -1
+name: IsEmailAddressInternal
+script: ''
+type: python
+subtype: python2
+tags:
+- email
+comment: Checks if the email address is part of the internal domains
+enabled: true
+args:
+- name: email
+  required: true
+  default: true
+  description: The email address to check
+- name: domain
+  description: List of internal domains to check, comma separated
+  isArray: true
+- name: include_subdomains
+  auto: PREDEFINED
+  predefined:
+  - "yes"
+  - "no"
+  description: Include subdomains of the domain list?
+  defaultValue: "no"
+outputs:
+- contextPath: Account.Email.Address
+  description: The Email account full address
+  type: string
+- contextPath: Account.Email.Username
+  description: The Email account username
+  type: string
+- contextPath: Account.Email.Domain
+  description: The Email account domain
+  type: string
+- contextPath: Account.Email.NetworkType
+  description: The Email account NetworkType (could be Internal/External)
+  type: string
+scripttarget: 0
+runonce: false
+fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.24066
+tests:
+- No tests (auto formatted)

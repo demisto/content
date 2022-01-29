@@ -1,0 +1,37 @@
+commonfields:
+  id: CheckSenderDomainDistance
+  version: -1
+name: CheckSenderDomainDistance
+script: ''
+type: python
+subtype: python2
+tags:
+- server
+- phishing
+- Condition
+comment: Get the string distance for the sender from our domain
+system: true
+args:
+- name: domain
+  required: true
+  default: true
+  description: The domain to be measured against the domain in the sender's email
+    address.Usually the domain used by the company for email, e.g. acme.com when users
+    are assigned jane@acme.com (could be multiple domains with a comma separator)
+- name: sender
+  required: true
+  description: Sender email address
+- name: distance
+  required: false
+  description: Distance that is considered close
+  defaultValue: "3"
+outputs:
+- contextPath: LevenshteinDistance
+  description: The closeness of the sender domain to our configured domains
+scripttarget: 0
+dependson: {}
+timeout: 0s
+fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.24398
+tests:
+- No tests (auto formatted)

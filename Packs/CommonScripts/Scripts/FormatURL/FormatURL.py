@@ -1,10 +1,15 @@
 from html import unescape
 from typing import Tuple
-from urllib.parse import urlparse, parse_qs, ParseResult, unquote
+from urllib.parse import ParseResult, parse_qs, unquote, urlparse
 
-from CommonServerPython import *
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+
+register_module_line('FormatURL', 'start', __line__())
+
 
 ATP_REGEX = re.compile(r'(https://\w*|\w*)\.safelinks\.protection\.outlook\.com/.*\?url=')
+FIREEYE_REGEX = re.compile(r'(https:\/\/\w*|\w*)\.fireeye\.com\/.*\/url\?k=')
 PROOF_POINT_URL_REG = re.compile(r'https://urldefense(?:\.proofpoint)?\.(com|us)/(v[0-9])/')
 HTTP = 'http'
 PREFIX_TO_NORMALIZE = {
@@ -23,6 +28,28 @@ PREFIX_CHANGES: List[Tuple[str, Optional[str], str]] = [
 ]
 
 
+def get_redirect_url_fireeye(non_formatted_url: str, parse_results: ParseResult, redirect_param_name: str) -> str:
+    """
+    Receives an FireEye Safe Link URL, returns the URL the FireEye Safe Link points to.
+    Args:
+        non_formatted_url (str): The raw URL. For debugging purposes.
+        parse_results (str): FireEye Safe Link URL parse results.
+        redirect_param_name (str): Name of the redirect parameter.
+    Returns:
+        (str): The URL the FireEye Safe Link points to.
+    """
+    query_params_dict: Dict[str, List[str]] = parse_qs(parse_results.query)
+    if not (query_urls := query_params_dict.get(redirect_param_name, [])):
+        demisto.error(f'Could not find redirected URL. Returning the original URL: {non_formatted_url}')
+        return non_formatted_url
+
+    if len(query_urls) > 1:
+        demisto.debug(f'Found more than one URL query parameters for redirect in the given URL {non_formatted_url}\n'
+                      f'Returning the first URL: {query_urls[0]}')
+    url_: str = query_urls[0]
+    return url_
+
+
 def get_redirect_url_proof_point_v2(non_formatted_url: str, parse_results: ParseResult) -> str:
     """
     Extracts redirect URL from Proof Point V2.
@@ -34,9 +61,7 @@ def get_redirect_url_proof_point_v2(non_formatted_url: str, parse_results: Parse
         (str): Redirected URL from Proof Point.
     """
     url_: str = get_redirect_url_from_query(non_formatted_url, parse_results, 'u')
-    trans = str.maketrans('-_', '%/')
-    url_ = url_.translate(trans)
-    return url_
+    return_results(url_)
 
 
 def get_redirect_url_proof_point_v3(non_formatted_url: str) -> str:
@@ -150,6 +175,8 @@ def format_urls(non_formatted_urls: List[str]) -> List[Dict]:
         additional_redirect_url: Optional[str] = None
         if re.match(ATP_REGEX, non_formatted_url):
             non_formatted_url = get_redirect_url_from_query(non_formatted_url, parse_results, 'url')
+        elif re.match(FIREEYE_REGEX, non_formatted_url):
+            non_formatted_url = get_redirect_url_fireeye(non_formatted_url, parse_results, 'u')
         elif match := PROOF_POINT_URL_REG.search(non_formatted_url):
             proof_point_ver: str = match.group(2)
             if proof_point_ver == 'v3':
@@ -188,3 +215,5 @@ def main():
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
+
+register_module_line('FormatURL', 'end', __line__())
