@@ -977,9 +977,6 @@ class SlackLogger:
 async def slack_loop():
     exception_await_seconds = 1
     while True:
-        # SocketModeClient does not respect environment variables for ssl verification.
-        # Instead we use a custom session.
-        session = aiohttp.ClientSession(connector=aiohttp.TCPConnector(verify_ssl=VERIFY_CERT))
         slack_logger = SlackLogger()
         client = SocketModeClient(
             app_token=APP_TOKEN,
@@ -987,7 +984,11 @@ async def slack_loop():
             logger=slack_logger,  # type: ignore
             auto_reconnect_enabled=False
         )
-        client.aiohttp_client_session = session
+        if not VERIFY_CERT:
+            # SocketModeClient does not respect environment variables for ssl verification.
+            # Instead we use a custom session.
+            session = aiohttp.ClientSession(connector=aiohttp.TCPConnector(verify_ssl=VERIFY_CERT))
+            client.aiohttp_client_session = session
         client.socket_mode_request_listeners.append(listen)  # type: ignore
         try:
             await client.connect()
@@ -1216,6 +1217,8 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
         thread = event.get('thread_ts', None)
         message = data.get('message', {})
         entitlement_reply = None
+        action_text = None
+        message_ts = message.get('ts', '')
         # Check if slash command received. If so, ignore for now.
         if data.get('command', None):
             demisto.debug("Slash command event received. Ignoring.")
@@ -1263,11 +1266,16 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
                 entitlement_reply = await check_and_handle_entitlement(text, user, thread)  # type: ignore
 
         if entitlement_reply:
-            await send_slack_request_async(client=ASYNC_CLIENT, method='chat.postMessage',
+            if '{user}' in entitlement_reply:
+                entitlement_reply = entitlement_reply.replace('{user}', f'<@{user_id}>')
+            if '{response}' in entitlement_reply and action_text:
+                entitlement_reply = entitlement_reply.replace('{response}', str(action_text))
+            await send_slack_request_async(client=ASYNC_CLIENT, method='chat.update',
                                            body={
                                                'channel': channel,
-                                               'thread_ts': thread,
-                                               'text': entitlement_reply
+                                               'ts': message_ts,
+                                               'text': entitlement_reply,
+                                               'blocks': []
                                            })
 
         elif channel and channel[0] == 'D' and ENABLE_DM:
