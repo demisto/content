@@ -1,0 +1,32 @@
+commonfields:
+  id: ResolveShortenedURL
+  version: -1
+name: ResolveShortenedURL
+script: ''
+type: python
+subtype: python3
+tags:
+- Utility
+comment: Resolve the original URL from the given shortened URL and place it in both
+  as output and in the context of a playbook. (https://unshorten.me/api)
+enabled: true
+args:
+- name: url
+  required: true
+  default: true
+  description: URL to resolve
+- auto: PREDEFINED
+  defaultValue: "true"
+  description: Whether to use the Unshorten.me API or use the requests python package.
+  name: use_unshorten_me
+  predefined:
+  - "true"
+  - "false"
+outputs:
+- contextPath: URL.Data
+  description: Shortened URL
+scripttarget: 0
+tests:
+- "No test"
+fromversion: 5.0.0
+dockerimage: demisto/python3:3.9.8.24399
