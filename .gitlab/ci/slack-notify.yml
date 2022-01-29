@@ -20,8 +20,11 @@ slack-notify:
     - gke
   stage: notify
   extends: .default-job-settings
+  variables:
+    # XSOAR is the default marketplace
+    MARKETPLACE_ARTIFACTS: $ARTIFACTS_FOLDER_XSOAR
   script:
-    - python3 ./Tests/scripts/gitlab_slack_notifier.py -p "$PIPELINE_TO_QUERY" -s "$SLACK_TOKEN" -c "$GITLAB_STATUS_TOKEN" -ch "$SLACK_CHANNEL" -tw "$WORKFLOW"
+    - python3 ./Tests/scripts/gitlab_slack_notifier.py -p "$PIPELINE_TO_QUERY" -s "$SLACK_TOKEN" -c "$GITLAB_STATUS_TOKEN" -ch "$SLACK_CHANNEL" -tw "$WORKFLOW" --marketplace_artifacts "$MARKETPLACE_ARTIFACTS"
   retry:
     max: 2
   needs:
