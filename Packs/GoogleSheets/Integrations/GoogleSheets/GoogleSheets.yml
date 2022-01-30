@@ -145,8 +145,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: The ranges to retrieve from the spreadsheet, Ranges are specified.
-        using A1 notation. A1 notation example Sheet1!A1:D5 \n\n For further explanation
+      description: Works only with include_grid_data = True, 
+        The ranges to retrieve from the spreadsheet, Ranges are specified.
+        using A1 notation. A1 notation example Sheet1!A1:D5 For further explanation
         and examples - https://developers.google.com/sheets/api/guides/concepts#expandable-1
       isArray: true
       name: ranges
@@ -227,8 +228,8 @@ script:
       name: right_to_left
       auto: PREDEFINED
       predefined:
-      - LEFT_TO_RIGHT
-      - RIGHT_TO_LEFT
+      - "false"
+      - "true"
       required: false
       secret: false
     - name: tab_color
@@ -393,7 +394,7 @@ script:
       defaultValue: ""
     - name: range
       description: A1 notation or R1C1 notation of the values to clear. A1 notation
-        example Sheet1!A1:D5 \n\n For further explanation and examples - https://developers.google.com/sheets/api/guides/concepts#expandable-1
+        example Sheet1!A1:D5 For further explanation and examples - https://developers.google.com/sheets/api/guides/concepts#expandable-1
       required: true
       isArray: false
       defaultValue: ""
@@ -641,7 +642,7 @@ script:
       - "true"
       - "false"
     - name: find
-      description: Finds and replaces data in cells over a range, sheet, or all sheets.
+      description: The value to find. Finds and replaces data in cells over a range, sheet, or all sheets.
       required: true
       isArray: false
       defaultValue: ""
@@ -735,7 +736,7 @@ script:
       defaultValue: ""
     - name: range
       description: The A1 notation of the values to update. example - Sheet1!A1:D5
-        \n\n For further explanation and examples - https://developers.google.com/sheets/api/guides/concepts#expandable-1
+        For further explanation and examples - https://developers.google.com/sheets/api/guides/concepts#expandable-1
       required: true
       isArray: false
       defaultValue: ""
@@ -785,7 +786,7 @@ script:
     - name: range
       description: The A1 notation of a range to search for a logical table of data.
         Values are appended after the last row of the table. A1 notation example Sheet1!A1:D5
-        \n\n For further explanation and examples - https://developers.google.com/sheets/api/guides/concepts#expandable-1
+        For further explanation and examples - https://developers.google.com/sheets/api/guides/concepts#expandable-1
       required: true
       isArray: false
       defaultValue: ""
@@ -799,7 +800,7 @@ script:
       - RAW
       - USER_ENTERED
     - name: insert_option
-      description: description
+      description: How the input data should be inserted.
       required: true
       isArray: false
       defaultValue: ""
@@ -849,7 +850,7 @@ script:
       - "True"
     - name: requests
       description: JSON Input according to the method documentation and object documentation
-        - for advanced users’ free use (Google Sheets API)
+        - for advanced users’ free use (Google Sheets API) https://developers.google.com/sheets/api/reference/rest/v4/spreadsheets/batchUpdate
       required: true
       isArray: false
       defaultValue: ""

@@ -146,7 +146,7 @@ def markdown_single_get(response: dict) -> str:
     return markdown
 
 
-def markdown_single_get_include_grid_data(response: dict) -> dict:
+def markdown_single_get_include_grid_data(response: dict) -> str:
     """
     Args:
         response (dict): The response from the API call, after it was processed by context_single_get_output
@@ -165,7 +165,7 @@ def markdown_single_get_include_grid_data(response: dict) -> dict:
     markdown = tableToMarkdown(response.get('properties', {}).get('spreadsheetTitle', {}), human_readable,
                                headers=['spreadsheet Id', 'spreadsheet url'])
     markdown += '\n'
-    markdown += make_markdown_matrix(response.get('sheets'))
+    markdown += make_markdown_matrix(response.get('sheets', []))
     return markdown
 
 
@@ -183,7 +183,7 @@ def make_markdown_matrix(sheets: list) -> str:
     """
     markdown = ""
     for sheet in sheets:
-        markdown += f'### ***{sheet.get("title", {})}***'
+        markdown += f'### ***Name: {sheet.get("title", {})}     Sheet Id: {sheet.get("sheetId", {})}***'
 
         # find the max number of columns in the table
         max_row_len = max(list(map(lambda elem: len(elem.get('values')), sheet.get('rowData'))))
@@ -224,9 +224,9 @@ def context_single_get_parse(response: dict, include_grid_data: bool) -> dict:
     output_dict = {
         "spreadsheetId": response.get('spreadsheetId'),
         "spreadsheetUrl": response.get('spreadsheetUrl'),
-        "spreadsheetTitle": response.get('properties').get('title'),
+        "spreadsheetTitle": response.get('properties', {}).get('title'),
         # this is the array of sheets
-        "sheets": parse_sheets_for_get_response(response.get('sheets'), include_grid_data),
+        "sheets": parse_sheets_for_get_response(response.get('sheets', []), include_grid_data),
 
     }
     return output_dict
@@ -251,28 +251,33 @@ def parse_sheets_for_get_response(sheets: list, include_grid_data: bool) -> list
         output_sheet['sheetId'] = properties.get('sheetId')
         output_sheet['index'] = properties.get('index')
         output_sheet['gridProperties'] = properties.get('gridProperties')
-        output_sheet['rowData'] = []
-        # take the rowData from the response
+        row_data: list = []
         if not include_grid_data:
+            output_sheet['rowData'] = []    # with include_grid_data False the row data will be empty
             sheet_lst.append(output_sheet)
             continue
+        # take the rowData from the response
         response_rows_data = sheet.get('data', {})[0].get('rowData', None)
         if not response_rows_data:
-            output_sheet.get('rowData').append({'values': {}})
+            row_data.append({'values': []})
         # values is an array of CellData object
         else:
             for response_values in response_rows_data:
-                output_row_values = {"values": []}
+                values = []
+                # output_row_values: Dict[str, list] = {"values": []}
                 # here we build the values per row list of the output
-                if not response_values:  # if the row is empty append none
-                    output_sheet.get('rowData').append({'values': {}})
+                if not response_values:  # if the row is empty append an empty list
+                    row_data.append({'values': []})
                 else:
                     for response_cell_data in response_values.get('values'):
                         if not response_cell_data:
-                            output_row_values.get('values').append('')
+                            # output_row_values.get('values').append('')
+                            values.append('')
                         else:
-                            output_row_values.get('values').append(response_cell_data.get('formattedValue'))
-                    output_sheet.get('rowData').append(output_row_values)
+                            # output_row_values.get('values').append(response_cell_data.get('formattedValue'))
+                            values.append(response_cell_data.get('formattedValue'))
+                    row_data.append({'values': values})
+        output_sheet['rowData'] = row_data
         sheet_lst.append(output_sheet)
     return sheet_lst
 
@@ -371,7 +376,7 @@ def get_spreadsheet(service: Resource, args: dict) -> CommandResults:
     ranges = args.get('ranges')
     markdown = ""
     if not spread_sheets_ids:
-        raise 'No spreadsheet ID given'
+        raise DemistoException('No spreadsheet ID given')
     if len(spread_sheets_ids) > 1:
         for spreadsheet in spread_sheets_ids:
             response = service.spreadsheets().get(spreadsheetId=spreadsheet).execute()
@@ -426,7 +431,7 @@ def create_sheet(service: Resource, args: dict) -> CommandResults:
                         "title": args.get('sheet_title', None),
                         "index": args.get('sheet_index', None),
                         "sheetType": args.get('sheet_type', "GRID"),
-                        "rightToLeft": args.get('right_to_left', None),
+                        "rightToLeft": argToBoolean(args.get('right_to_left', False)),
                         "tabColor": {
                             "red": rgb_format[0],
                             "green": rgb_format[1],
