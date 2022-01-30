@@ -931,6 +931,14 @@ def test_responders_to_json_empty_value():
 
 
 def test_get_request_command(requests_mock, mocker):
+    """
+    Given:
+        - A call to get-retquest
+    When:
+        - response is successful
+    Then:
+        - output is returned
+    """
     output = {'hello': 'world'}
     mocker.patch('CommonServerPython.ScheduledCommand.raise_error_if_not_supported')
     requests_mock.get(url='http://example.com/v2/alert/requests/1', json={'data': output})
@@ -940,6 +948,14 @@ def test_get_request_command(requests_mock, mocker):
 
 
 def test_get_request_command_404(requests_mock, mocker):
+    """
+      Given:
+          - A call to get-retquest
+      When:
+          - response is 404
+      Then:
+          - Scheduledcommand is returned
+      """
     mocker.patch('CommonServerPython.ScheduledCommand.raise_error_if_not_supported')
     requests_mock.get(url='http://example.com/v2/alert/requests/1', status_code=404)
     args = {'request_id': 1, 'request_type': 'alert'}

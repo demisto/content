@@ -798,7 +798,7 @@ def remove_tag_incident(client: Client, args: Dict[str, Any]) -> CommandResults:
 
 
 def get_request_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    request_type = args.get('request_type')
+    request_type = str(args.get('request_type'))
     results: Response = client.get_request(args)
 
     if results.status_code == 404:
