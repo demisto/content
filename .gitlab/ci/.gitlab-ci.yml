@@ -23,6 +23,8 @@ variables:
   SLACK_CHANNEL: "dmst-content-team"
   DEMISTO_README_VALIDATION: "true"
   ARTIFACTS_FOLDER: "/builds/xsoar/content/artifacts"
+  ARTIFACTS_FOLDER_XSOAR: "/builds/xsoar/content/artifacts/xsoar"
+  ARTIFACTS_FOLDER_MPV2: "/builds/xsoar/content/artifacts/marketplacev2"
   BASH_ENV: "/builds/xsoar/content/artifacts/bash_env"
   PYTHONPATH: "/builds/xsoar/content"
   PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"

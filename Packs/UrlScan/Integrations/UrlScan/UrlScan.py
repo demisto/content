@@ -20,8 +20,8 @@ except ImportError:
 requests.packages.urllib3.disable_warnings()
 
 '''GLOBAL VARS'''
-BLACKLISTED_URL_ERROR_MESSAGE = 'The submitted domain is on our blacklist. ' \
-                                'For your own safety we did not perform this scan...'
+BLACKLISTED_URL_ERROR_MESSAGE = 'The submitted domain is on our blacklist, ' \
+                                'we will not scan it.'
 BRAND = 'urlscan.io'
 
 """ RELATIONSHIP TYPE"""
