@@ -14,8 +14,8 @@ from test_data.feed_data import INDICATORS_DATA, ATTACK_PATTERN_DATA, MALWARE_DA
 
 
 @pytest.mark.parametrize('command, args, response, length', [
-    (get_indicators_command, {'limit': 2}, INDICATORS_DATA, 2),
-    (get_indicators_command, {'limit': 5}, INDICATORS_DATA, 5),
+    (get_indicators_command, {'limit': 2, 'indicators_type': 'indicator'}, INDICATORS_DATA, 2),
+    (get_indicators_command, {'limit': 5, 'indicators_type': 'indicator'}, INDICATORS_DATA, 5)
 ])  # noqa: E124
 def test_commands(command, args, response, length, mocker):
     """
