@@ -2667,8 +2667,6 @@ def main():
         api_key = demisto.getLicenseCustomField('CortexCoreIR.api_key')
         if not api_key:
             raise DemistoException('Could not resolve the API key from the license nor the instance configuration.')
-        else:
-            raise DemistoException('An API key must be specified in order to use this integration')
     api_key_id = demisto.params().get('apikey_id')
     base_url = urljoin(demisto.params().get('url'), '/public_api/v1')
     proxy = demisto.params().get('proxy')

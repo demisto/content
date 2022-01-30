@@ -76,6 +76,10 @@ class Client:
 
 def get_headers(params: Dict) -> Dict:
     api_key: str = str(params.get('apikey'))
+    if not api_key:
+        api_key = demisto.getLicenseCustomField('CoreIOCs.api_key')
+        if not api_key:
+            raise DemistoException('Could not resolve the API key from the license nor the instance configuration.')
     api_key_id: str = str(params.get('apikey_id'))
     nonce: str = "".join([secrets.choice(string.ascii_letters + string.digits) for _ in range(64)])
     timestamp: str = str(int(datetime.now(timezone.utc).timestamp()) * 1000)

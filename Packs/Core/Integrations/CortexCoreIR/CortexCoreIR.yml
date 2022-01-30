@@ -17,7 +17,7 @@ configuration:
   type: 4
 - display: API Key
   name: apikey
-  required: true
+  required: false
   type: 4
 - additionalinfo: The timeout of the HTTP requests sent to Cortex XDR API (in seconds).
   defaultvalue: '120'

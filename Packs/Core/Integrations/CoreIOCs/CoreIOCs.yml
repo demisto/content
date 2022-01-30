@@ -13,7 +13,7 @@ configuration:
   type: 4
 - display: API Key
   name: apikey
-  required: true
+  required: false
   type: 4
 - additionalinfo: Map the severity of each indicator that will be synced to Cortex
     XDR.
