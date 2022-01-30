@@ -941,8 +941,7 @@ def fetch_incidents_command(client: Client,
                                                                                      tags,
                                                                                      client.list_incidents,
                                                                                      now,
-                                                                                     demisto.get(last_run,
-                                                                                                 f"{INCIDENT_TYPE}"))
+                                                                                     demisto.get(last_run, f"{INCIDENT_TYPE}"))
     return incidents + alerts, {ALERT_TYPE: {'lastRun': last_run_alerts,
                                              'next_page': next_page_alerts},
                                 INCIDENT_TYPE: {'lastRun': last_run_incidents,

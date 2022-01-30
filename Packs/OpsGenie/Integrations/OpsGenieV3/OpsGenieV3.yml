@@ -1539,8 +1539,63 @@ script:
         auto: PREDEFINED
         predefined:
           - alerts
-          - incedents
-    outputs: []
+          - Incidents
+    outputs:
+    - contextPath: OpsGenie.Alert.action
+      description: Action of this request.
+      type: String
+    - contextPath: OpsGenie.Alert.alertId
+      description: ID of the created alert.
+      type: String
+    - contextPath: OpsGenie.Alert.alias
+      description: Alias of the created alert.
+      type: String
+    - contextPath: OpsGenie.Alert.integrationId
+      description: Integration ID of the created alert.
+      type: String
+    - contextPath: OpsGenie.Alert.isSuccess
+      description: Whether the request was successful.
+      type: Boolean
+    - contextPath: OpsGenie.Alert.processedAt
+      description: When the request was processed.
+      type: Date
+    - contextPath: OpsGenie.Alert.requestId
+      description: The ID of the request.
+      type: String
+    - contextPath: OpsGenie.Alert.status
+      description: The human readable result of the request.
+      type: String
+    - contextPath: OpsGenie.Alert.success
+      description: Whether the request was successful.
+      type: Boolean
+    - contextPath: OpsGenie.Incident.action
+      description: Action of this request.
+      type: String
+    - contextPath: OpsGenie.Incident.alertId
+      description: ID of the created alert.
+      type: String
+    - contextPath: OpsGenie.Incident.alias
+      description: Alias of the created alert.
+      type: String
+    - contextPath: OpsGenie.Incident.integrationId
+      description: Integration ID of the created alert.
+      type: String
+    - contextPath: OpsGenie.Incident.isSuccess
+      description: Whether the request was successful.
+      type: Boolean
+    - contextPath: OpsGenie.Incident.processedAt
+      description: When the request was processed.
+      type: Date
+    - contextPath: OpsGenie.Incident.requestId
+      description: The ID of the request.
+      type: String
+    - contextPath: OpsGenie.Incident.status
+      description: The human readable result of the request.
+      type: String
+    - contextPath: OpsGenie.Incident.success
+      description: Whether the request was successful.
+      type: Boolean
+
   dockerimage: demisto/python3:3.10.1.25933
   isfetch: true
   runonce: false

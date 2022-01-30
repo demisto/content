@@ -1677,17 +1677,25 @@ Get a request in Opsgenie.
 
 #### Context Output
 
-| **Path**                              | **Type** | **Description** |
-|---------------------------------------| --- | --- |
-| OpsGenie.[request_type].action        | String | Action of this request. | 
-| OpsGenie.[request_type].alertId       | String | ID of the created alert. | 
-| OpsGenie.[request_type].alias         | String | Alias of the created alert. | 
-| OpsGenie.[request_type].integrationId | String | Integration ID of the created alert. | 
-| OpsGenie.[request_type].isSuccess     | Boolean | Whether the request was successful. | 
-| OpsGenie.[request_type].processedAt                | Date | When the request was processed. | 
-| OpsGenie.[request_type].requestId              | String | The ID of the request. | 
-| OpsGenie.[request_type].status                 | String | The human readable result of the request. | 
-| OpsGenie.[request_type].success                | Boolean | Whether the request was successful. | 
+| **Path**                       | **Type** | **Description** |
+|--------------------------------| --- | --- |
+| OpsGenie.Alert.action          | String | Action of this request. | 
+| OpsGenie.Alert.alertId         | String | ID of the created alert. | 
+| OpsGenie.Alert.alias           | String | Alias of the created alert. | 
+| OpsGenie.Alert.integrationId   | String | Integration ID of the created alert. | 
+| OpsGenie.Alert.isSuccess       | Boolean | Whether the request was successful. | 
+| OpsGenie.Alert.processedAt     | Date | When the request was processed. | 
+| OpsGenie.Alert.requestId       | String | The ID of the request. | 
+| OpsGenie.Alert.status          | String | The human readable result of the request. | 
+| OpsGenie.Alert.success         | Boolean | Whether the request was successful. || OpsGenie.Alert.action        | String | Action of this request. | 
+| OpsGenie.Incident.alertId      | String | ID of the created alert. | 
+| OpsGenie.Incident.alias        | String | Alias of the created alert. | 
+| OpsGenie.Incident.integrationId | String | Integration ID of the created alert. | 
+| OpsGenie.Incident.isSuccess    | Boolean | Whether the request was successful. | 
+| OpsGenie.Incident.processedAt  | Date | When the request was processed. | 
+| OpsGenie.Incident.requestId            | String | The ID of the request. | 
+| OpsGenie.Incident.status       | String | The human readable result of the request. | 
+| OpsGenie.Incident.success      | Boolean | Whether the request was successful. | 
 
 
 #### Command Example
