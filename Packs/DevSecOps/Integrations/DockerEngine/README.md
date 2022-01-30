@@ -3708,8 +3708,8 @@ Inspect a node
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Docker.Node.ID | String | Docker Node ID | 
-| Docker.Node.CreatedAt | String | Date and time at which the node was added to the swarm in \[RFC 3339\]\(https://www.ietf.org/rfc/rfc3339.txt\) format with nano-seconds.  | 
-| Docker.Node.UpdatedAt | String | Date and time at which the node was last updated in \[RFC 3339\]\(https://www.ietf.org/rfc/rfc3339.txt\) format with nano-seconds.  | 
+| Docker.Node.CreatedAt | String | Date and time at which the node was added to the swarm in \[RFC 3339\](https://www.ietf.org/rfc/rfc3339.txt) format with nano-seconds.  | 
+| Docker.Node.UpdatedAt | String | Date and time at which the node was last updated in \[RFC 3339\](https://www.ietf.org/rfc/rfc3339.txt) format with nano-seconds.  | 
 
 
 #### Command Example
@@ -6223,7 +6223,7 @@ There are no input arguments for this command.
 | Docker.SystemInfo.NoProxy | String | Comma-se ted list of domain extensions for which no proxy should be used. This value is obtained from the \[\`NO_PROXY\`\](https://www.gnu.org/software/wget/manual/html_node/Proxies.html) environment variable.  Containers do not automatically inherit this configuration.  | 
 | Docker.SystemInfo.Name | String | Hostname of the host. | 
 | Docker.SystemInfo.ExperimentalBuild | Boolean | Indicates if experimental features are enabled on the daemon.  | 
-| Docker.SystemInfo.ServerVersion | String | Version string of the daemon.      Note  : the \[standalone Swarm API\]\(https://docs.docker.com/swarm/swarm-api/\)   returns the Swarm version instead of the daemon  version, for example   \`swarm/1.2.8\`.  | 
+| Docker.SystemInfo.ServerVersion | String | Version string of the daemon.      Note  : the \[standalone Swarm API\](https://docs.docker.com/swarm/swarm-api)   returns the Swarm version instead of the daemon  version, for example   \`swarm/1.2.8\`.  | 
 | Docker.SystemInfo.ClusterStore | String | URL of the distributed storage backend.   The storage backend is used for multihost networking \(to store network and endpoint information\) and by the node discovery mechanism.   p    /  /p       Deprecated  : This field is only propagated when using standalone Swarm   mode, and overlay networking using an external k/v store. Overlay   networks with Swarm mode enabled use the built-in raft store, and   this field will be empty.  | 
 | Docker.SystemInfo.ClusterAdvertise | String | The network endpoint that the Engine advertises for the purpose of node discovery. ClusterAdvertise is a \`host:port\` combination on which the daemon is reachable by other hosts.   p    /  /p       Deprecated  : This field is only propagated when using standalone Swarm   mode, and overlay networking using an external k/v store. Overlay   networks with Swarm mode enabled use the built-in raft store, and   this field will be empty.  | 
 | Docker.SystemInfo.Runtimes.path | String | Name and, optional, path, of the OCI executable binary.  If the path is omitted, the daemon searches the host's \`$PATH\` for the binary and uses the first result.  | 
