@@ -13,7 +13,7 @@ SHOULD_ERROR = demisto.params().get('with_error', False)
 # flake8: noqa
 
 """
-    1This integration is built using the joepie91 "Whois" module. For more information regarding this package please see
+    This integration is built using the joepie91 "Whois" module. For more information regarding this package please see
     the following - https://github.com/joepie91/python-whois
 """
 
