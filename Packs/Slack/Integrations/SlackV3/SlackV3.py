@@ -1393,7 +1393,6 @@ async def get_user_by_id_async(client: AsyncWebClient, user_id: str) -> dict:
 
     return user
 
-
 async def handle_file(
     investigation_id: str,
     file_result: dict,
@@ -1408,6 +1407,7 @@ async def handle_file(
         footer=MESSAGE_FOOTER,
         entryType=EntryType.FILE
     )
+    demisto.info(f'Added entry')
 
 
 async def handle_text(client: AsyncWebClient, investigation_id: str, text: str, user: dict):
