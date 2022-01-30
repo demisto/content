@@ -722,10 +722,10 @@ def test_assigned_to_field_no_user():
         def get(self, table, value):
             return {'results': {}}
 
-    assigned_to = {'link': 'https://dev113888.service-now.com/api/now/table/sys_user/oscar@example.com',
+    assigned_to = {'link': 'https://test.service-now.com/api/now/table/sys_user/oscar@example.com',
                    'value': 'oscar@example.com'}
-    res = check_assigned_to_field(Client(), assigned_to, {})
-    assert res == {'assigned_to': ''}
+    res = check_assigned_to_field(Client(), assigned_to)
+    assert res == ''
 
 
 def test_assigned_to_field_user_exists():
@@ -742,10 +742,10 @@ def test_assigned_to_field_user_exists():
         def get(self, table, value):
             return USER_RESPONSE
 
-    assigned_to = {'link': 'https://dev113888.service-now.com/api/now/table/sys_user/oscar@example.com',
+    assigned_to = {'link': 'https://test.service-now.com/api/now/table/sys_user/oscar@example.com',
                    'value': 'oscar@example.com'}
-    res = check_assigned_to_field(Client(), assigned_to, {})
-    assert res == {'assigned_to': 'oscar@example.com'}
+    res = check_assigned_to_field(Client(), assigned_to)
+    assert res == 'oscar@example.com'
 
 
 CLOSING_RESPONSE = {'dbotIncidentClose': True, 'closeReason': 'From ServiceNow: Test'}

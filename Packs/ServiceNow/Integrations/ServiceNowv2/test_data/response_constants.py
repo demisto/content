@@ -90,34 +90,7 @@ RESPONSE_TICKET_MIRROR = {'result': [{
 }
 
 USER_RESPONSE = {
-    'result': {
-        'calendar_integration': '', 'country': '', 'user_password': '1234', 'last_login_time': '',
-        'source': '', 'sys_updated_on': '2022-01-15 13:57:29', 'building': '', 'web_service_access_only': 'false',
-        'notification': '1', 'enable_multifactor_authn': 'false', 'sys_updated_by': 'developer.program@snc',
-        'sys_created_on': '2006-02-07 23:09:38',
-        'sys_domain': {
-            'link': 'https://dev113888.service-now.com/api/now/table/sys_user_group/global', 'value': 'global'},
-        'state': '', 'vip': 'false', 'sys_created_by': 'system', 'zip': '', 'home_phone': '', 'time_format': '',
-        'last_login': '', 'default_perspective': '', 'active': 'true', 'sys_domain_path': '/',
-        'cost_center': {
-            'link': 'https://dev113888.service-now.com/api/now/table/cmn_cost_center/7fb1cc99c0a80a6d30c04574d14c0acf',
-            'value': '7fb1cc99c0a80a6d30c04574d14c0acf'}, 'phone': '', 'name': 'Bud Richman', 'employee_number': '',
-        'password_needs_reset': 'false', 'gender': 'Male', 'city': '', 'failed_attempts': '',
-        'user_name': 'bud.richman', 'roles': 'itil,asset', 'title': '', 'sys_class_name': 'sys_user',
-        'sys_id': '46c6f9efa9fe198101ddf5eed9adf6e7', 'internal_integration_user': 'false', 'ldap_server': '',
-        'mobile_phone': '', 'street': '',
-        'company': {
-            'link': 'https://dev113888.service-now.com/api/now/table/core_company/31bea3d53790200044e0bfc8bcbe5dec',
-            'value': '31bea3d53790200044e0bfc8bcbe5dec'},
-        'department': {
-            'link': 'https://dev113888.service-now.com/api/now/table/cmn_department/221db0edc611228401760aec06c9d929',
-            'value': '221db0edc611228401760aec06c9d929'}, 'first_name': 'Oscar', 'email': 'oscar@example.com',
-        'introduction': '', 'preferred_language': '', 'manager': '', 'locked_out': 'false', 'sys_mod_count': '11',
-        'last_name': 'Test', 'photo': '', 'avatar': '', 'middle_name': '', 'sys_tags': '', 'time_zone': '',
-        'schedule': '', 'date_format': '',
-        'location': {
-            'link': 'https://dev113888.service-now.com/api/now/table/cmn_location/f90aa2f50a0a0b9100576930575aa596',
-            'value': 'f90aa2f50a0a0b9100576930575aa596'}}}
+    'result': {'first_name': 'Oscar', 'email': 'oscar@example.com'}}
 
 
 RESPONSE_CLOSING_TICKET_MIRROR = {'result': [{
