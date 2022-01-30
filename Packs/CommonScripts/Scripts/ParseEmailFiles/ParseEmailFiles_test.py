@@ -6,7 +6,7 @@ import pytest
 import demistomock as demisto
 from CommonServerPython import entryTypes
 from ParseEmailFiles import MsOxMessage, main, convert_to_unicode, unfold, handle_msg, get_msg_mail_format, \
-    data_to_md, create_headers_map, DataModel
+    data_to_md, create_headers_map, DataModel, handle_eml
 
 
 def exec_command_for_file(
@@ -138,6 +138,23 @@ def test_smime2(mocker):
     assert results[0]['Type'] == entryTypes['note']
     # assert results[0]['EntryContext']['Email']['Subject'] == 'Testing signed multipart email'
     assert results[0]['EntryContext']['Email']['Subject'] == 'Testing signed multipart email'
+
+
+def test_handle_eml_parses_correct_message_id():
+    """
+    Given:
+     - eml file
+
+    When:
+     - parsing eml file into email data.
+
+    Then:
+     - Validate that correct 'Message-ID' case sensitive is in 'HeadersMap' dict.
+       Must be 'Message-ID' case sensitive.
+
+    """
+    email_data, _ = handle_eml(file_path='test_data/invalid_message_id.eml')
+    assert 'Message-ID' in email_data['HeadersMap']
 
 
 def test_eml_contains_eml(mocker):

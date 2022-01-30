@@ -1,6 +1,11 @@
 import pytest
-from Tanium_v2 import Client, get_question_result
+from Tanium_v2 import Client, get_question_result, get_action_result
 import json
+
+
+def get_fetch_data():
+    with open('test_data/action_results.json', 'r') as f:
+        return json.loads(f.read())
 
 
 BASE_URL = 'https://test.com/'
@@ -366,3 +371,25 @@ def test_update_session(mocker):
     client = Client(BASE_URL, username='', password='', domain='domain', api_token='oauth authentication')
     client.update_session()
     assert client.session == 'oauth authentication'
+
+
+def test_get_action_result(mocker):
+    """
+    Tests the get action result method.
+    Given:
+        - Action ID to get information on.
+    When:
+        - calling the get_action_result() function.
+    Then:
+        - Verify that the human_readable was created as expected.
+        - Verify that the outputs was created as expected.
+        - Verify that the raw_response was created as expected.
+    """
+    client = Client(BASE_URL, 'username', 'password', 'domain')
+    data_args = {'id': '350385'}
+    action_res = get_fetch_data()
+    mocker.patch.object(Client, 'do_request', return_value=action_res['action_raw_response'])
+    human_readable, outputs, action_res_outputs = get_action_result(client, data_args)
+    assert action_res_outputs == action_res['action_output']
+    assert outputs == action_res['action_output_res']
+    assert '### Device Statuses' in human_readable
