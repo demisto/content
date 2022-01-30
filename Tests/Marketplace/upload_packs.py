@@ -198,7 +198,7 @@ def update_index_folder(index_folder_path: str, pack_name: str, pack_path: str, 
 
 
 def clean_non_existing_packs(index_folder_path: str, private_packs: list, storage_bucket: Any,
-                             storage_base_path: str) -> bool:
+                             storage_base_path: str, marketplace: str = 'xsoar', id_set: str = '') -> bool:
     """ Detects packs that are not part of content repo or from private packs bucket.
 
     In case such packs were detected, problematic pack is deleted from index and from content/packs/{target_pack} path.
@@ -208,6 +208,8 @@ def clean_non_existing_packs(index_folder_path: str, private_packs: list, storag
         private_packs (list): priced packs from private bucket.
         storage_bucket (google.cloud.storage.bucket.Bucket): google storage bucket where index.zip is stored.
         storage_base_path (str): the source path of the packs in the target bucket.
+        id_set: path to current id_set
+        marketplace: name of current markeplace, xsoar or marketplacev2
 
     Returns:
         bool: whether cleanup was skipped or not.
@@ -219,16 +221,26 @@ def clean_non_existing_packs(index_folder_path: str, private_packs: list, storag
         logging.info("Skipping cleanup of packs in gcs.")  # skipping execution of cleanup in gcs bucket
         return True
 
-    public_packs_names = {p for p in os.listdir(PACKS_FULL_PATH) if p not in IGNORED_FILES}
-    private_packs_names = {p.get('id', '') for p in private_packs}
-    valid_packs_names = public_packs_names.union(private_packs_names)
-    # search for invalid packs folder inside index
-    invalid_packs_names = {(entry.name, entry.path) for entry in os.scandir(index_folder_path) if
-                           entry.name not in valid_packs_names and entry.is_dir()}
+    if marketplace == 'xsoar':
+        public_packs_names = {p for p in os.listdir(PACKS_FULL_PATH) if p not in IGNORED_FILES}
+        private_packs_names = {p.get('id', '') for p in private_packs}
+        valid_packs_names = public_packs_names.union(private_packs_names)
+        # search for invalid packs folder inside index
+        invalid_packs_names = {(entry.name, entry.path) for entry in os.scandir(index_folder_path) if
+                               entry.name not in valid_packs_names and entry.is_dir()}
+    else:
+        if id_set:
+            with open(id_set, 'r') as id_set_file:
+                id_set_dict = json.load(id_set_file)
+        valid_packs_names = list(id_set_dict.get('Packs', {}).keys())
+        # search for invalid packs folder inside index
+        invalid_packs_names = {(entry.name, entry.path) for entry in os.scandir(index_folder_path) if
+                               entry.name not in valid_packs_names and entry.is_dir()}
 
     if invalid_packs_names:
         try:
-            logging.warning(f"Detected {len(invalid_packs_names)} non existing pack inside index, starting cleanup.")
+            logging.warning(f"Found the following invalid packs: {invalid_packs_names}")
+            logging.warning(f"Starting cleanup of {len(invalid_packs_names)} invalid packs from gcp and index.zip.")
 
             for invalid_pack in invalid_packs_names:
                 invalid_pack_name = invalid_pack[0]
@@ -785,6 +797,8 @@ def option_handler():
     parser.add_argument('-c', '--ci_branch', help="CI branch of current build", required=True)
     parser.add_argument('-f', '--force_upload', help="is force upload build?", type=str2bool, required=True)
     parser.add_argument('-mp', '--marketplace', help="marketplace version", default='xsoar')
+    parser.add_argument('-idp', '--id_set_path', help="path to id set")
+
     # disable-secrets-detection-end
     return parser.parse_args()
 
@@ -943,7 +957,7 @@ def main():
     ci_branch = option.ci_branch
     force_upload = option.force_upload
     marketplace = option.marketplace
-
+    id_set_path = option.id_set_path
     # google cloud storage client initialized
     storage_client = init_storage_client(service_account)
     storage_bucket = storage_client.bucket(storage_bucket_name)
@@ -982,7 +996,7 @@ def main():
     statistics_handler = StatisticsHandler(service_account, index_folder_path)
 
     # clean index and gcs from non existing or invalid packs
-    clean_non_existing_packs(index_folder_path, private_packs, storage_bucket, storage_base_path)
+    clean_non_existing_packs(index_folder_path, private_packs, storage_bucket, storage_base_path, marketplace, id_set_path)
 
     # Packages that depend on new packs that are not in the previous index.json
     packs_missing_dependencies = []

@@ -22,6 +22,10 @@ else
   fi
 fi
 
+if [[ -n "$4" ]]; then
+  ID_SET_PATH = $4
+fi
+
 echo "Preparing content packs for testing ..."
 gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" > auth.out 2>&1
 echo "Auth loaded successfully."
@@ -73,7 +77,7 @@ if [ -z "${BUCKET_UPLOAD}" ]; then
       echo "Did not get content packs to update in the bucket."
     else
       echo "Updating the following content packs: $CONTENT_PACKS_TO_INSTALL ..."
-      python3 ./Tests/Marketplace/upload_packs.py -a $PACK_ARTIFACTS -d $ARTIFACTS_FOLDER/packs_dependencies.json -e $EXTRACT_FOLDER -b $GCS_BUILD_BUCKET -s "$GCS_MARKET_KEY" -n $CI_PIPELINE_ID -p $CONTENT_PACKS_TO_INSTALL -o true -sb $BUILD_BUCKET_PACKS_DIR_PATH -k $PACK_SIGNING_KEY -rt false -bu false -c $CI_COMMIT_BRANCH -f false -mp "$MARKETPLACE_TYPE"
+      python3 ./Tests/Marketplace/upload_packs.py -a $PACK_ARTIFACTS -d $ARTIFACTS_FOLDER/packs_dependencies.json -e $EXTRACT_FOLDER -b $GCS_BUILD_BUCKET -s "$GCS_MARKET_KEY" -n $CI_PIPELINE_ID -p $CONTENT_PACKS_TO_INSTALL -o true -sb $BUILD_BUCKET_PACKS_DIR_PATH -k $PACK_SIGNING_KEY -rt false -bu false -c $CI_COMMIT_BRANCH -f false -mp "$MARKETPLACE_TYPE" -idp "$ID_SET_PATH"
       echo "Finished updating content packs successfully."
     fi
   fi
@@ -95,7 +99,7 @@ else
     PACKS_LIST="all"
     IS_FORCE_UPLOAD=false
   fi
-  python3 ./Tests/Marketplace/upload_packs.py -a $PACK_ARTIFACTS -d $ARTIFACTS_FOLDER/packs_dependencies.json -e $EXTRACT_FOLDER -b $GCS_BUILD_BUCKET -s "$GCS_MARKET_KEY" -n $CI_PIPELINE_ID -p "$PACKS_LIST" -o $OVERRIDE_ALL_PACKS -sb $BUILD_BUCKET_PACKS_DIR_PATH -k $PACK_SIGNING_KEY -rt $REMOVE_PBS -bu $BUCKET_UPLOAD_FLOW -pb "$GCS_PRIVATE_BUCKET" -c $CI_COMMIT_BRANCH -f $IS_FORCE_UPLOAD -mp "$MARKETPLACE_TYPE"
+  python3 ./Tests/Marketplace/upload_packs.py -a $PACK_ARTIFACTS -d $ARTIFACTS_FOLDER/packs_dependencies.json -e $EXTRACT_FOLDER -b $GCS_BUILD_BUCKET -s "$GCS_MARKET_KEY" -n $CI_PIPELINE_ID -p "$PACKS_LIST" -o $OVERRIDE_ALL_PACKS -sb $BUILD_BUCKET_PACKS_DIR_PATH -k $PACK_SIGNING_KEY -rt $REMOVE_PBS -bu $BUCKET_UPLOAD_FLOW -pb "$GCS_PRIVATE_BUCKET" -c $CI_COMMIT_BRANCH -f $IS_FORCE_UPLOAD -mp "$MARKETPLACE_TYPE" -idp "$ID_SET_PATH"
 
   if [ -f "$ARTIFACTS_FOLDER/index.json" ]; then
     gsutil cp -z json "$ARTIFACTS_FOLDER/index.json" "gs://$BUILD_BUCKET_PACKS_DIR_FULL_PATH"
@@ -107,7 +111,7 @@ else
   else
     echo "Skipping uploading corepacks.json file."
   fi
-  if [ -f "$ARTIFACTS_FOLDER/id_set.json" ]; then
+  if [ -f "$ARTIFACTS_FOLDER/id_set.json" ]; then # TODO: fix for mp_v2_id_set
     gsutil cp -z json "$ARTIFACTS_FOLDER/id_set.json" "gs://$BUILD_BUCKET_CONTENT_DIR_FULL_PATH"
   else
     echo "Skipping uploading id_set.json file."
