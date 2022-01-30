@@ -1038,7 +1038,8 @@ def upload_packs_with_dependencies_zip(extract_destination_path, packs_dependenc
         marketplace (str): Marketplace version
         packs_dependencies_mapping (dict): First level dependency mapping
         signature_key (str): Signature key used for encrypting packs
-        storage_base_path (str): The upload destination in the target bucket for all packs (in the format of <some_path_in_the_target_bucket>/content/Packs).
+        storage_base_path (str): The upload destination in the target bucket for all packs (in the format of
+                                 <some_path_in_the_target_bucket>/content/Packs).
         storage_bucket (google.cloud.storage.bucket.Bucket): google cloud storage bucket.
     """
     logging.info("Starting to collect pack with dependencies zips")
