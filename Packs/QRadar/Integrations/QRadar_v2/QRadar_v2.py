@@ -487,10 +487,14 @@ class QRadarClient:
         """
         Converts closing reason id to name
         """
-        if not closing_reasons:
-            closing_reasons = self.get_closing_reasons(
-                include_deleted=True, include_reserved=True
-            )
+        if closing_reasons is None:
+            try:
+                closing_reasons = self.get_closing_reasons(
+                    include_deleted=True, include_reserved=True
+                )
+            except Exception as e:
+                demisto.error(f"Encountered an issue while getting offense closing reasons: {e}")
+                closing_reasons = {}
         for closing_reason in closing_reasons:
             if closing_reason["id"] == closing_id:
                 return closing_reason["text"]
@@ -500,8 +504,12 @@ class QRadarClient:
         """
         Converts offense type id to name
         """
-        if not offense_types:
-            offense_types = self.get_offense_types()
+        if offense_types is None:
+            try:
+                offense_types = self.get_offense_types()
+            except Exception as e:
+                demisto.error(f"Encountered an issue while getting offense type: {e}")
+                offense_types = []
         if offense_types:
             for o_type in offense_types:
                 if o_type["id"] == offense_type_id:
@@ -642,7 +650,7 @@ def epoch_to_iso(ms_passed_since_epoch):
     return ms_passed_since_epoch
 
 
-def print_debug_msg(msg):
+def print_debug_msg(msg, is_error):
     """
     Prints a debug message with QRadarMsg prefix
     """
@@ -796,7 +804,7 @@ def perform_offense_events_enrichment(
                 break
             time.sleep(SLEEP_FETCH_EVENT_RETIRES)
     except Exception as e:
-        print_debug_msg(f'Failed fetching event for offense {offense["id"]}: {str(e)}.')
+        demisto.error(f'Failed fetching event for offense {offense["id"]}: {str(e)}.')
     finally:
         return offense
 
@@ -838,8 +846,8 @@ def try_poll_offense_events_with_retry(
                     start_time = time.time()
                 time.sleep(EVENTS_INTERVAL_SECS)
         except Exception as e:
-            print_debug_msg(f"Error while fetching offense {offense_id} events, search_id: {search_id}. "
-                            f"Error details: {str(e)}")
+            demisto.error(f"Error while fetching offense {offense_id} events, search_id: {search_id}. "
+                          f"Error details: {str(e)}")
             failures += 1
             if failures < max_retries:
                 time.sleep(FAILURE_SLEEP)
@@ -1154,10 +1162,18 @@ def enrich_offense_result(
     domain_ids = set()
     rule_ids = set()
     if isinstance(response, list):
-        type_dict = client.get_offense_types()
-        closing_reason_dict = client.get_closing_reasons(
-            include_deleted=True, include_reserved=True
-        )
+        try:
+            type_dict = client.get_offense_types()
+        except Exception as e:
+            demisto.error(f"Encountered an issue while getting offense type: {e}")
+            type_dict = {}
+        try:
+            closing_reason_dict = client.get_closing_reasons(
+                include_deleted=True, include_reserved=True
+            )
+        except Exception as e:
+            demisto.error(f"Encountered an issue while getting offense closing reasons: {e}")
+            closing_reason_dict = {}
         for offense in response:
             offense["LinkToOffense"] = f"{client.server}/console/do/sem/offensesummary?" \
                                        f"appName=Sem&pageId=OffenseSummary&summaryId={offense.get('id')}"
@@ -1190,14 +1206,18 @@ def enrich_offense_result(
     return response
 
 
-def enrich_offense_res_with_domain_names(client, domain_ids, response):
+def enrich_offense_res_with_domain_names(client, domain_ids, offenses):
     """
     Add domain_name to the offense and assets results
     """
     domain_filter = 'id=' + 'or id='.join(str(domain_ids).replace(' ', '').split(','))[1:-1]
-    domains = client.get_devices(_filter=domain_filter)
+    try:
+        domains = client.get_devices(_filter=domain_filter)
+    except Exception as e:
+        demisto.error(f"Encountered an issue while getting offense domain names: {e}")
+        return
     domain_names = {d['id']: d['name'] for d in domains}
-    for offense in response:
+    for offense in offenses:
         if 'domain_id' in offense:
             offense['domain_name'] = domain_names.get(offense['domain_id'], '')
         if 'assets' in offense:
@@ -1206,14 +1226,18 @@ def enrich_offense_res_with_domain_names(client, domain_ids, response):
                     asset['domain_name'] = domain_names.get(asset['domain_id'], '')
 
 
-def enrich_offense_res_with_rule_names(client, rule_ids, response):
+def enrich_offense_res_with_rule_names(client, rule_ids, offenses):
     """
     Add name to the offense rules
     """
     rule_filter = 'id=' + 'or id='.join(str(rule_ids).replace(' ', '').split(','))[1:-1]
-    rules = client.get_rules(_filter=rule_filter)
+    try:
+        rules = client.get_rules(_filter=rule_filter)
+    except Exception as e:
+        demisto.error(f"Encountered an issue while getting offenses rules: {e}")
+        return
     rule_names = {r['id']: r['name'] for r in rules}
-    for offense in response:
+    for offense in offenses:
         if 'rules' in offense and isinstance(offense['rules'], list):
             for rule in offense['rules']:
                 if 'id' in rule:
@@ -1260,6 +1284,8 @@ def enrich_offenses_with_assets_and_source_destination_addresses(
                     assets = get_assets_for_offense(client, assets_ips)
                     if assets:
                         offense["assets"] = assets
+    except Exception as e:
+        demisto.error(f'Failed to enrich offenses with assets and source destination addresses. {e}')
     finally:
         return offenses
 
