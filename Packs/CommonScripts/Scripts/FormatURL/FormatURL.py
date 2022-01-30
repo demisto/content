@@ -153,7 +153,7 @@ def format_urls(non_formatted_urls: List[str]) -> List[Dict]:
             non_formatted_url = get_redirect_url_from_query(non_formatted_url, parse_results, 'url')
         elif re.match(FIREEYE_REGEX, non_formatted_url):
             if '&amp;' in non_formatted_url:
-                non_formatted_url = get_redirect_url_from_query(non_formatted_url, parse_results, 'amp;u')         
+                non_formatted_url = get_redirect_url_from_query(non_formatted_url, parse_results, 'amp;u')
             else:
                 non_formatted_url = get_redirect_url_from_query(non_formatted_url, parse_results, 'u')
         elif match := PROOF_POINT_URL_REG.search(non_formatted_url):
