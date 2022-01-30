@@ -5,7 +5,7 @@
 	"description": "The date and time when the alert was triggered. Right-click to Show rows 30 days prior or 30 days after the selected timestamp field value",
     "name": "Timestamp",
     "ownerOnly": false,
-    "cliName": "Timestamp",
+    "cliName": "timestamp",
     "type": "date",
     "closeForm": false,
     "editForm": true,
