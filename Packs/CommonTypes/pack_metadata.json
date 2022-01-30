@@ -35,6 +35,10 @@
         "CVESearch": {
             "mandatory": false,
             "display_name": "CVE Search"
+        },
+        "CoreAlertFields": {
+            "mandatory": false,
+            "display_name": "Core Alert Fields"
         }
     },
     "displayedImages": [
