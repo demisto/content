@@ -39,7 +39,7 @@ class Client(BaseClient):
             url_suffix=f"{url_suffix}/{args.get('request_type')}/{REQUESTS_SUFFIX}/"
                        f"{args.get('request_id')}",
             ok_codes=(404, 200),
-            resp_type='all')
+            resp_type='response')
 
     def get_paged(self, args: dict):
         data = self._http_request(
