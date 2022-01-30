@@ -3,7 +3,7 @@
     "description": "Incident state, either **Open** or **Closed**.",
     "version": -1,
     "modified": "2021-10-26T10:39:00.784636+03:00",
-    "name": "SaaS Security State",
+    "name": "Saas Security State",
     "ownerOnly": true,
     "cliName": "saassecuritystate",
     "type": "singleSelect",

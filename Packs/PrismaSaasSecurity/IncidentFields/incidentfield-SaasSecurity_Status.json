@@ -3,7 +3,7 @@
     "description": "Incident status details, combining **State** and **Category**. When **Closed**, followed by **No Reason**, **Business Justified**,  **Misidentified**, or **In The Cloud**. When *Open*, followed by **New**.",
     "version": -1,
     "modified": "2021-10-13T10:49:18.927919+03:00",
-    "name": "SaaS Security Status",
+    "name": "Saas Security Status",
     "ownerOnly": true,
     "cliName": "saassecuritystatus",
     "type": "singleSelect",

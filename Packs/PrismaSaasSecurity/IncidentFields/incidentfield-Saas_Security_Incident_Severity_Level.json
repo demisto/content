@@ -4,7 +4,7 @@
     "version": -1,
     "modified": "2021-10-27T23:00:55.750509079Z",
     "fromVersion": "6.0.0",
-    "name": "SaaS Security Incident Severity Level",
+    "name": "Saas Security Incident Severity Level",
     "ownerOnly": true,
     "cliName": "saassecurityincidentseveritylevel",
     "type": "shortText",
@@ -21,7 +21,7 @@
     "hidden": false,
     "openEnded": false,
     "associatedTypes": [
-        "SaaS Security Incident"
+        "Saas Security Incident"
     ],
     "associatedToAll": false,
     "unmapped": false,

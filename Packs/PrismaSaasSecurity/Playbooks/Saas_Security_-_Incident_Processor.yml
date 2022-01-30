@@ -1,6 +1,6 @@
-id: SaaS Security - Incident Processor
+id: Saas Security - Incident Processor
 version: -1
-name: SaaS Security - Incident Processor
+name: Saas Security - Incident Processor
 description: 'This playbook notifies incidents owner and provides remediation options
   to Saas Security admin for resolving incidents. '
 starttaskid: "0"

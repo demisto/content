@@ -1,11 +1,27 @@
 {
     "description": "Maps incoming Saas Security incidents fields.",
     "feed": false,
-    "id": "SaaS Security - Incoming Mapper",
+    "id": "Saas Security - Incoming Mapper",
     "mapping": {
         "Saas Security Incident": {
             "dontMapEventToLabels": true,
             "internalMapping": {
+                "Saas Security Asset Name": {
+                    "complex": null,
+                    "simple": "asset_name"
+                },
+                "Saas Security Asset URL": {
+                    "complex": null,
+                    "simple": "asset_page_uri"
+                },
+                "Saas Security Incident Id": {
+                    "complex": null,
+                    "simple": "incident_id"
+                },
+                "Saas Security Incident Severity Level": {
+                    "complex": null,
+                    "simple": "severity_level"
+                },
                 "Policy URI": {
                     "complex": null,
                     "simple": "policy_page_uri"
@@ -58,9 +74,29 @@
                     "complex": null,
                     "simple": "category"
                 },
+                "Saas Security State": {
+                    "complex": null,
+                    "simple": "state"
+                },
+                "Saas Security Category": {
+                    "complex": null,
+                    "simple": "category"
+                },
+                "Saas Security Assigned To": {
+                    "complex": null,
+                    "simple": "assigned_to"
+                },
+                "Saas Security Resolved By": {
+                    "complex": null,
+                    "simple": "resolved_by"
+                },
                 "Saas Security Status": {
                     "complex": null,
                     "simple": "status"
+                },
+                "Saas Security Asset ID": {
+                    "complex": null,
+                    "simple": "asset_id"
                 },
                 "name": {
                     "complex": null,
@@ -104,47 +140,11 @@
                     "complex": null,
                     "simple": "in_mirror_error"
                 },
-                "SaaS Security Asset Name": {
-                    "complex": null,
-                    "simple": "asset_name"
-                },
-                "SaaS Security Asset URL": {
-                    "complex": null,
-                    "simple": "asset_page_uri"
-                },
-                "SaaS Security Incident Id": {
-                    "complex": null,
-                    "simple": "incident_id"
-                },
-                "SaaS Security Incident Severity Level": {
-                    "complex": null,
-                    "simple": "severity_level"
-                },
-                "SaaS Security State": {
-                    "complex": null,
-                    "simple": "state"
-                },
-                "SaaS Security Category": {
-                    "complex": null,
-                    "simple": "category"
-                },
-                "SaaS Security Assigned To": {
-                    "complex": null,
-                    "simple": "assigned_to"
-                },
-                "SaaS Security Resolved By": {
-                    "complex": null,
-                    "simple": "resolved_by"
-                },
-                "SaaS Security Asset ID": {
-                    "complex": null,
-                    "simple": "asset_id"
-                },
-                "SaaS Security Asset Owner": {
+                "Saas Security Asset Owner": {
                     "complex": null,
                     "simple": "asset_owner_name"
                 },
-                "SaaS Security Asset Owner Email": {
+                "Saas Security Asset Owner Email": {
                     "complex": null,
                     "simple": "asset_owner_email"
                 }
@@ -153,14 +153,14 @@
         "dbot_classification_incident_type_all": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                "SaaS Security Incident Severity Level": {
+                "Saas Security Incident Severity Level": {
                     "complex": null,
                     "simple": "severity_level"
                 }
             }
         }
     },
-    "name": "SaaS Security - Incoming Mapper",
+    "name": "Saas Security - Incoming Mapper",
     "type": "mapping-incoming",
     "version": -1,
     "fromVersion": "6.0.0"
