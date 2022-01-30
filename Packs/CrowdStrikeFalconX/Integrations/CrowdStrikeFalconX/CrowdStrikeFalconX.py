@@ -972,7 +972,7 @@ def upload_file_with_polling_command(client, args):
 
 
 def submit_uploaded_file_polling_command(client, args):
-    return run_polling_command(client, args, 'cs-fx-submit-uploaded-file', 
+    return run_polling_command(client, args, 'cs-fx-submit-uploaded-file',
                                send_uploaded_file_to_sandbox_analysis_command, get_full_report_command)
 
 
@@ -995,24 +995,24 @@ def should_run_command_as_polling(command, args):
 def validate_command_args(command, args):
     if command == 'cs-fx-upload-file':
         if 'file' not in args:
-            raise Exception(f"file argument is a mandatory for cs-fx-upload-file command")
+            raise Exception("file argument is a mandatory for cs-fx-upload-file command")
         if 'file_name' not in args:
-            raise Exception(f"file_name argument is a mandatory for cs-fx-upload-file command")
+            raise Exception("file_name argument is a mandatory for cs-fx-upload-file command")
         if 'polling' in args and args.get('submit_file') != 'yes':
-            raise Exception(f"The command cs-fx-upload-file support the polling option "
-                            f"just when the submit_file argument is yes.")
+            raise Exception("The command cs-fx-upload-file support the polling option "
+                            "just when the submit_file argument is yes.")
 
     elif command == 'cs-fx-submit-uploaded-file':
         if 'environment_id' not in args:
-            raise Exception(f"environment_id argument is a mandatory for cs-fx-submit-uploaded-file command")
+            raise Exception("environment_id argument is a mandatory for cs-fx-submit-uploaded-file command")
         if 'sha256' not in args:
-            raise Exception(f"sha256 argument is a mandatory for cs-fx-submit-uploaded-file command")
+            raise Exception("sha256 argument is a mandatory for cs-fx-submit-uploaded-file command")
 
     elif command == 'cs-fx-submit-url':
         if 'environment_id' not in args:
-            raise Exception(f"environment_id argument is a mandatory for cs-fx-submit-url command")
+            raise Exception("environment_id argument is a mandatory for cs-fx-submit-url command")
         if 'url' not in args:
-            raise Exception(f"sha256 argument is a mandatory for cs-fx-submit-url command")
+            raise Exception("sha256 argument is a mandatory for cs-fx-submit-url command")
 
 
 def remove_polling_related_args(args):
