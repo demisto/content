@@ -508,7 +508,7 @@ class QRadarClient:
             try:
                 offense_types = self.get_offense_types()
             except Exception as e:
-                demisto.error(f"Encountered an issue while getting offense type: {e}")
+                demisto.error(f"Encountered an issue while getting offense types: {e}")
                 offense_types = []
         if offense_types:
             for o_type in offense_types:
@@ -650,7 +650,7 @@ def epoch_to_iso(ms_passed_since_epoch):
     return ms_passed_since_epoch
 
 
-def print_debug_msg(msg, is_error):
+def print_debug_msg(msg):
     """
     Prints a debug message with QRadarMsg prefix
     """
@@ -1165,7 +1165,7 @@ def enrich_offense_result(
         try:
             type_dict = client.get_offense_types()
         except Exception as e:
-            demisto.error(f"Encountered an issue while getting offense type: {e}")
+            demisto.error(f"Encountered an issue while getting offense types: {e}")
             type_dict = {}
         try:
             closing_reason_dict = client.get_closing_reasons(
