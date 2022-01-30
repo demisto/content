@@ -1085,9 +1085,10 @@ tasks:
       limit:
         simple: "2"
       query:
-        simple: event from cloud.audit_logs where ip EXISTS
+        simple: event from cloud.audit_logs where operation IN ('AuthorizeSecurityGroupEgress', 'AuthorizeSecurityGroupIngress',
+          'CreateVpc', 'DeleteFlowLogs', 'DeleteVpc', 'ModifyVpcAttribute', 'RevokeSecurityGroupIngress')
       time-range-unit:
-        simple: hour
+        simple: day
       time-range-value:
         simple: "1"
     separatecontext: false
