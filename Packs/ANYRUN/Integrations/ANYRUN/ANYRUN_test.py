@@ -5,7 +5,7 @@ from ANYRUN import make_capital, make_singular, make_upper
 from ANYRUN import generate_dbotscore
 from ANYRUN import taskid_from_url
 import requests
-
+from CommonServerPython import DemistoException
 HEADERS = {
     'Authorization': 'Authorization'
 }
@@ -136,17 +136,7 @@ class TestTaskIDFromURL(object):
         assert taskid_from_url(url) == 'this-is-the-task-id'
 
 
-def http_mock(method, url, verify=USE_SSL, headers=None):
-    if not headers:
-        raise ValueError("Permission denied")
-    else:
-        the_response = requests.Response()
-        the_response.status_code = 200
-        the_response._content = b'{ "image" : "image" }'
-        return the_response
-
-
-def test_get_image(mocker):
+def test_get_image(requests_mock):
     """
     Given:
         A mock response from the API
@@ -155,9 +145,8 @@ def test_get_image(mocker):
     Then:
         Validate that the http request gets called with authorization (headers)
     """
-    response = {'data': {'analysis': {'content': {'screenshots': [{'permanentUrl': 'www.test.com'}]}}}}
-    mocker.patch('requests.request', side_effect=http_mock)
-    try:
-        images_from_report(response)
-    except ValueError as e:
-        print(str(e))
+    response = {'data': {'analysis': {'content': {'screenshots': [{'permanentUrl': ' http://www.test.com'}]}}}}
+    requests_mock.get('http://www.test.com')
+    images_from_report(response)
+
+    assert requests_mock._adapter.last_request._request.headers["Authorization"] is not None
