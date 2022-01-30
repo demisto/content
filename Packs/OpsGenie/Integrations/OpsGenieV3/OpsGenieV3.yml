@@ -1523,8 +1523,10 @@ script:
     arguments:
       - name: output_prefix
         deprecated: true
+        description: The output prefix to use for the results
       - name: polled_once
         deprecated: true
+        description: 'Whether this is the first time polling'
         required: false
       - name: request_id
         description: The id of the request to get
