@@ -32,6 +32,12 @@ class ServiceNowClient(BaseClient):
             self.password = credentials.get('password')
             self.auth = (self.username, self.password)
 
+        if '@' in client_id:
+            splitted_client_id = client_id.split('@')
+            self.client_id = splitted_client_id[0]
+            refresh_token = splitted_client_id[1]
+            set_integration_context({'refresh_token': refresh_token})
+
         self.base_url = url
         super().__init__(base_url=self.base_url, verify=verify, proxy=proxy, headers=headers, auth=self.auth)  # type
         # : ignore[misc]
