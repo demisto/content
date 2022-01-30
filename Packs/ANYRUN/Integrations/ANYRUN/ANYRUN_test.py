@@ -4,9 +4,7 @@ from ANYRUN import underscore_to_camel_case, images_from_report
 from ANYRUN import make_capital, make_singular, make_upper
 from ANYRUN import generate_dbotscore
 from ANYRUN import taskid_from_url
-HEADERS = {
-    'Authorization': 'Authorization'
-}
+HEADERS = {'Authorization': 'Basic Og=='}
 USE_SSL = False
 
 
@@ -144,7 +142,5 @@ def test_get_image(requests_mock):
         Validate that the http request gets called with authorization (headers)
     """
     response = {'data': {'analysis': {'content': {'screenshots': [{'permanentUrl': ' http://www.test.com'}]}}}}
-    requests_mock.get('http://www.test.com')
-    images_from_report(response)
-
-    assert requests_mock._adapter.last_request._request.headers["Authorization"] is not None
+    requests_mock.get('http://www.test.com', request_headers=HEADERS)
+    images_from_report(response)  # the command will fail if a header is not provided with the GET request.
