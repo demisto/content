@@ -831,3 +831,23 @@ def test_get_machine_details_command(mocker):
 def test_reformat_filter_with_list_arg(fields_to_filter_by, field_key_from_type_list, expected_query):
     from MicrosoftDefenderAdvancedThreatProtection import reformat_filter_with_list_arg
     assert reformat_filter_with_list_arg(fields_to_filter_by, field_key_from_type_list) == expected_query
+
+
+@pytest.mark.parametrize('hostnames, ips, ids, expected_filter', [
+    # only one list is given
+    (['example.com'], [], [], "computerDnsName eq 'example.com'"),
+    (['example.com', 'b.com'], [], [], "computerDnsName eq 'example.com' or computerDnsName eq 'b.com'"),
+    # each list has only one value
+    (['b.com'], ['1.2.3.4'], ['1'], "computerDnsName eq 'b.com' or lastIpAddress eq '1.2.3.4' or id eq '1'"),
+    # each list has more than 1 value
+    (['b.com', 'a.com'], ['1.2.3.4', '1.2.3.5'], ['1', '2'],
+     "computerDnsName eq 'b.com' or computerDnsName eq 'a.com' or "
+     "lastIpAddress eq '1.2.3.4' or "
+     "lastIpAddress eq '1.2.3.5' or "
+     "id eq '1' or "
+     "id eq '2'"),
+
+])
+def test_create_filter_for_endpoint_command(hostnames, ips, ids, expected_filter):
+    from MicrosoftDefenderAdvancedThreatProtection import create_filter_for_endpoint_command
+    assert create_filter_for_endpoint_command(hostnames, ips, ids) == expected_filter

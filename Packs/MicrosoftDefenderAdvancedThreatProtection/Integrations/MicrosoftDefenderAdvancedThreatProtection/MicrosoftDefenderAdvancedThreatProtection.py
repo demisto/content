@@ -2761,6 +2761,29 @@ def create_endpoint_verdict(machine: dict):
     )
 
 
+def create_filter_for_endpoint_command(hostnames, ips, ids):
+    """
+    Creates a filter query for getting the machines according to the given args.
+    The query build is: "or" operator separetes the key and the value between each arg.
+
+    For example,
+    for fields_to_values: {'computerDnsName': ['b.com', 'a.com'], 'lastIpAddress': ['1.2.3.4'], 'id': ['1','2']}
+    the result is: "computerDnsName eq 'b.com' or computerDnsName eq 'a.com' or lastIpAddress eq '1.2.3.4' or
+    id eq '1' or id eq '2'"
+
+    Args:
+        hostnames (list): Comma-separated list of computerDnsName.
+        ips (list): Comma-separated list of lastIpAddress.
+        ids (list): Comma-separated list of id.
+
+    Returns: A string that represents the filter query according the inputs.
+    """
+    fields_to_values = {'computerDnsName': hostnames, 'lastIpAddress': ips, 'id': ids}
+    return ' or '.join(
+        f"{field_key} eq '{field_value}'" for (field_key, field_value_list) in fields_to_values.items() if
+        field_value_list for field_value in field_value_list)
+
+
 def endpoint_command(client: MsClient, args: dict) -> List[CommandResults]:
     """Retrieves a collection of machines that have communicated with WDATP cloud on the last 30 days
 
@@ -2780,12 +2803,7 @@ def endpoint_command(client: MsClient, args: dict) -> List[CommandResults]:
         raise DemistoException(
             f'{INTEGRATION_NAME} - In order to run this command, please provide valid id, ip or hostname')
 
-    fields_to_values = {'computerDnsName': hostnames, 'lastIpAddress': ips, 'id': ids}
-    filter_req = ' or '.join(
-        f"{field_key} eq '{field_value}'" for (field_key, field_value_list) in fields_to_values.items() if
-        field_value_list for field_value in field_value_list)
-
-    machines_response = client.get_machines(filter_req)
+    machines_response = client.get_machines(create_filter_for_endpoint_command(hostnames, ips, ids))
     machines_outputs = []
     for machine in machines_response.get('value', []):
         machine_data = get_machine_data(machine)
