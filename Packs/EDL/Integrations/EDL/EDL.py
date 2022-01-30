@@ -380,8 +380,8 @@ def create_mwg_out_format(indicator: dict, request_args: RequestArguments, heade
         mwg_type = request_args.mwg_type
         if isinstance(mwg_type, list):
             mwg_type = mwg_type[0]
-        return "type=" + mwg_type + "\n" + value + " " + sources_string + '\n'
-    return value + " " + sources_string + '\n'
+        return "type=" + mwg_type + "\n" + value + " " + sources_string
+    return '\n' + value + " " + sources_string
 
 
 def create_proxysg_all_category_out_format(indicators_file: IO, files_by_category: dict):
@@ -394,12 +394,15 @@ def create_proxysg_all_category_out_format(indicators_file: IO, files_by_categor
     Returns:
         a file in proxysg format.
     """
+    # the first time "define category" will be writen without a new line
+    new_line = ''
     for category, category_file in files_by_category.items():
-        indicators_file.write(f"define category {category}\n")
+        indicators_file.write(f"{new_line}define category {category}\n")
+        new_line = '\n'
         category_file.seek(0)
         indicators_file.write(category_file.read())
         category_file.close()
-        indicators_file.write("end\n")
+        indicators_file.write("end")
 
     return indicators_file
 
@@ -464,8 +467,8 @@ def create_csv_out_format(headers_was_writen: bool, list_fields: List, ioc, requ
         if not headers_was_writen:
             headers = list(ioc.keys())
             headers_str = list_to_str(headers) + "\n"
-            return headers_str + list_to_str(values, map_func=lambda val: f'"{val}"') + "\n"
-        return list_to_str(values, map_func=lambda val: f'"{val}"') + "\n"
+            return headers_str + list_to_str(values, map_func=lambda val: f'"{val}"')
+        return "\n" + list_to_str(values, map_func=lambda val: f'"{val}"')
     else:
         fields_value_list = []
         for field in list_fields:
@@ -473,8 +476,8 @@ def create_csv_out_format(headers_was_writen: bool, list_fields: List, ioc, requ
             fields_value_list.append(value)
         if not headers_was_writen:
             headers_str = request_args.fields_to_present + '\n'
-            return headers_str + list_to_str(fields_value_list, map_func=lambda val: f'"{val}"') + "\n"
-        return list_to_str(fields_value_list, map_func=lambda val: f'"{val}"') + "\n"
+            return headers_str + list_to_str(fields_value_list, map_func=lambda val: f'"{val}"')
+        return "\n" + list_to_str(fields_value_list, map_func=lambda val: f'"{val}"')
 
 
 def ip_groups_to_cidrs(ip_range_groups: Iterable):
@@ -646,6 +649,7 @@ def create_text_out_format(iocs: IO, request_args: RequestArguments) -> Union[IO
             # this could generate more than num entries according to PAGE_SIZE
             if indicator.startswith('*.'):
                 formatted_indicators.write(new_line + str(indicator.lstrip('*.')))
+                new_line = '\n'
 
         if request_args.collapse_ips != DONT_COLLAPSE and ioc_type in (FeedIndicatorType.IP, FeedIndicatorType.CIDR):
             ipv4_formatted_indicators.add(indicator)
@@ -785,8 +789,18 @@ def route_edl() -> Response:
     edl_size = 0
     if edl.strip():
         edl_size = edl.count('\n') + 1  # add 1 as last line doesn't have a \n
-    if len(edl) == 0 and request_args.add_comment_if_empty:
-        edl = '# Empty EDL'
+    if len(edl) == 0 and request_args.add_comment_if_empty or edl == ']' and request_args.add_comment_if_empty:
+        edl = '# Empty List'
+    # if the case there are strings to add to the EDL, add them if the output type is text
+    elif request_args.out_format == FORMAT_TEXT:
+        append_str = params.get("append_string")
+        prepend_str = params.get("prepend_string")
+        if append_str:
+            append_str = append_str.replace("\\n", "\n")
+            edl = f"{edl}{append_str}"
+        if prepend_str:
+            prepend_str = prepend_str.replace("\\n", "\n")
+            edl = f"{prepend_str}\n{edl}"
     mimetype = get_outbound_mimetype(request_args)
     max_age = ceil((datetime.now() - dateparser.parse(cache_refresh_rate)).total_seconds())  # type: ignore[operator]
     demisto.debug(f'Returning edl of size: [{edl_size}], created: [{created}], query time seconds: [{query_time}],'

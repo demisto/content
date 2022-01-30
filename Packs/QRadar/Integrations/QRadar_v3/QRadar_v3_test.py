@@ -1723,6 +1723,7 @@ def test_change_ctx_to_be_compatible(mocker, context_data, retry_compatible):
     """
     mocker.patch.object(QRadar_v3, 'get_integration_context', return_value=context_data)
     mocker.patch.object(QRadar_v3, 'set_integration_context')
+    mocker.patch.object(QRadar_v3.demisto, 'error')
 
     change_ctx_to_be_compatible_with_retry()
 
