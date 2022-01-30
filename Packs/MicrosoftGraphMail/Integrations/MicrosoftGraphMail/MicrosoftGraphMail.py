@@ -519,7 +519,7 @@ class MsGraphClient:
         return parsed_email
 
     @staticmethod
-    def build_reply(to_recipients, comment):
+    def build_reply(to_recipients, comment, attach_ids, attach_names, attach_cids):
         """
         Builds the reply message that includes recipients to reply and reply message.
 
@@ -529,12 +529,22 @@ class MsGraphClient:
         :type comment: ``str``
         :param comment: The message to reply.
 
+        :type attach_ids: ``list``
+        :param attach_ids: List of uploaded to War Room regular attachments to send
+
+        :type attach_names: ``list``
+        :param attach_names: List of regular attachments names to send
+
+        :type attach_cids: ``list``
+        :param attach_cids: List of uploaded to War Room inline attachments to send
+
         :return: Returns legal reply message.
         :rtype: ``dict``
         """
         return {
             'message': {
-                'toRecipients': MsGraphClient._build_recipient_input(to_recipients)
+                'toRecipients': MsGraphClient._build_recipient_input(to_recipients),
+                'attachments': MsGraphClient._build_file_attachments_input(attach_ids, attach_names, attach_cids, [])
             },
             'comment': comment
         }
@@ -1425,7 +1435,10 @@ def prepare_args(command, args):
         return {
             'to_recipients': argToList(args.get('to')),
             'message_id': args.get('ID', ''),
-            'comment': args.get('body')
+            'comment': args.get('body'),
+            'attach_ids': argToList(args.get('attachIDs')),
+            'attach_names': argToList(args.get('attachNames')),
+            'attach_cids': argToList((args.get('attachCIDs')))
         }
 
     return args
@@ -1548,10 +1561,13 @@ def reply_to_command(client: MsGraphClient, args):
     to_recipients = prepared_args.get('to_recipients')
     message_id = prepared_args.get('message_id')
     comment = prepared_args.get('comment')
+    attach_ids = prepared_args.get('attach_ids')
+    attach_names = prepared_args.get('attach_names')
+    attach_cids = prepared_args.get('attach_cids')
     email = args.get('from')
 
     suffix_endpoint = f'/users/{email}/messages/{message_id}/reply'
-    reply = client.build_reply(to_recipients, comment)
+    reply = client.build_reply(to_recipients, comment, attach_ids, attach_names, attach_cids)
     client.ms_client.http_request('POST', suffix_endpoint, json_data=reply, resp_type="text")
 
     return_outputs(f'### Replied to: {", ".join(to_recipients)} with comment: {comment}')

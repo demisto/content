@@ -1,0 +1,65 @@
+category: Utilities
+commonfields:
+  id: CreateIncidents
+  version: -1
+configuration:
+- defaultvalue: https://raw.github.com/demisto/content/master
+  additionalinfo: The base url of the source you wish to upload/ downlowd files from.
+  display: Source URL
+  name: url
+  required: true
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+description: CreateIncidents fetches custom incidents that are created manually.
+display: Create Test Incidents
+name: CreateIncidents
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: 'The path of json file containing incidents. Can contain one incident
+        or a list of incidents. For example: Packs/somePack/TestPlaybooks/examples.json'
+      isArray: false
+      name: incidents_path
+      required: true
+      secret: false
+    - default: false
+      description: 'The paths of the files to be added to incidents as attachment. Would
+        be added to all incidents provided in the incident_path file. For example:
+        Packs/somePack/TestPlaybooks/attach.eml'
+      isArray: false
+      name: attachment_paths
+      required: false
+      secret: false
+    deprecated: false
+    description: Creates incidents from json files provided, and stores it in the
+      instance context.
+    execution: false
+    name: create-test-incident-from-file
+  dockerimage: demisto/python3:3.10.1.25933
+  feed: false
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- No tests (auto formatted)
+fromversion: 6.1.0

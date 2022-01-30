@@ -13,7 +13,7 @@ import warnings
 from CommonServerPython import set_to_integration_context_with_retries, xml2json, json2xml, entryTypes, formats, tableToMarkdown, underscoreToCamelCase, \
     flattenCell, date_to_timestamp, datetime, camelize, pascalToSpace, argToList, \
     remove_nulls_from_dictionary, is_error, get_error, hash_djb2, fileResult, is_ip_valid, get_demisto_version, \
-    IntegrationLogger, parse_date_string, IS_PY3, DebugLogger, b64_encode, parse_date_range, return_outputs, \
+    IntegrationLogger, parse_date_string, IS_PY3, PY_VER_MINOR, DebugLogger, b64_encode, parse_date_range, return_outputs, \
     argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, ipv6Regex, batch, FeedIndicatorType, \
     encode_string_results, safe_load_json, remove_empty_elements, aws_table_to_markdown, is_demisto_version_ge, \
     appendContext, auto_detect_indicator_type, handle_proxy, get_demisto_version_as_str, get_x_content_info_headers, \
@@ -247,8 +247,7 @@ COMPLEX_DATA_WITH_URLS = [(
 
 class TestTableToMarkdown:
     @pytest.mark.parametrize('data, expected_table', TABLE_TO_MARKDOWN_ONLY_DATA_PACK)
-    @staticmethod
-    def test_sanity(data, expected_table):
+    def test_sanity(self, data, expected_table):
         """
         Given:
           - list of objects.
@@ -634,8 +633,7 @@ class TestTableToMarkdown:
         assert table_with_character == expected_string_with_special_character
 
     @pytest.mark.parametrize('data, expected_table', DATA_WITH_URLS)
-    @staticmethod
-    def test_clickable_url(data, expected_table):
+    def test_clickable_url(self, data, expected_table):
         """
         Given:
           - list of objects.
@@ -2394,6 +2392,20 @@ class TestCommandResults:
 
         assert results.to_context().get('Note') is True
 
+
+def test_http_request_ssl_ciphers_insecure():
+    if IS_PY3 and PY_VER_MINOR >= 10:
+        from CommonServerPython import BaseClient
+
+        client = BaseClient('https://www.google.com', ok_codes=(200, 201), verify=False)
+        adapter = client._session.adapters.get('https://')
+        ssl_context = adapter.poolmanager.connection_pool_kw['ssl_context']
+        ciphers_list = ssl_context.get_ciphers()
+
+        assert len(ciphers_list) == 42
+        assert next(cipher for cipher in ciphers_list if cipher['name'] == 'AES128-GCM-SHA256')
+    else:
+        assert True
 
 class TestBaseClient:
     from CommonServerPython import BaseClient
@@ -5928,7 +5940,44 @@ def test_get_message_memory_dump():
     assert ' Globals by Size ' in result
     assert ' End Top ' in result
     assert ' End Variables Dump ' in result
-    assert '<class \'' in result
+
+
+def test_shorten_string_for_printing():
+    from CommonServerPython import shorten_string_for_printing
+    assert shorten_string_for_printing(None, None) is None
+    assert shorten_string_for_printing('1', 9) == '1'
+    assert shorten_string_for_printing('123456789', 9) == '123456789'
+    assert shorten_string_for_printing('1234567890', 9) == '123...890'
+    assert shorten_string_for_printing('12345678901', 9) == '123...901'
+    assert shorten_string_for_printing('123456789012', 9) == '123...012'
+
+    assert shorten_string_for_printing('1234567890', 10) == '1234567890'
+    assert shorten_string_for_printing('12345678901', 10) == '1234...901'
+    assert shorten_string_for_printing('123456789012', 10) == '1234...012'
+
+
+def test_get_size_of_object():
+    from CommonServerPython import get_size_of_object
+
+    class Object(object):
+        pass
+
+    level_3 = Object()
+    level_3.key3 = 'val3'
+
+    level_2 = Object()
+    level_2.key2 = 'val2'
+    level_2.child = level_3
+
+    level_1 = Object()
+    level_1.key1 = 'val1'
+    level_1.child = level_2
+
+    level_1_sys_size = sys.getsizeof(level_1)
+    level_1_deep_size = get_size_of_object(level_1)
+
+    # 3 levels, so shoulod be at least 3 times as large
+    assert level_1_deep_size > 3 * level_1_sys_size
 
 
 class TestSetAndGetLastMirrorRun:
