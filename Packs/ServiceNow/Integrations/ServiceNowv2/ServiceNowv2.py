@@ -2118,8 +2118,7 @@ def check_assigned_to_field(client: Client, assigned_to: dict) -> Optional[str]:
             return user_email
         else:
             demisto.debug(f'Could not assign user {assigned_to.get("value")} since it does not exist in ServiceNow')
-            return ''
-    return
+    return ''
 
 
 def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) -> Union[List[Dict[str, Any]], str]:
