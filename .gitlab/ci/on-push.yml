@@ -139,7 +139,7 @@ prepare-testing-bucket-mpv2:
     - section_end "Collect Tests and Content Packs"
 
     - section_start "Prepare Content Packs for Testing"
-    - ./Tests/scripts/prepare_content_packs_for_testing.sh "$GCS_MARKET_V2_BUCKET" "$STORAGE_BASE_PATH" "marketplacev2" "-idp ./Tests/id_set.json"
+    - ./Tests/scripts/prepare_content_packs_for_testing.sh "$GCS_MARKET_V2_BUCKET" "$STORAGE_BASE_PATH" "marketplacev2" "./Tests/id_set.json"
     - section_end "Prepare Content Packs for Testing"
 
     - section_start "Upload Artifacts to GCP" --collapsed

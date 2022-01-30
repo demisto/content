@@ -14,15 +14,15 @@ if [[ ! -f "$GCS_MARKET_KEY" ]]; then
     exit 1
 fi
 
-#if [[ -z "$3" ]]; then
-#  MARKETPLACE_TYPE="xsoar"
-#else
-#  MARKETPLACE_TYPE=$3
+if [[ -z "$3" ]]; then
+  MARKETPLACE_TYPE="xsoar"
+else
+  MARKETPLACE_TYPE=$3
 #  if [[ "$MARKETPLACE_TYPE" == "marketplacev2" ]]; then
 #    GCS_PRODUCTION_BUCKET=$GCS_PRODUCTION_V2_BUCKET
 #    ID_SET=$ARTIFACTS_FOLDER/id_set_mp_v2.json
 #  fi
-#fi
+fi
 
 #if [[ -n "$4" ]]; then  # TODO: adjust with existing id_set, fix also in calling lines
 #  ID_SET_PATH = $4
