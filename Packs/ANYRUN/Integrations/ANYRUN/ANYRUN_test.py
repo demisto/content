@@ -4,8 +4,6 @@ from ANYRUN import underscore_to_camel_case, images_from_report
 from ANYRUN import make_capital, make_singular, make_upper
 from ANYRUN import generate_dbotscore
 from ANYRUN import taskid_from_url
-import requests
-from CommonServerPython import DemistoException
 HEADERS = {
     'Authorization': 'Authorization'
 }
