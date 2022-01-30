@@ -180,7 +180,7 @@ def safe_get_file_reputation(tie_client, hash_param):
     try:
         res = tie_client.get_file_reputation(hash_param)
     except Exception as e:
-        demisto.log("McAfee failed to get file reputation with error: " + str(e))
+        demisto.info("McAfee failed to get file reputation with error: " + str(e))
         return None
     return res
 
