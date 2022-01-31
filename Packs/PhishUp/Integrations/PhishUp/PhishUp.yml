@@ -41,13 +41,13 @@ script:
     - default: false
       description: Single URL for phishup investigation
       isArray: false
-      name: Url
+      name: url
       required: true
       secret: false
     deprecated: false
     description: Single url investigation
     execution: false
-    name: phishup-investigate-url
+    name: url
     outputs:
     - contextPath: PhishUp.Result
       description: response types "Clean", "Phish", "Error"
