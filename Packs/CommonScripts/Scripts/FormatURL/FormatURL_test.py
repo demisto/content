@@ -226,7 +226,7 @@ class TestFormatURL:
                                            redirect_param_name) == expected
 
     #  Invalid cases
-    
+
     @pytest.mark.parametrize('url_', [
         'https://urldefense.com/v3/__https://google.com:443/search?66ujQIQ$',
         'https://urldefense.us/v3/__https://google.com:443/searchERujngZv9UWf66ujQIQ$'
