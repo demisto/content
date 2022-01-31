@@ -139,6 +139,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 44. microsoft-atp-list-machines-by-vulnerability
 45. microsoft-atp-get-file-info
 46. endpoint
+47. microsoft-atp-indicator-batch-update
 
 ### 1. microsoft-atp-isolate-machine
 ---
@@ -4358,3 +4359,68 @@ Machine.ReadWrite.All
 >|ID|ComputerDNSName|OSPlatform|LastIPAddress|LastExternalIPAddress|HealthStatus|RiskScore|ExposureLevel|
 >|---|---|---|---|---|---|---|---|
 >| f3bba49a | ec2amaz-ua9hieu | WindowsServer2016 | 1.2.3.4 | 127.0.0.1 | Active | None | High |
+
+
+### microsoft-atp-indicator-batch-update
+***
+Updates batch of indicator. If an indicator does not exist, a new indicator will be created.
+
+##### Required Permissions
+Ti.ReadWrite
+Ti.ReadWrite.All
+
+##### Limitations
+1. Rate limitations for this API are 30 calls per minute.
+2. There is a limit of 15,000 active indicators per tenant.
+3. Maximum batch size for one API call is 500.
+
+#### Base Command
+
+`microsoft-atp-indicator-batch-update`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| indicator_batch | A JSON object with list of MS defender ATP indicators to update. indicator_batch query should by list of dictionaries. For example: [{"indicatorValue": "value1"}, {"indicatorValue": "value2"}]. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftATP.Indicators.ID | String | Created by the system when the indicator is ingested. Generated GUID/unique identifier. | 
+| MicrosoftATP.Indicators.Value | String | The value of the indicator. | 
+| MicrosoftATP.Indicators.FailureReason | String | The reason for update failure. | 
+| MicrosoftATP.Indicators.IsFailed | Boolean | Whether the update was failed. | 
+
+#### Command example
+```!microsoft-atp-indicator-batch-update indicator_batch=`[{"indicatorValue": "220e7d15b011d7fac48f2bd61114db1022197f7f","indicatorType": "FileSha1","title": "demo","application": "demo-test", "action": "Alert","severity": "Informational","description": "demo2","recommendedActions": "nothing","rbacGroupNames": ["group1", "group2"]},{"indicatorValue": "2233223322332233223322332233223322332233223322332233223322332222","indicatorType": "FileSha256","title": "demo2","application": "demo-test2","action": "Alert","severity": "Medium","description": "demo2","recommendedActions": "nothing","rbacGroupNames": []}]````
+#### Context Example
+```json
+{
+    "MicrosoftATP": {
+        "Indicators": [
+            {
+                "FailureReason": null,
+                "ID": "5217",
+                "IsFailed": false,
+                "Value": "220e7d15b011d7fac48f2bd61114db1022197f7f"
+            },
+            {
+                "FailureReason": null,
+                "ID": "5218",
+                "IsFailed": false,
+                "Value": "2233223322332233223322332233223322332233223322332233223322332222"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Indicators updated successfully.
+>|ID|Value|IsFailed|
+>|---|---|---|
+>| 5217 | 220e7d15b011d7fac48f2bd61114db1022197f7f | false |
+>| 5218 | 2233223322332233223322332233223322332233223322332233223322332222 | false |

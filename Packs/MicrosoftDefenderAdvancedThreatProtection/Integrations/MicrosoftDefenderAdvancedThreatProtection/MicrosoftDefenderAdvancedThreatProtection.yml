@@ -4735,6 +4735,32 @@ script:
     - contextPath: MicrosoftATP.Machine.AgentVersion
       description: The machine Agent version.
       type: String
+  - arguments:
+    - default: false
+      description: 'A JSON object with list of MS defender ATP indicators to update. indicator_batch
+        query should by list of dictionaries. For example: [{"indicatorValue": "value1"}, {"indicatorValue": "value2"}]'
+      isArray: false
+      name: indicator_batch
+      required: true
+      secret: false
+    deprecated: false
+    description: Updates batch of indicator. If an indicator does not exist, a new indicator will be created.
+    execution: false
+    name: microsoft-atp-indicator-batch-update
+    outputs:
+    - contextPath: MicrosoftATP.Indicators.ID
+      description: Created by the system when the indicator is ingested. Generated
+        GUID/unique identifier.
+      type: String
+    - contextPath: MicrosoftATP.Indicators.Value
+      description: The value of the indicator.
+      type: String
+    - contextPath: MicrosoftATP.Indicators.FailureReason
+      description: The reason for update failure.
+      type: String
+    - contextPath: MicrosoftATP.Indicators.IsFailed
+      description: Whether the update was failed.
+      type: Boolean
   dockerimage: demisto/crypto:1.0.0.24380
   feed: false
   isfetch: true

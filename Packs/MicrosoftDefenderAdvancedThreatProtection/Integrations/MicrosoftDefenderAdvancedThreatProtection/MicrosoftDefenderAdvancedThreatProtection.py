@@ -1,4 +1,6 @@
 import copy
+import json
+from json import JSONDecodeError
 from typing import Tuple, List, Dict
 from CommonServerPython import *
 import urllib3
@@ -58,6 +60,7 @@ HEALTH_STATUS_TO_ENDPOINT_STATUS = {
 
 SECURITY_CENTER_RESOURCE = 'https://api.securitycenter.microsoft.com'
 SECURITY_CENTER_INDICATOR_ENDPOINT = 'https://api.securitycenter.microsoft.com/api/indicators'
+SECURITY_CENTER_INDICATOR_ENDPOINT_BATCH = 'https://api.securitycenter.microsoft.com/api/indicators/import'
 GRAPH_INDICATOR_ENDPOINT = 'https://graph.microsoft.com/beta/security/tiIndicators'
 
 INTEGRATION_NAME = 'Microsoft Defender ATP'
@@ -881,6 +884,14 @@ class MsClient:
         resp = self.indicators_http_request('POST', full_url=SECURITY_CENTER_INDICATOR_ENDPOINT, json_data=body,
                                             url_suffix=None, should_use_security_center=True)
         return assign_params(values_to_ignore=[None], **resp)
+
+    def create_update_indicator_batch_security_center_api(self, body):
+        """
+        https://docs.microsoft.com/en-us/microsoft-365/security/defender-endpoint/import-ti-indicators?view=o365-worldwide
+        """
+        resp = self.indicators_http_request('POST', full_url=SECURITY_CENTER_INDICATOR_ENDPOINT_BATCH, json_data=body,
+                                            url_suffix=None, should_use_security_center=True)
+        return resp
 
     def update_indicator(
             self, indicator_id: str, expiration_date_time: str,
@@ -2624,6 +2635,46 @@ def sc_create_update_indicator_command(client: MsClient, args: Dict[str, str]) -
         return CommandResults(readable_output=f'Indicator {indicator_value} was NOT updated.')
 
 
+def sc_update_batch_indicators_command(client: MsClient, args: Dict[str, str]):  # -> CommandResults:
+    """Updates batch of indicators. If an indicator exists it will be updated. Otherwise, will create new one
+    Note: CIDR notation for IPs is not supported.
+
+    Args:
+        client: MsClient
+        args: arguments from CortexSOAR.
+           Must contains 'indicator_batch' as a JSON file.
+
+    """
+    indicator_batch = args.get('indicator_batch', "")
+    headers = ["ID", "Value", "IsFailed", "FailureReason"]
+    try:
+        batch_json = json.loads(indicator_batch)
+    except JSONDecodeError as e:
+        raise DemistoException(f'{INTEGRATION_NAME}: The `indicator_batch` argument is not a valid json, {e}.')
+
+    all_indicators = client.create_update_indicator_batch_security_center_api({"Indicators": batch_json})
+    outputs = parse_indicator_batch_response(all_indicators)
+    if outputs:
+        human_readable = tableToMarkdown('Indicators updated successfully.', outputs, headers=headers, removeNull=True)
+        return CommandResults(outputs=outputs, readable_output=human_readable, outputs_key_field='id',
+                              outputs_prefix='MicrosoftATP.Indicators')
+    return CommandResults(readable_output='Indicators were not updated.')
+
+
+def parse_indicator_batch_response(indicators_response):
+    parsed_response = []
+    if indicators_response and indicators_response.get('value'):
+        indicators = indicators_response.get('value')
+        for indicator in indicators:
+            parsed_response.append({
+                "ID": indicator.get("id"),
+                "Value": indicator.get("indicator"),
+                "IsFailed": indicator.get("isFailed"),
+                "FailureReason": indicator.get("failureReason"),
+            })
+    return parsed_response
+
+
 def sc_list_indicators_command(client: MsClient, args: Dict[str, str]) -> Union[CommandResults, List[CommandResults]]:
     """
     https://docs.microsoft.com/en-us/microsoft-365/security/defender-endpoint/get-ti-indicators-collection?view=o365-worldwide
@@ -2983,6 +3034,8 @@ def main():
             return_results(sc_create_update_indicator_command(client, args))
         elif command == 'microsoft-atp-sc-indicator-delete':
             return_results(sc_delete_indicator_command(client, args))
+        elif command == 'microsoft-atp-indicator-batch-update':
+            return_results(sc_update_batch_indicators_command(client, args))
     except Exception as err:
         return_error(str(err))
 
