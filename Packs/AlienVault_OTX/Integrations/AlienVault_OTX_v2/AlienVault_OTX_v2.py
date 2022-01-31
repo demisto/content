@@ -102,18 +102,18 @@ def calculate_dbot_score(client: Client, raw_response: Union[dict, None]) -> flo
     """
     default_threshold = int(client.default_threshold)
     false_Positive = {}
-    pulase_info = {}
+    pulase_info_dict = {}
     validation = []
     if isinstance(raw_response, dict):
         false_Positive = raw_response.get('false_positive', {})
         validation = raw_response.get("validation", [])
-        pulse_info = raw_response.get('pulse_info', {})
+        pulase_info_dict = raw_response.get('pulse_info', {})
     if false_Positive and false_Positive[0].get("assessment") == "accepted":
         return Common.DBotScore.GOOD
     else:
         if not validation:
-            if pulse_info:
-                count = int(pulse_info.get('count', '0'))
+            if pulase_info_dict:
+                count = int(pulase_info_dict.get('count', '0'))
                 if count >= default_threshold:
                     return Common.DBotScore.BAD
                 elif 0 < count < default_threshold:
@@ -186,7 +186,8 @@ def extract_attack_ids(raw_response: dict):
     return dict_safe_get(([{}] if attack_id_field == [] else attack_id_field)[0], ['attack_ids'], [''])
 
 
-def relationships_manager(client: Client, entity_a: str, entity_a_type: str, indicator_type: str, indicator: str, field_for_passive_dns_rs: str, feed_indicator_type_for_passive_dns_rs: str):
+def relationships_manager(client: Client, entity_a: str, entity_a_type: str, indicator_type: str, 
+                          indicator: str, field_for_passive_dns_rs: str, feed_indicator_type_for_passive_dns_rs: str):
     """
     manage the relationships creation
 
@@ -211,17 +212,19 @@ def relationships_manager(client: Client, entity_a: str, entity_a_type: str, ind
         _, _, hash_raw_response = alienvault_get_related_hashes_by_indicator_command(client, indicator_type, indicator, params)
         hash_raw_response = delete_duplicated_relationships(dict_safe_get(hash_raw_response, ['data'], ['']), 'hash')
         relationships += create_relationships(client, hash_raw_response, entity_a, entity_a_type, 'hash', FeedIndicatorType.File)
-        
+
         _, _, passive_dns_raw_response = alienvault_get_passive_dns_data_by_indicator_command(client, indicator_type,
-                                                                                              indicator, params)          
+                                                                                              indicator, params)    
         if len(dict_safe_get(passive_dns_raw_response, ['passive_dns'], [''])) > client.max_indicator_relationships:
-            passive_dns_raw_response = delete_duplicated_relationships(passive_dns_raw_response.get('passive_dns')[0:client.max_indicator_relationships], field_for_passive_dns_rs)            
+            passive_dns_raw_response = delete_duplicated_relationships(passive_dns_raw_response.get('passive_dns')
+                                                                       [0:client.max_indicator_relationships], field_for_passive_dns_rs)
         else:
-            passive_dns_raw_response = delete_duplicated_relationships(dict_safe_get(passive_dns_raw_response, ['passive_dns'], ['']), field_for_passive_dns_rs)
+            passive_dns_raw_response = delete_duplicated_relationships(dict_safe_get(passive_dns_raw_response, ['passive_dns'], 
+                                                                                     ['']), field_for_passive_dns_rs)
         passive_dns_raw_response = validate_string_is_not_url(passive_dns_raw_response, field_for_passive_dns_rs)
         relationships += create_relationships(client, passive_dns_raw_response, entity_a,
                                               entity_a_type, field_for_passive_dns_rs, feed_indicator_type_for_passive_dns_rs)
-                                              
+             
     return relationships
 
 
@@ -267,8 +270,9 @@ def delete_duplicated_relationships(rs_list: list[dict], field_name: str):
     return list(unique_dict.values())
 
 
-def validate_string_is_not_url(dicts_list: list[dict], field_name: str ):
+def validate_string_is_not_url(dicts_list: list[dict], field_name: str):
     return [dict for dict in dicts_list if not auto_detect_indicator_type(dict.get(field_name)) == "URL"]
+
 
 def lowercase_protocol_callback(pattern: re.Match) -> str:
     return pattern.group(0).lower()
@@ -322,7 +326,8 @@ def ip_command(client: Client, ip_address: str, ip_version: str) -> List[Command
             relationships = create_relationships(client, extract_attack_ids(raw_response), ip_, ip_version, 'display_name',
                                                  FeedIndicatorType.indicator_type_by_server_version("STIX Attack Pattern"))
             relationships += relationships_manager(client, entity_a=ip_, entity_a_type=ip_version,
-                                                   indicator_type=ip_version, indicator=ip_, field_for_passive_dns_rs="hostname", feed_indicator_type_for_passive_dns_rs=FeedIndicatorType.Domain)
+                                                   indicator_type=ip_version, indicator=ip_, field_for_passive_dns_rs="hostname", 
+                                                   feed_indicator_type_for_passive_dns_rs=FeedIndicatorType.Domain)
 
             dbot_score = Common.DBotScore(indicator=ip_, indicator_type=DBotScoreType.IP,
                                           integration_name=INTEGRATION_NAME,
@@ -384,8 +389,9 @@ def domain_command(client: Client, domain: str) -> List[CommandResults]:
                                                  FeedIndicatorType.Domain, 'display_name',
                                                  FeedIndicatorType.indicator_type_by_server_version("STIX Attack Pattern"))
             relationships += relationships_manager(client, entity_a=domain, indicator_type='domain',
-                                                   entity_a_type=FeedIndicatorType.Domain, indicator=domain, field_for_passive_dns_rs='address', feed_indicator_type_for_passive_dns_rs=FeedIndicatorType.IP)
-            
+                                                   entity_a_type=FeedIndicatorType.Domain, indicator=domain, field_for_passive_dns_rs='address', 
+                                                   feed_indicator_type_for_passive_dns_rs=FeedIndicatorType.IP)
+
             dbot_score = Common.DBotScore(indicator=domain, indicator_type=DBotScoreType.DOMAIN,
                                           integration_name=INTEGRATION_NAME,
                                           score=calculate_dbot_score(client, raw_response),
