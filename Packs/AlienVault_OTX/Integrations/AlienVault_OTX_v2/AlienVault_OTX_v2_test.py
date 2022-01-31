@@ -480,7 +480,7 @@ IP_EC_WITH_RELATIONSHIPS = {
 
 IP_URL_RAW_RESPONSE = {'page_num': 1, 'limit': 10, 'paged': True, 'has_next': True, 'full_size': 7855, 'actual_size': 7855}
 
-IP_URL_RAW_RESPONSE_WITH_RELATIONSHIPS = {'url_list': [{'url': 'https://mojorojorestaurante.com', 'date': '2022-01-03T08:21:31',
+IP_URL_RAW_RESPONSE_WITH_RELATIONSHIPS = {'url_list': [{'url': 'mojorojorestaurante.com', 'date': '2022-01-03T08:21:31',
                                                         'domain': 'mojorojorestaurante.com',
                                                         'hostname': 'mojorojorestaurante.com',
                                                         'result': {'urlworker': {'ip': '8.8.8.8', 'http_code': 200},
@@ -532,7 +532,7 @@ IP_RELATIONSHIPS = [
      'entityBFamily': 'Indicator', 'entityBType': 'STIX Attack Pattern', 'fields': {}, 'reliability': 'C - Fairly reliable',
      'brand': 'AlienVault OTX v2'},
     {'name': 'indicator-of', 'reverseName': 'indicated-by', 'type': 'IndicatorToIndicator', 'entityA': '98.136.103.23',
-     'entityAFamily': 'Indicator', 'entityAType': 'IP', 'entityB': 'https://mojorojorestaurante.com',
+     'entityAFamily': 'Indicator', 'entityAType': 'IP', 'entityB': 'mojorojorestaurante.com',
      'entityBFamily': 'Indicator', 'entityBType': 'URL', 'fields': {}, 'reliability': 'C - Fairly reliable',
      'brand': 'AlienVault OTX v2'},
     {'name': 'indicator-of', 'reverseName': 'indicated-by', 'type': 'IndicatorToIndicator', 'entityA': '98.136.103.23',
