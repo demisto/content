@@ -97,7 +97,7 @@ tasks:
       using:
         complex:
           root: incident
-          accessor: contentinstancename
+          accessor: demistorestapiname
     separatecontext: false
     skipunavailable: false
     task:
