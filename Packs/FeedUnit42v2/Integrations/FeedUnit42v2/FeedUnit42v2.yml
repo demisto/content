@@ -106,6 +106,17 @@ script:
       name: limit
       required: false
       secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: indicator
+      description: The type of the indicators to return.
+      isArray: false
+      name: indicators_type
+      predefined:
+      - indicator
+      - attack-pattern
+      required: false
+      secret: false
     deprecated: false
     description: Retrieves a limited number of the indicators.
     execution: false
@@ -120,5 +131,5 @@ script:
   subtype: python3
   type: python
 tests:
-- No tests
+- unit42_atoms
 fromversion: 5.5.0

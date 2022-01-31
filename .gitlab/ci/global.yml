@@ -99,7 +99,7 @@
   - nvm use default
   - echo "Installing Node Modules" | tee --append $ARTIFACTS_FOLDER/logs/installations.log
   - npm ci --cache .npm --prefer-offline | tee --append $ARTIFACTS_FOLDER/logs/installations.log
-  - npm install jsdoc-to-markdown@5.0.3 -g | tee --append $ARTIFACTS_FOLDER/logs/installations.log  # disable-secrets-detection
+  - npm link jsdoc-to-markdown@5.0.3 | tee --append $ARTIFACTS_FOLDER/logs/installations.log  # disable-secrets-detection
   - section_end "Installing node modules"
 
 .default-before-script:
@@ -114,7 +114,7 @@
     - *get_contribution_pack
     - *install_ssh_keys
     - section_start "Build Parameters"
-    - set | grep -E "^NIGHTLY=|^INSTANCE_TESTS=|^SERVER_BRANCH_NAME=|^ARTIFACT_BUILD_NUM=|^DEMISTO_SDK_NIGHTLY=|^TIME_TO_LIVE=|^CONTRIB_BRANCH=|^FORCE_PACK_UPLOAD=|^PACKS_TO_UPLOAD=|^BUCKET_UPLOAD=|^STORAGE_BASE_PATH=|^OVERRIDE_ALL_PACKS=|^GCS_MARKET_BUCKET=|^GCS_MARKET_V2_BUCKET=|^SLACK_CHANNEL=|^NVM_DIR=|^NODE_VERSION=|^PATH="
+    - set | grep -E "^NIGHTLY=|^INSTANCE_TESTS=|^SERVER_BRANCH_NAME=|^ARTIFACT_BUILD_NUM=|^DEMISTO_SDK_NIGHTLY=|^TIME_TO_LIVE=|^CONTRIB_BRANCH=|^FORCE_PACK_UPLOAD=|^PACKS_TO_UPLOAD=|^BUCKET_UPLOAD=|^STORAGE_BASE_PATH=|^OVERRIDE_ALL_PACKS=|^GCS_MARKET_BUCKET=|^GCS_MARKET_V2_BUCKET=|^SLACK_CHANNEL=|^NVM_DIR=|^NODE_VERSION=|^PATH=|^ARTIFACTS_FOLDER=|^ENV_RESULTS_PATH="
     - python --version
     - python2 --version
     - python3 --version
@@ -192,7 +192,7 @@
         mkdir ./unit-tests
         if [ -n "$SHOULD_LINT_ALL" ]; then
           echo -e  "----------\nLinting all because:\n${SHOULD_LINT_ALL}\n----------"
-          demisto-sdk lint -p 8 -a -q --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER --coverage-report $ARTIFACTS_FOLDER/coverage_report -dt 120
+          demisto-sdk lint -p 12 -a -q --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER --coverage-report $ARTIFACTS_FOLDER/coverage_report -dt 120
         else
           demisto-sdk lint -p 8 -g -v --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER --coverage-report $ARTIFACTS_FOLDER/coverage_report
         fi

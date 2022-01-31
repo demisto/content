@@ -436,6 +436,7 @@ There is no context output for this command.
 ### 7. cs-falcon-run-command
 ---
 Sends commands to hosts.
+
 #### Base Command
 
 `cs-falcon-run-command`
@@ -446,7 +447,7 @@ Sends commands to hosts.
 | host_ids | A comma-separated list of host agent IDs for which to run commands. (Can be retrieved by running the 'cs-falcon-search-device' command.) | Required | 
 | command_type | The type of command to run. | Required | 
 | full_command | The full command to run. | Required | 
-| scope | The scope for which to run the command. Possible values are: "read", "write", and "admin". Default is "read". | Optional | 
+| scope | The scope for which to run the command. Possible values are: "read", "write", and "admin". Default is "read". (NOTE: In order to run the CrowdStrike RTR `put` command, it is necessary to pass `scope=admin`.) | Optional | 
 | target | The target for which to run the command. Possible values are: "single" and "batch". Default is "batch". | Optional | 
 
 
