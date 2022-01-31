@@ -11,7 +11,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          ref: trigger_contrib_build
+          ref: trigger_contrib_build # change to master
       - name: Setup Python
         uses: actions/setup-python@v2
         with:
