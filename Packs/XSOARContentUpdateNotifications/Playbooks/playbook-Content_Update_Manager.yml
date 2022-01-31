@@ -1063,10 +1063,6 @@ tasks:
                 value:
                   simple: ']'
           - operator: 6b3c5e6d-4da6-44bc-8c19-f3608b077e72
-    - incidentfield: Content Pack Selection
-      output:
-        complex:
-          root: ContentData
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -1138,10 +1134,6 @@ tasks:
                 value:
                   simple: ']'
           - operator: 6b3c5e6d-4da6-44bc-8c19-f3608b077e72
-    - incidentfield: Content Pack Selection
-      output:
-        complex:
-          root: ContentData
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -1375,11 +1367,6 @@ tasks:
           right:
             value:
               simple: "no"
-        - operator: isTrue
-          left:
-            value:
-              simple: inputs.auto_update
-            iscontext: true
     view: |-
       {
         "position": {
@@ -2254,8 +2241,8 @@ tasks:
     task:
       id: 8ea57849-9250-4e06-8c8b-3f675deb3762
       version: -1
-      name: Set description to layout
-      description: Set description to layout
+      name: Set description to layout and set default pack selection
+      description: Set description to layout and set default pack selection
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -2264,6 +2251,17 @@ tasks:
       '#none#':
       - "21"
     scriptarguments:
+      contentpackselection:
+        complex:
+          root: incident
+          accessor: contentpackselection
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: All
       usecasedescription:
         simple: |-
           This playbook will check to see if there are any content updates available for chosen installed content packs, and notify users via e-mail or Slack.
@@ -2480,6 +2478,12 @@ inputs:
       root: incident
       accessor: contentpackselection
       transformers:
+      - operator: SetIfEmpty
+        args:
+          applyIfEmpty: {}
+          defaultValue:
+            value:
+              simple: All
       - operator: split
         args:
           delimiter:
