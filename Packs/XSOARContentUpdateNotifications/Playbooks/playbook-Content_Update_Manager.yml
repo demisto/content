@@ -2011,6 +2011,11 @@ tasks:
           right:
             value:
               simple: "yes"
+        - operator: isTrue
+          left:
+            value:
+              simple: inputs.auto_update
+            iscontext: true
     view: |-
       {
         "position": {
