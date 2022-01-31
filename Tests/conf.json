@@ -1528,12 +1528,6 @@
         },
         {
             "integrations": "McAfee ESM v2",
-            "instance_names": "v10.2.0",
-            "playbookID": "McAfee ESM Watchlists - Test v10.2.0",
-            "fromversion": "5.0.0"
-        },
-        {
-            "integrations": "McAfee ESM v2",
             "instance_names": "v11.1.3",
             "playbookID": "McAfee ESM Watchlists - Test v11.1.3",
             "fromversion": "5.0.0"
@@ -5072,8 +5066,6 @@
         "iDefense_v2_Test": "Issue 40126",
         "EWS Mail Sender Test": "Issue 27944",
         "Feed iDefense Test": "Issue 34035",
-        "McAfee ESM Watchlists - Test v10.3.0": "Issue 37130",
-        "McAfee ESM Watchlists - Test v10.2.0": "Issue 39389",
         "McAfee ESM v2 - Test v11.1.3": "Issue 43825",
         "Microsoft Teams Management - Test": "Issue 33410",
         "MicrosoftGraphMail-Test_prod": "Issue 40125",
