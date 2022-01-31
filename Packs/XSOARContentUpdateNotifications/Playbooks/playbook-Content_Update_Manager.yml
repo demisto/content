@@ -62,7 +62,7 @@ tasks:
       using:
         complex:
           root: incident
-          accessor: contentinstancename
+          accessor: demistorestapiname
     separatecontext: false
     view: |-
       {
