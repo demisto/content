@@ -215,7 +215,7 @@ class TestFormatURL:
         assert get_redirect_url_from_query(non_formatted_url, urlparse(non_formatted_url),
                                            redirect_param_name) == expected
 
-     @pytest.mark.parametrize('non_formatted_url, redirect_param_name, expected', [
+    @pytest.mark.parametrize('non_formatted_url, redirect_param_name, expected', [
         ('https://protect2.fireeye.com/v1/url?k=d7c23005-88590c48-d7c31221-0cc47aa886f2-ae4b7c793165343e'
          '&amp;q=1'
          '&amp;e=c6beb47c-b5f9-4870-ab14-f6de1a85f4f2'
@@ -238,8 +238,8 @@ class TestFormatURL:
         Then:
         - Ensure redirected URL is returned.
         """
-        from FormatURL import get_redirect_url_from_query
-        assert get_redirect_url_from_query(non_formatted_url, urlparse(non_formatted_url),
+        from FormatURL import get_redirect_url_fireeye
+        assert get_redirect_url_fireeye(non_formatted_url, urlparse(non_formatted_url),
                                            redirect_param_name) == expected
 
     #  Invalid cases
