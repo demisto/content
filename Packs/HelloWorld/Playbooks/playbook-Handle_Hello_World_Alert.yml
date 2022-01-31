@@ -80,6 +80,7 @@ inputs:
     simple: ${incident.helloworldid}
   required: false
   description: "Alert ID to retrieve details for. By default retrieves from the HelloWorld ID custom field in the HelloWorld incident type"
+  description_x2: "Alert ID to retrieve details for. By default retrieves from the HelloWorld ID custom field in the HelloWorld alert type"
   playbookInputQuery: null
 outputs: []
 tests:

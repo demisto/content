@@ -772,6 +772,20 @@ def incidents(incidents=None):
         )
 
 
+def alerts(alerts=None):
+    """In script, retrieves the `alerts` list from the context
+    In integration, used to return alerts to the server
+
+    Args:
+      alerts (list): In integration only, list of alert objects (Default value = None)
+
+    Returns:
+      list: List of alert objects
+
+    """
+    return incidents(alerts)
+
+
 def incident():
     """Retrieves the current incident and all its fields (e.g. name, type).
     The incident custom fields will be populated as a `dict` under the CustomFields attribute

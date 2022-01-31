@@ -8,16 +8,16 @@ configuration:
   name: url
   required: true
   type: 0
-- display: Fetch incidents
+- display: Fetch alerts
   name: isFetch
   required: false
   type: 8
-- display: Incident type
+- display: Alert type
   name: incidentType
   required: false
   type: 13
 - defaultvalue: '10'
-  display: Maximum number of incidents per fetch
+  display: Maximum number of alerts per fetch
   name: max_fetch
   required: false
   type: 0
@@ -590,7 +590,7 @@ script:
     - contextPath: CVE.ID
       description: The ID of the CVE.
       type: string
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.1.25933
   isfetch: true
   longRunning: false
   longRunningPort: false
@@ -600,7 +600,7 @@ script:
   type: python
 defaultclassifier: HelloWorld
 defaultmapperin: HelloWorld-mapper
-fromversion: 5.0.0
+fromversion: 6.6.0
 marketplaces: [
-  'xsoar'
+  'marketplacev2'
 ]

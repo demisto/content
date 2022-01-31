@@ -284,6 +284,20 @@ class IncidentSeverity(object):
     CRITICAL = 4
 
 
+class AlertSeverity(object):
+    """
+    Enum: contains all the alert severity types (for marketplacev2)
+    :return: None
+    :rtype: ``None``
+    """
+    UNKNOWN = 0
+    INFO = 0.5
+    LOW = 1
+    MEDIUM = 2
+    HIGH = 3
+    CRITICAL = 4
+
+
 # DEPRECATED - use EntryFormat enum instead
 formats = {
     'html': 'html',
