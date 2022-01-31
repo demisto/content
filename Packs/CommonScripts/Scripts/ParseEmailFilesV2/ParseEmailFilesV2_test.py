@@ -274,7 +274,7 @@ def test_eml_contains_eml_depth(mocker):
 
     assert results[1].args[0]['File'] == 'test - inner attachment eml.eml'
 
-    assert results[2].args[0]['EntryContext']['Email']['Subject'] == 'Fwd: test - inner attachment eml'
+    assert results[2].args[0]['EntryContext']['Email']['Depth'] == 0
     assert 'ArcSight_ESM_fixes.yml' in results[2].args[0]['EntryContext']['Email']['Attachments']
     assert 'ArcSight_ESM_fixes.yml' in results[2].args[0]['EntryContext']['Email']['AttachmentsData'][0]['Name']
     assert 'test - inner attachment eml.eml' in results[2].args[0]['EntryContext']['Email']['Attachments']
