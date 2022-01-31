@@ -718,6 +718,10 @@ class Client(BaseClient):
         """
         entries = []
         links = []  # type: List[Tuple[str, str]]
+        headers = {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        }
         attachments_res = self.get_ticket_attachments(ticket_id, sys_created_on)
         if 'result' in attachments_res and len(attachments_res['result']) > 0:
             attachments = attachments_res['result']
@@ -725,8 +729,14 @@ class Client(BaseClient):
                      for attachment in attachments]
 
         for link in links:
-            file_res = requests.get(link[0], auth=(self._username, self._password), verify=self._verify,
-                                    proxies=self._proxies)
+            if self.use_oauth:
+                access_token = self.snow_client.get_access_token()
+                headers.update({'Authorization': f'Bearer {access_token}'})
+                file_res = requests.get(link[0], headers=headers, verify=self._verify, proxies=self._proxies)
+            else:
+                file_res = requests.get(link[0], auth=(self._username, self._password), verify=self._verify,
+                                        proxies=self._proxies)
+
             if file_res is not None:
                 entries.append(fileResult(link[1], file_res.content))
 
