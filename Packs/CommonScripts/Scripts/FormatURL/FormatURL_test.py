@@ -221,11 +221,11 @@ class TestFormatURL:
          '&amp;e=c6beb47c-b5f9-4870-ab14-f6de1a85f4f2'
          '&amp;u=https%3A%2F%2Fu24529037.ct.sendgrid.net%2Fls%2Fclick%3Fupn%3DMn9cnrhwVc3VEByAz0okLzSoQaiiARALB36UNYUKNpx0TebEXz7S2ov3fDfm4EOO-2F4XpHUkBcNKMTt4OpBx4FqDEjKzxiUqLeqgAUlV4JqGOH2BcZU4d9GZEU6XFO5qNe3EFIMjfORBL2LaSV5unIKmI34cVaSbtGkJOppbDPyP8VO3rwCX9f-2FPDRIwEn79IsvmPEdQvIMBMvRIvUnKfWB7u8-2BxbqZcYF7wNSUVu9yYOfp1oo5A-2FBTlDLxbzoAKLk648usNVl4PxuiMnoxEBE9wMi5UuE-2F3AgL-2FAIeAkOR0cuMXgWOwwo-2FbQw1fUKZBwTVWW2ibytROTLvXwzOzCwLy9-2BDOyUj0XcWzNKaqpzcrNjuQgdffhfZTeBCRY7nhewywwgruwJ1yIJPdBVXzleiRVf3-2FtWgYJDl4F1qVnxI-2B-2BM0Azr20iW1VGgRJSfBQGkcB-_9NNCMg4EDQZkBGmxCNI25Dr6J7YypxuzZp44E4lWmNl5vonSzibTuIOW8lH7EYhVscA3pEBOKCw6kleKEiSDyxUWa-2BAb-2BybJ-2BElvMVJOHS-2Bk9DSCRf5esR8bElFWwwnDQi67PXo0b0jgG152-2B02vUmaz0DiUnyYt4idTLz8t4E3LXQq1tJiegxf4RBU2cthoXWs77460RUn0SZedWK-2BEMg-3D-3D', 'amp;u',
          'https://u24529037.ct.sendgrid.net/ls/click'),
-        ('https://protect2.fireeye.com/v1/url?k=fcb21e11-a3292113-fcb33c35-0cc47aa88f82-c8bfc4eb285a1fb1'
+        ('https://protect2.fireeye.com/v1/url?k=00bf92e9-5f24adeb-00beb0cd-0cc47aa88f82-a1f32e4f84d91cbe'
          '&q=1'
-         '&e=1cdc43b6-30a0-4774-8109-0be1f8ca5294'
-         '&u=https://itsssl.com/h6wTA', 'u',
-         'https://itsssl.com/h6wTA')
+         '&amp;q=1&amp;e=221919da-9d68-429a-a70e-9d8d836ca107'
+         '&amp;u=https%3A%2F%2Fwww.facebook.com%2FNamshiOfficial', 'u',
+         'https://www.facebook.com/NamshiOfficial')
     ])
     def test_get_redirect_url_from_query(self, non_formatted_url: str, redirect_param_name: str, expected: str):
         """
