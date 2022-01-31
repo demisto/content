@@ -77,7 +77,7 @@ def calculate_checksum(api_key, headers, body=''):
                 temp += value
 
     temp += body
-    return hashlib.sha1(temp)
+    return hashlib.sha1(temp)  # lgtm [py/weak-sensitive-data-hashing]
 
 
 def http_request(uri, method, headers, body={}, params={}, files={}):
@@ -459,7 +459,6 @@ def build_report(res, threshold, status, verbose):
 
         # add data regarding the submission to the context if file is malicious
         if (reports['OVERALL_RISK_LEVEL'] >= threshold):
-            dbot_score = 3
             if file_analyze_report['TrueFileType'] == 'URL':
                 context[outputPaths['url']].update({
                     'Malicious': {
