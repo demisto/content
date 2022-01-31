@@ -12,7 +12,7 @@ If you have any question feel free to concat us: [info@phishup.com](info@phishup
 
 | **Parameter**           | **Required** | **Description**                        |
 |-------------------------|--------------|----------------------------------------|
-| Password (Api Key)      | True         | Enter your PhishUp Api Key as Password |
+| API Key                 | True         | Enter your PhishUp Api Key as Password |
 | PhishUp Playbook Action | True         | PhishUp Playbook Mail Action           |
 
 2. Click **Test** to Api Key and connection.

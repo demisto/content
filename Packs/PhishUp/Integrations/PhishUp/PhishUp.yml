@@ -4,7 +4,8 @@ commonfields:
   version: -1
 configuration:
 - additionalinfo: PhishUp Api Key
-  display: Username
+  displaypassword: API Key
+  hiddenusername: true
   name: credentials
   required: false
   type: 9
@@ -38,9 +39,9 @@ name: 6437c006-1d86-4cdc-89d5-23305f207e3a
 script:
   commands:
   - arguments:
-    - default: false
+    - default: true
       description: Single URL for phishup investigation
-      isArray: false
+      isArray: true
       name: url
       required: true
       secret: false

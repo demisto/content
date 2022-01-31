@@ -70,14 +70,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 37da6639-78b7-418d-859d-fa6d3f0875dd
+    taskid: 60132afa-2828-4548-899f-62a0313f06ed
     type: regular
     task:
-      id: 37da6639-78b7-418d-859d-fa6d3f0875dd
+      id: 60132afa-2828-4548-899f-62a0313f06ed
       version: -1
       name: Sending URLs to PhishUp
       description: Single url investigation
-      script: '|||phishup-investigate-url'
+      script: '|||url'
       type: regular
       iscommand: true
       brand: ""
@@ -85,7 +85,7 @@ tasks:
       '#none#':
       - "22"
     scriptarguments:
-      Url:
+      url:
         simple: ${ExtractedIndicators.URL}
     separatecontext: false
     view: |-
@@ -688,14 +688,14 @@ inputs:
     simple: ${incident.labels.Email/html}
   required: true
   description: Email Mail Body for extracting URLs. Default Value is "${incident.emailbodyhtml}"
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: ShouldPhishUpActionWork
   value:
     simple: "True"
   required: true
   description: If you do not want actions such as deleting mail and moving to spam
     in PhishUp playbook, you should set the value False. Default value is True
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: Phishup.Result
   description: Phishup Service Response (Clean, Phish, Error)

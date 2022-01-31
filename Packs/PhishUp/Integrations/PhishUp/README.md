@@ -1,5 +1,10 @@
 PhishUp prevents phishing attacks, protects your staff and your brand with AI
 
+If you don't have [PhishUp](https://phishup.co) Api Key please create account on PhishUp and get an Api Key. 
+Also you can visit and test [PhishUp Web Demo](https://phishup.co).
+
+If you have any question feel free to concat us: [info@phishup.com](info@phishup.co)
+
 ## Configure PhishUp on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -15,68 +20,41 @@ PhishUp prevents phishing attacks, protects your staff and your brand with AI
     | PhishUp Playbook Actions | If there is any Phishing activity in mail, what should PhishUp do? | True |
 
 4. Click **Test** to validate the URLs, token, and connection.
-
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-
-
-### url
+### phishup-investigate-url
 ***
-Get Url Reputation
+Single url investigation
+
 
 #### Base Command
 
-`phishup-investigate-url`
+`url`
 #### Input
 
-| **Argument Name** | **Description**                       | **Required** | **Usage** |
-| --- |---------------------------------------| --- | --- |
-| Url | Single URL for sending to PhishUp Api | Required | Send single URL string
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| Url | Single URL for phishup investigation. | Required | 
 
 
 #### Context Output
 
-| **Path**       | **Type** | **Description**                   | **Results** |
-|----------------| --- |-----------------------------------| --- |
-| PhishUp.Result | String | PhishUp Url Investigating Result  | response types "Clean", "Phish", "Error"
-| PhishUp.Score  | String | Phishup Engine Result Class Score | Number
-
-
-PhishUp.Result contains raw result. 
-PhishUp.Score is score for predicted class.
-
-
-#### Command Examples
-`!phishup-investigate-url Url="https://www.paloaltonetworks.com/cortex/xsoar"`
-
-##### Raw Response
-`
-{'IncomingUrl': 'https://www.paloaltonetworks.com/cortex/xsoar', 'Url': 'www.paloaltonetworks.com', 'IsRouted': False, 'PhishUpStatus': 'Clean', 'PhishUpScore': '1.00'}
-`
-
-### phishup-get-chosen-action
-***
-Get chosen PhishUp Playbook action option from instance
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PhishUp.Result | String | response types "Clean", "Phish", "Error" | 
+| PhishUp.Score | Number | Phishup Engine Url Score | 
 
 
 #### Base Command
 
-`!phishup-get-chosen-action`
+`phishup-get-chosen-action`
 #### Input
+
 There are no input arguments for this command.
 
 #### Context Output
 
-| **Path** | **Type** | **Description**                                                              |
-| --- | --- |------------------------------------------------------------------------------|
-| PhishUp.Action | String | Chosen PhishUp Playbook action like deleting mail or maving mail to spam box | 
-
-
-#### Command Example
-
-`!phishup-get-chosen-action`
-
-#### Human Readable Output
-
-Chosen Action: Move to SPAM
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PhishUp.Action | String | Chosen action from PhishUp instance | 

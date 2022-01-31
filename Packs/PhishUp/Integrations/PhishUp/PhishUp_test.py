@@ -18,24 +18,24 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-def test_error_investigate_url_command(requests_mock):
+def test_investigate_url_authentication_error(requests_mock):
     from PhishUp import Client, investigate_url_command
     requests_mock.post(f'{BASE_URL}/sherlock/investigate?apikey={MOCK_APIKEY}',
-                       json=util_load_json("test_data/mock_service_error.json"))
+                       json=util_load_json("test_data/authentication_error.json"))
     client = Client(
         base_url=BASE_URL,
         verify=False)
     args = {
-        "Url": ["https://www.paloaltonetworks.com/"]
+        "url": ["https://www.paloaltonetworkscom/"]
     }
-    with raises(Exception, match="PhishUp Response Error"):
+    with raises(Exception, match="PhishUp"):
         investigate_url_command(client, args, MOCK_APIKEY)
 
 
-def test_empty_investigate_url_command(requests_mock):
+def test_investigate_url_command_empty_url_list_error(requests_mock):
     from PhishUp import Client, investigate_url_command
     requests_mock.post(f'{BASE_URL}/sherlock/investigate?apikey={MOCK_APIKEY}',
-                       json=util_load_json("test_data/mock_service_error.json"))
+                       json=util_load_json("test_data/authentication_error.json"))
     client = Client(
         base_url=BASE_URL,
         verify=False)
@@ -50,15 +50,16 @@ def test_success_investigate_url_command(requests_mock):
     from PhishUp import Client, investigate_url_command
 
     requests_mock.post(f'{BASE_URL}/sherlock/investigate?apikey={MOCK_APIKEY}',
-                       json=util_load_json("test_data/investigate_url_api_response.json"))
+                       json=util_load_json("test_data/investigate_api_successful_response.json"))
     client = Client(
         base_url=BASE_URL,
         verify=False)
     args = {
-        "Url": "https://www.paloaltonetworks.com/"
+        "url": "https://www.paloaltonetworks.com/"
     }
     response = investigate_url_command(client, args, MOCK_APIKEY)
-    assert response[0].raw_response == util_load_json("test_data/investigate-success.json")
+    assert response[0].outputs == util_load_json("test_data/investigate-success-outputs.json")
+    assert response[0].raw_response == util_load_json("test_data/investigate-success-raw-response.json")
 
 
 def test_get_chosen_nothing_phishup_action_command():
