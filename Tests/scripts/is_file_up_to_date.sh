@@ -6,6 +6,10 @@ if [[ `git diff origin/master -- ${FILE_TO_CHECK}` ]]; then
     # Checks if part of the branch's changes
     if [[ -z `git diff origin/master..."$CI_COMMIT_BRANCH" --name-only | grep ${FILE_TO_CHECK}` ]]; then
         echo "${FILE_TO_CHECK} has been changed. Merge from master"
+        if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
+          echo "Run ./Utils/git_pull_master_into_fork.sh or merge manually from upstream demisto content"
+        fi
+
         exit 1
     else
         echo "${FILE_TO_CHECK} is part of the branch changes, proceeding"
