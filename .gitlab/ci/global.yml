@@ -45,9 +45,9 @@
     if [[ $CI_COMMIT_BRANCH =~ pull/[0-9]+ ]]; then
       echo "Skipping, Should not run on contributor's branch."
     else
-      ./Tests/scripts/is_file_up_to_date.sh .gitlab/ci/gitlab-ci.yml
-      ./Tests/scripts/is_file_up_to_date.sh dev-requirements-py2.txt
-      ./Tests/scripts/is_file_up_to_date.sh dev-requirements-py3.txt
+      ./Tests/scripts/is_file_up_to_date.sh .gitlab/ci/gitlab-ci.yml $CI_COMMIT_BRANCH
+      ./Tests/scripts/is_file_up_to_date.sh dev-requirements-py2.txt $CI_COMMIT_BRANCH
+      ./Tests/scripts/is_file_up_to_date.sh dev-requirements-py3.txt $CI_COMMIT_BRANCH
     fi
   - section_end "Check Build Files Are Up To Date"
 
