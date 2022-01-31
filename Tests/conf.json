@@ -424,10 +424,6 @@
             "fromversion": "5.5.0"
         },
         {
-            "playbookID": "Traps test",
-            "integrations": "Traps"
-        },
-        {
             "integrations": "Pipl",
             "playbookID": "Pipl Test"
         },
