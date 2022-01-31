@@ -76,10 +76,10 @@ while [[ "$#" -gt 0 ]]; do
     shift;;
 
   -g|--gitlab) _gitlab=true
-    shift
     shift;;
 
   -dz|--create_dependencies_zip) _create_dependencies_zip=true
+    shift;;
 
   *)    # unknown option.
     shift;;
