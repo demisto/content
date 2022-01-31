@@ -1,6 +1,6 @@
 name: Trigger Contribution Build
 on:
-  pull_request_target:
+  pull_request: #to add _target to access secrets on forked
     types: [labeled]
 
 jobs:
