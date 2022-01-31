@@ -223,7 +223,7 @@ class TestFormatURL:
          'https://u24529037.ct.sendgrid.net/ls/click'),
         ('https://protect2.fireeye.com/v1/url?k=00bf92e9-5f24adeb-00beb0cd-0cc47aa88f82-a1f32e4f84d91cbe'
          '&q=1'
-         '&amp;q=1&amp;e=221919da-9d68-429a-a70e-9d8d836ca107'
+         '&amp;e=221919da-9d68-429a-a70e-9d8d836ca107'
          '&amp;u=https%3A%2F%2Fwww.facebook.com%2FNamshiOfficial', 'u',
          'https://www.facebook.com/NamshiOfficial')
     ])
