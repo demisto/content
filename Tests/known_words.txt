@@ -63,3 +63,13 @@ CloudWatchLogs
 GuardDuty
 NetWitness
 ASN
+NoneType
+CreateIncidents
+EML
+LastSeen
+IntelGraph
+Accenture
+CTI
+SCC
+IPinfo
+QRadarFullSearch
