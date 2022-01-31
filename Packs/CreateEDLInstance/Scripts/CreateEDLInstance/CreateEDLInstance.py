@@ -1,10 +1,12 @@
+import random
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-import random
 
 edl_instance_name = demisto.args().get('InstanceName')
 edl_port_list_name = demisto.args().get('PortListName')
 edl_query = demisto.args().get('Query')
+port = demisto.args().get('Port', None)
 
 try:
     existing_port_list = demisto.executeCommand('getList', {'listName': edl_port_list_name})[0].get('Contents').split(',')
@@ -16,19 +18,23 @@ def generate_random_port():
     return random.randint(3000, 50000)
 
 
-# create initial random port
-random_port = generate_random_port()
+if not port:
+    # create initial random port
+    port = generate_random_port()
 
-# keep generating a random port until one is found
-# which is not in existing port list
-i = 0
-while str(random_port) in existing_port_list:
-    random_port = generate_random_port()
-    i += 1
-    if i > 30:
-        return_error("Looks like there are no more free ports!")
+    # keep generating a random port until one is found
+    # which is not in existing port list
+    i = 0
+    while str(port) in existing_port_list:
+        port = generate_random_port()
+        i += 1
+        if i > 30:
+            return_error("Looks like there are no more free ports!")
 
-existing_port_list.append(str(random_port))
+if port not in existing_port_list:
+    existing_port_list.append(str(port))
+else:
+    return_error("Error: It looks like that port is already taken!")
 
 # Add new port to existing port list
 try:
@@ -151,7 +157,7 @@ body = {
                 "displayPassword": "",
                 "options": None,
                 "required": True,
-                "value": str(random_port),
+                "value": str(port),
                 "hasvalue": True
             },
             {
@@ -515,7 +521,7 @@ body = {
         },
         {
             "name": "longRunningPort",
-            "value": str(random_port),
+            "value": str(port),
             "hasvalue": True,
             "type": 0,
             "defaultValue": "",
@@ -643,8 +649,23 @@ def main():
     except Exception as e:
         return_error(e)
 
-    readable_output = f"EDL: {edl_instance_name} created on port: {random_port}"
-    return_results(CommandResults(readable_output=readable_output, raw_response=results))
+    output = {
+        "Name": edl_instance_name,
+        "PortListName": edl_port_list_name,
+        "Query": edl_query,
+        "Port": port
+    }
+
+    readable_output = tableToMarkdown("Indicator Feed", output)
+
+    entry = CommandResults(
+        outputs_key_field="Name",
+        outputs_prefix="EDL",
+        outputs=output,
+        readable_output=readable_output,
+        raw_response=results
+    )
+    return_results(entry)
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
