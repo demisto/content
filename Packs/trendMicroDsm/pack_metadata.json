@@ -1,5 +1,5 @@
 {
-    "name": "Trend Micro Deep Security",
+    "name": "Trend Micro",
     "description": "Uses Trend Micro Deep Security",
     "support": "xsoar",
     "currentVersion": "1.0.4",
