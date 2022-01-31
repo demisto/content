@@ -1,11 +1,12 @@
 {
-    "id": "incident_processpath",
+    "id": "incident_category",
     "version": -1,
-    "modified": "2021-05-30T15:53:36.753562+03:00",
-    "name": "Process Path",
+    "modified": "2022-01-12T08:13:44.844285695Z",
     "ownerOnly": false,
-    "cliName": "processpath",
-    "type": "shortText",
+    "cliName": "category",
+	"description": "Alert category based on the alert source. An example of an XDR Agent alert category is Exploit Modules.",
+    "name": "Category",
+    "type": "multiSelect",
     "closeForm": false,
     "editForm": true,
     "required": false,
@@ -17,14 +18,13 @@
     "content": true,
     "group": 0,
     "hidden": false,
+    "openEnded": true,
     "associatedToAll": true,
     "unmapped": false,
-    "unsearchable": false,
+    "unsearchable": true,
     "caseInsensitive": true,
     "sla": 0,
     "threshold": 72,
-    "fromVersion": "5.5.0",
-    "marketplaces": [
-        "xsoar"
-    ]
+    "fromVersion": "6.5.0",
+	"x2_fields": "alert_category"
 }
