@@ -62,7 +62,7 @@ def test_get_ticket_command_not_found(requests_mock):
 
     args = {"id": test_id}
     response = get_ticket_command(client, args)
-    assert response.raw_response == None
+    assert response.raw_response is None
     assert "not found" in response.readable_output
 
 

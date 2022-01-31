@@ -91,6 +91,7 @@ ASSET_FIELDS = [
 
 ''' CLIENT CLASS '''
 
+
 class Client(BaseClient):
     """
     Trustwave Fusion API Client
@@ -374,12 +375,14 @@ def fetch_incidents(client, max_results, first_fetch):
     demisto.setLastRun(last_run)
     demisto.incidents(incidents)
 
+
 def simplify_ticket(ticket):
     if not ticket:
         return
     for f in list(ticket.keys()):
         if f not in TICKET_FIELDS:
             del ticket[f]
+
 
 def simplify_finding(finding):
     if not finding:
@@ -389,7 +392,8 @@ def simplify_finding(finding):
         if f not in FINDING_FIELDS:
             del finding[f]
     if "status" in finding:
-        finding["status"].pop("code",None)
+        finding["status"].pop("code", None)
+
 
 def simplify_asset(asset):
     if not asset:
@@ -397,6 +401,7 @@ def simplify_asset(asset):
     for f in list(asset.keys()):
         if f not in ASSET_FIELDS:
             del asset[f]
+
 
 def get_ticket_command(client, args):
     id = args.get("id")
