@@ -210,20 +210,21 @@ class Client(BaseClient):
             if not isinstance(urls, list):
                 urls = [urls]
             for url in urls:
-                # Set the If-None-Match and If-Modified-Since headers if we have etag or
-                # last_modified values in the context.
-                last_run = demisto.getLastRun()
-                etag = last_run.get(url, {}).get('etag')
-                last_modified = last_run.get(url, {}).get('last_modified')
-                if etag:
-                    if not kwargs.get('headers'):
-                        kwargs['headers'] = {}
-                    kwargs['headers']['If-None-Match'] = etag
+                if is_demisto_version_ge('6.5.0'):
+                    # Set the If-None-Match and If-Modified-Since headers if we have etag or
+                    # last_modified values in the context, for server version higher than 6.5.0.
+                    last_run = demisto.getLastRun()
+                    etag = last_run.get(url, {}).get('etag')
+                    last_modified = last_run.get(url, {}).get('last_modified')
+                    if etag:
+                        if not kwargs.get('headers'):
+                            kwargs['headers'] = {}
+                        kwargs['headers']['If-None-Match'] = etag
 
-                if last_modified:
-                    if not kwargs.get('headers'):
-                        kwargs['headers'] = {}
-                    kwargs['headers']['If-Modified-Since'] = last_modified
+                    if last_modified:
+                        if not kwargs.get('headers'):
+                            kwargs['headers'] = {}
+                        kwargs['headers']['If-Modified-Since'] = last_modified
 
                 r = requests.get(
                     url,
@@ -235,7 +236,7 @@ class Client(BaseClient):
                     LOG(f'{self.feed_name!r} - exception in request:'
                         f' {r.status_code!r} {r.content!r}')
                     raise
-                no_update = get_no_update_value(r, url)
+                no_update = get_no_update_value(r, url) if is_demisto_version_ge('6.5.0') else True
                 url_to_response_list.append({url: {'response': r, 'no_update': no_update}})
         except requests.exceptions.ConnectTimeout as exception:
             err_msg = 'Connection Timeout Error - potential reasons might be that the Server URL parameter' \
@@ -530,13 +531,19 @@ def feed_main(feed_name, params=None, prefix=''):
 
             # check if the version is higher than 6.5.0 so we can use noUpdate parameter
             if is_demisto_version_ge('6.5.0'):
-                # we submit the indicators in batches
-                for b in batch(indicators, batch_size=2000):
-                    demisto.createIndicators(b, noUpdate=no_update)
+                if not indicators:
+                    demisto.createIndicators(indicators, noUpdate=no_update)  # type: ignore
+                else:
+                    # we submit the indicators in batches
+                    for b in batch(indicators, batch_size=2000):
+                        demisto.createIndicators(b, noUpdate=no_update)  # type: ignore
             else:
                 # call createIndicators without noUpdate arg
-                for b in batch(indicators, batch_size=2000):
-                    demisto.createIndicators(b)
+                if not indicators:
+                    demisto.createIndicators(indicators)  # type: ignore
+                else:
+                    for b in batch(indicators, batch_size=2000):  # type: ignore
+                        demisto.createIndicators(b)
 
         else:
             args = demisto.args()

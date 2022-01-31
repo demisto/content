@@ -2,7 +2,7 @@
     "name": "CVE-2021-44228 - Log4j RCE",
     "description": "This pack handles Apache Log4j RCE CVE-2021-44228, a 0-day exploit in the popular Java logging library log4j2. ",
     "support": "xsoar",
-    "currentVersion": "1.0.2",
+    "currentVersion": "1.0.11",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -12,13 +12,26 @@
     ],
     "useCases": [
         "Hunting",
-        "Incident Response"
+        "Incident Response",
+        "Rapid Breach Response"
     ],
     "keywords": [
         "zero-day",
         "0-day",
         "zero day",
-        "Apache"
+        "Apache",
+        "CVE-2021-44228",
+        "Log4j",
+        "CVE-2021-45046",
+        "CVE",
+        "44228",
+        "45046",
+        "Log4Shell",
+        "CVE-2021-45105",
+        "45105",
+        "CVE-2021-44832",
+        "44832",
+        "RCE"
     ],
     "dependencies": {
         "QRadar": {
@@ -73,5 +86,9 @@
         "PaloAltoNetworks_PAN_OS_EDL_Management",
         "PANWComprehensiveInvestigation",
         "CommonPlaybooks"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }

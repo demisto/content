@@ -11,7 +11,7 @@
     "process_id": null,
     "sd": {},
     "severity": "warning",
-    "timestamp": "2021-11-09T17:07:20",
+    "timestamp": "REPLACE_WITH_CURRENT_YEAR-11-09T17:07:20",
     "version": null,
     "occurred": null
    }
@@ -27,7 +27,7 @@
     "process_id": null,
     "sd": {},
     "severity": "critical",
-    "timestamp": "2021-10-11T22:14:15",
+    "timestamp": "REPLACE_WITH_CURRENT_YEAR-10-11T22:14:15",
     "version": null,
     "occurred": null
    }
@@ -138,7 +138,7 @@
     "process_id": null,
     "sd": {},
     "severity": "warning",
-    "timestamp": "2021-11-09T17:07:20",
+    "timestamp": "REPLACE_WITH_CURRENT_YEAR-11-09T17:07:20",
     "version": null,
     "occurred": null
    }
@@ -154,7 +154,7 @@
     "process_id": null,
     "sd": {},
     "severity": "critical",
-    "timestamp": "2021-10-11T22:14:15",
+    "timestamp": "REPLACE_WITH_CURRENT_YEAR-10-11T22:14:15",
     "version": null,
     "occurred": null
    }

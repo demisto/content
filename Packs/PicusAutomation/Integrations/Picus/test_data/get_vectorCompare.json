@@ -1,0 +1,1 @@
+{"success":true,"data":{"trusted":"PicusPeerINT","untrusted":"PicusPeerEXT","variants":[{"variant_name":"HTTP","insecure_to_secures":null,"secure_to_insecures":null,"insecures":[{"threat_id":"646402","name":"Jellyfin Server Side Request Forgery (SSRF) Vulnerability Variant-1","since":"2021-12-03 07:33:45.726423 +0000 UTC"}],"secures":null}]}}

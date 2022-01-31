@@ -12,7 +12,8 @@
     ],
     "useCases": [
         "Hunting",
-        "Incident Response"
+        "Incident Response",
+        "Rapid Breach Response"
     ],
     "keywords": [
         "zero-day",
@@ -20,5 +21,9 @@
         "zero day",
         "Microsoft",
         "Microsoft Office"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }

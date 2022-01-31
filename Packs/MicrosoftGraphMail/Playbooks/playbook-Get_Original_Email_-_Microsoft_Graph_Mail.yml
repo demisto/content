@@ -4,11 +4,8 @@ contentitemexportablefields:
   contentitemfields: {}
 name: Get Original Email - Microsoft Graph Mail
 description: |-
-  Use this playbook to retrieve the original email using Microsoft Graph Mail integration.
-
-  You must have the necessary permissions in the Microsoft Graph Mail integration as described here:
-        * https://docs.microsoft.com/en-us/graph/api/message-get
-        * https://docs.microsoft.com/en-us/graph/api/user-list-messages
+  This playbook retrieves the original email using the Microsoft Graph Mail integration.
+  Note: You must have the necessary permissions in the Microsoft Graph Mail integration as described in the [message-get API](https://docs.microsoft.com/en-us/graph/api/message-get) and the [user-list-messages API](https://docs.microsoft.com/en-us/graph/api/user-list-messages)
 starttaskid: "0"
 tasks:
   "0":
@@ -75,8 +72,7 @@ tasks:
       id: 0db04b60-0358-4214-851a-42598fa48cd3
       version: -1
       name: Is Microsoft Graph Mail enabled?
-      description: Returns 'yes' if an integration brand is available. Otherwise returns
-        'no'.
+      description: Returns 'yes' if an integration brand is available.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -108,10 +104,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 4e24bc0c-facd-4823-8f1e-67e4458fd4b5
+    taskid: bac1f73e-786c-4ec4-8334-748fab110af7
     type: regular
     task:
-      id: 4e24bc0c-facd-4823-8f1e-67e4458fd4b5
+      id: bac1f73e-786c-4ec4-8334-748fab110af7
       version: -1
       name: Search for messages by MessageID
       description: Gets the properties of returned emails. Typically shows partial
@@ -124,6 +120,9 @@ tasks:
       '#none#':
       - "12"
     scriptarguments:
+      pages_to_pull:
+        complex:
+          root: inputs.PagesToPull
       search:
         simple: subject:${inputs.ThreadTopic}
       user_id:
@@ -153,7 +152,7 @@ tasks:
       id: b22d3fc0-5801-4c61-8b57-87dfc491682e
       version: -1
       name: Was a matching email found?
-      description: Verifies that an email object with a Message-Id that matches the
+      description: Verifies that an email object with a message ID that matches the
         InReplyTo ID of the forwarded email was found.
       type: condition
       iscommand: false
@@ -263,8 +262,8 @@ tasks:
       id: 015f4932-563b-458f-8009-e7daafc60547
       version: -1
       name: Verify required inputs
-      description: Verifies that the required input values exist for retrieving the original
-        email.
+      description: Verifies that the required input values exist for retrieving the
+        original email.
       type: condition
       iscommand: false
       brand: ""
@@ -283,13 +282,13 @@ tasks:
               complex:
                 root: inputs.UserID
             iscontext: true
-        - operator: isExists
+      - - operator: isExists
           left:
             value:
               complex:
                 root: inputs.MessageID
             iscontext: true
-        - operator: isExists
+      - - operator: isExists
           left:
             value:
               complex:
@@ -345,10 +344,16 @@ inputs:
   required: false
   description: The ThreadTopic header in the forwarded email.
   playbookInputQuery:
+- key: PagesToPull
+  value:
+    simple: "10"
+  required: false
+  description: The number of pages of emails to return (maximum is 10 emails per page).
+  playbookInputQuery:
 outputs:
 - contextPath: File
-  description: The original email as an eml file.
+  description: The original email as an EML file.
   type: string
 tests:
 - Get Original Email - Microsoft Graph Mail - test
-fromversion: 6.1.0
+fromversion: 6.0.0

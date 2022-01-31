@@ -15,5 +15,9 @@
     "keywords": [],
     "githubUser": [
         "luminatesec"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }

@@ -14,5 +14,9 @@
     "keywords": [],
     "githubUser": [],
     "dependencies": {},
-    "displayedImages": []
+    "displayedImages": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

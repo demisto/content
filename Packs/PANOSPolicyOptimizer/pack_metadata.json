@@ -2,8 +2,8 @@
     "name": "PAN-OS Policy Optimizer",
     "description": "This integration introduces Policy Optimizer and DAG features that are not available through the regular PAN API",
     "support": "xsoar",
-    "currentVersion": "1.0.2",
-    "author": "Cortex XSOAR",
+    "currentVersion": "1.0.3",
+    "author": "Maciej Drobniuch and Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "created": "2020-04-14T00:00:00Z",
@@ -22,5 +22,20 @@
             "mandatory": true,
             "display_name": "Common Scripts"
         }
-    }
+    },
+    "itemPrefix": [
+        "PAN-OS",
+        "Policy Optimizer"
+    ],
+    "displayedImages": [
+        "PAN-OS",
+        "CommonTypes",
+        "CommonScripts"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }
+
+

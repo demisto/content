@@ -2,7 +2,7 @@
     "name": "Syslog",
     "description": "Use the Syslog pack to send messages and mirror incident War Room entries to Syslog, or listen to incoming Syslog messages.",
     "support": "xsoar",
-    "currentVersion": "2.0.0",
+    "currentVersion": "2.0.2",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -14,5 +14,9 @@
     "useCases": [],
     "keywords": [
         "Syslog"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }

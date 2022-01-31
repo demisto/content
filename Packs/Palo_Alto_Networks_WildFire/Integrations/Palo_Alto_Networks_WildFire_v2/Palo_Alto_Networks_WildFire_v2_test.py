@@ -7,7 +7,7 @@ import demistomock as demisto
 from Palo_Alto_Networks_WildFire_v2 import prettify_upload, prettify_report_entry, prettify_verdict, \
     create_dbot_score_from_verdict, prettify_verdicts, create_dbot_score_from_verdicts, hash_args_handler, \
     file_args_handler, wildfire_get_sample_command, wildfire_get_report_command, run_polling_command, \
-    wildfire_upload_url_command
+    wildfire_upload_url_command, prettify_url_verdict, create_dbot_score_from_url_verdict
 
 
 def test_will_return_ok():
@@ -36,6 +36,43 @@ def test_prettify_verdict():
     prettify_verdict_res = prettify_verdict(
         {'md5': "md5_hash", 'sha256': "sha256_hash", 'verdict': "1"})
     assert expected_verdict_dict == prettify_verdict_res
+
+
+def test_prettify_url_verdict():
+    """
+    Given:
+     - The verdict response.
+
+    When:
+     - Running prettify_url_verdict function.
+
+    Then:
+     - Verify that the dictionary is prettified.
+    """
+    expected_verdict_dict = dict({'URL': 'www.some-url.com', 'Verdict': '0', 'VerdictDescription': 'benign',
+                                  'Valid': 'Yes', 'AnalysisTime': '2021-12-13T11:30:55Z'})
+    prettify_verdict_res = prettify_url_verdict(
+        {'url': 'www.some-url.com', 'verdict': '0', 'analysis_time': '2021-12-13T11:30:55Z', 'valid': 'Yes'})
+    assert expected_verdict_dict == prettify_verdict_res
+
+
+def test_create_dbot_score_from_url_verdict():
+    """
+    Given:
+     - A dictionary to create the dbot score from.
+
+    When:
+     - Running create_dbot_score_from_url_verdict function.
+
+    Then:
+     - Verify that the expected dbot score has been returned.
+    """
+    expected_dbot_score = [
+        {'Indicator': 'www.some-url.com', 'Type': 'url', 'Vendor': 'WildFire', 'Score': 1,
+         'Reliability': 'B - Usually reliable'}
+    ]
+    dbot_score_dict = create_dbot_score_from_url_verdict({'URL': "www.some-url.com", 'Verdict': "0"})
+    assert expected_dbot_score == dbot_score_dict
 
 
 def test_create_dbot_score_from_verdict():

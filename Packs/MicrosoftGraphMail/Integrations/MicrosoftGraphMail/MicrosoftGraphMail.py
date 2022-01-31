@@ -519,7 +519,7 @@ class MsGraphClient:
         return parsed_email
 
     @staticmethod
-    def build_reply(to_recipients, comment):
+    def build_reply(to_recipients, comment, attach_ids, attach_names, attach_cids):
         """
         Builds the reply message that includes recipients to reply and reply message.
 
@@ -529,12 +529,22 @@ class MsGraphClient:
         :type comment: ``str``
         :param comment: The message to reply.
 
+        :type attach_ids: ``list``
+        :param attach_ids: List of uploaded to War Room regular attachments to send
+
+        :type attach_names: ``list``
+        :param attach_names: List of regular attachments names to send
+
+        :type attach_cids: ``list``
+        :param attach_cids: List of uploaded to War Room inline attachments to send
+
         :return: Returns legal reply message.
         :rtype: ``dict``
         """
         return {
             'message': {
-                'toRecipients': MsGraphClient._build_recipient_input(to_recipients)
+                'toRecipients': MsGraphClient._build_recipient_input(to_recipients),
+                'attachments': MsGraphClient._build_file_attachments_input(attach_ids, attach_names, attach_cids, [])
             },
             'comment': comment
         }
@@ -1425,7 +1435,10 @@ def prepare_args(command, args):
         return {
             'to_recipients': argToList(args.get('to')),
             'message_id': args.get('ID', ''),
-            'comment': args.get('body')
+            'comment': args.get('body'),
+            'attach_ids': argToList(args.get('attachIDs')),
+            'attach_names': argToList(args.get('attachNames')),
+            'attach_cids': argToList((args.get('attachCIDs')))
         }
 
     return args
@@ -1548,10 +1561,13 @@ def reply_to_command(client: MsGraphClient, args):
     to_recipients = prepared_args.get('to_recipients')
     message_id = prepared_args.get('message_id')
     comment = prepared_args.get('comment')
+    attach_ids = prepared_args.get('attach_ids')
+    attach_names = prepared_args.get('attach_names')
+    attach_cids = prepared_args.get('attach_cids')
     email = args.get('from')
 
     suffix_endpoint = f'/users/{email}/messages/{message_id}/reply'
-    reply = client.build_reply(to_recipients, comment)
+    reply = client.build_reply(to_recipients, comment, attach_ids, attach_names, attach_cids)
     client.ms_client.http_request('POST', suffix_endpoint, json_data=reply, resp_type="text")
 
     return_outputs(f'### Replied to: {", ".join(to_recipients)} with comment: {comment}')
@@ -1571,9 +1587,9 @@ def main():
     args: dict = demisto.args()
     params: dict = demisto.params()
     self_deployed: bool = params.get('self_deployed', False)
-    tenant_id: str = params.get('tenant_id', '')
-    auth_and_token_url: str = params.get('auth_id', '')
-    enc_key: str = params.get('enc_key', '')
+    tenant_id: str = params.get('tenant_id', '') or params.get('_tenant_id', '')
+    auth_and_token_url: str = params.get('auth_id', '') or params.get('_auth_id', '')
+    enc_key: str = params.get('enc_key', '') or (params.get('credentials') or {}).get('password', '')
     server = params.get('url', '')
     base_url: str = urljoin(server, '/v1.0')
     endpoint = GRAPH_BASE_ENDPOINTS.get(server, 'com')
@@ -1581,6 +1597,13 @@ def main():
     ok_codes: tuple = (200, 201, 202, 204)
     use_ssl: bool = not params.get('insecure', False)
     proxy: bool = params.get('proxy', False)
+
+    if not enc_key:
+        raise Exception('Key must be provided.')
+    if not auth_and_token_url:
+        raise Exception('ID must be provided.')
+    if not tenant_id:
+        raise Exception('Token must be provided.')
 
     # params related to mailbox to fetch incidents
     mailbox_to_fetch = params.get('mailbox_to_fetch', '')

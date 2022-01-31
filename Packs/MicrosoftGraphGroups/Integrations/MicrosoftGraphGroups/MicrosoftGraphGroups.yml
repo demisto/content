@@ -8,19 +8,19 @@ configuration:
   name: url
   required: true
   type: 0
-- display: ID (received from the admin consent - see Detailed Instructions (?)
-  name: auth_id
-  required: true
-  type: 4
-- display: Token (received from the admin consent - see Detailed Instructions (?)
-    section)
-  name: tenant_id
-  required: true
-  type: 4
-- display: Key (received from the admin consent - see Detailed Instructions (?)
-  name: enc_key
-  required: true
-  type: 4
+- display: ID
+  name: _auth_id
+  required: false
+  type: 0
+- display: Token
+  name: _tenant_id
+  required: false
+  type: 0
+- displaypassword: Key
+  name: credentials
+  required: false
+  type: 9
+  hiddenusername: true
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -33,6 +33,25 @@ configuration:
   name: self_deployed
   required: false
   type: 8
+- display: Key (received from the admin consent - see Detailed Instructions (?) (Deprecated)
+  name: enc_key
+  required: false
+  type: 4
+  hidden: true
+  additionalinfo: Use the "Key" parameter instead.
+- display: ID (received from the admin consent - see Detailed Instructions (?) (Deprecated)
+  name: auth_id
+  required: false
+  type: 4
+  hidden: true
+  additionalinfo: Use the "ID" parameter instead
+- display: Token (received from the admin consent - see Detailed Instructions (?) (Deprecated)
+    section)
+  name: tenant_id
+  required: false
+  type: 4
+  hidden: true
+  additionalinfo: Use the "Token" parameter instead.
 description: Microsoft Graph Groups enables you to create and manage different types
   of groups and group functionality according to your requirements.
 display: Azure Active Directory Groups

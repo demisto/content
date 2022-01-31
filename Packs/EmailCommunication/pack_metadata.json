@@ -22,5 +22,8 @@
             "mandatory": true,
             "display_name": "Common Types"
         }
-    }
+    },
+    "marketplaces": [
+        "xsoar"
+    ]
 }

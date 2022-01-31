@@ -16,5 +16,9 @@
     ],
     "useCases": ["Email Communication"],
     "keywords": ["Email Security", "Cloud Security", "Abuse Mailbox", "Data Loss Protection", "Data Leaks", "Compliance"],
-    "githubUser": ["urajat", "ab-samba", "ab-dj"]
+    "githubUser": ["urajat", "ab-samba", "ab-dj"],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

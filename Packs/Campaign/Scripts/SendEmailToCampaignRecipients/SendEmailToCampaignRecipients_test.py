@@ -33,7 +33,7 @@ def test_send_email_happy_path(mocker):
     # prepare
     mocker.patch.object(demisto, 'incidents', return_value=[MOCKED_INCIDENT])
     mocker.patch.object(demisto, 'executeCommand')
-
+    mocker.patch.object(demisto, 'results')
     # run
     main()
 

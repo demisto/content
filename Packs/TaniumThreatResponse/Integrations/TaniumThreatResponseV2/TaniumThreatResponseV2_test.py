@@ -115,7 +115,6 @@ FILTER_GET_SYSTEM_STATUS_ARGS = [
     ({'offset': '0', 'limit': '50', 'port': '8080'}, 2),
 ]
 
-
 """ GENERAL HELPER FUNCTIONS TESTS"""
 
 
@@ -398,6 +397,56 @@ def test_update_intel_doc_yara(mocker, requests_mock):
     assert outputs.get('Tanium.IntelDoc(val.ID && val.ID === obj.ID)', {}).get('RevisionId') == 2
 
 
+def test_delete_intel_doc(mocker, requests_mock):
+    """
+    Given -
+        A specific intel-doc ID.
+
+    When -
+        Running delete_intel_doc function.
+
+    Then -
+        Specified intel-doc is deleted.
+    """
+
+    requests_mock.post(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
+    requests_mock.delete(BASE_URL + '/plugin/products/detect3/api/v1/intels/?id=431', json={})
+
+    human_readable, outputs, raw_response = TaniumThreatResponseV2.delete_intel_doc(MOCK_CLIENT, {'intel_doc_id': 431})
+    assert 'Intel Doc deleted' in human_readable
+
+
+def test_start_quick_scan(mocker, requests_mock):
+    """
+    Given -
+        A specific intel-doc ID.
+        A Tanium Computer Group Name
+
+    When -
+        Running start_quick_scan function.
+
+    Then -
+        A quick scan is started.
+    """
+
+    api_get_expected_response = util_load_json('test_files/get_computer_group_name_raw_response.json')
+    api_post_expected_response = util_load_json('test_files/start_quick_scan_raw_response.json')
+    requests_mock.post(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
+    requests_mock.get(BASE_URL + '/api/v2/groups/by-name/All%20Computers', json=api_get_expected_response)
+    requests_mock.post(BASE_URL + '/plugin/products/detect3/api/v1/quick-scans/', json=api_post_expected_response)
+
+    human_readable, outputs, raw_response = TaniumThreatResponseV2.start_quick_scan(MOCK_CLIENT, {
+        'intel_doc_id': 431, 'computer_group_name': 'All Computers'})
+    assert 'Quick Scan started' in human_readable
+    assert outputs.get('Tanium.QuickScan(val.ID && val.ID === obj.ID)', {}).get('IntelDocId') == 431
+    assert outputs.get('Tanium.QuickScan(val.ID && val.ID === obj.ID)', {}).get('ComputerGroupId') == 1
+    assert outputs.get('Tanium.QuickScan(val.ID && val.ID === obj.ID)', {}).get('ID') == 1000239
+    assert outputs.get('Tanium.QuickScan(val.ID && val.ID === obj.ID)', {}).get('AlertCount') == 0
+    assert outputs.get('Tanium.QuickScan(val.ID && val.ID === obj.ID)', {}).get('CreatedAt') == "2022-01-05T19:53:43.049Z"
+    assert outputs.get('Tanium.QuickScan(val.ID && val.ID === obj.ID)', {}).get('UserId') == 64
+    assert outputs.get('Tanium.QuickScan(val.ID && val.ID === obj.ID)', {}).get('QuestionId') == 2025697
+
+
 def test_deploy_intel(requests_mock):
     """
     Given -
@@ -638,7 +687,7 @@ def test_get_connections(requests_mock):
     'command_args, expected_output_len', FILTER_CONNECTIONS_LIST_ARGS
 )
 def test_filter_get_connections(
-    requests_mock, command_args, expected_output_len
+        requests_mock, command_args, expected_output_len
 ):
     """
     Given -
@@ -966,9 +1015,8 @@ def test_filter_list_evidence(requests_mock, command_args, expected_output_len):
 
     _, outputs, _ = TaniumThreatResponseV2.list_evidence(MOCK_CLIENT, command_args)
     response = outputs.get('Tanium.Evidence(val.uuid && val.uuid === obj.uuid)', {})
-    assert (
-        len(response) == expected_output_len
-    ), f'Actual length: {len(response)}, Expected length: {expected_output_len}'
+    assert (len(
+        response) == expected_output_len), f'Actual length: {len(response)}, Expected length: {expected_output_len}'
 
 
 def test_event_evidence_get_properties(requests_mock):
@@ -1298,7 +1346,7 @@ def test_get_system_status(requests_mock):
     'command_args, expected_output_len', FILTER_GET_SYSTEM_STATUS_ARGS
 )
 def test_filter_get_system_status(
-    requests_mock, command_args, expected_output_len
+        requests_mock, command_args, expected_output_len
 ):
     """
     Given -
@@ -1328,9 +1376,8 @@ def test_filter_get_system_status(
     response = outputs.get(
         'Tanium.SystemStatus(val.clientId === obj.clientId)', {}
     )
-    assert (
-        len(response) == expected_output_len
-    ), f'Actual length: {len(response)}, Expected length: {expected_output_len}'
+    assert (len(
+        response) == expected_output_len), f'Actual length: {len(response)}, Expected length: {expected_output_len}'
 
 
 def test_fetch_all_incidents(requests_mock):
@@ -1345,8 +1392,12 @@ def test_fetch_all_incidents(requests_mock):
 
     test_incidents = util_load_json('test_files/fetch_incidents.json')
     requests_mock.post(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
-    requests_mock.get(BASE_URL + '/plugin/products/detect3/api/v1/alerts?&state=unresolved&limit=500',
+    requests_mock.get(BASE_URL + '/plugin/products/detect3/api/v1/alerts?'
+                                 '&state=unresolved&sort=-createdAt&limit=500&offset=0',
                       json=test_incidents)
+    requests_mock.get(BASE_URL + '/plugin/products/detect3/api/v1/alerts?'
+                                 '&state=unresolved&sort=-createdAt&limit=500&offset=500',
+                      json=[])
     requests_mock.get(BASE_URL + '/plugin/products/detect3/api/v1/intels/11', json={'name': 'test'})
 
     alerts_states_to_retrieve = 'unresolved'
@@ -1368,7 +1419,8 @@ def test_fetch_all_incidents(requests_mock):
     assert incidents[0].get(
         'occurred') == "2021-09-26T14:01:31.000Z"
     assert next_run.get('id') == "2"
-    assert next_run.get('time') == datetime.strftime(parse("2021-09-26T14:02:59.000Z"), TaniumThreatResponseV2.DATE_FORMAT)
+    assert next_run.get('time') == datetime.strftime(parse("2021-09-26T14:02:59.000Z"),
+                                                     TaniumThreatResponseV2.DATE_FORMAT)
 
 
 def test_fetch_new_incidents(requests_mock):
@@ -1383,8 +1435,12 @@ def test_fetch_new_incidents(requests_mock):
 
     test_incidents = util_load_json('test_files/fetch_incidents_new.json')
     requests_mock.post(BASE_URL + '/api/v2/session/login', json={'data': {'session': 'session-id'}})
-    requests_mock.get(BASE_URL + '/plugin/products/detect3/api/v1/alerts?&state=unresolved&limit=500',
+    requests_mock.get(BASE_URL + '/plugin/products/detect3/api/v1/alerts?'
+                                 '&state=unresolved&sort=-createdAt&limit=500&offset=0',
                       json=test_incidents)
+    requests_mock.get(BASE_URL + '/plugin/products/detect3/api/v1/alerts?'
+                                 '&state=unresolved&sort=-createdAt&limit=500&offset=500',
+                      json=[])
     requests_mock.get(BASE_URL + '/plugin/products/detect3/api/v1/intels/11', json={'name': 'test'})
 
     alerts_states_to_retrieve = 'unresolved'

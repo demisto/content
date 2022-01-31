@@ -1,22 +1,22 @@
 id: ServiceNow_OAuth_Test
-version: 2
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: ServiceNow_OAuth_Test
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: ef1bf632-35f8-4328-84f2-e406335e7f3d
+    taskid: 5a19a1e1-fd4e-499f-8c2b-67e3a97924c3
     type: start
     task:
-      id: ef1bf632-35f8-4328-84f2-e406335e7f3d
+      id: 5a19a1e1-fd4e-499f-8c2b-67e3a97924c3
       version: -1
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
-      - "1"
+      - "2"
     separatecontext: false
     view: |-
       {
@@ -30,47 +30,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "1":
-    id: "1"
-    taskid: 889c6278-31d9-422f-86ef-bba37545eb11
-    type: regular
-    task:
-      id: 889c6278-31d9-422f-86ef-bba37545eb11
-      version: -1
-      name: servicenow-oauth-login
-      description: This function should be used once before running any command when
-        using OAuth2 authentication.
-      script: ServiceNow v2|||servicenow-oauth-login
-      type: regular
-      iscommand: true
-      brand: ServiceNow v2
-    nexttasks:
-      '#none#':
-      - "2"
-    scriptarguments:
-      password:
-        simple: '@R6wWjITp39m7@Ev5uF#'
-      username:
-        simple: admin_test_Nov2020-01
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: db211e50-1faa-4bfd-8832-49cddcca083f
+    taskid: f71a6300-900a-4f34-8897-6dc75fcbd32d
     type: regular
     task:
-      id: db211e50-1faa-4bfd-8832-49cddcca083f
+      id: f71a6300-900a-4f34-8897-6dc75fcbd32d
       version: -1
       name: servicenow-oauth-test
       description: Test the instance configuration when using OAuth2 authentication.
@@ -86,7 +53,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 370
+          "y": 195
         }
       }
     note: false
@@ -94,12 +61,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 1918ff6c-e1a3-4ef9-84a0-751fc4f2d181
+    taskid: dcb1e8cb-850a-4a08-8f02-83600c7cd056
     type: regular
     task:
-      id: 1918ff6c-e1a3-4ef9-84a0-751fc4f2d181
+      id: dcb1e8cb-850a-4a08-8f02-83600c7cd056
       version: -1
       name: servicenow-get-table-name
       description: Gets table names by a label to use in commands.
@@ -109,12 +78,73 @@ tasks:
       brand: ServiceNow v2
     nexttasks:
       '#none#':
-      - "4"
+      - "5"
     scriptarguments:
       label:
         simple: Asset
-      limit: {}
-      offset: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: bccb98e7-65bf-4cd1-8e09-3c3de836c765
+    type: title
+    task:
+      id: bccb98e7-65bf-4cd1-8e09-3c3de836c765
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: f70c6226-45ee-46c5-81b1-e7980624584a
+    type: regular
+    task:
+      id: f70c6226-45ee-46c5-81b1-e7980624584a
+      version: -1
+      name: servicenow-get-ticket
+      description: Retrieves ticket information by ticket ID.
+      script: ServiceNow v2|||servicenow-get-ticket
+      type: regular
+      iscommand: true
+      brand: ServiceNow v2
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      get_attachments:
+        simple: "true"
+      id:
+        simple: 2f0beba21b150550042611b4bd4bcb65
     separatecontext: false
     view: |-
       {
@@ -128,18 +158,44 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "4":
-    id: "4"
-    taskid: 91691330-16dc-495f-817f-419fad38d3c3
-    type: title
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: fcf5d072-6b0c-4c8f-8ef5-1ea2c7a49b86
+    type: condition
     task:
-      id: 91691330-16dc-495f-817f-419fad38d3c3
+      id: fcf5d072-6b0c-4c8f-8ef5-1ea2c7a49b86
       version: -1
-      name: Done
-      type: title
+      name: Verify ticket attachment
+      type: condition
       iscommand: false
       brand: ""
+    nexttasks:
+      "yes":
+      - "7"
     separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ServiceNow.Ticket.Number
+            iscontext: true
+          right:
+            value:
+              simple: INC0018723
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: File
+                accessor: Name
+            iscontext: true
+          right:
+            value:
+              simple: Attachmet_For_ServiceNow_test_playbook.txt
     view: |-
       {
         "position": {
@@ -152,12 +208,88 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 50f81925-c03b-4afd-82d5-f4201c32ef9d
+    type: regular
+    task:
+      id: 50f81925-c03b-4afd-82d5-f4201c32ef9d
+      version: -1
+      name: Read attachment
+      description: Load the contents of a file into context.
+      scriptName: ReadFile
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      entryID:
+        simple: ${File.EntryID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: a4131ed3-11c0-437b-8ee9-2f3efc0288d8
+    type: condition
+    task:
+      id: a4131ed3-11c0-437b-8ee9-2f3efc0288d8
+      version: -1
+      name: Verify the attachment's content
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: FileData
+            iscontext: true
+          right:
+            value:
+              simple: Attachmet For ServiceNow test-playbook.
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 735,
+        "height": 1260,
         "width": 380,
         "x": 50,
         "y": 50
@@ -167,3 +299,4 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.0.0
+description: ''

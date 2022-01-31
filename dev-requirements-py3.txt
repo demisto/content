@@ -1,7 +1,7 @@
 flake8==3.9.2
 bandit==1.7.0
-demisto-py==3.0.2
-git+https://github.com/demisto/demisto-sdk.git@5a2ee4a272105b1df3b5b0491e82797fbe11e0d5#egg=demisto-sdk
+demisto-py>=3.0.2
+git+https://github.com/demisto/demisto-sdk.git@3702c2a940ddda26ec5de2340c3d6b48ebeefc8f
 pytest==6.2.1
 pytest-mock==3.4.0
 requests-mock==1.8.0
@@ -15,7 +15,7 @@ beautifulsoup4==4.9.3
 pypdf2==1.26.0
 freezegun==0.3.12
 vulture==1.5
-git+https://github.com/coyo8/parinx.git@6493798ceba8089345d970f71be4a896eb6b081d#egg=parinx
+git+https://github.com/npsolve/parinx.git@6493798ceba8089345d970f71be4a896eb6b081d#egg=parinx
 pylint==2.6.0
 coloredlogs==15.0
 pandas==1.2.0

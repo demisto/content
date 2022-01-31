@@ -18,5 +18,9 @@
     "githubUser": [
         "gib-tds"
     ],
-    "certification": "certified"
+    "certification": "certified",
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

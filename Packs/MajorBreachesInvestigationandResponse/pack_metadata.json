@@ -26,7 +26,8 @@
     ],
     "useCases": [
         "Hunting",
-        "Incident Response"
+        "Incident Response",
+        "Rapid Breach Response"
     ],
     "keywords": [
         "SolarStorm",
@@ -62,6 +63,18 @@
         "MicrosoftPolicyAndCompliance": {
             "display_name": "Microsoft Policy And Compliance",
             "mandatory": false
+        },
+        "CVE_2021_44228": {
+            "mandatory": false,
+            "display_name": "CVE-2021-44228 - Log4j RCE"
+        },
+        "CVE_2021_40444": {
+            "mandatory": false,
+            "display_name": "CVE-2021-40444 - MSHTML RCE"
         }
-    }
+    },
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

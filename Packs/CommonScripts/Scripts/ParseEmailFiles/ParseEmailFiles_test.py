@@ -6,7 +6,7 @@ import pytest
 import demistomock as demisto
 from CommonServerPython import entryTypes
 from ParseEmailFiles import MsOxMessage, main, convert_to_unicode, unfold, handle_msg, get_msg_mail_format, \
-    data_to_md, create_headers_map, DataModel
+    data_to_md, create_headers_map, DataModel, handle_eml
 
 
 def exec_command_for_file(
@@ -140,6 +140,23 @@ def test_smime2(mocker):
     assert results[0]['EntryContext']['Email']['Subject'] == 'Testing signed multipart email'
 
 
+def test_handle_eml_parses_correct_message_id():
+    """
+    Given:
+     - eml file
+
+    When:
+     - parsing eml file into email data.
+
+    Then:
+     - Validate that correct 'Message-ID' case sensitive is in 'HeadersMap' dict.
+       Must be 'Message-ID' case sensitive.
+
+    """
+    email_data, _ = handle_eml(file_path='test_data/invalid_message_id.eml')
+    assert 'Message-ID' in email_data['HeadersMap']
+
+
 def test_eml_contains_eml(mocker):
     def executeCommand(name, args=None):
         if name == 'getFilePath':
@@ -178,10 +195,13 @@ def test_eml_contains_eml(mocker):
     assert results[0]['Type'] == entryTypes['note']
     assert results[0]['EntryContext']['Email'][0]['Subject'] == 'Fwd: test - inner attachment eml'
     assert 'ArcSight_ESM_fixes.yml' in results[0]['EntryContext']['Email'][0]['Attachments']
+    assert 'ArcSight_ESM_fixes.yml' in results[0]['EntryContext']['Email'][0]['AttachmentsData'][0]['Name']
     assert 'test - inner attachment eml.eml' in results[0]['EntryContext']['Email'][0]['Attachments']
+    assert 'test - inner attachment eml.eml' in results[0]['EntryContext']['Email'][0]['AttachmentsData'][1]['Name']
     assert results[0]['EntryContext']['Email'][0]['Depth'] == 0
     assert results[0]['EntryContext']['Email'][1]["Subject"] == 'test - inner attachment eml'
     assert 'CS Training 2019 - EWS.pptx' in results[0]['EntryContext']['Email'][1]["Attachments"]
+    assert 'CS Training 2019 - EWS.pptx' in results[0]['EntryContext']['Email'][1]["AttachmentsData"][0]['Name']
     assert results[0]['EntryContext']['Email'][1]['Depth'] == 1
 
 
@@ -225,6 +245,7 @@ def test_eml_contains_msg(mocker):
     assert results[0]['EntryContext']['Email'][0]['Depth'] == 0
 
     assert 'Attacker+email+.msg' in results[0]['EntryContext']['Email'][0]['Attachments']
+    assert 'Attacker+email+.msg' in results[0]['EntryContext']['Email'][0]['AttachmentsData'][0]['Name']
     assert results[0]['EntryContext']['Email'][1]["Subject"] == 'Attacker email'
     assert results[0]['EntryContext']['Email'][1]['Depth'] == 1
 
@@ -267,7 +288,9 @@ def test_eml_contains_eml_depth(mocker):
     assert results[0]['Type'] == entryTypes['note']
     assert results[0]['EntryContext']['Email']['Subject'] == 'Fwd: test - inner attachment eml'
     assert 'ArcSight_ESM_fixes.yml' in results[0]['EntryContext']['Email']['Attachments']
+    assert 'ArcSight_ESM_fixes.yml' in results[0]['EntryContext']['Email']['AttachmentsData'][0]['Name']
     assert 'test - inner attachment eml.eml' in results[0]['EntryContext']['Email']['Attachments']
+    assert 'test - inner attachment eml.eml' in results[0]['EntryContext']['Email']['AttachmentsData'][1]['Name']
     assert isinstance(results[0]['EntryContext']['Email'], dict)
     assert results[0]['EntryContext']['Email']['Depth'] == 0
 
@@ -684,6 +707,7 @@ def test_eml_contains_base64_encoded_eml(mocker, email_file):
     assert results[0]['Type'] == entryTypes['note']
     assert results[0]['EntryContext']['Email'][0]['Subject'] == 'Fwd: test - inner attachment eml (base64)'
     assert 'message.eml' in results[0]['EntryContext']['Email'][0]['Attachments']
+    assert 'message.eml' in results[0]['EntryContext']['Email'][0]['AttachmentsData'][0]['Name']
     assert results[0]['EntryContext']['Email'][0]['Depth'] == 0
 
     assert results[0]['EntryContext']['Email'][1]["Subject"] == 'test - inner attachment eml'
@@ -807,6 +831,21 @@ def test_get_msg_mail_format():
     assert msg_mail_format == ''
 
 
+def test_handle_msg_with_attachments():
+    """
+    Given:
+     - A msg file with attachments
+
+    When:
+     - Running the 'handle_msg' method
+
+    Then:
+     - Ensure that the attachment name is in the results
+    """
+    result = handle_msg('test_data/html_attachment.msg', 'html_attachment.msg')
+    assert result[0]['Attachments'] == 'dummy-attachment.txt'
+
+
 def test_no_content_file(mocker):
     mocker.patch.object(demisto, 'args', return_value={'entryid': 'test'})
     mocker.patch.object(demisto, 'executeCommand',
@@ -834,6 +873,7 @@ def test_eml_contains_htm_attachment(mocker):
     assert len(results) == 1
     assert results[0]['Type'] == entryTypes['note']
     assert results[0]['EntryContext']['Email'][u'Attachments'] == '1.htm'
+    assert results[0]['EntryContext']['Email'][u'AttachmentsData'][0]['Name'] == '1.htm'
 
 
 def test_signed_attachment(mocker):
@@ -939,6 +979,7 @@ def test_eml_base64_header_comment_although_string(mocker):
     assert results[0]['EntryContext']['Email'][0]['Depth'] == 0
 
     assert 'Attacker+email+.msg' in results[0]['EntryContext']['Email'][0]['Attachments']
+    assert 'Attacker+email+.msg' in results[0]['EntryContext']['Email'][0]['AttachmentsData'][0]['Name']
     assert results[0]['EntryContext']['Email'][1]["Subject"] == 'Attacker email'
     assert results[0]['EntryContext']['Email'][1]['Depth'] == 1
 

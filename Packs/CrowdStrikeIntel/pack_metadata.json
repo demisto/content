@@ -10,5 +10,8 @@
     "categories": [],
     "tags": [],
     "useCases": [],
-    "keywords": []
+    "keywords": [],
+    "marketplaces": [
+        "xsoar"
+    ]
 }

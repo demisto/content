@@ -130,7 +130,34 @@ def get_auth():
     )
 
 
-def run_query(query, start_at='', max_results=None):
+def get_custom_field_names():
+    """
+    This function returns all custom fields.
+    :return: dict of custom fields: id as key and name as value.
+    """
+    custom_id_name_mapping = {}
+    HEADERS['Accept'] = "application/json"
+    try:
+        res = requests.request(
+            method='GET',
+            url=BASE_URL + 'rest/api/latest/field',
+            headers=HEADERS,
+            verify=USE_SSL,
+            auth=get_auth(),
+        )
+    except Exception as e:
+        demisto.error(f'Could not get custom fields because got the next exception: {e}')
+    else:
+        if res.ok:
+            custom_fields_list = res.json()
+            custom_id_name_mapping = {field.get('id'): field.get('name') for field in custom_fields_list}
+        else:
+            demisto.error(f'Could not get custom fields. status code: {res.status_code}. reason: {res.reason}')
+    finally:
+        return custom_id_name_mapping
+
+
+def run_query(query, start_at='', max_results=None, extra_fields=None, nofields=None):
     # EXAMPLE
     """
     request = {
@@ -151,7 +178,16 @@ def run_query(query, start_at='', max_results=None):
         "startAt": start_at,
         "maxResults": max_results,
     }
-
+    if extra_fields:
+        fields = extra_fields.split(",")
+        fields_mapping_name_id = {k.lower(): v.lower() for k, v in get_custom_field_names().items()}
+        query_params['fields'] = [k for y in fields for k, v in fields_mapping_name_id.items() if v == y.lower()]
+        nofields.update({fieldextra for fieldextra in fields if fieldextra.lower() not in fields_mapping_name_id.values()})
+    if nofields:
+        if len(nofields) > 1:
+            return_warning(f'{",".join(nofields)} do not exist')
+        else:
+            return_warning(f'{",".join(nofields)} does not exist')
     try:
         result = requests.get(
             url=url,
@@ -237,33 +273,59 @@ def expand_urls(data, depth=0):
                     return expand_urls(value, depth + 1)
 
 
-def search_user(query: str, max_results: str = '50'):
+def search_user(query: str, max_results: str = '50', is_jirav2api: bool = False):
     """
         Search for user by name or email address.
     Args:
         query: A query string that is matched against user attributes ( displayName, and emailAddress) to find relevant users.
         max_results (str): The maximum number of items to return. default by the server: 50
+        is_jirav2api (bool): if the instance is connecting to a Jira Server that supports only the v2 REST API. default as False
+
 
     Returns:
         List of users.
     """
-    url = f"rest/api/latest/user/search?query={query}&maxResults={max_results}"
+
+    if is_jirav2api:
+        """
+        override user identifier for Jira v2 API
+        https://docs.atlassian.com/software/jira/docs/api/REST/8.13.15/#user-findUsers
+        """
+        url = f"rest/api/latest/user/search?username={query}&maxResults={max_results}"
+    else:
+        url = f"rest/api/latest/user/search?query={query}&maxResults={max_results}"
+
     res = jira_req('GET', url, resp_type='json')
     return res
 
 
-def get_account_id_from_attribute(attribute: str, max_results: str = '50') -> Union[CommandResults, str]:
+def get_account_id_from_attribute(
+        attribute: str,
+        max_results: str = '50',
+        is_jirav2api: str = 'false') -> Union[CommandResults, str]:
     """
     https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-user-search/#api-rest-api-3-user-search-get
 
     Args:
         attribute (str): Username or Email address of a user.
         max_results (str): The maximum number of items to return. default by the server: 50
+        is_jirav2api (str): if the instance is connecting to a Jira Server that supports only the v2 REST API. default as false
     """
-    users = search_user(attribute, max_results)
-    account_ids = {
-        user.get('accountId') for user in users if (attribute.lower() in [user.get('displayName', '').lower(),
-                                                                          user.get('emailAddress', '').lower()])}
+
+    if is_jirav2api == 'true':
+        """
+        override user identifier for Jira v2 API
+        https://docs.atlassian.com/software/jira/docs/api/REST/8.13.15/#user-findUsers
+        """
+        users = search_user(attribute, max_results, is_jirav2api=True)
+        account_ids = {
+            user.get('name') for user in users if (attribute.lower() in [user.get('displayName', '').lower(),
+                                                                         user.get('emailAddress', '').lower()])}
+    else:
+        users = search_user(attribute, max_results)
+        account_ids = {
+            user.get('accountId') for user in users if (attribute.lower() in [user.get('displayName', '').lower(),
+                                                                              user.get('emailAddress', '').lower()])}
 
     if not account_ids:
         return f'No Account ID was found for attribute: {attribute}.'
@@ -285,7 +347,7 @@ def get_account_id_from_attribute(attribute: str, max_results: str = '50') -> Un
     )
 
 
-def generate_md_context_get_issue(data):
+def generate_md_context_get_issue(data, customfields=None, nofields=None):
     get_issue_obj: dict = {"md": [], "context": []}
     if not isinstance(data, list):
         data = [data]
@@ -297,6 +359,19 @@ def generate_md_context_get_issue(data):
         context_obj['Key'] = md_obj['key'] = demisto.get(element, 'key')
         context_obj['Summary'] = md_obj['summary'] = demisto.get(element, 'fields.summary')
         context_obj['Status'] = md_obj['status'] = demisto.get(element, 'fields.status.name')
+        context_obj['Priority'] = md_obj['priority'] = demisto.get(element, 'fields.priority.name')
+        context_obj['ProjectName'] = md_obj['project'] = demisto.get(element, 'fields.project.name')
+        context_obj['DueDate'] = md_obj['duedate'] = demisto.get(element, 'fields.duedate')
+        context_obj['Created'] = md_obj['created'] = demisto.get(element, 'fields.created')
+        # Parse custom fields into their original names
+        custom_fields = [i for i in demisto.get(element, "fields") if "custom" in i]
+        if custom_fields and customfields and not nofields:
+            field_mappings = get_custom_field_names()
+            for field_returned in custom_fields:
+                readable_field_name = field_mappings.get(field_returned)
+                if readable_field_name:
+                    context_obj[readable_field_name] = md_obj[readable_field_name] = \
+                        demisto.get(element, f"fields.{field_returned}")
 
         assignee = demisto.get(element, 'fields.assignee')
         context_obj['Assignee'] = md_obj['assignee'] = "{name}({email})".format(
@@ -316,15 +391,16 @@ def generate_md_context_get_issue(data):
             email=reporter.get('emailAddress', 'null')
         ) if reporter else 'null(null)'
 
+        context_obj.update({
+            'LastSeen': demisto.get(element, 'fields.lastViewed'),
+            'LastUpdate': demisto.get(element, 'fields.updated'),
+        })
+
         md_obj.update({
             'issueType': demisto.get(element, 'fields.issuetype.description'),
-            'priority': demisto.get(element, 'fields.priority.name'),
-            'project': demisto.get(element, 'fields.project.name'),
             'labels': demisto.get(element, 'fields.labels'),
             'description': demisto.get(element, 'fields.description'),
-            'duedate': demisto.get(element, 'fields.duedate'),
             'ticket_link': demisto.get(element, 'self'),
-            'created': demisto.get(element, 'fields.created'),
         })
         attachments = demisto.get(element, 'fields.attachment')
         if isinstance(attachments, list):
@@ -613,14 +689,16 @@ def get_issue(issue_id, headers=None, expand_links=False, is_update=False, get_a
     return human_readable, outputs, contents
 
 
-def issue_query_command(query, start_at='', max_results=None, headers=''):
-    j_res = run_query(query, start_at, max_results)
+def issue_query_command(query, start_at='', max_results=None, headers='', extra_fields=None):
+    nofields: set = set()
+
+    j_res = run_query(query, start_at, max_results, extra_fields, nofields)
     if not j_res:
         outputs = contents = {}
         human_readable = 'No issues matched the query.'
     else:
         issues = demisto.get(j_res, 'issues')
-        md_and_context = generate_md_context_get_issue(issues)
+        md_and_context = generate_md_context_get_issue(issues, extra_fields, nofields)
         human_readable = tableToMarkdown(demisto.command(), t=md_and_context['md'], headers=argToList(headers))
         contents = j_res
         outputs = {'Ticket(val.Id == obj.Id)': md_and_context['context']}

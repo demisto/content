@@ -2271,7 +2271,57 @@ script:
     - contextPath: Tanium.SystemStatus.status
       description: The host status.
       type: String
-  dockerimage: demisto/lxml:1.0.0.24133
+  - name: tanium-tr-intel-doc-delete
+    arguments:
+    - default: false
+      description: The intel document ID.
+      isArray: false
+      name: intel_doc_id
+      required: true
+      secret: false
+    description: Remove an intel document from the system by providing its ID
+  - name: tanium-tr-start-quick-scan
+    arguments:
+    - default: false
+      description: The intel document ID.
+      isArray: false
+      name: intel_doc_id
+      required: true
+      secret: false
+    - default: false
+      description: The name of a Tanium computer group. See command description for
+        possible ways to retrieve this value.
+      isArray: false
+      name: computer_group_name
+      required: true
+      secret: false
+    outputs:
+    - contextPath: Tanium.QuickScan.IntelDocId
+      description: The unique identifier for this intel in this instance of the system.
+      type: Number
+    - contextPath: Tanium.QuickScan.ComputerGroupId
+      description: The ID of a Tanium computer group.
+      type: Number
+    - contextPath: Tanium.QuickScan.ID
+      description: The ID of the quick scan
+      type: Number
+    - contextPath: Tanium.QuickScan.AlertCount
+      description: The number of alerts returned from the quick scan
+      type: Number
+    - contextPath: Tanium.QuickScan.CreatedAt
+      description: The date the quick scan was created
+      type: Date
+    - contextPath: Tanium.QuickScan.UserId
+      description: The user ID which initiated the quick scan
+      type: Number
+    - contextPath: Tanium.QuickScan.QuestionId
+      description: The ID of the quick scan question
+      type: Number
+    description: Scan a computer group for hashes in intel document. Computer groups
+      can be viewed by navigating to `Administration -> Computer Groups` in the Threat-Response
+      product console. Computer group names and IDs can also be retrieved by using
+      the `tn-list-groups` command in the `Tanium` integration.
+  dockerimage: demisto/lxml:1.0.0.25271
   feed: false
   isfetch: true
   longRunning: false

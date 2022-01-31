@@ -134,17 +134,18 @@ class Client(BaseClient):
             kwargs['verify'] = self._verify
             kwargs['timeout'] = self.polling_timeout
 
-            # Set the If-None-Match and If-Modified-Since headers if we have etag or
-            # last_modified values in the context.
-            last_run = demisto.getLastRun()
-            etag = last_run.get(url, {}).get('etag')
-            last_modified = last_run.get(url, {}).get('last_modified')
+            if is_demisto_version_ge('6.5.0'):
+                # Set the If-None-Match and If-Modified-Since headers if we have etag or
+                # last_modified values in the context.
+                last_run = demisto.getLastRun()
+                etag = last_run.get(url, {}).get('etag')
+                last_modified = last_run.get(url, {}).get('last_modified')
 
-            if etag:
-                self.headers['If-None-Match'] = etag
+                if etag:
+                    self.headers['If-None-Match'] = etag
 
-            if last_modified:
-                self.headers['If-Modified-Since'] = last_modified
+                if last_modified:
+                    self.headers['If-Modified-Since'] = last_modified
 
             # set request headers
             if 'headers' in kwargs:
@@ -207,7 +208,7 @@ class Client(BaseClient):
 
             if skip_first_line:
                 next(csvreader)
-            no_update = get_no_update_value(r, url)
+            no_update = get_no_update_value(r, url) if is_demisto_version_ge('6.5.0') else True
             results.append({url: {'result': csvreader, 'no_update': no_update}})
 
         return results
@@ -408,7 +409,7 @@ def get_indicators_command(client, args: dict, tags: Optional[List[str]] = None)
     return hr, {}, indicators_list
 
 
-def feed_main(feed_name, params=None, prefix=''):
+def feed_main(feed_name, params=None, prefix=''):   # pragma: no cover
     if not params:
         params = {k: v for k, v in demisto.params().items() if v is not None}
     handle_proxy()
@@ -435,13 +436,19 @@ def feed_main(feed_name, params=None, prefix=''):
 
             # check if the version is higher than 6.5.0 so we can use noUpdate parameter
             if is_demisto_version_ge('6.5.0'):
-                # we submit the indicators in batches
-                for b in batch(indicators, batch_size=2000):
-                    demisto.createIndicators(b, noUpdate=no_update)  # type: ignore
+                if not indicators:
+                    demisto.createIndicators(indicators, noUpdate=no_update)  # type: ignore
+                else:
+                    # we submit the indicators in batches
+                    for b in batch(indicators, batch_size=2000):
+                        demisto.createIndicators(b, noUpdate=no_update)  # type: ignore
             else:
                 # call createIndicators without noUpdate arg
-                for b in batch(indicators, batch_size=2000):
-                    demisto.createIndicators(b)  # type: ignore
+                if not indicators:
+                    demisto.createIndicators(indicators)  # type: ignore
+                else:
+                    for b in batch(indicators, batch_size=2000):  # type: ignore
+                        demisto.createIndicators(b)
 
         else:
             args = demisto.args()

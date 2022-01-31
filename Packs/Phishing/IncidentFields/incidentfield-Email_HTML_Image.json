@@ -1,7 +1,8 @@
 {
  "associatedToAll": false,
  "associatedTypes": [
-  "Email Communication"
+  "Email Communication",
+  "Phishing Alerts"
  ],
  "caseInsensitive": true,
  "cliName": "emailhtmlimage",

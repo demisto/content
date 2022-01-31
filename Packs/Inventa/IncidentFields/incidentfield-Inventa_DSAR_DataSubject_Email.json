@@ -1,0 +1,30 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "iDSAR"
+    ],
+    "caseInsensitive": true,
+    "cliName": "inventadsardatasubjectemail",
+    "closeForm": false,
+    "content": true,
+    "description": "Email of a Data Subject",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_inventadsardatasubjectemail",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Inventa DSAR DataSubject Email",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

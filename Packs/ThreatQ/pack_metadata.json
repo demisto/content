@@ -1,11 +1,11 @@
 {
     "name": "ThreatQ",
     "description": "A threat intelligence platform that collects and interprets intelligence data from open sources and manages indicator scoring, types, and attributes.",
-    "support": "partner",
-    "currentVersion": "1.0.13",
-    "author": "ThreatQ",
-    "url": "",
-    "email": "support@threat.com",
+    "support": "xsoar",
+    "currentVersion": "1.0.15",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
     "created": "2020-04-14T00:00:00Z",
     "categories": [
         "Data Enrichment & Threat Intelligence"
@@ -13,8 +13,9 @@
     "tags": [],
     "useCases": [],
     "keywords": [],
-    "githubUser": [
-        "YoshaNir"
-    ],
-    "certification": "certified"
+    "certification": "certified",
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

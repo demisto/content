@@ -16,5 +16,9 @@
         "deception",
         "apt"
     ],
-    "githubUser": []
+    "githubUser": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

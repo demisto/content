@@ -1,9 +1,9 @@
-iDefense provides intelligence regarding security threats and vulnerabilities.
-This integration was integrated and tested with version v2.58.0 of iDefense
-## Configure iDefense v2 on Cortex XSOAR
+Accenture CTI provides intelligence regarding security threats and vulnerabilities.
+This integration was integrated and tested with version v2.58.0 of ACTI
+## Configure Accenture CTI on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for iDefense v2.
+2. Search for Accenture CTI.
 3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
@@ -37,10 +37,11 @@ Checks the reputation of the given IP address.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| IP.Address | String | The IP address that was checked. | 
+| IP.Address | String | The IP address that was checked. |   
 | IP.Malicious.Vendor | String | For malicious IP addresses, the vendor that made the decision. | 
-| IP.Malicious.Description | String | For malicious IP addresses, the reason the vendor made that decision. | 
+| IP.Malicious.Description | String | For malicious IP addresses, the reason the vendor made that decision. |
 | DBotScore.Indicator | String | The indicator that was tested. | 
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. |
 | DBotScore.Type | String | The indicator type. | 
 | DBotScore.Vendor | String | The vendor that was used to calculate the score. | 
 | DBotScore.Score | String | The actual score. | 
@@ -54,9 +55,10 @@ Checks the reputation of the given IP address.
 {
     "DBotScore": {
         "Indicator": "0.0.0.0",
+        "Reliability": "B - Usually reliable",
         "Score": 2,
         "Type": "ip",
-        "Vendor": "iDefense"
+        "Vendor": "iDefense_v2"
     },
     "IP": {
         "Address": "0.0.0.0"
@@ -94,7 +96,8 @@ Checks the reputation of the given domain.
 | Domain.Name | String | The name of the domain that was checked. | 
 | Domain.Malicious.Vendor | String | For malicious domains, the vendor that made the decision. | 
 | Domain.Malicious.Description | String | For malicious domains, the reason the vendor made that decision. | 
-| DBotScore.Indicator | String | The indicator that was tested. | 
+| DBotScore.Indicator | String | The indicator that was tested. |
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
 | DBotScore.Type | String | The indicator type. | 
 | DBotScore.Vendor | String | The vendor used to calculate the score. | 
 | DBotScore.Score | Number | The actual score. | 
@@ -108,9 +111,10 @@ Checks the reputation of the given domain.
 {
     "DBotScore": {
         "Indicator": "example.org",
+        "Reliability": "B - Usually reliable",
         "Score": 2,
         "Type": "domain",
-        "Vendor": "iDefense"
+        "Vendor": "iDefense_v2"
     },
     "Domain": {
         "Name": "example.org"
@@ -145,10 +149,11 @@ Checks the reputation of the given URL.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| URL.Data | String | The URL that was checked. | 
+| URL.Data | String | The URL that was checked. |
 | URL.Malicious.Vendor | String | For malicious URLs, the vendor that made the decision. | 
-| URL.Malicious.Description | String | For malicious URLs, the reason the vendor made that decision. | 
+| URL.Malicious.Description | String | For malicious URLs, the reason the vendor made that decision. |
 | DBotScore.Indicator | String | The indicator that was tested. | 
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. |
 | DBotScore.Type | String | The indicator type. | 
 | DBotScore.Vendor | String | The vendor used to calculate the score. | 
 | DBotScore.Score | Number | The actual score. | 
@@ -162,9 +167,10 @@ Checks the reputation of the given URL.
 {
     "DBotScore": {
         "Indicator": "http://example.com",
+        "Reliability": "B - Usually reliable",
         "Score": 2,
         "Type": "url",
-        "Vendor": "iDefense"
+        "Vendor": "iDefense_v2"
     },
     "URL": {
         "Data": "http://example.com"
@@ -200,15 +206,16 @@ Get specific indicator reputation
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | IP.Address | String | The IP address. | 
-| IP.Malicious.Vendor | String | For malicious IPs, the vendor that made the decision. | 
-| IP.Malicious.Description | String | For malicious IPs, the reason the vendor made that decision. | 
+| IP.Malicious.Vendor | String | For malicious IP addresses, the vendor that made the decision. | 
+| IP.Malicious.Description | String | For malicious IP addresses, the reason the vendor made that decision. |
 | Domain.Name | String | The domain name. | 
 | Domain.Malicious.Vendor | String | For malicious domains, the vendor that made the decision. | 
-| Domain.Malicious.Description | String | For malicious domains, the reason the vendor made that decision. | 
+| Domain.Malicious.Description | String | For malicious domains, the reason the vendor made that decision. |
 | URL.Data | String | The URL. | 
 | URL.Malicious.Vendor | String | For malicious URLs, the vendor that made the decision. | 
-| URL.Malicious.Description | String | For malicious URLs, the reason the vendor made that decision. | 
+| URL.Malicious.Description | String | For malicious URLs, the reason the vendor made that decision. |
 | DBotScore.Indicator | String | The indicator that was tested. | 
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. |
 | DBotScore.Type | String | The indicator type. | 
 | DBotScore.Vendor | String | The vendor used to calculate the score. | 
 | DBotScore.Score | Number | The actual score. | 
@@ -222,9 +229,10 @@ Get specific indicator reputation
 {
     "DBotScore": {
         "Indicator": "example.org",
+        "Reliability": "B - Usually reliable",
         "Score": 2,
         "Type": "domain",
-        "Vendor": "iDefense"
+        "Vendor": "iDefense_v2"
     },
     "Domain": {
         "Name": "example.org"
@@ -238,4 +246,5 @@ Get specific indicator reputation
 >|Confidence|DbotReputation|LastPublished|Name|ThreatTypes|TypeOfUse|
 >|---|---|---|---|---|---|
 >| 0 | 2 | 2017-01-11 20:56:22 | example.org | Cyber Espionage | MALWARE_C2 |
+
 

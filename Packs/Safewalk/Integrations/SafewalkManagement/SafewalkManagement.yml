@@ -1055,7 +1055,7 @@ script:
     - name: new-group-name
       description: New user group.
     description: Update user group
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.9.8.24399
   isfetch: true
   feed: false
   runonce: false

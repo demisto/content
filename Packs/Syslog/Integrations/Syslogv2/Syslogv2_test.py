@@ -8,6 +8,7 @@ from Syslogv2 import parse_rfc_3164_format, parse_rfc_5424_format, fetch_samples
 
 import demistomock as demisto
 from CommonServerPython import DemistoException, set_integration_context, get_integration_context
+from datetime import datetime
 
 
 def util_load_json(path):
@@ -38,7 +39,10 @@ def test_parse_rfc_format_valid(test_case: dict, func: Callable[[bytes], SyslogM
     - Ensure the expected data is returned.
 
     """
-    assert vars(func(test_case['log_message'].encode())) == test_case['expected_vars']
+    expected = test_case['expected_vars']
+    current_year = str(datetime.now().year)
+    expected['timestamp'] = expected['timestamp'].replace('REPLACE_WITH_CURRENT_YEAR', current_year)
+    assert vars(func(test_case['log_message'].encode())) == expected
 
 
 @pytest.mark.parametrize('test_case, func, err_message', [(rfc_test_data['rfc-3164']['case_weird_message'],
@@ -353,6 +357,11 @@ def test_perform_long_running_loop(mocker, test_data, test_name):
     incident_mock = mocker.patch.object(demisto, 'createIncidents')
     if test_name_data.get('expected'):
         perform_long_running_loop(test_data['log_message'].encode())
+        # Deleting timestamp, because it is retrieved by current year.
+        current_year = str(datetime.now().year)
+        for res in test_name_data['expected']:
+            for replace_field in ['rawJSON', 'name', 'details']:
+                res[replace_field] = res[replace_field].replace('REPLACE_WITH_CURRENT_YEAR', current_year)
         assert incident_mock.call_args[0][0] == test_name_data.get('expected')
         assert get_integration_context() == {'samples': test_name_data.get('expected')}
     else:

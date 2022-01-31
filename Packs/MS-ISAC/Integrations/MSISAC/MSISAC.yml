@@ -1,0 +1,191 @@
+category: Utilities
+commonfields:
+  id: MS-ISAC
+  version: -1
+configuration:
+- additionalinfo: Key provided by MS-ISAC according to the detailed Instructions
+  display: API Key
+  name: apikey
+  required: true
+  type: 4
+- additionalinfo: This is the URL provided by MS-ISAC for the base of all endpoints
+  defaultvalue: https://socapi.cisecurity.org
+  display: ""
+  name: url
+  required: true
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: This API queries alerts and alert data from the MS-ISAC API to enrich
+  and query alerts from the platform
+display: MS-ISAC
+name: MS-ISAC
+script:
+  commands:
+  - arguments:
+    - description: The ID of the MS-ISAC event
+      name: event_id
+    description: Retrieve alert data by its ID
+    name: msisac-get-event
+    outputs:
+    - contextPath: MSISAC.Event.EventID
+      description: The event ID for this specific retrieval
+      type: string
+    - contextPath: MSISAC.Event.Stream
+      description: A list of data streams that were pulled from this MS-ISAC event.
+        These lists of dictionaries contain more detailed information
+      type: unknown
+    - contextPath: MSISAC.Event.Stream.flow_id
+      description: The ID for this specific data flow
+      type: number
+    - contextPath: MSISAC.Event.Stream.start
+      description: The start data for this stream
+      type: date
+    - contextPath: MSISAC.Event.Stream.src_ip
+      description: The source IP of the event
+      type: string
+    - contextPath: MSISAC.Event.Stream.vlan
+      description: A list of all the VLANs configured for this interface
+    - contextPath: MSISAC.Event.Stream.pkts_toserver
+      description: The number of packets sent
+      type: number
+    - contextPath: MSISAC.Event.Stream.dest_ip
+      description: The destination IP for this flow
+      type: string
+    - contextPath: MSISAC.Event.Stream.length
+      description: The length of this flow
+      type: number
+    - contextPath: MSISAC.Event.Stream.streamdataascii
+      description: 'A string representation of the flow data that is granularly displayed '
+      type: string
+    - contextPath: MSISAC.Event.Stream.host
+      description: The Albert sensor that detected the traffic
+      type: string
+    - contextPath: MSISAC.Event.Stream.proto
+      description: TCP or UDP communication
+      type: string
+    - contextPath: MSISAC.Event.Stream.app_proto
+      description: The application protocol that was used in this communication
+      type: string
+    - contextPath: MSISAC.Event.Stream.logical_sensor_id
+      description: The ID for the sensor that detected the traffic
+      type: string
+    - contextPath: MSISAC.Event.Stream.streamdatalen
+      description: The total data sent in the request
+      type: string
+    - contextPath: MSISAC.Event.Stream.pkts_toclient
+      description: The total amount of packets sent
+      type: number
+    - contextPath: MSISAC.Event.Stream.flow_id
+      description: The specific ID for this flow
+      type: number
+    - contextPath: MSISAC.Event.Stream.in_iface
+      description: The physical interface that this traffic traversed
+      type: string
+    - contextPath: MSISAC.Event.Stream.time
+      description: The time that this traffic occured in a more human readable format
+        than 'start'
+      type: date
+    - contextPath: MSISAC.Event.Stream.url
+      description: The URL that was attempted with this traffic
+      type: string
+    - contextPath: MSISAC.Event.Stream.bytes_toserver
+      description: The size of the data sent to the server
+      type: number
+    - contextPath: MSISAC.Event.Stream.status
+      description: The status code for this data stream
+      type: number
+    - contextPath: MSISAC.Event.Stream.hostname
+      description: The hostname (not URL) of the attempted traffic
+      type: string
+    - contextPath: MSISAC.Event.Stream.tx_id
+      description: The transaction ID for the MSISAC stream
+      type: number
+    - contextPath: MSISAC.Event.Stream.http_content_type
+      description: The content encoding used for the response traffic
+      type: string
+    - contextPath: MSISAC.Event.Stream.http_method
+      description: The method used to send the traffic (GET, POST, etc)
+      type: string
+    - contextPath: MSISAC.Event.Stream.protocol
+      description: What web protocol was used (HTTP/1.1 etc)
+      type: string
+    - contextPath: MSISAC.Event.Stream.bytes_toclient
+      description: The size of the data sent to the client
+      type: number
+    - contextPath: MSISAC.Event.Stream.src_port
+      description: The source port for the traffic
+      type: number
+    - contextPath: MSISAC.Event.Stream.dest_port
+      description: The destination port for the traffic
+      type: string
+    - contextPath: MSISAC.Event.Stream.event_type
+      description: The type of event submitted from MS-ISAC
+  - arguments:
+    - defaultValue: "1"
+      description: The number of days worth of events to return. Must be one or greater
+      name: days
+      required: true
+    - description: If you want to search the list of events for a specific event,
+        specify this optional command to return just those results
+      name: event_id
+    description: Retrieves a list of MS-ISAC events for a given number of days (one
+      or greater)
+    name: msisac-retrieve-events
+    outputs:
+    - contextPath: MSISAC.RetrievedEvents.event_id
+      description: ID for the retrieved MS-ISAC event
+      type: number
+    - contextPath: MSISAC.RetrievedEvents.stime
+      description: The time that the traffic started
+      type: date
+    - contextPath: MSISAC.RetrievedEvents.sourceip
+      description: The IP that originated the traffic
+      type: string
+    - contextPath: MSISAC.RetrievedEvents.analyzed_ts
+      description: The time that this traffic was analyzed by MS-ISAC
+      type: date
+    - contextPath: MSISAC.RetrievedEvents.logical_sensor_id
+      description: The ID for the sensor that triggered the event
+      type: string
+    - contextPath: MSISAC.RetrievedEvents.ticket_id
+      description: String representation of event_id
+      type: string
+    - contextPath: MSISAC.RetrievedEvents.queue
+      description: The group that originated the event
+      type: string
+    - contextPath: MSISAC.RetrievedEvents.status
+      description: The current state of the event
+      type: string
+    - contextPath: MSISAC.RetrievedEvents.previous_escalations
+      description: How many times this alert has been escalated
+      type: string
+    - contextPath: MSISAC.RetrievedEvents.last_stime
+      description: The last time that this traffic was observed (stop time)
+      type: date
+    - contextPath: MSISAC.RetrievedEvents.sensor
+      description: The hostname of the sensor that triggered the event
+      type: string
+    - contextPath: MSISAC.RetrievedEvents.analysis
+      description: The analysis provided by MS-ISAC
+      type: string
+    - contextPath: MSISAC.RetrievedEvents.description
+      description: The description of the event
+      type: string
+    - contextPath: MSISAC.RetrievedEvents.severity
+      description: The severity assigned to the MS-ISAC alert
+      type: string
+  dockerimage: demisto/python3:3.9.8.24399
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)

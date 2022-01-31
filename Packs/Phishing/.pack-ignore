@@ -132,3 +132,9 @@ ignore=BA101
 
 [file:FindDuplicateEmailIncidents.yml]
 ignore=SC105
+
+[file:incidentfield-Email_Internal_Message_ID.json]
+ignore=IF115
+
+[file:incidentfield-reported_email_origin.json]
+ignore=IF116

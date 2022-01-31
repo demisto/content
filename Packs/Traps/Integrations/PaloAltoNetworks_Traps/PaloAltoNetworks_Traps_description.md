@@ -1,4 +1,4 @@
- ## Traps TMS
+ ## Traps TMS (Deprecated)
  **Endpoint protection and response stops threats on endpoints and coordinates enforcement with network and cloud security to prevent successful cyberattacks.**
  
  ### Integrations credentials

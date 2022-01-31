@@ -12,8 +12,15 @@
     "tags": [],
     "created": "2021-09-28T21:56:05Z",
     "useCases": [],
-    "keywords": ["assign", "ai"],
+    "keywords": [
+        "assign",
+        "ai"
+    ],
     "devEmail": [
         "dev@penfield.ai"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }
