@@ -1,6 +1,4 @@
 import json
-import os
-import sys
 import demistomock as demisto  # noqa: F401
 import requests
 from CommonServerPython import *  # noqa: F401
@@ -13,25 +11,11 @@ default_playground_id = "122c7bff-feae-4177-867e-37e2096cd7d9"
 
 class Main_Object():
     def __init__(self) -> None:
-        try:
-            self.endpoint = demisto.params()['url']
-            self.api_key = demisto.params().get('apikey')
-            self.playground = demisto.params().get('playground-id')
-            self.ssl_verify = not bool(demisto.params().get('insecure', False))
-            self.run_env = "demisto"
-            self.log_response = log_response_demisto
-        except Exception:
-            self.endpoint = os.environ.get('DEMISTO_BASE_URL')
-            self.api_key = os.environ.get('DEMISTO_API_KEY')
-            if os.environ.get('DEMISTO_VERIFY_SSL') == "true":
-                self.ssl_verify = True
-            else:
-                self.ssl_verify = False
-            self.run_env = "terminal"
-            self.log_response = log_response_terminal
-
-    def ret_env(self):
-        return self.run_env
+        self.endpoint = demisto.params()['url']
+        self.api_key = demisto.params().get('apikey')
+        self.playground = demisto.params().get('playground-id')
+        self.ssl_verify = not bool(demisto.params().get('insecure', False))
+        self.log_response = log_response_demisto
 
 
 def log_response_demisto(res: requests.Response):
@@ -40,11 +24,6 @@ def log_response_demisto(res: requests.Response):
     else:
         return_results(f"Command seemed to have failed status-code:{res.status_code}")
         return_results(res.text)
-
-
-def log_response_terminal(res: requests.Response):
-    print(res.status_code)
-    print(res.text)
 
 
 def send_request(obj: Main_Object, path: str, method="get", data="", test=False):
@@ -78,32 +57,15 @@ def create_entry(obj: Main_Object, data: str, inv_id: str):
 def main():
     obj = Main_Object()
     commands_list: Dict[str, Callable] = {"xsoar-create-entry": create_entry}
-    if obj.run_env == "terminal":
-        print("detected terminal as environment")
-        try:
-            command = sys.argv[1]
-            print(f"found command {command}")
-            if sys.argv[2]:
-                command_args = json.loads(sys.argv[2])
-                commands_list[command](obj, **command_args)
-            else:
-                print("could not read command_args, creating entry in playground")
-                create_entry(obj, data="**testapi**", inv_id=default_playground_id)
-        except Exception as e:
-            print(e)
-            print("Calling /engines and printing results")
-            send_request(obj, path="/engines", method="get", test=False)
-
+    demisto.info("Executing Xsoar_Utils, detected demisto as environment")
+    command = demisto.command()
+    command_args = demisto.args()
+    if "inv_id" not in command_args.keys():
+        command_args["inv_id"] = obj.playground
+    if command == "test-module":
+        send_request(obj, path="/engines", method="get", test=True)
     else:
-        demisto.info("Executing Xsoar_Utils, detected demisto as environment")
-        command = demisto.command()
-        command_args = demisto.args()
-        if "inv_id" not in command_args.keys():
-            command_args["inv_id"] = obj.playground
-        if command == "test-module":
-            send_request(obj, path="/engines", method="get", test=True)
-        else:
-            commands_list[command](obj, **command_args)
+        commands_list[command](obj, **command_args)
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
