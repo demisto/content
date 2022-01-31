@@ -208,7 +208,7 @@ script:
     arguments: []
     description: Checks that Gmail auth is configured properly. Use this command after
       completing the OAuth2 authentication process.
-  dockerimage: demisto/google-api-py3:1.0.0.25818
+  dockerimage: demisto/google-api-py3:1.0.0.26204
   isfetch: true
   longRunning: false
   longRunningPort: false

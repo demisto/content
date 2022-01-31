@@ -30,7 +30,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: If true, gets team history. If empty, gets your submitted analyses history.
+      description: If true, gets team history. If empty, gets your submitted analyses
+        history.
       isArray: false
       name: team
       predefined:
@@ -49,7 +50,8 @@ script:
       secret: false
     - default: false
       defaultValue: '25'
-      description: Limits the history retrieved/searched to the specified number of executed analyses. The range is 1-100.
+      description: Limits the history retrieved/searched to the specified number of
+        executed analyses. The range is 1-100.
       isArray: false
       name: limit
       required: false
@@ -97,7 +99,10 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Unique task ID. A task ID is returned when submitting a file or URL for analysis using the `anyrun-run-analysis` command. Task IDs can also be located in the `ID` field of the output of executing the `anyrun-get-history` command.
+      description: Unique task ID. A task ID is returned when submitting a file or
+        URL for analysis using the `anyrun-run-analysis` command. Task IDs can also
+        be located in the `ID` field of the output of executing the `anyrun-get-history`
+        command.
       isArray: false
       name: task
       required: true
@@ -234,7 +239,8 @@ script:
       description: SSDeep hash of the file submitted for analysis.
       type: String
     - contextPath: ANYRUN.Task.Verdict
-      description: ANY.RUN verdict for the maliciousness of the submitted file or URL.
+      description: ANY.RUN verdict for the maliciousness of the submitted file or
+        URL.
       type: String
     - contextPath: ANYRUN.Task.Process.FileName
       description: File name of the process.
@@ -343,7 +349,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: URL, used only if 'obj_type' command argument is 'url' or 'download'. Permitted size is 5-512 characters long.
+      description: URL, used only if 'obj_type' command argument is 'url' or 'download'.
+        Permitted size is 5-512 characters long.
       isArray: false
       name: obj_url
       required: false
@@ -426,7 +433,7 @@ script:
     - contextPath: ANYRUN.Task.ID
       description: ID of the task created to analyze the submission.
       type: String
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.1.25933
   subtype: python3
   isfetch: false
   runonce: false
