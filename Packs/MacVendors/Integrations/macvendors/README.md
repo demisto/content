@@ -1,7 +1,7 @@
 Query MAC Vendors for vendor names when providing a MAC address.
 MAC Vendors maintains a list of vendors provided directly from the IEEE Standards Association and is updated multiple times each day. The IEEE is the registration authority and provides data on over 16,500 registered vendors.
 
-This integration was integrated and tested with version xx of MAC Vendors
+This integration was integrated and tested with the latest verison of MAC Vendors API as of 31st January 2022.
 
 ## Configure MAC Vendors on Cortex XSOAR
 
