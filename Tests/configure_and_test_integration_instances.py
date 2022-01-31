@@ -969,19 +969,6 @@ def get_changed_integrations(build: Build) -> tuple:
     return new_integrations_names, modified_integrations_names
 
 
-def get_pack_ids_to_install():
-    if Build.run_environment == Running.CI_RUN:
-        with open('./artifacts/content_packs_to_install.txt', 'r') as packs_stream:
-            pack_ids = packs_stream.readlines()
-            return [pack_id.rstrip('\n') for pack_id in pack_ids]
-    else:
-        # START CHANGE ON LOCAL RUN #
-        return [
-            'SplunkPy'
-        ]
-        #  END CHANGE ON LOCAL RUN  #
-
-
 def nightly_install_packs(build, install_method=None, pack_path=None, service_account=None):
     threads_list = []
 
@@ -1011,7 +998,7 @@ def install_nightly_pack(build):
 
 
 def install_packs(build, pack_ids=None):
-    pack_ids = get_pack_ids_to_install() if pack_ids is None else pack_ids
+    pack_ids = build.pack_ids_to_install if pack_ids is None else pack_ids
     installed_content_packs_successfully = True
     for server in build.servers:
         try:
@@ -1303,11 +1290,11 @@ def get_non_added_packs_ids(build: Build):
 
     added_files = filter(lambda x: x, added_files.split('\n'))
     added_pack_ids = map(lambda x: x.split('/')[1], added_files)
-    return set(get_pack_ids_to_install()) - set(added_pack_ids)
+    return set(build.pack_ids_to_install) - set(added_pack_ids)
 
 
 def set_marketplace_url(servers, branch_name, ci_build_number):
-    url_suffix = quote_plus(f'{branch_name}/{ci_build_number}')
+    url_suffix = quote_plus(f'{branch_name}/{ci_build_number}/xsoar')
     config_path = 'marketplace.bootstrap.bypass.url'
     config = {config_path: f'https://storage.googleapis.com/marketplace-ci-build/content/builds/{url_suffix}'}
     for server in servers:

@@ -3,6 +3,7 @@ This script will be appended to each server script before being executed.
 Please notice that to add custom common code, add it to the CommonServerUserPython script.
 Note that adding code to CommonServerUserPython can override functions in CommonServerPython
 """
+# If you change this section, make sure you update the line offset magic number
 from __future__ import print_function
 
 import base64
@@ -15,6 +16,7 @@ import socket
 import sys
 import time
 import traceback
+import types
 import urllib
 from random import randint
 import xml.etree.cElementTree as ET
@@ -34,9 +36,9 @@ def __line__():
     return cf.f_back.f_lineno
 
 
-# 39 - the line offset from the beggining of the file.
+# 41 - The line offset from the beggining of the file.
 _MODULES_LINE_MAPPING = {
-    'CommonServerPython': {'start': __line__() - 39, 'end': float('inf')},
+    'CommonServerPython': {'start': __line__() - 41, 'end': float('inf')},
 }
 
 
@@ -187,6 +189,7 @@ except Exception:
 CONTENT_RELEASE_VERSION = '0.0.0'
 CONTENT_BRANCH_NAME = 'master'
 IS_PY3 = sys.version_info[0] == 3
+PY_VER_MINOR = sys.version_info[1]
 STIX_PREFIX = "STIX "
 # pylint: disable=undefined-variable
 
@@ -7167,6 +7170,30 @@ H || val.SSDeep && val.SSDeep == obj.SSDeep)': {'Malicious': {'Vendor': 'Vendor'
 
 # Will add only if 'requests' module imported
 if 'requests' in sys.modules:
+    if IS_PY3 and PY_VER_MINOR >= 10:
+        from requests.packages.urllib3.util.ssl_ import create_urllib3_context
+
+        # The ciphers string used to replace default cipher string
+
+        CIPHERS_STRING = '@SECLEVEL=1:ECDHE+AESGCM:ECDHE+CHACHA20:DHE+AESGCM:DHE+CHACHA20:ECDH+AESGCM:DH+AESGCM:' \
+                         'ECDH+AES:DH+AES:RSA+ANESGCM:RSA+AES:!aNULL:!eNULL:!MD5:!DSS'
+
+        class SSLAdapter(HTTPAdapter):
+            """
+                A wrapper used for https communication to enable ciphers that are commonly used
+                and are not enabled by default
+            """
+
+            def init_poolmanager(self, *args, **kwargs):
+                context = create_urllib3_context(ciphers=CIPHERS_STRING)
+                kwargs['ssl_context'] = context
+                return super(SSLAdapter, self).init_poolmanager(*args, **kwargs)
+
+            def proxy_manager_for(self, *args, **kwargs):
+                context = create_urllib3_context(ciphers=CIPHERS_STRING)
+                kwargs['ssl_context'] = context
+                return super(SSLAdapter, self).proxy_manager_for(*args, **kwargs)
+
     class BaseClient(object):
         """Client to use in integrations with powerful _http_request
         :type base_url: ``str``
@@ -7215,6 +7242,14 @@ if 'requests' in sys.modules:
             self._headers = headers
             self._auth = auth
             self._session = requests.Session()
+
+            # the following condition was added to overcome the security hardening happened in Python 3.10.
+            # https://github.com/python/cpython/pull/25778
+            # https://bugs.python.org/issue43998
+
+            if IS_PY3 and PY_VER_MINOR >= 10 and not verify:
+                self._session.mount('https://', SSLAdapter())
+
             if proxy:
                 ensure_proxy_has_http_prefix()
             else:
@@ -7295,9 +7330,21 @@ if 'requests' in sys.modules:
                     raise_on_redirect=raise_on_redirect,
                     **whitelist_kawargs
                 )
-                adapter = HTTPAdapter(max_retries=retry)
-                self._session.mount('http://', adapter)
-                self._session.mount('https://', adapter)
+                http_adapter = HTTPAdapter(max_retries=retry)
+
+                # the following condition was added to overcome the security hardening happened in Python 3.10.
+                # https://github.com/python/cpython/pull/25778
+                # https://bugs.python.org/issue43998
+
+                if self._verify:
+                    https_adapter = http_adapter
+                elif IS_PY3 and PY_VER_MINOR >= 10:
+                    https_adapter = SSLAdapter(max_retries=retry)
+                else:
+                    https_adapter = http_adapter
+
+                self._session.mount('https://', https_adapter)
+
             except NameError:
                 pass
 
@@ -8572,12 +8619,14 @@ def get_message_memory_dump(_sig, _frame):
     ret_value += get_message_global_vars()
     ret_value += '\n--- End Variables Dump ---\n\n'
 
+    ret_value += get_message_modules_sizes()
+
     return ret_value
 
 
 def get_message_classes_dump(classes_as_list):
     """
-    A function that prints the memory dump to log info
+    A function that returns the printable message about classes dump
 
     :type classes_as_list: ``list``
     :param classes_as_list: The classes to print to the log
@@ -8609,7 +8658,7 @@ def get_message_classes_dump(classes_as_list):
 
 def get_message_local_vars():
     """
-    A function that prints the local variables to log info
+    A function that returns the printable message about local variables
 
     :return: Message to print.
     :rtype: ``str``
@@ -8617,16 +8666,116 @@ def get_message_local_vars():
     local_vars = list(locals().items())
     ret_value = '\n\n--- Start Local Vars ---\n\n'
     for current_local_var in local_vars:
-        ret_value += str(current_local_var) + '\n'
+        ret_value += shorten_string_for_printing(str(current_local_var)) + '\n'
 
     ret_value += '\n--- End Local Vars ---\n\n'
 
     return ret_value
 
 
+def get_size_of_object(input_object):
+    """
+    A function that recursively iterate to sum size of object & members.
+
+    :type input_object: ``Any``
+    :param input_object: The object to calculate its memory footprint
+
+    :return: Size of input_object in bytes.
+    :rtype: ``int``
+    """
+    if IS_PY3 and PY_VER_MINOR >= 10:
+        from collections.abc import Mapping
+    else:
+        from collections import Mapping  # type: ignore[no-redef]
+
+    from collections import deque
+    from numbers import Number
+    # IS_PY3:
+    # ZERO_DEPTH_BASES = (str, bytes, Number, range, bytearray) if IS_PY3 else (str, bytes, Number, bytearray)
+    ZERO_DEPTH_BASES = (str, bytes, Number, bytearray)
+    MAX_LEVEL = 20
+    _seen_ids = set()
+
+    def inner(obj, level):
+        """
+        A recursion that goes deep into objects, to calculate their deep memory footprint.
+
+        :type level: ``int``
+        :param level: Current level of the recursion (object)
+
+        :return: Size of obj in bytes.
+        :rtype: ``int``
+        """
+        if level == MAX_LEVEL:
+            # Stop at MAX_LEVEL
+            return sys.getsizeof(obj)
+        obj_id = id(obj)
+        if obj_id in _seen_ids:
+            return 0
+        _seen_ids.add(obj_id)
+        size = sys.getsizeof(obj)
+        if isinstance(obj, ZERO_DEPTH_BASES):
+            pass
+        elif isinstance(obj, (tuple, list, set, deque)):
+            size += sum(inner(i, level + 1) for i in obj)
+        elif isinstance(obj, Mapping):
+            mapping_items_keys = list(getattr(obj, 'keys')())
+            for current_key in mapping_items_keys:
+                if current_key in obj:
+                    size += (inner(current_key, level + 1) + inner(obj[current_key], level + 1))
+        # Check for custom object instances - may subclass above too
+        if hasattr(obj, '__dict__'):
+            size += inner(vars(obj), level + 1)
+        return size
+    return inner(input_object, 0)
+
+
+excluded_globals = ['__name__', '__doc__', '__package__', '__loader__',
+                    '__spec__', '__annotations__', '__builtins__',
+                    '__file__', '__cached__', '_Feature',
+                    ]
+excluded_types_names = ['MagicMock',  # When running tests locally
+                        ]
+
+
 def get_message_global_vars():
     """
-    A function that prints the global variables to log info
+    A function that returns the printable message about global variables
+
+    :return: Message to print.
+    :rtype: ``str``
+    """
+    excluded_types = [types.ModuleType, types.FunctionType,
+                      ]
+
+    globals_dict = dict(globals())
+    globals_dict_full = {}
+    for current_key in globals_dict.keys():
+        current_value = globals_dict[current_key]
+        if not type(current_value) in excluded_types \
+                and current_key not in excluded_globals \
+                and type(current_value).__name__ not in excluded_types_names:
+            globals_dict_full[current_key] = {
+                'name': current_key,
+                'value': current_value,
+                # Deep calculation. Better than sys.getsizeof(current_value)
+                'size': get_size_of_object(current_value)
+            }
+
+    ret_value = '\n\n--- Start Top {} Globals by Size ---\n'.format(PROFILING_DUMP_ROWS_LIMIT)
+    globals_sorted_by_size = sorted(globals_dict_full.values(), key=lambda d: d['size'], reverse=True)
+    ret_value += 'Size\t\tName\t\tValue\n'
+    for current_global in globals_sorted_by_size[:PROFILING_DUMP_ROWS_LIMIT]:
+        ret_value += '{}\t\t{}\t\t{}\n'.format(current_global["size"], current_global["name"],
+                                               shorten_string_for_printing(str(current_global["value"])))
+    ret_value += '\n--- End Top {} Globals by Size ---\n'.format(PROFILING_DUMP_ROWS_LIMIT)
+
+    return ret_value
+
+
+def get_message_modules_sizes():
+    """
+    A function that returns the printable message about the loaded modules by size
 
     :return: Message to print.
     :rtype: ``str``
@@ -8635,18 +8784,23 @@ def get_message_global_vars():
     globals_dict_full = {}
     for current_key in globals_dict.keys():
         current_value = globals_dict[current_key]
-        globals_dict_full[current_key] = {
-            'name': current_key,
-            'value': current_value,
-            'size': sys.getsizeof(current_value)
-        }
+        if isinstance(current_value, types.ModuleType) \
+                and current_key not in excluded_globals \
+                and type(current_value).__name__ not in excluded_types_names:
+            globals_dict_full[current_key] = {
+                'name': current_key,
+                'value': current_value,
+                # Deep calculation. Better than sys.getsizeof(current_value)
+                'size': get_size_of_object(current_value)
+            }
 
-    ret_value = '\n\n--- Start Top {} Globals by Size ---\n'.format(PROFILING_DUMP_ROWS_LIMIT)
+    ret_value = '\n\n--- Start Top {} Modules by Size ---\n'.format(PROFILING_DUMP_ROWS_LIMIT)
     globals_sorted_by_size = sorted(globals_dict_full.values(), key=lambda d: d['size'], reverse=True)
     ret_value += 'Size\t\tName\t\tValue\n'
     for current_global in globals_sorted_by_size[:PROFILING_DUMP_ROWS_LIMIT]:
-        ret_value += '{}\t\t{}\t\t{}\n'.format(current_global["size"], current_global["name"], current_global["value"])
-    ret_value += '\n--- End Top {} Globals by Size ---\n'.format(PROFILING_DUMP_ROWS_LIMIT)
+        ret_value += '{}\t\t{}\t\t{}\n'.format(current_global["size"], current_global["name"],
+                                               shorten_string_for_printing(str(current_global["value"])))
+    ret_value += '\n--- End Top {} Modules by Size ---\n'.format(PROFILING_DUMP_ROWS_LIMIT)
 
     return ret_value
 
@@ -8679,6 +8833,9 @@ def register_signal_handler_profiling_dump(signal_type=None, profiling_dump_rows
     :type profiling_dump_rows_limit: ``int``
     :param profiling_dump_rows_limit: The max number of profiling related rows to print to the log
 
+    :type profiling_dump_rows_limit: ``int``
+    :param profiling_dump_rows_limit: The max number of profiling related rows to print to the log
+
     :return: No data returned
     :rtype: ``None``
     """
@@ -8693,6 +8850,45 @@ def register_signal_handler_profiling_dump(signal_type=None, profiling_dump_rows
         signal.signal(requested_signal, signal_handler_profiling_dump)
     else:
         demisto.info('Not a Linux or Mac OS, profiling using a signal is not supported.')
+
+
+def shorten_string_for_printing(source_string, max_length=64):
+    """
+    Function that removes the middle of a long str, for printint or logging.
+    If needed, it will replace the middle with '...',
+    Examples:
+    >>> shorten_string_for_printing('123456789', 9)
+    '123456789'
+    >>> shorten_string_for_printing('1234567890', 9)
+    'abc...890'
+    >>> shorten_string_for_printing('123456789012', 10)
+    '1234...012'
+
+    :type source_string: ``str``
+    :param source_string: A long str that needs shortening.
+
+    :type max_length: ``int``
+    :param max_length: Maximum length of the returned str, should be higher than 0. Default is 64.
+
+    :return:: A string no longer than max_length.
+    :rtype: ``str``
+    """
+    if not source_string or max_length < 1 or len(source_string) <= max_length:
+        return source_string
+
+    extremeties_length = int((max_length - 3) / 2)
+    if max_length % 2 == 0:
+        # even max_length. Start with one more char than at the beginning
+        ret_value = source_string[:extremeties_length + 1] \
+            + '...' \
+            + source_string[-extremeties_length:]
+        return ret_value
+    else:
+        # odd max_length
+        ret_value = source_string[:extremeties_length] \
+            + '...' \
+            + source_string[-extremeties_length:]
+        return ret_value
 
 
 ###########################################
