@@ -1,4 +1,5 @@
 from copy import deepcopy
+import io
 import pytest
 from splunklib import client
 from splunklib.binding import AuthenticationError
@@ -167,6 +168,11 @@ POSITIVE = {
 RAW_JSON = '{"Test": "success"}'
 RAW_STANDARD = '"Test="success"'
 RAW_JSON_AND_STANDARD_OUTPUT = {"Test": "success"}
+
+
+def util_load_json(path):
+    with io.open(path) as f:
+        return json.loads(f.read())
 
 
 def test_raw_to_dict():
@@ -1102,29 +1108,24 @@ def test_remove_old_incident_ids():
     - When running with look_behind of 1 hour, only the ID of the incident that occurred more than 2 hours ago was removed.
     """
     from SplunkPyPreRelease import remove_old_incident_ids
-    cur_time = int(time.time())
-
-    incident_ids_one_hour = {
-        "incident_under_one_hour_old": cur_time - 300,
-        "incident_over_one_hour_old": cur_time - 4200,
-        "incident_over_two_hours_old": cur_time - 7800
+    now = datetime.utcnow()
+    occurred_start_time = now - timedelta(minutes=60)
+    last_run_fetched_ids = {
+        "incident_in_fetch_time_range": (now - timedelta(minutes=30)).strftime(SPLUNK_TIME_FORMAT),
+        "incident_in_fetch_time_range_on_the_min": (now - timedelta(minutes=60)).strftime(SPLUNK_TIME_FORMAT),
+        "incident_not_in_fetch_time_range_sec": (now - timedelta(minutes=60, seconds=1)).strftime(SPLUNK_TIME_FORMAT),
+        "incident_not_in_fetch_time_range": (now - timedelta(minutes=70)).strftime(SPLUNK_TIME_FORMAT),
+        "incident_in_fetch_start_time_range": occurred_start_time.strftime(SPLUNK_TIME_FORMAT)
     }
+    occurred_start_time_splunk_format = occurred_start_time.strftime(SPLUNK_TIME_FORMAT)
 
-    assert "incident_under_one_hour_old" in incident_ids_one_hour
-    assert "incident_over_one_hour_old" in incident_ids_one_hour
-    assert "incident_over_two_hours_old" in incident_ids_one_hour
+    new_incident_ids_after_remove_olds = remove_old_incident_ids(last_run_fetched_ids, occurred_start_time_splunk_format)
 
-    new_incident_ids_one_hour_look_behind = remove_old_incident_ids(incident_ids_one_hour, cur_time, 30)
-
-    assert "incident_under_one_hour_old" in new_incident_ids_one_hour_look_behind
-    assert "incident_over_one_hour_old" not in new_incident_ids_one_hour_look_behind
-    assert "incident_over_two_hours_old" not in new_incident_ids_one_hour_look_behind
-
-    new_incident_ids_one_hour_look_behind = remove_old_incident_ids(incident_ids_one_hour, cur_time, 60)
-
-    assert "incident_under_one_hour_old" in new_incident_ids_one_hour_look_behind
-    assert "incident_over_one_hour_old" in new_incident_ids_one_hour_look_behind
-    assert "incident_over_two_hours_old" not in new_incident_ids_one_hour_look_behind
+    assert "incident_in_fetch_time_range" in new_incident_ids_after_remove_olds
+    assert "incident_not_in_fetch_time_range" not in new_incident_ids_after_remove_olds
+    assert "incident_in_fetch_start_time_range" in new_incident_ids_after_remove_olds
+    assert "incident_in_fetch_time_range_on_the_min" in new_incident_ids_after_remove_olds
+    assert "incident_not_in_fetch_time_range_sec" not in new_incident_ids_after_remove_olds
 
 
 occurred_time = str(int(time.time()) - 300)
@@ -1483,3 +1484,231 @@ def test_module_hec_url(mocker):
 
     # validate
     assert requests.get.call_args[0][0] == 'test_hec_url/services/collector/health'
+
+
+def mock_fetch_notables(mocker, demisto_params):
+    splunk.ENABLED_ENRICHMENTS = []
+    mocker.patch.object(demisto, 'incidents')
+    mocker.patch.object(demisto, 'setLastRun')
+    service = mocker.patch('splunklib.client.connect', return_value=None)
+    mocker.patch('demistomock.params',
+                 return_value=demisto_params)
+    mocker.patch('demistomock.getLastRun', return_value={'time': '2020-08-24T13:59:00'})
+    date_time_mocker = mocker.patch('SplunkPyPreRelease.datetime', wraps=datetime)
+
+    return service, date_time_mocker
+
+
+@pytest.mark.parametrize('batch_size, expected_batch, expected_time, last_run_fetch_ids',
+                         [(2, 4, '2020-08-24T13:30:17', {}),
+                          (2, 4, '2020-08-24T12:01:12', {'306b2a70f347d2a9713d51a746f9e22d': '2020-08-24T12:10:17',
+                                                         '4c9309cc618c50369f63a93587906393': '2020-08-24T13:30:17'}),
+                          (3, 3, '2020-08-24T13:30:17', {})])
+def test_increase_batch_size(batch_size, expected_batch, expected_time, last_run_fetch_ids, mocker):
+    """
+    Given:
+    1. query returns 2 new events, batch_size is 2
+    2. query returns 2 events that already returned on the last fetch, batch_size is 2
+    3. query returns 2 new events, batch_size is 3
+    When:
+    - checking if we need to increase batch_size
+    Then:
+    - batch_size_default added to the current batch_size if needed, in order to fetch next time new events.
+    """
+    response_two_events = util_load_json("test_data/response_two_events.json")
+
+    service, mock_dt = mock_fetch_notables(mocker, demisto_params={'fetchQuery': "something", 'enabled_enrichments': [],
+                                                                   'occurrence_look_behind': 120,
+                                                                   "batch_size": batch_size})
+    next_run = {'found_incidents_ids': last_run_fetch_ids,
+                'batch_size': batch_size, 'time': '2020-08-24T13:51:12'}
+    mocker.patch('demistomock.getLastRun', return_value=next_run)
+    mocker.patch('splunklib.results.ResultsReader', return_value=response_two_events)
+    mock_dt.utcnow.return_value = datetime(2020, 8, 24, 14, 01, 12, 703618)
+    splunk.fetch_notables(service)
+    next_run = demisto.setLastRun.call_args[0][0]
+    assert next_run.get('next_batch_size') == expected_batch
+    assert next_run.get('time') == expected_time
+
+
+def test_delayed_index_events(mocker):
+    """
+    Given:
+    - "Next run" dictionary from the last fetch contains 2 event
+    When:
+    - 2 events found when fetching, one of them already seen on the last fetch
+    Then:
+    - Return 1 new incident, and next run dict will contain now the 2 fetched events - one from last fetch and
+    one from current fetch
+    """
+    from SplunkPyPreRelease import splunk_time_to_datetime
+    response_two_events = util_load_json("test_data/response_two_events.json")
+
+    service, mock_dt = mock_fetch_notables(mocker, demisto_params={'fetchQuery': "something", 'enabled_enrichments': [],
+                                                                   'occurrence_look_behind': 120})
+    next_run = {'found_incidents_ids': {'4c9309cc618c50369f63a93587906393': '2020-08-24T13:30:17'},
+                'next_batch_size': 200, 'time': '2020-08-24T13:30:17'}
+    mocker.patch('demistomock.getLastRun', return_value=next_run)
+    mocker.patch('splunklib.results.ResultsReader', return_value=response_two_events)
+    mock_dt.utcnow.return_value = datetime(2020, 8, 24, 14, 01, 12, 703618)
+
+    splunk.fetch_notables(service)
+    next_run = demisto.setLastRun.call_args[0][0]
+    incidents = demisto.incidents.call_args[0][0]
+    found_incident_time = splunk_time_to_datetime(incidents[0]['occurred'])
+    next_run_time = datetime.strptime(next_run["time"], SPLUNK_TIME_FORMAT)
+    assert next_run_time == found_incident_time
+    assert len(incidents) == 1
+    assert len(next_run.get('found_incidents_ids')) == 2
+    assert next_run["next_batch_size"] == 200
+
+
+def test_no_incident_returned(mocker):
+    """
+    Given:
+    - 0 incident found
+    When:
+    - the end of the fetch set the time for the next run
+    Then:
+    - next run time will be the time the current fetch started
+    """
+    service, mock_dt = mock_fetch_notables(mocker, demisto_params={'fetchQuery': "something", 'enabled_enrichments': [],
+                                                                   'occurrence_look_behind': 15})
+    next_run = {'found_incidents_ids': {'a74cabaebb6fae0db6e52e290574398d': '2020-08-24T13:30:17'},
+                'next_batch_size': 200, 'time': '2020-08-24T13:45:17'}
+    now = datetime(2020, 8, 24, 14, 00, 12, 703618)
+    mock_dt.utcnow.return_value = now
+    mocker.patch('demistomock.getLastRun', return_value=next_run)
+    mocker.patch('splunklib.results.ResultsReader', return_value={})
+
+    splunk.fetch_notables(service)
+    next_run = demisto.setLastRun.call_args[0][0]
+    assert next_run["time"] == now.strftime(SPLUNK_TIME_FORMAT)
+
+
+def test_incident_exceeded_limit(mocker):
+    """
+    Given:
+    - Splunk query return 2 incidents, where FETCH_LIMIT is 1
+    When:
+    - read all returned event
+    Then:
+    - Number of incidents returned are as the FETCH_LIMIT and next run time will be the time of the last returned event
+    """
+    from SplunkPyPreRelease import splunk_time_to_datetime
+    response_two_events = util_load_json("test_data/response_two_events.json")
+
+    splunk.FETCH_LIMIT = 1
+    service, mock_dt = mock_fetch_notables(mocker, demisto_params={'fetchQuery': "something", 'enabled_enrichments': [],
+                                                                   'occurrence_look_behind': 15})
+    next_run = {'found_incidents_ids': {'a74cabaebb6fae0db6e52e290574398d': '2020-08-24T13:30:17'},
+                'next_batch_size': 200, 'time': '2020-08-24T13:45:17'}
+    now = datetime(2020, 8, 24, 14, 00, 12, 703618)
+    mock_dt.utcnow.return_value = now
+    mocker.patch('demistomock.getLastRun', return_value=next_run)
+    mocker.patch('splunklib.results.ResultsReader', return_value=response_two_events)
+    splunk.fetch_notables(service)
+    next_run = demisto.setLastRun.call_args[0][0]
+    incidents = demisto.incidents.call_args[0][0]
+    assert len(incidents) == 1
+    found_incident_time = splunk_time_to_datetime(incidents[0]['occurred'])
+    next_run_time = datetime.strptime(next_run["time"], SPLUNK_TIME_FORMAT)
+    assert next_run_time == found_incident_time
+
+
+def test_get_fetch_start_time(mocker):
+    """
+    Given:
+    - last run time set to the last event seen at the previous fetch
+    - occurred_look_behind is 120 minutes
+    - timezone is +120
+    When:
+    - occurred_look_behind is greater than the time past since the last event
+    Then:
+    - occurred_look_behind is considered and fetch start time is now minus 120 min
+    """
+    from SplunkPyPreRelease import get_fetch_start_times
+    mock_dt = mocker.patch('SplunkPyPreRelease.datetime', wraps=datetime)
+    utc_now = datetime(2020, 8, 24, 14, 00, 12, 703618)
+    expected_start_time = datetime(2020, 8, 24, 14, 00, 12, 703618)
+    mock_dt.utcnow.return_value = utc_now
+    dem_params = {'fetchQuery': "something", 'enabled_enrichments': [], 'occurrence_look_behind': 120, 'timezone': '+120'}
+    service = mocker.patch('splunklib.client.connect', return_value=None)
+    last_run_time = '2020-08-24T15:45:17'
+    occurred_look_behind = 120
+    occurred_start_time, now = get_fetch_start_times(dem_params, service, last_run_time, occurred_look_behind)
+    assert occurred_start_time == datetime.strftime(expected_start_time, SPLUNK_TIME_FORMAT)
+
+
+def test_delayed_events_exceeded_limit(mocker):
+    """
+    Given:
+    - 5 events occurred on 12:10 and indexed on 14:05
+    - 1 event occurred on 13:30 and indexed on 13:45
+    - fetch on 14:00 returns 1 event from 13:30 and next fetch on 14:10 returned 6 events - 5 from 12:15 and 1 on 13:30
+    - fetch limit is 1
+    - fetch every 10 minutes
+    When:
+    - fetch notables that was index on delay because of the look behind window
+    Then:
+    - Return all the events in 5 following fetches
+    """
+    response_six_events_with_delay = util_load_json("test_data/response_six_events_with_delay.json")
+    splunk.FETCH_LIMIT = 1
+    service, mock_dt = mock_fetch_notables(mocker, demisto_params={'fetchQuery': "something", 'enabled_enrichments': [],
+                                                                   'occurrence_look_behind': 120})
+    next_run = {'found_incidents_ids': {'a74cabaebb6fae0db6e52e290574398d': '2020-08-24T13:30:17'},
+                'next_batch_size': 200, 'time': '2020-08-24T13:45:17'}
+    minutes = 00
+    now = datetime(2020, 8, 24, 14, minutes, 12, 703618)
+    mock_dt.utcnow.return_value = now
+    mocker.patch('demistomock.getLastRun', return_value=next_run)
+    response_iter = -1
+    returned_incidents = [next_run['found_incidents_ids']]
+    mocker.patch('splunklib.results.ResultsReader', return_value=response_six_events_with_delay)
+    while len(returned_incidents) < len(response_six_events_with_delay):
+        splunk.fetch_notables(service)
+        next_run = demisto.setLastRun.call_args[0][0]
+        incidents = demisto.incidents.call_args[0][0]
+        assert len(incidents) == 1
+        returned_incidents.append(incidents[0])
+        mocker.patch('demistomock.getLastRun', return_value=next_run)
+        minutes += 10
+        now = datetime(2020, 8, 24, 14, minutes, 12, 703618)
+        mock_dt.utcnow.return_value = now
+        response_iter += 1
+        mocker.patch('splunklib.results.ResultsReader', return_value=response_six_events_with_delay[response_iter:])
+    assert len(returned_incidents) == len(response_six_events_with_delay)
+
+
+def test_delayed_events_five(mocker):
+    """
+    Given:
+    - 5 events occurred on 12:10 and indexed on 14:05
+    - fetch limit is 3
+    - fetch every 1 minutes
+    When:
+    - fetch notables
+    Then:
+    - Return all 5 events in 2 following fetches
+    """
+    response_five_events = util_load_json("test_data/response_five_events.json")
+    splunk.FETCH_LIMIT = 3
+    service, mock_dt = mock_fetch_notables(mocker, demisto_params={'fetchQuery': "something", 'enabled_enrichments': [],
+                                                                   'occurrence_look_behind': 120})
+    minutes = 00
+    now = datetime(2020, 8, 24, 14, minutes, 12, 703618)
+    mock_dt.utcnow.return_value = now
+    returned_incidents = []
+    mocker.patch('splunklib.results.ResultsReader', return_value=response_five_events)
+    while len(returned_incidents) < len(response_five_events):
+        splunk.fetch_notables(service)
+        next_run = demisto.setLastRun.call_args[0][0]
+        incidents = demisto.incidents.call_args[0][0]
+        assert len(incidents) <= splunk.FETCH_LIMIT
+        returned_incidents.extend(incidents)
+        mocker.patch('demistomock.getLastRun', return_value=next_run)
+        minutes += 1
+        now = datetime(2020, 8, 24, 14, minutes, 12, 703618)
+        mock_dt.utcnow.return_value = now
+    assert len(returned_incidents) == len(response_five_events)
