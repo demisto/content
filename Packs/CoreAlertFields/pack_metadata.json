@@ -10,7 +10,7 @@
     "tags": [],
     "useCases": [],
     "keywords": [],
-    "serverMinVersion": "7.0.0",
+    "serverMinVersion": "99.99.99",
     "marketplaces": [
         "marketplacev2"
     ]
