@@ -2661,7 +2661,7 @@ def get_live_response_result_command(client, args):
 
 
 def get_machine_action_command(client, args):
-    id = args['id']
+    id = args['machine_action_id']
     res = client.get_machine_action(id)
     md_results = {
         'Machine Action Id': res.get('id'),

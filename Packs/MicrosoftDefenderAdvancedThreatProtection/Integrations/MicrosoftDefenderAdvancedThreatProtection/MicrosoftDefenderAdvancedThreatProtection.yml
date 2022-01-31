@@ -4522,6 +4522,130 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score.
       type: Number
+  - arguments:
+      - default: true
+        description: Machine ID to add file to.
+        isArray: false
+        name: machine_id
+        required: true
+        secret: false
+      - default: false
+        description: A comment to associate with the action.
+        isArray: false
+        name: comment
+        required: true
+        secret: false
+      - default: false
+        description: File name to take from library to device.
+        isArray: false
+        name: file_name
+        required: true
+        secret: false
+    deprecated: false
+    description: Puts a file from the library to the device. Files are saved in a working folder and are deleted when the device restarts by default.
+    execution: true
+    name: microsoft-atp-live-response-put-file
+    outputs:
+      - contextPath: MicrosoftATP.LiveResponseAction
+        description: The machine action ID.
+        type: String
+  - arguments:
+      - default: true
+        description: Machine ID to add file to.
+        isArray: false
+        name: machine_id
+        required: true
+        secret: false
+      - default: false
+        description: A comment to associate with the action.
+        isArray: false
+        name: comment
+        required: true
+        secret: false
+      - default: false
+        description: File path to get from device.
+        isArray: false
+        name: path
+        required: true
+        secret: false
+    deprecated: false
+    description: 'Collect file from a device. NOTE: Backslashes in path must be escaped.'
+    execution: true
+    name: microsoft-atp-live-response-get-file
+    outputs:
+      - contextPath: MicrosoftATP.LiveResponseAction
+        description: The machine action ID.
+        type: String
+  - arguments:
+      - default: true
+        description: Machine ID to add file to.
+        isArray: false
+        name: machine_id
+        required: true
+        secret: false
+      - default: false
+        description: A comment to associate with the action.
+        isArray: false
+        name: comment
+        required: true
+        secret: false
+      - default: false
+        description: Script name to run on device
+        isArray: false
+        name: scriptName
+        required: true
+        secret: false
+      - default: false
+        description: Arguments to run the script with
+        isArray: false
+        name: arguments
+        required: true
+        secret: false
+    deprecated: false
+    description: |-
+      Runs a script from the library on a device. The Args parameter is passed to your script. Timeouts after 10 minutes.
+    execution: true
+    name: microsoft-atp-live-response-run-script
+    outputs:
+      - contextPath: MicrosoftATP.LiveResponseAction
+        description: The machine action ID.
+        type: String
+  - arguments:
+      - default: true
+        description: Action ID to retrieve status and data for.
+        isArray: false
+        name: machine_action_id
+        required: true
+        secret: false
+    deprecated: false
+    description: Retrieve action's data.
+    execution: true
+    name: microsoft-atp-get-machine-action
+    outputs:
+      - contextPath: MicrosoftATP.LiveResponseAction
+        description: The machine action ID.
+        type: String
+  - arguments:
+      - default: true
+        description: Action ID to retrieve status and data for.
+        isArray: false
+        name: machine_action_id
+        required: true
+        secret: false
+      - default: false
+        description: A command index to retrieve file for.
+        isArray: false
+        name: command_index
+        required: true
+        secret: false
+    deprecated: false
+    description: Gets a result file for a specified action.
+    execution: true
+    name: microsoft-atp-live-response-result
+    outputs:
+      - contextPath: MicrosoftATP.LiveResponseAction
+        description: The machine action ID.
+        type: String
   dockerimage: demisto/crypto:1.0.0.24380
   feed: false
   isfetch: true
