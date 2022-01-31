@@ -1429,7 +1429,7 @@ tasks:
       '#none#':
       - "43"
     scriptarguments:
-      to:
+      channel:
         complex:
           root: incident
           accessor: contentnotificationslackusername
