@@ -6,8 +6,7 @@ import pytest
 import demistomock as demisto
 from CommonServerPython import entryTypes
 from ParseEmailFiles import MsOxMessage, main, convert_to_unicode, unfold, handle_msg, get_msg_mail_format, \
-    data_to_md, create_headers_map, DataModel, handle_eml
-    data_to_md, create_headers_map, DataModel, parse_nesting_level
+    data_to_md, create_headers_map, DataModel, handle_eml, parse_nesting_level
 
 
 def exec_command_for_file(
