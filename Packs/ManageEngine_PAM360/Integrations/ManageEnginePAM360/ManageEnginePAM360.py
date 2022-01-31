@@ -236,9 +236,9 @@ def test_module(
     }
     r = requests.request("GET", client._base_url + URL_SUFFIX, headers=headers, verify=client._verify)
     if r.status_code != 200:
-        return 'Failed to connect to server'
+        return_results('Failed to connect to server')
     else:
-        return 'ok'
+        return_results('ok')
 
 
 def pam360_fetch_password(
@@ -450,7 +450,7 @@ def main():
 
     params = demisto.params()
     url = params.get('url')
-    app_token = params.get('appToken')
+    app_token = params.get('credentials').get('password')
     verify_certificate = not params.get('insecure')
     proxy = params.get('proxy')
     try:
