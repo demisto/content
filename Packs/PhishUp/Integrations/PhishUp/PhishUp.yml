@@ -40,13 +40,13 @@ script:
   commands:
   - arguments:
     - default: true
-      description: Single URL for phishup investigation
+      description: Url for PhishUp Reputation Investigation
       isArray: true
       name: url
       required: true
       secret: false
     deprecated: false
-    description: Single url investigation
+    description: Url for PhishUp Reputation Investigation
     execution: false
     name: url
     outputs:
