@@ -53,7 +53,7 @@
         },
         {
           "cliName": "sourceips",
-          "type": "shortText"
+          "type": "multiSelect"
         }
     ]
 }
