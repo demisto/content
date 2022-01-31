@@ -1,5 +1,5 @@
 id: ServiceNow_CMDB_OAuth_Test
-version: 9
+version: -1
 vcShouldKeepItemLegacyProdMachine: false
 name: ServiceNow_CMDB_OAuth_Test
 starttaskid: "0"
