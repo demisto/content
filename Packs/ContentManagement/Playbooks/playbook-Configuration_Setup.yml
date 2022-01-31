@@ -3,6 +3,7 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Configuration Setup
+detached: true
 description: Playbook for the configuration incident type.
 starttaskid: "0"
 tasks:
