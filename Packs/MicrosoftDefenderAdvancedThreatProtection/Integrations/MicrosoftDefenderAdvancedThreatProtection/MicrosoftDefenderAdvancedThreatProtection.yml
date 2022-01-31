@@ -16,11 +16,9 @@ configuration:
   name: _tenant_id
   required: false
   type: 0
-- displaypassword: Key
-  name: credentials
+- name: credentials
   required: false
   type: 9
-  hiddenusername: true
 - display: Fetch incidents
   name: isFetch
   required: false
@@ -69,22 +67,24 @@ configuration:
   name: first_fetch_timestamp
   required: false
   type: 0
-- display: ID (received from the admin consent - see Detailed Instructions (?) section) (Deprecated)
+- display: ID (received from the admin consent - see Detailed Instructions (?) section)
+    (Deprecated)
+  hidden: true
   name: auth_id
   required: false
   type: 4
+- display: Token (received from the admin consent - see Detailed Instructions (?)
+    (Deprecated) section)
   hidden: true
-- display: Token (received from the admin consent - see Detailed Instructions (?) (Deprecated)
-    section)
   name: tenant_id
   required: false
   type: 4
+- display: Key (received from the admin consent - see Detailed Instructions (?) section)
+    (Deprecated)
   hidden: true
-- display: Key (received from the admin consent - see Detailed Instructions (?) section) (Deprecated)
   name: enc_key
   required: false
   type: 4
-  hidden: true
 description: Microsoft Defender for Endpoint (previously Microsoft Defender Advanced
   Threat Protection (ATP)) is a unified platform for preventative protection, post-breach
   detection, automated investigation, and response.
@@ -3606,14 +3606,14 @@ script:
       name: indicator_id
       required: true
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       defaultValue: MediumHigh
       description: 'The severity of the malicious behavior identified by the data
         within the indicator. Possible values: "Informational", "Low", "MediumLow",
         "MediumHigh", and "High", where High is the most severe and Informational
         is not severe at all.'
       isArray: false
-      auto: PREDEFINED
       name: severity
       predefined:
       - Informational
@@ -3886,32 +3886,34 @@ script:
       name: indicator_value
       required: true
       secret: false
-    - default: false
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      default: false
       description: 'Type of the indicator. Possible values: "FileSha1", "FileSha256",
         "IpAddress", "DomainName", and "Url".'
       isArray: false
       name: indicator_type
-      required: true
       predefined:
       - FileSha1
       - FileSha256
       - IpAddress
       - DomainName
       - Url
-    - default: false
-      auto: PREDEFINED
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
       description: 'The action taken if the indicator is discovered in the organization.
         Possible values: "Alert", "AlertAndBlock", and "Allowed".'
       isArray: false
       name: action
-      required: true
       predefined:
       - Alert
       - AlertAndBlock
       - Allowed
-    - default: false
-      auto: PREDEFINED
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
       description: 'The severity of the malicious behavior identified by the data
         within the indicator. Possible values: "Informational", "Low", "Medium", and
         "High", where High is the most severe and Informational is not severe at all.'
@@ -3925,10 +3927,10 @@ script:
       required: false
       secret: false
     - default: false
+      defaultValue: 14 days
       description: 'DateTime string indicating when the indicator expires. Format:
         (<number> <time unit>, e.g., 12 hours, 7 days).'
       isArray: false
-      defaultValue: 14 days
       name: expiration_time
       required: false
       secret: false
@@ -4081,32 +4083,34 @@ script:
       name: indicator_value
       required: true
       secret: false
-    - default: false
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      default: false
       description: 'Type of the indicator. Possible values: "FileSha1", "FileSha256",
         "IpAddress", "DomainName", and "Url".'
       isArray: false
       name: indicator_type
-      required: true
       predefined:
       - FileSha1
       - FileSha256
       - IpAddress
       - DomainName
       - Url
-    - default: false
-      auto: PREDEFINED
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
       description: 'The action taken if the indicator is discovered in the organization.
         Possible values: "Alert", "AlertAndBlock", and "Allowed".'
       isArray: false
       name: action
-      required: true
       predefined:
       - Alert
       - AlertAndBlock
       - Allowed
-    - default: false
-      auto: PREDEFINED
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
       description: 'The severity of the malicious behavior identified by the data
         within the indicator. Possible values: "Informational", "Low", "Medium", and
         "High", where High is the most severe and Informational is not severe at all.'
@@ -4120,10 +4124,10 @@ script:
       required: false
       secret: false
     - default: false
+      defaultValue: 14 days
       description: 'DateTime string indicating when the indicator expires. Format:
         (<number> <time unit>, e.g., 12 hours, 7 days).'
       isArray: false
-      defaultValue: 14 days
       name: expiration_time
       required: false
       secret: false
@@ -4289,6 +4293,7 @@ script:
       name: limit
       required: false
       secret: false
+    deprecated: false
     description: Lists all indicators by the ID that the system creates when the indicator
       is ingested.
     execution: false
@@ -4526,6 +4531,6 @@ script:
   script: '-'
   subtype: python3
   type: python
-fromversion: 5.0.0
 tests:
 - No tests (auto formatted)
+fromversion: 5.0.0
