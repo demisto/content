@@ -240,7 +240,7 @@ class TestFormatURL:
         """
         from FormatURL import get_redirect_url_fireeye
         assert get_redirect_url_fireeye(non_formatted_url, urlparse(non_formatted_url),
-                                           redirect_param_name) == expected
+                                        redirect_param_name) == expected
 
     #  Invalid cases
 
