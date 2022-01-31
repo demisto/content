@@ -1429,10 +1429,10 @@ tasks:
       '#none#':
       - "43"
     scriptarguments:
-      channel:
+      to:
         complex:
           root: incident
-          accessor: contentnotificationslackchannel
+          accessor: contentnotificationslackusername
       ignoreAddURL:
         simple: "true"
       message:
