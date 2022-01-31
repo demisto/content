@@ -8,4 +8,4 @@ ports which have been allocated by this automation.
 If there are existing EDLs these ports should be added to the new list in a 
 comma seperated fashion.
 
-A Demisto REST API integration also needs to be configured for correct operation.
+A Demi$to REST API integration also needs to be configured for correct operation.
