@@ -124,14 +124,36 @@ class AzureSentinelClient:
 ''' INTEGRATION HELPER METHODS '''
 
 
+def get_error_kind(code):
+    """
+    Get the kind of the error based on the http error code.
+    """
+    if code == 400:
+        return 'BadRequest'
+    elif code == 401:
+        return 'UnAuthorized'
+    elif code == 403:
+        return 'Forbidden'
+    elif code == 404:
+        return 'NotFound'
+
+
 def error_handler(response: requests.Response):
     """
     raise informative exception in case of error response
     """
     if response.status_code in (400, 401, 403, 404):
-        res_json = response.json()
-        error_kind = res_json.get('error', {}).get('code', 'BadRequest')
-        error_msg = res_json.get('error', {}).get('message', res_json)
+        try:
+            error_json = response.json()
+        except json.JSONDecodeError:
+            error_json = {
+                'error': {
+                    'code': get_error_kind(code=response.status_code),
+                    'message': response.text
+                }
+            }
+        error_kind = error_json.get('error', {}).get('code', 'BadRequest')
+        error_msg = error_json.get('error', {}).get('message', error_json)
         raise ValueError(
             f'[{error_kind} {response.status_code}] {error_msg}'
         )

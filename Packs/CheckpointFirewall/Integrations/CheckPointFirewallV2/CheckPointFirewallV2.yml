@@ -337,11 +337,38 @@ script:
     - contextPath: CheckPoint.Group.read-only
       description: Indicates if the object is read-only.
       type: Boolean
-    - contextPath: CheckPoint.Group.members.ipv4-address
+    - contextPath: CheckPoint.Group.ipv4-address
+      description: Group IPv4 addresses.
+      type: string
+    - contextPath: CheckPoint.Group.ipv6-address
+      description: Group IPv6 addresses.
+      type: string
+    - contextPath: CheckPoint.Group.groups
+      description: Collection of group identifiers.
+      type: Unknown
+    - contextPath: CheckPoint.Group.members.member-ipv4-address
       description: Group members IPv4 addresses.
       type: string
-    - contextPath: CheckPoint.Group.members.ipv6-address
+    - contextPath: CheckPoint.Group.members.member-ipv6-address
       description: Group members IPv6 addresses.
+      type: string
+    - contextPath: CheckPoint.Group.members.member-domain-name
+      description: Group members domain name.
+      type: string
+    - contextPath: CheckPoint.Group.members.member-domain-uid
+      description: Group members domain UID.
+      type: string
+    - contextPath: CheckPoint.Group.members.member-domain-type
+      description: Group members domain type.
+      type: string
+    - contextPath: CheckPoint.Group.members.member-name
+      description: Group member name.
+      type: string
+    - contextPath: CheckPoint.Group.members.member-uid
+      description: Group member UID.
+      type: string
+    - contextPath: CheckPoint.Group.members.member-type
+      description: Group member type.
       type: string
   - arguments:
     - description: Object name. Must be unique in the domain.
@@ -875,6 +902,33 @@ script:
     - contextPath: CheckPoint.AccessRule.uid
       description: Object UID.
       type: String
+    - contextPath: CheckPoint.AccessRule.type
+      description: Object type.
+      type: String
+    - contextPath: CheckPoint.AccessRule.ipv4-address
+      description: IPv4 address of the specified object.
+      type: String
+    - contextPath: CheckPoint.AccessRule.ipv6-address
+      description: IPv6 address of the specified object.
+      type: String
+    - contextPath: CheckPoint.AccessRule.domain-name
+      description: Domain name.
+      type: String
+    - contextPath: CheckPoint.AccessRule.domain-uid
+      description: Domain UID.
+      type: String
+    - contextPath: CheckPoint.AccessRule.creator
+      description: The creator of the object.
+      type: String
+    - contextPath: CheckPoint.AccessRule.last-modifier
+      description: The user that last modified the object.
+      type: String
+    - contextPath: CheckPoint.AccessRule.read-only
+      description: Indicates if the object is read-only.
+      type: Boolean
+    - contextPath: CheckPoint.AccessRule.groups
+      description: Collection of group identifiers.
+      type: Unknown
   - arguments:
     - description: Layer to which to assign the rule, identified by the name or UID.
       name: layer
@@ -1544,18 +1598,39 @@ script:
     description: Retrieve data about objects.
     name: checkpoint-show-objects
     outputs:
-    - contextPath: CheckPoint.Object.name
+    - contextPath: CheckPoint.Objects.name
       description: Object name.
       type: String
-    - contextPath: CheckPoint.Object.uid
+    - contextPath: CheckPoint.Objects.uid
       description: Object UID.
       type: String
-    - contextPath: CheckPoint.Object.type
+    - contextPath: CheckPoint.Objects.type
       description: Object type.
       type: String
-    - contextPath: CheckPoint.Object.ipv4
+    - contextPath: CheckPoint.Objects.ipv4-address
       description: IPv4 address of the specified object.
       type: String
+    - contextPath: CheckPoint.Objects.ipv6-address
+      description: IPv6 address of the specified object.
+      type: String
+    - contextPath: CheckPoint.Objects.domain-name
+      description: Domain name.
+      type: String
+    - contextPath: CheckPoint.Objects.domain-uid
+      description: Domain UID.
+      type: String
+    - contextPath: CheckPoint.Objects.creator
+      description: The creator of the object.
+      type: String
+    - contextPath: CheckPoint.Objects.last-modifier
+      description: The user that last modified the object.
+      type: String
+    - contextPath: CheckPoint.Objects.read-only
+      description: Indicates if the object is read-only.
+      type: Boolean
+    - contextPath: CheckPoint.Objects.groups
+      description: Collection of group identifiers.
+      type: Unknown
   - arguments:
     - description: The object unique identifier or name.
       name: identifier

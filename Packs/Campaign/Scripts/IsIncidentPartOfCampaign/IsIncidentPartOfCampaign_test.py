@@ -114,3 +114,24 @@ class TestMain:
         results = main()
         assert results.readable_output == 'Found campaign with ID - 2'
         assert results.outputs['ExistingCampaignID'] == '2'
+
+
+def test_where_no_campaign_ids(mocker):
+    """
+    Given
+        Incidents to check if they are part of campaign.
+    When
+        Getting some incidents campaign ids which are not related to the given incident ids.
+    Then
+        Ensure the results returned nothing.
+    """
+    import IsIncidentPartOfCampaign
+
+    mocker.patch.object(demisto, 'args', return_value={})
+    mocker.patch.object(IsIncidentPartOfCampaign, 'get_incidents_ids_by_type', return_value=[1, 2, 3])
+    mocker.patch.object(IsIncidentPartOfCampaign, 'check_incidents_ids_in_campaign', return_value=False)
+
+    command_results = main()
+
+    assert command_results.readable_output == "No campaign has found"
+    assert command_results.outputs['ExistingCampaignID'] is None

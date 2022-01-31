@@ -12,6 +12,8 @@ class Client(BaseClient):
         super().__init__(base_url, verify, proxy, ok_codes, headers)
         self.token = token
 
+        LOG.add_replace_strs(token)
+
     def get_file_report(self, file_hash: str):
         return self._http_request(
             'POST',

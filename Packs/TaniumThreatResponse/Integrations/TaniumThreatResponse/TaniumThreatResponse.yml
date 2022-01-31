@@ -1808,7 +1808,7 @@ script:
     - contextPath: Tanium.QuickScan.QuestionID
       description: The ID of the quick scan question
       type: number
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.1.25933
   isfetch: true
   longRunning: false
   longRunningPort: false

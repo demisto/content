@@ -1,20 +1,20 @@
 {
-  "name": "OpsGenie",
-  "description": "Get current on-call assignments, schedules, and users info",
-  "support": "xsoar",
-  "currentVersion": "2.0.0",
-  "author": "Cortex XSOAR",
-  "url": "https://www.paloaltonetworks.com/cortex",
-  "email": "",
-  "created": "2020-04-14T00:00:00Z",
-  "categories": [
-    "Messaging"
-  ],
-  "tags": [],
-  "useCases": [],
-  "keywords": [],
-  "marketplaces": [
-    "xsoar",
-    "marketplacev2"
-  ]
+    "name": "OpsGenie",
+    "description": "Get current on-call assignments, schedules, and users info",
+    "support": "xsoar",
+    "currentVersion": "2.0.3",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2020-04-14T00:00:00Z",
+    "categories": [
+        "Messaging"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }
