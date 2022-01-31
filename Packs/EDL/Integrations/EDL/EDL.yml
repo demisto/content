@@ -95,13 +95,13 @@ configuration:
   name: prepend_string
   required: false
   type: 12
-  additionalinfo: For use with PAN-OS (Text) format - String to add to beginning of published list. Supports newline characters (\n).
+  additionalinfo: For use with PAN-OS (text) format - String to add to beginning of published list. Supports newline characters (\n).
 - display: Append string to list
   name: append_string
   required: false
   type: 12
-  additionalinfo: For use with PAN-OS (Text) format - String to add to end of published list. Supports newline characters (\n).
-- additionalinfo: For use with PAN-OS (Text) format - collapse method for IPs (none, range, CIDR).
+  additionalinfo: For use with PAN-OS (text) format - String to add to end of published list. Supports newline characters (\n).
+- additionalinfo: For use with PAN-OS (text) format - collapse method for IPs (none, range, CIDR).
   defaultvalue: Don't Collapse
   display: IP Collapsing
   hidden: false
@@ -112,7 +112,7 @@ configuration:
   - To Ranges
   required: false
   type: 15
-- additionalinfo: For use with PAN-OS (Text) format - if selected, any URL entry that is not compliant with PAN-OS URL format is dropped instead of being rewritten.
+- additionalinfo: For use with PAN-OS (text) format - if selected, any URL entry that is not compliant with PAN-OS URL format is dropped instead of being rewritten.
   display: "PAN-OS: drop invalid URL entries"
   hidden: false
   name: drop_invalids
@@ -273,7 +273,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'False'
-      description: For use with PAN-OS (Text) format - if selected, any URL entry that is not compliant with PAN-OS URL format is dropped instead of being rewritten.
+      description: For use with PAN-OS (text) format - if selected, any URL entry that is not compliant with PAN-OS URL format is dropped instead of being rewritten.
       isArray: false
       name: drop_invalids
       predefined:
@@ -284,7 +284,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Don't Collapse
-      description: For use with PAN-OS (Text) format - collapse method for IPs (none, range, CIDR).
+      description: For use with PAN-OS (text) format - collapse method for IPs (none, range, CIDR).
       isArray: false
       name: collapse_ips
       predefined:
@@ -408,7 +408,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'False'
-      description: For use with PAN-OS (Text) format - if selected, any URL entry that is not compliant with PAN-OS URL format is dropped instead of being rewritten.
+      description: For use with PAN-OS (text) format - if selected, any URL entry that is not compliant with PAN-OS URL format is dropped instead of being rewritten.
       isArray: false
       name: drop_invalids
       predefined:
@@ -419,7 +419,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Don't Collapse
-      description: For use with PAN-OS (Text) format - collapse method for IPs (none, range, CIDR).
+      description: For use with PAN-OS (text) format - collapse method for IPs (none, range, CIDR).
       isArray: false
       name: collapse_ips
       predefined:
