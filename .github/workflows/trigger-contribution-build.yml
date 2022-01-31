@@ -6,7 +6,7 @@ on:
 jobs:
   trigget_contrib_build:
     runs-on: ubuntu-latest
-    if: github.event.action == 'labeled' && github.event.pull_request.head.repo.fork == false && contains(github.event.pull_request.labels.*.name, 'ready-for-instance-test') == true
+    if: github.event.action == 'labeled' && contains(github.event.pull_request.labels.*.name, 'ready-for-instance-test') == true && github.event.pull_request.head.repo.fork == false # change to true
     steps:
       - name: Checkout
         uses: actions/checkout@v2
