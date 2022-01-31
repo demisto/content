@@ -75,8 +75,8 @@ def test_get_chosen_nothing_phishup_action_command():
 
 def test_auth_success_test_module(requests_mock):
     from PhishUp import Client, test_module
-    requests_mock.post(f'{BASE_URL}/sherlock/ValidateApiKey?apikey={MOCK_APIKEY}',
-                       json={"Status": "Success"})
+    requests_mock.post(f'{BASE_URL}/auth-service/ValidateApiKey?apikey={MOCK_APIKEY}',
+                       json={"Status": {"Result": "Success", "Message": ""}})
     client = Client(
         base_url=BASE_URL,
         verify=False)
@@ -90,7 +90,7 @@ def test_auth_error_test_module(requests_mock, mocker):
     patcher_mock_params = mocker.patch("demistomock.params", return_value=MOCK_PARAMS)
     patcher_mock_params.start()
     patcher.start()
-    requests_mock.post(f'{BASE_URL}/sherlock/ValidateApiKey?apikey={MOCK_APIKEY}',
-                       json={"Status": "Authentication Error"})
+    requests_mock.post(f'{BASE_URL}/auth-service/ValidateApiKey?apikey={MOCK_APIKEY}',
+                       json={"Status": {"Result": "Error", "Message": "Authentication Error"}})
     response = main()
     assert response is None
