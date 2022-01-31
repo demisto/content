@@ -21,8 +21,8 @@ def validate_params(aws_default_region, aws_role_arn, aws_role_session_name, aws
 class AWSClient:
 
     def __init__(self, aws_default_region, aws_role_arn, aws_role_session_name, aws_role_session_duration,
-                 aws_role_policy, aws_access_key_id, aws_secret_access_key,
-                 verify_certificate, timeout, retries, aws_session_token=None):
+                 aws_role_policy, aws_access_key_id, aws_secret_access_key, aws_session_token,
+                 verify_certificate, timeout, retries):
 
         self.aws_default_region = aws_default_region
         self.aws_role_arn = aws_role_arn
