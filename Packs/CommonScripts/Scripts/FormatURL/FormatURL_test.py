@@ -238,9 +238,9 @@ class TestFormatURL:
         Then:
         - Ensure redirected URL is returned.
         """
-        from FormatURL import get_redirect_url_fireeye
-        assert get_redirect_url_fireeye(non_formatted_url, urlparse(non_formatted_url),
-                                        redirect_param_name) == expected
+        from FormatURL import get_redirect_url_from_query
+        assert get_redirect_url_from_query(non_formatted_url, urlparse(non_formatted_url),
+                                           redirect_param_name) == expected
 
     #  Invalid cases
 
