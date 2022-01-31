@@ -219,8 +219,8 @@ class TestFormatURL:
         ('https://protect2.fireeye.com/v1/url?k=d7c23005-88590c48-d7c31221-0cc47aa886f2-ae4b7c793165343e'
          '&amp;q=1'
          '&amp;e=c6beb47c-b5f9-4870-ab14-f6de1a85f4f2'
-         '&amp;u=https%3A%2F%2Fu24529037.ct.sendgrid.net%2Fls%2Fclick', 'amp;u',
-         'https://u24529037.ct.sendgrid.net/ls/click'),
+         '&amp;u=https%3A%2F%2Fexample.com%2Fls%2Fclick', 'amp;u',
+         'https://example.com/ls/click'),
         ('https://protect2.fireeye.com/v1/url?k=00bf92e9-5f24adeb-00beb0cd-0cc47aa88f82-a1f32e4f84d91cbe'
          '&q=1'
          '&e=221919da-9d68-429a-a70e-9d8d836ca107'
