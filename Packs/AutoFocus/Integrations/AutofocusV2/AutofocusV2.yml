@@ -408,7 +408,7 @@ script:
     description: Searches for sessions in AutoFocus. To view results, run the autofocus-sessions-search-results
       command with the returned AF Cookie. The AF Cookie expires 120 seconds after
       the search completes. Note that if you pass more than 100 IPs, it may not work when searching the result with the returned AF cookie,
-      you will need to iterate the IPs and search for each AF cookie, this is due to an AF limitation.
+      due to an API limitation. In this case, you will need to iterate over the IPs and searching the result for each AF cookie.
       `Autofocus Query Samples, Sessions and Tags` Playbook is recommended for querying and polling.
     execution: false
     polling: true
