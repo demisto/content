@@ -215,6 +215,7 @@ class TestFormatURL:
         assert get_redirect_url_from_query(non_formatted_url, urlparse(non_formatted_url),
                                            redirect_param_name) == expected
 
+     @pytest.mark.parametrize('non_formatted_url, redirect_param_name, expected', [
         ('https://protect2.fireeye.com/v1/url?k=d7c23005-88590c48-d7c31221-0cc47aa886f2-ae4b7c793165343e'
          '&amp;q=1'
          '&amp;e=c6beb47c-b5f9-4870-ab14-f6de1a85f4f2'
@@ -225,6 +226,7 @@ class TestFormatURL:
          '&e=221919da-9d68-429a-a70e-9d8d836ca107'
          '&u=https%3A%2F%2Fwww.facebook.com%2FNamshiOfficial', 'u',
          'https://www.facebook.com/NamshiOfficial')
+    ])
     def test_get_redirect_url_fireeye(self, non_formatted_url: str, redirect_param_name: str, expected: str):
         """
         Given:
