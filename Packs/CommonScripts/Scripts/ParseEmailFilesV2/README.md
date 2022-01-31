@@ -1,6 +1,6 @@
 Parse an email from an eml or msg file and populate all relevant context data to investigate the email. Also extracts inner attachments and returns them to the war room. The incident labels themselves are preserved and not modified - only the "Label/x" context items that originated from the labels, and the best practice is to rely on these for the remainder of the playbook.
 
-This script is based on the [parse-emails XSOAR python package](https://github.com/demisto/parse-emails), visit the script documentation for more info.
+This script is based on the [parse-emails XSOAR python package](https://github.com/demisto/parse-emails), check the script documentation for more info.
 
 ## Script Data
 ---

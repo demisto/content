@@ -106,7 +106,7 @@ def main():
     args = demisto.args()
     entry_id = args.get('entryid')
     max_depth = arg_to_number(args.get('max_depth', '3'))
-    if max_depth is None or max_depth < 1:
+    if not max_depth or max_depth < 1:
         return_error('Minimum max_depth is 1, the script will parse just the top email')
     parse_only_headers = argToBoolean(args.get('parse_only_headers', 'false'))
     forced_encoding = args.get('forced_encoding')

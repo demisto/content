@@ -28,7 +28,7 @@ comment: (Beta) Parse an email from an eml or msg file and populate all relevant
   to the war room. The incident labels themselves are preserved and not modified -
   only the "Label/x" context items that originated from the labels, and the best practice
   is to rely on these for the remainder of the playbook.
-  This script is based on the parse-emails XSOAR python package, visit the script documentation for more info.
+  This script is based on the parse-emails XSOAR python package, check the script documentation for more info
 commonfields:
   id: ParseEmailFilesV2
   version: -1
