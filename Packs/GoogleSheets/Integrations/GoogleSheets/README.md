@@ -15,6 +15,10 @@ This integration was integrated and tested with version 4 of GoogleSheets API
     | User Id - Associate to Google Drive | User-Id - This will be used to impersonate a Google workspace user, so the spreadsheets will be created in the associated Google Drive and will be accessible from a UI easily. This parameter will be used during the authentication process.<br/> | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
+## Known limitations
+Deleting a spreadsheet is only with the Google Drive Integrations. 
+
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
