@@ -72,5 +72,5 @@ Accenture
 CTI
 SCC
 IPinfo
+QRadarFullSearch
 ServiceNow
-
