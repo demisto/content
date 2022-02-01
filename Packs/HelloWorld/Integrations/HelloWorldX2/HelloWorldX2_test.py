@@ -69,7 +69,7 @@ def test_say_hello():
     No mock is needed here because the say_hello_command does not call
     any external API.
     """
-    from HelloWorld import Client, say_hello_command
+    from HelloWorldX2 import Client, say_hello_command
 
     client = Client(base_url='https://test.com/api/v1', verify=False, auth=('test', 'test'))
     args = {
@@ -87,7 +87,7 @@ def test_start_scan(requests_mock):
     API response when the correct start_scan API request is performed. Checks
     the output of the command function with the expected output.
     """
-    from HelloWorld import Client, scan_start_command
+    from HelloWorldX2 import Client, scan_start_command
 
     mock_response = {
         'scan_id': '7a161a3f-8d53-42de-80cd-92fb017c5a12',
@@ -126,7 +126,7 @@ def test_status_scan(requests_mock):
     should be COMPLETE while for scan ID 200 is RUNNING. Checks the output of
     the command function with the expected output.
     """
-    from HelloWorld import Client, scan_status_command
+    from HelloWorldX2 import Client, scan_status_command
 
     mock_response = {
         'scan_id': '100',
