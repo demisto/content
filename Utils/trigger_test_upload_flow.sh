@@ -12,6 +12,7 @@ if [ "$#" -lt "1" ]; then
   [-p, --packs]               CSV list of pack IDs. Mandatory when the --force flag is on.
   [-ch, --slack-channel]      A slack channel to send notifications to. Default is dmst-bucket-upload.
   [-g, --gitlab]              Flag indicating to trigger the flow in GitLab.
+  [-o, --override_all_packs]  Whether to override all packs, and not just modified packs.
   [-sbp, --storage-base-path] A path to copy from in this current upload, and to be used as a target destination. This path should look like base path should look like upload-flow/builds/branch_name/build_number/content.
   "
   exit 1
@@ -75,7 +76,6 @@ while [[ "$#" -gt 0 ]]; do
     shift;;
 
   -g|--gitlab) _gitlab=true
-    shift
     shift;;
 
   *)    # unknown option.
@@ -98,15 +98,17 @@ if [ -n "$_force" ] && [ -n "$_storage_base_path"]; then
     echo "Can not force upload while using a storage base path."
     exit 1
 fi
-if [[ -n "$_storage_base_path" ]] && [ "$_storage_base_path" != *content ]; then
-  echo "The given storage base path should look like upload-flow/builds/branch_name/build_number/content."
-  exit 1
-fi
-
-if [[ -n "$_storage_base_path" ]] && [ "$_storage_base_path" != upload-flow* ]; then
-  echo "The given storage base path should look like upload-flow/builds/branch_name/build_number/content."
-  exit 1
-fi
+#if [[ -n "$_storage_base_path" ]] && [ "$_storage_base_path" != *content ]; then
+#  echo "$_storage_base_path"
+#  echo "The given storage base path should look like upload-flow/builds/branch_name/build_number/content."
+#  exit 1
+#fi
+#
+#if [[ -n "$_storage_base_path" ]] && [ "$_storage_base_path" != upload-flow* ]; then
+#  echo $_storage_base_path
+#  echo "The given storage base path should look like upload-flow/builds/branch_name/build_number/content."
+#  exit 1
+#fi
 
 if [ -n "$_gitlab" ]; then
 
