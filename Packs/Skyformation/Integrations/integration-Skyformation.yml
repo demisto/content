@@ -1,0 +1,214 @@
+commonfields:
+  id: Skyformation
+  version: -1
+name: Skyformation
+display: Skyformation (Deprecated)
+deprecated: true
+category: IT Services
+description: "Deprecated. Vendor has declared end of life for this integration. No available replacement."
+image: data:image/png;base64,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
+configuration:
+- display: Server URL (https://35.158.26.15:8443)
+  name: url
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Credentials
+  name: credentials
+  type: 9
+  required: true
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+script:
+  script: >-
+    import requests
+
+    requests.packages.urllib3.disable_warnings()
+
+
+    if not demisto.params()['proxy']:
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
+
+    # removes the last / from the url
+
+    def fix_url(url):
+        if url.endswith("/"):
+            return url[:-1]
+
+        return url
+
+    USERNAME = demisto.params()['credentials']['identifier']
+
+    PASSWORD = demisto.params()['credentials']['password']
+
+    SERVER_URL = fix_url(demisto.params()['url'])
+
+    INSECURE = demisto.params().get('insecure')
+
+
+    def get_accounts_request():
+        fullurl = '{}{}'.format(SERVER_URL, '/openapi/api/rest/v1/accounts')
+        res = requests.get(fullurl, auth = (USERNAME, PASSWORD), verify=(not INSECURE))
+        if res.status_code < 200 or res.status_code >= 300:
+            raise Exception('Failed to get accounts. Status Code: {}'.format(res.status_code))
+
+        return res.json()
+
+    def get_accounts():
+        accounts = get_accounts_request()
+        context = accounts
+        accountsToContext = []
+        for account in accounts:
+            accountsToContext.append({
+                'Id': account['id'],
+                'Name': account['name'],
+                'Application': account['application'],
+                'TenantId': demisto.dt(account, 'tenant.id'),
+                'TenantName': demisto.dt(account, 'tenant.name')
+            })
+        hr = tableToMarkdown('Accounts', accountsToContext, ['Application', 'Name', 'Id', 'TenantName', 'TenantId'])
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': accounts,
+            'HumanReadable': hr,
+            'ReadableContentsFormat': formats['markdown'],
+            'EntryContext': {
+                'Skyformation.Account(val.Id==obj.Id)': accountsToContext
+            }
+        })
+
+    # suspend_or_unsuspend_user_request will suspend user if suspend=True, otherwise it will un-suspend user
+
+    def suspend_or_unsuspend_user_request(suspend, account_id, user_email):
+        query_params = {
+            'userAttributeName': 'email',
+            'userAttributeValue': user_email
+        }
+
+        fullurl = ''.join([
+            SERVER_URL,
+            '/openapi/api/rest/v1/remediation/',
+            account_id,
+            '/suspend-user' if suspend == True else '/un-suspend-user'
+        ])
+        demisto.info(fullurl)
+        res = requests.post(fullurl, auth = (USERNAME, PASSWORD), verify=(not INSECURE), params=query_params)
+        if res.status_code < 200 or res.status_code >= 300:
+            raise Exception('Failed to get accounts.\nStatus Code: {}\nResponse Body: {}'.format(res.status_code, res.text))
+
+        return res.json()
+
+    def suspend_user():
+        account_id = demisto.args().get('accountId')
+        user_email = demisto.args().get('userEmail')
+        res = suspend_or_unsuspend_user_request(True, account_id, user_email)
+        if not res['is-success']:
+            demisto.results({
+                'Type': entryTypes['error'],
+                'ContentsFormat': formats['text'],
+                'Contents': res['status-message']
+            })
+            return
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': res,
+            'HumanReadable': user_email + ' was suspended successfully',
+            'ReadableContentsFormat': formats['markdown']
+        })
+
+    def unsuspend_user():
+        account_id = demisto.args().get('accountId')
+        user_email = demisto.args().get('userEmail')
+        res = suspend_or_unsuspend_user_request(False, account_id, user_email)
+        if not res['is-success']:
+            demisto.results({
+                'Type': entryTypes['error'],
+                'ContentsFormat': formats['text'],
+                'Contents': res['status-message']
+            })
+            return
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': res,
+            'HumanReadable': user_email + ' was un-suspended successfully',
+            'ReadableContentsFormat': formats['markdown']
+        })
+
+    # The command demisto.command() holds the command sent from the user.
+
+    if demisto.command() == 'test-module':
+        get_accounts_request()
+        demisto.results('ok')
+        sys.exit(0)
+    if demisto.command() == 'skyformation-get-accounts':
+        get_accounts()
+        sys.exit(0)
+    if demisto.command() == 'skyformation-suspend-user':
+        suspend_user()
+        sys.exit(0)
+    if demisto.command() == 'skyformation-unsuspend-user':
+        unsuspend_user()
+        sys.exit(0)
+
+  type: python
+  subtype: python2
+  commands:
+  - name: skyformation-get-accounts
+    arguments: []
+    outputs:
+    - contextPath: Skyformation.Account
+      description: Account object
+    - contextPath: Skyformation.Account.Name
+      description: The name of the account
+      type: string
+    - contextPath: Skyformation.Account.Application
+      description: Application name (e.g Office 365, Sales Cloud)
+      type: string
+    - contextPath: Skyformation.Account.Id
+      description: The id of the account
+      type: string
+    - contextPath: Skyformation.Account.TenantId
+      description: The id of the tenant
+      type: string
+    - contextPath: Skyformation.Account.TenantName
+      description: The name of the tenant
+      type: string
+    description: Returns all the configured accounts in skyformation
+  - name: skyformation-suspend-user
+    arguments:
+    - name: accountId
+      required: true
+      description: You can get the account id by executing skyformation-get-accounts command
+    - name: userEmail
+      required: true
+      description: The email of the user that will be suspended in that account
+    description: The command will suspend user in the configured application by user email. For example if Sales Cloud configured in Skyformation, then this command can suspend user in Sales Cloud.
+    execution: true
+  - name: skyformation-unsuspend-user
+    arguments:
+    - name: accountId
+      required: true
+      description: You can get the account id by executing skyformation-get-accounts command
+    - name: userEmail
+      required: true
+      description: The email of the user that will be un-suspended in that account
+    description: The command will un-suspend user in the configured application by user email. For example if Sales Cloud configured in Skyformation, then this command can un-suspend user in Sales Cloud.
+    execution: true
+  runonce: false
+  dockerimage: demisto/python:2.7.18.20958
+fromversion: 5.0.0
