@@ -211,7 +211,7 @@ script:
       type: String
     - contextPath: Gmail.SentMail.From
       description: The sender of the email.
-      type: Unknown
+      type: String
     - contextPath: Gmail.SentMail.Cc
       description: Additional recipient email address (CC).
       type: String
@@ -223,7 +223,7 @@ script:
       type: String
     - contextPath: Gmail.SentMail.Body
       description: The plain-text version of the email.
-      type: Unknown
+      type: String
     - contextPath: Gmail.SentMail.MailBox
       description: The mailbox from which the mail was sent.
       type: String
