@@ -82,8 +82,13 @@ def get_new_entity_record(entity_path: str) -> Tuple[str, str]:
         if not name:
             name = data.get('brandName')
 
+    if 'indicatortypes' in entity_path.lower():
+        name = data.get('details')
+        if not name:
+            name = data.get('id')
+
     if name == entity_path:
-        logging.error(f'missing name for {entity_path}')
+        logging.warning()(f'missing name for {entity_path}')
 
     # script entities has "comment" instead of "description"
     description = data.get('description', '') or data.get('comment', '')
