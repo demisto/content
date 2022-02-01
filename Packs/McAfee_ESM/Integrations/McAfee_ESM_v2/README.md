@@ -1,6 +1,8 @@
 
 Run queries and receive alarms from Intel Security ESM. Support version 10 and above.
-This integration was integrated and tested with version 10.2 of McAfee ESM v2
+This integration was integrated and tested with version 11.3 of McAfee ESM v2.
+previous versions have been [EOL](https://kc.mcafee.com/corporate/index?page=content&id=KB94822) by the vendor.
+
 ## Configure McAfee ESM v2 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
