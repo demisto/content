@@ -87,27 +87,33 @@ script:
     - contextPath: URL.Malicious.Description
       description: Description of the malicious URL.
       type: string
+    - contextPath: URL.Tags
+      description: A list of tags associated with the queried malware URL.
+      type: string
+    - contextPath: URL.Relationships
+      description: A list of Relationships associated with the queried malware URL(Optional on configurtion).
+      type: Unknown
     - contextPath: URLhaus.URL.ID
       description: Unique identifier of the URLhaus database entry.
-      type: string
+      type: String
     - contextPath: URLhaus.URL.Status
       description: The current status of the URL.
-      type: string
+      type: String
     - contextPath: URLhaus.URL.Host
       description: The extracted host of the malware URL (IP address or domain name/FQDN).
-      type: string
+      type: String
     - contextPath: URLhaus.URL.DateAdded
       description: Date the URL was added to URLhaus.
       type: date
     - contextPath: URLhaus.URL.Threat
       description: The threat corresponding to this malware URL.
-      type: string
+      type: String
     - contextPath: URLhaus.URL.Blacklist.Name
       description: Name of the block list.
       type: String
     - contextPath: URLhaus.URL.Tags
       description: A list of tags associated with the queried malware URL.
-      type: string
+      type: String
     - contextPath: URLhaus.URL.Payload.Name
       description: Payload file name.
       type: String
@@ -156,6 +162,12 @@ script:
     - contextPath: Domain.Name
       description: The domain name, for example, google.com.
       type: String
+    - contextPath: Domain.Tags
+      description: A list of tags associated with the queried malware Domain.
+      type: string
+    - contextPath: Domain.Relationships
+      description: A list of Relationships associated with the queried malware Domain(Optional on configurtion).
+      type: Unknown
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
       type: String
@@ -210,6 +222,15 @@ script:
     - contextPath: File.SHA256
       description: SHA256 hash of the file.
       type: String
+    - contextPath: File.SSDeep
+      description: SSDeep of the file.
+      type: string
+    - contextPath: File.Type
+      description: Type of the file.
+      type: string
+    - contextPath: File.Relationships
+      description: A list of Relationships associated with the queried malware file(Optional on configurtion).
+      type: Unknown
     - contextPath: URLhaus.File.MD5
       description: MD5 hash of the file.
       type: String

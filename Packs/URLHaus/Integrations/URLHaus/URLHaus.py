@@ -130,6 +130,7 @@ def calculate_dbot_score(command, arg):
     if func_to_run:
         return func_to_run(arg)
 
+
 def parse_host(host):
     return "ip" if is_ip_valid(host) else "domain"
 
@@ -315,6 +316,14 @@ def domain_create_relationships(urls, domain, **kwargs):
     return relationships
 
 
+def domain_add_tags(bl_status, tags):
+    if bl_status:
+        status_prefix = bl_status.split("_")[0] if bl_status.endswith("domain") else \
+            bl_status.split("_")[-1] if bl_status.startswith("abused") else ''
+        if status_prefix:
+            tags.append(status_prefix)
+
+
 def domain_command(**kwargs):
     domain = demisto.args()['domain']
 
@@ -341,10 +350,7 @@ def domain_command(**kwargs):
             for bl_name, bl_status in blacklists.items():
                 blacklist_information.append({'Name': bl_name,
                                               'Status': bl_status})
-                status_postfix = bl_status.split("_")[0] if bl_status.endswith("domain") else \
-                bl_status.split("_")[-1] if bl_status.startswith("abused") else ''
-                if status_postfix:
-                    tags.append(status_postfix)
+                domain_add_tags(bl_status, tags)
             if tags:
                 ec['Domain']['Tags'] = tags
             first_seen = reformat_date(domain_information.get('firstseen'))
@@ -358,7 +364,7 @@ def domain_command(**kwargs):
             # DBot score calculation
             dbot_score, description = calculate_dbot_score('domain', domain_information.get('blacklists', {}))
             ec['DBotScore']['Score'] = dbot_score
-            if dbot_score == 3:
+            if dbot_score == Common.DBotScore.BAD:
                 ec['domain']['Malicious'] = {
                     'Vendor': 'URLhaus',
                     'Description': description
@@ -459,6 +465,7 @@ def file_command(**kwargs):
                     'Percent': float(file_information.get('virustotal', {'percent': 0})['percent']),
                     'Link': file_information.get('virustotal', {'link': ''})['link']
                 }
+
             dbot_score = Common.DBotScore(
                 indicator=hash,
                 integration_name='URLhaus',

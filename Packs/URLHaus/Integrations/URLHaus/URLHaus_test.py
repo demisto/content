@@ -84,7 +84,7 @@ url_command_test_reliability_dbot_score = [
 
 
 @pytest.mark.parametrize('status,excepted_output', url_command_test_reliability_dbot_score)
-def test_reliability_dbot_score_url(status, excepted_output):
+def test_url_reliability_dbot_score(status, excepted_output):
     """
 
     Given:
@@ -219,7 +219,7 @@ def test_url_command_create_relationships(host, host_type, create_relationship, 
             "EntityA": uri,
             "EntityAType": 'URL',
             "EntityB": host,
-            "EntityBType": f'{host_type}',
+            "EntityBType": host_type,
         }]
         excepted_output.extend([{
             "Relationship": 'related-to',
@@ -233,6 +233,7 @@ def test_url_command_create_relationships(host, host_type, create_relationship, 
     assert len(results) == len(excepted_output)
     for i in range(len(results)):
         assert results[i].to_context() == excepted_output[i]
+
 
 #
 # domain_command_test = [
@@ -337,7 +338,7 @@ domain_command_test_reliability_dbot_score = [
 
 
 @pytest.mark.parametrize('blacklist,excepted_output', domain_command_test_reliability_dbot_score)
-def test_reliability_dbot_score_domain(blacklist, excepted_output):
+def test_domain_reliability_dbot_score(blacklist, excepted_output):
     """
 
     Given:
@@ -374,17 +375,17 @@ domain_command_test_create_relationships = [
 
 @pytest.mark.parametrize('create_relationship,max_num_relationships',
                          domain_command_test_create_relationships)
-def test_url_command_create_relationships(create_relationship, max_num_relationships):
+def test_domain_command_test_create_relationships(create_relationship, max_num_relationships):
     """
 
     Given:
-        - Create relationship table(T/F),max number of relationships(Limited to 1000).
+        - Blacklist status.
 
     When:
-        - Creating relationships table for domain command.
+        - Adding tags from blacklist if they have relevant information.
 
     Then:
-        - Return indicators relationships table {Relationship,EntityA,EntityAType,EntityB,EntityBType}.
+        - Add blacklist status information to the tags list.
 
     """
     urls = [{
@@ -402,6 +403,106 @@ def test_url_command_create_relationships(create_relationship, max_num_relations
         } for i in range(max_num_relationships)])
     kwargs = {'create_relationships': create_relationship, 'max_num_of_relationships': max_num_relationships}
     results = URLHaus.domain_create_relationships(urls, domain, **kwargs)
+    assert len(results) == len(excepted_output)
+    for i in range(len(results)):
+        assert results[i] == excepted_output[i]
+
+
+domain_add_tags = [
+    ('spammer_domain', ['spammer']),
+    ('phishing_domain', ['phishing']),
+    ('botnet_cc_domain', ['botnet']),
+    ('listed', []),
+    ('not listed', []),
+    ('', []),
+    (None, []),
+]
+
+
+@pytest.mark.parametrize('blacklist_status,excepted_output',
+                         domain_add_tags)
+def test_domain_add_tags(blacklist_status, excepted_output):
+    """
+
+    Given:
+        - Create relationship table(T/F),max number of relationships(Limited to 1000).
+
+    When:
+        - Creating relationships table for domain command.
+
+    Then:
+        - Return indicators relationships table {Relationship,EntityA,EntityAType,EntityB,EntityBType}.
+
+    """
+    tags = []
+    URLHaus.domain_add_tags(blacklist_status, tags)
+    assert tags == excepted_output
+
+
+def test_file_reliability_dbot_score():
+    """
+
+    Given:
+        - File.
+
+    When:
+        - Calculating dbot score.
+
+    Then:
+        - Return Bad sbot score.
+
+    """
+    dbot_score = URLHaus.calculate_dbot_score('file', '')
+    assert dbot_score == Common.DBotScore.BAD
+
+
+file_command_test_create_relationships = [
+    (True, 1),
+    (True, 22),
+    (False, 22),
+    (True, 1000),
+    (False, 1000),
+]
+
+
+@pytest.mark.parametrize('create_relationship,max_num_relationships',
+                         file_command_test_create_relationships)
+def test_file_create_relationships(create_relationship, max_num_relationships):
+    """
+
+    Given:
+        - Create relationship table(T/F), max number of relationships(Limited to 1000).
+
+    When:
+        - Creating relationships table for file command.
+
+    Then:
+        - Return indicators relationships table {Relationship,EntityA,EntityAType,EntityB,EntityBType}.
+
+    """
+    urls = [{
+        'url': f'test_url{i}',
+    } for i in range(10000)]  # Large amounts of urls
+    file = "123123123123123123123"
+    sig = "test_signature"
+    excepted_output = []
+    if create_relationship:
+        excepted_output = [{
+            "Relationship": 'indicator-of',
+            "EntityA": file,
+            "EntityAType": 'File',
+            "EntityB": sig,
+            "EntityBType": 'Malware',
+        }]
+        excepted_output.extend([{
+            "Relationship": 'related-to',
+            "EntityA": file,
+            "EntityAType": 'File',
+            "EntityB": urls[i].get('url'),
+            "EntityBType": 'URL',
+        } for i in range(max_num_relationships - 1)])
+    kwargs = {'create_relationships': create_relationship, 'max_num_of_relationships': max_num_relationships}
+    results = URLHaus.file_create_relationships(file=file, urls=urls, sig=sig, **kwargs)
     assert len(results) == len(excepted_output)
     for i in range(len(results)):
         assert results[i] == excepted_output[i]
