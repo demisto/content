@@ -182,7 +182,13 @@ class Client(BaseClient):
         quoted_id = urllib.parse.quote(id, safe='')
         url_suffix = f"/v2/assets/{quoted_id}"
 
-        asset = self._http_request(method="GET", url_suffix=url_suffix)
+        try:
+            asset = self._http_request(method="GET", url_suffix=url_suffix)
+        except DemistoException as e:
+            if e.res is not None and e.res.status_code == 404:
+                return None
+            else:
+                raise
         simplify_asset(asset)
         return asset
 
