@@ -399,6 +399,18 @@ script:
       required: true
       secret: false
     - default: false
+      description: A delimiter is a character you use to group keys.
+      isArray: false
+      name: delimiter
+      required: false
+      secret: false
+    - default: false
+      description: Limits the response to keys that begin with the specified prefix.
+      isArray: false
+      name: prefix
+      required: false
+      secret: false
+    - default: false
       description: The AWS Region, if not specified the default region will be used.
       isArray: false
       name: region

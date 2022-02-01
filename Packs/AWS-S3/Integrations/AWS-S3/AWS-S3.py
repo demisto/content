@@ -191,14 +191,26 @@ def list_objects_command(args, aws_client):
         role_session_duration=args.get('roleSessionDuration'),
     )
     data = []
-    response = client.list_objects(Bucket=args.get('bucket'))
-    if response.get('Contents', None):
-        for key in response['Contents']:
-            data.append({
-                'Key': key['Key'],
-                'Size': convert_size(key['Size']),
-                'LastModified': datetime.strftime(key['LastModified'], '%Y-%m-%dT%H:%M:%S')
-            })
+    kwargs = {
+        'Bucket': args.get('bucket')
+    }
+    if args.get('delimiter') is not None:
+        kwargs.update({'Delimiter': args.get('delimiter')})
+    if args.get('prefix') is not None:
+        kwargs.update({'Prefix': args.get('prefix')})
+
+    client.list_objects(**kwargs)
+    paginator = client.get_paginator('list_objects')
+    for response in paginator.paginate(**kwargs):
+        if response.get('Contents', None):
+            for key in response['Contents']:
+                data.append({
+                    'Key': key['Key'],
+                    'Size': convert_size(key['Size']),
+                    'LastModified': datetime.strftime(key['LastModified'], '%Y-%m-%dT%H:%M:%S')
+                })
+
+    if len(data) > 0:
         ec = {'AWS.S3.Buckets(val.BucketName === args.get("bucket")).Objects': data}
         human_readable = tableToMarkdown('AWS S3 Bucket Objects', data)
         return_outputs(human_readable, ec)
