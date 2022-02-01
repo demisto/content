@@ -3437,7 +3437,8 @@
         {
             "integrations": "BitcoinAbuse",
             "playbookID": "BitcoinAbuse-test",
-            "fromversion": "5.5.0"
+            "fromversion": "5.5.0",
+            "memory_threshold": 200
         },
         {
             "integrations": "ExpanseV2",
@@ -3600,7 +3601,7 @@
             "integrations": "QualysV2",
             "playbookID": "QualysVulnerabilityManagement-Test",
             "fromversion": "5.5.0",
-            "timeout": 3000
+            "timeout": 4000
         },
         {
             "integrations": "ThreatExchange v2",
@@ -5059,7 +5060,6 @@
         "get_original_email_-_ews-_test": "Issue 27571",
         "Trend Micro Deep Security - Test": "outsourced",
         "Microsoft Teams - Test": "Issue 38263",
-        "QualysVulnerabilityManagement-Test": "Issue 38640",
         "EWS Extension: Powershell Online V2 Test": "Issue 39008",
         "O365 - EWS - Extension - Test": "Issue 39008",
         "Majestic Million Test Playbook": "Issue 30931",
@@ -5096,7 +5096,6 @@
         "cisco-ise-test-playbook": "Issue 44351",
         "GuardiCoreV2-Test": "Issue 43822",
         "ExtractAttackPattern-Test": "Issue 44095",
-        "test_MsGraphFiles prod": "Issue 44214",
         "EWS_O365_test": "Issue 25605",
         "Cherwell - test": "Issue 26780",
         "Cherwell Example Scripts - test": "Issue 27107",
