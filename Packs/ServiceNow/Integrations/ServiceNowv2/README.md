@@ -1,10 +1,11 @@
-IT service management. Cortex XSOAR interfaces with ServiceNow to help streamline security-related service management and IT operations. For example, you can use the ‘ServiceNow’ integration in order to:
+IT service management. Cortex XSOAR interfaces with ServiceNow to help streamline security-related service management and IT operations. For example, you can use the `ServiceNow` integration in order to:
 
-- View, create, update or delete a ServiceNow ticket directly from the Cortex XSOAR CLI and enrich it with Cortex XSOAR data.
+- View, create, update or delete a ServiceNow ticket directly from the Cortex XSOAR CLI, and enrich it with Cortex XSOAR data.
 - View, create, update and delete records from any ServiceNow table.
 - Query ServiceNow data with the ServiceNow query syntax.
+- Manage Security Incident Response (SIR) tickets with Cortex XSOAR, update tickets and enrich them with data.
 
-Please refer to ServiceNow documentation for additional information. We especially recommend the Operators available for filters and queries page: https://docs.servicenow.com/bundle/istanbul-servicenow-platform/page/use/common-ui-elements/reference/r_OpAvailableFiltersQueries.html
+Please refer to ServiceNow documentation for additional information. We especially recommend the [Operators available for filters and queries](https://docs.servicenow.com/bundle/istanbul-servicenow-platform/page/use/common-ui-elements/reference/r_OpAvailableFiltersQueries.html) page.
 
 This integration was integrated and tested with the Orlando version of ServiceNow.
 
@@ -35,15 +36,14 @@ These scripts are wrapped around the incident table, so to wrap them around anot
 4. To ensure that mirroring works:
    1. Select the **Fetches incidents** radio button.
    2. Under **Classifier**, select ServiceNow Classifier.
-   3. Under **Incident type**, select ServiceNowTicket.
-   4. Under **Mapper (incoming)**, select ServiceNow - Incoming Mapper.
-   5. Under **Mapper (outgoing)**, select ServiceNow - Outgoing Mapper.
-   6. To enable mirroring when closing an incident or ticket in Cortex XSOAR and ServiceNow, select the **Close Mirrored XSOAR Incident** and **Close Mirrored ServiceNow Ticket** checkboxes, respectively.
+   3. Under **Mapper (incoming)**, select ServiceNow - Incoming Mapper.
+   4. Under **Mapper (outgoing)**, select ServiceNow - Outgoing Mapper.
+   5. To enable mirroring when closing an incident or ticket in Cortex XSOAR and ServiceNow, select the **Close Mirrored XSOAR Incident** and **Close Mirrored ServiceNow Ticket** checkboxes, respectively.
 
         ![image](https://raw.githubusercontent.com/demisto/content/8038ce7e02dfd47b75adc9bedf1f7e9747dd77d5/Packs/ServiceNow/Integrations/ServiceNowv2/doc_files/closing-params.png)
         
 ## Instance Creation Flow
-The integration supports two types of authorization:
+This integration supports two types of authorization:
 1. Basic authorization using username and password.
 2. OAuth 2.0 authorization.
 
@@ -57,7 +57,7 @@ To use OAuth 2.0 authorization follow the next steps:
 
 **Notes:**
 1. When running the `!servicenow-oauth-login` command, a refresh token is generated and will be used to produce new access tokens after the current access token has expired.
-2. Every time the refresh token expires you will have to run the `servicenow-oauth-login` command again. Hence, we recommend to set the `Refresh Token Lifespan` field in the endpoint created in step 1 to a long period (can be set to several years). 
+2. Every time the refresh token expires you will have to run the `servicenow-oauth-login` command again. Hence, we recommend setting the `Refresh Token Lifespan` field in the endpoint created in step 1 to a long period (can be set to several years). 
 
 
 ### Using Multi Factor Authentication (MFA)
@@ -100,13 +100,11 @@ If MFA is enabled for your user, follow the next steps:
 5. Click **Test** to validate the URLs, token, and connection.
 6. Click **Done.**
 
-Note: Fetch incidents and mirroring is not currently supported for the ServiceNow Security Incident Response (SIR) module.
-
 ## Fetch Incidents
 The integration fetches newly created tickets according to the following parameters,
 which you define in the instance configuration: ticket_type, query, and limit.
 For the first fetch, the integration will fetch incidents that were created 10 minutes earlier. 
-After that, it will fetch incidents that were created after the timestamp of the last fetch.
+After that, the integration will fetch incidents created after the timestamp of the last fetch.
 
 ## Configure Incident Mirroring
 **This feature is compliant with XSOAR version 6.0 and above.**
