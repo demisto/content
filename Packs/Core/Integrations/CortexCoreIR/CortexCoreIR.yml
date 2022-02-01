@@ -9,11 +9,11 @@ configuration:
   type: 13
 - display: Server URL (copy URL from Core - click ? to see more info.)
   name: url
-  required: true
+  required: false
   type: 0
 - display: API Key ID
   name: apikey_id
-  required: true
+  required: false
   type: 4
 - display: API Key
   name: apikey

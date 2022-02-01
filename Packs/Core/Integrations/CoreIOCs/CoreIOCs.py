@@ -47,7 +47,10 @@ class Client:
     }
 
     def __init__(self, params: Dict):
-        self._base_url: str = urljoin(params.get('url'), '/public_api/v1/indicators/')
+        url = params.get('url')
+        if not url:
+            url = "http://" + demisto.getLicenseCustomField("Core.ApiHost")
+        self._base_url: str = urljoin(url, '/public_api/v1/indicators/')
         self._verify_cert: bool = not params.get('insecure', False)
         self._params = params
         handle_proxy()
@@ -76,24 +79,19 @@ class Client:
 
 def get_headers(params: Dict) -> Dict:
     api_key: str = str(params.get('apikey'))
-    if not api_key:
-        api_key = demisto.getLicenseCustomField('CoreIOCs.api_key')
-        if not api_key:
-            raise DemistoException('Could not resolve the API key from the license nor the instance configuration.')
     api_key_id: str = str(params.get('apikey_id'))
-    nonce: str = "".join([secrets.choice(string.ascii_letters + string.digits) for _ in range(64)])
-    timestamp: str = str(int(datetime.now(timezone.utc).timestamp()) * 1000)
-    auth_key = "%s%s%s" % (api_key, nonce, timestamp)
-    auth_key = auth_key.encode("utf-8")
-    api_key_hash: str = hashlib.sha256(auth_key).hexdigest()
-
-    headers: Dict = {
-        "x-xdr-timestamp": timestamp,
-        "x-xdr-nonce": nonce,
-        "x-xdr-auth-id": str(api_key_id),
-        "Authorization": api_key_hash,
-        "x-iocs-source": "xsoar"
-    }
+    if not api_key or not api_key_id:
+        headers = {
+            "HOST": demisto.getLicenseCustomField("Core.ApiHostName"),
+            demisto.getLicenseCustomField("Core.ApiHeader"): demisto.getLicenseCustomField("Core.ApiKey"),
+            "Content-Type": "application/json"
+        }
+    else:
+        headers = {
+            "Content-Type": "application/json",
+            "x-xdr-auth-id": str(api_key_id),
+            "Authorization": api_key
+        }
 
     return headers
 

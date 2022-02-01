@@ -1227,7 +1227,7 @@ class Client(BaseClient):
         if tenant_id:
             request_data['tenant_id'] = tenant_id
         if filter:
-            request_data['filter'] = filter
+            request_data['filter_data'] = filter
         res = self._http_request(
             method='POST',
             url_suffix='/alerts_exclusion/',
@@ -2817,9 +2817,24 @@ def main():
     command = demisto.command()
     LOG(f'Command being called is {command}')
     args = demisto.args()
-    api_key_hash = demisto.params().get('apikey')
+    api_key = demisto.params().get('apikey')
     api_key_id = demisto.params().get('apikey_id')
-    base_url = urljoin(demisto.params().get('url'), '/public_api/v1')
+    url = demisto.params().get('url')
+    if not api_key or not api_key_id or not url:
+        headers = {
+            "HOST": demisto.getLicenseCustomField("Core.ApiHostName"),
+            demisto.getLicenseCustomField("Core.ApiHeader"): demisto.getLicenseCustomField("Core.ApiKey"),
+            "Content-Type": "application/json"
+        }
+        url = "http://" + demisto.getLicenseCustomField("Core.ApiHost")
+    else:
+        headers = {
+            "Content-Type": "application/json",
+            "x-xdr-auth-id": str(api_key_id),
+            "Authorization": api_key
+        }
+
+    base_url = urljoin(url, '/public_api/v1')
     proxy = demisto.params().get('proxy')
     verify_cert = not demisto.params().get('insecure', False)
 
@@ -2828,12 +2843,6 @@ def main():
     except ValueError as e:
         demisto.debug(f'Failed casting timeout parameter to int, falling back to 120 - {e}')
         timeout = 120
-
-    headers = {
-        "Content-Type": "application/json",
-        "x-xdr-auth-id": str(api_key_id),
-        "Authorization": api_key_hash
-    }
 
     client = Client(
         base_url=base_url,
