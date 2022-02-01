@@ -658,14 +658,13 @@ def main():
 
     readable_output = tableToMarkdown("Indicator Feed", output)
 
-    entry = CommandResults(
+    return_results(CommandResults(
         outputs_key_field="Name",
         outputs_prefix="EDL",
         outputs=output,
         readable_output=readable_output,
         raw_response=results
-    )
-    return_results(entry)
+    ))
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

@@ -1,6 +1,6 @@
 args:
 - defaultValue: EDL_PORT_LIST
-  description: 'The Listname in XSOAR of ports in use. '
+  description: The Listname in XSOAR of ports in use
   name: PortListName
   required: true
 - description: The Name of the EDL instance to create

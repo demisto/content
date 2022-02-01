@@ -13,7 +13,7 @@ Use this automation to create an EDL instance on XSOAR.
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| PortListName | The Listname in XSOAR of ports in use.  |
+| PortListName | The Listname in XSOAR of ports in use  |
 | InstanceName | The Name of the EDL instance to create |
 | Query | The indicator query used to populate the EDL |
 | Port | Specify specific port to use when creating the EDL instance., else it will be random \(3000-50000\) |
