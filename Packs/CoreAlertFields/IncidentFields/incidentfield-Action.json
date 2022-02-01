@@ -11,7 +11,7 @@
     "id": "incident_action",
     "isReadOnly": false,
     "locked": false,
-    "name": "User name",
+    "name": "Action",
     "neverSetAsRequired": false,
     "openEnded": true,
     "ownerOnly": false,
