@@ -140,29 +140,25 @@ def test_eml_contains_eml(mocker):
     assert demisto.args()['entryid'] == 'test'
 
     main()
-    assert demisto.results.call_count == 5
+    assert demisto.results.call_count == 4
     # call_args is tuple (args list, kwargs). we only need the first one
     results = demisto.results.call_args_list
 
-    assert len(results) == 5
+    assert len(results) == 4
 
     assert results[0].args[0]['File'] == 'ArcSight_ESM_fixes.yml'
 
     assert results[1].args[0]['File'] == 'test - inner attachment eml.eml'
 
-    assert results[2].args[0]['File'] == 'CS Training 2019 - EWS.pptx'
+    assert results[2].args[0]['EntryContext']['Email']['Subject'] == 'Fwd: test - inner attachment eml'
+    assert 'ArcSight_ESM_fixes.yml' in results[2].args[0]['EntryContext']['Email']['Attachments']
+    assert 'ArcSight_ESM_fixes.yml' in results[2].args[0]['EntryContext']['Email']['AttachmentsData'][0]['Name']
+    assert 'test - inner attachment eml.eml' in results[2].args[0]['EntryContext']['Email']['Attachments']
+    assert 'test - inner attachment eml.eml' in results[2].args[0]['EntryContext']['Email']['AttachmentsData'][1]['Name']
+    assert results[2].args[0]['EntryContext']['Email']['Depth'] == 0
 
-    assert results[3].args[0]['EntryContext']['Email']['Subject'] == 'Fwd: test - inner attachment eml'
-    assert 'ArcSight_ESM_fixes.yml' in results[3].args[0]['EntryContext']['Email']['Attachments']
-    assert 'ArcSight_ESM_fixes.yml' in results[3].args[0]['EntryContext']['Email']['AttachmentsData'][0]['Name']
-    assert 'test - inner attachment eml.eml' in results[3].args[0]['EntryContext']['Email']['Attachments']
-    assert 'test - inner attachment eml.eml' in results[3].args[0]['EntryContext']['Email']['AttachmentsData'][1]['Name']
-    assert results[3].args[0]['EntryContext']['Email']['Depth'] == 0
-
-    assert results[4].args[0]['EntryContext']['Email']["Subject"] == 'test - inner attachment eml'
-    assert 'CS Training 2019 - EWS.pptx' in results[4].args[0]['EntryContext']['Email']["Attachments"]
-    assert 'CS Training 2019 - EWS.pptx' in results[4].args[0]['EntryContext']['Email']["AttachmentsData"][0]['Name']
-    assert results[4].args[0]['EntryContext']['Email']['Depth'] == 1
+    assert results[3].args[0]['EntryContext']['Email']["Subject"] == 'test - inner attachment eml'
+    assert results[3].args[0]['EntryContext']['Email']['Depth'] == 1
 
 
 def test_eml_contains_msg(mocker):
