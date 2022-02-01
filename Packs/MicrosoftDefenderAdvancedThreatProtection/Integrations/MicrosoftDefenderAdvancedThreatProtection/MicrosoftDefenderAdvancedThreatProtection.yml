@@ -4545,6 +4545,7 @@ script:
     description: Puts a file from the library to the device. Files are saved in a working folder and are deleted when the device restarts by default.
     execution: true
     name: microsoft-atp-live-response-put-file
+    polling: true
     outputs:
       - contextPath: MicrosoftATP.LiveResponseAction
         description: The machine action ID.
@@ -4572,6 +4573,7 @@ script:
     description: 'Collect file from a device. NOTE: Backslashes in path must be escaped.'
     execution: true
     name: microsoft-atp-live-response-get-file
+    polling: true
     outputs:
       - contextPath: MicrosoftATP.LiveResponseAction
         description: The machine action ID.
@@ -4596,16 +4598,17 @@ script:
         required: true
         secret: false
       - default: false
-        description: Arguments to run the script with
+        description: The Arguments parameter is passed to your script.
         isArray: false
         name: arguments
-        required: true
+        required: false
         secret: false
     deprecated: false
     description: |-
-      Runs a script from the library on a device. The Args parameter is passed to your script. Timeouts after 10 minutes.
+      Runs a script from the library on a device. Timeouts after 10 minutes.
     execution: true
     name: microsoft-atp-live-response-run-script
+    polling: true
     outputs:
       - contextPath: MicrosoftATP.LiveResponseAction
         description: The machine action ID.

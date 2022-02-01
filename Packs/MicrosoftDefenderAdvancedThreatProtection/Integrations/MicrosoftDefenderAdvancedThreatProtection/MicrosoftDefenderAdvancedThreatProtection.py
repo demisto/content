@@ -2602,16 +2602,17 @@ def run_polling_command(client: MsClient, args: dict, cmd: str, action_func: Cal
     ScheduledCommand.raise_error_if_not_supported()
     interval_in_secs = int(args.get('interval_in_seconds', 5))
     # distinguish between the initial run, which is the upload run, and the results run
-    is_first_run = 'action_id' not in args
+    print(f'polling {args=}, command={cmd}')
+    is_first_run = 'machine_action_id' not in args
     if is_first_run:
-        command_results = action_func(args)
+        command_results = action_func(client, args)
         outputs = command_results.outputs
-        results_function_args = {'action_id': outputs.get['action_id']}
         # schedule next poll
         polling_args = {
+            'machine_action_id': outputs.get('action_id'),
             'interval_in_seconds': interval_in_secs,
             'polling': True,
-            **results_function_args,
+            **args,
         }
         scheduled_command = ScheduledCommand(
             command=cmd,
@@ -2622,6 +2623,7 @@ def run_polling_command(client: MsClient, args: dict, cmd: str, action_func: Cal
         return command_results
 
     # not a first run
+
     command_result = results_function(client, args)
     status = command_result.outputs.get("commands", [])[0].get("commandStatus")
     if status != 'Completed':
@@ -2631,6 +2633,7 @@ def run_polling_command(client: MsClient, args: dict, cmd: str, action_func: Cal
             'polling': True,
             **args
         }
+        print(args)
         scheduled_command = ScheduledCommand(
             command=cmd,
             next_run_in_seconds=interval_in_secs,
@@ -2646,6 +2649,7 @@ def run_polling_command(client: MsClient, args: dict, cmd: str, action_func: Cal
 
 
 def get_live_response_result_command(client, args):
+    raise Exception(f'get_live_response_result_command: {args=}')
     machine_action_id = args['machine_action_id']
     command_index = arg_to_number(args['command_index'])
     res = client.get_live_response_result(machine_action_id, command_index)
@@ -2661,6 +2665,8 @@ def get_live_response_result_command(client, args):
 
 
 def get_machine_action_command(client, args):
+    raise Exception(f'get_machine_action_command: {args=}')
+
     id = args['machine_action_id']
     res = client.get_machine_action(id)
     md_results = {
@@ -2682,10 +2688,14 @@ def get_machine_action_command(client, args):
 # -------------- Run Script ---------------
 
 def run_live_response_script_with_polling(client, args):
-    run_polling_command(client, args, 'microsoft-atp-live-response-run-script', run_live_response_script_action,
+    print(args)
+    return run_polling_command(client, args, 'microsoft-atp-live-response-run-script', run_live_response_script_action,
                         get_machine_action_command, get_successfull_action_results_as_info)
 
+
 def run_live_response_script_action(client, args):
+    print(f'run_live_response_script_action: {args}')
+
     machine_id = args['machine_id']
     scriptName = args['scriptName']
     comment = args['comment']
@@ -2742,7 +2752,7 @@ def get_successfull_action_results_as_info(client, res):
 
 # -------------- Get File ---------------
 def get_live_response_file_with_polling(client, args):
-    run_polling_command(client, args, 'microsoft-atp-live-response-get-file', get_live_response_file_action,
+    return run_polling_command(client, args, 'microsoft-atp-live-response-get-file', get_live_response_file_action,
                         get_machine_action_command, get_file_get_successfull_action_results)
 
 
@@ -2799,7 +2809,7 @@ def get_file_get_successfull_action_results(client, res):
 
 # -------------- Put File ---------------
 def put_live_response_file_with_polling(client, args):
-    run_polling_command(client, args, 'microsoft-atp-live-response-put-file', put_live_response_file_action,
+    return run_polling_command(client, args, 'microsoft-atp-live-response-put-file', put_live_response_file_action,
                         get_machine_action_command, put_file_get_successfull_action_results)
 
 
@@ -3115,11 +3125,11 @@ def main():
         elif command == 'microsoft-atp-sc-indicator-delete':
             return_results(sc_delete_indicator_command(client, args))
         elif command == 'microsoft-atp-live-response-put-file':  ##
-            return_results(put_live_response_file_command(client, args))
+            return_results(put_live_response_file_with_polling(client, args))
         elif command == 'microsoft-atp-live-response-get-file':
-            return_results(get_live_response_file_command(client, args))
+            return_results(get_live_response_file_with_polling(client, args))
         elif command == 'microsoft-atp-live-response-run-script':
-            return_results(run_live_response_script_command(client, args))
+            return_results(run_live_response_script_with_polling(client, args))
         elif command == 'microsoft-atp-get-machine-action':
             return_results(get_machine_action_command(client, args))
         elif command == 'microsoft-atp-live-response-result':
