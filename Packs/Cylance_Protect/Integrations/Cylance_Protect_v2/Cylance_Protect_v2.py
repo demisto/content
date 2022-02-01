@@ -753,6 +753,16 @@ def get_threat_request(sha256):
     return res
 
 
+def create_dbot_score_entry(threat, dbot_score):
+    dbot_score_entry = {
+            'Indicator': threat.get('sha256'),
+            'Type': 'file',
+            'Vendor': 'Cylance Protect',
+            'Score': dbot_score
+        }
+    return dbot_score_entry
+
+
 def get_threats():
     page = demisto.args().get('pageNumber')
     page_size = demisto.args().get('pageSize')
@@ -766,12 +776,7 @@ def get_threats():
             threat['cylance_score'] = normalize_score(threat['cylance_score'])
             threshold = demisto.args().get('threshold', FILE_THRESHOLD)
             dbot_score = translate_score(threat['cylance_score'], int(threshold))
-        dbot_score_array.append({
-            'Indicator': threat.get('sha256'),
-            'Type': 'file',
-            'Vendor': 'Cylance Protect',
-            'Score': dbot_score
-        })
+        dbot_score_array.append(create_dbot_score_entry(threat, dbot_score))
     context_threat = createContext(data=threats, keyTransform=underscoreToCamelCase, removeNull=True)
     context_threat = add_capitalized_hash_to_context(context_threat)
     ec = {
@@ -1455,94 +1460,106 @@ def add_capitalized_hash_to_context(threats_context):
     return threats_context
 
 
-# EXECUTION
-LOG('command is %s' % (demisto.command(),))
-try:
-    handle_proxy()
-    if demisto.command() == 'test-module':
-        test()
+def main():
+    global APP_ID, APP_SECRET, TID, SERVER_URL, FILE_THRESHOLD, USE_SSL
+    APP_ID = demisto.params()['app_id']
+    APP_SECRET = demisto.params()['app_secret']
+    TID = demisto.params()['tid']
+    SERVER_URL = load_server_url()
+    FILE_THRESHOLD = demisto.params()['file_threshold']
+    USE_SSL = not demisto.params().get('unsecure', False)
 
-    if demisto.command() == 'fetch-incidents':
-        fetch_incidents()
+    LOG('command is %s' % (demisto.command(),))
+    try:
+        handle_proxy()
+        if demisto.command() == 'test-module':
+            test()
 
-    elif demisto.command() == 'cylance-protect-get-devices':
-        get_devices()
+        if demisto.command() == 'fetch-incidents':
+            fetch_incidents()
 
-    elif demisto.command() == 'cylance-protect-get-device':
-        get_device()
+        elif demisto.command() == 'cylance-protect-get-devices':
+            get_devices()
 
-    elif demisto.command() == 'cylance-protect-get-device-by-hostname':
-        get_device_by_hostname()
+        elif demisto.command() == 'cylance-protect-get-device':
+            get_device()
 
-    elif demisto.command() == 'cylance-protect-update-device':
-        update_device()
+        elif demisto.command() == 'cylance-protect-get-device-by-hostname':
+            get_device_by_hostname()
 
-    elif demisto.command() == 'cylance-protect-get-device-threats':
-        get_device_threats()
+        elif demisto.command() == 'cylance-protect-update-device':
+            update_device()
 
-    elif demisto.command() == 'cylance-protect-get-policies':
-        get_policies()
+        elif demisto.command() == 'cylance-protect-get-device-threats':
+            get_device_threats()
 
-    elif demisto.command() == 'cylance-protect-create-zone':
-        create_zone()
+        elif demisto.command() == 'cylance-protect-get-policies':
+            get_policies()
 
-    elif demisto.command() == 'cylance-protect-get-zones':
-        get_zones()
+        elif demisto.command() == 'cylance-protect-create-zone':
+            create_zone()
 
-    elif demisto.command() == 'cylance-protect-get-zone':
-        get_zone()
+        elif demisto.command() == 'cylance-protect-get-zones':
+            get_zones()
 
-    elif demisto.command() == 'cylance-protect-update-zone':
-        update_zone()
+        elif demisto.command() == 'cylance-protect-get-zone':
+            get_zone()
 
-    elif demisto.command() == 'cylance-protect-get-threat':
-        get_threat()
+        elif demisto.command() == 'cylance-protect-update-zone':
+            update_zone()
 
-    elif demisto.command() == 'cylance-protect-get-threats':
-        get_threats()
+        elif demisto.command() == 'cylance-protect-get-threat':
+            get_threat()
 
-    elif demisto.command() == 'cylance-protect-get-threat-devices':
-        get_threat_devices()
+        elif demisto.command() == 'cylance-protect-get-threats':
+            get_threats()
 
-    elif demisto.command() == 'cylance-protect-get-indicators-report':
-        get_indicators_report()
+        elif demisto.command() == 'cylance-protect-get-threat-devices':
+            get_threat_devices()
 
-    elif demisto.command() == 'cylance-protect-update-device-threats':
-        update_device_threats()
+        elif demisto.command() == 'cylance-protect-get-indicators-report':
+            get_indicators_report()
 
-    elif demisto.command() == 'cylance-protect-get-list':
-        get_list()
+        elif demisto.command() == 'cylance-protect-update-device-threats':
+            update_device_threats()
 
-    elif demisto.command() == 'cylance-protect-get-list-entry':
-        get_list_entry_by_hash()
+        elif demisto.command() == 'cylance-protect-get-list':
+            get_list()
 
-    # new commands
-    elif demisto.command() == 'cylance-protect-download-threat':
-        download_threat()
+        elif demisto.command() == 'cylance-protect-get-list-entry':
+            get_list_entry_by_hash()
 
-    elif demisto.command() == 'cylance-protect-add-hash-to-list':
-        add_hash_to_list()
+        # new commands
+        elif demisto.command() == 'cylance-protect-download-threat':
+            download_threat()
 
-    elif demisto.command() == 'cylance-protect-delete-hash-from-lists':
-        delete_hash_from_lists()
+        elif demisto.command() == 'cylance-protect-add-hash-to-list':
+            add_hash_to_list()
 
-    elif demisto.command() == 'cylance-protect-delete-devices':
-        delete_devices()
+        elif demisto.command() == 'cylance-protect-delete-hash-from-lists':
+            delete_hash_from_lists()
 
-    elif demisto.command() == 'cylance-protect-get-policy-details':
-        get_policy_details()
+        elif demisto.command() == 'cylance-protect-delete-devices':
+            delete_devices()
 
-except Warning as w:
-    demisto.results({
-        'Type': 11,
-        'Contents': str(w),
-        'ContentsFormat': formats['text']
-    })
+        elif demisto.command() == 'cylance-protect-get-policy-details':
+            get_policy_details()
 
-except Exception as e:
-    demisto.error('#### error in Cylance Protect v2: ' + str(e))
-    if demisto.command() == 'fetch-incidents':
-        LOG.print_log()
-        raise
-    else:
-        return_error(str(e))
+    except Warning as w:
+        demisto.results({
+            'Type': 11,
+            'Contents': str(w),
+            'ContentsFormat': formats['text']
+        })
+
+    except Exception as e:
+        demisto.error('#### error in Cylance Protect v2: ' + str(e))
+        if demisto.command() == 'fetch-incidents':
+            LOG.print_log()
+            raise
+        else:
+            return_error(str(e))
+
+
+if __name__ in ('__main__', '__builtin__', 'builtins'):
+    main()
