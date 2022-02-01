@@ -3437,7 +3437,8 @@
         {
             "integrations": "BitcoinAbuse",
             "playbookID": "BitcoinAbuse-test",
-            "fromversion": "5.5.0"
+            "fromversion": "5.5.0",
+            "memory_threshold": 200
         },
         {
             "integrations": "ExpanseV2",
