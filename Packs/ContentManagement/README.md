@@ -17,5 +17,5 @@ For more information, visit our [Cortex XSOAR Developer Docs](https://xsoar.pan.
 <video controls>
     <source src="https://github.com/demisto/content-assets/raw/c332ede923f40990749a1498c6501fcacbf58bfd/Assets/ContentManagement/content_management_demo.mp4"
             type="video/mp4"/>
-    Sorry, your browser doesn't support embedded videos. You can download the video at: https://github.com/demisto/content-assets/raw/c332ede923f40990749a1498c6501fcacbf58bfd/Assets/ContentManagement/content_management_demo.mp4 
+    Sorry, your browser doesn't support embedded videos. You can download the video at: https://github.com/demisto/content-assets/blob/master/Assets/ContentManagement/content_management_demo.mp4?raw=true 
 </video>
