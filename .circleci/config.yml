@@ -371,7 +371,6 @@ jobs:
             ./Tests/scripts/is_file_up_to_date.sh .circleci/config.yml $CIRCLE_BRANCH
             ./Tests/scripts/is_file_up_to_date.sh dev-requirements-py2.txt $CIRCLE_BRANCH
             ./Tests/scripts/is_file_up_to_date.sh dev-requirements-py3.txt $CIRCLE_BRANCH
-            ./Tests/scripts/is_file_up_to_date.sh Tests $CIRCLE_BRANCH
       - run:
           name: Verify Base Branch for Contribution
           when: always
