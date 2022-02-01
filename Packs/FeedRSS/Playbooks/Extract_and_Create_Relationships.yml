@@ -1,24 +1,41 @@
-id: Extract and Create Relationships
-version: -1
-name: Extract and Create Relationships
 description: Extract and enrich indicators
+id: Extract and Create Relationships
+inputs:
+- description: The raw content of an article
+  key: raw_content
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: Report indicator value
+  key: indicator_value
+  playbookInputQuery:
+  required: false
+  value: {}
+name: Extract and Create Relationships
+outputs: []
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 71df99dd-4183-431a-8600-d4a340dbda25
-    type: start
-    task:
-      id: 71df99dd-4183-431a-8600-d4a340dbda25
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
-      description: ''
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
       - "1"
+    note: false
+    quietmode: 0
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 5ed7c5df-7f48-4052-85df-17d64f15042d
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 5ed7c5df-7f48-4052-85df-17d64f15042d
+    timertriggers: []
+    type: start
     view: |-
       {
         "position": {
@@ -26,24 +43,11 @@ tasks:
           "y": -700
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "1":
     id: "1"
-    taskid: c4f28b19-3fe6-4f9d-82e4-88a6b1406f4a
-    type: regular
-    task:
-      id: c4f28b19-3fe6-4f9d-82e4-88a6b1406f4a
-      version: -1
-      name: Extract indicators from report description
-      description: commands.local.cmd.extract.indicators
-      script: Builtin|||extractIndicators
-      type: regular
-      iscommand: true
-      brand: Builtin
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
       - "20"
@@ -52,11 +56,26 @@ tasks:
       - "24"
       - "22"
       - "25"
+    note: false
+    quietmode: 0
+    reputationcalc: 2
     scriptarguments:
       text:
         simple: ${inputs.raw_content}
-    reputationcalc: 2
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.extract.indicators
+      id: 2bd5f59e-d3ff-485b-8322-591133ce8b5b
+      iscommand: true
+      name: Extract indicators from report description
+      script: Builtin|||extractIndicators
+      type: regular
+      version: -1
+    taskid: 2bd5f59e-d3ff-485b-8322-591133ce8b5b
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -64,27 +83,16 @@ tasks:
           "y": -500
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "2":
     id: "2"
-    taskid: ea11f575-2b94-492c-8afc-7ae2e6f1ccfd
-    type: regular
-    task:
-      id: ea11f575-2b94-492c-8afc-7ae2e6f1ccfd
-      version: -1
-      name: CVE Create Relationship
-      description: This automation creates a relationship between indicator objects.
-      scriptName: CreateIndicatorRelationship
-      type: regular
-      iscommand: false
-      brand: ""
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
-      - "17"
+      - "6"
+    note: false
+    quietmode: 0
     scriptarguments:
       create_indicator:
         simple: "true"
@@ -101,6 +109,19 @@ tasks:
       relationship:
         simple: related-to
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: This automation creates a relationship between indicator objects.
+      id: 17f9824b-c596-4a34-83a6-9604ab969426
+      iscommand: false
+      name: CVE Create Relationship
+      script: CreateIndicatorRelationship
+      type: regular
+      version: -1
+    taskid: 17f9824b-c596-4a34-83a6-9604ab969426
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -108,37 +129,39 @@ tasks:
           "y": 400
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "3":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ExtractedIndicators.CVE
+          operator: isNotEmpty
+      label: "yes"
     id: "3"
-    taskid: ce475c8b-1735-4209-8dd8-5ac172260f26
-    type: condition
-    task:
-      id: ce475c8b-1735-4209-8dd8-5ac172260f26
-      version: -1
-      name: Are there CVEs?
-      description: Checks whether CVEs were extracted
-      type: condition
-      iscommand: false
-      brand: ""
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#default#':
       - "6"
       "yes":
       - "2"
+    note: false
+    quietmode: 0
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ExtractedIndicators.CVE
-            iscontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks whether CVEs were extracted
+      id: ce4e0982-8c29-4b4c-867e-9bd9db8a3ff0
+      iscommand: false
+      name: Are there CVEs?
+      type: condition
+      version: -1
+    taskid: ce4e0982-8c29-4b4c-867e-9bd9db8a3ff0
+    timertriggers: []
+    type: condition
     view: |-
       {
         "position": {
@@ -146,37 +169,39 @@ tasks:
           "y": 70
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "4":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ExtractedIndicators.IP
+          operator: isNotEmpty
+      label: "yes"
     id: "4"
-    taskid: 57416fce-a618-46df-804d-9eb0160e20b4
-    type: condition
-    task:
-      id: 57416fce-a618-46df-804d-9eb0160e20b4
-      version: -1
-      name: Are there IPs?
-      description: Checks whether IPs were extracted from the report.
-      type: condition
-      iscommand: false
-      brand: ""
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#default#':
       - "6"
       "yes":
       - "5"
+    note: false
+    quietmode: 0
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ExtractedIndicators.IP
-            iscontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks whether IPs were extracted from the report.
+      id: 6ead7b4f-3d9b-4a6f-89b8-0d5fc32a57ea
+      iscommand: false
+      name: Are there IPs?
+      type: condition
+      version: -1
+    taskid: 6ead7b4f-3d9b-4a6f-89b8-0d5fc32a57ea
+    timertriggers: []
+    type: condition
     view: |-
       {
         "position": {
@@ -184,27 +209,16 @@ tasks:
           "y": 70
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "5":
     id: "5"
-    taskid: 845439c7-c9a2-46a0-87b7-be54140a94d7
-    type: regular
-    task:
-      id: 845439c7-c9a2-46a0-87b7-be54140a94d7
-      version: -1
-      name: IP Create Relationship
-      description: This automation creates a relationship between indicator objects.
-      scriptName: CreateIndicatorRelationship
-      type: regular
-      iscommand: false
-      brand: ""
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
-      - "16"
+      - "6"
+    note: false
+    quietmode: 0
     scriptarguments:
       create_indicator:
         simple: "true"
@@ -221,6 +235,19 @@ tasks:
       relationship:
         simple: related-to
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: This automation creates a relationship between indicator objects.
+      id: 7ef53744-fab8-4f29-8cc7-c1f66b28ed71
+      iscommand: false
+      name: IP Create Relationship
+      script: CreateIndicatorRelationship
+      type: regular
+      version: -1
+    taskid: 7ef53744-fab8-4f29-8cc7-c1f66b28ed71
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -228,34 +255,36 @@ tasks:
           "y": 400
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "6":
     id: "6"
-    taskid: d8217f92-af52-45ac-8547-ef35ce4396ee
-    type: regular
-    task:
-      id: d8217f92-af52-45ac-8547-ef35ce4396ee
-      version: -1
-      name: Delete Context Subplaybook
-      description: 'In order to isolate each report and include only the data extracted
-        from the specific report.'
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: Builtin
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
       - "19"
+    note: false
+    quietmode: 0
     scriptarguments:
       all:
         simple: "yes"
       subplaybook:
         simple: "yes"
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: In order to isolate each report and include only the data extracted
+        from the specific report.
+      id: d2f2bbf6-6585-4a08-8453-c06dec80e33d
+      iscommand: false
+      name: Delete Context Subplaybook
+      script: DeleteContext
+      type: regular
+      version: -1
+    taskid: d2f2bbf6-6585-4a08-8453-c06dec80e33d
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -263,37 +292,39 @@ tasks:
           "y": 1340
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "7":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ExtractedIndicators.Email
+          operator: isNotEmpty
+      label: "yes"
     id: "7"
-    taskid: c7c0a500-cad9-4785-80ce-c3eb09135ea7
-    type: condition
-    task:
-      id: c7c0a500-cad9-4785-80ce-c3eb09135ea7
-      version: -1
-      name: Are there Emails?
-      description: Checks whether emails were extracted.
-      type: condition
-      iscommand: false
-      brand: ""
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#default#':
       - "6"
       "yes":
       - "8"
+    note: false
+    quietmode: 0
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ExtractedIndicators.Email
-            iscontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks whether emails were extracted.
+      id: d56559fc-cf6d-4f59-85bb-78340776297f
+      iscommand: false
+      name: Are there Emails?
+      type: condition
+      version: -1
+    taskid: d56559fc-cf6d-4f59-85bb-78340776297f
+    timertriggers: []
+    type: condition
     view: |-
       {
         "position": {
@@ -301,27 +332,16 @@ tasks:
           "y": 70
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "8":
     id: "8"
-    taskid: 8414df6b-b3b7-4e74-8100-bd9986ab60b5
-    type: regular
-    task:
-      id: 8414df6b-b3b7-4e74-8100-bd9986ab60b5
-      version: -1
-      name: Email Create Relationship
-      description: This automation creates a relationship between indicator objects.
-      scriptName: CreateIndicatorRelationship
-      type: regular
-      iscommand: false
-      brand: ""
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
-      - "15"
+      - "6"
+    note: false
+    quietmode: 0
     scriptarguments:
       create_indicator:
         simple: "true"
@@ -338,6 +358,19 @@ tasks:
       relationship:
         simple: related-to
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: This automation creates a relationship between indicator objects.
+      id: d74b2cc1-63c5-4005-8cd2-13a85e3218a2
+      iscommand: false
+      name: Email Create Relationship
+      script: CreateIndicatorRelationship
+      type: regular
+      version: -1
+    taskid: d74b2cc1-63c5-4005-8cd2-13a85e3218a2
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -345,37 +378,39 @@ tasks:
           "y": 400
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "10":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ExtractedIndicators.Domain
+          operator: isNotEmpty
+      label: "yes"
     id: "10"
-    taskid: 9a073a44-5430-421e-87cc-5e56d18bb710
-    type: condition
-    task:
-      id: 9a073a44-5430-421e-87cc-5e56d18bb710
-      version: -1
-      name: Are there Domains?
-      description: Checks whether domains were extracted.
-      type: condition
-      iscommand: false
-      brand: ""
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#default#':
       - "6"
       "yes":
       - "11"
+    note: false
+    quietmode: 0
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ExtractedIndicators.Domain
-            iscontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks whether domains were extracted.
+      id: bba003ef-76b3-429b-862a-9548862b5ef4
+      iscommand: false
+      name: Are there Domains?
+      type: condition
+      version: -1
+    taskid: bba003ef-76b3-429b-862a-9548862b5ef4
+    timertriggers: []
+    type: condition
     view: |-
       {
         "position": {
@@ -383,27 +418,16 @@ tasks:
           "y": 70
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "11":
     id: "11"
-    taskid: 7254c2bf-6b16-4e19-8e5c-dfc0b4f0a43b
-    type: regular
-    task:
-      id: 7254c2bf-6b16-4e19-8e5c-dfc0b4f0a43b
-      version: -1
-      name: Domain Create Relationship
-      description: This automation creates a relationship between indicator objects.
-      scriptName: CreateIndicatorRelationship
-      type: regular
-      iscommand: false
-      brand: ""
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
-      - "14"
+      - "6"
+    note: false
+    quietmode: 0
     scriptarguments:
       create_indicator:
         simple: "true"
@@ -420,6 +444,19 @@ tasks:
       relationship:
         simple: related-to
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: This automation creates a relationship between indicator objects.
+      id: c50792e9-2b79-4bbc-8be5-223f2731a60e
+      iscommand: false
+      name: Domain Create Relationship
+      script: CreateIndicatorRelationship
+      type: regular
+      version: -1
+    taskid: c50792e9-2b79-4bbc-8be5-223f2731a60e
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -427,37 +464,39 @@ tasks:
           "y": 400
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "12":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ExtractedIndicators.URL
+          operator: isNotEmpty
+      label: "yes"
     id: "12"
-    taskid: 92376b14-5dd7-47ec-8d9e-ca114f98a85c
-    type: condition
-    task:
-      id: 92376b14-5dd7-47ec-8d9e-ca114f98a85c
-      version: -1
-      name: Are there URLs?
-      description: Checks whether URLs were extracted.
-      type: condition
-      iscommand: false
-      brand: ""
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#default#':
       - "6"
       "yes":
       - "13"
+    note: false
+    quietmode: 0
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ExtractedIndicators.URL
-            iscontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks whether URLs were extracted.
+      id: a3288eb7-b9f6-4f6c-8bde-e68a5fb779b2
+      iscommand: false
+      name: Are there URLs?
+      type: condition
+      version: -1
+    taskid: a3288eb7-b9f6-4f6c-8bde-e68a5fb779b2
+    timertriggers: []
+    type: condition
     view: |-
       {
         "position": {
@@ -465,27 +504,16 @@ tasks:
           "y": 70
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "13":
     id: "13"
-    taskid: 46d07da8-d775-4586-8a31-5c6bde51c157
-    type: regular
-    task:
-      id: 46d07da8-d775-4586-8a31-5c6bde51c157
-      version: -1
-      name: URL Create Relationship
-      description: This automation creates a relationship between indicator objects.
-      scriptName: CreateIndicatorRelationship
-      type: regular
-      iscommand: false
-      brand: ""
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
-      - "18"
+      - "6"
+    note: false
+    quietmode: 0
     scriptarguments:
       create_indicator:
         simple: "true"
@@ -502,6 +530,19 @@ tasks:
       relationship:
         simple: related-to
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: This automation creates a relationship between indicator objects.
+      id: 53ff0ad3-8b01-4c3e-816e-fe7deffa9e06
+      iscommand: false
+      name: URL Create Relationship
+      script: CreateIndicatorRelationship
+      type: regular
+      version: -1
+    taskid: 53ff0ad3-8b01-4c3e-816e-fe7deffa9e06
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -509,184 +550,25 @@ tasks:
           "y": 400
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "14":
-    id: "14"
-    taskid: 9ae971f3-48e2-4912-804e-0078e0d75e9f
-    type: regular
-    task:
-      id: 9ae971f3-48e2-4912-804e-0078e0d75e9f
-      version: -1
-      name: Domain enrichment
-      description: commands.local.cmd.enrich.indicators
-      script: Builtin|||enrichIndicators
-      type: regular
-      iscommand: true
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "6"
-    scriptarguments:
-      indicatorsValues:
-        simple: ${ExtractedIndicators.Domain}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 10,
-          "y": 645
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "15":
-    id: "15"
-    taskid: 8f51f38e-8bbb-4831-8ea5-5ecec7b4e84a
-    type: regular
-    task:
-      id: 8f51f38e-8bbb-4831-8ea5-5ecec7b4e84a
-      version: -1
-      name: Email enrichment
-      description: commands.local.cmd.enrich.indicators
-      script: Builtin|||enrichIndicators
-      type: regular
-      iscommand: true
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "6"
-    scriptarguments:
-      indicatorsValues:
-        simple: ${ExtractedIndicators.Email}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 870,
-          "y": 645
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "16":
-    id: "16"
-    taskid: 8c2323a2-b066-4722-854a-d965003cdfaf
-    type: regular
-    task:
-      id: 8c2323a2-b066-4722-854a-d965003cdfaf
-      version: -1
-      name: IP enrichment
-      description: commands.local.cmd.enrich.indicators
-      script: Builtin|||enrichIndicators
-      type: regular
-      iscommand: true
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "6"
-    scriptarguments:
-      indicatorsValues:
-        simple: ${ExtractedIndicators.IP}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1290,
-          "y": 645
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "17":
-    id: "17"
-    taskid: d4772cc8-6d5b-4f24-8a0d-50bfd62d5c64
-    type: regular
-    task:
-      id: d4772cc8-6d5b-4f24-8a0d-50bfd62d5c64
-      version: -1
-      name: CVE enrichment
-      description: commands.local.cmd.enrich.indicators
-      script: Builtin|||enrichIndicators
-      type: regular
-      iscommand: true
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "6"
-    scriptarguments:
-      indicatorsValues:
-        simple: ${ExtractedIndicators.CVE}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 440,
-          "y": 645
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "18":
-    id: "18"
-    taskid: 99f588d0-9478-4c07-82ff-172fcb09625b
-    type: regular
-    task:
-      id: 99f588d0-9478-4c07-82ff-172fcb09625b
-      version: -1
-      name: URL enrichment
-      description: commands.local.cmd.enrich.indicators
-      script: Builtin|||enrichIndicators
-      type: regular
-      iscommand: true
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "6"
-    scriptarguments:
-      indicatorsValues:
-        simple: ${ExtractedIndicators.URL}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -430,
-          "y": 645
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "19":
     id: "19"
-    taskid: afe40893-9631-4857-8a41-72e9099688d0
-    type: title
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
     task:
-      id: afe40893-9631-4857-8a41-72e9099688d0
-      version: -1
+      brand: ""
+      id: 5b5c468a-d9a0-478f-844b-d0313e3be872
+      iscommand: false
       name: Done
       type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    separatecontext: false
+      version: -1
+    taskid: 5b5c468a-d9a0-478f-844b-d0313e3be872
+    timertriggers: []
+    type: title
     view: |-
       {
         "position": {
@@ -694,27 +576,28 @@ tasks:
           "y": 1560
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "20":
     id: "20"
-    taskid: 7006f767-a5a6-4188-831e-1a8e313a22a6
-    type: title
-    task:
-      id: 7006f767-a5a6-4188-831e-1a8e313a22a6
-      version: -1
-      name: IP
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
       - "4"
+    note: false
+    quietmode: 0
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 89139733-1763-4e1a-8fea-221d26ab593b
+      iscommand: false
+      name: IP
+      type: title
+      version: -1
+    taskid: 89139733-1763-4e1a-8fea-221d26ab593b
+    timertriggers: []
+    type: title
     view: |-
       {
         "position": {
@@ -722,27 +605,28 @@ tasks:
           "y": -100
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "21":
     id: "21"
-    taskid: 5886062f-5ddb-49a8-8c51-519328fe851c
-    type: title
-    task:
-      id: 5886062f-5ddb-49a8-8c51-519328fe851c
-      version: -1
-      name: Email
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
       - "7"
+    note: false
+    quietmode: 0
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 5c55a84e-5eda-42fa-8d6a-053394a8de70
+      iscommand: false
+      name: Email
+      type: title
+      version: -1
+    taskid: 5c55a84e-5eda-42fa-8d6a-053394a8de70
+    timertriggers: []
+    type: title
     view: |-
       {
         "position": {
@@ -750,27 +634,28 @@ tasks:
           "y": -100
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "22":
     id: "22"
-    taskid: 369258b8-2a6d-4598-84f7-ca946a8dd569
-    type: title
-    task:
-      id: 369258b8-2a6d-4598-84f7-ca946a8dd569
-      version: -1
-      name: URL
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
       - "12"
+    note: false
+    quietmode: 0
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 9a859d8d-eea1-4357-8484-66009c48cdd6
+      iscommand: false
+      name: URL
+      type: title
+      version: -1
+    taskid: 9a859d8d-eea1-4357-8484-66009c48cdd6
+    timertriggers: []
+    type: title
     view: |-
       {
         "position": {
@@ -778,27 +663,28 @@ tasks:
           "y": -100
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "23":
     id: "23"
-    taskid: a58598ba-8bea-46d6-833d-eedb520eaf0d
-    type: title
-    task:
-      id: a58598ba-8bea-46d6-833d-eedb520eaf0d
-      version: -1
-      name: CVE
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
       - "3"
+    note: false
+    quietmode: 0
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 7fae69d8-9971-4b41-8dd1-1f4ace014a02
+      iscommand: false
+      name: CVE
+      type: title
+      version: -1
+    taskid: 7fae69d8-9971-4b41-8dd1-1f4ace014a02
+    timertriggers: []
+    type: title
     view: |-
       {
         "position": {
@@ -806,27 +692,28 @@ tasks:
           "y": -100
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "24":
     id: "24"
-    taskid: 83e2c287-f5e6-4ae1-85d6-1d3303610009
-    type: title
-    task:
-      id: 83e2c287-f5e6-4ae1-85d6-1d3303610009
-      version: -1
-      name: Domain
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
       - "10"
+    note: false
+    quietmode: 0
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 5b2e6fa5-4aa9-417c-8b1b-ccc5621ffb71
+      iscommand: false
+      name: Domain
+      type: title
+      version: -1
+    taskid: 5b2e6fa5-4aa9-417c-8b1b-ccc5621ffb71
+    timertriggers: []
+    type: title
     view: |-
       {
         "position": {
@@ -834,27 +721,28 @@ tasks:
           "y": -100
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "25":
     id: "25"
-    taskid: 9fb16778-7525-47b1-879f-be520f7f820b
-    type: title
-    task:
-      id: 9fb16778-7525-47b1-879f-be520f7f820b
-      version: -1
-      name: File
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
       - "26"
+    note: false
+    quietmode: 0
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 9cb541b3-16d3-431b-8f3d-59cd2a2ff666
+      iscommand: false
+      name: File
+      type: title
+      version: -1
+    taskid: 9cb541b3-16d3-431b-8f3d-59cd2a2ff666
+    timertriggers: []
+    type: title
     view: |-
       {
         "position": {
@@ -862,37 +750,39 @@ tasks:
           "y": -100
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "26":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ExtractedIndicators.File
+          operator: isNotEmpty
+      label: "yes"
     id: "26"
-    taskid: d3b09852-d38a-46cf-8914-c237ebd9be53
-    type: condition
-    task:
-      id: d3b09852-d38a-46cf-8914-c237ebd9be53
-      version: -1
-      name: Are there Files hash?
-      description: Checks whether URLs were extracted
-      type: condition
-      iscommand: false
-      brand: ""
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#default#':
       - "6"
       "yes":
       - "27"
+    note: false
+    quietmode: 0
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ExtractedIndicators.File
-            iscontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks whether URLs were extracted
+      id: 5f4306d2-265f-4469-8167-5e0dfa775268
+      iscommand: false
+      name: Are there Files hash?
+      type: condition
+      version: -1
+    taskid: 5f4306d2-265f-4469-8167-5e0dfa775268
+    timertriggers: []
+    type: condition
     view: |-
       {
         "position": {
@@ -900,27 +790,16 @@ tasks:
           "y": 70
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "27":
     id: "27"
-    taskid: c64a9bfb-0cfc-4987-8fa4-6837005d8396
-    type: regular
-    task:
-      id: c64a9bfb-0cfc-4987-8fa4-6837005d8396
-      version: -1
-      name: File Create Relationship
-      description: This automation creates a relationship between indicator objects.
-      scriptName: CreateIndicatorRelationship
-      type: regular
-      iscommand: false
-      brand: ""
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
-      - "28"
+      - "6"
+    note: false
+    quietmode: 0
     scriptarguments:
       create_indicator:
         simple: "true"
@@ -937,6 +816,19 @@ tasks:
       relationship:
         simple: related-to
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: This automation creates a relationship between indicator objects.
+      id: 150a34d1-b902-4409-85a6-ce2c2f6f05f3
+      iscommand: false
+      name: File Create Relationship
+      script: CreateIndicatorRelationship
+      type: regular
+      version: -1
+    taskid: 150a34d1-b902-4409-85a6-ce2c2f6f05f3
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -944,44 +836,7 @@ tasks:
           "y": 400
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "28":
-    id: "28"
-    taskid: a137b4ff-595c-4f77-8838-2338b8249f3c
-    type: regular
-    task:
-      id: a137b4ff-595c-4f77-8838-2338b8249f3c
-      version: -1
-      name: File enrichment
-      description: commands.local.cmd.enrich.indicators
-      script: Builtin|||enrichIndicators
-      type: regular
-      iscommand: true
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "6"
-    scriptarguments:
-      indicatorsValues:
-        simple: ${ExtractedIndicators.File}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -870,
-          "y": 645
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-system: true
+version: -1
 view: |-
   {
     "linkLabelsPosition": {},
@@ -994,18 +849,6 @@ view: |-
       }
     }
   }
-inputs:
-- key: raw_content
-  value: {}
-  required: false
-  description: "The raw content of an article"
-  playbookInputQuery:
-- key: indicator_value
-  value: {}
-  required: false
-  description: "Report indicator value"
-  playbookInputQuery:
-outputs: []
+fromversion: 6.2.0
 tests:
 - No tests (auto formatted)
-fromversion: 6.2.0
