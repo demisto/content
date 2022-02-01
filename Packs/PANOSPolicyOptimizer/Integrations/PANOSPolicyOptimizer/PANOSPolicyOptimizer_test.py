@@ -117,4 +117,4 @@ def test_querying_rules_is_valid(mocker, client):
 
     assert isinstance(rules.outputs, list)
     assert len(rules.outputs) > 0
-    assert 'PolicyOptimizer UnusedRules' in rules.readable_output
+    assert 'PolicyOptimizer Unused-security-rules' in rules.readable_output
