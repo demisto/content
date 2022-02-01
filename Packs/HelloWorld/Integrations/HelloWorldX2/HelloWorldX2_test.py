@@ -185,7 +185,7 @@ def test_scan_results(mocker, requests_mock):
     get_scan_results API response, loaded from a local JSON file. Checks
     the output of the command function with the expected output.
     """
-    from HelloWorld import Client, scan_results_command
+    from HelloWorldX2 import Client, scan_results_command
     from CommonServerPython import Common
 
     mock_response = util_load_json('test_data/scan_results.json')
@@ -224,7 +224,7 @@ def test_search_alerts(requests_mock):
     get_alerts API response, loaded from a local JSON file. Checks
     the output of the command function with the expected output.
     """
-    from HelloWorld import Client, search_alerts_command
+    from HelloWorldX2 import Client, search_alerts_command
 
     mock_response = util_load_json('test_data/search_alerts.json')
     requests_mock.get(
@@ -265,7 +265,7 @@ def test_get_alert(requests_mock):
     get_alerts API response, loaded from a local JSON file. Checks
     the output of the command function with the expected output.
     """
-    from HelloWorld import Client, get_alert_command
+    from HelloWorldX2 import Client, get_alert_command
 
     mock_response = util_load_json('test_data/get_alert.json')
     requests_mock.get('https://test.com/api/v1/get_alert_details?alert_id=695b3238-05d6-4934-86f5-9fff3201aeb0',
@@ -301,7 +301,7 @@ def test_update_alert_status(requests_mock):
     get_alerts API response, loaded from a local JSON file. Checks
     the output of the command function with the expected output.
     """
-    from HelloWorld import Client, update_alert_status_command
+    from HelloWorldX2 import Client, update_alert_status_command
 
     mock_response = util_load_json('test_data/update_alert_status.json')
     requests_mock.get(
@@ -339,7 +339,7 @@ def test_ip(requests_mock):
     ip reputation API response, loaded from a local JSON file. Checks
     the output of the command function with the expected output.
     """
-    from HelloWorld import Client, ip_reputation_command
+    from HelloWorldX2 import Client, ip_reputation_command
     from CommonServerPython import Common
 
     ip_to_check = '151.1.1.1'
@@ -379,7 +379,7 @@ def test_domain(requests_mock):
     domain reputation API response, loaded from a local JSON file. Checks
     the output of the command function with the expected output.
     """
-    from HelloWorld import Client, domain_reputation_command
+    from HelloWorldX2 import Client, domain_reputation_command
     from CommonServerPython import Common
 
     domain_to_check = 'google.com'
@@ -425,7 +425,7 @@ def test_fetch_alerts(requests_mock):
     get_alert API response, loaded from a local JSON file. Checks
     the output of the command function with the expected output.
     """
-    from HelloWorld import Client, fetch_alerts
+    from HelloWorldX2 import Client, fetch_alerts
 
     mock_response = util_load_json('test_data/search_alerts.json')
     requests_mock.get(
