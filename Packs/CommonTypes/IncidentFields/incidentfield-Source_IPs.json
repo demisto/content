@@ -45,38 +45,7 @@
   "version": -1,
   "fromVersion": "6.0.0",
   "openEnded": true,
-  "Aliases": [
-    {
-      "cliName": "sourceipoffense",
-      "type": "multiSelect"
-    },
-    {
-      "cliName": "digitalguardiansourceaddress",
-      "type": "shortText"
-    },
-    {
-      "cliName": "digitalguardiansourceip",
-      "type": "shortText"
-    },
-    {
-      "cliName": "f5silverlinegeolocationsourceip",
-      "type": "shortText"
-    },
-    {
-      "cliName": "f5silverlinemessageoriginatorsourceip",
-      "type": "shortText"
-    },
-    {
-      "cliName": "f5silverlinetranslatedsourceip",
-      "type": "shortText"
-    },
-    {
-      "cliName": "irondefensesrcip",
-      "type": "shortText"
-    },
-    {
-      "cliName": "sourceip",
-      "type": "shortText"
-    }
+  "marketplaces": [
+    "xsoar"
   ]
 }

@@ -740,6 +740,10 @@ class Client(BaseClient):
         """
         entries = []
         links = []  # type: List[Tuple[str, str]]
+        headers = {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        }
         attachments_res = self.get_ticket_attachments(ticket_id, sys_created_on)
         if 'result' in attachments_res and len(attachments_res['result']) > 0:
             attachments = attachments_res['result']
@@ -747,8 +751,14 @@ class Client(BaseClient):
                      for attachment in attachments]
 
         for link in links:
-            file_res = requests.get(link[0], auth=(self._username, self._password), verify=self._verify,
-                                    proxies=self._proxies)
+            if self.use_oauth:
+                access_token = self.snow_client.get_access_token()
+                headers.update({'Authorization': f'Bearer {access_token}'})
+                file_res = requests.get(link[0], headers=headers, verify=self._verify, proxies=self._proxies)
+            else:
+                file_res = requests.get(link[0], auth=(self._username, self._password), verify=self._verify,
+                                        proxies=self._proxies)
+
             if file_res is not None:
                 entries.append(fileResult(link[1], file_res.content))
 
@@ -2125,6 +2135,18 @@ def login_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Dict[Any, 
     return hr, {}, {}, True
 
 
+def check_assigned_to_field(client: Client, assigned_to: dict) -> Optional[str]:
+    if assigned_to:
+        user_result = client.get('sys_user', assigned_to.get('value'))  # type: ignore[arg-type]
+        user = user_result.get('result', {})
+        if user:
+            user_email = user.get('email')
+            return user_email
+        else:
+            demisto.debug(f'Could not assign user {assigned_to.get("value")} since it does not exist in ServiceNow')
+    return ''
+
+
 def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) -> Union[List[Dict[str, Any]], str]:
     """
     get-remote-data command: Returns an updated incident and entries
@@ -2221,11 +2243,8 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
         group_name = group.get('name')
         ticket['assignment_group'] = group_name
 
-    if assigned_to:
-        user_result = client.get('sys_user', assigned_to.get('value'))
-        user = user_result.get('result', {})
-        user_email = user.get('email')
-        ticket['assigned_to'] = user_email
+    user_assigned = check_assigned_to_field(client, assigned_to)
+    ticket['assigned_to'] = user_assigned
 
     if caller:
         user_result = client.get('sys_user', caller.get('value'))

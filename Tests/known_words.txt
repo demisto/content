@@ -72,3 +72,8 @@ Accenture
 CTI
 SCC
 IPinfo
+QRadarFullSearch
+ServiceNow
+OAuth
+Attivo
+Botsink
