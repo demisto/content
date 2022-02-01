@@ -75,3 +75,4 @@ IPinfo
 QRadarFullSearch
 ServiceNow
 OAuth
+QRadar
