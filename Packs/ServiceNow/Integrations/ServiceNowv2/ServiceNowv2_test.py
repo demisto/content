@@ -10,7 +10,8 @@ from ServiceNowv2 import get_server_url, get_ticket_context, get_ticket_human_re
     list_table_fields_command, query_computers_command, get_table_name_command, add_tag_command, query_items_command, \
     get_item_details_command, create_order_item_command, document_route_to_table, fetch_incidents, main, \
     get_mapping_fields_command, get_remote_data_command, update_remote_system_command, build_query_for_request_params, \
-    ServiceNowClient, oauth_test_module, login_command, get_modified_remote_data_command, parse_build_query, get_ticket_fields
+    ServiceNowClient, oauth_test_module, login_command, get_modified_remote_data_command, parse_build_query, \
+    get_ticket_fields, check_assigned_to_field
 from ServiceNowv2 import test_module as module
 from test_data.response_constants import RESPONSE_TICKET, RESPONSE_MULTIPLE_TICKET, RESPONSE_UPDATE_TICKET, \
     RESPONSE_UPDATE_TICKET_SC_REQ, RESPONSE_CREATE_TICKET, RESPONSE_CREATE_TICKET_WITH_OUT_JSON, RESPONSE_QUERY_TICKETS, \
@@ -22,7 +23,7 @@ from test_data.response_constants import RESPONSE_TICKET, RESPONSE_MULTIPLE_TICK
     RESPONSE_FETCH_ATTACHMENTS_TICKET, RESPONSE_TICKET_MIRROR, MIRROR_COMMENTS_RESPONSE, RESPONSE_MIRROR_FILE_ENTRY, \
     RESPONSE_ASSIGNMENT_GROUP, RESPONSE_MIRROR_FILE_ENTRY_FROM_XSOAR, MIRROR_COMMENTS_RESPONSE_FROM_XSOAR, \
     MIRROR_ENTRIES, RESPONSE_CLOSING_TICKET_MIRROR, RESPONSE_TICKET_ASSIGNED, OAUTH_PARAMS, \
-    RESPONSE_QUERY_TICKETS_EXCLUDE_REFERENCE_LINK, MIRROR_ENTRIES_WITH_EMPTY_USERNAME
+    RESPONSE_QUERY_TICKETS_EXCLUDE_REFERENCE_LINK, MIRROR_ENTRIES_WITH_EMPTY_USERNAME, USER_RESPONSE
 from test_data.result_constants import EXPECTED_TICKET_CONTEXT, EXPECTED_MULTIPLE_TICKET_CONTEXT, \
     EXPECTED_TICKET_HR, EXPECTED_MULTIPLE_TICKET_HR, EXPECTED_UPDATE_TICKET, EXPECTED_UPDATE_TICKET_SC_REQ, \
     EXPECTED_CREATE_TICKET, EXPECTED_CREATE_TICKET_WITH_OUT_JSON, EXPECTED_QUERY_TICKETS, EXPECTED_ADD_LINK_HR, \
@@ -707,6 +708,46 @@ def test_get_remote_data(mocker):
     assert res[2]['Contents'] == 'This is a comment'
 
 
+def test_assigned_to_field_no_user():
+    """
+    Given:
+        -  Client class
+        -  Assigned_to field for user that doesn't exist in SNOW
+    When
+        - run check_assigned_to_field command
+    Then
+        - Check that assign_to value is empty
+    """
+    class Client:
+        def get(self, table, value):
+            return {'results': {}}
+
+    assigned_to = {'link': 'https://test.service-now.com/api/now/table/sys_user/oscar@example.com',
+                   'value': 'oscar@example.com'}
+    res = check_assigned_to_field(Client(), assigned_to)
+    assert res == ''
+
+
+def test_assigned_to_field_user_exists():
+    """
+    Given:
+        -  Client class
+        -  Assigned_to field for user that does exist in SNOW
+    When
+        - run check_assigned_to_field command
+    Then
+        - Check that assign_to value is filled with the right email
+    """
+    class Client:
+        def get(self, table, value):
+            return USER_RESPONSE
+
+    assigned_to = {'link': 'https://test.service-now.com/api/now/table/sys_user/oscar@example.com',
+                   'value': 'oscar@example.com'}
+    res = check_assigned_to_field(Client(), assigned_to)
+    assert res == 'oscar@example.com'
+
+
 CLOSING_RESPONSE = {'dbotIncidentClose': True, 'closeReason': 'From ServiceNow: Test'}
 
 
@@ -1117,3 +1158,47 @@ def test_get_tasks_for_co_command(mocker):
         'ServiceNow.Tasks(val.ID===obj.ID)': CREATED_TICKET_CONTEXT_GET_TASKS_FOR_CO_COMMAND
     }
     assert result.raw_response == util_load_json('test_data/get_tasks_for_co_command.json')
+
+
+def test_get_ticket_attachment_entries_with_oauth_token(mocker):
+    """
+    The purpose of this test is to verify that it is possible to get a file attachment of a ServiceNow ticket by using
+    an OAuth 2.0 client.
+
+    Given:
+        - A client with 'oauth_params' - i.e a client that is configured with an OAuth 2.0 Authorization.
+        - Mock responses for 'get_ticket_attachments', 'get_access_token' and 'requests.get' functions.
+
+    When:
+        - Running the 'client.get_ticket_attachment_entries' function.
+
+    Then:
+        - Verify that the 'requests.get' function's arguments are arguments of a call with OAuth 2.0 Authorization.
+    """
+    # Preparations and mocking:
+    client = Client("url", 'sc_server_url', 'cr_server_url', 'username', 'password', 'verify', 'fetch_time',
+                    'sysparm_query', 'sysparm_limit', 'timestamp_field', 'ticket_type', 'get_attachments',
+                    'incident_name', oauth_params={'oauth_params': ''})
+
+    mock_res_for_get_ticket_attachments = \
+        {'result': [
+            {
+                'file_name': 'attachment for test.txt',
+                'download_link': 'https://ven03941.service-now.com/api/now/attachment/12b7ea411b15cd10042611b4bd4/file'
+            }]}
+
+    mock_res_for_get_access_token = 'access_token'
+
+    mocker.patch.object(client, 'get_ticket_attachments', return_value=mock_res_for_get_ticket_attachments)
+    mocker.patch.object(client.snow_client, 'get_access_token', return_value=mock_res_for_get_access_token)
+    requests_get_mocker = mocker.patch('requests.get', return_value=None)
+
+    # Running get_ticket_attachment_entries function:
+    client.get_ticket_attachment_entries(ticket_id='id')
+
+    # Validate Results are as expected:
+    assert requests_get_mocker.call_args.kwargs.get('auth') is None,\
+        "When An OAuth 2.0 client is configured the 'auth' argument shouldn't be passed to 'requests.get' function"
+    assert requests_get_mocker.call_args.kwargs.get('headers').get('Authorization') == \
+           f"Bearer {mock_res_for_get_access_token}", "When An OAuth 2.0 client is configured the 'Authorization'" \
+                                                      " Header argument should be passed to 'requests.get' function"
