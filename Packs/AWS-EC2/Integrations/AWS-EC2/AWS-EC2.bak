@@ -1,4 +1,3 @@
-from typing import *  # noqa: F401
 from datetime import date
 
 import demistomock as demisto  # noqa: F401

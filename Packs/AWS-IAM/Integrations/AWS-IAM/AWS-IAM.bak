@@ -1,4 +1,3 @@
-from typing import *  # noqa: F401
 import botocore.exceptions
 
 import demistomock as demisto
