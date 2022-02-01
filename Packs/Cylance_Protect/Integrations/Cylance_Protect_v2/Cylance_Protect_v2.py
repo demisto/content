@@ -754,12 +754,11 @@ def get_threat_request(sha256):
 
 
 def create_dbot_score_entry(threat, dbot_score):
-    dbot_score_entry = {
-            'Indicator': threat.get('sha256'),
-            'Type': 'file',
-            'Vendor': 'Cylance Protect',
-            'Score': dbot_score
-        }
+    dbot_score_entry = Common.DBotScore(
+        threat.get('sha256'),
+        DBotScoreType.FILE,
+        integration_name='Cylance Protect',
+        score=dbot_score)
     return dbot_score_entry
 
 
@@ -776,13 +775,12 @@ def get_threats():
             threat['cylance_score'] = normalize_score(threat['cylance_score'])
             threshold = demisto.args().get('threshold', FILE_THRESHOLD)
             dbot_score = translate_score(threat['cylance_score'], int(threshold))
-        dbot_score_array.append(create_dbot_score_entry(threat, dbot_score))
-    context_threat = createContext(data=threats, keyTransform=underscoreToCamelCase, removeNull=True)
-    context_threat = add_capitalized_hash_to_context(context_threat)
-    ec = {
-        'File': context_threat,
-        'DBotScore': dbot_score_array
-    }
+        dbot_score_array.append(create_dbot_score_entry(threat, dbot_score).to_context())
+
+    dbot_score_dict = {Common.DBotScore.get_context_path(): []}
+    for dbot_score in dbot_score_array:
+        for key, value in dbot_score.items():
+            dbot_score_dict[key].append(value)
 
     title = 'Cylance Protect Threats'
     demisto.results({
@@ -791,7 +789,7 @@ def get_threats():
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown(title, threats, headerTransform=underscoreToCamelCase, removeNull=True),
-        'EntryContext': ec
+        'EntryContext': dbot_score_dict
     })
 
 
