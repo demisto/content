@@ -112,7 +112,7 @@ script:
       either queue-name or topic-name. You can't provide both.
     execution: false
     name: activemq-subscribe
-  dockerimage: demisto/py3-tools:0.0.1.25751
+  dockerimage: demisto/py3-tools:0.0.1.26374
   feed: false
   isfetch: true
   longRunning: false
