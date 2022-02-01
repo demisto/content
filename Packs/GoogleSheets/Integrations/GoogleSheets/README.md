@@ -1,5 +1,5 @@
-Google Sheets is a spreadsheet program part of free web-based Google applications to create and format spreadsheets. Use this integration to create and modify spreadsheets.
-This integration was integrated and tested with version 4 of GoogleSheets API
+Google Sheets is a spreadsheet program that is part of the free web-based Google applications to create and format spreadsheets. Use this integration to create and modify spreadsheets.
+This integration was integrated and tested with version 4 of Google Sheets API.
 
 ## Configure GoogleSheets on Cortex XSOAR
 
@@ -9,22 +9,22 @@ This integration was integrated and tested with version 4 of GoogleSheets API
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Service Account Key | A service Account Key from Google | True |
+    | Service Account Key | A service account key from Google | True |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
-    | User Id - Associate to Google Drive | User-Id - This will be used to impersonate a Google workspace user, so the spreadsheets will be created in the associated Google Drive and will be accessible from a UI easily. This parameter will be used during the authentication process.<br/> | False |
+    | User Id - Associate to Google Drive | Used to impersonate a Google workspace user, so the spreadsheets is created in the associated Google Drive and is  accessible from a UI. This parameter is used during the authentication process.<br/> | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
 ## Known limitations
-Deleting a spreadsheet is only with the Google Drive Integrations. 
+You can only delete a spreadsheet with the Google Drive integrations. 
 
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### google-sheets-spreadsheet-create
 ***
-Create a new Spreadsheet
+Create a new spreadsheet.
 
 
 #### Base Command
@@ -34,21 +34,21 @@ Create a new Spreadsheet
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| title | The title of the Spreadsheet to create. | Required | 
-| locale | The locale of the Spreadsheet to create. Default is en. | Optional | 
-| cell_format_type | The type of the number format of the Spreadsheet to create. Possible values are: NUMBER, TEXT, PERCENT, CURRENCY, DATE, TIME, DATE_TIME, SCIENTIFIC. Default is TEXT. | Optional | 
-| cell_format_backgroundColor | The cell_format_backgroundColor will be inserted as array type in the following order -  red,green,blue,alpha All vaules between 0-1. If choosen you must specify all fields. | Optional | 
-| cell_format_textformat_font_size | Cell font size in the Spreadsheet to create. Default is 11. | Optional | 
-| cell_format_textformat_text_direction | Cell text direction in the Spreadsheet to create. Possible values are: LEFT_TO_RIGHT, RIGHT_TO_LEFT. Default is LEFT_TO_RIGHT. | Optional | 
-| sheet_title | Sets the first sheet title in the Spreadsheet to create (set first sheet only). | Required | 
-| sheet_type | Sets the first sheet type in the SpreadSheet to create. Possible values are: GRID, OBJECT, DATASOURCE. Default is GRID. | Optional | 
+| title | The title of the spreadsheet to create. | Required | 
+| locale | The locale of the spreadsheet to create. Default is en. | Optional | 
+| cell_format_type | The type of the cell format of the spreadsheet to create. Possible values are: NUMBER, TEXT, PERCENT, CURRENCY, DATE, TIME, DATE_TIME, SCIENTIFIC. Default is TEXT. | Optional | 
+| cell_format_backgroundColor | A comma-separated list of background colors in the following order - red,green,blue,alpha All values must be between 0-1. If chosen, you must specify all fields. | Optional | 
+| cell_format_textformat_font_size | Cell font size in the spreadsheet to create. Default is 11. | Optional | 
+| cell_format_textformat_text_direction | Cell text direction in the spreadsheet to create. Possible values are: LEFT_TO_RIGHT, RIGHT_TO_LEFT. Default is LEFT_TO_RIGHT. | Optional | 
+| sheet_title | Sets the title of the first sheet in the spreadsheet to create. | Required | 
+| sheet_type | Sets the type of the first sheet in the spreadsheet to create. Possible values are: GRID, OBJECT, DATASOURCE. Default is GRID. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GoogleSheets.Spreadsheet.properties.title | Unknown | Spreadsheet title | 
+| GoogleSheets.Spreadsheet.properties.title | Unknown | Spreadsheet title. | 
 | GoogleSheets.Spreadsheet.spreadsheetId | Unknown | Spreadsheet ID. | 
 
 #### Command example
@@ -220,7 +220,7 @@ Create a new Spreadsheet
 
 ### google-sheets-spreadsheet-get
 ***
-Returns the spreadsheet at the given ID
+Returns the spreadsheet at the given ID.
 
 
 #### Base Command
@@ -230,23 +230,23 @@ Returns the spreadsheet at the given ID
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| spreadsheet_id | ID of the Spreadsheet to get. | Required | 
+| spreadsheet_id | ID of the spreadsheet to get. | Required | 
 | include_grid_data | True if grid data should be returned. This parameter is ignored if a field mask was set in the request. Possible values are: true, false. Default is false. | Optional | 
-| ranges | Works only with include_grid_data = True, The ranges to retrieve from the spreadsheet, Ranges are specified. using A1 notation. A1 notation example Sheet1!A1:D5 For further explanation and examples - https://developers.google.com/sheets/api/guides/concepts#expandable-1. | Optional | 
+| ranges | Works only with include_grid_data = True, The ranges to retrieve from the spreadsheet. Ranges are specified using A1 notation. For example. Sheet1!A1:D5.For further explanation and examples, see https://developers.google.com/sheets/api/guides/concepts#expandable-1. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GoogleSheets.Spreadsheet.spreadsheetTitle | Unknown | Spreadsheet title | 
-| GoogleSheets.Spreadsheet.spreadsheetId | Unknown | SpreadSheet Id | 
-| GoogleSheets.Spreadsheet.spreadsheetUrl | Unknown | Spreadsheet URL | 
-| GoogleSheets.Spreadsheet.sheets.title | Unknown | Sheets titles | 
-| GoogleSheets.Spreadsheet.sheets.index | Unknown | Sheets index | 
-| GoogleSheets.Spreadsheet.sheets.sheetId | Unknown | Sheets ID's | 
-| GoogleSheets.Spreadsheet.sheets.gridProperties | Unknown | Sheets grid properties | 
-| GoogleSheets.Spreadsheet.sheets.rowData | Unknown | Sheets RowData | 
+| GoogleSheets.Spreadsheet.spreadsheetTitle | Unknown | Spreadsheet title. | 
+| GoogleSheets.Spreadsheet.spreadsheetId | Unknown | Spreadsheet ID. | 
+| GoogleSheets.Spreadsheet.spreadsheetUrl | Unknown | Spreadsheet URL. | 
+| GoogleSheets.Spreadsheet.sheets.title | Unknown | Sheet titles. | 
+| GoogleSheets.Spreadsheet.sheets.index | Unknown | Sheet index. | 
+| GoogleSheets.Spreadsheet.sheets.sheetId | Unknown | Sheet ID. | 
+| GoogleSheets.Spreadsheet.sheets.gridProperties | Unknown | Sheet grid properties. | 
+| GoogleSheets.Spreadsheet.sheets.rowData | Unknown | Sheet row data. | 
 
 #### Command example
 ```!google-sheets-spreadsheet-get spreadsheet_id=1EwL7rqcSVdkXCAwuGt4jIiDrDUEKW3bmP63dqTBolfk```
@@ -379,7 +379,7 @@ Returns the spreadsheet at the given ID
 
 ### google-sheets-sheet-create
 ***
-Adds a new sheet. When a sheet is added at a given index, all subsequent sheets' indexes are incremented
+Adds a new sheet. When a sheet is added at a given index, all subsequent sheet indexes are incremented.
 
 
 #### Base Command
@@ -389,26 +389,26 @@ Adds a new sheet. When a sheet is added at a given index, all subsequent sheets'
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| spreadsheet_id | Spreadsheet ID to create a new sheet in it. | Required | 
-| echo_spreadsheet | Include Spreadsheet in response. Possible values are: true, false. Default is false. | Optional | 
+| spreadsheet_id | Spreadsheet ID in which to create a new sheet. | Required | 
+| echo_spreadsheet | Include the spreadsheet in the response. Possible values are: true, false. Default is false. | Optional | 
 | sheet_title | Sheet title to create. | Required | 
 | sheet_index | The index of the sheet within the spreadsheet. | Optional | 
 | sheet_type | Sheet type to create. Possible values are: GRID, OBJECT, DATA_SOURCE. Default is GRID. | Optional | 
-| right_to_left | True if the sheet is an RTL sheet instead of an LTR sheet. Possible values are: false, true. | Optional | 
-| tab_color | The color of the tab in the UI. - The tab color will be inserted as array type in the following orger -  red,green,blue,alpha All vaules between 0-1. If choosen you must specify all fields. | Optional | 
-| hidden | True if the sheet is hidden in the UI, false if it's visible. | Optional | 
-| sheet_id | The id of the sheet to create. (needs to be unique - if not specified the sheet id will be generated by google-sheets. | Optional | 
+| right_to_left | True if the sheet is a right_to_left sheet instead of a left_to_right sheet. Possible values are: false, true. | Optional | 
+| tab_color | A comma-separated list of the color of the tab in the UI in the following order - red,green,blue,alpha. All values must be between 0-1. If chosen, you must specify all fields. | Optional | 
+| hidden | True if the sheet is hidden in the UI. False if it is visible. | Optional | 
+| sheet_id | The ID of the sheet to create. (Needs to be unique. If not specified, the sheet ID will be generated by google-sheets. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GoogleSheets.Spreadsheet.updatedSpreadsheet.properties.title | Unknown | Spreadsheet title | 
-| GoogleSheets.Spreadsheet.spreadsheetId | Unknown | SpreadSheet Id | 
-| GoogleSheets.Spreadsheet.updatedSpreadsheet.spreadsheetUrl | Unknown | Spreadsheet URL | 
-| GoogleSheets.Spreadsheet.updatedSpreadsheet.sheets.sheetId | String | Sheets ID | 
-| GoogleSheets.Spreadsheet.updatedSpreadsheet.sheets.title | String | Sheet title | 
+| GoogleSheets.Spreadsheet.updatedSpreadsheet.properties.title | Unknown | Spreadsheet title. | 
+| GoogleSheets.Spreadsheet.spreadsheetId | Unknown | Spreadsheet ID. | 
+| GoogleSheets.Spreadsheet.updatedSpreadsheet.spreadsheetUrl | Unknown | Spreadsheet URL. | 
+| GoogleSheets.Spreadsheet.updatedSpreadsheet.sheets.sheetId | String | Sheet ID. | 
+| GoogleSheets.Spreadsheet.updatedSpreadsheet.sheets.title | String | Sheet title. | 
 
 #### Command example
 ```!google-sheets-sheet-create spreadsheet_id=1EwL7rqcSVdkXCAwuGt4jIiDrDUEKW3bmP63dqTBolfk sheet_title=Sheet3 sheet_id=3 sheet_index=2 tab_color=1,1,1,1 right_to_left=false```
@@ -419,7 +419,7 @@ Adds a new sheet. When a sheet is added at a given index, all subsequent sheets'
 
 ### google-sheets-sheet-duplicate
 ***
-Duplicates the contents of a sheet
+Duplicates the contents of a sheet.
 
 
 #### Base Command
@@ -429,10 +429,10 @@ Duplicates the contents of a sheet
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| spreadsheet_id | Spreadsheet ID you want to copy a sheet from. | Required | 
-| echo_spreadsheet | True - to add the spreadsheet to the output . Possible values are: true, false. Default is false. | Optional | 
-| source_sheet_id | The id of the sheet to copy . | Required | 
-| new_sheet_index | If set, the ID of the new sheet. If not set, an ID is chosen. If set, the ID must not conflict with any existing sheet ID. If set, it must be non-negative. | Optional | 
+| spreadsheet_id | Spreadsheet ID from which to copy a sheet. | Required | 
+| echo_spreadsheet | True to add the spreadsheet to the output . Possible values are: true, false. Default is false. | Optional | 
+| source_sheet_id | The ID of the sheet to copy . | Required | 
+| new_sheet_index | If set, the ID of the new sheet. If not set, an ID is chosen. If set, the ID must not conflict with any existing sheet ID and it must be a non-negative number. | Optional | 
 | new_sheet_name | The name of the new sheet. | Required | 
 
 
@@ -440,11 +440,11 @@ Duplicates the contents of a sheet
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GoogleSheets.Spreadsheet.updatedSpreadsheet.properties.title | String | Spreadsheet title | 
-| GoogleSheets.Spreadsheet.spreadsheetId | String | Spreadsheet ID | 
-| GoogleSheets.Spreadsheet.updatedSpreadsheet.spreadsheetUrl | Unknown | Spreadsheet URL | 
-| GoogleSheets.Spreadsheet.updatedSpreadsheet.sheets.sheetId | String | Sheets ID | 
-| GoogleSheets.Spreadsheet.updatedSpreadsheet.sheets.title | String | Sheet title | 
+| GoogleSheets.Spreadsheet.updatedSpreadsheet.properties.title | String | Spreadsheet title. | 
+| GoogleSheets.Spreadsheet.spreadsheetId | String | Spreadsheet ID. | 
+| GoogleSheets.Spreadsheet.updatedSpreadsheet.spreadsheetUrl | Unknown | Spreadsheet URL. | 
+| GoogleSheets.Spreadsheet.updatedSpreadsheet.sheets.sheetId | String | Sheet ID. | 
+| GoogleSheets.Spreadsheet.updatedSpreadsheet.sheets.title | String | Sheet title. | 
 
 #### Command example
 ```!google-sheets-sheet-duplicate new_sheet_name=duplicated_sheet spreadsheet_id=1EwL7rqcSVdkXCAwuGt4jIiDrDUEKW3bmP63dqTBolfk source_sheet_id=1574092348 echo_spreadsheet=true```
@@ -653,7 +653,7 @@ Duplicates the contents of a sheet
 
 ### google-sheets-sheet-copy-to
 ***
-Copies a single sheet from a spreadsheet to another spreadsheet
+Copies a single sheet from a spreadsheet to another spreadsheet.
 
 
 #### Base Command
@@ -679,7 +679,7 @@ There is no context output for this command.
 
 ### google-sheets-sheet-delete
 ***
-Delete a sheet from a spreadsheet by ID
+Delete a sheet from a spreadsheet by ID.
 
 
 #### Base Command
@@ -689,20 +689,20 @@ Delete a sheet from a spreadsheet by ID
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| spreadsheet_id | Spread sheet to delete sheet from. . | Required | 
-| echo_spreadsheet | True - to add the spreadsheet to the output. Possible values are: true, false. Default is false. | Optional | 
-| sheet_id | Sheet ID to delete. | Required | 
+| spreadsheet_id | Spreadsheet from which to delete sheet. . | Required | 
+| echo_spreadsheet | True to add the spreadsheet to the output. Possible values are: true, false. Default is false. | Optional | 
+| sheet_id | ID of sheet to delete. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GoogleSheets.Spreadsheet.updatedSpreadsheet.properties.title | String | Spreadsheet title | 
-| GoogleSheets.Spreadsheet.spreadsheetId | String | Spreadsheet ID | 
-| GoogleSheets.Spreadsheet.updatedSpreadsheet.spreadsheetUrl | Unknown | Spreadsheet URL | 
-| GoogleSheets.Spreadsheet.updatedSpreadsheet.sheets.sheetId | String | Sheets ID | 
-| GoogleSheets.Spreadsheet.updatedSpreadsheet.sheets.title | String | Sheet title | 
+| GoogleSheets.Spreadsheet.updatedSpreadsheet.properties.title | String | Spreadsheet title. | 
+| GoogleSheets.Spreadsheet.spreadsheetId | String | Spreadsheet ID. | 
+| GoogleSheets.Spreadsheet.updatedSpreadsheet.spreadsheetUrl | Unknown | Spreadsheet URL. | 
+| GoogleSheets.Spreadsheet.updatedSpreadsheet.sheets.sheetId | String | Sheet ID. | 
+| GoogleSheets.Spreadsheet.updatedSpreadsheet.sheets.title | String | Sheet title. | 
 
 #### Command example
 ```!google-sheets-sheet-delete sheet_id=3 spreadsheet_id=1EwL7rqcSVdkXCAwuGt4jIiDrDUEKW3bmP63dqTBolfk```
@@ -713,7 +713,7 @@ Delete a sheet from a spreadsheet by ID
 
 ### google-sheets-sheet-clear
 ***
-Clears values from a spreadsheet. The caller must specify the spreadsheet ID and range. Only values are cleared -- all other properties of the cell (such as formatting, data validation, etc..) are kept.
+Clears values from a spreadsheet. The caller must specify the spreadsheet ID and range. Only values are cleared. All other properties of the cell (such as formatting, data validation, etc..) are kept.
 
 
 #### Base Command
@@ -723,19 +723,19 @@ Clears values from a spreadsheet. The caller must specify the spreadsheet ID and
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| spreadsheet_id | Spreadsheet ID to Update. | Required | 
-| range | A1 notation or R1C1 notation of the values to clear. A1 notation example Sheet1!A1:D5 For further explanation and examples - https://developers.google.com/sheets/api/guides/concepts#expandable-1. | Required | 
+| spreadsheet_id | Spreadsheet ID to update. | Required | 
+| range | A1 notation or R1C1 notation of the values to clear. A1 notation example Sheet1!A1:D5. For further explanation and examples, see https://developers.google.com/sheets/api/guides/concepts#expandable-1. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GoogleSheets.Spreadsheet.updatedSpreadsheet.properties.title | String | Spreadsheet title | 
-| GoogleSheets.Spreadsheet.spreadsheetId | String | Spreadsheet ID | 
-| GoogleSheets.Spreadsheet.updatedSpreadsheet.spreadsheetUrl | Unknown | Spreadsheet URL | 
-| GoogleSheets.Spreadsheet.updatedSpreadsheet.sheets.sheetId | String | Sheets ID | 
-| GoogleSheets.Spreadsheet.updatedSpreadsheet.sheets.title | String | Sheet title | 
+| GoogleSheets.Spreadsheet.updatedSpreadsheet.properties.title | String | Spreadsheet title. | 
+| GoogleSheets.Spreadsheet.spreadsheetId | String | Spreadsheet ID. | 
+| GoogleSheets.Spreadsheet.updatedSpreadsheet.spreadsheetUrl | Unknown | Spreadsheet URL. | 
+| GoogleSheets.Spreadsheet.updatedSpreadsheet.sheets.sheetId | String | Sheet ID. | 
+| GoogleSheets.Spreadsheet.updatedSpreadsheet.sheets.title | String | Sheet title. | 
 
 #### Command example
 ```!google-sheets-sheet-clear spreadsheet_id=1EwL7rqcSVdkXCAwuGt4jIiDrDUEKW3bmP63dqTBolfk range=newSheetTitle!2:2```
@@ -762,24 +762,24 @@ Deletes a range of cells, shifting other cells into the deleted area.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | spreadsheet_id | Spreadsheet ID. | Required | 
-| echo_spreadsheet | True - to add the spreadsheet to the output. Possible values are: true, false. Default is false. | Optional | 
-| sheet_id | The sheet this range is on. | Required | 
+| echo_spreadsheet | True to add the spreadsheet to the output. Possible values are: true, false. Default is false. | Optional | 
+| sheet_id | The sheet this range is in. | Required | 
 | start_row_index | The start row (inclusive) of the range, or not set if unbounded. | Required | 
 | end_row_index | The end row (exclusive) of the range, or not set if unbounded. | Required | 
-| start_column_index | description. Default is The start column (inclusive) of the range, or not set if unbounded.. | Required | 
+| start_column_index | The start column (inclusive) of the range, or not set if unbounded. | Required | 
 | end_column_index | The end column (exclusive) of the range, or not set if unbounded. | Required | 
-| shift_dimension | The dimension from which deleted cells will be replaced with. If ROWS , existing cells will be shifted upward to replace the deleted cells. If COLUMNS , existing cells will be shifted left to replace the deleted cells. Possible values are: ROWS, COLUMNS. | Required | 
+| shift_dimension | The dimension from which deleted cells will be replaced with. If ROWS, existing cells will be shifted upward to replace the deleted cells. If COLUMNS, existing cells will be shifted left to replace the deleted cells. Possible values are: ROWS, COLUMNS. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GoogleSheets.Spreadsheet.updatedSpreadsheet.properties.title | String | Spreadsheet title | 
-| GoogleSheets.Spreadsheet.spreadsheetId | String | Spreadsheet ID | 
-| GoogleSheets.Spreadsheet.updatedSpreadsheet.spreadsheetUrl | Unknown | Spreadsheet URL | 
-| GoogleSheets.Spreadsheet.updatedSpreadsheet.sheets.sheetId | String | Sheets ID | 
-| GoogleSheets.Spreadsheet.updatedSpreadsheet.sheets.title | String | Sheet title | 
+| GoogleSheets.Spreadsheet.updatedSpreadsheet.properties.title | String | Spreadsheet title. | 
+| GoogleSheets.Spreadsheet.spreadsheetId | String | Spreadsheet ID. | 
+| GoogleSheets.Spreadsheet.updatedSpreadsheet.spreadsheetUrl | Unknown | Spreadsheet URL. | 
+| GoogleSheets.Spreadsheet.updatedSpreadsheet.sheets.sheetId | String | Sheet ID. | 
+| GoogleSheets.Spreadsheet.updatedSpreadsheet.sheets.title | String | Sheet title. | 
 
 #### Command example
 ```!google-sheets-range-delete spreadsheet_id=1EwL7rqcSVdkXCAwuGt4jIiDrDUEKW3bmP63dqTBolfk sheet_id=1574092348 shift_dimension=COLUMNS start_row_index=0 end_row_index=2 start_column_index=0 end_column_index=2```
@@ -790,7 +790,7 @@ Deletes a range of cells, shifting other cells into the deleted area.
 
 ### google-sheets-dimension-delete
 ***
-Deletes the dimensions from the sheet. notice the indexing starts from 0
+Deletes the dimensions from the sheet. Note that the indexing starts from 0.
 
 
 #### Base Command
@@ -801,9 +801,9 @@ Deletes the dimensions from the sheet. notice the indexing starts from 0
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | spreadsheet_id | Spreadsheet ID. | Required | 
-| echo_spreadsheet | True - to add the spreadsheet to the output. Possible values are: true, false. Default is false. | Optional | 
+| echo_spreadsheet | True to add the spreadsheet to the output. Possible values are: true, false. Default is false. | Optional | 
 | dimension_type | The dimension of the span. Possible values are: ROWS, COLUMNS. | Required | 
-| sheet_id | The sheet this span is on. | Required | 
+| sheet_id | The sheet this span is in. | Required | 
 | start_index | The start (inclusive) of the span, or not set if unbounded. | Required | 
 | end_index | The end (exclusive) of the span, or not set if unbounded. | Required | 
 
@@ -812,11 +812,11 @@ Deletes the dimensions from the sheet. notice the indexing starts from 0
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GoogleSheets.Spreadsheet.updatedSpreadsheet.properties.title | String | Spreadsheet title | 
-| GoogleSheets.Spreadsheet.spreadsheetId | String | Spreadsheet ID | 
-| GoogleSheets.Spreadsheet.updatedSpreadsheet.spreadsheetUrl | Unknown | Spreadsheet URL | 
-| GoogleSheets.Spreadsheet.updatedSpreadsheet.sheets.sheetId | String | Sheets ID | 
-| GoogleSheets.Spreadsheet.updatedSpreadsheet.sheets.title | String | Sheet title | 
+| GoogleSheets.Spreadsheet.updatedSpreadsheet.properties.title | String | Spreadsheet title. | 
+| GoogleSheets.Spreadsheet.spreadsheetId | String | Spreadsheet ID. | 
+| GoogleSheets.Spreadsheet.updatedSpreadsheet.spreadsheetUrl | Unknown | Spreadsheet URL. | 
+| GoogleSheets.Spreadsheet.updatedSpreadsheet.sheets.sheetId | String | Sheet ID. | 
+| GoogleSheets.Spreadsheet.updatedSpreadsheet.sheets.title | String | Sheet title. | 
 
 #### Command example
 ```!google-sheets-dimension-delete dimension_type=ROWS sheet_id=1574092348 spreadsheet_id=1EwL7rqcSVdkXCAwuGt4jIiDrDUEKW3bmP63dqTBolfk start_index=0 end_index=3 echo_spreadsheet=true```
@@ -1035,24 +1035,24 @@ Inserts data into the spreadsheet starting at the specified coordinate.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | spreadsheet_id | Spreadsheet ID. | Required | 
-| echo_spreadsheet | True - to add the spreadsheet to the output. Possible values are: true, false. Default is false. | Optional | 
-| sheet_id | The sheet this coordinate is on. | Required | 
+| echo_spreadsheet | True to add the spreadsheet to the output. Possible values are: true, false. Default is false. | Optional | 
+| sheet_id | The sheet this coordinate is in. | Required | 
 | row_index | The row index of the coordinate. | Required | 
 | column_index | The column index of the coordinate. | Required | 
-| data | The data to insert. If chossen kind delimiter - the delimiter will be ',' and the data shold be given in the following form cell1, cell2, cell3..  if chosen type html enter one value. | Required | 
-| data_kind | Union field kind . How to interpret the data, exactly one value must be set. kind can be only one of the following. Possible values are: delimiter, html. | Required | 
-| paste_type | How the data should be pasted. Possible values are: NORMAL, VALUES, FORMAT, NO_BORDERS, FORMULA, DATA_VALIDATION, CONDITIONAL_FORMATTING. Default is NORMAL. | Optional | 
+| data | The data to insert. If data_kind is delimiter, the delimiter will be ',' and the data should be in the following form cell1, cell2, cell3... If data_kind is html, enter a single value. | Required | 
+| data_kind | Field type. Possible values are: delimiter, html. | Required | 
+| paste_type | The way the data should be pasted. Possible values are: NORMAL, VALUES, FORMAT, NO_BORDERS, FORMULA, DATA_VALIDATION, CONDITIONAL_FORMATTING. Default is NORMAL. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GoogleSheets.Spreadsheet.updatedSpreadsheet.properties.title | String | Spreadsheet title | 
-| GoogleSheets.Spreadsheet.spreadsheetId | String | Spreadsheet ID | 
-| GoogleSheets.Spreadsheet.updatedSpreadsheet.spreadsheetUrl | Unknown | Spreadsheet URL | 
-| GoogleSheets.Spreadsheet.updatedSpreadsheet.sheets.sheetId | String | Sheets ID | 
-| GoogleSheets.Spreadsheet.updatedSpreadsheet.sheets.title | String | Sheet title | 
+| GoogleSheets.Spreadsheet.updatedSpreadsheet.properties.title | String | Spreadsheet title. | 
+| GoogleSheets.Spreadsheet.spreadsheetId | String | Spreadsheet ID. | 
+| GoogleSheets.Spreadsheet.updatedSpreadsheet.spreadsheetUrl | Unknown | Spreadsheet URL. | 
+| GoogleSheets.Spreadsheet.updatedSpreadsheet.sheets.sheetId | String | Sheet ID. | 
+| GoogleSheets.Spreadsheet.updatedSpreadsheet.sheets.title | String | Sheet title. | 
 
 #### Command example
 ```!google-sheets-data-paste column_index=0 row_index=2 data_kind=delimiter data=1,2,3,4,5 spreadsheet_id=1EwL7rqcSVdkXCAwuGt4jIiDrDUEKW3bmP63dqTBolfk sheet_id=1574092348```
@@ -1074,14 +1074,14 @@ Finds and replaces data in cells over a range, sheet, or all sheets.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | spreadsheet_id | Spreadsheet ID. | Required | 
-| echo_spreadsheet | True - to add the spreadsheet to the output. Possible values are: true, false. Default is false. | Optional | 
-| find | The value to find. Finds and replaces data in cells over a range, sheet, or all sheets. | Required | 
+| echo_spreadsheet | True to add the spreadsheet to the output. Possible values are: true, false. Default is false. | Optional | 
+| find | The value to find. | Required | 
 | replacement | The value to use as the replacement. | Required | 
-| sheet_id | The sheet to find/replace over. | Optional | 
+| sheet_id | The sheet to find/replace. | Optional | 
 | all_sheets | True to find/replace over all sheets. Possible values are: True, False. | Optional | 
 | match_case | True if the search is case sensitive. Possible values are: True, False. | Optional | 
-| match_entire_cell | True if the find value should match the entire cell. Possible values are: True, False. | Optional | 
-| range_sheet_id | The sheet this range is on. | Optional | 
+| match_entire_cell | True if the find value matches the entire cell. Possible values are: True, False. | Optional | 
+| range_sheet_id | The sheet this range is in. | Optional | 
 | range_start_row_Index | The start row (inclusive) of the range, or not set if unbounded. | Optional | 
 | range_end_row_Index | The end row (exclusive) of the range, or not set if unbounded. | Optional | 
 | range_start_column_Index | The start column (inclusive) of the range, or not set if unbounded. | Optional | 
@@ -1092,11 +1092,11 @@ Finds and replaces data in cells over a range, sheet, or all sheets.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GoogleSheets.Spreadsheet.updatedSpreadsheet.properties.title | String | Spreadsheet title | 
-| GoogleSheets.Spreadsheet.spreadsheetId | String | Spreadsheet ID | 
-| GoogleSheets.Spreadsheet.updatedSpreadsheet.spreadsheetUrl | Unknown | Spreadsheet URL | 
-| GoogleSheets.Spreadsheet.updatedSpreadsheet.sheets.sheetId | String | Sheets ID | 
-| GoogleSheets.Spreadsheet.updatedSpreadsheet.sheets.title | String | Sheet title | 
+| GoogleSheets.Spreadsheet.updatedSpreadsheet.properties.title | String | Spreadsheet title. | 
+| GoogleSheets.Spreadsheet.spreadsheetId | String | Spreadsheet ID. | 
+| GoogleSheets.Spreadsheet.updatedSpreadsheet.spreadsheetUrl | Unknown | Spreadsheet URL. | 
+| GoogleSheets.Spreadsheet.updatedSpreadsheet.sheets.sheetId | String | Sheet ID. | 
+| GoogleSheets.Spreadsheet.updatedSpreadsheet.sheets.title | String | Sheet title. | 
 
 #### Command example
 ```!google-sheets-find-replace find=e replacement=! spreadsheet_id=1EwL7rqcSVdkXCAwuGt4jIiDrDUEKW3bmP63dqTBolfk all_sheets=True```
@@ -1118,10 +1118,10 @@ Sets values in a range of a spreadsheet. The caller must specify the spreadsheet
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | spreadsheet_id | Spreadsheet ID. | Required | 
-| range | The A1 notation of the values to update. example - Sheet1!A1:D5 For further explanation and examples - https://developers.google.com/sheets/api/guides/concepts#expandable-1. | Required | 
+| range | The A1 notation of the values to update. For example, Sheet1!A1:D5. For further explanation and examples, see https://developers.google.com/sheets/api/guides/concepts#expandable-1. | Required | 
 | input_option | Determines how input data should be interpreted. Possible values are: RAW, USER_ENTERED. | Required | 
 | major_dimension | The major dimension of the values. Possible values are: ROWS, COLUMNS. | Required | 
-| values | The data that was read or to be written. This is an array of arrays, the outer array representing all the data and each inner array representing a major dimension. Each item in the inner array corresponds with one cell. to be entered in the following way- [1,2,3],[4,5,6] where each bracket will be the row or columen, and each value inside will corresponde with a cell. | Required | 
+| values | The data that was read or to be written. This is an array of arrays, the outer array representing all the data and each inner array representing a major dimension. Each item in the inner array corresponds to one cell. To be entered in the following format - [1,2,3],[4,5,6] where each bracket will be the row or column, and each value inside will correspond to a cell. | Required | 
 
 
 #### Context Output
@@ -1136,7 +1136,7 @@ There is no context output for this command.
 
 ### google-sheets-value-append
 ***
-Appends values to a spreadsheet. The input range is used to search for existing data and find a "table" within that range. Values will be appended to the next row of the table, starting with the first column of the table. See the guide and sample code for specific details of how tables are detected and data is appended.  The caller must specify the spreadsheet ID, range, and a valueInputOption. The valueInputOption only controls how the input data will be added to the sheet (column-wise or row-wise), it does not influence what cell the data starts being written to.
+Appends values to a spreadsheet. The input range is used to search for existing data and find a "table" within that range. Values will be appended to the next row of the table, starting with the first column of the table. See the guide (https://developers.google.com/sheets/api/guides/values#appending_values) and sample code (https://developers.google.com/sheets/api/samples/writing#append_values) for specific details of how tables are detected and data is appended. The caller must specify the spreadsheet ID, range, and a valueInputOption. The valueInputOption only controls how the input data will be added to the sheet (column-wise or row-wise), it does not influence what cell the data starts being written to.
 
 
 #### Base Command
@@ -1147,11 +1147,11 @@ Appends values to a spreadsheet. The input range is used to search for existing 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | spreadsheet_id | Spreadsheet ID. | Required | 
-| range | The A1 notation of a range to search for a logical table of data. Values are appended after the last row of the table. A1 notation example Sheet1!A1:D5 For further explanation and examples - https://developers.google.com/sheets/api/guides/concepts#expandable-1. | Required | 
-| input_option | Determines how input data should be interpreted. Possible values are: RAW, USER_ENTERED. | Optional | 
-| insert_option | How the input data should be inserted. Possible values are: OVERWRITE, INSERT_ROWS. | Required | 
+| range | The A1 notation of a range to search for a logical table of data. Values are appended after the last row of the table. A1 notation example, Sheet1!A1:D5. For further explanation and examples, see https://developers.google.com/sheets/api/guides/concepts#expandable-1. | Required | 
+| input_option | The way input data should be interpreted. Possible values are: RAW, USER_ENTERED. | Optional | 
+| insert_option | The way input data should be inserted. Possible values are: OVERWRITE, INSERT_ROWS. | Required | 
 | major_dimension | The major dimension of the values. Possible values are: ROWS, COLUMNS. | Required | 
-| values | The data that was read or to be written. This is an array of arrays, the outer array representing all the data and each inner array representing a major dimension. Each item in the inner array corresponds with one cell. to be entered in the following way- [1,2,3],[4,5,6] where each bracket will be the row or columen, and each value inside will corresponde with a cell. | Required | 
+| values | The data that was read or to be written. This is an array of arrays, the outer array representing all the data and each inner array representing a major dimension. Each item in the inner array corresponds to one cell. To be entered in the following format - [1,2,3],[4,5,6] where each bracket will be the row or column, and each value inside will correspond to a cell. | Required | 
 
 
 #### Context Output
@@ -1166,7 +1166,7 @@ There is no context output for this command.
 
 ### google-sheets-spreadsheet-update
 ***
-This is a costume update command, inorder to apply any of the Google Sheets API options. Applies one or more updates to the spreadsheet. Each request is validated before being applied. If any request is not valid then the entire request will fail and nothing will be applied.
+This is a custom update command, used to apply any of the Google Sheets API options. Applies one or more updates to the spreadsheet. Each request is validated before being applied. If any request is not valid, the entire request will fail and nothing will be applied.
 
 
 #### Base Command
@@ -1177,19 +1177,19 @@ This is a costume update command, inorder to apply any of the Google Sheets API 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | spreadsheet_id | Spreadsheet ID. | Required | 
-| echo_spreadsheet | True - to add the spreadsheet to the output. Possible values are: False , True. Default is False. | Optional | 
-| requests | JSON Input according to the method documentation and object documentation - for advanced users’ free use (Google Sheets API) https://developers.google.com/sheets/api/reference/rest/v4/spreadsheets/batchUpdate. | Required | 
+| echo_spreadsheet | True to add the spreadsheet to the output. Possible values are: False, True. Default is False. | Optional | 
+| requests | JSON input according to the method documentation and object documentation - for advanced users’ free use (Google Sheets API) https://developers.google.com/sheets/api/reference/rest/v4/spreadsheets/batchUpdate. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GoogleSheets.Spreadsheet.updatedSpreadsheet.properties.title | String | Spreadsheet title | 
-| GoogleSheets.Spreadsheet.spreadsheetId | String | Spreadsheet ID | 
-| GoogleSheets.Spreadsheet.updatedSpreadsheet.spreadsheetUrl | Unknown | Spreadsheet URL | 
-| GoogleSheets.Spreadsheet.updatedSpreadsheet.sheets.sheetId | String | Sheets ID | 
-| GoogleSheets.Spreadsheet.updatedSpreadsheet.sheets.title | String | Sheet title | 
+| GoogleSheets.Spreadsheet.updatedSpreadsheet.properties.title | String | Spreadsheet title. | 
+| GoogleSheets.Spreadsheet.spreadsheetId | String | Spreadsheet ID. | 
+| GoogleSheets.Spreadsheet.updatedSpreadsheet.spreadsheetUrl | Unknown | Spreadsheet URL. | 
+| GoogleSheets.Spreadsheet.updatedSpreadsheet.sheets.sheetId | String | Sheet ID. | 
+| GoogleSheets.Spreadsheet.updatedSpreadsheet.sheets.title | String | Sheet title. | 
 
 #### Command example
 ```!google-sheets-spreadsheet-update spreadsheet_id=1EwL7rqcSVdkXCAwuGt4jIiDrDUEKW3bmP63dqTBolfk requests=`{"requests": [{"copyPaste": {"destination": {"startRowIndex": 0, "startColumnIndex": 0, "endRowIndex": 5, "endColumnIndex": 5, "sheetId": 1574092348}, "pasteOrientation": "TRANSPOSE", "source": {"sheetId": 1574092348, "startRowIndex": 0, "startColumnIndex": 0, "endColumnIndex": 5, "endRowIndex": 5}, "pasteType": "PASTE_NORMAL"}}]}````
