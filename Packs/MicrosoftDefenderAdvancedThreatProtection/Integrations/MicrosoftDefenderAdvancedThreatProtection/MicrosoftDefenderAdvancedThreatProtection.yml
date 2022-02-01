@@ -4546,6 +4546,9 @@ script:
     - contextPath: MicrosoftATP.CveMachine.RBACGroupName
       description: The machine RBAC group name.
       type: String
+    - contextPath: MicrosoftATP.CveMachine.CVE
+      description: The given CVE Id related to this machine.
+      type: String
   - arguments:
     - default: true
       description: A comma-separated list of file hashs (Sha1 or Sha256) to be used for getting the file info.

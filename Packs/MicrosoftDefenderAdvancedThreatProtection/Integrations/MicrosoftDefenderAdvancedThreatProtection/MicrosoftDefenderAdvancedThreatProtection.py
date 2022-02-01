@@ -2738,14 +2738,16 @@ def list_machines_by_vulnerability_command(client: MsClient, args: dict) -> Comm
     Returns:
         CommandResults. Human readable, context, raw response
     """
-    headers = ['ID', 'ComputerDNSName', 'OSPlatform', 'RBACGroupID', 'RBACGroupName']
+    headers = ['ID', 'ComputerDNSName', 'OSPlatform', 'RBACGroupID', 'RBACGroupName', 'CVE']
     cve_ids = argToList(args.get('cve_id'))
     raw_response = []
     machines_outputs = []
     for cve_id in cve_ids:
         machines_response = client.get_list_machines_by_vulnerability(cve_id)
         for machine in machines_response['value']:
-            machines_outputs.append(get_machine_data(machine))
+            machine_data = get_machine_data(machine)
+            machine_data.update({"CVE": cve_id})
+            machines_outputs.append(machine_data)
         raw_response.append(machines_response)
 
     human_readable = tableToMarkdown(f'Microsoft Defender ATP machines by vulnerabilities: {cve_ids}',
