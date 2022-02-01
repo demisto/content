@@ -41,10 +41,15 @@
 
 .check_build_files_are_up_to_date: &check_build_files_are_up_to_date
   - section_start "Check Build Files Are Up To Date"
-  - ./Tests/scripts/is_file_up_to_date.sh .gitlab $CI_COMMIT_BRANCH
-  - ./Tests/scripts/is_file_up_to_date.sh dev-requirements-py2.txt $CI_COMMIT_BRANCH
-  - ./Tests/scripts/is_file_up_to_date.sh dev-requirements-py3.txt $CI_COMMIT_BRANCH
-  - ./Tests/scripts/is_file_up_to_date.sh Tests $CI_COMMIT_BRANCH
+  - |
+    if [[ -n "${DEMISTO_SDK_NIGHTLY} && -n $NIGHTLY ]]; then
+      echo "running nightly, skipping files up-to-date validation"
+    else
+      ./Tests/scripts/is_file_up_to_date.sh .gitlab $CI_COMMIT_BRANCH
+      ./Tests/scripts/is_file_up_to_date.sh dev-requirements-py2.txt $CI_COMMIT_BRANCH
+      ./Tests/scripts/is_file_up_to_date.sh dev-requirements-py3.txt $CI_COMMIT_BRANCH
+      ./Tests/scripts/is_file_up_to_date.sh Tests $CI_COMMIT_BRANCH
+    fi
   - section_end "Check Build Files Are Up To Date"
 
 
@@ -121,7 +126,6 @@
     - *install_venv
     - *get_contribution_pack
     - *install_ssh_keys
-    - *check_build_files_are_up_to_date
     - section_start "Build Parameters"
     - set | grep -E "^NIGHTLY=|^INSTANCE_TESTS=|^SERVER_BRANCH_NAME=|^ARTIFACT_BUILD_NUM=|^DEMISTO_SDK_NIGHTLY=|^TIME_TO_LIVE=|^CONTRIB_BRANCH=|^FORCE_PACK_UPLOAD=|^PACKS_TO_UPLOAD=|^BUCKET_UPLOAD=|^STORAGE_BASE_PATH=|^OVERRIDE_ALL_PACKS=|^GCS_MARKET_BUCKET=|^GCS_MARKET_V2_BUCKET=|^SLACK_CHANNEL=|^NVM_DIR=|^NODE_VERSION=|^PATH=|^ARTIFACTS_FOLDER=|^ENV_RESULTS_PATH="
     - python --version
@@ -134,6 +138,7 @@
     - jsdoc2md --version
     - demisto-sdk --version
     - section_end "Build Parameters"
+    - *check_build_files_are_up_to_date
 
 .default-job-settings:
   extends:
