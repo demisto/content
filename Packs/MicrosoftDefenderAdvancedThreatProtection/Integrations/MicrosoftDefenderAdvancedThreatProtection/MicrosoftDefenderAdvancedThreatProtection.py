@@ -2872,7 +2872,11 @@ def endpoint_command(client: MsClient, args: dict) -> List[CommandResults]:
             outputs=machine_data,
             indicator=endpoint_indicator,
         ))
-
+    if not machines_outputs:
+        machines_outputs.append(CommandResults(
+            readable_output=f"{INTEGRATION_NAME} no device found.",
+            raw_response=machines_response,
+        ))
     return machines_outputs
 
 
