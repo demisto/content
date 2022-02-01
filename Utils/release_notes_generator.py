@@ -88,7 +88,7 @@ def get_new_entity_record(entity_path: str) -> Tuple[str, str]:
             name = data.get('id')
 
     if name == entity_path:
-        logging.warning()(f'missing name for {entity_path}')
+        logging.warning(f'missing name for {entity_path}')
 
     # script entities has "comment" instead of "description"
     description = data.get('description', '') or data.get('comment', '')
