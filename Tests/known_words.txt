@@ -78,8 +78,5 @@ OAuth
 Qualys
 Attivo
 Botsink
-<<<<<<< HEAD
 Dbot
 OTX
-=======
->>>>>>> master
