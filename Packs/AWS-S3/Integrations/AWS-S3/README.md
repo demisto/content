@@ -252,6 +252,8 @@ List object in S3 bucket.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | bucket | The name of S3 bucket. | Required | 
+| prefix | Limits the response to keys that begin with the specified prefix. | Optional |
+| delimiter | A delimiter is a character you use to group keys. | Optional |
 | region | The AWS Region, if not specified the default region will be used. | Optional | 
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
@@ -268,7 +270,7 @@ List object in S3 bucket.
 
 
 #### Command Example
-``` !aws-s3-list-bucket-objects bucket=test```
+``` !aws-s3-list-bucket-objects bucket=test prefix=testing delimiter='/'```
 
 #### Human Readable Output
 AWS S3 Bucket Objects
