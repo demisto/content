@@ -116,7 +116,7 @@ def test_eml_contains_eml(mocker):
                 {
                     'Type': entryTypes['note'],
                     'Contents': {
-                        'path': 'content/Packs/CommonScripts/Scripts/ParseEmailFiles/test_data/Fwd_test-inner_attachment_eml.eml',
+                        'path': 'test_data/Fwd_test-inner_attachment_eml.eml',
                         'name': 'Fwd_test-inner_attachment_eml.eml'
                     }
                 }
@@ -240,7 +240,7 @@ def test_eml_contains_eml_depth(mocker):
                 {
                     'Type': entryTypes['note'],
                     'Contents': {
-                        'path': 'Packs/CommonScripts/Scripts/ParseEmailFiles/test_data/Fwd_test-inner_attachment_eml.eml',
+                        'path': 'test_data/Fwd_test-inner_attachment_eml.eml',
                         'name': 'Fwd_test-inner_attachment_eml.eml'
                     }
                 }
