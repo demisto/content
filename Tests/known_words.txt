@@ -75,5 +75,3 @@ IPinfo
 QRadarFullSearch
 ServiceNow
 OAuth
-OTX
-Dbot
