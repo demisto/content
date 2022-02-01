@@ -102,6 +102,33 @@ script:
       - 'true'
       required: false
       secret: false
+    - default: false
+      description: Whether to get pre-rules or post-rules, 'pre' for pre rules, 'post' for post-rules, only for panorama instances.
+      isArray: false
+      name: position
+      predefined:
+      - 'pre'
+      - 'post'
+      required: false
+      secret: false
+    - default: false
+      defaultValue: 'security'
+      description: Which type of rules to query.
+      isArray: false
+      name: rule_type
+      predefined:
+      - 'security'
+      - 'nat'
+      - 'qos'
+      - 'pbf'
+      - 'decryption'
+      - 'tunnel-inspect'
+      - 'application-override'
+      - 'authentication'
+      - 'dos'
+      - 'sdwan'
+      required: false
+      secret: false
     deprecated: false
     description: Gets unused, used, or any rules.
     execution: false
