@@ -1,11 +1,5 @@
 [
     {
-        "name": "[Sepio Systems] Port alert Switch is sepio-2960-x (192.168.100.29), Port is Gi1/0/9 - Fingerprint is similar to ProxiCast PP2",
-        "occurred": "2020-06-22T15:26:44Z",
-        "rawJSON": "{\"eventID\": 405, \"category\": \"Network\", \"creationTime\": \"2020-06-22T15:26:44.181762\", \"eventCode\": \"0x210001\", \"severity\": 2, \"severityString\": \"Critical\", \"eventEntityID\": \"sepio-2960-x (192.168.100.29)\", \"description\": \"Port alert\", \"hashtags\": \"\", \"peripheralIcon\": \"-1\", \"details\": \"Switch is sepio-2960-x (192.168.100.29), Port is Gi1/0/9 - Fingerprint is similar to ProxiCast PP2\", \"eventSource\": \"Sepio Systems\"}",
-        "severity": 4
-    },
-    {
         "name": "[Sepio Systems] Port link down Switch is sepio-2960-x (192.168.100.29), Port is Gi1/0/9",
         "occurred": "2020-06-22T17:27:06Z",
         "rawJSON": "{\"eventID\": 408, \"category\": \"Network\", \"creationTime\": \"2020-06-22T17:27:06.220114\", \"eventCode\": \"0x210002\", \"severity\": 4, \"severityString\": \"Warning\", \"eventEntityID\": \"sepio-2960-x (192.168.100.29)\", \"description\": \"Port link down\", \"hashtags\": \"\", \"peripheralIcon\": \"-1\", \"details\": \"Switch is sepio-2960-x (192.168.100.29), Port is Gi1/0/9\", \"eventSource\": \"Sepio Systems\"}",
