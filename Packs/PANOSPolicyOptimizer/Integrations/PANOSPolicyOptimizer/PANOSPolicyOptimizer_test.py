@@ -17,19 +17,21 @@ def get_panorama_instance_client():
 QUERYING_RULES_PARAMS = [
     (
         get_firewall_instance_client(),
-        ['main'],
-        False
+        'main',
     ),
     (
         get_panorama_instance_client(),
-        ['post', 'pre'],
-        True
+        'pre',
+    ),
+    (
+        get_panorama_instance_client(),
+        'post',
     )
 ]
 
 
-@pytest.mark.parametrize("client, positions, is_cms_selected", QUERYING_RULES_PARAMS)
-def test_body_request_is_valid_when_querying_rules(mocker, client, positions, is_cms_selected):
+@pytest.mark.parametrize("client, position", QUERYING_RULES_PARAMS)
+def test_body_request_is_valid_when_querying_rules(mocker, client, position):
     """
     Given
         - a client.
@@ -49,32 +51,30 @@ def test_body_request_is_valid_when_querying_rules(mocker, client, positions, is
     response_mocker = mocker.patch.object(client.session, 'post', return_value=response)
 
     policy_optimizer_get_rules_command(
-        client=client, args={'timeframe': '30', 'usage': 'Unused', 'exclude': 'false'}
-    )
-
-    tid = 1
-    for position, calling_args in zip(positions, response_mocker.call_args_list):
-        assert calling_args.kwargs['json'] == {
-            'action': 'PanDirect',
-            'method': 'run',
-            'data': [
-                '123',
-                'PoliciesDirect.getPoliciesByUsage',
-                [
-                    {
-                        'type': 'security', 'position': position, 'vsysName': 'test',
-                        'isCmsSelected': is_cms_selected, 'isMultiVsys': False, 'showGrouped': False,
-                        'usageAttributes': {
-                            'timeframe': '30', 'usage': 'Unused', 'exclude': False, 'exclude-reset-text': '90'
-                        },
-                        'pageContext': 'rule_usage'
-                    }
-                ]
-            ],
-            'type': 'rpc',
-            'tid': tid
+        client=client, args={
+            'timeframe': '30', 'usage': 'Unused', 'exclude': 'false', 'rule_type': 'security', 'position': position
         }
-        tid += 1
+    )
+    assert response_mocker.call_args.kwargs['json'] == {
+        'action': 'PanDirect',
+        'method': 'run',
+        'data': [
+            '123',
+            'PoliciesDirect.getPoliciesByUsage',
+            [
+                {
+                    'type': 'security', 'position': position, 'vsysName': 'test',
+                    'isCmsSelected': client.is_cms_selected, 'isMultiVsys': False, 'showGrouped': False,
+                    'usageAttributes': {
+                        'timeframe': '30', 'usage': 'Unused', 'exclude': False, 'exclude-reset-text': '90'
+                    },
+                    'pageContext': 'rule_usage'
+                }
+            ]
+        ],
+        'type': 'rpc',
+        'tid': 1
+    }
 
 
 CLIENTS = [

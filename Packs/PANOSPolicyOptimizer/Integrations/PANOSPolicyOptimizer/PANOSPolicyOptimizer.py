@@ -163,7 +163,9 @@ class Client:
             url=f'{self.session_metadata["base_url"]}/php/utils/router.php/PoliciesDirect.getPoliciesByUsage',
             json_cmd=json_cmd)
 
-    def policy_optimizer_get_rules(self, timeframe: str, usage: str, exclude: bool, position: str) -> dict:
+    def policy_optimizer_get_rules(
+        self, timeframe: str, usage: str, exclude: bool, position: str, rule_type: str
+    ) -> dict:
         self.session_metadata['tid'] += 1  # Increment TID
         json_cmd = {
             "action": "PanDirect", "method": "run",
@@ -172,7 +174,7 @@ class Client:
                 "PoliciesDirect.getPoliciesByUsage",
                 [
                     {
-                        "type": "security",
+                        "type": rule_type,
                         "position": position,
                         "vsysName": self.machine,
                         "isCmsSelected": self.is_cms_selected,
@@ -321,42 +323,33 @@ def policy_optimizer_get_unused_apps_command(client: Client) -> CommandResults:
 
 def policy_optimizer_get_rules_command(client: Client, args: dict) -> CommandResults:
     """
-    Gets the unused rules Statistics as seen from the User Interface
+    Get rules information from Panorama/Firewall instances.
     """
-    timeframe = str(args.get('timeframe'))
-    usage = str(args.get('usage'))
+    timeframe = args.get('timeframe')
+    usage = args.get('usage')
     exclude = argToBoolean(args.get('exclude'))
+    position = args.get('position') or 'post'
+    rule_type = args.get('rule_type') or 'security'
 
     headers = ['@name', '@uuid', 'action', 'description', 'source', 'destination']
 
     if client.is_cms_selected:  # panorama instance
-        raw_response, rules = [], []
-        for position in ['post', 'pre']:
-            response = client.policy_optimizer_get_rules(timeframe, usage, exclude, position)
-            raw_response.append(response)
-            stats = response.get('result') or {}
-            if (stats.get('@status') or '') == 'error':
-                raise Exception(f'Operation Failed with: {stats}')
-
-            cur_rules = (stats.get('result') or {}).get('entry') or []
-            if cur_rules and isinstance(cur_rules, list):
-                rules.extend(cur_rules)
-
-        if rules:
-            table = tableToMarkdown(name=f'PolicyOptimizer {usage}Rules:', t=rules, headers=headers, removeNull=True)
-        else:
-            table = f'No {usage} rules where found.'
+        raw_response = client.policy_optimizer_get_rules(
+            timeframe=timeframe, usage=usage, exclude=exclude, position=position, rule_type=rule_type
+        )
     else:  # firewall instance
-        raw_response = client.policy_optimizer_get_rules(timeframe, usage, exclude, 'main')  # type: ignore
-        stats = raw_response.get('result') or {}  # type: ignore
-        if (stats.get('@status') or '') == 'error':
-            raise Exception(f'Operation Failed with: {stats}')
+        raw_response = client.policy_optimizer_get_rules(
+            timeframe=timeframe, usage=usage, exclude=exclude, position='main', rule_type=rule_type
+        )
+    stats = raw_response.get('result') or {}  # type: ignore
+    if (stats.get('@status') or '') == 'error':
+        raise Exception(f'Operation Failed with: {stats}')
 
-        rules = (stats.get('result') or {}).get('entry') or []
-        if rules:
-            table = tableToMarkdown(name=f'PolicyOptimizer {usage}Rules:', t=rules, headers=headers, removeNull=True)
-        else:
-            table = f'No {usage} rules where found.'
+    rules = (stats.get('result') or {}).get('entry') or []
+    if rules:
+        table = tableToMarkdown(name=f'PolicyOptimizer {usage}Rules:', t=rules, headers=headers, removeNull=True)
+    else:
+        table = f'No {usage} rules where found.'
 
     return CommandResults(
         outputs_prefix=f'PanOS.PolicyOptimizer.{usage}Rules',
