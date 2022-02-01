@@ -554,6 +554,71 @@ script:
     description: Upload file to S3 bucket
     execution: false
     name: aws-s3-upload-file
+  - arguments:
+    - default: false
+      description: The name of the Amazon S3 bucket whose PublicAccessBlock configuration
+        you want to retrieve.
+      isArray: false
+      name: bucket
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieves the PublicAccessBlock configuration for an Amazon S3 bucket.
+    execution: false
+    name: aws-s3-get-public-access-block
+    outputs:
+    - contextPath: AWS.S3.Buckets.BucketName.PublicAccessBlockConfiguration.BlockPublicAcls
+      description: Specifies whether Amazon S3 should block public access control
+        lists (ACLs) for this bucket and objects in this bucket.
+      type: Boolean
+    - contextPath: AWS.S3.Buckets.BucketName.PublicAccessBlockConfiguration.IgnorePublicAcls
+      description: Specifies whether Amazon S3 should ignore public ACLs for this
+        bucket and objects in this bucket.
+      type: Boolean
+    - contextPath: AWS.S3.Buckets.BucketName.PublicAccessBlockConfiguration.BlockPublicPolicy
+      description: Specifies whether Amazon S3 should block public bucket policies
+        for this bucket.
+      type: Boolean
+    - contextPath: AWS.S3.Buckets.BucketName.PublicAccessBlockConfiguration.RestrictPublicBuckets
+      description: Specifies whether Amazon S3 should restrict public bucket policies
+        for this bucket.
+      type: Boolean
+  - arguments:
+    - default: false
+      description: The name of the Amazon S3 bucket whose PublicAccessBlock configuration
+        you want to retrieve.
+      isArray: false
+      name: bucket
+      required: true
+      secret: false
+    - default: false
+      description: Specifies whether Amazon S3 should block public access control lists (ACLs) for this bucket and objects in this bucket.
+      isArray: false
+      name: BlockPublicAcls
+      required: true
+      secret: false
+    - default: false
+      description: Specifies whether Amazon S3 should ignore public ACLs for this bucket and objects in this bucket.
+      isArray: false
+      name: IgnorePublicAcls
+      required: true
+      secret: false
+    - default: false
+      description: Specifies whether Amazon S3 should block public bucket policies for this bucket.
+      isArray: false
+      name: BlockPublicPolicy
+      required: true
+      secret: false
+    - default: false
+      description: Specifies whether Amazon S3 should restrict public bucket policies for this bucket.
+      isArray: false
+      name: RestrictPublicBuckets
+      required: true
+      secret: false
+    deprecated: false
+    description: Creates or modifies the PublicAccessBlock configuration for an Amazon S3 bucket.
+    execution: false
+    name: aws-s3-put-public-access-block
   dockerimage: demisto/boto3:2.0.0.24033
   isfetch: false
   runonce: false

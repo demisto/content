@@ -344,3 +344,78 @@ There is no context output for this command.
 #### Human Readable Output
 
 File {file name to be displayed} was uploaded successfully to {bucket name}'
+
+
+### aws-s3-get-public-access-block
+***
+Retrieves the PublicAccessBlock configuration for an Amazon S3 bucket.
+
+
+#### Base Command
+
+`aws-s3-get-public-access-block`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| bucket | The name of the Amazon S3 bucket whose PublicAccessBlock configuration you want to retrieve. | Required | 
+| region | The AWS Region, if not specified the default region will be used. | Optional | 
+| roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
+| roleSessionName | An identifier for the assumed role session. | Optional | 
+| roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.S3.Buckets.BucketName.PublicAccessBlockConfiguration.BlockPublicAcls | Boolean | Specifies whether Amazon S3 should block public access control lists (ACLs) for this bucket and objects in this bucket. | 
+| AWS.S3.Buckets.BucketName.PublicAccessBlockConfiguration.IgnorePublicAcls | Boolean | Specifies whether Amazon S3 should ignore public ACLs for this bucket and objects in this bucket. | 
+| AWS.S3.Buckets.BucketName.PublicAccessBlockConfiguration.BlockPublicPolicy | Boolean | Specifies whether Amazon S3 should block public bucket policies for this bucket. | 
+| AWS.S3.Buckets.BucketName.PublicAccessBlockConfiguration.RestrictPublicBuckets | Boolean | Specifies whether Amazon S3 should restrict public bucket policies for this bucket. | 
+
+#### Command Example
+``` !aws-s3-get-public-access-block bucket="bucket name"```
+
+#### Human Readable Output
+
+AWS S3 Bucket Public Access Block
+
+| BlockPublicAcls | IgnorePublicAcls | BlockPublicPolicy | RestrictPublicBuckets |
+| --- | --- | --- | --- | 
+| True | False | True | False |
+
+
+### aws-s3-put-public-access-block
+***
+Creates or modifies the PublicAccessBlock configuration for an Amazon S3 bucket.
+
+
+#### Base Command
+
+`aws-s3-put-public-access-block`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| bucket | The name of the bucket to upload to. | Required | 
+| BlockPublicAcls | Specifies whether Amazon S3 should block public access control lists (ACLs) for this bucket and objects in this bucket. | Required | 
+| IgnorePublicAcls | Specifies whether Amazon S3 should ignore public ACLs for this bucket and objects in this bucket. | Required | 
+| BlockPublicPolicy | Specifies whether Amazon S3 should block public bucket policies for this bucket. | Required | 
+| RestrictPublicBuckets | Specifies whether Amazon S3 should restrict public bucket policies for this bucket. | Required | 
+| region | The AWS Region, if not specified the default region will be used. | Optional | 
+| roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
+| roleSessionName | An identifier for the assumed role session. | Optional | 
+| roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+``` !aws-s3-put-public-access-block bucket="bucket name" BlockPublicAcls=True IgnorePublicAcls=False BlockPublicPolicy=True RestrictPublicBuckets=True```
+
+#### Human Readable Output
+
+Successfully applied public access block to the {bucket} bucket.
