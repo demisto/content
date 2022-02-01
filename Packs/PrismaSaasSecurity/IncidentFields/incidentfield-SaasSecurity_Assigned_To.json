@@ -1,5 +1,6 @@
 {
     "id": "incident_saassecurityassignedto",
+    "description": "Administrator who is assigned to the incident on SaaS Security to investigate the incident.",
     "version": -1,
     "modified": "2021-10-13T10:51:37.549677+03:00",
     "name": "Saas Security Assigned To",
