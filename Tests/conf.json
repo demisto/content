@@ -1512,13 +1512,6 @@
         },
         {
             "integrations": "McAfee ESM v2",
-            "instance_names": "v10.2.0",
-            "playbookID": "McAfee ESM v2 - Test v10.2.0",
-            "fromversion": "5.0.0",
-            "is_mockable": false
-        },
-        {
-            "integrations": "McAfee ESM v2",
             "instance_names": "v11.1.3",
             "playbookID": "McAfee ESM v2 - Test v11.1.3",
             "fromversion": "5.0.0",
@@ -1531,12 +1524,6 @@
             "fromversion": "5.0.0",
             "timeout": 300,
             "is_mockable": false
-        },
-        {
-            "integrations": "McAfee ESM v2",
-            "instance_names": "v10.2.0",
-            "playbookID": "McAfee ESM Watchlists - Test v10.2.0",
-            "fromversion": "5.0.0"
         },
         {
             "integrations": "McAfee ESM v2",
@@ -5083,11 +5070,7 @@
         "Majestic Million Test Playbook": "Issue 30931",
         "iDefense_v2_Test": "Issue 40126",
         "EWS Mail Sender Test": "Issue 27944",
-        "McAfee ESM v2 - Test v10.3.0": "Issue 35616",
         "Feed iDefense Test": "Issue 34035",
-        "McAfee ESM v2 - Test v10.2.0": "Issue 35670",
-        "McAfee ESM Watchlists - Test v10.3.0": "Issue 37130",
-        "McAfee ESM Watchlists - Test v10.2.0": "Issue 39389",
         "McAfee ESM v2 - Test v11.1.3": "Issue 43825",
         "Microsoft Teams Management - Test": "Issue 33410",
         "MicrosoftGraphMail-Test_prod": "Issue 40125",

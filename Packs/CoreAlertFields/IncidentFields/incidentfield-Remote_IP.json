@@ -1,0 +1,58 @@
+{
+    "associatedToAll": true,
+    "caseInsensitive": true,
+    "cliName": "remoteip",
+    "closeForm": false,
+	"description": "The remote IP address of a network operation that triggered the alert.",
+    "content": true,
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_remoteip",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Remote IP",
+    "neverSetAsRequired": false,
+    "openEnded": true,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "multiSelect",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.5.0",
+	"x2_fields": "action_remote_ip",
+    "Aliases": [
+        {
+          "cliName": "digitalguardiandestinationaddress",
+          "type": "shortText"
+        },
+        {
+          "cliName": "f5silverlinetranslateddestip",
+          "type": "shortText"
+        },
+        {
+          "cliName": "irondefensedstip",
+          "type": "shortText"
+        },
+        {
+          "cliName": "destinationip",
+          "type": "shortText"
+        },
+        {
+          "cliName": "destinationipoffense",
+          "type": "multiSelect"
+        },
+        {
+          "cliName": "fireeyenxeventattackerip",
+          "type": "shortText"
+        }
+    ]
+}
