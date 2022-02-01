@@ -130,7 +130,7 @@ def parse_indicators(indicator_objects: list, feed_tags: Optional[list] = None, 
                     indicator_obj = {
                         "value": indicator_object.get('name'),
                         "type": UNIT42_TYPES_TO_DEMISTO_TYPES.get(key),
-                        "score": ThreatIntel.ObjectsScore.MALWARE,
+                        "score": ThreatIntel.ObjectsScore.MALWARE,  # default verdict of fetched indicators is malicious
                         "rawJSON": indicator_object,
                         "fields": {
                             "firstseenbysource": indicator_object.get('created'),
