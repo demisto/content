@@ -80,11 +80,12 @@ tasks:
         simple: ${inputs.maxIncidentsToFetchOnTraining}
       outputFormat:
         simple: ${inputs.outputFormat}
+      populateFields:
+        simple: ${inputs.emailTextKey},${inputs.emailSubjectKey},${inputs.emailTagKey}
       query:
         simple: ${inputs.incidentsQuery}
       timeField:
         simple: created
-      toDate: {}
     separatecontext: false
     view: |-
       {
