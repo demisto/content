@@ -972,7 +972,7 @@ def map_pack_dependencies_graph(pack_name, first_level_graph, full_dep_graph):
     return full_dep_graph
 
 
-def prepare_and_zip_pack(pack, signature_key, delete_test_playbooks=True):
+def prepare_and_zip_pack(pack, signature_key, marketplace, delete_test_playbooks=True):
     """
     Prepares the pack before zip, and then zips it.
     Args:
@@ -982,7 +982,7 @@ def prepare_and_zip_pack(pack, signature_key, delete_test_playbooks=True):
     Returns:
         (bool): Whether the zip was successful
     """
-    task_status = pack.load_user_metadata()
+    task_status = pack.load_user_metadata(marketplace)
     if not pack.should_upload_to_marketplace:
         logging.warning(f"Skipping {pack.name} pack as it is not supported in the current marketplace.")
         pack.status = PackStatus.NOT_RELEVANT_FOR_MARKETPLACE.name
@@ -1070,7 +1070,7 @@ def upload_packs_with_dependencies_zip(extract_destination_path, packs_dependenc
                 continue
             pack_deps = full_deps_graph[pack.name]
             if not (pack.zip_path and os.path.isfile(pack.zip_path)):
-                if not prepare_and_zip_pack(pack, signature_key):
+                if not prepare_and_zip_pack(pack, signature_key, marketplace):
                     logging.warning(f"Skipping dependencies collection for {pack.name}. Failed zipping")
                     continue
             shutil.copy(pack.zip_path, os.path.join(pack_with_dep_path, pack.name + ".zip"))
@@ -1082,7 +1082,7 @@ def upload_packs_with_dependencies_zip(extract_destination_path, packs_dependenc
                 else:
                     dep_pack = packs_dict[dep_name]
                 if not (dep_pack.zip_path and os.path.isfile(dep_pack.zip_path)):
-                    if not prepare_and_zip_pack(dep_pack, signature_key):
+                    if not prepare_and_zip_pack(dep_pack, signature_key, marketplace):
                         logging.error(f"Skipping dependency {pack.name}. Failed zipping")
                         continue
                 shutil.copy(dep_pack.zip_path, os.path.join(pack_with_dep_path, dep_name + '.zip'))
@@ -1158,10 +1158,11 @@ def main():
                   if os.path.exists(os.path.join(extract_destination_path, pack_name))]
     diff_files_list = content_repo.commit(current_commit_hash).diff(content_repo.commit(previous_commit_hash))
 
-    # taking care of private packs
-    is_private_content_updated, private_packs, updated_private_packs_ids = handle_private_content(
-        index_folder_path, private_bucket_name, extract_destination_path, storage_client, pack_names, storage_base_path
-    )
+    if marketplace == 'xsoar':
+        # taking care of private packs, only relevant for xsoar marketplace
+        is_private_content_updated, private_packs, updated_private_packs_ids = handle_private_content(
+            index_folder_path, private_bucket_name, extract_destination_path, storage_client, pack_names, storage_base_path
+        )
 
     if not option.override_all_packs:
         check_if_index_is_updated(index_folder_path, content_repo, current_commit_hash, previous_commit_hash,
@@ -1178,7 +1179,7 @@ def main():
 
     # starting iteration over packs
     for pack in packs_list:
-        if not prepare_and_zip_pack(pack, signature_key, remove_test_playbooks):
+        if not prepare_and_zip_pack(pack, signature_key, marketplace, remove_test_playbooks):
             continue
         task_status = pack.upload_integration_images(storage_bucket, storage_base_path, diff_files_list, True)
         if not task_status:
