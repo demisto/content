@@ -21,10 +21,10 @@ This playbook does not use any scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| latest-downloaded | Time frame for the leaked identities          | Last Year     | Required |
+| latest-downloaded | Time frame for the leaked identities          | Last Year     | Optional |
 | domain-type       | Type of the domain(Email, Authorization, All) | Email | Optional |
 | identities        | String of identities separated by semicolon   | RecordedFuture.Credentials.SearchIdentities | Required |
-| first-downloaded  | Time frame for the leaked identities          | Last Year     | Required |
+| first-downloaded  | Time frame for the leaked identities          | Last Year     | Optional |
 
 ## Playbook Outputs
 ---

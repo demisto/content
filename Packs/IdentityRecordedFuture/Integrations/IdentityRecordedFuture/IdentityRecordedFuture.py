@@ -1,10 +1,9 @@
-"""Recorded Future Integration for Demisto."""
-from typing import Dict, Any, List, Union
+"""Recorded Future Identity Integration for Demisto."""
+from typing import Dict, Any, List, Union, Optional
 import requests
 import json
 import re
 import dateparser
-from datetime import datetime, timedelta
 
 # flake8: noqa: F402,F405 lgtm
 import demistomock as demisto
@@ -22,28 +21,16 @@ requests.packages.urllib3.disable_warnings()  # pylint:disable=no-member
 __version__ = "1.0"
 
 
-def period_to_date(period):
-    current_time = datetime.now()
-    periods_to_date = {
-        "Last 24 Hours": (current_time - timedelta(days=1)).strftime(
-            ISO_DATE_FORMAT
-        ),
-        "Last 7 Days": (current_time - timedelta(weeks=1)).strftime(
-            ISO_DATE_FORMAT
-        ),
-        "Last Month": (current_time - timedelta(days=31)).strftime(
-            ISO_DATE_FORMAT
-        ),
-        "Last 3 Months": (current_time - timedelta(3 * 30)).strftime(
-            ISO_DATE_FORMAT
-        ),
-        "Last 6 Months": (current_time - timedelta(6 * 30)).strftime(
-            ISO_DATE_FORMAT
-        ),
-        "Last Year": (current_time - timedelta(365)).strftime(ISO_DATE_FORMAT),
-        "All time": None,
-    }
-    return periods_to_date[period]
+def period_to_date(period: str) -> Optional[str]:
+    if period in ("All time", ""):
+        return None
+    # Parse return None if it can't parse the input string
+    parsed_date = dateparser.parse(period)
+    if not parsed_date:
+        raise DemistoException(
+            f"The time period you specified '{period}' is incorrect. Please use period as in example."
+        )
+    return parsed_date.strftime(ISO_DATE_FORMAT)
 
 
 class Client(BaseClient):
@@ -58,7 +45,7 @@ class Client(BaseClient):
     def identity_search(
         self,
         domains: List[str],
-        date_period: str,
+        date_period: Optional[str],
         domain_type: List[str],
         password_properties: List[str],
         limit: int,
@@ -86,7 +73,7 @@ class Client(BaseClient):
         email_identities: List[str],
         authorization_identities: List[dict],
         sha1_identities: List[str],
-        date_period: str,
+        date_period: Optional[str],
         password_properties: List[str],
     ) -> Dict[str, Any]:
         """Identity Lookup."""
@@ -411,7 +398,7 @@ def main() -> None:
             return_results(
                 actions.identity_search_command(
                     domains,
-                    demisto_args.get("latest-downloaded", "All time"),
+                    demisto_args.get("latest-downloaded", ""),
                     demisto_args.get("domain-type"),
                     password_properties,
                     limit_identities,
@@ -421,7 +408,7 @@ def main() -> None:
             return_results(
                 actions.identity_lookup_command(
                     demisto_args.get("identities"),
-                    demisto_args.get("first-downloaded", "All time"),
+                    demisto_args.get("first-downloaded", ""),
                     password_properties,
                     domains,
                 )

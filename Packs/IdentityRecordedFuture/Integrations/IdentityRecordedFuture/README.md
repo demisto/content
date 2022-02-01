@@ -136,7 +136,7 @@ Get a detailed info regarding identities.
 
 
 #### Command Example
-```!recordedfuture-identity-lookup identities="fake@fakeyahoo.com;real@notfake.com" first-downloaded="Last 3 Months"```
+```!recordedfuture-identity-lookup identities="fake@fakeyahoo.com;real@notfake.com" first-downloaded="3 Months ago"```
 
 #### Context Example
 ```

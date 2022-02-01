@@ -65,17 +65,9 @@ script:
     arguments:
     - name: latest-downloaded
       required: false
-      auto: PREDEFINED
       defaultValue: "All time"
-      description: Time period for last downloaded time.
-      predefined:
-      - "Last 24 Hours"
-      - "Last 7 Days"
-      - "Last Month"
-      - "Last 3 Months"
-      - "Last 6 Months"
-      - "Last Year"
-      - "All time"
+      description: Time period for last downloaded time.(e.g. "7 days ago",
+        "Three months ago", "Last Year", "All time")
     - name: domain-type
       description: Type of identities to search for (Authorization or Email). If not
         specified use All.
@@ -99,17 +91,9 @@ script:
         test1@google.com").
     - name: first-downloaded
       required: false
-      auto: PREDEFINED
       defaultValue: "All time"
-      description: Time period for last downloaded time.
-      predefined:
-      - "Last 24 Hours"
-      - "Last 7 Days"
-      - "Last Month"
-      - "Last 3 Months"
-      - "Last 6 Months"
-      - "Last Year"
-      - "All time"
+      description: Time period for first downloaded time.(e.g. "7 days ago",
+        "Three months ago", "Last Year", "All time")
     outputs:
     - contextPath: RecordedFuture.Credentials.Identities.identity.subjects
       description: Identity value.

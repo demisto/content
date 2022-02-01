@@ -1,4 +1,3 @@
-from datetime import timedelta, datetime
 from freezegun import freeze_time
 import io
 import os
@@ -6,7 +5,7 @@ import unittest
 import json
 from pathlib import Path
 from unittest.mock import patch, Mock
-from IdentityRecordedFuture import Actions, Client, period_to_date, ISO_DATE_FORMAT
+from IdentityRecordedFuture import Actions, Client, period_to_date
 
 import vcr as vcrpy
 
@@ -61,36 +60,35 @@ def test_client_whoami() -> None:
     assert isinstance(resp, dict) is True
 
 
-@patch(
-    "IdentityRecordedFuture.BaseClient._http_request",
-    return_value={}
-)
+@patch("IdentityRecordedFuture.BaseClient._http_request", return_value={})
 def test_identity_search(mock_http_request) -> None:
     client = create_client()
-    resp = client.identity_search('fake.com', DATETIME_STR_VALUE, ['Email'], [], 0)
+    resp = client.identity_search(
+        "fake.com", DATETIME_STR_VALUE, ["Email"], [], 0
+    )
     assert isinstance(resp, dict) is True
 
 
 def test_period_to_date_none() -> None:
-    period = 'All time'
+    period = "All time"
     period_start = period_to_date(period)
     assert period_start is None
 
 
-@freeze_time("2020-02-02")
+@freeze_time("2020-01-01")
 def test_period_to_date_period() -> None:
-    period = 'Last 3 Months'
-    delta = (datetime.now() - timedelta(3 * 30)).strftime(ISO_DATE_FORMAT)
+    period = "3 Months ago"
+    expected = "2019-10-01T00:00:00.000000Z"
     period_start = period_to_date(period)
     assert isinstance(period_start, str)
-    assert period_start == delta
+    assert period_start == expected
 
 
 class RFTestIdentity(unittest.TestCase):
     def setUp(self) -> None:
         self.domains = ["fake1.com"]
         self.password_properties = ["Letter", "Number"]
-        self.period = "Last 3 Months"
+        self.period = "3 Months ago"
 
     @patch(
         "IdentityRecordedFuture.period_to_date",

@@ -1,2 +1,2 @@
-!recordedfuture-identity-lookup identities="fake@fakeyahoo.com;real@notfake.com" first-downloaded="Last 3 Months"
-!recordedfuture-identity-search latest-downloaded="All time" domain-type=Authorization
+!recordedfuture-identity-lookup identities="fake@fakeyahoo.com;real@notfake.com" first-downloaded="3 Months ago"
+!recordedfuture-identity-search latest-downloaded="Two years ago" domain-type=Authorization
