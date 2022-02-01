@@ -332,9 +332,8 @@ def create_and_upload_marketplace_pack(upload_config: Any, pack: Any, storage_bu
         pack.cleanup()
         return
 
-    task_status, zip_pack_path = pack.zip_pack(extract_destination_path, pack._pack_name, enc_key,
+    task_status, zip_pack_path = pack.zip_pack(extract_destination_path, enc_key,
                                                private_artifacts_dir, secondary_enc_key)
-
     if not task_status:
         pack.status = PackStatus.FAILED_ZIPPING_PACK_ARTIFACTS.name
         pack.cleanup()

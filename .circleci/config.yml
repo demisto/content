@@ -256,7 +256,7 @@ references:
       name: Create ID Set
       when: always
       command: |
-        demisto-sdk create-id-set -o ./Tests/id_set.json --fail-duplicates
+        demisto-sdk create-id-set -o ./Tests/id_set.json
         cp ./Tests/id_set.json $CIRCLE_ARTIFACTS
 
   merge_public_and_private_id_sets: &merge_public_and_private_id_sets
@@ -345,16 +345,6 @@ jobs:
       - *generate_coverage_reports
       - store_test_results:
           path: ./unit-tests
-      - run:
-          name: Slack Notifier
-          shell: /bin/bash
-          command: |
-            if [ -n "${BUCKET_UPLOAD}" ]; then
-              ./Tests/scripts/slack_notifier.sh 'bucket_upload_flow' '' "$SLACK_CHANNEL"
-            else
-              ./Tests/scripts/slack_notifier.sh 'unittests' $ENV_RESULTS_PATH
-            fi
-          when: always
       - *store_artifacts
 
   Run Validations:
@@ -406,14 +396,6 @@ jobs:
             unzip $INDEX_PATH -d $UNZIP_PATH
 
             python3 Tests/Marketplace/validate_landing_page_sections.py -i $UNZIP_PATH
-      - run:
-          name: Slack Notifier
-          shell: /bin/bash
-          command: |
-            if [ -n "${BUCKET_UPLOAD}" ]; then
-              ./Tests/scripts/slack_notifier.sh 'bucket_upload_flow' '' "$SLACK_CHANNEL"
-            fi
-          when: always
       - *store_artifacts
 
 
