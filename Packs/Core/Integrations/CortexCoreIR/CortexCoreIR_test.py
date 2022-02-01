@@ -459,7 +459,7 @@ def test_blocklist_files_command_with_more_than_one_file(requests_mock):
 
     from CortexCoreIR import blocklist_files_command, Client
     test_data = load_test_data('test_data/blocklist_allowlist_files_success.json')
-    expected_command_result = {'Core.blackList.fileHash(val.fileHash == obj.fileHash)': test_data[
+    expected_command_result = {'Core.blocklist.fileHash(val.fileHash == obj.fileHash)': test_data[
         'multi_command_args']['hash_list']}
     requests_mock.post(f'{Core_URL}/public_api/v1/hash_exceptions/blocklist/', json=test_data['api_response'])
 
@@ -467,9 +467,9 @@ def test_blocklist_files_command_with_more_than_one_file(requests_mock):
         base_url=f'{Core_URL}/public_api/v1', headers={}
     )
     client._headers = {}
-    markdown, context, raw = blocklist_files_command(client, test_data['multi_command_args'])
+    res = blocklist_files_command(client, test_data['multi_command_args'])
 
-    assert expected_command_result == context
+    assert expected_command_result == res.outputs
 
 
 def test_blocklist_files_command_with_single_file(requests_mock):
@@ -485,7 +485,7 @@ def test_blocklist_files_command_with_single_file(requests_mock):
     from CortexCoreIR import blocklist_files_command, Client
     test_data = load_test_data('test_data/blocklist_allowlist_files_success.json')
     expected_command_result = {
-        'Core.blackList.fileHash(val.fileHash == obj.fileHash)':
+        'Core.blocklist.fileHash(val.fileHash == obj.fileHash)':
             test_data['single_command_args']['hash_list']}
     requests_mock.post(f'{Core_URL}/public_api/v1/hash_exceptions/blocklist/', json=test_data['api_response'])
 
@@ -493,9 +493,9 @@ def test_blocklist_files_command_with_single_file(requests_mock):
         base_url=f'{Core_URL}/public_api/v1', headers={}
     )
     client._headers = {}
-    markdown, context, raw = blocklist_files_command(client, test_data['single_command_args'])
+    res = blocklist_files_command(client, test_data['single_command_args'])
 
-    assert expected_command_result == context
+    assert expected_command_result == res.outputs
 
 
 def test_blocklist_files_command_with_no_comment_file(requests_mock):
@@ -511,7 +511,7 @@ def test_blocklist_files_command_with_no_comment_file(requests_mock):
     from CortexCoreIR import blocklist_files_command, Client
     test_data = load_test_data('test_data/blocklist_allowlist_files_success.json')
     expected_command_result = {
-        'Core.blackList.fileHash(val.fileHash == obj.fileHash)':
+        'Core.blocklist.fileHash(val.fileHash == obj.fileHash)':
             test_data['no_comment_command_args']['hash_list']}
     requests_mock.post(f'{Core_URL}/public_api/v1/hash_exceptions/blocklist/', json=test_data['api_response'])
 
@@ -519,9 +519,9 @@ def test_blocklist_files_command_with_no_comment_file(requests_mock):
         base_url=f'{Core_URL}/public_api/v1', headers={}
     )
     client._headers = {}
-    markdown, context, raw = blocklist_files_command(client, test_data['no_comment_command_args'])
+    res = blocklist_files_command(client, test_data['no_comment_command_args'])
 
-    assert expected_command_result == context
+    assert expected_command_result == res.outputs
 
 
 def test_allowlist_files_command_with_more_than_one_file(requests_mock):
@@ -536,7 +536,7 @@ def test_allowlist_files_command_with_more_than_one_file(requests_mock):
 
     from CortexCoreIR import allowlist_files_command, Client
     test_data = load_test_data('test_data/blocklist_allowlist_files_success.json')
-    expected_command_result = {'Core.whiteList.fileHash(val.fileHash == obj.fileHash)': test_data[
+    expected_command_result = {'Core.allowlist.fileHash(val.fileHash == obj.fileHash)': test_data[
         'multi_command_args']['hash_list']}
     requests_mock.post(f'{Core_URL}/public_api/v1/hash_exceptions/allowlist/', json=test_data['api_response'])
 
@@ -544,9 +544,9 @@ def test_allowlist_files_command_with_more_than_one_file(requests_mock):
         base_url=f'{Core_URL}/public_api/v1', headers={}
     )
     client._headers = {}
-    markdown, context, raw = allowlist_files_command(client, test_data['multi_command_args'])
+    res = allowlist_files_command(client, test_data['multi_command_args'])
 
-    assert expected_command_result == context
+    assert expected_command_result == res.outputs
 
 
 def test_allowlist_files_command_with_single_file(requests_mock):
@@ -562,7 +562,7 @@ def test_allowlist_files_command_with_single_file(requests_mock):
     from CortexCoreIR import allowlist_files_command, Client
     test_data = load_test_data('test_data/blocklist_allowlist_files_success.json')
     expected_command_result = {
-        'Core.whiteList.fileHash(val.fileHash == obj.fileHash)':
+        'Core.allowlist.fileHash(val.fileHash == obj.fileHash)':
             test_data['single_command_args']['hash_list']}
     requests_mock.post(f'{Core_URL}/public_api/v1/hash_exceptions/allowlist/', json=test_data['api_response'])
 
@@ -570,9 +570,9 @@ def test_allowlist_files_command_with_single_file(requests_mock):
         base_url=f'{Core_URL}/public_api/v1', headers={}
     )
     client._headers = {}
-    markdown, context, raw = allowlist_files_command(client, test_data['single_command_args'])
+    res = allowlist_files_command(client, test_data['single_command_args'])
 
-    assert expected_command_result == context
+    assert expected_command_result == res.outputs
 
 
 def test_allowlist_files_command_with_no_comment_file(requests_mock):
@@ -588,7 +588,7 @@ def test_allowlist_files_command_with_no_comment_file(requests_mock):
     from CortexCoreIR import allowlist_files_command, Client
     test_data = load_test_data('test_data/blocklist_allowlist_files_success.json')
     expected_command_result = {
-        'Core.whiteList.fileHash(val.fileHash == obj.fileHash)': test_data['no_comment_command_args'][
+        'Core.allowlist.fileHash(val.fileHash == obj.fileHash)': test_data['no_comment_command_args'][
             'hash_list']}
     requests_mock.post(f'{Core_URL}/public_api/v1/hash_exceptions/allowlist/', json=test_data['api_response'])
 
@@ -596,9 +596,9 @@ def test_allowlist_files_command_with_no_comment_file(requests_mock):
         base_url=f'{Core_URL}/public_api/v1', headers={}
     )
     client._headers = {}
-    markdown, context, raw = allowlist_files_command(client, test_data['no_comment_command_args'])
+    res = allowlist_files_command(client, test_data['no_comment_command_args'])
 
-    assert expected_command_result == context
+    assert expected_command_result == res.outputs
 
 
 def test_quarantine_files_command(requests_mock):
