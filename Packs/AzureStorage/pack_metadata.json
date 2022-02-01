@@ -15,5 +15,7 @@
     "marketplaces": [
         "xsoar",
         "marketplacev2"
-    ]
+    ],
+    "dependencies": {},
+    "displayedImages": []
 }

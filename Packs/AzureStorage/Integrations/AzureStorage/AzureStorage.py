@@ -8,7 +8,7 @@ urllib3.disable_warnings()
 
 API_VERSION = '2019-06-01'
 
-
+# CHANGE IN PACK
 class ASClient:
     def __init__(self, app_id: str, subscription_id: str, resource_group_name: str, verify: bool, proxy: bool):
         if '@' in app_id:
