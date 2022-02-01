@@ -7,7 +7,6 @@ class Client:
     """
     Client to use in the APN-OS Policy Optimizer integration.
     """
-
     def __init__(self, url: str, username: str, password: str, vsys: str, device_group: str, verify: bool, tid: int):
         # The TID is used to track individual commands send to the firewall/Panorama during a PHP session, and
         # is also used to generate the security token (Data String) that is used to validate each command.
@@ -20,7 +19,12 @@ class Client:
         if not device_group and not vsys:
             raise DemistoException('Set vsys for firewall or Device group for Panorama.')
 
-        self.machine = vsys if vsys else device_group
+        if vsys:  # firewall instance
+            self.machine = vsys
+            self.is_cms_selected = False
+        else:
+            self.machine = device_group
+            self.is_cms_selected = True
         self.verify = verify
         handle_proxy()
         # Use Session() in order to maintain cookies for persisting the login PHP session cookie
@@ -159,7 +163,7 @@ class Client:
             url=f'{self.session_metadata["base_url"]}/php/utils/router.php/PoliciesDirect.getPoliciesByUsage',
             json_cmd=json_cmd)
 
-    def policy_optimizer_get_rules(self, timeframe: str, usage: str, exclude: bool) -> dict:
+    def policy_optimizer_get_rules(self, timeframe: str, usage: str, exclude: bool, position: str) -> dict:
         self.session_metadata['tid'] += 1  # Increment TID
         json_cmd = {
             "action": "PanDirect", "method": "run",
@@ -169,9 +173,9 @@ class Client:
                 [
                     {
                         "type": "security",
-                        "position": "main",
+                        "position": position,
                         "vsysName": self.machine,
-                        "isCmsSelected": False,
+                        "isCmsSelected": self.is_cms_selected,
                         "isMultiVsys": False,
                         "showGrouped": False,
                         "usageAttributes": {
@@ -323,27 +327,42 @@ def policy_optimizer_get_rules_command(client: Client, args: dict) -> CommandRes
     usage = str(args.get('usage'))
     exclude = argToBoolean(args.get('exclude'))
 
-    raw_response = client.policy_optimizer_get_rules(timeframe, usage, exclude)
-    stats = raw_response['result']
-    if '@status' in stats and stats['@status'] == 'error':
-        raise Exception(f'Operation Failed with: {str(stats)}')
-
-    stats = stats['result']
-    if '@count' in stats and stats['@count'] == '0':
-        return CommandResults(readable_output=f'No {usage} rules where found.', raw_response=raw_response)
-
-    rules = stats['entry']
-    if not isinstance(rules, list):
-        rules = rules[0]
-
     headers = ['@name', '@uuid', 'action', 'description', 'source', 'destination']
+
+    if client.is_cms_selected:  # panorama instance
+        raw_response, rules = [], []
+        for position in ['post', 'pre']:
+            response = client.policy_optimizer_get_rules(timeframe, usage, exclude, position)
+            raw_response.append(response)
+            stats = response.get('result') or {}
+            if (stats.get('@status') or '') == 'error':
+                raise Exception(f'Operation Failed with: {stats}')
+
+            cur_rules = (stats.get('result') or {}).get('entry') or []
+            if cur_rules and isinstance(cur_rules, list):
+                rules.extend(cur_rules)
+
+        if rules:
+            table = tableToMarkdown(name=f'PolicyOptimizer {usage}Rules:', t=rules, headers=headers, removeNull=True)
+        else:
+            table = f'No {usage} rules where found.'
+    else:  # firewall instance
+        raw_response = client.policy_optimizer_get_rules(timeframe, usage, exclude, 'main')  # type: ignore
+        stats = raw_response.get('result') or {}  # type: ignore
+        if (stats.get('@status') or '') == 'error':
+            raise Exception(f'Operation Failed with: {stats}')
+
+        rules = (stats.get('result') or {}).get('entry') or []
+        if rules:
+            table = tableToMarkdown(name=f'PolicyOptimizer {usage}Rules:', t=rules, headers=headers, removeNull=True)
+        else:
+            table = f'No {usage} rules where found.'
 
     return CommandResults(
         outputs_prefix=f'PanOS.PolicyOptimizer.{usage}Rules',
         outputs_key_field='@uuid',
         outputs=rules,
-        readable_output=tableToMarkdown(name=f'PolicyOptimizer {usage}Rules:', t=rules, headers=headers,
-                                        removeNull=True),
+        readable_output=table,
         raw_response=raw_response
     )
 
