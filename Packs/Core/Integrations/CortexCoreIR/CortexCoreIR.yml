@@ -2440,6 +2440,147 @@ script:
     description: report FP to wildfire through XDR
     execution: true
     name: core-report-incorrect-wildfire
+  - arguments:
+      - default: false
+        description: Allows to link the response action to the incident that triggered
+          it.
+        isArray: false
+        name: incident_id
+        required: false
+        secret: false
+      - default: false
+        description: String that represents a list of hashed files you want to add to
+          allow list. Must be a valid SHA256 hash.
+        isArray: true
+        name: hash_list
+        required: true
+        secret: false
+      - default: false
+        description: String that represents additional information regarding the action.
+        isArray: false
+        name: comment
+        required: false
+        secret: false
+      - auto: PREDEFINED
+        default: false
+        defaultValue: 'false'
+        description: Whether to response detailed response. default value = false
+        isArray: false
+        name: detailed_response
+        predefined:
+          - 'true'
+          - 'false'
+        required: false
+        secret: false
+    deprecated: false
+    description: Removes requested files from allow list.
+    execution: false
+    name: core-remove-allowlist-files
+  - arguments:
+      - default: false
+        description: Allows to link the response action to the incident that triggered
+          it.
+        isArray: false
+        name: incident_id
+        required: false
+        secret: false
+      - default: false
+        description: String that represents a list of hashed files you want to add to
+          allow list. Must be a valid SHA256 hash.
+        isArray: true
+        name: hash_list
+        required: true
+        secret: false
+      - default: false
+        description: String that represents additional information regarding the action.
+        isArray: false
+        name: comment
+        required: false
+        secret: false
+      - auto: PREDEFINED
+        default: false
+        defaultValue: 'false'
+        description: Whether to response detailed response. default value = false
+        isArray: false
+        name: detailed_response
+        predefined:
+          - 'true'
+          - 'false'
+        required: false
+        secret: false
+    deprecated: false
+    description: Removes requested files from block list.
+    execution: false
+    name: core-remove-blocklist-files
+  - arguments:
+      - default: false
+        description: Name of the exclusion.
+        isArray: false
+        name: name
+        required: true
+        secret: false
+      - default: false
+        description: Filter object for the exclusion.
+        isArray: false
+        name: filterObject
+        required: true
+        secret: false
+      - default: false
+        description: String that represents additional information regarding the action.
+        isArray: false
+        name: comment
+        required: false
+        secret: false
+      - auto: PREDEFINED
+        default: false
+        defaultValue: 'ENABLED'
+        description: Status of exclusion. default value = ENABLED
+        isArray: false
+        name: status
+        predefined:
+          - 'ENABLED'
+          - 'DISABLED'
+        required: false
+        secret: false
+    deprecated: false
+    description: Adds exclusion.
+    execution: false
+    name: core-add-exclusion
+  - arguments:
+      - default: false
+        description: The desired alert_exclusion_id to be removed
+        isArray: false
+        name: alert_exclusion_id
+        required: true
+        secret: false
+    deprecated: false
+    description: Delete exclusion.
+    execution: false
+    name: core-delete-exclusion
+  - arguments:
+      - default: false
+        description: Allows to link the response action to the tenant that triggered it.
+        isArray: false
+        name: tenant_ID
+        required: false
+        secret: false
+      - default: false
+        description: Filter object for the exclusion.
+        isArray: false
+        name: filterObject
+        required: false
+        secret: false
+      - default: false
+        description: Limit for the response. You will get the first "limit" exclusions. Default value is 20.
+        isArray: false
+        name: limit
+        required: false
+        secret: false
+        defaultValue: '20'
+    deprecated: false
+    description: Gets exclusion list.
+    execution: false
+    name: core-get-exclusion
   feed: false
   isfetch: false
   longRunning: false

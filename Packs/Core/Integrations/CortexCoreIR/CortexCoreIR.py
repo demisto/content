@@ -28,45 +28,6 @@ XSOAR_RESOLVED_STATUS_TO_Core = {
 }
 
 
-def convert_epoch_to_milli(timestamp):
-    if timestamp is None:
-        return None
-    if 9 < len(str(timestamp)) < 13:
-        timestamp = int(timestamp) * 1000
-    return int(timestamp)
-
-
-def convert_datetime_to_epoch(the_time=0):
-    if the_time is None:
-        return None
-    try:
-        if isinstance(the_time, datetime):
-            return int(the_time.strftime('%s'))
-    except Exception as err:
-        demisto.debug(err)
-        return 0
-
-
-def convert_datetime_to_epoch_millis(the_time=0):
-    return convert_epoch_to_milli(convert_datetime_to_epoch(the_time=the_time))
-
-
-def generate_current_epoch_utc():
-    return convert_datetime_to_epoch_millis(datetime.now(timezone.utc))
-
-
-def generate_key():
-    return "".join([secrets.choice(string.ascii_letters + string.digits) for _ in range(API_KEY_LENGTH)])
-
-
-def create_auth(api_key):
-    nonce = "".join([secrets.choice(string.ascii_letters + string.digits) for _ in range(NONCE_LENGTH)])
-    timestamp = str(generate_current_epoch_utc())  # Get epoch time utc millis
-    hash_ = hashlib.sha256()
-    hash_.update((api_key + nonce + timestamp).encode("utf-8"))
-    return nonce, timestamp, hash_.hexdigest()
-
-
 class Client(BaseClient):
 
     def __init__(self, base_url: str, headers: dict, timeout: int = 120, proxy: bool = False, verify: bool = False):
@@ -181,7 +142,6 @@ class Client(BaseClient):
 
         if len(filters) > 0:
             request_data['filters'] = filters
-
         res = self._http_request(
             method='POST',
             url_suffix='/incidents/get_incidents/',
@@ -650,6 +610,24 @@ class Client(BaseClient):
         )
         return reply.get('reply')
 
+    def remove_blocklist_files(self, hash_list, comment=None, incident_id=None, detailed_response=False):
+        request_data: Dict[str, Any] = {"hash_list": hash_list}
+        if comment:
+            request_data["comment"] = comment
+        if incident_id:
+            request_data['incident_id'] = incident_id
+        if detailed_response:
+            request_data['get_detailed_response'] = detailed_response
+
+        self._headers['content-type'] = 'application/json'
+        reply = self._http_request(
+            method='POST',
+            url_suffix='/hash_exceptions/blocklist/remove/',
+            json_data={'request_data': request_data},
+            timeout=self.timeout
+        )
+        return reply.get('reply')
+
     def allowlist_files(self, hash_list, comment=None, incident_id=None):
         request_data: Dict[str, Any] = {"hash_list": hash_list}
         if comment:
@@ -663,6 +641,24 @@ class Client(BaseClient):
             url_suffix='/hash_exceptions/allowlist/',
             json_data={'request_data': request_data},
             ok_codes=(201, 200),
+            timeout=self.timeout
+        )
+        return reply.get('reply')
+
+    def remove_allowlist_files(self, hash_list, comment=None, incident_id=None, detailed_response=False):
+        request_data: Dict[str, Any] = {"hash_list": hash_list}
+        if comment:
+            request_data["comment"] = comment
+        if incident_id:
+            request_data['incident_id'] = incident_id
+        if detailed_response:
+            request_data['get_detailed_response'] = detailed_response
+
+        self._headers['content-type'] = 'application/json'
+        reply = self._http_request(
+            method='POST',
+            url_suffix='/hash_exceptions/allowlist/remove/',
+            json_data={'request_data': request_data},
             timeout=self.timeout
         )
         return reply.get('reply')
@@ -1197,6 +1193,49 @@ class Client(BaseClient):
             resp_type='content'
         )
         return reply
+
+    def add_exclusion(self, indicator, name, status="ENABLED", comment=None):
+        request_data: Dict[str, Any] = {
+            'indicator': indicator,
+            'status': status,
+            'name': name
+        }
+
+        res = self._http_request(
+            method='POST',
+            url_suffix='/alerts_exclusion/add/',
+            json_data={'request_data': request_data},
+            timeout=self.timeout
+        )
+        return res.get("reply")
+
+    def delete_exclusion(self, alert_exclusion_id: int):
+        request_data: Dict[str, Any] = {
+            'alert_exclusion_id': alert_exclusion_id,
+        }
+
+        res = self._http_request(
+            method='POST',
+            url_suffix='/alerts_exclusion/delete/',
+            json_data={'request_data': request_data},
+            timeout=self.timeout
+        )
+        return res.get("reply")
+
+    def get_exclusion(self, limit, tenant_id=None, filter=None):
+        request_data: Dict[str, Any] = {}
+        if tenant_id:
+            request_data['tenant_id'] = tenant_id
+        if filter:
+            request_data['filter'] = filter
+        res = self._http_request(
+            method='POST',
+            url_suffix='/alerts_exclusion/',
+            json_data={'request_data': request_data},
+            timeout=self.timeout
+        )
+        reply = res.get("reply")
+        return reply[:limit]
 
 
 def create_endpoint_context(audit_logs):
@@ -1834,12 +1873,36 @@ def blocklist_files_command(client, args):
         raise ValueError(res)
     markdown_data = [{'fileHash': file_hash} for file_hash in hash_list]
 
-    return (
-        tableToMarkdown('Blacklist Files', markdown_data, headers=['fileHash'], headerTransform=pascalToSpace),
-        {
-            f'{INTEGRATION_CONTEXT_BRAND}.blackList.fileHash(val.fileHash == obj.fileHash)': hash_list
-        },
-        argToList(hash_list)
+    return CommandResults(
+        readable_output=tableToMarkdown('Blocklist Files',
+                                        markdown_data,
+                                        headers=['fileHash'],
+                                        headerTransform=pascalToSpace),
+        outputs={f'{INTEGRATION_CONTEXT_BRAND}.blocklist.fileHash(val.fileHash == obj.fileHash)': hash_list},
+        raw_response=res
+    )
+
+
+def remove_blocklist_files_command(client: Client, args: Dict) -> CommandResults:
+    hash_list = argToList(args.get('hash_list'))
+    comment = args.get('comment')
+    incident_id = arg_to_number(args.get('incident_id'))
+    detailed_response = argToBoolean(args.get('detailed_response', False))
+
+    res = client.remove_blocklist_files(hash_list=hash_list,
+                                        comment=comment,
+                                        incident_id=incident_id,
+                                        detailed_response=detailed_response)
+    if isinstance(res, dict) and res.get('err_extra') != "All hashes have already been added to the allow or block list":
+        raise ValueError(res)
+    markdown_data = [{'fileHash': file_hash} for file_hash in hash_list]
+
+    return CommandResults(
+        readable_output=tableToMarkdown('Blocklist Files Removed',
+                                        markdown_data,
+                                        headers=['fileHash'],
+                                        headerTransform=pascalToSpace),
+        raw_response=res
     )
 
 
@@ -1848,14 +1911,34 @@ def allowlist_files_command(client, args):
     comment = args.get('comment')
     incident_id = arg_to_number(args.get('incident_id'))
 
-    client.allowlist_files(hash_list=hash_list, comment=comment, incident_id=incident_id)
+    res = client.allowlist_files(hash_list=hash_list, comment=comment, incident_id=incident_id)
     markdown_data = [{'fileHash': file_hash} for file_hash in hash_list]
-    return (
-        tableToMarkdown('Whitelist Files', markdown_data, ['fileHash'], headerTransform=pascalToSpace),
-        {
-            f'{INTEGRATION_CONTEXT_BRAND}.whiteList.fileHash(val.fileHash == obj.fileHash)': hash_list
-        },
-        argToList(hash_list)
+    return CommandResults(
+        readable_output=tableToMarkdown('Allowlist Files',
+                                        markdown_data,
+                                        headers=['fileHash'],
+                                        headerTransform=pascalToSpace),
+        outputs={f'{INTEGRATION_CONTEXT_BRAND}.allowlist.fileHash(val.fileHash == obj.fileHash)': hash_list},
+        raw_response=res
+    )
+
+
+def remove_allowlist_files_command(client, args):
+    hash_list = argToList(args.get('hash_list'))
+    comment = args.get('comment')
+    incident_id = arg_to_number(args.get('incident_id'))
+    detailed_response = argToBoolean(args.get('detailed_response', False))
+    res = client.remove_allowlist_files(hash_list=hash_list,
+                                        comment=comment,
+                                        incident_id=incident_id,
+                                        detailed_response=detailed_response)
+    markdown_data = [{'fileHash': file_hash} for file_hash in hash_list]
+    return CommandResults(
+        readable_output=tableToMarkdown('Allowlist Files Removed',
+                                        markdown_data,
+                                        headers=['fileHash'],
+                                        headerTransform=pascalToSpace),
+        raw_response=res
     )
 
 
@@ -2560,6 +2643,49 @@ def run_script_kill_process_command(client: Client, args: Dict) -> List[CommandR
     return all_processes_response
 
 
+def add_exclusion_command(client: Client, args: Dict) -> CommandResults:
+    name = args.get('name')
+    status = args.get('status', "ENABLED")
+    indicator = args.get('filterObject')
+    comment = args.get('comment')
+
+    res = client.add_exclusion(name=name,
+                               status=status,
+                               indicator=json.loads(indicator),
+                               comment=comment)
+
+    return CommandResults(
+        readable_output=tableToMarkdown('Add Exclusion', res),
+        outputs={f'{INTEGRATION_CONTEXT_BRAND}.exclusion.rule_id(val.rule_id == obj.rule_id)': res.get("rule_id")},
+        raw_response=res
+    )
+
+
+def delete_exclusion_command(client: Client, args: Dict) -> CommandResults:
+    alert_exclusion_id = arg_to_number(args.get('alert_exclusion_id'))
+
+    res = client.delete_exclusion(alert_exclusion_id=alert_exclusion_id)
+
+    return CommandResults(
+        readable_output=f"Successfully deleted the following exclusion: {alert_exclusion_id}",
+        raw_response=res
+    )
+
+
+def get_exclusion_command(client: Client, args: Dict) -> CommandResults:
+
+    res = client.get_exclusion(tenant_id=args.get('tenant_ID'),
+                               filter=args.get('filterObject'),
+                               limit=arg_to_number(args.get('limit', 20)))
+
+    return CommandResults(
+        outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.exclusion',
+        outputs=res,
+        readable_output=tableToMarkdown('Exclusion', res),
+        raw_response=res
+    )
+
+
 def report_incorrect_wildfire_command(client: Client, args) -> CommandResults:
     file_hash = args.get('file_hash')
     reason = args.get('reason')
@@ -2659,14 +2785,39 @@ def main():
     """
     Executes an integration command
     """
+    # command = demisto.command()
+    # LOG(f'Command being called is {command}')
+    # args = demisto.args()
+    # api_key = demisto.getLicenseCustomField("Core.ApiKey")
+    # api_host_name = demisto.getLicenseCustomField("Core.ApiHostName")
+    # api_header = demisto.getLicenseCustomField("Core.ApiHeader")
+    # base_url = urljoin("http://" + demisto.getLicenseCustomField("Core.ApiHost"), '/public_api/v1')
+    # proxy = demisto.params().get('proxy')
+    # verify_cert = not demisto.params().get('insecure', False)
+    # try:
+    #     timeout = int(demisto.params().get('timeout', 120))
+    # except ValueError as e:
+    #     demisto.debug(f'Failed casting timeout parameter to int, falling back to 120 - {e}')
+    #     timeout = 120
+    #
+    # headers = {
+    #               "HOST": api_host_name,
+    #               api_header: api_key,
+    #               "Content-Type": "application/json"
+    #           }
+    # demisto.log(headers)
+    # client = Client(
+    #     base_url=base_url,
+    #     proxy=proxy,
+    #     verify=verify_cert,
+    #     headers=headers,
+    #     timeout=timeout
+    # )
+
     command = demisto.command()
     LOG(f'Command being called is {command}')
     args = demisto.args()
-    api_key = demisto.params().get('apikey')
-    if not api_key:
-        api_key = demisto.getLicenseCustomField('CortexCoreIR.api_key')
-        if not api_key:
-            raise DemistoException('Could not resolve the API key from the license nor the instance configuration.')
+    api_key_hash = demisto.params().get('apikey')
     api_key_id = demisto.params().get('apikey_id')
     base_url = urljoin(demisto.params().get('url'), '/public_api/v1')
     proxy = demisto.params().get('proxy')
@@ -2678,15 +2829,8 @@ def main():
         demisto.debug(f'Failed casting timeout parameter to int, falling back to 120 - {e}')
         timeout = 120
 
-    nonce = "".join([secrets.choice(string.ascii_letters + string.digits) for _ in range(64)])
-    timestamp = str(int(datetime.now(timezone.utc).timestamp()) * 1000)
-    auth_key = "%s%s%s" % (api_key, nonce, timestamp)
-    auth_key = auth_key.encode("utf-8")
-    api_key_hash = hashlib.sha256(auth_key).hexdigest()
-
     headers = {
-        "x-xdr-timestamp": timestamp,
-        "x-xdr-nonce": nonce,
+        "Content-Type": "application/json",
         "x-xdr-auth-id": str(api_key_id),
         "Authorization": api_key_hash
     }
@@ -2756,10 +2900,10 @@ def main():
             return_outputs(*get_audit_agent_reports_command(client, args))
 
         elif command == 'core-blocklist-files':
-            return_outputs(*blocklist_files_command(client, args))
+            return_results(blocklist_files_command(client, args))
 
         elif command == 'core-allowlist-files':
-            return_outputs(*allowlist_files_command(client, args))
+            return_results(allowlist_files_command(client, args))
 
         elif command == 'core-quarantine-files':
             polling_args = {
@@ -2924,6 +3068,22 @@ def main():
 
         elif command == 'core-report-incorrect-wildfire':
             return_results(report_incorrect_wildfire_command(client, args))
+
+        elif command == 'core-remove-blocklist-files':
+            return_results(remove_blocklist_files_command(client, args))
+
+        elif command == 'core-remove-allowlist-files':
+            return_results(remove_allowlist_files_command(client, args))
+
+        elif command == 'core-add-exclusion':
+            return_results(add_exclusion_command(client, args))
+
+        elif command == 'core-delete-exclusion':
+            return_results(delete_exclusion_command(client, args))
+
+        elif command == 'core-get-exclusion':
+            return_results(get_exclusion_command(client, args))
+
     except Exception as err:
         demisto.error(traceback.format_exc())
         return_error(str(err))
