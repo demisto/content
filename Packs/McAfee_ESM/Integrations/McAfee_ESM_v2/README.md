@@ -1,5 +1,5 @@
 
-Run queries and receive alarms from Intel Security ESM. Support version 10 and above.
+Run queries and receive alarms from Intel Security ESM.
 This integration was integrated and tested with version 11.3 of McAfee ESM v2.
 Previous versions have been declared [EOL](https://kc.mcafee.com/corporate/index?page=content&id=KB94822) by the vendor.
 
