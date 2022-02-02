@@ -348,7 +348,7 @@ def policy_optimizer_get_rules_command(client: Client, args: dict) -> CommandRes
             name=f'PolicyOptimizer {usage}-{rule_type}-rules:', t=rules, headers=headers, removeNull=True
         )
     else:
-        table = f'No {usage} {rule_type} rules where found.'
+        table = f'No {usage} {rule_type} rules were found.'
 
     return CommandResults(
         outputs_prefix=f'PanOS.PolicyOptimizer.{usage}Rules',
