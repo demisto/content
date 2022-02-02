@@ -28,6 +28,7 @@
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "6.5.0",
+<<<<<<< HEAD
 	"x2_fields": "matching_service_rule_id",
     "Aliases": [
         {
@@ -37,3 +38,7 @@
       
     ]
 }
+=======
+	"x2_fields": "matching_service_rule_id"
+}
+>>>>>>> origin/master

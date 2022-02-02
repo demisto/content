@@ -27,6 +27,7 @@
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "6.5.0",
+<<<<<<< HEAD
 	"x2_fields": "os_actor_process_image_name",
     "Aliases": [
         {
@@ -35,4 +36,7 @@
         }
       
     ]
+=======
+	"x2_fields": "os_actor_process_image_name"
+>>>>>>> origin/master
 }

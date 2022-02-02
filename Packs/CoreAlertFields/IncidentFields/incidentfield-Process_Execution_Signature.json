@@ -28,6 +28,7 @@
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "6.5.0",
+<<<<<<< HEAD
     "x2_fields": "action_process_signature_status",
     "Aliases": [
         {
@@ -44,4 +45,7 @@
         }
       
     ]
+=======
+    "x2_fields": "action_process_signature_status"
+>>>>>>> origin/master
 }
