@@ -15,6 +15,7 @@
   "CommonScripts",
   "CommonPlaybooks",
   "CommonTypes",
+  "CoreAlertFields",
   "HelloWorld",
   "ExportIndicators",
   "Malware",
