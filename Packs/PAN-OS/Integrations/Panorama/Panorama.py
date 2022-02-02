@@ -3,7 +3,7 @@ from collections import defaultdict
 from dataclasses import dataclass, fields
 from typing import Generator, Callable, Union
 
-import panos.errors
+import panos.errors  # type: ignore
 
 # -- This is a way to get around trimming commonserverpython on import
 try:
@@ -12,15 +12,16 @@ except:
     from CommonServerPython import *
 
 from xml.etree.ElementTree import Element
-from panos.base import PanDevice, VersionedPanObject, Root, ENTRY, VersionedParamPath
-from panos.panorama import Panorama, DeviceGroup, Template, PanoramaCommitAll
-from panos.firewall import Firewall
-from panos.device import Vsys
-from panos.network import Zone
-from panos.policies import Rulebase, PreRulebase, PostRulebase, SecurityRule
-from panos.objects import (
-    AddressObject, AddressGroup, ServiceObject, ServiceGroup, ApplicationObject, ApplicationGroup,
-    LogForwardingProfile, LogForwardingProfileMatchList, SecurityProfileGroup)
+from panos.base import PanDevice, VersionedPanObject, Root, ENTRY, VersionedParamPath  # type: ignore
+from panos.panorama import Panorama, DeviceGroup, Template, PanoramaCommitAll  # type: ignore
+from panos.firewall import Firewall  # type: ignore
+from panos.device import Vsys  # type: ignore
+from panos.network import Zone  # type: ignore
+from panos.policies import Rulebase, PreRulebase, PostRulebase, SecurityRule  # type: ignore
+from panos.objects import (AddressObject, AddressGroup, ServiceObject, ServiceGroup)  # type: ignore
+from panos.objects import (LogForwardingProfile, LogForwardingProfileMatchList)  # type: ignore
+from panos.objects import (ApplicationObject, SecurityProfileGroup)  # type: ignore
+from panos.objects import ApplicationGroup  # type: ignore
 from urllib.error import HTTPError
 
 import shutil
@@ -34,7 +35,7 @@ import requests
 from urllib.parse import urlparse
 
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+requests.packages.urllib3.disable_warnings()  # type: ignore
 
 ''' GLOBALS '''
 URL = ''
@@ -175,8 +176,9 @@ def http_request(uri: str, method: str, headers: dict = {},
                                'entry']]
                 else:
                     ips = \
-                    json_result['response']['msg']['line']['uid-response']['payload']['register']['entry'][
-                        '@ip']
+                        json_result['response']['msg']['line']['uid-response']['payload']['register'][
+                            'entry'][
+                            '@ip']
                 return_results(
                     'IP ' + str(
                         ips) + ' already exist in the tag. All submitted IPs were not registered to the tag.')
@@ -3334,7 +3336,7 @@ def panorama_list_applications_command(predefined: Optional[str] = None):
     """
     List all applications
     """
-    predefined = predefined == 'true'
+    predefined = predefined == 'true'  # type: ignore
     applications_arr = panorama_list_applications(predefined)
     applications_arr_output = prettify_applications_arr(applications_arr)
     headers = ['Id', 'Name', 'Risk', 'Category', 'SubCategory', 'Technology', 'Description']
@@ -7408,6 +7410,28 @@ def run_op_command(device: Union[Panorama, Firewall], cmd: str, **kwargs) -> Ele
     return result
 
 
+def find_text_in_element(element: Element, tag: str) -> str:
+    result = element.find(tag)
+    if result is None:
+        raise LookupError(f"Tag {tag} not found in element.")
+
+    if not hasattr(result, "text"):
+        raise LookupError(f"Tag {tag} has no text.")
+
+    if result.text:
+        return result.text
+    else:
+        return ""
+
+
+def get_element_attribute(element: Element, attribute: str) -> str:
+    if attribute in element.attrib:
+        return element.attrib.get(attribute, "")
+
+    else:
+        raise AttributeError(f"Element is missing requested attribute {attribute}")
+
+
 @dataclass
 class FrozenTopology(object):
     panorama_objects: list
@@ -7443,22 +7467,22 @@ class Topology:
         """
         ha_pair_dict = {}
         device_op_command_result: Element = run_op_command(device, "show devices all")
+        device_entry: Element
         for device_entry in device_op_command_result.findall("./result/devices/entry"):
-            serial_number: str = device_entry.find("./serial").text
-            connected: str = device_entry.find("./connected").text
+            serial_number: str = find_text_in_element(device_entry, "./serial")
+            connected: str = find_text_in_element(device_entry, "./connected")
             if connected == "yes":
                 new_firewall_object = Firewall(serial=serial_number)
                 device.add(new_firewall_object)
                 self.add_device_object(new_firewall_object)
-                ha_peer_serial_element: Element = device_entry.find("./ha/peer/serial")
+                ha_peer_serial_element: Optional[Element] = device_entry.find("./ha/peer/serial")
                 ha_peer_serial = None
-                if hasattr(ha_peer_serial_element, "text"):
+                if ha_peer_serial_element and hasattr(ha_peer_serial_element, "text"):
                     ha_peer_serial = ha_peer_serial_element.text
 
                 if ha_peer_serial:
                     # The key is always the active device.
-                    ha_status: Element = device_entry.find("./ha/state")
-                    ha_status = ha_status.text
+                    ha_status: str = find_text_in_element(device_entry, "./ha/state")
                     if ha_status == "active":
                         self.ha_active_devices[serial_number] = ha_peer_serial
 
@@ -7468,16 +7492,15 @@ class Topology:
 
         self.ha_pair_serials = ha_pair_dict
 
-    def add_device_object(self, device: PanDevice):
+    def add_device_object(self, device: Union[PanDevice, Panorama, Firewall]):
         if type(device) is Panorama:
-            device: Panorama
             # Check if HA is active and if so, what the system state is.
             panorama_ha_state_result: Element = run_op_command(device, "show high-availability state")
             enabled = panorama_ha_state_result.find("./result/enabled")
 
             if enabled == "yes":
                 # Only associate Firewalls with the active Panorama instance
-                state = panorama_ha_state_result.find("./result/group/local-info/state").text
+                state = find_text_in_element(panorama_ha_state_result, "./result/group/local-info/state")
                 if "active" in state:
                     # TODO: Work out how to get the Panorama peer serial..
                     self.ha_active_devices[device.serial] = "peer serial not implemented here.."
@@ -7493,7 +7516,6 @@ class Topology:
             return
 
         elif type(device) is Firewall:
-            device: Firewall
             self.firewall_objects[device.serial] = device
             return
 
@@ -7539,7 +7561,7 @@ class Topology:
         return active_top_level_devices
 
     @staticmethod
-    def filter_devices(devices: dict, filter_str: str):
+    def filter_devices(devices: dict, filter_str: Optional[str] = None):
         """Filters a list of devices to find matching entries based on the string"""
         # Exact match based on device serial number
         if not filter_str:
@@ -7598,7 +7620,7 @@ class Topology:
                         api_key=api_key
                     )
                 else:
-                    device: PanDevice = PanDevice.create_from_device(
+                    device = PanDevice.create_from_device(
                         hostname=hostname,
                         api_username=username,
                         api_password=password,
@@ -7685,12 +7707,12 @@ class Topology:
         Given a device, returns all the possible configuration containers that can contain objects -
         vsys and device-groups.
         """
-        containers: list[tuple[PanDevice, Callable]] = []
+        containers: list[Union[tuple[PanDevice, Callable], tuple[PanDevice, PanDevice]]] = []
         # for device in self.all(device_filter_string):
         # Changed to only refer to active devices, no passives.
         device_retrieval_func = self.active_devices
         if top_level_devices_only:
-            device_retrieval_func = self.active_top_level_devices
+            device_retrieval_func = self.active_top_level_devices  # type: ignore
 
         for device in device_retrieval_func(device_filter_string):
             device_groups = DeviceGroup.refreshall(device)
@@ -7717,7 +7739,7 @@ class Topology:
                     if type(container[1]) is Panorama:
                         return_containers.append(container)
                 if type(container[1]) not in [Panorama, Firewall]:
-                    if container[1].name == container_name:
+                    if container[1].name == container_name:  # type: ignore
                         return_containers.append(container)
         else:
             return_containers = containers
@@ -7884,19 +7906,19 @@ class ShowSystemInfoResultData(ResultData):
     sw_version: str
     operational_mode: str
     # Nullable fields - when using Panorama these can be null
-    ipv6_address: str = None
-    default_gateway: str = None
-    public_ip_address: str = None
-    hostname: str = None
-    av_version: str = None
-    av_release_date: str = None
-    app_version: str = None
-    app_release_date: str = None
-    threat_version: str = None
-    threat_release_date: str = None
-    wildfire_version: str = None
-    wildfire_release_date: str = None
-    url_filtering_version: str = None
+    ipv6_address: str = ""
+    default_gateway: str = ""
+    public_ip_address: str = ""
+    hostname: str = ""
+    av_version: str = ""
+    av_release_date: str = ""
+    app_version: str = ""
+    app_release_date: str = ""
+    threat_version: str = ""
+    threat_release_date: str = ""
+    wildfire_version: str = ""
+    wildfire_release_date: str = ""
+    url_filtering_version: str = ""
 
 
 @dataclass
@@ -7914,7 +7936,7 @@ class ShowSystemInfoSummaryData(ResultData):
     family: str
     model: str
     uptime: str
-    hostname: str = None
+    hostname: str = ""
 
 
 @dataclass
@@ -8317,7 +8339,7 @@ class DeviceGroupInformation(ResultData):
     connected: str
     hostname: str
     last_commit_all_state_sp: str
-    name: str = None
+    name: str = ""
 
     _output_prefix = OUTPUT_PREFIX + "DeviceGroupOp"
     _title = "PAN-OS Operational Device Group Status"
@@ -8337,7 +8359,7 @@ class TemplateStackInformation(ResultData):
     connected: str
     hostname: str
     last_commit_all_state_tpl: str
-    name: str = None
+    name: str = ""
 
     _output_prefix = OUTPUT_PREFIX + "TemplateStackOp"
     _title = "PAN-OS Operational Template Stack status"
@@ -8455,7 +8477,7 @@ def flatten_xml_to_dict(element: Element, d: dict, class_type: Callable):
 def dataclass_from_element(
         device: Union[Panorama, Firewall],
         class_type: Callable,
-        element: Element,
+        element: Optional[Element],
 ):
     """
     Turns an XML `Element` Object into an instance of the provided dataclass. Dataclass paramaters must match
@@ -8698,8 +8720,20 @@ class ObjectGetter:
 class HygieneCheckRegister:
     """Stores all the hygiene checks this integration is capable of and their assocaited details."""
 
-    @staticmethod
-    def get_hygiene_check_register(issue_codes: list[str]) -> dict[str, ConfigurationHygieneCheck]:
+    def __init__(self, register: dict):
+        self.register: dict = register
+
+    def get(self, issue_code) -> ConfigurationHygieneCheck:
+        issue_check = self.register.get(issue_code)
+        if not issue_check:
+            raise DemistoException("Invalid Hygiene check issue name")
+        return issue_check
+
+    def values(self):
+        return self.register.values()
+
+    @classmethod
+    def get_hygiene_check_register(cls, issue_codes: list[str]):
         check_register = {
             "BP-V-1": ConfigurationHygieneCheck(
                 issue_code="BP-V-1",
@@ -8753,7 +8787,7 @@ class HygieneCheckRegister:
             ),
         }
 
-        return {issue_code: check_register[issue_code] for issue_code in issue_codes}
+        return cls({issue_code: check_register[issue_code] for issue_code in issue_codes})
 
 
 class HygieneLookups:
@@ -8765,7 +8799,7 @@ class HygieneLookups:
             device_filter_str: str = None,
     ):
         issues = []
-        lf_profile_list = []
+        lf_profile_list: list[LogForwardingProfile] = []
         check_register = HygieneCheckRegister.get_hygiene_check_register([
             "BP-V-1",
             "BP-V-2",
@@ -8838,9 +8872,9 @@ class HygieneLookups:
     @staticmethod
     def get_conforming_threat_profiles(
             profiles: Union[list[VulnerabilityProfile], list[AntiSpywareProfile]],
-            minimum_block_severities: list[str] = None,
-            minimum_alert_severities: list[str] = None
-    ):
+            minimum_block_severities: list[str],
+            minimum_alert_severities: list[str]
+    ) -> Union[list[VulnerabilityProfile], list[AntiSpywareProfile]]:
         """Given a list of threat profiles, return any that conform to best practices."""
         conforming_profiles = []
 
@@ -8885,7 +8919,7 @@ class HygieneLookups:
         if not minimum_alert_severities:
             minimum_alert_severities = BestPractices.VULNERABILITY_ALERT_THRESHOLD
 
-        conforming_profiles = []
+        conforming_profiles: Union[list[VulnerabilityProfile], list[AntiSpywareProfile]] = []
         issues = []
 
         check_register = HygieneCheckRegister.get_hygiene_check_register([
@@ -8931,7 +8965,7 @@ class HygieneLookups:
         if not minimum_alert_severities:
             minimum_alert_severities = BestPractices.SPYWARE_ALERT_THRESHOLD
 
-        conforming_profiles = []
+        conforming_profiles: Union[list[VulnerabilityProfile], list[AntiSpywareProfile]] = []
         issues = []
         check_register = HygieneCheckRegister.get_hygiene_check_register([
             "BP-V-5"
@@ -8998,9 +9032,9 @@ class HygieneLookups:
     @staticmethod
     def get_all_conforming_spyware_profiles(
             topology: Topology,
+            minimum_block_severities: list[str],
+            minimum_alert_severities: list[str],
             device_filter_str: str = None,
-            minimum_block_severities: list[str] = None,
-            minimum_alert_severities: list[str] = None
     ) -> list[PanosObjectReference]:
 
         result = []
@@ -9025,9 +9059,9 @@ class HygieneLookups:
     @staticmethod
     def get_all_conforming_vulnerability_profiles(
             topology: Topology,
+            minimum_block_severities: list[str],
+            minimum_alert_severities: list[str],
             device_filter_str: str = None,
-            minimum_block_severities: list[str] = None,
-            minimum_alert_severities: list[str] = None
     ) -> list[PanosObjectReference]:
 
         result = []
@@ -9052,7 +9086,7 @@ class HygieneLookups:
     @staticmethod
     def check_url_filtering_profiles(topology: Topology, device_filter_str: str = None):
         issues: list[ConfigurationHygieneIssue] = []
-        conforming_profiles = []
+        conforming_profiles: list[URLFilteringProfile] = []
         check_register = HygieneCheckRegister.get_hygiene_check_register([
             "BP-V-6"
         ])
@@ -9198,7 +9232,7 @@ class PanoramaCommand:
             if type(device) is Panorama:
                 response = run_op_command(device, PanoramaCommand.GET_DEVICEGROUPS_COMMAND)
                 for device_group_xml in response.findall("./result/devicegroups/entry"):
-                    dg_name = device_group_xml.attrib.get("name")
+                    dg_name = get_element_attribute(device_group_xml, "name")
                     for device_xml in device_group_xml.findall("./devices/entry"):
                         r: DeviceGroupInformation = dataclass_from_element(device, DeviceGroupInformation,
                                                                            device_xml)
@@ -9216,7 +9250,7 @@ class PanoramaCommand:
             if type(device) is Panorama:
                 response = run_op_command(device, PanoramaCommand.GET_TEMPLATE_STACK_COMMAND)
                 for template_stack_xml in response.findall("./result/template-stack/entry"):
-                    template_name = template_stack_xml.attrib.get("name")
+                    template_name = get_element_attribute(template_stack_xml, "name")
                     for device_xml in template_stack_xml.findall("./devices/entry"):
                         r: TemplateStackInformation = dataclass_from_element(device, TemplateStackInformation,
                                                                              device_xml)
@@ -9242,25 +9276,25 @@ class PanoramaCommand:
             template_stack_names = set([x.name for x in template_stacks])
 
             if device_group_filter:
-                device_group_names = [x for x in device_group_names if x in device_group_filter]
+                device_group_names = set([x for x in device_group_names if x in device_group_filter])
 
             if template_stack_filter:
-                template_stack_names = [x for x in template_stack_names if x in template_stack_filter]
+                template_stack_names = set([x for x in template_stack_names if x in template_stack_filter])
 
             for dg_name in device_group_names:
                 device_group_commit = PanoramaCommitAll(
                     style="device group",
                     name=dg_name
                 )
-                result_job_id = device.commit(cmd=device_group_commit)
+                result_job_id = device.commit(cmd=device_group_commit)  # type: ignore
                 result.append(PushStatus(
                     hostid=resolve_host_id(device),
                     commit_type="devicegroup",
                     name=dg_name,
-                    job_id=result_job_id,
+                    job_id=result_job_id,  # type: ignore
                     commit_all_status="Initiated",
-                    device_status=None,
-                    device=None
+                    device_status="",
+                    device=""
                 ))
 
             for template_name in template_stack_names:
@@ -9268,15 +9302,15 @@ class PanoramaCommand:
                     style="template stack",
                     name=template_name
                 )
-                result_job_id = device.commit(cmd=template_stack_commit)
+                result_job_id = device.commit(cmd=template_stack_commit)  # type: ignore
                 result.append(PushStatus(
                     hostid=resolve_host_id(device),
                     commit_type="template-stack",
                     name=template_name,
-                    job_id=result_job_id,
+                    job_id=result_job_id,  # type: ignore
                     commit_all_status="Initiated",
-                    device_status=None,
-                    device=None
+                    device_status="",
+                    device=""
                 ))
 
         return result
@@ -9287,23 +9321,23 @@ class PanoramaCommand:
         for device in topology.active_top_level_devices():
             response = run_op_command(device, UniversalCommand.SHOW_JOBS_COMMAND)
             for job in response.findall("./result/job"):
-                commit_type = job.find("./type").text
+                commit_type = find_text_in_element(job, "./type")
                 if commit_type in ["CommitAll"]:
-                    commit_all_status = job.find("./status").text
-                    job_id = job.find("./id").text
-                    commit_type = job.find("./type").text
+                    commit_all_status = find_text_in_element(job, "./status")
+                    job_id = find_text_in_element(job, "./id")
+                    commit_type = find_text_in_element(job, "./type")
                     dg_name_xml = job.find("./dgname")
                     tpl_name_xml = job.find("./tplname")
                     name = ""
-                    if hasattr(dg_name_xml, "text"):
-                        name = dg_name_xml.text
+                    if hasattr(dg_name_xml, "text") and dg_name_xml:
+                        name = dg_name_xml.text  # type: ignore
 
-                    if hasattr(tpl_name_xml, "text"):
-                        name = tpl_name_xml.text
+                    if hasattr(tpl_name_xml, "text") and tpl_name_xml:
+                        name = tpl_name_xml.text  # type: ignore
 
                     for device_xml in job.findall("./devices/entry"):
-                        serial = device_xml.find("./serial-no").text
-                        device_status = device_xml.find("./result").text
+                        serial = find_text_in_element(device_xml, "./serial-no")
+                        device_status = find_text_in_element(device_xml, "./result")
                         result.append(PushStatus(
                             hostid=resolve_host_id(device),
                             job_id=job_id,
@@ -9429,11 +9463,11 @@ class UniversalCommand:
         for device in topology.active_devices():
             response = run_op_command(device, UniversalCommand.SHOW_JOBS_COMMAND)
             for job in response.findall("./result/job"):
-                commit_type = job.find("./type").text
+                commit_type = find_text_in_element(job, "./type")
                 if commit_type in ["Commit", "CommitAll"]:
-                    status = job.find("./status").text
-                    job_id = job.find("./id").text
-                    commit_type = job.find("./type").text
+                    status = find_text_in_element(job, "./status")
+                    job_id = find_text_in_element(job, "./id")
+                    commit_type = find_text_in_element(job, "./type")
                     if type(device) is Panorama:
                         device_type = "Panorama"
                     else:
@@ -9462,8 +9496,8 @@ class UniversalCommand:
             )
 
         show_system_info = UniversalCommand.get_system_info(topology, hostid)
-        show_system_info = show_system_info.result_data[0]
-        if show_system_info.operational_mode != "normal":
+        show_system_info_result = show_system_info.result_data[0]
+        if show_system_info_result.operational_mode != "normal":
             return CheckSystemStatus(
                 hostid=hostid,
                 up=False
@@ -9476,7 +9510,7 @@ class UniversalCommand:
 
     @staticmethod
     def show_jobs(topology: Topology, device_filter_str: str = None, job_type: str = None,
-                  status=None, id: int = None) -> ShowJobsAllResultData:
+                  status=None, id: int = None) -> list[ShowJobsAllResultData]:
         result_data = []
         for device in topology.all(filter_string=device_filter_str):
             response = run_op_command(device, UniversalCommand.SHOW_JOBS_COMMAND)
@@ -9494,7 +9528,7 @@ class UniversalCommand:
         # The below is very important for XSOAR to de-duplicate the returned key. If there is only one obj
         # being returned, return it as a dict instead of a list.
         if len(result_data) == 1:
-            return result_data[0]
+            return result_data[0]  # type: ignore
 
         return result_data
 
@@ -9595,11 +9629,11 @@ class FirewallCommand:
                     hostid=firewall_host_id,
                     status="HA Not enabled.",
                     active=True,
-                    peer=None
+                    peer=""
                 ))
             else:
                 state_information_element = run_op_command(firewall, FirewallCommand.HA_STATE_COMMAND)
-                state = state_information_element.find("./result/group/local-info/state").text
+                state = find_text_in_element(state_information_element, "./result/group/local-info/state")
 
                 if state == "active":
                     result.append(ShowHAState(
@@ -9617,17 +9651,17 @@ class FirewallCommand:
                     ))
 
         if len(result) == 1:
-            return result[0]
+            return result[0]  # type: ignore
         return result
 
     @staticmethod
     def change_status(topology: Topology, hostid: str, state: str) -> HighAvailabilityStateStatus:
-        for firewall in topology.firewalls(filter_string=hostid):
-            run_op_command(firewall, FirewallCommand.REQUEST_STATE_PREFIX + f" {state}")
-            return HighAvailabilityStateStatus(
-                hostid=resolve_host_id(firewall),
-                state=state
-            )
+        firewall = list(topology.firewalls(filter_string=hostid))[0]
+        run_op_command(firewall, FirewallCommand.REQUEST_STATE_PREFIX + f" {state}")
+        return HighAvailabilityStateStatus(
+            hostid=resolve_host_id(firewall),
+            state=state
+        )
 
     @staticmethod
     def get_routes(topology: Topology,
@@ -9642,7 +9676,7 @@ class FirewallCommand:
 
         # Calculate summary as number of routes by network interface and VR
         row: ShowRoutingRouteResultData
-        count_data = {}
+        count_data: dict[str, dict] = {}
         for row in result_data:
             if not count_data.get(row.hostid):
                 count_data[row.hostid] = defaultdict(int)
@@ -9669,8 +9703,8 @@ class FirewallCommand:
 
 
 class CommandRegister:
-    commands: dict = {}
-    file_commands: dict = {}
+    commands: dict[str, Callable] = {}
+    file_commands: dict[str, Callable] = {}
 
     def command(self, command_name: str):
         """
@@ -9720,7 +9754,7 @@ class CommandRegister:
             return command_result
 
         # Convert the dataclasses into dicts
-        outputs = {}
+        outputs: Union[list, dict] = {}
         summary_list = []
         title = ""
         output_prefix = ""
@@ -9747,7 +9781,8 @@ class CommandRegister:
                 }
 
             if result.result_data:
-                outputs["Result"] = [vars(x) for x in result.result_data if hasattr(x, "__dict__")]
+                outputs["Result"] = [vars(x) for x in result.result_data if
+                                     hasattr(x, "__dict__")]  # type: ignore
 
             title = result._title
             output_prefix = result._output_prefix
@@ -9793,11 +9828,11 @@ class CommandRegister:
         """
         if command_name in self.commands:
             func = self.commands.get(command_name)
-            return self.run_command_result_command(command_name, func, topology, demisto_args)
+            return self.run_command_result_command(command_name, func, topology, demisto_args)  # type: ignore
 
         if command_name in self.file_commands:
             func = self.file_commands.get(command_name)
-            return self.run_file_command(func, topology, demisto_args)
+            return self.run_file_command(func, topology, demisto_args)  # type: ignore
 
         raise DemistoException("Command not found.")
 
@@ -9840,8 +9875,8 @@ def get_route_summaries(topology: Topology,
 
 
 @COMMANDS.command("pan-os-platform-get-routes")
-def get_route_summaries(topology: Topology,
-                        device_filter_string: str = None) -> ShowRoutingRouteCommandResult:
+def get_routes(topology: Topology,
+               device_filter_string: str = None) -> ShowRoutingRouteCommandResult:
     """
     Pulls all route summary information from the topology
     :param topology: `Topology` instance !no-auto-argument
@@ -9890,8 +9925,8 @@ def get_template_stacks(topology: Topology, device_filter_string: str = None) ->
 
 
 @COMMANDS.command("pan-os-platform-get-global-counters")
-def get_system_info(topology: Topology,
-                    device_filter_string: str = None) -> ShowCounterGlobalCommmandResult:
+def get_global_counters(topology: Topology,
+                        device_filter_string: str = None) -> ShowCounterGlobalCommmandResult:
     """
     Gets global counter information from all the PAN-OS firewalls in the topology
     :param topology: `Topology` instance !no-auto-argument
@@ -9903,8 +9938,8 @@ def get_system_info(topology: Topology,
 
 
 @COMMANDS.command("pan-os-platform-get-bgp-peers")
-def get_system_info(topology: Topology,
-                    device_filter_string: str = None) -> ShowRoutingProtocolBGPCommandResult:
+def get_bgp_peers(topology: Topology,
+                  device_filter_string: str = None) -> ShowRoutingProtocolBGPCommandResult:
     """
     Retrieves all BGP peer information from the PAN-OS firewalls in the topology.
     :param topology: `Topology` instance !no-auto-argument
@@ -9966,19 +10001,19 @@ def get_device_state(topology: Topology, hostid: str) -> FileInfoResult:
 
 
 @COMMANDS.command("pan-os-platform-get-ha-state")
-def get_ha_state(topology: Topology, device_filter_string: str = None) -> ShowHAState:
+def get_ha_state(topology: Topology, device_filter_string: str = None) -> list[ShowHAState]:
     """
     Get the HA state and assocaited details from the given device and any other details.
     :param topology: `Topology` instance !no-auto-argument
     :param device_filter_string: String to filter to only show specific hostnames or serial numbers.
     """
-    result: ShowHAState = FirewallCommand.get_ha_status(topology, device_filter_string)
+    result: list[ShowHAState] = FirewallCommand.get_ha_status(topology, device_filter_string)
     return result
 
 
 @COMMANDS.command("pan-os-platform-get-jobs")
 def get_jobs(topology: Topology, device_filter_string: str = None, status: str = None, job_type: str = None,
-             id: int = None) -> ShowJobsAllResultData:
+             id: int = None) -> list[ShowJobsAllResultData]:
     """
     Get all the jobs from the devices in the environment, or a single job when ID is specified.
 
@@ -9992,7 +10027,7 @@ def get_jobs(topology: Topology, device_filter_string: str = None, status: str =
     if id:
         id = int(id)
 
-    result: ShowJobsAllResultData = UniversalCommand.show_jobs(
+    result: list[ShowJobsAllResultData] = UniversalCommand.show_jobs(
         topology,
         device_filter_string,
         job_type=job_type,
@@ -10269,7 +10304,7 @@ def check_security_rules(topology: Topology,
 
 def hygiene_issue_dict_to_object(issue_dicts: Union[list[dict], dict]) -> list[ConfigurationHygieneIssue]:
     if type(issue_dicts) is not list:
-        issue_dicts = [issue_dicts]
+        issue_dicts = [issue_dicts]  # type: ignore
 
     issues: list[ConfigurationHygieneIssue] = []
     for issue_dict in issue_dicts:
@@ -10432,7 +10467,7 @@ def get_commit_status(topology: Topology, match_job_id: list[str] = None) -> lis
 
 
 @COMMANDS.command("pan-os-config-get-push-status")
-def get_commit_status(
+def get_push_status(
         topology: Topology,
         match_job_id: list[str] = None,
 
@@ -10471,7 +10506,8 @@ def get_object(
         topology=topology,
         device_filter_string=device_filter_string,
         object_name=object_name,
-        object_type=object_type,
+        # Fixing the ignore below would rfequire adding union handling to code generation script.
+        object_type=object_type,  # type: ignore
         container_filter=parent,
         use_regex=use_regex
     )
@@ -10486,7 +10522,7 @@ class DemistoParameters:
     """
     hostnames: str
     credentials: dict
-    api_key: str = None
+    api_key: str = ""
 
 
 def convert_params_to_object(params: dict) -> DemistoParameters:
@@ -10494,10 +10530,10 @@ def convert_params_to_object(params: dict) -> DemistoParameters:
     server_url = params.get('server')
     parsed_url = urlparse(server_url)
     hostname = parsed_url.hostname
-    api_key = params.get('key')
+    api_key = params.get('key', '')
 
     return DemistoParameters(
-        hostnames=hostname,
+        hostnames=hostname,  # type: ignore
         api_key=api_key,
         credentials={}
     )
