@@ -227,7 +227,7 @@ script:
       type: string
     - contextPath: File.Type
       description: Type of the file.
-      type: string
+      type: stringd
     - contextPath: File.Relationships
       description: A list of Relationships associated with the queried malware file(Optional on configurtion).
       type: Unknown
