@@ -241,7 +241,8 @@ def test_sepio_query_system_events(requests_mock):
         'min_severity': 'Notice',
         'category': ['USB', 'Network'],
         'source': 'DESKTOP-9LR722S (192.168.100.128)',
-        'peripheral_type': '1,2,3'
+        'peripheral_type': '1,2,3',
+        'from_eventid': '1',
     }
 
     response = sepio_query_system_events_command(client, args)
