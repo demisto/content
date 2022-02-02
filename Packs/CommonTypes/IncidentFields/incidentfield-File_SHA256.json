@@ -27,7 +27,6 @@
     "version": -1,
     "fromVersion": "5.5.0",
     "openEnded": true,
-    "x2_fields": "action_file_sha256",
     "marketplaces": [
         "xsoar"
     ]
