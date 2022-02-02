@@ -148,7 +148,7 @@ def format_urls(non_formatted_urls: List[str]) -> List[Dict]:
     """
 
     def format_single_url(non_formatted_url: str) -> List[str]:
-        demisto.debug(f"Format URL {non_formatted_url}")
+        demisto.debug(f"Starting to format URL {non_formatted_url}")
         parse_results: ParseResult = urlparse(non_formatted_url)
         additional_redirect_url: Optional[str] = None
         if re.match(ATP_REGEX, non_formatted_url):
