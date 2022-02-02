@@ -1,43 +1,40 @@
-{
-	"last_fetch_eventid": "406",
-	[
-		{
-			"HostIdentifier": "DESKTOP-9LR722S",
-			"IpAddress": "192.168.100.128",
-			"UUID": "BFEBFBFF000906E9S3007C4002F0055fac80da104202200da18eba0a588",
-			"OsVersion": "Windows 10 Pro 64-bit",
-			"HardwareModel": "Dell Inc.  PowerEdge T130||4||SKU=NotProvided;ModelName=PowerEdge T130",
-			"NicInfo": [
-				"50:9A:4C:79:F1:BF||Broadcom||Broadcom NetXtreme Gigabit Ethernet",
-				"50:9A:4C:79:F1:C0||Broadcom||Broadcom NetXtreme Gigabit Ethernet"
-			],
-			"LastUpdate": "2020-06-21T14:43:50.250177",
-			"Status": "Free",
-			"HasUnapprovedPeripherals": false,
-			"HasVulnerablePeripherals": false,
-			"HasKnownAttackTools": false,
-			"LastConfiguration": "2020-06-18T15:37:03",
-			"Version": "2.5.3.0",
-			"License": "Activated"
-		},
-		{
-			"HostIdentifier": "DESKTOP-ANTONY",
-			"IpAddress": "192.168.100.120",
-			"UUID": "BFEBFBFF000806EAL1HF8C4003Z",
-			"OsVersion": "Windows 10 Pro 64-bit",
-			"HardwareModel": "LENOVO ThinkPad E580 20KS0039IV||2||LENOVO_MT_20KS_BU_Think_FM_ThinkPad E580",
-			"NicInfo": [
-				"E8:6A:64:72:C2:BF||Realtek||Realtek PCIe GbE Family Controller",
-				"A0:A4:C5:14:DA:CF||Intel Corporation||Intel(R) Dual Band Wireless-AC 3165"
-			],
-			"LastUpdate": "2020-06-21T14:43:52.17317",
-			"Status": "Free",
-			"HasUnapprovedPeripherals": false,
-			"HasVulnerablePeripherals": false,
-			"HasKnownAttackTools": false,
-			"LastConfiguration": "2020-06-18T14:49:11",
-			"Version": "2.5.3.0",
-			"License": "Activated"
-		}
-	]
-}
+[
+    {
+        "HostIdentifier": "DESKTOP-9LR722S",
+        "IpAddress": "192.168.100.128",
+        "UUID": "BFEBFBFF000906E9S3007C4002F0055fac80da104202200da18eba0a588",
+        "OsVersion": "Windows 10 Pro 64-bit",
+        "HardwareModel": "Dell Inc.  PowerEdge T130||4||SKU=NotProvided;ModelName=PowerEdge T130",
+        "NicInfo": [
+            "50:9A:4C:79:F1:BF||Broadcom||Broadcom NetXtreme Gigabit Ethernet",
+            "50:9A:4C:79:F1:C0||Broadcom||Broadcom NetXtreme Gigabit Ethernet"
+        ],
+        "LastUpdate": "2020-06-21T14:43:50.250177",
+        "Status": "Free",
+        "HasUnapprovedPeripherals": false,
+        "HasVulnerablePeripherals": false,
+        "HasKnownAttackTools": false,
+        "LastConfiguration": "2020-06-18T15:37:03",
+        "Version": "2.5.3.0",
+        "License": "Activated"
+    },
+    {
+        "HostIdentifier": "DESKTOP-ANTONY",
+        "IpAddress": "192.168.100.120",
+        "UUID": "BFEBFBFF000806EAL1HF8C4003Z",
+        "OsVersion": "Windows 10 Pro 64-bit",
+        "HardwareModel": "LENOVO ThinkPad E580 20KS0039IV||2||LENOVO_MT_20KS_BU_Think_FM_ThinkPad E580",
+        "NicInfo": [
+            "E8:6A:64:72:C2:BF||Realtek||Realtek PCIe GbE Family Controller",
+            "A0:A4:C5:14:DA:CF||Intel Corporation||Intel(R) Dual Band Wireless-AC 3165"
+        ],
+        "LastUpdate": "2020-06-21T14:43:52.17317",
+        "Status": "Free",
+        "HasUnapprovedPeripherals": false,
+        "HasVulnerablePeripherals": false,
+        "HasKnownAttackTools": false,
+        "LastConfiguration": "2020-06-18T14:49:11",
+        "Version": "2.5.3.0",
+        "License": "Activated"
+    }
+]
