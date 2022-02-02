@@ -2894,8 +2894,7 @@ def endpoint_command(client: MsClient, args: dict) -> List[CommandResults]:
     Returns:
         CommandResults list.
     """
-    headers = ['ID', 'ComputerDNSName', 'OSPlatform', 'LastIPAddress', 'LastExternalIPAddress', 'HealthStatus',
-               'RiskScore', 'ExposureLevel']
+    headers = ['ID', 'Hostname', 'OS', 'OSVersion', 'IPAddress', 'Status', 'MACAddress', 'Vendor']
     hostnames = argToList(args.get('hostname', ''))
     ips = argToList(args.get('ip', ''))
     ids = argToList(args.get('id', ''))
@@ -2912,9 +2911,10 @@ def endpoint_command(client: MsClient, args: dict) -> List[CommandResults]:
     for machine in machines_response.get('value', []):
         machine_data = get_machine_data(machine)
         machine_data['MACAddress'] = get_machine_mac_address(machine)
-        human_readable = tableToMarkdown('Microsoft Defender ATP Machine:', machine_data, headers=headers,
-                                         removeNull=True)
         endpoint_indicator = create_endpoint_verdict(machine_data)
+        human_readable = tableToMarkdown('Microsoft Defender ATP Machine:',
+                                         endpoint_indicator.to_context()[Common.Endpoint.CONTEXT_PATH], headers=headers,
+                                         removeNull=True)
         machines_outputs.append(CommandResults(
             readable_output=human_readable,
             outputs_prefix='MicrosoftATP.Machine',
