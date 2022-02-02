@@ -7,9 +7,9 @@
 		"CrowdStrike Falcon Detection": {
 			"dontMapEventToLabels": true,
 			"internalMapping": {
-				"status": {
+				"state": {
 					"complex": null,
-					"simple": "labels.status"
+					"simple": "state"
 				}
 			}
 		},
@@ -18,11 +18,11 @@
 			"internalMapping": {
 				"status": {
 					"complex": null,
-					"simple": "labels.state"
+					"simple": "status"
 				},
 				"tag": {
 					"complex": null,
-					"simple": "labels.tags"
+					"simple": "tags"
 				}
 			}
 		}

@@ -159,9 +159,9 @@ STATUS_NUM_TO_TEXT = {20: 'New',
 
 ''' MIRRORING DICTIONARIES & PARAMS '''
 
-DETECTION_STATUS = {'new', 'in_progress', 'true_positive', 'false_positive', 'ignored'}
+DETECTION_STATE = {'new', 'in_progress', 'true_positive', 'false_positive', 'ignored'}
 
-CS_FALCON_DETECTION_OUTGOING_ARGS = {'status': f'Updated detection status, one of {"/".join(DETECTION_STATUS)}'}
+CS_FALCON_DETECTION_OUTGOING_ARGS = {'state': f'Updated detection state, one of {"/".join(DETECTION_STATE)}'}
 
 CS_FALCON_INCIDENT_OUTGOING_ARGS = {'tag': 'A tag that have been added or removed from the incident',
                                     'status': f'Updated incident status, one of {"/".join(STATUS_TEXT_TO_NUM.keys())}'}
@@ -1508,18 +1508,22 @@ def resolve_incident(ids: List[str], status: str):
     if status not in STATUS_TEXT_TO_NUM:
         raise DemistoException(f'CrowdStrike Falcon Error: '
                                f'Status given is {status} and it is not in {STATUS_TEXT_TO_NUM.keys()}')
+    return update_incident_request(ids, STATUS_TEXT_TO_NUM[status], "update_status")
+
+
+def update_incident_request(ids: List[str], value: str, action_name: str):
     data = {
         "action_parameters": [
             {
-                "name": "update_status",
-                "value": STATUS_TEXT_TO_NUM[status]
+                "name": action_name,
+                "value": value
             }
         ],
         "ids": ids
     }
-    http_request(method='POST',
-                 url_suffix='/incidents/entities/incident-actions/v1',
-                 json=data)
+    return http_request(method='POST',
+                        url_suffix='/incidents/entities/incident-actions/v1',
+                        json=data)
 
 
 def list_host_groups(filter: Optional[str], limit: Optional[str], offset: Optional[str]) -> Dict:
@@ -1649,6 +1653,19 @@ def get_modified_remote_data_command(args: Dict[str, Any]):
         modified_ids_to_mirror.append(str(detection_id))
 
     return GetModifiedRemoteDataResponse(modified_ids_to_mirror)
+
+
+def update_detection_request(ids: List[str], state: str):
+    if state not in DETECTION_STATE:
+        raise DemistoException(f'CrowdStrike Falcon Error: '
+                               f'Status given is {state} and it is not in {DETECTION_STATE}')
+    data = {
+        "status": state,
+        "ids": ids
+    }
+    return http_request(method='PATCH',
+                        url_suffix='/detects/entities/detects/v2',
+                        json=data)
 
 
 def update_remote_system_command(args: Dict[str, Any]) -> str:
