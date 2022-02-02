@@ -1,9 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-import hashlib
 import secrets
-import string
 import tempfile
 from datetime import timezone
 from typing import Dict, Optional, List, Tuple, Union
