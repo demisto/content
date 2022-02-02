@@ -4378,8 +4378,8 @@ Ti.ReadWrite.All
 3. Maximum batch size for one API call is 500.
 
 ##### Note
-Please read [here](https://docs.microsoft.com/en-us/microsoft-365/security/defender-endpoint/ti-indicator?view=o365-worldwide) about a Microsoft Defender for Endpoint indicator resource type
-
+Please read [here](https://docs.microsoft.com/en-us/microsoft-365/security/defender-endpoint/ti-indicator?view=o365-worldwide) about the Microsoft Defender for Endpoint indicator resource type.
+We suggest using the <insert_automation_name>[insert_automation_readme?] to load the XSOAR IOCs to MSDE indicator format.
 #### Base Command
 
 `microsoft-atp-indicator-batch-update`
