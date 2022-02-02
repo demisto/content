@@ -15,7 +15,7 @@ THREAT_OUTPUT = {u'cylance_score': -1.0, u'name': u'SysMonitor.exe',
                  }
 
 
-def test_get_threats():
+def test_create_dbot_score_entry():
     """
     Given
         - a threat and a dbot score
@@ -29,3 +29,4 @@ def test_get_threats():
     dbot_score = translate_score(threat['cylance_score'], FILE_THRESHOLD)
     dbot_score_entry = create_dbot_score_entry(THREAT_OUTPUT, dbot_score)
     assert isinstance(dbot_score_entry, Common.DBotScore)
+

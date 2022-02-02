@@ -73,6 +73,7 @@ def generate_jwt_times():
 
 
 def api_call(uri, method='post', headers={}, body={}, params={}, accept_404=False):
+    # pragma: no cover
     """
     Makes an API call to the server URL with the supplied uri, method, headers, body and params
     """
@@ -221,6 +222,7 @@ def get_devices():
 
 
 def get_devices_request(page=None, page_size=None):
+    # pragma: no cover
     access_token = get_authentication_token(scope=SCOPE_DEVICE_LIST)
     headers = {
         'Content-Type': 'application/json',
@@ -302,6 +304,7 @@ def get_device():
 
 
 def get_device_request(device_id):
+    # pragma: no cover
     access_token = get_authentication_token(scope=SCOPE_DEVICE_READ)
     headers = {
         'Content-Type': 'application/json',
@@ -378,6 +381,7 @@ def get_device_by_hostname():
 
 
 def get_hostname_request(hostname):
+    # pragma: no cover
     access_token = get_authentication_token(scope=SCOPE_DEVICE_READ)
     headers = {
         'Content-Type': 'application/json',
@@ -427,6 +431,7 @@ def update_device():
 
 
 def update_device_request(device_id, name=None, policy_id=None, add_zones=None, remove_zones=None):
+    # pragma: no cover
     access_token = get_authentication_token(scope=SCOPE_DEVICE_UPDATE)
     headers = {
         'Content-Type': 'application/json',
@@ -467,12 +472,7 @@ def get_device_threats():
             threat['cylance_score'] = normalize_score(threat['cylance_score'])
             threshold = demisto.args().get('threshold', FILE_THRESHOLD)
             dbot_score = translate_score(threat['cylance_score'], int(threshold))
-        dbot_score_array.append({
-            'Indicator': threat.get('sha256'),
-            'Type': 'file',
-            'Vendor': 'Cylance Protect',
-            'Score': dbot_score
-        })
+        dbot_score_array.append(create_dbot_score_entry(threat, dbot_score).to_context())
     if device_threats:
         threats_context = createContext(data=device_threats, keyTransform=underscoreToCamelCase)
         threats_context = add_capitalized_hash_to_context(threats_context)
@@ -495,6 +495,7 @@ def get_device_threats():
 
 
 def get_device_threats_request(device_id, page=None, page_size=None):
+    # pragma: no cover
     access_token = get_authentication_token(scope=SCOPE_DEVICE_THREAT_LIST)
     headers = {
         'Content-Type': 'application/json',
@@ -536,6 +537,7 @@ def get_policies():
 
 
 def get_policies_request(page=None, page_size=None):
+    # pragma: no cover
     access_token = get_authentication_token(scope=SCOPE_POLICY_LIST)
     headers = {
         'Content-Type': 'application/json',
@@ -570,6 +572,7 @@ def create_zone():
 
 
 def create_zone_request(name, policy_id, criticality):
+    # pragma: no cover
     access_token = get_authentication_token(scope=SCOPE_ZONE_CREATE)
     headers = {
         'Content-Type': 'application/json',
@@ -607,6 +610,7 @@ def get_zones():
 
 
 def get_zones_request(page=None, page_size=None):
+    # pragma: no cover
     access_token = get_authentication_token(scope=SCOPE_ZONE_LIST)
     headers = {
         'Content-Type': 'application/json',
@@ -644,6 +648,7 @@ def get_zone():
 
 
 def get_zone_request(zone_id):
+    # pragma: no cover
     access_token = get_authentication_token(scope=SCOPE_ZONE_READ)
     headers = {
         'Content-Type': 'application/json',
@@ -684,6 +689,7 @@ def update_zone():
 
 
 def update_zone_request(zone_id, name, policy_id, criticality):
+    # pragma: no cover
     access_token = get_authentication_token(scope=SCOPE_ZONE_UPDATE)
     headers = {
         'Content-Type': 'application/json',
@@ -721,12 +727,7 @@ def get_threat():
         context_threat = add_capitalized_hash_to_context(context_threat)
         ec = {
             'File': context_threat,
-            'DBotScore': {
-                'Indicator': sha256,
-                'Type': 'file',
-                'Vendor': 'Cylance Protect',
-                'Score': dbot_score
-            }
+            'DBotScore': create_dbot_score_entry(threat, dbot_score).to_context()
         }
         title = 'Cylance Protect Threat ' + sha256
 
@@ -743,6 +744,7 @@ def get_threat():
 
 
 def get_threat_request(sha256):
+    # pragma: no cover
     access_token = get_authentication_token(scope=SCOPE_THREAT_READ)
     headers = {
         'Content-Type': 'application/json',
@@ -798,6 +800,7 @@ def get_threats():
 
 
 def get_threats_request(page=None, page_size=None):
+    # pragma: no cover
     access_token = get_authentication_token(scope=SCOPE_THREAT_LIST)
     headers = {
         'Content-Type': 'application/json',
@@ -884,6 +887,7 @@ def get_threat_devices():
 
 
 def get_threat_devices_request(threat_hash, page=None, page_size=None):
+    # pragma: no cover
     access_token = get_authentication_token(scope=SCOPE_THREAT_DEVICE_LIST)
     headers = {
         'Content-Type': 'application/json',
@@ -914,12 +918,7 @@ def get_list():
             threat['cylance_score'] = normalize_score(threat['cylance_score'])
             threshold = demisto.args().get('threshold', FILE_THRESHOLD)
             dbot_score = translate_score(threat['cylance_score'], int(threshold))
-        dbot_score_array.append({
-            'Indicator': threat['sha256'],
-            'Type': 'file',
-            'Vendor': 'Cylance Protect',
-            'Score': dbot_score
-        })
+        dbot_score_array.append(create_dbot_score_entry(threat, dbot_score).to_context())
     if lst:
         context_list = createContext(data=lst, keyTransform=underscoreToCamelCase, removeNull=True)
         context_list = add_capitalized_hash_to_context((context_list))
@@ -942,6 +941,7 @@ def get_list():
 
 
 def get_list_request(list_type_id, page=None, page_size=None):
+    # pragma: no cover
     access_token = get_authentication_token(scope=SCOPE_GLOBAL_LIST)
     headers = {
         'Content-Type': 'application/json',
@@ -1004,6 +1004,7 @@ def get_list_entry_by_hash(sha256=None, list_type_id=None):
 
 
 def get_indicators_report():
+    # pragma: no cover
     url = 'https://protect.cylance.com/Reports/ThreatDataReportV1/indicators/' + demisto.args()['token']
     res = requests.request('GET', url, verify=USE_SSL)
     filename = 'Indicators_Report.csv'
@@ -1109,6 +1110,7 @@ def download_threat():
 
 
 def download_threat_request(hash):
+    # pragma: no cover
     access_token = get_authentication_token(scope=SCOPE_THREAT_READ)
     headers = {
         'Content-Type': 'application/json',
@@ -1163,6 +1165,7 @@ def add_hash_to_list():
 
 
 def add_hash_to_list_request(sha256, list_type, reason, category=None):
+    # pragma: no cover
     access_token = get_authentication_token(scope=SCOPE_GLOBAL_LIST_CREATE)
     headers = {
         'Content-Type': 'application/json',
@@ -1211,6 +1214,7 @@ def delete_hash_from_lists():
 
 
 def delete_hash_from_lists_request(sha256, list_type):
+    # pragma: no cover
     access_token = get_authentication_token(scope=SCOPE_GLOBAL_LIST_DELETE)
     headers = {
         'Content-Type': 'application/json',
@@ -1271,6 +1275,7 @@ def delete_devices():
 
 
 def delete_devices_request(device_ids):
+    # pragma: no cover
     access_token = get_authentication_token()
     headers = {
         'Content-Type': 'application/json',
@@ -1403,6 +1408,7 @@ def get_policy_details():
 
 
 def get_policy_details_request(policy_id):
+    # pragma: no cover
     access_token = get_authentication_token(scope=SCOPE_POLICY_READ)
     headers = {
         'Content-Type': 'application/json',
