@@ -331,22 +331,19 @@ def policy_optimizer_get_rules_command(client: Client, args: dict) -> CommandRes
     position = args.get('position') or 'post'
     rule_type = args.get('rule_type') or 'security'
 
-    headers = ['@name', '@uuid', 'action', 'description', 'source', 'destination']
+    position = position if client.is_cms_selected else 'main'  # firewall instance only has position main
 
-    if client.is_cms_selected:  # panorama instance
-        raw_response = client.policy_optimizer_get_rules(
-            timeframe=timeframe, usage=usage, exclude=exclude, position=position, rule_type=rule_type  # type: ignore
-        )
-    else:  # firewall instance
-        raw_response = client.policy_optimizer_get_rules(
-            timeframe=timeframe, usage=usage, exclude=exclude, position='main', rule_type=rule_type  # type: ignore
-        )
+    raw_response = client.policy_optimizer_get_rules(
+        timeframe=timeframe, usage=usage, exclude=exclude, position=position, rule_type=rule_type  # type: ignore
+    )
+
     stats = raw_response.get('result') or {}
     if (stats.get('@status') or '') == 'error':
         raise Exception(f'Operation Failed with: {stats}')
 
     rules = (stats.get('result') or {}).get('entry') or []
     if rules:
+        headers = ['@name', '@uuid', 'action', 'description', 'source', 'destination']
         table = tableToMarkdown(
             name=f'PolicyOptimizer {usage}-{rule_type}-rules:', t=rules, headers=headers, removeNull=True
         )

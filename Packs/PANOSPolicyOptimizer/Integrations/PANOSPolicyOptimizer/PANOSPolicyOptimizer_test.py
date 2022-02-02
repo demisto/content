@@ -1,4 +1,6 @@
 import pytest
+import json
+import io
 from CommonServerPython import *
 from PANOSPolicyOptimizer import Client, policy_optimizer_get_rules_command
 
@@ -12,6 +14,11 @@ def get_firewall_instance_client():
 
 def get_panorama_instance_client():
     return Client(url=BASE_URL, username='test', password='test', vsys='', device_group='test', verify=False, tid=0)
+
+
+def read_json_file(path):
+    with io.open(path, mode='r', encoding='utf-8') as f:
+        return json.loads(f.read())
 
 
 QUERYING_RULES_PARAMS = [
@@ -44,9 +51,7 @@ def test_body_request_is_valid_when_querying_rules(mocker, client, position):
     """
     mocker.patch.object(client, 'token_generator', return_value='123')
     response = requests.Response()
-    response._content = b'{"type":"rpc","tid":"51","action":"PanDirect","method":"run",' \
-                        b'"predefinedCacheUpdate":"true","result":{"@status":"success",' \
-                        b'"result":{"@total-count":"0","@count":"0","@max-bytes":"0"}}}'
+    response._content = b'{}'
 
     response_mocker = mocker.patch.object(client.session, 'post', return_value=response)
 
@@ -87,7 +92,7 @@ CLIENTS = [
 def test_querying_rules_is_valid(mocker, client):
     """
     Given
-        - a client instance and a valid mocked response.
+        - a client instance and a valid mocked security rules response.
 
     When
         - querying rules in firewall/panorama instances.
@@ -96,21 +101,9 @@ def test_querying_rules_is_valid(mocker, client):
         - Verify that the output for both cases returns expected responses.
     """
     mocker.patch.object(client, 'token_generator', return_value='123')
-    response = requests.Response()
-    response._content = b'{"type":"rpc","tid":"51","action":"PanDirect","method":"run",' \
-                        b'"predefinedCacheUpdate":"true","result":{"@status":"success","result":{"@total-count":"1",' \
-                        b'"@count":"1","entry":[{"@name":"test",' \
-                        b'"@uuid":"123",' \
-                        b'"@__recordInfo":"{\\"permission\\":\\"readwrite\\",\\"xpathId\\":\\"vsys\\",\\"vsysName\\' \
-                        b'":\\"Lab-Devices\\",\\"position\\":\\"post\\"}","action":"drop","description":"any","source' \
-                        b'":{"member":["5.5.5.5"]},"destination":{"member":["any"]},"application":' \
-                        b'{"member":["any"]},"source-user":{"member":["any"]},"from":{"member":["any"]},"to":' \
-                        b'{"member":["any"]},"service":{"member":["any"]},"negate-source":"no","negate-destination":' \
-                        b'"no","disabled":"no","option":{"disable-server-response-inspection":"no"}' \
-                        b',"rule-state":"Unused","rule-creation-timestamp":"1626849818",' \
-                        b'"rule-modification-timestamp":"1626849818"}]}}}'
+    mocker.patch.object(client.session, 'post')
+    mocker.patch.object(json, 'loads', return_value=read_json_file(path='test_data/valid_security_rules_response.json'))
 
-    mocker.patch.object(client.session, 'post', return_value=response)
     rules = policy_optimizer_get_rules_command(
         client=client, args={'timeframe': '30', 'usage': 'Unused', 'exclude': 'false'}
     )
