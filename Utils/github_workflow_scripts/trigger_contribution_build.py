@@ -9,7 +9,7 @@ import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 CONTRIBUTION_BUILD_INSTANCE_URL = "https://content-gold.paloaltonetworks.com/instance/" \
-                                  "execute/Generic Webhook_trigger_contribution_build"
+                                  "execute/GenericWebhook_trigger_contribution_build"
 
 
 def arguments_handler():
@@ -36,7 +36,7 @@ def trigger_generic_webhook(options):
     username = options.username
     password = options.password
     body = {
-        "name": "Generic Webhook_trigger_contribution_build",
+        "name": "GenericWebhook_trigger_contribution_build",
         "raw_json": {"BaseBranch": base_branch, "PullRequestNumber": pr_number, "ContribBranch": contrib_branch,
                      "ProjectID": "2596"},
     }
