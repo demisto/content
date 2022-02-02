@@ -1003,16 +1003,22 @@ def isolate_machine_command(client: MsClient, args: dict):
     isolation_type = args.get('isolation_type')
     machines_all_action = []
     raw_response = []
+    failed_machines = {}  # if we got an error, we will return the machine ids that failed
     for machine_id in machine_ids:
-        machine_action_response = client.isolate_machine(machine_id, comment, isolation_type)
-        raw_response.append(machine_action_response)
-        machines_all_action.append(get_machine_action_data(machine_action_response))
-
+        try:
+            machine_action_response = client.isolate_machine(machine_id, comment, isolation_type)
+            raw_response.append(machine_action_response)
+            machines_all_action.append(get_machine_action_data(machine_action_response))
+        except Exception as e:
+            # if we got an error for a machine, we want to get result for the other ones
+            failed_machines[machine_id] = e
+            continue
     entry_context = {
         'MicrosoftATP.MachineAction(val.ID === obj.ID)': machines_all_action
     }
     human_readable = tableToMarkdown("The isolation request has been submitted successfully:", machines_all_action,
                                      headers=headers, removeNull=True)
+    human_readable += add_error_message_for(failed_machines, machine_ids)
     return human_readable, entry_context, raw_response
 
 
@@ -1027,18 +1033,35 @@ def unisolate_machine_command(client: MsClient, args: dict):
     comment = args.get('comment')
     machines_all_action = []
     raw_response = []
+    failed_machines = {}  # if we got an error, we will return the machine ids that failed
     for machine_id in machine_ids:
-        machine_action_response = client.unisolate_machine(machine_id, comment)
-        raw_response.append(machine_action_response)
-        machines_all_action.append(get_machine_action_data(machine_action_response))
-
+        try:
+            machine_action_response = client.unisolate_machine(machine_id, comment)
+            raw_response.append(machine_action_response)
+            machines_all_action.append(get_machine_action_data(machine_action_response))
+        except Exception as e:
+            # if we got an error for a machine, we want to get result for the other ones
+            failed_machines[machine_id] = e
+            continue
     entry_context = {
         'MicrosoftATP.MachineAction(val.ID === obj.ID)': machines_all_action
     }
-
-    human_readable = tableToMarkdown("The request to stop the isolation has been submitted successfully:",
+    human_readable = tableToMarkdown("The request to stop the isolation has been submitted successfully.",
                                      machines_all_action, headers=headers, removeNull=True)
+    human_readable += add_error_message_for(failed_machines, machine_ids)
     return human_readable, entry_context, raw_response
+
+
+def add_error_message_for(failed_devices, all_requested_devices):
+    human_readable = ""
+    if failed_devices:
+        if len(all_requested_devices) == len(failed_devices):
+            raise DemistoException(f"{INTEGRATION_NAME} The command was failed with the errors: {failed_devices}")
+        human_readable = "Note: you don't see the following IDs in the results as the request was failed " \
+                         "for them. \n"
+        for device_id in failed_devices:
+            human_readable += f'ID {device_id} failed with the error: {failed_devices[device_id]} \n'
+    return human_readable
 
 
 def get_machines_command(client: MsClient, args: dict):
@@ -1191,20 +1214,24 @@ def get_file_related_machines_command(client: MsClient, args: dict) -> CommandRe
     raw_response = []
     context_outputs = []
     all_machines_outputs = []
+    failed_files = {}  # if we got an error, we will return the file that failed
     for file in files:
-        machines_response = client.get_file_related_machines(file)
-        raw_response.append(machines_response)
-
-        for machine in machines_response['value']:
-            all_machines_outputs.append(get_machine_data(machine))
-
-        context_outputs.append({
-            'File': file,
-            'Machines': get_machines_list(machines_response)
-        })
+        try:
+            machines_response = client.get_file_related_machines(file)
+            raw_response.append(machines_response)
+            for machine in machines_response['value']:
+                all_machines_outputs.append(get_machine_data(machine))
+            context_outputs.append({
+                'File': file,
+                'Machines': get_machines_list(machines_response)
+            })
+        except Exception as e:
+            failed_files[file] = e
+            continue
 
     human_readable = tableToMarkdown(f'Microsoft Defender ATP machines related to files {files}', all_machines_outputs,
                                      headers=headers, removeNull=True)
+    human_readable += add_error_message_for(failed_files, files)
     return CommandResults(readable_output=human_readable,
                           outputs=context_outputs,
                           outputs_prefix="MicrosoftATP.FileMachine",
@@ -1268,22 +1295,28 @@ def get_machine_details_command(client: MsClient, args: dict) -> CommandResults:
     raw_response = []
     machines_outputs = []
     machines_readable_outputs = []
+    failed_machines = {}  # if we got an error, we will return the machine ids that failed
     for machine_id in machine_ids:
-        machine_response = client.get_machine_details(machine_id)
-        machine_data = get_machine_data(machine_response)
+        try:
+            machine_response = client.get_machine_details(machine_id)
+            machine_data = get_machine_data(machine_response)
 
-        machine_data_to_readable_outputs = copy.deepcopy(machine_data)
-        raw_ip_addresses = machine_data_to_readable_outputs.get('IPAddresses', [])
-        parsed_ip_address = parse_ip_addresses(raw_ip_addresses)
-        human_readable_ip_addresses = print_ip_addresses(parsed_ip_address)
-        machine_data_to_readable_outputs['IPAddresses'] = human_readable_ip_addresses
+            machine_data_to_readable_outputs = copy.deepcopy(machine_data)
+            raw_ip_addresses = machine_data_to_readable_outputs.get('IPAddresses', [])
+            parsed_ip_address = parse_ip_addresses(raw_ip_addresses)
+            human_readable_ip_addresses = print_ip_addresses(parsed_ip_address)
+            machine_data_to_readable_outputs['IPAddresses'] = human_readable_ip_addresses
 
-        machines_outputs.append(machine_data)
-        machines_readable_outputs.append(machine_data_to_readable_outputs)
-        raw_response.append(machine_response)
+            machines_outputs.append(machine_data)
+            machines_readable_outputs.append(machine_data_to_readable_outputs)
+            raw_response.append(machine_response)
+        except Exception as e:
+            failed_machines[machine_id] = e
+            continue
 
     human_readable = tableToMarkdown(f'Microsoft Defender ATP machines {machine_ids} details:',
                                      machines_readable_outputs, headers=headers, removeNull=True)
+    human_readable += add_error_message_for(failed_machines, machine_ids)
     return CommandResults(
         outputs_prefix='MicrosoftATP.Machine',
         outputs_key_field='ID',
@@ -1304,17 +1337,22 @@ def run_antivirus_scan_command(client: MsClient, args: dict):
     comment = args.get('comment')
     machine_actions_data = []
     raw_response = []
-
+    failed_machines = {}  # if we got an error, we will return the machine ids that failed
     for machine_id in machine_ids:
-        machine_action_response = client.run_antivirus_scan(machine_id, comment, scan_type)
-        machine_actions_data.append(get_machine_action_data(machine_action_response))
-        raw_response.append(machine_action_response)
+        try:
+            machine_action_response = client.run_antivirus_scan(machine_id, comment, scan_type)
+            machine_actions_data.append(get_machine_action_data(machine_action_response))
+            raw_response.append(machine_action_response)
+        except Exception as e:
+            failed_machines[machine_id] = e
+            continue
 
     entry_context = {
         'MicrosoftATP.MachineAction(val.ID === obj.ID)': machine_actions_data
     }
     human_readable = tableToMarkdown('Antivirus scan successfully triggered', machine_actions_data, headers=headers,
                                      removeNull=True)
+    human_readable += add_error_message_for(failed_machines, machine_ids)
     return human_readable, entry_context, raw_response
 
 
@@ -2742,16 +2780,22 @@ def list_machines_by_vulnerability_command(client: MsClient, args: dict) -> Comm
     cve_ids = argToList(args.get('cve_id'))
     raw_response = []
     machines_outputs = []
+    failed_csvs = {}  # if we got an error, we will return the machine ids that failed
     for cve_id in cve_ids:
-        machines_response = client.get_list_machines_by_vulnerability(cve_id)
-        for machine in machines_response['value']:
-            machine_data = get_machine_data(machine)
-            machine_data.update({"CVE": cve_id})
-            machines_outputs.append(machine_data)
-        raw_response.append(machines_response)
+        try:
+            machines_response = client.get_list_machines_by_vulnerability(cve_id)
+            for machine in machines_response['value']:
+                machine_data = get_machine_data(machine)
+                machine_data.update({"CVE": cve_id})
+                machines_outputs.append(machine_data)
+            raw_response.append(machines_response)
+        except Exception as e:
+            failed_csvs[cve_id] = e
+            continue
 
     human_readable = tableToMarkdown(f'Microsoft Defender ATP machines by vulnerabilities: {cve_ids}',
                                      machines_outputs, headers=headers, removeNull=True)
+    human_readable += add_error_message_for(failed_csvs, cve_ids)
     return CommandResults(
         outputs_prefix='MicrosoftATP.CveMachine',
         outputs_key_field='ID',
@@ -2778,15 +2822,20 @@ def get_file_info_command(client: MsClient, args: dict) -> dict:
     raw_response = []
     file_outputs = []
     file_context_outputs = []
+    failed_hashes = {}  # if we got an error, we will return the machine ids that failed
     for file_hash in file_hashes:
-        file_info_response = client.get_file_data(file_hash)
-        file_outputs.append(get_file_data(file_info_response))
-        raw_response.append(file_info_response)
-        file_context_outputs.append(get_file_context(file_info_response, ["sha1", "sha256", "filetype", "size"]))
+        try:
+            file_info_response = client.get_file_data(file_hash)
+            file_outputs.append(get_file_data(file_info_response))
+            raw_response.append(file_info_response)
+            file_context_outputs.append(get_file_context(file_info_response, ["sha1", "sha256", "filetype", "size"]))
+        except Exception as e:
+            failed_hashes[file_hash] = e
+            continue
 
     human_readable = tableToMarkdown(f'Microsoft Defender ATP file info by hashes: {file_hashes}',
                                      file_outputs, headers=headers, removeNull=True)
-
+    human_readable += add_error_message_for(failed_hashes, file_hashes)
     context = {
         'MicrosoftATP.File(val.Sha1 === obj.Sha1)': file_outputs,
         file_context_path: file_context_outputs
