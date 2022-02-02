@@ -29,4 +29,3 @@ def test_create_dbot_score_entry():
     dbot_score = translate_score(threat['cylance_score'], FILE_THRESHOLD)
     dbot_score_entry = create_dbot_score_entry(THREAT_OUTPUT, dbot_score)
     assert isinstance(dbot_score_entry, Common.DBotScore)
-
