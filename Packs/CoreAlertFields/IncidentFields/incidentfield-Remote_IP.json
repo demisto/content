@@ -69,10 +69,7 @@
         {
           "cliName": "externaladdresses",
           "type": "shortText"
-        },
-        {
-          "cliName": "irondefensesrcip",
-          "type": "shortText"
-        } 
+        }
+        
     ]
 }

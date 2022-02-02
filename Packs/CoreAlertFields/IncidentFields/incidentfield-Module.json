@@ -28,7 +28,6 @@
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "6.5.0",
-<<<<<<< HEAD
     "x2_fields": "module_id",
     "Aliases": [
         {
@@ -37,7 +36,4 @@
         }
       
     ]
-=======
-    "x2_fields": "module_id"
->>>>>>> origin/master
 }

@@ -28,7 +28,6 @@
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "6.5.0",
-<<<<<<< HEAD
 	"x2_fields": "os_actor_process_command_line",
     "Aliases": [
         {
@@ -37,7 +36,5 @@
         }
       
     ]
-=======
-	"x2_fields": "os_actor_process_command_line"
->>>>>>> origin/master
+
 }
