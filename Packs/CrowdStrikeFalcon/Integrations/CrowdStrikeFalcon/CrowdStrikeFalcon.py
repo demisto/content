@@ -159,9 +159,9 @@ STATUS_NUM_TO_TEXT = {20: 'New',
 
 ''' MIRRORING DICTIONARIES & PARAMS '''
 
-DETECTION_STATE = {'new', 'in_progress', 'true_positive', 'false_positive', 'ignored'}
+DETECTION_STATUS = {'new', 'in_progress', 'true_positive', 'false_positive', 'ignored'}
 
-CS_FALCON_DETECTION_OUTGOING_ARGS = {'state': f'Updated detection state, one of {"/".join(DETECTION_STATE)}'}
+CS_FALCON_DETECTION_OUTGOING_ARGS = {'status': f'Updated detection status, one of {"/".join(DETECTION_STATUS)}'}
 
 CS_FALCON_INCIDENT_OUTGOING_ARGS = {'tag': 'A tag that have been added or removed from the incident',
                                     'status': f'Updated incident status, one of {"/".join(STATUS_TEXT_TO_NUM.keys())}'}
@@ -1655,12 +1655,12 @@ def get_modified_remote_data_command(args: Dict[str, Any]):
     return GetModifiedRemoteDataResponse(modified_ids_to_mirror)
 
 
-def update_detection_request(ids: List[str], state: str):
-    if state not in DETECTION_STATE:
+def update_detection_request(ids: List[str], status: str):
+    if status not in DETECTION_STATUS:
         raise DemistoException(f'CrowdStrike Falcon Error: '
-                               f'Status given is {state} and it is not in {DETECTION_STATE}')
+                               f'Status given is {status} and it is not in {DETECTION_STATUS}')
     data = {
-        "status": state,
+        "status": status,
         "ids": ids
     }
     return http_request(method='PATCH',

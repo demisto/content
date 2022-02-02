@@ -23,7 +23,7 @@
 					"complex": null,
 					"simple": "device.hostname"
 				},
-				"State": {
+				"Source Status": {
 					"complex": null,
 					"simple": "status"
 				},
@@ -59,6 +59,10 @@
 				"Objective": {
 					"complex": null,
 					"simple": "objectives"
+				},
+				"Source Status": {
+					"complex": null,
+					"simple": "status"
 				},
 				"State": {
 					"complex": null,
