@@ -782,6 +782,10 @@ def get_threats():
         for key, value in dbot_score.items():
             dbot_score_dict[key].append(value)
 
+    context_threat = createContext(data=threats, keyTransform=underscoreToCamelCase, removeNull=True)
+    context_threat = add_capitalized_hash_to_context(context_threat)
+    ec = {'File': context_threat}
+    ec.update(dbot_score_dict)
     title = 'Cylance Protect Threats'
     demisto.results({
         'Type': entryTypes['note'],
@@ -789,7 +793,7 @@ def get_threats():
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown(title, threats, headerTransform=underscoreToCamelCase, removeNull=True),
-        'EntryContext': dbot_score_dict
+        'EntryContext': ec
     })
 
 
