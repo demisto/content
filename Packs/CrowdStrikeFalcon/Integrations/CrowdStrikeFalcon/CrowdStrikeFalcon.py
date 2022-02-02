@@ -179,7 +179,6 @@ MIRROR_DIRECTION_DICT = {
 }
 
 MIRROR_DIRECTION = MIRROR_DIRECTION_DICT.get(demisto.params().get('mirror_direction'))
-INCIDENT_TAG = demisto.params().get('incident_tag')
 MIRROR_INSTANCE = demisto.integrationInstance()
 
 ''' HELPER FUNCTIONS '''
@@ -327,7 +326,6 @@ def add_mirroring_fields(incident: Dict):
         Updates the given incident to hold the needed mirroring fields.
     """
     incident['mirror_direction'] = MIRROR_DIRECTION
-    incident['mirror_tags'] = INCIDENT_TAG
     incident['mirror_instance'] = MIRROR_INSTANCE
 
 

@@ -74,13 +74,6 @@ configuration:
   - Incidents
   required: false
   type: 16
-- additionalinfo: A tag to add to mirrored out incident entries.
-  defaultvalue: tag
-  display: Incident entry tag
-  hidden: false
-  name: incident_tag
-  required: false
-  type: 0
 description: The CrowdStrike Falcon OAuth 2 API (formerly the Falcon Firehose API),
   enables fetching and resolving detections, searching devices, getting behaviors
   by ID, containing hosts, and lifting host containment.
