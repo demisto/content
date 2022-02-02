@@ -497,6 +497,11 @@ def parse_outputs(
                 api_res_sandbox = sandbox[0]
                 sandbox_group_outputs = add_outputs_from_dict(api_res_sandbox, sandbox_fields)
                 extra_sandbox_group_outputs = add_outputs_from_dict(api_res_sandbox, extra_sandbox_fields)
+
+                if extra_sandbox_group_outputs.get('processes'):
+                    for pro in extra_sandbox_group_outputs.get('processes'):
+                        if pro.get('registry'):
+                            del pro['registry']
         else:
             # the resources section is a list of strings
             resources_group_outputs = {"resources": api_res.get("resources")}
@@ -818,10 +823,12 @@ def download_ioc_command(
     :param accept_encoding: format used to compress your downloaded file
     :return: Demisto outputs when entry_context and responses are lists
     """
+    response: dict = {}
     try:
         response = client.download_ioc(id, name, accept_encoding)
     except Exception as a:
         demisto.debug(f'Download ioc exception {a}')
+
     entry_context = {'csfalconx.resource(val.id === obj.id)': [response]}
 
     return tableToMarkdown("CrowdStrike Falcon X response:", response), entry_context, [response]
@@ -891,20 +898,39 @@ def find_submission_id_command(
     return tableToMarkdown("CrowdStrike Falcon X response:", filtered_outputs), entry_context, [response]
 
 
-def get_results_function_args(outputs, extended_data):
+def get_results_function_args(outputs, extended_data, item_type):
     if isinstance(outputs, list):
         outputs = outputs[0]
 
-    results_function_args = {
-        'ids': outputs.get('submitted_id'),
-        'extended_data': extended_data,
-        'submit_file': 'yes'
-    }
+    results_function_args: dict = {}
+
+    if item_type == 'FILE':
+        results_function_args.update({
+            'ids': outputs.get('submitted_id'),
+            'extended_data': extended_data,
+            'submit_file': 'yes'
+        })
+    else:  # URL case
+        results_function_args.update({
+            'ids': outputs.get('submitted_id'),
+            'extended_data': extended_data
+        })
 
     return results_function_args
 
 
-def run_polling_command(client, args: dict, cmd: str, upload_function: Callable, results_function: Callable):
+def pop_polling_related_args(args):
+    if 'submit_file' in args:
+        args.pop('submit_file')
+    if 'enable_tor' in args:
+        args.pop('enable_tor')
+    if 'interval_in_seconds' in args:
+        args.pop('interval_in_seconds')
+    if 'polling' in args:
+        args.pop('polling')
+
+
+def run_polling_command(client, args: dict, cmd: str, upload_function: Callable, results_function: Callable, item_type):
     """
     This function is generically handling the polling flow. In the polling flow, there is always an initial call that
     starts the uploading to the API (referred here as the 'upload' function) and another call that retrieves the status
@@ -912,6 +938,7 @@ def run_polling_command(client, args: dict, cmd: str, upload_function: Callable,
     The run_polling_command function runs the 'upload' function and returns a ScheduledCommand object that schedules
     the next 'results' function, until the polling is complete.
     Args:
+        item_type: the item type to handle the args according.
         client: the CS FX client.
         args: the arguments required to the command being called, under cmd
         cmd: the command to schedule by after the current command
@@ -931,7 +958,7 @@ def run_polling_command(client, args: dict, cmd: str, upload_function: Callable,
         extended_data = args.pop('extended_data')
         command_results = upload_function(client, **args)
         outputs = command_results.outputs
-        results_function_args = get_results_function_args(outputs, extended_data)
+        results_function_args = get_results_function_args(outputs, extended_data, item_type)
         # schedule next poll
         polling_args = {
             'interval_in_seconds': interval_in_secs,
@@ -946,8 +973,7 @@ def run_polling_command(client, args: dict, cmd: str, upload_function: Callable,
         command_results.scheduled_command = scheduled_command
         return command_results
     # not a new search, get search status
-    if 'submit_file' in args:
-        args.pop('submit_file')
+    pop_polling_related_args(args)
     command_result, status = results_function(client, **args)
     if not status:
         # schedule next poll
@@ -968,17 +994,17 @@ def run_polling_command(client, args: dict, cmd: str, upload_function: Callable,
 
 def upload_file_with_polling_command(client, args):
     return run_polling_command(client, args, 'cs-fx-upload-file', upload_file_command,
-                               get_full_report_command)
+                               get_full_report_command, 'FILE')
 
 
 def submit_uploaded_file_polling_command(client, args):
     return run_polling_command(client, args, 'cs-fx-submit-uploaded-file',
-                               send_uploaded_file_to_sandbox_analysis_command, get_full_report_command)
+                               send_uploaded_file_to_sandbox_analysis_command, get_full_report_command, 'FILE')
 
 
 def submit_uploaded_url_polling_command(client, args):
     return run_polling_command(client, args, 'cs-fx-submit-url', send_url_to_sandbox_analysis_command,
-                               get_full_report_command)
+                               get_full_report_command, 'URL')
 
 
 def should_run_command_as_polling(command, args):
@@ -993,6 +1019,8 @@ def should_run_command_as_polling(command, args):
 
 
 def validate_command_args(command, args):
+    if 'ids' in args:
+        return
     if command == 'cs-fx-upload-file':
         if 'file' not in args:
             raise Exception("file argument is a mandatory for cs-fx-upload-file command")
@@ -1054,8 +1082,8 @@ def main():
             'cs-fx-find-submission-id': find_submission_id_command
         }
         if command in polling_commands:
-            validate_command_args(command, args)
             if should_run_command_as_polling(command, args):
+                validate_command_args(command, args)
                 return_results(polling_commands[command](client, args))  # type: ignore[operator]
             else:
                 remove_polling_related_args(args)

@@ -381,6 +381,12 @@ script:
       required: false
       secret: false
     - default: false
+      description: Used just for the inner polling flow.
+      isArray: true
+      name: ids
+      required: false
+      secret: false
+    - default: false
       defaultValue: '60'
       description: Interval in seconds between each poll.
       isArray: false
@@ -1175,6 +1181,12 @@ script:
       predefined:
         - 'true'
         - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: Used just for the inner polling flow.
+      isArray: true
+      name: ids
       required: false
       secret: false
     - default: false
