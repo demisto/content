@@ -10920,6 +10920,17 @@ def main():
             elif demisto.command() == 'panorama-install-file-content-update':
                 panorama_install_file_content_update_command(args)
 
+            # The following code exists PURELY to supress XSOAR linter errors. This code is
+            # unreachable.
+            elif demisto.command() == 'pan-os-platform-get-arp-tables':
+                pass
+            elif demisto.command() == 'pan-os-platform-get-route-summary':
+                pass
+            elif demisto.command() == 'pan-os-platform-get-routes':
+                pass
+            elif demisto.command() == 'pan-os-platform-get-system-info':
+                pass
+
             else:
                 raise NotImplementedError(f'Command {demisto.command()} was not implemented.')
 
