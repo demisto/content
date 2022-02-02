@@ -1,5 +1,8 @@
 import pytest
+import os
+from xml.etree.ElementTree import ElementTree, Element, fromstring
 import demistomock as demisto
+from CommonServerPython import DemistoException
 
 integration_params = {
     'port': '443',
@@ -12,6 +15,131 @@ mock_demisto_args = {
     'threat_id': "11111",
     'vulnerability_profile': "mock_vuln_profile"
 }
+
+
+@pytest.fixture()
+def firewall_login():
+    return {
+        "username": os.getenv("T_USERNAME"),
+        "password": os.getenv("T_PASSWORD"),
+        "ip": os.getenv("T_FW_IP")
+    }
+
+
+@pytest.fixture()
+def panorama_login():
+    return {
+        "username": os.getenv("T_USERNAME"),
+        "password": os.getenv("T_PASSWORD"),
+        "ip": os.getenv("T_PAN_IP")
+    }
+
+
+@pytest.fixture()
+def test_arp_result_element():
+    xml_str = """<response status="success">
+        <result>
+            <max>1500</max>
+            <total>7</total>
+            <timeout>1800</timeout>
+            <dp>dp0</dp>
+            <entries>
+                <entry>
+                    <status>  c  </status>
+                    <ip>2.3.4.5</ip>
+                    <mac>00:66:4b:da:ce:61</mac>
+                    <ttl>1525</ttl>
+                    <interface>ethernet1/1</interface>
+                    <port>ethernet1/1</port>
+                </entry>
+            </entries>
+        </result>
+    </response>"""
+    return fromstring(xml_str)
+
+
+@pytest.fixture()
+def test_bgp_result_element():
+    xml_str = """<response status="success">
+    <result>
+        <entry peer="testlab-server" vr="default">
+            <peer-group>testlab-peers</peer-group>
+            <peer-router-id>3.3.3.3</peer-router-id>
+            <remote-as>64511</remote-as>
+            <status>Established</status>
+            <status-duration>12459</status-duration>
+            <password-set>no</password-set>
+            <passive>no</passive>
+            <multi-hop-ttl>1</multi-hop-ttl>
+            <peer-address>3.3.3.3:179</peer-address>
+            <local-address>10.10.0.1:39889</local-address>
+            <reflector-client>not-client</reflector-client>
+            <same-confederation>no</same-confederation>
+            <aggregate-confed-as>yes</aggregate-confed-as>
+            <peering-type>Unspecified</peering-type>
+            <connect-retry-interval>1</connect-retry-interval>
+            <open-delay>0</open-delay>
+            <idle-hold>15</idle-hold>
+            <prefix-limit>5000</prefix-limit>
+            <holdtime>90</holdtime>
+            <holdtime-config>90</holdtime-config>
+            <keepalive>30</keepalive>
+            <keepalive-config>30</keepalive-config>
+            <msg-update-in>3</msg-update-in>
+            <msg-update-out>1</msg-update-out>
+            <msg-total-in>420</msg-total-in>
+            <msg-total-out>482</msg-total-out>
+            <last-update-age>8</last-update-age>
+            <last-error></last-error>
+            <status-flap-counts>1479</status-flap-counts>
+            <established-counts>1</established-counts>
+            <ORF-entry-received>0</ORF-entry-received>
+            <nexthop-self>no</nexthop-self>
+            <nexthop-thirdparty>yes</nexthop-thirdparty>
+            <nexthop-peer>no</nexthop-peer>
+            <prefix-counter>
+                <entry afi-safi="bgpAfiIpv4-unicast">
+                    <incoming-total>1</incoming-total>
+                    <incoming-accepted>1</incoming-accepted>
+                    <incoming-rejected>0</incoming-rejected>
+                    <policy-rejected>0</policy-rejected>
+                    <outgoing-total>0</outgoing-total>
+                    <outgoing-advertised>0</outgoing-advertised>
+                </entry>
+            </prefix-counter>
+        </entry>
+    </result>
+</response>"""
+    return fromstring(xml_str)
+
+
+@pytest.fixture()
+def fake_device():
+    class Device:
+        hostname = "test_hostname"
+        serial = "testserial"
+
+    return Device()
+
+
+@pytest.fixture()
+def hygiene_issue_example_list():
+    return [
+        {
+            "containername": "LAB",
+            "description": "Log forwarding profile is missing enhanced application logging.",
+            "hostid": "1.1.1.1",
+            "issuecode": "BP-V-3",
+            "name": "test_fwd_profile-1"
+        },
+        {
+            "containername": "LAB",
+            "description": "Log forwarding profile is missing enhanced application logging.",
+            "hostid": "1.1.1.1",
+            "issuecode": "BP-V-3",
+            "name": "test_fwd_profile-1-1"
+        }
+    ]
 
 
 @pytest.fixture(autouse=True)
@@ -61,7 +189,8 @@ def test_panoram_override_vulnerability(patched_requests_mocker):
     from Panorama import panorama_override_vulnerability
     import Panorama
     Panorama.URL = 'https://1.1.1.1:443/api/'
-    r = panorama_override_vulnerability(mock_demisto_args['threat_id'], mock_demisto_args['vulnerability_profile'],
+    r = panorama_override_vulnerability(mock_demisto_args['threat_id'],
+                                        mock_demisto_args['vulnerability_profile'],
                                         'reset-both')
     assert r['response']['@status'] == 'success'
 
@@ -202,10 +331,11 @@ def test_prettify_traffic_logs():
 
 def test_prettify_logs():
     from Panorama import prettify_logs
-    traffic_logs = [{'action': 'my_action1', 'category': 'my_category1', 'rule': 'my_rule1', 'natdport': '100',
-                     'bytes': '12'},
-                    {'action': 'my_action2', 'category': 'my_category2', 'rule': 'my_rule2', 'natdport': '101',
-                     'bytes_sent': '11'}]
+    traffic_logs = [
+        {'action': 'my_action1', 'category': 'my_category1', 'rule': 'my_rule1', 'natdport': '100',
+         'bytes': '12'},
+        {'action': 'my_action2', 'category': 'my_category2', 'rule': 'my_rule2', 'natdport': '101',
+         'bytes_sent': '11'}]
     response = prettify_logs(traffic_logs)
     expected = [{'Action': 'my_action1', 'CategoryOrVerdict': 'my_category1', 'Rule': 'my_rule1',
                  'NATDestinationPort': '100', 'Bytes': '12'},
@@ -228,15 +358,18 @@ def test_build_policy_match_query():
 
 def test_prettify_matching_rule():
     from Panorama import prettify_matching_rule
-    matching_rule = {'action': 'my_action1', '@name': 'very_important_rule', 'source': '6.7.8.9', 'destination': 'any'}
+    matching_rule = {'action': 'my_action1', '@name': 'very_important_rule', 'source': '6.7.8.9',
+                     'destination': 'any'}
     response = prettify_matching_rule(matching_rule)
-    expected = {'Action': 'my_action1', 'Name': 'very_important_rule', 'Source': '6.7.8.9', 'Destination': 'any'}
+    expected = {'Action': 'my_action1', 'Name': 'very_important_rule', 'Source': '6.7.8.9',
+                'Destination': 'any'}
     assert response == expected
 
 
 def test_prettify_static_route():
     from Panorama import prettify_static_route
-    static_route = {'@name': 'name1', 'destination': '1.2.3.4', 'metric': '10', 'nexthop': {'fqdn': 'demisto.com'}}
+    static_route = {'@name': 'name1', 'destination': '1.2.3.4', 'metric': '10',
+                    'nexthop': {'fqdn': 'demisto.com'}}
     virtual_router = 'my_virtual_router'
     response = prettify_static_route(static_route, virtual_router)
     expected = {'Name': 'name1', 'Destination': '1.2.3.4', 'Metric': 10,
@@ -271,13 +404,16 @@ def test_prettify_configured_user_id_agents__multi_result():
     raw_response = [{'@name': 'testing2', 'serial-number': 'panorama2'},
                     {'@name': 'fullinfo', 'host-port': {'port': '67', 'ntlm-auth': 'yes',
                                                         'ldap-proxy': 'yes', 'collectorname': 'demisto',
-                                                        'secret': 'secret', 'host': 'what'}, 'ip-user-mappings': 'yes'}]
+                                                        'secret': 'secret', 'host': 'what'},
+                     'ip-user-mappings': 'yes'}]
     response = prettify_configured_user_id_agents(raw_response)
     expected = [{'Name': 'testing2', 'Host': None, 'Port': None, 'NtlmAuth': 'no', 'LdapProxy': 'no',
-                 'CollectorName': None, 'Secret': None, 'EnableHipCollection': 'no', 'SerialNumber': 'panorama2',
+                 'CollectorName': None, 'Secret': None, 'EnableHipCollection': 'no',
+                 'SerialNumber': 'panorama2',
                  'IpUserMapping': 'no', 'Disabled': 'no'},
                 {'Name': 'fullinfo', 'Host': 'what', 'Port': '67', 'NtlmAuth': 'yes', 'LdapProxy': 'yes',
-                 'CollectorName': 'demisto', 'Secret': 'secret', 'EnableHipCollection': 'no', 'SerialNumber': None,
+                 'CollectorName': 'demisto', 'Secret': 'secret', 'EnableHipCollection': 'no',
+                 'SerialNumber': None,
                  'IpUserMapping': 'yes', 'Disabled': 'no'}]
     assert response == expected
 
@@ -286,9 +422,87 @@ def test_prettify_configured_user_id_agents__single_result():
     from Panorama import prettify_configured_user_id_agents
     raw_response = {'@name': 'fullinfo', 'host-port': {'port': '67', 'ntlm-auth': 'yes',
                                                        'ldap-proxy': 'yes', 'collectorname': 'demisto',
-                                                       'secret': 'secret', 'host': 'what'}, 'ip-user-mappings': 'yes'}
+                                                       'secret': 'secret', 'host': 'what'},
+                    'ip-user-mappings': 'yes'}
     response = prettify_configured_user_id_agents(raw_response)
     expected = {'Name': 'fullinfo', 'Host': 'what', 'Port': '67', 'NtlmAuth': 'yes', 'LdapProxy': 'yes',
-                'CollectorName': 'demisto', 'Secret': 'secret', 'EnableHipCollection': 'no', 'SerialNumber': None,
+                'CollectorName': 'demisto', 'Secret': 'secret', 'EnableHipCollection': 'no',
+                'SerialNumber': None,
                 'IpUserMapping': 'yes', 'Disabled': 'no'}
     assert response == expected
+
+
+def test_get_issue_code():
+    from Panorama import HygieneCheckRegister, ConfigurationHygieneCheck
+    check_register = HygieneCheckRegister.get_hygiene_check_register(["BP-V-1"])
+    assert check_register.get("BP-V-1")
+    assert type(check_register.get("BP-V-1")) == ConfigurationHygieneCheck
+
+
+def test_missing_issue_code():
+    from Panorama import HygieneCheckRegister
+    check_register = HygieneCheckRegister.get_hygiene_check_register(["BP-V-1"])
+    with pytest.raises(DemistoException):
+        assert check_register.get("BP-V-2")
+
+
+def test_dataclass_from_element(test_arp_result_element, fake_device):
+    from Panorama import ShowArpCommandResultData, dataclass_from_element
+
+    entry = test_arp_result_element.findall("./result/entries/entry")
+    result_object: ShowArpCommandResultData = dataclass_from_element(fake_device,
+                                                                     ShowArpCommandResultData, entry[0])
+    for field in [result_object.ip, result_object.ttl, result_object.mac, result_object.port]:
+        assert field
+
+    assert result_object.hostid == "testserial"
+    assert result_object.ip == "2.3.4.5"
+
+def test_dataclass_from_nested_element(test_bgp_result_element, fake_device):
+    from Panorama import ShowRoutingProtocolBGPPeersResultData, dataclass_from_element
+
+    entry = test_bgp_result_element.findall("./result/entry")
+    result_object: ShowRoutingProtocolBGPPeersResultData = dataclass_from_element(fake_device,
+                                                                                  ShowRoutingProtocolBGPPeersResultData,
+                                                                                  entry[0])
+    assert result_object.incoming_total == 1
+    assert result_object.peer == "testlab-server"
+
+
+def test_run_command():
+    from Panorama import (DownloadSoftwareCommandResult, CommandRegister,
+                          GenericSoftwareStatus, ShowJobsAllResultData)
+
+    cr = CommandRegister()
+    cr.command("test_run_command")
+
+    # Test a normal return with summary data
+    def f(topology):
+        return DownloadSoftwareCommandResult(
+            summary_data=[GenericSoftwareStatus(hostid='015351000071920', started=True)]
+        )
+
+    cr.run_command_result_command("test_run_command", f, {}, {})
+
+    def f(topology):
+        return ShowJobsAllResultData(
+            hostid="111",
+            status="FIN",
+            description="",
+            result="OK",
+            progress="100",
+            stoppable="NO",
+            positionInQ="1",
+            tenq="blah",
+            tfin="blah",
+            type="Dwnld",
+            id="48",
+            user=None
+        )
+
+    cr.run_command_result_command("test_run_command", f, {}, {})
+
+
+def test_convert_hygiene_dataclass(hygiene_issue_example_list):
+    from Panorama import hygiene_issue_dict_to_object
+    assert len(hygiene_issue_dict_to_object(hygiene_issue_example_list)) == 2
