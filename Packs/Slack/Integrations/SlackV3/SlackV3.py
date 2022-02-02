@@ -1257,7 +1257,7 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
             entitlement_reply = json.loads(entitlement_json).get("reply", "Thank you for your reply.")
             action_text = actions[0].get('text').get('text')
             user = await ASYNC_CLIENT.users_info(user=user_id)
-            answer_question(action_text, entitlement_string, user.get('profile', {}).get('email'))
+            answer_question(action_text, entitlement_string, user.get('user', {}).get('profile', {}).get('email'))
 
         else:
             if user_id != '':
