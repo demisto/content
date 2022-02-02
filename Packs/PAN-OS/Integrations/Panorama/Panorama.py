@@ -7207,7 +7207,7 @@ class CustomVersionedPanObject(VersionedPanObject):
 
 
 class AntiSpywareProfileBotnetDomainList(CustomVersionedPanObject):
-    ROOT = Root.VSYS
+    ROOT = Root.VSYS  # pylint: disable=E1101
     SUFFIX = ENTRY
 
     def _setup(self):
@@ -7224,7 +7224,7 @@ class AntiSpywareProfileBotnetDomainList(CustomVersionedPanObject):
 
 
 class AntiSpywareProfileBotnetDomains(CustomVersionedPanObject):
-    ROOT = Root.VSYS
+    ROOT = Root.VSYS  # pylint: disable=E1101
     SUFFIX = ENTRY
     CHILDTYPES = (AntiSpywareProfileBotnetDomainList,)
 
@@ -7237,7 +7237,7 @@ class AntiSpywareProfileBotnetDomains(CustomVersionedPanObject):
 
 
 class AntiSpywareProfileRule(VersionedPanObject):
-    ROOT = Root.VSYS
+    ROOT = Root.VSYS  # pylint: disable=E1101
     SUFFIX = ENTRY
 
     def _setup(self):
@@ -7283,7 +7283,7 @@ class AntiSpywareProfile(CustomVersionedPanObject):
 
     """
 
-    ROOT = Root.VSYS
+    ROOT = Root.VSYS # pylint: disable=E1101
     SUFFIX = ENTRY
     CHILDTYPES = (AntiSpywareProfileRule,)
 
@@ -7304,7 +7304,7 @@ class VulnerabilityProfileRule(VersionedPanObject):
         name (str): Name of the object
         severity (list:str): List of severities matching this rule
     """
-    ROOT = Root.VSYS
+    ROOT = Root.VSYS  # pylint: disable=E1101
     SUFFIX = ENTRY
 
     def _setup(self):
@@ -7350,7 +7350,7 @@ class VulnerabilityProfile(CustomVersionedPanObject):
         name (str): Name of the object
     """
 
-    ROOT = Root.VSYS
+    ROOT = Root.VSYS  # pylint: disable=E1101
     SUFFIX = ENTRY
     CHILDTYPES = (VulnerabilityProfileRule,)
 
@@ -7373,7 +7373,7 @@ class URLFilteringProfile(VersionedPanObject):
     :param credential_enforce_alert: Categories alerting on credentials
     """
 
-    ROOT = Root.VSYS
+    ROOT = Root.VSYS  # pylint: disable=E1101
     SUFFIX = ENTRY
 
     def _setup(self):
