@@ -1235,6 +1235,13 @@ script:
       name: requestor
       required: false
       secret: false
+    - default: false
+      defaultValue: '50'
+      description: The maximum number of machines to return.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
     deprecated: false
     description: |-
       Return the machine's actions. If you set an action id it returns the info on the specific action.

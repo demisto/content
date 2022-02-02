@@ -459,7 +459,7 @@ class MsClient:
         cmd_url = f'/machineactions/{action_id}'
         return self.ms_client.http_request(method='GET', url_suffix=cmd_url)
 
-    def get_machine_actions(self, filter_req):
+    def get_machine_actions(self, filter_req, limit):
         """Retrieves all Machine Actions.
 
         Notes:
@@ -470,7 +470,9 @@ class MsClient:
             dict. Machine Action entity
         """
         cmd_url = '/machineactions'
-        params = {'$filter': filter_req} if filter_req else None
+        params = {'$top': limit}
+        if filter_req:
+            params.update({'$filter': filter_req})
         return self.ms_client.http_request(method='GET', url_suffix=cmd_url, params=params)
 
     def get_investigation_package(self, machine_id, comment):
@@ -1654,6 +1656,7 @@ def get_machine_action_by_id_command(client: MsClient, args: dict):
     machine_id = argToList(args.get('machine_id', ''))
     type = args.get('type', '')
     requestor = args.get('requestor', '')
+    limit = arg_to_number(args.get('limit', 50))
     if action_id:
         for index in range(3):
             try:
@@ -1679,12 +1682,12 @@ def get_machine_action_by_id_command(client: MsClient, args: dict):
             'requestor': requestor
         }
         filter_req = reformat_filter_with_list_arg(fields_to_filter_by, "machineId")
-        response = client.get_machine_actions(filter_req)
+        response = client.get_machine_actions(filter_req, limit)
         machine_actions_list = []
         for machine_action in response['value']:
             machine_actions_list.append(get_machine_action_data(machine_action))
-        human_readable = tableToMarkdown('Machine actions Info:', machine_actions_list, headers=headers,
-                                         removeNull=True)
+        human_readable = tableToMarkdown(f'Machine actions Info with limit of {limit}:',
+                                         machine_actions_list, headers=headers, removeNull=True)
         context_output = machine_actions_list
     entry_context = {
         'MicrosoftATP.MachineAction(val.ID === obj.ID)': context_output

@@ -1474,7 +1474,7 @@ Machine.ReadWrite.All
 | machine_id | A comma-separated list of machine IDs on which the action was executed. | Optional | 
 | type | The machine action type. Possible values: "RunAntiVirusScan", "Offboard", "CollectInvestigationPackage", "Isolate", "Unisolate", "StopAndQuarantineFile", "RestrictCodeExecution", and "UnrestrictCodeExecution". Possible values are: RunAntiVirusScan, Offboard, CollectInvestigationPackage, Isolate, Unisolate, StopAndQuarantineFile, RestrictCodeExecution, UnrestrictCodeExecution. | Optional | 
 | requestor | The ID of the user that executed the action, only one can be added. | Optional | 
-
+| limit | The maximum number of machines to return. Default is 50. | Optional | 
 
 #### Context Output
 
