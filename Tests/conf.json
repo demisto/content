@@ -4568,6 +4568,12 @@
             ]
         },
         {
+            "integrations": "CrowdStrike Falcon Sandbox V2",
+            "playbookID": "CrowdstrikeFalconSandbox2 Test",
+            "timeout": 500,
+            "nightly": true
+        },
+        {
             "playbookID": "Send Email To Recipients",
             "fromversion": "5.0.0",
             "integrations": [

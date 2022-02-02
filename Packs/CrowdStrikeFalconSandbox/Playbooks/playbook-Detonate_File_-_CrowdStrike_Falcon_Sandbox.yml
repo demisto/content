@@ -1,7 +1,7 @@
 id: CrowdStrike Falcon Sandbox - Detonate file
 version: -1
 name: CrowdStrike Falcon Sandbox - Detonate file
-description: Detonate one or more files using the CrowdStrike Falcon Sandbox integration. This playbook returns relevant reports to the War Room and file reputations to the context data. The detonation supports the following file types - PE32, EXE, DLL, JAR, JS, PDF, DOC, DOCX, RTF, XLS, PPT, PPTX, XML, ZIP, VBN, SEP, XZ, GZ, BZ2, TAR, MHTML, SWF, LNK, URL, MSI, JTD, JTT, JTDC, JTTC, HWP, HWT, HWPX, BAT, HTA, PS1, VBS, WSF, JSE, VBE, CHM
+description: Deprecated. Use the cs-falcon-sandbox-submit-file command with polling=true instead.
 fromversion: 5.0.0
 starttaskid: "0"
 tasks:
@@ -113,7 +113,7 @@ tasks:
       id: 7226fb9e-9b1c-4e40-8823-428a6ef19aaa
       version: -1
       name: CrowdStrike Scan
-      description: Download the pdf report to the War Room.
+      description: Downloads the PDF report to the War Room.
       script: VxStream|||crowdstrike-scan
       type: regular
       iscommand: true
@@ -142,7 +142,7 @@ tasks:
       id: 8377ba6f-c57d-4cd1-8a1f-5989f89978ac
       version: -1
       name: Set file to context
-      description: Set the file object into context.
+      description: Sets the file object into context.
       scriptName: Set
       type: regular
       iscommand: false
@@ -174,7 +174,7 @@ tasks:
       id: ab929de2-d71d-487e-8200-68a9178aca32
       version: -1
       name: CrowdStrike Upload Sample
-      description: Submits a sample to CrowdStrike
+      description: Submits a sample to CrowdStrike.
       script: VxStream|||crowdstrike-submit-sample
       type: regular
       iscommand: true
@@ -206,7 +206,7 @@ tasks:
       id: a15cdef0-f6bd-48e3-8198-3f7c20e668fe
       version: -1
       name: Is there a file to detonate?
-      description: Asserts there's a file to detonate
+      description: Asserts there's a file to detonate.
       type: condition
       iscommand: false
       brand: ""
@@ -240,7 +240,7 @@ tasks:
       id: a0565f2c-c720-4196-84d2-21e057c23637
       version: -1
       name: Is the file type supported?
-      description: Asserts the file type is supported
+      description: Asserts the file type is supported.
       type: condition
       iscommand: false
       brand: ""
@@ -303,7 +303,7 @@ tasks:
       id: c6e5c638-5c9e-470c-8f57-7931c2689dba
       version: -1
       name: GenericPolling
-      description: Initiated the generic polling playbook that will do the polling command
+      description: Initiates the generic polling playbook that will do the polling command.
       playbookName: GenericPolling
       type: playbook
       iscommand: false
@@ -360,64 +360,65 @@ inputs:
     complex:
       root: File
   required: false
-  description: File object of the file to detonate.
+  description: The file object of the file to detonate.
 - key: EnvironmentID
   value:
     simple: "100"
   required: false
-  description: Environment ID to submit the file to. To get all IDs run the crowdstrike-get-environments command.
+  description: The environment ID to submit the file to. To get all IDs run the crowdstrike-get-environments command.
 - key: Interval
   value:
     simple: "5"
   required: false
-  description: Polling frequency - how often the polling command should run (minutes)
+  description: Polling frequency - how often the polling command should run (minutes).
 - key: Timeout
   value:
     simple: "30"
   required: false
-  description: How much time to wait before a timeout occurs  (minutes)
+  description: How much time to wait before a timeout occurs (minutes).
 outputs:
 - contextPath: File.SHA256
-  description: SHA256 hash of the file
+  description: The SHA256 hash of the file.
   type: string
 - contextPath: File.Malicious
-  description: The File malicious description
+  description: The file malicious description.
   type: unknown
 - contextPath: File.Type
-  description: File type e.g. "PE"
+  description: The file type, for example "PE".
   type: string
 - contextPath: File.Size
-  description: File size
+  description: The file size.
   type: number
 - contextPath: File.MD5
-  description: MD5 hash of the file
+  description: The MD5 hash of the file.
   type: string
 - contextPath: File.Name
-  description: Filename
+  description: The file name.
   type: string
 - contextPath: File.SHA1
-  description: SHA1 hash of the file
+  description: The SHA1 hash of the file.
   type: string
 - contextPath: File
-  description: The File object
+  description: The file object.
   type: unknown
 - contextPath: File.Malicious.Vendor
-  description: For malicious files, the vendor that made the decision
+  description: The vendor that decided the file was malicious.
   type: string
 - contextPath: DBotScore
-  description: The DBotScore object
+  description: The DBotScore object.
   type: unknown
 - contextPath: DBotScore.Indicator
-  description: The indicator we tested
+  description: The tested indicator.
   type: string
 - contextPath: DBotScore.Type
-  description: The type of the indicator
+  description: The indicator type.
   type: string
 - contextPath: DBotScore.Vendor
-  description: Vendor used to calculate the score
+  description: The vendor used to calculate the score.
   type: string
 - contextPath: DBotScore.Score
-  description: The actual score
+  description: The actual score.
   type: number
 tests:
 - VxStream Test
+deprecated: true
