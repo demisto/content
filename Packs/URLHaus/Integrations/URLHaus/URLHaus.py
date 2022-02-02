@@ -1,6 +1,4 @@
-import demistomock as demisto
 from CommonServerPython import *
-from CommonServerUserPython import *
 
 ''' IMPORTS '''
 import traceback
@@ -8,7 +6,6 @@ import requests
 import zipfile
 import io
 from datetime import datetime as dt
-from urllib.parse import urlparse
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -88,6 +85,15 @@ def test_module(**kwargs):
 
 
 def url_calculate_score(status):
+    """
+         Calculate DBot Score for domain command using url status.
+
+         Args:
+             status(str)- url status.
+
+         Returns:
+             (DBot Score,Description)(tuple).
+     """
     status_dict = {'online': (Common.DBotScore.BAD, "The URL is active (online) and currently serving a payload"),
                    'offline': (Common.DBotScore.SUSPICIOUS, "The URL is inadctive (offline) and serving no payload"),
                    'unknown': (Common.DBotScore.NONE, "The URL status could not be determined")}
@@ -97,6 +103,15 @@ def url_calculate_score(status):
 
 
 def domain_calculate_score(blacklist):
+    """
+         Calculate DBot Score for domain command using blacklist.
+
+         Args:
+             blacklist(list(str,str))- spamhaus_dbl, surbl.
+
+         Returns:
+             (DBot Score,Description)(tuple).
+     """
     spamhaus_dbl = blacklist.get('spamhaus_dbl', '')
     surbl = blacklist.get('surbl', '')
 
@@ -120,10 +135,28 @@ def domain_calculate_score(blacklist):
 
 
 def file_calculate_score(args):
-    return Common.DBotScore.BAD
+    """
+         Calculate DBot Score for file command (always malicious).
+
+         Args:
+             args(not in use).
+
+         Returns:
+             (DBot Score,Description)(tuple).
+     """
+    return Common.DBotScore.BAD, ''
 
 
-def calculate_dbot_score(command, arg):
+def calculate_dbot_score(command, arg: Union[dict, str]):
+    """
+         Calculate DBot Score for url/domain/file commands.
+
+         Args:
+             command(dict)- command to execute, arg(dict/str)- param for dbot calculation.
+
+         Returns:
+             (DBot Score,Description)(tuple).
+     """
     calculate_dbot_score_dic = {'url': url_calculate_score, 'domain': domain_calculate_score,
                                 'file': file_calculate_score}
     func_to_run = calculate_dbot_score_dic.get(command)
@@ -132,28 +165,46 @@ def calculate_dbot_score(command, arg):
 
 
 def parse_host(host):
-    return "ip" if is_ip_valid(host) else "domain"
+    """
+     Parse the host and return if domain or ip (using CommonServerPython is_ip_valid).
+
+     Args:
+         host(str)- host to parse.
+
+     Returns:
+         ip/domain(str).
+     """
+    return 'ip' if is_ip_valid(host) else 'domain'
 
 
 def url_create_relationships(uri, host, files, **kwargs):
+    """
+        Return relationships list if create_relationships is on (limited to max_num_of_relationships).
+
+        Args:
+            uri(str)- queried url, host/ip(str), file(list)- file associated with url, params(dict).
+
+        Returns:
+            Relationships(list).
+    """
     relationships = []
     if kwargs.get('create_relationships'):
         if host:
             parsed_host = parse_host(host)
-            if parsed_host == "domain":
+            if parsed_host == 'domain':
                 relationships.append(EntityRelationship(
                     name=EntityRelationship.Relationships.RELATIONSHIPS_NAMES.get('hosts'), entity_a=uri,
                     entity_a_type=FeedIndicatorType.URL,
                     entity_b=host, entity_b_type=FeedIndicatorType.Domain,
                     reverse_name=EntityRelationship.Relationships.HOSTS))
-            if parsed_host == "ip":
+            if parsed_host == 'ip':
                 relationships.append(EntityRelationship(
                     name=EntityRelationship.Relationships.RELATED_TO, entity_a=uri, entity_a_type=FeedIndicatorType.URL,
                     entity_b=host, entity_b_type=FeedIndicatorType.IP,
                     reverse_name=EntityRelationship.Relationships.RELATED_TO))
         if files:
             for file in files:
-                if len(relationships) >= kwargs.get('max_num_of_relationships'):
+                if len(relationships) >= kwargs.get('max_num_of_relationships', 1):
                     break
 
                 file_sh256 = file.get('SHA256')
@@ -167,13 +218,31 @@ def url_create_relationships(uri, host, files, **kwargs):
 
 
 def url_create_tags(urlhaus_data):
+    """
+        Create url tags.
+
+        Args:
+            urlhaus_data(dict).
+
+        Returns:
+            Tags(list).
+    """
     tags = urlhaus_data.get('Tags', [])
-    if urlhaus_data.get("Threat"):
-        tags.append(urlhaus_data.get("Threat"))
+    if urlhaus_data.get('Threat'):
+        tags.append(urlhaus_data.get('Threat'))
     return tags
 
 
 def url_create_payloads(url_information):
+    """
+        Return payloads list.
+
+        Args:
+            url_information(dict).
+
+        Returns:
+            Payloads(list).
+    """
     payloads = []
     for payload in url_information.get('payloads') or []:
         vt_data = payload.get('virustotal', None)
@@ -194,6 +263,15 @@ def url_create_payloads(url_information):
 
 
 def url_create_blacklist(url_information):
+    """
+        Create blacklist for url command.
+
+        Args:
+            url_information(dict).
+
+        Returns:
+            Blacklist(list).
+    """
     blacklist_information = []
     blacklists = url_information.get('blacklists', {})
     for bl_name, bl_status in blacklists.items():
@@ -203,8 +281,15 @@ def url_create_blacklist(url_information):
 
 
 def build_context_url_ok_status(url_information, uri, **kwargs):
-    # URLhaus output
+    """
+         Build context if the status is ok.
 
+         Args:
+             url_information(dict), queried url(str), params(dict).
+
+         Returns:
+             CommandResults.
+     """
     blacklist_information = url_create_blacklist(url_information)
     date_added = reformat_date(url_information.get('date_added'))
     payloads = url_create_payloads(url_information)
@@ -237,11 +322,11 @@ def build_context_url_ok_status(url_information, uri, **kwargs):
                                                                                                  urlhaus_data))
     human_readable = tableToMarkdown(f'URLhaus reputation for {uri}',
                                      {
-                                         'URLhaus link': url_information.get("urlhaus_reference", "None"),
+                                         'URLhaus link': url_information.get('urlhaus_reference', 'None'),
                                          'Description': description,
                                          'URLhaus ID': urlhaus_data['ID'],
                                          'Status': urlhaus_data['Status'],
-                                         'Threat': url_information.get("threat", ""),
+                                         'Threat': url_information.get('threat', ''),
                                          'Date added': date_added
                                      })
 
@@ -255,6 +340,15 @@ def build_context_url_ok_status(url_information, uri, **kwargs):
 
 
 def build_context_url_no_results_status(url_information, uri, **kwargs):
+    """
+         Build context if url status is no results.
+
+         Args:
+             url_information(dict), queried url(str), params(dict).
+
+         Returns:
+             CommandResults.
+     """
     dbot_score = Common.DBotScore(
         indicator=uri,
         integration_name='URLhaus',
@@ -273,6 +367,15 @@ def build_context_url_no_results_status(url_information, uri, **kwargs):
 
 
 def process_query_info(url_information, uri, **kwargs):
+    """
+         Process response information and return the right command results.
+
+         Args:
+             url_information(dict), queried url(str), params(dict).
+
+         Returns:
+             CommandResults.
+     """
     if url_information['query_status'] == 'ok':
         return build_context_url_ok_status(url_information, uri, **kwargs)
 
@@ -291,22 +394,40 @@ def process_query_info(url_information, uri, **kwargs):
 
 
 def url_command(**kwargs):
+    """
+        Execute url command.
+
+        Args:
+            params (dict): query parameters.
+
+        Returns:
+            CommandResults.
+    """
     url = demisto.args().get('url')
     try:
         url_information = query_url_information(url, kwargs.get('api_url'), kwargs.get('use_ssl')).json()
     except UnicodeEncodeError:
         return_results(CommandResults(
-            readable_output="Service Does not support special characters.",
+            readable_output='Service Does not support special characters.',
         ))
         return
     return process_query_info(url_information, url, **kwargs)
 
 
 def domain_create_relationships(urls, domain, **kwargs):
-    relationships = []
+    """
+        Return relationships list if create_relationships is on (limited to max_num_of_relationships).
+
+        Args:
+            urls(list)- url associated with domain, domain(str)- queried domain, params(dict).
+
+        Returns:
+            Relationships(list).
+    """
+    relationships: list = []
     if kwargs.get('create_relationships'):
         for url in urls:
-            if len(relationships) >= kwargs.get('max_num_of_relationships'):
+            if len(relationships) >= kwargs.get('max_num_of_relationships', 1):
                 break
             relationships.append(EntityRelationship(
                 name=EntityRelationship.Relationships.HOSTS, entity_a=domain,
@@ -317,14 +438,32 @@ def domain_create_relationships(urls, domain, **kwargs):
 
 
 def domain_add_tags(bl_status, tags):
+    """
+        Create tags associated to the domain.
+
+        Args:
+            bl_status(str)- blacklist status, tags(list).
+
+        Returns:
+            append to tags list(passed by ref).
+    """
     if bl_status:
-        status_prefix = bl_status.split("_")[0] if bl_status.endswith("domain") else \
-            bl_status.split("_")[-1] if bl_status.startswith("abused") else ''
+        status_prefix = bl_status.split('_')[0] if bl_status.endswith('domain') else \
+            bl_status.split('_')[-1] if bl_status.startswith('abused') else ''
         if status_prefix:
             tags.append(status_prefix)
 
 
 def domain_command(**kwargs):
+    """
+        Execute domain command.
+
+        Args:
+            params (dict): query parameters.
+
+        Returns:
+            CommandResults.
+    """
     domain = demisto.args()['domain']
 
     try:
@@ -342,7 +481,7 @@ def domain_command(**kwargs):
             }
         }
 
-        tags = []
+        tags: list = []
         if domain_information['query_status'] == 'ok':
             # URLHaus output
             blacklist_information = []
@@ -365,7 +504,7 @@ def domain_command(**kwargs):
             dbot_score, description = calculate_dbot_score('domain', domain_information.get('blacklists', {}))
             ec['DBotScore']['Score'] = dbot_score
             if dbot_score == Common.DBotScore.BAD:
-                ec['domain']['Malicious'] = {
+                ec['Domain']['Malicious'] = {
                     'Vendor': 'URLhaus',
                     'Description': description
                 }
@@ -402,14 +541,21 @@ def domain_command(**kwargs):
                 raw_response=domain_information))
         else:
             raise DemistoException(f'Query results = {domain_information["query_status"]}', res=domain_information)
-
-
     except Exception:
         demisto.debug(traceback.format_exc())
         return_error('Failed getting domain data, please verify the arguments and parameters')
 
 
 def file_create_relationships(urls, sig, file, **kwargs):
+    """
+        Return relationships list if create_relationships is on (limited to max_num_of_relationships).
+
+        Args:
+             urls(list)- url associated with file, sig(str)- file signature, file(str)- hash, params(dict).
+
+        Returns:
+            Relationships(list).
+    """
     relationships = []
     if kwargs.get('create_relationships'):
         relationships.append(EntityRelationship(
@@ -419,7 +565,7 @@ def file_create_relationships(urls, sig, file, **kwargs):
             reverse_name=EntityRelationship.Relationships.INDICATED_BY).to_context())
 
         for url in urls:
-            if len(relationships) >= kwargs.get('max_num_of_relationships'):
+            if len(relationships) >= kwargs.get('max_num_of_relationships', 1):
                 break
             relationships.append(EntityRelationship(
                 name=EntityRelationship.Relationships.RELATED_TO, entity_a=file,
@@ -430,6 +576,15 @@ def file_create_relationships(urls, sig, file, **kwargs):
 
 
 def file_command(**kwargs):
+    """
+        Execute file command.
+
+        Args:
+            params (dict): query parameters.
+
+        Returns:
+            CommandResults.
+    """
     hash = demisto.args()['file']
     if len(hash) == 32:
         hash_type = 'md5'
@@ -471,7 +626,7 @@ def file_command(**kwargs):
                 integration_name='URLhaus',
                 indicator_type=DBotScoreType.FILE,
                 reliability=kwargs.get('reliability'),
-                score=calculate_dbot_score('file', ""),
+                score=calculate_dbot_score('file', '')[0],  # only score
             ).to_context()
 
             ec = {
@@ -520,8 +675,6 @@ def file_command(**kwargs):
                 raw_response=file_information))
         else:
             raise DemistoException(f'Query results = {file_information["query_status"]}', res=file_information)
-
-
     except Exception:
         demisto.debug(traceback.format_exc())
         return_error('Failed getting file data, please verify the arguments and parameters')
@@ -588,7 +741,7 @@ def main():
         if DBotScoreReliability.is_valid_type(reliability):
             params['reliability'] = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
         else:
-            Exception("Please provide a valid value for the Source Reliability parameter.")
+            Exception('Please provide a valid value for the Source Reliability parameter.')
 
         # Remove proxy if not set to true in params
         handle_proxy()
