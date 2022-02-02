@@ -2646,7 +2646,7 @@ def gcp_iam_service_account_delete_command(client: Client, args: Dict[str, Any])
             ))
         except Exception as exception:
             error = CommandResults(
-                readable_output=f'An error occurred while trying to deleted {account}.\n {exception}'
+                readable_output=f'An error occurred while trying to delete {account}.\n {exception}'
             )
             command_results_list.append(error)
 
@@ -3230,7 +3230,7 @@ def gcp_iam_organization_role_get_command(client: Client, args: Dict[str, Any]) 
                 generate_role_command_output(response, readable_header=f'Role {retrieved_role_name} information:'))
         except Exception as exception:
             error = CommandResults(
-                readable_output=f'An error occurred while trying to retrieve {role}.\n {exception}'
+                readable_output=f'An error occurred while retrieving {role}.\n {exception}'
             )
             command_results_list.append(error)
 
@@ -3366,7 +3366,7 @@ def gcp_iam_project_role_get_command(client: Client, args: Dict[str, Any]) -> li
                 generate_role_command_output(response, readable_header=f'Role {retrieved_role_name} information:'))
         except Exception as exception:
             error = CommandResults(
-                readable_output=f'An error occurred while trying to retrieve {role}.\n {exception}'
+                readable_output=f'An error occurred while retrieving {role}.\n {exception}'
             )
             command_results_list.append(error)
 
@@ -3424,7 +3424,7 @@ def gcp_iam_predefined_role_get_command(client: Client, args: Dict[str, Any]) ->
                 generate_role_command_output(response, readable_header=f'Role {retrieved_role_name} information:'))
         except Exception as exception:
             error = CommandResults(
-                readable_output=f'An error occurred while trying to retrieve {role}.\n {exception}'
+                readable_output=f'An error occurred while retrieving {role}.\n {exception}'
             )
             command_results_list.append(error)
 

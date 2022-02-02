@@ -7,6 +7,20 @@ import pytest
 GCP_IAM = importlib.import_module("GCPIAM")
 
 
+def get_error_message(resource_name: str, error: str = 'Not Found') -> str:
+    """
+    Get error message.
+    Args:
+        resource_name (str): The name of the resource which trying to retrieve.
+        error (str): Exception message
+
+    Returns:
+        str: Error message.
+
+    """
+    return f'An error occurred while retrieving {resource_name}.\n {error}'
+
+
 def load_mock_response(file_path: str) -> str:
     """
     Load mock file that simulates an API response.
@@ -71,6 +85,10 @@ def test_gcp_iam_project_get_command(client):
     assert len(result[0].outputs) == 1
     assert result[0].outputs_prefix == 'GCPIAM.Project'
     assert result[0].outputs[0].get('name') == project_name
+
+    client.gcp_iam_project_get_request.side_effect = Exception('Not Found')
+    result = GCP_IAM.gcp_iam_projects_get_command(client, {"project_name": project_name})
+    assert result[0].readable_output == get_error_message(project_name)
 
 
 def test_gcp_iam_project_iam_policy_get_command(client):
@@ -431,6 +449,11 @@ def test_gcp_iam_group_membership_create_command(client):
     assert result[0].outputs[0].get('roles')[0].get('name') == role
     assert result[0].outputs[0].get('preferredMemberKey').get('id') == member_email
 
+    client.gcp_iam_group_membership_create_request.side_effect = Exception('Not Found')
+    result = GCP_IAM.gcp_iam_group_membership_create_command(client, command_args)
+    assert result[
+               0].readable_output == f'An error occurred while creating membership in group {group_name}.\n Not Found'
+
 
 def test_gcp_iam_group_membership_list_command(client):
     """
@@ -556,6 +579,11 @@ def test_gcp_iam_group_membership_delete_request(client):
 
     assert len(result) == 1
     assert result[0].readable_output == f'Membership {membership_name} deleted successfully.'
+
+    client.gcp_iam_group_membership_delete_request.side_effect = Exception('Not Found')
+    result = GCP_IAM.gcp_iam_group_membership_delete_command(client, command_args)
+    assert result[
+               0].readable_output == f'An error occurred while deleting the membership {membership_name}.\n Not Found'
 
 
 def test_gcp_iam_testable_permission_list_command(client):
@@ -724,6 +752,10 @@ def test_gcp_iam_service_account_get_command(client):
     assert result[0].outputs_prefix == 'GCPIAM.ServiceAccount'
     assert result[0].outputs[0].get('projectId') == 'project-id-1'
 
+    client.gcp_iam_service_account_get_request.side_effect = Exception('Not Found')
+    result = GCP_IAM.gcp_iam_service_accounts_get_command(client, command_args)
+    assert result[0].readable_output == get_error_message(service_account_name)
+
 
 def test_gcp_iam_service_account_enable_command(client):
     """
@@ -744,6 +776,10 @@ def test_gcp_iam_service_account_enable_command(client):
     result = GCP_IAM.gcp_iam_service_account_enable_command(client, command_args)
 
     assert result[0].readable_output == f'Service account {service_account_name} updated successfully.'
+
+    client.gcp_iam_service_account_enable_request.side_effect = Exception('Not Found')
+    result = GCP_IAM.gcp_iam_service_account_enable_command(client, command_args)
+    assert result[0].readable_output == f'An error occurred while trying to enable {service_account_name}.\n Not Found'
 
 
 def test_gcp_iam_service_account_disable_command(client):
@@ -766,6 +802,10 @@ def test_gcp_iam_service_account_disable_command(client):
 
     assert result[0].readable_output == f'Service account {service_account_name} updated successfully.'
 
+    client.gcp_iam_service_account_disable_request.side_effect = Exception('Not Found')
+    result = GCP_IAM.gcp_iam_service_account_disable_command(client, command_args)
+    assert result[0].readable_output == f'An error occurred while trying to disable {service_account_name}.\n Not Found'
+
 
 def test_gcp_iam_service_account_delete_command(client):
     """
@@ -786,6 +826,10 @@ def test_gcp_iam_service_account_delete_command(client):
     result = GCP_IAM.gcp_iam_service_account_delete_command(client, command_args)
 
     assert result[0].readable_output == f'Service account {service_account_name} deleted successfully.'
+
+    client.gcp_iam_service_account_delete_request.side_effect = Exception('Not Found')
+    result = GCP_IAM.gcp_iam_service_account_delete_command(client, command_args)
+    assert result[0].readable_output == f'An error occurred while trying to delete {service_account_name}.\n Not Found'
 
 
 def test_gcp_iam_service_account_key_create_command(client):
@@ -898,6 +942,10 @@ def test_gcp_iam_service_account_key_enable_command(client):
 
     assert result[0].readable_output == f'Service account key {key_name} updated successfully.'
 
+    client.gcp_iam_service_account_key_enable_request.side_effect = Exception('Not Found')
+    result = GCP_IAM.gcp_iam_service_account_key_enable_command(client, command_args)
+    assert result[0].readable_output == f'An error occurred while trying to enable {key_name}.\n Not Found'
+
 
 def test_gcp_iam_service_account_key_disable_command(client):
     """
@@ -920,6 +968,10 @@ def test_gcp_iam_service_account_key_disable_command(client):
 
     assert result[0].readable_output == f'Service account key {key_name} updated successfully.'
 
+    client.gcp_iam_service_account_key_disable_request.side_effect = Exception('Not Found')
+    result = GCP_IAM.gcp_iam_service_account_key_disable_command(client, command_args)
+    assert result[0].readable_output == f'An error occurred while trying to disable {key_name}.\n Not Found'
+
 
 def test_gcp_iam_service_account_key_delete_command(client):
     """
@@ -941,6 +993,10 @@ def test_gcp_iam_service_account_key_delete_command(client):
     result = GCP_IAM.gcp_iam_service_account_key_delete_command(client, command_args)
 
     assert result[0].readable_output == f'Service account key {key_name} deleted successfully.'
+
+    client.gcp_iam_service_account_key_delete_request.side_effect = Exception('Not Found')
+    result = GCP_IAM.gcp_iam_service_account_key_delete_command(client, command_args)
+    assert result[0].readable_output == f'An error occurred while trying to delete {key_name}.\n Not Found'
 
 
 def test_gcp_iam_organization_role_create_command(client):
@@ -1028,6 +1084,10 @@ def test_gcp_iam_organization_role_get_command(client):
     assert result[0].outputs[0].get('stage') == 'ALPHA'
     assert result[0].outputs[0].get('name') == role_name
 
+    client.gcp_iam_organization_role_get_request.side_effect = Exception('Not Found')
+    result = GCP_IAM.gcp_iam_organization_role_get_command(client, command_args)
+    assert result[0].readable_output == get_error_message(role_name)
+
 
 def test_gcp_iam_project_role_get_command(client):
     """
@@ -1055,6 +1115,10 @@ def test_gcp_iam_project_role_get_command(client):
     assert result[0].outputs_prefix == 'GCPIAM.Role'
     assert result[0].outputs[0].get('stage') == 'ALPHA'
     assert result[0].outputs[0].get('name') == role_name
+
+    client.gcp_iam_project_role_get_request.side_effect = Exception('Not Found')
+    result = GCP_IAM.gcp_iam_project_role_get_command(client, command_args)
+    assert result[0].readable_output == get_error_message(role_name)
 
 
 def test_gcp_iam_organization_role_list_command(client):
@@ -1170,6 +1234,10 @@ def test_gcp_iam_predefined_role_get_command(client):
     assert result[0].outputs_prefix == 'GCPIAM.Role'
     assert result[0].outputs[0].get('stage') == 'BETA'
     assert result[0].outputs[0].get('name') == role_name
+
+    client.gcp_iam_predefined_role_get_request.side_effect = Exception('Not Found')
+    result = GCP_IAM.gcp_iam_predefined_role_get_command(client, command_args)
+    assert result[0].readable_output == get_error_message(role_name)
 
 
 def test_gcp_iam_organization_role_update_command(client):
@@ -1376,6 +1444,10 @@ def test_gcp_iam_organization_role_delete_command(client):
 
     assert result[0].readable_output == f'Role {role_name} deleted successfully.'
 
+    client.gcp_iam_organization_role_delete_request.side_effect = Exception('Not Found')
+    result = GCP_IAM.gcp_iam_organization_role_delete_command(client, command_args)
+    assert result[0].readable_output == f'An error occurred while trying to delete {role_name}.\n Not Found'
+
 
 def test_gcp_iam_project_role_delete_command(client):
     """
@@ -1396,6 +1468,10 @@ def test_gcp_iam_project_role_delete_command(client):
     result = GCP_IAM.gcp_iam_project_role_delete_command(client, command_args)
 
     assert result[0].readable_output == f'Role {role_name} deleted successfully.'
+
+    client.gcp_iam_project_role_delete_request.side_effect = Exception('Not Found')
+    result = GCP_IAM.gcp_iam_project_role_delete_command(client, command_args)
+    assert result[0].readable_output == f'An error occurred while trying to delete {role_name}.\n Not Found'
 
 
 def test_gcp_iam_folder_list_command(client):
@@ -1440,6 +1516,10 @@ def test_gcp_iam_folder_get_command(client):
     assert len(result[0].outputs) == 1
     assert result[0].outputs_prefix == 'GCPIAM.Folder'
     assert result[0].outputs[0].get('name') == folder_name
+
+    client.gcp_iam_folder_get_request.side_effect = Exception('Not Found')
+    result = GCP_IAM.gcp_iam_folders_get_command(client, {"folder_name": folder_name})
+    assert result[0].readable_output == get_error_message(folder_name)
 
 
 def test_gcp_iam_folder_iam_policy_get_command(client):
@@ -1684,6 +1764,10 @@ def test_gcp_iam_organization_get_command(client):
     assert len(result[0].outputs) == 1
     assert result[0].outputs_prefix == 'GCPIAM.Organization'
     assert result[0].outputs[0].get('name') == organization_name
+
+    client.gcp_iam_organization_get_request.side_effect = Exception('Not Found')
+    result = GCP_IAM.gcp_iam_organizations_get_command(client, {"organization_name": organization_name})
+    assert result[0].readable_output == get_error_message(organization_name)
 
 
 def test_gcp_iam_organization_iam_policy_get_command(client):
