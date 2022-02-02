@@ -1,17 +1,17 @@
 name: Trigger Contribution Build
 on:
-  pull_request: #to add _target to access secrets on forked
+  pull_request_target:
     types: [labeled]
 
 jobs:
   trigget_contrib_build:
     runs-on: ubuntu-latest
-    if: github.event.action == 'labeled' && contains(github.event.pull_request.labels.*.name, 'ready-for-instance-test') == true && github.event.pull_request.head.repo.fork == false # change to true
+    if: github.event.action == 'labeled' && contains(github.event.pull_request.labels.*.name, 'ready-for-instance-test') == true && github.event.pull_request.head.repo.fork == true
     steps:
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          ref: trigger_contrib_build # change to master
+          ref: master
       - name: Setup Python
         uses: actions/setup-python@v2
         with:
