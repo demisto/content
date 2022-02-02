@@ -85,7 +85,7 @@ tasks:
         simple: "1"
       page: {}
       parent:
-        simple: ${GCP.IAM.Organization.name}
+        simple: ${GCPIAM.Organization.name}
       project_name: {}
       show_deleted: {}
     separatecontext: false
@@ -122,37 +122,37 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.Project.createTime
+              simple: GCPIAM.Project.createTime
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.Project.displayName
+              simple: GCPIAM.Project.displayName
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.Project.name
+              simple: GCPIAM.Project.name
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.Project.parent
+              simple: GCPIAM.Project.parent
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.Project.projectId
+              simple: GCPIAM.Project.projectId
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.Project.state
+              simple: GCPIAM.Project.state
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.Project.updateTime
+              simple: GCPIAM.Project.updateTime
             iscontext: true
     view: |-
       {
@@ -185,7 +185,7 @@ tasks:
       permissions:
         simple: compute.instances.create,aiplatform.dataItems.create
       project_name:
-        simple: ${GCP.IAM.Project.name}
+        simple: ${GCPIAM.Project.name}
     separatecontext: false
     view: |-
       {
@@ -220,7 +220,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.Permission
+              simple: GCPIAM.Permission
             iscontext: true
     view: |-
       {
@@ -253,7 +253,7 @@ tasks:
       members:
         simple: group:poctest@fortresssecurity.ai
       project_name:
-        simple: ${GCP.IAM.Project.name}
+        simple: ${GCPIAM.Project.name}
       role:
         simple: roles/browser
     separatecontext: false
@@ -288,7 +288,7 @@ tasks:
       members:
         simple: group:poctest@fortresssecurity.ai
       project_name:
-        simple: ${GCP.IAM.Project.name}
+        simple: ${GCPIAM.Project.name}
       role:
         simple: roles/browser
     separatecontext: false
@@ -321,7 +321,7 @@ tasks:
       - "9"
     scriptarguments:
       project_name:
-        simple: ${GCP.IAM.Project.name}
+        simple: ${GCPIAM.Project.name}
     separatecontext: false
     view: |-
       {
@@ -356,17 +356,17 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.Policy.bindings.members
+              simple: GCPIAM.Policy.bindings.members
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.Policy.bindings.role
+              simple: GCPIAM.Policy.bindings.role
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.Policy.name
+              simple: GCPIAM.Policy.name
             iscontext: true
     view: |-
       {
@@ -397,9 +397,9 @@ tasks:
       - "11"
     scriptarguments:
       policy:
-        simple: ${GCP.IAM.Policy.bindings}
+        simple: ${GCPIAM.Policy.bindings}
       project_name:
-        simple: ${GCP.IAM.Project.name}
+        simple: ${GCPIAM.Project.name}
     separatecontext: false
     view: |-
       {
@@ -434,17 +434,17 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.Policy.bindings.members
+              simple: GCPIAM.Policy.bindings.members
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.Policy.bindings.role
+              simple: GCPIAM.Policy.bindings.role
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.Policy.name
+              simple: GCPIAM.Policy.name
             iscontext: true
     view: |-
       {
@@ -475,7 +475,7 @@ tasks:
       - "13"
     scriptarguments:
       project_name:
-        simple: ${GCP.IAM.Project.name}
+        simple: ${GCPIAM.Project.name}
       role:
         simple: roles/browser
     separatecontext: false
@@ -510,7 +510,7 @@ tasks:
       members:
         simple: serviceAccount:test123@mystical-studio-330810.iam.gserviceaccount.com,user:yehuda@fortresssecurity.ai
       project_name:
-        simple: ${GCP.IAM.Project.name}
+        simple: ${GCPIAM.Project.name}
       role:
         simple: roles/browser
     separatecontext: false
@@ -547,7 +547,7 @@ tasks:
         simple: "1"
       page: {}
       parent:
-        simple: ${GCP.IAM.Organization.name}
+        simple: ${GCPIAM.Organization.name}
       show_deleted: {}
     separatecontext: false
     view: |-
@@ -583,32 +583,32 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.Folder.createTime
+              simple: GCPIAM.Folder.createTime
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.Folder.displayName
+              simple: GCPIAM.Folder.displayName
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.Folder.name
+              simple: GCPIAM.Folder.name
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.Folder.parent
+              simple: GCPIAM.Folder.parent
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.Folder.state
+              simple: GCPIAM.Folder.state
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.Folder.updateTime
+              simple: GCPIAM.Folder.updateTime
             iscontext: true
     view: |-
       {
@@ -639,7 +639,7 @@ tasks:
       - "17"
     scriptarguments:
       folder_name:
-        simple: ${GCP.IAM.Folder.name}
+        simple: ${GCPIAM.Folder.name}
       permissions:
         simple: compute.instances.create,aiplatform.dataItems.create
     separatecontext: false
@@ -676,7 +676,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.Permission
+              simple: GCPIAM.Permission
             iscontext: true
     view: |-
       {
@@ -707,7 +707,7 @@ tasks:
       - "19"
     scriptarguments:
       folder_name:
-        simple: ${GCP.IAM.Folder.name}
+        simple: ${GCPIAM.Folder.name}
       members:
         simple: group:poctest@fortresssecurity.ai
       role:
@@ -742,7 +742,7 @@ tasks:
       - "20"
     scriptarguments:
       folder_name:
-        simple: ${GCP.IAM.Folder.name}
+        simple: ${GCPIAM.Folder.name}
       members:
         simple: group:poctest@fortresssecurity.ai
       role:
@@ -777,7 +777,7 @@ tasks:
       - "21"
     scriptarguments:
       folder_name:
-        simple: ${GCP.IAM.Folder.name}
+        simple: ${GCPIAM.Folder.name}
     separatecontext: false
     view: |-
       {
@@ -812,17 +812,17 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.Policy.bindings.members
+              simple: GCPIAM.Policy.bindings.members
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.Policy.bindings.role
+              simple: GCPIAM.Policy.bindings.role
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.Policy.name
+              simple: GCPIAM.Policy.name
             iscontext: true
     view: |-
       {
@@ -853,9 +853,9 @@ tasks:
       - "23"
     scriptarguments:
       folder_name:
-        simple: ${GCP.IAM.Folder.name}
+        simple: ${GCPIAM.Folder.name}
       policy:
-        simple: ${GCP.IAM.Policy.bindings}
+        simple: ${GCPIAM.Policy.bindings}
     separatecontext: false
     view: |-
       {
@@ -890,17 +890,17 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.Policy.bindings.members
+              simple: GCPIAM.Policy.bindings.members
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.Policy.bindings.role
+              simple: GCPIAM.Policy.bindings.role
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.Policy.name
+              simple: GCPIAM.Policy.name
             iscontext: true
     view: |-
       {
@@ -931,7 +931,7 @@ tasks:
       - "25"
     scriptarguments:
       folder_name:
-        simple: ${GCP.IAM.Folder.name}
+        simple: ${GCPIAM.Folder.name}
       role:
         simple: roles/resourcemanager.folderEditor
     separatecontext: false
@@ -964,7 +964,7 @@ tasks:
       - "88"
     scriptarguments:
       folder_name:
-        simple: ${GCP.IAM.Folder.name}
+        simple: ${GCPIAM.Folder.name}
       members:
         simple: serviceAccount:yehuda-test-service-account@mystical-studio-330810.iam.gserviceaccount.com
       role:
@@ -1036,32 +1036,32 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.Organization.createTime
+              simple: GCPIAM.Organization.createTime
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.Organization.directoryCustomerId
+              simple: GCPIAM.Organization.directoryCustomerId
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.Organization.displayName
+              simple: GCPIAM.Organization.displayName
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.Organization.name
+              simple: GCPIAM.Organization.name
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.Organization.state
+              simple: GCPIAM.Organization.state
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.Organization.updateTime
+              simple: GCPIAM.Organization.updateTime
             iscontext: true
     view: |-
       {
@@ -1092,7 +1092,7 @@ tasks:
       - "29"
     scriptarguments:
       organization_name:
-        simple: ${GCP.IAM.Organization.name}
+        simple: ${GCPIAM.Organization.name}
       permissions:
         simple: compute.instances.create,aiplatform.dataItems.create
     separatecontext: false
@@ -1129,7 +1129,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.Permission
+              simple: GCPIAM.Permission
             iscontext: true
     view: |-
       {
@@ -1162,7 +1162,7 @@ tasks:
       members:
         simple: group:poctest@fortresssecurity.ai
       organization_name:
-        simple: ${GCP.IAM.Organization.name}
+        simple: ${GCPIAM.Organization.name}
       role:
         simple: roles/compute.viewer
     separatecontext: false
@@ -1197,7 +1197,7 @@ tasks:
       members:
         simple: group:poctest@fortresssecurity.ai
       organization_name:
-        simple: ${GCP.IAM.Organization.name}
+        simple: ${GCPIAM.Organization.name}
       role:
         simple: roles/compute.viewer
     separatecontext: false
@@ -1230,7 +1230,7 @@ tasks:
       - "33"
     scriptarguments:
       organization_name:
-        simple: ${GCP.IAM.Organization.name}
+        simple: ${GCPIAM.Organization.name}
     separatecontext: false
     view: |-
       {
@@ -1265,17 +1265,17 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.Policy.bindings.members
+              simple: GCPIAM.Policy.bindings.members
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.Policy.bindings.role
+              simple: GCPIAM.Policy.bindings.role
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.Policy.name
+              simple: GCPIAM.Policy.name
             iscontext: true
     view: |-
       {
@@ -1310,7 +1310,7 @@ tasks:
       group_email_address:
         simple: xsoar-test123@fortresssecurity.ai
       parent:
-        simple: customers/${GCP.IAM.Organization.directoryCustomerId}
+        simple: customers/${GCPIAM.Organization.directoryCustomerId}
     separatecontext: false
     view: |-
       {
@@ -1345,32 +1345,32 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.Group.createTime
+              simple: GCPIAM.Group.createTime
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.Group.displayName
+              simple: GCPIAM.Group.displayName
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.Group.groupKey.id
+              simple: GCPIAM.Group.groupKey.id
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.Group.name
+              simple: GCPIAM.Group.name
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.Group.parent
+              simple: GCPIAM.Group.parent
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.Group.updateTime
+              simple: GCPIAM.Group.updateTime
             iscontext: true
     view: |-
       {
@@ -1405,7 +1405,7 @@ tasks:
       page:
         simple: "1"
       parent:
-        simple: customers/${GCP.IAM.Organization.directoryCustomerId}
+        simple: customers/${GCPIAM.Organization.directoryCustomerId}
     separatecontext: false
     view: |-
       {
@@ -1440,17 +1440,17 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.Group.displayName
+              simple: GCPIAM.Group.displayName
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.Group.groupKey.id
+              simple: GCPIAM.Group.groupKey.id
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.Group.name
+              simple: GCPIAM.Group.name
             iscontext: true
     view: |-
       {
@@ -1481,7 +1481,7 @@ tasks:
       - "39"
     scriptarguments:
       group_name:
-        simple: ${GCP.IAM.Group.name}
+        simple: ${GCPIAM.Group.name}
     separatecontext: false
     view: |-
       {
@@ -1516,32 +1516,32 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.Group.createTime
+              simple: GCPIAM.Group.createTime
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.Group.displayName
+              simple: GCPIAM.Group.displayName
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.Group.groupKey.id
+              simple: GCPIAM.Group.groupKey.id
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.Group.name
+              simple: GCPIAM.Group.name
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.Group.parent
+              simple: GCPIAM.Group.parent
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.Group.updateTime
+              simple: GCPIAM.Group.updateTime
             iscontext: true
     view: |-
       {
@@ -1572,7 +1572,7 @@ tasks:
       - "41"
     scriptarguments:
       groups_name:
-        simple: ${GCP.IAM.Group.name}
+        simple: ${GCPIAM.Group.name}
       member_email:
         simple: yehuda@fortresssecurity.ai
       role:
@@ -1611,17 +1611,17 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.Membership.name
+              simple: GCPIAM.Membership.name
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.Membership.preferredMemberKey.id
+              simple: GCPIAM.Membership.preferredMemberKey.id
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.Membership.roles.name
+              simple: GCPIAM.Membership.roles.name
             iscontext: true
     view: |-
       {
@@ -1652,7 +1652,7 @@ tasks:
       - "43"
     scriptarguments:
       group_name:
-        simple: ${GCP.IAM.Group.name}
+        simple: ${GCPIAM.Group.name}
       limit:
         simple: "1"
       page:
@@ -1691,17 +1691,17 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.Membership.name
+              simple: GCPIAM.Membership.name
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.Membership.preferredMemberKey.id
+              simple: GCPIAM.Membership.preferredMemberKey.id
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.Membership.roles.name
+              simple: GCPIAM.Membership.roles.name
             iscontext: true
     view: |-
       {
@@ -1732,7 +1732,7 @@ tasks:
       - "45"
     scriptarguments:
       membership_name:
-        simple: ${GCP.IAM.Membership.name}
+        simple: ${GCPIAM.Membership.name}
     separatecontext: false
     view: |-
       {
@@ -1767,27 +1767,27 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.Membership.createTime
+              simple: GCPIAM.Membership.createTime
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.Membership.name
+              simple: GCPIAM.Membership.name
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.Membership.preferredMemberKey.id
+              simple: GCPIAM.Membership.preferredMemberKey.id
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.Membership.roles.name
+              simple: GCPIAM.Membership.roles.name
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.Membership.updateTime
+              simple: GCPIAM.Membership.updateTime
             iscontext: true
     view: |-
       {
@@ -1818,7 +1818,7 @@ tasks:
       - "47"
     scriptarguments:
       membership_name:
-        simple: ${GCP.IAM.Membership.name}
+        simple: ${GCPIAM.Membership.name}
       role:
         simple: OWNER
     separatecontext: false
@@ -1851,7 +1851,7 @@ tasks:
       - "48"
     scriptarguments:
       membership_name:
-        simple: ${GCP.IAM.Membership.name}
+        simple: ${GCPIAM.Membership.name}
       role:
         simple: OWNER
     separatecontext: false
@@ -1884,7 +1884,7 @@ tasks:
       - "51"
     scriptarguments:
       membership_names:
-        simple: ${GCP.IAM.Membership.name}
+        simple: ${GCPIAM.Membership.name}
     separatecontext: false
     view: |-
       {
@@ -1919,7 +1919,7 @@ tasks:
       display_name:
         simple: Test Playbook service account
       project_name:
-        simple: ${GCP.IAM.Project.name}
+        simple: ${GCPIAM.Project.name}
       service_account_id:
         simple: my-service-account-test
     separatecontext: false
@@ -1956,32 +1956,32 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.ServiceAccount.email
+              simple: GCPIAM.ServiceAccount.email
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.ServiceAccount.name
+              simple: GCPIAM.ServiceAccount.name
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.ServiceAccount.oauth2ClientId
+              simple: GCPIAM.ServiceAccount.oauth2ClientId
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.ServiceAccount.projectId
+              simple: GCPIAM.ServiceAccount.projectId
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.ServiceAccount.uniqueId
+              simple: GCPIAM.ServiceAccount.uniqueId
             iscontext: true
       - - operator: isExists
           left:
             value:
-              simple: GCP.IAM.ServiceAccount.disabled
+              simple: GCPIAM.ServiceAccount.disabled
             iscontext: true
     view: |-
       {
@@ -2012,7 +2012,7 @@ tasks:
       - "90"
     scriptarguments:
       group_name:
-        simple: ${GCP.IAM.Group.name}
+        simple: ${GCPIAM.Group.name}
     separatecontext: false
     view: |-
       {
@@ -2047,7 +2047,7 @@ tasks:
       fields_to_update:
         simple: displayName
       service_account_name:
-        simple: ${GCP.IAM.ServiceAccount.name}
+        simple: ${GCPIAM.ServiceAccount.name}
     separatecontext: false
     view: |-
       {
@@ -2078,7 +2078,7 @@ tasks:
       - "54"
     scriptarguments:
       service_account_name:
-        simple: ${GCP.IAM.ServiceAccount.name}
+        simple: ${GCPIAM.ServiceAccount.name}
     separatecontext: false
     view: |-
       {
@@ -2113,32 +2113,32 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.ServiceAccount.email
+              simple: GCPIAM.ServiceAccount.email
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.ServiceAccount.name
+              simple: GCPIAM.ServiceAccount.name
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.ServiceAccount.oauth2ClientId
+              simple: GCPIAM.ServiceAccount.oauth2ClientId
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.ServiceAccount.projectId
+              simple: GCPIAM.ServiceAccount.projectId
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.ServiceAccount.uniqueId
+              simple: GCPIAM.ServiceAccount.uniqueId
             iscontext: true
       - - operator: isExists
           left:
             value:
-              simple: GCP.IAM.ServiceAccount.disabled
+              simple: GCPIAM.ServiceAccount.disabled
             iscontext: true
     view: |-
       {
@@ -2169,7 +2169,7 @@ tasks:
       - "56"
     scriptarguments:
       service_account_name:
-        simple: ${GCP.IAM.ServiceAccount.name}
+        simple: ${GCPIAM.ServiceAccount.name}
     separatecontext: false
     view: |-
       {
@@ -2200,7 +2200,7 @@ tasks:
       - "57"
     scriptarguments:
       service_account_name:
-        simple: ${GCP.IAM.ServiceAccount.name}
+        simple: ${GCPIAM.ServiceAccount.name}
     separatecontext: false
     view: |-
       {
@@ -2231,7 +2231,7 @@ tasks:
       - "58"
     scriptarguments:
       service_account_name:
-        simple: ${GCP.IAM.ServiceAccount.name}
+        simple: ${GCPIAM.ServiceAccount.name}
     separatecontext: false
     view: |-
       {
@@ -2266,47 +2266,47 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.ServiceAccountKey.keyAlgorithm
+              simple: GCPIAM.ServiceAccountKey.keyAlgorithm
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.ServiceAccountKey.keyOrigin
+              simple: GCPIAM.ServiceAccountKey.keyOrigin
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.ServiceAccountKey.keyType
+              simple: GCPIAM.ServiceAccountKey.keyType
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.ServiceAccountKey.name
+              simple: GCPIAM.ServiceAccountKey.name
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.ServiceAccountKey.privateKeyData
+              simple: GCPIAM.ServiceAccountKey.privateKeyData
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.ServiceAccountKey.privateKeyType
+              simple: GCPIAM.ServiceAccountKey.privateKeyType
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.ServiceAccountKey.validAfterTime
+              simple: GCPIAM.ServiceAccountKey.validAfterTime
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.ServiceAccountKey.validBeforeTime
+              simple: GCPIAM.ServiceAccountKey.validBeforeTime
             iscontext: true
       - - operator: isExists
           left:
             value:
-              simple: GCP.IAM.ServiceAccountKey.disabled
+              simple: GCPIAM.ServiceAccountKey.disabled
             iscontext: true
     view: |-
       {
@@ -2339,7 +2339,7 @@ tasks:
       limit:
         simple: "1"
       service_account_name:
-        simple: ${GCP.IAM.ServiceAccount.name}
+        simple: ${GCPIAM.ServiceAccount.name}
     separatecontext: false
     view: |-
       {
@@ -2374,37 +2374,37 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.ServiceAccountKey.keyAlgorithm
+              simple: GCPIAM.ServiceAccountKey.keyAlgorithm
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.ServiceAccountKey.keyOrigin
+              simple: GCPIAM.ServiceAccountKey.keyOrigin
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.ServiceAccountKey.keyType
+              simple: GCPIAM.ServiceAccountKey.keyType
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.ServiceAccountKey.name
+              simple: GCPIAM.ServiceAccountKey.name
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.ServiceAccountKey.validAfterTime
+              simple: GCPIAM.ServiceAccountKey.validAfterTime
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.ServiceAccountKey.validBeforeTime
+              simple: GCPIAM.ServiceAccountKey.validBeforeTime
             iscontext: true
       - - operator: isExists
           left:
             value:
-              simple: GCP.IAM.ServiceAccountKey.disabled
+              simple: GCPIAM.ServiceAccountKey.disabled
             iscontext: true
     view: |-
       {
@@ -2435,7 +2435,7 @@ tasks:
       - "62"
     scriptarguments:
       key_name:
-        simple: ${GCP.IAM.ServiceAccountKey.name}
+        simple: ${GCPIAM.ServiceAccountKey.name}
     separatecontext: false
     view: |-
       {
@@ -2466,7 +2466,7 @@ tasks:
       - "63"
     scriptarguments:
       key_name:
-        simple: ${GCP.IAM.ServiceAccountKey.name}
+        simple: ${GCPIAM.ServiceAccountKey.name}
     separatecontext: false
     view: |-
       {
@@ -2497,7 +2497,7 @@ tasks:
       - "64"
     scriptarguments:
       key_name:
-        simple: ${GCP.IAM.ServiceAccountKey.name}
+        simple: ${GCPIAM.ServiceAccountKey.name}
     separatecontext: false
     view: |-
       {
@@ -2528,7 +2528,7 @@ tasks:
       - "92"
     scriptarguments:
       service_account_name:
-        simple: ${GCP.IAM.ServiceAccount.name}
+        simple: ${GCPIAM.ServiceAccount.name}
     separatecontext: false
     view: |-
       {
@@ -2562,7 +2562,7 @@ tasks:
       limit:
         simple: "1"
       organization_name:
-        simple: ${GCP.IAM.Organization.name}
+        simple: ${GCPIAM.Organization.name}
       page: {}
       show_deleted: {}
     separatecontext: false
@@ -2599,7 +2599,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.Role.name
+              simple: GCPIAM.Role.name
             iscontext: true
     view: |-
       {
@@ -2634,7 +2634,7 @@ tasks:
         simple: title
       permissions: {}
       role_name:
-        simple: ${GCP.IAM.Role.name}
+        simple: ${GCPIAM.Role.name}
       stage: {}
       title:
         simple: Test playbook organization role
@@ -2668,7 +2668,7 @@ tasks:
       - "69"
     scriptarguments:
       role_name:
-        simple: ${GCP.IAM.Role.name}
+        simple: ${GCPIAM.Role.name}
     separatecontext: false
     view: |-
       {
@@ -2703,7 +2703,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.Role.name
+              simple: GCPIAM.Role.name
             iscontext: true
     view: |-
       {
@@ -2736,7 +2736,7 @@ tasks:
       permissions:
         simple: aiplatform.artifacts.get
       role_name:
-        simple: ${GCP.IAM.Role.name}
+        simple: ${GCPIAM.Role.name}
     separatecontext: false
     view: |-
       {
@@ -2769,7 +2769,7 @@ tasks:
       permissions:
         simple: aiplatform.artifacts.get
       role_name:
-        simple: ${GCP.IAM.Role.name}
+        simple: ${GCPIAM.Role.name}
     separatecontext: false
     view: |-
       {
@@ -2804,7 +2804,7 @@ tasks:
         simple: "1"
       page: {}
       project_id:
-        simple: ${GCP.IAM.Project.projectId}
+        simple: ${GCPIAM.Project.projectId}
       show_deleted: {}
     separatecontext: false
     view: |-
@@ -2840,7 +2840,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.Role.name
+              simple: GCPIAM.Role.name
             iscontext: true
     view: |-
       {
@@ -2875,7 +2875,7 @@ tasks:
         simple: title
       permissions: {}
       role_name:
-        simple: ${GCP.IAM.Role.name}
+        simple: ${GCPIAM.Role.name}
       stage: {}
       title:
         simple: Test playbook project role
@@ -2909,7 +2909,7 @@ tasks:
       - "76"
     scriptarguments:
       role_name:
-        simple: ${GCP.IAM.Role.name}
+        simple: ${GCPIAM.Role.name}
     separatecontext: false
     view: |-
       {
@@ -2944,7 +2944,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.Role.name
+              simple: GCPIAM.Role.name
             iscontext: true
     view: |-
       {
@@ -2977,7 +2977,7 @@ tasks:
       permissions:
         simple: aiplatform.artifacts.get
       role_name:
-        simple: ${GCP.IAM.Role.name}
+        simple: ${GCPIAM.Role.name}
     separatecontext: false
     view: |-
       {
@@ -3010,7 +3010,7 @@ tasks:
       permissions:
         simple: aiplatform.artifacts.get
       role_name:
-        simple: ${GCP.IAM.Role.name}
+        simple: ${GCPIAM.Role.name}
     separatecontext: false
     view: |-
       {
@@ -3045,7 +3045,7 @@ tasks:
       page:
         simple: "1"
       resource_name:
-        simple: ${GCP.IAM.Project.name}
+        simple: ${GCPIAM.Project.name}
     separatecontext: false
     view: |-
       {
@@ -3080,12 +3080,12 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.Permission.name
+              simple: GCPIAM.Permission.name
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.Permission.stage
+              simple: GCPIAM.Permission.stage
             iscontext: true
     view: |-
       {
@@ -3118,7 +3118,7 @@ tasks:
       limit:
         simple: "2"
       resource_name:
-        simple: projects/${GCP.IAM.Project.projectId}
+        simple: projects/${GCPIAM.Project.projectId}
     separatecontext: false
     view: |-
       {
@@ -3153,7 +3153,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.Role.name
+              simple: GCPIAM.Role.name
             iscontext: true
     view: |-
       {
@@ -3222,7 +3222,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.Role.name
+              simple: GCPIAM.Role.name
             iscontext: true
     view: |-
       {
@@ -3253,7 +3253,7 @@ tasks:
       - "86"
     scriptarguments:
       role_name:
-        simple: ${GCP.IAM.Role.name}
+        simple: ${GCPIAM.Role.name}
     separatecontext: false
     view: |-
       {
@@ -3288,7 +3288,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.Role.name
+              simple: GCPIAM.Role.name
             iscontext: true
     view: |-
       {
@@ -3625,7 +3625,7 @@ tasks:
         simple: "1"
       page: {}
       parent:
-        simple: ${GCP.IAM.Organization.name}
+        simple: ${GCPIAM.Organization.name}
       project_name: {}
       show_deleted: {}
     separatecontext: false
@@ -3694,7 +3694,7 @@ tasks:
         simple: "1"
       page: {}
       parent:
-        simple: ${GCP.IAM.Organization.name}
+        simple: ${GCPIAM.Organization.name}
       project_name: {}
       show_deleted: {}
     separatecontext: false
@@ -3765,32 +3765,32 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.Organization.createTime
+              simple: GCPIAM.Organization.createTime
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.Organization.directoryCustomerId
+              simple: GCPIAM.Organization.directoryCustomerId
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.Organization.displayName
+              simple: GCPIAM.Organization.displayName
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.Organization.name
+              simple: GCPIAM.Organization.name
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.Organization.state
+              simple: GCPIAM.Organization.state
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: GCP.IAM.Organization.updateTime
+              simple: GCPIAM.Organization.updateTime
             iscontext: true
     view: |-
       {
