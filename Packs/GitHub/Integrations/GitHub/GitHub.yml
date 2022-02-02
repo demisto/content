@@ -26,6 +26,10 @@ configuration:
   required: false
   type: 9
   hiddenusername: true
+- display: Credentials
+  name: credentials
+  required: false
+  type: 9
 - display: 'Username of the repository owner, for example: github.com/repos/{_owner_}/{repo}/issues'
   name: user
   required: false
