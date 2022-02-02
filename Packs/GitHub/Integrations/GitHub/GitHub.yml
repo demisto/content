@@ -21,24 +21,15 @@ configuration:
   name: url
   required: false
   type: 0
-- display: API Token
+- displaypassword: API Token
   name: api_token
   required: false
   type: 9
-- display: Credentials
-  name: credentials
-  required: false
-  type: 9
+  hiddenusername: true
 - display: 'Username of the repository owner, for example: github.com/repos/{_owner_}/{repo}/issues'
   name: user
   required: false
   type: 0
-- display: API Token
-  name: token
-  required: false
-  type: 4
-  hidden: True
-  additionalinfo: use the api_token field instead
 - display: The name of the requested repository
   name: repository
   required: false
@@ -48,6 +39,12 @@ configuration:
   name: fetch_time
   required: false
   type: 0
+- display: API Token
+  name: token
+  required: false
+  type: 4
+  hidden: true
+  additionalinfo: use api_token instead
 - display: Use system proxy settings
   name: proxy
   required: false

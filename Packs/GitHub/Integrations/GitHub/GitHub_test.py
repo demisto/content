@@ -3,7 +3,7 @@ import json
 import pytest
 
 import demistomock as demisto
-from CommonServerPython import CommandResults
+from CommonServerPython import CommandResults, return_error
 from GitHub import main, list_branch_pull_requests, list_all_projects_command, \
     add_issue_to_project_board_command, get_path_data, github_releases_list_command, get_branch_command, \
     list_issue_comments
@@ -75,7 +75,8 @@ LIST_TEAM_MEMBERS_CASES = [
 
 
 @pytest.mark.parametrize('params, expected_result', [
-    ({'credentials': {'password': 1234}, 'sshkey': 'sshkey'}, "You need to update the docker image so that the jwt package could be used"),
+    ({'credentials': {'password': 1234}, 'sshkey': 'sshkey'}, 
+    "You need to update the docker image so that the jwt package could be used"),
     ({'credentials': {'password': 1234}}, "Insert api token or private key"),
     ({'sshkey': 'sshkey'}, "Insert api token or private key")
 ])
@@ -91,10 +92,11 @@ def test_params(mocker, params, expected_result):
 
     mocker.patch.object(demisto, 'params', return_value=params)
 
-    with pytest.raises(Exception) as e:
-        main()
-
-    assert expected_result in str(e.value)
+    # with pytest.raises(Exception) as e:
+    err = main() 
+    print("/n/n/n/n/n")
+    print(err)
+    assert expected_result in str(err.message)
 
 
 @pytest.mark.parametrize('limit, expected_result', SEARCH_CASES)
