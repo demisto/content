@@ -15,8 +15,8 @@ script:
   commands:
   - arguments:
     - default: false
-      description: Comma-separated list of project names to retrieve. For example,
-        projects/415104041262.
+      description: A comma-separated list of project names to retrieve. For example,
+        projects/415104041262. Leave empty to retrieve a list of projects under a specified parent resource.
       isArray: true
       name: project_name
       required: false
@@ -47,8 +47,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'False'
-      description: Indicate that projects in the DELETE_REQUESTED state should also
-        be retrieved.
+      description: If true, projects that have been marked for deletion will also be retrieved.
       isArray: false
       name: show_deleted
       predefined:
@@ -57,30 +56,30 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: 'List projects under the specified parent, or retrieve project information.
-      One of the arguments: ''parent'' or ''project_name''  must be provided'
+    description: 'Lists project under the specified parent, or retrieves a specific projects information.
+      One of the arguments: ''parent'' or ''project_name''  must be provided.'
     execution: false
     name: gcp-iam-projects-get
     outputs:
-    - contextPath: GCP.IAM.Project.createTime
+    - contextPath: GCPIAM.Project.createTime
       description: Project creation time.
       type: Date
-    - contextPath: GCP.IAM.Project.displayName
+    - contextPath: GCPIAM.Project.displayName
       description: Project display name.
       type: String
-    - contextPath: GCP.IAM.Project.name
+    - contextPath: GCPIAM.Project.name
       description: The unique resource name of the project.
       type: String
-    - contextPath: GCP.IAM.Project.parent
+    - contextPath: GCPIAM.Project.parent
       description: 'The project parent resource. '
       type: String
-    - contextPath: GCP.IAM.Project.projectId
+    - contextPath: GCPIAM.Project.projectId
       description: The unique, user-assigned ID of the project.
       type: String
-    - contextPath: GCP.IAM.Project.state
+    - contextPath: GCPIAM.Project.state
       description: The project lifecycle state.
       type: String
-    - contextPath: GCP.IAM.Project.updateTime
+    - contextPath: GCPIAM.Project.updateTime
       description: The most recent time that the project was modified.
       type: Date
   - arguments:
@@ -110,13 +109,13 @@ script:
     execution: false
     name: gcp-iam-project-iam-policy-get
     outputs:
-    - contextPath: GCP.IAM.Policy.bindings.members
+    - contextPath: GCPIAM.Policy.bindings.members
       description: The members that associates to the role.
       type: String
-    - contextPath: GCP.IAM.Policy.bindings.role
+    - contextPath: GCPIAM.Policy.bindings.role
       description: The role that is assigned to the list of members.
       type: String
-    - contextPath: GCP.IAM.Policy.name
+    - contextPath: GCPIAM.Policy.name
       description: The unique resource name of the project. Please note that this
         output was added manually.
       type: String
@@ -129,7 +128,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Comma-separated list of permissions names to validate for the resource.
+      description: A comma-separated list of permissions names to validate for the resource.
       isArray: true
       name: permissions
       required: true
@@ -140,7 +139,7 @@ script:
     execution: false
     name: gcp-iam-project-iam-permission-test
     outputs:
-    - contextPath: GCP.IAM.Permission
+    - contextPath: GCPIAM.Permission
       description: The caller allowed permissions.
       type: String
   - arguments:
@@ -158,7 +157,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'Comma-separated list of members to add to the policy. For example
+      description: 'A comma-separated list of members to add to the policy. For example
         : user:mike@example.com, group:admins@example.com, domain:google.com, serviceAccount:my-project-id@xsoar.gserviceaccount.com'
       isArray: true
       name: members
@@ -183,7 +182,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'Comma-separated list of members to remove from the policy. For
+      description: 'A comma-separated list of members to remove from the policy. For
         example : user:mike@example.com, group:admins@example.com, domain:google.com,
         serviceAccount:my-project-id@xsoar.gserviceaccount.com'
       isArray: true
@@ -204,7 +203,7 @@ script:
       secret: false
     - default: false
       description: |-
-        Comma-separated list of JSON policies objects. Every policy item consists of 'role' and 'members'. For example: [
+        A comma-separated list of JSON policies objects. Every policy item consists of 'role' and 'members'. For example: [
           {
             "role": "roles/resourcemanager.organizationViewer",
             "members": [
@@ -222,13 +221,13 @@ script:
     execution: true
     name: gcp-iam-project-iam-policy-set
     outputs:
-    - contextPath: GCP.IAM.Policy.bindings.members
+    - contextPath: GCPIAM.Policy.bindings.members
       description: The members that associates to the role.
       type: String
-    - contextPath: GCP.IAM.Policy.bindings.role
+    - contextPath: GCPIAM.Policy.bindings.role
       description: The role that is assigned to the list of members.
       type: String
-    - contextPath: GCP.IAM.Policy.name
+    - contextPath: GCPIAM.Policy.name
       description: The unique resource name of the project. Please note that this
         output was added manually.
       type: String
@@ -247,7 +246,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'Comma-separated list of members associated with the role. For
+      description: 'A comma-separated list of members associated with the role. For
         example : user:mike@example.com, group:admins@example.com, domain:google.com,
         serviceAccount:my-project-id@xsoar.gserviceaccount.com'
       isArray: true
@@ -267,7 +266,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Comma-separated list of policy role names to remove.
+      description: A comma-separated list of policy role names to remove.
       isArray: true
       name: role
       required: true
@@ -278,8 +277,8 @@ script:
     name: gcp-iam-project-iam-policy-remove
   - arguments:
     - default: false
-      description: Comma-separated list of folder names to retrieve.  For example,
-        folders/12342.
+      description: A comma-separated list of folder names to retrieve.  For example,
+        folders/12342. Leave empty to retrieve a list of folders under a specified parent resource.
       isArray: true
       name: folder_name
       required: false
@@ -309,8 +308,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'False'
-      description: Indicate that folders in the DELETE_REQUESTED state should also
-        be retrieved.
+      description: If true, folders that have been marked for deletion will also be retrieved.
       isArray: false
       name: show_deleted
       predefined:
@@ -319,27 +317,27 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: List folders under the specified parent, or retrieve specific folder
-      information.
+    description: 'Lists folders under the specified parent, or retrieves a specific folder
+      information. One of the arguments: ''parent'' or ''folder_name''  must be provided.'
     execution: false
     name: gcp-iam-folders-get
     outputs:
-    - contextPath: GCP.IAM.Folder.createTime
+    - contextPath: GCPIAM.Folder.createTime
       description: Folder creation time.
       type: Date
-    - contextPath: GCP.IAM.Folder.displayName
+    - contextPath: GCPIAM.Folder.displayName
       description: Folder display name.
       type: String
-    - contextPath: GCP.IAM.Folder.name
+    - contextPath: GCPIAM.Folder.name
       description: The unique resource name of the folder.
       type: String
-    - contextPath: GCP.IAM.Folder.parent
+    - contextPath: GCPIAM.Folder.parent
       description: The folder parent resource.
       type: String
-    - contextPath: GCP.IAM.Folder.state
+    - contextPath: GCPIAM.Folder.state
       description: The folder lifecycle state.
       type: String
-    - contextPath: GCP.IAM.Folder.updateTime
+    - contextPath: GCPIAM.Folder.updateTime
       description: The most recent time that the folder was modified.
       type: Date
   - arguments:
@@ -369,13 +367,13 @@ script:
     execution: false
     name: gcp-iam-folder-iam-policy-get
     outputs:
-    - contextPath: GCP.IAM.Policy.bindings.members
+    - contextPath: GCPIAM.Policy.bindings.members
       description: The members that associates to the role.
       type: String
-    - contextPath: GCP.IAM.Policy.bindings.role
+    - contextPath: GCPIAM.Policy.bindings.role
       description: The role that is assigned to the list of members.
       type: String
-    - contextPath: GCP.IAM.Policy.name
+    - contextPath: GCPIAM.Policy.name
       description: The unique resource name of the folder. Please note that this output
         was added manually.
       type: String
@@ -388,7 +386,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Comma-separated list of permissions names to validate for the resource.
+      description: A comma-separated list of permissions names to validate for the resource.
       isArray: true
       name: permissions
       required: true
@@ -399,7 +397,7 @@ script:
     execution: false
     name: gcp-iam-folder-iam-permission-test
     outputs:
-    - contextPath: GCP.IAM.Permission
+    - contextPath: GCPIAM.Permission
       description: The caller allowed permissions.
       type: String
   - arguments:
@@ -417,7 +415,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'Comma-separated list of members to add to the policy. For example
+      description: 'A comma-separated list of members to add to the policy. For example
         : user:mike@example.com, group:admins@example.com, domain:google.com, serviceAccount:my-project-id@xsoar.gserviceaccount.com'
       isArray: true
       name: members
@@ -442,7 +440,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'Comma-separated list of members to remove from the policy. For
+      description: 'A comma-separated list of members to remove from the policy. For
         example : user:mike@example.com, group:admins@example.com, domain:google.com,
         serviceAccount:my-project-id@xsoar.gserviceaccount.com'
       isArray: true
@@ -463,7 +461,7 @@ script:
       secret: false
     - default: false
       description: |-
-        Comma-separated list of JSON policies objects. Every policy item consists of 'role' and 'members'. For example: [
+        A comma-separated list of JSON policies objects. Every policy item consists of 'role' and 'members'. For example: [
           {
             "role": "roles/resourcemanager.organizationViewer",
             "members": [
@@ -481,13 +479,13 @@ script:
     execution: true
     name: gcp-iam-folder-iam-policy-set
     outputs:
-    - contextPath: GCP.IAM.Policy.bindings.members
+    - contextPath: GCPIAM.Policy.bindings.members
       description: The members that associates to the role.
       type: String
-    - contextPath: GCP.IAM.Policy.bindings.role
+    - contextPath: GCPIAM.Policy.bindings.role
       description: The role that is assigned to the list of members.
       type: String
-    - contextPath: GCP.IAM.Policy.name
+    - contextPath: GCPIAM.Policy.name
       description: The unique resource name of the folder. Please note that this output
         was added manually.
       type: String
@@ -506,7 +504,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'Comma-separated list of members associated with the role. For
+      description: 'A comma-separated list of members associated with the role. For
         example : user:mike@example.com, group:admins@example.com, domain:google.com,
         serviceAccount:my-project-id@xsoar.gserviceaccount.com'
       isArray: true
@@ -526,7 +524,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Comma-separated list of policy role names to remove.
+      description: A comma-separated list of policy role names to remove.
       isArray: true
       name: role
       required: true
@@ -551,34 +549,34 @@ script:
       required: false
       secret: false
     - default: false
-      description: Comma-separated list of organization names to retrieve. For example,
-        organizations/3456.
+      description: A comma-separated list of organization names to retrieve. For example,
+        organizations/3456. Leave empty to retrieve a list of organizations that are visible to the caller.
       isArray: true
       name: organization_name
       required: false
       secret: false
     deprecated: false
-    description: List organization resources that are visible to the caller, or retrieve
-      organization information.
+    description: Lists organization resources that are visible to the caller, or retrieves
+      an organization information.
     execution: false
     name: gcp-iam-organizations-get
     outputs:
-    - contextPath: GCP.IAM.Organization.createTime
+    - contextPath: GCPIAM.Organization.createTime
       description: Organization creation time.
       type: Date
-    - contextPath: GCP.IAM.Organization.directoryCustomerId
+    - contextPath: GCPIAM.Organization.directoryCustomerId
       description: The G Suite / Workspace customer ID used in the Directory API.
       type: String
-    - contextPath: GCP.IAM.Organization.displayName
+    - contextPath: GCPIAM.Organization.displayName
       description: Organizatio display name.
       type: String
-    - contextPath: GCP.IAM.Organization.name
+    - contextPath: GCPIAM.Organization.name
       description: The unique resource name of the Organization.
       type: String
-    - contextPath: GCP.IAM.Organization.state
+    - contextPath: GCPIAM.Organization.state
       description: The organizatio lifecycle state.
       type: String
-    - contextPath: GCP.IAM.Organization.updateTime
+    - contextPath: GCPIAM.Organization.updateTime
       description: The most recent time that the organization was modified.
       type: Date
   - arguments:
@@ -608,13 +606,13 @@ script:
     execution: false
     name: gcp-iam-organization-iam-policy-get
     outputs:
-    - contextPath: GCP.IAM.Policy.bindings.members
+    - contextPath: GCPIAM.Policy.bindings.members
       description: The members that associates to the role.
       type: String
-    - contextPath: GCP.IAM.Policy.bindings.role
+    - contextPath: GCPIAM.Policy.bindings.role
       description: The role that is assigned to the list of members.
       type: String
-    - contextPath: GCP.IAM.Policy.name
+    - contextPath: GCPIAM.Policy.name
       description: The unique resource name of the organization. Please note that
         this output was added manually.
       type: String
@@ -627,7 +625,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Comma-separated list of permissions names to validate for the resource.
+      description: A comma-separated list of permissions names to validate for the resource.
       isArray: true
       name: permissions
       required: true
@@ -639,7 +637,7 @@ script:
     execution: false
     name: gcp-iam-organization-iam-permission-test
     outputs:
-    - contextPath: GCP.IAM.Permission
+    - contextPath: GCPIAM.Permission
       description: The caller allowed permissions.
       type: String
   - arguments:
@@ -657,7 +655,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'Comma-separated list of members ato add to the policy. For example
+      description: 'A comma-separated list of members ato add to the policy. For example
         : user:mike@example.com, group:admins@example.com, domain:google.com, serviceAccount:my-project-id@xsoar.gserviceaccount.com'
       isArray: true
       name: members
@@ -682,7 +680,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'Comma-separated list of members to remove from the policy. For
+      description: 'A comma-separated list of members to remove from the policy. For
         example : user:mike@example.com, group:admins@example.com, domain:google.com,
         serviceAccount:my-project-id@xsoar.gserviceaccount.com'
       isArray: true
@@ -703,7 +701,7 @@ script:
       secret: false
     - default: false
       description: |-
-        Comma-separated list of JSON policies objects. Every policy item consists of 'role' and 'members'. For example: [
+        A comma-separated list of JSON policies objects. Every policy item consists of 'role' and 'members'. For example: [
           {
             "role": "roles/resourcemanager.organizationViewer",
             "members": [
@@ -721,13 +719,13 @@ script:
     execution: true
     name: gcp-iam-organization-iam-policy-set
     outputs:
-    - contextPath: GCP.IAM.Policy.bindings.members
+    - contextPath: GCPIAM.Policy.bindings.members
       description: The members that associates to the role.
       type: String
-    - contextPath: GCP.IAM.Policy.bindings.role
+    - contextPath: GCPIAM.Policy.bindings.role
       description: The role that is assigned to the list of members.
       type: String
-    - contextPath: GCP.IAM.Policy.name
+    - contextPath: GCPIAM.Policy.name
       description: The unique resource name of the organization. Please note that
         this output was added manually.
       type: String
@@ -746,7 +744,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'Comma-separated list of members associated with the role. For
+      description: 'A comma-separated list of members associated with the role. For
         example : user:mike@example.com, group:admins@example.com, domain:google.com,
         serviceAccount:my-project-id@xsoar.gserviceaccount.com'
       isArray: true
@@ -766,7 +764,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Comma-separated list of policy role names to remove.
+      description: A comma-separated list of policy role names to remove.
       isArray: true
       name: role
       required: true
@@ -812,23 +810,23 @@ script:
     execution: false
     name: gcp-iam-group-create
     outputs:
-    - contextPath: GCP.IAM.Group.createTime
+    - contextPath: GCPIAM.Group.createTime
       description: Group creation time.
       type: Date
-    - contextPath: GCP.IAM.Group.displayName
+    - contextPath: GCPIAM.Group.displayName
       description: The display name of the group
       type: String
-    - contextPath: GCP.IAM.Group.groupKey.id
+    - contextPath: GCPIAM.Group.groupKey.id
       description: The ID of the group.
       type: String
-    - contextPath: GCP.IAM.Group.name
+    - contextPath: GCPIAM.Group.name
       description: The resource name of the group.
       type: String
-    - contextPath: GCP.IAM.Group.parent
+    - contextPath: GCPIAM.Group.parent
       description: The resource name of the entity under which this group resides
         in the Cloud Identity resource hierarchy
       type: String
-    - contextPath: GCP.IAM.Group.updateTime
+    - contextPath: GCPIAM.Group.updateTime
       description: The most recent time that the group was modified.
       type: Date
   - arguments:
@@ -858,13 +856,13 @@ script:
     execution: false
     name: gcp-iam-group-list
     outputs:
-    - contextPath: GCP.IAM.Group.displayName
+    - contextPath: GCPIAM.Group.displayName
       description: The display name of the group
       type: String
-    - contextPath: GCP.IAM.Group.groupKey.id
+    - contextPath: GCPIAM.Group.groupKey.id
       description: The ID of the group.
       type: String
-    - contextPath: GCP.IAM.Group.name
+    - contextPath: GCPIAM.Group.name
       description: The resource name of the group.
       type: String
   - arguments:
@@ -879,23 +877,23 @@ script:
     execution: false
     name: gcp-iam-group-get
     outputs:
-    - contextPath: GCP.IAM.Group.createTime
+    - contextPath: GCPIAM.Group.createTime
       description: Group creation time.
       type: Date
-    - contextPath: GCP.IAM.Group.displayName
+    - contextPath: GCPIAM.Group.displayName
       description: The display name of the group
       type: String
-    - contextPath: GCP.IAM.Group.groupKey.id
+    - contextPath: GCPIAM.Group.groupKey.id
       description: The ID of the group.
       type: String
-    - contextPath: GCP.IAM.Group.name
+    - contextPath: GCPIAM.Group.name
       description: The resource name of the group.
       type: String
-    - contextPath: GCP.IAM.Group.parent
+    - contextPath: GCPIAM.Group.parent
       description: The resource name of the entity under which this group resides
         in the Cloud Identity resource hierarchy
       type: String
-    - contextPath: GCP.IAM.Group.updateTime
+    - contextPath: GCPIAM.Group.updateTime
       description: The most recent time that the group was modified.
       type: Date
   - arguments:
@@ -911,7 +909,7 @@ script:
     name: gcp-iam-group-delete
   - arguments:
     - default: false
-      description: Comma-separated list of group names which will contain the membership.
+      description: A comma-separated list of group names which will contain the membership.
         Every group name must be of the form groups/{group_id}.
       isArray: true
       name: groups_name
@@ -926,7 +924,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: MEMBER
-      description: Comma-separated list of membership roles that apply to the membership.
+      description: A comma-separated list of membership roles that apply to the membership.
         The 'MEMBER' role must be provided
       isArray: true
       name: role
@@ -941,13 +939,13 @@ script:
     execution: false
     name: gcp-iam-group-membership-create
     outputs:
-    - contextPath: GCP.IAM.Membership.name
+    - contextPath: GCPIAM.Membership.name
       description: The resource name of the membership.
       type: String
-    - contextPath: GCP.IAM.Membership.preferredMemberKey.id
+    - contextPath: GCPIAM.Membership.preferredMemberKey.id
       description: The member key ID.
       type: String
-    - contextPath: GCP.IAM.Membership.roles.name
+    - contextPath: GCPIAM.Membership.roles.name
       description: The membership roles that apply to the membership.
       type: String
   - arguments:
@@ -977,13 +975,13 @@ script:
     execution: false
     name: gcp-iam-group-membership-list
     outputs:
-    - contextPath: GCP.IAM.Membership.name
+    - contextPath: GCPIAM.Membership.name
       description: The resource name of the membership.
       type: String
-    - contextPath: GCP.IAM.Membership.preferredMemberKey.id
+    - contextPath: GCPIAM.Membership.preferredMemberKey.id
       description: The member key ID.
       type: String
-    - contextPath: GCP.IAM.Membership.roles.name
+    - contextPath: GCPIAM.Membership.roles.name
       description: The membership roles that apply to the membership.
       type: String
   - arguments:
@@ -999,19 +997,19 @@ script:
     execution: false
     name: gcp-iam-group-membership-get
     outputs:
-    - contextPath: GCP.IAM.Membership.createTime
+    - contextPath: GCPIAM.Membership.createTime
       description: The membership creation time.
       type: Date
-    - contextPath: GCP.IAM.Membership.name
+    - contextPath: GCPIAM.Membership.name
       description: The resource name of the membership.
       type: String
-    - contextPath: GCP.IAM.Membership.preferredMemberKey.id
+    - contextPath: GCPIAM.Membership.preferredMemberKey.id
       description: The member key ID.
       type: String
-    - contextPath: GCP.IAM.Membership.roles.name
+    - contextPath: GCPIAM.Membership.roles.name
       description: The membership roles that apply to the membership.
       type: String
-    - contextPath: GCP.IAM.Membership.updateTime
+    - contextPath: GCPIAM.Membership.updateTime
       description: The most recent time that the membership was modified.
       type: Date
   - arguments:
@@ -1024,7 +1022,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Comma-separated list of membership roles to add to the membership.
+      description: A comma-separated list of membership roles to add to the membership.
       isArray: true
       name: role
       predefined:
@@ -1045,7 +1043,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Comma-separated list of membership roles to remove from the membership.
+      description: A comma-separated list of membership roles to remove from the membership.
       isArray: true
       name: role
       predefined:
@@ -1059,7 +1057,7 @@ script:
     name: gcp-iam-group-membership-role-remove
   - arguments:
     - default: false
-      description: 'Comma-separated list of resource names of the memberships to delete.  Must
+      description: 'A comma-separated list of resource names of the memberships to delete.  Must
         be of the form: groups/{group_id}/memberships/{membership_id}.'
       isArray: true
       name: membership_names
@@ -1102,22 +1100,22 @@ script:
     execution: false
     name: gcp-iam-service-account-create
     outputs:
-    - contextPath: GCP.IAM.ServiceAccount.email
+    - contextPath: GCPIAM.ServiceAccount.email
       description: The email address of the service account.
       type: String
-    - contextPath: GCP.IAM.ServiceAccount.name
+    - contextPath: GCPIAM.ServiceAccount.name
       description: The resource name of the service account.
       type: String
-    - contextPath: GCP.IAM.ServiceAccount.oauth2ClientId
+    - contextPath: GCPIAM.ServiceAccount.oauth2ClientId
       description: The OAuth 2.0 client ID for the service account.
       type: String
-    - contextPath: GCP.IAM.ServiceAccount.projectId
+    - contextPath: GCPIAM.ServiceAccount.projectId
       description: The ID of the project that owns the service account.
       type: String
-    - contextPath: GCP.IAM.ServiceAccount.uniqueId
+    - contextPath: GCPIAM.ServiceAccount.uniqueId
       description: The unique, stable numeric ID for the service account.
       type: String
-    - contextPath: GCP.IAM.ServiceAccount.disabled
+    - contextPath: GCPIAM.ServiceAccount.disabled
       description: Indicates whether the service account is disabled.
       type: Boolean
   - arguments:
@@ -1142,7 +1140,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Comma-separated names list of the fields to update.
+      description: A comma-separated names list of the fields to update.
       isArray: false
       name: fields_to_update
       predefined:
@@ -1156,8 +1154,8 @@ script:
     name: gcp-iam-service-account-update
   - arguments:
     - default: false
-      description: 'Comma-separated list of service accounts names to retrieve in
-        the following format: projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}'
+      description: 'A comma-separated list of service accounts names to retrieve in
+        the following format: projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}. Leave empty to retrieve a list of service accounts under a specified project resource.'
       isArray: true
       name: service_account_name
       required: false
@@ -1185,33 +1183,33 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: 'List service accounts in project, or retrieve service accounts information.
+    description: 'Lists service accounts in project, or retrieves a specific service accounts information.
       One of the arguments: ''service_account_name'' or ''project_name''  must be
       provided.'
     execution: false
     name: gcp-iam-service-accounts-get
     outputs:
-    - contextPath: GCP.IAM.ServiceAccount.email
+    - contextPath: GCPIAM.ServiceAccount.email
       description: The email address of the service account.
       type: String
-    - contextPath: GCP.IAM.ServiceAccount.name
+    - contextPath: GCPIAM.ServiceAccount.name
       description: The resource name of the service account.
       type: String
-    - contextPath: GCP.IAM.ServiceAccount.oauth2ClientId
+    - contextPath: GCPIAM.ServiceAccount.oauth2ClientId
       description: The OAuth 2.0 client ID for the service account.
       type: String
-    - contextPath: GCP.IAM.ServiceAccount.projectId
+    - contextPath: GCPIAM.ServiceAccount.projectId
       description: The ID of the project that owns the service account.
       type: String
-    - contextPath: GCP.IAM.ServiceAccount.uniqueId
+    - contextPath: GCPIAM.ServiceAccount.uniqueId
       description: The unique, stable numeric ID for the service account.
       type: String
-    - contextPath: GCP.IAM.ServiceAccount.disabled
+    - contextPath: GCPIAM.ServiceAccount.disabled
       description: Indicates whether the service account is disabled.
       type: Boolean
   - arguments:
     - default: false
-      description: 'Comma-separated list of names of service accounts to enable. Every
+      description: 'A comma-separated list of names of service accounts to enable. Every
         resource name should be in the following format: projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}'
       isArray: true
       name: service_account_name
@@ -1223,7 +1221,7 @@ script:
     name: gcp-iam-service-account-enable
   - arguments:
     - default: false
-      description: 'Comma-separated list of names of service accounts to disable.
+      description: 'A comma-separated list of names of service accounts to disable.
         Every resource name should be in the following format: projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}'
       isArray: true
       name: service_account_name
@@ -1259,37 +1257,37 @@ script:
     execution: false
     name: gcp-iam-service-account-key-create
     outputs:
-    - contextPath: GCP.IAM.ServiceAccountKey.keyAlgorithm
+    - contextPath: GCPIAM.ServiceAccountKey.keyAlgorithm
       description: Specifies the algorithm for the key.
       type: String
-    - contextPath: GCP.IAM.ServiceAccountKey.keyOrigin
+    - contextPath: GCPIAM.ServiceAccountKey.keyOrigin
       description: Service account key origin provider.
       type: String
-    - contextPath: GCP.IAM.ServiceAccountKey.keyType
+    - contextPath: GCPIAM.ServiceAccountKey.keyType
       description: Indicates the resource managed type.
       type: String
-    - contextPath: GCP.IAM.ServiceAccountKey.name
+    - contextPath: GCPIAM.ServiceAccountKey.name
       description: The resource name of the service account key.
       type: String
-    - contextPath: GCP.IAM.ServiceAccountKey.privateKeyData
+    - contextPath: GCPIAM.ServiceAccountKey.privateKeyData
       description: The encrypted private key data.
       type: String
-    - contextPath: GCP.IAM.ServiceAccountKey.privateKeyType
+    - contextPath: GCPIAM.ServiceAccountKey.privateKeyType
       description: The output format for the private key.
       type: String
-    - contextPath: GCP.IAM.ServiceAccountKey.validAfterTime
+    - contextPath: GCPIAM.ServiceAccountKey.validAfterTime
       description: Indicaetd the time that the key can be used after this timestamp.
       type: Date
-    - contextPath: GCP.IAM.ServiceAccountKey.validBeforeTime
+    - contextPath: GCPIAM.ServiceAccountKey.validBeforeTime
       description: Indicaetd the time that the key can be used before this timestamp.
       type: Date
-    - contextPath: GCP.IAM.ServiceAccountKey.disabled
+    - contextPath: GCPIAM.ServiceAccountKey.disabled
       description: Indicates whether the service account key is disabled.
       type: Boolean
   - arguments:
     - default: false
       description: 'The resource name of the service account key to retrieve. The
-        resource name should be in the following format: projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}/keys/{key}'
+        resource name should be in the following format: projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}/keys/{key}. Leave empty to retrieve a list of service account keys that associated with service account resource.'
       isArray: false
       name: key_name
       required: false
@@ -1316,35 +1314,35 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: 'List service account keys, or retrieve service account information.
+    description: 'Lists service account keys, or retrieves a specific service account key information.
       One of the arguments: ''service_account_name'' or ''key_name''  must be provided.'
     execution: false
     name: gcp-iam-service-account-keys-get
     outputs:
-    - contextPath: GCP.IAM.ServiceAccountKey.keyAlgorithm
+    - contextPath: GCPIAM.ServiceAccountKey.keyAlgorithm
       description: Specifies the algorithm for the key.
       type: String
-    - contextPath: GCP.IAM.ServiceAccountKey.keyOrigin
+    - contextPath: GCPIAM.ServiceAccountKey.keyOrigin
       description: Service account key origin provider.
       type: String
-    - contextPath: GCP.IAM.ServiceAccountKey.keyType
+    - contextPath: GCPIAM.ServiceAccountKey.keyType
       description: Indicates the resource managed type.
       type: String
-    - contextPath: GCP.IAM.ServiceAccountKey.name
+    - contextPath: GCPIAM.ServiceAccountKey.name
       description: The resource name of the service account key.
       type: String
-    - contextPath: GCP.IAM.ServiceAccountKey.validAfterTime
+    - contextPath: GCPIAM.ServiceAccountKey.validAfterTime
       description: Indicaetd the time that the key can be used after this timestamp.
       type: Date
-    - contextPath: GCP.IAM.ServiceAccountKey.validBeforeTime
+    - contextPath: GCPIAM.ServiceAccountKey.validBeforeTime
       description: Indicaetd the time that the key can be used before this timestamp.
       type: Date
-    - contextPath: GCP.IAM.ServiceAccountKey.disabled
+    - contextPath: GCPIAM.ServiceAccountKey.disabled
       description: Indicates whether the service account key is disabled.
       type: Boolean
   - arguments:
     - default: false
-      description: 'Comma-separated list of names of resource name of the service
+      description: 'A comma-separated list of names of resource name of the service
         account key to enable. Every resource name should be in the following format:
         projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}/keys/{key}'
       isArray: true
@@ -1357,7 +1355,7 @@ script:
     name: gcp-iam-service-account-key-enable
   - arguments:
     - default: false
-      description: 'Comma-separated list of names of resource name of the service
+      description: 'A comma-separated list of names of resource name of the service
         account key to disavle. Every resource name should be in the following format:
         projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}/keys/{key}'
       isArray: true
@@ -1370,7 +1368,7 @@ script:
     name: gcp-iam-service-account-key-disable
   - arguments:
     - default: false
-      description: 'Comma-separated list of names of resource name of the service
+      description: 'A comma-separated list of names of resource name of the service
         account key to delete. Every resource name should be in the following format:
         projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}/keys/{key}'
       isArray: true
@@ -1410,7 +1408,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Comma-separated names of the permissions the role grants when bound.
+      description: A comma-separated names of the permissions the role grants when bound.
         in an IAM policy.
       isArray: true
       name: permissions
@@ -1436,7 +1434,7 @@ script:
     execution: false
     name: gcp-iam-organization-role-create
     outputs:
-    - contextPath: GCP.IAM.Role.name
+    - contextPath: GCPIAM.Role.name
       description: The name of the role.
       type: String
   - arguments:
@@ -1459,7 +1457,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Comma-separated names of the permissions the role grants when bound
+      description: A comma-separated names of the permissions the role grants when bound
         in an IAM policy. Please note that this command argument will replace the
         existing permissions.
       isArray: true
@@ -1468,7 +1466,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Comma-separated names of the fields to update.
+      description: A comma-separated names of the fields to update.
       isArray: false
       name: fields_to_update
       predefined:
@@ -1505,7 +1503,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Comma-separated names of the permissions to add to the role.
+      description: A comma-separated names of the permissions to add to the role.
       isArray: true
       name: permissions
       required: true
@@ -1522,7 +1520,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Comma-separated names of the permissions to remove from the role.
+      description: A comma-separated names of the permissions to remove from the role.
       isArray: false
       name: permissions
       required: true
@@ -1568,7 +1566,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'False'
-      description: Indicate that roles that have been deleted should also be retrieved.
+      description:  If true, roles that have been deleted will also be retrieved.
       isArray: false
       name: show_deleted
       predefined:
@@ -1584,7 +1582,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Comma-separated list of role permissions. Used to filter the retrieved
+      description: A comma-separated list of role permissions. Used to filter the retrieved
         roles by their permissions. The command will retrieve the rules which includes
         all the provided permissions in their permissions list. If the argument is
         provided, the command will include the role permissions in the output.
@@ -1597,12 +1595,12 @@ script:
     execution: false
     name: gcp-iam-organization-role-list
     outputs:
-    - contextPath: GCP.IAM.Role.name
+    - contextPath: GCPIAM.Role.name
       description: The resource name of the role.
       type: String
   - arguments:
     - default: false
-      description: 'Comma-separated list of organization role to retrieve. Every role
+      description: 'A comma-separated list of organization role to retrieve. Every role
         name should be in the following format: organizations/{ORGANIZATION_ID}/roles/{CUSTOM_ROLE_ID}'
       isArray: true
       name: role_name
@@ -1613,12 +1611,12 @@ script:
     execution: false
     name: gcp-iam-organization-role-get
     outputs:
-    - contextPath: GCP.IAM.Role.name
+    - contextPath: GCPIAM.Role.name
       description: The resource name of the role.
       type: String
   - arguments:
     - default: false
-      description: 'Comma-separated list of organization role to delete. Every role
+      description: 'A comma-separated list of organization role to delete. Every role
         name should be in the following format: organizations/{ORGANIZATION_ID}/roles/{CUSTOM_ROLE_ID}'
       isArray: true
       name: role_name
@@ -1656,7 +1654,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Comma-separated names of the permissions the role grants when bound
+      description: A comma-separated names of the permissions the role grants when bound
         in an IAM policy.
       isArray: true
       name: permissions
@@ -1682,7 +1680,7 @@ script:
     execution: false
     name: gcp-iam-project-role-create
     outputs:
-    - contextPath: GCP.IAM.Role.name
+    - contextPath: GCPIAM.Role.name
       description: The name of the role.
       type: String
   - arguments:
@@ -1705,7 +1703,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Comma-separated names of the permissions the role grants when bound
+      description: A comma-separated names of the permissions the role grants when bound
         in an IAM policy. Please note that this command argument will replace the
         existing permissions.
       isArray: true
@@ -1729,7 +1727,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Comma-separated names of the fields to update.
+      description: A comma-separated names of the fields to update.
       isArray: false
       name: fields_to_update
       predefined:
@@ -1751,7 +1749,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Comma-separated names of the permissions to add to the role.
+      description: A comma-separated names of the permissions to add to the role.
       isArray: true
       name: permissions
       required: true
@@ -1768,7 +1766,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Comma-separated names of the permissions to remove from the role.
+      description: A comma-separated names of the permissions to remove from the role.
       isArray: false
       name: permissions
       required: true
@@ -1813,7 +1811,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'False'
-      description: Indicate that roles that have been deleted should also be retrieved.
+      description: If true, roles that have been deleted will also be retrieved.
       isArray: false
       name: show_deleted
       predefined:
@@ -1829,7 +1827,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Comma-separated list of role permissions. Used to filter the retrieved
+      description: A comma-separated list of role permissions. Used to filter the retrieved
         roles by their permissions. The command will retrieve the rules which includes
         all the provided permissions in their permissions list. If the argument is
         provided, the command will include the role permissions in the output.
@@ -1842,12 +1840,12 @@ script:
     execution: false
     name: gcp-iam-project-role-list
     outputs:
-    - contextPath: GCP.IAM.Role.name
+    - contextPath: GCPIAM.Role.name
       description: The resource name of the role.
       type: String
   - arguments:
     - default: false
-      description: 'Comma-separated list of project role to retrieve. Every role name
+      description: 'A comma-separated list of project role to retrieve. Every role name
         should be in the following format: projects/{PROJECT_ID}/roles/{CUSTOM_ROLE_ID}'
       isArray: true
       name: role_name
@@ -1858,12 +1856,12 @@ script:
     execution: false
     name: gcp-iam-project-role-get
     outputs:
-    - contextPath: GCP.IAM.Role.name
+    - contextPath: GCPIAM.Role.name
       description: The name of the role.
       type: String
   - arguments:
     - default: false
-      description: 'Comma-separated list of project role to delete. Every role name
+      description: 'A comma-separated list of project role to delete. Every role name
         should be in the following format: projects/{PROJECT_ID}/roles/{CUSTOM_ROLE_ID}'
       isArray: true
       name: role_name
@@ -1901,15 +1899,15 @@ script:
     execution: false
     name: gcp-iam-testable-permission-list
     outputs:
-    - contextPath: GCP.IAM.Permission.name
+    - contextPath: GCPIAM.Permission.name
       description: The name of the permissions.
       type: String
-    - contextPath: GCP.IAM.Permission.stage
+    - contextPath: GCPIAM.Permission.stage
       description: The current launch stage of the permission
       type: String
   - arguments:
     - default: false
-      description: 'Comma-separated list of names of service accounts to delete. Every
+      description: 'A comma-separated list of names of service accounts to delete. Every
         resource name should be in the following format: projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}.'
       isArray: true
       name: service_account_name
@@ -1949,12 +1947,12 @@ script:
     execution: false
     name: gcp-iam-grantable-role-list
     outputs:
-    - contextPath: GCP.IAM.Role.name
+    - contextPath: GCPIAM.Role.name
       description: The name of the role.
       type: String
   - arguments:
     - default: false
-      description: 'Comma-separated list of GCP IAM predefined role to retrieve. Every
+      description: 'A comma-separated list of GCP IAM predefined role to retrieve. Every
         role name should be in the following format: roles/{ROLE_NAME}'
       isArray: true
       name: role_name
@@ -1965,7 +1963,7 @@ script:
     execution: false
     name: gcp-iam-role-get
     outputs:
-    - contextPath: GCP.IAM.Role.name
+    - contextPath: GCPIAM.Role.name
       description: The resource name of the role.
       type: String
   - arguments:
@@ -1998,7 +1996,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'False'
-      description: Indicate that roles that have been deleted should also be retrieved.
+      description: If true, roles that have been deleted will also be retrieved.
       isArray: false
       name: show_deleted
       predefined:
@@ -2014,7 +2012,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Comma-separated list of role permissions. Used to filter the retrieved
+      description: A comma-separated list of role permissions. Used to filter the retrieved
         roles by their permissions. The command will retrieve the rules which includes
         all the provided permissions in their permissions list. If the argument is
         provided, the command will include the role permissions in the output.
@@ -2027,7 +2025,7 @@ script:
     execution: false
     name: gcp-iam-role-list
     outputs:
-    - contextPath: GCP.IAM.Role.name
+    - contextPath: GCPIAM.Role.name
       description: The resource name of the role.
       type: String
   dockerimage: demisto/google-api-py3:1.0.0.26204

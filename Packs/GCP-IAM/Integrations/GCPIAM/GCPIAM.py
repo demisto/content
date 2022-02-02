@@ -387,7 +387,7 @@ class Client:
 
         return response
 
-    def gcp_iam_group_membership_create_request(self, group_name, member_email, roles: list) -> dict:
+    def gcp_iam_group_membership_create_request(self, group_name: str, member_email: str, roles: list) -> dict:
         """
         Create a group membership
         Args:
@@ -412,7 +412,7 @@ class Client:
 
         return response
 
-    def gcp_iam_group_membership_list_request(self, group_name, limit: int, page_token=None) -> dict:
+    def gcp_iam_group_membership_list_request(self, group_name: str, limit: int = None, page_token=None) -> dict:
         """
         List group memberships.
         Args:
@@ -1149,7 +1149,7 @@ def generate_iam_policy_command_output(response: dict, resource_name: str = None
 
     command_results = CommandResults(
         readable_output=readable_output,
-        outputs_prefix='GCP.IAM.Policy',
+        outputs_prefix='GCPIAM.Policy',
         outputs_key_field='name',
         outputs=outputs,
         raw_response=response
@@ -1218,7 +1218,7 @@ def generate_group_membership_command_output(response: dict, output_key: str = N
 
     command_results = CommandResults(
         readable_output=readable_output,
-        outputs_prefix='GCP.IAM.Membership',
+        outputs_prefix='GCPIAM.Membership',
         outputs_key_field='name',
         outputs=outputs,
         raw_response=response
@@ -1318,7 +1318,7 @@ def generate_service_account_command_output(response: dict, output_key: str = No
 
     command_results = CommandResults(
         readable_output=readable_output,
-        outputs_prefix='GCP.IAM.ServiceAccount',
+        outputs_prefix='GCPIAM.ServiceAccount',
         outputs_key_field='name',
         outputs=outputs,
         raw_response=response
@@ -1359,7 +1359,7 @@ def generate_project_command_output(response: dict, output_key: str = None,
 
     command_results = CommandResults(
         readable_output=readable_output,
-        outputs_prefix='GCP.IAM.Project',
+        outputs_prefix='GCPIAM.Project',
         outputs_key_field='name',
         outputs=outputs,
         raw_response=response
@@ -1480,7 +1480,7 @@ def generate_test_permission_command_output(response: dict, readable_header: str
 
     command_results = CommandResults(
         readable_output=readable_output,
-        outputs_prefix='GCP.IAM.Permission',
+        outputs_prefix='GCPIAM.Permission',
         outputs_key_field='name',
         outputs=outputs,
         raw_response=response
@@ -1580,7 +1580,7 @@ def gcp_iam_project_iam_policy_set_command(client: Client, args: Dict[str, Any])
         if policy and not policy.startswith('['):
             policy = '[' + policy + ']'
 
-        policy = json.loads(policy)
+    policy = safe_load_json(policy)
 
     response = client.gcp_iam_project_iam_policy_set_request(project_name, policy)
     return generate_iam_policy_command_output(response, project_name,
@@ -1649,7 +1649,7 @@ def generate_folder_command_output(response: dict, output_key: str = None,
 
     command_results = CommandResults(
         readable_output=readable_output,
-        outputs_prefix='GCP.IAM.Folder',
+        outputs_prefix='GCPIAM.Folder',
         outputs_key_field='name',
         outputs=outputs,
         raw_response=response
@@ -1839,7 +1839,7 @@ def gcp_iam_folder_iam_policy_set_command(client: Client, args: Dict[str, Any]) 
         if policy and not policy.startswith('['):
             policy = '[' + policy + ']'
 
-        policy = json.loads(policy)
+    policy = safe_load_json(policy)
 
     response = client.gcp_iam_folder_iam_policy_set_request(folder_name, policy)
     return generate_iam_policy_command_output(response, folder_name,
@@ -1908,7 +1908,7 @@ def generate_organization_command_output(response: dict, output_key: str = None,
 
     command_results = CommandResults(
         readable_output=readable_output,
-        outputs_prefix='GCP.IAM.Organization',
+        outputs_prefix='GCPIAM.Organization',
         outputs_key_field='name',
         outputs=outputs,
         raw_response=response
@@ -2091,7 +2091,7 @@ def gcp_iam_organization_iam_policy_set_command(client: Client, args: Dict[str, 
         if policy and not policy.startswith('['):
             policy = '[' + policy + ']'
 
-        policy = json.loads(policy)
+    policy = safe_load_json(policy)
 
     response = client.gcp_iam_organization_iam_policy_set_request(organization_name, policy)
     return generate_iam_policy_command_output(response, organization_name,
@@ -2159,7 +2159,7 @@ def gcp_iam_group_create_command(client: Client, args: Dict[str, Any]) -> Comman
 
     command_results = CommandResults(
         readable_output=readable_output,
-        outputs_prefix='GCP.IAM.Group',
+        outputs_prefix='GCPIAM.Group',
         outputs_key_field='name',
         outputs=outputs,
         raw_response=response
@@ -2193,7 +2193,7 @@ def gcp_iam_group_list_command(client: Client, args: Dict[str, Any]) -> CommandR
         if not page_token:
             return CommandResults(
                 readable_output=readable_message,
-                outputs_prefix='GCP.IAM.Group',
+                outputs_prefix='GCPIAM.Group',
                 outputs=[],
                 raw_response=[]
             )
@@ -2209,7 +2209,7 @@ def gcp_iam_group_list_command(client: Client, args: Dict[str, Any]) -> CommandR
 
     command_results = CommandResults(
         readable_output=readable_output,
-        outputs_prefix='GCP.IAM.Group',
+        outputs_prefix='GCPIAM.Group',
         outputs_key_field='name',
         outputs=response.get('groups'),
         raw_response=response
@@ -2244,7 +2244,7 @@ def gcp_iam_group_get_command(client: Client, args: Dict[str, Any]) -> CommandRe
 
     command_results = CommandResults(
         readable_output=readable_output,
-        outputs_prefix='GCP.IAM.Group',
+        outputs_prefix='GCPIAM.Group',
         outputs_key_field='name',
         outputs=outputs,
         raw_response=response
@@ -2334,7 +2334,7 @@ def gcp_iam_group_membership_list_command(client: Client, args: Dict[str, Any]) 
         if not page_token:
             return CommandResults(
                 readable_output=readable_message,
-                outputs_prefix='GCP.IAM.Membership',
+                outputs_prefix='GCPIAM.Membership',
                 outputs=[],
                 raw_response=[]
             )
@@ -2687,7 +2687,7 @@ def generate_service_account_key_command_output(response: dict, output_key: str 
 
     command_results = CommandResults(
         readable_output=readable_output,
-        outputs_prefix='GCP.IAM.ServiceAccountKey',
+        outputs_prefix='GCPIAM.ServiceAccountKey',
         outputs_key_field='name',
         outputs=outputs,
         raw_response=response
@@ -2766,7 +2766,7 @@ def gcp_iam_service_account_keys_get_command(client: Client, args: Dict[str, Any
 
         command_results = CommandResults(
             readable_output=readable_output,
-            outputs_prefix='GCP.IAM.ServiceAccountKey',
+            outputs_prefix='GCPIAM.ServiceAccountKey',
             outputs_key_field='name',
             outputs=outputs,
             raw_response=response
@@ -2899,7 +2899,7 @@ def generate_role_command_output(response: dict, output_key: str = None,
 
     command_results = CommandResults(
         readable_output=readable_output,
-        outputs_prefix='GCP.IAM.Role',
+        outputs_prefix='GCPIAM.Role',
         outputs_key_field='name',
         outputs=outputs,
         raw_response=response
@@ -3053,13 +3053,25 @@ def list_filtered_role(client_request_method: Callable, command_arguments: dict,
     outputs = []
     response_roles = response.get("roles", [])
 
-    for role in response_roles:
-        if (title_filter and title_filter.lower() in role.get("title", "").lower()) or (permission_filter and all(
-                item in role.get("includedPermissions", []) for item in permission_filter)):
-            outputs.append(role)
+    roles_remain = True
 
-        if len(outputs) >= max_result_offset:
-            break
+    while roles_remain and response_roles:
+        for role in response_roles:
+            if (title_filter and title_filter.lower() in role.get("title", "").lower()) or (permission_filter and all(
+                    item in role.get("includedPermissions", []) for item in permission_filter)):
+                outputs.append(role)
+
+            if len(outputs) >= max_result_offset:
+                roles_remain = False
+                break
+
+        if roles_remain:
+            if response.get('nextPageToken'):
+                response = client_request_method(limit=max_limit, page_token=response.get('nextPageToken'),
+                                                 **command_arguments)
+                response_roles = response.get("roles", [])
+            else:
+                roles_remain = False
 
     return response, outputs[offset: max_result_offset]
 
@@ -3461,7 +3473,7 @@ def gcp_iam_testable_permission_list_command(client: Client, args: Dict[str, Any
         if not page_token:
             return CommandResults(
                 readable_output=readable_message,
-                outputs_prefix='GCP.IAM.Permission',
+                outputs_prefix='GCPIAM.Permission',
                 outputs=[],
                 raw_response=[]
             )
@@ -3477,7 +3489,7 @@ def gcp_iam_testable_permission_list_command(client: Client, args: Dict[str, Any
 
     command_results = CommandResults(
         readable_output=readable_output,
-        outputs_prefix='GCP.IAM.Permission',
+        outputs_prefix='GCPIAM.Permission',
         outputs_key_field='name',
         outputs=response.get("permissions"),
         raw_response=response
@@ -3512,7 +3524,7 @@ def gcp_iam_grantable_role_list_command(client: Client, args: Dict[str, Any]) ->
         if not page_token:
             return CommandResults(
                 readable_output=readable_message,
-                outputs_prefix='GCP.IAM.Roles',
+                outputs_prefix='GCPIAM.Roles',
                 outputs=[],
                 raw_response=[]
             )
@@ -3528,7 +3540,7 @@ def gcp_iam_grantable_role_list_command(client: Client, args: Dict[str, Any]) ->
 
     command_results = CommandResults(
         readable_output=readable_output,
-        outputs_prefix='GCP.IAM.Roles',
+        outputs_prefix='GCPIAM.Roles',
         outputs_key_field='name',
         outputs=response.get("roles"),
         raw_response=response

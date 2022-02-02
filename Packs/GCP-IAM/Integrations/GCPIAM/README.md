@@ -21,7 +21,7 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### gcp-iam-projects-get
 ***
-List projects under the specified parent, or retrieve project information. One of the arguments: 'parent' or 'project_name'  must be provided
+Lists project under the specified parent, or retrieves a specific projects information. One of the arguments: ''parent'' or ''project_name''  must be provided.
 
 
 #### Base Command
@@ -31,24 +31,24 @@ List projects under the specified parent, or retrieve project information. One o
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_name | Comma-separated list of project names to retrieve. For example, projects/415104041262. | Optional | 
+| project_name | A comma-separated list of project names to retrieve. For example, projects/415104041262. Leave empty to retrieve a list of projects under a specified parent resource. | Optional | 
 | limit | The number of results to retrieve. Minimum value is 1, maximum value is 100. Default is 50. | Optional | 
 | page | The page number of the results to retrieve. Minimum value is 1. Default is 1. | Optional | 
 | parent | The name of the parent resource to list projects under. For example, setting this field to 'folders/1234' would list all projects directly under that folder. | Optional | 
-| show_deleted | Indicate that projects in the DELETE_REQUESTED state should also be retrieved. Possible values are: False, True. Default is False. | Optional | 
+| show_deleted | If true, projects that have been marked for deletion will also be retrieved. Possible values are: False, True. Default is False. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.IAM.Project.createTime | Date | Project creation time. | 
-| GCP.IAM.Project.displayName | String | Project display name. | 
-| GCP.IAM.Project.name | String | The unique resource name of the project. | 
-| GCP.IAM.Project.parent | String | The project parent resource.  | 
-| GCP.IAM.Project.projectId | String | The unique, user-assigned ID of the project. | 
-| GCP.IAM.Project.state | String | The project lifecycle state. | 
-| GCP.IAM.Project.updateTime | Date | The most recent time that the project was modified. | 
+| GCPIAM.Project.createTime | Date | Project creation time. | 
+| GCPIAM.Project.displayName | String | Project display name. | 
+| GCPIAM.Project.name | String | The unique resource name of the project. | 
+| GCPIAM.Project.parent | String | The project parent resource.  | 
+| GCPIAM.Project.projectId | String | The unique, user-assigned ID of the project. | 
+| GCPIAM.Project.state | String | The project lifecycle state. | 
+| GCPIAM.Project.updateTime | Date | The most recent time that the project was modified. | 
 
 #### Command example
 ```!gcp-iam-projects-get project_name="projects/project-name-1"```
@@ -101,9 +101,9 @@ Retrieve the IAM access control policy for the specified project.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.IAM.Policy.bindings.members | String | The members that associates to the role. | 
-| GCP.IAM.Policy.bindings.role | String | The role that is assigned to the list of members. | 
-| GCP.IAM.Policy.name | String | The unique resource name of the project. Please note that this output was added manually. | 
+| GCPIAM.Policy.bindings.members | String | The members that associates to the role. | 
+| GCPIAM.Policy.bindings.role | String | The role that is assigned to the list of members. | 
+| GCPIAM.Policy.name | String | The unique resource name of the project. Please note that this output was added manually. | 
 
 
 #### Command Example
@@ -163,14 +163,14 @@ Returns permissions that a caller has on the specified project. Permission list 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | project_name | The project name for which the permissions is being tested.  For example, projects/415104041262. | Required | 
-| permissions | Comma-separated list of permissions names to validate for the resource. | Required | 
+| permissions | A comma-separated list of permissions names to validate for the resource. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.IAM.Permission | String | The caller allowed permissions. | 
+| GCPIAM.Permission | String | The caller allowed permissions. | 
 
 
 #### Command Example
@@ -217,7 +217,7 @@ Add members to project policy.
 | --- | --- | --- |
 | project_name | The resource for which the policy is being specified.  For example, projects/415104041262. | Required | 
 | role | The name of policy role. | Required | 
-| members | Comma-separated list of members to add to the policy. For example : user:mike@example.com, group:admins@example.com, domain:google.com, serviceAccount:my-project-id@xsoar.gserviceaccount.com. | Required | 
+| members | A comma-separated list of members to add to the policy. For example : user:mike@example.com, group:admins@example.com, domain:google.com, serviceAccount:my-project-id@xsoar.gserviceaccount.com. | Required | 
 
 
 #### Context Output
@@ -245,7 +245,7 @@ Remove members from project policy.
 | --- | --- | --- |
 | project_name | The name of the project for which the policy is being specified.  For example, projects/415104041262. | Required | 
 | role | The name of policy role. | Required | 
-| members | Comma-separated list of members to remove from the policy. For example : user:mike@example.com, group:admins@example.com, domain:google.com, serviceAccount:my-project-id@xsoar.gserviceaccount.com. | Required | 
+| members | A comma-separated list of members to remove from the policy. For example : user:mike@example.com, group:admins@example.com, domain:google.com, serviceAccount:my-project-id@xsoar.gserviceaccount.com. | Required | 
 
 
 #### Context Output
@@ -272,16 +272,16 @@ Sets the IAM access control policy for the specified project. This operation wil
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | project_name | The name of the project for which the policy is being specified.  For example, projects/415104041262. | Required | 
-| policy | Comma-separated list of JSON policies objects. Every policy item consists of 'role' and 'members'. For example: [<br/>  {<br/>    "role": "roles/resourcemanager.organizationViewer",<br/>    "members": [<br/>      "user:eve@example.com"<br/>    ]<br/>  }<br/>]. | Required | 
+| policy | A comma-separated list of JSON policies objects. Every policy item consists of 'role' and 'members'. For example: [<br/>  {<br/>    "role": "roles/resourcemanager.organizationViewer",<br/>    "members": [<br/>      "user:eve@example.com"<br/>    ]<br/>  }<br/>]. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.IAM.Policy.bindings.members | String | The members that associates to the role. | 
-| GCP.IAM.Policy.bindings.role | String | The role that is assigned to the list of members. | 
-| GCP.IAM.Policy.name | String | The unique resource name of the project. Please note that this output was added manually. | 
+| GCPIAM.Policy.bindings.members | String | The members that associates to the role. | 
+| GCPIAM.Policy.bindings.role | String | The role that is assigned to the list of members. | 
+| GCPIAM.Policy.name | String | The unique resource name of the project. Please note that this output was added manually. | 
 
 
 #### Command Example
@@ -340,7 +340,7 @@ Add new project IAM policy.
 | --- | --- | --- |
 | project_name | The name of the project for which the policy is being specified.  For example, projects/415104041262. | Required | 
 | role | The name of policy role. | Required | 
-| members | Comma-separated list of members associated with the role. For example : user:mike@example.com, group:admins@example.com, domain:google.com, serviceAccount:my-project-id@xsoar.gserviceaccount.com. | Required | 
+| members | A comma-separated list of members associated with the role. For example : user:mike@example.com, group:admins@example.com, domain:google.com, serviceAccount:my-project-id@xsoar.gserviceaccount.com. | Required | 
 
 
 #### Context Output
@@ -356,7 +356,7 @@ There is no context output for this command.
 
 ### gcp-iam-folders-get
 ***
-List folders under the specified parent, or retrieve specific folder information.
+Lists folders under the specified parent, or retrieves a specific folder information. One of the arguments: ''parent'' or ''folder_name''  must be provided.
 
 
 #### Base Command
@@ -366,23 +366,23 @@ List folders under the specified parent, or retrieve specific folder information
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| folder_name | Comma-separated list of folder names to retrieve.  For example, folders/12342. | Optional | 
+| folder_name | A comma-separated list of folder names to retrieve.  For example, folders/12342. Leave empty to retrieve a list of folders under a specified parent resource. | Optional | 
 | parent | The name of the parent resource to list folders under. For example, setting this field to 'folders/1234' would list all folder directly under that folder. | Optional | 
 | limit | The number of results to retrieve. Minimum value is 1. Default is 50. | Optional | 
 | page | The page number of the results to retrieve. Minimum value is 1. Default is 1. | Optional | 
-| show_deleted | Indicate that folders in the DELETE_REQUESTED state should also be retrieved. Possible values are: False, True. Default is False. | Optional | 
+| show_deleted | If true, folders that have been marked for deletion will also be retrieved. Possible values are: False, True. Default is False. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.IAM.Folder.createTime | Date | Folder creation time. | 
-| GCP.IAM.Folder.displayName | String | Folder display name. | 
-| GCP.IAM.Folder.name | String | The unique resource name of the folder. | 
-| GCP.IAM.Folder.parent | String | The folder parent resource. | 
-| GCP.IAM.Folder.state | String | The folder lifecycle state. | 
-| GCP.IAM.Folder.updateTime | Date | The most recent time that the folder was modified. | 
+| GCPIAM.Folder.createTime | Date | Folder creation time. | 
+| GCPIAM.Folder.displayName | String | Folder display name. | 
+| GCPIAM.Folder.name | String | The unique resource name of the folder. | 
+| GCPIAM.Folder.parent | String | The folder parent resource. | 
+| GCPIAM.Folder.state | String | The folder lifecycle state. | 
+| GCPIAM.Folder.updateTime | Date | The most recent time that the folder was modified. | 
 
 #### Command example
 ```!gcp-iam-folders-get folder_name="folders/folder-name-1"```
@@ -434,9 +434,9 @@ Retrieve the IAM access control policy for the specified folder.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.IAM.Policy.bindings.members | String | The members that associates to the role. | 
-| GCP.IAM.Policy.bindings.role | String | The role that is assigned to the list of members. | 
-| GCP.IAM.Policy.name | String | The unique resource name of the folder. Please note that this output was added manually. | 
+| GCPIAM.Policy.bindings.members | String | The members that associates to the role. | 
+| GCPIAM.Policy.bindings.role | String | The role that is assigned to the list of members. | 
+| GCPIAM.Policy.name | String | The unique resource name of the folder. Please note that this output was added manually. | 
 
 
 #### Command Example
@@ -496,14 +496,14 @@ Returns permissions that a caller has on the specified folder. Permission list c
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | folder_name | The folder name for which the permissions is being tested.  For example, folders/12342. | Required | 
-| permissions | Comma-separated list of permissions names to validate for the resource. | Required | 
+| permissions | A comma-separated list of permissions names to validate for the resource. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.IAM.Permission | String | The caller allowed permissions. | 
+| GCPIAM.Permission | String | The caller allowed permissions. | 
 
 
 #### Command Example
@@ -550,7 +550,7 @@ Add members to folder policy.
 | --- | --- | --- |
 | folder_name | The resource for which the policy is being specified.  For example, folders/12342. | Required | 
 | role | The name of policy role. | Required | 
-| members | Comma-separated list of members to add to the policy. For example : user:mike@example.com, group:admins@example.com, domain:google.com, serviceAccount:my-project-id@xsoar.gserviceaccount.com. | Required | 
+| members | A comma-separated list of members to add to the policy. For example : user:mike@example.com, group:admins@example.com, domain:google.com, serviceAccount:my-project-id@xsoar.gserviceaccount.com. | Required | 
 
 
 #### Context Output
@@ -578,7 +578,7 @@ Remove members from folder policy.
 | --- | --- | --- |
 | folder_name | The name of the folder for which the policy is being specified.  For example, folders/12342. | Required | 
 | role | The name of policy role. | Required | 
-| members | Comma-separated list of members to remove from the policy. For example : user:mike@example.com, group:admins@example.com, domain:google.com, serviceAccount:my-project-id@xsoar.gserviceaccount.com. | Required | 
+| members | A comma-separated list of members to remove from the policy. For example : user:mike@example.com, group:admins@example.com, domain:google.com, serviceAccount:my-project-id@xsoar.gserviceaccount.com. | Required | 
 
 
 #### Context Output
@@ -605,16 +605,16 @@ Sets the IAM access control policy for the specified folder. This operation will
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | folder_name | The name of the folder for which the policy is being specified.  For example, folders/12342. | Required | 
-| policy | Comma-separated list of JSON policies objects. Every policy item consists of 'role' and 'members'. For example: [<br/>  {<br/>    "role": "roles/resourcemanager.organizationViewer",<br/>    "members": [<br/>      "user:eve@example.com"<br/>    ]<br/>  }<br/>]. | Required | 
+| policy | A comma-separated list of JSON policies objects. Every policy item consists of 'role' and 'members'. For example: [<br/>  {<br/>    "role": "roles/resourcemanager.organizationViewer",<br/>    "members": [<br/>      "user:eve@example.com"<br/>    ]<br/>  }<br/>]. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.IAM.Policy.bindings.members | String | The members that associates to the role. | 
-| GCP.IAM.Policy.bindings.role | String | The role that is assigned to the list of members. | 
-| GCP.IAM.Policy.name | String | The unique resource name of the folder. Please note that this output was added manually. | 
+| GCPIAM.Policy.bindings.members | String | The members that associates to the role. | 
+| GCPIAM.Policy.bindings.role | String | The role that is assigned to the list of members. | 
+| GCPIAM.Policy.name | String | The unique resource name of the folder. Please note that this output was added manually. | 
 
 
 #### Command Example
@@ -672,7 +672,7 @@ Add new folder IAM policy.
 | --- | --- | --- |
 | folder_name | The name of the folder for which the policy is being specified.  For example, folders/12342. | Required | 
 | role | The name of policy role. | Required | 
-| members | Comma-separated list of members associated with the role. For example : user:mike@example.com, group:admins@example.com, domain:google.com, serviceAccount:my-project-id@xsoar.gserviceaccount.com. | Required | 
+| members | A comma-separated list of members associated with the role. For example : user:mike@example.com, group:admins@example.com, domain:google.com, serviceAccount:my-project-id@xsoar.gserviceaccount.com. | Required | 
 
 
 #### Context Output
@@ -688,7 +688,7 @@ There is no context output for this command.
 
 ### gcp-iam-organizations-get
 ***
-List organization resources that are visible to the caller, or retrieve organization information.
+Lists organization resources that are visible to the caller, or retrieves an organization information.
 
 
 #### Base Command
@@ -700,19 +700,19 @@ List organization resources that are visible to the caller, or retrieve organiza
 | --- | --- | --- |
 | limit | The number of results to retrieve. Minimum value is 1. Default is 50. | Optional | 
 | page | The page number of the results to retrieve. Minimum value is 1. Default is 1. | Optional | 
-| organization_name | Comma-separated list of organization names to retrieve. For example, organizations/3456. | Optional | 
+| organization_name | A comma-separated list of organization names to retrieve. For example, organizations/3456. Leave empty to retrieve a list of organizations that are visible to the caller. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.IAM.Organization.createTime | Date | Organization creation time. | 
-| GCP.IAM.Organization.directoryCustomerId | String | The G Suite / Workspace customer ID used in the Directory API. | 
-| GCP.IAM.Organization.displayName | String | Organizatio display name. | 
-| GCP.IAM.Organization.name | String | The unique resource name of the Organization. | 
-| GCP.IAM.Organization.state | String | The organizatio lifecycle state. | 
-| GCP.IAM.Organization.updateTime | Date | The most recent time that the organization was modified. | 
+| GCPIAM.Organization.createTime | Date | Organization creation time. | 
+| GCPIAM.Organization.directoryCustomerId | String | The G Suite / Workspace customer ID used in the Directory API. | 
+| GCPIAM.Organization.displayName | String | Organizatio display name. | 
+| GCPIAM.Organization.name | String | The unique resource name of the Organization. | 
+| GCPIAM.Organization.state | String | The organizatio lifecycle state. | 
+| GCPIAM.Organization.updateTime | Date | The most recent time that the organization was modified. | 
 
 #### Command example
 ```!gcp-iam-organizations-get limit="50" page="1"```
@@ -766,9 +766,9 @@ Retrieve the IAM access control policy for the specified organization.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.IAM.Policy.bindings.members | String | The members that associates to the role. | 
-| GCP.IAM.Policy.bindings.role | String | The role that is assigned to the list of members. | 
-| GCP.IAM.Policy.name | String | The unique resource name of the organization. Please note that this output was added manually. | 
+| GCPIAM.Policy.bindings.members | String | The members that associates to the role. | 
+| GCPIAM.Policy.bindings.role | String | The role that is assigned to the list of members. | 
+| GCPIAM.Policy.name | String | The unique resource name of the organization. Please note that this output was added manually. | 
 
 
 #### Command Example
@@ -827,14 +827,14 @@ Returns permissions that a caller has on the specified organization. Permission 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | organization_name | The organization name for which the permissions is being tested.  For example, organizations/3456. | Required | 
-| permissions | Comma-separated list of permissions names to validate for the resource. | Required | 
+| permissions | A comma-separated list of permissions names to validate for the resource. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.IAM.Permission | String | The caller allowed permissions. | 
+| GCPIAM.Permission | String | The caller allowed permissions. | 
 
 
 #### Command Example
@@ -881,7 +881,7 @@ Add members to organization policy.
 | --- | --- | --- |
 | organization_name | The resource for which the policy is being specified. For example, organizations/3456. | Required | 
 | role | The name of policy role. | Required | 
-| members | Comma-separated list of members ato add to the policy. For example : user:mike@example.com, group:admins@example.com, domain:google.com, serviceAccount:my-project-id@xsoar.gserviceaccount.com. | Required | 
+| members | A comma-separated list of members ato add to the policy. For example : user:mike@example.com, group:admins@example.com, domain:google.com, serviceAccount:my-project-id@xsoar.gserviceaccount.com. | Required | 
 
 
 #### Context Output
@@ -909,7 +909,7 @@ Remove members from organization policy.
 | --- | --- | --- |
 | organization_name | The name of the organization for which the policy is being specified. For example, organizations/3456. | Required | 
 | role | The name of policy role. | Required | 
-| members | Comma-separated list of members to remove from the policy. For example : user:mike@example.com, group:admins@example.com, domain:google.com, serviceAccount:my-project-id@xsoar.gserviceaccount.com. | Required | 
+| members | A comma-separated list of members to remove from the policy. For example : user:mike@example.com, group:admins@example.com, domain:google.com, serviceAccount:my-project-id@xsoar.gserviceaccount.com. | Required | 
 
 
 #### Context Output
@@ -936,16 +936,16 @@ Sets the IAM access control policy for the specified organization. This operatio
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | organization_name | The name of the organization for which the policy is being specified. For example, organizations/3456. | Required | 
-| policy | Comma-separated list of JSON policies objects. Every policy item consists of 'role' and 'members'. For example: [<br/>  {<br/>    "role": "roles/resourcemanager.organizationViewer",<br/>    "members": [<br/>      "user:eve@example.com"<br/>    ]<br/>  }<br/>]. | Required | 
+| policy | A comma-separated list of JSON policies objects. Every policy item consists of 'role' and 'members'. For example: [<br/>  {<br/>    "role": "roles/resourcemanager.organizationViewer",<br/>    "members": [<br/>      "user:eve@example.com"<br/>    ]<br/>  }<br/>]. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.IAM.Policy.bindings.members | String | The members that associates to the role. | 
-| GCP.IAM.Policy.bindings.role | String | The role that is assigned to the list of members. | 
-| GCP.IAM.Policy.name | String | The unique resource name of the organization. Please note that this output was added manually. | 
+| GCPIAM.Policy.bindings.members | String | The members that associates to the role. | 
+| GCPIAM.Policy.bindings.role | String | The role that is assigned to the list of members. | 
+| GCPIAM.Policy.name | String | The unique resource name of the organization. Please note that this output was added manually. | 
 
 
 #### Command Example
@@ -996,7 +996,7 @@ Add new organization IAM policy.
 | --- | --- | --- |
 | organization_name | The name of the organization for which the policy is being specified. For example, organizations/3456. | Required | 
 | role | The name of policy role. | Required | 
-| members | Comma-separated list of members associated with the role. For example : user:mike@example.com, group:admins@example.com, domain:google.com, serviceAccount:my-project-id@xsoar.gserviceaccount.com. | Required | 
+| members | A comma-separated list of members associated with the role. For example : user:mike@example.com, group:admins@example.com, domain:google.com, serviceAccount:my-project-id@xsoar.gserviceaccount.com. | Required | 
 
 
 #### Context Output
@@ -1032,12 +1032,12 @@ Create a new group. The end user making the request will be added as the initial
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.IAM.Group.createTime | Date | Group creation time. | 
-| GCP.IAM.Group.displayName | String | The display name of the group | 
-| GCP.IAM.Group.groupKey.id | String | The ID of the group. | 
-| GCP.IAM.Group.name | String | The resource name of the group. | 
-| GCP.IAM.Group.parent | String | The resource name of the entity under which this group resides in the Cloud Identity resource hierarchy | 
-| GCP.IAM.Group.updateTime | Date | The most recent time that the group was modified. | 
+| GCPIAM.Group.createTime | Date | Group creation time. | 
+| GCPIAM.Group.displayName | String | The display name of the group | 
+| GCPIAM.Group.groupKey.id | String | The ID of the group. | 
+| GCPIAM.Group.name | String | The resource name of the group. | 
+| GCPIAM.Group.parent | String | The resource name of the entity under which this group resides in the Cloud Identity resource hierarchy | 
+| GCPIAM.Group.updateTime | Date | The most recent time that the group was modified. | 
 
 
 #### Command Example
@@ -1096,9 +1096,9 @@ List groups that visible to the caller.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.IAM.Group.displayName | String | The display name of the group | 
-| GCP.IAM.Group.groupKey.id | String | The ID of the group. | 
-| GCP.IAM.Group.name | String | The resource name of the group. | 
+| GCPIAM.Group.displayName | String | The display name of the group | 
+| GCPIAM.Group.groupKey.id | String | The ID of the group. | 
+| GCPIAM.Group.name | String | The resource name of the group. | 
 
 
 #### Command Example
@@ -1160,12 +1160,12 @@ Retrieve a group information.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.IAM.Group.createTime | Date | Group creation time. | 
-| GCP.IAM.Group.displayName | String | The display name of the group | 
-| GCP.IAM.Group.groupKey.id | String | The ID of the group. | 
-| GCP.IAM.Group.name | String | The resource name of the group. | 
-| GCP.IAM.Group.parent | String | The resource name of the entity under which this group resides in the Cloud Identity resource hierarchy | 
-| GCP.IAM.Group.updateTime | Date | The most recent time that the group was modified. | 
+| GCPIAM.Group.createTime | Date | Group creation time. | 
+| GCPIAM.Group.displayName | String | The display name of the group | 
+| GCPIAM.Group.groupKey.id | String | The ID of the group. | 
+| GCPIAM.Group.name | String | The resource name of the group. | 
+| GCPIAM.Group.parent | String | The resource name of the entity under which this group resides in the Cloud Identity resource hierarchy | 
+| GCPIAM.Group.updateTime | Date | The most recent time that the group was modified. | 
 
 
 #### Command Example
@@ -1240,18 +1240,18 @@ Create a group membership.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| groups_name | Comma-separated list of group names which will contain the membership. Every group name must be of the form groups/{group_id}. | Required | 
+| groups_name | A comma-separated list of group names which will contain the membership. Every group name must be of the form groups/{group_id}. | Required | 
 | member_email | The email address of the member to add to the group. | Required | 
-| role | Comma-separated list of membership roles that apply to the membership. The 'MEMBER' role must be provided. Possible values are: OWNER, MANAGER, MEMBER. Default is MEMBER. | Required | 
+| role | A comma-separated list of membership roles that apply to the membership. The 'MEMBER' role must be provided. Possible values are: OWNER, MANAGER, MEMBER. Default is MEMBER. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.IAM.Membership.name | String | The resource name of the membership. | 
-| GCP.IAM.Membership.preferredMemberKey.id | String | The member key ID. | 
-| GCP.IAM.Membership.roles.name | String | The membership roles that apply to the membership. | 
+| GCPIAM.Membership.name | String | The resource name of the membership. | 
+| GCPIAM.Membership.preferredMemberKey.id | String | The member key ID. | 
+| GCPIAM.Membership.roles.name | String | The membership roles that apply to the membership. | 
 
 
 #### Command Example
@@ -1308,9 +1308,9 @@ List group memberships.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.IAM.Membership.name | String | The resource name of the membership. | 
-| GCP.IAM.Membership.preferredMemberKey.id | String | The member key ID. | 
-| GCP.IAM.Membership.roles.name | String | The membership roles that apply to the membership. | 
+| GCPIAM.Membership.name | String | The resource name of the membership. | 
+| GCPIAM.Membership.preferredMemberKey.id | String | The member key ID. | 
+| GCPIAM.Membership.roles.name | String | The membership roles that apply to the membership. | 
 
 
 #### Command Example
@@ -1383,11 +1383,11 @@ Retrieve group membership information.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.IAM.Membership.createTime | Date | The membership creation time. | 
-| GCP.IAM.Membership.name | String | The resource name of the membership. | 
-| GCP.IAM.Membership.preferredMemberKey.id | String | The member key ID. | 
-| GCP.IAM.Membership.roles.name | String | The membership roles that apply to the membership. | 
-| GCP.IAM.Membership.updateTime | Date | The most recent time that the membership was modified. | 
+| GCPIAM.Membership.createTime | Date | The membership creation time. | 
+| GCPIAM.Membership.name | String | The resource name of the membership. | 
+| GCPIAM.Membership.preferredMemberKey.id | String | The member key ID. | 
+| GCPIAM.Membership.roles.name | String | The membership roles that apply to the membership. | 
+| GCPIAM.Membership.updateTime | Date | The most recent time that the membership was modified. | 
 
 
 #### Command Example
@@ -1441,7 +1441,7 @@ Add group membership role.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | membership_name | The name of the group membership to update.  Must be of the form: groups/{group_id}/memberships/{membership_id}. | Required | 
-| role | Comma-separated list of membership roles to add to the membership. Possible values are: MANAGER, OWNER. | Required | 
+| role | A comma-separated list of membership roles to add to the membership. Possible values are: MANAGER, OWNER. | Required | 
 
 
 #### Context Output
@@ -1468,7 +1468,7 @@ Remove group membership role.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | membership_name | The resource name of the membership.  Must be of the form: groups/{group_id}/memberships/{membership_id}. | Required | 
-| role | Comma-separated list of membership roles to remove from the membership. Possible values are: OWNER, MANAGER. | Required | 
+| role | A comma-separated list of membership roles to remove from the membership. Possible values are: OWNER, MANAGER. | Required | 
 
 
 #### Context Output
@@ -1494,7 +1494,7 @@ Delete group membership.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| membership_names | Comma-separated list of resource names of the memberships to delete.  Must be of the form: groups/{group_id}/memberships/{membership_id}. | Required | 
+| membership_names | A comma-separated list of resource names of the memberships to delete.  Must be of the form: groups/{group_id}/memberships/{membership_id}. | Required | 
 
 
 #### Context Output
@@ -1530,12 +1530,12 @@ Create a service account in project.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.IAM.ServiceAccount.email | String | The email address of the service account. | 
-| GCP.IAM.ServiceAccount.name | String | The resource name of the service account. | 
-| GCP.IAM.ServiceAccount.oauth2ClientId | String | The OAuth 2.0 client ID for the service account. | 
-| GCP.IAM.ServiceAccount.projectId | String | The ID of the project that owns the service account. | 
-| GCP.IAM.ServiceAccount.uniqueId | String | The unique, stable numeric ID for the service account. | 
-| GCP.IAM.ServiceAccount.disabled | Boolean | Indicates whether the service account is disabled. | 
+| GCPIAM.ServiceAccount.email | String | The email address of the service account. | 
+| GCPIAM.ServiceAccount.name | String | The resource name of the service account. | 
+| GCPIAM.ServiceAccount.oauth2ClientId | String | The OAuth 2.0 client ID for the service account. | 
+| GCPIAM.ServiceAccount.projectId | String | The ID of the project that owns the service account. | 
+| GCPIAM.ServiceAccount.uniqueId | String | The unique, stable numeric ID for the service account. | 
+| GCPIAM.ServiceAccount.disabled | Boolean | Indicates whether the service account is disabled. | 
 
 
 #### Command Example
@@ -1585,7 +1585,7 @@ Update service account.
 | service_account_name | The name of the service account to update.  Must be of the form projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}. | Required | 
 | display_name | Human readable name for the updated service account. | Optional | 
 | description | Human readable description for updated the service account. | Optional | 
-| fields_to_update | Comma-separated names list of the fields to update. Possible values are: displayName, description. | Required | 
+| fields_to_update | A comma-separated names list of the fields to update. Possible values are: displayName, description. | Required | 
 
 
 #### Context Output
@@ -1601,7 +1601,7 @@ There is no context output for this command.
 
 ### gcp-iam-service-accounts-get
 ***
-List service accounts in project, or retrieve service accounts information. One of the arguments: 'service_account_name' or 'project_name'  must be provided.
+Lists service accounts in project, or retrieves a specific service accounts information. One of the arguments: ''service_account_name'' or ''project_name''  must be provided.
 
 
 #### Base Command
@@ -1611,7 +1611,7 @@ List service accounts in project, or retrieve service accounts information. One 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| service_account_name | Comma-separated list of service accounts names to retrieve in the following format: projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}. | Optional | 
+| service_account_name | A comma-separated list of service accounts names to retrieve in the following format: projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}. Leave empty to retrieve a list of service accounts under a specified project resource. | Optional | 
 | project_name | The name of the project associated with the service accounts to retrieve, for example: projects/my-project-123. | Optional | 
 | limit | The number of results to retrieve. Minimum value is 1, maximum value is 100. Default is 50. | Optional | 
 | page | The page number of the results to retrieve. Minimum value is 1. Default is 1. | Optional | 
@@ -1621,12 +1621,12 @@ List service accounts in project, or retrieve service accounts information. One 
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.IAM.ServiceAccount.email | String | The email address of the service account. | 
-| GCP.IAM.ServiceAccount.name | String | The resource name of the service account. | 
-| GCP.IAM.ServiceAccount.oauth2ClientId | String | The OAuth 2.0 client ID for the service account. | 
-| GCP.IAM.ServiceAccount.projectId | String | The ID of the project that owns the service account. | 
-| GCP.IAM.ServiceAccount.uniqueId | String | The unique, stable numeric ID for the service account. | 
-| GCP.IAM.ServiceAccount.disabled | Boolean | Indicates whether the service account is disabled. | 
+| GCPIAM.ServiceAccount.email | String | The email address of the service account. | 
+| GCPIAM.ServiceAccount.name | String | The resource name of the service account. | 
+| GCPIAM.ServiceAccount.oauth2ClientId | String | The OAuth 2.0 client ID for the service account. | 
+| GCPIAM.ServiceAccount.projectId | String | The ID of the project that owns the service account. | 
+| GCPIAM.ServiceAccount.uniqueId | String | The unique, stable numeric ID for the service account. | 
+| GCPIAM.ServiceAccount.disabled | Boolean | Indicates whether the service account is disabled. | 
 
 
 #### Command Example
@@ -1673,7 +1673,7 @@ Enable project service account.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| service_account_name | Comma-separated list of names of service accounts to enable. Every resource name should be in the following format: projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}. | Required | 
+| service_account_name | A comma-separated list of names of service accounts to enable. Every resource name should be in the following format: projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}. | Required | 
 
 
 #### Context Output
@@ -1699,7 +1699,7 @@ Disable project service account.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| service_account_name | Comma-separated list of names of service accounts to disable. Every resource name should be in the following format: projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}. | Required | 
+| service_account_name | A comma-separated list of names of service accounts to disable. Every resource name should be in the following format: projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}. | Required | 
 
 
 #### Context Output
@@ -1733,15 +1733,15 @@ Create a service account key. A service account can have up to 10 keys. Service 
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.IAM.ServiceAccountKey.keyAlgorithm | String | Specifies the algorithm for the key. | 
-| GCP.IAM.ServiceAccountKey.keyOrigin | String | Service account key origin provider. | 
-| GCP.IAM.ServiceAccountKey.keyType | String | Indicates the resource managed type. | 
-| GCP.IAM.ServiceAccountKey.name | String | The resource name of the service account key. | 
-| GCP.IAM.ServiceAccountKey.privateKeyData | String | The encrypted private key data. | 
-| GCP.IAM.ServiceAccountKey.privateKeyType | String | The output format for the private key. | 
-| GCP.IAM.ServiceAccountKey.validAfterTime | Date | Indicaetd the time that the key can be used after this timestamp. | 
-| GCP.IAM.ServiceAccountKey.validBeforeTime | Date | Indicaetd the time that the key can be used before this timestamp. | 
-| GCP.IAM.ServiceAccountKey.disabled | Boolean | Indicates whether the service account key is disabled. | 
+| GCPIAM.ServiceAccountKey.keyAlgorithm | String | Specifies the algorithm for the key. | 
+| GCPIAM.ServiceAccountKey.keyOrigin | String | Service account key origin provider. | 
+| GCPIAM.ServiceAccountKey.keyType | String | Indicates the resource managed type. | 
+| GCPIAM.ServiceAccountKey.name | String | The resource name of the service account key. | 
+| GCPIAM.ServiceAccountKey.privateKeyData | String | The encrypted private key data. | 
+| GCPIAM.ServiceAccountKey.privateKeyType | String | The output format for the private key. | 
+| GCPIAM.ServiceAccountKey.validAfterTime | Date | Indicaetd the time that the key can be used after this timestamp. | 
+| GCPIAM.ServiceAccountKey.validBeforeTime | Date | Indicaetd the time that the key can be used before this timestamp. | 
+| GCPIAM.ServiceAccountKey.disabled | Boolean | Indicates whether the service account key is disabled. | 
 
 
 #### Command Example
@@ -1778,7 +1778,7 @@ Create a service account key. A service account can have up to 10 keys. Service 
 
 ### gcp-iam-service-account-keys-get
 ***
-List service account keys, or retrieve service account information. One of the arguments: 'service_account_name' or 'key_name'  must be provided.
+Lists service account keys, or retrieves a specific service account key information. One of the arguments: ''service_account_name'' or ''key_name''  must be provided.
 
 
 #### Base Command
@@ -1788,7 +1788,7 @@ List service account keys, or retrieve service account information. One of the a
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| key_name | The resource name of the service account key to retrieve. The resource name should be in the following format: projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}/keys/{key}. | Optional | 
+| key_name | The resource name of the service account key to retrieve. The resource name should be in the following format: projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}/keys/{key}. Leave empty to retrieve a list of service account keys that associated with service account resource. | Optional | 
 | service_account_name | The name of the service account associated with the keys.  Must be of the form projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}. | Optional | 
 | limit | The number of results to retrieve. Minimum value is 1. Default is 50. | Optional | 
 | page | The page number of the results to retrieve. Minimum value is 1. Default is 1. | Optional | 
@@ -1798,13 +1798,13 @@ List service account keys, or retrieve service account information. One of the a
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.IAM.ServiceAccountKey.keyAlgorithm | String | Specifies the algorithm for the key. | 
-| GCP.IAM.ServiceAccountKey.keyOrigin | String | Service account key origin provider. | 
-| GCP.IAM.ServiceAccountKey.keyType | String | Indicates the resource managed type. | 
-| GCP.IAM.ServiceAccountKey.name | String | The resource name of the service account key. | 
-| GCP.IAM.ServiceAccountKey.validAfterTime | Date | Indicaetd the time that the key can be used after this timestamp. | 
-| GCP.IAM.ServiceAccountKey.validBeforeTime | Date | Indicaetd the time that the key can be used before this timestamp. | 
-| GCP.IAM.ServiceAccountKey.disabled | Boolean | Indicates whether the service account key is disabled. | 
+| GCPIAM.ServiceAccountKey.keyAlgorithm | String | Specifies the algorithm for the key. | 
+| GCPIAM.ServiceAccountKey.keyOrigin | String | Service account key origin provider. | 
+| GCPIAM.ServiceAccountKey.keyType | String | Indicates the resource managed type. | 
+| GCPIAM.ServiceAccountKey.name | String | The resource name of the service account key. | 
+| GCPIAM.ServiceAccountKey.validAfterTime | Date | Indicaetd the time that the key can be used after this timestamp. | 
+| GCPIAM.ServiceAccountKey.validBeforeTime | Date | Indicaetd the time that the key can be used before this timestamp. | 
+| GCPIAM.ServiceAccountKey.disabled | Boolean | Indicates whether the service account key is disabled. | 
 
 
 #### Command Example
@@ -1863,7 +1863,7 @@ Enable service account key.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| key_name | Comma-separated list of names of resource name of the service account key to enable. Every resource name should be in the following format: projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}/keys/{key}. | Required | 
+| key_name | A comma-separated list of names of resource name of the service account key to enable. Every resource name should be in the following format: projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}/keys/{key}. | Required | 
 
 
 #### Context Output
@@ -1889,7 +1889,7 @@ Disable service account key.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| key_name | Comma-separated list of names of resource name of the service account key to disavle. Every resource name should be in the following format: projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}/keys/{key}. | Required | 
+| key_name | A comma-separated list of names of resource name of the service account key to disavle. Every resource name should be in the following format: projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}/keys/{key}. | Required | 
 
 
 #### Context Output
@@ -1915,7 +1915,7 @@ Delete service account key.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| key_name | Comma-separated list of names of resource name of the service account key to delete. Every resource name should be in the following format: projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}/keys/{key}. | Required | 
+| key_name | A comma-separated list of names of resource name of the service account key to delete. Every resource name should be in the following format: projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}/keys/{key}. | Required | 
 
 
 #### Context Output
@@ -1945,7 +1945,7 @@ Create a custom organization role.
 | role_id | The unique ID of the role to create. A role ID may contain alphanumeric characters, underscores (_), and periods (.). It must contain a minimum of 3 characters and a maximum of 64 characters. | Required | 
 | description | The description of the role to create. | Optional | 
 | title | The title of the role to create. | Optional | 
-| permissions | Comma-separated names of the permissions the role grants when bound. in an IAM policy. | Required | 
+| permissions | A comma-separated names of the permissions the role grants when bound. in an IAM policy. | Required | 
 | stage | The launch stage of the role. More information can be found here: https://cloud.google.com/iam/docs/reference/rest/v1/organizations.roles#rolelaunchstage. Possible values are: ALPHA, BETA, GA, DEPRECATED, DISABLED, EAP. | Optional | 
 
 
@@ -1953,7 +1953,7 @@ Create a custom organization role.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.IAM.Role.name | String | The name of the role. | 
+| GCPIAM.Role.name | String | The name of the role. | 
 
 
 #### Command Example
@@ -2004,8 +2004,8 @@ Update a custom organization role.
 | role_name | The name of the role to update. Must be from the format of organizations/{ORGANIZATION_ID}/roles/{CUSTOM_ROLE_ID}. | Required | 
 | description | The updated description of the role. | Optional | 
 | title | The updated title of the role. | Optional | 
-| permissions | Comma-separated names of the permissions the role grants when bound in an IAM policy. Please note that this command argument will replace the existing permissions. | Optional | 
-| fields_to_update | Comma-separated names of the fields to update. Possible values are: description, title, includedPermissions, stage. | Required | 
+| permissions | A comma-separated names of the permissions the role grants when bound in an IAM policy. Please note that this command argument will replace the existing permissions. | Optional | 
+| fields_to_update | A comma-separated names of the fields to update. Possible values are: description, title, includedPermissions, stage. | Required | 
 | stage | The launch stage of the role. More information can be found here: https://cloud.google.com/iam/docs/reference/rest/v1/organizations.roles#rolelaunchstage. Possible values are: ALPHA, BETA, GA, DEPRECATED, DISABLED, EAP. | Optional | 
 
 
@@ -2033,7 +2033,7 @@ Add permissions to custom organization role.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | role_name | The resource name of the role. Must be from the format of organizations/{ORGANIZATION_ID}/roles/{CUSTOM_ROLE_ID}. | Required | 
-| permissions | Comma-separated names of the permissions to add to the role. | Required | 
+| permissions | A comma-separated names of the permissions to add to the role. | Required | 
 
 
 #### Context Output
@@ -2060,7 +2060,7 @@ Remove permissions from custom organization role.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | role_name | The resource name of the role. Must be from the format of organizations/{ORGANIZATION_ID}/roles/{CUSTOM_ROLE_ID}. | Required | 
-| permissions | Comma-separated names of the permissions to remove from the role. | Required | 
+| permissions | A comma-separated names of the permissions to remove from the role. | Required | 
 
 
 #### Context Output
@@ -2090,16 +2090,16 @@ List organization custom roles.
 | include_permissions | Indicates whether to include permissions in the response. Possible values are: True, False. Default is True. | Optional | 
 | limit | The number of results to retrieve. Minimum value is 1. Default is 50. | Optional | 
 | page | The page number of the results to retrieve. Minimum value is 1, maximum value is 1000. Default is 1. | Optional | 
-| show_deleted | Indicate that roles that have been deleted should also be retrieved. Possible values are: False, True. Default is False. | Optional | 
+| show_deleted | If true, roles that have been deleted will also be retrieved. Possible values are: False, True. Default is False. | Optional | 
 | title_filter | Used to filter the retrieved roles by the rule title. The command will retrieve the rules which includes the provided argument in their title. | Optional | 
-| permission_filter | Comma-separated list of role permissions. Used to filter the retrieved roles by their permissions. The command will retrieve the rules which includes all the provided permissions in their permissions list. If the argument is provided, the command will include the role permissions in the output. | Optional | 
+| permission_filter | A comma-separated list of role permissions. Used to filter the retrieved roles by their permissions. The command will retrieve the rules which includes all the provided permissions in their permissions list. If the argument is provided, the command will include the role permissions in the output. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.IAM.Role.name | String | The resource name of the role. | 
+| GCPIAM.Role.name | String | The resource name of the role. | 
 
 
 #### Command Example
@@ -2159,14 +2159,14 @@ Retrieve organization role information.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| role_name | Comma-separated list of organization role to retrieve. Every role name should be in the following format: organizations/{ORGANIZATION_ID}/roles/{CUSTOM_ROLE_ID}. | Required | 
+| role_name | A comma-separated list of organization role to retrieve. Every role name should be in the following format: organizations/{ORGANIZATION_ID}/roles/{CUSTOM_ROLE_ID}. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.IAM.Role.name | String | The resource name of the role. | 
+| GCPIAM.Role.name | String | The resource name of the role. | 
 
 
 #### Command Example
@@ -2214,7 +2214,7 @@ Delete a custom organization role.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| role_name | Comma-separated list of organization role to delete. Every role name should be in the following format: organizations/{ORGANIZATION_ID}/roles/{CUSTOM_ROLE_ID}. | Required | 
+| role_name | A comma-separated list of organization role to delete. Every role name should be in the following format: organizations/{ORGANIZATION_ID}/roles/{CUSTOM_ROLE_ID}. | Required | 
 
 
 #### Context Output
@@ -2244,7 +2244,7 @@ Create a custom project role.
 | role_id | The unique ID of the role to create. A role ID may contain alphanumeric characters, underscores (_), and periods (.). It must contain a minimum of 3 characters and a maximum of 64 characters. | Required | 
 | description | The description of the role to create. | Optional | 
 | title | The title of the role to create. | Optional | 
-| permissions | Comma-separated names of the permissions the role grants when bound in an IAM policy. | Optional | 
+| permissions | A comma-separated names of the permissions the role grants when bound in an IAM policy. | Optional | 
 | stage | The launch stage of the role. More information can be found here: https://cloud.google.com/iam/docs/reference/rest/v1/organizations.roles#rolelaunchstage. Possible values are: ALPHA, BETA, GA, DEPRECATED, DISABLED, EAP. | Optional | 
 
 
@@ -2252,7 +2252,7 @@ Create a custom project role.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.IAM.Role.name | String | The name of the role. | 
+| GCPIAM.Role.name | String | The name of the role. | 
 
 
 #### Command Example
@@ -2303,9 +2303,9 @@ Update a custom project role.
 | role_name | The name of the role to update. Must be from the format of projects/{PROJECT_ID}/roles/{CUSTOM_ROLE_ID}. . | Required | 
 | description | The updated description of the role. | Optional | 
 | title | The updated title of the role. | Optional | 
-| permissions | Comma-separated names of the permissions the role grants when bound in an IAM policy. Please note that this command argument will replace the existing permissions. | Optional | 
+| permissions | A comma-separated names of the permissions the role grants when bound in an IAM policy. Please note that this command argument will replace the existing permissions. | Optional | 
 | stage | The launch stage of the role. More information can be found here: https://cloud.google.com/iam/docs/reference/rest/v1/organizations.roles#rolelaunchstage. Possible values are: ALPHA, BETA, GA, DEPRECATED, DISABLED, EAP. | Optional | 
-| fields_to_update | Comma-separated names of the fields to update. Possible values are: description, title, includedPermissions, stage. | Required | 
+| fields_to_update | A comma-separated names of the fields to update. Possible values are: description, title, includedPermissions, stage. | Required | 
 
 
 #### Context Output
@@ -2332,7 +2332,7 @@ Add permissions to custom project role.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | role_name | The resource name of the role. Must be from the format of projects/{PROJECT_ID}/roles/{CUSTOM_ROLE_ID}. . | Required | 
-| permissions | Comma-separated names of the permissions to add to the role. | Required | 
+| permissions | A comma-separated names of the permissions to add to the role. | Required | 
 
 
 #### Context Output
@@ -2359,7 +2359,7 @@ Remove permissions from custom project role.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | role_name | The resource name of the role. Must be from the format of projects/{PROJECT_ID}/roles/{CUSTOM_ROLE_ID}. . | Required | 
-| permissions | Comma-separated names of the permissions to remove from the role. | Required | 
+| permissions | A comma-separated names of the permissions to remove from the role. | Required | 
 
 
 #### Context Output
@@ -2389,16 +2389,16 @@ List project custom roles.
 | include_permissions | Indicates whether to include permissions in the response. Possible values are: True, False. Default is True. | Optional | 
 | limit | The number of results to retrieve. Minimum value is 1, maximum value is 1000. Default is 50. | Optional | 
 | page | The page number of the results to retrieve. Minimum value is 1. Default is 1. | Optional | 
-| show_deleted | Indicate that roles that have been deleted should also be retrieved. Possible values are: False, True. Default is False. | Optional | 
+| show_deleted | If true, roles that have been deleted will also be retrieved. Possible values are: False, True. Default is False. | Optional | 
 | title_filter | Used to filter the retrieved roles by the rule title. The command will retrieve the rules which includes the provided argument in their title. | Optional | 
-| permission_filter | Comma-separated list of role permissions. Used to filter the retrieved roles by their permissions. The command will retrieve the rules which includes all the provided permissions in their permissions list. If the argument is provided, the command will include the role permissions in the output. | Optional |
+| permission_filter | A comma-separated list of role permissions. Used to filter the retrieved roles by their permissions. The command will retrieve the rules which includes all the provided permissions in their permissions list. If the argument is provided, the command will include the role permissions in the output. | Optional |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.IAM.Role.name | String | The resource name of the role. | 
+| GCPIAM.Role.name | String | The resource name of the role. | 
 
 
 #### Command Example
@@ -2462,14 +2462,14 @@ Retrieve custom project role.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| role_name | Comma-separated list of project role to retrieve. Every role name should be in the following format: projects/{PROJECT_ID}/roles/{CUSTOM_ROLE_ID}. | Required | 
+| role_name | A comma-separated list of project role to retrieve. Every role name should be in the following format: projects/{PROJECT_ID}/roles/{CUSTOM_ROLE_ID}. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.IAM.Role.name | String |  | 
+| GCPIAM.Role.name | String |  | 
 
 
 #### Command Example
@@ -2517,7 +2517,7 @@ Delete custom project role.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| role_name | Comma-separated list of project role to delete. Every role name should be in the following format: projects/{PROJECT_ID}/roles/{CUSTOM_ROLE_ID}. | Required | 
+| role_name | A comma-separated list of project role to delete. Every role name should be in the following format: projects/{PROJECT_ID}/roles/{CUSTOM_ROLE_ID}. | Required | 
 
 
 #### Context Output
@@ -2552,8 +2552,8 @@ Lists every permission can be tested on a resource.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.IAM.Permission.name | String | The name of the permissions. | 
-| GCP.IAM.Permission.stage | String | The current launch stage of the permission | 
+| GCPIAM.Permission.name | String | The name of the permissions. | 
+| GCPIAM.Permission.stage | String | The current launch stage of the permission | 
 
 
 #### Command Example
@@ -2602,7 +2602,7 @@ Delete a service account.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| service_account_name | Comma-separated list of names of service accounts to delete. Every resource name should be in the following format: projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}. | Required | 
+| service_account_name | A comma-separated list of names of service accounts to delete. Every resource name should be in the following format: projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}. | Required | 
 
 
 #### Context Output
@@ -2637,7 +2637,7 @@ Lists roles that can be granted on a Google Cloud resource. A role is grantable 
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.IAM.Role.name | String | The name of the role. | 
+| GCPIAM.Role.name | String | The name of the role. | 
 
 
 #### Command Example
@@ -2681,14 +2681,14 @@ Retrieve GCP IAM predefined role information.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| role_name | Comma-separated list of GCP IAM predefined role to retrieve. Every role name should be in the following format: roles/{ROLE_NAME}. | Required | 
+| role_name | A comma-separated list of GCP IAM predefined role to retrieve. Every role name should be in the following format: roles/{ROLE_NAME}. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.IAM.Role.name | String | The resource name of the role. | 
+| GCPIAM.Role.name | String | The resource name of the role. | 
 
 
 #### Command Example
@@ -2742,16 +2742,16 @@ List GCP IAM predefined roles.
 | include_permissions | Indicates whether to include permissions in the response. Possible values are: True, False. Default is True. | Optional | 
 | limit | The number of results to retrieve. Minimum value is 1, maximum value is 1000. Default is 50. | Optional | 
 | page | The page number of the results to retrieve. Minimum value is 1. Default is 1. | Optional | 
-| show_deleted | Indicate that roles that have been deleted should also be retrieved. Possible values are: False, True. Default is False. | Optional | 
+| show_deleted | If true, roles that have been deleted will also be retrieved. Possible values are: False, True. Default is False. | Optional | 
 | title_filter | Used to filter the retrieved roles by the rule title. The command will retrieve the rules which includes the provided argument in their title. | Optional | 
-| permission_filter | Comma-separated list of role permissions. Used to filter the retrieved roles by their permissions. The command will retrieve the rules which includes all the provided permissions in their permissions list. If the argument is provided, the command will include the role permissions in the output. | Optional |
+| permission_filter | A comma-separated list of role permissions. Used to filter the retrieved roles by their permissions. The command will retrieve the rules which includes all the provided permissions in their permissions list. If the argument is provided, the command will include the role permissions in the output. | Optional |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.IAM.Role.name | String | The resource name of the role. | 
+| GCPIAM.Role.name | String | The resource name of the role. | 
 
 
 #### Command Example
@@ -2824,7 +2824,7 @@ Remove policy from organization IAM policies.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | organization_name | The name of the organization for which the policy is being specified. For example, organizations/3456. | Required | 
-| role | Comma-separated list of policy role names to remove. | Required | 
+| role | A comma-separated list of policy role names to remove. | Required | 
 
 
 #### Context Output
@@ -2850,7 +2850,7 @@ Remove policy from folder IAM policies.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | folder_name | The name of the folder for which the policy is being specified.  For example, folders/12342. | Required | 
-| role | Comma-separated list of policy role names to remove. | Required | 
+| role | A comma-separated list of policy role names to remove. | Required | 
 
 
 #### Context Output
@@ -2876,7 +2876,7 @@ Remove policy from project IAM policies.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | project_name | The name of the project for which the policy is being specified.  For example, projects/415104041262. | Required | 
-| role | Comma-separated list of policy role names to remove. | Required | 
+| role | A comma-separated list of policy role names to remove. | Required | 
 
 
 #### Context Output

@@ -47,7 +47,7 @@ def test_gcp_iam_project_list_command(client):
     result = GCP_IAM.gcp_iam_projects_get_command(client, {"parent": parent})
 
     assert len(result[0].outputs) == 2
-    assert result[0].outputs_prefix == 'GCP.IAM.Project'
+    assert result[0].outputs_prefix == 'GCPIAM.Project'
     assert result[0].outputs[0].get('name') == 'projects/project-name-1'
 
 
@@ -69,7 +69,7 @@ def test_gcp_iam_project_get_command(client):
     result = GCP_IAM.gcp_iam_projects_get_command(client, {"project_name": project_name})
 
     assert len(result[0].outputs) == 1
-    assert result[0].outputs_prefix == 'GCP.IAM.Project'
+    assert result[0].outputs_prefix == 'GCPIAM.Project'
     assert result[0].outputs[0].get('name') == project_name
 
 
@@ -91,7 +91,7 @@ def test_gcp_iam_project_iam_policy_get_command(client):
     result = GCP_IAM.gcp_iam_project_iam_policy_get_command(client, {"project_name": project_name})
 
     assert len(result.outputs.get('bindings')) == 2
-    assert result.outputs_prefix == 'GCP.IAM.Policy'
+    assert result.outputs_prefix == 'GCPIAM.Policy'
     assert result.outputs.get('name') == project_name
     assert result.outputs.get('bindings')[0].get('role') == 'roles/anthosidentityservice.serviceAgent'
 
@@ -116,7 +116,7 @@ def test_gcp_iam_project_iam_test_permission_command(client):
                                                                           "permissions": permissions})
 
     assert len(result.outputs) == 2
-    assert result.outputs_prefix == 'GCP.IAM.Permission'
+    assert result.outputs_prefix == 'GCPIAM.Permission'
     assert result.outputs[1].get('name') == "compute.instances.create"
     assert result.outputs[0].get('name') == "aiplatform.dataItems.create"
 
@@ -218,7 +218,7 @@ def test_gcp_iam_project_iam_policy_set_command(client):
     result = GCP_IAM.gcp_iam_project_iam_policy_set_command(client, command_args)
 
     assert len(result.outputs.get('bindings')) == 2
-    assert result.outputs_prefix == 'GCP.IAM.Policy'
+    assert result.outputs_prefix == 'GCPIAM.Policy'
     assert result.outputs.get('name') == project_name
     assert result.outputs.get('bindings') == policy
 
@@ -313,7 +313,7 @@ def test_gcp_iam_group_create_command(client):
 
     assert len(result.outputs) == 1
     assert len(result.outputs[0]) == 9
-    assert result.outputs_prefix == 'GCP.IAM.Group'
+    assert result.outputs_prefix == 'GCPIAM.Group'
     assert result.outputs[0].get('parent') == parent
     assert result.outputs[0].get('displayName') == display_name
     assert result.outputs[0].get('description') == description
@@ -343,7 +343,7 @@ def test_gcp_iam_group_list_command(client):
 
     assert len(result.outputs) == 2
     assert len(result.outputs[0]) == 3
-    assert result.outputs_prefix == 'GCP.IAM.Group'
+    assert result.outputs_prefix == 'GCPIAM.Group'
     assert result.outputs[0].get('name') == 'groups/group-3-name'
     assert result.outputs[0].get('displayName') == "xsoar-api-test-2"
     assert result.outputs[0].get('groupKey').get('id') == "poctest1@xsoar.com"
@@ -372,7 +372,7 @@ def test_gcp_iam_group_get_command(client):
 
     assert len(result.outputs) == 1
     assert len(result.outputs[0]) == 8
-    assert result.outputs_prefix == 'GCP.IAM.Group'
+    assert result.outputs_prefix == 'GCPIAM.Group'
     assert result.outputs[0].get('name') == 'groups/group-1-name'
     assert result.outputs[0].get('displayName') == "xsoar-api-test-2"
     assert result.outputs[0].get('groupKey').get('id') == "poctest12@xsoar.com"
@@ -426,7 +426,7 @@ def test_gcp_iam_group_membership_create_command(client):
     assert len(result) == 1
     assert len(result[0].outputs) == 1
     assert len(result[0].outputs[0]) == 4
-    assert result[0].outputs_prefix == 'GCP.IAM.Membership'
+    assert result[0].outputs_prefix == 'GCPIAM.Membership'
     assert result[0].outputs[0].get('name') == "groups/group-3-name/memberships/membership-1"
     assert result[0].outputs[0].get('roles')[0].get('name') == role
     assert result[0].outputs[0].get('preferredMemberKey').get('id') == member_email
@@ -455,7 +455,7 @@ def test_gcp_iam_group_membership_list_command(client):
 
     assert len(result.outputs) == 2
     assert len(result.outputs[0]) == 3
-    assert result.outputs_prefix == 'GCP.IAM.Membership'
+    assert result.outputs_prefix == 'GCPIAM.Membership'
     assert result.outputs[0].get('name') == "groups/group-3-name/memberships/membership-1"
     assert result.outputs[0].get('roles')[0].get('name') == 'MEMBER'
     assert result.outputs[0].get('preferredMemberKey').get('id') == "user-2@xsoar.com"
@@ -484,7 +484,7 @@ def test_gcp_iam_group_membership_get_command(client):
 
     assert len(result.outputs) == 1
     assert len(result.outputs[0]) == 6
-    assert result.outputs_prefix == 'GCP.IAM.Membership'
+    assert result.outputs_prefix == 'GCPIAM.Membership'
     assert result.outputs[0].get('name') == membership_name
     assert result.outputs[0].get('roles')[1].get('name') == 'MEMBER'
     assert result.outputs[0].get('preferredMemberKey').get(
@@ -581,7 +581,7 @@ def test_gcp_iam_testable_permission_list_command(client):
 
     assert len(result.outputs) == 3
     assert len(result.outputs[0]) == 2
-    assert result.outputs_prefix == 'GCP.IAM.Permission'
+    assert result.outputs_prefix == 'GCPIAM.Permission'
     assert result.outputs[0].get('name') == "accessapproval.requests.approve"
     assert result.outputs[0].get('stage') == "BETA"
 
@@ -609,7 +609,7 @@ def test_gcp_iam_grantable_role_list_command(client):
 
     assert len(result.outputs) == 2
     assert len(result.outputs[0]) == 3
-    assert result.outputs_prefix == 'GCP.IAM.Roles'
+    assert result.outputs_prefix == 'GCPIAM.Roles'
     assert result.outputs[0].get('name') == "roles/accessapproval.approver"
     assert result.outputs[0].get('title') == "Access Approval Approver"
 
@@ -641,7 +641,7 @@ def test_gcp_iam_service_account_create_command(client):
 
     assert len(result.outputs) == 1
     assert len(result.outputs[0]) == 9
-    assert result.outputs_prefix == 'GCP.IAM.ServiceAccount'
+    assert result.outputs_prefix == 'GCPIAM.ServiceAccount'
     assert result.outputs[0].get('description') == description
 
 
@@ -693,7 +693,7 @@ def test_gcp_iam_service_account_list_command(client):
 
     assert len(result.outputs) == 2
     assert len(result.outputs[0]) == 8
-    assert result.outputs_prefix == 'GCP.IAM.ServiceAccount'
+    assert result.outputs_prefix == 'GCPIAM.ServiceAccount'
     assert result.outputs[0].get('projectId') == "project-id-1"
 
 
@@ -721,8 +721,8 @@ def test_gcp_iam_service_account_get_command(client):
     assert len(result) == 1
     assert len(result[0].outputs) == 1
     assert len(result[0].outputs[0]) == 9
-    assert result[0].outputs_prefix == 'GCP.IAM.ServiceAccount'
-    assert result[0].outputs[0].get('projectId') == 'rich-agency-334609'
+    assert result[0].outputs_prefix == 'GCPIAM.ServiceAccount'
+    assert result[0].outputs[0].get('projectId') == 'project-id-1'
 
 
 def test_gcp_iam_service_account_enable_command(client):
@@ -811,7 +811,7 @@ def test_gcp_iam_service_account_key_create_command(client):
 
     assert len(result.outputs) == 1
     assert len(result.outputs[0]) == 9
-    assert result.outputs_prefix == 'GCP.IAM.ServiceAccountKey'
+    assert result.outputs_prefix == 'GCPIAM.ServiceAccountKey'
     assert result.outputs[0].get('privateKeyData') == "my-private-key-data"
     assert not result.outputs[0].get('disabled')
 
@@ -839,10 +839,10 @@ def test_gcp_iam_service_account_key_list_command(client):
 
     assert len(result.outputs) == 2
     assert len(result.outputs[0]) == 7
-    assert result.outputs_prefix == 'GCP.IAM.ServiceAccountKey'
+    assert result.outputs_prefix == 'GCPIAM.ServiceAccountKey'
     assert not result.outputs[1].get('disabled')
     assert result.outputs[1].get(
-        'name') == "projects/rich-agency-334609/serviceAccounts/" \
+        'name') == "projects/project-id-1/serviceAccounts/" \
                    "integration-test-5@395661807466.iam.gserviceaccount.com/keys/service-account-key-1"
 
 
@@ -861,7 +861,7 @@ def test_gcp_iam_service_account_key_get_command(client):
     mock_response = load_mock_response('service_account_key/service_account_key_get.json')
     client.gcp_iam_service_account_key_get_request = Mock(return_value=mock_response)
 
-    key_name = "projects/rich-agency-334609/serviceAccounts/" \
+    key_name = "projects/project-id-1/serviceAccounts/" \
                "integration-test-5@395661807466.iam.gserviceaccount.com/keys/service-account-key-1"
 
     command_args = dict(key_name=key_name)
@@ -870,10 +870,10 @@ def test_gcp_iam_service_account_key_get_command(client):
 
     assert len(result.outputs) == 1
     assert len(result.outputs[0]) == 7
-    assert result.outputs_prefix == 'GCP.IAM.ServiceAccountKey'
+    assert result.outputs_prefix == 'GCPIAM.ServiceAccountKey'
     assert not result.outputs[0].get('disabled')
     assert result.outputs[0].get(
-        'name') == "projects/rich-agency-334609/serviceAccounts/" \
+        'name') == "projects/project-id-1/serviceAccounts/" \
                    "integration-test-5@395661807466.iam.gserviceaccount.com/keys/service-account-key-1"
 
 
@@ -889,7 +889,7 @@ def test_gcp_iam_service_account_key_enable_command(client):
     """
     client.gcp_iam_service_account_key_enable_request = Mock(return_value={})
 
-    key_name = "projects/rich-agency-334609/serviceAccounts/" \
+    key_name = "projects/project-id-1/serviceAccounts/" \
                "integration-test-5@395661807466.iam.gserviceaccount.com/keys/service-account-key-1"
 
     command_args = dict(key_name=key_name)
@@ -911,7 +911,7 @@ def test_gcp_iam_service_account_key_disable_command(client):
     """
     client.gcp_iam_service_account_key_disable_request = Mock(return_value={})
 
-    key_name = "projects/rich-agency-334609/serviceAccounts/" \
+    key_name = "projects/project-id-1/serviceAccounts/" \
                "integration-test-5@395661807466.iam.gserviceaccount.com/keys/service-account-key-1"
 
     command_args = dict(key_name=key_name)
@@ -933,7 +933,7 @@ def test_gcp_iam_service_account_key_delete_command(client):
     """
     client.gcp_iam_service_account_key_delete_request = Mock(return_value={})
 
-    key_name = "projects/rich-agency-334609/serviceAccounts/" \
+    key_name = "projects/project-id-1/serviceAccounts/" \
                "integration-test-5@395661807466.iam.gserviceaccount.com/keys/service-account-key-1"
 
     command_args = dict(key_name=key_name)
@@ -967,7 +967,7 @@ def test_gcp_iam_organization_role_create_command(client):
 
     assert len(result.outputs) == 1
     assert len(result.outputs[0]) == 7
-    assert result.outputs_prefix == 'GCP.IAM.Role'
+    assert result.outputs_prefix == 'GCPIAM.Role'
     assert result.outputs[0].get('stage') == 'ALPHA'
     assert result.outputs[0].get('name') == f'{organization_name}/roles/{role_id}'
 
@@ -996,7 +996,7 @@ def test_gcp_iam_project_role_create_command(client):
 
     assert len(result.outputs) == 1
     assert len(result.outputs[0]) == 7
-    assert result.outputs_prefix == 'GCP.IAM.Role'
+    assert result.outputs_prefix == 'GCPIAM.Role'
     assert result.outputs[0].get('stage') == 'ALPHA'
     assert result.outputs[0].get('name') == f'projects/{project_id}/roles/{role_id}'
 
@@ -1024,7 +1024,7 @@ def test_gcp_iam_organization_role_get_command(client):
 
     assert len(result[0].outputs) == 1
     assert len(result[0].outputs[0]) == 7
-    assert result[0].outputs_prefix == 'GCP.IAM.Role'
+    assert result[0].outputs_prefix == 'GCPIAM.Role'
     assert result[0].outputs[0].get('stage') == 'ALPHA'
     assert result[0].outputs[0].get('name') == role_name
 
@@ -1052,7 +1052,7 @@ def test_gcp_iam_project_role_get_command(client):
 
     assert len(result[0].outputs) == 1
     assert len(result[0].outputs[0]) == 7
-    assert result[0].outputs_prefix == 'GCP.IAM.Role'
+    assert result[0].outputs_prefix == 'GCPIAM.Role'
     assert result[0].outputs[0].get('stage') == 'ALPHA'
     assert result[0].outputs[0].get('name') == role_name
 
@@ -1081,7 +1081,7 @@ def test_gcp_iam_organization_role_list_command(client):
 
     assert len(result.outputs) == 2
     assert len(result.outputs[0]) == 7
-    assert result.outputs_prefix == 'GCP.IAM.Role'
+    assert result.outputs_prefix == 'GCPIAM.Role'
     assert result.outputs[0].get('stage') == 'ALPHA'
     assert result.outputs[1].get('name') == "organizations/xsoar-organization/roles/xsoar_demo_97"
 
@@ -1111,7 +1111,7 @@ def test_gcp_iam_project_role_list_command(client):
     assert len(result.outputs) == 2
     assert len(result.outputs[0]) == 7
     assert len(result.outputs[1]) == 7
-    assert result.outputs_prefix == 'GCP.IAM.Role'
+    assert result.outputs_prefix == 'GCPIAM.Role'
     assert result.outputs[0].get('stage') == 'ALPHA'
     assert result.outputs[1].get('name') == "projects/xsoar-project-5/roles/test_xsoar_role"
 
@@ -1139,7 +1139,7 @@ def test_gcp_iam_predefined_role_list_command(client):
 
     assert len(result.outputs) == 2
     assert len(result.outputs[0]) == 7
-    assert result.outputs_prefix == 'GCP.IAM.Role'
+    assert result.outputs_prefix == 'GCPIAM.Role'
     assert result.outputs[0].get('stage') == 'BETA'
     assert result.outputs[1].get('name') == "roles/accessapproval.configEditor"
 
@@ -1167,7 +1167,7 @@ def test_gcp_iam_predefined_role_get_command(client):
 
     assert len(result[0].outputs) == 1
     assert len(result[0].outputs[0]) == 7
-    assert result[0].outputs_prefix == 'GCP.IAM.Role'
+    assert result[0].outputs_prefix == 'GCPIAM.Role'
     assert result[0].outputs[0].get('stage') == 'BETA'
     assert result[0].outputs[0].get('name') == role_name
 
@@ -1416,7 +1416,7 @@ def test_gcp_iam_folder_list_command(client):
     result = GCP_IAM.gcp_iam_folders_get_command(client, {"parent": parent})
 
     assert len(result[0].outputs) == 2
-    assert result[0].outputs_prefix == 'GCP.IAM.Folder'
+    assert result[0].outputs_prefix == 'GCPIAM.Folder'
     assert result[0].outputs[0].get('name') == 'folders/folder-name-1'
 
 
@@ -1438,7 +1438,7 @@ def test_gcp_iam_folder_get_command(client):
     result = GCP_IAM.gcp_iam_folders_get_command(client, {"folder_name": folder_name})
 
     assert len(result[0].outputs) == 1
-    assert result[0].outputs_prefix == 'GCP.IAM.Folder'
+    assert result[0].outputs_prefix == 'GCPIAM.Folder'
     assert result[0].outputs[0].get('name') == folder_name
 
 
@@ -1460,7 +1460,7 @@ def test_gcp_iam_folder_iam_policy_get_command(client):
     result = GCP_IAM.gcp_iam_folder_iam_policy_get_command(client, {"folder_name": folder_name})
 
     assert len(result.outputs.get('bindings')) == 2
-    assert result.outputs_prefix == 'GCP.IAM.Policy'
+    assert result.outputs_prefix == 'GCPIAM.Policy'
     assert result.outputs.get('name') == folder_name
     assert result.outputs.get('bindings')[0].get('role') == "roles/resourcemanager.folderAdmin"
 
@@ -1486,7 +1486,7 @@ def test_gcp_iam_folder_iam_test_permission_command(client):
                                                                  "permissions": permissions})
 
     assert len(result.outputs) == 2
-    assert result.outputs_prefix == 'GCP.IAM.Permission'
+    assert result.outputs_prefix == 'GCPIAM.Permission'
     assert result.outputs[1].get('name') == "compute.instances.create"
     assert result.outputs[0].get('name') == "aiplatform.dataItems.create"
 
@@ -1581,7 +1581,7 @@ def test_gcp_iam_folder_iam_policy_set_command(client):
     result = GCP_IAM.gcp_iam_folder_iam_policy_set_command(client, command_args)
 
     assert len(result.outputs.get('bindings')) == 2
-    assert result.outputs_prefix == 'GCP.IAM.Policy'
+    assert result.outputs_prefix == 'GCPIAM.Policy'
     assert result.outputs.get('name') == folder_name
     assert result.outputs.get('bindings') == policy
 
@@ -1660,7 +1660,7 @@ def test_gcp_iam_organization_list_command(client):
     result = GCP_IAM.gcp_iam_organizations_get_command(client, {})
 
     assert len(result[0].outputs) == 1
-    assert result[0].outputs_prefix == 'GCP.IAM.Organization'
+    assert result[0].outputs_prefix == 'GCPIAM.Organization'
     assert result[0].outputs[0].get('name') == "organizations/xsoar-organization"
 
 
@@ -1682,7 +1682,7 @@ def test_gcp_iam_organization_get_command(client):
     result = GCP_IAM.gcp_iam_organizations_get_command(client, {"organization_name": organization_name})
 
     assert len(result[0].outputs) == 1
-    assert result[0].outputs_prefix == 'GCP.IAM.Organization'
+    assert result[0].outputs_prefix == 'GCPIAM.Organization'
     assert result[0].outputs[0].get('name') == organization_name
 
 
@@ -1704,7 +1704,7 @@ def test_gcp_iam_organization_iam_policy_get_command(client):
     result = GCP_IAM.gcp_iam_organization_iam_policy_get_command(client, {"organization_name": organization_name})
 
     assert len(result.outputs.get('bindings')) == 2
-    assert result.outputs_prefix == 'GCP.IAM.Policy'
+    assert result.outputs_prefix == 'GCPIAM.Policy'
     assert result.outputs.get('name') == organization_name
     assert result.outputs.get('bindings')[0].get('role') == "roles/bigquery.admin"
 
@@ -1730,7 +1730,7 @@ def test_gcp_iam_organization_iam_test_permission_command(client):
                                                                        "permissions": permissions})
 
     assert len(result.outputs) == 2
-    assert result.outputs_prefix == 'GCP.IAM.Permission'
+    assert result.outputs_prefix == 'GCPIAM.Permission'
     assert result.outputs[1].get('name') == "compute.instances.create"
     assert result.outputs[0].get('name') == "aiplatform.dataItems.create"
 
@@ -1825,7 +1825,7 @@ def test_gcp_iam_organization_iam_policy_set_command(client):
     result = GCP_IAM.gcp_iam_organization_iam_policy_set_command(client, command_args)
 
     assert len(result.outputs.get('bindings')) == 2
-    assert result.outputs_prefix == 'GCP.IAM.Policy'
+    assert result.outputs_prefix == 'GCPIAM.Policy'
     assert result.outputs.get('name') == organization_name
     assert result.outputs.get('bindings') == policy
 
