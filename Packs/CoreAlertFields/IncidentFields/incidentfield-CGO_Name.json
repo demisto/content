@@ -32,7 +32,7 @@
     "Aliases": [
         {
           "cliName": "parentprocess",
-          "type": "shortText"
+          "type": "multiSelect"
         }
     ]
 }
