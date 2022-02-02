@@ -777,9 +777,9 @@ def get_threats():
             dbot_score = translate_score(threat['cylance_score'], int(threshold))
         dbot_score_array.append(create_dbot_score_entry(threat, dbot_score).to_context())
 
-    dbot_score_dict = {Common.DBotScore.get_context_path(): []}
-    for dbot_score in dbot_score_array:
-        for key, value in dbot_score.items():
+    dbot_score_dict = {Common.DBotScore.get_context_path(): []}  # type: Dict[str, List[Dict[str, str]]]
+    for dbot_score_entry in dbot_score_array:
+        for key, value in dbot_score_entry.items():
             dbot_score_dict[key].append(value)
 
     context_threat = createContext(data=threats, keyTransform=underscoreToCamelCase, removeNull=True)
