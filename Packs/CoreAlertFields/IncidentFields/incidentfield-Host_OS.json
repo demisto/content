@@ -33,6 +33,18 @@
         {
           "cliName": "srcos",
           "type": "shortText"
+        },
+        {
+          "cliName": "destos",
+          "type": "shortText"
+        },
+        {
+          "cliName": "illusivenetworkssourceoperatingsystem",
+          "type": "shortText"
+        },
+        {
+          "cliName": "os",
+          "type": "shortText"
         }
     ]
 }
