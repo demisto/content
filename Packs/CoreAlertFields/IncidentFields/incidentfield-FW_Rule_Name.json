@@ -28,5 +28,11 @@
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "6.5.0",
-	"x2_fields": "fw_rule"
+	"x2_fields": "fw_rule",
+    "Aliases": [
+        {
+          "cliName": "f5silverlineirulename",
+          "type": "shortText"
+        }
+    ]
 }

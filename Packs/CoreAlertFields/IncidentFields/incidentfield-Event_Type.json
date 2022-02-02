@@ -28,5 +28,39 @@
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "6.5.0",
-    "x2_fields": "event_type"
+    "x2_fields": "event_type",
+    "Aliases": [
+        {
+          "cliName": "qualysfimeventtype",
+          "type": "shortText"
+        },
+        {
+          "cliName": "arguseventtype",
+          "type": "shortText"
+        },
+        {
+          "cliName": "eventtype",
+          "type": "shortText"
+        },
+        {
+          "cliName": "googlecloudsccfindingsourcepropertieseventtype",
+          "type": "shortText"
+        },
+        {
+          "cliName": "laceworkeventtype",
+          "type": "shortText"
+        },
+        {
+          "cliName": "qualysfimeventtype",
+          "type": "shortText"
+        },
+        {
+          "cliName": "solarwindseventtype",
+          "type": "shortText"
+        },
+        {
+          "cliName": "taniumtreatresponsescanconfigid",
+          "type": "shortText"
+        }
+    ]
 }

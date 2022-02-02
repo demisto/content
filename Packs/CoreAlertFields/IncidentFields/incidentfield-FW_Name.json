@@ -33,6 +33,10 @@
         {
           "cliName": "appliancename",
           "type": "shortText"
+        },
+        {
+          "cliName": "riskiqassetgcpfirewallname",
+          "type": "shortText"
         }
     ]
 }
