@@ -27,10 +27,7 @@
     "version": -1,
     "fromVersion": "5.5.0",
     "openEnded": true,
-    "marketplaces": [
-        "xsoar",
-        "marketplacev2"
-    ],
+    "x2_fields": "action_file_sha256",
     "Aliases": [
         {
           "cliName": "sha256",
