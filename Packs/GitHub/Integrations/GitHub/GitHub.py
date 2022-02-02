@@ -8,9 +8,10 @@ from datetime import datetime
 from typing import Any, Union
 import codecs
 import requests
+import urllib3
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 BASE_URL: str
@@ -2019,7 +2020,7 @@ def main():
     params = demisto.params()
     BASE_URL = params.get('url', 'https://api.github.com')
     USER = params.get('user')
-    TOKEN = params.get('token') or (params.get('api_token') or {}).get('password')
+    TOKEN = params.get('token') or (params.get('api_token') or {}).get('password', '')
     creds: dict = params.get('credentials', {})
     PRIVATE_KEY = creds.get('sshkey', '') if creds else ''
     INTEGRATION_ID = params.get('integration_id')

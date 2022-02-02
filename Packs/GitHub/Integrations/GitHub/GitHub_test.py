@@ -3,7 +3,7 @@ import json
 import pytest
 
 import demistomock as demisto
-from CommonServerPython import CommandResults, return_error
+from CommonServerPython import CommandResults
 from GitHub import main, list_branch_pull_requests, list_all_projects_command, \
     add_issue_to_project_board_command, get_path_data, github_releases_list_command, get_branch_command, \
     list_issue_comments
@@ -74,10 +74,11 @@ LIST_TEAM_MEMBERS_CASES = [
 ]
 
 
+RETURN_ERROR_TARGET = 'GitHub.return_error'
+
+
 @pytest.mark.parametrize('params, expected_result', [
-    ({'credentials': {'password': 1234}, 'sshkey': 'sshkey'}, 
-    "You need to update the docker image so that the jwt package could be used"),
-    ({'credentials': {'password': 1234}}, "Insert api token or private key"),
+    ({'credentials': {'password': '1234'}, '_auth_id': '_auth_id'}, "Insert api token or private key"),
     ({'sshkey': 'sshkey'}, "Insert api token or private key")
 ])
 def test_params(mocker, params, expected_result):
@@ -91,12 +92,13 @@ def test_params(mocker, params, expected_result):
     """
 
     mocker.patch.object(demisto, 'params', return_value=params)
-
-    # with pytest.raises(Exception) as e:
-    err = main() 
-    print("/n/n/n/n/n")
-    print(err)
-    assert expected_result in str(err.message)
+    return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
+    main()
+    assert return_error_mock.call_count == 1
+    # call_args last call with a tuple of args list and kwargs
+    err_msg = return_error_mock.call_args[0][0]
+    assert len(err_msg) < 100
+    assert expected_result in err_msg
 
 
 @pytest.mark.parametrize('limit, expected_result', SEARCH_CASES)
