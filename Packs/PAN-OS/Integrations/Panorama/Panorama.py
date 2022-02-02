@@ -7283,7 +7283,7 @@ class AntiSpywareProfile(CustomVersionedPanObject):
 
     """
 
-    ROOT = Root.VSYS # pylint: disable=E1101
+    ROOT = Root.VSYS  # pylint: disable=E1101
     SUFFIX = ENTRY
     CHILDTYPES = (AntiSpywareProfileRule,)
 

@@ -458,6 +458,7 @@ def test_dataclass_from_element(test_arp_result_element, fake_device):
     assert result_object.hostid == "testserial"
     assert result_object.ip == "2.3.4.5"
 
+
 def test_dataclass_from_nested_element(test_bgp_result_element, fake_device):
     from Panorama import ShowRoutingProtocolBGPPeersResultData, dataclass_from_element
 
