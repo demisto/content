@@ -1,7 +1,7 @@
 id: MicrosoftManagementActivity - Test
-version: 3
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: MicrosoftManagementActivity - Test
+fromversion: 5.5.0
 starttaskid: "0"
 tasks:
   "0":
@@ -14,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "3"
@@ -313,6 +314,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -342,3 +344,4 @@ view: |-
   }
 inputs: []
 outputs: []
+description: ''
