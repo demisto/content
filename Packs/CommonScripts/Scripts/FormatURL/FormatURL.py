@@ -5,6 +5,7 @@ from urllib.parse import urlparse, parse_qs, ParseResult, unquote
 from CommonServerPython import *
 
 ATP_REGEX = re.compile(r'(https://\w*|\w*)\.safelinks\.protection\.outlook\.com/.*\?url=')
+FIREEYE_REGEX = re.compile(r'(https:\/\/\w*|\w*)\.fireeye\.com\/.*\/url\?k=')
 PROOF_POINT_URL_REG = re.compile(r'https://urldefense(?:\.proofpoint)?\.(com|us)/(v[0-9])/')
 HTTP = 'http'
 PREFIX_TO_NORMALIZE = {
@@ -150,6 +151,11 @@ def format_urls(non_formatted_urls: List[str]) -> List[Dict]:
         additional_redirect_url: Optional[str] = None
         if re.match(ATP_REGEX, non_formatted_url):
             non_formatted_url = get_redirect_url_from_query(non_formatted_url, parse_results, 'url')
+        elif re.match(FIREEYE_REGEX, non_formatted_url):
+            if '&amp;' in non_formatted_url:
+                non_formatted_url = get_redirect_url_from_query(non_formatted_url, parse_results, 'amp;u')
+            else:
+                non_formatted_url = get_redirect_url_from_query(non_formatted_url, parse_results, 'u')
         elif match := PROOF_POINT_URL_REG.search(non_formatted_url):
             proof_point_ver: str = match.group(2)
             if proof_point_ver == 'v3':
@@ -179,7 +185,7 @@ def main():
         formatted_urls_groups: List[Dict] = format_urls(argToList(demisto.args().get('input')))
         for formatted_urls_group in formatted_urls_groups:
             demisto.results(formatted_urls_group)
-    except Exception as e:
+    except Exception as e:  # pragma: no cover
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute FormatURL. Error: {str(e)}')
 
