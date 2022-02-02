@@ -1,5 +1,5 @@
 {
-	"description": "",
+	"description": "CrowdStrike Falcon mirror out mapper.",
 	"feed": false,
 	"fromServerVersion": "",
 	"id": "CrowdStrike Falcon - Outgoing Mapper",
@@ -9,7 +9,7 @@
 			"internalMapping": {
 				"status": {
 					"complex": null,
-					"simple": "status"
+					"simple": "sourcestatus"
 				}
 			}
 		},
@@ -18,7 +18,7 @@
 			"internalMapping": {
 				"status": {
 					"complex": null,
-					"simple": "status"
+					"simple": "sourcestatus"
 				},
 				"tag": {
 					"complex": null,
