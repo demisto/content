@@ -4377,6 +4377,9 @@ Ti.ReadWrite.All
 2. There is a limit of 15,000 active indicators per tenant.
 3. Maximum batch size for one API call is 500.
 
+##### Note
+Please read [here](https://docs.microsoft.com/en-us/microsoft-365/security/defender-endpoint/ti-indicator?view=o365-worldwide) about a Microsoft Defender for Endpoint indicator resource type
+
 #### Base Command
 
 `microsoft-atp-indicator-batch-update`
