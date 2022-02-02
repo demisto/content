@@ -10,6 +10,7 @@ try:
     demisto.args()
 except:
     from CommonServerPython import *
+    pass
 
 from xml.etree.ElementTree import Element
 from panos.base import PanDevice, VersionedPanObject, Root, ENTRY, VersionedParamPath  # type: ignore
