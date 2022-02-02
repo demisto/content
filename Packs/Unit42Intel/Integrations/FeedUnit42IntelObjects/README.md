@@ -48,7 +48,7 @@ There is no context output for this command.
 #### Human Readable Output
 Value |	Type	| Fields
 |---|---|---|
-DarkHotel|	Threat Actor|	publications: {'link': 'https://securelist.com/the-darkhotel-apt/66779', 'title': 'The DarkHotel APT', 'source': 'Kaspersky', 'timestamp': '2018-08-20T15:25:31'},aliases: ParasiticBeast, description: The DarkHotel attackers were most infamously behind a series of attacks between 2008 and 2014 against organizations located primarily in  Japan, Taiwan, China, Russia and South Korea. This campaign infiltrated multiple hotel networks and used them as a jumping-off point to infect hotel guests., lastseenbysource: 2021-05-03T01:55:18Z, updateddate: 2019-08-28T08:56:30Z ,reportedby: Unit 42
+DarkHotel|	Threat Actor|	publications: {'link': 'https://securelist.com/the-darkhotel-apt/66779/', 'title': 'The DarkHotel APT', 'source': 'Kaspersky', 'timestamp': '2018-08-20T15:25:31'},aliases: ParasiticBeast, description: The DarkHotel attackers were most infamously behind a series of attacks between 2008 and 2014 against organizations located primarily in  Japan, Taiwan, China, Russia and South Korea. This campaign infiltrated multiple hotel networks and used them as a jumping-off point to infect hotel guests., lastseenbysource: 2021-05-03T01:55:18Z, updateddate: 2019-08-28T08:56:30Z ,reportedby: Unit 42
 
 #### Notes
 Be aware, due to API limitations, `fetch-indicators` fetches only a limited number of indicators for each interval.

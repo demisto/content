@@ -89,7 +89,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 | host | hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance. | Required | 
 | state | The state of the account, to be identified by its account key. If the state is `absent`, the account will either not exist or be deactivated. If the state is `changed_key`, the account must exist. The account key will be changed; no other information will be touched. Possible values are: present, absent, changed_key. | Required | 
 | allow_creation | Whether account creation is allowed (when state is `present`). Possible values are: Yes, No. Default is Yes. | Optional | 
-| contact | A list of contact URLs. Email addresses must be prefixed with `mailto:`. See https://tools.ietf.org/html/rfc8555#section-7.3 for what is allowed. Must be specified when state is `present`. Will be ignored if state is `absent` or `changed_key`. | Optional | 
+| contact | A list of contact URLs. Email addresses must be prefixed with `mailto:`. See `https://tools.ietf.org/html/rfc8555#section-7.3` for what is allowed. Must be specified when state is `present`. Will be ignored if state is `absent` or `changed_key`. | Optional | 
 | terms_agreed | Boolean indicating whether you agree to the terms of service document. ACME servers can require this to be true. Possible values are: Yes, No. Default is No. | Optional | 
 | new_account_key_src | Path to a file containing the ACME account RSA or Elliptic Curve key to change to. Same restrictions apply as to `account_key_src`. Mutually exclusive with `new_account_key_content`. Required if `new_account_key_content` is not used and state is `changed_key`. | Optional | 
 | new_account_key_content | Content of the ACME account RSA or Elliptic Curve key to change to. Same restrictions apply as to `account_key_content`. Mutually exclusive with `new_account_key_src`. Required if `new_account_key_src` is not used and state is `changed_key`. | Optional | 
@@ -269,11 +269,11 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 | ACME.AcmeCertificate.cert_days | number | The number of days the certificate remains valid. | 
 | ACME.AcmeCertificate.challenge_data | unknown | Per identifier / challenge type challenge data. Since Ansible 2.8.5, only challenges which are not yet valid are returned. | 
 | ACME.AcmeCertificate.challenge_data_dns | unknown | List of TXT values per DNS record, in case challenge is \`dns-01\`. Since Ansible 2.8.5, only challenges which are not yet valid are returned. | 
-| ACME.AcmeCertificate.authorizations | unknown | ACME authorization data. Maps an identifier to ACME authorization objects. See https://tools.ietf.org/html/rfc8555#section-7.1.4. | 
+| ACME.AcmeCertificate.authorizations | unknown | ACME authorization data. Maps an identifier to ACME authorization objects. See \`https://tools.ietf.org/html/rfc8555#section-7.1.4\`. | 
 | ACME.AcmeCertificate.order_uri | string | ACME order URI. | 
 | ACME.AcmeCertificate.finalization_uri | string | ACME finalization URI. | 
 | ACME.AcmeCertificate.account_uri | string | ACME account URI. | 
-| ACME.AcmeCertificate.all_chains | unknown | When \`retrieve_all_alternates\` is set to \`yes\`, the module will query the ACME server for alternate chains. This return value will contain a list of all chains returned, the first entry being the main chain returned by the server. See Section 7.4.2 of RFC8555, https://tools.ietf.org/html/rfc8555#section-7.4.2 for details. | 
+| ACME.AcmeCertificate.all_chains | unknown | When \`retrieve_all_alternates\` is set to \`yes\`, the module will query the ACME server for alternate chains. This return value will contain a list of all chains returned, the first entry being the main chain returned by the server. See \`Section 7.4.2 of RFC8555,https://tools.ietf.org/html/rfc8555#section-7.4.2\` for details. | 
 
 
 #### Command Example
