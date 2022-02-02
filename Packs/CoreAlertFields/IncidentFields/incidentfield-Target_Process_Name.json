@@ -28,7 +28,6 @@
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "6.5.0",
-<<<<<<< HEAD
     "x2_fields": "action_process_image_name",
     "Aliases": [
         {
@@ -39,17 +38,12 @@
             "cliName": "digitalguardianprocessname",
             "type": "shortText"
         },
-        {
-            "cliName": "processname",
-            "type": "shortText"
-        },
+        
         {
             "cliName": "childprocess",
             "type": "multiSelect"
         }
       
     ]
-=======
-    "x2_fields": "action_process_image_name"
->>>>>>> origin/master
+
 }

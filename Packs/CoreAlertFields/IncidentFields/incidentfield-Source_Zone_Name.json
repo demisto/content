@@ -28,7 +28,6 @@
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "6.5.0",
-<<<<<<< HEAD
     "x2_fields": "fw_interface_from",
     "Aliases": [
         {
@@ -45,7 +44,5 @@
         }
       
     ]
-=======
-    "x2_fields": "fw_interface_from"
->>>>>>> origin/master
+
 }
