@@ -1,17 +1,19 @@
 {
     "associatedToAll": true,
     "caseInsensitive": true,
-    "cliName": "filesha256",
+    "cliName": "cgocmd",
     "closeForm": false,
     "content": true,
+    "description": "Command-line arguments of the Causality Group Owner.",
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_filesha256",
+    "id": "incident_cgocmd",
     "isReadOnly": false,
     "locked": false,
-    "name": "File SHA256",
+    "name": "CGO CMD",
     "neverSetAsRequired": false,
+    "openEnded": true,
     "ownerOnly": false,
     "propagationLabels": [
         "all"
@@ -22,15 +24,14 @@
     "threshold": 72,
     "type": "multiSelect",
     "unmapped": false,
-    "unsearchable": false,
+    "unsearchable": true,
     "useAsKpi": false,
     "version": -1,
-    "fromVersion": "5.5.0",
-    "openEnded": true,
-    "x2_fields": "action_file_sha256",
+    "fromVersion": "6.5.0",
+    "x2_fields": "causality_actor_process_command_line",
     "Aliases": [
         {
-          "cliName": "sha256",
+          "cliName": "parentcmdline",
           "type": "shortText"
         }
     ]
