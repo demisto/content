@@ -1,7 +1,7 @@
 id: MicrosoftManagementActivity - Test
 version: -1
 name: MicrosoftManagementActivity - Test
-fromversion: 5.5.0
+fromversion: 5.0.0
 starttaskid: "0"
 tasks:
   "0":
