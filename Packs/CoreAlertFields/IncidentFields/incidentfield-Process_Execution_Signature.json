@@ -28,5 +28,20 @@
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "6.5.0",
-    "x2_fields": "action_process_signature_status"
+    "x2_fields": "action_process_signature_status",
+    "Aliases": [
+        {
+          "cliName": "f5silverlineattacksignaturename",
+          "type": "multiSelect"
+        },
+        {
+            "cliName": "fireeyesignature",
+            "type": "shortText"
+        },
+        {
+            "cliName": "signature",
+            "type": "shortText"
+        }
+      
+    ]
 }

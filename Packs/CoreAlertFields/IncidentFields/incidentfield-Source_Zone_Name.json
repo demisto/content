@@ -28,5 +28,20 @@
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "6.5.0",
-    "x2_fields": "fw_interface_from"
+    "x2_fields": "fw_interface_from",
+    "Aliases": [
+        {
+          "cliName": "sourcenetwork",
+          "type": "shortText"
+        },
+        {
+            "cliName": "irondefensesrcnetworkid",
+            "type": "shortText"
+        },
+        {
+            "cliName": "sourcenetworkoffense",
+            "type": "shortText"
+        }
+      
+    ]
 }
