@@ -1,17 +1,19 @@
 {
     "associatedToAll": true,
     "caseInsensitive": true,
-    "cliName": "filesha256",
+    "cliName": "initiatorsignature",
     "closeForm": false,
     "content": true,
+    "description": "Signing status of the process that initiated the activity: Unsigned, Signed, Invalid Signature, Unknown.",
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_filesha256",
+    "id": "incident_initiatorsignature",
     "isReadOnly": false,
     "locked": false,
-    "name": "File SHA256",
+    "name": "Initiator signature",
     "neverSetAsRequired": false,
+    "openEnded": true,
     "ownerOnly": false,
     "propagationLabels": [
         "all"
@@ -22,16 +24,9 @@
     "threshold": 72,
     "type": "multiSelect",
     "unmapped": false,
-    "unsearchable": false,
+    "unsearchable": true,
     "useAsKpi": false,
     "version": -1,
-    "fromVersion": "5.5.0",
-    "openEnded": true,
-    "x2_fields": "action_file_sha256",
-    "Aliases": [
-        {
-          "cliName": "sha256",
-          "type": "shortText"
-        }
-    ]
+    "fromVersion": "6.5.0",
+    "x2_fields": "actor_process_signature_status"
 }
