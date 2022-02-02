@@ -6,7 +6,7 @@ import zipfile
 import pytest
 
 import demistomock as demisto
-from CommonServerPython import Common
+from CommonServerPython import Common, tableToMarkdown, pascalToSpace
 
 Core_URL = 'https://api.xdrurl.com'
 
@@ -2270,3 +2270,34 @@ def test_get_update_args_when_not_getting_close_reason():
     from CortexCoreIR import get_update_args
     update_args = get_update_args({'someChange': '1234'}, 2)
     assert update_args.get('status') is None
+
+
+def test_remove_blocklist_files_command(requests_mock):
+    """
+    Given:
+        - Endpoint data
+    When
+        - The status of the enndpoint is 'Connected' with a capital C.
+    Then
+        - The status of the endpointn is determined to be 'Online'
+    """
+    from CortexCoreIR import remove_blocklist_files_command, Client
+
+    client = Client(
+        base_url=f'{Core_URL}/public_api/v1', headers={}
+    )
+
+    remove_blocklist_files_response = load_test_data('./test_data/remove_blocklist_files.json')
+    requests_mock.post(f'{Core_URL}/public_api/v1/hash_exceptions/blocklist/remove/', json=remove_blocklist_files_response)
+    hash_list = ["11d69fb388ff59e5ba6ca217ca04ecde6a38fa8fb306aa5f1b72e22bb7c3a25b",
+                      "e5ab4d81607668baf7d196ae65c9cf56dd138e3fe74c4bace4765324a9e1c565"]
+    res = remove_blocklist_files_command(client=client, args={
+        "hash_list": hash_list,
+        "comment": "",
+        "incident_id": 606,
+        "get_detailed_response": "true"})
+    markdown_data = [{'fileHash': file_hash} for file_hash in hash_list]
+    assert res.readable_output == tableToMarkdown('Blocklist Files Removed',
+                                                  markdown_data,
+                                                  headers=['fileHash'],
+                                                  headerTransform=pascalToSpace)

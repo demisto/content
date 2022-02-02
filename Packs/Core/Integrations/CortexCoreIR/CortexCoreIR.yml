@@ -952,6 +952,10 @@ script:
       or added to allow list.
     execution: false
     name: core-blocklist-files
+    outputs:
+      - contextPath: Core.blocklist.fileHash
+        description: Added fileHash to blocklist
+        type: Number
   - arguments:
     - default: false
       description: Allows to link the response action to the incident that triggered
@@ -978,6 +982,10 @@ script:
       list or allow list.
     execution: false
     name: core-allowlist-files
+    outputs:
+      - contextPath: Core.allowlist.fileHash
+        description: Added fileHash to allowlist
+        type: Number
   - arguments:
     - default: false
       description: Allows to link the response action to the incident that triggered
@@ -2476,6 +2484,10 @@ script:
     description: Removes requested files from allow list.
     execution: false
     name: core-remove-allowlist-files
+    outputs:
+      - contextPath: Core.allowlist.removedFileHash
+        description: Removed file hash
+        type: Number
   - arguments:
       - default: false
         description: Allows to link the response action to the incident that triggered
@@ -2512,6 +2524,10 @@ script:
     description: Removes requested files from block list.
     execution: false
     name: core-remove-blocklist-files
+    outputs:
+      - contextPath: Core.blocklist.removedFileHash
+        description: Removed file hash from blocklist
+        type: Number
   - arguments:
       - default: false
         description: Name of the exclusion.
@@ -2546,6 +2562,10 @@ script:
     description: Adds exclusion.
     execution: false
     name: core-add-exclusion
+    outputs:
+      - contextPath: Core.exclusion.rule_id
+        description: Added exclusion rule id
+        type: Number
   - arguments:
       - default: false
         description: The desired alert_exclusion_id to be removed
@@ -2557,6 +2577,10 @@ script:
     description: Delete exclusion.
     execution: false
     name: core-delete-exclusion
+    outputs:
+      - contextPath: Core.deletedExclusion.rule_id
+        description: Deleted exclusion rule id
+        type: Number
   - arguments:
       - default: false
         description: Allows to link the response action to the tenant that triggered it.
@@ -2581,6 +2605,64 @@ script:
     description: Gets exclusion list.
     execution: false
     name: core-get-exclusion
+    outputs:
+      - contextPath: Core.exclusion.ALERT_WHITELIST_ID
+        description: ''
+        type: Number
+      - contextPath: Core.exclusion.ALERT_WHITELIST_MODIFY_TIME
+        description: ''
+        type: Date
+      - contextPath: Core.exclusion.ALERT_WHITELIST_NAME
+        description: ''
+        type: String
+      - contextPath: Core.exclusion.ALERT_WHITELIST_INDICATOR_TEXT.pretty_name
+        description: ''
+        type: String
+      - contextPath: Core.exclusion.ALERT_WHITELIST_INDICATOR_TEXT.data_type
+        description: ''
+        type: Unknown
+      - contextPath: Core.exclusion.ALERT_WHITELIST_INDICATOR_TEXT.render_type
+        description: ''
+        type: String
+      - contextPath: Core.exclusion.ALERT_WHITELIST_INDICATOR_TEXT.entity_map
+        description: ''
+        type: Unknown
+      - contextPath: Core.exclusion.ALERT_WHITELIST_INDICATOR_TEXT.dml_type
+        description: ''
+        type: Unknown
+      - contextPath: Core.exclusion.ALERT_WHITELIST_INDICATOR.filter.AND.SEARCH_FIELD
+        description: ''
+        type: String
+      - contextPath: Core.exclusion.ALERT_WHITELIST_INDICATOR.filter.AND.SEARCH_TYPE
+        description: ''
+        type: String
+      - contextPath: Core.exclusion.ALERT_WHITELIST_INDICATOR.filter.AND.SEARCH_VALUE
+        description: ''
+        type: String
+      - contextPath: Core.exclusion.ALERT_WHITELIST_HITS
+        description: ''
+        type: Number
+      - contextPath: Core.exclusion.ALERT_WHITELIST_COMMENT
+        description: ''
+        type: String
+      - contextPath: Core.exclusion.ALERT_WHITELIST_USER
+        description: ''
+        type: String
+      - contextPath: Core.exclusion.ALERT_WHITELIST_PRETTY_USER
+        description: ''
+        type: String
+      - contextPath: Core.exclusion.ALERT_WHITELIST_STATUS
+        description: ''
+        type: String
+      - contextPath: Core.exclusion.ALERT_WHITELIST_BACKWARDS_SCAN_STATUS
+        description: ''
+        type: String
+      - contextPath: Core.exclusion.ALERT_WHITELIST_BACKWARDS_SCAN_TIMESTAMP
+        description: ''
+        type: Unknown
+      - contextPath: Core.exclusion.ALERT_WHITELIST_MIGRATED_FROM_ANALYTICS
+        description: ''
+        type: Number
   feed: false
   isfetch: false
   longRunning: false
