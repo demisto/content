@@ -72,7 +72,7 @@ def generate_jwt_times():
     return epoch_time, epoch_timeout
 
 
-def api_call(uri, method='post', headers={}, body={}, params={}, accept_404=False): # pragma: no cover
+def api_call(uri, method='post', headers={}, body={}, params={}, accept_404=False):  # pragma: no cover
 
     """
     Makes an API call to the server URL with the supplied uri, method, headers, body and params
@@ -89,7 +89,7 @@ def api_call(uri, method='post', headers={}, body={}, params={}, accept_404=Fals
     return json.loads(res.text) if res.text else res.ok
 
 
-def get_authentication_token(scope=None): # pragma: no cover
+def get_authentication_token(scope=None):  # pragma: no cover
     """
     Generates a JWT authorization token with an optional scope and queries the API for an access token
     Returns the received API access token
@@ -221,7 +221,7 @@ def get_devices():
     demisto.results(entry)
 
 
-def get_devices_request(page=None, page_size=None): # pragma: no cover
+def get_devices_request(page=None, page_size=None):  # pragma: no cover
 
     access_token = get_authentication_token(scope=SCOPE_DEVICE_LIST)
     headers = {
@@ -303,7 +303,7 @@ def get_device():
     demisto.results(entry)
 
 
-def get_device_request(device_id): # pragma: no cover
+def get_device_request(device_id):  # pragma: no cover
 
     access_token = get_authentication_token(scope=SCOPE_DEVICE_READ)
     headers = {
@@ -380,7 +380,7 @@ def get_device_by_hostname():
     demisto.results(entry)
 
 
-def get_hostname_request(hostname): # pragma: no cover
+def get_hostname_request(hostname):  # pragma: no cover
 
     access_token = get_authentication_token(scope=SCOPE_DEVICE_READ)
     headers = {
@@ -430,7 +430,7 @@ def update_device():
     demisto.results(entry)
 
 
-def update_device_request(device_id, name=None, policy_id=None, add_zones=None, remove_zones=None): # pragma: no cover
+def update_device_request(device_id, name=None, policy_id=None, add_zones=None, remove_zones=None):  # pragma: no cover
 
     access_token = get_authentication_token(scope=SCOPE_DEVICE_UPDATE)
     headers = {
@@ -494,7 +494,7 @@ def get_device_threats():
         demisto.results('No threats found.')
 
 
-def get_device_threats_request(device_id, page=None, page_size=None): # pragma: no cover
+def get_device_threats_request(device_id, page=None, page_size=None):  # pragma: no cover
 
     access_token = get_authentication_token(scope=SCOPE_DEVICE_THREAT_LIST)
     headers = {
@@ -536,7 +536,7 @@ def get_policies():
     demisto.results(entry)
 
 
-def get_policies_request(page=None, page_size=None): # pragma: no cover
+def get_policies_request(page=None, page_size=None):  # pragma: no cover
 
     access_token = get_authentication_token(scope=SCOPE_POLICY_LIST)
     headers = {
@@ -571,7 +571,7 @@ def create_zone():
     })
 
 
-def create_zone_request(name, policy_id, criticality): # pragma: no cover
+def create_zone_request(name, policy_id, criticality):  # pragma: no cover
 
     access_token = get_authentication_token(scope=SCOPE_ZONE_CREATE)
     headers = {
@@ -609,7 +609,7 @@ def get_zones():
     })
 
 
-def get_zones_request(page=None, page_size=None): # pragma: no cover
+def get_zones_request(page=None, page_size=None):  # pragma: no cover
 
     access_token = get_authentication_token(scope=SCOPE_ZONE_LIST)
     headers = {
@@ -647,7 +647,7 @@ def get_zone():
     })
 
 
-def get_zone_request(zone_id): # pragma: no cover
+def get_zone_request(zone_id):  # pragma: no cover
 
     access_token = get_authentication_token(scope=SCOPE_ZONE_READ)
     headers = {
@@ -688,7 +688,7 @@ def update_zone():
     })
 
 
-def update_zone_request(zone_id, name, policy_id, criticality): # pragma: no cover
+def update_zone_request(zone_id, name, policy_id, criticality):  # pragma: no cover
 
     access_token = get_authentication_token(scope=SCOPE_ZONE_UPDATE)
     headers = {
@@ -743,7 +743,7 @@ def get_threat():
         demisto.results('Threat was not found.')
 
 
-def get_threat_request(sha256): # pragma: no cover
+def get_threat_request(sha256):  # pragma: no cover
 
     access_token = get_authentication_token(scope=SCOPE_THREAT_READ)
     headers = {
@@ -799,7 +799,7 @@ def get_threats():
     })
 
 
-def get_threats_request(page=None, page_size=None): # pragma: no cover
+def get_threats_request(page=None, page_size=None):  # pragma: no cover
 
     access_token = get_authentication_token(scope=SCOPE_THREAT_LIST)
     headers = {
@@ -886,7 +886,7 @@ def get_threat_devices():
         demisto.results('No devices found on given threat.')
 
 
-def get_threat_devices_request(threat_hash, page=None, page_size=None): # pragma: no cover
+def get_threat_devices_request(threat_hash, page=None, page_size=None):  # pragma: no cover
 
     access_token = get_authentication_token(scope=SCOPE_THREAT_DEVICE_LIST)
     headers = {
@@ -940,7 +940,7 @@ def get_list():
         demisto.results('No list of this type was found.')
 
 
-def get_list_request(list_type_id, page=None, page_size=None): # pragma: no cover
+def get_list_request(list_type_id, page=None, page_size=None):  # pragma: no cover
 
     access_token = get_authentication_token(scope=SCOPE_GLOBAL_LIST)
     headers = {
@@ -1003,7 +1003,7 @@ def get_list_entry_by_hash(sha256=None, list_type_id=None):
         return found_hash
 
 
-def get_indicators_report(): # pragma: no cover
+def get_indicators_report():  # pragma: no cover
 
     url = 'https://protect.cylance.com/Reports/ThreatDataReportV1/indicators/' + demisto.args()['token']
     res = requests.request('GET', url, verify=USE_SSL)
@@ -1019,7 +1019,7 @@ def update_device_threats():
     demisto.results('Device threat was updated successfully.')
 
 
-def update_device_threats_request(device_id, threat_id, event): # pragma: no cover
+def update_device_threats_request(device_id, threat_id, event):  # pragma: no cover
     access_token = get_authentication_token(scope=SCOPE_THREAT_UPDATE)
     headers = {
         'Content-Type': 'application/json',
@@ -1109,7 +1109,7 @@ def download_threat():
     })
 
 
-def download_threat_request(hash): # pragma: no cover
+def download_threat_request(hash):  # pragma: no cover
 
     access_token = get_authentication_token(scope=SCOPE_THREAT_READ)
     headers = {
@@ -1164,7 +1164,7 @@ def add_hash_to_list():
     })
 
 
-def add_hash_to_list_request(sha256, list_type, reason, category=None): # pragma: no cover
+def add_hash_to_list_request(sha256, list_type, reason, category=None):  # pragma: no cover
 
     access_token = get_authentication_token(scope=SCOPE_GLOBAL_LIST_CREATE)
     headers = {
@@ -1213,7 +1213,7 @@ def delete_hash_from_lists():
     })
 
 
-def delete_hash_from_lists_request(sha256, list_type): # pragma: no cover
+def delete_hash_from_lists_request(sha256, list_type):  # pragma: no cover
 
     access_token = get_authentication_token(scope=SCOPE_GLOBAL_LIST_DELETE)
     headers = {
@@ -1274,7 +1274,7 @@ def delete_devices():
     })
 
 
-def delete_devices_request(device_ids): # pragma: no cover
+def delete_devices_request(device_ids):  # pragma: no cover
     access_token = get_authentication_token()
     headers = {
         'Content-Type': 'application/json',
@@ -1406,7 +1406,7 @@ def get_policy_details():
     })
 
 
-def get_policy_details_request(policy_id): # pragma: no cover
+def get_policy_details_request(policy_id):  # pragma: no cover
 
     access_token = get_authentication_token(scope=SCOPE_POLICY_READ)
     headers = {
