@@ -1,12 +1,14 @@
+import json
 from typing import Dict
 
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
+import demistomock as demisto  # noqa: F401
+import urllib3
+from CommonServerPython import *  # noqa: F401
+
+register_module_line('Tanium v2', 'start', __line__())
+
 
 ''' IMPORTS '''
-import json
-import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 ''' GLOBALS/PARAMS '''
@@ -219,6 +221,8 @@ class Client(BaseClient):
             tmp_row = {}
             for item, column in zip(row.get('data', []), columns):
                 item_value = list(map(lambda x: x.get('text', ''), item))
+                if "[current result unavailable]" in item_value:
+                    break
                 item_value = ', '.join(item_value)
 
                 if item_value != '[no results]':
@@ -1153,3 +1157,5 @@ def main():
 
 if __name__ == 'builtins':
     main()
+
+register_module_line('Tanium v2', 'end', __line__())
