@@ -21,7 +21,9 @@ def validate_params(aws_default_region, aws_role_arn, aws_role_session_name, aws
 class AWSClient:
 
     def __init__(self, aws_default_region, aws_role_arn, aws_role_session_name, aws_role_session_duration,
-                 aws_role_policy, aws_access_key_id, aws_secret_access_key, verify_certificate, timeout, retries):
+                 aws_role_policy, aws_access_key_id, aws_secret_access_key, verify_certificate, timeout, retries,
+                 aws_session_token=None):
+
         self.aws_default_region = aws_default_region
         self.aws_role_arn = aws_role_arn
         self.aws_role_session_name = aws_role_session_name
@@ -29,6 +31,7 @@ class AWSClient:
         self.aws_role_policy = aws_role_policy
         self.aws_access_key_id = aws_access_key_id
         self.aws_secret_access_key = aws_secret_access_key
+        self.aws_session_token = aws_session_token
         self.verify_certificate = verify_certificate
 
         proxies = handle_proxy(proxy_param_name='proxy', checkbox_default_value=False)
@@ -128,6 +131,16 @@ class AWSClient:
                 region_name=region if region else self.aws_default_region,
                 aws_access_key_id=self.aws_access_key_id,
                 aws_secret_access_key=self.aws_secret_access_key,
+                verify=self.verify_certificate,
+                config=self.config
+            )
+        elif self.aws_session_token and not self.aws_role_arn:  # login with access key id
+            client = boto3.client(
+                service_name=service,
+                region_name=region if region else self.aws_default_region,
+                aws_access_key_id=self.aws_access_key_id,
+                aws_secret_access_key=self.aws_secret_access_key,
+                aws_session_token=self.aws_session_token,
                 verify=self.verify_certificate,
                 config=self.config
             )
