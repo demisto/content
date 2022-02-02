@@ -1,17 +1,17 @@
 {
     "associatedToAll": true,
     "caseInsensitive": true,
-    "cliName": "filesha256",
+    "cliName": "registryfullkey",
     "closeForm": false,
     "content": true,
-    "description": "SHA256 hash value of the file.",
+    "description": "If the alert triggered on registry modifications (the Event Type is Registry) this is the full registry key that triggered the alert. If not, then N/A.",
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_filesha256",
+    "id": "incident_registryfullkey",
     "isReadOnly": false,
     "locked": false,
-    "name": "File SHA256",
+    "name": "Registry Full Key",
     "neverSetAsRequired": false,
     "openEnded": true,
     "ownerOnly": false,
@@ -28,11 +28,5 @@
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "6.5.0",
-	"x2_fields": "action_file_sha256",
-    "Aliases": [
-        {
-          "cliName": "sha256",
-          "type": "shortText"
-        }
-    ]
+	"x2_fields": "action_registry_full_key"
 }
