@@ -159,6 +159,7 @@ script:
     description: Create an alert in Opsgenie.
     deprecated: false
     name: opsgenie-create-alert
+    polling: true
     outputs:
     - contextPath: OpsGenie.Alert.action
       description: Action of this request.
@@ -364,6 +365,7 @@ script:
     description: Delete an alert from OpsGenie.
     execution: false
     name: opsgenie-delete-alert
+    polling: true
     outputs:
     - contextPath: OpsGenie.DeletedAlert.action
       description: Action of this request.
@@ -409,6 +411,7 @@ script:
     description: Acknowledge an alert in OpsGenie.
     execution: false
     name: opsgenie-ack-alert
+    polling: true
     outputs:
     - contextPath: OpsGenie.AckedAlert.action
       description: Action of this request.
@@ -455,6 +458,7 @@ script:
     description: Close an alert in OpsGenie.
     execution: false
     name: opsgenie-close-alert
+    polling: true
     outputs:
     - contextPath: OpsGenie.ClosedAlert.action
       description: Action of this request.
@@ -515,6 +519,7 @@ script:
     description: Assign an OpsGenie alert.
     execution: false
     name: opsgenie-assign-alert
+    polling: true
     outputs:
     - contextPath: OpsGenie.AssignAlert.action
       description: Action of this request.
@@ -582,6 +587,7 @@ script:
     description: Add a responder to an OpsGenie alert.
     execution: false
     name: opsgenie-add-responder-alert
+    polling: true
     outputs:
     - contextPath: OpsGenie.AddResponderAlert.action
       description: Action of this request.
@@ -695,6 +701,7 @@ script:
     description: Escalate an OpsGenie alert.
     execution: false
     name: opsgenie-escalate-alert
+    polling: true
     outputs:
     - contextPath: OpsGenie.EscalateAlert.action
       description: Action of this request.
@@ -750,6 +757,7 @@ script:
     description: Add tag to the OpsGenie alert.
     execution: false
     name: opsgenie-add-alert-tag
+    polling: true
     outputs:
     - contextPath: OpsGenie.AddTagAlert.action
       description: Action of this request.
@@ -802,6 +810,7 @@ script:
     description: Remove a tag from the OpsGenie alert.
     execution: false
     name: opsgenie-remove-alert-tag
+    polling: true
     outputs:
     - contextPath: OpsGenie.RemoveTagAlert.action
       description: Action of this request.
@@ -1059,6 +1068,7 @@ script:
     description: Create an incident in Opsgenie.
     deprecated: false
     name: opsgenie-create-incident
+    polling: true
     outputs:
     - contextPath: OpsGenie.Incident.action
       description: Action of this request.
@@ -1095,6 +1105,7 @@ script:
     description: Delete an incident from OpsGenie.
     execution: false
     name: opsgenie-delete-incident
+    polling: true
     outputs:
     - contextPath: OpsGenie.DeletedIncident.action
       description: Action of this request.
@@ -1255,6 +1266,7 @@ script:
     description: Close an incident from OpsGenie.
     execution: false
     name: opsgenie-close-incident
+    polling: true
     outputs:
     - contextPath: OpsGenie.ClosedIncident.action
       description: Action of this request.
@@ -1298,6 +1310,7 @@ script:
     description: Resolve an incident from OpsGenie.
     execution: false
     name: opsgenie-resolve-incident
+    polling: true
     outputs:
     - contextPath: OpsGenie.ResolvedIncident.action
       description: Action of this request.
@@ -1351,6 +1364,7 @@ script:
     description: Add a responder to an OpsGenie incident.
     execution: false
     name: opsgenie-add-responder-incident
+    polling: true
     outputs:
     - contextPath: OpsGenie.AddResponderIncident.action
       description: Action of this request.
@@ -1400,6 +1414,7 @@ script:
     description: Add a tag to the OpsGenie incident.
     execution: false
     name: opsgenie-add-tag-incident
+    polling: true
     outputs:
     - contextPath: OpsGenie.AddTagIncident.action
       description: Action of this request.
@@ -1449,6 +1464,7 @@ script:
     description: Remove a tag from the OpsGenie alert.
     execution: false
     name: opsgenie-remove-tag-incident
+    polling: true
     outputs:
     - contextPath: OpsGenie.RemoveTagIncident.action
       description: Action of this request.
@@ -1500,6 +1516,86 @@ script:
     - contextPath: OpsGenie.Team.name
       description: Team name.
       type: String
+  - name: opsgenie-get-request
+    polling: true
+    description: Get a request in Opsgenie
+    deprecated: false
+    arguments:
+      - name: output_prefix
+        deprecated: true
+        description: The output prefix to use for the results
+      - name: polled_once
+        deprecated: true
+        description: 'Whether this is the first time polling'
+        required: false
+      - name: request_id
+        description: The id of the request to get
+        required: true
+        isArray: false
+      - name: request_type
+        description: The type of the request to get
+        required: true
+        isArray: false
+        auto: PREDEFINED
+        predefined:
+          - alerts
+          - Incidents
+    outputs:
+    - contextPath: OpsGenie.Alert.action
+      description: Action of this request.
+      type: String
+    - contextPath: OpsGenie.Alert.alertId
+      description: ID of the created alert.
+      type: String
+    - contextPath: OpsGenie.Alert.alias
+      description: Alias of the created alert.
+      type: String
+    - contextPath: OpsGenie.Alert.integrationId
+      description: Integration ID of the created alert.
+      type: String
+    - contextPath: OpsGenie.Alert.isSuccess
+      description: Whether the request was successful.
+      type: Boolean
+    - contextPath: OpsGenie.Alert.processedAt
+      description: When the request was processed.
+      type: Date
+    - contextPath: OpsGenie.Alert.requestId
+      description: The ID of the request.
+      type: String
+    - contextPath: OpsGenie.Alert.status
+      description: The human readable result of the request.
+      type: String
+    - contextPath: OpsGenie.Alert.success
+      description: Whether the request was successful.
+      type: Boolean
+    - contextPath: OpsGenie.Incident.action
+      description: Action of this request.
+      type: String
+    - contextPath: OpsGenie.Incident.alertId
+      description: ID of the created alert.
+      type: String
+    - contextPath: OpsGenie.Incident.alias
+      description: Alias of the created alert.
+      type: String
+    - contextPath: OpsGenie.Incident.integrationId
+      description: Integration ID of the created alert.
+      type: String
+    - contextPath: OpsGenie.Incident.isSuccess
+      description: Whether the request was successful.
+      type: Boolean
+    - contextPath: OpsGenie.Incident.processedAt
+      description: When the request was processed.
+      type: Date
+    - contextPath: OpsGenie.Incident.requestId
+      description: The ID of the request.
+      type: String
+    - contextPath: OpsGenie.Incident.status
+      description: The human readable result of the request.
+      type: String
+    - contextPath: OpsGenie.Incident.success
+      description: Whether the request was successful.
+      type: Boolean
+
   dockerimage: demisto/python3:3.10.1.25933
   isfetch: true
   runonce: false
