@@ -10994,6 +10994,8 @@ def main():
                 pass
             elif demisto.command() == 'pan-os-platform-get-device-state':
                 pass
+            elif demisto.command() == 'pan-os-platform-get-device-groups':
+                pass
 
             else:
                 raise NotImplementedError(f'Command {demisto.command()} was not implemented.')
