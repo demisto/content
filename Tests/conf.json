@@ -5084,7 +5084,6 @@
         "test_Qradar_v2": "the integration is deprecated as we released Qradar V3",
         "XsoarPowershellTesting-Test": "Issue 32689",
         "Unit42 Intel Objects Feed - Test": "Issue 44100",
-        "RedCanaryTest": "Issue 43818",
         "MicrosoftManagementActivity - Test": "Issue 43922",
         "Google-Vault-Generic-Test": "Issue 24347",
         "Google_Vault-Search_And_Display_Results_test": "Issue 24348",
