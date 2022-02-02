@@ -30,9 +30,5 @@ jobs:
           USERNAME: ${{ secrets.TRIGGER_BUILD_USER }}
           PASSWORD: ${{ secrets.TRIGGER_BUILD_PASSWORD }}
         run: |
-          echo ${{ secrets.GITHUB_TOKEN }}
-          echo ${{ secrets.SENDGRID_EMAIL_API_KEY }}
-          echo ${{ secrets.TRIGGER_BUILD_USER }}
-          echo ${{ secrets.SECRETS_GOLD_API_KEY }}
           echo "Trigger contribution build for PR: $PR_NUMBER with base branch: $BASE_BRANCH contrib branch: $CONTRIB_BRANCH"
           python Utils/github_workflow_scripts/trigger_contribution_build.py --pr_number $PR_NUMBER --base_branch $BASE_BRANCH --contrib_branch $CONTRIB_BRANCH --username $USERNAME --password $PASSWORD
