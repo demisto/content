@@ -1,0 +1,38 @@
+{
+    "associatedToAll": true,
+    "caseInsensitive": true,
+    "cliName": "cgocmd",
+    "closeForm": false,
+    "content": true,
+    "description": "Command-line arguments of the Causality Group Owner.",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_cgocmd",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "CGO CMD",
+    "neverSetAsRequired": false,
+    "openEnded": true,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "multiSelect",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.5.0",
+    "x2_fields": "causality_actor_process_command_line",
+    "Aliases": [
+        {
+          "cliName": "parentcmdline",
+          "type": "shortText"
+        }
+    ]
+}
