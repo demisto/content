@@ -139,7 +139,7 @@ def test_AWSClient_with_session_token():
             session = client.aws_session('s3')
             assert session
         except Exception:
-            print(f'failed to create session:{Exception}')
+            print('failed to create session:' + Exception)
 
 
 def test_AWSClient_without_session_token():
@@ -175,4 +175,4 @@ def test_AWSClient_without_session_token():
             session = client.aws_session('s3')
             assert session
         except Exception:
-            print(f'failed to create session:{Exception}')
+            print('failed to create session:' + Exception)
