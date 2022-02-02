@@ -998,8 +998,7 @@ def isolate_machine_command(client: MsClient, args: dict):
         (str, dict, dict). Human readable, context, raw response
     """
     headers = ['ID', 'Type', 'Requestor', 'RequestorComment', 'Status', 'MachineID', 'ComputerDNSName']
-
-    machine_ids = argToList(args.get('machine_id'))
+    machine_ids = list(dict.fromkeys(argToList(args.get('machine_id'))))  # remove duplicates
     comment = args.get('comment')
     isolation_type = args.get('isolation_type')
     machines_all_action = []
@@ -1030,7 +1029,7 @@ def unisolate_machine_command(client: MsClient, args: dict):
         (str, dict, dict). Human readable, context, raw response
     """
     headers = ['ID', 'Type', 'Requestor', 'RequestorComment', 'Status', 'MachineID', 'ComputerDNSName']
-    machine_ids = argToList(args.get('machine_id'))
+    machine_ids = list(dict.fromkeys(argToList(args.get('machine_id'))))  # remove duplicates
     comment = args.get('comment')
     machines_all_action = []
     raw_response = []
@@ -1074,8 +1073,8 @@ def get_machines_command(client: MsClient, args: dict):
     """
     headers = ['ID', 'ComputerDNSName', 'OSPlatform', 'LastIPAddress', 'LastExternalIPAddress', 'HealthStatus',
                'RiskScore', 'ExposureLevel']
-    hostname = argToList(args.get('hostname', ''))
-    ip = argToList(args.get('ip', ''))
+    hostname = list(dict.fromkeys(argToList(args.get('hostname', ''))))  # remove duplicates
+    ip = list(dict.fromkeys(argToList(args.get('ip', ''))))  # remove duplicates
     risk_score = args.get('risk_score', '')
     health_status = args.get('health_status', '')
     os_platform = args.get('os_platform', '')
@@ -1211,7 +1210,7 @@ def get_file_related_machines_command(client: MsClient, args: dict) -> CommandRe
     """
     headers = ['ID', 'ComputerDNSName', 'OSPlatform', 'LastIPAddress', 'LastExternalIPAddress', 'HealthStatus',
                'RiskScore', 'ExposureLevel']
-    files = argToList(args.get('file_hash'))
+    files = list(dict.fromkeys(argToList(args.get('file_hash'))))  # remove duplicates
     raw_response = []
     context_outputs = []
     all_machines_outputs = []
@@ -1292,7 +1291,7 @@ def get_machine_details_command(client: MsClient, args: dict) -> CommandResults:
     """
     headers = ['ID', 'ComputerDNSName', 'OSPlatform', 'LastIPAddress', 'LastExternalIPAddress', 'HealthStatus',
                'RiskScore', 'ExposureLevel', 'IPAddresses']
-    machine_ids = argToList(args.get('machine_id'))
+    machine_ids = list(dict.fromkeys(argToList(args.get('machine_id'))))  # remove duplicates
     raw_response = []
     machines_outputs = []
     machines_readable_outputs = []
@@ -1333,7 +1332,7 @@ def run_antivirus_scan_command(client: MsClient, args: dict):
         (str, dict, dict). Human readable, context, raw response
     """
     headers = ['ID', 'Type', 'Requestor', 'RequestorComment', 'Status', 'MachineID', 'ComputerDNSName']
-    machine_ids = argToList(args.get('machine_id'))
+    machine_ids = list(dict.fromkeys(argToList(args.get('machine_id'))))  # remove duplicates
     scan_type = args.get('scan_type')
     comment = args.get('comment')
     machine_actions_data = []
@@ -1652,7 +1651,7 @@ def get_machine_action_by_id_command(client: MsClient, args: dict):
     headers = ['ID', 'Type', 'Requestor', 'RequestorComment', 'Status', 'MachineID', 'ComputerDNSName']
     action_id = args.get('id', '')
     status = args.get('status', '')
-    machine_id = argToList(args.get('machine_id', ''))
+    machine_id = list(dict.fromkeys(argToList(args.get('machine_id', ''))))  # remove duplicates
     type = args.get('type', '')
     requestor = args.get('requestor', '')
     limit = arg_to_number(args.get('limit', 50))
@@ -2779,10 +2778,10 @@ def list_machines_by_vulnerability_command(client: MsClient, args: dict) -> Comm
         CommandResults. Human readable, context, raw response
     """
     headers = ['ID', 'ComputerDNSName', 'OSPlatform', 'RBACGroupID', 'RBACGroupName', 'CVE']
-    cve_ids = argToList(args.get('cve_id'))
+    cve_ids = list(dict.fromkeys(argToList(args.get('cve_id'))))  # remove duplicates
     raw_response = []
     machines_outputs = []
-    failed_csvs = {}  # if we got an error, we will return the machine ids that failed
+    failed_cve = {}  # if we got an error, we will return the machine ids that failed
     for cve_id in cve_ids:
         try:
             machines_response = client.get_list_machines_by_vulnerability(cve_id)
@@ -2792,18 +2791,48 @@ def list_machines_by_vulnerability_command(client: MsClient, args: dict) -> Comm
                 machines_outputs.append(machine_data)
             raw_response.append(machines_response)
         except Exception as e:
-            failed_csvs[cve_id] = e
+            failed_cve[cve_id] = e
             continue
-
+    machines_outputs = create_related_cve_list_for_machine(machines_outputs)
     human_readable = tableToMarkdown(f'Microsoft Defender ATP machines by vulnerabilities: {cve_ids}',
                                      machines_outputs, headers=headers, removeNull=True)
-    human_readable += add_error_message_for(failed_csvs, cve_ids)
+    human_readable += add_error_message_for(failed_cve, cve_ids)
     return CommandResults(
         outputs_prefix='MicrosoftATP.CveMachine',
         outputs_key_field='ID',
         outputs=machines_outputs,
         readable_output=human_readable,
         raw_response=raw_response)
+
+
+def create_related_cve_list_for_machine(machines):
+    """
+    Parses the machines list to include a CVE list for each machine by ID.
+    For example,
+    machines = [{'ID': 1, 'CVE': 'CVE-1'},{'ID': 1, 'CVE': 'CVE-2'},{'ID': 2, 'CVE': 'CVE-1'}]
+
+    the output after the for loop will be:
+    machines = [{'ID': 1, ['CVE': 'CVE-1','CVE-2']},{'ID': 1, ['CVE': 'CVE-1','CVE-2']},{'ID': 2, 'CVE': ['CVE-1']}]
+
+    and the output after remove duplicates will be:
+    unique_machines = [{'ID': 1, ['CVE': 'CVE-1','CVE-2']},{'ID': 2, 'CVE': ['CVE-1']}]
+    """
+    machine_id_to_cve_list = {}
+    for machine in machines:
+        machine_id = machine.get('ID')
+        cve_id = machine.get('CVE')
+        if not machine_id_to_cve_list.get(machine_id):
+            machine_id_to_cve_list[machine_id] = [cve_id]
+        else:
+            machine_id_to_cve_list[machine_id].append(cve_id)
+        machine.pop('CVE')
+        machine['CVE'] = machine_id_to_cve_list[machine_id]
+    # handle duplicates
+    unique_machines = []
+    for machine in machines:
+        if machine not in unique_machines:
+            unique_machines.append(machine)
+    return unique_machines
 
 
 def get_file_context(file_info_response: Dict[str, str], headers: list):
@@ -2819,8 +2848,7 @@ def get_file_info_command(client: MsClient, args: dict) -> dict:
     headers = ['Sha1', 'Sha256', 'Size', 'FileType']
     file_context_path = 'File(val.SHA1 && val.SHA1 == obj.SHA1 || val.SHA256 && val.SHA256 == obj.SHA256 || ' \
                         'val.Type && val.Type == obj.Type || val.Size && val.Size == obj.Size )'
-
-    file_hashes = argToList(args.get('hash'))
+    file_hashes = list(dict.fromkeys(argToList(args.get('hash'))))  # remove duplicates
     raw_response = []
     file_outputs = []
     file_context_outputs = []
@@ -2834,7 +2862,6 @@ def get_file_info_command(client: MsClient, args: dict) -> dict:
         except Exception as e:
             failed_hashes[file_hash] = e
             continue
-
     human_readable = tableToMarkdown(f'Microsoft Defender ATP file info by hashes: {file_hashes}',
                                      file_outputs, headers=headers, removeNull=True)
     human_readable += add_error_message_for(failed_hashes, file_hashes)

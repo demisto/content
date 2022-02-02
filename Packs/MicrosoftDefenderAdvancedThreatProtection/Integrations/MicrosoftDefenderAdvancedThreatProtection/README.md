@@ -4023,7 +4023,7 @@ Vulnerability.Read.All
 | MicrosoftATP.CveMachine.ComputerDNSName | String | The machine hostname. | 
 | MicrosoftATP.CveMachine.OSPlatform | String | The operating system platform. | 
 | MicrosoftATP.CveMachine.RBACGroupName | String | The machine RBAC group name. | 
-| MicrosoftATP.CveMachine.CVE | String | The given CVE Id related to this machine. | 
+| MicrosoftATP.CveMachine.CVE | Unknown | The given CVE IDs related to this machine. | 
 
 #### Command example
 ```!microsoft-atp-list-machines-by-vulnerability cve_id=CVE-2021-32810,CVE-2020-12321```
@@ -4037,14 +4037,14 @@ Vulnerability.Read.All
                 "ID": "f3bba49a",
                 "OSPlatform": "WindowsServer2016",
                 "RBACGroupID": 0,
-                "CVE": "CVE-2021-32810"
+                "CVE": ["CVE-2021-32810", "CVE-2020-12321"]
             },
             {
                 "ComputerDNSName": "msde-agent-host-centos7",
                 "ID": "48a62a74",
                 "OSPlatform": "Linux",
                 "RBACGroupID": 0,
-                "CVE": "CVE-2020-12321"
+                "CVE": ["CVE-2020-12321"]
             }
         ]
     }
@@ -4056,7 +4056,7 @@ Vulnerability.Read.All
 >### Microsoft Defender ATP machines by vulnerabilities: ['CVE-2021-32810', 'CVE-2020-12321']
 >|ID|ComputerDNSName|OSPlatform|RBACGroupID|CVE|
 >|---|---|---|---|---|
->| f3bba49a | ec2amaz | WindowsServer2016 | 0 | CVE-2021-32810|
+>| f3bba49a | ec2amaz | WindowsServer2016 | 0 | CVE-2021-32810,CVE-2020-12321|
 >| 48a62a74 | msde-agent-host-centos7 | Linux | 0 | CVE-2020-12321|
 
 ### microsoft-atp-get-file-info
