@@ -1,0 +1,33 @@
+
+{
+    "associatedToAll": true,
+    "caseInsensitive": true,
+    "cliName": "appsubcategory",
+    "closeForm": false,
+    "content": true,
+    "description": "APP-ID Sub category name associated with a firewall alert",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_appsubcategory",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "appsubcategory",
+    "neverSetAsRequired": false,
+    "openEnded": true,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "multiSelect",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.5.0",
+	"x2_fields": "fw_app_subcategory"
+}
