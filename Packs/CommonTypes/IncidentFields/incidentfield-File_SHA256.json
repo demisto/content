@@ -28,6 +28,13 @@
     "fromVersion": "5.5.0",
     "openEnded": true,
     "marketplaces": [
-        "xsoar"
+        "xsoar",
+        "marketplacev2"
+    ],
+    "Aliases": [
+        {
+          "cliName": "sha256",
+          "type": "shortText"
+        }
     ]
 }
