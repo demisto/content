@@ -1040,6 +1040,9 @@ Replies to the recipients of a message.
 | body | The comment of the replied message. | Required |
 | to | The comma-separated list of email addresses for the 'to' field. | Required |
 | from | The email address from which to reply. | Required |
+| attachIDs | A CSV list of War Room entry IDs that contain files, and are used to attach files to the outgoing email. For example: attachIDs=15@8,19@8. | Optional |
+| attachNames | A CSV list of names of attachments to send. Should be the same number of elements as attachIDs. | Optional |
+| attachCIDs | A CSV list of CIDs to embed attachments within the email itself. | Optional |
 
 
 ##### Context Output
