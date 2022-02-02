@@ -10921,7 +10921,7 @@ def main():
                 panorama_install_file_content_update_command(args)
 
             # The following code exists PURELY to supress XSOAR linter errors. This code is
-            # unreachable.
+            # unreachable as these commands are routed via the COMMAND object.
             elif demisto.command() == 'pan-os-platform-get-arp-tables':
                 pass
             elif demisto.command() == 'pan-os-platform-get-route-summary':
@@ -10929,6 +10929,70 @@ def main():
             elif demisto.command() == 'pan-os-platform-get-routes':
                 pass
             elif demisto.command() == 'pan-os-platform-get-system-info':
+                pass
+            elif demisto.command() == 'pan-os-platform-get-device-group':
+                pass
+            elif demisto.command() == 'pan-os-platform-get-template-stacks':
+                pass
+            elif demisto.command() == 'pan-os-platform-get-global-counters':
+                pass
+            elif demisto.command() == 'pan-os-platform-get-bgp-peers':
+                pass
+            elif demisto.command() == 'pan-os-platform-get-device-connectivity':
+                pass
+            elif demisto.command() == 'pan-os-platform-get-available-software':
+                pass
+            elif demisto.command() == 'pan-os-platform-get-ha-state':
+                pass
+            elif demisto.command() == 'pan-os-platform-get-jobs':
+                pass
+            elif demisto.command() == 'pan-os-platform-download-software':
+                pass
+            elif demisto.command() == 'pan-os-platform-install-software':
+                pass
+            elif demisto.command() == 'pan-os-platform-reboot':
+                pass
+            elif demisto.command() == 'pan-os-platform-get-system-status':
+                pass
+            elif demisto.command() == 'pan-os-platform-update-ha-state':
+                pass
+            elif demisto.command() == 'pan-os-hygiene-check-log-forwarding':
+                pass
+            elif demisto.command() == 'pan-os-hygiene-check-vulnerability-profiles':
+                pass
+            elif demisto.command() == 'pan-os-hygiene-check-spyware-profiles':
+                pass
+            elif demisto.command() == 'pan-os-hygiene-check-url-filtering-profiles':
+                pass
+            elif demisto.command() == 'pan-os-hygiene-conforming-url-filtering-profiles':
+                pass
+            elif demisto.command() == 'pan-os-hygiene-conforming-spyware-profiles':
+                pass
+            elif demisto.command() == 'pan-os-hygiene-conforming-vulnerability-profiles':
+                pass
+            elif demisto.command() == 'pan-os-hygiene-check-security-zones':
+                pass
+            elif demisto.command() == 'pan-os-hygiene-check-security-rules':
+                pass
+            elif demisto.command() == 'pan-os-hygiene-fix-log-forwarding':
+                pass
+            elif demisto.command() == 'pan-os-hygiene-fix-security-zone-log-settings':
+                pass
+            elif demisto.command() == 'pan-os-hygiene-fix-security-rule-log-settings':
+                pass
+            elif demisto.command() == 'pan-os-hygiene-fix-security-rule-profile-settings':
+                pass
+            elif demisto.command() == 'pan-os-config-commit':
+                pass
+            elif demisto.command() == 'pan-os-config-push-all':
+                pass
+            elif demisto.command() == 'pan-os-config-get-commit-status':
+                pass
+            elif demisto.command() == 'pan-os-config-get-push-status':
+                pass
+            elif demisto.command() == 'pan-os-config-get-object':
+                pass
+            elif demisto.command() == 'pan-os-platform-get-device-state':
                 pass
 
             else:
