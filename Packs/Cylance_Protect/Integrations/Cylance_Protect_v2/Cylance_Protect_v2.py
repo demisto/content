@@ -1,5 +1,5 @@
 from CommonServerPython import *
-
+import demistomock as demisto
 import jwt
 import uuid
 import requests
