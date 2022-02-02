@@ -74,6 +74,29 @@ LIST_TEAM_MEMBERS_CASES = [
 ]
 
 
+@pytest.mark.parametrize('params, expected_result', [
+    ({'credentials': {'password': 1234}, 'sshkey': 'sshkey'}, "You need to update the docker image so that the jwt package could be used"),
+    ({'credentials': {'password': 1234}}, "Insert api token or private key"),
+    ({'sshkey': 'sshkey'}, "Insert api token or private key")
+])
+def test_params(mocker, params, expected_result):
+    """
+    Given:
+      - Configuration parameters
+    When:
+      - One of the required parameters are missed.
+    Then:
+      - Ensure the exception message as expected.
+    """
+
+    mocker.patch.object(demisto, 'params', return_value=params)
+
+    with pytest.raises(Exception) as e:
+        main()
+
+    assert expected_result in str(e.value)
+
+
 @pytest.mark.parametrize('limit, expected_result', SEARCH_CASES)
 def test_search_command(mocker, limit, expected_result):
     """

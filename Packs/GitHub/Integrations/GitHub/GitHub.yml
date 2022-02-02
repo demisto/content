@@ -22,9 +22,9 @@ configuration:
   required: false
   type: 0
 - display: API Token
-  name: token
+  name: api_token
   required: false
-  type: 4
+  type: 9
 - display: Credentials
   name: credentials
   required: false
@@ -33,6 +33,12 @@ configuration:
   name: user
   required: false
   type: 0
+- display: API Token
+  name: token
+  required: false
+  type: 4
+  hidden: True
+  additionalinfo: use the api_token field instead
 - display: The name of the requested repository
   name: repository
   required: false
