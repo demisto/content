@@ -1,6 +1,6 @@
 import pytest
 import os
-from xml.etree.ElementTree import ElementTree, Element, fromstring
+from xml.etree.ElementTree import fromstring
 import demistomock as demisto
 from CommonServerPython import DemistoException
 
