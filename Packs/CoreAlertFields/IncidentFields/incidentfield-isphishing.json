@@ -13,7 +13,7 @@
     "locked": false,
     "name": "Is Phishing",
     "neverSetAsRequired": false,
-    "openEnded": false,
+    "openEnded": true,
     "ownerOnly": false,
     "propagationLabels": [
         "all"
