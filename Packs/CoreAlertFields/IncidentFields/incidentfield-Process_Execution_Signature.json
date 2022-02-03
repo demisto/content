@@ -30,11 +30,6 @@
     "fromVersion": "6.5.0",
     "x2_fields": "action_process_signature_status",
     "Aliases": [
-        
-        {
-            "cliName": "fireeyesignature",
-            "type": "shortText"
-        },
         {
             "cliName": "signature",
             "type": "shortText"

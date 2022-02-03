@@ -141,13 +141,9 @@ CONF: TestConf = None  # type: ignore[assignment]
 
 ARTIFACTS_FOLDER = os.getenv('ARTIFACTS_FOLDER', './artifacts')
 ARTIFACTS_ID_SET_PATH = os.path.join(ARTIFACTS_FOLDER, 'id_set.json')
-ARTIFACTS_ID_SET_MPV2_PATH = os.path.join(ARTIFACTS_FOLDER, 'id_set_mp_v2.json')
 ARTIFACTS_CONF_PATH = os.path.join(ARTIFACTS_FOLDER, 'conf.json')
 if os.path.isfile(ARTIFACTS_ID_SET_PATH):
     with open(ARTIFACTS_ID_SET_PATH, 'r') as conf_file:
-        ID_SET = json.load(conf_file)
-elif os.path.isfile(ARTIFACTS_ID_SET_MPV2_PATH):
-    with open(ARTIFACTS_ID_SET_MPV2_PATH, 'r') as conf_file:
         ID_SET = json.load(conf_file)
 
 if os.path.isfile(ARTIFACTS_CONF_PATH):
