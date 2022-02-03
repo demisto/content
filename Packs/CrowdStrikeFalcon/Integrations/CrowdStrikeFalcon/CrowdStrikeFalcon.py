@@ -984,7 +984,7 @@ def get_detections(last_behavior_time=None, behavior_id=None, filter_arg=None):
     return response
 
 
-def get_fetch_detections(last_created_timestamp=None, filter_arg=None, offset: int = 0):
+def get_fetch_detections(last_created_timestamp=None, filter_arg=None, offset: int = 0, last_updated_timestamp=None, has_limit=True):
     """ Sends detection request, based on the created_timestamp field. Used for fetch-incidents
     Args:
         last_created_timestamp: last created timestamp of the results will be greater than this value.
@@ -996,13 +996,18 @@ def get_fetch_detections(last_created_timestamp=None, filter_arg=None, offset: i
     params = {
         'sort': 'first_behavior.asc',
         'offset': offset,
-        'limit': INCIDENTS_PER_FETCH
     }
+    if has_limit:
+        params['limit'] = INCIDENTS_PER_FETCH
+
     if filter_arg:
         params['filter'] = filter_arg
 
     elif last_created_timestamp:
         params['filter'] = "created_timestamp:>'{0}'".format(last_created_timestamp)
+
+    elif last_updated_timestamp:
+        params['filter'] = "date_updated:>'{0}'".format(last_updated_timestamp)
 
     response = http_request('GET', endpoint_url, params)
 
@@ -1026,18 +1031,23 @@ def get_detections_entities(detections_ids):
     return detections_ids
 
 
-def get_incidents_ids(last_created_timestamp=None, filter_arg=None, offset: int = 0):
+def get_incidents_ids(last_created_timestamp=None, filter_arg=None, offset: int = 0, last_updated_timestamp=None, has_limit=True):
     get_incidents_endpoint = '/incidents/queries/incidents/v1'
     params = {
         'sort': 'start.asc',
         'offset': offset,
-        'limit': INCIDENTS_PER_FETCH
     }
+    if has_limit:
+        params['limit'] = INCIDENTS_PER_FETCH
+
     if filter_arg:
         params['filter'] = filter_arg
 
     elif last_created_timestamp:
         params['filter'] = "start:>'{0}'".format(last_created_timestamp)
+
+    elif last_updated_timestamp:
+        params['filter'] = "modified_timestamp:>'{0}'".format(last_updated_timestamp)
 
     response = http_request('GET', get_incidents_endpoint, params)
 
@@ -1642,11 +1652,11 @@ def get_modified_remote_data_command(args: Dict[str, Any]):
 
     modified_ids_to_mirror = list()
 
-    raw_incidents = get_incidents_ids(last_created_timestamp=last_update_utc).get('resources', [])
+    raw_incidents = get_incidents_ids(last_updated_timestamp=last_update_utc, has_limit=False).get('resources', [])
     for incident_id in raw_incidents:
         modified_ids_to_mirror.append(str(incident_id))
 
-    raw_detections = get_fetch_detections(last_created_timestamp=last_update_utc).get('resources', [])
+    raw_detections = get_fetch_detections(last_updated_timestamp=last_update_utc, has_limit=False).get('resources', [])
     for detection_id in raw_detections:
         modified_ids_to_mirror.append(str(detection_id))
 
