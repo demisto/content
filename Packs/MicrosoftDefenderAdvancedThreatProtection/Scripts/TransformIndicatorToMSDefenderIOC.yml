@@ -1,0 +1,60 @@
+args:
+- default: false
+  description: The indicators query.
+  isArray: false
+  name: query
+  required: false
+  secret: false
+- default: false
+  description: A comma-separated list of fields in the object to ignore.
+  isArray: false
+  name: dontPopulateFields
+  required: false
+  secret: false
+- default: false
+  defaultValue: '10000'
+  description: The maximum number of indicators to fetch.
+  isArray: false
+  name: limit
+  required: false
+  secret: false
+- default: false
+  defaultValue: '0'
+  description: The results offset page. Only change when the number
+    of the results exceed the limit.
+  isArray: false
+  name: offset
+  required: false
+  secret: false
+- default: false
+  description: A comma-separated list of fields to hash. Supports wildcard "*".
+  isArray: false
+  name: fieldsToHash
+  required: false
+  secret: false
+- default: false
+  defaultValue: id,score,investigationIDs
+  description: A comma-separated list of fields in the object to poplulate. Defaults are id, score, and investigationIDs.
+  isArray: false
+  name: populateFields
+  required: false
+  secret: false
+comment: Transform a XSOAR indicator into a Microsoft Defender for Endpoint IOC
+commonfields:
+  id: TransformIndicatorToMSDefenderIOC
+  version: -1
+enabled: false
+name: TransformIndicatorToMSDefenderIOC
+outputs:
+- contextPath: BaseScript.Output
+  description: '[Enter a description of the data returned in this output.]'
+  type: String
+script: '-'
+system: false
+tags:
+- basescript
+timeout: '0'
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.9.7.24076
+fromversion: 6.0.0
