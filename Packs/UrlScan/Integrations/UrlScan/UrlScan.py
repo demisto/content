@@ -685,7 +685,7 @@ def format_http_transaction_list(client):
 def main():
     params = demisto.params()
 
-    api_key = params.get('apikey')
+    api_key = params.get('apikey') or (params.get('api_key') or {}).get('password', '')
     threshold = int(params.get('url_threshold', '1'))
     use_ssl = not params.get('insecure', False)
     reliability = params.get('integrationReliability')

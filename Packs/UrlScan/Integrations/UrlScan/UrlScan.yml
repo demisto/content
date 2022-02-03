@@ -3,10 +3,11 @@ commonfields:
   id: urlscan.io
   version: -1
 configuration:
-- display: API Key (only required for scanning URLs)
-  name: apikey
+- displaypassword: API Key (only required for scanning URLs)
+  name: api_key
   required: false
-  type: 4
+  type: 9
+  hiddenusername: true
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: C - Fairly reliable
   display: Source Reliability
@@ -51,6 +52,12 @@ configuration:
   type: 0
   required: false
   additionalinfo: User Agent to perform requests
+- display: API Key (only required for scanning URLs)
+  name: apikey
+  required: false
+  type: 4
+  hidden: true  
+  additionalinfo: Use api_key instead
 description: Use urlscan.io integration to perform scans on suspected URLs and see their reputation.
 display: urlscan.io
 name: urlscan.io
