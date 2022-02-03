@@ -32,7 +32,7 @@
     "Aliases": [
         {
           "cliName": "parentcmdline",
-          "type": "shortText"
+          "type": "multiSelect"
         }
     ]
 }

@@ -27,5 +27,23 @@
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "6.5.0",
-	"x2_fields": "cluster_name"
+	"x2_fields": "cluster_name",
+    "Aliases": [
+        {
+          "cliName": "cohesityheliosclustername",
+          "type": "shortText"
+        },
+        {
+          "cliName": "proofpointtapcluster",
+          "type": "shortText"
+        },
+        {
+          "cliName": "rubrikcdmclustername",
+          "type": "shortText"
+        },
+        {
+          "cliName": "rubrikpolariscdmclustername",
+          "type": "shortText"
+        }
+    ]
 }
