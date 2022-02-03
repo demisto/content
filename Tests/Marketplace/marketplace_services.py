@@ -617,7 +617,7 @@ class Pack(object):
 
         return pack_metadata
 
-    def _load_pack_dependencies(self, index_folder_path, pack_names, id_set):
+    def _load_pack_dependencies(self, index_folder_path, pack_names, id_set, marketplace):
         """ Loads dependencies metadata and returns mapping of pack id and it's loaded data.
             There are 3 cases for dependencies:
             Case 1: The dependency is present in the index.zip. In this case we add it to the dependencies results.
@@ -630,6 +630,7 @@ class Pack(object):
             index_folder_path (str): full path to download index folder.
             pack_names (set): List of all packs.
             id_set (dict): Loaded id_set.json.
+            marketplace (str): Marketplace of current upload.
 
         Returns:
             dict: pack id as key and loaded metadata of packs as value.
@@ -659,7 +660,7 @@ class Pack(object):
                 print('here2!!!!!!!!!!!!!!!!')
                 if id_set:
                     print('here3!!!!!!!!!!!!!!!!')
-                    if not id_set.get('Packs', {}).get(dependency_pack_id):
+                    if marketplace not in id_set.get('Packs', {}).get(dependency_pack_id, {}).get('marketplaces'):
                         print('here4!!!!!!!!!!!!!!!!')
                         # Case 2: the dependency is not in the index since it is not a part of the current marketplace
                         logging.warning(f"{self._pack_name} pack dependency with id {dependency_pack_id} is not part of"
@@ -1943,7 +1944,7 @@ class Pack(object):
         )
 
     def format_metadata(self, index_folder_path, packs_dependencies_mapping, build_number, commit_hash,
-                        pack_was_modified, statistics_handler, pack_names=None, id_set=None,
+                        pack_was_modified, statistics_handler, pack_names=None, id_set=None, marketplace='xsoar',
                         format_dependencies_only=False):
         """ Re-formats metadata according to marketplace metadata format defined in issue #19786 and writes back
         the result.
@@ -1957,6 +1958,7 @@ class Pack(object):
             statistics_handler (StatisticsHandler): The marketplace statistics handler
             pack_names (set): List of all pack names.
             id_set (dict): Dict of id_set.json
+            marketplace (str): Marketplace of current upload.
             format_dependencies_only (bool): Indicates whether the metadata formation is just for formatting the
              dependencies or not.
 
@@ -1980,7 +1982,7 @@ class Pack(object):
             logging.info(f"Loading pack dependencies for {self._pack_name} pack")
             print(f'{len(id_set.keys())}!!!!!!!!!!!!!!!!')
             dependencies_data, is_missing_dependencies = \
-                self._load_pack_dependencies(index_folder_path, pack_names, id_set)
+                self._load_pack_dependencies(index_folder_path, pack_names, id_set, marketplace)
 
             self._enhance_pack_attributes(index_folder_path, pack_was_modified, dependencies_data, statistics_handler,
                                           format_dependencies_only)
