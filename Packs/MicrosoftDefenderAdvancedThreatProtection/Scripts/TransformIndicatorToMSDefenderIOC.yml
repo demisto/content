@@ -5,11 +5,21 @@ args:
   name: query
   required: false
   secret: false
-- default: false
-  description: A comma-separated list of fields in the object to ignore.
+- auto: PREDEFINED
+  default: false
+  description: The action that will be taken if the indicator will be discovered in
+    the organization.
   isArray: false
-  name: dontPopulateFields
-  required: false
+  name: action
+  predefined:
+  - Warn
+  - Block
+  - Audit
+  - Alert
+  - AlertAndBlock
+  - BlockAndRemediate
+  - Allowed
+  required: true
   secret: false
 - default: false
   defaultValue: '10000'
@@ -20,41 +30,95 @@ args:
   secret: false
 - default: false
   defaultValue: '0'
-  description: The results offset page. Only change when the number
-    of the results exceed the limit.
+  description: The results offset page. Only change when the number of the results
+    exceed the limit.
   isArray: false
   name: offset
   required: false
   secret: false
-- default: false
-  description: A comma-separated list of fields to hash. Supports wildcard "*".
-  isArray: false
-  name: fieldsToHash
-  required: false
-  secret: false
-- default: false
-  defaultValue: id,score,investigationIDs
-  description: A comma-separated list of fields in the object to poplulate. Defaults are id, score, and investigationIDs.
-  isArray: false
-  name: populateFields
-  required: false
-  secret: false
-comment: Transform a XSOAR indicator into a Microsoft Defender for Endpoint IOC
+comment: Transform a XSOAR indicator into a Microsoft Defender for Endpoint IOC. The
+  output (at TransformIndicatorToMSDefenderIOC.JsonOutput) is a json represents the
+  indicators in MSDE format. This json can be the input for the *microsoft-atp-indicator-batch-update*
+  command.
 commonfields:
   id: TransformIndicatorToMSDefenderIOC
   version: -1
 enabled: false
 name: TransformIndicatorToMSDefenderIOC
 outputs:
-- contextPath: BaseScript.Output
-  description: '[Enter a description of the data returned in this output.]'
+- contextPath: TransformIndicatorToMSDefenderIOC.JsonOutput
+  description: Json output of the indicators. Should be the input for the *microsoft-atp-indicator-batch-update*.
+  type: String
+- contextPath: TransformIndicatorToMSDefenderIOC.Indicators.indicatorValue
+  description: The value of the Indicator.
+  type: String
+- contextPath: TransformIndicatorToMSDefenderIOC.Indicators.indicatorType
+  description: 'Type of the indicator. Possible values are: FileSha1, FileSha256,
+    FileMd5, CertificateThumbprint, IpAddress, DomainName, Url'
+  type: String
+- contextPath: TransformIndicatorToMSDefenderIOC.Indicators.lastUpdateTime
+  description: The last time the indicator was updated.
+  type: String
+- contextPath: TransformIndicatorToMSDefenderIOC.Indicators.lastUpdatedBy
+  description: Identity of the user/application that last updated the indicator.
+  type: String
+- contextPath: TransformIndicatorToMSDefenderIOC.Indicators.action
+  description: 'The action that will be taken if the indicator will be discovered
+    in the organization. Possible values are: "Warn", "Block", "Audit", "Alert", "AlertAndBlock",
+    "BlockAndRemediate" and "Allowed".'
+  type: String
+- contextPath: TransformIndicatorToMSDefenderIOC.Indicators.title
+  description: Indicator title.
+  type: String
+- contextPath: TransformIndicatorToMSDefenderIOC.Indicators.expirationTime
+  description: The expiration time of the indicator.
+  type: String
+- contextPath: TransformIndicatorToMSDefenderIOC.Indicators.description
+  description: Description of the indicator.
+  type: String
+- contextPath: TransformIndicatorToMSDefenderIOC.Indicators.creationTimeDateTimeUtc
+  description: The date and time when the indicator was created.
+  type: String
+- contextPath: TransformIndicatorToMSDefenderIOC.Indicators.Severity
+  description: 'The severity of the indicator. possible values are: Informational,
+    Low, Medium and High.'
+  type: String
+- contextPath: TransformIndicatorToMSDefenderIOC.Indicators.application
+  description: The application associated with the indicator.
+  type: String
+- contextPath: TransformIndicatorToMSDefenderIOC.Indicators.externalID
+  description: Id the customer can submit in the request for custom correlation.
+  type: String
+- contextPath: TransformIndicatorToMSDefenderIOC.Indicators.sourceType
+  description: 'User in case the Indicator created by a user. "AadApp" in case it
+    submitted using automated application via the API.'
+  type: String
+- contextPath: TransformIndicatorToMSDefenderIOC.Indicators.createdBySource
+  description: The name of the user or application that submitted the indicator.
+  type: String
+- contextPath: TransformIndicatorToMSDefenderIOC.Indicators.createdBy
+  description: Unique identity of the user or application that submitted the indicator.
+  type: String
+- contextPath: TransformIndicatorToMSDefenderIOC.Indicators.recommendedActions
+  description: Recommended actions for the indicator.
+  type: String
+- contextPath: TransformIndicatorToMSDefenderIOC.Indicators.rbacGroupNames
+  description: RBAC device group names where the indicator is exposed and active.
+    Empty list in case it exposed to all devices.
+  type: Unknown
+- contextPath: TransformIndicatorToMSDefenderIOC.Indicators.rbacGroupIds
+  description: RBAC device group ID's where the indicator is exposed and active. Empty
+    list in case it exposed to all devices.
+  type: Unknown
+- contextPath: TransformIndicatorToMSDefenderIOC.Indicators.generateAlert
+  description: True if alert generation is required, False if this indicator should
+    not generate an alert.
   type: String
 script: '-'
 system: false
-tags:
-- basescript
-timeout: '0'
 type: python
 subtype: python3
-dockerimage: demisto/python3:3.9.7.24076
+dockerimage: demisto/python3:3.10.1.25933
 fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

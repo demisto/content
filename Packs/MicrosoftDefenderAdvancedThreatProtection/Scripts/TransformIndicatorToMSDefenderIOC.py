@@ -1,37 +1,115 @@
-"""Base Script for Cortex XSOAR (aka Demisto)
-
-This is an empty script with some basic structure according
-to the code conventions.
-
-MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
-
-Developer Documentation: https://xsoar.pan.dev/docs/welcome
-Code Conventions: https://xsoar.pan.dev/docs/integrations/code-conventions
-Linting: https://xsoar.pan.dev/docs/integrations/linting
-
-"""
-
-import demistomock as demisto
 from CommonServerPython import *
-from CommonServerUserPython import *
-
-from typing import Dict, Any
 import traceback
+
+POPULATE_INDICATOR_FIELDS = ["value", "indicator_type", "applications", "user", "firstSeen",
+                             "expiration", "lastSeen", "score", "title", "description"]
+
+INDICATOR_FIELDS_TO_MSDE_IOC = {
+    "value": "indicatorValue",
+    "indicator_type": "indicatorType",
+    "applications": "application",
+    "user": "createdBy",
+    "firstSeen": "creationTimeDateTimeUtc",
+    "expiration": "expirationTime",
+    "lastSeen": "lastUpdateTime",
+    "score": "Severity",
+    "title": "title",
+    "description": "description",
+    # enter (hard-coded) your wanted indicator arguments per MS docs (make sure to remove the '#'):
+    # {https://docs.microsoft.com/en-us/microsoft-365/security/defender-endpoint/ti-indicator?view=o365-worldwide} ##
+    # "" : "externalID",
+    # "" : "sourceType",
+    # "" : "lastUpdatedBy",
+    # "" : "recommendedActions",
+    # "" : "rbacGroupNames",
+    # "" : "rbacGroupIds",
+    # "" : "generateAlert",
+    # "" : "createdBySource",
+}
+
+# feel free to change it hard-coded.
+# Possible values in MSDE are: Informational, Low, Medium and High
+DBOT_SCORE_TO_MSDE_SEVERITY = {
+    Common.DBotScore.BAD: "High",
+    Common.DBotScore.SUSPICIOUS: "Medium",
+    Common.DBotScore.GOOD: "Informational",
+    Common.DBotScore.NONE: "Informational",
+}
+
+
+def convert_unique_fields(ioc, action):
+    ioc['Severity'] = DBOT_SCORE_TO_MSDE_SEVERITY[ioc.get('Severity')]  # XSOAR indicators always have score
+    if ioc.get('indicatorType'):
+        indicator_type = ioc.get('indicatorType')
+        indicator_value = ioc.get('indicatorValue', "")
+        if indicator_type == 'File':
+            hash_type = get_hash_type(indicator_value)
+            if hash_type == 'md5':
+                ioc["indicatorType"] = "FileMd5"
+            elif hash_type == 'sha1':
+                ioc["indicatorType"] = "FileSha1"
+            if hash_type == 'sha256':
+                ioc["indicatorType"] = "FileSha256"
+        elif indicator_type == "IP":
+            ioc["indicatorType"] = "IpAddress"
+        elif indicator_type == "DOMAIN":
+            ioc["indicatorType"] = "DomainName"
+        elif indicator_type == "URL":
+            ioc["indicatorType"] = "Url"
+        else:
+            raise DemistoException(f"The indicator type: {indicator_type} does not exist in MSDE")
+    # if you want to map the action field, you can do it here.
+    # Note: the action arg is mandatory with MSDE api
+    # Possible values are: "Warn", "Block", "Audit", "Alert", "AlertAndBlock", "BlockAndRemediate" and "Allowed".
+    ioc['action'] = action
+    # Note: the title arg is mandatory with MSDE api, please change it
+    if not ioc.get('title'):
+        ioc['title'] = "XSOAR Indicator title"
+    # Note: the description arg is mandatory with MSDE api, please change it
+    if not ioc.get('description'):
+        ioc['description'] = "XSOAR Indicator description"
+    return ioc
+
+
+def get_indicators_by_query():
+    action = demisto.args().pop('action')
+    demisto.args().update({'populateFields': POPULATE_INDICATOR_FIELDS})
+    indicators = execute_command('GetIndicatorsByQuery', args=demisto.args())
+    msde_iocs = []
+    if indicators:
+        for indicator in indicators:
+            # convert XSOAR indicator to MSDE IOC
+            msde_ioc = {INDICATOR_FIELDS_TO_MSDE_IOC[indicator_field]: indicator_value for
+                        (indicator_field, indicator_value) in indicator.items()}
+            msde_ioc = convert_unique_fields(msde_ioc, action)
+            msde_iocs.append(msde_ioc)
+    return msde_iocs
 
 
 def main():
     try:
-        indicators = execute_command('GetIndicatorsByQuery', args=demisto.args())
-
-
-        return_results(indicators)
+        msde_iocs = get_indicators_by_query()
+        human_readable = tableToMarkdown('TransformIndicatorToMSDefenderIOC id done:',
+                                         msde_iocs, removeNull=True,
+                                         headers=list(INDICATOR_FIELDS_TO_MSDE_IOC.values()))
+        # add the output in json format to the output as well
+        # msde_iocs.append({'JsonOutput': json.dumps(msde_iocs)})
+        context = {
+            'TransformIndicatorToMSDefenderIOC.JsonOutput': json.dumps(msde_iocs),
+            'TransformIndicatorToMSDefenderIOC.Indicators': msde_iocs,
+        }
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['text'],
+            'Contents': msde_iocs,
+            'EntryContext': context,
+            'HumanReadable': human_readable,
+        })
 
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute TransformIndicatorToMSDefenderIOC. Error: {str(ex)}')
 
-
-''' ENTRY POINT '''
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
