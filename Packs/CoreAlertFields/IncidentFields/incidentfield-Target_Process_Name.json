@@ -33,11 +33,6 @@
         {
           "cliName": "childprocess",
           "type": "multiSelect"
-        },
-        
-        {
-            "cliName": "childprocess",
-            "type": "multiSelect"
         }
       
     ]

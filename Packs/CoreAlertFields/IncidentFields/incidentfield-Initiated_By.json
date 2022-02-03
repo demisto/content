@@ -39,11 +39,7 @@
           "cliName": "carbonblackesprocessname",
           "type": "shortText"
         },
-        
-        {
-            "cliName": "digitalguardianparentprocessname",
-            "type": "shortText"  
-        },
+       
         {
             "cliName": "digitalguardianprocessname",
             "type": "shortText"
