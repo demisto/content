@@ -106,7 +106,7 @@ script:
     description: Gets indicators from the feed.
     execution: false
     name: google-ip-ranges-get-indicators
-  dockerimage: demisto/py3-tools:0.0.1.25751
+  dockerimage: demisto/py3-tools:0.0.1.26536
   feed: true
   isfetch: false
   longRunning: false
