@@ -5,13 +5,14 @@ from CommonServerUserPython import *
 
 import json
 import requests
+import urllib3
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 params = demisto.params()
-TOKEN = params.get('token') or params.get('api_token', '')
+TOKEN = params.get('token') or (params.get('api_token', {})).get('password')
 # Remove trailing slash to prevent wrong URL path to service
 SERVER = params['url'][:-1] if (params.get('url') and params['url'].endswith('/')) \
     else params.get('url')
@@ -2119,6 +2120,8 @@ def fetch_incidents():
 
 # main added for unit tests
 def main():
+    if not TOKEN:
+        raise Exception('api token must be provided.')
     handle_proxy()
     command = demisto.command()
     LOG(f'Command being called is {command}')

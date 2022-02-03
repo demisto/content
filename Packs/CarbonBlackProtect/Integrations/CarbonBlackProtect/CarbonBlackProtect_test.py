@@ -1,4 +1,27 @@
 from CommonServerPython import *
+import pytest
+from CarbonBlackProtect import main
+import demistomock as demisto
+
+
+@pytest.mark.parametrize('params, expected_result', [
+    ({'url': "https://ec2-34-254-32-78.eu-west-1.compute.amazonaws.com"}, 'api token must be provided.'),
+])
+def test_params(mocker, params, expected_result):
+    """
+    Given:
+      - Configuration parameters
+    When:
+      - One of the required parameters are missed.
+    Then:
+      - Ensure the exception message as expected.
+    """
+    mocker.patch.object(demisto, 'params', return_value=params)
+
+    with pytest.raises(Exception) as e:
+        main()
+
+    assert expected_result in str(e.value)
 
 
 def test_remove_prefix():
