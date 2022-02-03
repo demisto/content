@@ -1,0 +1,7 @@
+{
+        "api_url": "http://test.com/api/v1",
+        "use_ssl": "True",
+        "reliability": "C - Fairly reliable",
+        "create_relationships": true,
+        "max_num_of_relationships": 1
+}
