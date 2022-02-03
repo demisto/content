@@ -32,7 +32,12 @@
     "Aliases": [
         {
           "cliName": "parentprocess",
-          "type": "multiSelect"
+          "type": "shortText"
+        },
+         
+        {
+            "cliName": "digitalguardianparentprocessname",
+            "type": "shortText"  
         }
     ]
 }
