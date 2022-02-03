@@ -33,6 +33,11 @@
         {
           "cliName": "parentprocess",
           "type": "shortText"
+        },
+         
+        {
+            "cliName": "digitalguardianparentprocessname",
+            "type": "shortText"  
         }
     ]
 }
