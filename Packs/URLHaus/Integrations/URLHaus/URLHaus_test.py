@@ -36,12 +36,12 @@ def test_url_command(mocker, requests_mock, query_status, tags, ):
     """
     from URLHaus import url_command
 
-    url_to_check = "www.test_url.com"
+    url_to_check = 'www.test_url.com'
     mock_response = util_load_json('test_data/url_command.json')
     mock_params = util_load_json('test_data/params.json')
     mock_response['query_status'] = query_status
     mock_response['tags'] = tags
-    requests_mock.post(f'http://test.com/api/v1/url/',
+    requests_mock.post('http://test.com/api/v1/url/',
                        json=mock_response)
     mocker.patch.object(demisto, 'args',
                         return_value={'url': url_to_check})
