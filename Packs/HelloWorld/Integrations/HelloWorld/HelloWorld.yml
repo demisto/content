@@ -111,7 +111,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Filter by alert type
+      description: Filter by alert type!
       isArray: false
       name: alert_type
       required: false
