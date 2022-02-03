@@ -105,8 +105,7 @@ tasks:
         simple: /contentpacks/installed-expired
       using:
         complex:
-          root: incident
-          accessor: demistorestapiname
+          root: inputs.demisto_rest_api_name
     separatecontext: false
     skipunavailable: false
     task:
