@@ -9,6 +9,7 @@ import httplib2
 import urllib.parse
 from googleapiclient.discovery import build, Resource
 from oauth2client import service_account
+from typing import Optional
 
 # This is a message in the oath2client branch
 SERVICE_ACCOUNT_FILE = 'token.json'
@@ -282,6 +283,34 @@ def parse_sheets_for_get_response(sheets: list, include_grid_data: bool) -> list
     return sheet_lst
 
 
+def default_ranges_if_not_specified(spreadsheet: str, ranges: str, include_grid_data: bool, service: Resource) -> \
+        Optional[str]:
+    """
+        Args:
+            ranges: (str) A Google A1 notation ranges
+            include_grid_data: (bool) argument specified by the user
+            spreadsheet (str): The spreadsheet ID
+            service (Google Resource): google-api discovery resource (google api client)
+        Returns:
+            (str) - A1 notation: The original ranges if specified or a default range if not
+
+        Action:
+            if include_grid_data is specified without a range, instead of overflowing the server with
+            all the spreadsheet data we will take only a default range 500 rows 120 columns
+    """
+    if not ranges and include_grid_data:
+        response = service.spreadsheets().get(spreadsheetId=spreadsheet).execute()
+        first_sheet_title = response.get("sheets", [])[0].get("properties", {}).get("title")
+        default_range = first_sheet_title + "!A0:T500"
+        return default_range
+    else:
+        return ranges
+
+
+
+
+
+
 # COMMANDS
 
 
@@ -386,6 +415,7 @@ def get_spreadsheet(service: Resource, args: dict) -> CommandResults:
         markdown = '### Success\n\n' + markdown
         return CommandResults(readable_output=markdown)
     else:
+        ranges = default_ranges_if_not_specified(spread_sheets_ids[0], ranges, include_grid_data)
         request = service.spreadsheets().get(spreadsheetId=spread_sheets_ids[0], ranges=ranges,
                                              includeGridData=include_grid_data)
         response = request.execute()

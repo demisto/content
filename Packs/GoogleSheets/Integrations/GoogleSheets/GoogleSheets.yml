@@ -24,7 +24,7 @@ configuration:
   type: 8
   additionalinfo:
 - name: user_id
-  display: User Id - Associate to Google Drive
+  display: Email - Associate to Google Drive
   required: false
   defaultvalue:
   type: 0
@@ -36,7 +36,7 @@ configuration:
 description: Google Sheets is a spreadsheet program that is part of the free web-based Google
   applications to create and format spreadsheets. Use this integration to create and
   modify spreadsheets.
-display: GoogleSheets
+display: Google Sheets
 name: GoogleSheets
 script:
   commands:
@@ -359,7 +359,7 @@ script:
       - "true"
       - "false"
     - name: sheet_id
-      description: ID if sheet to delete.
+      description: ID of sheet to delete.
       required: true
       isArray: false
       defaultValue: ""
@@ -581,7 +581,7 @@ script:
       isArray: false
       defaultValue: ""
     - name: data_kind
-      description: Field type. 
+      description: How to interpret the data inserted in data argument.
       required: true
       isArray: false
       defaultValue: ""
@@ -671,7 +671,7 @@ script:
       - "True"
       - "False"
     - name: match_entire_cell
-      description: True if the find value matches the entire cell.
+      description: True if the find value should match the entire cell.
       required: false
       isArray: false
       defaultValue: ""
@@ -680,7 +680,7 @@ script:
       - "True"
       - "False"
     - name: range_sheet_id
-      description: The sheet this range is in.
+      description: The sheet this range is on.
       required: false
       isArray: false
       defaultValue: ""

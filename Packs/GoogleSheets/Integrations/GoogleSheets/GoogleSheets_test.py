@@ -196,6 +196,34 @@ def test_markdown_single_get(mocker):
     assert markdown == markdown_assert
 
 
+grid_ranges_combinations = [(True, "Sheet1!A1:D5", "Sheet1!A1:D5"),
+                            (True, None, "new sheet!A0:T500"),
+                            (False, "Sheet1!A1:D5", "Sheet1!A1:D5"),
+                            (False, None, None)]
+
+
+@pytest.mark.parametrize("include_grid_data ,ranges, expected", grid_ranges_combinations)
+def test_default_ranges_if_not_specified(include_grid_data, ranges, expected):
+    '''
+
+           Given:
+               - spreadsheetId, ranges, include_grid_data Google service
+
+           When:
+               - we want to check if include_grid_data was specified but not the ranges argument
+
+           Then:
+               - if include_grid_data is true and ranges not specified return default ranges else return ranges
+
+    '''
+
+    path = 'test_data/helper_functions/test_default_ranges_if_not_specified/'
+    http = HttpMock(path + 'response.json', {'status': '200'})
+    api_key = 'your_api_key'
+    service = build('sheets', 'v4', http=http, developerKey=api_key)
+    res = GoogleSheets.default_ranges_if_not_specified("fake", ranges, include_grid_data, service)
+    assert res == expected
+
 # CREATE SPREADSHEET TEST
 def test_create_spreadsheet():
     '''

@@ -1,7 +1,7 @@
 Google Sheets is a spreadsheet program that is part of the free web-based Google applications to create and format spreadsheets. Use this integration to create and modify spreadsheets.
 This integration was integrated and tested with version 4 of Google Sheets API.
 
-## Configure GoogleSheets on Cortex XSOAR
+## Configure Google Sheets on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for GoogleSheets.
