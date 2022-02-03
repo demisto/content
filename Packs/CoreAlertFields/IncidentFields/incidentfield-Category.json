@@ -27,7 +27,7 @@
     "threshold": 72,
     "fromVersion": "6.5.0",
 	"x2_fields": "alert_category",
-    "aliases": [
+    "Aliases": [
         {
             "cliName": "alertcategory",
             "type": "shortText"
