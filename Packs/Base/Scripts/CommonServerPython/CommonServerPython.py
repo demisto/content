@@ -8890,6 +8890,41 @@ def shorten_string_for_printing(source_string, max_length=64):
         return ret_value
 
 
+def calculate_fetch_run_time_with_look_back(last_run={}, look_back=0, first_fetch='', timezone=0):
+    last_run_time = last_run and 'time' in last_run and last_run['time']
+    now = datetime.utcnow() + timedelta(hours=timezone)
+    if not last_run_time:
+        last_run_time, now = parse_date_range(first_fetch, timezone=timezone)
+
+    if look_back > 0:
+        if now - last_run_time < look_back:
+            last_run_time = now - timedelta(minutes=look_back)
+
+    return last_run_time, now
+
+
+def look_for_incidents_in_last_run(last_run, fetch_limit):
+    incidents = []
+    if 'incidents' in last_run and len(last_run['incidents']) > 0:
+        incidents = last_run['incidents'][:fetch_limit]
+
+        if len(incidents) == fetch_limit:
+            last_run['incidents'] = last_run['incidents'][fetch_limit:]
+        else:
+            set_next_run()
+    
+    return incidents
+
+
+def set_next_fetch_run(last_run, incidents, fetch_limit, now, id_field='id'):
+    incident_ids = [incident[id_field] for incident in incidents]
+    if len(incidents) == 0:
+        new_last_run = {'time': now, 'incidents': [], 'found_incident_ids': last_run['found_incident_ids']}
+    elif len(incidents) < fetch_limit:
+        new_last_run = {'time': now, 'incidents': [], 'found_incident_ids': last_run['found_incident_ids']}
+
+
+
 ###########################################
 #     DO NOT ADD LINES AFTER THIS ONE     #
 ###########################################
