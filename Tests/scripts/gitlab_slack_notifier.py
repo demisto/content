@@ -13,7 +13,8 @@ from Tests.scripts.utils.log_util import install_logging
 DEMISTO_GREY_ICON = 'https://3xqz5p387rui1hjtdv1up7lw-wpengine.netdna-ssl.com/wp-content/' \
                     'uploads/2018/07/Demisto-Icon-Dark.png'
 ROOT_ARTIFACTS_FOLDER = os.getenv('ARTIFACTS_FOLDER', './artifacts')
-ARTIFACTS_FOLDER_XSOAR = os.getenv('ARTIFACTS_FOLDER_XSOAR', './artifacts')
+ARTIFACTS_FOLDER_XSOAR = os.getenv('ARTIFACTS_FOLDER_XSOAR', './artifacts/xsoar')
+ARTIFACTS_FOLDER_MPV2 = os.getenv('ARTIFACTS_FOLDER_MPV2', './artifacts/marketplacev2')
 CONTENT_CHANNEL = 'dmst-content-team'
 GITLAB_PROJECT_ID = os.getenv('CI_PROJECT_ID') or 2596  # the default is the id of the content repo in code.pan.run
 GITLAB_SERVER_URL = os.getenv('CI_SERVER_URL', 'https://code.pan.run')  # disable-secrets-detection
@@ -34,7 +35,6 @@ def options_handler():
         choices=WORKFLOW_TYPES)
     parser.add_argument('-p', '--pipeline_id', help='The pipeline id to check the status of', required=True)
     parser.add_argument('-c', '--ci_token', help='The token for circleci/gitlab', required=True)
-    parser.add_argument('--marketplace_artifacts', help="The path to the ci artifacts directory")
 
     parser.add_argument('-s', '--slack_token', help='The token for slack', required=True)
     parser.add_argument(
@@ -152,7 +152,7 @@ def bucket_upload_results(bucket_artifact_folder):
     return steps_fields
 
 
-def construct_slack_msg(triggering_workflow, pipeline_url, pipeline_failed_jobs, artifact_folder) -> list:
+def construct_slack_msg(triggering_workflow, pipeline_url, pipeline_failed_jobs) -> list:
     title = triggering_workflow
     if pipeline_failed_jobs:
         title += ' - Failure'
@@ -183,11 +183,12 @@ def construct_slack_msg(triggering_workflow, pipeline_url, pipeline_failed_jobs,
 
     # report pack updates
     if 'upload' in triggering_workflow_lower:
-        content_fields += bucket_upload_results(artifact_folder)
+        content_fields += bucket_upload_results(ARTIFACTS_FOLDER_XSOAR)
+        content_fields += bucket_upload_results(ARTIFACTS_FOLDER_MPV2)
 
     # report failing test-playbooks
     if 'content nightly' in triggering_workflow_lower:
-        content_fields += test_playbooks_results(artifact_folder)
+        content_fields += test_playbooks_results(ARTIFACTS_FOLDER_XSOAR)
 
     slack_msg = [{
         'fallback': title,
@@ -224,11 +225,10 @@ def main():
     project_id = options.gitlab_project_id
     pipeline_id = options.pipeline_id
     triggering_workflow = options.triggering_workflow  # ci workflow type that is triggering the slack notifier
-    bucket_artifact_folder = options.marketplace_artifacts
     slack_channel = options.slack_channel
     gitlab_client = gitlab.Gitlab(server_url, private_token=ci_token)
     pipeline_url, pipeline_failed_jobs = collect_pipeline_data(gitlab_client, project_id, pipeline_id)
-    slack_msg_data = construct_slack_msg(triggering_workflow, pipeline_url, pipeline_failed_jobs, bucket_artifact_folder)
+    slack_msg_data = construct_slack_msg(triggering_workflow, pipeline_url, pipeline_failed_jobs)
     slack_client = SlackClient(slack_token)
     username = 'Content GitlabCI'
     slack_client.api_call(
