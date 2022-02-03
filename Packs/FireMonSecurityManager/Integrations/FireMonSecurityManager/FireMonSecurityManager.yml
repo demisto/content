@@ -1,4 +1,3 @@
-beta: false
 category: Authentication
 commonfields:
   id: FireMonSecurityManager
@@ -28,6 +27,11 @@ configuration:
   name: proxy
   required: false
   type: 8
+- defaultvalue: '1'
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
 description: FireMon Security Manager delivers comprehensive rule lifecycle management
   to help you manage and automate every stage of the change management process. Workflows
   can be customized and automated to conform to your security goals and standards,
@@ -36,114 +40,78 @@ display: FireMon Security Manager
 name: FireMonSecurityManager
 script:
   commands:
-  - deprecated: false
+  - arguments: []
     description: Returns authentication token
-    execution: false
-    hidden: false
     name: firemon-user-authentication
     outputs:
     - contextPath: FireMonSecurityManager.Authentication.token
       description: Authentication token
       type: String
   - arguments:
-    - default: false
-      description: Domain Id
-      isArray: false
+    - description: Domain Id
       name: domain_id
       required: true
-      secret: false
     - default: true
       defaultValue: Access Req WF
       description: Workflow Name
-      isArray: false
       name: workflow_name
-      required: false
-      secret: false
-    - default: false
-      description: Add requirement
+    - description: Add requirement
       isArray: true
       name: requirement
-      required: false
-      secret: false
-    - default: false
-      defaultValue: LOW
+    - defaultValue: LOW
       description: Priority of Policy Planner Ticket
-      isArray: false
       name: priority
       required: true
-      secret: false
-    - default: false
-      description: Due Date of Policy Planner Ticket
-      isArray: false
+    - description: Due Date of Policy Planner Ticket
       name: due_date
       required: true
-      secret: false
-    deprecated: false
     description: Creates a ticket in policy planner application
-    execution: false
-    hidden: false
     name: firemon-create-pp-ticket
     outputs:
     - contextPath: FireMonSecurityManager.CreatePPTicket.pp_ticket
       description: Response for Policy Planner Ticket
       type: Unknown
   - arguments:
-    - default: false
-      description: Domain ID
-      isArray: false
+    - description: Domain ID
       name: domain_id
-      required: false
-      secret: false
-    - default: false
-      description: DeviceGroup ID
-      isArray: false
+    - description: DeviceGroup ID
       name: device_group_id
-      required: false
-      secret: false
-    - default: false
-      description: Enter comma seperated destination values
-      isArray: false
+    - description: Enter comma seperated destination values
       name: destinations
-      required: false
-      secret: false
-    - default: false
-      description: Enter comma seperated source values
-      isArray: false
+    - description: Enter comma seperated source values
       name: sources
-      required: false
-      secret: false
-    - default: false
-      description: Enter comma seperated service values
-      isArray: false
+    - description: Enter comma seperated service values
       name: services
-      required: false
-      secret: false
-    - default: false
-      description: PCA
-      isArray: false
+    - description: PCA
       name: action
       required: true
-      secret: false
-    deprecated: false
     description: "PCA- Pre-Change Assessment is process of showing impact of created\
       \ devices changes in early stages before implementing changes to devices. \n\
       We can check the PCA table in Review stage of Policy planner ticket."
-    execution: false
-    hidden: false
     name: firemon-pca
     outputs:
     - contextPath: FireMonSecurityManager.PCA.pca
       description: Response for PCA
       type: Unknown
-  dockerimage: demisto/python3:3.9.8.24399
-  feed: false
+  - arguments:
+    - description: SIQL query to search for security rules.
+      name: q
+      required: true
+    - defaultValue: '10'
+      description: Number of results in the page
+      name: pageSize
+    - defaultValue: '0'
+      description: Page in which to retrieve results
+      name: page
+    description: Searches for security rules using the SIQL language query (limit
+      to 10k)
+    name: firemon-secmgr-secrule-search
+  dockerimage: demisto/python3:3.10.1.25933
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
-  script: '-'
+  script: ''
   subtype: python3
   type: python
+fromversion: 5.5.0
 tests:
 - No tests (auto formatted)
-fromversion: 5.5.0
