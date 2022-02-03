@@ -54,6 +54,39 @@
         {
           "cliName": "sourceips",
           "type": "multiSelect"
+        },
+        {
+          "cliName": "src",
+          "type": "shortText"
+        },
+        {
+          "cliName": "srcs",
+          "type": "multiSelect"
+        },
+        {
+          "cliName": "srcs",
+          "type": "multiSelect"
+        },
+        {
+          "cliName": "devicelocalip",
+          "type": "shortText"
+        },
+        {
+          "cliName": "sourceipv6",
+          "type": "multiSelect"
+        },
+        {
+          "cliName": "threathuntingdetectedip",
+          "type": "multiSelect"
+        },
+        {
+          "cliName": "detectedinternalips",
+          "type": "shortText"
+        },
+        {
+          "cliName": "digitalguardiansourceip",
+          "type": "shortText"
         }
+
     ]
 }
