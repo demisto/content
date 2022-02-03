@@ -644,10 +644,9 @@ class Pack(object):
         dependencies_ids.update(all_level_displayed_dependencies)
 
         if self._pack_name != GCPConfig.BASE_PACK:  # check that current pack isn't Base Pack in order to prevent loop
-            dependencies_ids.add(GCPConfig.BASE_PACK)  # Base pack is always added as pack dependency TODO: check
+            dependencies_ids.add(GCPConfig.BASE_PACK)  # Base pack is always added as pack dependency
 
         for dependency_pack_id in dependencies_ids:
-            #print('here1!!!!!!!!!!!!!!!!')
             dependency_metadata_path = os.path.join(index_folder_path, dependency_pack_id, Pack.METADATA)
 
             if os.path.exists(dependency_metadata_path):
@@ -657,20 +656,14 @@ class Pack(object):
                     dependencies_data_result[dependency_pack_id] = dependency_metadata
 
             elif dependency_pack_id in pack_names:
-                #print('here2!!!!!!!!!!!!!!!!')
                 if id_set:
-                    #print('here3!!!!!!!!!!!!!!!!')
-                    #print(id_set.get('Packs', {}).get(dependency_pack_id, {}))
-                    #print(f'marketplace: {marketplace}')
                     if marketplace not in id_set.get('Packs', {}).get(dependency_pack_id, {}).get('marketplaces'):
-                        #print('here4!!!!!!!!!!!!!!!!')
                         # Case 2: the dependency is not in the index since it is not a part of the current marketplace
                         logging.warning(f"{self._pack_name} pack dependency with id {dependency_pack_id} is not part of"
                                         f" the current marketplace, ignoring dependency (this is probably an optional "
                                         f"dependency).")
 
                 else:
-                    #print('here5!!!!!!!!!!!!!!!!')
                     # Case 3: the dependency is not in the index since it is a new pack, but it is in the id set
                     self._is_missing_dependencies = True
                     logging.warning(f"{self._pack_name} pack dependency with id {dependency_pack_id} "
