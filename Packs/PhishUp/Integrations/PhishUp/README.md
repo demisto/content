@@ -1,6 +1,6 @@
-PhishUp prevents phishing attacks, protects your staff and your brand with AI
+### PhishUp prevents phishing attacks, protects your staff and your brand with AI
 
-If you don't have [PhishUp](https://phishup.co) Api Key please create account on PhishUp and get an Api Key. 
+If you don't have [PhishUp](https://phishup.co) Api Key please create an account on PhishUp and get a free Api Key. 
 Also you can visit and test [PhishUp Web Demo](https://phishup.co).
 
 If you have any question feel free to concat us: [info@phishup.com](info@phishup.co)
@@ -23,10 +23,9 @@ If you have any question feel free to concat us: [info@phishup.com](info@phishup
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-### phishup-investigate-url
+### url
 ***
-Single url investigation
-
+PhishUp Url investigation
 
 #### Base Command
 
@@ -35,14 +34,14 @@ Single url investigation
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| Url | Single URL for phishup investigation. | Required | 
+| Url | URL for phishup investigation. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PhishUp.Result | String | response types "Clean", "Phish", "Error" | 
+| PhishUp.Result | String | response types "Clean", "Phish" | 
 | PhishUp.Score | Number | Phishup Engine Url Score | 
 
 
