@@ -1,5 +1,6 @@
+import demistomock as demisto
 from CommonServerPython import Common
-from Cylance_Protect_v2 import create_dbot_score_entry, translate_score, FILE_THRESHOLD
+from Cylance_Protect_v2 import create_dbot_score_entry, translate_score, FILE_THRESHOLD, load_server_url
 
 THREAT_OUTPUT = {u'cylance_score': -1.0, u'name': u'SysMonitor.exe',
                  u'classification': u'Malware',
@@ -23,6 +24,7 @@ def test_create_dbot_score_entry():
         - calls the function create_dbot_score_entry
     Then
         - checks if dbot_score_entry is from type DBotScore
+
     """
 
     threat = THREAT_OUTPUT
