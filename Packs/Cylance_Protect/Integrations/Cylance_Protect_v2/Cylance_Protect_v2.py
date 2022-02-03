@@ -1012,7 +1012,7 @@ def get_indicators_report():  # pragma: no cover
     demisto.results(fileResult(filename, res.content))
 
 
-def update_device_threats():
+def update_device_threats():  # pragma: no cover
     device_id = demisto.args()['device_id']
     threat_id = demisto.args()['threat_id']
     event = demisto.args()['event']
@@ -1444,7 +1444,7 @@ def fetch_incidents():
     demisto.setLastRun({'time': current_run.isoformat().split('.')[0]})
 
 
-def add_capitalized_hash_to_context(threats_context):
+def add_capitalized_hash_to_context(threats_context):  # pragma: no cover
     """Add capitalized hash keys to the context such as SHA256 and MD5,
     the keys are redundant since they are used for avoiding BC issues.
 

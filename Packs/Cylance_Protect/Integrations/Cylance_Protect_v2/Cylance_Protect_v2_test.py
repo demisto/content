@@ -1,10 +1,8 @@
-import json
-
 import demistomock as demisto
 from CommonServerPython import Common
 from Cylance_Protect_v2 import create_dbot_score_entry, translate_score, FILE_THRESHOLD, \
     get_device, get_device_by_hostname, update_device, get_device_threats, get_policies, create_zone, get_zones,\
-    get_zone, update_zone
+    get_zone, update_zone, get_threat, get_threats
 import Cylance_Protect_v2
 
 THREAT_OUTPUT = {u'cylance_score': -1.0, u'name': u'name',
@@ -23,7 +21,7 @@ THREAT_OUTPUT = {u'cylance_score': -1.0, u'name': u'name',
 DEVICE_OUTPUT = {u'update_available': False,
                  u'date_last_modified': u'2020-11-09T23:10:24',
                  u'distinguished_name': u'',
-                 u'ip_addresses': [u'192.168.95.130'],
+                 u'ip_addresses': [u'1.1.1.1'],
                  u'dlcm_status': u'Unknown',
                  u'background_detection': False,
                  u'id': u'8e836c98-102e-4332-b00d-81dcb7a9b6f7',
@@ -58,7 +56,7 @@ EXPECTED_DEVICE = {'Name': u'DESKTOP-M7E991U',
                    'ID': u'8e836c98-102e-4332-b00d-81dcb7a9b6f7',
                    'DateLastModified': u'2020-11-09T23:10:24',
                    'DateOffline': u'2020-11-09T23:10:21.902',
-                   'IPAddress': [u'192.168.95.130']
+                   'IPAddress': [u'1.1.1.1']
                    }
 
 EXPECTED_HOSTNAME = {'Name': u'DESKTOP-M7E991U',
@@ -76,7 +74,7 @@ EXPECTED_HOSTNAME = {'Name': u'DESKTOP-M7E991U',
                      'DateLastModified': u'2020-11-09T23:10:24',
                      'AgentVersion': u'2.0.1500',
                      'DateOffline': u'2020-11-09T23:10:21.902',
-                     'IPAddress': [u'192.168.95.130']
+                     'IPAddress': [u'1.1.1.1']
                      }
 
 DEVICE_THREAT_OUTPUT = {u'sha256': u'0F427B33B824110427B2BA7BE20740B45EA4DA41BC1416DD55771EDFB0C18F09',
@@ -130,6 +128,7 @@ EXPECTED_ZONES = {u'DateModified': u'2022-02-03T15:52:30',
                   u'PolicyId': u'980fad21-b119-4cc4-ac97-2b2c035b4666',
                   u'Id': u'1998235b-a6ab-4043-86b5-81b0dc63887b'
                   }
+
 
 def test_create_dbot_score_entry():
     """
@@ -361,4 +360,47 @@ def test_update_zone(mocker):
 
     contents = demisto_results.call_args[0][0]
     assert 'Zone was updated successfully.' in contents.get('HumanReadable')
+
+
+def test_get_threat(mocker):
+    """
+    Given
+        - a threat and a dbot score
+    When
+        - calls the function get_device_threats
+    Then
+        - checks if the output is as expected
+    """
+
+    args = {'sha256': '055D7A25DECF6769BF4FB2F3BC9FD3159C8B42972818177E44975929D97292DE', 'threshold': -59}
+    mocker.patch.object(Cylance_Protect_v2, "get_threat_request", return_value=THREAT_OUTPUT)
+    mocker.patch.object(Cylance_Protect_v2, "translate_score", return_value=1)
+
+    mocker.patch.object(demisto, 'args', return_value=args)
+    demisto_results = mocker.patch.object(demisto, 'results')
+    get_threat()
+
+    contents = demisto_results.call_args[0][0]
+    assert u'055D7A25DECF6769BF4FB2F3BC9FD3159C8B42972818177E44975929D97292DE' == \
+           contents.get('EntryContext').get('File')[0].get('SHA256')
+
+
+def get_threats(mocker):
+    """
+        Given
+            - a threat and a dbot score
+        When
+            - calls the function update_device
+        Then
+            - checks if the output is as expected
+    """
+
+    mocker.patch.object(Cylance_Protect_v2, "get_threats_request", return_value={'page_items': [THREAT_OUTPUT]})
+    mocker.patch.object(demisto, 'args', return_value={'threshold': -59})
+    mocker.patch.object(Cylance_Protect_v2, "translate_score", return_value=1)
+    demisto_results = mocker.patch.object(demisto, 'results')
+    get_threats()
+
+    contents = demisto_results.call_args[0][0]
+    assert [EXPECTED_ZONES] == contents.get('EntryContext').get('File')[0].get('SHA256')
 
