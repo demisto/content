@@ -499,9 +499,9 @@ def parse_outputs(
                 extra_sandbox_group_outputs = add_outputs_from_dict(api_res_sandbox, extra_sandbox_fields)
 
                 if extra_sandbox_group_outputs.get('processes'):
-                    for pro in extra_sandbox_group_outputs.get('processes'):
-                        if pro.get('registry'):
-                            del pro['registry']
+                    for process in extra_sandbox_group_outputs.get('processes', []):
+                        if process.get('registry'):
+                            process.pop('registry')
         else:
             # the resources section is a list of strings
             resources_group_outputs = {"resources": api_res.get("resources")}
@@ -898,23 +898,18 @@ def find_submission_id_command(
     return tableToMarkdown("CrowdStrike Falcon X response:", filtered_outputs), entry_context, [response]
 
 
-def get_results_function_args(outputs, extended_data, item_type):
+def get_results_function_args(outputs, extended_data, item_type, interval_in_secs):
     if isinstance(outputs, list):
         outputs = outputs[0]
 
-    results_function_args: dict = {}
-
+    results_function_args: dict = {
+        'ids': outputs.get('submitted_id'),
+        'extended_data': extended_data,
+        'interval_in_seconds': interval_in_secs,
+        'polling': True,
+    }
     if item_type == 'FILE':
-        results_function_args.update({
-            'ids': outputs.get('submitted_id'),
-            'extended_data': extended_data,
-            'submit_file': 'yes'
-        })
-    else:  # URL case
-        results_function_args.update({
-            'ids': outputs.get('submitted_id'),
-            'extended_data': extended_data
-        })
+        results_function_args['submit_file'] = 'yes'
 
     return results_function_args
 
@@ -928,6 +923,17 @@ def pop_polling_related_args(args):
         args.pop('interval_in_seconds')
     if 'polling' in args:
         args.pop('polling')
+
+
+def should_run_upload_function(args):
+    return not args.get('ids')
+
+
+def arrange_args_for_upload_func(args):
+    args.pop('polling')
+    args.pop('interval_in_seconds')
+    extended_data = args.pop('extended_data')
+    return extended_data
 
 
 def run_polling_command(client, args: dict, cmd: str, upload_function: Callable, results_function: Callable, item_type):
@@ -951,24 +957,17 @@ def run_polling_command(client, args: dict, cmd: str, upload_function: Callable,
     ScheduledCommand.raise_error_if_not_supported()
     interval_in_secs = int(args.get('interval_in_seconds', 600))
     # distinguish between the initial run, which is the upload run, and the results run
-    if not args.get('ids'):
+    if should_run_upload_function(args):
         # create new search
-        args.pop('polling')
-        args.pop('interval_in_seconds')
-        extended_data = args.pop('extended_data')
+        extended_data = arrange_args_for_upload_func(args)
         command_results = upload_function(client, **args)
         outputs = command_results.outputs
-        results_function_args = get_results_function_args(outputs, extended_data, item_type)
+        results_function_args = get_results_function_args(outputs, extended_data, item_type, interval_in_secs)
         # schedule next poll
-        polling_args = {
-            'interval_in_seconds': interval_in_secs,
-            'polling': True,
-            **results_function_args,
-        }
         scheduled_command = ScheduledCommand(
             command=cmd,
             next_run_in_seconds=interval_in_secs,
-            args=polling_args,
+            args=results_function_args,
             timeout_in_seconds=6000)
         command_results.scheduled_command = scheduled_command
         return command_results
@@ -1007,19 +1006,8 @@ def submit_uploaded_url_polling_command(client, args):
                                get_full_report_command, 'URL')
 
 
-def should_run_command_as_polling(command, args):
-    is_polling = False
-    if command == 'cs-fx-upload-file' and args.get('polling') and args.get('submit_file'):
-        is_polling = True
-    elif command == 'cs-fx-submit-uploaded-file' and args.get('polling'):
-        is_polling = True
-    elif command == 'cs-fx-submit-url' and args.get('polling'):
-        is_polling = True
-    return is_polling
-
-
 def validate_command_args(command, args):
-    if 'ids' in args:
+    if 'ids' in args:  # for the polling result command
         return
     if command == 'cs-fx-upload-file':
         if 'file' not in args:
@@ -1082,8 +1070,8 @@ def main():
             'cs-fx-find-submission-id': find_submission_id_command
         }
         if command in polling_commands:
-            if should_run_command_as_polling(command, args):
-                validate_command_args(command, args)
+            validate_command_args(command, args)
+            if args.get('polling', '') == 'true':
                 return_results(polling_commands[command](client, args))  # type: ignore[operator]
             else:
                 remove_polling_related_args(args)

@@ -34,7 +34,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Used just for the inner polling flow.
+      description: This ia an internal argument used for the polling process, not to be used by the user.
       isArray: true
       name: ids
       required: false
@@ -82,7 +82,7 @@ script:
       required: false
       secret: false
     - default: false
-      defaultValue: '60'
+      defaultValue: '600'
       description: Interval in seconds between each poll.
       isArray: false
       name: interval_in_seconds
@@ -381,13 +381,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: Used just for the inner polling flow.
+      description: This ia an internal argument used for the polling process, not to be used by the user.
       isArray: true
       name: ids
       required: false
       secret: false
     - default: false
-      defaultValue: '60'
+      defaultValue: '600'
       description: Interval in seconds between each poll.
       isArray: false
       name: interval_in_seconds
@@ -803,7 +803,7 @@ script:
     - contextPath: csfalconx.resource.environment_id
       description: Environment ID.
       type: String
-    - contextPath: csfalconx.resource.sandbox.environment_description
+    - contextPath: csfalconx.resource.snadbox.environment_description
       description: Environment description.
       type: String
     - contextPath: csfalconx.resource.threat_score
@@ -1167,7 +1167,7 @@ script:
       required: false
       secret: false
     - default: false
-      defaultValue: '60'
+      defaultValue: '600'
       description: Interval in seconds between each poll.
       isArray: false
       name: interval_in_seconds
@@ -1184,7 +1184,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Used just for the inner polling flow.
+      description: This ia an internal argument used for the polling process, not to be used by the user.
       isArray: true
       name: ids
       required: false
