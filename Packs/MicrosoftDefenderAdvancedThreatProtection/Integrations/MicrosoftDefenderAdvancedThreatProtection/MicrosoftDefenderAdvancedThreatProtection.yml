@@ -4571,6 +4571,9 @@ script:
     - contextPath: MicrosoftATP.File.Sha1
       description: The SHA1 hash of the file.
       type: String
+    - contextPath: MicrosoftATP.File.MD5
+      description: The MD5 hash of the file.
+      type: String
     - contextPath: MicrosoftATP.File.Sha256
       description: The SHA256 hash of the file.
       type: String
