@@ -1284,4 +1284,15 @@ def test_decode_attachment_payload_base64(payload, answer):
                                                                  ('Inner file', ['output1', 'output2', 'output3'],
                                                                   ('output3', 'output3'))])
 def test_parse_nesting_level(nesting_level_to_parse, output, res):
+    """
+    Given:
+    - parsed email output, nesting_level_to_parse param - All files.
+    - parsed email output, nesting_level_to_parse param - Outer file.
+    - parsed email output, nesting_level_to_parse param - Inner file.
+    When:
+    - Getting all nested emails.
+    - Getting only outer email file.
+    - Getting only inner email file.
+    Then: Validate that returned result as expected.
+    """
     assert parse_nesting_level(nesting_level_to_parse, output) == res
