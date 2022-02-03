@@ -197,7 +197,7 @@ def test_markdown_single_get(mocker):
 
 
 grid_ranges_combinations = [(True, "Sheet1!A1:D5", "Sheet1!A1:D5"),
-                            (True, None, "new sheet!A0:T500"),
+                            (True, None, "new sheet!A1:T500"),
                             (False, "Sheet1!A1:D5", "Sheet1!A1:D5"),
                             (False, None, None)]
 

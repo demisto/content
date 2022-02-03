@@ -301,7 +301,7 @@ def default_ranges_if_not_specified(spreadsheet: str, ranges: str, include_grid_
     if not ranges and include_grid_data:
         response = service.spreadsheets().get(spreadsheetId=spreadsheet).execute()
         first_sheet_title = response.get("sheets", [])[0].get("properties", {}).get("title")
-        default_range = first_sheet_title + "!A0:T500"
+        default_range = first_sheet_title + "!A1:T500"
         return default_range
     else:
         return ranges
@@ -415,7 +415,7 @@ def get_spreadsheet(service: Resource, args: dict) -> CommandResults:
         markdown = '### Success\n\n' + markdown
         return CommandResults(readable_output=markdown)
     else:
-        ranges = default_ranges_if_not_specified(spread_sheets_ids[0], ranges, include_grid_data)
+        ranges = default_ranges_if_not_specified(spread_sheets_ids[0], ranges, include_grid_data, service)
         request = service.spreadsheets().get(spreadsheetId=spread_sheets_ids[0], ranges=ranges,
                                              includeGridData=include_grid_data)
         response = request.execute()

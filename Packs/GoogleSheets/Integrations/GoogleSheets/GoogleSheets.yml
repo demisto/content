@@ -154,6 +154,8 @@ script:
       secret: false
     deprecated: false
     description: Returns the spreadsheet of the given ID.
+      If include_grid_data is set to true and no ranges given,
+      will defaultly return the first 500 rows and 20 columns of the first sheet.
     execution: false
     name: google-sheets-spreadsheet-get
     outputs:
