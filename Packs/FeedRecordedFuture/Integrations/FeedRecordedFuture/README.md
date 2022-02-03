@@ -37,6 +37,7 @@ This integration was integrated and tested with Recorded Future Feed
     | Domain | 2 Hours. |
     | Hash | 1 Day. |
     | URL | 2 Hours. |
+    | Vulnerability | 2 Hours. |
 3. Per instance configuration, it is recommended to use either `connectApi` or `fusion` as a service for chosen indicator type, and not both, as most of the data between both services is duplicated.
 4. The feed size can be change according to the chosen indicator type:
     - IP - As of September 24, 2020, this risk list includes over 5.9k records.
