@@ -17,7 +17,7 @@ tasks:
       description: ""
     nexttasks:
       '#none#':
-      - "15"
+      - "14"
     separatecontext: false
     view: |-
       {
@@ -46,7 +46,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1420
+          "y": 1245
         }
       }
     note: false
@@ -92,7 +92,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 545
+          "y": 370
         }
       }
     note: false
@@ -146,7 +146,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 720
+          "y": 545
         }
       }
     note: false
@@ -202,7 +202,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1245
+          "y": 1070
         }
       }
     note: false
@@ -271,7 +271,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 1070
+          "y": 895
         }
       }
     note: false
@@ -306,45 +306,6 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "15":
-    id: "15"
-    taskid: b2c719f7-31d3-4b9c-8385-39d0328c6197
-    type: regular
-    task:
-      id: b2c719f7-31d3-4b9c-8385-39d0328c6197
-      version: -1
-      name: Clear Context
-      description: |-
-        Delete field from context.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "14"
-    scriptarguments:
-      all:
-        simple: "yes"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
           "y": 195
         }
       }
@@ -360,7 +321,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1435,
+        "height": 1260,
         "width": 492.5,
         "x": 50,
         "y": 50

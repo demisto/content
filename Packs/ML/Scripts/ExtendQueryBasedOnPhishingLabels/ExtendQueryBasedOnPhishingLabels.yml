@@ -48,6 +48,6 @@ type: python
 dockerimage: demisto/python3:3.10.1.25933
 runas: DBotWeakRole
 runonce: false
-fromversion: 5.5.0
+fromversion: 5.0.0
 tests:
-- No tests (auto formatted)
+- Create Phishing Classifier V2 ML Test
