@@ -28,5 +28,39 @@
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "6.5.0",
-    "x2_fields": "agent_device_domain"
+    "x2_fields": "agent_device_domain",
+    "Aliases": [
+        {
+            "cliName": "chronicledomainname",
+            "type": "shortText"
+        },
+        {
+            "cliName": "cyberpiondomain",
+            "type": "multiSelect"
+        },
+        {
+            "cliName": "destntdomain",
+            "type": "shortText"
+        },
+        {
+            "cliName": "digitalguardiandestinationdnsdomain",
+            "type": "shortText"
+        },
+        {
+            "cliName": "domainoffense",
+            "type": "shortText"
+        },
+        {
+            "cliName": "expansedomain",
+            "type": "shortText"
+        },
+        {
+            "cliName": "fireeyedomainname",
+            "type": "shortText"
+        },
+        {
+            "cliName": "srcntdomain",
+            "type": "shortText"
+        }
+    ]
 }

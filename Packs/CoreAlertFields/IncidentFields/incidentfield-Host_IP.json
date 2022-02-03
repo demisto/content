@@ -21,6 +21,9 @@
     "required": false,
     "sla": 0,
     "system": false,
+    "marketplaces": [
+        "xsoar"
+    ],
     "threshold": 72,
     "type": "multiSelect",
     "unmapped": false,
@@ -41,6 +44,34 @@
         {
         "cliName": "irondefensesrcip",
         "type": "shortText"
+        },
+        {
+         "cliName": "detectedips",
+         "type": "shortText"
+        },
+        {
+         "cliName": "entityipaddress",
+         "type": "shortText"
+        },
+        {
+         "cliName": "expanseip",
+         "type": "shortText"
+        },
+        {
+         "cliName": "f5silverlinebackendserverip",
+         "type": "shortText"
+        },
+        {
+            "cliName": "shadowitip",
+            "type": "shortText"
+        },
+        {
+            "cliName": "sourceip",
+            "type": "shortText"
+        },
+        {
+            "cliName": "sourceips",
+            "type": "shortText"
         }
     ]
 }
