@@ -24,5 +24,86 @@
     "sla": 0,
     "threshold": 72,
     "fromVersion": "6.5.0",
-	"x2_fields": "source_insert_ts"
+	"x2_fields": "source_insert_ts",
+    "Aliases": [
+        {
+          "cliName": "alertattacktime",
+          "type": "shortText"
+        },
+        {
+            "cliName": "dazureactivedirectoryidentityandaccessdetecteddatetime",
+            "type": "shortText"
+        },
+        {
+            "cliName": "bmcremedyforcecreateddate",
+            "type": "date"
+        },
+        {
+            "cliName": "carbonblackesfirsteventtime",
+            "type": "date"
+        },
+        {
+            "cliName": "chronicledetectiontime",
+            "type": "date"
+        },
+        {
+            "cliName": "chronicledetectionwindowstarttime",
+            "type": "date"
+        },
+        {
+            "cliName": "chroniclefirstseen",
+            "type": "date"
+        },
+        {
+            "cliName": "code42alerttimestamp",
+            "type": "date"
+        },
+        {
+            "cliName": "createdtime",
+            "type": "shortText"
+        },
+        {
+            "cliName": "cyberintcreateddate",
+            "type": "shortText"
+        },
+        {
+            "cliName": "datetimeofthebreach",
+            "type": "date"
+        },
+        {
+            "cliName": "detectionupdatetime",
+            "type": "date"
+        },
+        {
+            "cliName": "googlecloudsccfindingcreatetime",
+            "type": "date"
+        },
+        {
+            "cliName": "googlecloudsccfindingeventtime",
+            "type": "date"
+        },
+        {
+            "cliName": "gracaseopendate",
+            "type": "shortText"
+        },
+        {
+            "cliName": "irondefensefirsteventcreated",
+            "type": "date"
+        },
+        {
+            "cliName": "logpointdetectiontimestamp",
+            "type": "number"
+        },
+        {
+            "cliName": "servicenowopeneddate",
+            "type": "date"
+        },
+        {
+            "cliName": "ticketopeneddate",
+            "type": "date"
+        }
+      
+    ]
+
+    
 }

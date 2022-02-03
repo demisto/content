@@ -33,6 +33,17 @@
         {
           "cliName": "processname",
           "type": "shortText"
+        },
+        
+        {
+          "cliName": "carbonblackesprocessname",
+          "type": "shortText"
+        },
+       
+        {
+            "cliName": "digitalguardianprocessname",
+            "type": "shortText"
         }
+        
     ]
 }

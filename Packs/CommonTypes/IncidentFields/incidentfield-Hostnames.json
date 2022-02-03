@@ -19,6 +19,9 @@
   "sla": 0,
   "system": false,
   "threshold": 72,
+  "marketplaces": [
+    "xsoar"
+],
   "type": "multiSelect",
   "unmapped": false,
   "unsearchable": false,

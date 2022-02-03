@@ -529,7 +529,7 @@ script:
       in that order. The certificate and certificate chain are base64 encoded. If
       you want to decode the certificate to see the individual fields, you can use
       OpenSSL.
-  dockerimage: demisto/boto3py3:1.0.0.25480
+  dockerimage: demisto/boto3py3:1.0.0.26417
   runonce: false
   subtype: python3
 tests:
