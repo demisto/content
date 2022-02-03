@@ -28,7 +28,7 @@
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "6.5.0",
-	"x2_fields": "action_file_sha256",
+    "x2_fields": "action_file_sha256",
     "Aliases": [
         {
           "cliName": "sha256",

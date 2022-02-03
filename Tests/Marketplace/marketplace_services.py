@@ -1140,7 +1140,42 @@ class Pack(object):
                     self._aggregation_str = agg_str
             logging.success(f"Uploaded {self._pack_name} pack to {prod_pack_zip_path} path.")
 
+        # handle dependenices zip upload when found in build bucket
+        self.copy_and_upload_dependencies_zip_to_storage(
+            build_bucket,
+            build_bucket_base_path,
+            production_bucket,
+            storage_base_path
+        )
+
         return task_status, False
+
+    def copy_and_upload_dependencies_zip_to_storage(self, build_bucket, build_bucket_base_path, production_bucket,
+                                                    storage_base_path):
+        pack_with_deps_name = f'{self._pack_name}_with_dependencies.zip'
+        build_pack_with_deps_path = os.path.join(build_bucket_base_path, self._pack_name, pack_with_deps_name)
+        existing_bucket_deps_files = [f.name for f in build_bucket.list_blobs(prefix=build_pack_with_deps_path)]
+        if existing_bucket_deps_files:
+            logging.info(f"{self._pack_name} with dependencies was found. path {build_pack_with_deps_path}.")
+
+            # We upload the pack dependencies zip object taken from the build bucket into the production bucket
+            prod_version_pack_deps_zip_path = os.path.join(storage_base_path, self._pack_name, pack_with_deps_name)
+            build_pack_deps_zip_blob = build_bucket.blob(build_pack_with_deps_path)
+
+            try:
+                copied_blob = build_bucket.copy_blob(
+                    blob=build_pack_deps_zip_blob,
+                    destination_bucket=production_bucket,
+                    new_name=prod_version_pack_deps_zip_path
+                )
+                copied_blob.cache_control = "no-cache,max-age=0"  # disabling caching for pack blob
+                self.public_storage_path = copied_blob.public_url
+                dep_task_status = copied_blob.exists()
+                if not dep_task_status:
+                    logging.error(f"Failed in uploading {self._pack_name} pack with dependencies to production gcs.")
+            except Exception as e:
+                pack_deps_zip_suffix = os.path.join(self._pack_name, pack_with_deps_name)
+                logging.exception(f"Failed copying {pack_deps_zip_suffix}. Additional Info: {str(e)}")
 
     def get_changelog_latest_rn(self, changelog_index_path: str) -> Tuple[dict, LooseVersion, str]:
         """
