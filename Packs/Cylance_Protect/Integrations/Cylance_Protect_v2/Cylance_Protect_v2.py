@@ -43,7 +43,7 @@ SCOPE_GLOBAL_LIST_DELETE = 'globallist:delete'
 
 
 # PREREQUISITES
-def load_server_url():
+def load_server_url():   # pragma: no cover
     """ Cleans and loads the server url from the configuration """
     url = demisto.params()['server']
     url = re.sub('/[\/]+$/', '', url)
@@ -61,7 +61,7 @@ USE_SSL = False
 
 
 # HELPERS
-def generate_jwt_times():
+def generate_jwt_times():   # pragma: no cover
     """
     Generates the epoch time window in which the token will be valid
     Returns the current timestamp and the timeout timestamp (in that order)
@@ -73,7 +73,7 @@ def generate_jwt_times():
     return epoch_time, epoch_timeout
 
 
-def api_call(uri, method='post', headers={}, body={}, params={}, accept_404=False):
+def api_call(uri, method='post', headers={}, body={}, params={}, accept_404=False):   # pragma: no cover
 
     """
     Makes an API call to the server URL with the supplied uri, method, headers, body and params
@@ -141,14 +141,14 @@ def threat_to_incident(threat):
     return incident
 
 
-def normalize_score(score):
+def normalize_score(score):   # pragma: no cover
     """
     Translates API raw float (-1 to 1) score to UI score (-100 to 100)
     """
     return score * 100
 
 
-def translate_score(score, threshold):
+def translate_score(score, threshold):   # pragma: no cover
     if score > 0:
         dbot_score = 1
     elif threshold <= score:
@@ -159,7 +159,7 @@ def translate_score(score, threshold):
 
 
 # FUNCTIONS
-def test():
+def test():   # pragma: no cover
     access_token = get_authentication_token()
     if not access_token:
         raise Exception('Unable to get access token')
