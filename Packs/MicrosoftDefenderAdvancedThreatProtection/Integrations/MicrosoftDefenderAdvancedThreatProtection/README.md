@@ -4081,6 +4081,7 @@ File.Read.All
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | MicrosoftATP.File.Sha1 | String | The SHA1 hash of the file. | 
+| MicrosoftATP.File.Md5 | String | The Md5 hash of the file. | 
 | MicrosoftATP.File.Sha256 | String | The SHA256 hash of the file. | 
 | MicrosoftATP.File.GlobalPrevalence | Number | The file prevalence across organization. | 
 | MicrosoftATP.File.GlobalFirstObserved | Date | The first time the file was observed. | 
@@ -4096,7 +4097,7 @@ File.Read.All
 | MicrosoftATP.File.IsValidCertificate | Boolean | Was signing certificate successfully verified by Microsoft Defender ATP agent. | 
 | MicrosoftATP.File.DeterminationValue | String | The file determination value. | 
 | MicrosoftATP.File.DeterminationType | String | The file determination type. | 
-| File.SHA1 | String | The SHA1 hash of the file. | 
+| File.SHA1 | String | The SHA1 hash of the file. |
 | File.SHA256 | String | The SHA256 hash of the file. | 
 | File.Type | String | The file type. | 
 | File.Size | Number | The file size. | 
