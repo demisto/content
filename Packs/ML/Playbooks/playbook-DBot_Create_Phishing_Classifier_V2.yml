@@ -83,7 +83,7 @@ tasks:
       populateFields:
         simple: ${inputs.emailTextKey},${inputs.emailSubjectKey},${inputs.emailTagKey}
       query:
-        simple: ${TranslatePhishingLabelsIntoQuery.extendedQuery}
+        simple: ${ExtendQueryBasedOnPhishingLabels.extendedQuery}
       timeField:
         simple: created
       toDate: {}

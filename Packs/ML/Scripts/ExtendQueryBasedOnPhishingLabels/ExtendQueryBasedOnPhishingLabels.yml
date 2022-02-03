@@ -35,8 +35,9 @@ commonfields:
 enabled: true
 name: ExtendQueryBasedOnPhishingLabels
 outputs:
-- contextPath: TranslatePhishingLabelsIntoQuery.extendedQuery
+- contextPath: ExtendQueryBasedOnPhishingLabels.extendedQuery
   type: Unknown
+  description: The original query estended by a part which takes into account the *phishingLabels*.
 script: '-'
 subtype: python3
 system: false
@@ -47,7 +48,6 @@ type: python
 dockerimage: demisto/python3:3.10.1.25933
 runas: DBotWeakRole
 runonce: false
-pswd: ''
-vcShouldKeepItemLegacyProdMachine: false
-engineinfo: {
-  }
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)
