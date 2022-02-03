@@ -9,7 +9,7 @@
 			"internalMapping": {
 				"status": {
 					"complex": null,
-					"simple": "sourcestatus"
+					"simple": "detectionstatus"
 				}
 			}
 		},

@@ -23,7 +23,7 @@
 					"complex": null,
 					"simple": "device.hostname"
 				},
-				"Source Status": {
+				"Detection Status": {
 					"complex": null,
 					"simple": "status"
 				},
