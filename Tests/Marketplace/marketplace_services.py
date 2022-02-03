@@ -1935,7 +1935,7 @@ class Pack(object):
         )
 
     def format_metadata(self, index_folder_path, packs_dependencies_mapping, build_number, commit_hash,
-                        pack_was_modified, statistics_handler, pack_names=None, id_set_path=None,
+                        pack_was_modified, statistics_handler, pack_names=None, id_set=None,
                         format_dependencies_only=False):
         """ Re-formats metadata according to marketplace metadata format defined in issue #19786 and writes back
         the result.
@@ -1948,7 +1948,7 @@ class Pack(object):
             pack_was_modified (bool): Indicates whether the pack was modified or not.
             statistics_handler (StatisticsHandler): The marketplace statistics handler
             pack_names (set): List of all pack names.
-            id_set_path (str): Path to id_set.json
+            id_set (sict): Dict of id_set.json
             format_dependencies_only (bool): Indicates whether the metadata formation is just for formatting the
              dependencies or not.
 

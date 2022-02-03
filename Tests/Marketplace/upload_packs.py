@@ -22,7 +22,7 @@ from Tests.Marketplace.marketplace_services import init_storage_client, Pack, \
 from Tests.Marketplace.marketplace_statistics import StatisticsHandler
 from Tests.Marketplace.marketplace_constants import PackStatus, Metadata, GCPConfig, BucketUploadFlow, \
     CONTENT_ROOT_PATH, PACKS_FOLDER, PACKS_FULL_PATH, IGNORED_FILES, IGNORED_PATHS, LANDING_PAGE_SECTIONS_PATH
-from demisto_sdk.commands.common.tools import run_command, str2bool
+from demisto_sdk.commands.common.tools import run_command, str2bool, open_id_set_file
 
 from Tests.scripts.utils.log_util import install_logging
 from Tests.scripts.utils import logging_wrapper as logging
@@ -200,7 +200,7 @@ def update_index_folder(index_folder_path: str, pack_name: str, pack_path: str, 
 
 
 def clean_non_existing_packs(index_folder_path: str, private_packs: list, storage_bucket: Any,
-                             storage_base_path: str, marketplace: str = 'xsoar', id_set: str = '') -> bool:
+                             storage_base_path: str, id_set: dict, marketplace: str = 'xsoar') -> bool:
     """ Detects packs that are not part of content repo or from private packs bucket.
 
     In case such packs were detected, problematic pack is deleted from index and from content/packs/{target_pack} path.
@@ -210,8 +210,8 @@ def clean_non_existing_packs(index_folder_path: str, private_packs: list, storag
         private_packs (list): priced packs from private bucket.
         storage_bucket (google.cloud.storage.bucket.Bucket): google storage bucket where index.zip is stored.
         storage_base_path (str): the source path of the packs in the target bucket.
-        id_set: path to current id_set
-        marketplace: name of current markeplace, xsoar or marketplacev2
+        id_set (dict): current id_set
+        marketplace (str): name of current markeplace, xsoar or marketplacev2
 
     Returns:
         bool: whether cleanup was skipped or not.
@@ -231,10 +231,7 @@ def clean_non_existing_packs(index_folder_path: str, private_packs: list, storag
         invalid_packs_names = {(entry.name, entry.path) for entry in os.scandir(index_folder_path) if
                                entry.name not in valid_packs_names and entry.is_dir()}
     else:
-        if id_set:
-            with open(id_set, 'r') as id_set_file:
-                id_set_dict = json.load(id_set_file)
-        valid_packs_names = set(id_set_dict.get('Packs', {}).keys())
+        valid_packs_names = set(id_set.get('Packs', {}).keys())
         # search for invalid packs folder inside index
         invalid_packs_names = {(entry.name, entry.path) for entry in os.scandir(index_folder_path) if
                                entry.name not in valid_packs_names and entry.is_dir()}
@@ -758,54 +755,6 @@ Total number of packs: {len(successful_packs + skipped_packs + failed_packs)}
         add_pr_comment(pr_comment)
 
 
-def option_handler():
-    """Validates and parses script arguments.
-
-    Returns:
-        Namespace: Parsed arguments object.
-
-    """
-    parser = argparse.ArgumentParser(description="Store packs in cloud storage.")
-    # disable-secrets-detection-start
-    parser.add_argument('-pa', '--packs_artifacts_path', help="The full path of packs artifacts", required=True)
-    parser.add_argument('-idp', '--id_set_path', help="The full path of id_set.json", required=False)
-    parser.add_argument('-e', '--extract_path', help="Full path of folder to extract wanted packs", required=True)
-    parser.add_argument('-b', '--bucket_name', help="Storage bucket name", required=True)
-    parser.add_argument('-s', '--service_account',
-                        help=("Path to gcloud service account, is for circleCI usage. "
-                              "For local development use your personal account and "
-                              "authenticate using Google Cloud SDK by running: "
-                              "`gcloud auth application-default login` and leave this parameter blank. "
-                              "For more information go to: "
-                              "https://googleapis.dev/python/google-api-core/latest/auth.html"),
-                        required=False)
-    parser.add_argument('-d', '--pack_dependencies', help="Full path to pack dependencies json file.", required=False)
-    parser.add_argument('-p', '--pack_names',
-                        help=("Target packs to upload to gcs. Optional values are: `All`, "
-                              "`Modified` or csv list of packs "
-                              "Default is set to `All`"),
-                        required=False, default="All")
-    parser.add_argument('-n', '--ci_build_number',
-                        help="CircleCi build number (will be used as hash revision at index file)", required=False)
-    parser.add_argument('-o', '--override_all_packs', help="Override all existing packs in cloud storage",
-                        type=str2bool, default=False, required=True)
-    parser.add_argument('-k', '--key_string', help="Base64 encoded signature key used for signing packs.",
-                        required=False)
-    parser.add_argument('-sb', '--storage_base_path', help="Storage base path of the directory to upload to.",
-                        required=False)
-    parser.add_argument('-rt', '--remove_test_playbooks', type=str2bool,
-                        help='Should remove test playbooks from content packs or not.', default=True)
-    parser.add_argument('-bu', '--bucket_upload', help='is bucket upload build?', type=str2bool, required=True)
-    parser.add_argument('-pb', '--private_bucket_name', help="Private storage bucket name", required=False)
-    parser.add_argument('-c', '--ci_branch', help="CI branch of current build", required=True)
-    parser.add_argument('-f', '--force_upload', help="is force upload build?", type=str2bool, required=True)
-    parser.add_argument('-dz', '--create_dependencies_zip', type=str2bool, help="Upload packs with dependencies zip",
-                        required=False)
-    parser.add_argument('-mp', '--marketplace', help="marketplace version", default='xsoar')
-    # disable-secrets-detection-end
-    return parser.parse_args()
-
-
 def add_pr_comment(comment: str):
     """Add comment to the pull request.
 
@@ -1111,11 +1060,59 @@ def upload_packs_with_dependencies_zip(extract_destination_path, packs_dependenc
         logging.error(f"Failed uploading packs with dependencies: {e}")
 
 
+def option_handler():
+    """Validates and parses script arguments.
+
+    Returns:
+        Namespace: Parsed arguments object.
+
+    """
+    parser = argparse.ArgumentParser(description="Store packs in cloud storage.")
+    # disable-secrets-detection-start
+    parser.add_argument('-pa', '--packs_artifacts_path', help="The full path of packs artifacts", required=True)
+    parser.add_argument('-idp', '--id_set_path', help="The full path of id_set.json", required=True)
+    parser.add_argument('-e', '--extract_path', help="Full path of folder to extract wanted packs", required=True)
+    parser.add_argument('-b', '--bucket_name', help="Storage bucket name", required=True)
+    parser.add_argument('-s', '--service_account',
+                        help=("Path to gcloud service account, is for circleCI usage. "
+                              "For local development use your personal account and "
+                              "authenticate using Google Cloud SDK by running: "
+                              "`gcloud auth application-default login` and leave this parameter blank. "
+                              "For more information go to: "
+                              "https://googleapis.dev/python/google-api-core/latest/auth.html"),
+                        required=False)
+    parser.add_argument('-d', '--pack_dependencies', help="Full path to pack dependencies json file.", required=False)
+    parser.add_argument('-p', '--pack_names',
+                        help=("Target packs to upload to gcs. Optional values are: `All`, "
+                              "`Modified` or csv list of packs "
+                              "Default is set to `All`"),
+                        required=False, default="All")
+    parser.add_argument('-n', '--ci_build_number',
+                        help="CircleCi build number (will be used as hash revision at index file)", required=False)
+    parser.add_argument('-o', '--override_all_packs', help="Override all existing packs in cloud storage",
+                        type=str2bool, default=False, required=True)
+    parser.add_argument('-k', '--key_string', help="Base64 encoded signature key used for signing packs.",
+                        required=False)
+    parser.add_argument('-sb', '--storage_base_path', help="Storage base path of the directory to upload to.",
+                        required=False)
+    parser.add_argument('-rt', '--remove_test_playbooks', type=str2bool,
+                        help='Should remove test playbooks from content packs or not.', default=True)
+    parser.add_argument('-bu', '--bucket_upload', help='is bucket upload build?', type=str2bool, required=True)
+    parser.add_argument('-pb', '--private_bucket_name', help="Private storage bucket name", required=False)
+    parser.add_argument('-c', '--ci_branch', help="CI branch of current build", required=True)
+    parser.add_argument('-f', '--force_upload', help="is force upload build?", type=str2bool, required=True)
+    parser.add_argument('-dz', '--create_dependencies_zip', type=str2bool, help="Upload packs with dependencies zip",
+                        required=False)
+    parser.add_argument('-mp', '--marketplace', help="marketplace version", default='xsoar')
+    # disable-secrets-detection-end
+    return parser.parse_args()
+
+
 def main():
     install_logging('Prepare_Content_Packs_For_Testing.log', logger=logging)
     option = option_handler()
     packs_artifacts_path = option.packs_artifacts_path
-    id_set_path = option.id_set_path
+    id_set = open_id_set_file(option.id_set_path)
     extract_destination_path = option.extract_path
     storage_bucket_name = option.bucket_name
     service_account = option.service_account
@@ -1171,7 +1168,7 @@ def main():
     statistics_handler = StatisticsHandler(service_account, index_folder_path)
 
     # clean index and gcs from non existing or invalid packs
-    clean_non_existing_packs(index_folder_path, private_packs, storage_bucket, storage_base_path, marketplace, id_set_path)
+    clean_non_existing_packs(index_folder_path, private_packs, storage_bucket, storage_base_path, id_set, marketplace)
 
     # Packages that depend on new packs that are not in the previous index.json
     packs_missing_dependencies = []
@@ -1204,7 +1201,7 @@ def main():
         task_status, is_missing_dependencies = pack.format_metadata(index_folder_path,
                                                                     packs_dependencies_mapping, build_number,
                                                                     current_commit_hash, pack_was_modified,
-                                                                    statistics_handler, pack_names, id_set_path)
+                                                                    statistics_handler, pack_names, id_set)
 
         if is_missing_dependencies:
             # If the pack is dependent on a new pack
