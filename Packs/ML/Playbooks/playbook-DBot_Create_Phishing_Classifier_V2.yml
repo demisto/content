@@ -17,7 +17,7 @@ tasks:
       description: ""
     nexttasks:
       '#none#':
-      - "9"
+      - "15"
     separatecontext: false
     view: |-
       {
@@ -46,7 +46,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1070
+          "y": 1420
         }
       }
     note: false
@@ -80,8 +80,10 @@ tasks:
         simple: ${inputs.maxIncidentsToFetchOnTraining}
       outputFormat:
         simple: ${inputs.outputFormat}
+      populateFields:
+        simple: ${inputs.emailTextKey},${inputs.emailSubjectKey},${inputs.emailTagKey}
       query:
-        simple: ${inputs.incidentsQuery}
+        simple: ${TranslatePhishingLabelsIntoQuery.extendedQuery}
       timeField:
         simple: created
       toDate: {}
@@ -90,7 +92,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 195
+          "y": 545
         }
       }
     note: false
@@ -144,7 +146,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 370
+          "y": 720
         }
       }
     note: false
@@ -200,7 +202,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 895
+          "y": 1245
         }
       }
     note: false
@@ -236,7 +238,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 545
+          "y": 895
         }
       }
     note: false
@@ -268,20 +270,98 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 320,
-          "y": 720
+          "x": 162.5,
+          "y": 1070
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+  "14":
+    id: "14"
+    taskid: c6f0a658-35a4-482b-817f-c28b0e060fa7
+    type: regular
+    task:
+      id: c6f0a658-35a4-482b-817f-c28b0e060fa7
+      version: -1
+      name: Extend Query
+      description: 'A helper script for DBot Create Phishing Classifier V2 playbook.
+        This script extends the query based on phishingLabels argument. '
+      scriptName: ExtendQueryBasedOnPhishingLabels
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      phishingLabels:
+        simple: ${inputs.phishingLabels}
+      query:
+        simple: ${inputs.incidentsQuery}
+      tagField:
+        simple: ${inputs.emailTagKey}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: b2c719f7-31d3-4b9c-8385-39d0328c6197
+    type: regular
+    task:
+      id: b2c719f7-31d3-4b9c-8385-39d0328c6197
+      version: -1
+      name: Clear Context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1085,
-        "width": 650,
+        "height": 1435,
+        "width": 492.5,
         "x": 50,
         "y": 50
       }
