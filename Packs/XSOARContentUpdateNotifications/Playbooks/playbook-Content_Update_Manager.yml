@@ -2507,6 +2507,15 @@ inputs:
     Establishes whether to automatically update the content packs if there are available updates or wait for an analyst's approval or the manual update process.
     Specify 'Yes' for auto-update or 'No' for manual update.
   playbookInputQuery:
+- key: demisto_rest_api_name
+  value:
+    complex:
+      root: incident
+      accessor: demistorestapiname
+  required: true
+  description: Defines which instance of a configured Demisto API to use for checking
+    updates against.
+  playbookInputQuery: null
 outputs: []
 tests:
 - No tests (auto formatted)
