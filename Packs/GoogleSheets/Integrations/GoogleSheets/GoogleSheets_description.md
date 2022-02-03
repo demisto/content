@@ -1,5 +1,5 @@
 # Google Sheets Integration
-Google Sheets is a spreadsheet program. part of free cloud-based Google Docs Editors suite offered by Google.
+Google Sheets is a spreadsheet program that is part of the free cloud-based Google Docs Editors suite offered by Google.
 Use this integration to create, get, modify, and format spreadsheets.
 
 ### Configure a service account for Google Sheets - (per project)
@@ -8,7 +8,6 @@ Configure a service account and retrieve its key in JSON format by following the
 ### The scope for this API 
 <https://www.googleapis.com/auth/spreadsheets>
 
-* ***google-Sheets API*** 
-    * <https://developers.google.com/sheets/api>
+**google-Sheets API** - <https://developers.google.com/sheets/api>
 
 
