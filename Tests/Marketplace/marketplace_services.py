@@ -12,6 +12,7 @@ import warnings
 from datetime import datetime, timedelta
 from distutils.util import strtobool
 from distutils.version import LooseVersion
+from pathlib import Path
 from typing import Tuple, Any, Union, List, Dict, Optional
 from zipfile import ZipFile, ZIP_DEFLATED
 
@@ -1038,14 +1039,14 @@ class Pack(object):
                 zip_to_upload_full_path = overridden_upload_path
             else:
                 version_pack_path = os.path.join(storage_base_path, self._pack_name, latest_version)
-                existing_files = [f.name for f in storage_bucket.list_blobs(prefix=version_pack_path)]
+                existing_files = [Path(f.name).name for f in storage_bucket.list_blobs(prefix=version_pack_path)]
 
                 if override_pack:
                     logging.warning(f"Uploading {self._pack_name} pack to storage and overriding the existing pack "
                                     f"files already in storage.")
 
                 elif existing_files:
-                    logging.warning(f"The following packs already exist at storage: {', '.join(existing_files)}")
+                    logging.warning(f"The following packs already exist in storage: {', '.join(existing_files)}")
                     logging.warning(f"Skipping step of uploading {self._pack_name}.zip to storage.")
                     return task_status, True, None
 
@@ -1950,7 +1951,7 @@ class Pack(object):
             pack_was_modified (bool): Indicates whether the pack was modified or not.
             statistics_handler (StatisticsHandler): The marketplace statistics handler
             pack_names (set): List of all pack names.
-            id_set (sict): Dict of id_set.json
+            id_set (dict): Dict of id_set.json
             format_dependencies_only (bool): Indicates whether the metadata formation is just for formatting the
              dependencies or not.
 
@@ -2623,14 +2624,17 @@ class Pack(object):
             return list(bc_version_to_text.values())[0]
         # Handle cases of two or more BC versions in entry.
         text_of_bc_versions, bc_without_text = self._split_bc_versions_with_and_without_text(bc_version_to_text)
-        # Case one: Not even one BC version contains breaking text.
+
         if len(text_of_bc_versions) == 0:
+            # Case 1: Not even one BC version contains breaking text.
             return None
-        # Case two: Only part of BC versions contains breaking text.
+
         elif len(text_of_bc_versions) < len(bc_version_to_text):
+            # Case 2: Only part of BC versions contains breaking text.
             return self._handle_many_bc_versions_some_with_text(release_notes_dir, text_of_bc_versions, bc_without_text)
-        # Case 3: All BC versions contains text.
+
         else:
+            # Case 3: All BC versions contains text.
             # Important: Currently, implementation of aggregating BCs was decided to concat between them
             # In the future this might be needed to re-thought.
             return '\n'.join(bc_version_to_text.values())  # type: ignore[arg-type]
