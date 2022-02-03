@@ -1047,7 +1047,7 @@ class Pack(object):
                                     f"files already in storage.")
 
                 elif existing_files:
-                    logging.warning(f"The following packs already exist in storage: {', '.join(existing_files)}")
+                    logging.warning(f"The following packs already exist in the storage: {', '.join(existing_files)}")
                     logging.warning(f"Skipping step of uploading {self._pack_name}.zip to storage.")
                     return task_status, True, None
 
