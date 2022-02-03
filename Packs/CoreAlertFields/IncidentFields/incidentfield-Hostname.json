@@ -109,6 +109,18 @@
         {
         "cliName": "googlecloudsccfindingsourcepropertieshostname",
         "type": "shortText"
+        },
+        {
+            "cliName": "desthostname",
+            "type": "shortText"
+        },
+        {
+            "cliName": "destinationhostname",
+            "type": "shortText"
+        },
+        {
+            "cliName": "hostnames",
+            "type": "multiSelect"
         }
     ]
 }

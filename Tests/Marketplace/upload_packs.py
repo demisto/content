@@ -200,7 +200,7 @@ def update_index_folder(index_folder_path: str, pack_name: str, pack_path: str, 
 
 
 def clean_non_existing_packs(index_folder_path: str, private_packs: list, storage_bucket: Any,
-                             storage_base_path: str) -> bool:
+                             storage_base_path: str, marketplace: str = 'xsoar', id_set: str = '') -> bool:
     """ Detects packs that are not part of content repo or from private packs bucket.
 
     In case such packs were detected, problematic pack is deleted from index and from content/packs/{target_pack} path.
@@ -210,6 +210,8 @@ def clean_non_existing_packs(index_folder_path: str, private_packs: list, storag
         private_packs (list): priced packs from private bucket.
         storage_bucket (google.cloud.storage.bucket.Bucket): google storage bucket where index.zip is stored.
         storage_base_path (str): the source path of the packs in the target bucket.
+        id_set: path to current id_set
+        marketplace: name of current markeplace, xsoar or marketplacev2
 
     Returns:
         bool: whether cleanup was skipped or not.
@@ -221,16 +223,26 @@ def clean_non_existing_packs(index_folder_path: str, private_packs: list, storag
         logging.info("Skipping cleanup of packs in gcs.")  # skipping execution of cleanup in gcs bucket
         return True
 
-    public_packs_names = {p for p in os.listdir(PACKS_FULL_PATH) if p not in IGNORED_FILES}
-    private_packs_names = {p.get('id', '') for p in private_packs}
-    valid_packs_names = public_packs_names.union(private_packs_names)
-    # search for invalid packs folder inside index
-    invalid_packs_names = {(entry.name, entry.path) for entry in os.scandir(index_folder_path) if
-                           entry.name not in valid_packs_names and entry.is_dir()}
+    if marketplace == 'xsoar':
+        public_packs_names = {p for p in os.listdir(PACKS_FULL_PATH) if p not in IGNORED_FILES}
+        private_packs_names = {p.get('id', '') for p in private_packs}
+        valid_packs_names = public_packs_names.union(private_packs_names)
+        # search for invalid packs folder inside index
+        invalid_packs_names = {(entry.name, entry.path) for entry in os.scandir(index_folder_path) if
+                               entry.name not in valid_packs_names and entry.is_dir()}
+    else:
+        if id_set:
+            with open(id_set, 'r') as id_set_file:
+                id_set_dict = json.load(id_set_file)
+        valid_packs_names = set(id_set_dict.get('Packs', {}).keys())
+        # search for invalid packs folder inside index
+        invalid_packs_names = {(entry.name, entry.path) for entry in os.scandir(index_folder_path) if
+                               entry.name not in valid_packs_names and entry.is_dir()}
 
     if invalid_packs_names:
         try:
-            logging.warning(f"Detected {len(invalid_packs_names)} non existing pack inside index, starting cleanup.")
+            logging.warning(f"Found the following invalid packs: {invalid_packs_names}")
+            logging.warning(f"Starting cleanup of {len(invalid_packs_names)} invalid packs from gcp and index.zip.")
 
             for invalid_pack in invalid_packs_names:
                 invalid_pack_name = invalid_pack[0]
@@ -960,7 +972,7 @@ def map_pack_dependencies_graph(pack_name, first_level_graph, full_dep_graph):
     return full_dep_graph
 
 
-def prepare_and_zip_pack(pack, signature_key, delete_test_playbooks=True):
+def prepare_and_zip_pack(pack, signature_key, marketplace, delete_test_playbooks=True):
     """
     Prepares the pack before zip, and then zips it.
     Args:
@@ -970,7 +982,7 @@ def prepare_and_zip_pack(pack, signature_key, delete_test_playbooks=True):
     Returns:
         (bool): Whether the zip was successful
     """
-    task_status = pack.load_user_metadata()
+    task_status = pack.load_user_metadata(marketplace)
     if not pack.should_upload_to_marketplace:
         logging.warning(f"Skipping {pack.name} pack as it is not supported in the current marketplace.")
         pack.status = PackStatus.NOT_RELEVANT_FOR_MARKETPLACE.name
@@ -1058,7 +1070,7 @@ def upload_packs_with_dependencies_zip(extract_destination_path, packs_dependenc
                 continue
             pack_deps = full_deps_graph[pack.name]
             if not (pack.zip_path and os.path.isfile(pack.zip_path)):
-                if not prepare_and_zip_pack(pack, signature_key):
+                if not prepare_and_zip_pack(pack, signature_key, marketplace):
                     logging.warning(f"Skipping dependencies collection for {pack.name}. Failed zipping")
                     continue
             shutil.copy(pack.zip_path, os.path.join(pack_with_dep_path, pack.name + ".zip"))
@@ -1070,7 +1082,7 @@ def upload_packs_with_dependencies_zip(extract_destination_path, packs_dependenc
                 else:
                     dep_pack = packs_dict[dep_name]
                 if not (dep_pack.zip_path and os.path.isfile(dep_pack.zip_path)):
-                    if not prepare_and_zip_pack(dep_pack, signature_key):
+                    if not prepare_and_zip_pack(dep_pack, signature_key, marketplace):
                         logging.error(f"Skipping dependency {pack.name}. Failed zipping")
                         continue
                 shutil.copy(dep_pack.zip_path, os.path.join(pack_with_dep_path, dep_name + '.zip'))
@@ -1159,14 +1171,14 @@ def main():
     statistics_handler = StatisticsHandler(service_account, index_folder_path)
 
     # clean index and gcs from non existing or invalid packs
-    clean_non_existing_packs(index_folder_path, private_packs, storage_bucket, storage_base_path)
+    clean_non_existing_packs(index_folder_path, private_packs, storage_bucket, storage_base_path, marketplace, id_set_path)
 
     # Packages that depend on new packs that are not in the previous index.json
     packs_missing_dependencies = []
 
     # starting iteration over packs
     for pack in packs_list:
-        if not prepare_and_zip_pack(pack, signature_key, remove_test_playbooks):
+        if not prepare_and_zip_pack(pack, signature_key, marketplace, remove_test_playbooks):
             continue
         task_status = pack.upload_integration_images(storage_bucket, storage_base_path, diff_files_list, True)
         if not task_status:
