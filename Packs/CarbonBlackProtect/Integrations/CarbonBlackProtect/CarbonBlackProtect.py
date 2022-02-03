@@ -10,18 +10,18 @@ import requests
 requests.packages.urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
-
-TOKEN = demisto.params().get('token')
+params = demisto.params()
+TOKEN = params.get('token') or params.get('api_token', '')
 # Remove trailing slash to prevent wrong URL path to service
-SERVER = demisto.params()['url'][:-1] if (demisto.params().get('url') and demisto.params()['url'].endswith('/')) \
-    else demisto.params().get('url')
+SERVER = params['url'][:-1] if (params.get('url') and params['url'].endswith('/')) \
+    else params.get('url')
 BASE_URL = f'{SERVER}/api/bit9platform/v1'
 # Should we use SSL
-USE_SSL = not demisto.params().get('insecure', False)
-FETCH_TIME = demisto.params().get('fetch_time', '3 days')
+USE_SSL = not params.get('insecure', False)
+FETCH_TIME = params.get('fetch_time', '3 days')
 CB_TIME_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 CB_NO_MS_TIME_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
-INCIDENTS_PER_FETCH = int(demisto.params().get('incidents_per_fetch', 15))
+INCIDENTS_PER_FETCH = int(params.get('incidents_per_fetch', 15))
 # Headers to be sent in requests
 HEADERS = {
     'X-Auth-Token': TOKEN,

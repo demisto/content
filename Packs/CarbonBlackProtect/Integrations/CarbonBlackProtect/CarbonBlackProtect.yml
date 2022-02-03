@@ -8,10 +8,11 @@ configuration:
   name: url
   required: true
   type: 0
-- display: API Token
-  name: token
-  required: true
-  type: 4
+- displaypassword: API Token
+  name: api_token
+  required: false
+  type: 9
+  hiddenusername: true
 - defaultvalue: 3 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: fetch_time
@@ -26,6 +27,12 @@ configuration:
   name: fetch_query
   required: false
   type: 0
+- display: API Token
+  name: token
+  required: false
+  type: 4
+  hidden: true
+  additionalinfo: user api_token instead
 - display: Fetch incidents
   name: isFetch
   required: false
