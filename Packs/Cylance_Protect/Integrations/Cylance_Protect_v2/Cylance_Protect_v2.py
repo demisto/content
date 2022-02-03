@@ -77,16 +77,16 @@ def api_call(uri, method='post', headers={}, body={}, params={}, accept_404=Fals
     """
     Makes an API call to the server URL with the supplied uri, method, headers, body and params
     """
-    url = '%s/%s' % (SERVER_URL, uri)  # pragma: no cover
-    res = requests.request(method, url, headers=headers, data=json.dumps(body), params=params, verify=USE_SSL)  # pragma: no cover
-    if res.status_code < 200 or res.status_code >= 300:  # pragma: no cover
-        if res.status_code == 409 and str(res.content).find('already an entry for this threat') != -1:  # pragma: no cover
-            raise Warning(res.content)  # pragma: no cover
-        if not res.status_code == 404 and not accept_404:  # pragma: no cover
-            return_error(  # pragma: no cover
-                'Got status code ' + str(res.status_code) + ' with body ' + res.content + ' with headers ' + str(  # pragma: no cover
-                    res.headers))  # pragma: no cover
-    return json.loads(res.text) if res.text else res.ok  # pragma: no cover
+    url = '%s/%s' % (SERVER_URL, uri)
+    res = requests.request(method, url, headers=headers, data=json.dumps(body), params=params, verify=USE_SSL)
+    if res.status_code < 200 or res.status_code >= 300:
+        if res.status_code == 409 and str(res.content).find('already an entry for this threat') != -1:
+            raise Warning(res.content)
+        if not res.status_code == 404 and not accept_404:
+            return_error(
+                'Got status code ' + str(res.status_code) + ' with body ' + res.content + ' with headers ' + str(
+                    res.headers))
+    return json.loads(res.text) if res.text else res.ok
 
 
 def get_authentication_token(scope=None):  # pragma: no cover
@@ -95,29 +95,29 @@ def get_authentication_token(scope=None):  # pragma: no cover
     Returns the received API access token
     """
     # Generate token ID
-    token_id = str(uuid.uuid4())  # pragma: no cover
+    token_id = str(uuid.uuid4())
 
     # Generate current time & token timeout
-    epoch_time, epoch_timeout = generate_jwt_times()  # pragma: no cover
+    epoch_time, epoch_timeout = generate_jwt_times()
     # Token claims
-    claims = {  # pragma: no cover
-        'exp': epoch_timeout,  # pragma: no cover
-        'iat': epoch_time,  # pragma: no cover
-        'iss': 'http://cylance.com',  # pragma: no cover
-        'sub': APP_ID,  # pragma: no cover
-        'tid': TID,  # pragma: no cover
-        'jti': token_id  # pragma: no cover
+    claims = {
+        'exp': epoch_timeout,
+        'iat': epoch_time,
+        'iss': 'http://cylance.com',
+        'sub': APP_ID,
+        'tid': TID,
+        'jti': token_id
     }
 
-    if scope:  # pragma: no cover
-        claims['scp'] = scope  # pragma: no cover
+    if scope:
+        claims['scp'] = scope
 
     # Encode the token
-    encoded = jwt.encode(claims, APP_SECRET, algorithm='HS256')  # pragma: no cover
-    payload = {'auth_token': encoded}  # pragma: no cover
-    headers = {'Content-Type': 'application/json; charset=utf-8'}  # pragma: no cover
-    res = api_call(method='post', uri=URI_AUTH, body=payload, headers=headers)  # pragma: no cover
-    return res['access_token']  # pragma: no cover
+    encoded = jwt.encode(claims, APP_SECRET, algorithm='HS256')
+    payload = {'auth_token': encoded}
+    headers = {'Content-Type': 'application/json; charset=utf-8'}
+    res = api_call(method='post', uri=URI_AUTH, body=payload, headers=headers)
+    return res['access_token']
 
 
 def threat_to_incident(threat):
