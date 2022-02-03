@@ -42,7 +42,12 @@
         
         {
             "cliName": "digitalguardianparentprocessname",
-            "type": "shortText"   
+            "type": "shortText"  
+        },
+        {
+            "cliName": "digitalguardianprocessname",
+            "type": "shortText"
         }
+        
     ]
 }
