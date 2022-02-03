@@ -4,7 +4,16 @@ contentitemexportablefields:
     - all
 description: This playbook checks for content updates.
 id: Check For Content Installation
-inputs: []
+inputs:
+- key: demisto_rest_api_name
+  value:
+    complex:
+      root: incident
+      accessor: demistorestapiname
+  required: true
+  description: Defines which instance of a configured Demisto API to use for checking
+    updates against.
+  playbookInputQuery: null
 name: Check For Content Installation
 outputs:
 - contextPath: PacksUpdated
