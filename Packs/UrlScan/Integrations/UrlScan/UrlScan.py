@@ -126,7 +126,7 @@ def polling(client, uuid):
     TIMEOUT = int(demisto.args().get('timeout', 60))
     uri = client.base_url + 'result/{}'.format(uuid)
 
-    ready = _poll(
+    ready = poll(
         lambda: requests.get(uri, headers={'API-Key': client.api_key}, verify=client.use_ssl).status_code == 200,
         step=5,
         ignore_exceptions=(requests.exceptions.ConnectionError),
@@ -148,7 +148,7 @@ def is_truthy(val):
     return bool(val)
 
 
-def _poll(target, step, args=(), kwargs=None, timeout=60,
+def poll(target, step, args=(), kwargs=None, timeout=60,
          check_success=is_truthy, step_function=step_constant,
          ignore_exceptions=(), collect_values=None, **k):
     kwargs = kwargs or dict()
