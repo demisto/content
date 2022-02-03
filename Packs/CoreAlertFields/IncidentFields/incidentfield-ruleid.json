@@ -28,5 +28,12 @@
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "6.5.0",
-	"x2_fields": "matching_service_rule_id"
+	"x2_fields": "matching_service_rule_id",
+    "Aliases": [
+        {
+          "cliName": "chronicleruleid",
+          "type": "shortText"
+        }
+      
+    ]
 }

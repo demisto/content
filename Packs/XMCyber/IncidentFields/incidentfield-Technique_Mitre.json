@@ -16,6 +16,9 @@
  "locked": false,
  "system": false,
  "content": true,
+ "marketplaces": [
+    "xsoar"
+],
  "group": 0,
  "hidden": false,
  "associatedTypes": [
