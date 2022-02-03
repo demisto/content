@@ -169,7 +169,7 @@ CS_FALCON_INCIDENT_OUTGOING_ARGS = {'tag': 'A tag that have been added or remove
 CS_FALCON_DETECTION_INCOMING_ARGS = ['status', 'severity', 'behaviors.tactic', 'behaviors.scenario', 'behaviors.objective',
                                      'behaviors.technique', 'device.hostname']
 
-CS_FALCON_INCIDENT_INCOMING_ARGS = ['state', 'tactics', 'techniques', 'objectives', 'tags', 'hosts.hostname']
+CS_FALCON_INCIDENT_INCOMING_ARGS = ['state', 'status', 'tactics', 'techniques', 'objectives', 'tags', 'hosts.hostname']
 
 MIRROR_DIRECTION_DICT = {
     'None': None,
@@ -1014,7 +1014,7 @@ def get_fetch_detections(last_created_timestamp=None, filter_arg=None, offset: i
     return response
 
 
-def get_detections_entities(detections_ids):
+def get_detections_entities(detections_ids: List):
     """
         Sends detection entities request
         :param detections_ids: IDs of the requested detections.
@@ -1054,7 +1054,7 @@ def get_incidents_ids(last_created_timestamp=None, filter_arg=None, offset: int 
     return response
 
 
-def get_incidents_entities(incidents_ids):
+def get_incidents_entities(incidents_ids: List):
     ids_json = {'ids': incidents_ids}
     response = http_request(
         'POST',
@@ -1575,47 +1575,51 @@ def get_remote_data_command(args: Dict[str, Any]):
 
         # updating remote incident
         if remote_args.remote_incident_id[0:3] == 'inc':
-            mirrored_data = get_incidents_entities(remote_args.remote_incident_id)
-            delta = {field: mirrored_data.get(field) for field in CS_FALCON_INCIDENT_INCOMING_ARGS if mirrored_data.get(field)}
+            mirrored_data_list = get_incidents_entities([remote_args.remote_incident_id]).get('resources', [])
+            delta = {}
+            for mirrored_data in mirrored_data_list:
+                delta.update({field: mirrored_data.get(field) for field in CS_FALCON_INCIDENT_INCOMING_ARGS if mirrored_data.get(field)})
 
         # updating remote detection
         elif remote_args.remote_incident_id[0:3] == 'ldt':
-            mirrored_data = get_detections_entities(remote_args.remote_incident_id)
-            delta = {field: mirrored_data.get(field) for field in CS_FALCON_DETECTION_INCOMING_ARGS if mirrored_data.get(field)}
+            mirrored_data_list = get_detections_entities([remote_args.remote_incident_id]).get('resources', [])
+            delta = {}
+            for mirrored_data in mirrored_data_list:
+                delta.update({field: mirrored_data.get(field) for field in CS_FALCON_DETECTION_INCOMING_ARGS if mirrored_data.get(field)})
 
         else:
             raise Exception(f'Executed get-remote-data command with undefined id: {remote_args.remote_incident_id}')
 
         entries = []
-
-        if delta:
-            # 'state' field indicates whether the incident is closed
-            if delta.get('state') == 'closed':
-                demisto.debug(f'Incident is closed: {remote_args.remote_incident_id}')
-                entries.append({
-                    'Type': EntryType.NOTE,
-                    'Contents': {
-                        'dbotIncidentClose': True,
-                        'closeReason': 'Incident was closed on CrowdStrike Falcon'
-                    },
-                    'ContentsFormat': EntryFormat.JSON
-                })
-
-            # 'status' field indicates whether the detection is closed
-            elif delta.get('status') == 'closed':
-                demisto.debug(f'Detection is closed: {remote_args.remote_incident_id}')
-                entries.append({
-                    'Type': EntryType.NOTE,
-                    'Contents': {
-                        'dbotIncidentClose': True,
-                        'closeReason': 'Detection was closed on CrowdStrike Falcon'
-                    },
-                    'ContentsFormat': EntryFormat.JSON
-                })
-
-            demisto.debug(f"Update incident or detection {remote_args.remote_incident_id} with fields: {delta}")
-        else:
-            demisto.debug("No delta was found for incident or detection.")
+        # todo answer from Meital about closing incidents (& check what determines it)
+        # if delta:
+        #     # 'state' field indicates whether the incident is closed
+        #     if delta.get('state') == 'closed':
+        #         demisto.debug(f'Incident is closed: {remote_args.remote_incident_id}')
+        #         entries.append({
+        #             'Type': EntryType.NOTE,
+        #             'Contents': {
+        #                 'dbotIncidentClose': True,
+        #                 'closeReason': 'Incident was closed on CrowdStrike Falcon'
+        #             },
+        #             'ContentsFormat': EntryFormat.JSON
+        #         })
+        #
+        #     # 'status' field indicates whether the detection is closed
+        #     elif delta.get('status') == 'closed':
+        #         demisto.debug(f'Detection is closed: {remote_args.remote_incident_id}')
+        #         entries.append({
+        #             'Type': EntryType.NOTE,
+        #             'Contents': {
+        #                 'dbotIncidentClose': True,
+        #                 'closeReason': 'Detection was closed on CrowdStrike Falcon'
+        #             },
+        #             'ContentsFormat': EntryFormat.JSON
+        #         })
+        #
+        #     demisto.debug(f"Update incident or detection {remote_args.remote_incident_id} with fields: {delta}")
+        # else:
+        #     demisto.debug("No delta was found for incident or detection.")
 
         return GetRemoteDataResponse(mirrored_object=delta, entries=entries)
 
