@@ -4,13 +4,13 @@ from CommonServerUserPython import *
 from typing import Union, Optional
 
 ''' IMPORTS '''
-import requests
 import base64
 import binascii
+import urllib3
 from urllib.parse import quote
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' GLOBAL VARS '''
 
@@ -1587,8 +1587,10 @@ def main():
     args: dict = demisto.args()
     params: dict = demisto.params()
     self_deployed: bool = params.get('self_deployed', False)
-    tenant_id: str = params.get('tenant_id', '') or params.get('_tenant_id', '')
-    auth_and_token_url: str = params.get('auth_id', '') or params.get('_auth_id', '')
+    tenant_id: str = params.get('tenant_id', '') or params.get('_tenant_id', '') or (params.get('_tenant_id_')
+                                                                                     or {}).get('password', '')
+    auth_and_token_url: str = params.get('auth_id', '') or params.get('_auth_id', '') or (params.get('_auth_id_')
+                                                                                          or {}).get('password', '')
     enc_key: str = params.get('enc_key', '') or (params.get('credentials') or {}).get('password', '')
     server = params.get('url', '')
     base_url: str = urljoin(server, '/v1.0')

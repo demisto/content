@@ -8,14 +8,16 @@ configuration:
   name: url
   required: true
   type: 0
-- display: ID or Client ID - see Detailed Instructions (?)
-  name: _auth_id
+- displaypassword: ID or Client ID - see Detailed Instructions (?)
+  name: _auth_id_
   required: false
-  type: 0
-- display: Token or Tenant ID - see Detailed Instructions (?)
-  name: _tenant_id
+  type: 9
+  hiddenusername: true
+- displaypassword: Token or Tenant ID - see Detailed Instructions (?)
+  name: _tenant_id_
   required: false
-  type: 0
+  type: 9
+  hiddenusername: true
 - displaypassword: Key or Client Secret - see Detailed Instructions (?)
   name: credentials
   required: false
@@ -68,6 +70,18 @@ configuration:
   name: incidentType
   required: false
   type: 13
+- display: ID or Client ID - see Detailed Instructions (?)
+  name: _auth_id
+  required: false
+  type: 0
+  hidden: true
+  additionalinfo: use _auth_id_ key instead
+- display: Token or Tenant ID - see Detailed Instructions (?)
+  name: _tenant_id
+  required: false
+  type: 0
+  hidden: true
+  additionalinfo: use _tenant_id_ key instead
 - display: Key or Client Secret (Deprecated)
   name: enc_key
   required: false

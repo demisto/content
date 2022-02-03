@@ -6,9 +6,32 @@ import requests_mock
 from CommonServerPython import *
 from MicrosoftGraphMail import MsGraphClient, build_mail_object, assert_pages, build_folders_path, \
     add_second_to_str_date, list_mails_command, item_result_creator, create_attachment, reply_email_command, \
-    send_email_command, list_attachments_command
+    send_email_command, list_attachments_command, main
 from MicrosoftApiModule import MicrosoftClient
 import demistomock as demisto
+
+
+@pytest.mark.parametrize('params, expected_result', [
+    ({'_tenant_id_': {'password': '1234'}, '_auth_id_': {'password': '1234'}}, 'Key must be provided.'),
+    ({'_tenant_id_': {'password': '1234'}, 'credentials': {'password': '1234'}}, 'ID must be provided.'),
+    ({'credentials': {'password': '1234'}, '_auth_id_': {'password': '1234'}}, 'Token must be provided.')
+])
+def test_params(mocker, params, expected_result):
+    """
+    Given:
+      - Configuration parameters
+    When:
+      - One of the required parameters are missed.
+    Then:
+      - Ensure the exception message as expected.
+    """
+
+    mocker.patch.object(demisto, 'params', return_value=params)
+
+    with pytest.raises(Exception) as e:
+        main()
+
+    assert expected_result in str(e.value)
 
 
 def test_build_mail_object():
