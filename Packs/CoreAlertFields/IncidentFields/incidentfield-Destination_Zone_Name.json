@@ -33,6 +33,14 @@
         {
             "cliName": "destinationnetwork",
             "type": "shortText"
+        },
+        {
+            "cliName": "destinationnetworkoffense",
+            "type": "multiSelect"
+        },
+        {
+            "cliName": "irondefensedstnetworkid",
+            "type": "shortText"
         }
     ]
 }
