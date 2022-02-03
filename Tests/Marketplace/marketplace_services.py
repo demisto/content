@@ -3194,7 +3194,7 @@ def get_all_packs_by_id_set(packs_list, extract_destination_path, id_set, market
     packs_dict = {pack.name: pack for pack in packs_list}
     if not id_set:
         return packs_dict
-    for pack_name in id_set.keys():
+    for pack_name in id_set:
         if pack_name not in packs_dict:
             pack = Pack(pack_name, os.path.join(extract_destination_path, pack_name), marketplace)
             packs_dict[pack_name] = pack
