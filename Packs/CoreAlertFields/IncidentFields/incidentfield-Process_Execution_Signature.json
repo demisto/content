@@ -28,5 +28,12 @@
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "6.5.0",
-    "x2_fields": "action_process_signature_status"
+    "x2_fields": "action_process_signature_status",
+    "Aliases": [
+        {
+            "cliName": "signature",
+            "type": "shortText"
+        }
+      
+    ]
 }
