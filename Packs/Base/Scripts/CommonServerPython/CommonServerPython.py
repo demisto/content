@@ -8915,7 +8915,7 @@ class PollResult:
         self.partial_result = partial_result
 
 
-def poll(name, interval=30, timeout=600, poll_message='Fetching Results:', polling_arg_name="polling",
+def polling_function(name, interval=30, timeout=600, poll_message='Fetching Results:', polling_arg_name="polling",
          requires_polling_arg=True):
     """
     To use on a function that should rerun itself

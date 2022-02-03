@@ -313,7 +313,7 @@ def crowdstrike_search_command(client: Client, args: Dict[str, Any]) -> List[Com
         *[convert_to_file_res(res) for res in response.get('result')]]
 
 
-@poll('cs-falcon-sandbox-scan')
+@polling_function('cs-falcon-sandbox-scan')
 def crowdstrike_scan_command(client: Client, args: Dict[str, Any]):
     hashes = args['file'].split(',')
     scan_response = client.scan(hashes)
@@ -376,7 +376,7 @@ def crowdstrike_analysis_overview_refresh_command(client: Client, args: Dict[str
     return CommandResults(readable_output='The request to refresh the analysis overview was sent successfully.')
 
 
-@poll('cs-falcon-sandbox-result')
+@polling_function('cs-falcon-sandbox-result')
 def crowdstrike_result_command(client: Client, args: Dict[str, Any]):
     key = get_api_id(args)
     report_response = client.get_report(key, args['file-type'])
