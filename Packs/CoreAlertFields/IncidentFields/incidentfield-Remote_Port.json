@@ -33,6 +33,34 @@
         {
           "cliName": "dstports",
           "type": "multiSelect"
+        },
+        {
+            "cliName": "destinationport",
+            "type": "shortText"
+        },
+        {
+            "cliName": "destinationports",
+            "type": "shortText"
+        },
+        {
+            "cliName": "digitalguardianremoteport",
+            "type": "shortText"
+        },
+        {
+            "cliName": "expanseport",
+            "type": "number"
+        },
+        {
+            "cliName": "fireeyec2port",
+            "type": "shortText"
+        },
+        {
+            "cliName": "fireeyenxeventdestinationport",
+            "type": "shortText"
+        },
+        {
+            "cliName": "irondefensedstport",
+            "type": "number"
         }
     ]
 }
