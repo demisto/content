@@ -13,7 +13,7 @@
     "locked": false,
     "name": "Rule ID",
     "neverSetAsRequired": false,
-    "openEnded": true,
+    "openEnded": false,
     "ownerOnly": false,
     "propagationLabels": [
         "all"
@@ -22,7 +22,7 @@
     "sla": 0,
     "system": false,
     "threshold": 72,
-    "type": "multiSelect",
+    "type": "shortText",
     "unmapped": false,
     "unsearchable": true,
     "useAsKpi": false,
