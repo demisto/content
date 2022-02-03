@@ -1,3 +1,4 @@
+import demistomock as demisto
 from CommonServerPython import *
 
 import jwt
@@ -72,7 +73,7 @@ def generate_jwt_times():
     return epoch_time, epoch_timeout
 
 
-def api_call(uri, method='post', headers={}, body={}, params={}, accept_404=False):  # pragma: no cover
+def api_call(uri, method='post', headers={}, body={}, params={}, accept_404=False):
 
     """
     Makes an API call to the server URL with the supplied uri, method, headers, body and params
@@ -89,7 +90,7 @@ def api_call(uri, method='post', headers={}, body={}, params={}, accept_404=Fals
     return json.loads(res.text) if res.text else res.ok
 
 
-def get_authentication_token(scope=None):  # pragma: no cover
+def get_authentication_token(scope=None):
     """
     Generates a JWT authorization token with an optional scope and queries the API for an access token
     Returns the received API access token
@@ -1468,15 +1469,22 @@ def add_capitalized_hash_to_context(threats_context):
 
 
 # EXECUTION
-def main():
-    global APP_ID, TID, APP_SECRET, SERVER_URL, FILE_THRESHOLD, USE_SSL
+def main():    # pragma: no cover
+    global APP_ID
+    APP_ID = demisto.params()['app_id']
+    global APP_SECRET
     APP_SECRET = demisto.params()['app_secret']
+    global TID
     TID = demisto.params()['tid']
+    global SERVER_URL
     SERVER_URL = load_server_url()
+    global FILE_THRESHOLD
     FILE_THRESHOLD = demisto.params()['file_threshold']
+    global USE_SSL
     USE_SSL = not demisto.params().get('unsecure', False)
+    command = demisto.command()
 
-    LOG('command is %s' % (demisto.command(),))
+    LOG('Command being called is {command}'.format(command=command))
     try:
         handle_proxy()
         if demisto.command() == 'test-module':
@@ -1568,5 +1576,5 @@ def main():
             return_error(str(e))
 
 
-if __name__ in ['__main__', 'builtin', 'builtins']:
+if __name__ in ('__builtin__', 'builtins', '__main__'):
     main()
