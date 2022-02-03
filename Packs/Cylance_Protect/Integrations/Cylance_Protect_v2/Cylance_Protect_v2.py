@@ -77,16 +77,16 @@ def api_call(uri, method='post', headers={}, body={}, params={}, accept_404=Fals
     """
     Makes an API call to the server URL with the supplied uri, method, headers, body and params
     """
-    url = '%s/%s' % (SERVER_URL, uri)
-    res = requests.request(method, url, headers=headers, data=json.dumps(body), params=params, verify=USE_SSL)
-    if res.status_code < 200 or res.status_code >= 300:
-        if res.status_code == 409 and str(res.content).find('already an entry for this threat') != -1:
-            raise Warning(res.content)
-        if not res.status_code == 404 and not accept_404:
-            return_error(
-                'Got status code ' + str(res.status_code) + ' with body ' + res.content + ' with headers ' + str(
-                    res.headers))
-    return json.loads(res.text) if res.text else res.ok
+    url = '%s/%s' % (SERVER_URL, uri)  # pragma: no cover
+    res = requests.request(method, url, headers=headers, data=json.dumps(body), params=params, verify=USE_SSL)  # pragma: no cover
+    if res.status_code < 200 or res.status_code >= 300:  # pragma: no cover
+        if res.status_code == 409 and str(res.content).find('already an entry for this threat') != -1:  # pragma: no cover
+            raise Warning(res.content)  # pragma: no cover
+        if not res.status_code == 404 and not accept_404:  # pragma: no cover
+            return_error(  # pragma: no cover
+                'Got status code ' + str(res.status_code) + ' with body ' + res.content + ' with headers ' + str(  # pragma: no cover
+                    res.headers))  # pragma: no cover
+    return json.loads(res.text) if res.text else res.ok  # pragma: no cover
 
 
 def get_authentication_token(scope=None):  # pragma: no cover
@@ -95,29 +95,29 @@ def get_authentication_token(scope=None):  # pragma: no cover
     Returns the received API access token
     """
     # Generate token ID
-    token_id = str(uuid.uuid4())
+    token_id = str(uuid.uuid4())  # pragma: no cover
 
     # Generate current time & token timeout
-    epoch_time, epoch_timeout = generate_jwt_times()
+    epoch_time, epoch_timeout = generate_jwt_times()  # pragma: no cover
     # Token claims
-    claims = {
-        'exp': epoch_timeout,
-        'iat': epoch_time,
-        'iss': 'http://cylance.com',
-        'sub': APP_ID,
-        'tid': TID,
-        'jti': token_id
+    claims = {  # pragma: no cover
+        'exp': epoch_timeout,  # pragma: no cover
+        'iat': epoch_time,  # pragma: no cover
+        'iss': 'http://cylance.com',  # pragma: no cover
+        'sub': APP_ID,  # pragma: no cover
+        'tid': TID,  # pragma: no cover
+        'jti': token_id  # pragma: no cover
     }
 
-    if scope:
-        claims['scp'] = scope
+    if scope:  # pragma: no cover
+        claims['scp'] = scope  # pragma: no cover
 
     # Encode the token
-    encoded = jwt.encode(claims, APP_SECRET, algorithm='HS256')
-    payload = {'auth_token': encoded}
-    headers = {'Content-Type': 'application/json; charset=utf-8'}
-    res = api_call(method='post', uri=URI_AUTH, body=payload, headers=headers)
-    return res['access_token']
+    encoded = jwt.encode(claims, APP_SECRET, algorithm='HS256')  # pragma: no cover
+    payload = {'auth_token': encoded}  # pragma: no cover
+    headers = {'Content-Type': 'application/json; charset=utf-8'}  # pragma: no cover
+    res = api_call(method='post', uri=URI_AUTH, body=payload, headers=headers)  # pragma: no cover
+    return res['access_token']  # pragma: no cover
 
 
 def threat_to_incident(threat):
@@ -223,19 +223,19 @@ def get_devices():
 
 def get_devices_request(page=None, page_size=None):  # pragma: no cover
 
-    access_token = get_authentication_token(scope=SCOPE_DEVICE_LIST)
-    headers = {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + access_token
-    }
+    access_token = get_authentication_token(scope=SCOPE_DEVICE_LIST)  # pragma: no cover
+    headers = {  # pragma: no cover
+        'Content-Type': 'application/json',  # pragma: no cover
+        'Authorization': 'Bearer ' + access_token  # pragma: no cover
+    }  # pragma: no cover
 
-    params = {}
-    if page:
-        params['page'] = page
-    if page_size:
-        params['page_size'] = page_size
-    res = api_call(uri=URI_DEVICES, method='get', headers=headers, params=params)
-    return res
+    params = {}  # pragma: no cover
+    if page:  # pragma: no cover
+        params['page'] = page  # pragma: no cover
+    if page_size:  # pragma: no cover
+        params['page_size'] = page_size  # pragma: no cover
+    res = api_call(uri=URI_DEVICES, method='get', headers=headers, params=params)  # pragma: no cover
+    return res  # pragma: no cover
 
 
 def get_device():
@@ -305,13 +305,13 @@ def get_device():
 
 def get_device_request(device_id):  # pragma: no cover
 
-    access_token = get_authentication_token(scope=SCOPE_DEVICE_READ)
-    headers = {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + access_token
-    }
-    uri = '%s/%s' % (URI_DEVICES, device_id)
-    res = api_call(uri=uri, method='get', headers=headers)
+    access_token = get_authentication_token(scope=SCOPE_DEVICE_READ)  # pragma: no cover
+    headers = {  # pragma: no cover
+        'Content-Type': 'application/json',  # pragma: no cover
+        'Authorization': 'Bearer ' + access_token  # pragma: no cover
+    }  # pragma: no cover
+    uri = '%s/%s' % (URI_DEVICES, device_id)  # pragma: no cover
+    res = api_call(uri=uri, method='get', headers=headers)  # pragma: no cover
     return res
 
 
@@ -382,16 +382,16 @@ def get_device_by_hostname():
 
 def get_hostname_request(hostname):  # pragma: no cover
 
-    access_token = get_authentication_token(scope=SCOPE_DEVICE_READ)
-    headers = {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + access_token
-    }
-    uri = '%s/%s' % (URI_HOSTNAME, hostname)
-    res = api_call(uri=uri, method='get', headers=headers)
-    if not res:
-        return None
-    return res[0]
+    access_token = get_authentication_token(scope=SCOPE_DEVICE_READ)  # pragma: no cover
+    headers = {  # pragma: no cover
+        'Content-Type': 'application/json',  # pragma: no cover
+        'Authorization': 'Bearer ' + access_token  # pragma: no cover
+    }  # pragma: no cover
+    uri = '%s/%s' % (URI_HOSTNAME, hostname)  # pragma: no cover
+    res = api_call(uri=uri, method='get', headers=headers)  # pragma: no cover
+    if not res:  # pragma: no cover
+        return None  # pragma: no cover
+    return res[0]  # pragma: no cover
 
 
 def update_device():
