@@ -421,4 +421,4 @@ outputs:
   description: The actual score.
   type: number
 tests:
-- Test-Detonate URL - Crowdstrike
+- No test - deprecated.

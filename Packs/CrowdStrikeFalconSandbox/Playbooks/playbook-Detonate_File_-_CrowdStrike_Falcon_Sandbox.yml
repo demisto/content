@@ -420,5 +420,5 @@ outputs:
   description: The actual score.
   type: number
 tests:
-- VxStream Test
+- No test - deprecated.
 deprecated: true

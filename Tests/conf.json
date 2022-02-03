@@ -915,11 +915,6 @@
             "nightly": true
         },
         {
-            "integrations": "VxStream",
-            "playbookID": "Detonate File - HybridAnalysis - Test",
-            "timeout": 2400
-        },
-        {
             "integrations": "Awake Security",
             "playbookID": "awake_security_test_pb"
         },
@@ -2016,12 +2011,6 @@
             "fromversion": "5.0.0"
         },
         {
-            "integrations": "VxStream",
-            "playbookID": "VxStream Test",
-            "nightly": true,
-            "is_mockable": false
-        },
-        {
             "integrations": "QRadar_v2",
             "playbookID": "test_Qradar_v2",
             "fromversion": "6.0.0",
@@ -2199,11 +2188,6 @@
             "timeout": 700
         },
         {
-            "integrations": "VxStream",
-            "playbookID": "Test-Detonate URL - Crowdstrike",
-            "timeout": 1200
-        },
-        {
             "playbookID": "Detonate File - Generic Test",
             "timeout": 500
         },
@@ -2239,7 +2223,6 @@
             "nightly": true,
             "integrations": [
                 "McAfee Advanced Threat Defense",
-                "VxStream",
                 "Lastline v2"
             ]
         },
