@@ -47,10 +47,6 @@
         "type": "shortText"
         },
         {
-        "cliName": "infectedhosts",
-        "type": "grid"
-        },
-        {
         "cliName": "infinipointhostname",
         "type": "shortText"
         },
@@ -97,10 +93,6 @@
         {
         "cliName": "dnsname",
         "type": "multiSelect"
-        },
-        {
-        "cliName": "expanseasset",
-        "type": "grid"
         },
         {
         "cliName": "extrahophostname",
