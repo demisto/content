@@ -47,10 +47,6 @@
         "type": "shortText"
         },
         {
-        "cliName": "infectedhosts",
-        "type": "grid"
-        },
-        {
         "cliName": "infinipointhostname",
         "type": "shortText"
         },
@@ -99,16 +95,24 @@
         "type": "multiSelect"
         },
         {
-        "cliName": "expanseasset",
-        "type": "grid"
-        },
-        {
         "cliName": "extrahophostname",
         "type": "shortText"
         },
         {
         "cliName": "googlecloudsccfindingsourcepropertieshostname",
         "type": "shortText"
+        },
+        {
+            "cliName": "desthostname",
+            "type": "shortText"
+        },
+        {
+            "cliName": "destinationhostname",
+            "type": "shortText"
+        },
+        {
+            "cliName": "hostnames",
+            "type": "multiSelect"
         }
     ]
 }

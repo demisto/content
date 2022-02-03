@@ -28,5 +28,11 @@
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "6.5.0",
-    "x2_fields": "agent_os_sub_type"
+    "x2_fields": "agent_os_sub_type",
+    "Aliases": [
+        {
+            "cliName": "osversion",
+            "type": "shortText"
+        }
+    ]
 }
