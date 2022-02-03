@@ -620,12 +620,12 @@ class Pack(object):
     def _load_pack_dependencies(self, index_folder_path, pack_names, id_set, marketplace):
         """ Loads dependencies metadata and returns mapping of pack id and it's loaded data.
             There are 3 cases for dependencies:
-            Case 1: The dependency is present in the index.zip. In this case we add it to the dependencies results.
-            Case 2: The dependency is missing from ths index.zip since it is not a part of this marketplace.
-            In this case, ignore it.
-            Case 3: The dependency is missing from the index.zip since it is of a new pack. In this case, handle missing
-            dependency - This means we mark this pack as 'missing dependency' and once the new index.zip is created, and
-            therefore it contains the new pack, we call this function again, and hitting case 1.
+              Case 1: The dependency is present in the index.zip. In this case, we add it to the dependencies results.
+              Case 2: The dependency is missing from the index.zip since it is not a part of this marketplace.
+                In this case, ignore it.
+              Case 3: The dependency is missing from the index.zip since it is a new pack. In this case, handle missing
+                dependency - This means we mark this pack as 'missing dependency', and once the new index.zip is created, and
+                therefore it contains the new pack, we call this function again, and hitting case 1.
         Args:
             index_folder_path (str): full path to download index folder.
             pack_names (set): List of all packs.
@@ -1046,7 +1046,7 @@ class Pack(object):
                                     f"files already in storage.")
 
                 elif existing_files:
-                    logging.warning(f"The following packs already exist in storage: {', '.join(existing_files)}")
+                    logging.warning(f"The following packs already exist in the storage: {', '.join(existing_files)}")
                     logging.warning(f"Skipping step of uploading {self._pack_name}.zip to storage.")
                     return task_status, True, None
 
@@ -3193,7 +3193,7 @@ def get_all_packs_by_id_set(packs_list, extract_destination_path, id_set, market
     packs_dict = {pack.name: pack for pack in packs_list}
     if not id_set:
         return packs_dict
-    for pack_name in id_set.keys():
+    for pack_name in id_set:
         if pack_name not in packs_dict:
             pack = Pack(pack_name, os.path.join(extract_destination_path, pack_name), marketplace)
             packs_dict[pack_name] = pack
