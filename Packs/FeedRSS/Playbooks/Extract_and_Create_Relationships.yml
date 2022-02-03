@@ -13,6 +13,7 @@ inputs:
   value: {}
 name: Extract and Create Relationships
 outputs: []
+quiet: true
 starttaskid: "0"
 tasks:
   "0":
@@ -28,13 +29,12 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      description: ""
       brand: ""
-      id: 5ed7c5df-7f48-4052-85df-17d64f15042d
+      id: 7836dcca-6051-43ae-8ad2-afa084d89bb7
       iscommand: false
       name: ""
       version: -1
-    taskid: 5ed7c5df-7f48-4052-85df-17d64f15042d
+    taskid: 7836dcca-6051-43ae-8ad2-afa084d89bb7
     timertriggers: []
     type: start
     view: |-
@@ -58,7 +58,7 @@ tasks:
       - "22"
       - "25"
     note: false
-    quietmode: 0
+    quietmode: 2
     reputationcalc: 2
     scriptarguments:
       text:
@@ -68,13 +68,13 @@ tasks:
     task:
       brand: Builtin
       description: commands.local.cmd.extract.indicators
-      id: 2bd5f59e-d3ff-485b-8322-591133ce8b5b
+      id: e2ea5ff8-fe97-4a86-8130-5e3a082298cc
       iscommand: true
       name: Extract indicators from report description
       script: Builtin|||extractIndicators
       type: regular
       version: -1
-    taskid: 2bd5f59e-d3ff-485b-8322-591133ce8b5b
+    taskid: e2ea5ff8-fe97-4a86-8130-5e3a082298cc
     timertriggers: []
     type: regular
     view: |-
@@ -114,13 +114,13 @@ tasks:
     task:
       brand: ""
       description: This automation creates a relationship between indicator objects.
-      id: 17f9824b-c596-4a34-83a6-9604ab969426
+      id: 7746d166-2e2b-4c41-8552-5d7248586890
       iscommand: false
       name: CVE Create Relationship
       script: CreateIndicatorRelationship
       type: regular
       version: -1
-    taskid: 17f9824b-c596-4a34-83a6-9604ab969426
+    taskid: 7746d166-2e2b-4c41-8552-5d7248586890
     timertriggers: []
     type: regular
     view: |-
@@ -155,12 +155,12 @@ tasks:
     task:
       brand: ""
       description: Checks whether CVEs were extracted
-      id: ce4e0982-8c29-4b4c-867e-9bd9db8a3ff0
+      id: 2fc4ef3d-6c8a-43e0-8343-c175e8b84450
       iscommand: false
       name: Are there CVEs?
       type: condition
       version: -1
-    taskid: ce4e0982-8c29-4b4c-867e-9bd9db8a3ff0
+    taskid: 2fc4ef3d-6c8a-43e0-8343-c175e8b84450
     timertriggers: []
     type: condition
     view: |-
@@ -195,12 +195,12 @@ tasks:
     task:
       brand: ""
       description: Checks whether IPs were extracted from the report.
-      id: 6ead7b4f-3d9b-4a6f-89b8-0d5fc32a57ea
+      id: 10196ba8-92d3-4167-8f82-a885eafe637e
       iscommand: false
       name: Are there IPs?
       type: condition
       version: -1
-    taskid: 6ead7b4f-3d9b-4a6f-89b8-0d5fc32a57ea
+    taskid: 10196ba8-92d3-4167-8f82-a885eafe637e
     timertriggers: []
     type: condition
     view: |-
@@ -240,13 +240,13 @@ tasks:
     task:
       brand: ""
       description: This automation creates a relationship between indicator objects.
-      id: 7ef53744-fab8-4f29-8cc7-c1f66b28ed71
+      id: 7c45cbc8-0aa5-466f-876e-2e7f20d14a21
       iscommand: false
       name: IP Create Relationship
       script: CreateIndicatorRelationship
       type: regular
       version: -1
-    taskid: 7ef53744-fab8-4f29-8cc7-c1f66b28ed71
+    taskid: 7c45cbc8-0aa5-466f-876e-2e7f20d14a21
     timertriggers: []
     type: regular
     view: |-
@@ -277,20 +277,20 @@ tasks:
       brand: Builtin
       description: In order to isolate each report and include only the data extracted
         from the specific report.
-      id: d2f2bbf6-6585-4a08-8453-c06dec80e33d
+      id: 134472aa-8eec-48e7-86d5-e654e2372393
       iscommand: false
       name: Delete Context Subplaybook
       script: DeleteContext
       type: regular
       version: -1
-    taskid: d2f2bbf6-6585-4a08-8453-c06dec80e33d
+    taskid: 134472aa-8eec-48e7-86d5-e654e2372393
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 440,
-          "y": 1340
+          "x": 270,
+          "y": 740
         }
       }
   "7":
@@ -318,12 +318,12 @@ tasks:
     task:
       brand: ""
       description: Checks whether emails were extracted.
-      id: d56559fc-cf6d-4f59-85bb-78340776297f
+      id: cff06de3-f1cb-4a8e-8090-b0e7ce3b36a2
       iscommand: false
       name: Are there Emails?
       type: condition
       version: -1
-    taskid: d56559fc-cf6d-4f59-85bb-78340776297f
+    taskid: cff06de3-f1cb-4a8e-8090-b0e7ce3b36a2
     timertriggers: []
     type: condition
     view: |-
@@ -363,13 +363,13 @@ tasks:
     task:
       brand: ""
       description: This automation creates a relationship between indicator objects.
-      id: d74b2cc1-63c5-4005-8cd2-13a85e3218a2
+      id: 5e51e455-a8bc-42e8-8c54-72983bb902ba
       iscommand: false
       name: Email Create Relationship
       script: CreateIndicatorRelationship
       type: regular
       version: -1
-    taskid: d74b2cc1-63c5-4005-8cd2-13a85e3218a2
+    taskid: 5e51e455-a8bc-42e8-8c54-72983bb902ba
     timertriggers: []
     type: regular
     view: |-
@@ -404,12 +404,12 @@ tasks:
     task:
       brand: ""
       description: Checks whether domains were extracted.
-      id: bba003ef-76b3-429b-862a-9548862b5ef4
+      id: 3f25ad99-3bfb-4009-8680-ccc1fc4b1580
       iscommand: false
       name: Are there Domains?
       type: condition
       version: -1
-    taskid: bba003ef-76b3-429b-862a-9548862b5ef4
+    taskid: 3f25ad99-3bfb-4009-8680-ccc1fc4b1580
     timertriggers: []
     type: condition
     view: |-
@@ -449,13 +449,13 @@ tasks:
     task:
       brand: ""
       description: This automation creates a relationship between indicator objects.
-      id: c50792e9-2b79-4bbc-8be5-223f2731a60e
+      id: d680fbe7-324e-4d83-81a9-e748b5aa5d1b
       iscommand: false
       name: Domain Create Relationship
       script: CreateIndicatorRelationship
       type: regular
       version: -1
-    taskid: c50792e9-2b79-4bbc-8be5-223f2731a60e
+    taskid: d680fbe7-324e-4d83-81a9-e748b5aa5d1b
     timertriggers: []
     type: regular
     view: |-
@@ -490,12 +490,12 @@ tasks:
     task:
       brand: ""
       description: Checks whether URLs were extracted.
-      id: a3288eb7-b9f6-4f6c-8bde-e68a5fb779b2
+      id: bed515d2-8b0d-4561-84b0-f1ab580c45ba
       iscommand: false
       name: Are there URLs?
       type: condition
       version: -1
-    taskid: a3288eb7-b9f6-4f6c-8bde-e68a5fb779b2
+    taskid: bed515d2-8b0d-4561-84b0-f1ab580c45ba
     timertriggers: []
     type: condition
     view: |-
@@ -535,13 +535,13 @@ tasks:
     task:
       brand: ""
       description: This automation creates a relationship between indicator objects.
-      id: 53ff0ad3-8b01-4c3e-816e-fe7deffa9e06
+      id: 69880a78-f8de-4c3d-8975-a47867cefb0e
       iscommand: false
       name: URL Create Relationship
       script: CreateIndicatorRelationship
       type: regular
       version: -1
-    taskid: 53ff0ad3-8b01-4c3e-816e-fe7deffa9e06
+    taskid: 69880a78-f8de-4c3d-8975-a47867cefb0e
     timertriggers: []
     type: regular
     view: |-
@@ -561,21 +561,20 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      description: ""
       brand: ""
-      id: 5b5c468a-d9a0-478f-844b-d0313e3be872
+      id: 4a739653-52e5-4854-8322-7691ba60dc82
       iscommand: false
       name: Done
       type: title
       version: -1
-    taskid: 5b5c468a-d9a0-478f-844b-d0313e3be872
+    taskid: 4a739653-52e5-4854-8322-7691ba60dc82
     timertriggers: []
     type: title
     view: |-
       {
         "position": {
-          "x": 440,
-          "y": 1560
+          "x": 270,
+          "y": 960
         }
       }
   "20":
@@ -591,14 +590,13 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      description: ""
       brand: ""
-      id: 89139733-1763-4e1a-8fea-221d26ab593b
+      id: 05372d15-c002-4ccc-869d-ab9301cf5746
       iscommand: false
       name: IP
       type: title
       version: -1
-    taskid: 89139733-1763-4e1a-8fea-221d26ab593b
+    taskid: 05372d15-c002-4ccc-869d-ab9301cf5746
     timertriggers: []
     type: title
     view: |-
@@ -621,14 +619,13 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      description: ""
       brand: ""
-      id: 5c55a84e-5eda-42fa-8d6a-053394a8de70
+      id: 73f6ba8b-9f48-4aa9-87e7-fad61ab98356
       iscommand: false
       name: Email
       type: title
       version: -1
-    taskid: 5c55a84e-5eda-42fa-8d6a-053394a8de70
+    taskid: 73f6ba8b-9f48-4aa9-87e7-fad61ab98356
     timertriggers: []
     type: title
     view: |-
@@ -651,14 +648,13 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      description: ""
       brand: ""
-      id: 9a859d8d-eea1-4357-8484-66009c48cdd6
+      id: e98805be-b6f1-4e97-896c-565bbe96b7ca
       iscommand: false
       name: URL
       type: title
       version: -1
-    taskid: 9a859d8d-eea1-4357-8484-66009c48cdd6
+    taskid: e98805be-b6f1-4e97-896c-565bbe96b7ca
     timertriggers: []
     type: title
     view: |-
@@ -681,14 +677,13 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      description: ""
       brand: ""
-      id: 7fae69d8-9971-4b41-8dd1-1f4ace014a02
+      id: 47b78d9d-cd03-48c2-8815-890379d5e4ab
       iscommand: false
       name: CVE
       type: title
       version: -1
-    taskid: 7fae69d8-9971-4b41-8dd1-1f4ace014a02
+    taskid: 47b78d9d-cd03-48c2-8815-890379d5e4ab
     timertriggers: []
     type: title
     view: |-
@@ -711,14 +706,13 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      description: ""
       brand: ""
-      id: 5b2e6fa5-4aa9-417c-8b1b-ccc5621ffb71
+      id: 8517c19f-70eb-4ca8-8c3e-d5257d72f04d
       iscommand: false
       name: Domain
       type: title
       version: -1
-    taskid: 5b2e6fa5-4aa9-417c-8b1b-ccc5621ffb71
+    taskid: 8517c19f-70eb-4ca8-8c3e-d5257d72f04d
     timertriggers: []
     type: title
     view: |-
@@ -741,14 +735,13 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      description: ""
       brand: ""
-      id: 9cb541b3-16d3-431b-8f3d-59cd2a2ff666
+      id: 8bc62e0e-fda9-4d2c-825c-b66965d74491
       iscommand: false
       name: File
       type: title
       version: -1
-    taskid: 9cb541b3-16d3-431b-8f3d-59cd2a2ff666
+    taskid: 8bc62e0e-fda9-4d2c-825c-b66965d74491
     timertriggers: []
     type: title
     view: |-
@@ -783,12 +776,12 @@ tasks:
     task:
       brand: ""
       description: Checks whether URLs were extracted
-      id: 5f4306d2-265f-4469-8167-5e0dfa775268
+      id: a8eadbc4-c9dc-4026-87a1-3b00666b7528
       iscommand: false
       name: Are there Files hash?
       type: condition
       version: -1
-    taskid: 5f4306d2-265f-4469-8167-5e0dfa775268
+    taskid: a8eadbc4-c9dc-4026-87a1-3b00666b7528
     timertriggers: []
     type: condition
     view: |-
@@ -828,13 +821,13 @@ tasks:
     task:
       brand: ""
       description: This automation creates a relationship between indicator objects.
-      id: 150a34d1-b902-4409-85a6-ce2c2f6f05f3
+      id: 2cc00ba2-0f7f-497b-8de0-fca94d6deafa
       iscommand: false
       name: File Create Relationship
       script: CreateIndicatorRelationship
       type: regular
       version: -1
-    taskid: 150a34d1-b902-4409-85a6-ce2c2f6f05f3
+    taskid: 2cc00ba2-0f7f-497b-8de0-fca94d6deafa
     timertriggers: []
     type: regular
     view: |-
@@ -850,7 +843,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2325,
+        "height": 1725,
         "width": 2540,
         "x": -870,
         "y": -700
