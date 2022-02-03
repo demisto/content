@@ -59,7 +59,7 @@
           "type": "shortText"
         },
         {
-          "cliName": "taniumtreatresponsescanconfigid",
+          "cliName": "taniumthreatresponsetype",
           "type": "shortText"
         }
     ]
