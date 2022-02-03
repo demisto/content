@@ -28,7 +28,7 @@
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "6.5.0",
-	"x2_fields": "causality_actor_process_image_name",
+	"x2_fields": "actor_process_image_name",
     "Aliases": [
         {
           "cliName": "processname",
@@ -39,10 +39,9 @@
           "cliName": "carbonblackesprocessname",
           "type": "shortText"
         },
-        
         {
             "cliName": "digitalguardianprocessname",
-            "type": "shortText"   
+            "type": "shortText"
         }
     ]
 }
