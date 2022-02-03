@@ -1,0 +1,32 @@
+{
+    "associatedToAll": true,
+    "caseInsensitive": true,
+    "cliName": "agentossubtype",
+    "closeForm": false,
+    "content": true,
+    "description": "The operating system subtype of the agent from which the alert was triggered.",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_agentossubtype",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Agent OS Sub Type",
+    "neverSetAsRequired": false,
+    "openEnded": true,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "multiSelect",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.5.0",
+    "x2_fields": "agent_os_sub_type"
+}

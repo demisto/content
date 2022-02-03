@@ -8,6 +8,15 @@ import traceback
 ''' STANDALONE FUNCTION '''
 
 
+def fix_nested_dicts(rules):
+    for key, value in rules.items():
+        if isinstance(value, dict):
+            if members := value.get('member'):
+                if isinstance(members, list):
+                    new_members = ','.join(members)
+                    rules[key] = new_members
+
+
 def create_script_output(result):
     human_readable_arr = set()
     context = []
@@ -41,6 +50,7 @@ def panorama_security_policy_match(args):
             'Panorama.SecurityPolicyMatch(val.Query == obj.Query && val.Device == obj.Device)')
         for entry in policy_match:
             if rules := entry.get('Rules'):
+                fix_nested_dicts(rules)
                 res.append(rules)
     elif is_error(result):
         res = [f'For the following arguments: {args}, panorama-security-policy-match command failed to run: '
