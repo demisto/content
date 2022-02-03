@@ -106,7 +106,7 @@ GET_INDICATOR_INPUTS = [
     ('domain', build_iterator_answer_domain_glob, '*domaintools.com', 'DomainGlob'),
     ('hash', build_iterator_answer_hash, '52483514f07eb14570142f6927b77deb7b4da99f', 'File'),
     ('url', build_iterator_answer_url, 'www.securityadvisor.io', 'URL'),
-    ('CVE(vulnerability)', build_iterator_answer_vulnerability, 'CVE-2014-1111', 'CVE'),
+    ('vulnerability', build_iterator_answer_vulnerability, 'CVE-2014-1111', 'CVE'),
 ]
 
 
