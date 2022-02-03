@@ -13,6 +13,7 @@
     "locked": false,
     "name": "Host FQDN",
     "neverSetAsRequired": false,
+    "openEnded": false,
     "ownerOnly": false,
     "propagationLabels": [
         "all"
