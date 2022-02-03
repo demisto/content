@@ -150,7 +150,7 @@ configuration:
     and only indicators with equivalent and higher risk score will be ingested into
     XSOAR.
   defaultvalue: '0'
-  display: IOC Risc Score Threshold
+  display: IOC Risk Score Threshold
   hidden: false
   name: risk_score_threshold
   required: false
