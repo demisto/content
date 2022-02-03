@@ -39,6 +39,18 @@
   - ./Tests/scripts/open_ssh_tunnel.sh
   - section_end "Open SSH Tunnel"
 
+.check_build_files_are_up_to_date: &check_build_files_are_up_to_date
+  - section_start "Check Build Files Are Up To Date"
+  - |
+    if [[ -n "${DEMISTO_SDK_NIGHTLY}" || -n "${NIGHTLY}" || -n "${BUCKET_UPLOAD}" ]]; then
+      echo "running nightly or bucket upload, skipping files up-to-date validation"
+    else
+      ./Tests/scripts/is_file_up_to_date.sh .gitlab $CI_COMMIT_BRANCH
+      ./Tests/scripts/is_file_up_to_date.sh dev-requirements-py2.txt $CI_COMMIT_BRANCH
+      ./Tests/scripts/is_file_up_to_date.sh dev-requirements-py3.txt $CI_COMMIT_BRANCH
+    fi
+  - section_end "Check Build Files Are Up To Date"
+
 
 .clone_and_export_variables: &clone_and_export_variables
   - source .gitlab/helper_functions.sh
@@ -125,6 +137,7 @@
     - jsdoc2md --version
     - demisto-sdk --version
     - section_end "Build Parameters"
+    - *check_build_files_are_up_to_date
 
 .default-job-settings:
   extends:
@@ -192,7 +205,7 @@
         mkdir ./unit-tests
         if [ -n "$SHOULD_LINT_ALL" ]; then
           echo -e  "----------\nLinting all because:\n${SHOULD_LINT_ALL}\n----------"
-          demisto-sdk lint -p 12 -a -q --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER --coverage-report $ARTIFACTS_FOLDER/coverage_report -dt 120
+          demisto-sdk lint -p 12 -a -q --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER --coverage-report $ARTIFACTS_FOLDER/coverage_report -dt 120 --time-measurements-dir $ARTIFACTS_FOLDER
         else
           demisto-sdk lint -p 8 -g -v --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER --coverage-report $ARTIFACTS_FOLDER/coverage_report
         fi
@@ -259,16 +272,6 @@
     - section_start "Check Spelling"
     - python3 ./Tests/scripts/circleci_spell_checker.py $CI_COMMIT_BRANCH
     - section_end "Check Spelling"
-    - section_start "Check Build Files Are Up To Date"
-    - |
-      if [[ $$CI_COMMIT_BRANCH =~ pull/[0-9]+ ]]; then
-        echo "Skipping, Should not run on contributor's branch."
-      else
-        ./Tests/scripts/is_file_up_to_date.sh .gitlab-ci.yml
-        ./Tests/scripts/is_file_up_to_date.sh .dev-requirements-py2.txt
-        ./Tests/scripts/is_file_up_to_date.sh .dev-requirements-py3.txt
-      fi
-    - section_end "Check Build Files Are Up To Date"
     - section_start "Validate content-test-conf Branch Merged"
     - |
       if [[ $CI_COMMIT_BRANCH = "master" ]]; then
