@@ -2,7 +2,7 @@ import demistomock as demisto
 from CommonServerPython import Common
 from Cylance_Protect_v2 import create_dbot_score_entry, translate_score, FILE_THRESHOLD, \
     get_device, get_device_by_hostname, update_device, get_device_threats, get_policies, create_zone, get_zones,\
-    get_zone, update_zone, get_threat, get_threats
+    get_zone, update_zone, get_threat, get_threats, get_threat_devices, get_list
 import Cylance_Protect_v2
 
 THREAT_OUTPUT = {u'cylance_score': -1.0, u'name': u'name',
@@ -129,7 +129,44 @@ EXPECTED_ZONES = {u'DateModified': u'2022-02-03T15:52:30',
                   u'Id': u'1998235b-a6ab-4043-86b5-81b0dc63887b'
                   }
 
+THREAT_DEVICES_OUTPUT = {u'name': u'DESKTOP-M7E991U',
+                         u'ip_addresses': [u'1.1.1.1'],
+                         u'mac_addresses': [u'00-0C-29-59-FB-FD'],
+                         u'file_path': u'file path',
+                         u'state': u'OffLine',
+                         u'date_found': u'2019-01-28T23:36:58',
+                         u'file_status': u'Quarantined',
+                         u'agent_version': u'2.0.1500',
+                         u'id': u'6d85a080-ceab-463e-b0e0-331739c35e5b',
+                         u'policy_id': u'2f184387-4cb0-4913-8e73-9c13a3af3470'
+                         }
 
+EXPECTED_THREAT_DEVICES = {'Path': [{'FilePath': u'file path'}],
+                           'SHA256': u'055D7A25DECF6769BF4FB2F3BC9FD3159C8B42972818177E44975929D97292DE'
+                           }
+
+LIST_OUTPUT = {u'category': u'Admin Tool',
+               u'cylance_score': None,
+               u'name': u'',
+               u'classification': u'',
+               u'sub_classification': u'',
+               u'av_industry': None,
+               u'reason': u'Added by Demisto',
+               u'added': u'2018-11-13T13:39:07',
+               u'list_type': u'GlobalSafe',
+               u'sha256': u'234E5014C239FD89F2F3D56091B87763DCD90F6E3DB42FD2FA1E0ABE05AF0487',
+               u'added_by': u'14a0944f-d6f9-4054-b338-382b673c32ed',
+               u'md5': u''
+               }
+
+EXPECTED_LIST = {u'Category': u'Admin Tool',
+                 u'Added': u'2018-11-13T13:39:07',
+                 'SHA256': u'234E5014C239FD89F2F3D56091B87763DCD90F6E3DB42FD2FA1E0ABE05AF0487',
+                 u'AddedBy': u'14a0944f-d6f9-4054-b338-382b673c32ed',
+                 u'Reason': u'Added by Demisto',
+                 u'ListType': u'GlobalSafe',
+                 u'Sha256': u'234E5014C239FD89F2F3D56091B87763DCD90F6E3DB42FD2FA1E0ABE05AF0487'
+                 }
 def test_create_dbot_score_entry():
     """
     Given
@@ -144,32 +181,6 @@ def test_create_dbot_score_entry():
     dbot_score = translate_score(threat['cylance_score'], FILE_THRESHOLD)
     dbot_score_entry = create_dbot_score_entry(THREAT_OUTPUT, dbot_score)
     assert isinstance(dbot_score_entry, Common.DBotScore)
-
-
-"""def test_threat_to_incident(mocker):
-    
-    Given
-        - a threat and a dbot score
-    When
-        - calls the function threat_to_incident
-    Then
-        - checks if the output
-    
-
-    threat = THREAT_OUTPUT
-    incident = {
-        'name': 'Cylance Protect v2 threat ' + threat['name'],
-        'occurred': threat['last_found'] + 'Z',
-        'rawJSON': json.dumps(threat)
-    }
-    expected_result = ''
-    args = {'id': '8e836c98-102e-4332-b00d-81dcb7a9b6f7'}
-    mocker.patch.object(demisto, 'args', return_value=args)
-    demisto_results = mocker.patch.object(demisto, 'results')
-    mocker.patch.object(Cylance_Protect_v2, "get_threat_devices_request", return_value={'page_items': DEVICE_OUTPUT})
-    result = threat_to_incident(threat)
-
-    assert result == expected_result"""
 
 
 def test_get_device(mocker):
@@ -385,7 +396,7 @@ def test_get_threat(mocker):
            contents.get('EntryContext').get('File')[0].get('SHA256')
 
 
-def get_threats(mocker):
+def test_get_threats(mocker):
     """
         Given
             - a threat and a dbot score
@@ -402,5 +413,52 @@ def get_threats(mocker):
     get_threats()
 
     contents = demisto_results.call_args[0][0]
-    assert [EXPECTED_ZONES] == contents.get('EntryContext').get('File')[0].get('SHA256')
+    assert u'055D7A25DECF6769BF4FB2F3BC9FD3159C8B42972818177E44975929D97292DE' == contents.get('EntryContext').get(
+        'File')[0].get('SHA256')
+
+
+def test_get_threat_devices(mocker):
+    """
+    Given
+        - a threat and a dbot score
+    When
+        - calls the function get_device_threats
+    Then
+        - checks if the output is as expected
+    """
+
+    args = {'sha256': '055D7A25DECF6769BF4FB2F3BC9FD3159C8B42972818177E44975929D97292DE'}
+    mocker.patch.object(Cylance_Protect_v2, "get_threat_devices_request",
+                        return_value={'page_items': [THREAT_DEVICES_OUTPUT]})
+    mocker.patch.object(Cylance_Protect_v2, "translate_score", return_value=1)
+
+    mocker.patch.object(demisto, 'args', return_value=args)
+    demisto_results = mocker.patch.object(demisto, 'results')
+    get_threat_devices()
+
+    contents = demisto_results.call_args[0][0]
+    assert EXPECTED_THREAT_DEVICES == contents.get('EntryContext').get('File')
+
+
+def test_get_list(mocker):
+    """
+    Given
+        - a threat and a dbot score
+    When
+        - calls the function get_device_threats
+    Then
+        - checks if the output is as expected
+    """
+
+    args = {'listTypeId': "GlobalSafe", "sha256": "234E5014C239FD89F2F3D56091B87763DCD90F6E3DB42FD2FA1E0ABE05AF0487"}
+    mocker.patch.object(Cylance_Protect_v2, "get_list_request",
+                        return_value={'page_items': [LIST_OUTPUT]})
+    mocker.patch.object(Cylance_Protect_v2, "translate_score", return_value=1)
+
+    mocker.patch.object(demisto, 'args', return_value=args)
+    demisto_results = mocker.patch.object(demisto, 'results')
+    get_list()
+
+    contents = demisto_results.call_args[0][0]
+    assert [EXPECTED_LIST] == contents.get('EntryContext').get('File')
 
