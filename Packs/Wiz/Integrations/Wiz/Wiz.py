@@ -17,6 +17,7 @@ TOKEN = None
 URL = ''
 
 
+
 def get_token():
     """
     Retrieve the token using the credentials
