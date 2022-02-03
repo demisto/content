@@ -1192,7 +1192,7 @@ def main():
         task_status, is_missing_dependencies = pack.format_metadata(index_folder_path,
                                                                     packs_dependencies_mapping, build_number,
                                                                     current_commit_hash, pack_was_modified,
-                                                                    statistics_handler, pack_names)
+                                                                    statistics_handler, pack_names, id_set_path)
 
         if is_missing_dependencies:
             # If the pack is dependent on a new pack
@@ -1263,7 +1263,7 @@ def main():
     for pack in packs_missing_dependencies:
         task_status, _ = pack.format_metadata(index_folder_path, packs_dependencies_mapping,
                                               build_number, current_commit_hash, False, statistics_handler,
-                                              pack_names, format_dependencies_only=True)
+                                              pack_names, id_set_path, format_dependencies_only=True)
 
         if not task_status:
             pack.status = PackStatus.FAILED_METADATA_REFORMATING.name

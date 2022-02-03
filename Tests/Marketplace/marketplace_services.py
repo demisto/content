@@ -616,11 +616,12 @@ class Pack(object):
 
         return pack_metadata
 
-    def _load_pack_dependencies(self, index_folder_path, pack_names):
+    def _load_pack_dependencies(self, index_folder_path, pack_names, id_set_path):
         """ Loads dependencies metadata and returns mapping of pack id and it's loaded data.
         Args:
             index_folder_path (str): full path to download index folder.
             pack_names (set): List of all packs.
+            id_set_path (str): Path to id_set.json.
 
         Returns:
             dict: pack id as key and loaded metadata of packs as value.
@@ -640,18 +641,30 @@ class Pack(object):
             dependency_metadata_path = os.path.join(index_folder_path, dependency_pack_id, Pack.METADATA)
 
             if os.path.exists(dependency_metadata_path):
+                # Case 1: the dependency is found in the index.zip
                 with open(dependency_metadata_path, 'r') as metadata_file:
                     dependency_metadata = json.load(metadata_file)
                     dependencies_data_result[dependency_pack_id] = dependency_metadata
+
             elif dependency_pack_id in pack_names:
-                # If the pack is dependent on a new pack (which is not yet in the index.json)
-                # we will note that it is missing dependencies.
-                # And finally after updating all the packages in index.json.
-                # We will go over the pack again to add what was missing
-                self._is_missing_dependencies = True
-                logging.warning(f"{self._pack_name} pack dependency with id {dependency_pack_id} "
-                                f"was not found in index, marking it as missing dependencies - to be resolved in next"
-                                f" iteration over packs")
+                with open(id_set_path, 'r') as id_set_file:
+                    id_set_dict = json.load(id_set_file)
+
+                    if not id_set_dict.get('Packs', {}).get(dependency_pack_id):
+                        # Case 2: the dependency is not in the index since it is not relevant in the current marketplace.
+                        # This means it is not in the id set. In that case, we want to ignore that dependency
+                        logging.warning(f"{self._pack_name} pack dependency with id {dependency_pack_id} is not part of "
+                                        f"the current marketplace, ignoring dependency (this is probably an optional "
+                                        f"dependency).")
+
+                    else:
+                        # Case 3: the dependency is not in the index since it is a new pack, but it is in the id set.
+                        # In this case we will note that it is missing dependencies, and after we finish updating all
+                        # the packages in index.zip we will go over the pack again to add what was missing
+                        self._is_missing_dependencies = True
+                        logging.warning(f"{self._pack_name} pack dependency with id {dependency_pack_id} "
+                                        f"was not found in index, marking it as missing dependencies - to be resolved in "
+                                        f"next iteration over packs")
 
             else:
                 logging.warning(f"{self._pack_name} pack dependency with id {dependency_pack_id} was not found")
@@ -1922,7 +1935,8 @@ class Pack(object):
         )
 
     def format_metadata(self, index_folder_path, packs_dependencies_mapping, build_number, commit_hash,
-                        pack_was_modified, statistics_handler, pack_names=None, format_dependencies_only=False):
+                        pack_was_modified, statistics_handler, pack_names=None, id_set_path=None,
+                        format_dependencies_only=False):
         """ Re-formats metadata according to marketplace metadata format defined in issue #19786 and writes back
         the result.
 
@@ -1933,9 +1947,11 @@ class Pack(object):
             commit_hash (str): current commit hash.
             pack_was_modified (bool): Indicates whether the pack was modified or not.
             statistics_handler (StatisticsHandler): The marketplace statistics handler
-            pack_names (set): List of all packs.
+            pack_names (set): List of all pack names.
+            id_set_path (str): Path to id_set.json
             format_dependencies_only (bool): Indicates whether the metadata formation is just for formatting the
              dependencies or not.
+
         Returns:
             bool: True is returned in case metadata file was parsed successfully, otherwise False.
             bool: True is returned in pack is missing dependencies.
@@ -1952,7 +1968,7 @@ class Pack(object):
                     self._pack_name, {}).get(Metadata.DISPLAYED_IMAGES, [])
                 logging.info(f"Adding auto generated display images for {self._pack_name} pack")
             dependencies_data, is_missing_dependencies = \
-                self._load_pack_dependencies(index_folder_path, pack_names)
+                self._load_pack_dependencies(index_folder_path, pack_names, id_set_path)
 
             self._enhance_pack_attributes(
                 index_folder_path, pack_was_modified, dependencies_data, statistics_handler,
