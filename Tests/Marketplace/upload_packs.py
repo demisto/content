@@ -234,7 +234,8 @@ def clean_non_existing_packs(index_folder_path: str, private_packs: list, storag
         if id_set:
             with open(id_set, 'r') as id_set_file:
                 id_set_dict = json.load(id_set_file)
-        valid_packs_names = list(id_set_dict.get('Packs', {}).keys())
+
+        valid_packs_names = set(id_set_dict.get('Packs', {}).keys())
         # search for invalid packs folder inside index
         invalid_packs_names = {(entry.name, entry.path) for entry in os.scandir(index_folder_path) if
                                entry.name not in valid_packs_names and entry.is_dir()}
