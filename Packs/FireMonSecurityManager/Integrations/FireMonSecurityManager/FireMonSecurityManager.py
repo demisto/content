@@ -1,7 +1,8 @@
-from CommonServerPython import *
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 """ IMPORTS """
-import demistomock as demisto
+from typing import Any, Callable, Dict, List
 
 """ CONSTANTS """
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
@@ -10,6 +11,7 @@ WORKFLOW_URL = "/policyplanner/api/domain/{0}/workflow/version/latest/all"
 CREATE_PP_TICKET_URL = "/policyplanner/api/domain/{0}/workflow/{1}/packet"
 PCA_URL_SUFFIX = "/orchestration/api/domain/{}/change/device/{}/pca"
 RULE_REC_URL = "orchestration/api/domain/{}/change/rulerec"
+PAGED_SEARCH_URL = "securitymanager/api/siql/secrule/paged-search"
 
 create_pp_payload = {
     "sources": [
@@ -72,6 +74,64 @@ def get_create_pp_ticket_payload():
         },
         "policyPlanRequirements": []
     }
+
+
+def get_secmgr_secrule_search_response_keys():
+    return [
+        "ndError",
+        "name",
+        "displayName",
+        "matchId",
+        "derived",
+        "system",
+        "ruleName",
+        "ruleOrder",
+        "ruleNumber",
+        "disabled",
+        "tunnel",
+        "log",
+        "createDate",
+        "expirationDate",
+        "cumulativeRuleSeverity",
+        "lastRuleSeverityComputeDate",
+        "ruleAction",
+        "commentText",
+        "policy",
+        "sources",
+        "destinations",
+        "services",
+        "srcContext",
+        "dstContext",
+        "srcNegated",
+        "dstNegated",
+        "svcNegated",
+        "userNegated",
+        "ndConfigRev",
+        "lastChangeNdConfigRev",
+        "lastChangeAction",
+        "lastChanged",
+        "lastUpdated",
+        "lastUsed",
+        "ndDevice managedType",
+        "ndDevice gpcStatus",
+        "ndDevice gpcSecurityRuleCount",
+        "ndDevice gpcServiceCount",
+        "ndDevice gpcServiceGroupCount",
+        "ndDevice gpcNetworkCount",
+        "ndDevice gpcNetworkGroupCount",
+        "ndDevice gpcPolicyCount",
+        "ndDevice gpcImplementDate",
+        "ndDevice supportsManualRetrieval",
+        "complexity",
+        "redundant",
+        "shadowed",
+        "inoperative",
+        "ndProblem",
+        "ruleGroup",
+        "ruleGroupProtected",
+        "gpcManaged",
+        "accessRuleIds",
+    ]
 
 
 class Client(BaseClient):
@@ -231,6 +291,32 @@ class Client(BaseClient):
         )
         return rule_rec_api_response
 
+    def get_paged_search_secrule(self, auth_token: str, payload: Dict[str, Any]):
+        """Calling siql paged search api for searching security rules
+        using `SIQL` language query
+
+        Args:
+            auth_token (str): authentication token
+            payload (Dict[str, Any]): payload to be used for making request
+        """
+        parameters: Dict[str, Any] = {
+            "q": payload["q"],
+            "pageSize": payload["pageSize"],
+            "page": payload["page"],
+        }
+
+        secrule_page_search_response = self._http_request(
+            method="GET",
+            url_suffix=PAGED_SEARCH_URL,
+            params=parameters,
+            headers={
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+                "X-FM-Auth-Token": auth_token,
+            },
+        )
+        return secrule_page_search_response
+
 
 def test_module(client):
     response = client.authenticate_user()
@@ -349,6 +435,87 @@ def pca_command(client, args):
                           raw_response=list_of_device_changes)
 
 
+def get_paged_search_secrule(client: Client, auth_token: str, payload: Dict[str, Any]) -> List:
+    """Make subsequent requests using client and other arguments
+
+    Args:
+        client (Client): `Client` class object
+        auth_token (str): authentication token to use
+        payload (Dict[str, Any]): parameter payload to use
+
+    Returns:
+        (List[Dict[str, Any]]): results list
+    """
+    result = list()
+    response = client.get_paged_search_secrule(auth_token, payload)
+    total_pages = response.get("total", 0) // payload.get("pageSize")
+
+    result.extend(response.get("results", list()))
+
+    while payload.get("page") < total_pages:  # NOTE: Check if we can implement async here
+        payload["page"] += 1
+        response = client.get_paged_search_secrule(auth_token, payload)
+        result.extend(response.get("results", list()))
+
+    return result
+
+
+def secmgr_secrule_search_command(client: Client, args: Dict[str, Any]):
+    """Searches for security rules using the SIQL language query
+
+    Args:
+        client (Client): `Client` class object
+        args (Dict[str, Any]): demisto arguments passed
+    """
+    auth_token_cmd_result = authenticate_command(client)
+    auth_token = auth_token_cmd_result.outputs
+
+    # page size can't be less than 1
+    page_size = 1 if int(args.get("pageSize", 10)) < 1 else int(args.get("pageSize", 10))
+    payload = dict(
+        q=str(args.get("q")),
+        pageSize=page_size,
+        page=int(args.get("page", 0)),
+    )
+
+    try:
+        results = get_paged_search_secrule(client, auth_token, payload)
+    except DemistoException as err:
+        demisto.error(f"{err}")
+        msg = None if err.res is None else err.res.json().get("message")
+        raise DemistoException(msg)
+
+    required_results: List[Dict[str, Any]] = list()
+
+    pascal_case: Callable[[str], str] = lambda x: x[0].upper() + x[1:]
+
+    def get_value(result: Dict[str, Any], keys: List):
+        if len(keys) == 1 or len(result) == 0:
+            return result.get(keys[0])
+        return get_value(result.get(keys[0], {}), keys[1:])
+
+    for result in results:
+        required_results.append(
+            {
+                pascal_case(key.split()[-1]): get_value(result, key.split())
+                for key in get_secmgr_secrule_search_response_keys()
+            }
+        )
+
+    return CommandResults(
+        outputs_prefix="FireMonSecurityManager.SIQL",
+        outputs_key_field="MatchId",
+        outputs=required_results,
+        readable_output=tableToMarkdown(
+            name="FireMon SecurityManager SIQL:",
+            t=required_results,
+            removeNull=True,
+            headerTransform=pascalToSpace,
+        ),
+        raw_response=result,
+    )
+
+
 def main():
     username = demisto.params().get('credentials').get('identifier')
     password = demisto.params().get('credentials').get('password')
@@ -371,6 +538,8 @@ def main():
             return_results(create_pp_ticket_command(client, demisto.args()))
         elif demisto.command() == 'firemon-pca':
             return_results(pca_command(client, demisto.args()))
+        elif demisto.command() == "firemon-secmgr-secrule-search":
+            return_results(secmgr_secrule_search_command(client, demisto.args()))
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
 
