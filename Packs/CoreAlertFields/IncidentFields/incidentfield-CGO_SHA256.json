@@ -1,0 +1,32 @@
+{
+    "associatedToAll": true,
+    "caseInsensitive": true,
+    "cliName": "cgo256",
+    "closeForm": false,
+    "content": true,
+	"description": "The SHA256 value of the CGO that initiated the alert.",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_cgo256",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "CGO SHA256",
+    "neverSetAsRequired": false,
+    "openEnded": true,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "multiSelect",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.5.0",
+	"x2_fields": "causality_actor_process_image_sha256"
+}

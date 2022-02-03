@@ -93,17 +93,17 @@ The following permissions are required for all commands:
   <tbody>
     <tr>
       <td>to</td>
-      <td>A comma separated list of email addresses for the 'to' field.</td>
+      <td>A comma-separated list of email addresses for the 'to' field.</td>
       <td>Optional</td>
     </tr>
     <tr>
       <td>cc</td>
-      <td>A comma separated list of email addresses for the 'cc' field.</td>
+      <td>A comma-separated list of email addresses for the 'cc' field.</td>
       <td>Optional</td>
     </tr>
     <tr>
       <td>bcc</td>
-      <td>A comma separated list of email addresses for the 'bcc' field.</td>
+      <td>A comma-separated list of email addresses for the 'bcc' field.</td>
       <td>Optional</td>
     </tr>
     <tr>
@@ -133,22 +133,22 @@ The following permissions are required for all commands:
     </tr>
     <tr>
       <td>headers</td>
-      <td>A comma separated list of additional headers in the format, headerName:headerValue. For example, "headerName1:headerValue1,headerName2:headerValue2".</td>
+      <td>A comma-separated list of additional headers in the format, headerName:headerValue. For example, "headerName1:headerValue1,headerName2:headerValue2".</td>
       <td>Optional</td>
     </tr>
     <tr>
       <td>attach_ids</td>
-      <td>A comma separated list of War Room entry IDs that contain files, which are used to attach files to the draft. For example, attachIDs=15@8,19@8.</td>
+      <td>A comma-separated list of War Room entry IDs that contain files, which are used to attach files to the draft. For example, attachIDs=15@8,19@8.</td>
       <td>Optional</td>
     </tr>
     <tr>
       <td>attach_names</td>
-      <td>A comma separated list of names of attachments to be displayed in the draft. Must be the same number of elements as attachIDs.</td>
+      <td>A comma-separated list of names of attachments to be displayed in the draft. Must be the same number of elements as attachIDs.</td>
       <td>Optional</td>
     </tr>
     <tr>
       <td>attach_cids</td>
-      <td>A comma separated list of CIDs to embed attachments within the email itself.</td>
+      <td>A comma-separated list of CIDs to embed attachments within the email itself.</td>
       <td>Optional</td>
     </tr>
   </tbody>
@@ -389,17 +389,17 @@ The following permissions are required for all commands:
   <tbody>
     <tr>
       <td>to</td>
-      <td>A comma separated list of email addresses for the 'to' field.</td>
+      <td>A comma-separated list of email addresses for the 'to' field.</td>
       <td>Optional</td>
     </tr>
     <tr>
       <td>cc</td>
-      <td>A comma separated list of email addresses for the 'cc' field.</td>
+      <td>A comma-separated list of email addresses for the 'cc' field.</td>
       <td>Optional</td>
     </tr>
     <tr>
       <td>bcc</td>
-      <td>A comma separated list of email addresses for the 'bcc' field.</td>
+      <td>A comma-separated list of email addresses for the 'bcc' field.</td>
       <td>Optional</td>
     </tr>
     <tr>
@@ -429,22 +429,22 @@ The following permissions are required for all commands:
     </tr>
     <tr>
       <td>headers</td>
-      <td>A comma separated list of additional headers in the format: headerName:headerValue. For example: "headerName1:headerValue1,headerName2:headerValue2".</td>
+      <td>A comma-separated list of additional headers in the format: headerName:headerValue. For example: "headerName1:headerValue1,headerName2:headerValue2".</td>
       <td>Optional</td>
     </tr>
     <tr>
       <td>attach_ids</td>
-      <td>A comma separated list of War Room entry IDs that contain files, which are used to attach files for the email to send. For example, attachIDs=15@8,19@8.</td>
+      <td>A comma-separated list of War Room entry IDs that contain files, which are used to attach files for the email to send. For example, attachIDs=15@8,19@8.</td>
       <td>Optional</td>
     </tr>
     <tr>
       <td>attach_names</td>
-      <td>A comma separated list of names of attachments to be displayed in the email to send. Must be the same number of elements as attachIDs.</td>
+      <td>A comma-separated list of names of attachments to be displayed in the email to send. Must be the same number of elements as attachIDs.</td>
       <td>Optional</td>
     </tr>
     <tr>
       <td>attach_cids</td>
-      <td>A comma separated list of CIDs to embed attachments within the email.</td>
+      <td>A comma-separated list of CIDs to embed attachments within the email.</td>
       <td>Optional</td>
     </tr>
     <tr>
@@ -652,8 +652,23 @@ The following permissions are required for all commands:
     </tr>
     <tr>
       <td>to</td>
-      <td>A comma separated list of email addresses for the 'to' field.</td>
+      <td>A comma-separated list of email addresses for the 'to' field.</td>
       <td>Required</td>
+    </tr>
+        <tr>
+      <td>attach_ids</td>
+      <td>A comma-separated list of War Room entry IDs that contain files, which are used to attach files for the email to send. For example, attachIDs=15@8,19@8.</td>
+      <td>Optional</td>
+    </tr>
+    <tr>
+      <td>attach_names</td>
+      <td>A comma-separated list of names of attachments to be displayed in the email to send. Must be the same number of elements as attachIDs.</td>
+      <td>Optional</td>
+    </tr>
+    <tr>
+      <td>attach_cids</td>
+      <td>A comma-separated list of CIDs to embed attachments within the email.</td>
+      <td>Optional</td>
     </tr>
   </tbody>
 </table>

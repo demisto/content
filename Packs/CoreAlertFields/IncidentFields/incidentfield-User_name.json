@@ -1,0 +1,122 @@
+{
+    "associatedToAll": true,
+    "caseInsensitive": true,
+    "cliName": "username",
+    "closeForm": false,
+    "content": true,
+    "description": "The name of the user that initiated the behavior that triggered the alert. If the user is a domain user account, this field also identifies the domain. Any alert triggered based on network, authentication, or login events, displays the User Name in the follow standardized format in the Alerts and Incidents pages.<company domain>\\<username>",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_username",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "User name",
+    "neverSetAsRequired": false,
+    "openEnded": true,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "multiSelect",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.5.0",
+    "x2_fields": "actor_effective_username",
+    "Aliases": [
+        {
+          "cliName": "illusivenetworkslastseenuser",
+          "type": "shortText"
+        },
+        {
+          "cliName": "logpointusername",
+          "type": "shortText"
+        },
+        {
+          "cliName": "microsoft365defenderusers",
+          "type": "grid"
+        },
+        {
+          "cliName": "prismacloudcomputeuser",
+          "type": "shortText"
+        },
+        {
+          "cliName": "safenettrustedaccessusername",
+          "type": "shortText"
+        },
+        {
+          "cliName": "securityscorecardusername",
+          "type": "shortText"
+        },
+        {
+          "cliName": "sourceusername",
+          "type": "shortText"
+        },
+        {
+          "cliName": "srcuser",
+          "type": "shortText"
+        },
+        {
+          "cliName": "tidyuser",
+          "type": "shortText"
+        },
+        {
+          "cliName": "username",
+          "type": "shortText"
+        },
+        {
+          "cliName": "accountname",
+          "type": "shortText"
+        },
+        {
+          "cliName": "chronicleuser",
+          "type": "shortText"
+        },
+        {
+          "cliName": "code42username",
+          "type": "shortText"
+        },
+        {
+          "cliName": "deviceusername",
+          "type": "shortText"
+        },
+        {
+          "cliName": "digitalguardianusername",
+          "type": "shortText"
+        },
+        {
+          "cliName": "f5silverlinedetectedusernames",
+          "type": "shortText"
+        },
+        {
+          "cliName": "user",
+          "type": "shortText"
+        },
+        {
+          "cliName": "usernames",
+          "type": "shortText"
+        },
+        {
+          "cliName": "users",
+          "type": "shortText"
+        },
+        {
+          "cliName": "detecteduser",
+          "type": "multiSelect"
+        },
+        {
+          "cliName": "detectedusers",
+          "type": "shortText"
+        },
+        {
+          "cliName": "deviceusername",
+          "type": "shortText"
+        }
+    ]
+}
