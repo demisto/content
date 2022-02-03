@@ -616,12 +616,19 @@ class Pack(object):
 
         return pack_metadata
 
-    def _load_pack_dependencies(self, index_folder_path, pack_names, id_set_path):
+    def _load_pack_dependencies(self, index_folder_path, pack_names, id_set):
         """ Loads dependencies metadata and returns mapping of pack id and it's loaded data.
+            There are 3 cases for dependencies:
+            Case 1: The dependency is present in the index.zip. In this case we add it to the dependencies results.
+            Case 2: The dependency is missing from ths index.zip since it is not a part of this marketplace.
+            In this case, ignore it.
+            Case 3: The dependency is missing from the index.zip since it is of a new pack. In this case, handle missing
+            dependency - This means we mark this pack as 'missing dependency' and once the new index.zip is created, and
+            therefore it contains the new pack, we call this function again, and hitting case 1.
         Args:
             index_folder_path (str): full path to download index folder.
             pack_names (set): List of all packs.
-            id_set_path (str): Path to id_set.json.
+            id_set (dict): Loaded id_set.json.
 
         Returns:
             dict: pack id as key and loaded metadata of packs as value.
@@ -635,7 +642,7 @@ class Pack(object):
         dependencies_ids.update(all_level_displayed_dependencies)
 
         if self._pack_name != GCPConfig.BASE_PACK:  # check that current pack isn't Base Pack in order to prevent loop
-            dependencies_ids.add(GCPConfig.BASE_PACK)  # Base pack is always added as pack dependency
+            dependencies_ids.add(GCPConfig.BASE_PACK)  # Base pack is always added as pack dependency TODO: check
 
         for dependency_pack_id in dependencies_ids:
             dependency_metadata_path = os.path.join(index_folder_path, dependency_pack_id, Pack.METADATA)
@@ -647,24 +654,19 @@ class Pack(object):
                     dependencies_data_result[dependency_pack_id] = dependency_metadata
 
             elif dependency_pack_id in pack_names:
-                with open(id_set_path, 'r') as id_set_file:
-                    id_set_dict = json.load(id_set_file)
-
-                    if not id_set_dict.get('Packs', {}).get(dependency_pack_id):
-                        # Case 2: the dependency is not in the index since it is not relevant in the current marketplace.
-                        # This means it is not in the id set. In that case, we want to ignore that dependency
-                        logging.warning(f"{self._pack_name} pack dependency with id {dependency_pack_id} is not part of "
-                                        f"the current marketplace, ignoring dependency (this is probably an optional "
+                if id_set:
+                    if not id_set.get('Packs', {}).get(dependency_pack_id):
+                        # Case 2: the dependency is not in the index since it is not a part of the current marketplace
+                        logging.warning(f"{self._pack_name} pack dependency with id {dependency_pack_id} is not part of"
+                                        f" the current marketplace, ignoring dependency (this is probably an optional "
                                         f"dependency).")
 
-                    else:
-                        # Case 3: the dependency is not in the index since it is a new pack, but it is in the id set.
-                        # In this case we will note that it is missing dependencies, and after we finish updating all
-                        # the packages in index.zip we will go over the pack again to add what was missing
-                        self._is_missing_dependencies = True
-                        logging.warning(f"{self._pack_name} pack dependency with id {dependency_pack_id} "
-                                        f"was not found in index, marking it as missing dependencies - to be resolved in "
-                                        f"next iteration over packs")
+                else:
+                    # Case 3: the dependency is not in the index since it is a new pack, but it is in the id set
+                    self._is_missing_dependencies = True
+                    logging.warning(f"{self._pack_name} pack dependency with id {dependency_pack_id} "
+                                    f"was not found in index, marking it as missing dependencies - to be resolved in "
+                                    f"next iteration over packs")
 
             else:
                 logging.warning(f"{self._pack_name} pack dependency with id {dependency_pack_id} was not found")
@@ -1963,17 +1965,19 @@ class Pack(object):
 
         try:
             self.set_pack_dependencies(packs_dependencies_mapping)
+
             if Metadata.DISPLAYED_IMAGES not in self.user_metadata and self._user_metadata:
+                logging.info(f"Adding auto generated display images for {self._pack_name} pack")
                 self._user_metadata[Metadata.DISPLAYED_IMAGES] = packs_dependencies_mapping.get(
                     self._pack_name, {}).get(Metadata.DISPLAYED_IMAGES, [])
-                logging.info(f"Adding auto generated display images for {self._pack_name} pack")
-            dependencies_data, is_missing_dependencies = \
-                self._load_pack_dependencies(index_folder_path, pack_names, id_set_path)
 
-            self._enhance_pack_attributes(
-                index_folder_path, pack_was_modified, dependencies_data, statistics_handler,
-                format_dependencies_only
-            )
+            logging.info(f"Loading pack dependencies for {self._pack_name} pack")
+            dependencies_data, is_missing_dependencies = \
+                self._load_pack_dependencies(index_folder_path, pack_names, id_set)
+
+            self._enhance_pack_attributes(index_folder_path, pack_was_modified, dependencies_data, statistics_handler,
+                                          format_dependencies_only)
+
             formatted_metadata = self._parse_pack_metadata(build_number, commit_hash)
             metadata_path = os.path.join(self._pack_path, Pack.METADATA)  # deployed metadata path after parsing
             json_write(metadata_path, formatted_metadata)  # writing back parsed metadata
@@ -3168,3 +3172,25 @@ def underscore_file_name_to_dotted_version(file_name: str) -> str:
         (str): Dotted version of file name
     """
     return os.path.splitext(file_name)[0].replace('_', '.')
+
+
+def get_all_packs_by_id_set(packs_list, extract_destination_path, id_set, marketplace):
+    """
+    Collect all packs from the id_set that are not in packs_dict
+    Args:
+        packs_list (List[Pack]): List of packs collected before
+        extract_destination_path (str): Base destination of Packs folder
+        id_set (dict): Dict of id_set.json.
+        marketplace (str): Marketplace version
+    Returns:
+         (dict, list): Dictionary of pack_name:Pack and list of all Pack in id_set.json
+    """
+    packs_dict = {pack.name: pack for pack in packs_list}
+    if not id_set:
+        return packs_dict
+    for pack_name in id_set.keys():
+        if pack_name not in packs_dict:
+            pack = Pack(pack_name, os.path.join(extract_destination_path, pack_name), marketplace)
+            packs_dict[pack_name] = pack
+            packs_list.append(pack)
+    return packs_dict, packs_list

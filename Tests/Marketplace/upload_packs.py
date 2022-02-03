@@ -18,7 +18,7 @@ from requests import Response
 
 from Tests.Marketplace.marketplace_services import init_storage_client, Pack, \
     load_json, get_content_git_client, get_recent_commits_data, store_successful_and_failed_packs_in_ci_artifacts, \
-    json_write
+    json_write, get_all_packs_by_id_set
 from Tests.Marketplace.marketplace_statistics import StatisticsHandler
 from Tests.Marketplace.marketplace_constants import PackStatus, Metadata, GCPConfig, BucketUploadFlow, \
     CONTENT_ROOT_PATH, PACKS_FOLDER, PACKS_FULL_PATH, IGNORED_FILES, IGNORED_PATHS, LANDING_PAGE_SECTIONS_PATH
@@ -964,38 +964,14 @@ def prepare_and_zip_pack(pack, signature_key, marketplace, delete_test_playbooks
     return True
 
 
-def get_all_packs(packs_list, extract_destination_path, id_set_path, marketplace):
-    """
-    Collect all packs from the id_set that are not in packs_dict
-    Args:
-        packs_list (List[Pack]): List of packs collected before
-        extract_destination_path (str): Base destination of Packs folder
-        id_set_path (str): Path of id_set.json.
-        marketplace (str): Marketplace version
-    Returns:
-         (dict, list): Dictionary of pack_name:Pack and list of all Pack in id_set.json
-    """
-    packs_dict = {pack.name: pack for pack in packs_list}
-    if not id_set_path or not os.path.isfile(id_set_path):
-        return packs_dict
-    with open(id_set_path) as f:
-        id_set_packs = json.load(f).get('Packs', [])
-    for pack_name in id_set_packs.keys():
-        if pack_name not in packs_dict:
-            pack = Pack(pack_name, os.path.join(extract_destination_path, pack_name), marketplace)
-            packs_dict[pack_name] = pack
-            packs_list.append(pack)
-    return packs_dict, packs_list
-
-
 def upload_packs_with_dependencies_zip(extract_destination_path, packs_dependencies_mapping, signature_key,
-                                       storage_bucket, storage_base_path, id_set_path, packs_list, marketplace):
+                                       storage_bucket, storage_base_path, id_set, packs_list, marketplace):
     """
     Uploads packs with mandatory dependencies zip for all packs
     Args:
         packs_list (List[Pack]): List of packs collected before
         extract_destination_path (str): Base destination of Packs folder
-        id_set_path (str): Path of id_set.json.
+        id_set (dict): dict of id_set.json.
         marketplace (str): Marketplace version
         packs_dependencies_mapping (dict): First level dependency mapping
         signature_key (str): Signature key used for encrypting packs
@@ -1004,7 +980,7 @@ def upload_packs_with_dependencies_zip(extract_destination_path, packs_dependenc
         storage_bucket (google.cloud.storage.bucket.Bucket): google cloud storage bucket.
     """
     logging.info("Starting to collect pack with dependencies zips")
-    packs_dict, packs_list = get_all_packs(packs_list, extract_destination_path, id_set_path, marketplace)
+    packs_dict, packs_list = get_all_packs_by_id_set(packs_list, extract_destination_path, id_set, marketplace)
     full_deps_graph: dict = {}
     try:
         for pack in packs_list:
@@ -1272,7 +1248,7 @@ def main():
     for pack in packs_missing_dependencies:
         task_status, _ = pack.format_metadata(index_folder_path, packs_dependencies_mapping,
                                               build_number, current_commit_hash, False, statistics_handler,
-                                              pack_names, id_set_path, format_dependencies_only=True)
+                                              pack_names, id_set, format_dependencies_only=True)
 
         if not task_status:
             pack.status = PackStatus.FAILED_METADATA_REFORMATING.name
@@ -1319,7 +1295,7 @@ def main():
     if is_create_dependencies_zip and marketplace == 'xsoar':
         # handle packs with dependencies zip
         upload_packs_with_dependencies_zip(extract_destination_path, packs_dependencies_mapping, signature_key,
-                                           storage_bucket, storage_base_path, id_set_path, packs_list, marketplace)
+                                           storage_bucket, storage_base_path, id_set, packs_list, marketplace)
 
 
 if __name__ == '__main__':
