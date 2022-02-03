@@ -660,7 +660,7 @@ class Pack(object):
                 print('here2!!!!!!!!!!!!!!!!')
                 if id_set:
                     print('here3!!!!!!!!!!!!!!!!')
-                    print({id_set.get('Packs', {}).get(dependency_pack_id, {})})
+                    print(id_set.get('Packs', {}).get(dependency_pack_id, {}))
                     print(f'marketplace: {marketplace}')
                     if marketplace not in id_set.get('Packs', {}).get(dependency_pack_id, {}).get('marketplaces'):
                         print('here4!!!!!!!!!!!!!!!!')
