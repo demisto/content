@@ -6,7 +6,7 @@
     "cliName": "category",
 	"description": "Alert category based on the alert source. An example of an XDR Agent alert category is Exploit Modules.",
     "name": "Category",
-    "type": "multiSelect",
+    "type": "shortText",
     "closeForm": false,
     "editForm": true,
     "required": false,
