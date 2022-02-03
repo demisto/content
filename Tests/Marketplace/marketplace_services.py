@@ -1975,7 +1975,6 @@ class Pack(object):
                     self._pack_name, {}).get(Metadata.DISPLAYED_IMAGES, [])
 
             logging.info(f"Loading pack dependencies for {self._pack_name} pack")
-            print(f'{len(id_set.keys())}!!!!!!!!!!!!!!!!')
             dependencies_data, is_missing_dependencies = \
                 self._load_pack_dependencies(index_folder_path, pack_names, id_set, marketplace)
 

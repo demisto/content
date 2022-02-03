@@ -5,8 +5,6 @@ from CommonServerPython import *
 # IMPORTS
 # Disable insecure warnings
 
-# CHANGE IN PACK
-
 requests.packages.urllib3.disable_warnings()
 
 # CONSTANTS
