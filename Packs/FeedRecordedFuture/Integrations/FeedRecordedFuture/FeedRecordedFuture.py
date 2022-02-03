@@ -23,6 +23,14 @@ RF_CRITICALITY_LABELS = {
     'Unusual': 5
 }
 
+RF_INDICATOR_TYPES = {
+    'ip': 'ip',
+    'domain': 'domain',
+    'url': 'url',
+    'CVE(vulnerability)': 'vulnerability',
+    'hash': 'hash'
+}
+
 
 class Client(BaseClient):
     """
@@ -38,7 +46,7 @@ class Client(BaseClient):
 
     def __init__(self, indicator_type: str, api_token: str, services: list, risk_rule: str = None,
                  fusion_file_path: str = None, insecure: bool = False,
-                 polling_timeout: int = 20, proxy: bool = False, threshold: int = 65,
+                 polling_timeout: int = 20, proxy: bool = False, threshold: int = 65, risk_score_threshold: int = 0,
                  tags: Optional[list] = None, tlp_color: Optional[str] = None):
         """
         Attributes:
@@ -51,6 +59,7 @@ class Client(BaseClient):
              polling_timeout: timeout of the polling request in seconds. Default: 20
              proxy: Sets whether use proxy when sending requests
              threshold: The minimum score from the feed in order to to determine whether the indicator is malicious.
+             risk_score_threshold: The minimum score to filter out the ingested indicators.
              tags: A list of tags to add to indicators
              :param tlp_color: Traffic Light Protocol color
         """
@@ -67,6 +76,7 @@ class Client(BaseClient):
         self.services = services
         self.indicator_type = indicator_type
         self.threshold = int(threshold)
+        self.risk_score_threshold = int(risk_score_threshold)
         self.tags = tags
         self.tlp_color = tlp_color
         super().__init__(self.BASE_URL, proxy=proxy, verify=not insecure)
@@ -192,6 +202,17 @@ class Client(BaseClient):
 
         return dbot_score
 
+    def check_indicator_risk_score(self, risk_score):
+        """Checks if the indicator risk score is above risk_score_threshold
+        Args:
+            risk_score (str): The indicator's risk score from the feed
+        Returns:
+            True if the indicator risk score is above risk_score_threshold, False otherwise.
+        """
+        if int(risk_score) < self.risk_score_threshold:
+            return False
+        return True
+
     def run_parameters_validations(self):
         """Checks validation of the risk_rule and fusion_file_path parameters
         Returns:
@@ -276,6 +297,8 @@ def get_indicator_type(indicator_type, item):
         return FeedIndicatorType.Domain
     elif indicator_type == 'url':
         return FeedIndicatorType.URL
+    elif indicator_type == 'vulnerability':
+        return FeedIndicatorType.CVE
 
 
 def ip_to_indicator_type(ip):
@@ -370,6 +393,9 @@ def fetch_indicators_command(client, indicator_type, risk_rule: Optional[str] = 
                 if isinstance(risk, str) and risk.isdigit():
                     raw_json['score'] = score = client.calculate_indicator_score(risk)
                     raw_json['Criticality Label'] = calculate_recorded_future_criticality_label(risk)
+                    # If the indicator risk score is lower than the risk score threshold we shouldn't create it.
+                    if not client.check_indicator_risk_score(risk):
+                        continue
                 lower_case_evidence_details_keys = []
                 evidence_details_value = item.get('EvidenceDetails', '{}')
                 if evidence_details_value:
@@ -471,10 +497,10 @@ def get_risk_rules_command(client: Client, args) -> Tuple[str, dict, dict]:
 
 def main():
     params = demisto.params()
-    client = Client(params.get('indicator_type'), params.get('api_token'), params.get('services'),
+    client = Client(RF_INDICATOR_TYPES[params.get('indicator_type')], params.get('api_token'), params.get('services'),
                     params.get('risk_rule'), params.get('fusion_file_path'), params.get('insecure'),
                     params.get('polling_timeout'), params.get('proxy'), params.get('threshold'),
-                    argToList(params.get('feedTags'), params.get('tlp_color'))
+                    params.get('risk_score_threshold'), argToList(params.get('feedTags'), params.get('tlp_color'))
                     )
     command = demisto.command()
     demisto.info('Command being called is {}'.format(command))

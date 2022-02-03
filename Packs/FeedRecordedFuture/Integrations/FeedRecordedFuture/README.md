@@ -24,6 +24,7 @@ This integration was integrated and tested with Recorded Future Feed
     | Tags | Supports CSV values. | False |
     | Request Timeout | Time in seconds before HTTP requests timeout. | True |
     | Malicious Threshold | The minimum score from the feed in order to to determine whether the indicator is malicious. Default is "65". For more information about Recorded Future scoring go to integration details. | False |
+    | IOC Risc Score Threshold | If selected, will be used to filter out the ingested indicators, and only indicators with equivalent and higher risk score will be ingested into XSOAR. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Notes
@@ -59,7 +60,7 @@ Gets indicators from the feed.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | limit | The maximum number of results to return. The default value is 10. Default is 10. | Required | 
-| indicator_type | The indicator type. Can be "ip", "domain", "hash", or "url". Possible values are: ip, domain, hash, url. | Optional | 
+| indicator_type | The indicator type. Can be "ip", "domain", "hash", "vulnerability" or "url". Possible values are: ip, domain, hash, url, vulnerability. | Optional | 
 
 
 #### Context Output
@@ -80,7 +81,7 @@ To limit the 'connectApi' service indicators list.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| indicator_type | The indicator type. Possible values are: ip, domain, hash, url. | Required | 
+| indicator_type | The indicator type. Possible values are: ip, domain, hash, url, vulnerability. | Required | 
 
 
 #### Context Output
@@ -90,6 +91,3 @@ To limit the 'connectApi' service indicators list.
 | RecordedFutureFeed.RiskRule.Name | String | The risk rule name. | 
 | RecordedFutureFeed.RiskRule.Description | String | The risk rule description. | 
 | RecordedFutureFeed.RiskRule.Criticality | String | The risk rule criticality. | 
-
-
-

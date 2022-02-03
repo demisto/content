@@ -88,6 +88,7 @@ configuration:
   - ip
   - hash
   - url
+  - CVE(vulnerability)
   required: true
   type: 15
 - display: API token
@@ -145,6 +146,15 @@ configuration:
   name: threshold
   required: false
   type: 0
+- additionalinfo: If selected, will be used to filter out the ingested indicators,
+    and only indicators with equivalent and higher risk score will be ingested into
+    XSOAR.
+  defaultvalue: '0'
+  display: IOC Risc Score Threshold
+  hidden: false
+  name: risk_score_threshold
+  required: false
+  type: 0
 description: Ingests indicators from Recorded Future feeds into Demisto.
 display: Recorded Future RiskList Feed
 name: Recorded Future Feed
@@ -160,7 +170,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The indicator type. Can be "ip", "domain", "hash", or "url".
+      description: The indicator type. Can be "ip", "domain", "hash", "vulnerability"
+        or "url".
       isArray: false
       name: indicator_type
       predefined:
@@ -168,6 +179,7 @@ script:
       - domain
       - hash
       - url
+      - vulnerability
       required: false
       secret: false
     deprecated: false
@@ -185,6 +197,7 @@ script:
       - domain
       - hash
       - url
+      - vulnerability
       required: true
       secret: false
     deprecated: false
