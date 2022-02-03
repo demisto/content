@@ -1578,14 +1578,15 @@ def get_remote_data_command(args: Dict[str, Any]):
             mirrored_data_list = get_incidents_entities([remote_args.remote_incident_id]).get('resources', [])
             delta = {}
             for mirrored_data in mirrored_data_list:
-                delta.update({field: mirrored_data.get(field) for field in CS_FALCON_INCIDENT_INCOMING_ARGS if mirrored_data.get(field)})
+                set_delta(delta, mirrored_data, CS_FALCON_INCIDENT_INCOMING_ARGS)
 
         # updating remote detection
         elif remote_args.remote_incident_id[0:3] == 'ldt':
             mirrored_data_list = get_detections_entities([remote_args.remote_incident_id]).get('resources', [])
             delta = {}
             for mirrored_data in mirrored_data_list:
-                delta.update({field: mirrored_data.get(field) for field in CS_FALCON_DETECTION_INCOMING_ARGS if mirrored_data.get(field)})
+                mirrored_data['severity'] = severity_string_to_int(mirrored_data.get('max_severity_displayname'))
+                set_delta(delta, mirrored_data, CS_FALCON_DETECTION_INCOMING_ARGS)
 
         else:
             raise Exception(f'Executed get-remote-data command with undefined id: {remote_args.remote_incident_id}')
@@ -1636,6 +1637,25 @@ def get_remote_data_command(args: Dict[str, Any]):
             }
 
         return GetRemoteDataResponse(mirrored_object=mirrored_data, entries=[])
+
+
+def set_delta(delta, mirrored_data, mirroring_fields):
+    # todo add documentation that we can have the value nested in a dict or list then dict
+    for field in mirroring_fields:
+        if mirrored_data.get(field):
+            delta[field] = mirrored_data.get(field)
+
+        elif '.' in field:
+            field_split = field.split('.')
+            if isinstance(mirrored_data.get(field_split[0]), list):
+                for nested_field in mirrored_data.get(field_split[0]):
+                    if nested_field.get(field_split[1]):
+                        delta[field] = nested_field.get(field_split[1])
+                        break
+
+            elif isinstance(mirrored_data.get(field_split[0]), dict):
+                if mirrored_data.get(field_split[0]).get(field_split[1]):
+                    delta[field] = mirrored_data.get(field_split[0]).get(field_split[1])
 
 
 def get_modified_remote_data_command(args: Dict[str, Any]):
