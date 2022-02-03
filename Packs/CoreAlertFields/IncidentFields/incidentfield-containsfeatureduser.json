@@ -21,7 +21,7 @@
     "sla": 0,
     "system": false,
     "threshold": 72,
-    "type": "boolean",
+    "type": "multiSelect",
     "unmapped": false,
     "unsearchable": true,
     "useAsKpi": false,
