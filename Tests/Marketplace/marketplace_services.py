@@ -660,6 +660,8 @@ class Pack(object):
                 print('here2!!!!!!!!!!!!!!!!')
                 if id_set:
                     print('here3!!!!!!!!!!!!!!!!')
+                    print({id_set.get('Packs', {}).get(dependency_pack_id, {})})
+                    print(f'marketplace: {marketplace}')
                     if marketplace not in id_set.get('Packs', {}).get(dependency_pack_id, {}).get('marketplaces'):
                         print('here4!!!!!!!!!!!!!!!!')
                         # Case 2: the dependency is not in the index since it is not a part of the current marketplace
