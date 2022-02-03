@@ -13,7 +13,7 @@
     "locked": false,
     "name": "Hostname",
     "neverSetAsRequired": false,
-    "openEnded": true,
+    "openEnded": false,
     "ownerOnly": false,
     "propagationLabels": [
         "all"
