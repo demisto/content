@@ -223,19 +223,19 @@ def get_devices():
 
 def get_devices_request(page=None, page_size=None):  # pragma: no cover
 
-    access_token = get_authentication_token(scope=SCOPE_DEVICE_LIST)  # pragma: no cover
-    headers = {  # pragma: no cover
-        'Content-Type': 'application/json',  # pragma: no cover
-        'Authorization': 'Bearer ' + access_token  # pragma: no cover
-    }  # pragma: no cover
+    access_token = get_authentication_token(scope=SCOPE_DEVICE_LIST)
+    headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + access_token
+    }
 
-    params = {}  # pragma: no cover
-    if page:  # pragma: no cover
-        params['page'] = page  # pragma: no cover
-    if page_size:  # pragma: no cover
-        params['page_size'] = page_size  # pragma: no cover
-    res = api_call(uri=URI_DEVICES, method='get', headers=headers, params=params)  # pragma: no cover
-    return res  # pragma: no cover
+    params = {}
+    if page:
+        params['page'] = page
+    if page_size:
+        params['page_size'] = page_size
+    res = api_call(uri=URI_DEVICES, method='get', headers=headers, params=params)
+    return res
 
 
 def get_device():
