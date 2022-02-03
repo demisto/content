@@ -620,12 +620,12 @@ class Pack(object):
     def _load_pack_dependencies(self, index_folder_path, pack_names, id_set, marketplace):
         """ Loads dependencies metadata and returns mapping of pack id and it's loaded data.
             There are 3 cases for dependencies:
-            Case 1: The dependency is present in the index.zip. In this case we add it to the dependencies results.
-            Case 2: The dependency is missing from ths index.zip since it is not a part of this marketplace.
-            In this case, ignore it.
-            Case 3: The dependency is missing from the index.zip since it is of a new pack. In this case, handle missing
-            dependency - This means we mark this pack as 'missing dependency' and once the new index.zip is created, and
-            therefore it contains the new pack, we call this function again, and hitting case 1.
+              Case 1: The dependency is present in the index.zip. In this case, we add it to the dependencies results.
+              Case 2: The dependency is missing from the index.zip since it is not a part of this marketplace.
+                In this case, ignore it.
+              Case 3: The dependency is missing from the index.zip since it is a new pack. In this case, handle missing
+                dependency - This means we mark this pack as 'missing dependency', and once the new index.zip is created, and
+                therefore it contains the new pack, we call this function again, and hitting case 1.
         Args:
             index_folder_path (str): full path to download index folder.
             pack_names (set): List of all packs.
