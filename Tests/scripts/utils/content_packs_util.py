@@ -5,6 +5,9 @@ from typing import Tuple, Union
 import demisto_sdk.commands.common.tools as tools
 from demisto_sdk.commands.common.constants import (PACK_METADATA_SUPPORT, PACKS_DIR, PACKS_PACK_META_FILE_NAME)
 
+# temporary workaround: this should be solved as part of the redesign: https://github.com/demisto/etc/issues/42239
+NON_XSOAR_PACKS = ['CoreAlertFields']
+
 SKIPPED_PACKS = ['DeprecatedContent', 'NonSupported']
 IGNORED_FILES = ['__init__.py', 'ApiModules', 'NonSupported']  # files to ignore inside Packs folder
 
@@ -83,6 +86,8 @@ def should_install_content_pack(pack_name: str) -> Tuple[bool, str]:
         return False, 'Pack is either the "NonSupported" pack or the "DeprecatedContent" pack.'
     if pack_name in IGNORED_FILES:
         return False, f'Pack should be ignored as it one of the files to ignore: {IGNORED_FILES}'
+    if pack_name in NON_XSOAR_PACKS:
+        return False, f'Pack is not part of the XSOAR marketplace.'
     if is_pack_deprecated(pack_path):
         return False, 'Pack is Deprecated'
     return True, ''
