@@ -13,18 +13,18 @@ This playbook does not use any integrations.
 This playbook does not use any scripts.
 
 ### Commands
-* win-service
-* win-regedit
 * panorama
 * win-package
+* win-regedit
+* win-service
 
 ## Playbook Inputs
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| Host | The host to perform the deployment on  | 10.0.1.6 | Optional |
-| Path | The path to the TS Agent msi installer | http://10.0.1.25:8000/TaInstall64.x64-10.0.4-23.msi | Optional |
+| Host | The host to perform the deployment on  | x.x.x.x | Optional |
+| Path | The path to the TS Agent msi installer | <somefileshare>/TaInstall64.x64-10.0.4-23.msi | Optional |
 | Name | The name of the TS Agent in NGFW console | Windows VDI Agent | Optional |
 | StartSize | The agent StartSize | 300 | Optional |
 | MaxSize | The agent MaxSize | 2000 | Optional |
@@ -44,4 +44,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![PANW NGFW TS Agent Deployment](Insert the link to your image here)
+![PANW NGFW TS Agent Deployment](https://github.com/demisto/content/raw/103784c12ffdc0826c8610a1324dd60e7b4e2e13/Packs/NGFWTSAgentDeployment/doc_files/PANW_NGFW_TS_Agent_Deployment_Fri_Feb_04_2022.png)
