@@ -168,6 +168,71 @@ EXPECTED_LIST = {u'Category': u'Admin Tool',
                  u'ListType': u'GlobalSafe',
                  u'Sha256': u'234E5014C239FD89F2F3D56091B87763DCD90F6E3DB42FD2FA1E0ABE05AF0487'
                  }
+
+POLICY_OUTPUT = {u'memoryviolation_actions': {u'memory_violations': [],
+                                              u'memory_exclusion_list': [],
+                                              u'memory_violations_ext': []},
+                 u'logpolicy': {u'log_upload': None,
+                                u'maxlogsize': u'100',
+                                u'retentiondays': u'30'
+                                },
+                 u'file_exclusions': [],
+                 u'checksum': u'987978644c220a71f6fa67685b06571d',
+                 u'filetype_actions': {u'suspicious_files': [{u'file_type': u'executable', u'actions': u'0'}],
+                                       u'threat_files': [{u'file_type': u'executable', u'actions': u'0'}]},
+                 u'policy_name': u'fff',
+                 u'policy_utctimestamp': u'/Date(1586773964507+0000)/',
+                 u'policy': [{u'name': u'auto_blocking', u'value': u'0'},
+                             {u'name': u'auto_uploading', u'value': u'0'},
+                             {u'name': u'threat_report_limit', u'value': u'500'},
+                             {u'name': u'low_confidence_threshold',
+                              u'value': u'-600'},
+                             {u'name': u'full_disc_scan', u'value': u'0'},
+                             {u'name': u'watch_for_new_files', u'value': u'0'},
+                             {u'name': u'memory_exploit_detection', u'value': u'0'},
+                             {u'name': u'trust_files_in_scan_exception_list', u'value': u'0'},
+                             {u'name': u'logpolicy', u'value': u'0'},
+                             {u'name': u'script_control', u'value': u'0'},
+                             {u'name': u'prevent_service_shutdown', u'value': u'0'},
+                             {u'name': u'scan_max_archive_size', u'value': u'0'},
+                             {u'name': u'sample_copy_path', u'value': None},
+                             {u'name': u'kill_running_threats', u'value': u'0'},
+                             {u'name': u'show_notifications', u'value': u'0'},
+                             {u'name': u'optics_set_disk_usage_maximum_fixed',
+                              u'value': u'1000'},
+                             {u'name': u'optics_malware_auto_upload', u'value': u'0'},
+                             {u'name': u'optics_memory_defense_auto_upload', u'value': u'0'},
+                             {u'name': u'optics_script_control_auto_upload', u'value': u'0'},
+                             {u'name': u'optics_application_control_auto_upload', u'value': u'0'},
+                             {u'name': u'optics_sensors_dns_visibility', u'value': u'0'},
+                             {u'name': u'optics_sensors_private_network_address_visibility', u'value': u'0'},
+                             {u'name': u'optics_sensors_windows_event_log_visibility', u'value': u'0'},
+                             {u'name': u'optics_sensors_advanced_powershell_visibility', u'value': u'0'},
+                             {u'name': u'optics_sensors_advanced_wmi_visibility', u'value': u'0'},
+                             {u'name': u'optics_sensors_advanced_executable_parsing', u'value': u'0'},
+                             {u'name': u'optics_sensors_enhanced_process_hooking_visibility', u'value': u'0'},
+                             {u'name': u'device_control', u'value': u'0'},
+                             {u'name': u'optics', u'value': u'0'},
+                             {u'name': u'auto_delete', u'value': u'0'},
+                             {u'name': u'days_until_deleted', u'value': u'14'},
+                             {u'name': u'pdf_auto_uploading', u'value': u'0'},
+                             {u'name': u'ole_auto_uploading', u'value': u'0'},
+                             {u'name': u'docx_auto_uploading', u'value': u'0'},
+                             {u'name': u'python_auto_uploading', u'value': u'0'},
+                             {u'name': u'autoit_auto_uploading', u'value': u'0'},
+                             {u'name': u'powershell_auto_uploading', u'value': u'0'},
+                             {u'name': u'data_privacy', u'value': u'0'},
+                             {u'name': u'custom_thumbprint', u'value': None},
+                             {u'name': u'scan_exception_list', u'value': []}],
+                 u'policy_id': u'980fad21-b119-4cc4-ac97-2b2c035b4666'
+                 }
+
+EXPECTED_POLICY = {'Timestamp': '2020-04-13T10:32:44.507000+00:00',
+                   'ID': u'980fad21-b119-4cc4-ac97-2b2c035b4666',
+                   'Name': u'fff'
+                   }
+
+
 def test_create_dbot_score_entry():
     """
     Given
@@ -564,3 +629,25 @@ def test_delete_devices(mocker):
     contents = demisto_results.call_args[0][0]
     assert 'The requested devices have been successfully removed from your organization list.' in\
            contents.get('HumanReadable')
+
+
+def test_get_policy_details(mocker):
+    """
+    Given
+        - a threat and a dbot score
+    When
+        - calls the function update_device
+    Then
+        - checks if the output is as expected
+    """
+
+    args = {'policyID': '980fad21-b119-4cc4-ac97-2b2c035b4666'}
+    mocker.patch.object(Cylance_Protect_v2, "get_policy_details_request", return_value=POLICY_OUTPUT)
+    mocker.patch.object(demisto, 'args', return_value=args)
+    demisto_results = mocker.patch.object(demisto, 'results')
+    get_policy_details()
+
+    contents = demisto_results.call_args[0][0]
+    assert EXPECTED_POLICY.get("ID") == contents.get('EntryContext').get('Cylance.Policy(val.ID && val.ID == obj.ID)')\
+        .get("ID")
+
