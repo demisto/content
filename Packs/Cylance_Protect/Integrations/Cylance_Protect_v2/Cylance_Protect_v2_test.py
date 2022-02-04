@@ -2,7 +2,8 @@ import demistomock as demisto
 from CommonServerPython import Common
 from Cylance_Protect_v2 import create_dbot_score_entry, translate_score, FILE_THRESHOLD, \
     get_device, get_device_by_hostname, update_device, get_device_threats, get_policies, create_zone, get_zones,\
-    get_zone, update_zone, get_threat, get_threats, get_threat_devices, get_list
+    get_zone, update_zone, get_threat, get_threats, get_threat_devices, get_list, get_list_entry_by_hash,\
+    add_hash_to_list, delete_hash_from_lists, delete_devices, get_policy_details
 import Cylance_Protect_v2
 
 THREAT_OUTPUT = {u'cylance_score': -1.0, u'name': u'name',
@@ -462,3 +463,104 @@ def test_get_list(mocker):
     contents = demisto_results.call_args[0][0]
     assert [EXPECTED_LIST] == contents.get('EntryContext').get('File')
 
+
+def test_get_list_entry_by_hash(mocker):
+    """
+    Given
+        - a threat and a dbot score
+    When
+        - calls the function get_device_threats
+    Then
+        - checks if the output is as expected
+    """
+
+    args = {'listTypeId': "GlobalSafe", "sha256": "234E5014C239FD89F2F3D56091B87763DCD90F6E3DB42FD2FA1E0ABE05AF0487"}
+    mocker.patch.object(Cylance_Protect_v2, "get_list_request",
+                        return_value={'page_items': [LIST_OUTPUT], u'total_pages': u'total_pages'})
+    mocker.patch.object(Cylance_Protect_v2, "translate_score", return_value=1)
+
+    mocker.patch.object(demisto, 'args', return_value=args)
+    mocker.patch.object(demisto, 'command', return_value='cylance-protect-get-list-entry')
+    demisto_results = mocker.patch.object(demisto, 'results')
+    get_list_entry_by_hash()
+
+    contents = demisto_results.call_args[0][0]
+    assert EXPECTED_LIST.get('Sha256') == contents.get('EntryContext').get('CylanceListSearch').get('Sha256')
+
+
+def test_add_hash_to_list(mocker):
+    """
+    Given
+        - a threat and a dbot score
+    When
+        - calls the function get_device_threats
+    Then
+        - checks if the output is as expected
+    """
+
+    args = {'listType': "GlobalSafe",
+            "sha256": "234E5014C239FD89F2F3D56091B87763DCD90F6E3DB42FD2FA1E0ABE05AF0487",
+            "category": "Admin Tool",
+            "reason": "Added by Demisto"
+            }
+    mocker.patch.object(Cylance_Protect_v2, "add_hash_to_list_request", return_value={'page_items': [LIST_OUTPUT]})
+
+    mocker.patch.object(demisto, 'args', return_value=args)
+    demisto_results = mocker.patch.object(demisto, 'results')
+    add_hash_to_list()
+
+    contents = demisto_results.call_args[0][0]
+    assert 'The requested threat has been successfully added to GlobalSafe hashlist.' in contents.get('HumanReadable')
+
+
+def test_delete_hash_from_lists(mocker):
+    """
+    Given
+        - a threat and a dbot score
+    When
+        - calls the function get_device_threats
+    Then
+        - checks if the output is as expected
+    """
+
+    args = {'listType': "GlobalSafe",
+            "sha256": "234E5014C239FD89F2F3D56091B87763DCD90F6E3DB42FD2FA1E0ABE05AF0487",
+            "category": "Admin Tool",
+            "reason": "Added by Demisto"
+            }
+    mocker.patch.object(Cylance_Protect_v2, "delete_hash_from_lists_request", return_value={})
+
+    mocker.patch.object(demisto, 'args', return_value=args)
+    demisto_results = mocker.patch.object(demisto, 'results')
+    delete_hash_from_lists()
+
+    contents = demisto_results.call_args[0][0]
+    assert 'The requested threat has been successfully removed from GlobalSafe hashlist.' in\
+           contents.get('HumanReadable')
+
+
+def test_delete_devices(mocker):
+    """
+    Given
+        - a threat and a dbot score
+    When
+        - calls the function get_device_threats
+    Then
+        - checks if the output is as expected
+    """
+
+    args = {'deviceIds': "8e836c98-102e-4332-b00d-81dcb7a9b6f7",
+            "batch_size": 1,
+            "category": "Admin Tool",
+            "reason": "Added by Demisto"
+            }
+
+    mocker.patch.object(Cylance_Protect_v2, "get_device_request", return_value=DEVICE_OUTPUT)
+    mocker.patch.object(Cylance_Protect_v2, "delete_devices_request", return_value={})
+    mocker.patch.object(demisto, 'args', return_value=args)
+    demisto_results = mocker.patch.object(demisto, 'results')
+    delete_devices()
+
+    contents = demisto_results.call_args[0][0]
+    assert 'The requested devices have been successfully removed from your organization list.' in\
+           contents.get('HumanReadable')
