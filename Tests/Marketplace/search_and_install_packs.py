@@ -16,7 +16,7 @@ from typing import List
 from Tests.Marketplace.marketplace_services import init_storage_client, Pack, load_json
 from Tests.Marketplace.upload_packs import download_and_extract_index
 from Tests.Marketplace.marketplace_constants import GCPConfig, PACKS_FULL_PATH, IGNORED_FILES, PACKS_FOLDER, Metadata
-from Tests.scripts.utils.content_packs_util import is_pack_deprecated
+from Tests.scripts.utils.content_packs_util import NON_XSOAR_PACKS, is_pack_deprecated
 from Tests.scripts.utils import logging_wrapper as logging
 
 PACK_METADATA_FILE = 'pack_metadata.json'
@@ -474,12 +474,16 @@ def install_all_content_packs_for_nightly(client: demisto_client, host: str, ser
         if is_pack_hidden(pack_id):
             logging.debug(f'Skipping installation of hidden pack "{pack_id}"')
             IGNORED_FILES.append(pack_id)
+        elif pack_id in NON_XSOAR_PACKS:
+            logging.debug(f'Skipping installation of non-xsoar pack "{pack_id}"')
+            IGNORED_FILES.append(pack_id)
 
     for pack_id in os.listdir(PACKS_FULL_PATH):
         if pack_id not in IGNORED_FILES:
             pack_version = get_latest_version_from_bucket(pack_id, production_bucket)
             if pack_version:
                 all_packs.append(get_pack_installation_request_data(pack_id, pack_version))
+
     install_packs(client, host, all_packs, is_nightly=True)
 
 
