@@ -33,6 +33,26 @@
         {
             "cliName": "countryname",
             "type": "shortText"
+        },
+        {
+            "cliName": "companycountry",
+            "type": "shortText"
+        },
+        {
+            "cliName": "countrywherethebreachtookplace",
+            "type": "shortText"
+        },
+        {
+            "cliName": "googlecloudsccfindingsourcepropertiesdstcountry",
+            "type": "shortText"
+        },
+        {
+            "cliName": "googlecloudsccfindingsourcepropertieslastcountry",
+            "type": "shortText"
+        },
+        {
+            "cliName": "previouscountry",
+            "type": "shortText"
         }
     ]
 }
