@@ -6,6 +6,7 @@ from CommonServerUserPython import *  # noqa: F401
 import base64
 import json
 import requests
+import re
 from datetime import datetime, timezone, timedelta
 from typing import Any, Dict, Union
 from requests.models import HTTPError
@@ -29,6 +30,7 @@ MAILBOX = 'mailbox'
 MESSAGE_DELIVERY_TIME = 'message_delivery_time'
 COMPUTER_ID = 'computer_id'
 FIELD = 'field'
+ENDPOINT = 'endpoint'
 DATA = 'data'
 TYPE = 'type'
 VALUE = 'value'
@@ -64,6 +66,7 @@ ADD_OBJECT_TO_SUSPICIOUS_LIST = '/v2.0/xdr/threatintel/suspiciousObjects'
 DELETE_OBJECT_FROM_SUSPICIOUS_LIST = '/v2.0/xdr/threatintel/suspiciousObjects/delete'
 TASK_DETAIL_ENDPOINT = '/v2.0/xdr/response/getTask'
 GET_COMPUTER_ID_ENDPOINT = '/v2.0/xdr/eiqs/query/agentInfo'
+GET_ENDPOINT_INFO_ENDPOINT = '/v2.0/xdr/eiqs/query/endpointInfo'
 GET_FILE_STATUS = '/v2.0/xdr/sandbox/tasks/{taskId}'
 GET_FILE_REPORT = '/v2.0/xdr/sandbox/reports/{reportId}'
 COLLECT_FORENSIC_FILE = '/v2.0/xdr/response/collectFile'
@@ -88,22 +91,23 @@ POLLING_MESSAGE = (
     "The task has not completed, will check status again in 30 seconds"
 )
 # Table Heading
-TABLE_ADD_TO_BLOCKLIST = 'The status of add to block list '
-TABLE_REMOVE_FROM_BLOCKLIST = 'The status of remove from block list '
-TABLE_QUARANTINE_EMAIL_MESSAGE = 'The status of quarantine email message '
-TABLE_DELETE_EMAIL_MESSAGE = 'The status of delete email message '
-TABLE_ISOLATE_ENDPOINT_MESSAGE = 'The status of isolated endpoint Connection '
-TABLE_RESTORE_ENDPOINT_MESSAGE = 'The status of Restore endpoint Connection '
-TABLE_TERMINATE_PROCESS = 'The status of Terminate Process '
-TABLE_ADD_EXCEPTION_LIST = 'The status of add object to exception list '
-TABLE_DELETE_EXCEPTION_LIST = 'The status of delete object from exception list '
-TABLE_ADD_SUSPICIOUS_LIST = 'The status of add object to suspicious list '
-TABLE_DELETE_SUSPICIOUS_LIST = 'The status of delete object from suspicious list '
+TABLE_ADD_TO_BLOCKLIST = 'Add to block list '
+TABLE_REMOVE_FROM_BLOCKLIST = 'Remove from block list '
+TABLE_QUARANTINE_EMAIL_MESSAGE = 'Quarantine email message '
+TABLE_DELETE_EMAIL_MESSAGE = 'Delete email message '
+TABLE_ISOLATE_ENDPOINT_MESSAGE = 'Isolate endpoint connection '
+TABLE_RESTORE_ENDPOINT_MESSAGE = 'Restore endpoint connection '
+TABLE_TERMINATE_PROCESS = 'Terminate process '
+TABLE_ADD_EXCEPTION_LIST = 'Add object to exception list '
+TABLE_DELETE_EXCEPTION_LIST = 'Delete object from exception list '
+TABLE_ADD_SUSPICIOUS_LIST = 'Add object to suspicious list '
+TABLE_ENDPOINT_INFO = 'Endpoint info '
+TABLE_DELETE_SUSPICIOUS_LIST = 'Delete object from suspicious list '
 TABLE_GET_FILE_ANALYSIS_STATUS = 'File analysis status '
-TABLE_GET_FILE_ANALYSIS_REPORT = 'The status of file analysis report '
-TABLE_COLLECT_FILE = 'The status of collect forensic file '
+TABLE_GET_FILE_ANALYSIS_REPORT = 'File analysis report '
+TABLE_COLLECT_FILE = 'Collect forensic file '
 TABLE_COLLECTED_FORENSIC_FILE_DOWNLOAD_INFORMATION = 'The download information for collected forensic file '
-TABLE_SUBMIT_FILE_TO_SANDBOX = 'The status of submit file to sandbox '
+TABLE_SUBMIT_FILE_TO_SANDBOX = 'Submit file to sandbox '
 # COMMAND NAMES
 ADD_BLOCKLIST_COMMAND = 'trendmicro-visionone-add-to-block-list'
 REMOVE_BLOCKLIST_COMMAND = 'trendmicro-visionone-remove-from-block-list'
@@ -122,6 +126,7 @@ COLLECT_FILE = 'trendmicro-visionone-collect-forensic-file'
 DOWNLOAD_COLLECTED_FILE = 'trendmicro-visionone-download-information-for-collected-forensic-file'
 FILE_TO_SANDBOX = 'trendmicro-visionone-submit-file-to-sandbox'
 CHECK_TASK_STATUS = 'trendmicro-visionone-check-task-status'
+GET_ENDPOINT_INFO_COMMAND = 'trendmicro-visionone-get-endpoint-info'
 FETCH_INCIDENTS = 'fetch-incidents'
 
 table_name = {
@@ -134,6 +139,7 @@ table_name = {
     ADD_EXCEPTION_LIST_COMMAND: TABLE_ADD_EXCEPTION_LIST,
     DELETE_EXCEPTION_LIST_COMMAND: TABLE_DELETE_EXCEPTION_LIST,
     ADD_SUSPICIOUS_LIST_COMMAND: TABLE_ADD_SUSPICIOUS_LIST,
+    GET_ENDPOINT_INFO_COMMAND: TABLE_ENDPOINT_INFO,
     DELETE_SUSPICIOUS_LIST_COMMAND: TABLE_DELETE_SUSPICIOUS_LIST
 }
 # disable insecure warnings
@@ -215,15 +221,51 @@ class Client(BaseClient):
         params = {"actionId": action_id}
         response = self.http_request(GET, TASK_DETAIL_ENDPOINT, params=params)
         message = {
+            "actionId": action_id,
             "taskStatus": response.get("data").get("taskStatus")
         }
         return CommandResults(
-            readable_output=tableToMarkdown("Status of task ", message),
+            readable_output=tableToMarkdown("Status of task ", message, removeNull=True),
             outputs_prefix=(
                 "VisionOne.Task_Status"
             ),
-            outputs_key_field="taskStatus",
+            outputs_key_field="actionId",
             outputs=message)
+
+    def lookup_type(self, param: Any) -> str:
+
+        # Regex expression for validating IPv4
+        regex = "(([0-9]|[1-9][0-9]|1[0-9][0-9]|"\
+                "2[0-4][0-9]|25[0-5])\\.){3}"\
+                "([0-9]|[1-9][0-9]|1[0-9][0-9]|"\
+                "2[0-4][0-9]|25[0-5])"
+
+        # Regex expression for validating IPv6
+        regex1 = "((([0-9a-fA-F]){1,4})\\:){7}"\
+                 "([0-9a-fA-F]){1,4}"
+
+        # Regex expression for validating mac
+        regex2 = "([0-9A-Fa-f]{2}[:-]){5}"\
+                 "([0-9A-Fa-f]{2})"
+
+        p = re.compile(regex)
+        p1 = re.compile(regex1)
+        p2 = re.compile(regex2)
+
+        # Checking if it is a valid IPv4 addresses
+        if (re.search(p, param)):
+            return "ip"
+
+        # Checking if it is a valid IPv6 addresses
+        elif (re.search(p1, param)):
+            return "ipv6"
+
+        # Checking if it is a valid IPv6 addresses
+        elif (re.search(p2, param)):
+            return "macaddr"
+
+        # Otherwise use hostname type
+        return "hostname"
 
     def get_computer_id(self, field: Any, value: Any) -> str:
         """
@@ -242,7 +284,7 @@ class Client(BaseClient):
             }
         }
         response = self.http_request(POST, GET_COMPUTER_ID_ENDPOINT, data=json.dumps(body))
-        demisto.results(response)
+
         if response["status"] == 'FAIL':
             return_error("kindly provide valid field value")
         computer_id = response.get("result").get("computerId")
@@ -309,12 +351,13 @@ def run_polling_command(
     ScheduledCommand.raise_error_if_not_supported()
     interval_in_secs = int(args.get('interval_in_seconds', 30))
     command_results = client.status_check(args)
+    action_id = args.get("actionId")
     if command_results.outputs.get(
         "taskStatus") not in (
             "success", "failed", "timeout", "skipped"):
         # schedule next poll
         polling_args = {
-            'actionId': args.get("actionId"),
+            'actionId': action_id,
             'interval_in_seconds': interval_in_secs,
             'polling': True,
             **args
@@ -324,8 +367,7 @@ def run_polling_command(
             next_run_in_seconds=interval_in_secs,
             args=polling_args,
             timeout_in_seconds=1500)  # The timeout interval set for 25 minutes.
-        command_results.scheduled_command = scheduled_command
-        return command_results
+        command_results = CommandResults(scheduled_command=scheduled_command)
     return command_results
 
 
@@ -353,6 +395,71 @@ def test_module(client: Client) -> Any:
     """
     client.http_request('GET', '/v2.0/xdr/threatintel/suspiciousObjects/exceptions')
     return 'ok'
+
+
+def get_endpoint_info(
+    client: Client, args: Dict[str, Any]
+) -> Union[str, CommandResults]:
+    """
+    Retrieve information abouut the endpoint queried and
+    sends the result to demisto war room.
+
+    :type client: ``Client``
+    :param client: client object to use http_request.
+
+    :type args: ``dict``
+    :param args: args object to fetch the argument data.
+
+    :return: sends data to demisto war room.
+    :rtype: ``dict`
+    """
+
+    value = args.get(ENDPOINT)
+    field = client.lookup_type(value)
+
+    computer_id = client.get_computer_id(field, value)
+    body = {
+        'computerId': computer_id
+    }
+    response = client.http_request(
+        POST, GET_ENDPOINT_INFO_ENDPOINT, data=json.dumps(body)
+    )
+
+    message = {
+        "message": response.get("message", ""),
+        "errorCode": response.get("errorCodecode", ""),
+        "status": response.get("status", ""),
+        "logonAccount": response.get("result", {})
+        .get("logonAccount", "")
+        .get("value", ""),
+        "hostname": response.get("result", {})
+        .get("hostname", "")
+        .get("value", ""),
+        "macAddr": response.get("result", {})
+        .get("macAddr", "")
+        .get("value", ""),
+        "ip": response.get("result", {})
+        .get("ip", "")
+        .get("value", ""),
+        "osName": response.get("result", {})
+        .get("osName", ""),
+        "osVersion": response.get("result", {})
+        .get("osVersion", ""),
+        "osDescription": response.get("result", {})
+        .get("osDescription", ""),
+        "productCode": response.get("result", {})
+        .get("productCode", ""),
+    }
+
+    results = CommandResults(
+        readable_output=tableToMarkdown(
+            table_name[GET_ENDPOINT_INFO_COMMAND], message, removeNull=True
+        ),
+        outputs_prefix="VisionOne.Endpoint_Info",
+        outputs_key_field="message",
+        outputs=message,
+    )
+    return results
 
 
 def add_delete_block_list_mapping(
@@ -415,10 +522,10 @@ def add_or_remove_from_block_list(
         response = client.http_request(
             POST, REMOVE_BLOCKLIST_ENDPOINT, data=json.dumps(body)
         )
-    demisto.results(RAW_RESPONSE.format(raw_response=response))
+
     mapping_data = add_delete_block_list_mapping(response)
     results = CommandResults(
-        readable_output=tableToMarkdown(table_name[command], mapping_data),
+        readable_output=tableToMarkdown(table_name[command], mapping_data, removeNull=True),
         outputs_prefix="VisionOne.BlockList",
         outputs_key_field="actionId",
         outputs=mapping_data,
@@ -531,10 +638,10 @@ def quarantine_or_delete_email_message(
         response = client.http_request(
             POST, DELETE_EMAIL_ENDPOINT, data=json.dumps(body)
         )
-    demisto.results(RAW_RESPONSE.format(raw_response=response))
+
     mapping_data = quarantine_delete_email_mapping(response)
     results = CommandResults(
-        readable_output=tableToMarkdown(table_name[command], mapping_data),
+        readable_output=tableToMarkdown(table_name[command], mapping_data, removeNull=True),
         outputs_prefix="VisionOne.Email",
         outputs_key_field="actionId",
         outputs=mapping_data,
@@ -580,8 +687,8 @@ def isolate_or_restore_connection(
     :return: sends data to demisto war room.
     :rtype: ``dict`
     """
-    field = args.get(FIELD)
-    value = args.get(VALUE)
+    value = args.get(ENDPOINT)
+    field = client.lookup_type(value)
     product_id = args.get(PRODUCT_ID)
     description = args.get(DESCRIPTION)
     if not description:
@@ -604,9 +711,9 @@ def isolate_or_restore_connection(
 
     mapping_data = isolate_restore_endpoint_mapping(
         response)
-    demisto.results(RAW_RESPONSE.format(raw_response=response))
+
     results = CommandResults(
-        readable_output=tableToMarkdown(table_name[command], mapping_data),
+        readable_output=tableToMarkdown(table_name[command], mapping_data, removeNull=True),
         outputs_prefix="VisionOne.Endpoint_Connection",
         outputs_key_field="actionId",
         outputs=mapping_data,
@@ -631,8 +738,8 @@ def terminate_process(
     :rtype: ``dict`
     """
     file_list = []
-    field = args.get(FIELD)
-    value = args.get(VALUE)
+    value = args.get(ENDPOINT)
+    field = client.lookup_type(value)
     product_id = args.get(PRODUCT_ID)
     description = args.get(DESCRIPTION)
     if not description:
@@ -652,12 +759,12 @@ def terminate_process(
     response = client.http_request(
         POST, TERMINATE_PROCESS_ENDPOINT, data=json.dumps(body)
     )
-    demisto.results(RAW_RESPONSE.format(raw_response=response))
+
     action_id = response.get("actionId", {})
     task_status = response.get("taskStatus", {})
     message = {"actionId": action_id, "taskStatus": task_status}
     results = CommandResults(
-        readable_output=tableToMarkdown(TABLE_TERMINATE_PROCESS, message),
+        readable_output=tableToMarkdown(TABLE_TERMINATE_PROCESS, message, removeNull=True),
         outputs_prefix="VisionOne.Terminate_Process",
         outputs_key_field="actionId",
         outputs=message,
@@ -694,24 +801,24 @@ def add_or_delete_from_exception_list(
         if not description:
             description = EMPTY_STRING
         body[DATA][0][DESCRIPTION] = description
-        response = client.http_request(
+        client.http_request(
             POST, ADD_OBJECT_TO_EXCEPTION_LIST, data=json.dumps(body)
         )
 
     elif command == DELETE_EXCEPTION_LIST_COMMAND:
-        response = client.http_request(
+        client.http_request(
             POST, DELETE_OBJECT_FROM_EXCEPTION_LIST, data=json.dumps(body)
         )
 
     exception_list = client.exception_list_count()
-    demisto.results(RAW_RESPONSE.format(raw_response=response))
+
     message = {
         "message": "success",
         "status_code": client.status,
         "total_items": exception_list,
     }
     results = CommandResults(
-        readable_output=tableToMarkdown(table_name[command], message),
+        readable_output=tableToMarkdown(table_name[command], message, removeNull=True),
         outputs_prefix="VisionOne.Exception_List",
         outputs_key_field="message",
         outputs=message,
@@ -761,11 +868,11 @@ def add_to_suspicious_list(
             }
         ]
     }
-    response = client.http_request(
+    client.http_request(
         POST, ADD_OBJECT_TO_SUSPICIOUS_LIST, data=json.dumps(body)
     )
     suspicious_list = client.suspicious_list_count()
-    demisto.results(RAW_RESPONSE.format(raw_response=response))
+
     message = {
         "message": "success",
         "status_code": client.status,
@@ -773,7 +880,7 @@ def add_to_suspicious_list(
     }
     results = CommandResults(
         readable_output=tableToMarkdown(
-            table_name[ADD_SUSPICIOUS_LIST_COMMAND], message
+            table_name[ADD_SUSPICIOUS_LIST_COMMAND], message, removeNull=True
         ),
         outputs_prefix="VisionOne.Suspicious_List",
         outputs_key_field="message",
@@ -801,12 +908,12 @@ def delete_from_suspicious_list(
     types = args.get(TYPE)
     value = args.get(VALUE)
     body = {DATA: [{'type': types, 'value': value}]}
-    response = client.http_request(
+    client.http_request(
         POST, DELETE_OBJECT_FROM_SUSPICIOUS_LIST, data=json.dumps(body)
     )
 
     exception_list = client.suspicious_list_count()
-    demisto.results(RAW_RESPONSE.format(raw_response=response))
+
     message = {
         "message": "success",
         "status_code": client.status,
@@ -814,7 +921,7 @@ def delete_from_suspicious_list(
     }
     results = CommandResults(
         readable_output=tableToMarkdown(
-            table_name[DELETE_SUSPICIOUS_LIST_COMMAND], message
+            table_name[DELETE_SUSPICIOUS_LIST_COMMAND], message, removeNull=True
         ),
         outputs_prefix="VisionOne.Suspicious_List",
         outputs_key_field="message",
@@ -841,7 +948,7 @@ def get_file_analysis_status(
     """
     task_id = args.get(TASKID)
     response = client.http_request(GET, GET_FILE_STATUS.format(taskId=task_id))
-    demisto.results(RAW_RESPONSE.format(raw_response=response))
+
     message = {
         "message": response.get("message", ""),
         "code": response.get("code", ""),
@@ -870,7 +977,7 @@ def get_file_analysis_status(
     }
     results = CommandResults(
         readable_output=tableToMarkdown(
-            TABLE_GET_FILE_ANALYSIS_STATUS, message),
+            TABLE_GET_FILE_ANALYSIS_STATUS, message, removeNull=True),
         outputs_prefix="VisionOne.File_Analysis_Status",
         outputs_key_field="message",
         outputs=message,
@@ -897,7 +1004,7 @@ def get_file_analysis_report(client: Client, args: Dict[str, Any]) -> Union[str,
     }
     response = client.http_request(GET, GET_FILE_REPORT.format(reportId=report_id), params=params)
     if isinstance(response, dict):
-        demisto.results(RAW_RESPONSE.format(raw_response=response))
+
         message = {
             'message': response.get("message", ""),
             'code': response.get("code", ""),
@@ -915,7 +1022,7 @@ def get_file_analysis_report(client: Client, args: Dict[str, Any]) -> Union[str,
                 }
                 message.get('data', {}).append(data_value)
         results = CommandResults(
-            readable_output=tableToMarkdown(TABLE_GET_FILE_ANALYSIS_REPORT, message),
+            readable_output=tableToMarkdown(TABLE_GET_FILE_ANALYSIS_REPORT, message, removeNull=True),
             outputs_prefix='VisionOne.File_Analysis_Report',
             outputs_key_field='message',
             outputs=message
@@ -939,8 +1046,8 @@ def collect_file(client: Client, args: Dict[str, Any]) -> Union[str, CommandResu
     :return: sends data to demisto war room.
     :rtype: ``dict`
     """
-    field = args.get(FIELD)
-    value = args.get(VALUE)
+    value = args.get(ENDPOINT)
+    field = client.lookup_type(value)
     product_id = args.get(PRODUCT_ID)
     description = args.get(DESCRIPTION)
     if not description:
@@ -956,7 +1063,7 @@ def collect_file(client: Client, args: Dict[str, Any]) -> Union[str, CommandResu
         'os': os
     }
     response = client.http_request(POST, COLLECT_FORENSIC_FILE, data=json.dumps(body))
-    demisto.results(RAW_RESPONSE.format(raw_response=response))
+
     task_status = response.get("taskStatus", {})
     action_id = response.get('actionId', {})
     message = {
@@ -964,7 +1071,7 @@ def collect_file(client: Client, args: Dict[str, Any]) -> Union[str, CommandResu
         'taskStatus': task_status
     }
     results = CommandResults(
-        readable_output=tableToMarkdown(TABLE_COLLECT_FILE, message),
+        readable_output=tableToMarkdown(TABLE_COLLECT_FILE, message, removeNull=True),
         outputs_prefix='VisionOne.Collect_Forensic_File',
         outputs_key_field='actionId',
         outputs=message
@@ -985,7 +1092,7 @@ def download_information_collected_file(client: Client, args: Dict[str, Any]) ->
     action_id = args.get(ACTION_ID)
     params = {'actionId': action_id}
     response = client.http_request(GET, DOWNLOAD_INFORMATION_COLLECTED_FILE, params=params)
-    demisto.results(RAW_RESPONSE.format(raw_response=response))
+
     file_url = response.get('data', '').get('url', '')
     expires = response.get('data', '').get('expires', '')
     password = response.get('data', '').get('password', '')
@@ -997,7 +1104,7 @@ def download_information_collected_file(client: Client, args: Dict[str, Any]) ->
         'filename': filename
     }
     results = CommandResults(
-        readable_output=tableToMarkdown(TABLE_COLLECTED_FORENSIC_FILE_DOWNLOAD_INFORMATION, message),
+        readable_output=tableToMarkdown(TABLE_COLLECTED_FORENSIC_FILE_DOWNLOAD_INFORMATION, message, removeNull=True),
         outputs_prefix='VisionOne.Download_Information_For_Collected_Forensic_File',
         outputs_key_field='url',
         outputs=message
@@ -1040,7 +1147,7 @@ def submit_file_to_sandbox(client: Client, args: Dict[str, Any]) -> Union[str, C
         return_error(err)
     else:
         response = result.json()
-    demisto.results(RAW_RESPONSE.format(raw_response=response))
+
     message = {
         'message': response.get("message", ""),
         'code': response.get("code", ""),
@@ -1048,7 +1155,7 @@ def submit_file_to_sandbox(client: Client, args: Dict[str, Any]) -> Union[str, C
         'digest': response.get("data", "").get("digest", ""),
     }
     results = CommandResults(
-        readable_output=tableToMarkdown(TABLE_SUBMIT_FILE_TO_SANDBOX, message),
+        readable_output=tableToMarkdown(TABLE_SUBMIT_FILE_TO_SANDBOX, message, removeNull=True),
         outputs_prefix='VisionOne.Submit_File_to_Sandbox',
         outputs_key_field='message',
         outputs=message
@@ -1102,6 +1209,9 @@ def main():
 
         elif command == GET_FILE_ANALYSIS_REPORT:
             return_results(get_file_analysis_report(client, args))
+
+        elif command == GET_ENDPOINT_INFO_COMMAND:
+            return_results(get_endpoint_info(client, args))
 
         elif command == COLLECT_FILE:
             return_results(collect_file(client, args))

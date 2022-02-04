@@ -3,7 +3,7 @@ commonfields:
   id: Trend Micro Vision One
   version: -1
 configuration:
-- additionalinfo: The base url for the Vision One API
+- additionalinfo: The base url for the Trend Micro Vision One API
   defaultvalue: https://api.xdr.trendmicro.com
   display: API URL (e.g. https://api.xdr.trendmicro.com)
   name: url
@@ -20,13 +20,14 @@ configuration:
   required: false
   type: 8
 - defaultvalue: "5"
-  display: Incidents Fetch Interval (minutes)
+  display: Incidents Fetch Interval
   name: incidentFetchInterval
   required: false
-  type: 0
+  type: 19
 - display: Incident type
   name: incidentType
   required: false
+  defaultvalue: Trend Micro Vision One XDR Incident
   type: 13
 - defaultvalue: "30"
   display: Sync On First Run (days)
@@ -54,6 +55,13 @@ script:
         "ip", "domain", "url" or "mailbox"'
       name: value_type
       required: true
+      auto: PREDEFINED
+      predefined:
+      - file_sha1
+      - domain
+      - ip
+      - url
+      - mailbox
     - description: The object you would like to add that matches the value-type
       name: target_value
       required: true
@@ -77,6 +85,13 @@ script:
     - description: 'The type of object you would like to remove from the block list:
         "file_sha1", "ip", "domain", "url" or "mailbox"'
       name: value_type
+      auto: PREDEFINED
+      predefined:
+      - file_sha1
+      - domain
+      - ip
+      - url
+      - mailbox
       required: true
     - description: The object you would like to add that matches the value-type
       name: target_value
@@ -99,7 +114,7 @@ script:
         list
       type: string
   - arguments:
-    - description: Email Message ID from Vision One message activity data
+    - description: Email Message ID from Trend Micro Vision One message activity data
       name: message_id
       required: true
     - description: Email mailbox where the message will be quarantined from
@@ -126,7 +141,7 @@ script:
         folder
       type: string
   - arguments:
-    - description: Email Message ID from Vision One message activity data
+    - description: Email Message ID from Trend Micro Vision One message activity data
       name: message_id
       required: true
     - description: Email mailbox where the message will be quarantined from
@@ -151,16 +166,18 @@ script:
       description: The task status of deleting a message from a mailbox
       type: string
   - arguments:
-    - description: Field to use to lookup computer_id. "hostname", "macaddr" or "ip"
-      name: field
-      required: true
-    - description: Value to lookup
-      name: value
+    - description: '"hostname", "macaddr" or "ip" of the endpoint to isolate'
+      name: endpoint
       required: true
     - default: true
       defaultValue: sao
-      description: 'Target product: "sao" or "sds"'
+      description: 'Target product: "sao", "sds", or "xes"'
       name: product_id
+      auto: PREDEFINED
+      predefined:
+      - sao
+      - sds
+      - xes
       required: true
     - description: Description
       name: description
@@ -175,16 +192,18 @@ script:
       description: 'The task status of isolate endpoint '
       type: string
   - arguments:
-    - description: Field to use to lookup computer_id. "hostname", "macaddr" or "ip"
-      name: field
-      required: true
-    - description: Value to lookup
-      name: value
+    - description: '"hostname", "macaddr" or "ip" of the endpoint to restore'
+      name: endpoint
       required: true
     - default: true
       defaultValue: sao
-      description: 'Target product: "sao" or "sds"'
+      description: 'Target product: "sao", "sds", or "xes"'
       name: product_id
+      auto: PREDEFINED
+      predefined:
+      - sao
+      - sds
+      - xes
       required: true
     - description: Description
       name: description
@@ -201,6 +220,12 @@ script:
   - arguments:
     - description: 'Object type: "domain", "ip", "sha1", or "url".'
       name: type
+      auto: PREDEFINED
+      predefined:
+      - domain
+      - ip
+      - sha1
+      - url
       required: true
     - description: The object value. Full and partial matches supported. Domain partial
         match, (with a wildcard as the subdomain, example, .example.com) IP partial
@@ -228,6 +253,12 @@ script:
   - arguments:
     - description: 'Object type: "domain", "ip", "sha1", or "url".'
       name: type
+      auto: PREDEFINED
+      predefined:
+      - domain
+      - ip
+      - sha1
+      - url
       required: true
     - description: The object value.
       name: value
@@ -248,6 +279,12 @@ script:
   - arguments:
     - description: 'Object type: "domain", "ip", "sha1", or "url".'
       name: type
+      auto: PREDEFINED
+      predefined:
+      - domain
+      - ip
+      - sha1
+      - url
       required: true
     - description: The object value.
       name: value
@@ -258,9 +295,18 @@ script:
         the scan action specified in default_settings.riskLevel.type will be used
         instead. "block" or "log".
       name: scan_action
+      auto: PREDEFINED
+      predefined:
+      - block
+      - log
     - description: The Suspicious Object risk level. If you don't use this parameter,
         high will be used instead. "high", "medium" or "low".
       name: risk_level
+      auto: PREDEFINED
+      predefined:
+      - high
+      - medium
+      - low
     - description: The number of days to keep the object in the Suspicious Object
         List. If you don't use this parameter, the default_settings.expiredDay scan
         action will be used instead.
@@ -281,6 +327,12 @@ script:
   - arguments:
     - description: 'Object type: "domain", "ip", "sha1", or "url".'
       name: type
+      auto: PREDEFINED
+      predefined:
+      - domain
+      - ip
+      - sha1
+      - url
       required: true
     - description: The object value.
       name: value
@@ -299,12 +351,48 @@ script:
       description: Number of items present in suspicious object list
       type: number
   - arguments:
-    - description: Field to use to lookup computer_id. "hostname", "macaddr" " or
-        "ip"
-      name: field
+    - description: '"hostname", "macaddr" or "ip" of the endpoint to query'
+      name: endpoint
       required: true
-    - description: Value to lookup
-      name: value
+    description: Retrieves information about a specific endpoint
+    name: trendmicro-visionone-get-endpoint-info
+    outputs:
+    - contextPath: VisionOne.Endpoint_Info.message
+      description: Message information from the request
+      type: string
+    - contextPath: VisionOne.Endpoint_Info.errorCode
+      description: Error code
+      type: integer
+    - contextPath: VisionOne.Endpoint_Info.status
+      description: Status of the request
+      type: string
+    - contextPath: VisionOne.Endpoint_Info.logonAccount
+      description: Account currently logged on to the endpoint
+      type: string
+    - contextPath: VisionOne.Endpoint_Info.hostname
+      description: Hostname
+      type: string
+    - contextPath: VisionOne.Endpoint_Info.macAddr
+      description: MAC address
+      type: string
+    - contextPath: VisionOne.Endpoint_Info.ip
+      description: IP address
+      type: string
+    - contextPath: VisionOne.Endpoint_Info.osName
+      description: Operating System name
+      type: string
+    - contextPath: VisionOne.Endpoint_Info.osVersion
+      description: Operating System nersion
+      type: string
+    - contextPath: VisionOne.Endpoint_Info.osDescription
+      description: Description of the Operating System
+      type: string
+    - contextPath: VisionOne.Endpoint_Info.productCode
+      description: Product code of the Trend Micro product running on the endpoint
+      type: string
+  - arguments:
+    - description: '"hostname", "macaddr" or "ip" of the endpoint to terminate process on'
+      name: endpoint
       required: true
     - description: SHA1 hash of the process to terminate
       name: file_sha1
@@ -312,6 +400,9 @@ script:
     - default: true
       defaultValue: sao
       description: Target product
+      auto: PREDEFINED
+      predefined:
+      - sao
       name: product_id
     - description: Description
       name: description
@@ -378,6 +469,11 @@ script:
     - description: 'Type of report to retrieve: "vaReport", "investigationPackage",
         or "suspiciousObject"'
       name: type
+      auto: PREDEFINED
+      predefined:
+      - vaReport
+      - investigationPackage
+      - suspiciousObject
       required: true
     description: Retrieves the analysis report, investigation package, or Suspicious
       Object List of a submitted file
@@ -408,15 +504,16 @@ script:
       description: Sample sha1 generate this suspicious object
       type: string
   - arguments:
-    - description: Field to use to lookup computer_id. "hostname", "macaddr" " or
-        "ip"
-      name: field
+    - description: '"hostname", "macaddr" or "ip" of the endpoint to collect file from'
+      name: endpoint
       required: true
-    - description: Value to lookup.
-      name: value
-      required: true
-    - description: 'Product: "sao" "xes" "sds"'
+    - description: 'Product: "sao", "sds" or "xes"'
       name: product_id
+      auto: PREDEFINED
+      predefined:
+      - sao
+      - xes
+      - sds
       required: true
     - description: Path to the file to collect.
       name: file_path
@@ -485,9 +582,7 @@ script:
       type: string
     - contextPath: VisionOne.Submit_File_to_Sandbox.digest
       description: The hash value of the file
-  - name: trendmicro-visionone-check-task-status
-    polling: true
-    arguments:
+  - arguments:
     - name: polling
       default: true
       description: polling the task for 30 seconds interval.
@@ -496,8 +591,12 @@ script:
       required: true
       description: Action id of the task you would like to check.
     outputs:
+    - contextPath: VisionOne.Task_Status.actionId
+      description: Action ID of the task queried.
     - contextPath: VisionOne.Task_Status.taskStatus
       description: Status of the task.
+    name: trendmicro-visionone-check-task-status
+    polling: true
     description: Command gives the status of the running task based on the action id.
   dockerimage: demisto/python3:3.10.1.25933
   isFetchSamples: true

@@ -114,8 +114,7 @@ Note: To get the complete task status run polling command `trendmicro-visionone-
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| field | Field to use to lookup computer_id. "hostname", "macaddr" or "ip" | Required | 
-| value | Value to lookup | Required | 
+| endpoint | "hostname", "macaddr" or "ip" of the endpoint to isolate | Required | 
 | product_id | Target product: "sao" or "sds". Default: "sao". | Required |
 | description | Description | Optional |
 
@@ -135,8 +134,7 @@ Note: The above command should be added with execution timeout in the advanced f
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| field | Field to use to lookup computer_id. "hostname", "macaddr" or "ip" |Required| 
-| value | Value to lookup | Required | 
+| endpoint | "hostname", "macaddr" or "ip" of the endpoint to restore connectivity | Required | 
 | product_id | Target product: "sao" or "sds". Default: "sao". | Required |
 | description | Description | Optional |
 
@@ -229,8 +227,7 @@ Note: The above command should be added with execution timeout in the advanced f
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| field | Field to use to lookup computer_id. "hostname", "macaddr" or "ip" |Required| 
-| value | Value to lookup | Required | 
+| endpoint | "hostname", "macaddr" or "ip" of the endpoint to terminate process on | Required | 
 | file_sha1 | SHA1 hash of the process to terminate | Required |
 | product_id | Target product. Default: "sao" | Optional |
 | description | Description | Optional |
@@ -293,8 +290,7 @@ Note: The above command should be added with execution timeout in the advanced f
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| field | Field to use to lookup computer_id. "hostname", "macaddr" or "ip" |Required|
-| value | Value to lookup | Required | 
+| endpoint | "hostname", "macaddr" or "ip" of the endpoint to collect file from | Required | 
 | product_id | Product: "sao" "xes" "sds" |Required|
 | file_path | Path of the file to collect |Required|
 | os | "windows", "mac" or "linux" |Required|
@@ -355,6 +351,29 @@ Note: The URL received from the 'trendmicro-visionone-download-information-for-c
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VisionOne.Task_Status.taskStatus | String | Status of the task queried. |
+| VisionOne.Endpoint_Connection.actionId | String | The action id | 
+| VisionOne.Endpoint_Connection.taskStatus | String | Status of existing task |
+
+18. `trendmicro-visionone-get-endpoint-info`
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| endpoint | "hostname", "macaddr" or "ip" of the endpoint to query | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| VisionOne.Endpoint_Info.message | String | Message information from the request. |
+| VisionOne.Endpoint_Info.errorCode | Integer | Error code. |
+| VisionOne.Endpoint_Info.status | String | Status of the request. |
+| VisionOne.Endpoint_Info.logonAccount | String | Account currently logged on to the endpoint. |
+| VisionOne.Endpoint_Info.hostname | String | Hostname. |
+| VisionOne.Endpoint_Info.macAddr | String | MAC address. |
+| VisionOne.Endpoint_Info.ip | String | IP address. |
+| VisionOne.Endpoint_Info.osName | String | Operating System name. |
+| VisionOne.Endpoint_Info.osVersion | String | Operating System version. |
+| VisionOne.Endpoint_Info.osDescription | String | Description of the Operating System. |
+| VisionOne.Endpoint_Info.productCode | String | Product code of the Trend Micro product running on the endpoint. |
 ---
 [View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/trend-micro-vision-one)

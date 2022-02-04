@@ -12,7 +12,8 @@ from TrendMicroVisionOne import (
     collect_file,
     download_information_collected_file,
     submit_file_to_sandbox,
-    get_task_status
+    get_task_status,
+    get_endpoint_info
 )
 
 
@@ -178,8 +179,7 @@ def test_isolate_endpoint(mocker):
         isolate_restore_mock_response)
     client = Client("https://api.xdr.trendmicro.com", api_key)
     args = {
-        "field": "hostname",
-        "value": "CLIENT2",
+        "endpoint": "hostname",
         "productId": "sao",
         "description": "isolate endpoint info",
     }
@@ -199,8 +199,7 @@ def test_restore_endpoint(mocker):
         isolate_restore_mock_response)
     client = Client("https://api.xdr.trendmicro.com", api_key)
     args = {
-        "field": "hostname",
-        "value": "CLIENT2",
+        "endpoint": "hostname",
         "productId": "sao",
         "description": "restore endpoint info",
     }
@@ -220,8 +219,7 @@ def test_terminate_process_endpoint(mocker):
         isolate_restore_mock_response)
     client = Client("https://api.xdr.trendmicro.com", api_key)
     args = {
-        "field": "macaddr",
-        "value": "00:50:56:81:87:A8",
+        "endpoint": "00:50:56:81:87:A8",
         "fileSha1": "12a08b7a3c5a10b64700c0aca1a47941b50a4f8b",
         "productId": "sao",
         "description": "terminate info",
@@ -493,8 +491,7 @@ def test_collect_forensic_file(mocker):
         mock_collect_file)
     client = Client("https://api.xdr.trendmicro.com", api_key)
     args = {
-        "field": "hostname",
-        "value": "sacumen-Vostro-3500",
+        "endpoint": "hostname",
         "description": "collect file",
         "productId": "sao",
         "filePath": (
@@ -658,3 +655,58 @@ def test_check_task_status(mocker):
     }
     result = get_task_status(args, client)
     assert result.outputs["taskStatus"] == "success"
+
+
+# Mock for downloaded file information
+def mock_get_endpoint_info_response(*args, **kwargs):
+    return_response = {
+        "status": "SUCCESS",
+        "errorCode": 0,
+        "message": "message",
+        "result": {
+            "logonAccount": {
+                "value": [
+                    "DOMAIN\\username"
+                ],
+                "updateAt": 0
+            },
+            "hostname": {
+                "value": "hostname",
+                "updateAt": 0
+            },
+            "macAddr": {
+                "value": "00:11:22:33:44:55",
+                "updateAt": 0
+            },
+            "ip": {
+                "value": "192.168.1.1",
+                "updateAt": 0
+            },
+            "osName": "Windows",
+            "osVersion": "10.0.19042",
+            "osDescription": "Windows 10 Pro (64 bit) build 19042",
+            "productCode": "xes"
+        }
+    }
+    return return_response
+
+
+# Test case for get endpoint information.
+def test_get_endpoint_information(mocker):
+    """Test get information from endpoint based on computerid"""
+    mocker.patch(
+        "TrendMicroVisionOne.Client.http_request",
+        mock_get_endpoint_info_response
+    )
+    args = {"endpoint": "hostname"}
+    client = Client("https://api.xdr.trendmicro.com", api_key)
+    result = get_endpoint_info(client, args)
+    assert result.outputs["status"] == "SUCCESS"
+    assert isinstance(result.outputs["message"], str)
+    assert isinstance(result.outputs["hostname"], str)
+    assert isinstance(result.outputs["ip"], str)
+    assert isinstance(result.outputs["macAddr"], str)
+    assert isinstance(result.outputs["osDescription"], str)
+    assert isinstance(result.outputs["osName"], str)
+    assert isinstance(result.outputs["osVersion"], str)
+    assert isinstance(result.outputs["productCode"], str)

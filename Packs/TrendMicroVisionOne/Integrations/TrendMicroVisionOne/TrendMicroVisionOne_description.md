@@ -51,10 +51,11 @@ You can then create a user account and generate an API key to be used for the Co
 | --- | --- | --- |
 | Name | Unique name for this Trend Micro Vision One instance | True |
 | Fetch Incidents | Choose if the integration should sync incidents | True |
-| Incident Type | Choose the "Trend Micro Vision One XDR Incident" type | True |
+| Incident Type | Endsure the "Trend Micro Vision One XDR Incident" type is selected | True |
+| Mapper (Incoming) | Endsure the "Trend Micro Vision One XDR - Incoming Mapper" type is selected | True |
 | API URL | Base URL for Trend Micro Vision One API | True |
 | API Key | API token for authentication  | True |
-| Incidents Fetch Interval (minutes) | How often do you want to check for new incidents | False |
+| Incidents Fetch Interval | How often do you want to check for new incidents | False |
 | Sync On First Run (days) | How many days to go back during first sync | False |
 | Max Incidents | Maximum Number of Workbenches to Retrieve | False |
 4. Click **Test** to validate the URLs, token, and connection.
