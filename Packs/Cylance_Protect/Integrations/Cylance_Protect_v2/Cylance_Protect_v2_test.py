@@ -650,4 +650,3 @@ def test_get_policy_details(mocker):
     contents = demisto_results.call_args[0][0]
     assert EXPECTED_POLICY.get("ID") == contents.get('EntryContext').get('Cylance.Policy(val.ID && val.ID == obj.ID)')\
         .get("ID")
-
