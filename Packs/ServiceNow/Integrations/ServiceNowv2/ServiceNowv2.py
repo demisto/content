@@ -2534,7 +2534,7 @@ def get_co_human_readable(ticket: dict, ticket_type: str, additional_fields: Ite
         'System ID': ticket.get('sys_id', {}).get('value', ''),
         'Number': ticket.get('number', {}).get('value', ''),
         'Impact': TICKET_IMPACT.get(str(int(ticket.get('impact', {}).get('value', ''))), ''),
-        'Business Impact': BUSINESS_IMPACT.get(str(int(ticket.get('business_criticality', {}).get('value', ''))), ''),
+        'Business Impact': BUSINESS_IMPACT.get(str(ticket.get('business_criticality', {}).get('value', '')), ''),
         'Urgency': ticket.get('urgency', {}).get('display_value', ''),
         'Severity': ticket.get('severity', {}).get('value', ''),
         'Priority': TICKET_PRIORITY.get(str(int(priority)), str(int(priority))),

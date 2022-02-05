@@ -18,14 +18,11 @@
 	"isReadOnly": false,
 	"itemVersion": "",
 	"locked": false,
-	"mergeStrategy": "",
 	"name": "ServiceNow Business Impact",
 	"neverSetAsRequired": false,
 	"ownerOnly": false,
-	"packID": "",
 	"placeholder": "1 - Critical,2 - High,3 - Non-Critical",
 	"required": false,
-	"runScriptAfterUpdate": false,
 	"script": "",
 	"selectValues": [
 		"1 - Critical",
@@ -41,7 +38,6 @@
 	"unmapped": false,
 	"unsearchable": false,
 	"useAsKpi": false,
-	"validatedError": "",
 	"validationRegex": "",
 	"version": -1
 }
