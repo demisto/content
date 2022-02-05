@@ -783,7 +783,7 @@ def get_threats():
     dbot_score_dict = {'DBotScore': []}  # type: Dict[str, List[Dict[str, str]]]
     for dbot_score_entry in dbot_score_array:
         for key, value in dbot_score_entry.items():
-            dbot_score_dict[key].append(value)
+            dbot_score_dict['DBotScore'].append(value)
 
     context_threat = createContext(data=threats, keyTransform=underscoreToCamelCase, removeNull=True)
     context_threat = add_capitalized_hash_to_context(context_threat)
