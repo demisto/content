@@ -170,7 +170,7 @@ script:
       default: false
       defaultValue: incident
       description: Ticket type. Can be "incident", "problem", "change_request", "sc_request",
-        "sc_task", or "sc_req_item". Default is "incident".
+        "sc_task", "sc_req_item" or "sn_si_incident". Default is "incident".
       isArray: false
       name: ticket_type
       predefined:
@@ -180,6 +180,7 @@ script:
       - sc_request
       - sc_task
       - sc_req_item
+      - sn_si_incident
       required: false
       secret: false
     - default: false
@@ -299,7 +300,7 @@ script:
       default: false
       defaultValue: incident
       description: Ticket type. Can be "incident", "problem", "change_request", "sc_request",
-        "sc_task", or "sc_req_item". Default is "incident".
+        "sc_task", "sc_req_item" or "sn_si_incident". Default is "incident".
       isArray: false
       name: ticket_type
       predefined:
@@ -309,6 +310,7 @@ script:
       - sc_request
       - sc_task
       - sc_req_item
+      - sn_si_incident
       required: false
       secret: false
     - auto: PREDEFINED
@@ -798,6 +800,23 @@ script:
       name: fields_delimiter
       required: false
       secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Business criticallity of the ticket.
+      isArray: false
+      name: business_criticality
+      predefined:
+        - 3 - Non-Critical
+        - 2 - High
+        - 1 - Critical
+      required: false
+      secret: false
+    - default: false
+      description: Incident risk score.
+      isArray: false
+      name: risk_score
+      required: false
+      secret: false
     deprecated: false
     description: Creates new ServiceNow ticket.
     execution: false
@@ -853,7 +872,7 @@ script:
       default: false
       defaultValue: incident
       description: Ticket type. Can be "incident", "problem", "change_request", "sc_request",
-        "sc_task", or "sc_req_item". Default is "incident".
+        "sc_task", "sc_req_item" or "sn_si_incident". Default is "incident".
       isArray: false
       name: ticket_type
       predefined:
@@ -863,6 +882,7 @@ script:
       - sc_request
       - sc_task
       - sc_req_item
+      - sn_si_incident
       required: false
       secret: false
     - auto: PREDEFINED
@@ -1351,6 +1371,23 @@ script:
       name: clear_fields
       required: false
       secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Business criticallity of the ticket.
+      isArray: false
+      name: business_criticality
+      predefined:
+        - 3 - Non-Critical
+        - 2 - High
+        - 1 - Critical
+      required: false
+      secret: false
+    - default: false
+      description: Incident risk score.
+      isArray: false
+      name: risk_score
+      required: false
+      secret: false
     deprecated: false
     description: Updates the specified ticket.
     execution: false
@@ -1365,7 +1402,7 @@ script:
     - auto: PREDEFINED
       default: false
       description: Ticket type. Can be "incident", "problem", "change_request", "sc_request",
-        "sc_task", or "sc_req_item".
+        "sc_task", "sc_req_item", or "sn_si_incident".
       isArray: false
       name: ticket_type
       predefined:
@@ -1375,6 +1412,7 @@ script:
       - sc_request
       - sc_task
       - sc_req_item
+      - sn_si_incident
       required: false
       secret: false
     deprecated: false
@@ -1393,7 +1431,7 @@ script:
       default: false
       defaultValue: incident
       description: Ticket type. Can be "incident", "problem", "change_request", "sc_request",
-        "sc_task", or "sc_req_item". Default is "incident".
+        "sc_task", "sc_req_item" or "sn_si_incident". Default is "incident".
       isArray: false
       name: ticket_type
       predefined:
@@ -1403,6 +1441,7 @@ script:
       - sc_request
       - sc_task
       - sc_req_item
+      - sn_si_incident
       required: false
       secret: false
     - default: false
@@ -1487,7 +1526,7 @@ script:
       default: false
       defaultValue: incident
       description: Ticket type. Can be "incident", "problem", "change_request", "sc_request",
-        "sc_task", or "sc_req_item". Default is "incident".
+        "sc_task", "sc_req_item" or "sn_si_incident". Default is "incident".
       isArray: false
       name: ticket_type
       predefined:
@@ -1496,6 +1535,7 @@ script:
       - change_request
       - sc_request
       - sc_task
+      - sn_si_incident
       required: false
       secret: false
     - default: false
@@ -1533,7 +1573,7 @@ script:
       default: false
       defaultValue: incident
       description: Ticket type. Can be "incident", "problem", "change_request", "sc_request",
-        "sc_task", or "sc_req_item". Default is "incident".
+        "sc_task", "sc_req_item" or "sn_si_incident". Default is "incident".
       isArray: false
       name: ticket_type
       predefined:
@@ -1542,6 +1582,7 @@ script:
       - change_request
       - sc_request
       - sc_task
+      - sn_si_incident
       required: false
       secret: false
     - default: false
@@ -1577,7 +1618,7 @@ script:
       default: false
       defaultValue: incident
       description: Ticket type. Can be "incident", "problem", "change_request", "sc_request",
-        "sc_task", or "sc_req_item". Default is "incident".
+        "sc_task", "sc_req_item" or "sn_si_incident". Default is "incident".
       isArray: false
       name: ticket_type
       predefined:
@@ -1586,6 +1627,7 @@ script:
       - change_request
       - sc_request
       - sc_task
+      - sn_si_incident
       required: false
       secret: false
     - default: false
@@ -2182,7 +2224,7 @@ script:
       default: false
       defaultValue: incident
       description: Ticket type. Can be "incident", "problem", "change_request", "sc_request",
-        "sc_task", or "sc_req_item". Default is "incident".
+        "sc_task", "sc_req_item" or "sn_si_incident". Default is "incident".
       isArray: false
       name: ticket_type
       predefined:
@@ -2192,6 +2234,7 @@ script:
       - sc_request
       - sc_task
       - sc_req_item
+      - sn_si_incident
       required: false
       secret: false
     deprecated: false

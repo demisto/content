@@ -91,10 +91,10 @@ TICKET_IMPACT = {
     '5': '5 - Caregiver'
 }
 
-TICKET_IMPACT_SIR: {
-    '1': '1 - High',
-    '2': '2 - Medium',
-    '3': '3 - Low'
+BUSINESS_IMPACT = {
+    '1': '1 - Critical',
+    '2': '2 - High',
+    '3': '3 - Non-Critical'
 }
 
 SNOW_ARGS = ['active', 'activity_due', 'opened_at', 'short_description', 'additional_assignee_list', 'approval_history',
@@ -108,9 +108,9 @@ SNOW_ARGS = ['active', 'activity_due', 'opened_at', 'short_description', 'additi
              'problem_id', 'reassignment_count', 'reopen_count', 'resolved_at', 'resolved_by', 'rfc',
              'severity', 'sla_due', 'state', 'subcategory', 'sys_tags', 'sys_updated_by', 'sys_updated_on',
              'time_worked', 'title', 'type', 'urgency', 'user_input', 'watch_list', 'work_end', 'work_notes',
-             'work_notes_list', 'work_start']
+             'work_notes_list', 'work_start', 'business_criticality', 'risk_score']
 
-SIR_OUT_FIELDS = ('description', 'short_description', 'sla_due', 'impact',
+SIR_OUT_FIELDS = ('description', 'short_description', 'sla_due', 'business_criticality',
                   'priority', 'state', 'urgency', 'severity', 'closed_at',
                   'risk_score', 'close_notes', 'attack_vector', 'work_notes')
 
@@ -394,6 +394,7 @@ def get_ticket_fields(args: dict, template_name: dict = {}, ticket_type: str = '
 
     inv_severity = {v: k for k, v in ticket_severity.items()}
     inv_priority = {v: k for k, v in TICKET_PRIORITY.items()}
+    inv_business_impact = {v: k for k, v in BUSINESS_IMPACT.items()}
     states = TICKET_STATES.get(ticket_type)
     inv_states = {v: k for k, v in states.items()} if states else {}
     approval = TICKET_APPROVAL.get(ticket_type)
@@ -422,6 +423,8 @@ def get_ticket_fields(args: dict, template_name: dict = {}, ticket_type: str = '
             elif arg == 'change_type':
                 # this change is required in order to use type 'Standard' as well.
                 ticket_fields['type'] = input_arg
+            elif arg == 'business_criticality':
+                ticket_fields[arg] = inv_business_impact.get(input_arg, input_arg)
             else:
                 ticket_fields[arg] = input_arg
         elif template_name and arg in template_name:
@@ -2526,12 +2529,12 @@ def get_co_human_readable(ticket: dict, ticket_type: str, additional_fields: Ite
     states = TICKET_STATES.get(ticket_type, {})
     state = ticket.get('state', {}).get('value', '')
     priority = ticket.get('priority', {}).get('value', '')
-    impacts = TICKET_IMPACT_SIR if ticket_type == SIR_INCIDENT else TICKET_IMPACT
 
     item = {
         'System ID': ticket.get('sys_id', {}).get('value', ''),
         'Number': ticket.get('number', {}).get('value', ''),
-        'Impact': impacts.get(str(int(ticket.get('impact', {}).get('value', ''))), ''),
+        'Impact': TICKET_IMPACT.get(str(int(ticket.get('impact', {}).get('value', ''))), ''),
+        'Business Impact': BUSINESS_IMPACT.get(str(int(ticket.get('business_criticality', {}).get('value', ''))), ''),
         'Urgency': ticket.get('urgency', {}).get('display_value', ''),
         'Severity': ticket.get('severity', {}).get('value', ''),
         'Priority': TICKET_PRIORITY.get(str(int(priority)), str(int(priority))),

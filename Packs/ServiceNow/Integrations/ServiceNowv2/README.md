@@ -253,7 +253,7 @@ Retrieves ticket information by ticket ID.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | Ticket system ID for which to retrieve information. | Optional | 
-| ticket_type | Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", or "sc_req_item". Default is "incident". | Optional | 
+| ticket_type | Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", "sc_req_item", or "sn_si_incident". Default is "incident". | Optional |
 | number | Ticket number to retrieve. | Optional | 
 | get_attachments | If "true" will retrieve ticket attachments. Default is "false". | Optional | 
 | custom_fields | Custom fields on which to query. For example: state_code=AR,time_zone=PST. | Optional | 
@@ -345,7 +345,7 @@ Creates new ServiceNow ticket.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | short_description | Short description of the ticket. | Optional | 
-| ticket_type | Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", or "sc_req_item". Default is "incident". | Optional | 
+| ticket_type | Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", "sc_req_item", or "sn_si_incident". Default is "incident". | Optional |
 | urgency | Ticket urgency. You can either select from the predefined options or enter another value, for example: "Urgent" or "5". | Optional | 
 | severity | Ticket severity. You can either select from the predefined options or enter another value, for example: "Urgent" or "5". | Optional | 
 | impact | Ticket impact. | Optional | 
@@ -358,7 +358,8 @@ Creates new ServiceNow ticket.
 | business_duration | Business duration, in the format: YYYY-MM-DD HH:MM:SS. | Optional | 
 | business_service | Business service. | Optional | 
 | business_stc | Business source. | Optional | 
-| calendar_duration | Calendar duration, in the format: YYYY-MM-DD HH:MM:SS. | Optional | 
+| business_criticality | Business criticallity of the ticket. | Optional |
+| calendar_duration | Calendar duration, in the format: YYYY-MM-DD HH:MM:SS. | Optional |
 | caller_id | Caller ID (UID format). | Optional | 
 | category | Category of the ticket. | Optional | 
 | caused_by | UID Format | Optional | 
@@ -390,9 +391,10 @@ Creates new ServiceNow ticket.
 | parent_incident | UID Format | Optional | 
 | problem_id | UID Format | Optional | 
 | reassignment_count | The number of users included in this ticket. | Optional | 
-| reopen_count | How many times the ticket has been reopened. | Optional | 
-| resolved_at | The date/time that the ticket was resolved, in the format: YYYY-MM-DD HH:MM:SS. | Optional | 
-| resolved_by | ID of the user that resolved the ticket. | Optional | 
+| reopen_count | How many times the ticket has been reopened. | Optional |
+| resolved_at | The date/time that the ticket was resolved, in the format: YYYY-MM-DD HH:MM:SS. | Optional |
+| resolved_by | ID of the user that resolved the ticket. | Optional |
+| risk_score | Incident risk score. | Optional |
 | rfc | UID | Optional | 
 | sla_due | SLA due date/time, in the format: YYYY-MM-DD HH:MM:SS. | Optional | 
 | subcategory | Ticket subcategory. | Optional | 
@@ -496,7 +498,7 @@ Updates the specified ticket.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | short_description | Short description of the ticket. | Optional | 
-| ticket_type | Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", or "sc_req_item". Default is "incident". | Optional | 
+| ticket_type | Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", "sc_req_item", or "sn_si_incident". Default is "incident". | Optional |
 | urgency | Ticket urgency. You can either select from the predefined options or enter another value, for example: "Urgent" or "5". | Optional | 
 | severity | Ticket severity. You can either select from the predefined options or enter another value, for example: "Urgent" or "5". | Optional | 
 | impact | Ticket impact. | Optional | 
@@ -507,9 +509,10 @@ Updates the specified ticket.
 | approval_set | The ticket approval set date/time, in the format: "2016-07-02 21:51:11". | Optional | 
 | assigned_to | User assigned to the ticket. | Optional | 
 | business_duration | Business duration, in the format: YYYY-MM-DD HH:MM:SS. | Optional | 
-| business_service | Business service. | Optional | 
-| business_stc | Business source. | Optional | 
-| calendar_duration | Calendar duration, in the format: YYYY-MM-DD HH:MM:SS. | Optional | 
+| business_service | Business service. | Optional |
+| business_stc | Business source. | Optional |
+| business_criticality | Business criticallity of the ticket. | Optional |
+| calendar_duration | Calendar duration, in the format: YYYY-MM-DD HH:MM:SS. | Optional |
 | caller_id | Caller ID (UID format). | Optional | 
 | category | Category name. | Optional | 
 | caused_by | UID format. | Optional | 
@@ -543,7 +546,8 @@ Updates the specified ticket.
 | reassignment_count | The number of users included in this ticket. | Optional | 
 | reopen_count | The number of times the ticket has been reopened. | Optional | 
 | resolved_at | Date/time the ticket was resolved, in the format: YYYY-MM-DD HH:MM:SS. | Optional | 
-| resolved_by | Resolved by (UID format). | Optional | 
+| resolved_by | Resolved by (UID format). | Optional |
+| risk_score | Incident risk score. | Optional |
 | rfc | UID | Optional | 
 | sla_due | SLA due date/time, in the format: YYYY-MM-DD HH:MM:SS. | Optional | 
 | subcategory | Ticket subcategory. | Optional | 
@@ -621,7 +625,7 @@ Deletes a ticket from ServiceNow.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | Ticket System ID | Required | 
-| ticket_type | Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", or "sc_req_item". | Optional | 
+| ticket_type | Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", "sc_req_item", or "sn_si_incident". | Optional |
 
 
 #### Context Output
@@ -653,7 +657,7 @@ Retrieves ticket information according to the supplied query.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | limit | The maximum number of tickets to retrieve. | Optional | 
-| ticket_type | Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", or "sc_req_item". Default is "incident". | Optional | 
+| ticket_type | Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", "sc_req_item", or "sn_si_incident". Default is "incident". | Optional |
 | query | The query to run. To learn about querying in ServiceNow, see https://docs.servicenow.com/bundle/istanbul-servicenow-platform/page/use/common-ui-elements/reference/r_OpAvailableFiltersQueries.html | Optional | 
 | offset | Starting record index to begin retrieving records from. | Optional | 
 | additional_fields | Additional fields to present in the War Room entry and incident context. | Optional || system_params | System parameters in the format: fieldname1=value;fieldname2=value. For example: "sysparm_display_value=al;&sysparm_exclude_reference_link=True" | Optional | 
@@ -798,7 +802,7 @@ Adds a link to the specified ticket.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | Ticket System ID. | Required | 
-| ticket_type | Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", or "sc_req_item". Default is "incident". | Optional | 
+| ticket_type | Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", "sc_req_item", or "sn_si_incident". Default is "incident". | Optional |
 | link | The actual link to publish in ServiceNow ticket, in a valid URL format, for example, http://www.demisto.com. | Required | 
 | post-as-comment | Whether to publish the link as comment on the ticket. Can be "true" or "false". If false will publish the link as WorkNote. | Optional | 
 | text | The text to represent the link. | Optional | 
@@ -837,7 +841,7 @@ Adds a comment to the specified ticket, by ticket ID.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | Ticket System ID. | Required | 
-| ticket_type | Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", or "sc_req_item". Default is "incident". | Optional | 
+| ticket_type | Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", "sc_req_item", or "sn_si_incident". Default is "incident". | Optional |
 | comment | Comment to add. | Required | 
 | post-as-comment | Whether to publish the note as comment on the ticket. Can be "true" or "false". Default is "false". | Optional | 
 
@@ -875,7 +879,7 @@ Uploads a file to the specified ticket.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | Ticket System ID. | Required | 
-| ticket_type | Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", or "sc_req_item". Default is "incident". | Optional | 
+| ticket_type | Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", "sc_req_item", or "sn_si_incident". Default is "incident". | Optional |
 | file_id | War Room entry ID that includes the file. | Required | 
 | file_name | Filename of the uploaded file to override the existing file name in the entry. | Optional | 
 
@@ -1792,7 +1796,7 @@ Adds a tag to a ticket. The tag will be visible in the label_entry table and can
 | id | Ticket System ID. | Required | 
 | tag_id | Tag system ID. Can be retrieved using the "!servicenow-query-table table_name=label fields=name,active,sys_id" command. | Required | 
 | title | Tag title. For example: "Incident - INC000001". | Required | 
-| ticket_type | Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", or "sc_req_item". Default is "incident". | Optional | 
+| ticket_type | Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", "sc_req_item", or "sn_si_incident". Default is "incident". | Optional |
 
 
 #### Context Output
