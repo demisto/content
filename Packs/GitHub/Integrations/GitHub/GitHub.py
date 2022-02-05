@@ -1938,7 +1938,7 @@ def github_releases_list_command():
 
 
 def update_comment(comment_id: Union[int, str], msg: str) -> dict:
-    suffix = ISSUE_SUFFIX + f'/comments/{comment_id}'
+    suffix = f'{ISSUE_SUFFIX}/comments/{comment_id}'
     response = http_request('PATCH', url_suffix=suffix, data={'body': msg})
     return response
 
