@@ -1952,7 +1952,7 @@ def github_update_comment_command():
 
     ec_object = format_comment_outputs(response, issue_number)
     ec = {
-        'GitHub.Comment(val.IssueNumber === obj.IssueNumber && val.ID === obj.ID)': ec_object
+        'GitHub.Comment(val.IssueNumber === obj.IssueNumber && val.ID === obj.ID)': ec_object,
     }
     human_readable = tableToMarkdown('Updated Comment', ec_object, removeNull=True)
     return_outputs(readable_output=human_readable, outputs=ec, raw_response=response)
