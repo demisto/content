@@ -106,6 +106,10 @@ script:
     description: Searches for security rules using the SIQL language query (limit
       to 10k)
     name: firemon-secmgr-secrule-search
+    outputs:
+    - contextPath: FireMonSecurityManager.SIQL.matchId
+      description: Resposne for the SIQL query
+      type: Unknown
   dockerimage: demisto/python3:3.10.1.25933
   isfetch: true
   runonce: false
