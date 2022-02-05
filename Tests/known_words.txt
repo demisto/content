@@ -75,5 +75,8 @@ IPinfo
 QRadarFullSearch
 ServiceNow
 OAuth
+Qualys
 Attivo
 Botsink
+QRadar
+AdditionalPollingCommandName

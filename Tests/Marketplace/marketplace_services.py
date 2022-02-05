@@ -12,6 +12,7 @@ import warnings
 from datetime import datetime, timedelta
 from distutils.util import strtobool
 from distutils.version import LooseVersion
+from pathlib import Path
 from typing import Tuple, Any, Union, List, Dict, Optional
 from zipfile import ZipFile, ZIP_DEFLATED
 
@@ -616,11 +617,20 @@ class Pack(object):
 
         return pack_metadata
 
-    def _load_pack_dependencies(self, index_folder_path, pack_names):
+    def _load_pack_dependencies(self, index_folder_path, pack_names, id_set, marketplace):
         """ Loads dependencies metadata and returns mapping of pack id and it's loaded data.
+            There are 3 cases for dependencies:
+              Case 1: The dependency is present in the index.zip. In this case, we add it to the dependencies results.
+              Case 2: The dependency is missing from the index.zip since it is not a part of this marketplace.
+                In this case, ignore it.
+              Case 3: The dependency is missing from the index.zip since it is a new pack. In this case, handle missing
+                dependency - This means we mark this pack as 'missing dependency', and once the new index.zip is created, and
+                therefore it contains the new pack, we call this function again, and hitting case 1.
         Args:
             index_folder_path (str): full path to download index folder.
             pack_names (set): List of all packs.
+            id_set (dict): Loaded id_set.json.
+            marketplace (str): Marketplace of current upload.
 
         Returns:
             dict: pack id as key and loaded metadata of packs as value.
@@ -640,18 +650,24 @@ class Pack(object):
             dependency_metadata_path = os.path.join(index_folder_path, dependency_pack_id, Pack.METADATA)
 
             if os.path.exists(dependency_metadata_path):
+                # Case 1: the dependency is found in the index.zip
                 with open(dependency_metadata_path, 'r') as metadata_file:
                     dependency_metadata = json.load(metadata_file)
                     dependencies_data_result[dependency_pack_id] = dependency_metadata
+
             elif dependency_pack_id in pack_names:
-                # If the pack is dependent on a new pack (which is not yet in the index.json)
-                # we will note that it is missing dependencies.
-                # And finally after updating all the packages in index.json.
-                # We will go over the pack again to add what was missing
-                self._is_missing_dependencies = True
-                logging.warning(f"{self._pack_name} pack dependency with id {dependency_pack_id} "
-                                f"was not found in index, marking it as missing dependencies - to be resolved in next"
-                                f" iteration over packs")
+                if id_set:
+                    if marketplace not in id_set.get('Packs', {}).get(dependency_pack_id, {}).get('marketplaces'):
+                        # Case 2: the dependency is not in the index since it is not a part of the current marketplace
+                        logging.warning(f"{self._pack_name} pack dependency with id {dependency_pack_id} is not part of"
+                                        f" the current marketplace, ignoring dependency.")
+
+                else:
+                    # Case 3: the dependency is not in the index since it is a new pack, but it is in the id set
+                    self._is_missing_dependencies = True
+                    logging.warning(f"{self._pack_name} pack dependency with id {dependency_pack_id} "
+                                    f"was not found in index, marking it as missing dependencies - to be resolved in "
+                                    f"next iteration over packs")
 
             else:
                 logging.warning(f"{self._pack_name} pack dependency with id {dependency_pack_id} was not found")
@@ -1023,14 +1039,14 @@ class Pack(object):
                 zip_to_upload_full_path = overridden_upload_path
             else:
                 version_pack_path = os.path.join(storage_base_path, self._pack_name, latest_version)
-                existing_files = [f.name for f in storage_bucket.list_blobs(prefix=version_pack_path)]
+                existing_files = [Path(f.name).name for f in storage_bucket.list_blobs(prefix=version_pack_path)]
 
                 if override_pack:
                     logging.warning(f"Uploading {self._pack_name} pack to storage and overriding the existing pack "
                                     f"files already in storage.")
 
                 elif existing_files:
-                    logging.warning(f"The following packs already exist at storage: {', '.join(existing_files)}")
+                    logging.warning(f"The following packs already exist in the storage: {', '.join(existing_files)}")
                     logging.warning(f"Skipping step of uploading {self._pack_name}.zip to storage.")
                     return task_status, True, None
 
@@ -1140,7 +1156,42 @@ class Pack(object):
                     self._aggregation_str = agg_str
             logging.success(f"Uploaded {self._pack_name} pack to {prod_pack_zip_path} path.")
 
+        # handle dependenices zip upload when found in build bucket
+        self.copy_and_upload_dependencies_zip_to_storage(
+            build_bucket,
+            build_bucket_base_path,
+            production_bucket,
+            storage_base_path
+        )
+
         return task_status, False
+
+    def copy_and_upload_dependencies_zip_to_storage(self, build_bucket, build_bucket_base_path, production_bucket,
+                                                    storage_base_path):
+        pack_with_deps_name = f'{self._pack_name}_with_dependencies.zip'
+        build_pack_with_deps_path = os.path.join(build_bucket_base_path, self._pack_name, pack_with_deps_name)
+        existing_bucket_deps_files = [f.name for f in build_bucket.list_blobs(prefix=build_pack_with_deps_path)]
+        if existing_bucket_deps_files:
+            logging.info(f"{self._pack_name} with dependencies was found. path {build_pack_with_deps_path}.")
+
+            # We upload the pack dependencies zip object taken from the build bucket into the production bucket
+            prod_version_pack_deps_zip_path = os.path.join(storage_base_path, self._pack_name, pack_with_deps_name)
+            build_pack_deps_zip_blob = build_bucket.blob(build_pack_with_deps_path)
+
+            try:
+                copied_blob = build_bucket.copy_blob(
+                    blob=build_pack_deps_zip_blob,
+                    destination_bucket=production_bucket,
+                    new_name=prod_version_pack_deps_zip_path
+                )
+                copied_blob.cache_control = "no-cache,max-age=0"  # disabling caching for pack blob
+                self.public_storage_path = copied_blob.public_url
+                dep_task_status = copied_blob.exists()
+                if not dep_task_status:
+                    logging.error(f"Failed in uploading {self._pack_name} pack with dependencies to production gcs.")
+            except Exception as e:
+                pack_deps_zip_suffix = os.path.join(self._pack_name, pack_with_deps_name)
+                logging.exception(f"Failed copying {pack_deps_zip_suffix}. Additional Info: {str(e)}")
 
     def get_changelog_latest_rn(self, changelog_index_path: str) -> Tuple[dict, LooseVersion, str]:
         """
@@ -1887,7 +1938,8 @@ class Pack(object):
         )
 
     def format_metadata(self, index_folder_path, packs_dependencies_mapping, build_number, commit_hash,
-                        pack_was_modified, statistics_handler, pack_names=None, format_dependencies_only=False):
+                        pack_was_modified, statistics_handler, pack_names=None, id_set=None, marketplace='xsoar',
+                        format_dependencies_only=False):
         """ Re-formats metadata according to marketplace metadata format defined in issue #19786 and writes back
         the result.
 
@@ -1898,9 +1950,12 @@ class Pack(object):
             commit_hash (str): current commit hash.
             pack_was_modified (bool): Indicates whether the pack was modified or not.
             statistics_handler (StatisticsHandler): The marketplace statistics handler
-            pack_names (set): List of all packs.
+            pack_names (set): List of all pack names.
+            id_set (dict): Dict of id_set.json
+            marketplace (str): Marketplace of current upload.
             format_dependencies_only (bool): Indicates whether the metadata formation is just for formatting the
              dependencies or not.
+
         Returns:
             bool: True is returned in case metadata file was parsed successfully, otherwise False.
             bool: True is returned in pack is missing dependencies.
@@ -1912,17 +1967,19 @@ class Pack(object):
 
         try:
             self.set_pack_dependencies(packs_dependencies_mapping)
+
             if Metadata.DISPLAYED_IMAGES not in self.user_metadata and self._user_metadata:
+                logging.info(f"Adding auto generated display images for {self._pack_name} pack")
                 self._user_metadata[Metadata.DISPLAYED_IMAGES] = packs_dependencies_mapping.get(
                     self._pack_name, {}).get(Metadata.DISPLAYED_IMAGES, [])
-                logging.info(f"Adding auto generated display images for {self._pack_name} pack")
-            dependencies_data, is_missing_dependencies = \
-                self._load_pack_dependencies(index_folder_path, pack_names)
 
-            self._enhance_pack_attributes(
-                index_folder_path, pack_was_modified, dependencies_data, statistics_handler,
-                format_dependencies_only
-            )
+            logging.info(f"Loading pack dependencies for {self._pack_name} pack")
+            dependencies_data, is_missing_dependencies = \
+                self._load_pack_dependencies(index_folder_path, pack_names, id_set, marketplace)
+
+            self._enhance_pack_attributes(index_folder_path, pack_was_modified, dependencies_data, statistics_handler,
+                                          format_dependencies_only)
+
             formatted_metadata = self._parse_pack_metadata(build_number, commit_hash)
             metadata_path = os.path.join(self._pack_path, Pack.METADATA)  # deployed metadata path after parsing
             json_write(metadata_path, formatted_metadata)  # writing back parsed metadata
@@ -2568,14 +2625,17 @@ class Pack(object):
             return list(bc_version_to_text.values())[0]
         # Handle cases of two or more BC versions in entry.
         text_of_bc_versions, bc_without_text = self._split_bc_versions_with_and_without_text(bc_version_to_text)
-        # Case one: Not even one BC version contains breaking text.
+
         if len(text_of_bc_versions) == 0:
+            # Case 1: Not even one BC version contains breaking text.
             return None
-        # Case two: Only part of BC versions contains breaking text.
+
         elif len(text_of_bc_versions) < len(bc_version_to_text):
+            # Case 2: Only part of BC versions contains breaking text.
             return self._handle_many_bc_versions_some_with_text(release_notes_dir, text_of_bc_versions, bc_without_text)
-        # Case 3: All BC versions contains text.
+
         else:
+            # Case 3: All BC versions contains text.
             # Important: Currently, implementation of aggregating BCs was decided to concat between them
             # In the future this might be needed to re-thought.
             return '\n'.join(bc_version_to_text.values())  # type: ignore[arg-type]
@@ -3117,3 +3177,25 @@ def underscore_file_name_to_dotted_version(file_name: str) -> str:
         (str): Dotted version of file name
     """
     return os.path.splitext(file_name)[0].replace('_', '.')
+
+
+def get_all_packs_by_id_set(packs_list, extract_destination_path, id_set, marketplace):
+    """
+    Collect all packs from the id_set that are not in packs_dict
+    Args:
+        packs_list (List[Pack]): List of packs collected before
+        extract_destination_path (str): Base destination of Packs folder
+        id_set (dict): Dict of id_set.json.
+        marketplace (str): Marketplace version
+    Returns:
+         (dict, list): Dictionary of pack_name:Pack and list of all Pack in id_set.json
+    """
+    packs_dict = {pack.name: pack for pack in packs_list}
+    if not id_set:
+        return packs_dict
+    for pack_name in id_set:
+        if pack_name not in packs_dict:
+            pack = Pack(pack_name, os.path.join(extract_destination_path, pack_name), marketplace)
+            packs_dict[pack_name] = pack
+            packs_list.append(pack)
+    return packs_dict, packs_list

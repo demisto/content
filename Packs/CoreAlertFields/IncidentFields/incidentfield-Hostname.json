@@ -13,7 +13,7 @@
     "locked": false,
     "name": "Hostname",
     "neverSetAsRequired": false,
-    "openEnded": true,
+    "openEnded": false,
     "ownerOnly": false,
     "propagationLabels": [
         "all"
@@ -22,7 +22,7 @@
     "sla": 0,
     "system": false,
     "threshold": 72,
-    "type": "multiSelect",
+    "type": "shortText",
     "unmapped": false,
     "unsearchable": true,
     "useAsKpi": false,
@@ -45,10 +45,6 @@
         {
         "cliName": "infectedhostnames",
         "type": "shortText"
-        },
-        {
-        "cliName": "infectedhosts",
-        "type": "grid"
         },
         {
         "cliName": "infinipointhostname",
@@ -99,16 +95,24 @@
         "type": "multiSelect"
         },
         {
-        "cliName": "expanseasset",
-        "type": "grid"
-        },
-        {
         "cliName": "extrahophostname",
         "type": "shortText"
         },
         {
         "cliName": "googlecloudsccfindingsourcepropertieshostname",
         "type": "shortText"
+        },
+        {
+            "cliName": "desthostname",
+            "type": "shortText"
+        },
+        {
+            "cliName": "destinationhostname",
+            "type": "shortText"
+        },
+        {
+            "cliName": "hostnames",
+            "type": "multiSelect"
         }
     ]
 }
