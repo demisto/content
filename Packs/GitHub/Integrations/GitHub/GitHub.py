@@ -1961,7 +1961,7 @@ def github_update_comment_command():
 def github_delete_comment_command():
     args = demisto.args()
     comment_id = args.get('comment_id')
-    suffix = ISSUE_SUFFIX + f'/comments/{comment_id}'
+    suffix = f'{ISSUE_SUFFIX}/comments/{comment_id}'
     http_request('DELETE', url_suffix=suffix)
     return_results(f'comment with ID {comment_id} was deleted successfully')
 
