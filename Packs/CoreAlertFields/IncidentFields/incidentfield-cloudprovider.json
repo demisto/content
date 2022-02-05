@@ -28,5 +28,19 @@
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "6.5.0",
-	"x2_fields": "cloud_provider"
+	"x2_fields": "cloud_provider",
+    "Aliases": [
+        {
+          "cliName": "expanseprovider",
+          "type": "shortText"
+        },
+        {
+          "cliName": "prismacloudcomputeprovider",
+          "type": "shortText"
+        },
+        {
+          "cliName": "shadowitprovider",
+          "type": "shortText"
+        }
+    ]
 }

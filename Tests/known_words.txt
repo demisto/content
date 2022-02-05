@@ -79,4 +79,5 @@ Qualys
 Attivo
 Botsink
 QRadar
+AdditionalPollingCommandName
 FireEye

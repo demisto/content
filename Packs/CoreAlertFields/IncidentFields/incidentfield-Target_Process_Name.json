@@ -28,5 +28,13 @@
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "6.5.0",
-    "x2_fields": "action_process_image_name"
+    "x2_fields": "action_process_image_name",
+    "Aliases": [
+        {
+          "cliName": "childprocess",
+          "type": "multiSelect"
+        }
+      
+    ]
+
 }

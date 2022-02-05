@@ -127,7 +127,9 @@ def search_for_redirect_url_in_first_query_parameter(parse_results: ParseResult)
         first_query_parameter: List[str] = query_parameters[0].split('=')
         # Validation of unexpected split behaviour
         if not len(first_query_parameter) == 2:
-            demisto.error(f'Unexpected parse of query parameter: {query_parameters[0]}: Parse: {first_query_parameter}')
+            demisto.debug(
+                f"Unable to parse to following URL path: {parse_results.path} with query: {parse_results.query}"
+            )
             return None
         first_query_parameter_value: str = first_query_parameter[1]
         # Redirect URL according to the given assumption
@@ -147,6 +149,7 @@ def format_urls(non_formatted_urls: List[str]) -> List[Dict]:
     """
 
     def format_single_url(non_formatted_url: str) -> List[str]:
+        demisto.debug(f"Starting to format URL {non_formatted_url}")
         parse_results: ParseResult = urlparse(non_formatted_url)
         additional_redirect_url: Optional[str] = None
         if re.match(ATP_REGEX, non_formatted_url):

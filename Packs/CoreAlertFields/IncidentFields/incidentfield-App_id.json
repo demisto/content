@@ -37,6 +37,42 @@
         {
           "cliName": "protocols",
           "type": "shortText"  
+        },
+        {
+            "cliName": "prismacloudcomputeappid",
+            "type": "shortText"
+        },
+        {
+            "cliName": "protocolevent",
+            "type": "multiSelect"
+        },
+        {
+            "cliName": "app",
+            "type": "shortText"
+        },
+        {
+            "cliName": "applicationid",
+            "type": "shortText"
+        },
+        {
+            "cliName": "applicationname",
+            "type": "shortText"
+        },
+        {
+            "cliName": "googlecloudsccfindingsourcepropertiesapp",
+            "type": "shortText"
+        },
+        {
+            "cliName": "expanseprotocol",
+            "type": "shortText"
+        },
+        {
+            "cliName": "expanseprotocol",
+            "type": "shortText"
+        },
+        {
+            "cliName": "irondefenseprimaryappprotocol",
+            "type": "shortText"
         }
     ]
 }
