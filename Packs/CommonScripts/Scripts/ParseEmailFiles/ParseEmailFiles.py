@@ -3125,7 +3125,9 @@ class MsOxMessage(object):
         ole_file = None
         try:
             ole_file = OleFileIO(msg_file_path)
-
+            demisto.info("OLE file parsing issues: ")
+            parsing_issues = str(ole_file.parsing_issues) or 'empty'
+            demisto.info(parsing_issues)
             # process directory entries
             ole_root = ole_file.root
             kids_dict = ole_root.kids_dict
@@ -3458,7 +3460,12 @@ def handle_msg(file_path, file_name, parse_only_headers=False, max_depth=3):
     msg_dict = msg.as_dict(max_depth)
     mail_format_type = get_msg_mail_format(msg_dict)
     headers, headers_map = create_headers_map(msg_dict.get('Headers'))
-
+    demisto.info("Message Headers: ")
+    headers_str = str(headers) or 'empty'
+    demisto.info(headers_str)
+    demisto.info("Message Headers Map: ")
+    msg_headers_map_str = str(headers_map) or 'empty'
+    demisto.info(msg_headers_map_str)
     email_data = {
         'To': msg_dict['To'],
         'CC': msg_dict['CC'],
@@ -3813,12 +3820,18 @@ def main():
     parse_only_headers = demisto.args().get('parse_only_headers', 'false').lower() == 'true'
     try:
         result = demisto.executeCommand('getFilePath', {'id': entry_id})
+        demisto.info("Demisto file path result")
+        result_str = str(result) or 'empty'
+        demisto.info(result_str)
         if is_error(result):
             return_error(get_error(result))
 
         file_path = result[0]['Contents']['path']
         file_name = result[0]['Contents']['name']
         result = demisto.executeCommand('getEntry', {'id': entry_id})
+        demisto.info("Demisto entry result")
+        result_str = str(result) or 'empty'
+        demisto.info(result_str)
         if is_error(result):
             return_error(get_error(result))
 
