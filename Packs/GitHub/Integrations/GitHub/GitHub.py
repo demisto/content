@@ -1938,7 +1938,7 @@ def github_releases_list_command():
 
 
 def update_comment(comment_id: Union[int, str], msg: str) -> dict:
-    suffix = ISSUE_SUFFIX + f'/comments/{comment_id}'
+    suffix = f'{ISSUE_SUFFIX}/comments/{comment_id}'
     response = http_request('PATCH', url_suffix=suffix, data={'body': msg})
     return response
 
@@ -1952,7 +1952,7 @@ def github_update_comment_command():
 
     ec_object = format_comment_outputs(response, issue_number)
     ec = {
-        'GitHub.Comment(val.IssueNumber === obj.IssueNumber && val.ID === obj.ID)': ec_object
+        'GitHub.Comment(val.IssueNumber === obj.IssueNumber && val.ID === obj.ID)': ec_object,
     }
     human_readable = tableToMarkdown('Updated Comment', ec_object, removeNull=True)
     return_outputs(readable_output=human_readable, outputs=ec, raw_response=response)
@@ -1961,7 +1961,7 @@ def github_update_comment_command():
 def github_delete_comment_command():
     args = demisto.args()
     comment_id = args.get('comment_id')
-    suffix = ISSUE_SUFFIX + f'/comments/{comment_id}'
+    suffix = f'{ISSUE_SUFFIX}/comments/{comment_id}'
     http_request('DELETE', url_suffix=suffix)
     return_results(f'comment with ID {comment_id} was deleted successfully')
 
