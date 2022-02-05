@@ -79,5 +79,6 @@ Qualys
 Attivo
 Botsink
 QRadar
+AdditionalPollingCommandName
 Gitlab
 GitHub

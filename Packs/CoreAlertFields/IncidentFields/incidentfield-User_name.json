@@ -39,10 +39,6 @@
           "type": "shortText"
         },
         {
-          "cliName": "microsoft365defenderusers",
-          "type": "grid"
-        },
-        {
           "cliName": "prismacloudcomputeuser",
           "type": "shortText"
         },
@@ -92,6 +88,30 @@
         },
         {
           "cliName": "f5silverlinedetectedusernames",
+          "type": "shortText"
+        },
+        {
+          "cliName": "user",
+          "type": "shortText"
+        },
+        {
+          "cliName": "usernames",
+          "type": "shortText"
+        },
+        {
+          "cliName": "users",
+          "type": "shortText"
+        },
+        {
+          "cliName": "detecteduser",
+          "type": "multiSelect"
+        },
+        {
+          "cliName": "detectedusers",
+          "type": "shortText"
+        },
+        {
+          "cliName": "deviceusername",
           "type": "shortText"
         }
     ]
