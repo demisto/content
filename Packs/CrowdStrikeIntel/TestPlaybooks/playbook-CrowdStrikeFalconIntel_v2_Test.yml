@@ -5,15 +5,14 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: c3f36afb-60c8-4a16-8440-4e35b5b66981
+    taskid: 34fcdd80-3346-4632-8d00-b385ed199590
     type: start
     task:
-      id: c3f36afb-60c8-4a16-8440-4e35b5b66981
+      id: 34fcdd80-3346-4632-8d00-b385ed199590
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "7"
@@ -30,12 +29,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 97dd3820-7ebc-4d7e-85a6-96f108e5e698
+    taskid: b853ff42-4f93-4657-8732-cc129984906d
     type: regular
     task:
-      id: 97dd3820-7ebc-4d7e-85a6-96f108e5e698
+      id: b853ff42-4f93-4657-8732-cc129984906d
       version: -1
       name: cs-reports
       description: The Falcon Intel Reports API allows to query CrowdStrike intelligence
@@ -46,26 +47,10 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - "3"
     scriptarguments:
-      actors: {}
-      created_date: {}
-      description: {}
       limit:
         simple: "1"
-      max_last_modified_date: {}
-      motivations: {}
-      name: {}
-      offset: {}
-      q: {}
-      query: {}
-      slug: {}
-      sort: {}
-      sub_type: {}
-      tags: {}
-      target_countries: {}
-      target_industries: {}
-      type: {}
     separatecontext: false
     view: |-
       {
@@ -79,52 +64,28 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "2":
-    id: "2"
-    taskid: db4d6881-d3d3-4a48-8916-c649604df58d
-    type: condition
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: bde09e26-1d37-4f51-829e-4e7d3de120e6
+    type: regular
     task:
-      id: db4d6881-d3d3-4a48-8916-c649604df58d
+      id: bde09e26-1d37-4f51-829e-4e7d3de120e6
       version: -1
-      name: Verify Outputs (cs-reports)
-      type: condition
-      iscommand: false
+      name: cs-actors
+      description: Search known actors based on the given parameters.
+      script: '|||cs-actors'
+      type: regular
+      iscommand: true
       brand: ""
     nexttasks:
-      "yes":
-      - "3"
+      '#none#':
+      - "4"
+    scriptarguments:
+      limit:
+        simple: "1"
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: FalconIntel.Report
-                accessor: ID
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: FalconIntel.Report
-                accessor: Name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: FalconIntel.Report
-                accessor: Type
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: FalconIntel.Report
-                accessor: Slug
-            iscontext: true
     view: |-
       {
         "position": {
@@ -137,59 +98,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "3":
-    id: "3"
-    taskid: 2af6ed70-8105-45fe-8c7b-a2a3c7a2fb8f
-    type: regular
-    task:
-      id: 2af6ed70-8105-45fe-8c7b-a2a3c7a2fb8f
-      version: -1
-      name: cs-actors
-      description: Search known actors based on the given parameters.
-      script: '|||cs-actors'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "4"
-    scriptarguments:
-      created_date: {}
-      description: {}
-      limit:
-        simple: "1"
-      max_last_activity_date: {}
-      max_last_modified_date: {}
-      min_last_activity_date: {}
-      motivations: {}
-      name: {}
-      offset: {}
-      origins: {}
-      q: {}
-      query: {}
-      slug: {}
-      sort: {}
-      tagret_industries: {}
-      target_countries: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: a75c1484-dfaa-443c-8cde-4956276f23a7
+    taskid: 7a583de4-1d4b-4f03-8c97-2aac50a5b40b
     type: condition
     task:
-      id: a75c1484-dfaa-443c-8cde-4956276f23a7
+      id: 7a583de4-1d4b-4f03-8c97-2aac50a5b40b
       version: -1
       name: Verify Outputs (cs-actors)
       type: condition
@@ -234,7 +150,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 895
+          "y": 720
         }
       }
     note: false
@@ -242,12 +158,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 331b608f-0c4e-4eea-8f9b-c808aac49ffd
+    taskid: 58b223b3-966b-4943-8668-76e368035a88
     type: regular
     task:
-      id: 331b608f-0c4e-4eea-8f9b-c808aac49ffd
+      id: 58b223b3-966b-4943-8668-76e368035a88
       version: -1
       name: cs-indicators
       description: Search known indicators based on the given parameters.
@@ -259,22 +177,14 @@ tasks:
       '#none#':
       - "6"
     scriptarguments:
-      id: {}
-      indicator: {}
-      last_updated: {}
       limit:
         simple: "1"
-      malicious_confidence: {}
-      offset: {}
-      query: {}
-      sort: {}
-      type: {}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1070
+          "y": 895
         }
       }
     note: false
@@ -282,12 +192,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 8dbd1ec1-db5f-4c7f-8245-89e739069917
+    taskid: 977b2057-18c2-4cac-87bf-6f1728f8f558
     type: condition
     task:
-      id: 8dbd1ec1-db5f-4c7f-8245-89e739069917
+      id: 977b2057-18c2-4cac-87bf-6f1728f8f558
       version: -1
       name: Verify Outputs (cs-indicators)
       type: condition
@@ -331,7 +243,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1245
+          "y": 1070
         }
       }
     note: false
@@ -339,12 +251,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 29bdb3c7-045c-4cca-8218-7d981a9b3f2b
+    taskid: 677de99c-fa6d-4aa7-82cc-c8fb6fdf0bfe
     type: regular
     task:
-      id: 29bdb3c7-045c-4cca-8218-7d981a9b3f2b
+      id: 677de99c-fa6d-4aa7-82cc-c8fb6fdf0bfe
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -358,10 +272,6 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
@@ -375,12 +285,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 88f361c8-18a9-448a-81b8-f2bc93ef6cf4
+    taskid: 4f80c82f-b853-4bdc-8423-3241530d4289
     type: regular
     task:
-      id: 88f361c8-18a9-448a-81b8-f2bc93ef6cf4
+      id: 4f80c82f-b853-4bdc-8423-3241530d4289
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -394,10 +306,42 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 18e535cb-cf50-4a90-8da2-de75365ce79a
+    type: regular
+    task:
+      id: 18e535cb-cf50-4a90-8da2-de75365ce79a
+      version: -1
+      name: Get IP
+      description: Search known indicators based on the given parameters.
+      script: '|||cs-indicators'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      limit:
+        simple: "1"
+      type:
+        simple: ip_address
     separatecontext: false
     view: |-
       {
@@ -411,34 +355,31 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "9":
-    id: "9"
-    taskid: cb771458-88da-4759-861c-3765fafe833a
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 5c860fa3-d74f-46b4-8358-3134f0154b70
     type: regular
     task:
-      id: cb771458-88da-4759-861c-3765fafe833a
+      id: 5c860fa3-d74f-46b4-8358-3134f0154b70
       version: -1
-      name: Get IP
-      description: Search known indicators based on the given parameters.
-      script: '|||cs-indicators'
+      name: Set IP
+      description: Set a value in context under the key you entered.
+      scriptName: Set
       type: regular
-      iscommand: true
+      iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "11"
+      - "12"
     scriptarguments:
-      id: {}
-      indicator: {}
-      last_updated: {}
-      limit:
-        simple: "1"
-      malicious_confidence: {}
-      offset: {}
-      query: {}
-      sort: {}
-      type:
-        simple: ip_address
+      key:
+        simple: IP_Address
+      value:
+        complex:
+          root: IP
+          accessor: Address
     separatecontext: false
     view: |-
       {
@@ -452,31 +393,29 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "11":
-    id: "11"
-    taskid: 1e7ff036-a4d7-4d61-8022-f0b862f9d80d
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: b0718908-01a0-406d-8c33-52daf2dfef03
     type: regular
     task:
-      id: 1e7ff036-a4d7-4d61-8022-f0b862f9d80d
+      id: b0718908-01a0-406d-8c33-52daf2dfef03
       version: -1
-      name: Set IP
-      description: Set a value in context under the key you entered.
-      scriptName: Set
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "12"
+      - "13"
     scriptarguments:
-      append: {}
       key:
-        simple: IP_Address
-      stringify: {}
-      value:
         complex:
-          root: IP
-          accessor: Address
+          root: FalconIntel
+          accessor: Indicator
     separatecontext: false
     view: |-
       {
@@ -490,50 +429,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "12":
-    id: "12"
-    taskid: 713b0f5e-d096-4efd-82c2-dc879f32c304
-    type: regular
-    task:
-      id: 713b0f5e-d096-4efd-82c2-dc879f32c304
-      version: -1
-      name: Delete Context
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "13"
-    scriptarguments:
-      all: {}
-      index: {}
-      key:
-        complex:
-          root: FalconIntel
-          accessor: Indicator
-      keysToKeep: {}
-      subplaybook: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1945
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: d81712a1-180c-40ff-83b7-79a7637c009a
+    taskid: 0073fe23-064c-4af3-866e-f3d9715b2283
     type: regular
     task:
-      id: d81712a1-180c-40ff-83b7-79a7637c009a
+      id: 0073fe23-064c-4af3-866e-f3d9715b2283
       version: -1
       name: ip command
       description: Check IP reputation.
@@ -552,7 +455,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2120
+          "y": 1945
         }
       }
     note: false
@@ -560,12 +463,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: dc49e6ca-ee1e-4fd3-8069-4c68fffaaae7
+    taskid: 772f7ddc-900e-41d0-8c21-495c61b559c4
     type: condition
     task:
-      id: dc49e6ca-ee1e-4fd3-8069-4c68fffaaae7
+      id: 772f7ddc-900e-41d0-8c21-495c61b559c4
       version: -1
       name: Verify Outputs (ip command)
       type: condition
@@ -603,7 +508,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2295
+          "y": 2120
         }
       }
     note: false
@@ -611,24 +516,25 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 6fca9b10-2100-48e2-8aed-f212c9595c28
+    taskid: 273b38d6-af86-42a0-83bb-5b3496478541
     type: title
     task:
-      id: 6fca9b10-2100-48e2-8aed-f212c9595c28
+      id: 273b38d6-af86-42a0-83bb-5b3496478541
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 4920
+          "y": 4745
         }
       }
     note: false
@@ -636,12 +542,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 5bac1f2a-6418-4841-8934-a3b23f48efe1
+    taskid: d68609b5-f42f-4049-8738-7eb3f245b2c7
     type: regular
     task:
-      id: 5bac1f2a-6418-4841-8934-a3b23f48efe1
+      id: d68609b5-f42f-4049-8738-7eb3f245b2c7
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -653,12 +561,42 @@ tasks:
       '#none#':
       - "17"
     scriptarguments:
-      all: {}
-      index: {}
       key:
         simple: IP
-      keysToKeep: {}
-      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 347b6d28-9b21-4241-8bb1-7b85a8589dcf
+    type: regular
+    task:
+      id: 347b6d28-9b21-4241-8bb1-7b85a8589dcf
+      version: -1
+      name: Multiple IPs
+      description: Checks the IP reputation.
+      script: CrowdStrike Falcon Intel v2|||ip
+      type: regular
+      iscommand: true
+      brand: CrowdStrike Falcon Intel v2
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      ip:
+        simple: 185.203.116.58,2.2.2.2
     separatecontext: false
     view: |-
       {
@@ -672,50 +610,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "17":
-    id: "17"
-    taskid: 75272814-a734-491b-8e61-057947d45091
-    type: regular
-    task:
-      id: 75272814-a734-491b-8e61-057947d45091
-      version: -1
-      name: Multiple IPs
-      description: Checks the IP reputation.
-      script: CrowdStrike Falcon Intel v2|||ip
-      type: regular
-      iscommand: true
-      brand: CrowdStrike Falcon Intel v2
-    nexttasks:
-      '#none#':
-      - "18"
-    scriptarguments:
-      fullResponse: {}
-      ip:
-        simple: 185.203.116.58,2.2.2.2
-      long: {}
-      retries: {}
-      sampleSize: {}
-      threshold: {}
-      wait: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2645
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 7a63140b-febc-4c98-86d3-c63dbbac6607
+    taskid: b88dca04-94e5-427d-8738-066ef40714d5
     type: condition
     task:
-      id: 7a63140b-febc-4c98-86d3-c63dbbac6607
+      id: b88dca04-94e5-427d-8738-066ef40714d5
       version: -1
       name: Verify Outputs (IP command)
       type: condition
@@ -748,7 +650,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2820
+          "y": 2645
         }
       }
     note: false
@@ -756,12 +658,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: ef17f2ee-0623-4f96-872e-88d4d3d45b80
+    taskid: 03f0ada3-49cd-4d99-8e17-d3ad9129e205
     type: regular
     task:
-      id: ef17f2ee-0623-4f96-872e-88d4d3d45b80
+      id: 03f0ada3-49cd-4d99-8e17-d3ad9129e205
       version: -1
       name: Multiple URLs
       description: Checks the URL reputation.
@@ -773,50 +677,8 @@ tasks:
       '#none#':
       - "22"
     scriptarguments:
-      long: {}
-      retries: {}
-      sampleSize: {}
-      submitWait: {}
-      threshold: {}
       url:
-        simple: https://withifceale.top/treusparq.php,http://www.demisto.com,https://www.test.com'
-      wait: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 3170
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "20":
-    id: "20"
-    taskid: 087b357e-111e-4a9a-8670-ec3db792e342
-    type: regular
-    task:
-      id: 087b357e-111e-4a9a-8670-ec3db792e342
-      version: -1
-      name: Delete Context
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "19"
-    scriptarguments:
-      all: {}
-      index: {}
-      key:
-        simple: URL
-      keysToKeep: {}
-      subplaybook: {}
+        simple: https://ketchas.ru/uplcv?utm_term=maaya+tamil+movie+online+hd,http://www.demisto.com,https://www.test.com'
     separatecontext: false
     view: |-
       {
@@ -830,12 +692,48 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 2b124b88-f649-46b1-81d9-214f751fc914
+    type: regular
+    task:
+      id: 2b124b88-f649-46b1-81d9-214f751fc914
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      key:
+        simple: URL
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 2d5869c7-c958-4bf5-84bf-54724436efbd
+    taskid: f9e290e3-6439-4266-8990-717e8b769ad7
     type: condition
     task:
-      id: 2d5869c7-c958-4bf5-84bf-54724436efbd
+      id: f9e290e3-6439-4266-8990-717e8b769ad7
       version: -1
       name: Verify Outputs (URL command)
       type: condition
@@ -855,12 +753,12 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: https://withifceale.top/treusparq.php
+              simple: https://ketchas.ru/uplcv?utm_term=maaya+tamil+movie+online+hd
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 3520
+          "y": 3345
         }
       }
     note: false
@@ -868,12 +766,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: 6634fa66-85ef-4f7e-82c0-8b7b353b043a
+    taskid: f53e3897-6f6d-4ce8-8053-1330e841aeee
     type: regular
     task:
-      id: 6634fa66-85ef-4f7e-82c0-8b7b353b043a
+      id: f53e3897-6f6d-4ce8-8053-1330e841aeee
       version: -1
       name: VerifyHumanReadableContains
       description: Verify given entry contains a string
@@ -901,7 +801,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3345
+          "y": 3170
         }
       }
     note: false
@@ -909,12 +809,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: d94e8dd5-d6ea-41ed-862c-ff8c6d57e594
+    taskid: c5f0b975-4efe-4fab-8d83-aad21a7c0247
     type: regular
     task:
-      id: d94e8dd5-d6ea-41ed-862c-ff8c6d57e594
+      id: c5f0b975-4efe-4fab-8d83-aad21a7c0247
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -926,18 +828,14 @@ tasks:
       '#none#':
       - "24"
     scriptarguments:
-      all: {}
-      index: {}
       key:
         simple: Domain
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 3695
+          "y": 3520
         }
       }
     note: false
@@ -945,12 +843,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 31c2b2d4-71a1-479c-8203-bc323f4bda28
+    taskid: 4e737fba-6e2d-4296-822a-4d55e0887950
     type: regular
     task:
-      id: 31c2b2d4-71a1-479c-8203-bc323f4bda28
+      id: 4e737fba-6e2d-4296-822a-4d55e0887950
       version: -1
       name: Multiple Domains
       description: Checks the domain reputation.
@@ -964,18 +864,12 @@ tasks:
     scriptarguments:
       domain:
         simple: tw.com,xeemoquo.top
-      fullResponse: {}
-      long: {}
-      retries: {}
-      sampleSize: {}
-      threshold: {}
-      wait: {}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 3870
+          "y": 3695
         }
       }
     note: false
@@ -983,12 +877,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: ff921a50-d02f-4d4d-82f3-4988e075f030
+    taskid: b91d9d81-72cf-43e6-8d95-a186093d0761
     type: regular
     task:
-      id: ff921a50-d02f-4d4d-82f3-4988e075f030
+      id: b91d9d81-72cf-43e6-8d95-a186093d0761
       version: -1
       name: VerifyHumanReadableContains
       description: Verify given entry contains a string
@@ -1016,7 +912,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4045
+          "y": 3870
         }
       }
     note: false
@@ -1024,12 +920,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: c324804a-bfbd-43a0-8550-d21db91bae8c
+    taskid: f65a8985-838f-49dd-8f7b-b3b23bd07ba7
     type: condition
     task:
-      id: c324804a-bfbd-43a0-8550-d21db91bae8c
+      id: f65a8985-838f-49dd-8f7b-b3b23bd07ba7
       version: -1
       name: Verify Outputs (Domain command)
       type: condition
@@ -1054,7 +952,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4220
+          "y": 4045
         }
       }
     note: false
@@ -1062,12 +960,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: 3349f8b2-7041-4c4a-8677-1b1aabe36c9a
+    taskid: 77f6e3fd-be49-41ae-892d-00b5e6d8e001
     type: regular
     task:
-      id: 3349f8b2-7041-4c4a-8677-1b1aabe36c9a
+      id: 77f6e3fd-be49-41ae-892d-00b5e6d8e001
       version: -1
       name: Multiple Files
       description: Checks the file reputation.
@@ -1081,46 +981,6 @@ tasks:
     scriptarguments:
       file:
         simple: 369c8fc6532ba547d7ef5985bb5e880a,c87172df108b5a15e693285c8b58f01c271e1e768e7e41b9da2f8b22cd784638
-      long: {}
-      retries: {}
-      threshold: {}
-      wait: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 4570
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "28":
-    id: "28"
-    taskid: fd2694b2-d3c5-43f7-862b-ecd22561079a
-    type: regular
-    task:
-      id: fd2694b2-d3c5-43f7-862b-ecd22561079a
-      version: -1
-      name: Delete Context
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "27"
-    scriptarguments:
-      all: {}
-      index: {}
-      key:
-        simple: File
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
@@ -1134,12 +994,48 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 6e876713-484c-4801-8a12-7822cc7b47a3
+    type: regular
+    task:
+      id: 6e876713-484c-4801-8a12-7822cc7b47a3
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      key:
+        simple: File
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: 0cfdc214-d781-4a4e-8d66-a01ddbb81707
+    taskid: afcc9d78-40fd-4366-8c6e-37797bde68f0
     type: condition
     task:
-      id: 0cfdc214-d781-4a4e-8d66-a01ddbb81707
+      id: afcc9d78-40fd-4366-8c6e-37797bde68f0
       version: -1
       name: Verify Outputs (File command)
       type: condition
@@ -1172,7 +1068,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4745
+          "y": 4570
         }
       }
     note: false
@@ -1180,12 +1076,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 4935,
+        "height": 4760,
         "width": 380,
         "x": 50,
         "y": 50
