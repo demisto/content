@@ -1,32 +1,30 @@
 {
-	"description": "CrowdStrike Falcon mirror out mapper.",
-	"feed": false,
-	"fromServerVersion": "",
-	"id": "CrowdStrike Falcon - Outgoing Mapper",
-	"mapping": {
-		"CrowdStrike Falcon Detection": {
-			"dontMapEventToLabels": true,
-			"internalMapping": {
-				"status": {
-					"simple": "state"
-				}
-			}
-		},
-		"CrowdStrike Falcon Incident": {
-			"dontMapEventToLabels": true,
-			"internalMapping": {
-				"status": {
-					"simple": "sourcestatus"
-				},
-				"tag": {
-					"simple": "tags"
-				}
-			}
-		}
-	},
-	"name": "CrowdStrike Falcon - Outgoing Mapper",
-	"toServerVersion": "",
-	"type": "mapping-outgoing",
-	"version": -1,
-	"fromVersion": "6.0.0"
+    "description": "CrowdStrike Falcon mirror out mapper.",
+    "feed": false,
+    "id": "CrowdStrike Falcon - Outgoing Mapper",
+    "mapping": {
+        "CrowdStrike Falcon Detection": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "status": {
+                    "simple": "state"
+                }
+            }
+        },
+        "CrowdStrike Falcon Incident": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "status": {
+                    "simple": "sourcestatus"
+                },
+                "tag": {
+                    "simple": "tags"
+                }
+            }
+        }
+    },
+    "name": "CrowdStrike Falcon - Outgoing Mapper",
+    "type": "mapping-outgoing",
+    "version": -1,
+    "fromVersion": "6.0.0"
 }
