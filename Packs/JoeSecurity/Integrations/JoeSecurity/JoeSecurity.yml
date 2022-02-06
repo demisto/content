@@ -495,10 +495,11 @@ script:
       - pcap
       - pdf
       - xml
+      - iocjson
       required: false
       secret: false
     deprecated: false
-    description: Download a resource belonging to a report. This can be the full report, dropped binaries, etc.
+    description: Download a resource belonging to a report. This can be the full report, dropped binaries, etc. See the integration documentation for full report types list.
     execution: false
     name: joe-download-report
     outputs:
