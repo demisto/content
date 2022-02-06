@@ -15,13 +15,16 @@ sendMultipart = function (uri, entryID, body) {
         // do nothing, use the body as is in the request.
         logDebug('could not parse body as a JSON object, passing as is. body: ' + JSON.stringify(body));
     }
-
+    var key = [params.apikey? params.apikey : (params.api_key? params.api_key.password : '')];
+    if (key == ''){
+        throw 'api key must be provided.';
+    }
     var res = httpMultipart(
         requestUrl,
         entryID,
         {
             Headers: {
-                'Authorization': [params.apikey? params.apikey : params.api_key],
+                'Authorization': key,
                 'Content-Type': ['multipart/form-data'],
                 'Accept': ['application/json']
             },
@@ -55,8 +58,10 @@ var sendRequest = function(method, uri, body, raw) {
         requestUrl += '/';
     }
     requestUrl += uri;
-    var key = [params.apikey? params.apikey : (params.api_key).password];
-    console.log(key);
+    var key = [params.apikey? params.apikey : (params.api_key? params.api_key.password : '')];
+    if (key == ''){
+        throw 'api key must be provided.';
+    }
     var res = http(
         requestUrl,
         {
