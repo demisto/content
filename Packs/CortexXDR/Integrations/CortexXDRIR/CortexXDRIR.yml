@@ -3148,6 +3148,9 @@ script:
   runonce: false
   script: '-'
   subtype: python3
+  ismappable: true
+  isremotesyncin: true
+  isremotesyncout: true
   type: python
 tests:
 - Test XDR Playbook
