@@ -25,7 +25,9 @@ except OSError:
 except ValueError:
     return_error("Value provided for maxImages is of the wrong type. Please provide an integer for maxImages")
 
-EMAIL_REGXEX = "[a-zA-Z0-9-_.]+@[a-zA-Z0-9-_.]+"
+EMAIL_REGEX = "[a-zA-Z0-9-_.]+@[a-zA-Z0-9-_.]+"
+# URL_REGEX = r'(?:(?:https?|ftp|hxxps?):\/\/|www\[?\.\]?|ftp\[?\.\]?)(?:[-\w\d]+\[?\.\]?)+[-\w\d]+(?::\d+)?' \
+#            r'(?:(?:\/|\?)[-\w\d+&@#\/%=~_$?!\-:,.\(\);]*[\w\d+&@#\/%=~_$\(\);])?'
 # Documentation claims png is enough for pdftohtml, but through testing we found jpg can be generated as well
 IMG_FORMATS = ['jpg', 'jpeg', 'png', 'gif']
 
@@ -288,7 +290,7 @@ def main():
                 pdf_html_content = get_pdf_htmls_content(cpy_file_path, output_folder)
                 urls = re.findall(urlRegex, pdf_html_content)
                 urls_set = set(urls)
-                emails_set = set(re.findall(EMAIL_REGXEX, pdf_html_content))
+                emails_set = set(re.findall(EMAIL_REGEX, pdf_html_content))
 
                 urls_set = urls_set.union(binary_file_urls)
 
