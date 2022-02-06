@@ -1,0 +1,32 @@
+{
+    "associatedToAll": true,
+    "caseInsensitive": true,
+    "cliName": "cloudresourcesubtype",
+    "closeForm": false,
+    "content": true,
+    "description": "A more specific classification used to map the types of resources. For example, DISK,VPC, Subnet are all mapped to Compute",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_cloudresourcesubtype",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Cloud Resource Sub-type",
+    "neverSetAsRequired": false,
+    "openEnded": true,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "multiSelect",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.5.0",
+	"x2_fields": "resource_sub_type"
+}
