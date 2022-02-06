@@ -4390,7 +4390,8 @@ tlds = {
     },
     "ph": {
         "adapter": "web",
-        "url": "http://www.dot.ph/whois"
+        "url": "http://www.dot.ph/whois",
+        "host": "whois.iana.org"
     },
     "pharmacy": {
         "_type": "newgtld",
@@ -7126,7 +7127,7 @@ dble_ext = dble_ext_str.split(",")
 
 
 def get_whois_raw(domain, server="", previous=None, rfc3490=True, never_cut=False, with_server_list=False,
-                  server_list=None):
+                  server_list=None, is_refer_server=False):
     previous = previous or []
     server_list = server_list or []
     # Sometimes IANA simply won't give us the right root WHOIS server
@@ -7170,7 +7171,7 @@ def get_whois_raw(domain, server="", previous=None, rfc3490=True, never_cut=Fals
     # If the request fails due to other cause - there will not be another try
     for i in range(0, 3):
         try:
-            response = whois_request(request_domain, target_server)
+            response = whois_request(request_domain, target_server, is_refer_server=is_refer_server)
         except socket.error as err:
             if err.errno == errno.ECONNRESET:
                 continue
@@ -7205,11 +7206,15 @@ def get_whois_raw(domain, server="", previous=None, rfc3490=True, never_cut=Fals
         match = re.match("(refer|whois server|referral url|registrar whois(?: server)?):\s*([^\s]+\.[^\s]+)", line,
                          re.IGNORECASE)
         if match is not None:
-            referal_server = match.group(2)
-            if referal_server != server and "://" not in referal_server:  # We want to ignore anything non-WHOIS (eg. HTTP) for now.
-                # Referal to another WHOIS server...
-                return get_whois_raw(domain, referal_server, new_list, server_list=server_list,
-                                     with_server_list=with_server_list)
+            referral_server = match.group(2)
+            if referral_server != server and "://" not in referral_server:  # We want to ignore anything non-WHOIS (eg. HTTP) for now.
+                # Referral to another WHOIS server...
+                try:
+                    return get_whois_raw(domain, referral_server, new_list, server_list=server_list,
+                                         with_server_list=with_server_list, is_refer_server=True)
+                except Exception as msg:
+                    demisto.info("Failed for querying a referral server {} : {}".format(referral_server, msg))
+
     if with_server_list:
         return new_list, server_list
     else:
@@ -7248,7 +7253,7 @@ def get_root_server(domain):
         raise WhoisException("No root WHOIS server found for domain.")
 
 
-def whois_request(domain, server, port=43):
+def whois_request(domain, server, port=43, is_refer_server=False):
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
         sock.connect((server, port))
@@ -7262,29 +7267,42 @@ def whois_request(domain, server, port=43):
             },
         })
 
-        if SHOULD_ERROR:
-            return_error("Whois returned - Couldn't connect with the socket-server: {}".format(msg), outputs=context)
-        else:
-            return_warning("Whois returned - Couldn't connect with the socket-server: {}".format(msg),
-                           exit=True, outputs=context)
+        if not is_refer_server:
+
+            if SHOULD_ERROR:
+                return_error("Whois returned - Couldn't connect with the socket-server: {}".format(msg), outputs=context)
+            else:
+                return_warning("Whois returned - Couldn't connect with the socket-server: {}".format(msg),
+                               exit=True, outputs=context)
+
+        else:  # in a referral server call
+
+            demisto.info("Whois returned - Couldn't connect with the socket-server"
+                         " of the referral server {}: {}".format(server, msg))
 
     else:
-        sock.send(("%s\r\n" % domain).encode("utf-8"))
-        buff = b""
-        while True:
-            data = sock.recv(1024)
-            if len(data) == 0:
-                break
-            buff += data
-        sock.close()
-        try:
-            d = buff.decode("utf-8")
-        except UnicodeDecodeError:
-            d = buff.decode("latin-1")
-
-        return d
+        return whois_request_get_response(socket=sock, domain=domain)
     finally:
         sock.close()
+
+
+def whois_request_get_response(socket, domain):
+    socket.send(("%s\r\n" % domain).encode("utf-8"))
+    buff = b""
+    while True:
+        data = socket.recv(1024)
+        if len(data) == 0:
+            break
+        buff += data
+    socket.close()
+    try:
+        d = buff.decode("utf-8")
+    except UnicodeDecodeError:
+        d = buff.decode("latin-1")
+
+    return d
+
+
 
 
 airports = {}  # type: dict

@@ -1,8 +1,8 @@
 {
-    "name": "Saas Security (Prisma)",
-    "description": "Provides unparalleled visibility and precise control of SaaS applications using an extensive library of application signatures.",
+    "name": "SaaS Security (Beta)",
+    "description": "SaaS Security API is a cloud-based service that you can connect directly to your sanctioned SaaS applications using the cloud app\u2019s API to provide data classification, sharing and permission visibility, and threat detection. This Content Pack provides insights into risks posed by data exposure and policy violations and enables you to use Cortex XSOAR to effectively manage the incidents discovered by SaaS Security API.",
     "support": "xsoar",
-    "currentVersion": "1.2.3",
+    "currentVersion": "1.2.7",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
