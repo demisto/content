@@ -657,6 +657,7 @@ class Pack(object):
 
             elif dependency_pack_id in pack_names:
                 if id_set:
+                    logging.debug(f'pack {dependency_pack_id} in ID set:\n {id_set.get("Packs", {}).get(dependency_pack_id)}')
                     if marketplace not in id_set.get('Packs', {}).get(dependency_pack_id, {}).get('marketplaces'):
                         # Case 2: the dependency is not in the index since it is not a part of the current marketplace
                         logging.warning(f"{self._pack_name} pack dependency with id {dependency_pack_id} is not part of"
