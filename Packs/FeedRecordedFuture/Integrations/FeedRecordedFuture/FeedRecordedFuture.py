@@ -209,9 +209,7 @@ class Client(BaseClient):
         Returns:
             True if the indicator risk score is above risk_score_threshold, False otherwise.
         """
-        if int(risk_score) < self.risk_score_threshold:
-            return False
-        return True
+        return int(risk_score) >= self.risk_score_threshold
 
     def run_parameters_validations(self):
         """Checks validation of the risk_rule and fusion_file_path parameters
