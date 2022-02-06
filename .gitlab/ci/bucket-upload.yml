@@ -248,7 +248,6 @@ upload-packs-to-marketplace-v2:
 
     - section_start "Download packs from GCP"
     - |
-      echo "$STORAGE_BASE_PATH"
       PACKS_SRC="gs://$GCS_MARKET_V2_BUCKET/$STORAGE_BASE_PATH/packs"
       ZIP_FOLDER=$(mktemp -d)
       gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" >> $ARTIFACTS_FOLDER/logs/auth.out

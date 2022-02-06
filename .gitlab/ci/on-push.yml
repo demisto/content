@@ -65,7 +65,7 @@ create-instances:
     - !reference [.download-demisto-conf]
     - !reference [.create-id-set]
     - !reference [.create-release-notes-and-common-docs]
-    - echo "$ARTIFACTS_FOLDER"
+
     - section_start "Create Content Artifacts and Update Conf" --collapsed
     - demisto-sdk create-content-artifacts -a $ARTIFACTS_FOLDER --cpus 8 --content_version $CONTENT_VERSION >> $ARTIFACTS_FOLDER/logs/create_content_artifacts.log
     - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY"
@@ -76,6 +76,7 @@ create-instances:
     - rm -rf $ARTIFACTS_FOLDER/uploadable_packs
     - cp "./Tests/conf.json" "$ARTIFACTS_FOLDER/conf.json"
     - section_end "Create Content Artifacts and Update Conf"
+
     - section_start "Collect Tests and Content Packs"
     - |
       if [ -n "${INSTANCE_TESTS}" ]; then
@@ -85,17 +86,21 @@ create-instances:
         python3 ./Tests/scripts/collect_tests_and_content_packs.py -n $IS_NIGHTLY
       fi
     - section_end "Collect Tests and Content Packs"
+
     - section_start "Calculate Packs Dependencies" --collapsed
     - python3 ./Tests/Marketplace/packs_dependencies.py -i ./Tests/id_set.json -o $ARTIFACTS_FOLDER/packs_dependencies.json
     - section_end "Calculate Packs Dependencies"
+
     - section_start "Prepare Content Packs for Testing"
     - ./Tests/scripts/prepare_content_packs_for_testing.sh "$GCS_MARKET_BUCKET" "$STORAGE_BASE_PATH"
     - section_end "Prepare Content Packs for Testing"
+
     - section_start "Create Instances"
     - |
       [ -n "${TIME_TO_LIVE}" ] && TTL=${TIME_TO_LIVE} || TTL=300
       python3 ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType "$IFRA_ENV_TYPE" -timetolive $TTL -outfile "$ARTIFACTS_FOLDER/env_results.json"
     - section_end "Create Instances"
+
     - section_start "Upload Artifacts to GCP" --collapsed
     - ./Tests/scripts/upload_artifacts.sh
     - section_end "Upload Artifacts to GCP"
@@ -119,7 +124,6 @@ prepare-testing-bucket-mpv2:
     - !reference [.download-demisto-conf]
     - !reference [.create-id-set-mp-v2]
     - !reference [.create-release-notes-and-common-docs]
-    - echo "$ARTIFACTS_FOLDER"
 
     - section_start "Create Content Artifacts and Update Conf" --collapsed
     - demisto-sdk create-content-artifacts -a $ARTIFACTS_FOLDER --cpus 8 --content_version $CONTENT_VERSION --marketplace "marketplacev2" -fbi -idp ./Tests/id_set.json >> $ARTIFACTS_FOLDER/logs/create_content_artifacts.log
