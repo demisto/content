@@ -658,7 +658,8 @@ class Pack(object):
             elif dependency_pack_id in pack_names:
                 if id_set:
                     # Case 2: the dependency is not in the index since it is not a part of the current marketplace
-                    if not id_set.get('Packs', {}).get(dependency_pack_id):
+                    pack_info = id_set.get('Packs', {}).get(dependency_pack_id)
+                    if not pack_info:
                         # If the pack is not in the id set - this happens in the marketplace v2 id set
                         logging.warning(f"{self._pack_name} pack dependency with id {dependency_pack_id} is not part of"
                                         f" the current marketplace, ignoring dependency.")
