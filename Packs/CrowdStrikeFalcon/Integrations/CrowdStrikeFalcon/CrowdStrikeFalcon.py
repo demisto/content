@@ -986,7 +986,8 @@ def get_detections(last_behavior_time=None, behavior_id=None, filter_arg=None):
     return response
 
 
-def get_fetch_detections(last_created_timestamp=None, filter_arg=None, offset: int = 0, last_updated_timestamp=None, has_limit=True):
+def get_fetch_detections(last_created_timestamp=None, filter_arg=None, offset: int = 0,
+                         last_updated_timestamp=None, has_limit=True):
     """ Sends detection request, based on the created_timestamp field. Used for fetch-incidents
     Args:
         last_created_timestamp: last created timestamp of the results will be greater than this value.
@@ -1578,7 +1579,7 @@ def get_remote_data_command(args: Dict[str, Any]):
         # updating remote incident
         if remote_args.remote_incident_id[0:3] == 'inc':
             mirrored_data_list = get_incidents_entities([remote_args.remote_incident_id]).get('resources', [])
-            delta = {}
+            delta: Dict[str, Any] = {}
             for mirrored_data in mirrored_data_list:
                 set_delta(delta, mirrored_data, CS_FALCON_INCIDENT_INCOMING_ARGS)
 
@@ -1640,7 +1641,7 @@ def get_remote_data_command(args: Dict[str, Any]):
         return GetRemoteDataResponse(mirrored_object=mirrored_data, entries=[])
 
 
-def set_delta(delta, mirrored_data, mirroring_fields):
+def set_delta(delta: Dict[str, Any], mirrored_data, mirroring_fields):
     # todo add documentation that we can have the value nested in a dict or list then dict
     for field in mirroring_fields:
         if mirrored_data.get(field):
