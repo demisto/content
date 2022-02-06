@@ -483,9 +483,11 @@ def fetch_incidents(client: Client, last_run: dict, first_fetch: str, max_fetch:
     all_alerts = raw_response.get('alert')
 
     if not all_alerts:
-        demisto.info(f'{INTEGRATION_NAME} no alerts were fetched at: {str(next_run)}')
-        # as no alerts occurred till now, update last_run time accordingly
-        next_run['time'] = to_fe_datetime_converter('now')
+        demisto.info(f'{INTEGRATION_NAME} no alerts were fetched from FireEye server at: {str(next_run)}')
+        # as no alerts occurred in the window of 48 hours from the given start time, update last_run window to the next
+        # 48 hours
+        next_search = arg_to_datetime(next_run['time']) + datetime.timedelta(hours=48)
+        next_run['time'] = next_search.isoformat()
         return next_run, []
 
     alerts = all_alerts[:max_fetch]
@@ -507,9 +509,11 @@ def fetch_incidents(client: Client, last_run: dict, first_fetch: str, max_fetch:
             last_alert_ids.append(alert_id)
 
     if not incidents:
-        demisto.info(f'{INTEGRATION_NAME} no new alerts were fetched at: {str(next_run)}.')
-        # as no alerts occurred till now, update last_run time accordingly
-        next_run['time'] = alerts[-1].get('occurred')
+        demisto.info(f'{INTEGRATION_NAME} no new alerts were collected at: {str(next_run)}.')
+        # As no incidents were collected, we know that all the fetched alerts for 48 hours starting in the 'start_time'
+        # already exists in our system, thus update last_run time accordingly.
+        next_search = arg_to_datetime(alerts[-1].get('occurred')) + datetime.timedelta(hours=48)
+        next_run['time'] = next_search
         demisto.info(f'{INTEGRATION_NAME} Setting next_run to: {next_run["time"]}')
         return next_run, []
 
