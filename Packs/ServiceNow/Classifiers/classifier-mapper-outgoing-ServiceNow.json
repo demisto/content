@@ -8,6 +8,10 @@
         "ServiceNow SIR Incident": {
             "dontMapEventToLabels": false,
             "internalMapping": {
+                "attack_vector": {
+                    "complex": null,
+                    "simple": "servicenowattackvector"
+                },
                 "business_criticality": {
                     "complex": {
                         "accessor": "",
@@ -257,10 +261,6 @@
                         ]
                     },
                     "simple": ""
-                },
-                "work_notes": {
-                    "complex": null,
-                    "simple": "labels.work_notes"
                 }
             }
         },
