@@ -27,5 +27,11 @@
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "6.5.0",
-	"x2_fields": "image_name"
+	"x2_fields": "image_name",
+    "Aliases": [
+        {
+          "cliName": "prismacloudcomputeimage",
+          "type": "shortText"
+        }
+    ]
 }
