@@ -7,7 +7,7 @@ category: Forensics & Malware Analysis
 description: Fully automated malware analysis.
 configuration:
   - name: credentials
-    required: false
+    required: true
     defaultvalue: null
     type: 9
     displaypassword: API Key
