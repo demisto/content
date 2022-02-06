@@ -2,7 +2,6 @@ import pytest
 
 from TransformIndicatorToMSDefenderIOC import *
 
-
 MSDE_IOC = [
     {'expirationTime': '2022-02-10T17:02:59.193836+02:00', 'creationTimeDateTimeUtc': '2022-01-22T12:55:20.20775+02:00',
      'indicatorType': 'IpAddress', 'lastUpdateTime': '2022-02-03T17:02:59.232834+02:00', 'Severity': 'High',
@@ -24,3 +23,9 @@ def test_get_indicators_by_query(mocker, args):
     mocker.patch('TransformIndicatorToMSDefenderIOC.execute_command', return_value=XSOAR_INDICATOR)
     mocker.patch.object(demisto, 'args', return_value=args)
     assert get_indicators_by_query() == MSDE_IOC
+
+
+def test_get_indicators_by_query_no_indicators(mocker):
+    mocker.patch('TransformIndicatorToMSDefenderIOC.execute_command', return_value=[])
+    mocker.patch.object(demisto, 'args', return_value={"query": "value=1.2.3.4", "action": "Alert"})
+    assert get_indicators_by_query() == []
