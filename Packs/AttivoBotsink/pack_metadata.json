@@ -1,11 +1,11 @@
 {
     "name": "Attivo Botsink",
     "description": "Network-based Threat Deception for Post-Compromise Threat Detection.",
-    "support": "xsoar",
-    "currentVersion": "1.0.5",
-    "author": "Cortex XSOAR",
-    "url": "https://www.paloaltonetworks.com/cortex",
-    "email": "",
+    "support": "partner",
+    "currentVersion": "1.0.6",
+    "author": "Attivo Networks",
+    "url": "https://www.attivonetworks.com",
+    "email": "support@attivonetworks.com",
     "created": "2020-04-14T00:00:00Z",
     "categories": [
         "Deception"

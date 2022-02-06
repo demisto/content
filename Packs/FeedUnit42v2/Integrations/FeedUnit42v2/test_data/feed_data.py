@@ -372,6 +372,7 @@ INDICATORS_RESULT = {'fields': {'firstseenbysource': '2019-07-30T09:29:07.724Z',
                                             "'c1ec28bc82500bd70f95edcbdf9306746198bbc04a09793ca69bb87f2abdb839']",
                                  'type': 'indicator',
                                  'valid_from': '2019-07-30T09:29:07.724Z'},
+                     'score': 3,
                      'type': 'File',
                      'value': 'c1ec28bc82500bd70f95edcbdf9306746198bbc04a09793ca69bb87f2abdb839'}
 

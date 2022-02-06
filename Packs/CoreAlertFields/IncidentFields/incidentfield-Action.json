@@ -1,0 +1,74 @@
+{
+  "associatedToAll": true,
+  "caseInsensitive": true,
+  "cliName": "action",
+  "closeForm": false,
+  "content": true,
+  "description": "Action taken by the alert sensor, either Detected or Prevented with action status displayed in parenthesis. Options are: Detected, Detected (Allowed The Session), Detected (Download), Detected (Forward), Detected (Post Detected), Detected (Prompt Allow), Detected (Raised An Alert), Detected (Reported), Detected (Scanned), Detected (Sinkhole), Detected (Syncookie Sent), Detected (Wildfire Upload Failure), Detected (Wildfire Upload Success), Detected (Wildfire Upload Skip), Detected (XDR Managed Threat Hunting), Prevented (Block), Prevented (Blocked), Prevented (Block-Override), Prevented (Blocked The URL), Prevented (Blocked The IP), Prevented (Continue), Prevented (Denied The Session), Prevented (Dropped All Packets), Prevented (Dropped The Session), Prevented (Dropped The Session And Sent a TCP Reset), Prevented (Dropped The Packet), Prevented (Override), Prevented (Override-Lockout), Prevented (Post Detected), Prevented (Prompt Block), Prevented (Random-Drop), Prevented (Silently Dropped The Session With An ICMP Unreachable Message To The Host Or Application), Prevented (Terminated The Session And Sent a TCP Reset To Both Sides Of The Connection), Prevented (Terminated The Session And Sent a TCP Reset To The Client), Prevented (Terminated The Session And Sent a TCP Reset To The Server), N/A.",
+  "editForm": true,
+  "group": 0,
+  "hidden": false,
+  "id": "incident_action",
+  "isReadOnly": false,
+  "locked": false,
+  "name": "Action",
+  "neverSetAsRequired": false,
+  "openEnded": false,
+  "ownerOnly": false,
+  "propagationLabels": [
+      "all"
+  ],
+  "required": false,
+  "sla": 0,
+  "system": false,
+  "threshold": 72,
+  "type": "shortText",
+  "unmapped": false,
+  "unsearchable": true,
+  "useAsKpi": false,
+  "version": -1,
+  "fromVersion": "6.5.0",
+  "x2_fields": "alert_action_status",
+  "Aliases": [
+    {
+      "cliName": "apdpolicyaction",
+      "type": "shortText"
+    },
+    {
+      "cliName": "blockedaction",
+      "type": "shortText"
+    },
+    {
+      "cliName": "cymulatelastaction",
+      "type": "shortText"
+    },
+    {
+      "cliName": "devsecopsapptaskaction",
+      "type": "shortText"
+    },
+    {
+      "cliName": "devsecopspraction",
+      "type": "shortText"
+    },
+    {
+      "cliName": "f5silverlineaction",
+      "type": "shortText"
+    },
+    {
+      "cliName": "fireeyenxalertaction",
+      "type": "shortText"
+    },
+    {
+      "cliName": "logpointlastaction",
+      "type": "shortText"
+    },
+    {
+      "cliName": "safebreachremediationaction",
+      "type": "shortText"
+    },
+    {
+      "cliName": "alertaction",
+      "type": "shortText"            
+    }
+  ]
+}
