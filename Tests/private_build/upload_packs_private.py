@@ -524,7 +524,7 @@ def main():
         private_packs = []
 
     # clean index and gcs from non existing or invalid packs
-    clean_non_existing_packs(index_folder_path, private_packs, default_storage_bucket, storage_base_path)
+    clean_non_existing_packs(index_folder_path, private_packs, default_storage_bucket, storage_base_path, {})
     # starting iteration over packs
     for pack in packs_list:
         create_and_upload_marketplace_pack(upload_config, pack, storage_bucket, index_folder_path,
