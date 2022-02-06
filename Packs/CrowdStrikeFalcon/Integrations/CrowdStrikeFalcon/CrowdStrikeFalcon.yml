@@ -64,6 +64,20 @@ configuration:
   name: proxy
   required: false
   type: 8
+- additionalinfo: When selected, closing the CrowdStrike Falcon incident or detection is mirrored in Cortex XSOAR.
+  defaultvalue: 'false'
+  display: Close Mirrored XSOAR Incident
+  hidden: false
+  name: close_incident
+  required: false
+  type: 8
+- additionalinfo: When selected, closing the XSOAR incident is mirrored in CrowdStrike Falcon.
+  defaultvalue: 'false'
+  display: Close Mirrored CrowdStrike Falcon Incident or Detection
+  hidden: false
+  name: close_in_cs_falcon
+  required: false
+  type: 8
 - additionalinfo: Choose what to fetch - incidents or detections or both
   defaultvalue: Detections
   display: Fetch types
@@ -3018,6 +3032,6 @@ script:
 tests:
 - Test - CrowdStrike Falcon
 defaultclassifier: CrowdStrike Falcon
-defaultmapperin: CrowdStrike Falcon - Incoming Mapper
+defaultmapperin: CrowdStrike Falcon-Mapper
 defaultmapperout: CrowdStrike Falcon - Outgoing Mapper
 fromversion: 5.0.0

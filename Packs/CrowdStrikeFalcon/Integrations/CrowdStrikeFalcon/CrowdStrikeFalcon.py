@@ -159,7 +159,7 @@ STATUS_NUM_TO_TEXT = {20: 'New',
 
 ''' MIRRORING DICTIONARIES & PARAMS '''
 
-DETECTION_STATUS = {'new', 'in_progress', 'true_positive', 'false_positive', 'ignored'}
+DETECTION_STATUS = {'new', 'in_progress', 'true_positive', 'false_positive', 'ignored', 'closed', 'reopened'}
 
 CS_FALCON_DETECTION_OUTGOING_ARGS = {'status': f'Updated detection status, one of {"/".join(DETECTION_STATUS)}'}
 
@@ -180,6 +180,8 @@ MIRROR_DIRECTION_DICT = {
 
 MIRROR_DIRECTION = MIRROR_DIRECTION_DICT.get(demisto.params().get('mirror_direction'))
 MIRROR_INSTANCE = demisto.integrationInstance()
+CLOSE_IN_XSOAR = demisto.params().get('close_incident')
+CLOSE_IN_CS_FALCON = demisto.params().get('close_in_cs_falcon')
 
 ''' HELPER FUNCTIONS '''
 
@@ -1592,7 +1594,7 @@ def get_remote_data_command(args: Dict[str, Any]):
             raise Exception(f'Executed get-remote-data command with undefined id: {remote_args.remote_incident_id}')
 
         entries = []
-        if delta:
+        if delta and CLOSE_IN_XSOAR:
             # 'state' field indicates whether the incident is closed
             if delta.get('state') == 'closed':
                 demisto.debug(f'Incident is closed: {remote_args.remote_incident_id}')

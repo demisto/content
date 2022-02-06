@@ -24,6 +24,9 @@
                 "Behaviour Tactic": {
                     "simple": "behaviors.tactic"
                 },
+                "Technique": {
+					"simple": "behaviors.technique"
+				},
                 "CMD line": {
                     "simple": "behaviors.cmdline"
                 },
@@ -136,7 +139,19 @@
                             }
                         ]
                     }
-                }
+                },
+				"dbotMirrorDirection": {
+					"simple": "mirror_direction"
+				},
+				"dbotMirrorId": {
+					"simple": "detection_id"
+				},
+				"dbotMirrorInstance": {
+					"simple": "mirror_instance"
+				},
+				"dbotMirrorTags": {
+					"simple": "mirror_tags"
+				}
             }
         },
         "CrowdStrike Falcon Incident": {
@@ -193,12 +208,18 @@
                 "Start Time": {
                     "simple": "start"
                 },
+                "Source Status": {
+					"simple": "status"
+                },
                 "State": {
                     "simple": "state"
                 },
                 "Tactic": {
                     "simple": "tactics"
                 },
+                "Tags": {
+					"simple": "tags"
+				},
                 "Technique": {
                     "simple": "techniques"
                 },
@@ -254,7 +275,19 @@
                             }
                         ]
                     }
-                }
+                },
+                "dbotMirrorDirection": {
+					"simple": "mirror_direction"
+				},
+				"dbotMirrorId": {
+					"simple": "incident_id"
+				},
+				"dbotMirrorInstance": {
+					"simple": "mirror_instance"
+				},
+				"dbotMirrorTags": {
+					"simple": "mirror_tags"
+				}
             }
         },
         "dbot_classification_incident_type_all": {
