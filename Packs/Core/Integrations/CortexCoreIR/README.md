@@ -88,7 +88,7 @@ Gets a list of endpoints, according to the passed filters. If there are no filte
 | --- | --- | --- |
 | endpoint_id_list | A comma-separated list of endpoint IDs. | Optional | 
 | dist_name | A comma-separated list of distribution package names or installation package names. <br/>Example: dist_name1,dist_name2. | Optional | 
-| ip_list | A comma-separated list of IP addresses.<br/>Example: 1.1.1.1,1.1.1.1 | Optional | 
+| ip_list | A comma-separated list of IP addresses.<br/>Example: 8.8.8.8,1.1.1.1. | Optional | 
 | group_name | The group name to which the agent belongs.<br/>Example: group_name1,group_name2. | Optional | 
 | platform | The endpoint platform. Valid values are\: "windows", "linux", "macos", or "android". . Possible values are: windows, linux, macos, android. | Optional | 
 | alias_name | A comma-separated list of alias names.<br/>Examples: alias_name1,alias_name2. | Optional | 
@@ -302,7 +302,7 @@ Creates an installation package. This is an asynchronous call that returns the d
         "Distribution": {
             "agent_version": "6.1.4.1680",
             "description": "some description",
-            "id": "18349e0d40e34f5d875afb82987428b5",
+            "id": "52c0e7988a024cbab32d4cd888e44dfb",
             "name": "dist_1",
             "package_type": "standalone",
             "platform": "linux"
@@ -313,7 +313,7 @@ Creates an installation package. This is an asynchronous call that returns the d
 
 #### Human Readable Output
 
->Distribution 18349e0d40e34f5d875afb82987428b5 created successfully
+>Distribution 52c0e7988a024cbab32d4cd888e44dfb created successfully
 
 ### core-get-distribution-url
 ***
@@ -517,33 +517,15 @@ Block lists requested files which have not already been block listed or added to
 | incident_id | Allows to link the response action to the incident that triggered it. | Optional | 
 | hash_list | String that represents a list of hashed files you want to block list. Must be a valid SHA256 hash. | Required | 
 | comment | String that represents additional information regarding the action. | Optional | 
+| detailed_response | Whether to response detailed response. default value = false. Possible values are: true, false. Default is false. | Optional | 
 
 
 #### Context Output
 
-There is no context output for this command.
-#### Command example
-```!core-blocklist-files hash_list=55f8718109829bf506b09d8af615b9f107a266e19f7a311039d1035f180b22d4```
-#### Context Example
-```json
-{
-    "Core": {
-        "blocklist": {
-            "fileHash": [
-                "55f8718109829bf506b09d8af615b9f107a266e19f7a311039d1035f180b22d4"
-            ]
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->### Blocklist Files
->|File Hash|
->|---|
->| 55f8718109829bf506b09d8af615b9f107a266e19f7a311039d1035f180b22d4 |
-
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Core.blocklist.added_hashes | Number | Added fileHash to blocklist | 
+| Core.blocklist.excluded_hashes | Number | Added fileHash to blocklist | 
 
 #### Command example
 ```!core-blocklist-files hash_list=11d69fb388ff59e5ba6ca217ca04ecde6a38fa8fb306aa5f1b72e22bb7c3a252```
@@ -552,9 +534,11 @@ There is no context output for this command.
 {
     "Core": {
         "blocklist": {
-            "fileHash": [
-                "11d69fb388ff59e5ba6ca217ca04ecde6a38fa8fb306aa5f1b72e22bb7c3a252"
-            ]
+            "added_hashes": {
+                "fileHash": [
+                    "11d69fb388ff59e5ba6ca217ca04ecde6a38fa8fb306aa5f1b72e22bb7c3a252"
+                ]
+            }
         }
     }
 }
@@ -563,7 +547,7 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### Blocklist Files
->|File Hash|
+>|Added _ Hashes|
 >|---|
 >| 11d69fb388ff59e5ba6ca217ca04ecde6a38fa8fb306aa5f1b72e22bb7c3a252 |
 
@@ -583,11 +567,16 @@ Adds requested files to allow list if they are not already on block list or allo
 | incident_id | Allows to link the response action to the incident that triggered it. | Optional | 
 | hash_list | String that represents a list of hashed files you want to add to allow list. Must be a valid SHA256 hash. | Required | 
 | comment | String that represents additional information regarding the action. | Optional | 
+| detailed_response | Whether to response detailed response. default value = false. Possible values are: true, false. Default is false. | Optional | 
 
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Core.allowlist.added_hashes | Number | Added fileHash to allowlist | 
+| Core.allowlist.excluded_hashes | Number | Added fileHash to allowlist | 
+
 #### Command example
 ```!core-allowlist-files hash_list=11d69fb388ff59e5ba6ca217ca04ecde6a38fa8fb306aa5f1b72e22bb7c3a252```
 #### Context Example
@@ -595,9 +584,11 @@ There is no context output for this command.
 {
     "Core": {
         "allowlist": {
-            "fileHash": [
-                "11d69fb388ff59e5ba6ca217ca04ecde6a38fa8fb306aa5f1b72e22bb7c3a252"
-            ]
+            "added_hashes": {
+                "fileHash": [
+                    "11d69fb388ff59e5ba6ca217ca04ecde6a38fa8fb306aa5f1b72e22bb7c3a252"
+                ]
+            }
         }
     }
 }
@@ -606,7 +597,7 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### Allowlist Files
->|File Hash|
+>|Added _ Hashes|
 >|---|
 >| 11d69fb388ff59e5ba6ca217ca04ecde6a38fa8fb306aa5f1b72e22bb7c3a252 |
 
@@ -1134,12 +1125,35 @@ Gets the code of a specific script in the script library.
 {
     "Core": {
         "ScriptCode": {
-            "code": "",
+            "code": "import os\nimport sys\nimport traceback\n\n\ndef run(file_path):\n    path = os.path.expanduser(file_path)\n    path = os.path.expandvars(path)\n    if os.path.isabs(path):\n        try:\n            os.remove(path)\n        except IOError:\n            sys.stderr.write(f\"File not accessible: {path}\")\n            return False\n        except Exception as e:\n            sys.stderr.write(f\"Exception occured: {traceback.format_exc()}\")\n            return False\n    return True\n",
             "script_uid": "548023b6e4a01ec51a495ba6e5d2a15d"
         }
     }
 }
 ```
+
+#### Human Readable Output
+
+>### Script code: 
+> ``` import os
+>import sys
+>import traceback
+>
+>
+>def run(file_path):
+>    path = os.path.expanduser(file_path)
+>    path = os.path.expandvars(path)
+>    if os.path.isabs(path):
+>        try:
+>            os.remove(path)
+>        except IOError:
+>            sys.stderr.write(f"File not accessible: {path}")
+>            return False
+>        except Exception as e:
+>            sys.stderr.write(f"Exception occured: {traceback.format_exc()}")
+>            return False
+>    return True
+> ```
 
 ### core-action-status-get
 ***
@@ -1509,18 +1523,33 @@ Removes requested files from allow list.
 | incident_id | Allows to link the response action to the incident that triggered it. | Optional | 
 | hash_list | String that represents a list of hashed files you want to add to allow list. Must be a valid SHA256 hash. | Required | 
 | comment | String that represents additional information regarding the action. | Optional | 
-| detailed_response | Whether to response detailed response. default value = false. Possible values are: true, false. Default is false. | Optional | 
 
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Core.allowlist.removed_hashes | Number | Removed file hash | 
+
 #### Command example
 ```!core-remove-allowlist-files hash_list=11d69fb388ff59e5ba6ca217ca04ecde6a38fa8fb306aa5f1b72e22bb7c3a252```
+#### Context Example
+```json
+{
+    "Core": {
+        "allowlist": [
+            {
+                "removed_hashes": "11d69fb388ff59e5ba6ca217ca04ecde6a38fa8fb306aa5f1b72e22bb7c3a252"
+            }
+        ]
+    }
+}
+```
+
 #### Human Readable Output
 
 >### Allowlist Files Removed
->|File Hash|
+>|Removed _ Hashes|
 >|---|
 >| 11d69fb388ff59e5ba6ca217ca04ecde6a38fa8fb306aa5f1b72e22bb7c3a252 |
 
@@ -1540,18 +1569,33 @@ Removes requested files from block list.
 | incident_id | Allows to link the response action to the incident that triggered it. | Optional | 
 | hash_list | String that represents a list of hashed files you want to add to allow list. Must be a valid SHA256 hash. | Required | 
 | comment | String that represents additional information regarding the action. | Optional | 
-| detailed_response | Whether to response detailed response. default value = false. Possible values are: true, false. Default is false. | Optional | 
 
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Core.blocklist.removed_hashes | Number | Removed fileHash from blocklist | 
+
 #### Command example
 ```!core-remove-blocklist-files hash_list=11d69fb388ff59e5ba6ca217ca04ecde6a38fa8fb306aa5f1b72e22bb7c3a252```
+#### Context Example
+```json
+{
+    "Core": {
+        "blocklist": [
+            {
+                "removed_hashes": "11d69fb388ff59e5ba6ca217ca04ecde6a38fa8fb306aa5f1b72e22bb7c3a252"
+            }
+        ]
+    }
+}
+```
+
 #### Human Readable Output
 
 >### Blocklist Files Removed
->|File Hash|
+>|Removed _ Hashes|
 >|---|
 >| 11d69fb388ff59e5ba6ca217ca04ecde6a38fa8fb306aa5f1b72e22bb7c3a252 |
 
@@ -1569,14 +1613,17 @@ Adds exclusion.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | name | Name of the exclusion. | Required | 
-| filterObject | Filter object for the exclusion. | Required | 
+| filterObject | Filter object for the exclusion. example: {"filter":{"AND":[{"SEARCH_FIELD":"alert_category","SEARCH_TYPE":"NEQ","SEARCH_VALUE":"Phishing"}]}}. | Required | 
 | comment | String that represents additional information regarding the action. | Optional | 
 | status | Status of exclusion. default value = ENABLED. Possible values are: ENABLED, DISABLED. Default is ENABLED. | Optional | 
 
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Core.exclusion.rule_id | Number | Added exclusion rule id | 
+
 #### Command example
 ```!core-add-exclusion filterObject={\"filter\":{\"AND\":[{\"SEARCH_FIELD\":\"alert_category\",\"SEARCH_TYPE\":\"NEQ\",\"SEARCH_VALUE\":\"Phishing\"}]}} name=test1```
 #### Context Example
@@ -1584,7 +1631,7 @@ There is no context output for this command.
 {
     "Core": {
         "exclusion": {
-            "rule_id": 37
+            "rule_id": 44
         }
     }
 }
@@ -1595,7 +1642,7 @@ There is no context output for this command.
 >### Add Exclusion
 >|rule_id|
 >|---|
->| 37 |
+>| 44 |
 
 
 ### core-delete-exclusion
@@ -1615,9 +1662,23 @@ Delete exclusion.
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Core.deletedExclusion.rule_id | Number | Deleted exclusion rule id | 
+
 #### Command example
 ```!core-delete-exclusion alert_exclusion_id=36```
+#### Context Example
+```json
+{
+    "Core": {
+        "deletedExclusion": {
+            "rule_id": null
+        }
+    }
+}
+```
+
 #### Human Readable Output
 
 >Successfully deleted the following exclusion: 36
@@ -1635,13 +1696,34 @@ Gets exclusion list.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | tenant_ID | Allows to link the response action to the tenant that triggered it. | Optional | 
-| filterObject | Filter object for the exclusion. | Optional | 
+| filterObject | Filter object for the exclusion. example: {"filter":{"AND":[{"SEARCH_FIELD":"alert_category","SEARCH_TYPE":"NEQ","SEARCH_VALUE":"Phishing"}]}}. | Optional | 
 | limit | Limit for the response. You will get the first "limit" exclusions. Default value is 20. Default is 20. | Optional | 
 
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Core.exclusion.ALERT_WHITELIST_ID | Number |  | 
+| Core.exclusion.ALERT_WHITELIST_MODIFY_TIME | Date |  | 
+| Core.exclusion.ALERT_WHITELIST_NAME | String |  | 
+| Core.exclusion.ALERT_WHITELIST_INDICATOR_TEXT.pretty_name | String |  | 
+| Core.exclusion.ALERT_WHITELIST_INDICATOR_TEXT.data_type | Unknown |  | 
+| Core.exclusion.ALERT_WHITELIST_INDICATOR_TEXT.render_type | String |  | 
+| Core.exclusion.ALERT_WHITELIST_INDICATOR_TEXT.entity_map | Unknown |  | 
+| Core.exclusion.ALERT_WHITELIST_INDICATOR_TEXT.dml_type | Unknown |  | 
+| Core.exclusion.ALERT_WHITELIST_INDICATOR.filter.AND.SEARCH_FIELD | String |  | 
+| Core.exclusion.ALERT_WHITELIST_INDICATOR.filter.AND.SEARCH_TYPE | String |  | 
+| Core.exclusion.ALERT_WHITELIST_INDICATOR.filter.AND.SEARCH_VALUE | String |  | 
+| Core.exclusion.ALERT_WHITELIST_HITS | Number |  | 
+| Core.exclusion.ALERT_WHITELIST_COMMENT | String |  | 
+| Core.exclusion.ALERT_WHITELIST_USER | String |  | 
+| Core.exclusion.ALERT_WHITELIST_PRETTY_USER | String |  | 
+| Core.exclusion.ALERT_WHITELIST_STATUS | String |  | 
+| Core.exclusion.ALERT_WHITELIST_BACKWARDS_SCAN_STATUS | String |  | 
+| Core.exclusion.ALERT_WHITELIST_BACKWARDS_SCAN_TIMESTAMP | Unknown |  | 
+| Core.exclusion.ALERT_WHITELIST_MIGRATED_FROM_ANALYTICS | Number |  | 
+
 #### Command example
 ```!core-get-exclusion filterObject={\"filter\":{\"AND\":[{\"SEARCH_FIELD\":\"ALERT_WHITELIST_COMMENT\",\"SEARCH_TYPE\":\"NEQ\",\"SEARCH_VALUE\":\"Phishing\"}]}}```
 #### Context Example
@@ -1654,7 +1736,7 @@ There is no context output for this command.
                 "ALERT_WHITELIST_BACKWARDS_SCAN_TIMESTAMP": null,
                 "ALERT_WHITELIST_COMMENT": "",
                 "ALERT_WHITELIST_HITS": 0,
-                "ALERT_WHITELIST_ID": 35,
+                "ALERT_WHITELIST_ID": 43,
                 "ALERT_WHITELIST_INDICATOR": {
                     "filter": {
                         "AND": [
@@ -1688,7 +1770,7 @@ There is no context output for this command.
                     }
                 ],
                 "ALERT_WHITELIST_MIGRATED_FROM_ANALYTICS": 0,
-                "ALERT_WHITELIST_MODIFY_TIME": 1643735814916,
+                "ALERT_WHITELIST_MODIFY_TIME": 1644157302128,
                 "ALERT_WHITELIST_NAME": "test1",
                 "ALERT_WHITELIST_PRETTY_USER": "Public API - 3",
                 "ALERT_WHITELIST_STATUS": "ENABLED",
@@ -1699,7 +1781,7 @@ There is no context output for this command.
                 "ALERT_WHITELIST_BACKWARDS_SCAN_TIMESTAMP": null,
                 "ALERT_WHITELIST_COMMENT": "",
                 "ALERT_WHITELIST_HITS": 0,
-                "ALERT_WHITELIST_ID": 37,
+                "ALERT_WHITELIST_ID": 44,
                 "ALERT_WHITELIST_INDICATOR": {
                     "filter": {
                         "AND": [
@@ -1710,7 +1792,34 @@ There is no context output for this command.
                             }
                         ]
                     }
-                }
+                },
+                "ALERT_WHITELIST_INDICATOR_TEXT": [
+                    {
+                        "data_type": "TEXT",
+                        "dml_type": null,
+                        "entity_map": null,
+                        "pretty_name": "category",
+                        "render_type": "attribute"
+                    },
+                    {
+                        "data_type": null,
+                        "entity_map": null,
+                        "pretty_name": "!=",
+                        "render_type": "operator"
+                    },
+                    {
+                        "data_type": null,
+                        "entity_map": null,
+                        "pretty_name": "Phishing",
+                        "render_type": "value"
+                    }
+                ],
+                "ALERT_WHITELIST_MIGRATED_FROM_ANALYTICS": 0,
+                "ALERT_WHITELIST_MODIFY_TIME": 1644162015295,
+                "ALERT_WHITELIST_NAME": "test1",
+                "ALERT_WHITELIST_PRETTY_USER": "Public API - 3",
+                "ALERT_WHITELIST_STATUS": "ENABLED",
+                "ALERT_WHITELIST_USER": "N/A"
             }
         ]
     }
@@ -1722,6 +1831,6 @@ There is no context output for this command.
 >### Exclusion
 >|ALERT_WHITELIST_BACKWARDS_SCAN_STATUS|ALERT_WHITELIST_BACKWARDS_SCAN_TIMESTAMP|ALERT_WHITELIST_COMMENT|ALERT_WHITELIST_HITS|ALERT_WHITELIST_ID|ALERT_WHITELIST_INDICATOR|ALERT_WHITELIST_INDICATOR_TEXT|ALERT_WHITELIST_MIGRATED_FROM_ANALYTICS|ALERT_WHITELIST_MODIFY_TIME|ALERT_WHITELIST_NAME|ALERT_WHITELIST_PRETTY_USER|ALERT_WHITELIST_STATUS|ALERT_WHITELIST_USER|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| DISABLED |  |  | 0 | 35 | filter: {"AND": [{"SEARCH_FIELD": "alert_category", "SEARCH_TYPE": "NEQ", "SEARCH_VALUE": "Phishing"}]} | {'pretty_name': 'category', 'data_type': 'TEXT', 'render_type': 'attribute', 'entity_map': None, 'dml_type': None},<br/>{'pretty_name': '!=', 'data_type': None, 'render_type': 'operator', 'entity_map': None},<br/>{'pretty_name': 'Phishing', 'data_type': None, 'render_type': 'value', 'entity_map': None} | 0 | 1643735814916 | test1 | Public API - 3 | ENABLED | N/A |
->| DISABLED |  |  | 0 | 37 | filter: {"AND": [{"SEARCH_FIELD": "alert_category", "SEARCH_TYPE": "NEQ", "SEARCH_VALUE": "Phishing"}]} | {'pretty_name': 'category', 'data_type': 'TEXT', 'render_type': 'attribute', 'entity_map': None, 'dml_type': None},<br/>{'pretty_name': '!=', 'data_type': None, 'render_type': 'operator', 'entity_map': None},<br/>{'pretty_name': 'Phishing', 'data_type': None, 'render_type': 'value', 'entity_map': None} | 0 | 1643736663635 | test1 | Public API - 3 | ENABLED | N/A |
+>| DISABLED |  |  | 0 | 43 | filter: {"AND": [{"SEARCH_FIELD": "alert_category", "SEARCH_TYPE": "NEQ", "SEARCH_VALUE": "Phishing"}]} | {'pretty_name': 'category', 'data_type': 'TEXT', 'render_type': 'attribute', 'entity_map': None, 'dml_type': None},<br/>{'pretty_name': '!=', 'data_type': None, 'render_type': 'operator', 'entity_map': None},<br/>{'pretty_name': 'Phishing', 'data_type': None, 'render_type': 'value', 'entity_map': None} | 0 | 1644157302128 | test1 | Public API - 3 | ENABLED | N/A |
+>| DISABLED |  |  | 0 | 44 | filter: {"AND": [{"SEARCH_FIELD": "alert_category", "SEARCH_TYPE": "NEQ", "SEARCH_VALUE": "Phishing"}]} | {'pretty_name': 'category', 'data_type': 'TEXT', 'render_type': 'attribute', 'entity_map': None, 'dml_type': None},<br/>{'pretty_name': '!=', 'data_type': None, 'render_type': 'operator', 'entity_map': None},<br/>{'pretty_name': 'Phishing', 'data_type': None, 'render_type': 'value', 'entity_map': None} | 0 | 1644162015295 | test1 | Public API - 3 | ENABLED | N/A |
 
