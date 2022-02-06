@@ -4,7 +4,7 @@ commonfields:
 name: CrowdStrike Falcon Sandbox V2
 display: CrowdStrike Falcon Sandbox v2
 category: Forensics & Malware Analysis
-description: Fully automated malware analysis (formerly Payload Security VxStream).
+description: Fully automated malware analysis.
 configuration:
   - name: credentials
     required: false
