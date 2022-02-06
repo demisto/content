@@ -28,5 +28,23 @@
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "6.5.0",
-	"x2_fields": "project"
+	"x2_fields": "project",
+    "Aliases": [
+        {
+          "cliName": "googlecloudsccfindingsourcepropertiesprojectid",
+          "type": "shortText"
+        },
+        {
+          "cliName": "googlecloudsccresourceprojectdisplayname",
+          "type": "shortText"
+        },
+        {
+          "cliName": "googlecloudsccresourceprojectname",
+          "type": "shortText"
+        },
+        {
+          "cliName": "prismacloudcomputeproject",
+          "type": "shortText"
+        }
+    ]
 }
