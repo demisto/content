@@ -8,8 +8,7 @@
 			"dontMapEventToLabels": true,
 			"internalMapping": {
 				"status": {
-					"complex": null,
-					"simple": "detectionstatus"
+					"simple": "state"
 				}
 			}
 		},
@@ -17,11 +16,9 @@
 			"dontMapEventToLabels": true,
 			"internalMapping": {
 				"status": {
-					"complex": null,
 					"simple": "sourcestatus"
 				},
 				"tag": {
-					"complex": null,
 					"simple": "tags"
 				}
 			}

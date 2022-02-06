@@ -3017,6 +3017,11 @@ script:
       is used as part of a Mirroring feature, which is available since version 6.1.
     execution: false
     name: get-modified-remote-data
+  - deprecated: false
+    description: Updates the remote incident or detection with local incident or detection changes. This method
+      is only used for debugging purposes and will not update the current incident or detection.
+    execution: false
+    name: update-remote-system
   dockerimage: demisto/python3:3.10.1.25933
   feed: false
   isfetch: true
