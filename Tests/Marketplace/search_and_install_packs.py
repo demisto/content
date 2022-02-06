@@ -479,10 +479,13 @@ def install_all_content_packs_for_nightly(client: demisto_client, host: str, ser
             IGNORED_FILES.append(pack_id)
 
     for pack_id in os.listdir(PACKS_FULL_PATH):
-        if pack_id not in IGNORED_FILES:
-            pack_version = get_latest_version_from_bucket(pack_id, production_bucket)
-            if pack_version:
-                all_packs.append(get_pack_installation_request_data(pack_id, pack_version))
+        if pack_id in IGNORED_FILES:
+            continue
+
+        logging.debug(f'Checking "{pack_id}"')
+        pack_version = get_latest_version_from_bucket(pack_id, production_bucket)
+        if pack_version:
+            all_packs.append(get_pack_installation_request_data(pack_id, pack_version))
 
     install_packs(client, host, all_packs, is_nightly=True)
 
