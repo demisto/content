@@ -16,6 +16,7 @@ class Client:
     """
     The integration's client
     """
+
     def __init__(self, base_url: str, username: str, password: str, verify: bool, proxy: bool):
         self.fe_client: FireEyeClient = FireEyeClient(base_url=base_url, username=username, password=password,
                                                       verify=verify, proxy=proxy)
@@ -184,7 +185,8 @@ def get_quarantined_emails(client: Client, args: Dict[str, Any]) -> CommandResul
     appliance_id = args.get('appliance_id', '')
     limit = (args.get('limit', '10000'))
 
-    raw_response = client.fe_client.get_quarantined_emails_request(start_time, end_time, from_, subject, appliance_id, limit)
+    raw_response = client.fe_client.get_quarantined_emails_request(start_time, end_time, from_, subject, appliance_id,
+                                                                   limit)
     if not raw_response:
         md_ = 'No emails with the given query arguments were found.'
     else:
@@ -485,8 +487,8 @@ def fetch_incidents(client: Client, last_run: dict, first_fetch: str, max_fetch:
     if not all_alerts:
         demisto.info(f'{INTEGRATION_NAME} no alerts were fetched from FireEye server at: {str(next_run)}')
         # as no alerts occurred in the window of 48 hours from the given start time, update last_run window to the next
-        # 48 hours
-        next_search = arg_to_datetime(next_run['time']) + datetime.timedelta(hours=48)
+        # 48 hours or now time.
+        next_search = (arg_to_datetime(next_run['time']) + datetime.timedelta(hours=48)) or arg_to_datetime('now')
         next_run['time'] = next_search.isoformat()
         return next_run, []
 
@@ -512,7 +514,8 @@ def fetch_incidents(client: Client, last_run: dict, first_fetch: str, max_fetch:
         demisto.info(f'{INTEGRATION_NAME} no new alerts were collected at: {str(next_run)}.')
         # As no incidents were collected, we know that all the fetched alerts for 48 hours starting in the 'start_time'
         # already exists in our system, thus update last_run time accordingly.
-        next_search = arg_to_datetime(alerts[-1].get('occurred')) + datetime.timedelta(hours=48)
+        next_search = (arg_to_datetime(alerts[-1].get('occurred')) + datetime.timedelta(hours=48)) or arg_to_datetime(
+            'now')
         next_run['time'] = next_search
         demisto.info(f'{INTEGRATION_NAME} Setting next_run to: {next_run["time"]}')
         return next_run, []
