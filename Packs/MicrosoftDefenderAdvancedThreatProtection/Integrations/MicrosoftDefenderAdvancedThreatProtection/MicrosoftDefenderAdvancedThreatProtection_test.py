@@ -867,3 +867,17 @@ def test_create_filter_for_endpoint_command(hostnames, ips, ids, expected_filter
 def test_create_related_cve_list_for_machine(machines_list, expected_list):
     from MicrosoftDefenderAdvancedThreatProtection import create_related_cve_list_for_machine
     assert create_related_cve_list_for_machine(machines_list) == expected_list
+
+
+@pytest.mark.parametrize('machine, expected_result', [
+    ({'ipAddresses': [], 'lastIpAddress': "1.2.3.4"}, None),
+    ({'ipAddresses': []}, None),
+    ({'ipAddresses': [{'ipAddress': "1.1.1.1", 'macAddress': ""}], 'lastIpAddress': "1.2.3.4"}, None),
+    ({'ipAddresses': [{'ipAddress': "1.2.3.4", 'macAddress': ""}], 'lastIpAddress': "1.2.3.4"}, ""),
+    ({'ipAddresses': [{'ipAddress': "1.2.3.4", 'macAddress': "mac"}], 'lastIpAddress': "1.2.3.4"}, "mac"),
+    ({'ipAddresses': [{'ipAddress': "1.2.3.4", 'macAddress': "mac"}, {'ipAddress': "1.1.1.1", 'macAddress': "mac"}],
+      'lastIpAddress': "1.2.3.4"}, "mac"),
+])
+def test_get_machine_mac_address(machine, expected_result):
+    from MicrosoftDefenderAdvancedThreatProtection import get_machine_mac_address
+    assert get_machine_mac_address(machine) == expected_result

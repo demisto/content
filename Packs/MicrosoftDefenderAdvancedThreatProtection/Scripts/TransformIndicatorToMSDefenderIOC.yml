@@ -3,7 +3,7 @@ args:
   description: The indicators query.
   isArray: false
   name: query
-  required: false
+  required: true
   secret: false
 - auto: PREDEFINED
   default: false

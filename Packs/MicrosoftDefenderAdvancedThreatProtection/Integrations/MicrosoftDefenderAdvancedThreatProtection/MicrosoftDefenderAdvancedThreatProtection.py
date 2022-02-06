@@ -1142,7 +1142,7 @@ def get_machine_mac_address(machine):
     last_ip_address = machine.get('lastIpAddress', '')
     for ip_object in ip_addresses:
         if last_ip_address and ip_object.get('ipAddress') == last_ip_address:
-            return ip_object.get('macAddress')
+            return ip_object.get('macAddress', '')
 
 
 def reformat_filter(fields_to_filter_by):
