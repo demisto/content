@@ -69,7 +69,6 @@ configuration:
   required: false
   type: 4
   hidden: true
-  additionalinfo: use api_token instead
 description: Integration to GitHub API
 display: GitHub
 name: GitHub
