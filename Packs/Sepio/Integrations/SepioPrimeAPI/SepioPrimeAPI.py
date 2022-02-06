@@ -260,7 +260,7 @@ class Client(BaseClient):
         }
         if from_eventid is None:
             get_events_params["FromDate"] = from_datetime
-            get_events_params["ToDate"] = to_datetime    
+            get_events_params["ToDate"] = to_datetime
         else:
             get_events_params["FromEventId"] = from_eventid
 
@@ -1107,9 +1107,9 @@ def fetch_incidents(client, last_run, first_fetch_time, min_serverity, categorie
     # Handle first time fetch
     last_fetch_dt = None
     if last_fetch is None:
-       last_fetch_dt = dateparser.parse(first_fetch_time)
+        last_fetch_dt = dateparser.parse(first_fetch_time)
     else:
-       last_fetch_dt = dateparser.parse(last_fetch)
+        last_fetch_dt = dateparser.parse(last_fetch)
 
     last_fetch_timestamp = date_to_timestamp(last_fetch_dt)
 
@@ -1117,7 +1117,8 @@ def fetch_incidents(client, last_run, first_fetch_time, min_serverity, categorie
     max_results = validate_fetch_data_max_result(max_results, MAX_RESULTS_EVENTS, 'limit')
 
     incidents = []
-    items = client.prime_get_events(timestamp_to_datestring(last_fetch_timestamp), min_serverity, categories, max_results, None, None, None,last_fetch_eventid)
+    items = client.prime_get_events(timestamp_to_datestring(last_fetch_timestamp), min_serverity,
+                                    categories, max_results, None, None, None, last_fetch_eventid)
     for item in items:
         item['eventSource'] = SEPIO  # constant for mapping
         incident_created_time = dateparser.parse(item['creationTime'])
@@ -1133,10 +1134,11 @@ def fetch_incidents(client, last_run, first_fetch_time, min_serverity, categorie
 
         # Update last run and add incident if the incident is newer than last fetch
         if incident_created_timestamp > last_fetch_timestamp:
-            last_fetch_timestamp = incident_created_timestamp    
+            last_fetch_timestamp = incident_created_timestamp
     if len(items):
-        last_fetch_eventid = items[0]["eventID"]+1
-    next_run = {'last_fetch': timestamp_to_datestring(last_fetch_timestamp, DATE_FORMAT),'last_fetch_eventid':last_fetch_eventid}
+        last_fetch_eventid = items[0]["eventID"] + 1
+    next_run = {'last_fetch': timestamp_to_datestring(
+        last_fetch_timestamp, DATE_FORMAT), 'last_fetch_eventid': last_fetch_eventid}
     return next_run, incidents
 
 
