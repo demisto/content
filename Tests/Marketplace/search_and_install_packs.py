@@ -429,6 +429,7 @@ def get_latest_version_from_bucket(pack_id: str, production_bucket: Bucket) -> s
     # Adding the '/' in the end of the prefix to search for the exact pack id
     pack_versions_paths = [f.name for f in production_bucket.list_blobs(prefix=f'{pack_bucket_path}/') if
                            f.name.endswith('.zip')]
+    logging.info(f'pack versions are: {pack_versions_paths}')
     pack_versions = [LooseVersion(PACK_PATH_VERSION_REGEX.findall(path)[0]) for path in pack_versions_paths]
     logging.debug(f'Found the following zips for {pack_id} pack: {pack_versions}')
     if pack_versions:
