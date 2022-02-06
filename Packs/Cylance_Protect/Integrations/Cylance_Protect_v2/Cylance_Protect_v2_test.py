@@ -1,8 +1,8 @@
 import demistomock as demisto
 from CommonServerPython import Common
 from Cylance_Protect_v2 import create_dbot_score_entry, translate_score, FILE_THRESHOLD, \
-    get_device, get_device_by_hostname, update_device, get_device_threats, get_policies, create_zone, get_zones,\
-    get_zone, update_zone, get_threat, get_threats, get_threat_devices, get_list, get_list_entry_by_hash,\
+    get_device, get_device_by_hostname, update_device, get_device_threats, get_policies, create_zone, get_zones, \
+    get_zone, update_zone, get_threat, get_threats, get_threat_devices, get_list, get_list_entry_by_hash, \
     add_hash_to_list, delete_hash_from_lists, delete_devices, get_policy_details
 import Cylance_Protect_v2
 
@@ -121,13 +121,13 @@ ZONES_OUTPUT = {u'name': u'name',
                 u'policy_id': u'980fad21-b119-4cc4-ac97-2b2c035b4666'
                 }
 
-EXPECTED_ZONES = {u'DateModified': u'2022-02-03T15:52:30',
-                  u'Name': u'name',
+EXPECTED_ZONES = {u'Name': u'name',
                   u'Criticality': u'Low',
                   u'UpdateType': u'Production',
                   u'DateCreated': u'2022-02-03T15:52:30',
                   u'PolicyId': u'980fad21-b119-4cc4-ac97-2b2c035b4666',
-                  u'Id': u'1998235b-a6ab-4043-86b5-81b0dc63887b'
+                  u'Id': u'1998235b-a6ab-4043-86b5-81b0dc63887b',
+                  u'DateModified': u'2022-02-03T15:52:30'
                   }
 
 THREAT_DEVICES_OUTPUT = {u'name': u'DESKTOP-M7E991U',
@@ -252,7 +252,7 @@ def test_create_dbot_score_entry():
 def test_get_device(mocker):
     """
     Given
-        - a threat and a dbot score
+        - a threat and demisto args
     When
         - calls the function get_device
     Then
@@ -265,13 +265,14 @@ def test_get_device(mocker):
     get_device()
 
     contents = demisto_results.call_args[0][0]
-    assert EXPECTED_DEVICE == contents.get('EntryContext').get('CylanceProtect.Device(val.ID && val.ID === obj.ID)')
+    assert EXPECTED_DEVICE.items() <= contents.get('EntryContext').get('CylanceProtect.Device(val.ID && val.ID === '
+                                                                       'obj.ID)').items()
 
 
 def test_get_device_by_hostname(mocker):
     """
     Given
-        - a threat and a dbot score
+        - a threat and demisto args
     When
         - calls the function get_device_by_hostname
     Then
@@ -284,13 +285,14 @@ def test_get_device_by_hostname(mocker):
     get_device_by_hostname()
 
     contents = demisto_results.call_args[0][0]
-    assert EXPECTED_HOSTNAME == contents.get('EntryContext').get('CylanceProtect.Device(val.ID && val.ID === obj.ID)')
+    assert EXPECTED_HOSTNAME.items() <= contents.get('EntryContext').get('CylanceProtect.Device(val.ID && val.ID === '
+                                                                         'obj.ID)').items()
 
 
 def test_update_device(mocker):
     """
     Given
-        - a threat and a dbot score
+        - demisto args
     When
         - calls the function update_device
     Then
@@ -312,7 +314,7 @@ def test_update_device(mocker):
 def test_get_device_threats(mocker):
     """
     Given
-        - a threat and a dbot score
+        - demisto args
     When
         - calls the function get_device_threats
     Then
@@ -337,9 +339,9 @@ def test_get_device_threats(mocker):
 def test_get_policies(mocker):
     """
     Given
-        - a threat and a dbot score
+        - demisto args
     When
-        - calls the function update_device
+        - calls the function get_policies
     Then
         - checks if the output is as expected
     """
@@ -351,16 +353,16 @@ def test_get_policies(mocker):
     get_policies()
 
     contents = demisto_results.call_args[0][0]
-    assert [EXPECTED_POLICIES] == contents.get('EntryContext').get(
-        'CylanceProtect.Policies(val.id && val.id === obj.id)')
+    assert EXPECTED_POLICIES.items() <= contents.get('EntryContext').get(
+        'CylanceProtect.Policies(val.id && val.id === obj.id)')[0].items()
 
 
 def test_create_zone(mocker):
     """
     Given
-        - a threat and a dbot score
+        - demisto args
     When
-        - calls the function update_device
+        - calls the function create_zone
     Then
         - checks if the output is as expected
     """
@@ -380,9 +382,9 @@ def test_create_zone(mocker):
 def test_get_zones(mocker):
     """
         Given
-            - a threat and a dbot score
+            - demisto args
         When
-            - calls the function update_device
+            - calls the function create_zones
         Then
             - checks if the output is as expected
     """
@@ -394,15 +396,16 @@ def test_get_zones(mocker):
     get_zones()
 
     contents = demisto_results.call_args[0][0]
-    assert [EXPECTED_ZONES] == contents.get('EntryContext').get('CylanceProtect.Zones(val.Id && val.Id === obj.Id)')
+    assert EXPECTED_ZONES.items() <= \
+           contents.get('EntryContext').get('CylanceProtect.Zones(val.Id && val.Id === obj.Id)')[0].items()
 
 
 def test_get_zone(mocker):
     """
     Given
-        - a threat and a dbot score
+        - demisto args
     When
-        - calls the function update_device
+        - calls the function get_zone
     Then
         - checks if the output is as expected
     """
@@ -414,15 +417,15 @@ def test_get_zone(mocker):
     get_zone()
 
     contents = demisto_results.call_args[0][0]
-    assert EXPECTED_ZONES == contents.get('EntryContext').get('CylanceProtect.Zones(val.Id && val.Id === obj.Id)')
+    assert EXPECTED_ZONES.items() <= contents.get('EntryContext').get('CylanceProtect.Zones(val.Id && val.Id === obj.Id)').items()
 
 
 def test_update_zone(mocker):
     """
     Given
-        - a threat and a dbot score
+        - demisto args
     When
-        - calls the function update_device
+        - calls the function update_zone
     Then
         - checks if the output is as expected
     """
@@ -442,9 +445,9 @@ def test_update_zone(mocker):
 def test_get_threat(mocker):
     """
     Given
-        - a threat and a dbot score
+        - demisto args
     When
-        - calls the function get_device_threats
+        - calls the function get_threats
     Then
         - checks if the output is as expected
     """
@@ -465,7 +468,7 @@ def test_get_threat(mocker):
 def test_get_threats(mocker):
     """
         Given
-            - a threat and a dbot score
+            - demisto args
         When
             - calls the function update_device
         Then
@@ -486,9 +489,9 @@ def test_get_threats(mocker):
 def test_get_threat_devices(mocker):
     """
     Given
-        - a threat and a dbot score
+        - demisto args
     When
-        - calls the function get_device_threats
+        - calls the function get_threat_devices
     Then
         - checks if the output is as expected
     """
@@ -503,15 +506,15 @@ def test_get_threat_devices(mocker):
     get_threat_devices()
 
     contents = demisto_results.call_args[0][0]
-    assert EXPECTED_THREAT_DEVICES == contents.get('EntryContext').get('File')
+    assert EXPECTED_THREAT_DEVICES.items() <= contents.get('EntryContext').get('File').items()
 
 
 def test_get_list(mocker):
     """
     Given
-        - a threat and a dbot score
+        - demisto args
     When
-        - calls the function get_device_threats
+        - calls the function get_list
     Then
         - checks if the output is as expected
     """
@@ -526,15 +529,15 @@ def test_get_list(mocker):
     get_list()
 
     contents = demisto_results.call_args[0][0]
-    assert [EXPECTED_LIST] == contents.get('EntryContext').get('File')
+    assert EXPECTED_LIST <= contents.get('EntryContext').get('File')[0]
 
 
 def test_get_list_entry_by_hash(mocker):
     """
     Given
-        - a threat and a dbot score
+        - demisto args
     When
-        - calls the function get_device_threats
+        - calls the function get_list_entry_by_hash
     Then
         - checks if the output is as expected
     """
@@ -556,9 +559,9 @@ def test_get_list_entry_by_hash(mocker):
 def test_add_hash_to_list(mocker):
     """
     Given
-        - a threat and a dbot score
+        - demisto args
     When
-        - calls the function get_device_threats
+        - calls the function add_hash_to_list
     Then
         - checks if the output is as expected
     """
@@ -581,9 +584,9 @@ def test_add_hash_to_list(mocker):
 def test_delete_hash_from_lists(mocker):
     """
     Given
-        - a threat and a dbot score
+        - demisto args
     When
-        - calls the function get_device_threats
+        - calls the function delete_hash_from_lists
     Then
         - checks if the output is as expected
     """
@@ -600,16 +603,16 @@ def test_delete_hash_from_lists(mocker):
     delete_hash_from_lists()
 
     contents = demisto_results.call_args[0][0]
-    assert 'The requested threat has been successfully removed from GlobalSafe hashlist.' in\
+    assert 'The requested threat has been successfully removed from GlobalSafe hashlist.' in \
            contents.get('HumanReadable')
 
 
 def test_delete_devices(mocker):
     """
     Given
-        - a threat and a dbot score
+        - demisto args
     When
-        - calls the function get_device_threats
+        - calls the function delete_devices
     Then
         - checks if the output is as expected
     """
@@ -627,16 +630,16 @@ def test_delete_devices(mocker):
     delete_devices()
 
     contents = demisto_results.call_args[0][0]
-    assert 'The requested devices have been successfully removed from your organization list.' in\
+    assert 'The requested devices have been successfully removed from your organization list.' in \
            contents.get('HumanReadable')
 
 
 def test_get_policy_details(mocker):
     """
     Given
-        - a threat and a dbot score
+        - demisto args
     When
-        - calls the function update_device
+        - calls the function get_policy_details
     Then
         - checks if the output is as expected
     """
@@ -648,5 +651,5 @@ def test_get_policy_details(mocker):
     get_policy_details()
 
     contents = demisto_results.call_args[0][0]
-    assert EXPECTED_POLICY.get("ID") == contents.get('EntryContext').get('Cylance.Policy(val.ID && val.ID == obj.ID)')\
+    assert EXPECTED_POLICY.get("ID") == contents.get('EntryContext').get('Cylance.Policy(val.ID && val.ID == obj.ID)') \
         .get("ID")

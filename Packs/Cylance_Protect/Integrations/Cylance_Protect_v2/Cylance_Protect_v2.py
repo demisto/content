@@ -73,11 +73,17 @@ def generate_jwt_times():   # pragma: no cover
     return epoch_time, epoch_timeout
 
 
-def api_call(uri, method='post', headers={}, body={}, params={}, accept_404=False):   # pragma: no cover
+def api_call(uri, method='post', headers={}, body={}, params={}, accept_404=False, access_token=''):   # pragma: no cover
 
     """
     Makes an API call to the server URL with the supplied uri, method, headers, body and params
     """
+    if not headers:
+        headers = {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + access_token
+        }
+
     url = '%s/%s' % (SERVER_URL, uri)
     res = requests.request(method, url, headers=headers, data=json.dumps(body), params=params, verify=USE_SSL)
     if res.status_code < 200 or res.status_code >= 300:
@@ -223,19 +229,14 @@ def get_devices():
 
 
 def get_devices_request(page=None, page_size=None):  # pragma: no cover
-
     access_token = get_authentication_token(scope=SCOPE_DEVICE_LIST)
-    headers = {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + access_token
-    }
 
     params = {}
     if page:
         params['page'] = page
     if page_size:
         params['page_size'] = page_size
-    res = api_call(uri=URI_DEVICES, method='get', headers=headers, params=params)
+    res = api_call(uri=URI_DEVICES, method='get', params=params, access_token=access_token)
     return res
 
 
@@ -305,14 +306,10 @@ def get_device():
 
 
 def get_device_request(device_id):  # pragma: no cover
+    access_token = get_authentication_token(scope=SCOPE_DEVICE_READ)
 
-    access_token = get_authentication_token(scope=SCOPE_DEVICE_READ)  # pragma: no cover
-    headers = {  # pragma: no cover
-        'Content-Type': 'application/json',  # pragma: no cover
-        'Authorization': 'Bearer ' + access_token  # pragma: no cover
-    }  # pragma: no cover
-    uri = '%s/%s' % (URI_DEVICES, device_id)  # pragma: no cover
-    res = api_call(uri=uri, method='get', headers=headers)  # pragma: no cover
+    uri = '%s/%s' % (URI_DEVICES, device_id)
+    res = api_call(uri=uri, method='get', access_token=access_token)
     return res
 
 
@@ -383,16 +380,13 @@ def get_device_by_hostname():
 
 def get_hostname_request(hostname):  # pragma: no cover
 
-    access_token = get_authentication_token(scope=SCOPE_DEVICE_READ)  # pragma: no cover
-    headers = {  # pragma: no cover
-        'Content-Type': 'application/json',  # pragma: no cover
-        'Authorization': 'Bearer ' + access_token  # pragma: no cover
-    }  # pragma: no cover
-    uri = '%s/%s' % (URI_HOSTNAME, hostname)  # pragma: no cover
-    res = api_call(uri=uri, method='get', headers=headers)  # pragma: no cover
-    if not res:  # pragma: no cover
-        return None  # pragma: no cover
-    return res[0]  # pragma: no cover
+    access_token = get_authentication_token(scope=SCOPE_DEVICE_READ)
+
+    uri = '%s/%s' % (URI_HOSTNAME, hostname)
+    res = api_call(uri=uri, method='get', access_token=access_token)
+    if not res:
+        return None
+    return res[0]
 
 
 def update_device():
@@ -432,12 +426,7 @@ def update_device():
 
 
 def update_device_request(device_id, name=None, policy_id=None, add_zones=None, remove_zones=None):  # pragma: no cover
-
     access_token = get_authentication_token(scope=SCOPE_DEVICE_UPDATE)
-    headers = {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + access_token
-    }
 
     body = {}
     if name:
@@ -454,7 +443,7 @@ def update_device_request(device_id, name=None, policy_id=None, add_zones=None, 
         raise Exception('No changes detected')
 
     uri = '%s/%s' % (URI_DEVICES, device_id)
-    res = api_call(uri=uri, method='put', headers=headers, body=body)
+    res = api_call(uri=uri, method='put', access_token=access_token, body=body)
     return res
 
 
@@ -499,12 +488,7 @@ def get_device_threats():
 
 
 def get_device_threats_request(device_id, page=None, page_size=None):  # pragma: no cover
-
     access_token = get_authentication_token(scope=SCOPE_DEVICE_THREAT_LIST)
-    headers = {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + access_token
-    }
 
     params = {}
     if page:
@@ -512,7 +496,7 @@ def get_device_threats_request(device_id, page=None, page_size=None):  # pragma:
     if page_size:
         params['page_size'] = page_size
     uri = '%s/%s/threats' % (URI_DEVICES, device_id)
-    res = api_call(uri=uri, method='get', headers=headers, params=params)
+    res = api_call(uri=uri, method='get', access_token=access_token, params=params)
     return res
 
 
@@ -541,12 +525,7 @@ def get_policies():
 
 
 def get_policies_request(page=None, page_size=None):  # pragma: no cover
-
     access_token = get_authentication_token(scope=SCOPE_POLICY_LIST)
-    headers = {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + access_token
-    }
 
     params = {}
     if page:
@@ -554,7 +533,7 @@ def get_policies_request(page=None, page_size=None):  # pragma: no cover
     if page_size:
         params['page_size'] = page_size
 
-    res = api_call(uri=URI_POLICIES, method='get', headers=headers, params=params)
+    res = api_call(uri=URI_POLICIES, method='get', access_token=access_token, params=params)
     return res
 
 
@@ -576,18 +555,14 @@ def create_zone():
 
 
 def create_zone_request(name, policy_id, criticality):  # pragma: no cover
-
     access_token = get_authentication_token(scope=SCOPE_ZONE_CREATE)
-    headers = {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + access_token
-    }
+
     body = {
         'name': name,
         'policy_id': policy_id,
         'criticality': criticality
     }
-    res = api_call(uri=URI_ZONES, method='post', headers=headers, body=body)
+    res = api_call(uri=URI_ZONES, method='post', access_token=access_token, body=body)
     return res
 
 
@@ -614,12 +589,7 @@ def get_zones():
 
 
 def get_zones_request(page=None, page_size=None):  # pragma: no cover
-
     access_token = get_authentication_token(scope=SCOPE_ZONE_LIST)
-    headers = {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + access_token
-    }
 
     params = {}
     if page:
@@ -627,7 +597,7 @@ def get_zones_request(page=None, page_size=None):  # pragma: no cover
     if page_size:
         params['page_size'] = page_size
 
-    res = api_call(uri=URI_ZONES, method='get', headers=headers, params=params)
+    res = api_call(uri=URI_ZONES, method='get', access_token=access_token, params=params)
     return res
 
 
@@ -652,14 +622,10 @@ def get_zone():
 
 
 def get_zone_request(zone_id):  # pragma: no cover
-
     access_token = get_authentication_token(scope=SCOPE_ZONE_READ)
-    headers = {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + access_token
-    }
+
     uri = '%s/%s' % (URI_ZONES, zone_id)
-    res = api_call(uri=uri, method='get', headers=headers)
+    res = api_call(uri=uri, method='get', access_token=access_token)
     return res
 
 
@@ -693,12 +659,7 @@ def update_zone():
 
 
 def update_zone_request(zone_id, name, policy_id, criticality):  # pragma: no cover
-
     access_token = get_authentication_token(scope=SCOPE_ZONE_UPDATE)
-    headers = {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + access_token
-    }
 
     body = {}
     if name:
@@ -713,7 +674,7 @@ def update_zone_request(zone_id, name, policy_id, criticality):  # pragma: no co
         raise Exception('No changes detected')
 
     uri = '%s/%s' % (URI_ZONES, zone_id)
-    res = api_call(uri=uri, method='put', headers=headers, body=body)
+    res = api_call(uri=uri, method='put', access_token=access_token, body=body)
     return res
 
 
@@ -747,14 +708,10 @@ def get_threat():
 
 
 def get_threat_request(sha256):  # pragma: no cover
-
     access_token = get_authentication_token(scope=SCOPE_THREAT_READ)
-    headers = {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + access_token
-    }
+
     uri = '%s/%s' % (URI_THREATS, sha256)
-    res = api_call(uri=uri, method='get', headers=headers, body={}, params={}, accept_404=False)
+    res = api_call(uri=uri, method='get', access_token=access_token, body={}, params={}, accept_404=False)
     return res
 
 
@@ -803,12 +760,7 @@ def get_threats():
 
 
 def get_threats_request(page=None, page_size=None):  # pragma: no cover
-
     access_token = get_authentication_token(scope=SCOPE_THREAT_LIST)
-    headers = {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + access_token
-    }
 
     params = {}
     if page in demisto.args():
@@ -816,7 +768,7 @@ def get_threats_request(page=None, page_size=None):  # pragma: no cover
     if page_size in demisto.args():
         params['page_size'] = demisto.args()['pageSize']
 
-    res = api_call(uri=URI_THREATS, method='get', headers=headers, params=params)
+    res = api_call(uri=URI_THREATS, method='get', access_token=access_token, params=params)
     return res
 
 
@@ -890,12 +842,7 @@ def get_threat_devices():
 
 
 def get_threat_devices_request(threat_hash, page=None, page_size=None):  # pragma: no cover
-
     access_token = get_authentication_token(scope=SCOPE_THREAT_DEVICE_LIST)
-    headers = {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + access_token
-    }
 
     params = {}
     if page:
@@ -904,7 +851,7 @@ def get_threat_devices_request(threat_hash, page=None, page_size=None):  # pragm
         params['page_size'] = page_size
 
     uri = '%s/%s/devices' % (URI_THREATS, threat_hash)
-    res = api_call(uri=uri, method='get', headers=headers, params=params)
+    res = api_call(uri=uri, method='get', access_token=access_token, params=params)
     return res
 
 
@@ -947,12 +894,7 @@ def get_list():
 
 
 def get_list_request(list_type_id, page=None, page_size=None):  # pragma: no cover
-
     access_token = get_authentication_token(scope=SCOPE_GLOBAL_LIST)
-    headers = {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + access_token
-    }
 
     params = {}
     if list_type_id == 'GlobalQuarantine':
@@ -963,7 +905,7 @@ def get_list_request(list_type_id, page=None, page_size=None):  # pragma: no cov
         params['page'] = page
     if page_size:
         params['page_size'] = page_size
-    res = api_call(uri=URI_LISTS, method='get', headers=headers, params=params)
+    res = api_call(uri=URI_LISTS, method='get', access_token=access_token, params=params)
     return res
 
 
@@ -1027,10 +969,6 @@ def update_device_threats():  # pragma: no cover
 
 def update_device_threats_request(device_id, threat_id, event):  # pragma: no cover
     access_token = get_authentication_token(scope=SCOPE_THREAT_UPDATE)
-    headers = {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + access_token
-    }
 
     body = {
         'threat_id': threat_id,
@@ -1038,7 +976,7 @@ def update_device_threats_request(device_id, threat_id, event):  # pragma: no co
     }
 
     uri = '%s/%s/threats' % (URI_DEVICES, device_id)
-    res = api_call(uri=uri, method='post', headers=headers, body=body)
+    res = api_call(uri=uri, method='post', access_token=access_token, body=body)
 
     return res
 
@@ -1116,14 +1054,10 @@ def download_threat():
 
 
 def download_threat_request(hash):  # pragma: no cover
-
     access_token = get_authentication_token(scope=SCOPE_THREAT_READ)
-    headers = {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + access_token
-    }
+
     uri = '%s/%s/%s' % (URI_THREATS, "download", hash)
-    res = api_call(uri=uri, method='get', headers=headers)
+    res = api_call(uri=uri, method='get', access_token=access_token)
     if not res['url']:
         return_error('No url was found')
     return res['url']
@@ -1171,12 +1105,7 @@ def add_hash_to_list():
 
 
 def add_hash_to_list_request(sha256, list_type, reason, category=None):  # pragma: no cover
-
     access_token = get_authentication_token(scope=SCOPE_GLOBAL_LIST_CREATE)
-    headers = {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + access_token
-    }
 
     body = {
         'sha256': sha256,
@@ -1185,7 +1114,7 @@ def add_hash_to_list_request(sha256, list_type, reason, category=None):  # pragm
     }
     if category:
         body['category'] = category.replace(" ", "")
-    res = api_call(uri=URI_LISTS, method='post', headers=headers, body=body)
+    res = api_call(uri=URI_LISTS, method='post', access_token=access_token, body=body)
     return res
 
 
@@ -1220,18 +1149,13 @@ def delete_hash_from_lists():
 
 
 def delete_hash_from_lists_request(sha256, list_type):  # pragma: no cover
-
     access_token = get_authentication_token(scope=SCOPE_GLOBAL_LIST_DELETE)
-    headers = {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + access_token
-    }
 
     body = {
         'sha256': sha256,
         'list_type': list_type
     }
-    res = api_call(uri=URI_LISTS, method='delete', headers=headers, body=body)
+    res = api_call(uri=URI_LISTS, method='delete', access_token=access_token, body=body)
     return res
 
 
@@ -1282,15 +1206,12 @@ def delete_devices():
 
 def delete_devices_request(device_ids):  # pragma: no cover
     access_token = get_authentication_token()
-    headers = {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + access_token
-    }
+
     body = {
         'device_ids': device_ids
     }
 
-    res = api_call(uri=URI_DEVICES, method='delete', headers=headers, body=body)
+    res = api_call(uri=URI_DEVICES, method='delete', access_token=access_token, body=body)
     if not res or not res.get('request_id'):
         return_error('Delete response does not contain request id')
 
@@ -1413,15 +1334,10 @@ def get_policy_details():
 
 
 def get_policy_details_request(policy_id):  # pragma: no cover
-
     access_token = get_authentication_token(scope=SCOPE_POLICY_READ)
-    headers = {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + access_token
-    }
 
     uri = '%s/%s' % (URI_POLICIES, policy_id)
-    res = api_call(uri=uri, method='get', headers=headers)
+    res = api_call(uri=uri, method='get', access_token=access_token)
     return res
 
 
