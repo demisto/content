@@ -11,8 +11,9 @@ PIPELINE_FIELDS_TO_EXTRACT = {'id', 'project_id', 'status', 'ref', 'sha', 'creat
 
 
 class Client(BaseClient):
-    def __init__(self, server_url, verify, proxy, headers):
+    def __init__(self, server_url, verify, proxy, headers, trigger_token=''):
         super().__init__(base_url=server_url, verify=verify, proxy=proxy, headers=headers)
+        self.trigger_token = trigger_token
 
     def get_projects_request(self, repository_storage, last_activity_before, min_access_level, simple, sort,
                              membership, search_namespaces, archived, search, id_before, last_activity_after, starred,
@@ -183,6 +184,18 @@ class Client(BaseClient):
         response = self._http_request('get', suffix, headers=headers, params=params, resp_type='text')
         response = response.strip("'").strip('"')
         return response
+
+    def trigger_build(self, base_branch: str, variables: str, project_id: str):
+        headers = self._headers
+        variables = json.loads(variables)
+        data = {
+            'token': self.trigger_token,
+            'ref': base_branch,
+        }
+        for key, value in variables.items():
+            data[f'variables[{key}]'] = value
+
+        return self._http_request('post', url_suffix=f'projects/{project_id}/trigger/pipeline', data=data, headers=headers)
 
 
 def get_projects_command(client, args):
@@ -665,6 +678,39 @@ def gitlab_get_raw_file_command(client: Client, args: Dict[str, Any]) -> Union[C
     )
 
 
+def gitlab_trigger_build_command(client: Client, args: Dict[str, Any]) -> Union[CommandResults, Dict]:
+    """
+    Returns triggered pipeline for contribution build.
+    Args:
+        client (Client): Client to perform calls to GitLab services.
+        args (Dict[str, Any]): XSOAR arguments:
+            - 'base_branch': base branch of the pr.
+            - 'contrib_branch': the contributor's branch name.
+            - 'pr_number': the pull request number
+            - 'trigger_token': the gitlab trigger token.
+
+    Returns:
+        (CommandResults).
+    """
+    base_branch = args.get('ref_branch', '')
+    project_id = str(args.get('project_id', ''))
+    variables = args.get('trigger_variables', '')
+    if not client.trigger_token:
+        return_error("A trigger token is required in the integration instance configuration")
+
+    response = client.trigger_build(base_branch, variables, project_id)
+
+    output = {k: v for k, v in response.items() if k in PIPELINE_FIELDS_TO_EXTRACT}
+
+    return CommandResults(
+        outputs_prefix='GitLab.Pipeline',
+        outputs_key_field='id',
+        outputs=output,
+        raw_response=response,
+        readable_output=tableToMarkdown('Successfully triggered build. Pipeline details:', output, removeNull=True)
+    )
+
+
 def test_module(client):
     # Test functions here
     response = client.get_version_request()
@@ -680,6 +726,7 @@ def main():
     url = params.get('url')
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
+    trigger_token = params.get('trigger_token', '')
     headers = {}
     headers['PRIVATE-TOKEN'] = f'{params["api_key"]}'
 
@@ -688,7 +735,7 @@ def main():
 
     try:
         urllib3.disable_warnings()
-        client = Client(urljoin(url, ""), verify_certificate, proxy, headers=headers)
+        client = Client(urljoin(url, ""), verify_certificate, proxy, headers=headers, trigger_token=trigger_token)
         commands = {
             'gitlab-get-projects': get_projects_command,
             'gitlab-projects-get-access-requests': projects_get_access_requests_command,
@@ -710,7 +757,8 @@ def main():
             'gitlab-issue-create': gitlab_create_issue_command,
             'gitlab-issue-edit': gitlab_edit_issue_command,
             'gitlab-group-projects-list': gitlab_group_projects_list_command,
-            'gitlab-raw-file-get': gitlab_get_raw_file_command
+            'gitlab-raw-file-get': gitlab_get_raw_file_command,
+            'gitlab-trigger-pipeline': gitlab_trigger_build_command,
         }
 
         if command == 'test-module':
