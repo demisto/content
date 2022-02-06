@@ -39,10 +39,6 @@
           "type": "shortText"
         },
         {
-          "cliName": "eventtype",
-          "type": "shortText"
-        },
-        {
           "cliName": "googlecloudsccfindingsourcepropertieseventtype",
           "type": "shortText"
         },
