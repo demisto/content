@@ -33,6 +33,18 @@
         {
           "cliName": "emailto",
           "type": "shortText"
+        },
+        {
+          "cliName": "campaignemailto",
+          "type": "shortText"
+        },
+        {
+          "cliName": "proofpointtapsmtprecipient",
+          "type": "shortText"
+        },
+        {
+          "cliName": "digitalguardianemailrecipient",
+          "type": "shortText"
         }
     ]
 }
