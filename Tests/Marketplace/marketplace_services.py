@@ -664,13 +664,13 @@ class Pack(object):
                         logging.warning(f"{self._pack_name} pack dependency with id {dependency_pack_id} is not part of"
                                         f" the current marketplace, ignoring dependency.")
                         continue
-                    else:
-                        # If the pack is in the id_set, check if its a part of the marketplace -
-                        # this happens in the xsoar id set
-                        if marketplace not in id_set.get('Packs').get(dependency_pack_id).get('marketplaces'):
-                            logging.warning(f"{self._pack_name} pack dependency with id {dependency_pack_id} is not part of"
-                                            f" the current marketplace, ignoring dependency.")
-                            continue
+
+                    # If the pack is in the id_set, check if its a part of the marketplace -
+                    # this happens in the xsoar id set
+                    if marketplace not in pack_info.get('marketplaces'):
+                        logging.warning(f"{self._pack_name} pack dependency with id {dependency_pack_id} is not part of"
+                                        f" the current marketplace, ignoring dependency.")
+                        continue
 
                 # Case 3: the dependency is not in the index since it is a new pack, but it is in the id set
                 self._is_missing_dependencies = True
