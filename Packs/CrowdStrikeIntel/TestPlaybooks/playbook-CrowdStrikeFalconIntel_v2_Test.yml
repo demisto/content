@@ -779,7 +779,7 @@ tasks:
       submitWait: {}
       threshold: {}
       url:
-        simple: https://withifceale.top/treusparq.php,http://www.demisto.com
+        simple: https://withifceale.top/treusparq.php,http://www.demisto.com,https://www.test.com'
       wait: {}
     separatecontext: false
     view: |-
