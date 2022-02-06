@@ -2815,7 +2815,7 @@ def create_related_cve_list_for_machine(machines):
     machines = [{'ID': 1, ['CVE': 'CVE-1','CVE-2']},{'ID': 1, ['CVE': 'CVE-1','CVE-2']},{'ID': 2, 'CVE': ['CVE-1']}]
 
     and the output after remove duplicates will be:
-    unique_machines = [{'ID': 1, ['CVE': 'CVE-1','CVE-2']},{'ID': 2, 'CVE': ['CVE-1']}]
+    unique_machines = [{'ID': 1, 'CVE': ['CVE-1','CVE-2']},{'ID': 2, 'CVE': ['CVE-1']}]
     """
     machine_id_to_cve_list: Dict[str, List[str]] = {}
     for machine in machines:

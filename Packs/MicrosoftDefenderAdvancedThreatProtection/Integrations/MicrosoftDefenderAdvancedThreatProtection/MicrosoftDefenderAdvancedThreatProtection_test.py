@@ -851,3 +851,19 @@ def test_reformat_filter_with_list_arg(fields_to_filter_by, field_key_from_type_
 def test_create_filter_for_endpoint_command(hostnames, ips, ids, expected_filter):
     from MicrosoftDefenderAdvancedThreatProtection import create_filter_for_endpoint_command
     assert create_filter_for_endpoint_command(hostnames, ips, ids) == expected_filter
+
+
+@pytest.mark.parametrize('machines_list, expected_list', [
+    ([{'ID': 1, 'CVE': 'CVE-1'}, {'ID': 1, 'CVE': 'CVE-2'}, {'ID': 2, 'CVE': 'CVE-1'}],
+     [{'ID': 1, 'CVE': ['CVE-1', 'CVE-2']}, {'ID': 2, 'CVE': ['CVE-1']}]),
+
+    ([{'ID': 1, 'CVE': 'CVE-1'}, {'ID': 3, 'CVE': 'CVE-3'}, {'ID': 2, 'CVE': 'CVE-1'}],
+     [{'ID': 1, 'CVE': ['CVE-1']}, {'ID': 3, 'CVE': ['CVE-3']}, {'ID': 2, 'CVE': ['CVE-1']}, ]),
+
+    ([], []),
+    ([{'ID': 1, 'CVE': 'CVE-1'}, {'ID': 1, 'CVE': 'CVE-2'}], [{'ID': 1, 'CVE': ['CVE-1', 'CVE-2']}]),
+
+])
+def test_create_related_cve_list_for_machine(machines_list, expected_list):
+    from MicrosoftDefenderAdvancedThreatProtection import create_related_cve_list_for_machine
+    assert create_related_cve_list_for_machine(machines_list) == expected_list
