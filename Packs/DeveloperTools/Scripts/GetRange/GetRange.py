@@ -10,68 +10,42 @@ Code Conventions: https://xsoar.pan.dev/docs/integrations/code-conventions
 Linting: https://xsoar.pan.dev/docs/integrations/linting
 
 """
-
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
-
-from typing import Dict, Any
 import traceback
+import demistomock as demisto
+from CommonServerPython import CommandResults, return_results, return_error
 
 
-''' STANDALONE FUNCTION '''
-
-
-# TODO: REMOVE the following dummy function:
-def basescript_dummy(dummy: str) -> Dict[str, str]:
-    """Returns a simple python dict with the information provided
-    in the input (dummy).
-
-    :type dummy: ``str``
-    :param dummy: string to add in the dummy dict that is returned
-
-    :return: dict as {"dummy": dummy}
-    :rtype: ``str``
+def get_range_command(args):
     """
+         Filter value list with an input range.
+         Args:
+             args- dict(value to filter , index (list | str)
+         Returns:
+             filtered list.
+     """
+    val = args['value']
+    indexes = args['range']
 
-    return {"dummy": dummy}
-# TODO: ADD HERE THE FUNCTIONS TO INTERACT WITH YOUR PRODUCT API
-
-
-''' COMMAND FUNCTION '''
-
-
-# TODO: REMOVE the following dummy command function
-def basescript_dummy_command(args: Dict[str, Any]) -> CommandResults:
-
-    dummy = args.get('dummy', None)
-    if not dummy:
-        raise ValueError('dummy not specified')
-
-    # Call the standalone function and get the raw response
-    result = basescript_dummy(dummy)
-
+    if isinstance(indexes, (list, tuple)):
+        return CommandResults(
+            outputs={'value': [val[index] for index in indexes]})
+    if isinstance(indexes, str):
+        if '-' in indexes:
+            start, end = indexes.split('-')
+            start = int(start) if start else 0
+            end = int(end) if end else len(val)
+            return CommandResults(
+                outputs={'value': val[start:end + 1]})
     return CommandResults(
-        outputs_prefix='GetRange',
-        outputs_key_field='',
-        outputs=result,
-    )
-# TODO: ADD additional command functions that translate XSOAR inputs/outputs
-
-
-''' MAIN FUNCTION '''
+        outputs={'value': []})
 
 
 def main():
     try:
-        # TODO: replace the invoked command function with yours
-        return_results(basescript_dummy_command(demisto.args()))
+        return_results(results=get_range_command(demisto.args()))
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute GetRange. Error: {str(ex)}')
-
-
-''' ENTRY POINT '''
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
