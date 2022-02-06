@@ -309,16 +309,19 @@ def main():
     proxy = params.get('proxy')
     credentials = params.get('credentials')
     api_params = {
-        'key': params.get('api_key'),
-        'api_token': params.get('api_token')
+        'key': params.get('api_key') or params.get('key_and_token').get('identifier', ''),
+        'api_token': params.get('api_token') or params.get('key_and_token').get('password', '')
     }
     api_params.update(demisto.args())
     threshold = int(api_params.get('threshold', params.get('threshold', 70)))
 
     if not credentials or not credentials.get('identifier') or not credentials.get('password'):
         credentials = {}
+    
+    if not api_params.get('key') or not api_params.get('api_token'):
+        api_params = {}
 
-    if not ((params.get('api_key') and params.get('api_token')) or credentials):
+    if not ((params.get('api_key') and params.get('api_token')) or api_params or credentials):
         raise DemistoException('Please fill the credentials in the integration params'
                                ' - api key and token or username and password')
 
