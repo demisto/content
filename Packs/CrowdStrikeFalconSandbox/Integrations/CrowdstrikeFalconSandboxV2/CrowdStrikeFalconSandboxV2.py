@@ -227,17 +227,16 @@ def get_submission_arguments(args: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def submission_response(client, response, polling) -> List[CommandResults]:
-    submission_res = [CommandResults(outputs_prefix='CrowdStrike.Submit', outputs_key_field='submission_id',
-                                     raw_response=response, outputs=response,
-                                     readable_output=tableToMarkdown('Submission Data:', response,
-                                                                     headerTransform=underscore_to_space)),
-                      CommandResults('CrowdStrike.JobID', outputs=response.get('job_id'),
-                                     readable_output=f"JobID: {response.get('job_id')}"),
-                      CommandResults('CrowdStrike.EnvironmentID', outputs=response.get('environment_id'),
-                                     readable_output=f"EnvironmentID: {response.get('environment_id')}")]
+    context = {'CrowdStrike.Submit(val.submission_id && val.submission_id === obj.submission_id)': response,
+               'CrowdStrike.JobID': response.get('job_id'),
+               'CrowdStrike.EnvironmentID': response.get('environment_id')}
+    submission_res = CommandResults(outputs_prefix='', outputs_key_field='',
+                                    raw_response=response, outputs=context,
+                                    readable_output=tableToMarkdown('Submission Data:', response,
+                                                                    headerTransform=underscore_to_space))
 
     if not polling:
-        return submission_res
+        return [submission_res]
     else:
         return_results(submission_res)  # return early
     return crowdstrike_scan_command(client, {'file': response.get('sha256'), 'JobID': response.get('job_id'),
@@ -312,7 +311,7 @@ def crowdstrike_search_command(client: Client, args: Dict[str, Any]) -> List[Com
             outputs_key_field='sha256', outputs=response.get('result'),
             readable_output=f"Search returned {response.get('count')} results. Limit set to {args['limit']}"),
 
-                *[convert_to_file_res(res) for res in response.get('result')[:max(int(args['limit']), 1)]]]
+            *[convert_to_file_res(res) for res in response.get('result')[:max(int(args['limit']), 1)]]]
     except ValueError:
         raise ValueError("The limit argument must be numeric.")
 
