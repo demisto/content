@@ -906,3 +906,19 @@ def test_add_error_message_raise_error(failed_devices, all_requested_devices):
     with raises(DemistoException,
                 match=f'Microsoft Defender ATP The command was failed with the errors: {failed_devices}'):
         add_error_message(failed_devices, all_requested_devices)
+
+
+@pytest.mark.parametrize('indicators_response, expected_result', [
+    ({'value': []}, []),
+    ({'value': [{"id": '1', "indicator": '2', "isFailed": 'false', "failureReason": "", 'name': "no"}]},
+     [{"ID": '1', "Value": '2', "IsFailed": 'false', "FailureReason": ""}]),
+    ({'value': [{"id": '1', "indicator": '2', "isFailed": 'false', "failureReason": "", 'name': "no"},
+                {"id": '2', "indicator": '4', "isFailed": 'true', "failureReason": "reason", 'name': "no"},
+                {'name': "no"}]},
+     [{"ID": '1', "Value": '2', "IsFailed": 'false', "FailureReason": ""},
+      {"ID": '2', "Value": '4', "IsFailed": 'true', "FailureReason": "reason"},
+      {'FailureReason': None, 'ID': None, 'IsFailed': None, 'Value': None}]),
+])
+def test_parse_indicator_batch_response(indicators_response, expected_result):
+    from MicrosoftDefenderAdvancedThreatProtection import parse_indicator_batch_response
+    assert parse_indicator_batch_response(indicators_response) == expected_result
