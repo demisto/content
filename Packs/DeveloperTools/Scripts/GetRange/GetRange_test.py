@@ -1,39 +1,52 @@
-"""Base Script for Cortex XSOAR - Unit Tests file
+import pytest
 
-Pytest Unit Tests: all funcion names must start with "test_"
-
-More details: https://xsoar.pan.dev/docs/integrations/unit-testing
-
-MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
-
-"""
-
-import json
-import io
+get_range_command_by_index_list = [
+    ([], []),
+    ([0, 1, 2], [0, 1, 2]),
+    ([3], [3]),
+    ([3, 5], [3, 5]),
+    ((3, 5), [3, 5]),
+    ((), [])
+]
 
 
-def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
-        return json.loads(f.read())
-
-
-# TODO: REMOVE the following dummy unit test function
-def test_basescript_dummy():
-    """Tests helloworld-say-hello command function.
-
-    Checks the output of the command function with the expected output.
-
-    No mock is needed here because the say_hello_command does not call
-    any external API.
+@pytest.mark.parametrize('indexes,expected_results', get_range_command_by_index_list)
+def test_get_range_command_by_index_list(indexes, expected_results):
     """
-    from BaseScript import basescript_dummy_command
+        Given
+        - Index list or tuple.
+        When
+        - Filtering value using index list.
+        Then
+        - Return filtered list.
+    """
+    from GetRange import get_range_command
 
-    args = {
-        'dummy': 'this is a dummy response'
-    }
-    response = basescript_dummy_command(args)
+    results = get_range_command({'value': [i for i in range(0, 10)], 'range': indexes})
+    assert results.outputs['value'] == expected_results
 
-    mock_response = util_load_json('test_data/basescript-dummy.json')
 
-    assert response.outputs == mock_response
-# TODO: ADD HERE your unit tests
+get_range_command_by_range_str = [
+    ('', []),
+    ('0-3', [0, 1, 2, 3]),
+    ('9-', [9]),
+    ('-1', [0, 1]),
+    ('0-9', [i for i in range(10)]),
+    ('4-5', [4, 5]),
+]
+
+
+@pytest.mark.parametrize('indexes,expected_results', get_range_command_by_range_str)
+def test_get_range_command_by_range_str(indexes, expected_results):
+    """
+        Given
+        - Index range str.
+        When
+        - Filtering value using index list.
+        Then
+        - Return filtered list.
+    """
+    from GetRange import get_range_command
+
+    results = get_range_command({'value': [i for i in range(10)], 'range': indexes})
+    assert results.outputs['value'] == expected_results
