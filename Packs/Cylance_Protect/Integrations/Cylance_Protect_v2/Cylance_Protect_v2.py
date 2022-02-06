@@ -726,10 +726,9 @@ def get_threat():
             dbot_score = translate_score(threat['cylance_score'], int(threshold))
         context_threat = createContext(data=threat, keyTransform=underscoreToCamelCase, removeNull=True)
         context_threat = add_capitalized_hash_to_context(context_threat)
-        ec = {
-            'File': context_threat,
-            'DBotScore': create_dbot_score_entry(threat, dbot_score).to_context()
-        }
+        ec = {'File': context_threat}
+        ec.update(create_dbot_score_entry(threat, dbot_score).to_context())
+
         title = 'Cylance Protect Threat ' + sha256
 
         demisto.results({
