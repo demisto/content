@@ -2853,10 +2853,14 @@ def get_file_info_command(client: MsClient, args: dict) -> dict:
     file_outputs = []
     file_context_outputs = []
     failed_hashes = {}  # if we got an error, we will return the machine ids that failed
+    sha1_value_in_files = []  # for not adding duplicates machines to the table
     for file_hash in file_hashes:
         try:
             file_info_response = client.get_file_data(file_hash)
-            file_outputs.append(get_file_data(file_info_response))
+            file_data = get_file_data(file_info_response)
+            if file_data.get('Sha1', '') not in sha1_value_in_files:
+                file_outputs.append(file_data)
+                sha1_value_in_files.append(file_data.get('Sha1', ''))
             raw_response.append(file_info_response)
             file_context_outputs.append(get_file_context(file_info_response, ["sha1", "sha256", "filetype", "size"]))
         except Exception as e:
