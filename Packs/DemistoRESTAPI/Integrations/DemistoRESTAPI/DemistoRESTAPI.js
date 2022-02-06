@@ -21,7 +21,7 @@ sendMultipart = function (uri, entryID, body) {
         entryID,
         {
             Headers: {
-                'Authorization': [params.apikey],
+                'Authorization': [params.apikey? params.apikey : params.api_key],
                 'Content-Type': ['multipart/form-data'],
                 'Accept': ['application/json']
             },
@@ -55,7 +55,8 @@ var sendRequest = function(method, uri, body, raw) {
         requestUrl += '/';
     }
     requestUrl += uri;
-
+    var key = [params.apikey? params.apikey : (params.api_key).password];
+    console.log(key);
     var res = http(
         requestUrl,
         {
@@ -63,7 +64,7 @@ var sendRequest = function(method, uri, body, raw) {
             Headers: {
                 'Accept': ['application/json'],
                 'content-type': ['application/json'],
-                'authorization': [params.apikey]
+                'authorization': key
             },
             Body: body,
             SaveToFile: raw

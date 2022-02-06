@@ -11,14 +11,20 @@ configuration:
   defaultvalue: https://127.0.0.1
   type: 0
   required: true
-- display: Demisto Server API Key
-  name: apikey
-  type: 4
-  required: true
+- displaypassword: Demisto Server API Key
+  name: api_key
+  type: 9
+  required: false
+  hiddenusername: true
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+- display: Demisto Server API Key
+  name: apikey
+  type: 4
+  required: false
+  hidden: true
 - display: Use system proxy settings
   name: proxy
   type: 8
