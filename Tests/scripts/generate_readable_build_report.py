@@ -3,11 +3,13 @@ import requests
 from gitlab_slack_notifier import get_artifact_data
 
 
-def generate_report_from_build_results():
-    failed_ut_msg = get_failing_ut()
-    failed_validate_msg = get_failing_validations()
-    failed_tpb_msg = get_failed_tbp()
-
+def get_pr_comment():
+    comment = ''
+    comment += get_failing_ut()
+    comment += get_failing_validations()
+    comment += get_failing_tests()
+    "here i a link to the full report"
+    return comment
 
 
 
@@ -15,35 +17,37 @@ FAILED_UT_COMMENT = 'This is the link to the failed unit tests'
 JID = os.environ.get("CI_JOB_ID")
 FAILED_UT_LINK = f'https://xsoar.docs.pan.run/-/content/-/jobs/{JID}/artifacts/failed_unit_tests.txt'
 example_run_tests_file = "Users/yucohen/Downloads/Run_Tests (1).log"
-
-
+ARTIFACTS_FOLDER = ''
 
 
 def get_failing_ut():
     failed_ut = get_artifact_data(ARTIFACTS_FOLDER, "failed_unit_tests.txt")
     if failed_ut:
         failed_ut_list = failed_ut.split('\n')
-        write_data_to_summay_file()
+        write_data_to_summary_file()
         return f'you have {len(failed_ut_list)} failed unit test on this push.\n'
-    return 'no failing unit tests on this one. nice job!'
+    return 'no failing unit tests on this one. nice job!\n'
 
 
 def get_failing_validations():
-    failed_ut = get_artifact_data(ARTIFACTS_FOLDER, "failed_unit_tests.txt")
-    if failed_ut:
-        failed_ut_list = failed_ut.split('\n')
-        write_data_to_summay_file()
-        return f'you have {len(failed_ut_list)} failed unit test on this push.\n'
-    return 'no failing unit tests on this one. nice job!'
+    failed_validations = get_artifact_data(ARTIFACTS_FOLDER, "failed_validations.txt")
+    if failed_validations:
+        failed_validations_list = failed_validations.split('\n')
+        write_data_to_summary_file()
+        return f'you have {len(failed_validations_list)} failed validations on this push.\n'
+    return 'no failing validations on this one. nice job!\n'
 
 
+def get_failing_tests():
+    failed_tests = get_artifact_data(ARTIFACTS_FOLDER, "failed_tests.txt")
+    if failed_tests:
+        failed_tests_list = failed_tests.split('\n')
+        write_data_to_summary_file()
+        return f'you have {len(failed_tests_list)} failed tests on this push.\n'
+    return 'no failing tests on this one. nice job!\n'
 
-def get_failed_tests_log_block_from_log_file(log_file_path: str, failed_tpb_file_path: str):
-    failed_tests = failed_tests_list(failed_tpb_file_path)
-    for test in failed_tests:
-        log_block = get_log_block_for_test()
 
-
+def write_data_to_summary_file():
 
 
 
