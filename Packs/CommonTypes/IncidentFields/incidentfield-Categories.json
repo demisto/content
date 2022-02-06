@@ -28,5 +28,8 @@
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "5.5.0",
-    "openEnded": true
+    "openEnded": true,
+    "marketplaces": [
+        "xsoar"
+    ]
 }

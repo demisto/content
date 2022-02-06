@@ -53,6 +53,23 @@
         {
           "cliName": "fireeyenxeventattackerip",
           "type": "shortText"
+        },
+        {
+          "cliName": "dest",
+          "type": "shortText"
+        },
+        {
+          "cliName": "destinationips",
+          "type": "multiSelect"
+        },
+        {
+          "cliName": "deviceexternalip",
+          "type": "shortText"
+        },
+        {
+          "cliName": "externaladdresses",
+          "type": "shortText"
         }
+        
     ]
 }
