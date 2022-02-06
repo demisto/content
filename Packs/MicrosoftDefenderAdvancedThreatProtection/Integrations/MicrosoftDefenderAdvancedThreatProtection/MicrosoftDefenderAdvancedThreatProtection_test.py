@@ -1,6 +1,10 @@
+from _pytest.python_api import raises
+
 import demistomock as demisto
 import json
 import pytest
+
+from CommonServerPython import DemistoException
 from MicrosoftDefenderAdvancedThreatProtection import MsClient, get_future_time, build_std_output, parse_ip_addresses, \
     print_ip_addresses, get_machine_details_command
 
@@ -881,3 +885,24 @@ def test_create_related_cve_list_for_machine(machines_list, expected_list):
 def test_get_machine_mac_address(machine, expected_result):
     from MicrosoftDefenderAdvancedThreatProtection import get_machine_mac_address
     assert get_machine_mac_address(machine) == expected_result
+
+
+@pytest.mark.parametrize('failed_devices, all_requested_devices, expected_result', [
+    ({}, ["id1", "id2"], ""),
+    ({'id1': "some error"}, ["id1", "id2"], "Note: you don't see the following IDs in the results as the request was "
+                                            "failed for them. \nID id1 failed with the error: some error \n"),
+])
+def test_add_error_message(failed_devices, all_requested_devices, expected_result):
+    from MicrosoftDefenderAdvancedThreatProtection import add_error_message
+    assert add_error_message(failed_devices, all_requested_devices) == expected_result
+
+
+@pytest.mark.parametrize('failed_devices, all_requested_devices', [
+    ({'id1': "some error", 'id2': "some error"}, ["id1", "id2"]),
+    ({'id1': "some error1", 'id2': "some error2"}, ["id1", "id2"]),
+])
+def test_add_error_message_raise_error(failed_devices, all_requested_devices):
+    from MicrosoftDefenderAdvancedThreatProtection import add_error_message
+    with raises(DemistoException,
+                match=f'Microsoft Defender ATP The command was failed with the errors: {failed_devices}'):
+        add_error_message(failed_devices, all_requested_devices)

@@ -1018,7 +1018,7 @@ def isolate_machine_command(client: MsClient, args: dict):
     }
     human_readable = tableToMarkdown("The isolation request has been submitted successfully:", machines_all_action,
                                      headers=headers, removeNull=True)
-    human_readable += add_error_message_for(failed_machines, machine_ids)
+    human_readable += add_error_message(failed_machines, machine_ids)
     return human_readable, entry_context, raw_response
 
 
@@ -1048,11 +1048,11 @@ def unisolate_machine_command(client: MsClient, args: dict):
     }
     human_readable = tableToMarkdown("The request to stop the isolation has been submitted successfully.",
                                      machines_all_action, headers=headers, removeNull=True)
-    human_readable += add_error_message_for(failed_machines, machine_ids)
+    human_readable += add_error_message(failed_machines, machine_ids)
     return human_readable, entry_context, raw_response
 
 
-def add_error_message_for(failed_devices, all_requested_devices):
+def add_error_message(failed_devices, all_requested_devices):
     human_readable = ""
     if failed_devices:
         if len(all_requested_devices) == len(failed_devices):
@@ -1231,7 +1231,7 @@ def get_file_related_machines_command(client: MsClient, args: dict) -> CommandRe
 
     human_readable = tableToMarkdown(f'Microsoft Defender ATP machines related to files {files}', all_machines_outputs,
                                      headers=headers, removeNull=True)
-    human_readable += add_error_message_for(failed_files, files)
+    human_readable += add_error_message(failed_files, files)
     return CommandResults(readable_output=human_readable,
                           outputs=context_outputs,
                           outputs_prefix="MicrosoftATP.FileMachine",
@@ -1316,7 +1316,7 @@ def get_machine_details_command(client: MsClient, args: dict) -> CommandResults:
 
     human_readable = tableToMarkdown(f'Microsoft Defender ATP machines {machine_ids} details:',
                                      machines_readable_outputs, headers=headers, removeNull=True)
-    human_readable += add_error_message_for(failed_machines, machine_ids)
+    human_readable += add_error_message(failed_machines, machine_ids)
     return CommandResults(
         outputs_prefix='MicrosoftATP.Machine',
         outputs_key_field='ID',
@@ -1352,7 +1352,7 @@ def run_antivirus_scan_command(client: MsClient, args: dict):
     }
     human_readable = tableToMarkdown('Antivirus scan successfully triggered', machine_actions_data, headers=headers,
                                      removeNull=True)
-    human_readable += add_error_message_for(failed_machines, machine_ids)
+    human_readable += add_error_message(failed_machines, machine_ids)
     return human_readable, entry_context, raw_response
 
 
@@ -2796,7 +2796,7 @@ def list_machines_by_vulnerability_command(client: MsClient, args: dict) -> Comm
     machines_outputs = create_related_cve_list_for_machine(machines_outputs)
     human_readable = tableToMarkdown(f'Microsoft Defender ATP machines by vulnerabilities: {cve_ids}',
                                      machines_outputs, headers=headers, removeNull=True)
-    human_readable += add_error_message_for(failed_cve, cve_ids)
+    human_readable += add_error_message(failed_cve, cve_ids)
     return CommandResults(
         outputs_prefix='MicrosoftATP.CveMachine',
         outputs_key_field='ID',
@@ -2874,7 +2874,7 @@ def get_file_info_command(client: MsClient, args: dict):
             continue
     human_readable = tableToMarkdown(f'Microsoft Defender ATP file info by hashes: {file_hashes}',
                                      file_outputs, headers=headers, removeNull=True)
-    human_readable += add_error_message_for(failed_hashes, file_hashes)
+    human_readable += add_error_message(failed_hashes, file_hashes)
     if file_outputs:
         context = {
             'MicrosoftATP.File(val.Sha1 === obj.Sha1)': file_outputs,
