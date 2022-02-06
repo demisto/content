@@ -4619,9 +4619,6 @@ script:
     - contextPath: MicrosoftATP.File.DeterminationType
       description: The file determination type.
       type: String
-    - contextPath: MicrosoftATP.File.IsSigned
-      description: Whether the file detected as signed (an issuer output exists).
-      type: Boolean
     - contextPath: File.SHA1
       description: The SHA1 hash of the file.
       type: String

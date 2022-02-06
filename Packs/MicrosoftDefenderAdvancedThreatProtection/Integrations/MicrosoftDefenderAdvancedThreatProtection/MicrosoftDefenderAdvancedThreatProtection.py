@@ -2845,7 +2845,7 @@ def get_file_info_command(client: MsClient, args: dict):
     Returns:
         CommandResults. Human readable, context, raw response
     """
-    headers = ['Sha1', 'Sha256', 'Size', 'FileType', 'IsSigned', 'IsValidCertificate']
+    headers = ['Sha1', 'Sha256', 'Size', 'FileType', 'Signer', 'IsValidCertificate']
     file_context_path = 'File(val.SHA1 && val.SHA1 == obj.SHA1 || val.SHA256 && val.SHA256 == obj.SHA256 || ' \
                         'val.Type && val.Type == obj.Type || val.Size && val.Size == obj.Size )'
     file_hashes = list(dict.fromkeys(argToList(args.get('hash'))))  # remove duplicates
@@ -2858,10 +2858,6 @@ def get_file_info_command(client: MsClient, args: dict):
         try:
             file_info_response = client.get_file_data(file_hash)
             file_data = get_file_data(file_info_response)
-            if file_data.get('SignerHash', ''):
-                file_data['IsSigned'] = True
-            else:
-                file_data['IsSigned'] = False
             if file_data.get('Sha1', '') not in sha1_value_in_files:
                 file_outputs.append(file_data)
                 sha1_value_in_files.append(file_data.get('Sha1', ''))
