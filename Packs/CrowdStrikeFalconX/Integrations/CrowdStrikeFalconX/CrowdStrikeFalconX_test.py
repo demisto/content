@@ -35,6 +35,22 @@ SEND_UPLOADED_FILE_TO_SENDBOX_ANALYSIS_ARGS = {
 }
 
 
+SEND_UPLOADED_FILE_TO_SENDBOX_ANALYSIS_ARGS_POLLING = {
+    "sha256": "sha256",
+    "environment_id": "160: Windows 10",
+    "action_script": "",
+    "command_line": "",
+    "document_password": "",
+    "enable_tor": "false",
+    "submit_name": "",
+    "system_date": "",
+    "system_time": "",
+    "polling": True,
+    "interval_in_seconds": "60",
+    "extended_data": "true"
+}
+
+
 SEND_URL_TO_SANDBOX_ANALYSIS_ARGS = {
     "url": "https://www.google.com",
     "environment_id": "160: Windows 10",
@@ -235,13 +251,13 @@ def test_running_polling_command_pending(mocker):
     assert command_results.scheduled_command is not None
 
 
-def test_running_polling_command_new_search(mocker):
+def test_running_polling_command_new_search_for_url(mocker):
     """
     Given:
-         An upload request of a url or a file using the polling flow, that was already initiated priorly and is not
+         An upload request of a url using the polling flow, that was already initiated priorly and is not
           completed yet.
     When:
-         When, while in the polling flow, we areMicrosoftCloudAppSecurity checking the status of on an upload that was initiated earlier and is
+         When, while in the polling flow, we are checking the status of on an upload that was initiated earlier and is
          not complete yet.
     Then:
         Return a command results object, with scheduling a new command.
@@ -261,4 +277,34 @@ def test_running_polling_command_new_search(mocker):
                                           get_full_report_command, 'URL')
 
     assert command_results.outputs == [expected_outputs]
+    assert command_results.scheduled_command is not None
+
+
+def test_running_polling_command_new_search_for_file(mocker):
+    """
+    Given:
+         An upload request of a file  using the polling flow, that was already initiated priorly and is not
+          completed yet.
+    When:
+         When, while in the polling flow, we are checking the status of on an upload that was initiated earlier and is
+         not complete yet.
+    Then:
+        Return a command results object, with scheduling a new command.
+    """
+    args = SEND_UPLOADED_FILE_TO_SENDBOX_ANALYSIS_ARGS_POLLING
+    mocker.patch('CommonServerPython.ScheduledCommand.raise_error_if_not_supported')
+    mocker.patch.object(Client, '_generate_token')
+    client = Client(server_url="https://api.crowdstrike.com/", username="user1", password="12345", use_ssl=False,
+                    proxy=False)
+
+    mocker.patch.object(Client, 'send_uploaded_file_to_sandbox_analysis',
+                        return_value=SEND_UPLOADED_FILE_TO_SENDBOX_ANALYSIS_HTTP_RESPONSE)
+    mocker.patch.object(Client, 'get_full_report', return_value=GET_FULL_REPORT_HTTP_RESPONSE)
+
+    expected_outputs = SEND_UPLOADED_FILE_TO_SENDBOX_ANALYSIS_CONTEXT
+    command_results = run_polling_command(client, args, 'cs-fx-submit-uploaded-file',
+                                          send_uploaded_file_to_sandbox_analysis_command,
+                                          get_full_report_command, 'FILE')
+
+    assert command_results.outputs == expected_outputs
     assert command_results.scheduled_command is not None

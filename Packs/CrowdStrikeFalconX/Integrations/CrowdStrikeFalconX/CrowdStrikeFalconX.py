@@ -925,7 +925,11 @@ def pop_polling_related_args(args):
         args.pop('polling')
 
 
-def should_run_upload_function(args):
+def is_new_polling_search(args):
+    """
+    Check if the polling func is a new search or in the polling flow.
+    if there ids argument in the args dict its mean that the first search is finished and we should run the polling flow
+    """
     return not args.get('ids')
 
 
@@ -957,7 +961,7 @@ def run_polling_command(client, args: dict, cmd: str, upload_function: Callable,
     ScheduledCommand.raise_error_if_not_supported()
     interval_in_secs = int(args.get('interval_in_seconds', 600))
     # distinguish between the initial run, which is the upload run, and the results run
-    if should_run_upload_function(args):
+    if is_new_polling_search(args):
         # create new search
         extended_data = arrange_args_for_upload_func(args)
         command_results = upload_function(client, **args)
@@ -971,6 +975,7 @@ def run_polling_command(client, args: dict, cmd: str, upload_function: Callable,
             timeout_in_seconds=6000)
         command_results.scheduled_command = scheduled_command
         return command_results
+
     # not a new search, get search status
     pop_polling_related_args(args)
     command_result, status = results_function(client, **args)
