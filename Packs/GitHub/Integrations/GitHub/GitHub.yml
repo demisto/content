@@ -4090,6 +4090,68 @@ script:
     - contextPath: GitHub.Release.body
       description: The release body.
       type: String
+  - arguments:
+    - default: false
+      description: The number of the issue to comment on.
+      isArray: false
+      name: issue_number
+      required: true
+      secret: false
+    - default: false
+      description: the comment id to update.
+      isArray: false
+      name: comment_id
+      required: true
+      secret: false
+    - default: false
+      description: The contents of the comment.
+      isArray: false
+      name: body
+      required: true
+      secret: false
+    deprecated: false
+    description: Update an already existing comment.
+    execution: false
+    name: GitHub-update-comment
+    outputs:
+    - contextPath: GitHub.Comment.IssueNumber
+      description: The number of the issue to which the comment belongs.
+      type: Number
+    - contextPath: GitHub.Comment.ID
+      description: The ID of the comment.
+      type: Number
+    - contextPath: GitHub.Comment.NodeID
+      description: The node ID of the comment.
+      type: String
+    - contextPath: GitHub.Comment.Body
+      description: The body content of the comment.
+      type: String
+    - contextPath: GitHub.Comment.User.Login
+      description: The login of the user who commented.
+      type: String
+    - contextPath: GitHub.Comment.User.ID
+      description: The ID of the user who commented.
+      type: Number
+    - contextPath: GitHub.Comment.User.NodeID
+      description: The node ID of the user who commented.
+      type: String
+    - contextPath: GitHub.Comment.User.Type
+      description: The type of the user who commented.
+      type: String
+    - contextPath: GitHub.Comment.User.SiteAdmin
+      description: Whether the user who commented is a site admin.
+      type: Boolean
+  - arguments:
+    - default: false
+      description: The id of comment to delete.
+      isArray: false
+      name: comment_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Deletes a comment.
+    execution: false
+    name: GitHub-delete-comment
   dockerimage: demisto/pyjwt3:1.0.0.23674
   feed: false
   isfetch: true
