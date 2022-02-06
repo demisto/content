@@ -1,7 +1,7 @@
 id: DBot Create Phishing Classifier V2
 version: -1
 name: DBot Create Phishing Classifier V2
-description: Create a phishing classifier using machine learning technique, based on email content.
+description: Create a phishing classifier using machine learning techniques, based on email content.
 starttaskid: "0"
 tasks:
   "0":
@@ -108,11 +108,11 @@ tasks:
       name: Pre-process file
       description: |-
         Pre-process text data for the machine learning text classifier.
-        The pre-process normalize the text:
-        - Remove HTML tags
-        - Convert every word to it's root (goes -> go)
-        - Remove sample text of which the total number words are less than or equal to a threshold
-        - Remove emails with similarity greater then some threshold.
+        The pre-process normalizes the text:
+        - Remove HTML tags.
+        - Convert every word to it's root (goes -> go).
+        - Remove sample text of which the total number of words are less than or equal to a threshold.
+        - Remove emails with similarity greater than some threshold.
       scriptName: DBotPreProcessTextData
       type: regular
       iscommand: false
@@ -216,7 +216,7 @@ tasks:
       id: 0ee35628-0387-4595-84f8-17968fdabcdc
       version: -1
       name: Historical data exist?
-      description: Check if we have input with historical data file - usually from external source, or data we used to have in Demisto.
+      description: Check if we have input with a historical data file - usually from an external source, or data we used to have in Cortex XSOAR.
       type: condition
       iscommand: false
       brand: ""
@@ -252,7 +252,7 @@ tasks:
       id: 7174d475-f61d-440b-80c7-dfe59c635595
       version: -1
       name: Get Historical File
-      description: Converts Base64 file in a list to a binary file and upload to WarRoom.
+      description: Converts a Base64 file in a list to a binary file and upload to the War Room.
       scriptName: Base64ListToFile
       type: regular
       iscommand: false
@@ -286,7 +286,7 @@ tasks:
       version: -1
       name: Extend Query
       description: 'A helper script for DBot Create Phishing Classifier V2 playbook.
-        This script extends the query based on phishingLabels argument. '
+        This script extends the query based on the phishingLabels argument.'
       scriptName: ExtendQueryBasedOnPhishingLabels
       type: regular
       iscommand: false
@@ -348,12 +348,12 @@ inputs:
   value:
     simple: emailclassification
   required: false
-  description: The field name with the email tag. Supports a comma-separated list, the first non-empty value will be taken.
+  description: The field name with the email tag. Supports a comma-separated list. The first non-empty value will be taken.
 - key: phishingLabels
   value:
     simple: '*'
   required: false
-  description: 'A comma-separated list of email tags values and mapping. The script considers only the tags specified in this field. You can map label to another value by using this format: LABEL:MAPPED_LABEL. For example, for 4 values in email tag: malicious, credentials harvesting, inner communitcation, external legit email, unclassified. While training, we want to ignore "unclassified" tag, and refer to "credentials harvesting" as "malicious" too. Also, we want to     merge "inner communitcation" and "external legit email" to one tag called "non-malicious". The input will be: malicious, credentials harvesting:malicious, inner communitcation:non-malicious, external legit email:non-malicious'
+  description: 'A comma-separated list of email tags values and mapping. The script considers only the tags specified in this field. You can map the label to another value by using this format: LABEL:MAPPED_LABEL. For example, for 4 values in an email tag: malicious, credentials harvesting, inner communication, external legit email, unclassified. While training, we want to ignore the "unclassified" tag, and refer to "credentials harvesting" as "malicious" too. Also, we want to merge "inner communication" and "external legit email" to a single tag called "non-malicious". The input will be: malicious, credentials harvesting:malicious, inner communication:non-malicious, external legit email:non-malicious.'
 - key: incidentsQuery
   value: {}
   required: false
@@ -370,7 +370,7 @@ inputs:
 - key: historicalDataFileListName
   value: {}
   required: false
-  description: The name of demisto list contains historical data training samples for the model.
+  description: The name of the Cortex XSOAR list that contains historical data training samples for the model.
 - key: overrideModel
   value:
     simple: "true"
@@ -380,17 +380,17 @@ inputs:
   value:
     simple: Phishing
   required: false
-  description: A common-separatetd list of incident types by which to filter.
+  description: A common-separated list of incident types by which to filter.
 - key: dedupThreshold
   value:
     simple: "0.99"
   required: false
-  description: Remove emails with similarity greater then this threshold, range 0-1, where 1 is completly identical.
+  description: Remove emails with similarity greater than this threshold, range 0-1, where 1 is completely identical.
 - key: removeShortTextThreshold
   value:
     simple: "15"
   required: false
-  description: Sample text of which the total number words are less than or equal to this number will be ignored.
+  description: Sample text of which the total number words that are less than or equal to this number will be ignored.
 - key: modelTargetAccuracy
   value:
     simple: "0.8"
@@ -415,7 +415,7 @@ outputs:
   description: The total number of instances.
   type: number
 - contextPath: DBotPhishingClassifier.ModelName
-  description: The name of the model in Demisto.
+  description: The name of the model in Cortex XSOAR.
   type: string
 fromversion: "5.0.0"
 tests:
