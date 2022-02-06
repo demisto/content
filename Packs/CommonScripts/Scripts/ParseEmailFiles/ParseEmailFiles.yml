@@ -22,7 +22,7 @@ args:
 - auto: PREDEFINED
   defaultValue: "All files"
   description: Decides how many email files to parse, for multiple nested email files (for instance - an EML inside an EML).
-  name: nesting_level_to_parse
+  name: nesting_level_to_return
   predefined:
   - "All files"
   - "Outer file"
