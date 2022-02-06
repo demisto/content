@@ -1003,6 +1003,11 @@ script:
           required: false
           isArray: false
           defaultValue: ""
+        - name: limit
+          description: The max number of search results to return.
+          required: false
+          isArray: false
+          defaultValue: 10
         - name: tag
           description: The hashtag, for example ransomware.
           required: false
@@ -1190,6 +1195,11 @@ script:
           required: false
           isArray: false
           defaultValue: ""
+        - name: limit
+          description: The max number of search results to return.
+          required: false
+          isArray: false
+          defaultValue: 10
         - name: tag
           description: The hashtag, for example ransomware.
           required: false

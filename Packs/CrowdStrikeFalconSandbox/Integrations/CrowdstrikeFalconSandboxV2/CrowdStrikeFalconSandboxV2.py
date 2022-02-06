@@ -306,11 +306,15 @@ def crowdstrike_search_command(client: Client, args: Dict[str, Any]) -> List[Com
                               name=res.get('submit_name'),
                               malware_family=res.get('vx_family')))
 
-    return [CommandResults(
-        raw_response=response, outputs_prefix='CrowdStrike.Search',
-        outputs_key_field='sha256', outputs=response.get('result'),
-        readable_output=f"Search returned {response.get('count')} results"),
-        *[convert_to_file_res(res) for res in response.get('result')]]
+    try:
+        return [CommandResults(
+            raw_response=response, outputs_prefix='CrowdStrike.Search',
+            outputs_key_field='sha256', outputs=response.get('result'),
+            readable_output=f"Search returned {response.get('count')} results. Limit set to {args['limit']}"),
+
+                *[convert_to_file_res(res) for res in response.get('result')[:max(int(args['limit']), 1)]]]
+    except ValueError:
+        raise ValueError("The limit argument must be numeric.")
 
 
 @polling_function('cs-falcon-sandbox-scan')
@@ -454,7 +458,7 @@ def crowdstrike_sample_download_command(client: Client, args: Dict[str, Any]) ->
 
 
 def main() -> None:
-    """main function, parses params and runs command functions
+    """main function, parses params and runs command_func functions
 
     :return:
     :rtype:
@@ -466,7 +470,8 @@ def main() -> None:
 
     proxy = params.get('proxy', False)
 
-    demisto.debug(f'Command being called is {demisto.command()}')
+    demisto_command = demisto.command()
+    demisto.debug(f'Command being called is {demisto_command}')
     try:
         headers: Dict = {
             'api-key': demisto.params().get('credentials', {}).get('password'),
@@ -478,41 +483,41 @@ def main() -> None:
             verify=verify_certificate,
             headers=headers,
             proxy=proxy)
-        command: Callable
-        if demisto.command() in ['test-module']:
-            command = test_module
-        elif demisto.command() in ['cs-falcon-sandbox-search', 'crowdstrike-search']:
-            command = crowdstrike_search_command
-        elif demisto.command() in ['cs-falcon-sandbox-scan', 'crowdstrike-scan', 'file']:
-            command = crowdstrike_scan_command
-        elif demisto.command() in ['crowdstrike-get-environments', 'cs-falcon-sandbox-get-environments']:
-            command = crowdstrike_get_environments_command
-        elif demisto.command() in ['cs-falcon-sandbox-get-screenshots', 'crowdstrike-get-screenshots']:
-            command = crowdstrike_get_screenshots_command
-        elif demisto.command() in ['cs-falcon-sandbox-result', 'crowdstrike-result']:
-            command = crowdstrike_result_command
-        elif demisto.command() in ['cs-falcon-sandbox-analysis-overview']:
-            command = crowdstrike_analysis_overview_command
-        elif demisto.command() in ['cs-falcon-sandbox-analysis-overview-summary']:
-            command = crowdstrike_analysis_overview_summary_command
-        elif demisto.command() in ['cs-falcon-sandbox-analysis-overview-refresh']:
-            command = crowdstrike_analysis_overview_refresh_command
-        elif demisto.command() in ['crowdstrike-submit-sample', 'cs-falcon-sandbox-submit-sample']:
-            command = crowdstrike_submit_sample_command
-        elif demisto.command() in ['cs-falcon-sandbox-submit-url', 'crowdstrike-submit-url']:
-            command = crowdstrike_submit_url_command
-        elif demisto.command() in ['cs-falcon-sandbox-sample-download']:
-            command = crowdstrike_sample_download_command
-        elif demisto.command() in ['cs-falcon-sandbox-report-state']:
-            command = crowdstrike_report_state_command
+        command_func: Callable
+        if demisto_command in ['test-module']:
+            command_func = test_module
+        elif demisto_command in ['cs-falcon-sandbox-search', 'crowdstrike-search']:
+            command_func = crowdstrike_search_command
+        elif demisto_command in ['cs-falcon-sandbox-scan', 'crowdstrike-scan', 'file']:
+            command_func = crowdstrike_scan_command
+        elif demisto_command in ['crowdstrike-get-environments', 'cs-falcon-sandbox-get-environments']:
+            command_func = crowdstrike_get_environments_command
+        elif demisto_command in ['cs-falcon-sandbox-get-screenshots', 'crowdstrike-get-screenshots']:
+            command_func = crowdstrike_get_screenshots_command
+        elif demisto_command in ['cs-falcon-sandbox-result', 'crowdstrike-result']:
+            command_func = crowdstrike_result_command
+        elif demisto_command in ['cs-falcon-sandbox-analysis-overview']:
+            command_func = crowdstrike_analysis_overview_command
+        elif demisto_command in ['cs-falcon-sandbox-analysis-overview-summary']:
+            command_func = crowdstrike_analysis_overview_summary_command
+        elif demisto_command in ['cs-falcon-sandbox-analysis-overview-refresh']:
+            command_func = crowdstrike_analysis_overview_refresh_command
+        elif demisto_command in ['crowdstrike-submit-sample', 'cs-falcon-sandbox-submit-sample']:
+            command_func = crowdstrike_submit_sample_command
+        elif demisto_command in ['cs-falcon-sandbox-submit-url', 'crowdstrike-submit-url']:
+            command_func = crowdstrike_submit_url_command
+        elif demisto_command in ['cs-falcon-sandbox-sample-download']:
+            command_func = crowdstrike_sample_download_command
+        elif demisto_command in ['cs-falcon-sandbox-report-state']:
+            command_func = crowdstrike_report_state_command
         else:
-            raise NotImplementedError(f'Command not implemented: {demisto.command()}')
+            raise NotImplementedError(f'Command not implemented: {demisto_command}')
 
-        return_results(command(client, args))
+        return_results(command_func(client, args))
 
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+        return_error(f'Failed to execute {demisto_command} command_func.\nError:\n{str(e)}')
 
 
 ''' ENTRY POINT '''
