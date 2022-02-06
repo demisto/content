@@ -2817,7 +2817,7 @@ def create_related_cve_list_for_machine(machines):
     and the output after remove duplicates will be:
     unique_machines = [{'ID': 1, ['CVE': 'CVE-1','CVE-2']},{'ID': 2, 'CVE': ['CVE-1']}]
     """
-    machine_id_to_cve_list = {}
+    machine_id_to_cve_list: Dict[str, List[str]] = {}
     for machine in machines:
         machine_id = machine.get('ID')
         cve_id = machine.get('CVE')
@@ -2839,13 +2839,13 @@ def get_file_context(file_info_response: Dict[str, str], headers: list):
     return {key.capitalize(): value for (key, value) in file_info_response.items() if key in headers}
 
 
-def get_file_info_command(client: MsClient, args: dict) -> dict:
+def get_file_info_command(client: MsClient, args: dict):
     """ Retrieves file info by a file hash (Sha1 or Sha256).
 
     Returns:
         CommandResults. Human readable, context, raw response
     """
-    headers = ['Sha1', 'Sha256', 'Size', 'FileType']
+    headers = ['Sha1', 'Sha256', 'Size', 'FileType', 'IsSigned', 'IsValidCertificate']
     file_context_path = 'File(val.SHA1 && val.SHA1 == obj.SHA1 || val.SHA256 && val.SHA256 == obj.SHA256 || ' \
                         'val.Type && val.Type == obj.Type || val.Size && val.Size == obj.Size )'
     file_hashes = list(dict.fromkeys(argToList(args.get('hash'))))  # remove duplicates
@@ -2858,29 +2858,38 @@ def get_file_info_command(client: MsClient, args: dict) -> dict:
         try:
             file_info_response = client.get_file_data(file_hash)
             file_data = get_file_data(file_info_response)
+            if file_data.get('SignerHash', ''):
+                file_data['IsSigned'] = True
+            else:
+                file_data['IsSigned'] = False
             if file_data.get('Sha1', '') not in sha1_value_in_files:
                 file_outputs.append(file_data)
                 sha1_value_in_files.append(file_data.get('Sha1', ''))
             raw_response.append(file_info_response)
             file_context_outputs.append(get_file_context(file_info_response, ["sha1", "sha256", "filetype", "size"]))
+        except NotFoundError:  # in case the error is not found hash, we want to return "No entries"
+            continue
         except Exception as e:
             failed_hashes[file_hash] = e
             continue
     human_readable = tableToMarkdown(f'Microsoft Defender ATP file info by hashes: {file_hashes}',
                                      file_outputs, headers=headers, removeNull=True)
     human_readable += add_error_message_for(failed_hashes, file_hashes)
-    context = {
-        'MicrosoftATP.File(val.Sha1 === obj.Sha1)': file_outputs,
-        file_context_path: file_context_outputs
-    }
-    return {
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['text'],
-        'Contents': file_outputs,
-        'EntryContext': context,
-        'HumanReadable': human_readable,
-        'raw_response': raw_response
-    }
+    if file_outputs:
+        context = {
+            'MicrosoftATP.File(val.Sha1 === obj.Sha1)': file_outputs,
+            file_context_path: file_context_outputs
+        }
+        return {
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['text'],
+            'Contents': file_outputs,
+            'EntryContext': context,
+            'HumanReadable': human_readable,
+            'raw_response': raw_response
+        }
+    else:
+        return "No entries."
 
 
 def create_endpoint_verdict(machine: dict):

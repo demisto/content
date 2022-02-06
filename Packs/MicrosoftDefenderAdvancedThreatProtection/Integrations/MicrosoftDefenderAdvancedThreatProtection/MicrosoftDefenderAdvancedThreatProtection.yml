@@ -4564,7 +4564,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Retrieves file info by a file hash (Sha1 or Sha256).
+    description: Retrieves file info by a file hash (Sha1 or Sha256). Note, if the given hash is not part of the results, it was not found.
     execution: false
     name: microsoft-atp-get-file-info
     outputs:
@@ -4619,6 +4619,9 @@ script:
     - contextPath: MicrosoftATP.File.DeterminationType
       description: The file determination type.
       type: String
+    - contextPath: MicrosoftATP.File.IsSigned
+      description: Whether the file detected as signed (an issuer output exists).
+      type: Boolean
     - contextPath: File.SHA1
       description: The SHA1 hash of the file.
       type: String
