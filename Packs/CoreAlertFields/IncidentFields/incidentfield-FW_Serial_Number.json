@@ -33,6 +33,14 @@
         {
           "cliName": "applianceid",
           "type": "shortText"
+        },
+        {
+          "cliName": "extrahopapplianceid",
+          "type": "shortText"
+        },
+        {
+          "cliName": "fwserials",
+          "type": "shortText"
         }
     ]
 }
