@@ -27,5 +27,11 @@
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "6.5.0",
-	"x2_fields": "container_id"
+	"x2_fields": "container_id",
+    "Aliases": [
+        {
+          "cliName": "prismacloudcomputecontainer",
+          "type": "shortText"
+        }
+    ]
 }
