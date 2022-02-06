@@ -29,18 +29,16 @@ WORKFLOW_TYPES = {CONTENT_NIGHTLY, SDK_NIGHTLY, BUCKET_UPLOAD, PRIVATE_NIGHTLY, 
 def options_handler():
     parser = argparse.ArgumentParser(description='Parser for slack_notifier args')
     parser.add_argument('-u', '--url', help='The gitlab server url', default=GITLAB_SERVER_URL)
+    parser.add_argument('-p', '--pipeline_id', help='The pipeline id to check the status of', required=True)
+    parser.add_argument('-s', '--slack_token', help='The token for slack', required=True)
+    parser.add_argument('-c', '--ci_token', help='The token for circleci/gitlab', required=True)
+    parser.add_argument(
+        '-ch', '--slack_channel', help='The slack channel in which to send the notification', default=CONTENT_CHANNEL
+    )
     parser.add_argument('-gp', '--gitlab_project_id', help='The gitlab project id', default=GITLAB_PROJECT_ID)
     parser.add_argument(
         '-tw', '--triggering-workflow', help='The type of ci pipeline workflow the notifier is reporting on',
         choices=WORKFLOW_TYPES)
-    parser.add_argument('-p', '--pipeline_id', help='The pipeline id to check the status of', required=True)
-    parser.add_argument('-c', '--ci_token', help='The token for circleci/gitlab', required=True)
-
-    parser.add_argument('-s', '--slack_token', help='The token for slack', required=True)
-    parser.add_argument(
-        '-ch', '--slack_channel', help='The slack channel in which to send the notification', default=CONTENT_CHANNEL
-    )
-
     options = parser.parse_args()
 
     return options
