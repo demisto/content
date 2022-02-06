@@ -18,7 +18,7 @@
     "content": true,
     "group": 0,
     "hidden": false,
-    "openEnded": true,
+    "openEnded": false,
     "associatedToAll": true,
     "unmapped": false,
     "unsearchable": true,
