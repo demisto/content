@@ -426,7 +426,7 @@ class TestCleanPacks:
 
         skipped_cleanup = clean_non_existing_packs(index_folder_path="dummy_index_path", private_packs=[],
                                                    storage_bucket=dummy_storage_bucket,
-                                                   storage_base_path=GCPConfig.PRODUCTION_STORAGE_BASE_PATH)
+                                                   storage_base_path=GCPConfig.PRODUCTION_STORAGE_BASE_PATH, id_set={})
 
         assert skipped_cleanup
 
@@ -455,7 +455,7 @@ class TestCleanPacks:
 
         skipped_cleanup = clean_non_existing_packs(index_folder_path="dummy_index_path", private_packs=[],
                                                    storage_bucket=dummy_storage_bucket,
-                                                   storage_base_path=GCPConfig.PRODUCTION_STORAGE_BASE_PATH)
+                                                   storage_base_path=GCPConfig.PRODUCTION_STORAGE_BASE_PATH, id_set={})
 
         assert skipped_cleanup
 
@@ -503,7 +503,7 @@ class TestCleanPacks:
 
         skipped_cleanup = clean_non_existing_packs(index_folder_path=index_folder_path, private_packs=private_packs,
                                                    storage_bucket=dummy_storage_bucket,
-                                                   storage_base_path=GCPConfig.PRODUCTION_STORAGE_BASE_PATH)
+                                                   storage_base_path=GCPConfig.PRODUCTION_STORAGE_BASE_PATH, id_set={})
 
         assert not skipped_cleanup
         shutil.rmtree.assert_called_once_with(os.path.join(index_folder_path, invalid_pack))
