@@ -487,11 +487,10 @@ def fetch_incidents(client: Client, last_run: dict, first_fetch: str, max_fetch:
         demisto.info(f'{INTEGRATION_NAME} no alerts were fetched from FireEye server at: {str(next_run)}')
         # as no alerts occurred in the window of 48 hours from the given start time, update last_run window to the next
         # 48 hours. If it is later than now -10 minutes take the latter (to avoid missing events).
-        two_days_from_last_search = (arg_to_datetime(next_run['time']) + timedelta(hours=48))
-        now_minus_ten_minutes = arg_to_datetime('10 minutes').replace(tzinfo=two_days_from_last_search.tzinfo)
-        demisto.error(two_days_from_last_search, now_minus_ten_minutes)
+        two_days_from_last_search = (dateparser.parse(next_run['time']) + timedelta(hours=48))
+        now_minus_ten_minutes = dateparser.parse('10 minutes').replace(tzinfo=two_days_from_last_search.tzinfo)
         next_search = min(two_days_from_last_search, now_minus_ten_minutes)
-        next_run['time'] = to_fe_datetime_converter(next_search.isoformat())
+        next_run['time'] = next_search.isoformat()
         return next_run, []
 
     alerts = all_alerts[:max_fetch]
@@ -517,11 +516,11 @@ def fetch_incidents(client: Client, last_run: dict, first_fetch: str, max_fetch:
         # As no incidents were collected, we know that all the fetched alerts for 48 hours starting in the 'start_time'
         # already exists in our system, thus update last_run time to look for the next 48 hours. If it is later than
         # now -10 minutes take the latter (to avoid missing events)
-        two_days_from_last_incident = arg_to_datetime(alerts[-1].get('occurred')) + timedelta(hours=48)
-        now_minus_ten_minutes = arg_to_datetime('10 minutes').replace(tzinfo=two_days_from_last_incident.tzinfo)
+        two_days_from_last_incident = dateparser.parse(alerts[-1].get('occurred')) + timedelta(hours=48)
+        now_minus_ten_minutes = dateparser.parse('10 minutes').replace(tzinfo=two_days_from_last_incident.tzinfo)
         demisto.info(two_days_from_last_incident, now_minus_ten_minutes)
         next_search = min(two_days_from_last_incident, now_minus_ten_minutes)
-        next_run['time'] = to_fe_datetime_converter(next_search.isoformat())
+        next_run['time'] = next_search.isoformat()
         demisto.info(f'{INTEGRATION_NAME} Setting next_run to: {next_run["time"]}')
         return next_run, []
 
