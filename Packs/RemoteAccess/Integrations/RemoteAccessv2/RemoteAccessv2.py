@@ -43,7 +43,7 @@ def perform_copy_command(ssh_client: SSHClient, file_path: str, destination_path
             else:
                 with tempfile.TemporaryDirectory() as temp_dir:
                     scp_client.get(file_path, f'{temp_dir}/{destination_path}')
-                    with open(f'{temp_dir}/{destination_path}', 'r') as f:
+                    with open(f'{temp_dir}/{destination_path}', 'rb') as f:
                         return f.read()
     except (FileNotFoundError, SCPException) as e:
         if 'No such file or directory' in str(e):
