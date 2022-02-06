@@ -865,10 +865,10 @@ def main() -> None:
     main function, parses params and runs command functions
     """
 
-    demisto.debug(f'Command being called is {demisto.command()}')
+    command = demisto.command()
+    demisto.debug(f'Command being called is {command}')
 
     try:
-        command = demisto.command()
         service = build_and_authenticate(demisto.params())
         if command == 'test-module':
             return_results(test_module())
