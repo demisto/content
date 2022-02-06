@@ -2,7 +2,7 @@
     "name": "DevSecOps",
     "description": "DevSecOps CI/CD Orchestration Integration Pack.",
     "support": "community",
-    "currentVersion": "1.0.6",
+    "currentVersion": "1.0.8",
     "author": "Ayman Mahmoud",
     "githubUser": [
         "ayman-m"

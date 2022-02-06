@@ -1,48 +1,117 @@
 {
-    "associatedToAll": false,
-    "associatedTypes": [
-        "Qradar Generic"
-    ],
-    "breachScript": "",
-    "caseInsensitive": true,
-    "cliName": "usernames",
-    "closeForm": false,
-    "columns": null,
-    "content": true,
-    "defaultRows": null,
-    "description": "The username in the event.",
-    "editForm": true,
-    "extractIndicatorTypesIDs": [],
-    "fieldCalcScript": "",
-    "fromServerVersion": "",
-    "group": 0,
-    "hidden": false,
-    "id": "incident_usernames",
-    "isExtractingSpecificIndicatorTypes": false,
-    "isReadOnly": false,
-    "itemVersion": "",
-    "locked": false,
-    "name": "Usernames",
-    "neverSetAsRequired": false,
-    "ownerOnly": false,
-    "placeholder": "",
-    "propagationLabels": [
-        "all"
-    ],
-    "required": false,
-    "script": "",
-    "selectValues": [],
-    "sla": 0,
-    "system": false,
-    "systemAssociatedTypes": null,
-    "threshold": 72,
-    "toServerVersion": "",
-    "type": "multiSelect",
-    "unmapped": false,
-    "unsearchable": false,
-    "useAsKpi": false,
-    "validationRegex": "",
-    "version": -1,
-    "fromVersion": "6.0.0",
-    "openEnded": true
+  "associatedToAll": false,
+  "associatedTypes": [
+    "Qradar Generic"
+  ],
+  "breachScript": "",
+  "caseInsensitive": true,
+  "cliName": "usernames",
+  "closeForm": false,
+  "columns": null,
+  "content": true,
+  "defaultRows": null,
+  "description": "The username in the event.",
+  "editForm": true,
+  "extractIndicatorTypesIDs": [],
+  "fieldCalcScript": "",
+  "fromServerVersion": "",
+  "group": 0,
+  "hidden": false,
+  "id": "incident_usernames",
+  "isExtractingSpecificIndicatorTypes": false,
+  "isReadOnly": false,
+  "itemVersion": "",
+  "locked": false,
+  "name": "Usernames",
+  "neverSetAsRequired": false,
+  "ownerOnly": false,
+  "placeholder": "",
+  "propagationLabels": [
+    "all"
+  ],
+  "required": false,
+  "script": "",
+  "selectValues": [],
+  "sla": 0,
+  "system": false,
+  "systemAssociatedTypes": null,
+  "threshold": 72,
+  "toServerVersion": "",
+  "type": "multiSelect",
+  "unmapped": false,
+  "unsearchable": false,
+  "useAsKpi": false,
+  "validationRegex": "",
+  "version": -1,
+  "fromVersion": "6.0.0",
+  "marketplaces": [
+    "xsoar"
+],
+  "openEnded": true,
+  "Aliases": [
+    {
+      "cliName": "illusivenetworkslastseenuser",
+      "type": "shortText"
+    },
+    {
+      "cliName": "logpointusername",
+      "type": "shortText"
+    },
+    {
+      "cliName": "microsoft365defenderusers",
+      "type": "grid"
+    },
+    {
+      "cliName": "prismacloudcomputeuser",
+      "type": "shortText"
+    },
+    {
+      "cliName": "safenettrustedaccessusername",
+      "type": "shortText"
+    },
+    {
+      "cliName": "securityscorecardusername",
+      "type": "shortText"
+    },
+    {
+      "cliName": "sourceusername",
+      "type": "shortText"
+    },
+    {
+      "cliName": "srcuser",
+      "type": "shortText"
+    },
+    {
+      "cliName": "tidyuser",
+      "type": "shortText"
+    },
+    {
+      "cliName": "username",
+      "type": "shortText"
+    },
+    {
+      "cliName": "accountname",
+      "type": "shortText"
+    },
+    {
+      "cliName": "chronicleuser",
+      "type": "shortText"
+    },
+    {
+      "cliName": "code42username",
+      "type": "shortText"
+    },
+    {
+      "cliName": "deviceusername",
+      "type": "shortText"
+    },
+    {
+      "cliName": "digitalguardianusername",
+      "type": "shortText"
+    },
+    {
+      "cliName": "f5silverlinedetectedusernames",
+      "type": "shortText"
+    }
+  ]
 }
