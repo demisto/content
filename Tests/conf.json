@@ -4363,7 +4363,9 @@
         {
             "playbookID": "Atlassian Confluence Cloud-Test",
             "fromversion": "6.2.0",
-            "integrations": "Atlassian Confluence Cloud"
+            "integrations": [
+                "Atlassian Confluence Cloud"
+            ],
         },
         {
             "playbookID": "CrowdStrike_Falcon_X_-Test-Detonate_URL",
@@ -5133,7 +5135,6 @@
         "Azure Storage FileShare": "No instance - developed by Qmasters",
         "Azure Storage Container": "No instance - developed by Qmasters",
         "VMware Workspace ONE UEM (AirWatch MDM)": "No instance - developed by crest",
-        "Atlassian Confluence Cloud": "No instance - developed by crest",
         "ServiceDeskPlus (On-Premise)": "No instance",
         "Forcepoint": "instance issues. Issue 28043",
         "ZeroFox": "Issue 29284",
