@@ -891,7 +891,7 @@
 <p>There is no raw output for this command.</p>
 <h3 id="h_828752286601529821180424">Download a report</h3>
 <hr>
-<p>Downloads a resource associated to a report. This can be the full report, dropped binaries, and so on. Click <a href="https://jbxcloud.joesecurity.org/userguide?sphinxurl=usage/webapi.html#v2-analysis-download"> here </a> to see the full report types list.</p>
+<p>Downloads a resource associated to a report. This can be the full report, dropped binaries, and so on. See all supported report types here: <a href="https://jbxcloud.joesecurity.org/userguide?sphinxurl=usage/webapi.html#v2-analysis-download"></a> </p>
 <h5>Base Command</h5>
 <p><code>joe-download-report</code></p>
 <h5>Input</h5>
