@@ -32,7 +32,6 @@ configuration:
   required: false
   type: 4
   hidden: true
-  additionalinfo: user api_token instead
 - display: Fetch incidents
   name: isFetch
   required: false

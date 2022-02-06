@@ -82,4 +82,9 @@ QRadar
 AdditionalPollingCommandName
 FireEye
 FormatURL
+<<<<<<< HEAD
 VMware
+=======
+Gitlab
+GitHub
+>>>>>>> master
