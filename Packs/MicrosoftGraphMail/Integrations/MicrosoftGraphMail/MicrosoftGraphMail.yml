@@ -75,19 +75,16 @@ configuration:
   required: false
   type: 0
   hidden: true
-  additionalinfo: use _auth_id_ key instead
 - display: Token or Tenant ID - see Detailed Instructions (?)
   name: _tenant_id
   required: false
   type: 0
   hidden: true
-  additionalinfo: use _tenant_id_ key instead
 - display: Key or Client Secret (Deprecated)
   name: enc_key
   required: false
   type: 4
   hidden: true
-  additionalinfo: Use the "Key or Client Secret - see Detailed Instructions (?) (Recommended)" parameter instead.
 - display: ID or Client ID - see Detailed Instructions (?) (Deprecated)
   name: auth_id
   required: false
