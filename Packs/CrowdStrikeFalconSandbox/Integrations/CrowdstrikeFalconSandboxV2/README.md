@@ -1,6 +1,6 @@
 # CrowdStrike Falcon Sandbox v2
 
-Use the CrowdStrike Falcon Sandbox integration to submit and analyze files and URLs.<br/>
+Use the CrowdStrike Falcon Sandbox integration to submit and analyze files and URLs.
 
 The maximum file upload size is 100 MB.
 
