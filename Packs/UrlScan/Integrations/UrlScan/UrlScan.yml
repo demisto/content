@@ -56,8 +56,7 @@ configuration:
   name: apikey
   required: false
   type: 4
-  hidden: true  
-  additionalinfo: Use api_key instead
+  hidden: true
 description: Use urlscan.io integration to perform scans on suspected URLs and see their reputation.
 display: urlscan.io
 name: urlscan.io
