@@ -21,7 +21,7 @@ args:
     Relevant to msg files only.
 - auto: PREDEFINED
   defaultValue: "All files"
-  description: Decides how many email files to parse, for multiple nested email files (for instance - an EML inside an EML).
+  description: In case of nested email files (for instance, an EML file inside an EML file), determines which of the email files to return as an output.
   name: nesting_level_to_return
   predefined:
   - "All files"
