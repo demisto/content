@@ -657,18 +657,25 @@ class Pack(object):
 
             elif dependency_pack_id in pack_names:
                 if id_set:
-                    logging.debug(f'pack {dependency_pack_id} in ID set:\n {id_set.get("Packs", {}).get(dependency_pack_id)}')
-                    if marketplace not in id_set.get('Packs', {}).get(dependency_pack_id, {}).get('marketplaces'):
-                        # Case 2: the dependency is not in the index since it is not a part of the current marketplace
+                    # Case 2: the dependency is not in the index since it is not a part of the current marketplace
+                    if not id_set.get('Packs', {}).get(dependency_pack_id):
+                        # If the pack is not in the id set - this happens in the marketplace v2 id set
                         logging.warning(f"{self._pack_name} pack dependency with id {dependency_pack_id} is not part of"
                                         f" the current marketplace, ignoring dependency.")
+                        continue
+                    else:
+                        # If the pack is in the id_set, check if its a part of the marketplace -
+                        # this happens in the xsoar id set
+                        if marketplace not in id_set.get('Packs').get(dependency_pack_id).get('marketplaces'):
+                            logging.warning(f"{self._pack_name} pack dependency with id {dependency_pack_id} is not part of"
+                                            f" the current marketplace, ignoring dependency.")
+                            continue
 
-                else:
-                    # Case 3: the dependency is not in the index since it is a new pack, but it is in the id set
-                    self._is_missing_dependencies = True
-                    logging.warning(f"{self._pack_name} pack dependency with id {dependency_pack_id} "
-                                    f"was not found in index, marking it as missing dependencies - to be resolved in "
-                                    f"next iteration over packs")
+                # Case 3: the dependency is not in the index since it is a new pack, but it is in the id set
+                self._is_missing_dependencies = True
+                logging.warning(f"{self._pack_name} pack dependency with id {dependency_pack_id} "
+                                f"was not found in index, marking it as missing dependencies - to be resolved in "
+                                f"next iteration over packs")
 
             else:
                 logging.warning(f"{self._pack_name} pack dependency with id {dependency_pack_id} was not found")
