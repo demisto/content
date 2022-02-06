@@ -10,7 +10,6 @@ configuration:
     required: false
     defaultvalue: null
     type: 9
-    additionalinfo: ' '
     displaypassword: API Key
     hiddenusername: true
   - additionalinfo: Reliability of the source providing the intelligence data.
