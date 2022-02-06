@@ -677,3 +677,5 @@ Returns reports on selected alerts.
 #### Human Readable Output
 
 
+## Known Limitations
+Clicking the **Test** button verifies that the instance configuration is correct. Clicking the **Test** button several times in a row may result in a known Unauthorized error. Please ignore that error. 
