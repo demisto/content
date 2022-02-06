@@ -317,7 +317,7 @@ def main():
 
     if not credentials or not credentials.get('identifier') or not credentials.get('password'):
         credentials = {}
-    
+
     if not api_params.get('key') or not api_params.get('api_token'):
         api_params = {}
 
