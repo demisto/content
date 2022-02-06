@@ -1,8 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-# CHANGE IN PACK
-
 ''' IMPORTS '''
 import copy
 import json
