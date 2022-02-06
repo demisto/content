@@ -459,8 +459,9 @@ def test_blocklist_files_command_with_more_than_one_file(requests_mock):
 
     from CortexCoreIR import blocklist_files_command, Client
     test_data = load_test_data('test_data/blocklist_allowlist_files_success.json')
-    expected_command_result = {'Core.blocklist.fileHash(val.fileHash == obj.fileHash)': test_data[
+    expected_command_result = {'Core.blocklist.added_hashes.fileHash(val.fileHash == obj.fileHash)': test_data[
         'multi_command_args']['hash_list']}
+
     requests_mock.post(f'{Core_URL}/public_api/v1/hash_exceptions/blocklist/', json=test_data['api_response'])
 
     client = Client(
@@ -485,7 +486,7 @@ def test_blocklist_files_command_with_single_file(requests_mock):
     from CortexCoreIR import blocklist_files_command, Client
     test_data = load_test_data('test_data/blocklist_allowlist_files_success.json')
     expected_command_result = {
-        'Core.blocklist.fileHash(val.fileHash == obj.fileHash)':
+        'Core.blocklist.added_hashes.fileHash(val.fileHash == obj.fileHash)':
             test_data['single_command_args']['hash_list']}
     requests_mock.post(f'{Core_URL}/public_api/v1/hash_exceptions/blocklist/', json=test_data['api_response'])
 
@@ -511,7 +512,7 @@ def test_blocklist_files_command_with_no_comment_file(requests_mock):
     from CortexCoreIR import blocklist_files_command, Client
     test_data = load_test_data('test_data/blocklist_allowlist_files_success.json')
     expected_command_result = {
-        'Core.blocklist.fileHash(val.fileHash == obj.fileHash)':
+        'Core.blocklist.added_hashes.fileHash(val.fileHash == obj.fileHash)':
             test_data['no_comment_command_args']['hash_list']}
     requests_mock.post(f'{Core_URL}/public_api/v1/hash_exceptions/blocklist/', json=test_data['api_response'])
 
@@ -536,7 +537,7 @@ def test_allowlist_files_command_with_more_than_one_file(requests_mock):
 
     from CortexCoreIR import allowlist_files_command, Client
     test_data = load_test_data('test_data/blocklist_allowlist_files_success.json')
-    expected_command_result = {'Core.allowlist.fileHash(val.fileHash == obj.fileHash)': test_data[
+    expected_command_result = {'Core.allowlist.added_hashes.fileHash(val.fileHash == obj.fileHash)': test_data[
         'multi_command_args']['hash_list']}
     requests_mock.post(f'{Core_URL}/public_api/v1/hash_exceptions/allowlist/', json=test_data['api_response'])
 
@@ -562,7 +563,7 @@ def test_allowlist_files_command_with_single_file(requests_mock):
     from CortexCoreIR import allowlist_files_command, Client
     test_data = load_test_data('test_data/blocklist_allowlist_files_success.json')
     expected_command_result = {
-        'Core.allowlist.fileHash(val.fileHash == obj.fileHash)':
+        'Core.allowlist.added_hashes.fileHash(val.fileHash == obj.fileHash)':
             test_data['single_command_args']['hash_list']}
     requests_mock.post(f'{Core_URL}/public_api/v1/hash_exceptions/allowlist/', json=test_data['api_response'])
 
@@ -588,7 +589,7 @@ def test_allowlist_files_command_with_no_comment_file(requests_mock):
     from CortexCoreIR import allowlist_files_command, Client
     test_data = load_test_data('test_data/blocklist_allowlist_files_success.json')
     expected_command_result = {
-        'Core.allowlist.fileHash(val.fileHash == obj.fileHash)': test_data['no_comment_command_args'][
+        'Core.allowlist.added_hashes.fileHash(val.fileHash == obj.fileHash)': test_data['no_comment_command_args'][
             'hash_list']}
     requests_mock.post(f'{Core_URL}/public_api/v1/hash_exceptions/allowlist/', json=test_data['api_response'])
 
@@ -2275,11 +2276,11 @@ def test_get_update_args_when_not_getting_close_reason():
 def test_remove_blocklist_files_command(requests_mock):
     """
     Given:
-        - Endpoint data
+        - List of files' hashes to remove from blocklist.
     When
-        - The status of the enndpoint is 'Connected' with a capital C.
+        - A user desires to remove blocklist files.
     Then
-        - The status of the endpointn is determined to be 'Online'
+        - returns markdown, context data and raw response.
     """
     from CortexCoreIR import remove_blocklist_files_command, Client
 
@@ -2290,14 +2291,150 @@ def test_remove_blocklist_files_command(requests_mock):
     remove_blocklist_files_response = load_test_data('./test_data/remove_blocklist_files.json')
     requests_mock.post(f'{Core_URL}/public_api/v1/hash_exceptions/blocklist/remove/', json=remove_blocklist_files_response)
     hash_list = ["11d69fb388ff59e5ba6ca217ca04ecde6a38fa8fb306aa5f1b72e22bb7c3a25b",
-                      "e5ab4d81607668baf7d196ae65c9cf56dd138e3fe74c4bace4765324a9e1c565"]
+                 "e5ab4d81607668baf7d196ae65c9cf56dd138e3fe74c4bace4765324a9e1c565"]
     res = remove_blocklist_files_command(client=client, args={
         "hash_list": hash_list,
         "comment": "",
-        "incident_id": 606,
-        "get_detailed_response": "true"})
-    markdown_data = [{'fileHash': file_hash} for file_hash in hash_list]
+        "incident_id": 606})
+    markdown_data = [{'removed_hashes': file_hash} for file_hash in hash_list]
     assert res.readable_output == tableToMarkdown('Blocklist Files Removed',
                                                   markdown_data,
-                                                  headers=['fileHash'],
+                                                  headers=['removed_hashes'],
                                                   headerTransform=pascalToSpace)
+
+
+def test_blocklist_files_command_with_detailed_response(requests_mock):
+    """
+    Given:
+        - List of files' hashes to add in blocklist with detailed_response.
+    When
+        - A user desires to blocklist files with detailed_response.
+    Then
+        - returns markdown, context data and raw response.
+    """
+    from CortexCoreIR import blocklist_files_command, Client
+
+    client = Client(
+        base_url=f'{Core_URL}/public_api/v1', headers={}
+    )
+
+    blocklist_files_response = load_test_data('./test_data/add_blocklist_files_detailed_response.json')
+    requests_mock.post(f'{Core_URL}/public_api/v1/hash_exceptions/blocklist/', json=blocklist_files_response)
+    hash_list = ["11d69fb388ff59e5ba6ca217ca04ecde6a38fa8fb306aa5f1b72e22bb7c3a25b",
+                 "e5ab4d81607668baf7d196ae65c9cf56dd138e3fe74c4bace4765324a9e1c565"]
+    res = blocklist_files_command(client=client, args={
+        "hash_list": hash_list,
+        "comment": "",
+        "incident_id": 606,
+        "detailed_response": "true"})
+    assert res.readable_output == tableToMarkdown('Blocklist Files', res.raw_response)
+
+
+def test_remove_allowlist_files_command(requests_mock):
+    """
+    Given:
+        - List of files' hashes to remove from allowlist.
+    When
+        - A user desires to remove allowlist files.
+    Then
+        - returns markdown, context data and raw response.
+    """
+    from CortexCoreIR import remove_allowlist_files_command, Client
+
+    client = Client(
+        base_url=f'{Core_URL}/public_api/v1', headers={}
+    )
+
+    remove_allowlist_files_response = load_test_data('./test_data/remove_blocklist_files.json')
+    requests_mock.post(f'{Core_URL}/public_api/v1/hash_exceptions/allowlist/remove/', json=remove_allowlist_files_response)
+    hash_list = ["11d69fb388ff59e5ba6ca217ca04ecde6a38fa8fb306aa5f1b72e22bb7c3a25b",
+                 "e5ab4d81607668baf7d196ae65c9cf56dd138e3fe74c4bace4765324a9e1c565"]
+    res = remove_allowlist_files_command(client=client, args={
+        "hash_list": hash_list,
+        "comment": "",
+        "incident_id": 606})
+    markdown_data = [{'removed_hashes': file_hash} for file_hash in hash_list]
+    assert res.readable_output == tableToMarkdown('Allowlist Files Removed',
+                                                  markdown_data,
+                                                  headers=['removed_hashes'],
+                                                  headerTransform=pascalToSpace)
+
+
+def test_allowlist_files_command_with_detailed_response(requests_mock):
+    """
+    Given:
+        - List of files' hashes to add in allowlist with detailed_response.
+    When
+        - A user desires to allowlist files with detailed_response.
+    Then
+        - returns markdown, context data and raw response.
+    """
+    from CortexCoreIR import allowlist_files_command, Client
+
+    client = Client(
+        base_url=f'{Core_URL}/public_api/v1', headers={}
+    )
+
+    allowlist_files_response = load_test_data('./test_data/add_blocklist_files_detailed_response.json')
+    requests_mock.post(f'{Core_URL}/public_api/v1/hash_exceptions/allowlist/', json=allowlist_files_response)
+    hash_list = ["11d69fb388ff59e5ba6ca217ca04ecde6a38fa8fb306aa5f1b72e22bb7c3a25b",
+                 "e5ab4d81607668baf7d196ae65c9cf56dd138e3fe74c4bace4765324a9e1c565"]
+    res = allowlist_files_command(client=client,
+                                  args={
+                                      "hash_list": hash_list,
+                                      "comment": "",
+                                      "incident_id": 606,
+                                      "detailed_response": "true"
+                                  })
+    assert res.readable_output == tableToMarkdown('Allowlist Files', res.raw_response)
+
+
+def test_add_exclusion_command(requests_mock):
+    from CortexCoreIR import add_exclusion_command, Client
+    client = Client(
+        base_url=f'{Core_URL}/public_api/v1', headers={}
+    )
+    add_exclusion_response = load_test_data('./test_data/add_exclusion_response.json')
+    requests_mock.post(f'{Core_URL}/public_api/v1/alerts_exclusion/add/', json=add_exclusion_response)
+    res = add_exclusion_command(
+        client=client,
+        args={
+            'filterObject': '{\"filter\":{\"AND\":[{\"SEARCH_FIELD\":\"alert_category\",'
+                            '\"SEARCH_TYPE\":\"NEQ\",\"SEARCH_VALUE\":\"Phishing\"}]}}',
+            'name': 'test1'
+        }
+    )
+    expected_res = add_exclusion_response.get("reply")
+    assert res.readable_output == tableToMarkdown('Add Exclusion', expected_res)
+
+
+def test_delete_exclusion_command(requests_mock):
+    from CortexCoreIR import delete_exclusion_command, Client
+    client = Client(
+        base_url=f'{Core_URL}/public_api/v1', headers={}
+    )
+    delete_exclusion_response = load_test_data('./test_data/delete_exclusion_response.json')
+    alert_exclusion_id = 42
+    requests_mock.post(f'{Core_URL}/public_api/v1/alerts_exclusion/delete/', json=delete_exclusion_response)
+    res = delete_exclusion_command(
+        client=client,
+        args={
+            'alert_exclusion_id': alert_exclusion_id
+        }
+    )
+    assert res.readable_output == f"Successfully deleted the following exclusion: {alert_exclusion_id}"
+
+
+def test_get_exclusion_command(requests_mock):
+    from CortexCoreIR import get_exclusion_command, Client
+    client = Client(
+        base_url=f'{Core_URL}/public_api/v1', headers={}
+    )
+    get_exclusion_response = load_test_data('./test_data/get_exclusion_response.json')
+    requests_mock.post(f'{Core_URL}/public_api/v1/alerts_exclusion/', json=get_exclusion_response)
+    res = get_exclusion_command(
+        client=client,
+        args={}
+    )
+    expected_result = get_exclusion_response.get('reply')
+    assert res.readable_output == tableToMarkdown('Exclusion', expected_result)

@@ -947,13 +947,27 @@ script:
       name: comment
       required: false
       secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Whether to response detailed response. default value = false
+      isArray: false
+      name: detailed_response
+      predefined:
+        - 'true'
+        - 'false'
+      required: false
+      secret: false
     deprecated: false
     description: Block lists requested files which have not already been block listed
       or added to allow list.
     execution: false
     name: core-blocklist-files
     outputs:
-      - contextPath: Core.blocklist.fileHash
+      - contextPath: Core.blocklist.added_hashes
+        description: Added fileHash to blocklist
+        type: Number
+      - contextPath: Core.blocklist.excluded_hashes
         description: Added fileHash to blocklist
         type: Number
   - arguments:
@@ -977,13 +991,27 @@ script:
       name: comment
       required: false
       secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Whether to response detailed response. default value = false
+      isArray: false
+      name: detailed_response
+      predefined:
+        - 'true'
+        - 'false'
+      required: false
+      secret: false
     deprecated: false
     description: Adds requested files to allow list if they are not already on block
       list or allow list.
     execution: false
     name: core-allowlist-files
     outputs:
-      - contextPath: Core.allowlist.fileHash
+      - contextPath: Core.allowlist.added_hashes
+        description: Added fileHash to allowlist
+        type: Number
+      - contextPath: Core.allowlist.excluded_hashes
         description: Added fileHash to allowlist
         type: Number
   - arguments:
@@ -2469,23 +2497,12 @@ script:
         name: comment
         required: false
         secret: false
-      - auto: PREDEFINED
-        default: false
-        defaultValue: 'false'
-        description: Whether to response detailed response. default value = false
-        isArray: false
-        name: detailed_response
-        predefined:
-          - 'true'
-          - 'false'
-        required: false
-        secret: false
     deprecated: false
     description: Removes requested files from allow list.
     execution: false
     name: core-remove-allowlist-files
     outputs:
-      - contextPath: Core.allowlist.removedFileHash
+      - contextPath: Core.allowlist.removed_hashes
         description: Removed file hash
         type: Number
   - arguments:
@@ -2509,24 +2526,13 @@ script:
         name: comment
         required: false
         secret: false
-      - auto: PREDEFINED
-        default: false
-        defaultValue: 'false'
-        description: Whether to response detailed response. default value = false
-        isArray: false
-        name: detailed_response
-        predefined:
-          - 'true'
-          - 'false'
-        required: false
-        secret: false
     deprecated: false
     description: Removes requested files from block list.
     execution: false
     name: core-remove-blocklist-files
     outputs:
-      - contextPath: Core.blocklist.removedFileHash
-        description: Removed file hash from blocklist
+      - contextPath: Core.blocklist.removed_hashes
+        description: Removed fileHash from blocklist
         type: Number
   - arguments:
       - default: false
@@ -2536,7 +2542,7 @@ script:
         required: true
         secret: false
       - default: false
-        description: Filter object for the exclusion.
+        description: 'Filter object for the exclusion. example: {"filter":{"AND":[{"SEARCH_FIELD":"alert_category","SEARCH_TYPE":"NEQ","SEARCH_VALUE":"Phishing"}]}}'
         isArray: false
         name: filterObject
         required: true
@@ -2589,7 +2595,7 @@ script:
         required: false
         secret: false
       - default: false
-        description: Filter object for the exclusion.
+        description: 'Filter object for the exclusion. example: {"filter":{"AND":[{"SEARCH_FIELD":"alert_category","SEARCH_TYPE":"NEQ","SEARCH_VALUE":"Phishing"}]}}'
         isArray: false
         name: filterObject
         required: false

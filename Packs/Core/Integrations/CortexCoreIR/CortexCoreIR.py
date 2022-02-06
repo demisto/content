@@ -590,12 +590,14 @@ class Client(BaseClient):
 
         return reply.get('reply').get('data', [])
 
-    def blocklist_files(self, hash_list, comment=None, incident_id=None):
+    def blocklist_files(self, hash_list, comment=None, incident_id=None, detailed_response=False):
         request_data: Dict[str, Any] = {"hash_list": hash_list}
         if comment:
             request_data["comment"] = comment
         if incident_id:
             request_data['incident_id'] = incident_id
+        if detailed_response:
+            request_data['detailed_response'] = detailed_response
 
         self._headers['content-type'] = 'application/json'
         reply = self._http_request(
@@ -607,14 +609,12 @@ class Client(BaseClient):
         )
         return reply.get('reply')
 
-    def remove_blocklist_files(self, hash_list, comment=None, incident_id=None, detailed_response=False):
+    def remove_blocklist_files(self, hash_list, comment=None, incident_id=None):
         request_data: Dict[str, Any] = {"hash_list": hash_list}
         if comment:
             request_data["comment"] = comment
         if incident_id:
             request_data['incident_id'] = incident_id
-        if detailed_response:
-            request_data['get_detailed_response'] = detailed_response
 
         self._headers['content-type'] = 'application/json'
         reply = self._http_request(
@@ -625,12 +625,14 @@ class Client(BaseClient):
         )
         return reply.get('reply')
 
-    def allowlist_files(self, hash_list, comment=None, incident_id=None):
+    def allowlist_files(self, hash_list, comment=None, incident_id=None, detailed_response=False):
         request_data: Dict[str, Any] = {"hash_list": hash_list}
         if comment:
             request_data["comment"] = comment
         if incident_id:
             request_data['incident_id'] = incident_id
+        if detailed_response:
+            request_data['detailed_response'] = detailed_response
 
         self._headers['content-type'] = 'application/json'
         reply = self._http_request(
@@ -642,14 +644,12 @@ class Client(BaseClient):
         )
         return reply.get('reply')
 
-    def remove_allowlist_files(self, hash_list, comment=None, incident_id=None, detailed_response=False):
+    def remove_allowlist_files(self, hash_list, comment=None, incident_id=None):
         request_data: Dict[str, Any] = {"hash_list": hash_list}
         if comment:
             request_data["comment"] = comment
         if incident_id:
             request_data['incident_id'] = incident_id
-        if detailed_response:
-            request_data['get_detailed_response'] = detailed_response
 
         self._headers['content-type'] = 'application/json'
         reply = self._http_request(
@@ -1864,18 +1864,29 @@ def blocklist_files_command(client, args):
     hash_list = argToList(args.get('hash_list'))
     comment = args.get('comment')
     incident_id = arg_to_number(args.get('incident_id'))
+    detailed_response = argToBoolean(args.get('detailed_response', False))
 
-    res = client.blocklist_files(hash_list=hash_list, comment=comment, incident_id=incident_id)
-    if isinstance(res, dict) and res.get('err_extra') != "All hashes have already been added to the allow or block list":
-        raise ValueError(res)
-    markdown_data = [{'fileHash': file_hash} for file_hash in hash_list]
+    res = client.blocklist_files(hash_list=hash_list,
+                                 comment=comment,
+                                 incident_id=incident_id,
+                                 detailed_response=detailed_response)
+
+    if detailed_response:
+        return CommandResults(
+            readable_output=tableToMarkdown('Blocklist Files', res),
+            outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.blocklist',
+            outputs=res,
+            raw_response=res
+        )
+
+    markdown_data = [{'added_hashes': file_hash} for file_hash in hash_list]
 
     return CommandResults(
         readable_output=tableToMarkdown('Blocklist Files',
                                         markdown_data,
-                                        headers=['fileHash'],
+                                        headers=['added_hashes'],
                                         headerTransform=pascalToSpace),
-        outputs={f'{INTEGRATION_CONTEXT_BRAND}.blocklist.fileHash(val.fileHash == obj.fileHash)': hash_list},
+        outputs={f'{INTEGRATION_CONTEXT_BRAND}.blocklist.added_hashes.fileHash(val.fileHash == obj.fileHash)': hash_list},
         raw_response=res
     )
 
@@ -1884,20 +1895,16 @@ def remove_blocklist_files_command(client: Client, args: Dict) -> CommandResults
     hash_list = argToList(args.get('hash_list'))
     comment = args.get('comment')
     incident_id = arg_to_number(args.get('incident_id'))
-    detailed_response = argToBoolean(args.get('detailed_response', False))
 
-    res = client.remove_blocklist_files(hash_list=hash_list,
-                                        comment=comment,
-                                        incident_id=incident_id,
-                                        detailed_response=detailed_response)
+    res = client.remove_blocklist_files(hash_list=hash_list, comment=comment, incident_id=incident_id)
     if isinstance(res, dict) and res.get('err_extra') != "All hashes have already been added to the allow or block list":
         raise ValueError(res)
-    markdown_data = [{'removedFileHash': file_hash} for file_hash in hash_list]
+    markdown_data = [{'removed_hashes': file_hash} for file_hash in hash_list]
 
     return CommandResults(
         readable_output=tableToMarkdown('Blocklist Files Removed',
                                         markdown_data,
-                                        headers=['removedFileHash'],
+                                        headers=['removed_hashes'],
                                         headerTransform=pascalToSpace),
         outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.blocklist',
         outputs=markdown_data,
@@ -1909,15 +1916,28 @@ def allowlist_files_command(client, args):
     hash_list = argToList(args.get('hash_list'))
     comment = args.get('comment')
     incident_id = arg_to_number(args.get('incident_id'))
+    detailed_response = argToBoolean(args.get('detailed_response', False))
 
-    res = client.allowlist_files(hash_list=hash_list, comment=comment, incident_id=incident_id)
-    markdown_data = [{'fileHash': file_hash} for file_hash in hash_list]
+    res = client.allowlist_files(hash_list=hash_list,
+                                 comment=comment,
+                                 incident_id=incident_id,
+                                 detailed_response=detailed_response)
+    if detailed_response:
+        return CommandResults(
+            readable_output=tableToMarkdown('Allowlist Files', res),
+            outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.blocklist',
+            outputs=res,
+            raw_response=res
+        )
+
+    markdown_data = [{'added_hashes': file_hash} for file_hash in hash_list]
+
     return CommandResults(
         readable_output=tableToMarkdown('Allowlist Files',
                                         markdown_data,
-                                        headers=['fileHash'],
+                                        headers=['added_hashes'],
                                         headerTransform=pascalToSpace),
-        outputs={f'{INTEGRATION_CONTEXT_BRAND}.allowlist.fileHash(val.fileHash == obj.fileHash)': hash_list},
+        outputs={f'{INTEGRATION_CONTEXT_BRAND}.allowlist.added_hashes.fileHash(val.fileHash == obj.fileHash)': hash_list},
         raw_response=res
     )
 
@@ -1926,16 +1946,12 @@ def remove_allowlist_files_command(client, args):
     hash_list = argToList(args.get('hash_list'))
     comment = args.get('comment')
     incident_id = arg_to_number(args.get('incident_id'))
-    detailed_response = argToBoolean(args.get('detailed_response', False))
-    res = client.remove_allowlist_files(hash_list=hash_list,
-                                        comment=comment,
-                                        incident_id=incident_id,
-                                        detailed_response=detailed_response)
-    markdown_data = [{'removedFileHash': file_hash} for file_hash in hash_list]
+    res = client.remove_allowlist_files(hash_list=hash_list, comment=comment, incident_id=incident_id)
+    markdown_data = [{'removed_hashes': file_hash} for file_hash in hash_list]
     return CommandResults(
         readable_output=tableToMarkdown('Allowlist Files Removed',
                                         markdown_data,
-                                        headers=['removedFileHash'],
+                                        headers=['removed_hashes'],
                                         headerTransform=pascalToSpace),
         outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.allowlist',
         outputs=markdown_data,
