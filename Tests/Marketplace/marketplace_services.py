@@ -667,6 +667,9 @@ class Pack(object):
                         logging.warning(f"{self._pack_name} pack dependency with id {dependency_pack_id} is not part of"
                                         f" the current marketplace, ignoring dependency.")
                         continue
+
+                    logging.debug(f'pack {dependency_pack_id} in ID set:\n {pack_info}')
+
                     if marketplace not in pack_info.get('marketplaces'):
                         # Case 2 option 2: the dependency is not in the index since it is not a part of the current
                         # marketplace. Here we check if the current marketplace is under the pack's marketplaces in the
