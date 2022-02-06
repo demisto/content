@@ -678,4 +678,5 @@ Returns reports on selected alerts.
 
 
 ## Known Limitations
-Clicking the **Test** button verifies that the instance configuration is correct. Clicking the **Test** button several times in a row may result in a known Unauthorized error. Please ignore that error. 
+Clicking the **Test** button of the **Integration instance settings** window verifies that the instance configuration is correct.
+Due to a known limitation, clicking the **Test** button several times in quick succession may result in an "Unauthorized" error, even after a successful result was initially returned. It is enough to receive one success message to verify that the configuration is correct. "Unauthorized" error messages received from repeated clicking of the instance configuration **Test** button do not affect the validity of the instance if the initial response was successful.
