@@ -28,5 +28,16 @@
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "6.5.0",
-    "x2_fields": "mitre_tactic_id_and_name"
+    "x2_fields": "mitre_tactic_id_and_name",
+    "Aliases": [
+        {
+          "cliName": "tactic",
+          "type": "multiSelect"
+        },
+        {
+          "cliName": "tacticid",
+          "type": "multiSelect"
+        }
+    ]
+
 }

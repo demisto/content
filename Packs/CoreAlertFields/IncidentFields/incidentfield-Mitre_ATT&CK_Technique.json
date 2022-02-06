@@ -28,5 +28,24 @@
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "6.5.0",
-    "x2_fields": "mitre_technique_id_and_name"
+    "x2_fields": "mitre_technique_id_and_name",
+    "Aliases": [
+        {
+          "cliName": "technique",
+          "type": "multiSelect"
+        },
+        {
+          "cliName": "techniqueid",
+          "type": "multiSelect"
+        },
+        {
+          "cliName": "techniquemitre",
+          "type": "multiSelect"
+        },
+        {
+          "cliName": "techniquename",
+          "type": "multiSelect"
+        }
+    ]
+
 }
