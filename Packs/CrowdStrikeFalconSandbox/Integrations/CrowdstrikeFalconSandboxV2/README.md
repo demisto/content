@@ -4,30 +4,6 @@ Use the CrowdStrike Falcon Sandbox integration to submit and analyze files and U
 
 The maximum file upload size is 100 MB.
 
-<p>Supported File Types:</p>
-<ul>
-<li>PE (.exe, .scr, .pif, .dll, .com, .cpl, and so on)</li>
-<li>Microsoft Word (.doc, .docx, .ppt, .pps, .pptx, .ppsx, .xls, .xlsx, .rtf, .pub)</li>
-<li>PDF</li>
-<li>APK</li>
-<li>JAR executables</li>
-<li>Windows Script Component (.sct)</li>
-<li>Windows Shortcut (.lnk)</li>
-<li>Windows Help (.chm)</li>
-<li>HTML Application (.hta)</li>
-<li>Windows Script File (*.wsf)</li>
-<li>Javascript (.js)</li>
-<li>Visual Basic (*.vbs, *.vbe)</li>
-<li>Shockwave Flash (.swf)</li>
-<li>Perl (.pl)</li>
-<li>PowerShell (.ps1, .psd1, .psm1)</li>
-<li>Scalable Vector Graphics (.svg)</li>
-<li>Python scripts (.py)</li>
-<li>Perl scripts (.pl)</li>
-<li>Linux ELF executables</li>
-<li>MIME RFC 822 (*.eml)</li>
-<li>Outlook (*.msg files)</li>
-</ul>
 
 ## Prerequisites
 
@@ -42,6 +18,10 @@ Authorization levels:
 - Elevated
 - Super
 
+### Get an API Key
+Obtain an API key by:
+1. In your [profile page](https://www.hybrid-analysis.com/my-account?tab=%23api-key-tab), from the top right menu navigate to the **API key** tab. 
+2. Click the **Create API key** button.
 
 ## Configure CrowdStrike Falcon Sandbox v2 on Cortex XSOAR
 
@@ -58,6 +38,29 @@ Authorization levels:
 
 4. Click **Test** to validate the URLs, token, and connection.
 
+## Supported File Types:
+
+- PE (.exe, .scr, .pif, .dll, .com, .cpl, and so on)
+- Microsoft Word (.doc, .docx, .ppt, .pps, .pptx, .ppsx, .xls, .xlsx, .rtf, .pub)
+- PDF
+- APK
+- JAR executables
+- Windows Script Component (.sct)
+- Windows Shortcut (.lnk)
+- Windows Help (.chm)
+- HTML Application (.hta)
+- Windows Script File (*.wsf)
+- Javascript (.js)
+- Visual Basic (*.vbs, *.vbe)
+- Shockwave Flash (.swf)
+- Perl (.pl)
+- PowerShell (.ps1, .psd1, .psm1)
+- Scalable Vector Graphics (.svg)
+- Python scripts (.py)
+- Perl scripts (.pl)
+- Linux ELF executables
+- MIME RFC 822 (*.eml)
+- Outlook (*.msg files)
 
 
 ## Commands
