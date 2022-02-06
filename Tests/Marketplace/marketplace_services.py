@@ -675,7 +675,7 @@ class Pack(object):
                         # marketplace. Here we check if the current marketplace is under the pack's marketplaces in the
                         # id set. This happens in the xsoar id set.
                         logging.warning(f"{self._pack_name} pack dependency with id {dependency_pack_id} is not part of"
-                                            f" the current marketplace, ignoring dependency.")
+                                        f" the current marketplace, ignoring dependency.")
                         continue
 
                 # Case 3: If we reached here, then the dependency is not in the index since it is a new pack,
