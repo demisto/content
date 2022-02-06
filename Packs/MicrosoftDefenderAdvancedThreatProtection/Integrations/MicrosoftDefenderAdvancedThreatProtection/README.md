@@ -4380,7 +4380,7 @@ Ti.ReadWrite.All
 
 ##### Note
 Please read [here](https://docs.microsoft.com/en-us/microsoft-365/security/defender-endpoint/ti-indicator?view=o365-worldwide) about the Microsoft Defender for Endpoint indicator resource type.
-We suggest using the <insert_automation_name>[insert_automation_readme?] to load the XSOAR IOCs to MSDE indicator format.
+We suggest using the [TransformIndicatorToMSDefenderIOC automation](https://github.com/demisto/content/blob/e19817f3271b35333aadfe12f3700ec1c5d6eadc/Packs/MicrosoftDefenderAdvancedThreatProtection/Scripts/README.md) to load the XSOAR IOCs to MSDE indicator format.
 #### Base Command
 
 `microsoft-atp-indicator-batch-update`
