@@ -1,15 +1,15 @@
 id: Test_URLhaus
-version: 16
+version: 23
 vcShouldKeepItemLegacyProdMachine: false
 name: Test_URLhaus
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: a5e9cd94-d670-433e-81a5-d4f2cc48b1ef
+    taskid: e0cff50b-4df5-4d6e-8a45-fe16fc54ab0c
     type: start
     task:
-      id: a5e9cd94-d670-433e-81a5-d4f2cc48b1ef
+      id: e0cff50b-4df5-4d6e-8a45-fe16fc54ab0c
       version: -1
       name: ""
       iscommand: false
@@ -34,10 +34,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 9649f6a2-502a-4b8d-8193-801ad362f51e
+    taskid: 0ebb560b-0273-464e-8ab5-8dd1d6986c60
     type: regular
     task:
-      id: 9649f6a2-502a-4b8d-8193-801ad362f51e
+      id: 0ebb560b-0273-464e-8ab5-8dd1d6986c60
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -75,10 +75,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 904e6915-7b30-4279-8097-f494bd554c6c
+    taskid: 4b757a34-1061-4c9c-8519-0e8f10826a3a
     type: regular
     task:
-      id: 904e6915-7b30-4279-8097-f494bd554c6c
+      id: 4b757a34-1061-4c9c-8519-0e8f10826a3a
       version: -1
       name: url - with data
       description: Retrieve URL information from URLhaus
@@ -109,10 +109,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 87720278-f5ff-4b1e-8e89-079c53ff90d5
+    taskid: 9d018d39-0834-4c68-8b1c-3ca79efc723a
     type: condition
     task:
-      id: 87720278-f5ff-4b1e-8e89-079c53ff90d5
+      id: 9d018d39-0834-4c68-8b1c-3ca79efc723a
       version: -1
       name: verify url context
       type: condition
@@ -187,10 +187,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 8ed102eb-b7f8-49ac-86bb-9cbb6ac9222a
+    taskid: e6f09c83-cb54-40b2-8a40-6e08e4077ecc
     type: title
     task:
-      id: 8ed102eb-b7f8-49ac-86bb-9cbb6ac9222a
+      id: e6f09c83-cb54-40b2-8a40-6e08e4077ecc
       version: -1
       name: complete
       type: title
@@ -213,10 +213,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: fda2d618-356f-4f82-87ca-0acfb5ffb0bf
+    taskid: cdc38d21-fee2-4476-8ab9-d1613304358a
     type: regular
     task:
-      id: fda2d618-356f-4f82-87ca-0acfb5ffb0bf
+      id: cdc38d21-fee2-4476-8ab9-d1613304358a
       version: -1
       name: url - nonexisting
       description: Retrieve URL information from URLhaus
@@ -247,10 +247,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: fd9f2a71-9647-4420-8219-aa5a8f64644b
+    taskid: 5296ff5b-3bae-4bf8-80eb-03617d22e9c1
     type: condition
     task:
-      id: fd9f2a71-9647-4420-8219-aa5a8f64644b
+      id: 5296ff5b-3bae-4bf8-80eb-03617d22e9c1
       version: -1
       name: verify url nonexsiting
       type: condition
@@ -306,10 +306,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 2e3636f6-8c3f-4b36-85c4-a6811f55be98
+    taskid: 1595a229-e15a-434e-87da-f53efd18d7c9
     type: regular
     task:
-      id: 2e3636f6-8c3f-4b36-85c4-a6811f55be98
+      id: 1595a229-e15a-434e-87da-f53efd18d7c9
       version: -1
       name: domain - with data
       description: Retrieve domain information from URLhaus
@@ -340,10 +340,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 89097b0b-32c2-49cd-8daa-4511005f6ee1
+    taskid: f8a57308-05ac-4e88-8cc9-917068cf794b
     type: condition
     task:
-      id: 89097b0b-32c2-49cd-8daa-4511005f6ee1
+      id: f8a57308-05ac-4e88-8cc9-917068cf794b
       version: -1
       name: verify domain context
       type: condition
@@ -398,10 +398,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: d8d7c878-b73f-41ec-83e0-5ed07502b4ad
+    taskid: e7ef2557-00d7-4d7f-8d3a-1ad347efba42
     type: regular
     task:
-      id: d8d7c878-b73f-41ec-83e0-5ed07502b4ad
+      id: e7ef2557-00d7-4d7f-8d3a-1ad347efba42
       version: -1
       name: domain - no data
       description: Retrieve domain information from URLhaus
@@ -432,10 +432,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 91666154-290e-4f85-864e-56ab653ac072
+    taskid: c767503e-a2a1-4769-8e7f-39adb500f7e3
     type: condition
     task:
-      id: 91666154-290e-4f85-864e-56ab653ac072
+      id: c767503e-a2a1-4769-8e7f-39adb500f7e3
       version: -1
       name: verify context
       type: condition
@@ -483,10 +483,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 2c2a1bdc-c1fb-4076-886e-ff5d2115ba1b
+    taskid: 42a170b3-3158-4c47-8a7a-f379c344aa47
     type: regular
     task:
-      id: 2c2a1bdc-c1fb-4076-886e-ff5d2115ba1b
+      id: 42a170b3-3158-4c47-8a7a-f379c344aa47
       version: -1
       name: file - no data
       description: Retrieve file information from URLhaus
@@ -521,10 +521,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: d813f3f1-df5f-484c-89f2-beca566cceb4
+    taskid: d8e94152-2162-4886-876c-8627d381e445
     type: condition
     task:
-      id: d813f3f1-df5f-484c-89f2-beca566cceb4
+      id: d8e94152-2162-4886-876c-8627d381e445
       version: -1
       name: verify file context
       type: condition
@@ -585,10 +585,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: a5015b1b-8220-418f-802a-79ffca692024
+    taskid: c0a11f14-6998-4d27-8f7c-45718e42fb60
     type: regular
     task:
-      id: a5015b1b-8220-418f-802a-79ffca692024
+      id: c0a11f14-6998-4d27-8f7c-45718e42fb60
       version: -1
       name: urlhaus-download-sample - with data
       description: Download a malware sample from URLhaus
@@ -601,7 +601,7 @@ tasks:
       - "17"
     scriptarguments:
       file:
-        simple: 254ca6a7a7ef7f17d9884c4a86f88b5d5fd8fe5341c0996eaaf1d4bcb3b2337b
+        simple: c0e8e6f210186eddae9e30690aad94099277d7991e130c666426cbc1b813bd12
     separatecontext: false
     view: |-
       {
@@ -619,10 +619,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 14e331df-04f1-411d-81ca-966cdec93ca6
+    taskid: 64bd5dd5-72fc-4787-88de-3306c2884bad
     type: condition
     task:
-      id: 14e331df-04f1-411d-81ca-966cdec93ca6
+      id: 64bd5dd5-72fc-4787-88de-3306c2884bad
       version: -1
       name: verify context
       type: condition
@@ -648,12 +648,12 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: 254ca6a7a7ef7f17d9884c4a86f88b5d5fd8fe5341c0996eaaf1d4bcb3b2337b
+                        simple: c0e8e6f210186eddae9e30690aad94099277d7991e130c666426cbc1b813bd12
                 accessor: MD5
             iscontext: true
           right:
             value:
-              simple: a820381c8acf07cfcb4d9b13498db71d
+              simple: c3d0754022504ca34bf165a933666b11
     view: |-
       {
         "position": {
@@ -670,10 +670,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 6ea02eb5-3bc3-4ace-897b-62af9f2e6046
+    taskid: 604e1b09-b650-44ee-88da-4d90c52338cc
     type: regular
     task:
-      id: 6ea02eb5-3bc3-4ace-897b-62af9f2e6046
+      id: 604e1b09-b650-44ee-88da-4d90c52338cc
       version: -1
       name: urlhaus-download-sample - w/o data
       description: Download a malware sample from URLhaus
@@ -704,10 +704,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 11e9be93-baa3-4463-8321-a6ac377ef13d
+    taskid: fb539aed-b61d-408e-8cda-42aa4b611bd3
     type: regular
     task:
-      id: 11e9be93-baa3-4463-8321-a6ac377ef13d
+      id: fb539aed-b61d-408e-8cda-42aa4b611bd3
       version: -1
       name: file - with data
       description: Retrieve file information from URLhaus
@@ -742,10 +742,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 898c7198-b0bf-4326-842c-21f23704e5f9
+    taskid: 67c59a7c-4748-47ee-857e-0bac0226f398
     type: condition
     task:
-      id: 898c7198-b0bf-4326-842c-21f23704e5f9
+      id: 67c59a7c-4748-47ee-857e-0bac0226f398
       version: -1
       name: verify context
       type: condition
