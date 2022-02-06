@@ -224,6 +224,7 @@ def test_default_ranges_if_not_specified(include_grid_data, ranges, expected):
     res = GoogleSheets.default_ranges_if_not_specified("fake", ranges, include_grid_data, service)
     assert res == expected
 
+
 # CREATE SPREADSHEET TEST
 def test_create_spreadsheet():
     '''

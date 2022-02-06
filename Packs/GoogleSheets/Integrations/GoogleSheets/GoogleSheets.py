@@ -307,10 +307,6 @@ def default_ranges_if_not_specified(spreadsheet: str, ranges: str, include_grid_
         return ranges
 
 
-
-
-
-
 # COMMANDS
 
 
@@ -415,7 +411,7 @@ def get_spreadsheet(service: Resource, args: dict) -> CommandResults:
         markdown = '### Success\n\n' + markdown
         return CommandResults(readable_output=markdown)
     else:
-        ranges = default_ranges_if_not_specified(spread_sheets_ids[0], ranges, include_grid_data, service)
+        ranges = default_ranges_if_not_specified(spread_sheets_ids[0], str(ranges), include_grid_data, service)
         request = service.spreadsheets().get(spreadsheetId=spread_sheets_ids[0], ranges=ranges,
                                              includeGridData=include_grid_data)
         response = request.execute()
@@ -834,11 +830,24 @@ def build_and_authenticate(params: dict):
             integration will make API calls
     """
     service_account_credentials = params.get('service_account_credentials', {})
-    service_account_credentials = json.loads(service_account_credentials.get('password'))
-    if not isinstance(service_account_credentials, dict):
-        raise DemistoException('The service account credentials must be of type dict')
-    credentials = service_account.ServiceAccountCredentials.from_json_keyfile_dict(service_account_credentials,
-                                                                                   scopes=SCOPES)
+    try:
+        service_account_credentials = service_account_credentials.get('password')
+        service_account_credentials = json.loads(service_account_credentials)
+    except Exception as e:
+        raise DemistoException(f'\nProblem with json format please validate the correctness\
+                               of your service account json. Json parser error {e}')
+
+    try:
+        credentials = service_account.ServiceAccountCredentials.from_json_keyfile_dict(service_account_credentials,
+                                                                                       scopes=SCOPES)
+    except KeyError as e:
+        raise DemistoException(f'There is a problem with the authentication of the Service account credentials.\
+                                Please check the correctness of your credentials. You are missing the following key\
+                                 in the service account {e}')
+    except ValueError as e:
+        raise DemistoException(f'(There is a problem with the authentication of the Service account credentials\
+                                The cred are of the wrong type. Google error is : {e})')
+
     # add delegation to help manage the UI - link to a google-account
     if params.get('user_id'):
         credentials = credentials.create_delegated(params.get('user_id'))

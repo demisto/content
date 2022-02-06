@@ -11,7 +11,7 @@
 !google-sheets-spreadsheet-get spreadsheet_id=1EwL7rqcSVdkXCAwuGt4jIiDrDUEKW3bmP63dqTBolfk,1meYzOYg7oCK7zYGBJu_hw3iQ_oEvJ6EecCBOV8ZQvFA
 !google-sheets-spreadsheet-get spreadsheet_id=1EwL7rqcSVdkXCAwuGt4jIiDrDUEKW3bmP63dqTBolfk include_grid_data=true
 !google-sheets-spreadsheet-update spreadsheet_id=1EwL7rqcSVdkXCAwuGt4jIiDrDUEKW3bmP63dqTBolfk requests=`{"requests": [{"copyPaste": {"destination": {"startRowIndex": 0, "startColumnIndex": 0, "endRowIndex": 5, "endColumnIndex": 5, "sheetId": 1574092348}, "pasteOrientation": "TRANSPOSE", "source": {"sheetId": 1574092348, "startRowIndex": 0, "startColumnIndex": 0, "endColumnIndex": 5, "endRowIndex": 5}, "pasteType": "PASTE_NORMAL"}}]}`
-!google-sheets-sheet-duplicate new_sheet_name=duplicated_sheet spreadsheet_id=1EwL7rqcSVdkXCAwuGt4jIiDrDUEKW3bmP63dqTBolfk source_sheet_id=1574092348 echo_spreadsheet=true
+!google-sheets-sheet-duplicate new_sheet_name=dup_sheet spreadsheet_id=1EwL7rqcSVdkXCAwuGt4jIiDrDUEKW3bmP63dqTBolfk source_sheet_id=1574092348 echo_spreadsheet=true
 !google-sheets-range-delete spreadsheet_id=1EwL7rqcSVdkXCAwuGt4jIiDrDUEKW3bmP63dqTBolfk sheet_id=1574092348 shift_dimension=COLUMNS start_row_index=0 end_row_index=2 start_column_index=0 end_column_index=2
 !google-sheets-value-append insert_option=OVERWRITE major_dimension=ROWS range=newSheetTitle!A1:D5 spreadsheet_id=1EwL7rqcSVdkXCAwuGt4jIiDrDUEKW3bmP63dqTBolfk input_option=RAW values=[77,77,77],[777,777,777]
 !google-sheets-sheet-copy-to source_sheet_id=1574092348 source_spreadsheet_id=1EwL7rqcSVdkXCAwuGt4jIiDrDUEKW3bmP63dqTBolfk destination_spreadsheet_id=1EwL7rqcSVdkXCAwuGt4jIiDrDUEKW3bmP63dqTBolfk
