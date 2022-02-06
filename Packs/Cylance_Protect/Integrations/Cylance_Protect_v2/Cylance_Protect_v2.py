@@ -475,12 +475,15 @@ def get_device_threats():
             dbot_score = translate_score(threat['cylance_score'], int(threshold))
         dbot_score_array.append(create_dbot_score_entry(threat, dbot_score).to_context())
     if device_threats:
+        dbot_score_dict = {Common.DBotScore.get_context_path(): []}  # type: Dict[str, List[Dict[str, str]]]
+        for dbot_score_entry in dbot_score_array:
+            for key, value in dbot_score_entry.items():
+                dbot_score_dict[Common.DBotScore.get_context_path()].append(value)
+
         threats_context = createContext(data=device_threats, keyTransform=underscoreToCamelCase)
         threats_context = add_capitalized_hash_to_context(threats_context)
-        ec = {
-            'File': threats_context,
-            'DBotScore': dbot_score_array
-        }
+        ec = {'File': threats_context}
+        ec.update(dbot_score_dict)
 
         title = 'Cylance Protect Device Threat ' + device_id
         demisto.results({
@@ -779,10 +782,10 @@ def get_threats():
             dbot_score = translate_score(threat['cylance_score'], int(threshold))
         dbot_score_array.append(create_dbot_score_entry(threat, dbot_score).to_context())
 
-    dbot_score_dict = {'DBotScore': []}  # type: Dict[str, List[Dict[str, str]]]
+    dbot_score_dict = {Common.DBotScore.get_context_path(): []}  # type: Dict[str, List[Dict[str, str]]]
     for dbot_score_entry in dbot_score_array:
         for key, value in dbot_score_entry.items():
-            dbot_score_dict['DBotScore'].append(value)
+            dbot_score_dict[Common.DBotScore.get_context_path()].append(value)
 
     context_threat = createContext(data=threats, keyTransform=underscoreToCamelCase, removeNull=True)
     context_threat = add_capitalized_hash_to_context(context_threat)
@@ -920,12 +923,15 @@ def get_list():
             dbot_score = translate_score(threat['cylance_score'], int(threshold))
         dbot_score_array.append(create_dbot_score_entry(threat, dbot_score).to_context())
     if lst:
+        dbot_score_dict = {Common.DBotScore.get_context_path(): []}  # type: Dict[str, List[Dict[str, str]]]
+        for dbot_score_entry in dbot_score_array:
+            for key, value in dbot_score_entry.items():
+                dbot_score_dict[Common.DBotScore.get_context_path()].append(value)
+
         context_list = createContext(data=lst, keyTransform=underscoreToCamelCase, removeNull=True)
-        context_list = add_capitalized_hash_to_context((context_list))
-        ec = {
-            'File': context_list,
-            'DBotScore': dbot_score_array
-        }
+        context_list = add_capitalized_hash_to_context(context_list)
+        ec = {'File': context_list}
+        ec.update(dbot_score_dict)
 
         title = 'Cylance Protect Global List'
         demisto.results({
