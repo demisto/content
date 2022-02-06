@@ -28,5 +28,15 @@
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "6.5.0",
-	"x2_fields": "action_external_hostname"
+	"x2_fields": "action_external_hostname",
+    "Aliases": [
+        {
+          "cliName": "desthostname",
+          "type": "shortText"
+        },
+        {
+            "cliName": "detectedexternalhosts",
+            "type": "shortText"
+        }
+    ]
 }
