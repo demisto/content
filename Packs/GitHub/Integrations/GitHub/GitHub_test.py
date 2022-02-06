@@ -78,7 +78,7 @@ RETURN_ERROR_TARGET = 'GitHub.return_error'
 
 
 @pytest.mark.parametrize('params, expected_result', [
-    ({'credentials': {'password': '1234'}, '_auth_id': '_auth_id'}, "Insert api token or private key"),
+    ({'credentials': {'password': '1234'}}, "Insert api token or private key"),
     ({'sshkey': 'sshkey'}, "Insert api token or private key")
 ])
 def test_params(mocker, params, expected_result):
