@@ -1592,35 +1592,34 @@ def get_remote_data_command(args: Dict[str, Any]):
             raise Exception(f'Executed get-remote-data command with undefined id: {remote_args.remote_incident_id}')
 
         entries = []
-        # todo answer from Meital about closing incidents (& check what determines it)
-        # if delta:
-        #     # 'state' field indicates whether the incident is closed
-        #     if delta.get('state') == 'closed':
-        #         demisto.debug(f'Incident is closed: {remote_args.remote_incident_id}')
-        #         entries.append({
-        #             'Type': EntryType.NOTE,
-        #             'Contents': {
-        #                 'dbotIncidentClose': True,
-        #                 'closeReason': 'Incident was closed on CrowdStrike Falcon'
-        #             },
-        #             'ContentsFormat': EntryFormat.JSON
-        #         })
-        #
-        #     # 'status' field indicates whether the detection is closed
-        #     elif delta.get('status') == 'closed':
-        #         demisto.debug(f'Detection is closed: {remote_args.remote_incident_id}')
-        #         entries.append({
-        #             'Type': EntryType.NOTE,
-        #             'Contents': {
-        #                 'dbotIncidentClose': True,
-        #                 'closeReason': 'Detection was closed on CrowdStrike Falcon'
-        #             },
-        #             'ContentsFormat': EntryFormat.JSON
-        #         })
-        #
-        #     demisto.debug(f"Update incident or detection {remote_args.remote_incident_id} with fields: {delta}")
-        # else:
-        #     demisto.debug("No delta was found for incident or detection.")
+        if delta:
+            # 'state' field indicates whether the incident is closed
+            if delta.get('state') == 'closed':
+                demisto.debug(f'Incident is closed: {remote_args.remote_incident_id}')
+                entries.append({
+                    'Type': EntryType.NOTE,
+                    'Contents': {
+                        'dbotIncidentClose': True,
+                        'closeReason': 'Incident was closed on CrowdStrike Falcon'
+                    },
+                    'ContentsFormat': EntryFormat.JSON
+                })
+
+            # 'status' field indicates whether the detection is closed
+            elif delta.get('status') == 'closed':
+                demisto.debug(f'Detection is closed: {remote_args.remote_incident_id}')
+                entries.append({
+                    'Type': EntryType.NOTE,
+                    'Contents': {
+                        'dbotIncidentClose': True,
+                        'closeReason': 'Detection was closed on CrowdStrike Falcon'
+                    },
+                    'ContentsFormat': EntryFormat.JSON
+                })
+
+            demisto.debug(f"Update incident or detection {remote_args.remote_incident_id} with fields: {delta}")
+        else:
+            demisto.debug("No delta was found for incident or detection.")
 
         return GetRemoteDataResponse(mirrored_object=delta, entries=entries)
 
