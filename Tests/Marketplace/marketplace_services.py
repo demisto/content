@@ -668,7 +668,7 @@ class Pack(object):
                                         f" the current marketplace, ignoring dependency.")
                         continue
 
-                    logging.debug(f'pack {dependency_pack_id} in ID set:\n {pack_info}')
+                    logging.debug(f'pack {dependency_pack_id} info in ID set:\n {pack_info}')
 
                     if marketplace not in pack_info.get('marketplaces'):
                         # Case 2 option 2: the dependency is not in the index since it is not a part of the current
