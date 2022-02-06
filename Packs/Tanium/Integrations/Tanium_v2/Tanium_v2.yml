@@ -395,8 +395,7 @@ script:
     - contextPath: Tanium.SavedQuestionResult.Status
       description: 'Status of the question request. Can be: "Completed" or "Pending".'
       type: String
-  - arguments: []
-    description: Returns all client details.
+  - description: Returns all client details.
     name: tn-get-system-status
     outputs:
     - contextPath: Tanium.Client.ComputerId
@@ -422,6 +421,7 @@ script:
       description: 'The status of the client. Can be: "Blocked", "Leader" "Normal",
         "Slow link".'
       type: String
+    arguments: []
   - arguments:
     - description: The command to execute.
       name: command
@@ -1410,6 +1410,6 @@ script:
   script: ''
   subtype: python3
   type: python
-fromversion: 5.0.0
 tests:
 - Tanium v2 - Test
+fromversion: 5.0.0
