@@ -36,7 +36,7 @@ configuration:
   required: false
   type: 8
 - additionalinfo: Maximal value is 1000.
-  defaultvalue: '1'
+  defaultvalue: '10'
   display: Maximum number of relationships to fetch per indicator
   name: max_num_of_relationships
   required: false
