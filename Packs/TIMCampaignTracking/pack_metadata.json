@@ -2,7 +2,7 @@
     "name": "TIM Campaign Tracking",
     "description": "This pack allows you to upload threat intelligence briefs to track IOCs related to specified threat actor campaigns. Using this pack you will be able to check what the adversary is trying to accomplish, why are they trying to accomplish this, and so on",
     "support": "community",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.0.1",
     "author": "Shawn Murphy & Nicholas Ericksen",
     "url": "",
     "email": "",

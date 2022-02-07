@@ -2,7 +2,7 @@
     "name": "NTT Cyber Threat Sensor",
     "description": "NTT Cyber Threat Sensor integration",
     "support": "community",
-    "currentVersion": "1.0.4",
+    "currentVersion": "1.0.5",
     "author": "NTT Ltd.",
     "url": "https://www.global.ntt",
     "email": "servicedesk@global.ntt",
