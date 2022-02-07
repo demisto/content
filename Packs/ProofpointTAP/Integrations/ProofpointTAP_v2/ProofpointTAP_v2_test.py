@@ -372,6 +372,7 @@ def test_fetch_incidents_with_encoding(requests_mock, mocker):
         event_type_filter=ALL_EVENTS,
         threat_status='',
         threat_type='',
+        raw_json_encoding='latin-1',
     )
 
     assert json.loads(incidents[0]['rawJSON'])['subject'] == 'pérdida'
