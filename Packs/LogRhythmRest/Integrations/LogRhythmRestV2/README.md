@@ -1,5 +1,5 @@
 LogRhythm security intelligence.
-This integration was integrated and tested with version 7.7 of LogRhythm Rest API. Previous versions have been declared [EOL](https://docs.logrhythm.com/docs/enterprise/find-more-information/end-of-life-policy-for-software-and-hardware#EndofLifePolicyforSoftwareandHardware-Appendix:EndofLifeTables) by the vendor.
+This integration was integrated and tested with version 7.7 of LogRhythm Rest API. Previous versions that have been declared [EOL](https://docs.logrhythm.com/docs/enterprise/find-more-information/end-of-life-policy-for-software-and-hardware#EndofLifePolicyforSoftwareandHardware-Appendix:EndofLifeTables) by the vendor, are not supported.
 
 
 
