@@ -326,9 +326,8 @@ def download_sample():
 
 def download_request(webid, rsc_type):
     res = http_post('v2/analysis/download', data={'webid': webid, 'type': rsc_type.lower()}, parse_json=False)
-    print(res)
+
     info = info_request(webid)
-    print(info)
     if rsc_type == 'sample':
         return fileResult('%s.dontrun' % (info.get('filename', webid),), res)
     else:
