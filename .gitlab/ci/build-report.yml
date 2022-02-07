@@ -15,7 +15,7 @@ include:
   - local: .gitlab/ci/global.yml
 
 
-slack-notify:
+build_report:
   tags:
     - gke
   stage: notify
