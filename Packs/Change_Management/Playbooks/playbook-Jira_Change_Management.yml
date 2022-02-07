@@ -280,7 +280,7 @@ tasks:
     task:
       id: 8681dac6-aef5-4808-8154-f8127ae24055
       version: -1
-      name: export to CSV
+      name: Export to CSV
       description: Export given array to a CSV file.
       scriptName: ExportToCSV
       type: regular
