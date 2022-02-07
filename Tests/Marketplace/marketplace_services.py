@@ -622,7 +622,9 @@ class Pack(object):
             There are 3 cases for dependencies:
               Case 1: The dependency is present in the index.zip. In this case, we add it to the dependencies results.
               Case 2: The dependency is missing from the index.zip since it is not a part of this marketplace.
-                In this case, ignore it.
+                In this case, ignore it. For this case there are two options - option 1 is that it is missing from the
+                id set, option 2 is that it is in the id set but doesn't have the current marketplace under the matching
+                key in the id set.
               Case 3: The dependency is missing from the index.zip since it is a new pack. In this case, handle missing
                 dependency - This means we mark this pack as 'missing dependency', and once the new index.zip is created, and
                 therefore it contains the new pack, we call this function again, and hitting case 1.
@@ -657,17 +659,31 @@ class Pack(object):
 
             elif dependency_pack_id in pack_names:
                 if id_set:
-                    if marketplace not in id_set.get('Packs', {}).get(dependency_pack_id, {}).get('marketplaces'):
-                        # Case 2: the dependency is not in the index since it is not a part of the current marketplace
+                    pack_info = id_set.get('Packs', {}).get(dependency_pack_id)
+                    if not pack_info:
+                        # Case 2 option 1: the dependency is not in the index since it is not a part of the current
+                        # marketplace. Here we check if the pack is not in the id set - this happens in the
+                        # marketplace v2 id set.
                         logging.warning(f"{self._pack_name} pack dependency with id {dependency_pack_id} is not part of"
                                         f" the current marketplace, ignoring dependency.")
+                        continue
 
-                else:
-                    # Case 3: the dependency is not in the index since it is a new pack, but it is in the id set
-                    self._is_missing_dependencies = True
-                    logging.warning(f"{self._pack_name} pack dependency with id {dependency_pack_id} "
-                                    f"was not found in index, marking it as missing dependencies - to be resolved in "
-                                    f"next iteration over packs")
+                    logging.debug(f'pack {dependency_pack_id} info in ID set:\n {pack_info}')
+
+                    if marketplace not in pack_info.get('marketplaces'):
+                        # Case 2 option 2: the dependency is not in the index since it is not a part of the current
+                        # marketplace. Here we check if the current marketplace is under the pack's marketplaces in the
+                        # id set. This happens in the xsoar id set.
+                        logging.warning(f"{self._pack_name} pack dependency with id {dependency_pack_id} is not part of"
+                                        f" the current marketplace, ignoring dependency.")
+                        continue
+
+                # Case 3: If we reached here, then the dependency is not in the index since it is a new pack,
+                # but it is in the id set and in this current marketplace.
+                self._is_missing_dependencies = True
+                logging.warning(f"{self._pack_name} pack dependency with id {dependency_pack_id} "
+                                f"was not found in index, marking it as missing dependencies - to be resolved in "
+                                f"next iteration over packs")
 
             else:
                 logging.warning(f"{self._pack_name} pack dependency with id {dependency_pack_id} was not found")

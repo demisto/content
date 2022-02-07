@@ -499,7 +499,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Download a resource belonging to a report. This can be the full report, dropped binaries, etc.
+    description: Download a resource belonging to a report. This can be the full report, dropped binaries, etc. See integration README for the full supported report types.
     execution: false
     name: joe-download-report
     outputs:
