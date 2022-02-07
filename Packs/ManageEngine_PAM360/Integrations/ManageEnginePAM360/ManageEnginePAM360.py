@@ -2,6 +2,7 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 import urllib3
+
 urllib3.disable_warnings()
 
 
@@ -229,13 +230,8 @@ class Client(BaseClient):
 def test_module(
         client: Client,
 ):
-    URL_SUFFIX = '/restapi/json/v1/resources/resourcetypes'
-    headers = {
-        'APP_AUTHTOKEN': client._app_token,
-        'APP_TYPE': '17'
-    }
-    r = requests.request("GET", client._base_url + URL_SUFFIX, headers=headers, verify=client._verify)
-    if r.status_code != 200:
+    test_result = client.check_connection("GET")
+    if not test_result.get('operation').get('Details'):
         return_results('Failed to connect to server')
     else:
         return_results('ok')

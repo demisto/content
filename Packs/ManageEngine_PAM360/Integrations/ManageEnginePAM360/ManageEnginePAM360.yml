@@ -51,7 +51,7 @@ script:
       description: Denotes either the DNS Name or the IP address.
     - name: department
       description: The department to which the account belongs.
-    - name: resource_descritpion
+    - name: resource_description
       description: Description of the resource.
     - name: notes
       description: Optional additional notes added about the resource.
@@ -140,6 +140,7 @@ script:
       required: true
     - name: account_name
       description: Name of the account.
+      required: true
     - name: owner_name
       description: Name of the account owner.
     - name: notes
