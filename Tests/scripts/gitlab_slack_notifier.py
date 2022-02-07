@@ -122,6 +122,7 @@ def unit_tests_results():
 def bucket_upload_results(bucket_artifact_folder):
     steps_fields = []
     pack_results_path = os.path.join(bucket_artifact_folder, BucketUploadFlow.PACKS_RESULTS_FILE)
+    marketplace_name = os.path.basename(bucket_artifact_folder)
 
     logging.info(f'retrieving upload data from "{pack_results_path}"')
     successful_packs, failed_packs, successful_private_packs, _ = get_upload_data(
@@ -129,22 +130,25 @@ def bucket_upload_results(bucket_artifact_folder):
     )
     if successful_packs:
         steps_fields += [{
-            "title": "Successful Packs:",
-            "value": "\n".join(sorted([pack_name for pack_name in {*successful_packs}], key=lambda s: s.lower())),
-            "short": False
+            'title': f'Successful {marketplace_name} Packs:',
+            'value': '\n'.join(sorted([pack_name for pack_name in {*successful_packs}], key=lambda s: s.lower())),
+            'short': False
         }]
+
     if failed_packs:
         steps_fields += [{
-            "title": "Failed Packs:",
-            "value": "\n".join(sorted([pack_name for pack_name in {*failed_packs}], key=lambda s: s.lower())),
-            "short": False
+            'title': f'Failed {marketplace_name} Packs:',
+            'value': '\n'.join(sorted([pack_name for pack_name in {*failed_packs}], key=lambda s: s.lower())),
+            'short': False
         }]
+
     if successful_private_packs:
+        # No need to indicate the marketplace name as private pack only upload to xsoar marketplace
         steps_fields += [{
-            "title": "Successful Private Packs:",
-            "value": "\n".join(sorted([pack_name for pack_name in {*successful_private_packs}],
+            'title': 'Successful Private Packs:',
+            'value': '\n'.join(sorted([pack_name for pack_name in {*successful_private_packs}],
                                       key=lambda s: s.lower())),
-            "short": False
+            'short': False
         }]
 
     return steps_fields
@@ -164,7 +168,7 @@ def construct_slack_msg(triggering_workflow, pipeline_url, pipeline_failed_jobs)
     failed_jobs_names = {job.name for job in pipeline_failed_jobs}
     if failed_jobs_names:
         content_fields.append({
-            "title": f'Failed Jobs - ({len(failed_jobs_names)})',
+            'title": f'Failed Jobs - ({len(failed_jobs_names)})',
             "value": '\n'.join(failed_jobs_names),
             "short": False
         })
