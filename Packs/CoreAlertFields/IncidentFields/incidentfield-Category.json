@@ -6,7 +6,7 @@
     "cliName": "category",
 	"description": "Alert category based on the alert source. An example of an XDR Agent alert category is Exploit Modules.",
     "name": "Category",
-    "type": "multiSelect",
+    "type": "shortText",
     "closeForm": false,
     "editForm": true,
     "required": false,
@@ -18,7 +18,7 @@
     "content": true,
     "group": 0,
     "hidden": false,
-    "openEnded": true,
+    "openEnded": false,
     "associatedToAll": true,
     "unmapped": false,
     "unsearchable": true,
@@ -26,5 +26,95 @@
     "sla": 0,
     "threshold": 72,
     "fromVersion": "6.5.0",
-	"x2_fields": "alert_category"
+	"x2_fields": "alert_category",
+    "Aliases": [
+        {
+            "cliName": "alertcategory",
+            "type": "shortText"
+        },
+        {
+            "cliName": "arguscasecategory",
+            "type": "shortText"
+        },
+        {
+            "cliName": "bitsightriskcategory",
+            "type": "shortText"
+        },
+        {
+            "cliName": "bmcremedyforcecategory",
+            "type": "shortText"
+        },
+        {
+            "cliName": "carbonblackesthreatcategory",
+            "type": "shortText"
+        },
+        {
+            "cliName": "categories",
+            "type": "multiSelect"
+        },
+        {
+            "cliName": "clarotycategory",
+            "type": "shortText"
+        },
+        {
+            "cliName": "cyberintcategory",
+            "type": "shortText"
+        },
+        {
+            "cliName": "cyberpioncategory",
+            "type": "shortText"
+        },
+        {
+            "cliName": "expansecategory",
+            "type": "shortText"
+        },
+        {
+            "cliName": "googlecloudsccfindingcategory",
+            "type": "shortText"
+        },
+        {
+            "cliName": "highlevelcategories",
+            "type": "multiSelect"
+        },
+        {
+            "cliName": "irondefensecategory",
+            "type": "singleSelect"
+        },
+        {
+            "cliName": "irondefenseirondomecategory",
+            "type": "singleSelect"
+        },
+        {
+            "cliName": "phishercategory",
+            "type": "shortText"
+        },
+        {
+            "cliName": "prismacloudcomputecategory",
+            "type": "shortText"
+        },
+        {
+            "cliName": "qsscasecategory",
+            "type": "shortText"
+        },
+        {
+            "cliName": "saassecuritycategory",
+            "type": "singleSelect"
+        },
+        {
+            "cliName": "safebreachinsightcategory",
+            "type": "shortText"
+        },
+        {
+            "cliName": "servicenowcategory",
+            "type": "singleSelect"
+        },
+        {
+            "cliName": "topdeskcategory",
+            "type": "shortText"
+        },
+        {
+            "cliName": "typeoffense",
+            "type": "shortText"
+        }
+    ]
 }

@@ -1,0 +1,78 @@
+{
+    "associatedToAll": true,
+    "caseInsensitive": true,
+    "cliName": "appid",
+    "closeForm": false,
+    "content": true,
+    "description": "Related App-ID for an alert. App-ID is a traffic classification system that determines what an application is irrespective of port, protocol, encryption (SSH or SSL) or any other evasive tactic used by the application. When known, you can also pivot to the Palo Alto Networks Applipedia entry that describes the detected application.",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_appid",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "App-id",
+    "neverSetAsRequired": false,
+    "openEnded": true,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "multiSelect",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.5.0",
+    "x2_fields": "fw_app_id",
+    "Aliases": [
+        {
+          "cliName": "protocol",
+          "type": "shortText"
+        },
+        {
+          "cliName": "protocols",
+          "type": "shortText"  
+        },
+        {
+            "cliName": "prismacloudcomputeappid",
+            "type": "shortText"
+        },
+        {
+            "cliName": "protocolevent",
+            "type": "multiSelect"
+        },
+        {
+            "cliName": "app",
+            "type": "shortText"
+        },
+        {
+            "cliName": "applicationid",
+            "type": "shortText"
+        },
+        {
+            "cliName": "applicationname",
+            "type": "shortText"
+        },
+        {
+            "cliName": "googlecloudsccfindingsourcepropertiesapp",
+            "type": "shortText"
+        },
+        {
+            "cliName": "expanseprotocol",
+            "type": "shortText"
+        },
+        {
+            "cliName": "expanseprotocol",
+            "type": "shortText"
+        },
+        {
+            "cliName": "irondefenseprimaryappprotocol",
+            "type": "shortText"
+        }
+    ]
+}
