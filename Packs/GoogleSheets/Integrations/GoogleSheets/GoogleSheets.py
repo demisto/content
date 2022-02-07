@@ -11,7 +11,6 @@ from googleapiclient.discovery import build, Resource
 from oauth2client import service_account
 from typing import Optional
 
-# This is a message in the oath2client branch
 SERVICE_ACCOUNT_FILE = 'token.json'
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 
@@ -41,10 +40,9 @@ def prepare_result(response: dict, args: dict) -> CommandResults:
     markdown = '### Success\n'
     outputs = None
     if argToBoolean(args.get('echo_spreadsheet')):
-        # here will be the code that will prep the result if echo mode is on
         human_readable = {
             'spreadsheet Id': response.get('spreadsheetId'),
-            'spreadsheet url': response.get('updatedSpreadsheet', {}).get('spreadsheetUrl')
+            'spreadsheet url': response.get('updatedSpreadsheet', {}).get('spreadsheetUrl'),
         }
 
         table_title = response.get('updatedSpreadsheet', {}).get('properties', {}).get('title', '')
@@ -110,7 +108,6 @@ def handle_values_input(values: str) -> list:
         raise ValueError('Wrong format of values entered, please check the documentation')
     split_by_brackets = re.findall("\[(.*?)\]", values)
     res_for_values_req = []
-    # split each element by that was in the brackets by a comma
     for element in split_by_brackets:
         res_for_values_req.append(element.split(","))
 
@@ -205,7 +202,6 @@ def make_markdown_matrix(sheets: list) -> str:
             row_data = sheet.get('rowData')
             for row in row_data:
                 markdown += '|'
-                # this is the list of values
                 values = row.get('values')
                 for value in values:
                     markdown += value + ' |'
@@ -226,9 +222,7 @@ def context_single_get_parse(response: dict, include_grid_data: bool) -> dict:
         "spreadsheetId": response.get('spreadsheetId'),
         "spreadsheetUrl": response.get('spreadsheetUrl'),
         "spreadsheetTitle": response.get('properties', {}).get('title'),
-        # this is the array of sheets
         "sheets": parse_sheets_for_get_response(response.get('sheets', []), include_grid_data),
-
     }
     return output_dict
 
@@ -245,7 +239,6 @@ def parse_sheets_for_get_response(sheets: list, include_grid_data: bool) -> list
     """
     sheet_lst = []
     for sheet in sheets:
-        # take the properties and remove the sheetType property
         output_sheet = {}
         properties = sheet.get('properties', {})
         output_sheet['title'] = properties.get('title')
@@ -254,28 +247,22 @@ def parse_sheets_for_get_response(sheets: list, include_grid_data: bool) -> list
         output_sheet['gridProperties'] = properties.get('gridProperties')
         row_data: list = []
         if not include_grid_data:
-            output_sheet['rowData'] = []    # with include_grid_data False the row data will be empty
+            output_sheet['rowData'] = []
             sheet_lst.append(output_sheet)
             continue
-        # take the rowData from the response
         response_rows_data = sheet.get('data', {})[0].get('rowData', None)
         if not response_rows_data:
             row_data.append({'values': []})
-        # values is an array of CellData object
         else:
             for response_values in response_rows_data:
                 values = []
-                # output_row_values: Dict[str, list] = {"values": []}
-                # here we build the values per row list of the output
-                if not response_values:  # if the row is empty append an empty list
+                if not response_values:
                     row_data.append({'values': []})
                 else:
                     for response_cell_data in response_values.get('values'):
                         if not response_cell_data:
-                            # output_row_values.get('values').append('')
                             values.append('')
                         else:
-                            # output_row_values.get('values').append(response_cell_data.get('formattedValue'))
                             values.append(response_cell_data.get('formattedValue'))
                     row_data.append({'values': values})
         output_sheet['rowData'] = row_data
@@ -319,8 +306,6 @@ def create_spreadsheet(service: Resource, args: dict) -> CommandResults:
             (CommandResults) command result ready for the server
         Action : creates a new spreadsheet
     '''
-    # in this function I can set them to None and then remove them in
-    # the next function, or I can set them manually to the default value.
     rgb_format = argToList(args.get('cell_format_backgroundColor'))
     rgb_format = [1, 1, 1, 1] if not rgb_format else rgb_format
     spreadsheet = {
@@ -329,7 +314,7 @@ def create_spreadsheet(service: Resource, args: dict) -> CommandResults:
             "locale": args.get('locale', "en"),
             "defaultFormat": {
                 "numberFormat": {
-                    "type": args.get('cell_form_at_type', 'TEXT')
+                    "type": args.get('cell_form_at_type', 'TEXT'),
                 },
                 "backgroundColor": {
                     "red": rgb_format[0],
@@ -339,27 +324,26 @@ def create_spreadsheet(service: Resource, args: dict) -> CommandResults:
                 },
                 "textFormat": {
                     "fontFamily": args.get('cell_format_textformat_family', 'ariel'),
-                    "fontSize": args.get('cell_format_textformat_font_size', 11)
+                    "fontSize": args.get('cell_format_textformat_font_size', 11),
                 },
-                "textDirection": args.get('cell_format_text_direction', 'LEFT_TO_RIGHT')
+                "textDirection": args.get('cell_format_text_direction', 'LEFT_TO_RIGHT'),
             }
         },
         "sheets": [
             {
                 "properties": {
                     "title": args.get('sheet_title'),
-                    "sheetType": args.get('sheet_type', "GRID")
+                    "sheetType": args.get('sheet_type', "GRID"),
                 }
             }
         ]
     }
-    # this removes all None values from the json in a recursive manner.
     spreadsheet = remove_empty_elements(spreadsheet)
     response = service.spreadsheets().create(body=spreadsheet).execute()
 
     human_readable = {
         'spreadsheet Id': response.get('spreadsheetId'),
-        'spreadsheet title': response.get('properties').get('title')
+        'spreadsheet title': response.get('properties').get('title'),
     }
     markdown = tableToMarkdown('Success', human_readable, headers=['spreadsheet Id', 'spreadsheet title'])
     results = CommandResults(
@@ -397,7 +381,6 @@ def get_spreadsheet(service: Resource, args: dict) -> CommandResults:
     '''
     spread_sheets_ids = argToList(args.get('spreadsheet_id'))
     include_grid_data = argToBoolean(args.get('include_grid_data', False))
-    # The ranges to retrieve from the spreadsheet.
     ranges = args.get('ranges')
     markdown = ""
     if not spread_sheets_ids:
@@ -431,9 +414,6 @@ def get_spreadsheet(service: Resource, args: dict) -> CommandResults:
         )
         return results
 
-    # True if grid data should be returned.
-    # This parameter is ignored if a field mask was set in the request.
-
 
 def create_sheet(service: Resource, args: dict) -> CommandResults:
     '''
@@ -464,12 +444,12 @@ def create_sheet(service: Resource, args: dict) -> CommandResults:
                             "blue": rgb_format[2],
                             "alpha": rgb_format[3]
                         },
-                        "hidden": args.get('hidden', False)
+                        "hidden": args.get('hidden', False),
                     }
                 }
             }
         ],
-        "includeSpreadsheetInResponse": args.get('echo_spreadsheet')
+        "includeSpreadsheetInResponse": args.get('echo_spreadsheet'),
     }
     request_to_update = remove_empty_elements(request_to_update)
     response = service.spreadsheets().batchUpdate(spreadsheetId=spreadsheet_id, body=request_to_update).execute()
@@ -493,11 +473,11 @@ def duplicate_sheet(service: Resource, args: dict) -> CommandResults:
                 "duplicateSheet": {
                     "sourceSheetId": args.get('source_sheet_id'),
                     "insertSheetIndex": args.get('new_sheet_index'),
-                    "newSheetName": args.get('new_sheet_name')
+                    "newSheetName": args.get('new_sheet_name'),
                 }
             }
         ],
-        "includeSpreadsheetInResponse": args.get('echo_spreadsheet')
+        "includeSpreadsheetInResponse": args.get('echo_spreadsheet'),
     }
     request_to_update = remove_empty_elements(request_to_update)
     response = service.spreadsheets().batchUpdate(spreadsheetId=spreadsheet_id, body=request_to_update).execute()
@@ -517,17 +497,15 @@ def copy_to_sheet(service: Resource, args: dict) -> CommandResults:
     '''
     spreadsheet_id_to_copy = args.get('source_spreadsheet_id')
 
-    # The ID of the sheet to copy.
     sheet_id_to_copy = args.get('source_sheet_id')
 
     copy_sheet_to_another_spreadsheet_request_body = {
-        # The ID of the spreadsheet to copy the sheet to.
-        'destination_spreadsheet_id': args.get('destination_spreadsheet_id')
+        'destination_spreadsheet_id': args.get('destination_spreadsheet_id'),
     }
 
     request = service.spreadsheets().sheets().copyTo(spreadsheetId=spreadsheet_id_to_copy, sheetId=sheet_id_to_copy,
                                                      body=copy_sheet_to_another_spreadsheet_request_body)
-    request.execute()  # we dont save the response because we dont need to add this to the context or the HR
+    request.execute()  # we don't save the response because there is no need for output or HR
     results = CommandResults(
         readable_output="### Success"
     )
@@ -550,11 +528,11 @@ def delete_sheet(service: Resource, args: dict) -> CommandResults:
         "requests": [
             {
                 "deleteSheet": {
-                    "sheetId": args.get('sheet_id')
+                    "sheetId": args.get('sheet_id'),
                 }
             }
         ],
-        "includeSpreadsheetInResponse": args.get('echo_spreadsheet')
+        "includeSpreadsheetInResponse": args.get('echo_spreadsheet'),
     }
     request_to_update = remove_empty_elements(request_to_update)
     response = service.spreadsheets().batchUpdate(spreadsheetId=spreadsheet_id, body=request_to_update).execute()
@@ -575,7 +553,6 @@ def clear_sheet(service: Resource, args: dict) -> CommandResults:
     spreadsheet_id = args.get('spreadsheet_id')
     ranges = args.get('range')
 
-    # the body of this reqeust needs to be empty
     request = service.spreadsheets().values().clear(spreadsheetId=spreadsheet_id, range=ranges,
                                                     body={})
     request.execute()  # we don't save the response because there is no need for output or HR
@@ -605,12 +582,12 @@ def dimension_delete_sheet(service: Resource, args: dict) -> CommandResults:
                         "dimension": args.get('dimension_type'),
                         "sheetId": args.get('sheet_id'),
                         "startIndex": args.get('start_index'),
-                        "endIndex": args.get('end_index')
+                        "endIndex": args.get('end_index'),
                     }
                 }
             }
         ],
-        "includeSpreadsheetInResponse": args.get('echo_spreadsheet')
+        "includeSpreadsheetInResponse": args.get('echo_spreadsheet'),
     }
     request_to_update = remove_empty_elements(request_to_update)
     response = service.spreadsheets().batchUpdate(spreadsheetId=spreadsheet_id, body=request_to_update).execute()
@@ -639,13 +616,13 @@ def range_delete_sheet(service: Resource, args: dict) -> CommandResults:
                         "startRowIndex": args.get('start_row_index'),
                         "endRowIndex": args.get('end_row_index'),
                         "startColumnIndex": args.get('start_column_index'),
-                        "endColumnIndex": args.get('end_column_index')
+                        "endColumnIndex": args.get('end_column_index'),
                     },
-                    "shiftDimension": args.get('shift_dimension')
+                    "shiftDimension": args.get('shift_dimension'),
                 }
             }
         ],
-        "includeSpreadsheetInResponse": args.get('echo_spreadsheet')
+        "includeSpreadsheetInResponse": args.get('echo_spreadsheet'),
     }
     request_to_update = remove_empty_elements(request_to_update)
     response = service.spreadsheets().batchUpdate(spreadsheetId=spreadsheet_id, body=request_to_update).execute()
@@ -671,26 +648,23 @@ def data_paste_sheets(service: Resource, args: dict) -> CommandResults:
                     "coordinate": {
                         "sheetId": args.get('sheet_id'),
                         "rowIndex": args.get('row_index'),
-                        "columnIndex": args.get('column_index')
+                        "columnIndex": args.get('column_index'),
                     },
-                    "data": args.get('data'),  # check here the data comes as an array how to handle
-                    "type": f"PASTE_{args.get('paste_type')}",  # add paste before the type
+                    "data": args.get('data'),
+                    "type": f"PASTE_{args.get('paste_type')}",
                 }
             }
         ],
-        "includeSpreadsheetInResponse": args.get('echo_spreadsheet', None)
+        "includeSpreadsheetInResponse": args.get('echo_spreadsheet', None),
     }
     request_to_update = remove_empty_elements(request_to_update)
-    # getting the kind arg
     kind = args.get('data_kind')
-    # getting the pasteData sub dict from the request_to_update
     paste_data = request_to_update.get('requests')[0].get('pasteData')
     # adding a field to the paste data sub dict so that it will fit the api call needed
     if kind == 'delimiter':
         paste_data[kind] = ','
     else:
         paste_data[kind] = "true"
-    # this change in the sub dict modifies the request_to_update that is sent to the google api
     request_to_update = remove_empty_elements(request_to_update)
     response = service.spreadsheets().batchUpdate(spreadsheetId=spreadsheet_id, body=request_to_update).execute()
     results = prepare_result(response, args)
@@ -723,12 +697,12 @@ def find_replace_sheets(service: Resource, args: dict) -> CommandResults:
                         "startRowIndex": args.get('range_start_row_Index'),
                         "endRowIndex": args.get('range_end_row_Index'),
                         "startColumnIndex": args.get('range_start_column_Index'),
-                        "endColumnIndex": args.get('range_end_column_Index')
+                        "endColumnIndex": args.get('range_end_column_Index'),
                     }
                 }
             }
         ],
-        "includeSpreadsheetInResponse": args.get('echo_spreadsheet')
+        "includeSpreadsheetInResponse": args.get('echo_spreadsheet'),
     }
 
     request_to_update = remove_empty_elements(request_to_update)
@@ -752,12 +726,12 @@ def value_update_sheets(service: Resource, args: dict) -> CommandResults:
     ranges = args.get('range')
     value_range_body = {
         "majorDimension": args.get('major_dimension'),
-        "values": handle_values_input(str(args.get('values')))
+        "values": handle_values_input(str(args.get('values'))),
     }
     request = service.spreadsheets().values().update(spreadsheetId=spreadsheet_id, range=ranges,
                                                      valueInputOption=input_option, body=value_range_body)
     request.execute()
-    markdown = '### Success\n'
+    markdown = '### Success'
     return CommandResults(readable_output=markdown)
 
 
@@ -778,14 +752,13 @@ def value_append_sheets(service: Resource, args: dict) -> CommandResults:
 
     value_range_body = {
         "majorDimension": args.get('major_dimension'),
-        "values": handle_values_input(str(args.get("values")))
+        "values": handle_values_input(str(args.get("values"))),
     }
     request = service.spreadsheets().values().append(spreadsheetId=spreadsheet_id, range=range_,
                                                      valueInputOption=input_option,
                                                      insertDataOption=insert_option, body=value_range_body)
     request.execute()
-
-    markdown = '### Success\n'
+    markdown = '### Success'
     return CommandResults(readable_output=markdown)
 
 

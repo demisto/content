@@ -1,20 +1,21 @@
 # in order to run these commands again you need to generate a new empty fresh spreadsheet and change its id with the id in the commands below -> 1EwL7rqcSVdkXCAwuGt4jIiDrDUEKW3bmP63dqTBolfk
 !google-sheets-spreadsheet-create title=NewSpreadsheet sheet_title=newSheetTitle cell_format_backgroundColor=1,1,1,1 cell_format_textformat_font_size=11 cell_format_type=TEXT
+!google-sheets-sheet-create spreadsheet_id=1EwL7rqcSVdkXCAwuGt4jIiDrDUEKW3bmP63dqTBolfk sheet_title=newSheetTitle sheet_id=3 sheet_index=2 tab_color=1,1,1,1 right_to_left=false
 !google-sheets-value-update input_option=RAW major_dimension=ROWS range=newSheetTitle!A1:E5 values=[a,b,c,d,e],[a,b,c,d,e],[a,b,c,d,e],[a,b,c,d,e],[a,b,c,d,e] spreadsheet_id=1EwL7rqcSVdkXCAwuGt4jIiDrDUEKW3bmP63dqTBolfk
 !google-sheets-sheet-clear spreadsheet_id=1EwL7rqcSVdkXCAwuGt4jIiDrDUEKW3bmP63dqTBolfk range=newSheetTitle!2:2
-!google-sheets-data-paste column_index=0 row_index=2 data_kind=delimiter data=1,2,3,4,5 spreadsheet_id=1EwL7rqcSVdkXCAwuGt4jIiDrDUEKW3bmP63dqTBolfk sheet_id=1574092348
-!google-sheets-sheet-create spreadsheet_id=1EwL7rqcSVdkXCAwuGt4jIiDrDUEKW3bmP63dqTBolfk sheet_title=Sheet3 sheet_id=3 sheet_index=2 tab_color=1,1,1,1 right_to_left=false
-!google-sheets-dimension-delete dimension_type=ROWS sheet_id=1574092348 spreadsheet_id=1EwL7rqcSVdkXCAwuGt4jIiDrDUEKW3bmP63dqTBolfk start_index=0 end_index=3 echo_spreadsheet=true
-!google-sheets-sheet-delete sheet_id=3 spreadsheet_id=1EwL7rqcSVdkXCAwuGt4jIiDrDUEKW3bmP63dqTBolfk
+!google-sheets-data-paste column_index=0 row_index=2 data_kind=delimiter data=1,2,3,4,5 spreadsheet_id=1EwL7rqcSVdkXCAwuGt4jIiDrDUEKW3bmP63dqTBolfk sheet_id=3
 !google-sheets-find-replace find=e replacement=! spreadsheet_id=1EwL7rqcSVdkXCAwuGt4jIiDrDUEKW3bmP63dqTBolfk all_sheets=True
 !google-sheets-spreadsheet-get spreadsheet_id=1EwL7rqcSVdkXCAwuGt4jIiDrDUEKW3bmP63dqTBolfk
 !google-sheets-spreadsheet-get spreadsheet_id=1EwL7rqcSVdkXCAwuGt4jIiDrDUEKW3bmP63dqTBolfk,1meYzOYg7oCK7zYGBJu_hw3iQ_oEvJ6EecCBOV8ZQvFA
-!google-sheets-spreadsheet-get spreadsheet_id=1EwL7rqcSVdkXCAwuGt4jIiDrDUEKW3bmP63dqTBolfk include_grid_data=true
-!google-sheets-spreadsheet-update spreadsheet_id=1EwL7rqcSVdkXCAwuGt4jIiDrDUEKW3bmP63dqTBolfk requests=`{"requests": [{"copyPaste": {"destination": {"startRowIndex": 0, "startColumnIndex": 0, "endRowIndex": 5, "endColumnIndex": 5, "sheetId": 1574092348}, "pasteOrientation": "TRANSPOSE", "source": {"sheetId": 1574092348, "startRowIndex": 0, "startColumnIndex": 0, "endColumnIndex": 5, "endRowIndex": 5}, "pasteType": "PASTE_NORMAL"}}]}`
-!google-sheets-sheet-duplicate new_sheet_name=dup_sheet spreadsheet_id=1EwL7rqcSVdkXCAwuGt4jIiDrDUEKW3bmP63dqTBolfk source_sheet_id=1574092348 echo_spreadsheet=true
-!google-sheets-range-delete spreadsheet_id=1EwL7rqcSVdkXCAwuGt4jIiDrDUEKW3bmP63dqTBolfk sheet_id=1574092348 shift_dimension=COLUMNS start_row_index=0 end_row_index=2 start_column_index=0 end_column_index=2
+!google-sheets-spreadsheet-get spreadsheet_id=1EwL7rqcSVdkXCAwuGt4jIiDrDUEKW3bmP63dqTBolfk include_grid_data=true ranges=newSheetTitle!A1:F10
+!google-sheets-dimension-delete dimension_type=ROWS sheet_id=3 spreadsheet_id=1EwL7rqcSVdkXCAwuGt4jIiDrDUEKW3bmP63dqTBolfk start_index=0 end_index=3 echo_spreadsheet=true
+!google-sheets-spreadsheet-update spreadsheet_id=1EwL7rqcSVdkXCAwuGt4jIiDrDUEKW3bmP63dqTBolfk requests=`{"requests": [{"copyPaste": {"destination": {"startRowIndex": 0, "startColumnIndex": 0, "endRowIndex": 5, "endColumnIndex": 5, "sheetId": 3}, "pasteOrientation": "TRANSPOSE", "source": {"sheetId": 3, "startRowIndex": 0, "startColumnIndex": 0, "endColumnIndex": 5, "endRowIndex": 5}, "pasteType": "PASTE_NORMAL"}}]}`
+!google-sheets-sheet-duplicate new_sheet_name=duplicated_sheet spreadsheet_id=1EwL7rqcSVdkXCAwuGt4jIiDrDUEKW3bmP63dqTBolfk source_sheet_id=3 echo_spreadsheet=true
+!google-sheets-range-delete spreadsheet_id=1EwL7rqcSVdkXCAwuGt4jIiDrDUEKW3bmP63dqTBolfk sheet_id=3 shift_dimension=COLUMNS start_row_index=0 end_row_index=2 start_column_index=0 end_column_index=2
 !google-sheets-value-append insert_option=OVERWRITE major_dimension=ROWS range=newSheetTitle!A1:D5 spreadsheet_id=1EwL7rqcSVdkXCAwuGt4jIiDrDUEKW3bmP63dqTBolfk input_option=RAW values=[77,77,77],[777,777,777]
-!google-sheets-sheet-copy-to source_sheet_id=1574092348 source_spreadsheet_id=1EwL7rqcSVdkXCAwuGt4jIiDrDUEKW3bmP63dqTBolfk destination_spreadsheet_id=1EwL7rqcSVdkXCAwuGt4jIiDrDUEKW3bmP63dqTBolfk
+!google-sheets-sheet-copy-to source_sheet_id=3 source_spreadsheet_id=1EwL7rqcSVdkXCAwuGt4jIiDrDUEKW3bmP63dqTBolfk destination_spreadsheet_id=1EwL7rqcSVdkXCAwuGt4jIiDrDUEKW3bmP63dqTBolfk
 !google-sheets-sheet-clear range=newSheetTitle spreadsheet_id=1EwL7rqcSVdkXCAwuGt4jIiDrDUEKW3bmP63dqTBolfk
+!google-sheets-sheet-delete sheet_id=3 spreadsheet_id=1EwL7rqcSVdkXCAwuGt4jIiDrDUEKW3bmP63dqTBolfk
+
 
 

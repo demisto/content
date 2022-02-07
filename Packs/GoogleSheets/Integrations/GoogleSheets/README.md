@@ -1,5 +1,5 @@
 Google Sheets is a spreadsheet program that is part of the free web-based Google applications to create and format spreadsheets. Use this integration to create and modify spreadsheets.
-This integration was integrated and tested with version xx of GoogleSheets
+This integration was integrated and tested with version 4 of Google Sheets API.
 
 ## Configure Google Sheets on Cortex XSOAR
 
@@ -15,6 +15,10 @@ This integration was integrated and tested with version xx of GoogleSheets
     | Email - Associate to Google Drive | Used to impersonate a Google workspace user, so the spreadsheets is created in the associated Google Drive and is easily accessible from a UI. This parameter is used during the authentication process.<br/> | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
+## Known limitations
+You can only delete a spreadsheet with the Google Drive integrations. 
+
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.

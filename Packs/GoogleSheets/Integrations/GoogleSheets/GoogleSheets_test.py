@@ -1,20 +1,8 @@
-"""Base Integration for Cortex XSOAR - Unit Tests file
-
-Pytest Unit Tests: all funcion names must start with "test_"
-
-More details: https://xsoar.pan.dev/docs/integrations/unit-testing
-
-MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
-
-You must add at least a Unit Test function for every XSOAR command
-you are implementing with your integration
-"""
-
 import json
 import io
 import pytest
 import GoogleSheets
-
+import os
 from googleapiclient.discovery import build
 from googleapiclient.http import HttpMock
 from googleapiclient.http import HttpMockSequence
@@ -41,7 +29,7 @@ def test_parse_sheets_for_get_response():
         - return a filtered list of the sheets with the relevant data
     '''
     path = 'test_data/helper_functions/test_parse_sheets_for_get_response/'
-    result = util_load_json(path + 'res_parse.json')
+    result = util_load_json(os.path.join(path, 'res_parse.json'))
     assert result == GoogleSheets.parse_sheets_for_get_response(util_load_json(path + 'sheets.json'), True)
 
 
@@ -59,7 +47,7 @@ def test_make_markdown_matrix():
     path = 'test_data/helper_functions/test_make_markdown_matrix/'
     with open(path + 'result.md', 'r') as file:
         result = file.read()
-    assert GoogleSheets.make_markdown_matrix(util_load_json(path + 'sheets.json')) == result
+    assert GoogleSheets.make_markdown_matrix(util_load_json(os.path.join(path, 'sheets.json'))) == result
 
 
 def test_prepare_result_with_echo(mocker):
@@ -147,16 +135,16 @@ def test_handle_values_input(test_input, expected):
 
 
 handle_values_input_parametrized_exception = [
-    ("1,2,3", pytest.raises(ValueError)),
-    ("[4,5", pytest.raises(ValueError)),
-    ("{3,4}", pytest.raises(ValueError)),
-    ("(1,2,3)", pytest.raises(ValueError)),
-    (None, pytest.raises(ValueError))
+    ("1,2,3"),
+    ("[4,5"),
+    ("{3,4}"),
+    ("(1,2,3)"),
+    (None)
 ]
 
 
-@pytest.mark.parametrize("test_input,expected", handle_values_input_parametrized_exception)
-def test_handle_values_input_exception(test_input, expected):
+@pytest.mark.parametrize("test_input", handle_values_input_parametrized_exception)
+def test_handle_values_input_exception(test_input):
     '''
 
         Given:
@@ -189,9 +177,9 @@ def test_markdown_single_get(mocker):
     '''
     path = 'test_data/helper_functions/test_markdown_single_get/'
     mocker.patch.object(GoogleSheets, 'create_list_id_title', return_value=[{'SheetId': 0, 'Sheet title': 'Sheet1'}])
-    response = util_load_json(path + 'get_response.json')
+    response = util_load_json(os.path.join(path, 'get_response.json'))
     markdown = GoogleSheets.markdown_single_get(response)
-    with open(path + 'markdown_assert.md', 'r') as file:
+    with open(os.path.join(path, 'markdown_assert.md'), 'r') as file:
         markdown_assert = file.read()
     assert markdown == markdown_assert
 
@@ -218,7 +206,7 @@ def test_default_ranges_if_not_specified(include_grid_data, ranges, expected):
     '''
 
     path = 'test_data/helper_functions/test_default_ranges_if_not_specified/'
-    http = HttpMock(path + 'response.json', {'status': '200'})
+    http = HttpMock(os.path.join(path, 'response.json'), {'status': '200'})
     api_key = 'your_api_key'
     service = build('sheets', 'v4', http=http, developerKey=api_key)
     res = GoogleSheets.default_ranges_if_not_specified("fake", ranges, include_grid_data, service)
@@ -240,13 +228,15 @@ def test_create_spreadsheet():
 
     '''
     path = "test_data/create_spreadsheet/"
-    http = HttpMock(path + 'response.json', {'status': '200'})
+    http = HttpMock(os.path.join(path, 'response.json'), {'status': '200'})
     api_key = 'your_api_key'
     service = build('sheets', 'v4', http=http, developerKey=api_key)
     args = util_load_json(path + 'args.json')
     command_result = GoogleSheets.create_spreadsheet(service, args)
-    assert command_result.readable_output == util_load_json(path + 'command_results_readable_output.json')
-    assert command_result.outputs == util_load_json(path + 'command_results_outputs.json')
+    with open(os.path.join(path, 'command_results_readable_output.md'), 'r') as file:
+        markdown_assert = file.read()
+    assert command_result.readable_output == markdown_assert
+    assert command_result.outputs == util_load_json(os.path.join(path, 'command_results_outputs.json'))
 
 
 # GET SPREADSHEET TESTS
@@ -269,11 +259,11 @@ def test_get_single_spreadsheet(path):
     http = HttpMock(path + 'response.json', {'status': '200'})
     api_key = 'your_api_key'
     service = build('sheets', 'v4', http=http, developerKey=api_key)
-    command_result = GoogleSheets.get_spreadsheet(service, util_load_json(path + 'args.json'))
+    command_result = GoogleSheets.get_spreadsheet(service, util_load_json(os.path.join(path, 'args.json')))
     with open(path + 'markdown.md', 'r') as file:
         markdown_assert = file.read()
     assert command_result.readable_output == markdown_assert
-    assert command_result.outputs == util_load_json(path + 'output.json')
+    assert command_result.outputs == util_load_json(os.path.join(path, 'output.json'))
 
 
 def test_get_multiple_spreadsheets():
@@ -294,14 +284,14 @@ def test_get_multiple_spreadsheets():
         'spreadsheet_id': "13YRXawxY54RI0uPjD_BQmw31zwaAYQ53I0mxbWlhTy8,1btQWA8icPTiVd-HIXOLpzetcoXFo77deZ3tExukEk-w"
     }
     http = HttpMockSequence([
-        ({'status': '200'}, json.dumps(util_load_json(path + 'response1.json'))),
-        ({'status': '200'}, json.dumps(util_load_json(path + 'response2.json')))])
+        ({'status': '200'}, json.dumps(util_load_json(os.path.join(path, 'response1.json')))),
+        ({'status': '200'}, json.dumps(util_load_json(os.path.join(path, 'response2.json'))))])
     api_key = 'your_api_key'
     service = build('sheets', 'v4',
                     http=http,
                     developerKey=api_key)
     command_result = GoogleSheets.get_spreadsheet(service, args)
-    with open(path + 'markdown.md', 'r') as file:
+    with open(os.path.join(path, 'markdown.md'), 'r') as file:
         markdown_assert = file.read()
     assert command_result.readable_output == markdown_assert
     assert command_result.outputs is None
@@ -326,7 +316,7 @@ def test_value_update():
     service = build('sheets', 'v4', http=http, developerKey=api_key)
     args = util_load_json("test_data/update_spreadsheet/test_value_update/command_mock.json")
     command_result = GoogleSheets.value_update_sheets(service, args)
-    assert command_result.readable_output == '### Success\n'
+    assert command_result.readable_output == '### Success'
 
 
 @pytest.mark.parametrize("path", ['test_data/update_spreadsheet/test_sheet_create/',
@@ -349,9 +339,9 @@ def test_sheet_create_both_ways(path):
     http = HttpMock(path + 'response.json', {'status': '200'})
     api_key = 'your_api_key'
     service = build('sheets', 'v4', http=http, developerKey=api_key)
-    args = util_load_json(path + 'args.json')
+    args = util_load_json(os.path.join(path, 'args.json'))
     command_result = GoogleSheets.create_sheet(service, args)
-    assert command_result.outputs == util_load_json(path + 'command_result_output.json')
-    with open(path + 'readable_output.md', 'r') as file:
+    assert command_result.outputs == util_load_json(os.path.join(path, 'command_result_output.json'))
+    with open(os.path.join(path, 'readable_output.md'), 'r') as file:
         markdown_assert = file.read()
     assert command_result.readable_output == markdown_assert
