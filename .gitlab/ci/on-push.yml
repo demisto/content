@@ -270,7 +270,7 @@ fan-in:
 
 generate_build_report:
   extends:
-    - .trigger-build_report
+    - .trigger-build-report
   rules:
     - if: '$NIGHTLY!= "true"'
     - if: '$BUCKET_UPLOAD != "true"'
