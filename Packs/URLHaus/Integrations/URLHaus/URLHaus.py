@@ -198,7 +198,7 @@ def url_create_relationships(uri, host, files, create_relationships, max_num_of_
             parsed_host = determine_host_ioc_type(host)
             if parsed_host == 'domain':
                 relationships.append(EntityRelationship(
-                    name=EntityRelationship.Relationships.RELATIONSHIPS_NAMES.get('hosts'), entity_a=uri,
+                    name=EntityRelationship.Relationships.HOSTED_ON, entity_a=uri,
                     entity_a_type=FeedIndicatorType.URL,
                     entity_b=host, entity_b_type=FeedIndicatorType.Domain,
                     reverse_name=EntityRelationship.Relationships.HOSTS))
