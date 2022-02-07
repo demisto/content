@@ -19,9 +19,9 @@ def test_main_flow(mocker, tmp_path):
     from ReadPDFFileV2 import main
     mocker.patch.object(demisto, 'args')
     mocker.patch.object(demisto, 'getFilePath', return_value={'path': f'{CWD}/lets_talk.pdf'})
-    mocker = mocker.patch('ReadPDFFileV2.return_error_without_exit')
+    err_mocker = mocker.patch('ReadPDFFileV2.return_error_without_exit')
     main()
-    assert not mocker.called
+    assert not err_mocker.called
 
 def test_get_files_names_in_path():
     from ReadPDFFileV2 import get_files_names_in_path
