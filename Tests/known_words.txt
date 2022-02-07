@@ -82,3 +82,5 @@ QRadar
 AdditionalPollingCommandName
 FireEye
 FormatURL
+Gitlab
+GitHub
