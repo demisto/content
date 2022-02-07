@@ -199,7 +199,7 @@ def test_handle_errors(http_response, output, mocker):
         assert (str(e) == str(output))
 
 
-def test_running_polling_command_success(mocker):
+def test_running_polling_command_success_for_url(mocker):
     """
     Given:
         An upload request of a url or a file using the polling flow, that was already initiated priorly and is now
@@ -226,7 +226,35 @@ def test_running_polling_command_success(mocker):
     assert command_results.scheduled_command is None
 
 
-def test_running_polling_command_pending(mocker):
+def test_running_polling_command_success_for_file(mocker):
+    """
+    Given:
+        An upload request of a url or a file using the polling flow, that was already initiated priorly and is now
+         complete.
+    When:
+        When, while in the polling flow, we are checking the status of on an upload that was initiated earlier and is
+         already complete.
+    Then:
+        Return a command results object, without scheduling a new command.
+    """
+    args = {'ids': "1234", "extended_data": "true"}
+    mocker.patch('CommonServerPython.ScheduledCommand.raise_error_if_not_supported')
+    mocker.patch.object(Client, '_generate_token')
+    client = Client(server_url="https://api.crowdstrike.com/", username="user1", password="12345", use_ssl=False,
+                    proxy=False)
+
+    mocker.patch.object(Client, 'send_url_to_sandbox_analysis', return_value=SEND_URL_TO_SANDBOX_ANALYSIS_HTTP_RESPONSE)
+    mocker.patch.object(Client, 'get_full_report', return_value=GET_FULL_REPORT_HTTP_RESPONSE)
+
+    expected_outputs = GET_FULL_REPORT_CONTEXT_EXTENDED
+    command_results = run_polling_command(client, args, 'cs-fx-submit-uploaded-file',
+                                          send_uploaded_file_to_sandbox_analysis_command,
+                                          get_full_report_command, 'FILE')
+    assert command_results.outputs == expected_outputs
+    assert command_results.scheduled_command is None
+
+
+def test_running_polling_command_pending_for_url(mocker):
     """
     Given:
          An upload request of a url or a file using the polling flow, that was already initiated priorly and is not
@@ -247,6 +275,32 @@ def test_running_polling_command_pending(mocker):
     mocker.patch.object(Client, 'get_full_report', return_value=GET_FULL_REPORT_HTTP_RESPONSE_EMPTY)
     command_results = run_polling_command(client, args, 'cs-fx-submit-url', send_url_to_sandbox_analysis_command,
                                           get_full_report_command, 'URL')
+    assert command_results.outputs is None
+    assert command_results.scheduled_command is not None
+
+
+def test_running_polling_command_pending_for_file(mocker):
+    """
+    Given:
+         An upload request of a url or a file using the polling flow, that was already initiated priorly and is not
+          completed yet.
+    When:
+         When, while in the polling flow, we are checking the status of on an upload that was initiated earlier and is
+         not complete yet.
+    Then:
+        Return a command results object, with scheduling a new command.
+    """
+    args = {'ids': "1234", "extended_data": "true"}
+    mocker.patch('CommonServerPython.ScheduledCommand.raise_error_if_not_supported')
+    mocker.patch.object(Client, '_generate_token')
+    client = Client(server_url="https://api.crowdstrike.com/", username="user1", password="12345", use_ssl=False,
+                    proxy=False)
+
+    mocker.patch.object(Client, 'send_url_to_sandbox_analysis', return_value=SEND_URL_TO_SANDBOX_ANALYSIS_HTTP_RESPONSE)
+    mocker.patch.object(Client, 'get_full_report', return_value=GET_FULL_REPORT_HTTP_RESPONSE_EMPTY)
+    command_results = run_polling_command(client, args, 'cs-fx-submit-uploaded-file',
+                                          send_uploaded_file_to_sandbox_analysis_command,
+                                          get_full_report_command, 'FILE')
     assert command_results.outputs is None
     assert command_results.scheduled_command is not None
 

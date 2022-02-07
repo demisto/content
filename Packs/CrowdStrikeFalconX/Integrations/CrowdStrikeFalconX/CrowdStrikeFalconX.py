@@ -704,7 +704,7 @@ def get_full_report_command(client: Client, ids: list, extended_data: str):
             "filesize", "sha256"
         ]
         extra_sandbox_fields = [
-            "processes", "architecture", "classification", "classification_tags",
+            "processes", "architecture", "classification", "classification_tags", "http_requests",
             "extracted_files", "file_metadata", "file_size", "file_type", "file_type_short", "packer", "incidents",
             "submit_name", "screenshots_artifact_ids", "dns_requests", "contacted_hosts", "contacted_hosts"
         ]
