@@ -490,13 +490,15 @@ def fetch_incidents(client: Client, last_run: dict, first_fetch: str, max_fetch:
         two_days_from_last_search = (dateparser.parse(next_run['time']) + timedelta(hours=48))
         now_minus_ten_minutes = dateparser.parse('10 minutes').replace(tzinfo=two_days_from_last_search.tzinfo)
         next_search = min(two_days_from_last_search, now_minus_ten_minutes)
-        next_run['time'] = next_search.isoformat()
+        next_run = {
+            'time': next_search.isoformat(),
+            'last_alert_ids': []
+        }
+        demisto.info(f'{INTEGRATION_NAME} setting next run to: {str(next_run)}')
         return next_run, []
 
     alerts = all_alerts[:max_fetch]
     last_alert_ids = last_run.get('last_alert_ids', [])
-    if last_alert_ids:
-        last_alert_ids = json.loads(last_alert_ids)  # unescape the dumped json
     incidents = []
 
     for alert in alerts:
@@ -518,7 +520,6 @@ def fetch_incidents(client: Client, last_run: dict, first_fetch: str, max_fetch:
         # now -10 minutes take the latter (to avoid missing events)
         two_days_from_last_incident = dateparser.parse(alerts[-1].get('occurred')) + timedelta(hours=48)
         now_minus_ten_minutes = dateparser.parse('10 minutes').replace(tzinfo=two_days_from_last_incident.tzinfo)
-        demisto.info(two_days_from_last_incident, now_minus_ten_minutes)
         next_search = min(two_days_from_last_incident, now_minus_ten_minutes)
         next_run['time'] = next_search.isoformat()
         demisto.info(f'{INTEGRATION_NAME} Setting next_run to: {next_run["time"]}')
@@ -527,7 +528,7 @@ def fetch_incidents(client: Client, last_run: dict, first_fetch: str, max_fetch:
     # as alerts occurred till now, update last_run time accordingly to the that of latest fetched alert
     next_run = {
         'time': alerts[-1].get('occurred'),
-        'last_alert_ids': json.dumps(last_alert_ids)  # save the alert IDs from the last fetch
+        'last_alert_ids': last_alert_ids  # save the alert IDs from the last fetch
     }
     demisto.info(f'{INTEGRATION_NAME} Fetched {len(incidents)}. last fetch at: {str(next_run)}')
     return next_run, incidents

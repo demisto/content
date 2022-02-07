@@ -114,10 +114,11 @@ class FireEyeClient(BaseClient):
 
     @logger
     def _generate_token(self) -> str:
-        resp = self._http_request(method='POST', url_suffix='auth/login', resp_type='response')
-        if resp.status_code != 200:
+        try:
+            resp = self._http_request(method='POST', url_suffix='auth/login', resp_type='response', retries=3)
+        except DemistoException as er:
             raise DemistoException(
-                f'Token request failed with status code {resp.status_code}. message: {str(resp)}')
+                f'Token request failed. message: {str(er)}')
         if 'X-FeApi-Token' not in resp.headers:
             raise DemistoException(
                 f'Token request failed. API token is missing. message: {str(resp)}')
