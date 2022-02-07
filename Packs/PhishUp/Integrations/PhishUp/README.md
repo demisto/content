@@ -57,3 +57,17 @@ There are no input arguments for this command.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | PhishUp.Action | String | Chosen action from PhishUp instance | 
+
+
+#### Base Command
+
+`phishup-evaluate-response`
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PhishUp.Evaluation | String | Evaluating PhishUp Results and Return Phish If There is an Phish Website | 

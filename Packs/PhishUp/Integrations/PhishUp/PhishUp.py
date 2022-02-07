@@ -130,6 +130,8 @@ def main():
     # get the service API url
     base_url = "https://apiv2.phishup.co"
 
+    demisto.debug(f"base_url: {base_url}")
+
     apikey = demisto.params().get('credentials').get('password')
 
     verify_certificate = not demisto.params().get('insecure', False)
@@ -143,7 +145,6 @@ def main():
 
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
-            # demisto.log("okkkk")
             result = test_module(client, apikey)
             demisto.results(result)
 

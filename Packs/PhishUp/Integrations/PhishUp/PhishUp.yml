@@ -7,7 +7,7 @@ configuration:
   displaypassword: API Key
   hiddenusername: true
   name: credentials
-  required: false
+  required: true
   type: 9
 - display: Incident type
   name: incidentType
