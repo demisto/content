@@ -11,6 +11,10 @@ import json
 from typing import List
 
 
+url_extraction_regex = r'(?:(?:https?|ftp|hxxps?):\/\/|www\[?\.\]?|ftp\[?\.\]?)(?:[-\w\d]+\[?\.\]?)+' \
+                       r'[-\w\d]+(?::\d+)?(?:(?:\/|\?)[-\w\d+&@#\/%=~_$?!\-:,.\(\);]*[\w\d+&@#\/%=~_$\(\);])?'
+
+
 # error class for shell errors
 class ShellException(Exception):
     pass
@@ -286,7 +290,7 @@ def main():
 
                 # Get URLS + emails:
                 pdf_html_content = get_pdf_htmls_content(cpy_file_path, output_folder)
-                urls = re.findall(urlRegex, pdf_html_content)
+                urls = re.findall(url_extraction_regex, pdf_html_content)
                 urls_set = set(urls)
                 emails_set = set(re.findall(EMAIL_REGXEX, pdf_html_content))
 
