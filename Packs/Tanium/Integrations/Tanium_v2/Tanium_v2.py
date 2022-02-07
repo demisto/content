@@ -5,8 +5,6 @@ import demistomock as demisto  # noqa: F401
 import urllib3
 from CommonServerPython import *  # noqa: F401
 
-register_module_line('Tanium v2', 'start', __line__())
-
 
 ''' IMPORTS '''
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -1157,5 +1155,3 @@ def main():
 
 if __name__ == 'builtins':
     main()
-
-register_module_line('Tanium v2', 'end', __line__())
