@@ -268,7 +268,7 @@ fan-in:
     - echo "fan in"
 
 
-generate_build_report:
+generate-build-report:
   extends:
     - .trigger-build-report
   rules:

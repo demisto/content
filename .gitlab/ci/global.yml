@@ -153,7 +153,7 @@
       - local: .gitlab/ci/slack-notify.yml
 
 
-.trigger-build_report:
+.trigger-build-report:
   stage: .post
   trigger:
     strategy: depend
