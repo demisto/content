@@ -43,7 +43,7 @@ run-validations:
   extends:
     - .run-validations
   rules:
-    - if: '$NIGHTLY'
+    - if: '$BUCKET_UPLOAD != "true"'
 
 
 create-instances:
