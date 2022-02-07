@@ -1,16 +1,17 @@
 import os
+import re
+
 import requests
 from gitlab_slack_notifier import get_artifact_data
 
 
-def get_pr_comment():
+def create_pr_comment():
     comment = ''
     comment += get_failing_ut()
     comment += get_failing_validations()
     comment += get_failing_tests()
-    "here i a link to the full report"
+    comment += f"here is a link to the full report: "
     return comment
-
 
 
 FAILED_UT_COMMENT = 'This is the link to the failed unit tests'
@@ -30,6 +31,7 @@ def get_failing_ut():
 
 
 def get_failing_validations():
+    # TODO check the file name
     failed_validations = get_artifact_data(ARTIFACTS_FOLDER, "failed_validations.txt")
     if failed_validations:
         failed_validations_list = failed_validations.split('\n')
@@ -39,16 +41,49 @@ def get_failing_validations():
 
 
 def get_failing_tests():
+    # TODO check the file name
     failed_tests = get_artifact_data(ARTIFACTS_FOLDER, "failed_tests.txt")
     if failed_tests:
         failed_tests_list = failed_tests.split('\n')
+        for failed_test in failed_tests_list:
+            test_data = get_test_data(failed_test)
         write_data_to_summary_file()
         return f'you have {len(failed_tests_list)} failed tests on this push.\n'
     return 'no failing tests on this one. nice job!\n'
 
 
 def write_data_to_summary_file():
+    pass
 
+
+def get_test_data(failed_test_name: str) -> str:
+    # TODO check the file name
+    log_data = get_artifact_data(ARTIFACTS_FOLDER, "xsoar/logs/Run_Tests.log")
+    index_to_trim = failed_test_name.find("(Mock Disabled)")
+    if index_to_trim > -1:
+        failed_test_name = failed_test_name[:index_to_trim - 1]
+    test_log_pattern = f"------ Test playbook: {failed_test_name}.*start ------"
+    re.search(test_log_pattern, log_data)
+
+    '''
+    [2022-02-06 12:46:05] - [Thread-1] - [INFO] - ------ Test playbook: "ConvertFile-Test" with no integrations start ------ (Mock: Disabled)
+INFO:demisto-sdk:External Playbook Configuration not provided, skipping re-configuration.
+[2022-02-06 12:46:05] - [Thread-1] - [INFO] - ssh tunnel command:
+ssh -i ~/.ssh/oregon-ci.pem -4 -o StrictHostKeyChecking=no -f -N "content-build@content-build-lb.demisto.works" -L "4447:10.0.24.230:443"
+[2022-02-06 12:46:25] - [Thread-1] - [INFO] - Investigation URL: https://localhost:4447/#/WorkPlan/7
+[2022-02-06 12:46:46] - [Thread-1] - [ERROR] - "ConvertFile-Test" failed with error/s
+[2022-02-06 12:46:46] - [Thread-1] - [ERROR] - Playbook "ConvertFile-Test" has failed:
+[2022-02-06 12:46:46] - [Thread-1] - [ERROR] - - Task ID: 8
+[2022-02-06 12:46:46] - [Thread-1] - [ERROR] -   Command: !ReadPDFFileV2 entryID="10@7" maxImages="0"
+[2022-02-06 12:46:46] - [Thread-1] - [ERROR] -   Body:
+Could not load pdf file in EntryID 10@7
+Error: 'http://www.w3.org/1999/xhtml'
+[2022-02-06 12:46:46] - [Thread-1] - [ERROR] - - Task ID: 8
+[2022-02-06 12:46:46] - [Thread-1] - [ERROR] -   Command: !ReadPDFFileV2 entryID="10@7" maxImages="0"
+[2022-02-06 12:46:46] - [Thread-1] - [ERROR] -   Body:
+The script failed read PDF file due to an error: 'http://www.w3.org/1999/xhtml'
+[2022-02-06 12:46:46] - [Thread-1] - [ERROR] - Test failed: playbook: "ConvertFile-Test" with no integrations
+[2022-02-06 12:46:47] - [Thread-1] - [INFO] - ------ Test playbook: "ConvertFile-Test" with no integrations end ------'''
 
 
 

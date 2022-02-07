@@ -1,0 +1,29 @@
+
+default:
+  image: docker-io.artifactory.pan.local/devdemisto/gitlab-content-ci:1.0.0.26243
+  artifacts:
+    expire_in: 30 days
+    paths:
+      - /builds/xsoar/content/artifacts/*
+    when: always
+
+stages:
+  - notify
+
+
+include:
+  - local: .gitlab/ci/global.yml
+
+
+slack-notify:
+  tags:
+    - gke
+  stage: notify
+  extends: .default-job-settings
+  script:
+    - python3 ./Tests/scripts/generate_readable_build_report.py -p "$PIPELINE_TO_QUERY" -c "$GITLAB_STATUS_TOKEN" -tw "$WORKFLOW"
+  retry:
+    max: 2
+  needs:
+    - pipeline: $PIPELINE_TO_QUERY
+      job: $JOB_NAME

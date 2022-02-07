@@ -153,6 +153,14 @@
       - local: .gitlab/ci/slack-notify.yml
 
 
+.trigger-build_report:
+  stage: .post
+  trigger:
+    strategy: depend
+    include:
+      - local: .gitlab/ci/build-report.yml
+
+
 .run-unittests-and-lint:
   tags:
     - gce
