@@ -1,14 +1,14 @@
 args:
 - default: true
-  description: List or single object
-  isArray: true
-  name: value
-  required: true
-  secret: false
-- default: true
   description: start_index - end_index or [i_1,i_2,...,i_n].
   isArray: true
   name: range
+  required: true
+  secret: false
+- default: true
+  description: List or single object
+  isArray: true
+  name: value
   required: true
   secret: false
 comment:

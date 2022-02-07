@@ -1,14 +1,15 @@
 id: Test_URLhaus
-version: -1
+version: 39
+vcShouldKeepItemLegacyProdMachine: false
 name: Test_URLhaus
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: d7616781-7931-4e6b-89b2-07382a4f84b9
+    taskid: 0a525511-8b3b-4021-8110-1347cfba9901
     type: start
     task:
-      id: d7616781-7931-4e6b-89b2-07382a4f84b9
+      id: 0a525511-8b3b-4021-8110-1347cfba9901
       version: -1
       name: ""
       iscommand: false
@@ -29,12 +30,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: a0b420c8-fdff-44a4-8429-e807fd84df4a
+    taskid: 99ccd21b-6052-412c-8de1-3291a577e105
     type: regular
     task:
-      id: a0b420c8-fdff-44a4-8429-e807fd84df4a
+      id: 99ccd21b-6052-412c-8de1-3291a577e105
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -55,10 +58,6 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
@@ -72,12 +71,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 070b3d4e-aa14-451e-8d56-2117e3a6eded
+    taskid: 3651d1a3-f448-4820-8a3f-cc2239281a53
     type: regular
     task:
-      id: 070b3d4e-aa14-451e-8d56-2117e3a6eded
+      id: 3651d1a3-f448-4820-8a3f-cc2239281a53
       version: -1
       name: url - with data
       description: Retrieve URL information from URLhaus
@@ -89,14 +90,8 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
-      long: {}
-      retries: {}
-      sampleSize: {}
-      submitWait: {}
-      threshold: {}
       url:
-        simple: http://sskymedia.com/VMYB-ht_JAQo-gi/INV/99401FORPO/20673114777/US/Outstanding-Invoices/ # disable-secrets-detection
-      wait: {}
+        simple: http://ekamjewels.com/anklet/WQG1/?i=1
     separatecontext: false
     view: |-
       {
@@ -110,14 +105,16 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 19f3d24b-25c1-491f-8eed-770d22a67bf1
+    taskid: 9c45f5ba-3672-40e4-81df-34660b6639c7
     type: condition
     task:
-      id: 19f3d24b-25c1-491f-8eed-770d22a67bf1
+      id: 9c45f5ba-3672-40e4-81df-34660b6639c7
       version: -1
-      name: verify context
+      name: verify url context
       type: condition
       iscommand: false
       brand: ""
@@ -141,8 +138,46 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: http://sskymedia.com/VMYB-ht_JAQo-gi/INV/99401FORPO/20673114777/US/Outstanding-Invoices/ # disable-secrets-detection
+                        simple: http://ekamjewels.com/anklet/WQG1/?i=1
                 accessor: Score
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+      - - operator: hasLength
+          left:
+            value:
+              complex:
+                root: URL
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: URL.Data
+                      iscontext: true
+                    right:
+                      value:
+                        simple: http://ekamjewels.com/anklet/WQG1/?i=1
+                accessor: Tags
+            iscontext: true
+          right:
+            value:
+              simple: "5"
+      - - operator: hasLength
+          left:
+            value:
+              complex:
+                root: URL
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: URL.Data
+                      iscontext: true
+                    right:
+                      value:
+                        simple: http://ekamjewels.com/anklet/WQG1/?i=1
+                accessor: Relationships
             iscontext: true
           right:
             value:
@@ -159,12 +194,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 00285b1b-8c6e-42b9-8817-4720e3bde01f
+    taskid: 45c96163-82fa-4863-8463-be97e128f4bf
     type: title
     task:
-      id: 00285b1b-8c6e-42b9-8817-4720e3bde01f
+      id: 45c96163-82fa-4863-8463-be97e128f4bf
       version: -1
       name: complete
       type: title
@@ -183,12 +220,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: a6a68e69-a32b-46c5-86a1-0ae8bc54e321
+    taskid: 890fc448-ab47-4959-8469-5c46f6f85db4
     type: regular
     task:
-      id: a6a68e69-a32b-46c5-86a1-0ae8bc54e321
+      id: 890fc448-ab47-4959-8469-5c46f6f85db4
       version: -1
       name: url - nonexisting
       description: Retrieve URL information from URLhaus
@@ -200,14 +239,8 @@ tasks:
       '#none#':
       - "6"
     scriptarguments:
-      long: {}
-      retries: {}
-      sampleSize: {}
-      submitWait: {}
-      threshold: {}
       url:
-        simple: http://gfrewdfsersfsfersfgergre.com # disable-secrets-detection
-      wait: {}
+        simple: http://gfrewdfsersfsfersfgergre.com
     separatecontext: false
     view: |-
       {
@@ -221,14 +254,16 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: fd8af1b1-c83c-4354-84fc-0547f13151b0
+    taskid: 4644f9ff-d34f-4f05-8a29-2c4869ff5623
     type: condition
     task:
-      id: fd8af1b1-c83c-4354-84fc-0547f13151b0
+      id: 4644f9ff-d34f-4f05-8a29-2c4869ff5623
       version: -1
-      name: verify context
+      name: verify url nonexsiting
       type: condition
       iscommand: false
       brand: ""
@@ -252,12 +287,20 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: http://gfrewdfsersfsfersfgergre.com # disable-secrets-detection
+                        simple: http://gfrewdfsersfsfersfgergre.com
                 accessor: Score
             iscontext: true
           right:
             value:
               simple: "0"
+      - - operator: notContainsGeneral
+          left:
+            value:
+              simple: URL
+            iscontext: true
+          right:
+            value:
+              simple: Relationships
     view: |-
       {
         "position": {
@@ -270,12 +313,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: f2664a18-6b82-4dff-8b69-48e2c5a35f25
+    taskid: 31066365-dfc2-4627-874e-595574314b03
     type: regular
     task:
-      id: f2664a18-6b82-4dff-8b69-48e2c5a35f25
+      id: 31066365-dfc2-4627-874e-595574314b03
       version: -1
       name: domain - with data
       description: Retrieve domain information from URLhaus
@@ -288,13 +333,7 @@ tasks:
       - "8"
     scriptarguments:
       domain:
-        simple: vektorex.com
-      fullResponse: {}
-      long: {}
-      retries: {}
-      sampleSize: {}
-      threshold: {}
-      wait: {}
+        simple: coin-coin-file-9.com
     separatecontext: false
     view: |-
       {
@@ -308,14 +347,16 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 9770aa46-145f-4da5-824c-5415e877e9ab
+    taskid: 6b90a227-cba9-4ae3-89d9-e221d34bfa50
     type: condition
     task:
-      id: 9770aa46-145f-4da5-824c-5415e877e9ab
+      id: 6b90a227-cba9-4ae3-89d9-e221d34bfa50
       version: -1
-      name: verify context
+      name: verify domain context
       type: condition
       iscommand: false
       brand: ""
@@ -339,8 +380,27 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: vektorex.com
+                        simple: coin-coin-file-9.com
                 accessor: Score
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+      - - operator: hasLength
+          left:
+            value:
+              complex:
+                root: Domain
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: Domain.Name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: coin-coin-file-9.com
+                accessor: Relationships
             iscontext: true
           right:
             value:
@@ -357,12 +417,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: a295b127-06e6-4adb-80f2-1a9f70dabbd4
+    taskid: 43b78bf3-5b3b-4fa6-8893-597e9f91eade
     type: regular
     task:
-      id: a295b127-06e6-4adb-80f2-1a9f70dabbd4
+      id: 43b78bf3-5b3b-4fa6-8893-597e9f91eade
       version: -1
       name: domain - no data
       description: Retrieve domain information from URLhaus
@@ -376,12 +438,6 @@ tasks:
     scriptarguments:
       domain:
         simple: google.com
-      fullResponse: {}
-      long: {}
-      retries: {}
-      sampleSize: {}
-      threshold: {}
-      wait: {}
     separatecontext: false
     view: |-
       {
@@ -395,12 +451,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 729e90ca-1927-4cde-8c1c-fbf62eecca72
+    taskid: cc001582-e44b-4e5a-8352-ba46f14835bc
     type: condition
     task:
-      id: 729e90ca-1927-4cde-8c1c-fbf62eecca72
+      id: cc001582-e44b-4e5a-8352-ba46f14835bc
       version: -1
       name: verify context
       type: condition
@@ -444,12 +502,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 983bea7f-3175-4c84-8642-e6abe02de307
+    taskid: aec17632-9b2b-43d9-862b-9944b6a7ac78
     type: regular
     task:
-      id: 983bea7f-3175-4c84-8642-e6abe02de307
+      id: aec17632-9b2b-43d9-862b-9944b6a7ac78
       version: -1
       name: file - no data
       description: Retrieve file information from URLhaus
@@ -459,7 +519,7 @@ tasks:
       brand: URLhaus
     nexttasks:
       '#none#':
-      - "4"
+      - "21"
     scriptarguments:
       file:
         simple: 01fa56184fcaa42b6ee1882787a34098c79898c182814774fd81dc18a6af0b01
@@ -467,16 +527,12 @@ tasks:
         simple: 01fa56184fcaa42b6ee1882787a34098c79898c182814774fd81dc18a6af0b01
       hash_type:
         simple: SHA256
-      long: {}
-      retries: {}
-      threshold: {}
-      wait: {}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 1770,
-          "y": 545
+          "y": 370
         }
       }
     note: false
@@ -484,14 +540,16 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 8a9b8cee-79fe-46bf-8e2e-97d2f9cd2a9f
+    taskid: 42c60a0a-7350-433d-832a-d17f5b786ff7
     type: condition
     task:
-      id: 8a9b8cee-79fe-46bf-8e2e-97d2f9cd2a9f
+      id: 42c60a0a-7350-433d-832a-d17f5b786ff7
       version: -1
-      name: verify context
+      name: verify file context
       type: condition
       iscommand: false
       brand: ""
@@ -505,22 +563,27 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              complex:
-                root: File
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: File.SHA256
-                      iscontext: true
-                    right:
-                      value:
-                        simple: 01fa56184fcaa42b6ee1882787a34098c79898c182814774fd81dc18a6af0b00
-                accessor: MD5
+              simple: File.SHA256
             iscontext: true
           right:
             value:
-              simple: 12c8aec5766ac3e6f26f2505e2f4a8f2
+              simple: 7855068e0cfb093ab9be9ec172676e3c119e16511f3d631d715a4e77ddad9d89
+      - - operator: isEqualString
+          left:
+            value:
+              simple: File.SSDeep
+            iscontext: true
+          right:
+            value:
+              simple: 24576:la1QHwgJMrQqj/wAc6QORNx2nAjwkaMm0GV9igWwlnwXQBwfalj21X4GtZ+FdnZ8:vH5qloBMd8A
+      - - operator: isEqualString
+          left:
+            value:
+              simple: File.Type
+            iscontext: true
+          right:
+            value:
+              simple: dll
     view: |-
       {
         "position": {
@@ -533,12 +596,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 550a02a9-54c0-4a3e-8c56-cc874b9892f6
+    taskid: 390d4f99-462b-427f-8f34-2937f07fe5ad
     type: regular
     task:
-      id: 550a02a9-54c0-4a3e-8c56-cc874b9892f6
+      id: 390d4f99-462b-427f-8f34-2937f07fe5ad
       version: -1
       name: urlhaus-download-sample - with data
       description: Download a malware sample from URLhaus
@@ -551,7 +616,7 @@ tasks:
       - "17"
     scriptarguments:
       file:
-        simple: 254ca6a7a7ef7f17d9884c4a86f88b5d5fd8fe5341c0996eaaf1d4bcb3b2337b
+        simple: c0e8e6f210186eddae9e30690aad94099277d7991e130c666426cbc1b813bd12
     separatecontext: false
     view: |-
       {
@@ -565,12 +630,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 67ca41db-b26b-4bf2-8d9e-25b300598fe6
+    taskid: 18d2cc95-dc1e-4aee-865f-cd1b3d4daea9
     type: condition
     task:
-      id: 67ca41db-b26b-4bf2-8d9e-25b300598fe6
+      id: 18d2cc95-dc1e-4aee-865f-cd1b3d4daea9
       version: -1
       name: verify context
       type: condition
@@ -596,12 +663,12 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: 254ca6a7a7ef7f17d9884c4a86f88b5d5fd8fe5341c0996eaaf1d4bcb3b2337b
+                        simple: c0e8e6f210186eddae9e30690aad94099277d7991e130c666426cbc1b813bd12
                 accessor: MD5
             iscontext: true
           right:
             value:
-              simple: a820381c8acf07cfcb4d9b13498db71d
+              simple: c3d0754022504ca34bf165a933666b11
     view: |-
       {
         "position": {
@@ -614,12 +681,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 4bea44bb-3cd6-4bd2-819b-90831db4d9c9
+    taskid: a08fa9c9-51e0-4a8a-8744-188f036ec9e5
     type: regular
     task:
-      id: 4bea44bb-3cd6-4bd2-819b-90831db4d9c9
+      id: a08fa9c9-51e0-4a8a-8744-188f036ec9e5
       version: -1
       name: urlhaus-download-sample - w/o data
       description: Download a malware sample from URLhaus
@@ -646,12 +715,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: e5c617a3-cd7a-4089-89a2-c42b8b159f93
+    taskid: 8db1ccc8-bdec-4ca5-87b8-38b6c806d823
     type: regular
     task:
-      id: e5c617a3-cd7a-4089-89a2-c42b8b159f93
+      id: 8db1ccc8-bdec-4ca5-87b8-38b6c806d823
       version: -1
       name: file - with data
       description: Retrieve file information from URLhaus
@@ -664,15 +735,11 @@ tasks:
       - "13"
     scriptarguments:
       file:
-        simple: 01fa56184fcaa42b6ee1882787a34098c79898c182814774fd81dc18a6af0b00
+        simple: 7855068e0cfb093ab9be9ec172676e3c119e16511f3d631d715a4e77ddad9d89
       hash:
         simple: 01fa56184fcaa42b6ee1882787a34098c79898c182814774fd81dc18a6af0b00
       hash_type:
         simple: SHA256
-      long: {}
-      retries: {}
-      threshold: {}
-      wait: {}
     separatecontext: false
     view: |-
       {
@@ -686,6 +753,48 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 807f2af5-4bd2-4c47-8405-576369514ebb
+    type: condition
+    task:
+      id: 807f2af5-4bd2-4c47-8405-576369514ebb
+      version: -1
+      name: verify context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: notContainsGeneral
+          left:
+            value:
+              simple: File
+            iscontext: true
+          right:
+            value:
+              simple: Size
+    view: |-
+      {
+        "position": {
+          "x": 1780,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
@@ -700,4 +809,3 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: 5.0.0
