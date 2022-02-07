@@ -21,7 +21,7 @@ build-report:
   stage: report
   extends: .default-job-settings
   script:
-    - python3 ./Tests/scripts/generate_readable_build_report.py -p "$PIPELINE_TO_QUERY" -c "$GITLAB_STATUS_TOKEN" -tw "$WORKFLOW"
+    - python3 ./Tests/scripts/generate_readable_build_report.py
   retry:
     max: 2
   needs:
