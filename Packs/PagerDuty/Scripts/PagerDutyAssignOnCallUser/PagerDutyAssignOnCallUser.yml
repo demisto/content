@@ -1,0 +1,27 @@
+commonfields:
+  id: PagerDutyAssignOnCallUser
+  version: -1
+name: PagerDutyAssignOnCallUser
+script: ''
+type: javascript
+tags:
+- pagerduty
+- communication
+comment: By default assigns the first on-call user to an investigation (all incidents
+  in the investigation will be owned by the on call user)
+enabled: true
+args:
+- name: escalation_policy_ids
+  description: Comma separated escalation policy IDs from which choose the oncall
+    user.
+- name: schedule_ids
+  description: Comma separated schedule IDs from which to choose the oncall.
+scripttarget: 0
+dependson:
+  must:
+  - PagerDuty-get-users-on-call-now
+runonce: false
+runas: DBotWeakRole
+tests:
+- No tests
+fromversion: 5.0.0

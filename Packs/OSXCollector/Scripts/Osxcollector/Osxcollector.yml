@@ -1,0 +1,22 @@
+commonfields:
+  id: Osxcollector
+  version: -1
+name: Osxcollector
+script: ''
+type: javascript
+tags:
+- osx
+- agent
+comment: Execute osxcollector on machine, can run ONLY on OSX
+system: true
+args:
+- name: section
+  default: true
+  description: Ask OSXCollector for a specific section
+- name: timeout
+  description: Timeout for the OSXCollector execution to complete. If omitted, defaults
+    to 10 minutes.
+scripttarget: 1
+dependson: {}
+timeout: 0s
+fromversion: 5.0.0

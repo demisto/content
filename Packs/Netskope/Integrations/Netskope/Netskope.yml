@@ -1,0 +1,192 @@
+commonfields:
+  id: Netskope
+  version: -1
+name: Netskope
+display: Netskope
+category: Network Security
+description: Cloud access security broker that enables to find, understand, and secure
+  cloud apps.
+configuration:
+- display: URL of Netskope Tenant (e.g. https://tenant.goskope.com)
+  name: url
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Tenant API Token
+  name: token
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  type: 13
+  required: false
+- display: Timeframe for initial fetch
+  name: firstFetch
+  defaultvalue: Last60Minutes
+  type: 15
+  required: false
+  options:
+  - Last60Minutes
+  - Last24Hours
+  - Last7Days
+  - Last30Days
+  - Last60Days
+  - Last90Days
+- display: Maximum number of events to fetch per fetch
+  name: maxFetch
+  defaultvalue: "50"
+  type: 0
+  required: false
+script:
+  script: ''
+  type: javascript
+  commands:
+  - name: netskope-events
+    arguments:
+    - name: query
+      description: filter query (e.g. user eq user1@domain.com)
+    - name: timeperiod
+      auto: PREDEFINED
+      predefined:
+      - Last60Minutes
+      - Last24Hours
+      - Last7Days
+      - Last30Days
+      - Last60Days
+      - Last90Days
+      description: TimePeriod
+    - name: starttime
+      description: 'Query start time: timestamp or dd-mm-yyyyTHH:MM:SSZ (e.g. 31-12-1999T11:59:59Z)'
+    - name: endtime
+      description: 'Query end time: timestamp or dd-mm-yyyyTHH:MM:SSZ (e.g. 31-12-1999T11:59:59Z)'
+    - name: type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - application
+      - page
+      - audit
+      description: Type of Event (e.g Application, Page, Audit)
+    - name: limit
+      description: Limit the number of events returned (useful for pagination in combination
+        with skip). Positive integer less than 5000.
+    - name: skip
+      description: Skip over some of the events (useful for pagination in combination
+        with limit)
+    outputs:
+    - contextPath: Netskope.Events.App
+      description: Name of Application
+      type: string
+    - contextPath: Netskope.Events.Timestamp
+      description: Timestamp of event
+      type: string
+    - contextPath: Netskope.Events.Activity
+      description: Activity of event
+      type: string
+    - contextPath: Netskope.Events.Object
+      description: Document/object from event
+      type: string
+    - contextPath: Netskope.Events.hostname
+      description: Hostname of device
+      type: string
+    - contextPath: Netskope.Events.AppCategory
+      description: Netskope application category (e.g. Cloud Storage, Webmail, etc)
+      type: string
+    - contextPath: Netskope.Events.device_classification
+      description: Device classification (e.g. managed vs unmanaged)
+      type: string
+    - contextPath: Netskope.Events.User
+      description: User
+      type: string
+    - contextPath: Netskope.Events.from_user
+      description: Login IDs for cloud apps
+      type: string
+    - contextPath: Netskope.Events.to_user
+      description: Destination user IDs
+      type: string
+    - contextPath: Netskope.Events.SourceIP
+      description: Source IP
+      type: string
+    - contextPath: Netskope.Events.AccessMethod
+      description: Access method (e.g. client, reverse proxy, Secure Forwarder, etc)
+      type: string
+    - contextPath: Netskope.Events.url
+      description: URL
+      type: string
+    - contextPath: Netskope.Events.ID
+      description: Event ID
+      type: string
+    description: Gets a list of events
+  - name: netskope-alerts
+    arguments:
+    - name: type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - anomaly
+      - Compromised Credential
+      - DLP
+      - Legal Hold
+      - malsite
+      - Malware
+      - policy
+      - quarantine
+      - Remediation
+      - watchlist
+      description: Type of alert
+    - name: timeperiod
+      auto: PREDEFINED
+      predefined:
+      - Last60Minutes
+      - Last24Hours
+      - Last7Days
+      - Last30Days
+      - Last60Days
+      - Last90Days
+      description: Time period (e.g. Last 60 minutes, Last 24 hours, etc.)
+    - name: starttime
+      description: 'Query start time: timestamp or dd-mm-yyyyTHH:MM:SSZ (e.g., 31-12-1999T11:59:59Z)'
+    - name: endtime
+      description: 'Query end time: timestamp or dd-mm-yyyyTHH:MM:SSZ (e.g. 31-12-1999T11:59:59Z)'
+    - name: query
+      description: Valid event query described in the query language document
+    outputs:
+    - contextPath: Netskope.Alerts.App
+      description: Name of Application
+      type: string
+    - contextPath: Netskope.Alerts.Timestamp
+      description: Timestamp of event
+      type: string
+    - contextPath: Netskope.Alerts.Policy
+      description: Name of Policy Triggered
+      type: string
+    - contextPath: Netskope.Alerts.DLPFile
+      description: Name of DLP File that triggered
+      type: string
+    - contextPath: Netskope.Alerts.Hostname
+      description: Hostname
+      type: string
+    - contextPath: Netskope.Alerts.ID
+      description: Alert ID
+      type: string
+    description: Gets a list of alerts
+  isfetch: true
+  runonce: false
+tests:
+- Netskope Test
+fromversion: 5.0.0

@@ -1,0 +1,54 @@
+commonfields:
+  id: PacketMail
+  version: -1
+name: PacketMail
+display: PacketMail.net
+category: Data Enrichment & Threat Intelligence
+description: Intel look up for IPS
+configuration:
+- display: URL
+  name: url
+  defaultvalue: https://www.packetmail.net/iprep.php/
+  type: 0
+  required: false
+- display: API Key
+  name: apikey
+  defaultvalue: ""
+  type: 4
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: CSV list of lists that should be considered malicious
+  name: maliciousList
+  defaultvalue: cleanmx_virus,et_c2
+  type: 0
+  required: false
+script:
+  script: ''
+  type: javascript
+  commands:
+  - name: packetmail-ip
+    arguments:
+    - name: ip
+      required: true
+      description: The ip to check on
+    outputs:
+    - contextPath: IP.Address
+      description: IP Address
+    - contextPath: IP.Malicious.Vendor
+      description: For malicious IPs, the vendor that made the decision
+    - contextPath: IP.Malicious.Description
+      description: For malicious IPs, the reason for the vendor to make the decision
+    description: Get intel from PacketMail.net on IPs
+hidden: false
+tests:
+- no test
+fromversion: 5.0.0
