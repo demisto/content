@@ -50,11 +50,11 @@ script:
     - contextPath: NMAP.Scan.Hosts.Services.Service
       description: The service name
     - contextPath: NMAP.Scan.Hosts.Extras.ID
-      description: TODO
+      description: the name of the script used.
     - contextPath: NMAP.Scan.Hosts.Extras.Output
-      description: TODO
+      description: The raw results of the script execution
     - contextPath: NMAP.Scan.Hosts.Extras.Elements
-      description: TODO
+      description: May Include more parseable fields of the script output.
     description: Scan targets with the given parameters
     execution: true
   dockerimage: devdemisto/nmap:1.0.0.26597

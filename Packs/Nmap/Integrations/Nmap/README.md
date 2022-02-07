@@ -46,6 +46,9 @@ Scan targets with the given parameters
 | NMAP.Scan.Hosts.Services.State | unknown | The state of the service. | 
 | NMAP.Scan.Hosts.Services.Banner | unknown | Any captured banner from the service. | 
 | NMAP.Scan.Hosts.Services.Service | unknown | The service name. | 
+| NMAP.Scan.Hosts.Extras.ID | unknown | The name of the script used. |
+| NMAP.Scan.Hosts.Extras.Output | unknown | The raw results of the script execution. |
+| NMAP.Scan.Hosts.Extras.Elements | unknown | May Include more parseable fields of the script output. |
 
 
 #### Command Example
