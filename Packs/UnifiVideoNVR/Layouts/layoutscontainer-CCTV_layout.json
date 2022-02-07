@@ -398,5 +398,8 @@
     "name": "CCTV layout",
     "system": false,
     "version": -1,
-    "description": "The layout of the CCTV incident type"
+    "description": "The layout of the CCTV incident type",
+    "marketplaces": [
+        "xsoar"
+    ]
 }

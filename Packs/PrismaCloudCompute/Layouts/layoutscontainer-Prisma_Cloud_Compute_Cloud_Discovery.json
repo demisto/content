@@ -339,5 +339,8 @@
                 "type": "custom"
             }
         ]
-    }
+    },
+    "marketplaces": [
+        "xsoar"
+    ]
 }

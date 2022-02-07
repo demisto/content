@@ -538,5 +538,8 @@
     "system": false,
     "version": -1,
     "fromVersion": "6.5.0",
-    "description": "A layout template for an out of the box report describing a Campaign ran by a threat actor"
+    "description": "A layout template for an out of the box report describing a Campaign ran by a threat actor",
+    "marketplaces": [
+        "xsoar"
+    ]
 }

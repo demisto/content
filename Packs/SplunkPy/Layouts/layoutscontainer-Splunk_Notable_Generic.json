@@ -486,7 +486,7 @@
                     },
                     {
                         "displayType": "CARD",
-                        "description": "‘True’ indicates enrichment was successful, even if there were no results found. See Assets, Identities and Drilldown tabs for details.",
+                        "description": "\u2018True\u2019 indicates enrichment was successful, even if there were no results found. See Assets, Identities and Drilldown tabs for details.",
                         "h": 2,
                         "hideName": false,
                         "i": "caseinfoid-dwdtwscjnm-field-changed-dwdtwscjnm-caseinfoid-dwdtwscjnm-field-changed-caseinfoid-cb6f5460-abea-11eb-addd-331717bce311",
@@ -645,5 +645,8 @@
     "system": false,
     "version": -1,
     "fromVersion": "6.0.0",
-    "description": ""
+    "description": "",
+    "marketplaces": [
+        "xsoar"
+    ]
 }

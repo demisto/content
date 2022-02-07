@@ -1,968 +1,971 @@
 {
-  "id": "Infinipoint Compliant",
-  "group": "incident",
-  "name": "Infinipoint Compliant",
-  "description": "Infinipoint Compliant Layout",
-  "version": -1,
-  "fromVersion": "6.0.0",
-  "detailsV2": {
-    "tabs": [
-        {
-            "id": "caseinfoid",
-            "name": "Incident Info",
-            "sections": [
-                {
-                    "displayType": "ROW",
-                    "h": 2,
-                    "i": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
-                    "isVisible": true,
-                    "items": [
-                        {
-                            "endCol": 2,
-                            "fieldId": "type",
-                            "height": 22,
-                            "id": "incident-type-field",
-                            "index": 0,
-                            "sectionItemType": "field",
-                            "startCol": 0
-                        },
-                        {
-                            "endCol": 2,
-                            "fieldId": "severity",
-                            "height": 22,
-                            "id": "incident-severity-field",
-                            "index": 1,
-                            "sectionItemType": "field",
-                            "startCol": 0
-                        },
-                        {
-                            "endCol": 2,
-                            "fieldId": "owner",
-                            "height": 22,
-                            "id": "incident-owner-field",
-                            "index": 2,
-                            "sectionItemType": "field",
-                            "startCol": 0
-                        },
-                        {
-                            "endCol": 2,
-                            "fieldId": "dbotsource",
-                            "height": 22,
-                            "id": "incident-source-field",
-                            "index": 3,
-                            "sectionItemType": "field",
-                            "startCol": 0
-                        },
-                        {
-                            "endCol": 2,
-                            "fieldId": "sourcebrand",
-                            "height": 22,
-                            "id": "incident-sourceBrand-field",
-                            "index": 4,
-                            "sectionItemType": "field",
-                            "startCol": 0
-                        },
-                        {
-                            "endCol": 2,
-                            "fieldId": "sourceinstance",
-                            "height": 22,
-                            "id": "incident-sourceInstance-field",
-                            "index": 5,
-                            "sectionItemType": "field",
-                            "startCol": 0
-                        },
-                        {
-                            "endCol": 2,
-                            "fieldId": "playbookid",
-                            "height": 22,
-                            "id": "incident-playbookId-field",
-                            "index": 6,
-                            "sectionItemType": "field",
-                            "startCol": 0
-                        }
-                    ],
-                    "moved": false,
-                    "name": "Case Details",
-                    "static": false,
-                    "w": 1,
-                    "x": 0,
-                    "y": 0
-                },
-                {
-                    "displayType": "ROW",
-                    "h": 2,
-                    "hideName": false,
-                    "i": "caseinfoid-7717e580-9bed-11e9-9a3f-8b4b2158e260",
-                    "moved": false,
-                    "name": "Team Members",
-                    "static": false,
-                    "type": "team",
-                    "w": 1,
-                    "x": 2,
-                    "y": 0
-                },
-                {
-                    "columns": [
-                        {
-                            "displayed": true,
-                            "isDefault": true,
-                            "key": "indicator_type",
-                            "width": 120
-                        },
-                        {
-                            "displayed": true,
-                            "isDefault": true,
-                            "key": "value",
-                            "width": 300
-                        },
-                        {
-                            "displayed": true,
-                            "isDefault": true,
-                            "key": "score",
-                            "width": 120
-                        },
-                        {
-                            "displayed": true,
-                            "isDefault": true,
-                            "key": "firstSeen",
-                            "width": 275
-                        },
-                        {
-                            "displayed": true,
-                            "isDefault": true,
-                            "key": "lastSeen",
-                            "width": 275
-                        },
-                        {
-                            "displayed": true,
-                            "isDefault": true,
-                            "key": "timestamp",
-                            "width": 190
-                        },
-                        {
-                            "displayed": true,
-                            "isDefault": true,
-                            "key": "relatedIncCount",
-                            "width": 150
-                        },
-                        {
-                            "displayed": true,
-                            "isDefault": true,
-                            "key": "sourceBrands",
-                            "width": 175
-                        },
-                        {
-                            "displayed": true,
-                            "isDefault": true,
-                            "key": "sourceInstances",
-                            "width": 175
-                        },
-                        {
-                            "displayed": true,
-                            "isDefault": true,
-                            "key": "expirationStatus",
-                            "width": 175
-                        },
-                        {
-                            "displayed": true,
-                            "isDefault": true,
-                            "key": "expiration",
-                            "width": 190
-                        },
-                        {
-                            "displayed": true,
-                            "isDefault": false,
-                            "key": "id",
-                            "width": 100
-                        },
-                        {
-                            "displayed": true,
-                            "isDefault": false,
-                            "key": "source",
-                            "width": 120
-                        },
-                        {
-                            "displayed": true,
-                            "isDefault": false,
-                            "key": "setBy",
-                            "width": 175
-                        },
-                        {
-                            "displayed": true,
-                            "isDefault": false,
-                            "key": "modified",
-                            "width": 190
-                        },
-                        {
-                            "displayed": true,
-                            "isDefault": false,
-                            "key": "aggregatedReliability",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "Account Type",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "Actor",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "Admin Country",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "Admin Email",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "Admin Name",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "Admin Phone",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "ASN",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "Associated File Names",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "Associations",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "BIOS Version",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "Campaign",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "Creation Date",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "CVE Description",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "CVE Modified",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "CVSS",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "Description",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "Detection Engines",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "Device Model",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "DHCP Server",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "Display Name",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "DNS",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "Domain Name",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "Domain Status",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "Email Address",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "Employee Health Status",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "Employee Response Status",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "Entry ID",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "Expiration Date",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "Feed Related Indicators",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "File Extension",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "File Type",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "First Name",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "First Seen By Source",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "Geo Country",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "Geo Location",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "Groups",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "Hostname",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "imphash",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "Indicator Identification",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "Internal",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "IP Address",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "Job Title",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "Last Name",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "Last Seen By Source",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "MAC Address",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "Malware Family",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "MD5",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "Memory",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "MITRE Aliases",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "MITRE Contributors",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "MITRE Data Sources",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "MITRE Defense Bypassed",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "MITRE Description",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "MITRE Detection",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "MITRE Extended Aliases",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "MITRE External References",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "MITRE ID",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "MITRE Impact Type",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "MITRE Kill Chain Phases",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "MITRE Labels",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "MITRE Name",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "MITRE Permissions Required",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "MITRE Platforms",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "MITRE System Requirements",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "MITRE Type",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "MITRE Version",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "Name",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "Name Field",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "Name Servers",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "Office365Category",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "Office365ExpressRoute",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "Office365Required",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "Operating System",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "Operating System Version",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "Organization",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "Organizational Unit (OU)",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "OS Version",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "Path",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "Port",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "Positive Detections",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "Processor",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "Processors",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "Published",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "Quarantined",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "Recorded Future Evidence Details",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "Region",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "Registrant Country",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "Registrant Email",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "Registrant Name",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "Registrant Phone",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "Registrar Abuse Email",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "Registrar Abuse Phone",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "Registrar Name",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "Reported By",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "Service",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "SHA1",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "SHA256",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "SHA512",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "Signature Authentihash",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "Signature Copyright",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "Signature Description",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "Signature File Version",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "Signature Internal Name",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "Signed",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "Size",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "Source Original Severity",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "SSDeep",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "Subdomains",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "Tags",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "Threat Types",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "Traffic Light Protocol",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "Updated Date",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "Username",
-                            "width": 200
-                        },
-                        {
-                            "displayed": true,
-                            "key": "XDR status",
-                            "width": 200
-                        }
-                    ],
-                    "displayType": "ROW",
-                    "h": 2,
-                    "i": "caseinfoid-7ce69dd0-a07f-11e9-936c-5395a1acf11e",
-                    "moved": false,
-                    "name": "Indicators",
-                    "query": "",
-                    "queryType": "input",
-                    "static": false,
-                    "type": "indicators",
-                    "w": 3,
-                    "x": 0,
-                    "y": 6
-                },
-                {
-                    "displayType": "CARD",
-                    "h": 2,
-                    "i": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
-                    "items": [
-                        {
-                            "endCol": 1,
-                            "fieldId": "occurred",
-                            "height": 22,
-                            "id": "incident-occurred-field",
-                            "index": 0,
-                            "sectionItemType": "field",
-                            "startCol": 0
-                        },
-                        {
-                            "endCol": 1,
-                            "fieldId": "dbotmodified",
-                            "height": 22,
-                            "id": "incident-modified-field",
-                            "index": 1,
-                            "sectionItemType": "field",
-                            "startCol": 0
-                        },
-                        {
-                            "endCol": 2,
-                            "fieldId": "dbotduedate",
-                            "height": 22,
-                            "id": "incident-dueDate-field",
-                            "index": 2,
-                            "sectionItemType": "field",
-                            "startCol": 0
-                        },
-                        {
-                            "endCol": 2,
-                            "fieldId": "dbotcreated",
-                            "height": 22,
-                            "id": "incident-created-field",
-                            "index": 0,
-                            "sectionItemType": "field",
-                            "startCol": 1
-                        },
-                        {
-                            "endCol": 2,
-                            "fieldId": "dbotclosed",
-                            "height": 22,
-                            "id": "incident-closed-field",
-                            "index": 1,
-                            "sectionItemType": "field",
-                            "startCol": 1
-                        }
-                    ],
-                    "moved": false,
-                    "name": "Timeline Information",
-                    "static": false,
-                    "w": 1,
-                    "x": 1,
-                    "y": 2
-                },
-                {
-                    "displayType": "CARD",
-                    "h": 2,
-                    "i": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
-                    "isVisible": true,
-                    "items": [
-                        {
-                            "endCol": 2,
-                            "fieldId": "details",
-                            "height": 22,
-                            "id": "incident-details-field",
-                            "index": 0,
-                            "sectionItemType": "field",
-                            "startCol": 0
-                        }
-                    ],
-                    "moved": false,
-                    "name": "Investigation Data",
-                    "static": false,
-                    "w": 1,
-                    "x": 1,
-                    "y": 0
-                },
-                {
-                    "displayType": "ROW",
-                    "h": 2,
-                    "hideName": false,
-                    "i": "caseinfoid-4d51d320-d713-11ea-9d77-ab03e81b1944",
-                    "items": [
-                        {
-                            "endCol": 2,
-                            "fieldId": "infinipointhostname",
-                            "height": 22,
-                            "id": "6ca53be0-d713-11ea-9d77-ab03e81b1944",
-                            "index": 0,
-                            "sectionItemType": "field",
-                            "startCol": 0
-                        },
-                        {
-                            "endCol": 2,
-                            "fieldId": "infinipointpolicyname",
-                            "height": 22,
-                            "id": "7127b6c0-d713-11ea-9d77-ab03e81b1944",
-                            "index": 3,
-                            "sectionItemType": "field",
-                            "startCol": 0
-                        },
-                        {
-                            "endCol": 2,
-                            "fieldId": "infinipointpolicyid",
-                            "height": 22,
-                            "id": "6ff37c80-d713-11ea-9d77-ab03e81b1944",
-                            "index": 4,
-                            "sectionItemType": "field",
-                            "startCol": 0
-                        }
-                    ],
-                    "maxW": 3,
-                    "minH": 1,
-                    "minW": 1,
-                    "moved": false,
-                    "name": "Infinipoint ",
-                    "static": false,
-                    "w": 1,
-                    "x": 0,
-                    "y": 2
-                },
-                {
-                    "h": 2,
-                    "i": "caseinfoid-948590f0-d723-11ea-84f9-59069426b2d6",
-                    "items": [],
-                    "maxW": 3,
-                    "minH": 1,
-                    "minW": 1,
-                    "moved": false,
-                    "name": "War Room Entries",
-                    "query": {
-                        "categories": [
-                            "playbookTaskResult",
-                            "playbookErrors",
-                            "justFound"
+    "id": "Infinipoint Compliant",
+    "group": "incident",
+    "name": "Infinipoint Compliant",
+    "description": "Infinipoint Compliant Layout",
+    "version": -1,
+    "fromVersion": "6.0.0",
+    "detailsV2": {
+        "tabs": [
+            {
+                "id": "caseinfoid",
+                "name": "Incident Info",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "type",
+                                "height": 22,
+                                "id": "incident-type-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "severity",
+                                "height": 22,
+                                "id": "incident-severity-field",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "owner",
+                                "height": 22,
+                                "id": "incident-owner-field",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotsource",
+                                "height": 22,
+                                "id": "incident-source-field",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sourcebrand",
+                                "height": 22,
+                                "id": "incident-sourceBrand-field",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sourceinstance",
+                                "height": 22,
+                                "id": "incident-sourceInstance-field",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "playbookid",
+                                "height": 22,
+                                "id": "incident-playbookId-field",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
                         ],
-                        "fromTime": "0001-01-01T00:00:00Z",
-                        "pageSize": 0,
-                        "tagsAndOperator": false,
-                        "usersAndOperator": false
+                        "moved": false,
+                        "name": "Case Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
                     },
-                    "queryType": "warRoomFilter",
-                    "static": false,
-                    "type": "invTimeline",
-                    "w": 3,
-                    "x": 0,
-                    "y": 4
-                }
-            ],
-            "type": "custom"
-        },
-        {
-            "id": "warRoom",
-            "name": "War Room",
-            "type": "warRoom"
-        },
-        {
-            "id": "workPlan",
-            "name": "Work Plan",
-            "type": "workPlan"
-        },
-        {
-            "id": "evidenceBoard",
-            "name": "Evidence Board",
-            "type": "evidenceBoard"
-        },
-        {
-            "id": "relatedIncidents",
-            "name": "Related Incidents",
-            "type": "relatedIncidents"
-        },
-        {
-            "id": "canvas",
-            "name": "Canvas",
-            "type": "canvas"
-        }
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "caseinfoid-7717e580-9bed-11e9-9a3f-8b4b2158e260",
+                        "moved": false,
+                        "name": "Team Members",
+                        "static": false,
+                        "type": "team",
+                        "w": 1,
+                        "x": 2,
+                        "y": 0
+                    },
+                    {
+                        "columns": [
+                            {
+                                "displayed": true,
+                                "isDefault": true,
+                                "key": "indicator_type",
+                                "width": 120
+                            },
+                            {
+                                "displayed": true,
+                                "isDefault": true,
+                                "key": "value",
+                                "width": 300
+                            },
+                            {
+                                "displayed": true,
+                                "isDefault": true,
+                                "key": "score",
+                                "width": 120
+                            },
+                            {
+                                "displayed": true,
+                                "isDefault": true,
+                                "key": "firstSeen",
+                                "width": 275
+                            },
+                            {
+                                "displayed": true,
+                                "isDefault": true,
+                                "key": "lastSeen",
+                                "width": 275
+                            },
+                            {
+                                "displayed": true,
+                                "isDefault": true,
+                                "key": "timestamp",
+                                "width": 190
+                            },
+                            {
+                                "displayed": true,
+                                "isDefault": true,
+                                "key": "relatedIncCount",
+                                "width": 150
+                            },
+                            {
+                                "displayed": true,
+                                "isDefault": true,
+                                "key": "sourceBrands",
+                                "width": 175
+                            },
+                            {
+                                "displayed": true,
+                                "isDefault": true,
+                                "key": "sourceInstances",
+                                "width": 175
+                            },
+                            {
+                                "displayed": true,
+                                "isDefault": true,
+                                "key": "expirationStatus",
+                                "width": 175
+                            },
+                            {
+                                "displayed": true,
+                                "isDefault": true,
+                                "key": "expiration",
+                                "width": 190
+                            },
+                            {
+                                "displayed": true,
+                                "isDefault": false,
+                                "key": "id",
+                                "width": 100
+                            },
+                            {
+                                "displayed": true,
+                                "isDefault": false,
+                                "key": "source",
+                                "width": 120
+                            },
+                            {
+                                "displayed": true,
+                                "isDefault": false,
+                                "key": "setBy",
+                                "width": 175
+                            },
+                            {
+                                "displayed": true,
+                                "isDefault": false,
+                                "key": "modified",
+                                "width": 190
+                            },
+                            {
+                                "displayed": true,
+                                "isDefault": false,
+                                "key": "aggregatedReliability",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "Account Type",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "Actor",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "Admin Country",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "Admin Email",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "Admin Name",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "Admin Phone",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "ASN",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "Associated File Names",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "Associations",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "BIOS Version",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "Campaign",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "Creation Date",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "CVE Description",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "CVE Modified",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "CVSS",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "Description",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "Detection Engines",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "Device Model",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "DHCP Server",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "Display Name",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "DNS",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "Domain Name",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "Domain Status",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "Email Address",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "Employee Health Status",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "Employee Response Status",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "Entry ID",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "Expiration Date",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "Feed Related Indicators",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "File Extension",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "File Type",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "First Name",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "First Seen By Source",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "Geo Country",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "Geo Location",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "Groups",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "Hostname",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "imphash",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "Indicator Identification",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "Internal",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "IP Address",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "Job Title",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "Last Name",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "Last Seen By Source",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "MAC Address",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "Malware Family",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "MD5",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "Memory",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "MITRE Aliases",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "MITRE Contributors",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "MITRE Data Sources",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "MITRE Defense Bypassed",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "MITRE Description",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "MITRE Detection",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "MITRE Extended Aliases",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "MITRE External References",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "MITRE ID",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "MITRE Impact Type",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "MITRE Kill Chain Phases",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "MITRE Labels",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "MITRE Name",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "MITRE Permissions Required",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "MITRE Platforms",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "MITRE System Requirements",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "MITRE Type",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "MITRE Version",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "Name",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "Name Field",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "Name Servers",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "Office365Category",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "Office365ExpressRoute",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "Office365Required",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "Operating System",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "Operating System Version",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "Organization",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "Organizational Unit (OU)",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "OS Version",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "Path",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "Port",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "Positive Detections",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "Processor",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "Processors",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "Published",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "Quarantined",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "Recorded Future Evidence Details",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "Region",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "Registrant Country",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "Registrant Email",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "Registrant Name",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "Registrant Phone",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "Registrar Abuse Email",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "Registrar Abuse Phone",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "Registrar Name",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "Reported By",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "Service",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "SHA1",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "SHA256",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "SHA512",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "Signature Authentihash",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "Signature Copyright",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "Signature Description",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "Signature File Version",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "Signature Internal Name",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "Signed",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "Size",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "Source Original Severity",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "SSDeep",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "Subdomains",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "Tags",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "Threat Types",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "Traffic Light Protocol",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "Updated Date",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "Username",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "key": "XDR status",
+                                "width": 200
+                            }
+                        ],
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-7ce69dd0-a07f-11e9-936c-5395a1acf11e",
+                        "moved": false,
+                        "name": "Indicators",
+                        "query": "",
+                        "queryType": "input",
+                        "static": false,
+                        "type": "indicators",
+                        "w": 3,
+                        "x": 0,
+                        "y": 6
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "i": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
+                        "items": [
+                            {
+                                "endCol": 1,
+                                "fieldId": "occurred",
+                                "height": 22,
+                                "id": "incident-occurred-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 1,
+                                "fieldId": "dbotmodified",
+                                "height": 22,
+                                "id": "incident-modified-field",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotduedate",
+                                "height": 22,
+                                "id": "incident-dueDate-field",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotcreated",
+                                "height": 22,
+                                "id": "incident-created-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 1
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotclosed",
+                                "height": 22,
+                                "id": "incident-closed-field",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 1
+                            }
+                        ],
+                        "moved": false,
+                        "name": "Timeline Information",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 2
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "i": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "details",
+                                "height": 22,
+                                "id": "incident-details-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "moved": false,
+                        "name": "Investigation Data",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "caseinfoid-4d51d320-d713-11ea-9d77-ab03e81b1944",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "infinipointhostname",
+                                "height": 22,
+                                "id": "6ca53be0-d713-11ea-9d77-ab03e81b1944",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "infinipointpolicyname",
+                                "height": 22,
+                                "id": "7127b6c0-d713-11ea-9d77-ab03e81b1944",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "infinipointpolicyid",
+                                "height": 22,
+                                "id": "6ff37c80-d713-11ea-9d77-ab03e81b1944",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Infinipoint ",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 2
+                    },
+                    {
+                        "h": 2,
+                        "i": "caseinfoid-948590f0-d723-11ea-84f9-59069426b2d6",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "War Room Entries",
+                        "query": {
+                            "categories": [
+                                "playbookTaskResult",
+                                "playbookErrors",
+                                "justFound"
+                            ],
+                            "fromTime": "0001-01-01T00:00:00Z",
+                            "pageSize": 0,
+                            "tagsAndOperator": false,
+                            "usersAndOperator": false
+                        },
+                        "queryType": "warRoomFilter",
+                        "static": false,
+                        "type": "invTimeline",
+                        "w": 3,
+                        "x": 0,
+                        "y": 4
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "id": "warRoom",
+                "name": "War Room",
+                "type": "warRoom"
+            },
+            {
+                "id": "workPlan",
+                "name": "Work Plan",
+                "type": "workPlan"
+            },
+            {
+                "id": "evidenceBoard",
+                "name": "Evidence Board",
+                "type": "evidenceBoard"
+            },
+            {
+                "id": "relatedIncidents",
+                "name": "Related Incidents",
+                "type": "relatedIncidents"
+            },
+            {
+                "id": "canvas",
+                "name": "Canvas",
+                "type": "canvas"
+            }
+        ]
+    },
+    "marketplaces": [
+        "xsoar"
     ]
-  }
 }

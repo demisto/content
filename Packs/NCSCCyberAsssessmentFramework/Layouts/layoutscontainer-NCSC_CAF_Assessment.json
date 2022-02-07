@@ -1,631 +1,618 @@
 {
- "detailsV2": {
-  "tabs": [
-   {
-    "id": "summary",
-    "name": "Legacy Summary",
-    "type": "summary"
-   },
-   {
-    "id": "caseinfoid",
-    "name": "Assessment Info",
-    "sections": [
-     {
-      "displayType": "CARD",
-      "h": 3,
-      "i": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
-      "isVisible": true,
-      "items": [
-       {
-        "dropEffect": "move",
-        "endCol": 1,
-        "fieldId": "dbotcreated",
-        "height": 53,
-        "id": "9ccb16d0-f439-11ea-b89f-7f553d2ef7d7",
-        "index": 0,
-        "listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "ncscassessmentstatus",
-        "height": 53,
-        "id": "b854f470-f439-11ea-b89f-7f553d2ef7d7",
-        "index": 1,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 1,
-        "fieldId": "cafastatus",
-        "height": 53,
-        "id": "8ef9af70-f43a-11ea-88fc-87a58d86ddd0",
-        "index": 2,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 1,
-        "fieldId": "cafcstatus",
-        "height": 53,
-        "id": "9dc3b230-f43a-11ea-88fc-87a58d86ddd0",
-        "index": 3,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "args": {
-         "htmlBody": {
-          "simple": "\u003c!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\"\u003e\n\u003chtml xmlns=\"http://www.w3.org/1999/xhtml\" xmlns:o=\"urn:schemas-microsoft-com:office:office\"\u003e\n\n\u003chead\u003e\n    \u003cmeta charset=\"UTF-8\"\u003e\n    \u003cmeta content=\"width=device-width, initial-scale=1\" name=\"viewport\"\u003e\n    \u003cmeta name=\"x-apple-disable-message-reformatting\"\u003e\n    \u003cmeta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\"\u003e\n    \u003cmeta content=\"telephone=no\" name=\"format-detection\"\u003e\n    \u003ctitle\u003e\u003c/title\u003e\n    \u003c!--[if (mso 16)]\u003e\n    \u003cstyle type=\"text/css\"\u003e\u003c!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\"\u003e\n\u003chtml\u003e\n\n\u003chead\u003e\n    \u003cmeta charset=\"UTF-8\"\u003e\n    \u003cmeta content=\"width=device-width, initial-scale=1\" name=\"viewport\"\u003e\n    \u003cmeta name=\"x-apple-disable-message-reformatting\"\u003e\n    \u003cmeta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\"\u003e\n    \u003cmeta content=\"telephone=no\" name=\"format-detection\"\u003e\n    \u003ctitle\u003e\u003c/title\u003e\n    \u003c!--[if (mso 16)]\u003e\n    \u003cstyle type=\"text/css\"\u003e\n    a {text-decoration: none;}\n    \u003c/style\u003e\n    \u003c![endif]--\u003e\n    \u003c!--[if gte mso 9]\u003e\u003cstyle\u003esup { font-size: 100% !important; }\u003c/style\u003e\u003c![endif]--\u003e\n    \u003c!--[if gte mso 9]\u003e\n\u003cxml\u003e\n    \u003co:OfficeDocumentSettings\u003e\n    \u003co:AllowPNG\u003e\u003c/o:AllowPNG\u003e\n    \u003co:PixelsPerInch\u003e96\u003c/o:PixelsPerInch\u003e\n    \u003c/o:OfficeDocumentSettings\u003e\n\u003c/xml\u003e\n\u003c![endif]--\u003e\n\u003c/head\u003e\n\n\u003cbody\u003e\n    \u003cdiv class=\"es-wrapper-color\"\u003e\n        \u003c!--[if gte mso 9]\u003e\n\t\t\t\u003cv:background xmlns:v=\"urn:schemas-microsoft-com:vml\" fill=\"t\"\u003e\n\t\t\t\t\u003cv:fill type=\"tile\" color=\"#f6f6f6\"\u003e\u003c/v:fill\u003e\n\t\t\t\u003c/v:background\u003e\n\t\t\u003c![endif]--\u003e\n        \u003ctable class=\"es-wrapper\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\"\u003e\n            \u003ctbody\u003e\n                \u003ctr\u003e\n                    \u003ctd class=\"esd-email-paddings\" valign=\"top\"\u003e\n                        \u003ctable cellpadding=\"0\" cellspacing=\"0\" class=\"es-content esd-footer-popover\" align=\"center\"\u003e\n                            \u003ctbody\u003e\n                                \u003ctr\u003e\n                                    \u003ctd class=\"esd-stripe\" align=\"center\"\u003e\n                                        \u003ctable bgcolor=\"#ffffff\" class=\"es-content-body\" align=\"center\" cellpadding=\"0\" cellspacing=\"0\" width=\"600\"\u003e\n                                            \u003ctbody\u003e\n                                                \u003ctr\u003e\n                                                    \u003ctd class=\"esd-structure esd-checked\" style=\"background-position: center top; background-repeat: no-repeat; background-color: #ffffff;\" bgcolor=\"#ffffff\" align=\"left\" esd-custom-block-id=\"55626\"\u003e\n                                                        \u003ctable width=\"100%\" cellspacing=\"0\" cellpadding=\"0\"\u003e\n                                                            \u003ctbody\u003e\n                                                                \u003ctr\u003e\n                                                                    \u003ctd class=\"esd-container-frame\" width=\"600\" valign=\"top\" align=\"center\"\u003e\n                                                                        \u003ctable width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" style=\"background-position: center top;\"\u003e\n                                                                            \u003ctbody\u003e\n                                                                                \u003ctr\u003e\n                                                                                    \u003ctd class=\"esd-block-text es-p10t es-p10b\" align=\"center\"\u003e\n                                                                                        \u003ch4 style=\"color: #0681f3;\"\u003e\u003cbr\u003e\u003c/h4\u003e\n                                                                                    \u003c/td\u003e\n                                                                                \u003c/tr\u003e\n                                                                                \u003ctr\u003e\n                                                                                    \u003ctd align=\"center\" class=\"esd-block-image\"\u003e\u003ca target=\"_blank\" href=\"https://www.paloaltonetworks.com/cortex\"\u003e\u003cimg class=\"adapt-img\" src=\"https://www.paloaltonetworks.com/content/dam/pan/en_US/images/logos/brand/cortex-primary/Cortex_Tagline_RGB.png?imbypass=on\" alt style=\"display: block;\" height=\"117\"\u003e\u003c/a\u003e\u003c/td\u003e\n                                                                                \u003c/tr\u003e\n                                                                            \u003c/tbody\u003e\n                                                                        \u003c/table\u003e\n                                                                    \u003c/td\u003e\n                                                                \u003c/tr\u003e\n                                                            \u003c/tbody\u003e\n                                                        \u003c/table\u003e\n                                                    \u003c/td\u003e\n                                                \u003c/tr\u003e\n                                                \u003ctr\u003e\n                                                    \u003ctd class=\"es-p20t es-p20r es-p20l esd-structure\" align=\"left\" style=\"background-position: center top;\"\u003e\n                                                        \u003ctable cellpadding=\"0\" cellspacing=\"0\" width=\"100%\"\u003e\n                                                            \u003ctbody\u003e\n                                                                \u003ctr\u003e\n                                                                    \u003ctd width=\"560\" class=\"esd-container-frame\" align=\"center\" valign=\"top\"\u003e\n                                                                        \u003ctable cellpadding=\"0\" cellspacing=\"0\" width=\"100%\"\u003e\n                                                                            \u003ctbody\u003e\n                                                                                \u003ctr\u003e\n                                                                                    \u003ctd align=\"center\" class=\"esd-block-spacer es-p20\" style=\"font-size: 0px;\"\u003e\n                                                                                        \u003ctable border=\"0\" width=\"100%\" height=\"100%\" cellpadding=\"0\" cellspacing=\"0\"\u003e\n                                                                                            \u003ctbody\u003e\n                                                                                                \u003ctr\u003e\n                                                                                                    \u003ctd style=\"border-bottom: 0px solid #cccccc; background: none; height: 1px; width: 100%; margin: 0px;\"\u003e\u003c/td\u003e\n                                                                                                \u003c/tr\u003e\n                                                                                            \u003c/tbody\u003e\n                                                                                        \u003c/table\u003e\n                                                                                    \u003c/td\u003e\n                                                                                \u003c/tr\u003e\n                                                                                \u003ctr\u003e\n                                                                                    \u003ctd align=\"center\" class=\"esd-block-spacer es-p20\" style=\"font-size: 0px;\"\u003e\n                                                                                        \u003ctable border=\"0\" width=\"100%\" height=\"100%\" cellpadding=\"0\" cellspacing=\"0\"\u003e\n                                                                                            \u003ctbody\u003e\n                                                                                                \u003ctr\u003e\n                                                                                                    \u003ctd style=\"border-bottom: 1px solid #cccccc; background:none; height:1px; width:100%; margin:0px 0px 0px 0px;\"\u003e\u003c/td\u003e\n                                                                                                \u003c/tr\u003e\n                                                                                            \u003c/tbody\u003e\n                                                                                        \u003c/table\u003e\n                                                                                    \u003c/td\u003e\n                                                                                \u003c/tr\u003e\n                                                                                \u003ctr\u003e\n                                                                                    \u003ctd align=\"left\" class=\"esd-block-text\"\u003e\n                                                                                        \u003cp style=\"font-family: helvetica, 'helvetica neue', arial, verdana, sans-serif; font-size: 16px;\"\u003e\u003cbr\u003eHello,\u003cbr\u003e\u003cbr\u003eThis is a friendly reminder that you have been assigned an assessment from the National Cyber Security Centre - Cyber Assessment Framework. Please could you take the time to answer the questions.\u003cbr\u003e\u003cbr\u003eIf you have already answered the questions, please ignore this e-mail.\u003cbr\u003e\u003cbr\u003eThank you!\u003cbr\u003e\u003cbr\u003e\u003cbr\u003e\u003c/p\u003e\n                                                                                    \u003c/td\u003e\n                                                                                \u003c/tr\u003e\n                                                                                \u003ctr\u003e\n                                                                                    \u003ctd align=\"center\" class=\"esd-block-spacer es-p20\"\u003e\n                                                                                        \u003ctable border=\"0\" width=\"100%\" height=\"100%\" cellpadding=\"0\" cellspacing=\"0\"\u003e\n                                                                                            \u003ctbody\u003e\n                                                                                                \u003ctr\u003e\n                                                                                                    \u003ctd style=\"border-bottom: 1px solid #cccccc; background:none; height:1px; width:100%; margin:0px 0px 0px 0px;\"\u003e\u003c/td\u003e\n                                                                                                \u003c/tr\u003e\n                                                                                            \u003c/tbody\u003e\n                                                                                        \u003c/table\u003e\n                                                                                    \u003c/td\u003e\n                                                                                \u003c/tr\u003e\n                                                                            \u003c/tbody\u003e\n                                                                        \u003c/table\u003e\n                                                                    \u003c/td\u003e\n                                                                \u003c/tr\u003e\n                                                            \u003c/tbody\u003e\n                                                        \u003c/table\u003e\n                                                    \u003c/td\u003e\n                                                \u003c/tr\u003e\n                                            \u003c/tbody\u003e\n                                        \u003c/table\u003e\n                                    \u003c/td\u003e\n                                \u003c/tr\u003e\n                            \u003c/tbody\u003e\n                        \u003c/table\u003e\n                    \u003c/td\u003e\n                \u003c/tr\u003e\n            \u003c/tbody\u003e\n        \u003c/table\u003e\n    \u003c/div\u003e\n\u003c/body\u003e\n\n\u003c/html\u003e"
-         },
-         "subject": {
-          "simple": "Reminder - You have an assessment to complete"
-         },
-         "to": {
-          "simple": "${incident.cafaemail};${incident.cafbemail};${incident.cafcemail};${incident.cafdemail}"
-         }
-        },
-        "buttonClass": "primary",
-        "endCol": 2,
-        "fieldId": "",
-        "height": 22,
-        "id": "35a60050-f74f-11ea-8653-7b13745c073a",
-        "index": 4,
-        "name": "Send a reminder e-mail",
-        "scriptId": "Mail Sender (New)|||send-mail",
-        "sectionItemType": "button",
-        "startCol": 0
-       },
-       {
-        "dropEffect": "move",
-        "endCol": 2,
-        "fieldId": "owner",
-        "height": 53,
-        "id": "incident-owner-field",
-        "index": 0,
-        "listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
-        "sectionItemType": "field",
-        "startCol": 1
-       },
-       {
-        "dropEffect": "move",
-        "endCol": 2,
-        "fieldId": "cafbstatus",
-        "height": 53,
-        "id": "93e7bd60-f43a-11ea-88fc-87a58d86ddd0",
-        "index": 2,
-        "listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
-        "sectionItemType": "field",
-        "startCol": 1
-       },
-       {
-        "dropEffect": "move",
-        "endCol": 2,
-        "fieldId": "cafdstatus",
-        "height": 53,
-        "id": "a04c0ac0-f43a-11ea-88fc-87a58d86ddd0",
-        "index": 3,
-        "listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
-        "sectionItemType": "field",
-        "startCol": 1
-       }
-      ],
-      "maxH": null,
-      "maxW": 1,
-      "minH": 1,
-      "minW": 1,
-      "moved": false,
-      "name": "Case Details",
-      "static": false,
-      "w": 1,
-      "x": 0,
-      "y": 0
-     },
-     {
-      "displayType": "ROW",
-      "h": 2,
-      "i": "caseinfoid-6aabad20-98b1-11e9-97d7-ed26ef9e46c8",
-      "maxH": null,
-      "maxW": 1,
-      "minH": 1,
-      "minW": 1,
-      "moved": false,
-      "name": "Work Plan",
-      "static": false,
-      "type": "workplan",
-      "w": 1,
-      "x": 0,
-      "y": 3
-     },
-     {
-      "h": 2,
-      "i": "caseinfoid-c9028340-f444-11ea-afa1-1deede81b6da",
-      "items": [
-
-      ],
-      "maxH": null,
-      "maxW": 1,
-      "minH": 1,
-      "minW": 1,
-      "moved": false,
-      "name": "Assessment A",
-      "query": "EntryWidgetNCSCResultsA",
-      "queryType": "script",
-      "static": false,
-      "type": "dynamic",
-      "w": 1,
-      "x": 1,
-      "y": 0
-     },
-     {
-      "h": 2,
-      "i": "caseinfoid-d3e512a0-f444-11ea-afa1-1deede81b6da",
-      "items": [
-
-      ],
-      "maxH": null,
-      "maxW": 1,
-      "minH": 1,
-      "minW": 1,
-      "moved": false,
-      "name": "Assessment B",
-      "query": "EntryWidgetNCSCResultsB",
-      "queryType": "script",
-      "static": false,
-      "type": "dynamic",
-      "w": 1,
-      "x": 2,
-      "y": 0
-     },
-     {
-      "h": 2,
-      "i": "caseinfoid-c2b8b7b0-f67a-11ea-9702-75d0378b8f61",
-      "items": [
-
-      ],
-      "maxH": null,
-      "maxW": 1,
-      "minH": 1,
-      "minW": 1,
-      "moved": false,
-      "name": "Assessment C",
-      "query": "EntryWidgetNCSCResultsC",
-      "queryType": "script",
-      "static": false,
-      "type": "dynamic",
-      "w": 1,
-      "x": 1,
-      "y": 2
-     },
-     {
-      "h": 2,
-      "i": "caseinfoid-c7813c40-f67a-11ea-9702-75d0378b8f61",
-      "items": [
-
-      ],
-      "maxH": null,
-      "maxW": 1,
-      "minH": 1,
-      "minW": 1,
-      "moved": false,
-      "name": "Assessment D",
-      "query": "EntryWidgetNCSCResultsD",
-      "queryType": "script",
-      "static": false,
-      "type": "dynamic",
-      "w": 1,
-      "x": 2,
-      "y": 2
-     }
-    ],
-    "type": "custom"
-   },
-   {
-    "hidden": false,
-    "id": "eugemmjkfg",
-    "name": "Assessment A Details",
-    "sections": [
-     {
-      "displayType": "CARD",
-      "h": 7,
-      "hideItemTitleOnlyOne": true,
-      "hideName": false,
-      "i": "eugemmjkfg-62b4c290-f43c-11ea-88fc-87a58d86ddd0",
-      "items": [
-       {
-        "endCol": 2,
-        "fieldId": "cafaresult",
-        "height": 106,
-        "id": "72000340-f43c-11ea-88fc-87a58d86ddd0",
-        "index": 0,
-        "sectionItemType": "field",
-        "startCol": 0
-       }
-      ],
-      "maxH": null,
-      "maxW": 1,
-      "minH": 1,
-      "minW": 1,
-      "moved": false,
-      "name": "Managing security risk - Question Review",
-      "static": false,
-      "w": 1,
-      "x": 0,
-      "y": 2
-     },
-     {
-      "displayType": "CARD",
-      "h": 7,
-      "hideItemTitleOnlyOne": true,
-      "hideName": false,
-      "i": "eugemmjkfg-f5788ae0-f6b6-11ea-ad49-87318685ea9d",
-      "items": [
-       {
-        "endCol": 4,
-        "fieldId": "cafadetails",
-        "height": 106,
-        "id": "08937130-f6b7-11ea-ad49-87318685ea9d",
-        "index": 0,
-        "sectionItemType": "field",
-        "startCol": 0
-       }
-      ],
-      "maxW": 3,
-      "minH": 1,
-      "minW": 1,
-      "moved": false,
-      "name": "Managing security risk - Question Details",
-      "static": false,
-      "w": 2,
-      "x": 1,
-      "y": 2
-     },
-     {
-      "h": 2,
-      "i": "eugemmjkfg-2f963550-f6b8-11ea-ad49-87318685ea9d",
-      "items": [
-
-      ],
-      "maxW": 3,
-      "minH": 1,
-      "minW": 1,
-      "moved": false,
-      "name": "Managing security risk - Status",
-      "query": "EntryWidgetNCSCResultsA",
-      "queryType": "script",
-      "static": false,
-      "type": "dynamic",
-      "w": 3,
-      "x": 0,
-      "y": 0
-     }
-    ],
-    "type": "custom"
-   },
-   {
-    "hidden": false,
-    "id": "elvunwpfgw",
-    "name": "Assessment B Details",
-    "sections": [
-     {
-      "displayType": "CARD",
-      "h": 7,
-      "hideItemTitleOnlyOne": true,
-      "hideName": false,
-      "i": "elvunwpfgw-eugemmjkfg-62b4c290-f43c-11ea-88fc-87a58d86ddd0",
-      "items": [
-       {
-        "endCol": 2,
-        "fieldId": "cafbresult",
-        "height": 106,
-        "id": "b9beaab0-f6b7-11ea-ad49-87318685ea9d",
-        "index": 0,
-        "sectionItemType": "field",
-        "startCol": 0
-       }
-      ],
-      "maxH": null,
-      "maxW": 1,
-      "minH": 1,
-      "minW": 1,
-      "moved": false,
-      "name": "Protecting against cyber-attack - Question Review",
-      "static": false,
-      "w": 1,
-      "x": 0,
-      "y": 2
-     },
-     {
-      "displayType": "CARD",
-      "h": 7,
-      "hideItemTitleOnlyOne": true,
-      "hideName": false,
-      "i": "elvunwpfgw-eugemmjkfg-f5788ae0-f6b6-11ea-ad49-87318685ea9d",
-      "items": [
-       {
-        "endCol": 4,
-        "fieldId": "cafbdetails",
-        "height": 106,
-        "id": "bd5c43d0-f6b7-11ea-ad49-87318685ea9d",
-        "index": 0,
-        "sectionItemType": "field",
-        "startCol": 0
-       }
-      ],
-      "maxW": 3,
-      "minH": 1,
-      "minW": 1,
-      "moved": false,
-      "name": "Protecting against cyber-attack - Question Details",
-      "static": false,
-      "w": 2,
-      "x": 1,
-      "y": 2
-     },
-     {
-      "h": 2,
-      "i": "elvunwpfgw-43568360-f6b8-11ea-ad49-87318685ea9d",
-      "items": [
-
-      ],
-      "maxW": 3,
-      "minH": 1,
-      "minW": 1,
-      "moved": false,
-      "name": "Protecting against cyber-attack - Status",
-      "query": "EntryWidgetNCSCResultsB",
-      "queryType": "script",
-      "static": false,
-      "type": "dynamic",
-      "w": 3,
-      "x": 0,
-      "y": 0
-     }
-    ],
-    "type": "custom"
-   },
-   {
-    "hidden": false,
-    "id": "twviqn8t9h",
-    "name": "Assessment C Details",
-    "sections": [
-     {
-      "displayType": "CARD",
-      "h": 7,
-      "hideItemTitleOnlyOne": true,
-      "hideName": false,
-      "i": "twviqn8t9h-elvunwpfgw-eugemmjkfg-62b4c290-f43c-11ea-88fc-87a58d86ddd0",
-      "items": [
-       {
-        "endCol": 2,
-        "fieldId": "cafcresult",
-        "height": 106,
-        "id": "d1aa52f0-f6b7-11ea-ad49-87318685ea9d",
-        "index": 0,
-        "sectionItemType": "field",
-        "startCol": 0
-       }
-      ],
-      "maxH": null,
-      "maxW": 1,
-      "minH": 1,
-      "minW": 1,
-      "moved": false,
-      "name": "Detecting cyber security events - Question Review",
-      "static": false,
-      "w": 1,
-      "x": 0,
-      "y": 2
-     },
-     {
-      "displayType": "CARD",
-      "h": 7,
-      "hideItemTitleOnlyOne": true,
-      "hideName": false,
-      "i": "twviqn8t9h-elvunwpfgw-eugemmjkfg-f5788ae0-f6b6-11ea-ad49-87318685ea9d",
-      "items": [
-       {
-        "endCol": 4,
-        "fieldId": "cafcdetails",
-        "height": 106,
-        "id": "f216ccd0-f6b7-11ea-ad49-87318685ea9d",
-        "index": 0,
-        "sectionItemType": "field",
-        "startCol": 0
-       }
-      ],
-      "maxW": 3,
-      "minH": 1,
-      "minW": 1,
-      "moved": false,
-      "name": "Detecting cyber security events - Question Details",
-      "static": false,
-      "w": 2,
-      "x": 1,
-      "y": 2
-     },
-     {
-      "h": 2,
-      "i": "twviqn8t9h-54d2add0-f6b8-11ea-ad49-87318685ea9d",
-      "items": [
-
-      ],
-      "maxW": 3,
-      "minH": 1,
-      "minW": 1,
-      "moved": false,
-      "name": "Detecting cyber security events - Status",
-      "query": "EntryWidgetNCSCResultsC",
-      "queryType": "script",
-      "static": false,
-      "type": "dynamic",
-      "w": 3,
-      "x": 0,
-      "y": 0
-     }
-    ],
-    "type": "custom"
-   },
-   {
-    "hidden": false,
-    "id": "h9e7ntingv",
-    "name": "Assessment D Details",
-    "sections": [
-     {
-      "displayType": "CARD",
-      "h": 7,
-      "hideItemTitleOnlyOne": true,
-      "hideName": false,
-      "i": "h9e7ntingv-twviqn8t9h-elvunwpfgw-eugemmjkfg-62b4c290-f43c-11ea-88fc-87a58d86ddd0",
-      "items": [
-       {
-        "endCol": 2,
-        "fieldId": "cafdresult",
-        "height": 106,
-        "id": "33af4dc0-f6bd-11ea-ad49-87318685ea9d",
-        "index": 0,
-        "sectionItemType": "field",
-        "startCol": 0
-       }
-      ],
-      "maxH": null,
-      "maxW": 1,
-      "minH": 1,
-      "minW": 1,
-      "moved": false,
-      "name": "Minimising the impact of cyber security incidents - Question Review",
-      "static": false,
-      "w": 1,
-      "x": 0,
-      "y": 2
-     },
-     {
-      "displayType": "CARD",
-      "h": 7,
-      "hideItemTitleOnlyOne": true,
-      "hideName": false,
-      "i": "h9e7ntingv-twviqn8t9h-elvunwpfgw-eugemmjkfg-f5788ae0-f6b6-11ea-ad49-87318685ea9d",
-      "items": [
-       {
-        "endCol": 4,
-        "fieldId": "cafddetails",
-        "height": 106,
-        "id": "38beed70-f6bd-11ea-ad49-87318685ea9d",
-        "index": 0,
-        "sectionItemType": "field",
-        "startCol": 0
-       }
-      ],
-      "maxW": 3,
-      "minH": 1,
-      "minW": 1,
-      "moved": false,
-      "name": "Minimising the impact of cyber security incidents - Question Details",
-      "static": false,
-      "w": 2,
-      "x": 1,
-      "y": 2
-     },
-     {
-      "h": 2,
-      "i": "h9e7ntingv-622b4640-f6b8-11ea-ad49-87318685ea9d",
-      "items": [
-
-      ],
-      "maxW": 3,
-      "minH": 1,
-      "minW": 1,
-      "moved": false,
-      "name": "Minimising the impact of cyber security incidents - Status",
-      "query": "EntryWidgetNCSCResultsD",
-      "queryType": "script",
-      "static": false,
-      "type": "dynamic",
-      "w": 3,
-      "x": 0,
-      "y": 0
-     }
-    ],
-    "type": "custom"
-   },
-   {
-    "id": "warRoom",
-    "name": "War Room",
-    "readOnly": false,
-    "roles": [
-     "Administrator"
-    ],
-    "type": "warRoom"
-   },
-   {
-    "id": "workPlan",
-    "name": "Work Plan",
-    "readOnly": false,
-    "roles": [
-     "Administrator"
-    ],
-    "type": "workPlan"
-   },
-   {
-    "id": "evidenceBoard",
-    "name": "Evidence Board",
-    "type": "evidenceBoard"
-   },
-   {
-    "hidden": true,
-    "id": "relatedIncidents",
-    "name": "Related Incidents",
-    "type": "relatedIncidents"
-   },
-   {
-    "hidden": true,
-    "id": "canvas",
-    "name": "Canvas",
-    "type": "canvas"
-   }
-  ]
- },
- "edit": {
-  "sections": [
-   {
-    "description": "### The Cyber Assessment Framework (CAF) provides a systematic and comprehensive approach to assessing the extent to which cyber risks to essential functions are being managed by the organisation responsible. It is intended to be used either by the responsible organisation itself (self-assessment) or by an independent external entity, possibly a regulator or a suitably qualified organisation acting on behalf of a regulator.\n\nPlease enter the relevant e-mail adddresses to begin the assessment.",
-    "fields": [
-     {
-      "fieldId": "incident_cafaemail",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_cafbemail",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_cafcemail",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_cafdemail",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_cafregulatoremail",
-      "isVisible": true
-     }
-    ],
-    "isVisible": true,
-    "name": "Assessment Information",
-    "query": null,
-    "queryType": "",
-    "readOnly": false,
-    "type": ""
-   }
-  ]
- },
- "group": "incident",
- "id": "16efc0b7-517f-4492-8104-0896262ebe54",
- "name": "NCSC CAF Assessment",
- "system": false,
- "version": -1,
- "fromVersion": "6.0.0",
- "description": ""
+    "detailsV2": {
+        "tabs": [
+            {
+                "id": "summary",
+                "name": "Legacy Summary",
+                "type": "summary"
+            },
+            {
+                "id": "caseinfoid",
+                "name": "Assessment Info",
+                "sections": [
+                    {
+                        "displayType": "CARD",
+                        "h": 3,
+                        "i": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 1,
+                                "fieldId": "dbotcreated",
+                                "height": 53,
+                                "id": "9ccb16d0-f439-11ea-b89f-7f553d2ef7d7",
+                                "index": 0,
+                                "listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "ncscassessmentstatus",
+                                "height": 53,
+                                "id": "b854f470-f439-11ea-b89f-7f553d2ef7d7",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 1,
+                                "fieldId": "cafastatus",
+                                "height": 53,
+                                "id": "8ef9af70-f43a-11ea-88fc-87a58d86ddd0",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 1,
+                                "fieldId": "cafcstatus",
+                                "height": 53,
+                                "id": "9dc3b230-f43a-11ea-88fc-87a58d86ddd0",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {
+                                    "htmlBody": {
+                                        "simple": "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n<html xmlns=\"http://www.w3.org/1999/xhtml\" xmlns:o=\"urn:schemas-microsoft-com:office:office\">\n\n<head>\n    <meta charset=\"UTF-8\">\n    <meta content=\"width=device-width, initial-scale=1\" name=\"viewport\">\n    <meta name=\"x-apple-disable-message-reformatting\">\n    <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">\n    <meta content=\"telephone=no\" name=\"format-detection\">\n    <title></title>\n    <!--[if (mso 16)]>\n    <style type=\"text/css\"><!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n<html>\n\n<head>\n    <meta charset=\"UTF-8\">\n    <meta content=\"width=device-width, initial-scale=1\" name=\"viewport\">\n    <meta name=\"x-apple-disable-message-reformatting\">\n    <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">\n    <meta content=\"telephone=no\" name=\"format-detection\">\n    <title></title>\n    <!--[if (mso 16)]>\n    <style type=\"text/css\">\n    a {text-decoration: none;}\n    </style>\n    <![endif]-->\n    <!--[if gte mso 9]><style>sup { font-size: 100% !important; }</style><![endif]-->\n    <!--[if gte mso 9]>\n<xml>\n    <o:OfficeDocumentSettings>\n    <o:AllowPNG></o:AllowPNG>\n    <o:PixelsPerInch>96</o:PixelsPerInch>\n    </o:OfficeDocumentSettings>\n</xml>\n<![endif]-->\n</head>\n\n<body>\n    <div class=\"es-wrapper-color\">\n        <!--[if gte mso 9]>\n\t\t\t<v:background xmlns:v=\"urn:schemas-microsoft-com:vml\" fill=\"t\">\n\t\t\t\t<v:fill type=\"tile\" color=\"#f6f6f6\"></v:fill>\n\t\t\t</v:background>\n\t\t<![endif]-->\n        <table class=\"es-wrapper\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\">\n            <tbody>\n                <tr>\n                    <td class=\"esd-email-paddings\" valign=\"top\">\n                        <table cellpadding=\"0\" cellspacing=\"0\" class=\"es-content esd-footer-popover\" align=\"center\">\n                            <tbody>\n                                <tr>\n                                    <td class=\"esd-stripe\" align=\"center\">\n                                        <table bgcolor=\"#ffffff\" class=\"es-content-body\" align=\"center\" cellpadding=\"0\" cellspacing=\"0\" width=\"600\">\n                                            <tbody>\n                                                <tr>\n                                                    <td class=\"esd-structure esd-checked\" style=\"background-position: center top; background-repeat: no-repeat; background-color: #ffffff;\" bgcolor=\"#ffffff\" align=\"left\" esd-custom-block-id=\"55626\">\n                                                        <table width=\"100%\" cellspacing=\"0\" cellpadding=\"0\">\n                                                            <tbody>\n                                                                <tr>\n                                                                    <td class=\"esd-container-frame\" width=\"600\" valign=\"top\" align=\"center\">\n                                                                        <table width=\"100%\" cellspacing=\"0\" cellpadding=\"0\" style=\"background-position: center top;\">\n                                                                            <tbody>\n                                                                                <tr>\n                                                                                    <td class=\"esd-block-text es-p10t es-p10b\" align=\"center\">\n                                                                                        <h4 style=\"color: #0681f3;\"><br></h4>\n                                                                                    </td>\n                                                                                </tr>\n                                                                                <tr>\n                                                                                    <td align=\"center\" class=\"esd-block-image\"><a target=\"_blank\" href=\"https://www.paloaltonetworks.com/cortex\"><img class=\"adapt-img\" src=\"https://www.paloaltonetworks.com/content/dam/pan/en_US/images/logos/brand/cortex-primary/Cortex_Tagline_RGB.png?imbypass=on\" alt style=\"display: block;\" height=\"117\"></a></td>\n                                                                                </tr>\n                                                                            </tbody>\n                                                                        </table>\n                                                                    </td>\n                                                                </tr>\n                                                            </tbody>\n                                                        </table>\n                                                    </td>\n                                                </tr>\n                                                <tr>\n                                                    <td class=\"es-p20t es-p20r es-p20l esd-structure\" align=\"left\" style=\"background-position: center top;\">\n                                                        <table cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n                                                            <tbody>\n                                                                <tr>\n                                                                    <td width=\"560\" class=\"esd-container-frame\" align=\"center\" valign=\"top\">\n                                                                        <table cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n                                                                            <tbody>\n                                                                                <tr>\n                                                                                    <td align=\"center\" class=\"esd-block-spacer es-p20\" style=\"font-size: 0px;\">\n                                                                                        <table border=\"0\" width=\"100%\" height=\"100%\" cellpadding=\"0\" cellspacing=\"0\">\n                                                                                            <tbody>\n                                                                                                <tr>\n                                                                                                    <td style=\"border-bottom: 0px solid #cccccc; background: none; height: 1px; width: 100%; margin: 0px;\"></td>\n                                                                                                </tr>\n                                                                                            </tbody>\n                                                                                        </table>\n                                                                                    </td>\n                                                                                </tr>\n                                                                                <tr>\n                                                                                    <td align=\"center\" class=\"esd-block-spacer es-p20\" style=\"font-size: 0px;\">\n                                                                                        <table border=\"0\" width=\"100%\" height=\"100%\" cellpadding=\"0\" cellspacing=\"0\">\n                                                                                            <tbody>\n                                                                                                <tr>\n                                                                                                    <td style=\"border-bottom: 1px solid #cccccc; background:none; height:1px; width:100%; margin:0px 0px 0px 0px;\"></td>\n                                                                                                </tr>\n                                                                                            </tbody>\n                                                                                        </table>\n                                                                                    </td>\n                                                                                </tr>\n                                                                                <tr>\n                                                                                    <td align=\"left\" class=\"esd-block-text\">\n                                                                                        <p style=\"font-family: helvetica, 'helvetica neue', arial, verdana, sans-serif; font-size: 16px;\"><br>Hello,<br><br>This is a friendly reminder that you have been assigned an assessment from the National Cyber Security Centre - Cyber Assessment Framework. Please could you take the time to answer the questions.<br><br>If you have already answered the questions, please ignore this e-mail.<br><br>Thank you!<br><br><br></p>\n                                                                                    </td>\n                                                                                </tr>\n                                                                                <tr>\n                                                                                    <td align=\"center\" class=\"esd-block-spacer es-p20\">\n                                                                                        <table border=\"0\" width=\"100%\" height=\"100%\" cellpadding=\"0\" cellspacing=\"0\">\n                                                                                            <tbody>\n                                                                                                <tr>\n                                                                                                    <td style=\"border-bottom: 1px solid #cccccc; background:none; height:1px; width:100%; margin:0px 0px 0px 0px;\"></td>\n                                                                                                </tr>\n                                                                                            </tbody>\n                                                                                        </table>\n                                                                                    </td>\n                                                                                </tr>\n                                                                            </tbody>\n                                                                        </table>\n                                                                    </td>\n                                                                </tr>\n                                                            </tbody>\n                                                        </table>\n                                                    </td>\n                                                </tr>\n                                            </tbody>\n                                        </table>\n                                    </td>\n                                </tr>\n                            </tbody>\n                        </table>\n                    </td>\n                </tr>\n            </tbody>\n        </table>\n    </div>\n</body>\n\n</html>"
+                                    },
+                                    "subject": {
+                                        "simple": "Reminder - You have an assessment to complete"
+                                    },
+                                    "to": {
+                                        "simple": "${incident.cafaemail};${incident.cafbemail};${incident.cafcemail};${incident.cafdemail}"
+                                    }
+                                },
+                                "buttonClass": "primary",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 22,
+                                "id": "35a60050-f74f-11ea-8653-7b13745c073a",
+                                "index": 4,
+                                "name": "Send a reminder e-mail",
+                                "scriptId": "Mail Sender (New)|||send-mail",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "owner",
+                                "height": 53,
+                                "id": "incident-owner-field",
+                                "index": 0,
+                                "listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+                                "sectionItemType": "field",
+                                "startCol": 1
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "cafbstatus",
+                                "height": 53,
+                                "id": "93e7bd60-f43a-11ea-88fc-87a58d86ddd0",
+                                "index": 2,
+                                "listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+                                "sectionItemType": "field",
+                                "startCol": 1
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "cafdstatus",
+                                "height": 53,
+                                "id": "a04c0ac0-f43a-11ea-88fc-87a58d86ddd0",
+                                "index": 3,
+                                "listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+                                "sectionItemType": "field",
+                                "startCol": 1
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Case Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-6aabad20-98b1-11e9-97d7-ed26ef9e46c8",
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Work Plan",
+                        "static": false,
+                        "type": "workplan",
+                        "w": 1,
+                        "x": 0,
+                        "y": 3
+                    },
+                    {
+                        "h": 2,
+                        "i": "caseinfoid-c9028340-f444-11ea-afa1-1deede81b6da",
+                        "items": [],
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Assessment A",
+                        "query": "EntryWidgetNCSCResultsA",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamic",
+                        "w": 1,
+                        "x": 1,
+                        "y": 0
+                    },
+                    {
+                        "h": 2,
+                        "i": "caseinfoid-d3e512a0-f444-11ea-afa1-1deede81b6da",
+                        "items": [],
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Assessment B",
+                        "query": "EntryWidgetNCSCResultsB",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamic",
+                        "w": 1,
+                        "x": 2,
+                        "y": 0
+                    },
+                    {
+                        "h": 2,
+                        "i": "caseinfoid-c2b8b7b0-f67a-11ea-9702-75d0378b8f61",
+                        "items": [],
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Assessment C",
+                        "query": "EntryWidgetNCSCResultsC",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamic",
+                        "w": 1,
+                        "x": 1,
+                        "y": 2
+                    },
+                    {
+                        "h": 2,
+                        "i": "caseinfoid-c7813c40-f67a-11ea-9702-75d0378b8f61",
+                        "items": [],
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Assessment D",
+                        "query": "EntryWidgetNCSCResultsD",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamic",
+                        "w": 1,
+                        "x": 2,
+                        "y": 2
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "hidden": false,
+                "id": "eugemmjkfg",
+                "name": "Assessment A Details",
+                "sections": [
+                    {
+                        "displayType": "CARD",
+                        "h": 7,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
+                        "i": "eugemmjkfg-62b4c290-f43c-11ea-88fc-87a58d86ddd0",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "cafaresult",
+                                "height": 106,
+                                "id": "72000340-f43c-11ea-88fc-87a58d86ddd0",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Managing security risk - Question Review",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 2
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 7,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
+                        "i": "eugemmjkfg-f5788ae0-f6b6-11ea-ad49-87318685ea9d",
+                        "items": [
+                            {
+                                "endCol": 4,
+                                "fieldId": "cafadetails",
+                                "height": 106,
+                                "id": "08937130-f6b7-11ea-ad49-87318685ea9d",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Managing security risk - Question Details",
+                        "static": false,
+                        "w": 2,
+                        "x": 1,
+                        "y": 2
+                    },
+                    {
+                        "h": 2,
+                        "i": "eugemmjkfg-2f963550-f6b8-11ea-ad49-87318685ea9d",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Managing security risk - Status",
+                        "query": "EntryWidgetNCSCResultsA",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamic",
+                        "w": 3,
+                        "x": 0,
+                        "y": 0
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "hidden": false,
+                "id": "elvunwpfgw",
+                "name": "Assessment B Details",
+                "sections": [
+                    {
+                        "displayType": "CARD",
+                        "h": 7,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
+                        "i": "elvunwpfgw-eugemmjkfg-62b4c290-f43c-11ea-88fc-87a58d86ddd0",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "cafbresult",
+                                "height": 106,
+                                "id": "b9beaab0-f6b7-11ea-ad49-87318685ea9d",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Protecting against cyber-attack - Question Review",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 2
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 7,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
+                        "i": "elvunwpfgw-eugemmjkfg-f5788ae0-f6b6-11ea-ad49-87318685ea9d",
+                        "items": [
+                            {
+                                "endCol": 4,
+                                "fieldId": "cafbdetails",
+                                "height": 106,
+                                "id": "bd5c43d0-f6b7-11ea-ad49-87318685ea9d",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Protecting against cyber-attack - Question Details",
+                        "static": false,
+                        "w": 2,
+                        "x": 1,
+                        "y": 2
+                    },
+                    {
+                        "h": 2,
+                        "i": "elvunwpfgw-43568360-f6b8-11ea-ad49-87318685ea9d",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Protecting against cyber-attack - Status",
+                        "query": "EntryWidgetNCSCResultsB",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamic",
+                        "w": 3,
+                        "x": 0,
+                        "y": 0
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "hidden": false,
+                "id": "twviqn8t9h",
+                "name": "Assessment C Details",
+                "sections": [
+                    {
+                        "displayType": "CARD",
+                        "h": 7,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
+                        "i": "twviqn8t9h-elvunwpfgw-eugemmjkfg-62b4c290-f43c-11ea-88fc-87a58d86ddd0",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "cafcresult",
+                                "height": 106,
+                                "id": "d1aa52f0-f6b7-11ea-ad49-87318685ea9d",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Detecting cyber security events - Question Review",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 2
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 7,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
+                        "i": "twviqn8t9h-elvunwpfgw-eugemmjkfg-f5788ae0-f6b6-11ea-ad49-87318685ea9d",
+                        "items": [
+                            {
+                                "endCol": 4,
+                                "fieldId": "cafcdetails",
+                                "height": 106,
+                                "id": "f216ccd0-f6b7-11ea-ad49-87318685ea9d",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Detecting cyber security events - Question Details",
+                        "static": false,
+                        "w": 2,
+                        "x": 1,
+                        "y": 2
+                    },
+                    {
+                        "h": 2,
+                        "i": "twviqn8t9h-54d2add0-f6b8-11ea-ad49-87318685ea9d",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Detecting cyber security events - Status",
+                        "query": "EntryWidgetNCSCResultsC",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamic",
+                        "w": 3,
+                        "x": 0,
+                        "y": 0
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "hidden": false,
+                "id": "h9e7ntingv",
+                "name": "Assessment D Details",
+                "sections": [
+                    {
+                        "displayType": "CARD",
+                        "h": 7,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
+                        "i": "h9e7ntingv-twviqn8t9h-elvunwpfgw-eugemmjkfg-62b4c290-f43c-11ea-88fc-87a58d86ddd0",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "cafdresult",
+                                "height": 106,
+                                "id": "33af4dc0-f6bd-11ea-ad49-87318685ea9d",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Minimising the impact of cyber security incidents - Question Review",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 2
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 7,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
+                        "i": "h9e7ntingv-twviqn8t9h-elvunwpfgw-eugemmjkfg-f5788ae0-f6b6-11ea-ad49-87318685ea9d",
+                        "items": [
+                            {
+                                "endCol": 4,
+                                "fieldId": "cafddetails",
+                                "height": 106,
+                                "id": "38beed70-f6bd-11ea-ad49-87318685ea9d",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Minimising the impact of cyber security incidents - Question Details",
+                        "static": false,
+                        "w": 2,
+                        "x": 1,
+                        "y": 2
+                    },
+                    {
+                        "h": 2,
+                        "i": "h9e7ntingv-622b4640-f6b8-11ea-ad49-87318685ea9d",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Minimising the impact of cyber security incidents - Status",
+                        "query": "EntryWidgetNCSCResultsD",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamic",
+                        "w": 3,
+                        "x": 0,
+                        "y": 0
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "id": "warRoom",
+                "name": "War Room",
+                "readOnly": false,
+                "roles": [
+                    "Administrator"
+                ],
+                "type": "warRoom"
+            },
+            {
+                "id": "workPlan",
+                "name": "Work Plan",
+                "readOnly": false,
+                "roles": [
+                    "Administrator"
+                ],
+                "type": "workPlan"
+            },
+            {
+                "id": "evidenceBoard",
+                "name": "Evidence Board",
+                "type": "evidenceBoard"
+            },
+            {
+                "hidden": true,
+                "id": "relatedIncidents",
+                "name": "Related Incidents",
+                "type": "relatedIncidents"
+            },
+            {
+                "hidden": true,
+                "id": "canvas",
+                "name": "Canvas",
+                "type": "canvas"
+            }
+        ]
+    },
+    "edit": {
+        "sections": [
+            {
+                "description": "### The Cyber Assessment Framework (CAF) provides a systematic and comprehensive approach to assessing the extent to which cyber risks to essential functions are being managed by the organisation responsible. It is intended to be used either by the responsible organisation itself (self-assessment) or by an independent external entity, possibly a regulator or a suitably qualified organisation acting on behalf of a regulator.\n\nPlease enter the relevant e-mail adddresses to begin the assessment.",
+                "fields": [
+                    {
+                        "fieldId": "incident_cafaemail",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_cafbemail",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_cafcemail",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_cafdemail",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_cafregulatoremail",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Assessment Information",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            }
+        ]
+    },
+    "group": "incident",
+    "id": "16efc0b7-517f-4492-8104-0896262ebe54",
+    "name": "NCSC CAF Assessment",
+    "system": false,
+    "version": -1,
+    "fromVersion": "6.0.0",
+    "description": "",
+    "marketplaces": [
+        "xsoar"
+    ]
 }

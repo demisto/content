@@ -638,5 +638,8 @@
                 "type": "canvas"
             }
         ]
-    }
+    },
+    "marketplaces": [
+        "xsoar"
+    ]
 }

@@ -1,40 +1,43 @@
 {
-	"id": "Indicator Feed",
-	"group": "incident",
-	"name": "Indicator Feed Incident",
-	"description": "",
-	"version": -1,
-	"fromVersion": "6.0.0",
-	"edit": {
+    "id": "Indicator Feed",
+    "group": "incident",
+    "name": "Indicator Feed Incident",
+    "description": "",
+    "version": -1,
+    "fromVersion": "6.0.0",
+    "edit": {
         "sections": [
-			{
-				"description": "",
-				"fields": [
-					{
-						"fieldId": "incident_name",
-						"id": "",
-						"isVisible": true,
-						"modified": "0001-01-01T00:00:00Z",
-						"version": 0
-					},
-					{
-						"fieldId": "incident_playbookid",
-						"id": "",
-						"isVisible": true,
-						"modified": "0001-01-01T00:00:00Z",
-						"version": 0
-					}
-				],
-				"id": "",
-				"isVisible": true,
-				"modified": "0001-01-01T00:00:00Z",
-				"name": "Basic Information",
-				"query": null,
-				"queryType": "",
-				"readOnly": false,
-				"type": "",
-				"version": 0
-			}
-		]
-    }
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "incident_name",
+                        "id": "",
+                        "isVisible": true,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "version": 0
+                    },
+                    {
+                        "fieldId": "incident_playbookid",
+                        "id": "",
+                        "isVisible": true,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "version": 0
+                    }
+                ],
+                "id": "",
+                "isVisible": true,
+                "modified": "0001-01-01T00:00:00Z",
+                "name": "Basic Information",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": "",
+                "version": 0
+            }
+        ]
+    },
+    "marketplaces": [
+        "xsoar"
+    ]
 }

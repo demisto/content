@@ -1,466 +1,469 @@
 {
-	"description": "OT Security Rogue Device Found Layout",
-	"details": {},
-	"fromVersion": "6.0.0",
-	"detailsV2": {
-		"tabs": [
-			{
-				"id": "summary",
-				"name": "Legacy Summary",
-				"type": "summary"
-			},
-			{
-				"id": "caseinfoid",
-				"name": "Incident Info",
-				"sections": [
-					{
-						"displayType": "ROW",
-						"h": 2,
-						"i": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
-						"isVisible": true,
-						"items": [
-							{
-								"endCol": 2,
-								"fieldId": "type",
-								"height": 22,
-								"id": "incident-type-field",
-								"index": 0,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "severity",
-								"height": 22,
-								"id": "incident-severity-field",
-								"index": 1,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "owner",
-								"height": 22,
-								"id": "incident-owner-field",
-								"index": 2,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "sourcebrand",
-								"height": 22,
-								"id": "incident-sourceBrand-field",
-								"index": 4,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "sourceinstance",
-								"height": 22,
-								"id": "incident-sourceInstance-field",
-								"index": 5,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "playbookid",
-								"height": 22,
-								"id": "incident-playbookId-field",
-								"index": 6,
-								"sectionItemType": "field",
-								"startCol": 0
-							}
-						],
-						"maxW": 3,
-						"name": "Case Details",
-						"w": 1,
-						"x": 0,
-						"y": 0
-					},
-					{
-						"h": 2,
-						"i": "caseinfoid-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
-						"maxW": 3,
-						"name": "Notes",
-						"type": "notes",
-						"w": 1,
-						"x": 2,
-						"y": 0
-					},
-					{
-						"displayType": "ROW",
-						"h": 2,
-						"i": "caseinfoid-6aabad20-98b1-11e9-97d7-ed26ef9e46c8",
-						"maxW": 3,
-						"name": "Work Plan",
-						"type": "workplan",
-						"w": 1,
-						"x": 1,
-						"y": 0
-					},
-					{
-						"displayType": "ROW",
-						"h": 2,
-						"i": "caseinfoid-770ec200-98b1-11e9-97d7-ed26ef9e46c8",
-						"isVisible": true,
-						"maxW": 3,
-						"name": "Linked Incidents",
-						"type": "linkedIncidents",
-						"w": 1,
-						"x": 1,
-						"y": 6
-					},
-					{
-						"displayType": "ROW",
-						"h": 2,
-						"i": "caseinfoid-842632c0-98b1-11e9-97d7-ed26ef9e46c8",
-						"maxW": 3,
-						"name": "Child Incidents",
-						"type": "childInv",
-						"w": 1,
-						"x": 2,
-						"y": 4
-					},
-					{
-						"displayType": "ROW",
-						"h": 2,
-						"i": "caseinfoid-4a31afa0-98ba-11e9-a519-93a53c759fe0",
-						"maxW": 3,
-						"name": "Evidence",
-						"type": "evidence",
-						"w": 1,
-						"x": 2,
-						"y": 2
-					},
-					{
-						"displayType": "ROW",
-						"h": 2,
-						"hideName": false,
-						"i": "caseinfoid-7717e580-9bed-11e9-9a3f-8b4b2158e260",
-						"maxW": 3,
-						"name": "Team Members",
-						"type": "team",
-						"w": 1,
-						"x": 2,
-						"y": 6
-					},
-					{
-						"displayType": "ROW",
-						"h": 2,
-						"i": "caseinfoid-7ce69dd0-a07f-11e9-936c-5395a1acf11e",
-						"maxW": 3,
-						"name": "Indicators",
-						"query": "",
-						"queryType": "input",
-						"type": "indicators",
-						"w": 2,
-						"x": 0,
-						"y": 4
-					},
-					{
-						"displayType": "CARD",
-						"h": 2,
-						"i": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
-						"items": [
-							{
-								"endCol": 1,
-								"fieldId": "occurred",
-								"height": 22,
-								"id": "incident-occurred-field",
-								"index": 0,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 1,
-								"fieldId": "dbotmodified",
-								"height": 22,
-								"id": "incident-modified-field",
-								"index": 1,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "dbotduedate",
-								"height": 22,
-								"id": "incident-dueDate-field",
-								"index": 2,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "dbotcreated",
-								"height": 22,
-								"id": "incident-created-field",
-								"index": 0,
-								"sectionItemType": "field",
-								"startCol": 1
-							},
-							{
-								"endCol": 2,
-								"fieldId": "dbotclosed",
-								"height": 22,
-								"id": "incident-closed-field",
-								"index": 1,
-								"sectionItemType": "field",
-								"startCol": 1
-							}
-						],
-						"maxW": 3,
-						"name": "Timeline Information",
-						"w": 1,
-						"x": 0,
-						"y": 2
-					},
-					{
-						"displayType": "ROW",
-						"h": 2,
-						"i": "caseinfoid-88e6bf70-a0b1-11e9-b27f-13ae1773d289",
-						"isVisible": true,
-						"items": [
-							{
-								"endCol": 2,
-								"fieldId": "dbotclosed",
-								"height": 22,
-								"id": "incident-dbotClosed-field",
-								"index": 0,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "closereason",
-								"height": 22,
-								"id": "incident-closeReason-field",
-								"index": 1,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "closenotes",
-								"height": 22,
-								"id": "incident-closeNotes-field",
-								"index": 2,
-								"sectionItemType": "field",
-								"startCol": 0
-							}
-						],
-						"maxW": 3,
-						"name": "Closing Information",
-						"w": 1,
-						"x": 0,
-						"y": 6
-					},
-					{
-						"displayType": "CARD",
-						"h": 2,
-						"i": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
-						"isVisible": true,
-						"items": [
-							{
-								"endCol": 2,
-								"fieldId": "details",
-								"height": 22,
-								"id": "incident-details-field",
-								"index": 0,
-								"sectionItemType": "field",
-								"startCol": 0
-							}
-						],
-						"maxW": 3,
-						"name": "Investigation Data",
-						"w": 1,
-						"x": 1,
-						"y": 2
-					}
-				],
-				"type": "custom"
-			},
-			{
-				"hidden": false,
-				"id": "mdvlfnygyu",
-				"name": "Investigation Details",
-				"sections": [
-					{
-						"displayType": "ROW",
-						"h": 2,
-						"hideName": false,
-						"i": "caseinfoid-92cda510-504c-11ec-92e0-53bf4e75f6ae",
-						"items": [
-							{
-								"endCol": 2,
-								"fieldId": "hostname",
-								"height": 22,
-								"id": "a6afabf0-504c-11ec-92e0-53bf4e75f6ae",
-								"index": 0,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "macaddress",
-								"height": 22,
-								"id": "c4c45320-504c-11ec-92e0-53bf4e75f6ae",
-								"index": 1,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "otsecuritysubstationname",
-								"height": 22,
-								"id": "f4bff540-50e0-11ec-81f4-a737c7b0a98a",
-								"index": 2,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "sourceip",
-								"height": 22,
-								"id": "bfeba1f0-504c-11ec-92e0-53bf4e75f6ae",
-								"index": 3,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "os",
-								"height": 22,
-								"id": "a7987550-50fc-11ec-81f4-a737c7b0a98a",
-								"index": 4,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "vendorid",
-								"height": 22,
-								"id": "98a60300-50fc-11ec-81f4-a737c7b0a98a",
-								"index": 5,
-								"sectionItemType": "field",
-								"startCol": 0
-							}
-						],
-						"maxW": 3,
-						"minH": 1,
-						"minW": 1,
-						"moved": false,
-						"name": "Device Details",
-						"static": false,
-						"w": 1,
-						"x": 0,
-						"y": 0
-					},
-					{
-						"displayType": "ROW",
-						"h": 2,
-						"hideName": false,
-						"i": "caseinfoid-fe824796-50e0-11ec-81f4-a737c7b0a98a",
-						"items": [
-							{
-								"endCol": 2,
-								"fieldId": "otsecuritysubstationname",
-								"height": 22,
-								"id": "1b9ed320-50e1-11ec-81f4-a737c7b0a98a",
-								"index": 0,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "otsecuritysubstationlocation",
-								"height": 22,
-								"id": "f5a12d80-50e0-11ec-81f4-a737c7b0a98a",
-								"index": 1,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "otsecuritysubstationcontact",
-								"height": 22,
-								"id": "a3e06aa0-50e1-11ec-81f4-a737c7b0a98a",
-								"index": 2,
-								"sectionItemType": "field",
-								"startCol": 0
-							}
-						],
-						"maxW": 3,
-						"minH": 1,
-						"minW": 1,
-						"moved": false,
-						"name": "Substation Details",
-						"static": false,
-						"w": 1,
-						"x": 1,
-						"y": 0
-					},
-					{
-						"displayType": "ROW",
-						"h": 2,
-						"hideName": false,
-						"i": "caseinfoid-d3bb9775-50fc-11ec-81f4-a737c7b0a98a",
-						"items": [
-							{
-								"endCol": 2,
-								"fieldId": "otsecurityprotocols",
-								"height": 106,
-								"id": "b398fe30-5104-11ec-81f4-a737c7b0a98a",
-								"index": 0,
-								"sectionItemType": "field",
-								"startCol": 0
-							}
-						],
-						"maxW": 3,
-						"minH": 1,
-						"minW": 1,
-						"moved": false,
-						"name": "Communication Details",
-						"static": false,
-						"w": 1,
-						"x": 2,
-						"y": 0
-					}
-				],
-				"type": "custom"
-			},
-			{
-				"id": "warRoom",
-				"name": "War Room",
-				"type": "warRoom"
-			},
-			{
-				"id": "workPlan",
-				"name": "Work Plan",
-				"type": "workPlan"
-			},
-			{
-				"id": "evidenceBoard",
-				"name": "Evidence Board",
-				"type": "evidenceBoard"
-			},
-			{
-				"id": "relatedIncidents",
-				"name": "Related Incidents",
-				"type": "relatedIncidents"
-			},
-			{
-				"id": "canvas",
-				"name": "Canvas",
-				"type": "canvas"
-			}
-		]
-	},
-	"group": "incident",
-	"id": "OTSecurity Rogue Device Found",
-	"name": "OTSecurity Rogue Device Found",
-	"system": false,
-	"version": -1
+    "description": "OT Security Rogue Device Found Layout",
+    "details": {},
+    "fromVersion": "6.0.0",
+    "detailsV2": {
+        "tabs": [
+            {
+                "id": "summary",
+                "name": "Legacy Summary",
+                "type": "summary"
+            },
+            {
+                "id": "caseinfoid",
+                "name": "Incident Info",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "type",
+                                "height": 22,
+                                "id": "incident-type-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "severity",
+                                "height": 22,
+                                "id": "incident-severity-field",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "owner",
+                                "height": 22,
+                                "id": "incident-owner-field",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sourcebrand",
+                                "height": 22,
+                                "id": "incident-sourceBrand-field",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sourceinstance",
+                                "height": 22,
+                                "id": "incident-sourceInstance-field",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "playbookid",
+                                "height": 22,
+                                "id": "incident-playbookId-field",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "name": "Case Details",
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "h": 2,
+                        "i": "caseinfoid-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
+                        "maxW": 3,
+                        "name": "Notes",
+                        "type": "notes",
+                        "w": 1,
+                        "x": 2,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-6aabad20-98b1-11e9-97d7-ed26ef9e46c8",
+                        "maxW": 3,
+                        "name": "Work Plan",
+                        "type": "workplan",
+                        "w": 1,
+                        "x": 1,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-770ec200-98b1-11e9-97d7-ed26ef9e46c8",
+                        "isVisible": true,
+                        "maxW": 3,
+                        "name": "Linked Incidents",
+                        "type": "linkedIncidents",
+                        "w": 1,
+                        "x": 1,
+                        "y": 6
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-842632c0-98b1-11e9-97d7-ed26ef9e46c8",
+                        "maxW": 3,
+                        "name": "Child Incidents",
+                        "type": "childInv",
+                        "w": 1,
+                        "x": 2,
+                        "y": 4
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-4a31afa0-98ba-11e9-a519-93a53c759fe0",
+                        "maxW": 3,
+                        "name": "Evidence",
+                        "type": "evidence",
+                        "w": 1,
+                        "x": 2,
+                        "y": 2
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "caseinfoid-7717e580-9bed-11e9-9a3f-8b4b2158e260",
+                        "maxW": 3,
+                        "name": "Team Members",
+                        "type": "team",
+                        "w": 1,
+                        "x": 2,
+                        "y": 6
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-7ce69dd0-a07f-11e9-936c-5395a1acf11e",
+                        "maxW": 3,
+                        "name": "Indicators",
+                        "query": "",
+                        "queryType": "input",
+                        "type": "indicators",
+                        "w": 2,
+                        "x": 0,
+                        "y": 4
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "i": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
+                        "items": [
+                            {
+                                "endCol": 1,
+                                "fieldId": "occurred",
+                                "height": 22,
+                                "id": "incident-occurred-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 1,
+                                "fieldId": "dbotmodified",
+                                "height": 22,
+                                "id": "incident-modified-field",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotduedate",
+                                "height": 22,
+                                "id": "incident-dueDate-field",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotcreated",
+                                "height": 22,
+                                "id": "incident-created-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 1
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotclosed",
+                                "height": 22,
+                                "id": "incident-closed-field",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 1
+                            }
+                        ],
+                        "maxW": 3,
+                        "name": "Timeline Information",
+                        "w": 1,
+                        "x": 0,
+                        "y": 2
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-88e6bf70-a0b1-11e9-b27f-13ae1773d289",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotclosed",
+                                "height": 22,
+                                "id": "incident-dbotClosed-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "closereason",
+                                "height": 22,
+                                "id": "incident-closeReason-field",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "closenotes",
+                                "height": 22,
+                                "id": "incident-closeNotes-field",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "name": "Closing Information",
+                        "w": 1,
+                        "x": 0,
+                        "y": 6
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "i": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "details",
+                                "height": 22,
+                                "id": "incident-details-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "name": "Investigation Data",
+                        "w": 1,
+                        "x": 1,
+                        "y": 2
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "hidden": false,
+                "id": "mdvlfnygyu",
+                "name": "Investigation Details",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "caseinfoid-92cda510-504c-11ec-92e0-53bf4e75f6ae",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "hostname",
+                                "height": 22,
+                                "id": "a6afabf0-504c-11ec-92e0-53bf4e75f6ae",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "macaddress",
+                                "height": 22,
+                                "id": "c4c45320-504c-11ec-92e0-53bf4e75f6ae",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "otsecuritysubstationname",
+                                "height": 22,
+                                "id": "f4bff540-50e0-11ec-81f4-a737c7b0a98a",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sourceip",
+                                "height": 22,
+                                "id": "bfeba1f0-504c-11ec-92e0-53bf4e75f6ae",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "os",
+                                "height": 22,
+                                "id": "a7987550-50fc-11ec-81f4-a737c7b0a98a",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "vendorid",
+                                "height": 22,
+                                "id": "98a60300-50fc-11ec-81f4-a737c7b0a98a",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Device Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "caseinfoid-fe824796-50e0-11ec-81f4-a737c7b0a98a",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "otsecuritysubstationname",
+                                "height": 22,
+                                "id": "1b9ed320-50e1-11ec-81f4-a737c7b0a98a",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "otsecuritysubstationlocation",
+                                "height": 22,
+                                "id": "f5a12d80-50e0-11ec-81f4-a737c7b0a98a",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "otsecuritysubstationcontact",
+                                "height": 22,
+                                "id": "a3e06aa0-50e1-11ec-81f4-a737c7b0a98a",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Substation Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "caseinfoid-d3bb9775-50fc-11ec-81f4-a737c7b0a98a",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "otsecurityprotocols",
+                                "height": 106,
+                                "id": "b398fe30-5104-11ec-81f4-a737c7b0a98a",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Communication Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 0
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "id": "warRoom",
+                "name": "War Room",
+                "type": "warRoom"
+            },
+            {
+                "id": "workPlan",
+                "name": "Work Plan",
+                "type": "workPlan"
+            },
+            {
+                "id": "evidenceBoard",
+                "name": "Evidence Board",
+                "type": "evidenceBoard"
+            },
+            {
+                "id": "relatedIncidents",
+                "name": "Related Incidents",
+                "type": "relatedIncidents"
+            },
+            {
+                "id": "canvas",
+                "name": "Canvas",
+                "type": "canvas"
+            }
+        ]
+    },
+    "group": "incident",
+    "id": "OTSecurity Rogue Device Found",
+    "name": "OTSecurity Rogue Device Found",
+    "system": false,
+    "version": -1,
+    "marketplaces": [
+        "xsoar"
+    ]
 }

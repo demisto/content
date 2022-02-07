@@ -227,12 +227,8 @@
                     ],
                     "lastId": "",
                     "pageSize": 100,
-                    "tags": [
-
-                    ],
-                    "users": [
-
-                    ]
+                    "tags": [],
+                    "users": []
                 },
                 "queryType": "warRoomFilter",
                 "readOnly": true,
@@ -248,12 +244,8 @@
                     ],
                     "lastId": "",
                     "pageSize": 100,
-                    "tags": [
-
-                    ],
-                    "users": [
-
-                    ]
+                    "tags": [],
+                    "users": []
                 },
                 "queryType": "warRoomFilter",
                 "readOnly": true,
@@ -774,5 +766,8 @@
     "system": false,
     "version": -1,
     "fromVersion": "6.0.0",
-    "description": ""
+    "description": "",
+    "marketplaces": [
+        "xsoar"
+    ]
 }

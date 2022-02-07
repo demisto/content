@@ -1,726 +1,711 @@
 {
- "close": {
-  "sections": [
-   {
-    "description": "",
-    "fields": [
-     {
-      "fieldId": "incident_closereason",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_closenotes",
-      "isVisible": true
-     }
-    ],
-    "isVisible": true,
-    "name": "Basic Information",
-    "query": null,
-    "queryType": "",
-    "readOnly": false,
-    "type": ""
-   }
-  ]
- },
- "detailsV2": {
-  "tabs": [
-   {
-    "id": "summary",
-    "name": "Legacy Summary",
-    "type": "summary"
-   },
-   {
-    "id": "caseinfoid",
-    "name": "Incident Info",
-    "sections": [
-     {
-      "displayType": "ROW",
-      "h": 2,
-      "i": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
-      "isVisible": true,
-      "items": [
-       {
-        "endCol": 2,
-        "fieldId": "severity",
-        "height": 22,
-        "id": "incident-severity-field",
-        "index": 0,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "type",
-        "height": 22,
-        "id": "incident-type-field",
-        "index": 1,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "dropEffect": "move",
-        "endCol": 2,
-        "fieldId": "owner",
-        "height": 22,
-        "id": "incident-owner-field",
-        "index": 2,
-        "listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "roles",
-        "height": 22,
-        "id": "73a95920-a6ae-11ea-ae9d-8553407179ff",
-        "index": 3,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "dropEffect": "move",
-        "endCol": 2,
-        "fieldId": "dbotcreated",
-        "height": 22,
-        "id": "incident-created-field",
-        "index": 4,
-        "listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "dropEffect": "move",
-        "endCol": 2,
-        "fieldId": "occurred",
-        "height": 22,
-        "id": "incident-occurred-field",
-        "index": 5,
-        "listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "dropEffect": "move",
-        "endCol": 2,
-        "fieldId": "dbotmodified",
-        "height": 22,
-        "id": "incident-modified-field",
-        "index": 7,
-        "listId": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "dropEffect": "move",
-        "endCol": 2,
-        "fieldId": "dbotclosed",
-        "height": 22,
-        "id": "eda146a0-a1ba-11ea-8efe-d92f013a0581",
-        "index": 8,
-        "listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "dropEffect": "move",
-        "endCol": 2,
-        "fieldId": "dbottotaltime",
-        "height": 22,
-        "id": "c57778a0-a5e0-11ea-beb5-2996637e1d9e",
-        "index": 9,
-        "listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "dropEffect": "move",
-        "endCol": 2,
-        "fieldId": "dbotduedate",
-        "height": 22,
-        "id": "incident-dueDate-field",
-        "index": 10,
-        "listId": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
-        "sectionItemType": "field",
-        "startCol": 0
-       }
-      ],
-      "maxH": null,
-      "maxW": 1,
-      "minH": 1,
-      "minW": 1,
-      "moved": false,
-      "name": "Case Details",
-      "static": false,
-      "w": 1,
-      "x": 0,
-      "y": 0
-     },
-     {
-      "displayType": "ROW",
-      "h": 2,
-      "hideName": false,
-      "i": "caseinfoid-7717e580-9bed-11e9-9a3f-8b4b2158e260",
-      "maxH": null,
-      "maxW": 1,
-      "minH": 1,
-      "minW": 1,
-      "moved": false,
-      "name": "Team Members",
-      "static": false,
-      "type": "team",
-      "w": 1,
-      "x": 0,
-      "y": 4
-     },
-     {
-      "displayType": "ROW",
-      "h": 2,
-      "i": "caseinfoid-88e6bf70-a0b1-11e9-b27f-13ae1773d289",
-      "isVisible": true,
-      "items": [
-       {
-        "endCol": 2,
-        "fieldId": "dbotclosed",
-        "height": 22,
-        "id": "incident-dbotClosed-field",
-        "index": 0,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "closereason",
-        "height": 22,
-        "id": "incident-closeReason-field",
-        "index": 1,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "closenotes",
-        "height": 44,
-        "id": "incident-closeNotes-field",
-        "index": 2,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "closinguserid",
-        "height": 22,
-        "id": "85c48b10-a1be-11ea-8efe-d92f013a0581",
-        "index": 3,
-        "sectionItemType": "field",
-        "startCol": 0
-       }
-      ],
-      "maxH": null,
-      "maxW": 1,
-      "minH": 1,
-      "minW": 1,
-      "moved": false,
-      "name": "Closing Information",
-      "static": false,
-      "w": 1,
-      "x": 1,
-      "y": 4
-     },
-     {
-      "description": "**Reminder**: Please ensure to install any required Marketplace Packs on the production server as well! Customizations to OOTB Incident types, configuration, etc, should be applied after uploading the custom content.\n\nDev to Prod tab has the content bundles for this run.",
-      "displayType": "ROW",
-      "h": 2,
-      "i": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
-      "isVisible": true,
-      "items": [
-       {
-        "endCol": 4,
-        "fieldId": "xsoardevtoprodmethod",
-        "height": 22,
-        "id": "7b9c34e0-5dc4-11eb-8940-ff9baa520e4a",
-        "index": 0,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 4,
-        "fieldId": "xsoardevinstancename",
-        "height": 22,
-        "id": "76d955a0-5dc4-11eb-8940-ff9baa520e4a",
-        "index": 1,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 4,
-        "fieldId": "xsoarprodinstancename",
-        "height": 22,
-        "id": "7f1fdd60-5dc4-11eb-8940-ff9baa520e4a",
-        "index": 2,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "dropEffect": "move",
-        "endCol": 4,
-        "fieldId": "playbookid",
-        "height": 22,
-        "id": "incident-playbookId-field",
-        "index": 3,
-        "listId": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
-        "sectionItemType": "field",
-        "startCol": 0
-       }
-      ],
-      "maxH": null,
-      "maxW": 2,
-      "minH": 1,
-      "minW": 2,
-      "moved": false,
-      "name": "XSOAR Dev to Prod",
-      "static": false,
-      "w": 2,
-      "x": 1,
-      "y": 0
-     },
-     {
-      "h": 2,
-      "i": "caseinfoid-f9dd0ce0-60b6-11eb-a207-edb36f37e8f5",
-      "items": [
-
-      ],
-      "maxH": null,
-      "maxW": 1,
-      "minH": 1,
-      "minW": 1,
-      "moved": false,
-      "name": "Work Plan",
-      "static": false,
-      "type": "workplan",
-      "w": 1,
-      "x": 0,
-      "y": 2
-     },
-     {
-      "h": 2,
-      "i": "caseinfoid-083a1d00-60b7-11eb-a207-edb36f37e8f5",
-      "items": [
-
-      ],
-      "maxH": null,
-      "maxW": 2,
-      "minH": 1,
-      "minW": 2,
-      "moved": false,
-      "name": "Notes",
-      "static": false,
-      "type": "notes",
-      "w": 2,
-      "x": 1,
-      "y": 2
-     },
-     {
-      "description": "Quick view of content bundles from this run, see the Dev to Prod tab for more information.",
-      "h": 2,
-      "i": "caseinfoid-d22b0b10-60b7-11eb-a207-edb36f37e8f5",
-      "items": [
-
-      ],
-      "maxH": null,
-      "maxW": 1,
-      "minH": 1,
-      "minW": 1,
-      "moved": false,
-      "name": "Content Bundles",
-      "query": {
-       "tags": [
-        "devcontent",
-        "prodbackup",
-        "selectedcontent"
-       ]
-      },
-      "queryType": "warRoomFilter",
-      "static": false,
-      "type": "invTimeline",
-      "w": 1,
-      "x": 2,
-      "y": 4
-     }
-    ],
-    "type": "custom"
-   },
-   {
-    "hidden": false,
-    "id": "ixxpcd2rip",
-    "name": "Dev to Prod ",
-    "sections": [
-     {
-      "description": "The downloaded dev custom content bundle",
-      "h": 2,
-      "i": "ixxpcd2rip-fcbf10e0-5dc6-11eb-ae45-310ec9c1f911",
-      "items": [
-
-      ],
-      "maxH": null,
-      "maxW": 3,
-      "minH": 1,
-      "minW": 3,
-      "moved": false,
-      "name": "Dev Content Bundle",
-      "query": {
-       "categories": [
-
-       ],
-       "tags": [
-        "devcontent"
-       ]
-      },
-      "queryType": "warRoomFilter",
-      "static": false,
-      "type": "invTimeline",
-      "w": 3,
-      "x": 0,
-      "y": 0
-     },
-     {
-      "description": "The selected custom content bundle, this can be downloaded and uploaded to prod.  Or if using the dev to prod this is what will be uploaded to prod.",
-      "h": 2,
-      "i": "ixxpcd2rip-0b7df010-5dc7-11eb-ae45-310ec9c1f911",
-      "items": [
-
-      ],
-      "maxH": null,
-      "maxW": 3,
-      "minH": 1,
-      "minW": 3,
-      "moved": false,
-      "name": "Selected Custom Content",
-      "query": {
-       "categories": [
-
-       ],
-       "tags": [
-        "selectedcontent"
-       ]
-      },
-      "queryType": "warRoomFilter",
-      "static": false,
-      "type": "invTimeline",
-      "w": 3,
-      "x": 0,
-      "y": 2
-     },
-     {
-      "description": "This is the backup of the production custom content prior to uploading the selected bundle above.",
-      "h": 2,
-      "i": "ixxpcd2rip-2bc11000-5dc7-11eb-ae45-310ec9c1f911",
-      "items": [
-
-      ],
-      "maxH": null,
-      "maxW": 3,
-      "minH": 1,
-      "minW": 3,
-      "moved": false,
-      "name": "Production Backup of Custom Content",
-      "query": {
-       "categories": [
-
-       ],
-       "tags": [
-        "prodbackup"
-       ]
-      },
-      "queryType": "warRoomFilter",
-      "static": false,
-      "type": "invTimeline",
-      "w": 3,
-      "x": 0,
-      "y": 4
-     }
-    ],
-    "type": "custom"
-   },
-   {
-    "id": "workPlan",
-    "name": "Work Plan",
-    "type": "workPlan"
-   },
-   {
-    "id": "warRoom",
-    "name": "War Room",
-    "type": "warRoom"
-   },
-   {
-    "hidden": true,
-    "id": "evidenceBoard",
-    "name": "Evidence Board",
-    "type": "evidenceBoard"
-   },
-   {
-    "hidden": true,
-    "id": "relatedIncidents",
-    "name": "Related Incidents",
-    "type": "relatedIncidents"
-   },
-   {
-    "hidden": true,
-    "id": "canvas",
-    "name": "Canvas",
-    "type": "canvas"
-   }
-  ]
- },
- "edit": {
-  "sections": [
-   {
-    "description": "",
-    "fields": [
-     {
-      "fieldId": "incident_name",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_details",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_type",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_owner",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_severity",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_occurred",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_reminder",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_labels",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_roles",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_playbookid",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_attachment",
-      "isVisible": true
-     }
-    ],
-    "isVisible": true,
-    "name": "Basic Information",
-    "query": null,
-    "queryType": "",
-    "readOnly": false,
-    "type": ""
-   }
-  ]
- },
- "group": "incident",
- "id": "XSOAR Dev to Prod",
- "mobile": {
-  "sections": [
-   {
-    "description": "",
-    "fields": [
-     {
-      "fieldId": "incident_type",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_name",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_details",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_severity",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_dbotstatus",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_owner",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_roles",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_playbookid",
-      "isVisible": true
-     }
-    ],
-    "isVisible": true,
-    "name": "Basic Information",
-    "query": null,
-    "queryType": "",
-    "readOnly": false,
-    "type": ""
-   },
-   {
-    "description": "",
-    "fields": [
-     {
-      "fieldId": "incident_dbotcreated",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_occurred",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_dbotduedate",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_dbotmodified",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_dbottotaltime",
-      "isVisible": true
-     }
-    ],
-    "isVisible": true,
-    "name": "Timeline Information",
-    "query": null,
-    "queryType": "",
-    "readOnly": false,
-    "type": ""
-   },
-   {
-    "description": "",
-    "fields": [
-     {
-      "fieldId": "incident_labels",
-      "isVisible": true
-     }
-    ],
-    "isVisible": true,
-    "name": "Labels",
-    "query": null,
-    "queryType": "",
-    "readOnly": true,
-    "type": "labels"
-   }
-  ]
- },
- "name": "XSOAR Dev to Prod",
- "quickView": {
-  "sections": [
-   {
-    "description": "",
-    "fields": [
-     {
-      "fieldId": "incident_type",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_name",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_details",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_severity",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_dbotstatus",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_owner",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_roles",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_playbookid",
-      "isVisible": true
-     }
-    ],
-    "isVisible": true,
-    "name": "Basic Information",
-    "query": null,
-    "queryType": "",
-    "readOnly": false,
-    "type": ""
-   },
-   {
-    "description": "",
-    "fields": [
-     {
-      "fieldId": "incident_dbotcreated",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_occurred",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_dbotduedate",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_dbotmodified",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_dbottotaltime",
-      "isVisible": true
-     }
-    ],
-    "isVisible": true,
-    "name": "Timeline Information",
-    "query": null,
-    "queryType": "",
-    "readOnly": false,
-    "type": ""
-   },
-   {
-    "description": "",
-    "fields": [
-     {
-      "fieldId": "incident_labels",
-      "isVisible": true
-     }
-    ],
-    "isVisible": true,
-    "name": "Labels",
-    "query": null,
-    "queryType": "",
-    "readOnly": true,
-    "type": "labels"
-   }
-  ]
- },
- "system": false,
- "version": -1,
- "fromVersion": "6.0.0",
- "description": "XSOAR Simple Dev to Prod layout"
+    "close": {
+        "sections": [
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "incident_closereason",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_closenotes",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Basic Information",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            }
+        ]
+    },
+    "detailsV2": {
+        "tabs": [
+            {
+                "id": "summary",
+                "name": "Legacy Summary",
+                "type": "summary"
+            },
+            {
+                "id": "caseinfoid",
+                "name": "Incident Info",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "severity",
+                                "height": 22,
+                                "id": "incident-severity-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "type",
+                                "height": 22,
+                                "id": "incident-type-field",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "owner",
+                                "height": 22,
+                                "id": "incident-owner-field",
+                                "index": 2,
+                                "listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "roles",
+                                "height": 22,
+                                "id": "73a95920-a6ae-11ea-ae9d-8553407179ff",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "dbotcreated",
+                                "height": 22,
+                                "id": "incident-created-field",
+                                "index": 4,
+                                "listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "occurred",
+                                "height": 22,
+                                "id": "incident-occurred-field",
+                                "index": 5,
+                                "listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "dbotmodified",
+                                "height": 22,
+                                "id": "incident-modified-field",
+                                "index": 7,
+                                "listId": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "dbotclosed",
+                                "height": 22,
+                                "id": "eda146a0-a1ba-11ea-8efe-d92f013a0581",
+                                "index": 8,
+                                "listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "dbottotaltime",
+                                "height": 22,
+                                "id": "c57778a0-a5e0-11ea-beb5-2996637e1d9e",
+                                "index": 9,
+                                "listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "dbotduedate",
+                                "height": 22,
+                                "id": "incident-dueDate-field",
+                                "index": 10,
+                                "listId": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Case Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "caseinfoid-7717e580-9bed-11e9-9a3f-8b4b2158e260",
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Team Members",
+                        "static": false,
+                        "type": "team",
+                        "w": 1,
+                        "x": 0,
+                        "y": 4
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-88e6bf70-a0b1-11e9-b27f-13ae1773d289",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotclosed",
+                                "height": 22,
+                                "id": "incident-dbotClosed-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "closereason",
+                                "height": 22,
+                                "id": "incident-closeReason-field",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "closenotes",
+                                "height": 44,
+                                "id": "incident-closeNotes-field",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "closinguserid",
+                                "height": 22,
+                                "id": "85c48b10-a1be-11ea-8efe-d92f013a0581",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Closing Information",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 4
+                    },
+                    {
+                        "description": "**Reminder**: Please ensure to install any required Marketplace Packs on the production server as well! Customizations to OOTB Incident types, configuration, etc, should be applied after uploading the custom content.\n\nDev to Prod tab has the content bundles for this run.",
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "endCol": 4,
+                                "fieldId": "xsoardevtoprodmethod",
+                                "height": 22,
+                                "id": "7b9c34e0-5dc4-11eb-8940-ff9baa520e4a",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "xsoardevinstancename",
+                                "height": 22,
+                                "id": "76d955a0-5dc4-11eb-8940-ff9baa520e4a",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "xsoarprodinstancename",
+                                "height": 22,
+                                "id": "7f1fdd60-5dc4-11eb-8940-ff9baa520e4a",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "playbookid",
+                                "height": 22,
+                                "id": "incident-playbookId-field",
+                                "index": 3,
+                                "listId": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 2,
+                        "minH": 1,
+                        "minW": 2,
+                        "moved": false,
+                        "name": "XSOAR Dev to Prod",
+                        "static": false,
+                        "w": 2,
+                        "x": 1,
+                        "y": 0
+                    },
+                    {
+                        "h": 2,
+                        "i": "caseinfoid-f9dd0ce0-60b6-11eb-a207-edb36f37e8f5",
+                        "items": [],
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Work Plan",
+                        "static": false,
+                        "type": "workplan",
+                        "w": 1,
+                        "x": 0,
+                        "y": 2
+                    },
+                    {
+                        "h": 2,
+                        "i": "caseinfoid-083a1d00-60b7-11eb-a207-edb36f37e8f5",
+                        "items": [],
+                        "maxH": null,
+                        "maxW": 2,
+                        "minH": 1,
+                        "minW": 2,
+                        "moved": false,
+                        "name": "Notes",
+                        "static": false,
+                        "type": "notes",
+                        "w": 2,
+                        "x": 1,
+                        "y": 2
+                    },
+                    {
+                        "description": "Quick view of content bundles from this run, see the Dev to Prod tab for more information.",
+                        "h": 2,
+                        "i": "caseinfoid-d22b0b10-60b7-11eb-a207-edb36f37e8f5",
+                        "items": [],
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Content Bundles",
+                        "query": {
+                            "tags": [
+                                "devcontent",
+                                "prodbackup",
+                                "selectedcontent"
+                            ]
+                        },
+                        "queryType": "warRoomFilter",
+                        "static": false,
+                        "type": "invTimeline",
+                        "w": 1,
+                        "x": 2,
+                        "y": 4
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "hidden": false,
+                "id": "ixxpcd2rip",
+                "name": "Dev to Prod ",
+                "sections": [
+                    {
+                        "description": "The downloaded dev custom content bundle",
+                        "h": 2,
+                        "i": "ixxpcd2rip-fcbf10e0-5dc6-11eb-ae45-310ec9c1f911",
+                        "items": [],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 3,
+                        "moved": false,
+                        "name": "Dev Content Bundle",
+                        "query": {
+                            "categories": [],
+                            "tags": [
+                                "devcontent"
+                            ]
+                        },
+                        "queryType": "warRoomFilter",
+                        "static": false,
+                        "type": "invTimeline",
+                        "w": 3,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "description": "The selected custom content bundle, this can be downloaded and uploaded to prod.  Or if using the dev to prod this is what will be uploaded to prod.",
+                        "h": 2,
+                        "i": "ixxpcd2rip-0b7df010-5dc7-11eb-ae45-310ec9c1f911",
+                        "items": [],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 3,
+                        "moved": false,
+                        "name": "Selected Custom Content",
+                        "query": {
+                            "categories": [],
+                            "tags": [
+                                "selectedcontent"
+                            ]
+                        },
+                        "queryType": "warRoomFilter",
+                        "static": false,
+                        "type": "invTimeline",
+                        "w": 3,
+                        "x": 0,
+                        "y": 2
+                    },
+                    {
+                        "description": "This is the backup of the production custom content prior to uploading the selected bundle above.",
+                        "h": 2,
+                        "i": "ixxpcd2rip-2bc11000-5dc7-11eb-ae45-310ec9c1f911",
+                        "items": [],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 3,
+                        "moved": false,
+                        "name": "Production Backup of Custom Content",
+                        "query": {
+                            "categories": [],
+                            "tags": [
+                                "prodbackup"
+                            ]
+                        },
+                        "queryType": "warRoomFilter",
+                        "static": false,
+                        "type": "invTimeline",
+                        "w": 3,
+                        "x": 0,
+                        "y": 4
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "id": "workPlan",
+                "name": "Work Plan",
+                "type": "workPlan"
+            },
+            {
+                "id": "warRoom",
+                "name": "War Room",
+                "type": "warRoom"
+            },
+            {
+                "hidden": true,
+                "id": "evidenceBoard",
+                "name": "Evidence Board",
+                "type": "evidenceBoard"
+            },
+            {
+                "hidden": true,
+                "id": "relatedIncidents",
+                "name": "Related Incidents",
+                "type": "relatedIncidents"
+            },
+            {
+                "hidden": true,
+                "id": "canvas",
+                "name": "Canvas",
+                "type": "canvas"
+            }
+        ]
+    },
+    "edit": {
+        "sections": [
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "incident_name",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_details",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_type",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_owner",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_severity",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_occurred",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_reminder",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_labels",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_roles",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_playbookid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_attachment",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Basic Information",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            }
+        ]
+    },
+    "group": "incident",
+    "id": "XSOAR Dev to Prod",
+    "mobile": {
+        "sections": [
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "incident_type",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_name",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_details",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_severity",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_dbotstatus",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_owner",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_roles",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_playbookid",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Basic Information",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            },
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "incident_dbotcreated",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_occurred",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_dbotduedate",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_dbotmodified",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_dbottotaltime",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Timeline Information",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            },
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "incident_labels",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Labels",
+                "query": null,
+                "queryType": "",
+                "readOnly": true,
+                "type": "labels"
+            }
+        ]
+    },
+    "name": "XSOAR Dev to Prod",
+    "quickView": {
+        "sections": [
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "incident_type",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_name",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_details",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_severity",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_dbotstatus",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_owner",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_roles",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_playbookid",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Basic Information",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            },
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "incident_dbotcreated",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_occurred",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_dbotduedate",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_dbotmodified",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_dbottotaltime",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Timeline Information",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            },
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "incident_labels",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Labels",
+                "query": null,
+                "queryType": "",
+                "readOnly": true,
+                "type": "labels"
+            }
+        ]
+    },
+    "system": false,
+    "version": -1,
+    "fromVersion": "6.0.0",
+    "description": "XSOAR Simple Dev to Prod layout",
+    "marketplaces": [
+        "xsoar"
+    ]
 }

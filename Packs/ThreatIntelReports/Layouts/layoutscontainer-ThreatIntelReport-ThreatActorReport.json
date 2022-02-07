@@ -683,5 +683,8 @@
     "system": false,
     "version": -1,
     "fromVersion": "6.5.0",
-    "description": "A report specifically made dor Threat Actors with additional sections including meta data about the actor"
+    "description": "A report specifically made dor Threat Actors with additional sections including meta data about the actor",
+    "marketplaces": [
+        "xsoar"
+    ]
 }

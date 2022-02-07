@@ -501,5 +501,8 @@
                 "type": "canvas"
             }
         ]
-    }
-  }
+    },
+    "marketplaces": [
+        "xsoar"
+    ]
+}

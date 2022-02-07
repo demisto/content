@@ -607,5 +607,8 @@
                 "queryType": ""
             }
         ]
-    }
+    },
+    "marketplaces": [
+        "xsoar"
+    ]
 }

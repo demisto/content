@@ -523,5 +523,8 @@
                 "queryType": ""
             }
         ]
-    }
- }
+    },
+    "marketplaces": [
+        "xsoar"
+    ]
+}

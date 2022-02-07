@@ -715,7 +715,7 @@
                         "y": 7
                     },
                     {
-                        "description": "Not all linked incidents may actually be related to the phishing campaign, and not all related incidents may be linked. This behavior customized via configuration of the Detect \u0026 Manage Phishing Campaigns playbook, or changed by the user through the Campaign Management tab under the Incident Actions section.",
+                        "description": "Not all linked incidents may actually be related to the phishing campaign, and not all related incidents may be linked. This behavior customized via configuration of the Detect & Manage Phishing Campaigns playbook, or changed by the user through the Campaign Management tab under the Incident Actions section.",
                         "displayType": "ROW",
                         "h": 1,
                         "hideName": false,
@@ -769,5 +769,8 @@
     "system": true,
     "version": -1,
     "fromVersion": "6.0.0",
-    "description": ""
+    "description": "",
+    "marketplaces": [
+        "xsoar"
+    ]
 }

@@ -390,5 +390,8 @@
     "system": false,
     "version": -1,
     "fromVersion": "6.0.0",
-    "description": "Grafana alerts default layout"
+    "description": "Grafana alerts default layout",
+    "marketplaces": [
+        "xsoar"
+    ]
 }

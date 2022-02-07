@@ -451,5 +451,8 @@
     "system": false,
     "version": -1,
     "fromVersion": "6.5.0",
-    "description": "A basic template for an Executive brief or any kind of a generic report"
+    "description": "A basic template for an Executive brief or any kind of a generic report",
+    "marketplaces": [
+        "xsoar"
+    ]
 }

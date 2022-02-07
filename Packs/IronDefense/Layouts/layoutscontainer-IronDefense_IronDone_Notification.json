@@ -495,5 +495,8 @@
                 "queryType": ""
             }
         ]
-    }
+    },
+    "marketplaces": [
+        "xsoar"
+    ]
 }

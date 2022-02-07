@@ -429,5 +429,8 @@
     "system": false,
     "version": -1,
     "fromVersion": "6.0.0",
-    "description": "The Azure Active Directory Identity Protection Layout"
+    "description": "The Azure Active Directory Identity Protection Layout",
+    "marketplaces": [
+        "xsoar"
+    ]
 }

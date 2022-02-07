@@ -1355,7 +1355,7 @@
                     }
                 ],
                 "isVisible": true,
-                "name": "Timeline \u0026 SLA",
+                "name": "Timeline & SLA",
                 "query": null,
                 "queryType": "",
                 "readOnly": false,
@@ -1498,5 +1498,8 @@
     "system": true,
     "version": -1,
     "fromVersion": "6.0.0",
-    "description": ""
+    "description": "",
+    "marketplaces": [
+        "xsoar"
+    ]
 }

@@ -1,897 +1,900 @@
 {
-	"description": "",
-	"detailsV2": {
-		"tabs": [
-			{
-				"id": "summary",
-				"name": "Legacy Summary",
-				"type": "summary"
-			},
-			{
-				"id": "caseinfoid",
-				"name": "Incident Info",
-				"sections": [
-					{
-						"displayType": "ROW",
-						"h": 2,
-						"i": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
-						"isVisible": true,
-						"items": [
-							{
-								"endCol": 2,
-								"fieldId": "type",
-								"height": 22,
-								"id": "incident-type-field",
-								"index": 0,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "severity",
-								"height": 22,
-								"id": "incident-severity-field",
-								"index": 1,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "owner",
-								"height": 22,
-								"id": "incident-owner-field",
-								"index": 2,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "dbotsource",
-								"height": 22,
-								"id": "incident-source-field",
-								"index": 3,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "sourcebrand",
-								"height": 22,
-								"id": "incident-sourceBrand-field",
-								"index": 4,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "sourceinstance",
-								"height": 22,
-								"id": "incident-sourceInstance-field",
-								"index": 5,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "playbookid",
-								"height": 22,
-								"id": "incident-playbookId-field",
-								"index": 6,
-								"sectionItemType": "field",
-								"startCol": 0
-							}
-						],
-						"name": "Case Details",
-						"w": 1,
-						"x": 0,
-						"y": 0
-					},
-					{
-						"h": 2,
-						"i": "caseinfoid-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
-						"name": "Notes",
-						"type": "notes",
-						"w": 1,
-						"x": 2,
-						"y": 0
-					},
-					{
-						"displayType": "ROW",
-						"h": 2,
-						"i": "caseinfoid-6aabad20-98b1-11e9-97d7-ed26ef9e46c8",
-						"name": "Work Plan",
-						"type": "workplan",
-						"w": 1,
-						"x": 1,
-						"y": 0
-					},
-					{
-						"displayType": "ROW",
-						"h": 2,
-						"i": "caseinfoid-770ec200-98b1-11e9-97d7-ed26ef9e46c8",
-						"isVisible": true,
-						"name": "Linked Incidents",
-						"type": "linkedIncidents",
-						"w": 1,
-						"x": 1,
-						"y": 6
-					},
-					{
-						"displayType": "ROW",
-						"h": 2,
-						"i": "caseinfoid-842632c0-98b1-11e9-97d7-ed26ef9e46c8",
-						"name": "Child Incidents",
-						"type": "childInv",
-						"w": 1,
-						"x": 2,
-						"y": 4
-					},
-					{
-						"displayType": "ROW",
-						"h": 2,
-						"i": "caseinfoid-4a31afa0-98ba-11e9-a519-93a53c759fe0",
-						"name": "Evidence",
-						"type": "evidence",
-						"w": 1,
-						"x": 2,
-						"y": 2
-					},
-					{
-						"displayType": "ROW",
-						"h": 2,
-						"hideName": false,
-						"i": "caseinfoid-7717e580-9bed-11e9-9a3f-8b4b2158e260",
-						"name": "Team Members",
-						"type": "team",
-						"w": 1,
-						"x": 2,
-						"y": 6
-					},
-					{
-						"displayType": "ROW",
-						"h": 2,
-						"i": "caseinfoid-7ce69dd0-a07f-11e9-936c-5395a1acf11e",
-						"name": "Indicators",
-						"query": "",
-						"queryType": "input",
-						"type": "indicators",
-						"w": 2,
-						"x": 0,
-						"y": 4
-					},
-					{
-						"displayType": "CARD",
-						"h": 2,
-						"i": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
-						"items": [
-							{
-								"endCol": 1,
-								"fieldId": "occurred",
-								"height": 22,
-								"id": "incident-occurred-field",
-								"index": 0,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 1,
-								"fieldId": "dbotmodified",
-								"height": 22,
-								"id": "incident-modified-field",
-								"index": 1,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "dbotduedate",
-								"height": 22,
-								"id": "incident-dueDate-field",
-								"index": 2,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "dbotcreated",
-								"height": 22,
-								"id": "incident-created-field",
-								"index": 0,
-								"sectionItemType": "field",
-								"startCol": 1
-							},
-							{
-								"endCol": 2,
-								"fieldId": "dbotclosed",
-								"height": 22,
-								"id": "incident-closed-field",
-								"index": 1,
-								"sectionItemType": "field",
-								"startCol": 1
-							}
-						],
-						"name": "Timeline Information",
-						"w": 1,
-						"x": 0,
-						"y": 2
-					},
-					{
-						"displayType": "ROW",
-						"h": 2,
-						"i": "caseinfoid-88e6bf70-a0b1-11e9-b27f-13ae1773d289",
-						"isVisible": true,
-						"items": [
-							{
-								"endCol": 2,
-								"fieldId": "dbotclosed",
-								"height": 22,
-								"id": "incident-dbotClosed-field",
-								"index": 0,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "closereason",
-								"height": 22,
-								"id": "incident-closeReason-field",
-								"index": 1,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "closenotes",
-								"height": 22,
-								"id": "incident-closeNotes-field",
-								"index": 2,
-								"sectionItemType": "field",
-								"startCol": 0
-							}
-						],
-						"name": "Closing Information",
-						"w": 1,
-						"x": 0,
-						"y": 6
-					},
-					{
-						"displayType": "CARD",
-						"h": 2,
-						"i": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
-						"isVisible": true,
-						"items": [
-							{
-								"endCol": 2,
-								"fieldId": "details",
-								"height": 22,
-								"id": "incident-details-field",
-								"index": 0,
-								"sectionItemType": "field",
-								"startCol": 0
-							}
-						],
-						"name": "Investigation Data",
-						"w": 1,
-						"x": 1,
-						"y": 2
-					}
-				],
-				"type": "custom"
-			},
-			{
-				"hidden": false,
-				"id": "frfsyyl2yp",
-				"name": "PR Analysis Details",
-				"sections": [
-					{
-						"displayType": "ROW",
-						"h": 2,
-						"hideName": false,
-						"i": "frfsyyl2yp-383385a0-9848-11eb-a5a2-4bde358ac351",
-						"items": [
-							{
-								"endCol": 2,
-								"fieldId": "devsecopscommitid",
-								"height": 22,
-								"id": "6eaba7b0-9849-11eb-a5a2-4bde358ac351",
-								"index": 0,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "devsecopscommittreeid",
-								"height": 22,
-								"id": "79621e00-9849-11eb-a5a2-4bde358ac351",
-								"index": 1,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "devsecopscommitmessage",
-								"height": 22,
-								"id": "b63fb8b0-da11-11ea-af66-fb6839b983eb",
-								"index": 2,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "devsecopscommittimestamp",
-								"height": 22,
-								"id": "be2de740-da11-11ea-af66-fb6839b983eb",
-								"index": 3,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "devsecopscommiturl",
-								"height": 22,
-								"id": "1c2fc2a0-da12-11ea-af66-fb6839b983eb",
-								"index": 4,
-								"sectionItemType": "field",
-								"startCol": 0
-							}
-						],
-						"maxW": 3,
-						"minH": 1,
-						"minW": 1,
-						"moved": false,
-						"name": "Head Commit Details",
-						"static": false,
-						"w": 1,
-						"x": 0,
-						"y": 0
-					},
-					{
-						"displayType": "ROW",
-						"h": 2,
-						"hideName": false,
-						"i": "frfsyyl2yp-gipvi5kljs-9e3516c0-da11-11ea-af66-fb6839b983eb",
-						"items": [
-							{
-								"endCol": 2,
-								"fieldId": "devsecopsrepositoryid",
-								"height": 22,
-								"id": "4583bf30-da12-11ea-af66-fb6839b983eb",
-								"index": 0,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "devsecopsrepositoryname",
-								"height": 22,
-								"id": "46d879c0-da12-11ea-af66-fb6839b983eb",
-								"index": 1,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "devsecopsrepositoryorganization",
-								"height": 22,
-								"id": "48b1a690-da12-11ea-af66-fb6839b983eb",
-								"index": 2,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "devsecopsrepositoryurl",
-								"height": 22,
-								"id": "49cc1740-da12-11ea-af66-fb6839b983eb",
-								"index": 3,
-								"sectionItemType": "field",
-								"startCol": 0
-							}
-						],
-						"maxW": 3,
-						"minH": 1,
-						"minW": 1,
-						"moved": false,
-						"name": "Repository Details",
-						"static": false,
-						"w": 1,
-						"x": 1,
-						"y": 0
-					},
-					{
-						"displayType": "ROW",
-						"h": 2,
-						"hideName": false,
-						"i": "frfsyyl2yp-gipvi5kljs-9654eee0-daf6-11ea-83fa-a10dd0e6f548",
-						"items": [
-							{
-								"endCol": 2,
-								"fieldId": "devsecopslgtmanalysisid",
-								"height": 22,
-								"id": "a2fbc380-daf6-11ea-83fa-a10dd0e6f548",
-								"index": 0,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "devsecopslgtmanalysisresultsurl",
-								"height": 22,
-								"id": "aa308d20-daf6-11ea-83fa-a10dd0e6f548",
-								"index": 1,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "devsecopslgtmanalysislogsurl",
-								"height": 22,
-								"id": "ad23dc80-daf6-11ea-83fa-a10dd0e6f548",
-								"index": 2,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "devsecopslgtmanalysisprojectid",
-								"height": 22,
-								"id": "aedbc5b0-daf6-11ea-83fa-a10dd0e6f548",
-								"index": 3,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "devsecopslgtmanalysisstatus",
-								"height": 22,
-								"id": "b0a31830-daf6-11ea-83fa-a10dd0e6f548",
-								"index": 4,
-								"sectionItemType": "field",
-								"startCol": 0
-							}
-						],
-						"maxW": 3,
-						"minH": 1,
-						"minW": 1,
-						"moved": false,
-						"name": "SAST Analysis Details",
-						"static": false,
-						"w": 1,
-						"x": 2,
-						"y": 0
-					},
-					{
-						"h": 2,
-						"i": "frfsyyl2yp-gipvi5kljs-99a50d90-dba1-11ea-95db-53738a95c2dc",
-						"items": [],
-						"maxW": 3,
-						"minH": 1,
-						"minW": 1,
-						"moved": false,
-						"name": "Linked Tasks",
-						"static": false,
-						"type": "linkedIncidents",
-						"w": 1,
-						"x": 1,
-						"y": 2
-					},
-					{
-						"h": 2,
-						"i": "frfsyyl2yp-gipvi5kljs-d96d2d90-dba1-11ea-95db-53738a95c2dc",
-						"items": [],
-						"maxW": 3,
-						"minH": 1,
-						"minW": 1,
-						"moved": false,
-						"name": "LGTM Alerts",
-						"query": "type:\"SAST Alert\"",
-						"queryType": "input",
-						"static": false,
-						"type": "indicators",
-						"w": 1,
-						"x": 2,
-						"y": 2
-					},
-					{
-						"displayType": "ROW",
-						"h": 7,
-						"hideName": false,
-						"i": "frfsyyl2yp-gipvi5kljs-5703f120-f0e3-11ea-91b8-790717e4f1e9",
-						"items": [
-							{
-								"dropEffect": "move",
-								"endCol": 2,
-								"fieldId": "devsecopsprnumber",
-								"height": 22,
-								"id": "2bbefd30-f0e7-11ea-bcd4-6b91bf85b9a8",
-								"index": 0,
-								"listId": "gipvi5kljs-5703f120-f0e3-11ea-91b8-790717e4f1e9",
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "devsecopsprtitle",
-								"height": 22,
-								"id": "3693a9e0-f0e7-11ea-bcd4-6b91bf85b9a8",
-								"index": 1,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "devsecopsprinstallationid",
-								"height": 22,
-								"id": "27619680-f0e7-11ea-bcd4-6b91bf85b9a8",
-								"index": 2,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "devsecopsprbranch",
-								"height": 22,
-								"id": "e8dbc410-f0f2-11ea-9fc0-e96a067b7e80",
-								"index": 3,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "devsecopspraction",
-								"height": 22,
-								"id": "4f754ae0-f0e7-11ea-bcd4-6b91bf85b9a8",
-								"index": 4,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"dropEffect": "move",
-								"endCol": 2,
-								"fieldId": "devsecopsprbody",
-								"height": 22,
-								"id": "0f338e10-f0e7-11ea-bcd4-6b91bf85b9a8",
-								"index": 5,
-								"listId": "gipvi5kljs-5703f120-f0e3-11ea-91b8-790717e4f1e9",
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"dropEffect": "move",
-								"endCol": 2,
-								"fieldId": "devsecopsprheadid",
-								"height": 22,
-								"id": "1efd9bb0-f0e7-11ea-bcd4-6b91bf85b9a8",
-								"index": 6,
-								"listId": "gipvi5kljs-5703f120-f0e3-11ea-91b8-790717e4f1e9",
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"dropEffect": "move",
-								"endCol": 2,
-								"fieldId": "devsecopsprbaselabel",
-								"height": 22,
-								"id": "0cb0b3c0-f0e7-11ea-bcd4-6b91bf85b9a8",
-								"index": 7,
-								"listId": "gipvi5kljs-5703f120-f0e3-11ea-91b8-790717e4f1e9",
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "devsecopsprheadcommit",
-								"height": 22,
-								"id": "f1764d50-f0f4-11ea-8623-bb926d409d8d",
-								"index": 8,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"dropEffect": "move",
-								"endCol": 2,
-								"fieldId": "devsecopsprcommits",
-								"height": 22,
-								"id": "184b4880-f0e7-11ea-bcd4-6b91bf85b9a8",
-								"index": 9,
-								"listId": "gipvi5kljs-5703f120-f0e3-11ea-91b8-790717e4f1e9",
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"dropEffect": "move",
-								"endCol": 2,
-								"fieldId": "devsecopspradditions",
-								"height": 22,
-								"id": "098145c0-f0e7-11ea-bcd4-6b91bf85b9a8",
-								"index": 11,
-								"listId": "gipvi5kljs-5703f120-f0e3-11ea-91b8-790717e4f1e9",
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"dropEffect": "move",
-								"endCol": 2,
-								"fieldId": "devsecopsprdeletions",
-								"height": 22,
-								"id": "1dceb8a0-f0e7-11ea-bcd4-6b91bf85b9a8",
-								"index": 12,
-								"listId": "gipvi5kljs-5703f120-f0e3-11ea-91b8-790717e4f1e9",
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"dropEffect": "move",
-								"endCol": 2,
-								"fieldId": "devsecopsprstate",
-								"height": 22,
-								"id": "34adf9f0-f0e7-11ea-bcd4-6b91bf85b9a8",
-								"index": 13,
-								"listId": "gipvi5kljs-5703f120-f0e3-11ea-91b8-790717e4f1e9",
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"dropEffect": "move",
-								"endCol": 2,
-								"fieldId": "devsecopsprmergeablestate",
-								"height": 22,
-								"id": "29dd6bf0-f0e7-11ea-bcd4-6b91bf85b9a8",
-								"index": 14,
-								"listId": "gipvi5kljs-5703f120-f0e3-11ea-91b8-790717e4f1e9",
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"dropEffect": "move",
-								"endCol": 2,
-								"fieldId": "devsecopsprcreatedat",
-								"height": 22,
-								"id": "1c313540-f0e7-11ea-bcd4-6b91bf85b9a8",
-								"index": 15,
-								"listId": "gipvi5kljs-5703f120-f0e3-11ea-91b8-790717e4f1e9",
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"dropEffect": "move",
-								"endCol": 2,
-								"fieldId": "devsecopsprpushedat",
-								"height": 22,
-								"id": "2f7faeb0-f0e7-11ea-bcd4-6b91bf85b9a8",
-								"index": 16,
-								"listId": "gipvi5kljs-5703f120-f0e3-11ea-91b8-790717e4f1e9",
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"dropEffect": "move",
-								"endCol": 2,
-								"fieldId": "devsecopsprclosedat",
-								"height": 22,
-								"id": "14e97fe0-f0e7-11ea-bcd4-6b91bf85b9a8",
-								"index": 17,
-								"listId": "gipvi5kljs-5703f120-f0e3-11ea-91b8-790717e4f1e9",
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"dropEffect": "move",
-								"endCol": 2,
-								"fieldId": "devsecopsprupdatedat",
-								"height": 22,
-								"id": "399ccb30-f0e7-11ea-bcd4-6b91bf85b9a8",
-								"index": 18,
-								"listId": "gipvi5kljs-5703f120-f0e3-11ea-91b8-790717e4f1e9",
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"dropEffect": "move",
-								"endCol": 2,
-								"fieldId": "devsecopsprsize",
-								"height": 22,
-								"id": "32763260-f0e7-11ea-bcd4-6b91bf85b9a8",
-								"index": 19,
-								"listId": "gipvi5kljs-5703f120-f0e3-11ea-91b8-790717e4f1e9",
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"dropEffect": "move",
-								"endCol": 2,
-								"fieldId": "devsecopsprwatchers",
-								"height": 22,
-								"id": "3b491ba0-f0e7-11ea-bcd4-6b91bf85b9a8",
-								"index": 20,
-								"listId": "gipvi5kljs-5703f120-f0e3-11ea-91b8-790717e4f1e9",
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"dropEffect": "move",
-								"endCol": 2,
-								"fieldId": "devsecopsprassignees",
-								"height": 22,
-								"id": "0b9076b0-f0e7-11ea-bcd4-6b91bf85b9a8",
-								"index": 21,
-								"listId": "gipvi5kljs-5703f120-f0e3-11ea-91b8-790717e4f1e9",
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"dropEffect": "move",
-								"endCol": 2,
-								"fieldId": "devsecopsprbasesize",
-								"height": 22,
-								"id": "0e2419e0-f0e7-11ea-bcd4-6b91bf85b9a8",
-								"index": 22,
-								"listId": "gipvi5kljs-5703f120-f0e3-11ea-91b8-790717e4f1e9",
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "devsecopsprheadopenissues",
-								"height": 22,
-								"id": "216cee00-f0e7-11ea-bcd4-6b91bf85b9a8",
-								"index": 23,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "devsecopsprchangedfiles",
-								"height": 22,
-								"id": "1368d350-f0e7-11ea-bcd4-6b91bf85b9a8",
-								"index": 24,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "devsecopsprcomments",
-								"height": 22,
-								"id": "16009530-f0e7-11ea-bcd4-6b91bf85b9a8",
-								"index": 25,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "devsecopsprassignee",
-								"height": 22,
-								"id": "0a70fcf0-f0e7-11ea-bcd4-6b91bf85b9a8",
-								"index": 26,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"dropEffect": "move",
-								"endCol": 2,
-								"fieldId": "devsecopsprid",
-								"height": 22,
-								"id": "22a287d0-f0e7-11ea-bcd4-6b91bf85b9a8",
-								"index": 27,
-								"listId": "gipvi5kljs-5703f120-f0e3-11ea-91b8-790717e4f1e9",
-								"sectionItemType": "field",
-								"startCol": 0
-							}
-						],
-						"maxW": 3,
-						"minH": 1,
-						"minW": 1,
-						"moved": false,
-						"name": "PR Details",
-						"static": false,
-						"w": 1,
-						"x": 0,
-						"y": 2
-					},
-					{
-						"displayType": "ROW",
-						"h": 2,
-						"hideName": false,
-						"i": "frfsyyl2yp-gipvi5kljs-6f6518c0-f2aa-11ea-824d-21554a73fed5",
-						"items": [
-							{
-								"endCol": 2,
-								"fieldId": "devsecopsiacvulnerability",
-								"height": 22,
-								"id": "ee9a6780-f2aa-11ea-824d-21554a73fed5",
-								"index": 0,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "devsecopsiacvulnerabilityseverity",
-								"height": 22,
-								"id": "f04112a0-f2aa-11ea-824d-21554a73fed5",
-								"index": 1,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "devsecopsiacvulnerablefiles",
-								"height": 22,
-								"id": "f5bdcc00-f2aa-11ea-824d-21554a73fed5",
-								"index": 2,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "devsecopsiacvulnerabilitydescription",
-								"height": 22,
-								"id": "f859fab0-f2aa-11ea-824d-21554a73fed5",
-								"index": 3,
-								"sectionItemType": "field",
-								"startCol": 0
-							}
-						],
-						"maxW": 3,
-						"minH": 1,
-						"minW": 1,
-						"moved": false,
-						"name": "IaC Analysis Details",
-						"static": false,
-						"w": 1,
-						"x": 2,
-						"y": 4
-					},
-					{
-						"description": "",
-						"h": 2,
-						"i": "frfsyyl2yp-gipvi5kljs-0c5bbe90-f2ab-11ea-824d-21554a73fed5",
-						"items": [],
-						"maxW": 3,
-						"minH": 1,
-						"minW": 1,
-						"moved": false,
-						"name": "IaC Alerts",
-						"query": "type:\"IaC Vulnerability\"",
-						"queryType": "input",
-						"static": false,
-						"type": "indicators",
-						"w": 1,
-						"x": 2,
-						"y": 6
-					}
-				],
-				"type": "custom"
-			},
-			{
-				"id": "warRoom",
-				"name": "War Room",
-				"type": "warRoom"
-			},
-			{
-				"id": "workPlan",
-				"name": "Work Plan",
-				"type": "workPlan"
-			},
-			{
-				"id": "evidenceBoard",
-				"name": "Evidence Board",
-				"type": "evidenceBoard"
-			},
-			{
-				"id": "relatedIncidents",
-				"name": "Related Incidents",
-				"type": "relatedIncidents"
-			},
-			{
-				"id": "canvas",
-				"name": "Canvas",
-				"type": "canvas"
-			}
-		]
-	},
-	"group": "incident",
-	"id": "New Git PR",
-	"name": "New Git PR",
-	"fromVersion": "6.0.0",
-	"version": -1
+    "description": "",
+    "detailsV2": {
+        "tabs": [
+            {
+                "id": "summary",
+                "name": "Legacy Summary",
+                "type": "summary"
+            },
+            {
+                "id": "caseinfoid",
+                "name": "Incident Info",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "type",
+                                "height": 22,
+                                "id": "incident-type-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "severity",
+                                "height": 22,
+                                "id": "incident-severity-field",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "owner",
+                                "height": 22,
+                                "id": "incident-owner-field",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotsource",
+                                "height": 22,
+                                "id": "incident-source-field",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sourcebrand",
+                                "height": 22,
+                                "id": "incident-sourceBrand-field",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sourceinstance",
+                                "height": 22,
+                                "id": "incident-sourceInstance-field",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "playbookid",
+                                "height": 22,
+                                "id": "incident-playbookId-field",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "name": "Case Details",
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "h": 2,
+                        "i": "caseinfoid-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
+                        "name": "Notes",
+                        "type": "notes",
+                        "w": 1,
+                        "x": 2,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-6aabad20-98b1-11e9-97d7-ed26ef9e46c8",
+                        "name": "Work Plan",
+                        "type": "workplan",
+                        "w": 1,
+                        "x": 1,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-770ec200-98b1-11e9-97d7-ed26ef9e46c8",
+                        "isVisible": true,
+                        "name": "Linked Incidents",
+                        "type": "linkedIncidents",
+                        "w": 1,
+                        "x": 1,
+                        "y": 6
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-842632c0-98b1-11e9-97d7-ed26ef9e46c8",
+                        "name": "Child Incidents",
+                        "type": "childInv",
+                        "w": 1,
+                        "x": 2,
+                        "y": 4
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-4a31afa0-98ba-11e9-a519-93a53c759fe0",
+                        "name": "Evidence",
+                        "type": "evidence",
+                        "w": 1,
+                        "x": 2,
+                        "y": 2
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "caseinfoid-7717e580-9bed-11e9-9a3f-8b4b2158e260",
+                        "name": "Team Members",
+                        "type": "team",
+                        "w": 1,
+                        "x": 2,
+                        "y": 6
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-7ce69dd0-a07f-11e9-936c-5395a1acf11e",
+                        "name": "Indicators",
+                        "query": "",
+                        "queryType": "input",
+                        "type": "indicators",
+                        "w": 2,
+                        "x": 0,
+                        "y": 4
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "i": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
+                        "items": [
+                            {
+                                "endCol": 1,
+                                "fieldId": "occurred",
+                                "height": 22,
+                                "id": "incident-occurred-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 1,
+                                "fieldId": "dbotmodified",
+                                "height": 22,
+                                "id": "incident-modified-field",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotduedate",
+                                "height": 22,
+                                "id": "incident-dueDate-field",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotcreated",
+                                "height": 22,
+                                "id": "incident-created-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 1
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotclosed",
+                                "height": 22,
+                                "id": "incident-closed-field",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 1
+                            }
+                        ],
+                        "name": "Timeline Information",
+                        "w": 1,
+                        "x": 0,
+                        "y": 2
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-88e6bf70-a0b1-11e9-b27f-13ae1773d289",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotclosed",
+                                "height": 22,
+                                "id": "incident-dbotClosed-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "closereason",
+                                "height": 22,
+                                "id": "incident-closeReason-field",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "closenotes",
+                                "height": 22,
+                                "id": "incident-closeNotes-field",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "name": "Closing Information",
+                        "w": 1,
+                        "x": 0,
+                        "y": 6
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "i": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "details",
+                                "height": 22,
+                                "id": "incident-details-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "name": "Investigation Data",
+                        "w": 1,
+                        "x": 1,
+                        "y": 2
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "hidden": false,
+                "id": "frfsyyl2yp",
+                "name": "PR Analysis Details",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "frfsyyl2yp-383385a0-9848-11eb-a5a2-4bde358ac351",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "devsecopscommitid",
+                                "height": 22,
+                                "id": "6eaba7b0-9849-11eb-a5a2-4bde358ac351",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "devsecopscommittreeid",
+                                "height": 22,
+                                "id": "79621e00-9849-11eb-a5a2-4bde358ac351",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "devsecopscommitmessage",
+                                "height": 22,
+                                "id": "b63fb8b0-da11-11ea-af66-fb6839b983eb",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "devsecopscommittimestamp",
+                                "height": 22,
+                                "id": "be2de740-da11-11ea-af66-fb6839b983eb",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "devsecopscommiturl",
+                                "height": 22,
+                                "id": "1c2fc2a0-da12-11ea-af66-fb6839b983eb",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Head Commit Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "frfsyyl2yp-gipvi5kljs-9e3516c0-da11-11ea-af66-fb6839b983eb",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "devsecopsrepositoryid",
+                                "height": 22,
+                                "id": "4583bf30-da12-11ea-af66-fb6839b983eb",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "devsecopsrepositoryname",
+                                "height": 22,
+                                "id": "46d879c0-da12-11ea-af66-fb6839b983eb",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "devsecopsrepositoryorganization",
+                                "height": 22,
+                                "id": "48b1a690-da12-11ea-af66-fb6839b983eb",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "devsecopsrepositoryurl",
+                                "height": 22,
+                                "id": "49cc1740-da12-11ea-af66-fb6839b983eb",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Repository Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "frfsyyl2yp-gipvi5kljs-9654eee0-daf6-11ea-83fa-a10dd0e6f548",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "devsecopslgtmanalysisid",
+                                "height": 22,
+                                "id": "a2fbc380-daf6-11ea-83fa-a10dd0e6f548",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "devsecopslgtmanalysisresultsurl",
+                                "height": 22,
+                                "id": "aa308d20-daf6-11ea-83fa-a10dd0e6f548",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "devsecopslgtmanalysislogsurl",
+                                "height": 22,
+                                "id": "ad23dc80-daf6-11ea-83fa-a10dd0e6f548",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "devsecopslgtmanalysisprojectid",
+                                "height": 22,
+                                "id": "aedbc5b0-daf6-11ea-83fa-a10dd0e6f548",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "devsecopslgtmanalysisstatus",
+                                "height": 22,
+                                "id": "b0a31830-daf6-11ea-83fa-a10dd0e6f548",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "SAST Analysis Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 0
+                    },
+                    {
+                        "h": 2,
+                        "i": "frfsyyl2yp-gipvi5kljs-99a50d90-dba1-11ea-95db-53738a95c2dc",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Linked Tasks",
+                        "static": false,
+                        "type": "linkedIncidents",
+                        "w": 1,
+                        "x": 1,
+                        "y": 2
+                    },
+                    {
+                        "h": 2,
+                        "i": "frfsyyl2yp-gipvi5kljs-d96d2d90-dba1-11ea-95db-53738a95c2dc",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "LGTM Alerts",
+                        "query": "type:\"SAST Alert\"",
+                        "queryType": "input",
+                        "static": false,
+                        "type": "indicators",
+                        "w": 1,
+                        "x": 2,
+                        "y": 2
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 7,
+                        "hideName": false,
+                        "i": "frfsyyl2yp-gipvi5kljs-5703f120-f0e3-11ea-91b8-790717e4f1e9",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "devsecopsprnumber",
+                                "height": 22,
+                                "id": "2bbefd30-f0e7-11ea-bcd4-6b91bf85b9a8",
+                                "index": 0,
+                                "listId": "gipvi5kljs-5703f120-f0e3-11ea-91b8-790717e4f1e9",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "devsecopsprtitle",
+                                "height": 22,
+                                "id": "3693a9e0-f0e7-11ea-bcd4-6b91bf85b9a8",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "devsecopsprinstallationid",
+                                "height": 22,
+                                "id": "27619680-f0e7-11ea-bcd4-6b91bf85b9a8",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "devsecopsprbranch",
+                                "height": 22,
+                                "id": "e8dbc410-f0f2-11ea-9fc0-e96a067b7e80",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "devsecopspraction",
+                                "height": 22,
+                                "id": "4f754ae0-f0e7-11ea-bcd4-6b91bf85b9a8",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "devsecopsprbody",
+                                "height": 22,
+                                "id": "0f338e10-f0e7-11ea-bcd4-6b91bf85b9a8",
+                                "index": 5,
+                                "listId": "gipvi5kljs-5703f120-f0e3-11ea-91b8-790717e4f1e9",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "devsecopsprheadid",
+                                "height": 22,
+                                "id": "1efd9bb0-f0e7-11ea-bcd4-6b91bf85b9a8",
+                                "index": 6,
+                                "listId": "gipvi5kljs-5703f120-f0e3-11ea-91b8-790717e4f1e9",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "devsecopsprbaselabel",
+                                "height": 22,
+                                "id": "0cb0b3c0-f0e7-11ea-bcd4-6b91bf85b9a8",
+                                "index": 7,
+                                "listId": "gipvi5kljs-5703f120-f0e3-11ea-91b8-790717e4f1e9",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "devsecopsprheadcommit",
+                                "height": 22,
+                                "id": "f1764d50-f0f4-11ea-8623-bb926d409d8d",
+                                "index": 8,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "devsecopsprcommits",
+                                "height": 22,
+                                "id": "184b4880-f0e7-11ea-bcd4-6b91bf85b9a8",
+                                "index": 9,
+                                "listId": "gipvi5kljs-5703f120-f0e3-11ea-91b8-790717e4f1e9",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "devsecopspradditions",
+                                "height": 22,
+                                "id": "098145c0-f0e7-11ea-bcd4-6b91bf85b9a8",
+                                "index": 11,
+                                "listId": "gipvi5kljs-5703f120-f0e3-11ea-91b8-790717e4f1e9",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "devsecopsprdeletions",
+                                "height": 22,
+                                "id": "1dceb8a0-f0e7-11ea-bcd4-6b91bf85b9a8",
+                                "index": 12,
+                                "listId": "gipvi5kljs-5703f120-f0e3-11ea-91b8-790717e4f1e9",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "devsecopsprstate",
+                                "height": 22,
+                                "id": "34adf9f0-f0e7-11ea-bcd4-6b91bf85b9a8",
+                                "index": 13,
+                                "listId": "gipvi5kljs-5703f120-f0e3-11ea-91b8-790717e4f1e9",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "devsecopsprmergeablestate",
+                                "height": 22,
+                                "id": "29dd6bf0-f0e7-11ea-bcd4-6b91bf85b9a8",
+                                "index": 14,
+                                "listId": "gipvi5kljs-5703f120-f0e3-11ea-91b8-790717e4f1e9",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "devsecopsprcreatedat",
+                                "height": 22,
+                                "id": "1c313540-f0e7-11ea-bcd4-6b91bf85b9a8",
+                                "index": 15,
+                                "listId": "gipvi5kljs-5703f120-f0e3-11ea-91b8-790717e4f1e9",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "devsecopsprpushedat",
+                                "height": 22,
+                                "id": "2f7faeb0-f0e7-11ea-bcd4-6b91bf85b9a8",
+                                "index": 16,
+                                "listId": "gipvi5kljs-5703f120-f0e3-11ea-91b8-790717e4f1e9",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "devsecopsprclosedat",
+                                "height": 22,
+                                "id": "14e97fe0-f0e7-11ea-bcd4-6b91bf85b9a8",
+                                "index": 17,
+                                "listId": "gipvi5kljs-5703f120-f0e3-11ea-91b8-790717e4f1e9",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "devsecopsprupdatedat",
+                                "height": 22,
+                                "id": "399ccb30-f0e7-11ea-bcd4-6b91bf85b9a8",
+                                "index": 18,
+                                "listId": "gipvi5kljs-5703f120-f0e3-11ea-91b8-790717e4f1e9",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "devsecopsprsize",
+                                "height": 22,
+                                "id": "32763260-f0e7-11ea-bcd4-6b91bf85b9a8",
+                                "index": 19,
+                                "listId": "gipvi5kljs-5703f120-f0e3-11ea-91b8-790717e4f1e9",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "devsecopsprwatchers",
+                                "height": 22,
+                                "id": "3b491ba0-f0e7-11ea-bcd4-6b91bf85b9a8",
+                                "index": 20,
+                                "listId": "gipvi5kljs-5703f120-f0e3-11ea-91b8-790717e4f1e9",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "devsecopsprassignees",
+                                "height": 22,
+                                "id": "0b9076b0-f0e7-11ea-bcd4-6b91bf85b9a8",
+                                "index": 21,
+                                "listId": "gipvi5kljs-5703f120-f0e3-11ea-91b8-790717e4f1e9",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "devsecopsprbasesize",
+                                "height": 22,
+                                "id": "0e2419e0-f0e7-11ea-bcd4-6b91bf85b9a8",
+                                "index": 22,
+                                "listId": "gipvi5kljs-5703f120-f0e3-11ea-91b8-790717e4f1e9",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "devsecopsprheadopenissues",
+                                "height": 22,
+                                "id": "216cee00-f0e7-11ea-bcd4-6b91bf85b9a8",
+                                "index": 23,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "devsecopsprchangedfiles",
+                                "height": 22,
+                                "id": "1368d350-f0e7-11ea-bcd4-6b91bf85b9a8",
+                                "index": 24,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "devsecopsprcomments",
+                                "height": 22,
+                                "id": "16009530-f0e7-11ea-bcd4-6b91bf85b9a8",
+                                "index": 25,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "devsecopsprassignee",
+                                "height": 22,
+                                "id": "0a70fcf0-f0e7-11ea-bcd4-6b91bf85b9a8",
+                                "index": 26,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "devsecopsprid",
+                                "height": 22,
+                                "id": "22a287d0-f0e7-11ea-bcd4-6b91bf85b9a8",
+                                "index": 27,
+                                "listId": "gipvi5kljs-5703f120-f0e3-11ea-91b8-790717e4f1e9",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "PR Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 2
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "frfsyyl2yp-gipvi5kljs-6f6518c0-f2aa-11ea-824d-21554a73fed5",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "devsecopsiacvulnerability",
+                                "height": 22,
+                                "id": "ee9a6780-f2aa-11ea-824d-21554a73fed5",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "devsecopsiacvulnerabilityseverity",
+                                "height": 22,
+                                "id": "f04112a0-f2aa-11ea-824d-21554a73fed5",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "devsecopsiacvulnerablefiles",
+                                "height": 22,
+                                "id": "f5bdcc00-f2aa-11ea-824d-21554a73fed5",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "devsecopsiacvulnerabilitydescription",
+                                "height": 22,
+                                "id": "f859fab0-f2aa-11ea-824d-21554a73fed5",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "IaC Analysis Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 4
+                    },
+                    {
+                        "description": "",
+                        "h": 2,
+                        "i": "frfsyyl2yp-gipvi5kljs-0c5bbe90-f2ab-11ea-824d-21554a73fed5",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "IaC Alerts",
+                        "query": "type:\"IaC Vulnerability\"",
+                        "queryType": "input",
+                        "static": false,
+                        "type": "indicators",
+                        "w": 1,
+                        "x": 2,
+                        "y": 6
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "id": "warRoom",
+                "name": "War Room",
+                "type": "warRoom"
+            },
+            {
+                "id": "workPlan",
+                "name": "Work Plan",
+                "type": "workPlan"
+            },
+            {
+                "id": "evidenceBoard",
+                "name": "Evidence Board",
+                "type": "evidenceBoard"
+            },
+            {
+                "id": "relatedIncidents",
+                "name": "Related Incidents",
+                "type": "relatedIncidents"
+            },
+            {
+                "id": "canvas",
+                "name": "Canvas",
+                "type": "canvas"
+            }
+        ]
+    },
+    "group": "incident",
+    "id": "New Git PR",
+    "name": "New Git PR",
+    "fromVersion": "6.0.0",
+    "version": -1,
+    "marketplaces": [
+        "xsoar"
+    ]
 }

@@ -485,7 +485,7 @@
                                 "height": 44,
                                 "id": "47ba5a20-1a90-11eb-b073-b3d10be54f98",
                                 "index": 8,
-                                "name": "↻ Refresh Assets",
+                                "name": "\u21bb Refresh Assets",
                                 "scriptId": "ExpanseRefreshIssueAssets",
                                 "sectionItemType": "button",
                                 "startCol": 0
@@ -1072,5 +1072,8 @@
     "system": false,
     "version": -1,
     "fromVersion": "6.0.0",
-    "description": ""
+    "description": "",
+    "marketplaces": [
+        "xsoar"
+    ]
 }

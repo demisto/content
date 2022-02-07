@@ -1,458 +1,461 @@
 {
     "detailsV2": {
         "tabs": [
-			{
-				"id": "summary",
-				"name": "Legacy Summary",
-				"type": "summary"
-			},
-			{
-				"id": "caseinfoid",
-				"name": "Incident Info",
-				"sections": [
-					{
-						"displayType": "ROW",
-						"h": 2,
-						"i": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
-						"isVisible": true,
-						"items": [
-							{
-								"endCol": 2,
-								"fieldId": "owner",
-								"height": 22,
-								"id": "incident-owner-field",
-								"index": 0,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "dbotsource",
-								"height": 22,
-								"id": "incident-source-field",
-								"index": 1,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "type",
-								"height": 22,
-								"id": "incident-type-field",
-								"index": 1,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "sourcebrand",
-								"height": 22,
-								"id": "incident-sourceBrand-field",
-								"index": 2,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "sourceinstance",
-								"height": 22,
-								"id": "incident-sourceInstance-field",
-								"index": 3,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "severity",
-								"height": 22,
-								"id": "incident-severity-field",
-								"index": 5,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "playbookid",
-								"height": 22,
-								"id": "incident-playbookId-field",
-								"index": 6,
-								"sectionItemType": "field",
-								"startCol": 0
-							}
-						],
-						"maxW": 3,
-						"minH": 1,
-						"minW": 1,
-						"moved": false,
-						"name": "Case Details",
-						"static": false,
-						"w": 1,
-						"x": 0,
-						"y": 0
-					},
-					{
-						"displayType": "CARD",
-						"h": 2,
-						"i": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
-						"items": [
-							{
-								"endCol": 1,
-								"fieldId": "occurred",
-								"height": 22,
-								"id": "incident-occurred-field",
-								"index": 0,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 1,
-								"fieldId": "dbotmodified",
-								"height": 22,
-								"id": "incident-modified-field",
-								"index": 1,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "dbotduedate",
-								"height": 22,
-								"id": "incident-dueDate-field",
-								"index": 2,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "dbotcreated",
-								"height": 22,
-								"id": "incident-created-field",
-								"index": 0,
-								"sectionItemType": "field",
-								"startCol": 1
-							},
-							{
-								"endCol": 2,
-								"fieldId": "dbotclosed",
-								"height": 22,
-								"id": "incident-closed-field",
-								"index": 1,
-								"sectionItemType": "field",
-								"startCol": 1
-							}
-						],
-						"maxW": 3,
-						"minH": 1,
-						"minW": 3,
-						"moved": false,
-						"name": "Timeline Information",
-						"static": false,
-						"w": 3,
-						"x": 0,
-						"y": 6
-					},
-					{
-						"displayType": "CARD",
-						"h": 2,
-						"hideName": false,
-						"i": "caseinfoid-2ec41170-454a-11eb-ba5e-05d9566e6d05",
-						"items": [
-							{
-								"dropEffect": "move",
-								"endCol": 2,
-								"fieldId": "rubrikpolarisobjectname",
-								"height": 53,
-								"id": "fca80bf0-6fd9-11eb-befe-85443460d735",
-								"index": 0,
-								"listId": "caseinfoid-2ec41170-454a-11eb-ba5e-05d9566e6d05",
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "rubrikpolarisobjectid",
-								"height": 53,
-								"id": "0445a980-6fda-11eb-befe-85443460d735",
-								"index": 1,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "rubrikpolariscdmclustername",
-								"height": 53,
-								"id": "056ff8b0-6fda-11eb-befe-85443460d735",
-								"index": 2,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "rubrikpolarisobjecttype",
-								"height": 53,
-								"id": "181f24e0-6fda-11eb-befe-85443460d735",
-								"index": 2,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"dropEffect": "move",
-								"endCol": 4,
-								"fieldId": "rubrikcdmclusterid",
-								"height": 53,
-								"id": "62032d90-a44b-11eb-82ca-4d054531f5f7",
-								"index": 0,
-								"listId": "caseinfoid-2ec41170-454a-11eb-ba5e-05d9566e6d05",
-								"sectionItemType": "field",
-								"startCol": 2
-							},
-							{
-								"endCol": 4,
-								"fieldId": "rubrikcdmclustername",
-								"height": 53,
-								"id": "f12222d0-a4ee-11eb-9bb3-6df13f2ef3ea",
-								"index": 2,
-								"sectionItemType": "field",
-								"startCol": 2
-							},
-							{
-								"endCol": 4,
-								"fieldId": "rubrikcdmclusterlocation",
-								"height": 53,
-								"id": "6658a500-a44b-11eb-82ca-4d054531f5f7",
-								"index": 4,
-								"sectionItemType": "field",
-								"startCol": 2
-							}
-						],
-						"maxW": 3,
-						"minH": 1,
-						"minW": 2,
-						"moved": false,
-						"name": "Rubrik Basic Information",
-						"static": false,
-						"w": 2,
-						"x": 1,
-						"y": 0
-					},
-					{
-						"h": 1,
-						"i": "caseinfoid-ee9b7f20-a255-11eb-86d3-ed6ff0cf2050",
-						"items": [],
-						"maxW": 3,
-						"minH": 1,
-						"minW": 1,
-						"moved": false,
-						"name": "Files with Open Access Permissions (Windows Only)",
-						"query": "RubrikSonarOpenAccessFiles",
-						"queryType": "script",
-						"static": false,
-						"type": "dynamic",
-						"w": 1,
-						"x": 0,
-						"y": 3
-					},
-					{
-						"h": 1,
-						"i": "caseinfoid-fafdf7c0-a255-11eb-86d3-ed6ff0cf2050",
-						"items": [],
-						"maxW": 3,
-						"minH": 1,
-						"minW": 1,
-						"moved": false,
-						"name": "Data Classification Hits",
-						"query": "RubrikSonarTotalHits",
-						"queryType": "script",
-						"static": false,
-						"type": "dynamic",
-						"w": 1,
-						"x": 2,
-						"y": 3
-					},
-					{
-						"h": 1,
-						"i": "caseinfoid-2f160900-a6a5-11eb-aa9a-55967479e045",
-						"items": [],
-						"maxW": 3,
-						"minH": 1,
-						"minW": 1,
-						"moved": false,
-						"name": "CDM Cluster Status",
-						"query": "RubrikCDMClusterConnectionState",
-						"queryType": "script",
-						"static": false,
-						"type": "dynamic",
-						"w": 1,
-						"x": 0,
-						"y": 2
-					},
-					{
-						"h": 1,
-						"i": "caseinfoid-e449ae90-a6a9-11eb-aa9a-55967479e045",
-						"items": [],
-						"maxW": 3,
-						"minH": 1,
-						"minW": 1,
-						"moved": false,
-						"name": "Files Added",
-						"query": "RubrikRadarFilesAdded",
-						"queryType": "script",
-						"static": false,
-						"type": "dynamic",
-						"w": 1,
-						"x": 1,
-						"y": 2
-					},
-					{
-						"h": 1,
-						"i": "caseinfoid-f0b3c850-a6a9-11eb-aa9a-55967479e045",
-						"items": [],
-						"maxW": 3,
-						"minH": 1,
-						"minW": 1,
-						"moved": false,
-						"name": "Files Modified",
-						"query": "RubrikRadarFilesModified",
-						"queryType": "script",
-						"static": false,
-						"type": "dynamic",
-						"w": 1,
-						"x": 2,
-						"y": 2
-					},
-					{
-						"h": 1,
-						"i": "caseinfoid-fb65d1d0-a6a9-11eb-aa9a-55967479e045",
-						"items": [],
-						"maxW": 3,
-						"minH": 1,
-						"minW": 1,
-						"moved": false,
-						"name": "Files Removed",
-						"query": "RubrikRadarFilesDeleted",
-						"queryType": "script",
-						"static": false,
-						"type": "dynamic",
-						"w": 1,
-						"x": 1,
-						"y": 3
-					},
-					{
-						"h": 2,
-						"i": "caseinfoid-f98cd270-a6b1-11eb-bada-87dc9a8c0b9b",
-						"items": [],
-						"maxW": 3,
-						"minH": 1,
-						"minW": 1,
-						"moved": false,
-						"name": "Work Plan",
-						"static": false,
-						"type": "workplan",
-						"w": 1,
-						"x": 0,
-						"y": 4
-					},
-					{
-						"h": 2,
-						"i": "caseinfoid-0b443120-a6b2-11eb-bada-87dc9a8c0b9b",
-						"items": [],
-						"maxW": 3,
-						"minH": 1,
-						"minW": 1,
-						"moved": false,
-						"name": "Linked Incidents",
-						"static": false,
-						"type": "linkedIncidents",
-						"w": 2,
-						"x": 1,
-						"y": 4
-					}
-				],
-				"type": "custom"
-			},
-			{
-				"id": "warRoom",
-				"name": "War Room",
-				"type": "warRoom"
-			},
-			{
-				"hidden": false,
-				"id": "rubrikPolaris",
-				"name": "Rubrik Polaris",
-				"sections": [
-					{
-						"displayType": "ROW",
-						"h": 3,
-						"hideName": false,
-						"i": "rubrikPolaris-35620770-a14e-11eb-a966-5fbb5aa7e80a",
-						"items": [
-							{
-								"endCol": 6,
-								"fieldId": "rubrikpolarisanalysispipeline",
-								"height": 106,
-								"id": "422e74f0-bf28-11eb-adf0-1dd6a5e74ad5",
-								"index": 0,
-								"sectionItemType": "field",
-								"startCol": 0
-							}
-						],
-						"maxW": 3,
-						"minH": 1,
-						"minW": 3,
-						"moved": false,
-						"name": "Anomaly Detection Event Timeline",
-						"static": false,
-						"w": 3,
-						"x": 0,
-						"y": 0
-					},
-					{
-						"h": 4,
-						"i": "rubrikPolaris-344948e0-9e37-11eb-ac95-f33fbce9c16e",
-						"items": [],
-						"maxW": 3,
-						"minH": 1,
-						"minW": 3,
-						"moved": false,
-						"name": "Data Classification",
-						"query": "RubrikSonarSensitiveHits",
-						"queryType": "script",
-						"static": false,
-						"type": "dynamic",
-						"w": 3,
-						"x": 0,
-						"y": 3
-					}
-				],
-				"type": "custom"
-			},
-			{
-				"id": "workPlan",
-				"name": "Work Plan",
-				"type": "workPlan"
-			},
-			{
-				"id": "evidenceBoard",
-				"name": "Evidence Board",
-				"type": "evidenceBoard"
-			},
-			{
-				"id": "relatedIncidents",
-				"name": "Related Incidents",
-				"type": "relatedIncidents"
-			},
-			{
-				"id": "canvas",
-				"name": "Canvas",
-				"type": "canvas"
-			}
-		]
-	},
+            {
+                "id": "summary",
+                "name": "Legacy Summary",
+                "type": "summary"
+            },
+            {
+                "id": "caseinfoid",
+                "name": "Incident Info",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "owner",
+                                "height": 22,
+                                "id": "incident-owner-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotsource",
+                                "height": 22,
+                                "id": "incident-source-field",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "type",
+                                "height": 22,
+                                "id": "incident-type-field",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sourcebrand",
+                                "height": 22,
+                                "id": "incident-sourceBrand-field",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sourceinstance",
+                                "height": 22,
+                                "id": "incident-sourceInstance-field",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "severity",
+                                "height": 22,
+                                "id": "incident-severity-field",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "playbookid",
+                                "height": 22,
+                                "id": "incident-playbookId-field",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Case Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "i": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
+                        "items": [
+                            {
+                                "endCol": 1,
+                                "fieldId": "occurred",
+                                "height": 22,
+                                "id": "incident-occurred-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 1,
+                                "fieldId": "dbotmodified",
+                                "height": 22,
+                                "id": "incident-modified-field",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotduedate",
+                                "height": 22,
+                                "id": "incident-dueDate-field",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotcreated",
+                                "height": 22,
+                                "id": "incident-created-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 1
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotclosed",
+                                "height": 22,
+                                "id": "incident-closed-field",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 1
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 3,
+                        "moved": false,
+                        "name": "Timeline Information",
+                        "static": false,
+                        "w": 3,
+                        "x": 0,
+                        "y": 6
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "caseinfoid-2ec41170-454a-11eb-ba5e-05d9566e6d05",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "rubrikpolarisobjectname",
+                                "height": 53,
+                                "id": "fca80bf0-6fd9-11eb-befe-85443460d735",
+                                "index": 0,
+                                "listId": "caseinfoid-2ec41170-454a-11eb-ba5e-05d9566e6d05",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "rubrikpolarisobjectid",
+                                "height": 53,
+                                "id": "0445a980-6fda-11eb-befe-85443460d735",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "rubrikpolariscdmclustername",
+                                "height": 53,
+                                "id": "056ff8b0-6fda-11eb-befe-85443460d735",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "rubrikpolarisobjecttype",
+                                "height": 53,
+                                "id": "181f24e0-6fda-11eb-befe-85443460d735",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "rubrikcdmclusterid",
+                                "height": 53,
+                                "id": "62032d90-a44b-11eb-82ca-4d054531f5f7",
+                                "index": 0,
+                                "listId": "caseinfoid-2ec41170-454a-11eb-ba5e-05d9566e6d05",
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "rubrikcdmclustername",
+                                "height": 53,
+                                "id": "f12222d0-a4ee-11eb-9bb3-6df13f2ef3ea",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "rubrikcdmclusterlocation",
+                                "height": 53,
+                                "id": "6658a500-a44b-11eb-82ca-4d054531f5f7",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 2,
+                        "moved": false,
+                        "name": "Rubrik Basic Information",
+                        "static": false,
+                        "w": 2,
+                        "x": 1,
+                        "y": 0
+                    },
+                    {
+                        "h": 1,
+                        "i": "caseinfoid-ee9b7f20-a255-11eb-86d3-ed6ff0cf2050",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Files with Open Access Permissions (Windows Only)",
+                        "query": "RubrikSonarOpenAccessFiles",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamic",
+                        "w": 1,
+                        "x": 0,
+                        "y": 3
+                    },
+                    {
+                        "h": 1,
+                        "i": "caseinfoid-fafdf7c0-a255-11eb-86d3-ed6ff0cf2050",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Data Classification Hits",
+                        "query": "RubrikSonarTotalHits",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamic",
+                        "w": 1,
+                        "x": 2,
+                        "y": 3
+                    },
+                    {
+                        "h": 1,
+                        "i": "caseinfoid-2f160900-a6a5-11eb-aa9a-55967479e045",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "CDM Cluster Status",
+                        "query": "RubrikCDMClusterConnectionState",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamic",
+                        "w": 1,
+                        "x": 0,
+                        "y": 2
+                    },
+                    {
+                        "h": 1,
+                        "i": "caseinfoid-e449ae90-a6a9-11eb-aa9a-55967479e045",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Files Added",
+                        "query": "RubrikRadarFilesAdded",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamic",
+                        "w": 1,
+                        "x": 1,
+                        "y": 2
+                    },
+                    {
+                        "h": 1,
+                        "i": "caseinfoid-f0b3c850-a6a9-11eb-aa9a-55967479e045",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Files Modified",
+                        "query": "RubrikRadarFilesModified",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamic",
+                        "w": 1,
+                        "x": 2,
+                        "y": 2
+                    },
+                    {
+                        "h": 1,
+                        "i": "caseinfoid-fb65d1d0-a6a9-11eb-aa9a-55967479e045",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Files Removed",
+                        "query": "RubrikRadarFilesDeleted",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamic",
+                        "w": 1,
+                        "x": 1,
+                        "y": 3
+                    },
+                    {
+                        "h": 2,
+                        "i": "caseinfoid-f98cd270-a6b1-11eb-bada-87dc9a8c0b9b",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Work Plan",
+                        "static": false,
+                        "type": "workplan",
+                        "w": 1,
+                        "x": 0,
+                        "y": 4
+                    },
+                    {
+                        "h": 2,
+                        "i": "caseinfoid-0b443120-a6b2-11eb-bada-87dc9a8c0b9b",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Linked Incidents",
+                        "static": false,
+                        "type": "linkedIncidents",
+                        "w": 2,
+                        "x": 1,
+                        "y": 4
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "id": "warRoom",
+                "name": "War Room",
+                "type": "warRoom"
+            },
+            {
+                "hidden": false,
+                "id": "rubrikPolaris",
+                "name": "Rubrik Polaris",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "hideName": false,
+                        "i": "rubrikPolaris-35620770-a14e-11eb-a966-5fbb5aa7e80a",
+                        "items": [
+                            {
+                                "endCol": 6,
+                                "fieldId": "rubrikpolarisanalysispipeline",
+                                "height": 106,
+                                "id": "422e74f0-bf28-11eb-adf0-1dd6a5e74ad5",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 3,
+                        "moved": false,
+                        "name": "Anomaly Detection Event Timeline",
+                        "static": false,
+                        "w": 3,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "h": 4,
+                        "i": "rubrikPolaris-344948e0-9e37-11eb-ac95-f33fbce9c16e",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 3,
+                        "moved": false,
+                        "name": "Data Classification",
+                        "query": "RubrikSonarSensitiveHits",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamic",
+                        "w": 3,
+                        "x": 0,
+                        "y": 3
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "id": "workPlan",
+                "name": "Work Plan",
+                "type": "workPlan"
+            },
+            {
+                "id": "evidenceBoard",
+                "name": "Evidence Board",
+                "type": "evidenceBoard"
+            },
+            {
+                "id": "relatedIncidents",
+                "name": "Related Incidents",
+                "type": "relatedIncidents"
+            },
+            {
+                "id": "canvas",
+                "name": "Canvas",
+                "type": "canvas"
+            }
+        ]
+    },
     "group": "incident",
     "id": "7e540e7c-3ff5-4176-88a6-21511516d9fb",
     "name": "Rubrik Polaris Radar",
     "system": false,
     "version": -1,
     "fromVersion": "6.0.0",
-    "description": ""
+    "description": "",
+    "marketplaces": [
+        "xsoar"
+    ]
 }

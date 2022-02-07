@@ -289,9 +289,7 @@
                         "h": 3,
                         "hideName": false,
                         "i": "hy0ngi34ro-06931ae0-b294-11eb-95ce-a72ccc0b5d68",
-                        "items": [
-
-                        ],
+                        "items": [],
                         "maxW": 3,
                         "minH": 1,
                         "minW": 1,
@@ -309,9 +307,7 @@
                         "description": "Graphical representation of progression vs their respective risk score",
                         "h": 3,
                         "i": "hy0ngi34ro-07b18330-b294-11eb-95ce-a72ccc0b5d68",
-                        "items": [
-
-                        ],
+                        "items": [],
                         "maxW": 3,
                         "minH": 1,
                         "minW": 1,
@@ -329,9 +325,7 @@
                         "description": "Graphical representation of detections and categories to which they belong. ",
                         "h": 3,
                         "i": "hy0ngi34ro-092cd890-b294-11eb-95ce-a72ccc0b5d68",
-                        "items": [
-
-                        ],
+                        "items": [],
                         "maxW": 3,
                         "minH": 1,
                         "minW": 1,
@@ -381,5 +375,8 @@
     "system": false,
     "version": -1,
     "fromVersion": "6.0.0",
-    "description": ""
+    "description": "",
+    "marketplaces": [
+        "xsoar"
+    ]
 }

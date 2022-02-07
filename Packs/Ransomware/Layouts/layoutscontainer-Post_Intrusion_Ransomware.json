@@ -240,9 +240,7 @@
                         "h": 2,
                         "hideName": false,
                         "i": "caseinfoid-736cd260-dd29-11e9-b483-696feb5a142f",
-                        "items": [
-
-                        ],
+                        "items": [],
                         "maxW": 3,
                         "minH": 1,
                         "minW": 1,
@@ -388,9 +386,7 @@
                         "h": 1,
                         "hideName": false,
                         "i": "sfmcsjvzpo-00f12eb0-aef8-11ea-a169-995a487457b1",
-                        "items": [
-
-                        ],
+                        "items": [],
                         "maxH": null,
                         "maxW": 1,
                         "minH": 1,
@@ -409,9 +405,7 @@
                         "h": 1,
                         "hideName": true,
                         "i": "sfmcsjvzpo-b4cf2240-e605-11ea-966d-8987c9f60217",
-                        "items": [
-
-                        ],
+                        "items": [],
                         "maxH": null,
                         "maxW": 1,
                         "minH": 1,
@@ -430,9 +424,7 @@
                         "h": 4,
                         "hideName": false,
                         "i": "sfmcsjvzpo-d364cd50-e6d6-11ea-b305-ddf8b6668112",
-                        "items": [
-
-                        ],
+                        "items": [],
                         "maxH": null,
                         "maxW": 2,
                         "minH": 1,
@@ -451,9 +443,7 @@
                         "h": 5,
                         "hideName": true,
                         "i": "sfmcsjvzpo-08a04dd0-29cd-11eb-bf08-5b4105b5e210",
-                        "items": [
-
-                        ],
+                        "items": [],
                         "maxH": null,
                         "maxW": 1,
                         "minH": 1,
@@ -571,5 +561,8 @@
     "name": "Post Intrusion Ransomware",
     "system": false,
     "version": -1,
-    "fromVersion": "6.0.0"
+    "fromVersion": "6.0.0",
+    "marketplaces": [
+        "xsoar"
+    ]
 }

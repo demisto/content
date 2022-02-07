@@ -56,9 +56,7 @@
                     {
                         "h": 2,
                         "i": "sg5y5mii0k-g7gjnikhyi-caseinfoid-6afbc4c0-32e0-11eb-b74b-1df0a6e0d46b",
-                        "items": [
-
-                        ],
+                        "items": [],
                         "maxH": null,
                         "maxW": 1,
                         "minH": 1,
@@ -115,9 +113,7 @@
                         "description": "",
                         "h": 2,
                         "i": "sg5y5mii0k-g7gjnikhyi-caseinfoid-1c5af080-3497-11eb-afb3-b3d49c138afb",
-                        "items": [
-
-                        ],
+                        "items": [],
                         "maxH": null,
                         "maxW": 1,
                         "minH": 1,
@@ -238,9 +234,7 @@
                     {
                         "h": 2,
                         "i": "sg5y5mii0k-4901db60-494d-11eb-8579-93785087c949",
-                        "items": [
-
-                        ],
+                        "items": [],
                         "maxW": 3,
                         "minH": 1,
                         "minW": 1,
@@ -741,5 +735,8 @@
     },
     "system": false,
     "version": -1,
-    "fromVersion": "6.0.0"
+    "fromVersion": "6.0.0",
+    "marketplaces": [
+        "xsoar"
+    ]
 }

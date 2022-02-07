@@ -261,7 +261,7 @@
                                 "width": 355
                             }
                         ],
-                        "description": "MITRE ATT\u0026CK Tactics and Techniques extracted from uploaded reports or manually derived Threat Intel.",
+                        "description": "MITRE ATT&CK Tactics and Techniques extracted from uploaded reports or manually derived Threat Intel.",
                         "h": 3,
                         "i": "qyimwiu96q-178d02e0-f6cc-11ea-9e92-bb306f8071e4",
                         "items": [],
@@ -270,8 +270,8 @@
                         "minH": 1,
                         "minW": 2,
                         "moved": false,
-                        "name": "MITRE ATT\u0026CK TTP's",
-                        "query": "type:\"MITRE ATT\u0026CK\"",
+                        "name": "MITRE ATT&CK TTP's",
+                        "query": "type:\"MITRE ATT&CK\"",
                         "queryType": "input",
                         "static": false,
                         "type": "indicators",
@@ -359,7 +359,7 @@
                         "minW": 2,
                         "moved": false,
                         "name": "Other Indicators",
-                        "query": "(-type:\"MITRE ATT\u0026CK\" and -type:CVE) and -reputation:Good and -value:\"\"",
+                        "query": "(-type:\"MITRE ATT&CK\" and -type:CVE) and -reputation:Good and -value:\"\"",
                         "queryType": "input",
                         "static": false,
                         "type": "indicators",
@@ -522,5 +522,8 @@
     "system": false,
     "version": -1,
     "fromVersion": "6.0.0",
-    "description": ""
+    "description": "",
+    "marketplaces": [
+        "xsoar"
+    ]
 }

@@ -343,5 +343,8 @@
     "system": false,
     "version": -1,
     "fromVersion": "6.0.0",
-    "description": "Basic layout for Cohesity Helios Ransomware Incidents"
+    "description": "Basic layout for Cohesity Helios Ransomware Incidents",
+    "marketplaces": [
+        "xsoar"
+    ]
 }

@@ -616,132 +616,135 @@
     },
     "edit": {
         "sections": [
-			{
-				"description": "",
-				"fields": [
-					{
-						"fieldId": "incident_name",
-						"id": "",
-						"isVisible": true,
-						"modified": "0001-01-01T00:00:00Z",
-						"version": 0
-					},
-					{
-						"fieldId": "incident_type",
-						"id": "",
-						"isVisible": true,
-						"modified": "0001-01-01T00:00:00Z",
-						"version": 0
-					},
-					{
-						"fieldId": "incident_playbookid",
-						"id": "",
-						"isVisible": true,
-						"modified": "0001-01-01T00:00:00Z",
-						"version": 0
-					},
-					{
-						"fieldId": "incident_owner",
-						"id": "",
-						"isVisible": true,
-						"modified": "0001-01-01T00:00:00Z",
-						"version": 0
-					}
-				],
-				"id": "",
-				"isVisible": true,
-				"modified": "0001-01-01T00:00:00Z",
-				"name": "Case Information",
-				"query": null,
-				"queryType": "",
-				"readOnly": false,
-				"type": "",
-				"version": 0
-			},
-			{
-				"description": "",
-				"fields": [
-					{
-						"fieldId": "incident_employeeemail",
-						"id": "",
-						"isVisible": true,
-						"modified": "0001-01-01T00:00:00Z",
-						"version": 0
-					}
-				],
-				"id": "",
-				"isVisible": true,
-				"modified": "0001-01-01T00:00:00Z",
-				"name": "Required Offboarding Employee Information",
-				"query": null,
-				"queryType": "",
-				"readOnly": false,
-				"type": "",
-				"version": 0
-			},
-			{
-				"description": "If employee's manager email is not specified, the playbook will attempt to retrieve it using Active Directory. ",
-				"fields": [
-					{
-						"fieldId": "incident_employeemanageremail",
-						"id": "",
-						"isVisible": true,
-						"modified": "0001-01-01T00:00:00Z",
-						"version": 0
-					},
-					{
-						"fieldId": "incident_offboardingdate",
-						"id": "",
-						"isVisible": true,
-						"modified": "0001-01-01T00:00:00Z",
-						"version": 0
-					},
-					{
-						"fieldId": "incident_severity",
-						"id": "",
-						"isVisible": true,
-						"modified": "0001-01-01T00:00:00Z",
-						"version": 0
-					},
-					{
-						"fieldId": "incident_details",
-						"id": "",
-						"isVisible": true,
-						"modified": "0001-01-01T00:00:00Z",
-						"version": 0
-					},
-					{
-						"fieldId": "incident_occurred",
-						"id": "",
-						"isVisible": true,
-						"modified": "0001-01-01T00:00:00Z",
-						"version": 0
-					},
-					{
-						"fieldId": "incident_reminder",
-						"id": "",
-						"isVisible": true,
-						"modified": "0001-01-01T00:00:00Z",
-						"version": 0
-					},
-					{
-						"fieldId": "incident_attachment",
-						"id": "",
-						"isVisible": true,
-						"modified": "0001-01-01T00:00:00Z",
-						"version": 0
-					}
-				],
-				"id": "",
-				"isVisible": true,
-				"modified": "0001-01-01T00:00:00Z",
-				"name": "Optional Information",
-				"query": null,
-				"queryType": "",
-				"readOnly": false,
-				"type": "",
-				"version": 0
-			}
-		]
-    }
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "incident_name",
+                        "id": "",
+                        "isVisible": true,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "version": 0
+                    },
+                    {
+                        "fieldId": "incident_type",
+                        "id": "",
+                        "isVisible": true,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "version": 0
+                    },
+                    {
+                        "fieldId": "incident_playbookid",
+                        "id": "",
+                        "isVisible": true,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "version": 0
+                    },
+                    {
+                        "fieldId": "incident_owner",
+                        "id": "",
+                        "isVisible": true,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "version": 0
+                    }
+                ],
+                "id": "",
+                "isVisible": true,
+                "modified": "0001-01-01T00:00:00Z",
+                "name": "Case Information",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": "",
+                "version": 0
+            },
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "incident_employeeemail",
+                        "id": "",
+                        "isVisible": true,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "version": 0
+                    }
+                ],
+                "id": "",
+                "isVisible": true,
+                "modified": "0001-01-01T00:00:00Z",
+                "name": "Required Offboarding Employee Information",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": "",
+                "version": 0
+            },
+            {
+                "description": "If employee's manager email is not specified, the playbook will attempt to retrieve it using Active Directory. ",
+                "fields": [
+                    {
+                        "fieldId": "incident_employeemanageremail",
+                        "id": "",
+                        "isVisible": true,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "version": 0
+                    },
+                    {
+                        "fieldId": "incident_offboardingdate",
+                        "id": "",
+                        "isVisible": true,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "version": 0
+                    },
+                    {
+                        "fieldId": "incident_severity",
+                        "id": "",
+                        "isVisible": true,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "version": 0
+                    },
+                    {
+                        "fieldId": "incident_details",
+                        "id": "",
+                        "isVisible": true,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "version": 0
+                    },
+                    {
+                        "fieldId": "incident_occurred",
+                        "id": "",
+                        "isVisible": true,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "version": 0
+                    },
+                    {
+                        "fieldId": "incident_reminder",
+                        "id": "",
+                        "isVisible": true,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "version": 0
+                    },
+                    {
+                        "fieldId": "incident_attachment",
+                        "id": "",
+                        "isVisible": true,
+                        "modified": "0001-01-01T00:00:00Z",
+                        "version": 0
+                    }
+                ],
+                "id": "",
+                "isVisible": true,
+                "modified": "0001-01-01T00:00:00Z",
+                "name": "Optional Information",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": "",
+                "version": 0
+            }
+        ]
+    },
+    "marketplaces": [
+        "xsoar"
+    ]
 }

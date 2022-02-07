@@ -594,7 +594,7 @@
             {
                 "hidden": false,
                 "id": "swtuqptgvs",
-                "name": "Alert \u0026 Artifacts",
+                "name": "Alert & Artifacts",
                 "sections": [
                     {
                         "displayType": "ROW",
@@ -750,5 +750,8 @@
                 "type": "canvas"
             }
         ]
-    }
+    },
+    "marketplaces": [
+        "xsoar"
+    ]
 }

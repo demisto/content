@@ -650,7 +650,7 @@
                         "minH": 1,
                         "minW": 1,
                         "moved": false,
-                        "name": "Panorama \u0026 Cortex Data Lake Results",
+                        "name": "Panorama & Cortex Data Lake Results",
                         "query": {
                             "tags": [
                                 "PanoramaResults",
@@ -1474,5 +1474,8 @@
     "system": false,
     "version": -1,
     "fromVersion": "6.0.0",
-    "description": ""
+    "description": "",
+    "marketplaces": [
+        "xsoar"
+    ]
 }

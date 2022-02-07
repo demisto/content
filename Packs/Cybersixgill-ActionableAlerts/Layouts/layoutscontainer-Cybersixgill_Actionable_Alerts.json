@@ -518,5 +518,8 @@
     "group": "incident",
     "system": false,
     "fromVersion": "6.0.0",
-    "description": ""
+    "description": "",
+    "marketplaces": [
+        "xsoar"
+    ]
 }

@@ -275,5 +275,8 @@
     "name": "Social Engineering Domain Investigation Layout",
     "system": false,
     "version": -1,
-    "description": ""
+    "description": "",
+    "marketplaces": [
+        "xsoar"
+    ]
 }

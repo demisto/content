@@ -1,750 +1,749 @@
 {
- "detailsV2": {
-  "tabs": [
-   {
-    "id": "caseinfoid",
-    "name": "Incident Info",
-    "sections": [
-     {
-      "displayType": "ROW",
-      "h": 2,
-      "i": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
-      "isVisible": true,
-      "items": [
-       {
-        "endCol": 2,
-        "fieldId": "type",
-        "height": 22,
-        "id": "incident-type-field",
-        "index": 0,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "severity",
-        "height": 22,
-        "id": "incident-severity-field",
-        "index": 1,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "dbotsource",
-        "height": 22,
-        "id": "incident-source-field",
-        "index": 2,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "sourcebrand",
-        "height": 22,
-        "id": "incident-sourceBrand-field",
-        "index": 3,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "sourceinstance",
-        "height": 22,
-        "id": "incident-sourceInstance-field",
-        "index": 4,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "playbookid",
-        "height": 22,
-        "id": "incident-playbookId-field",
-        "index": 5,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "owner",
-        "height": 22,
-        "id": "incident-owner-field",
-        "index": 6,
-        "sectionItemType": "field",
-        "startCol": 0
-       }
-      ],
-      "maxH": null,
-      "maxW": 1,
-      "minH": 1,
-      "minW": 1,
-      "moved": false,
-      "name": "Case Details",
-      "static": false,
-      "w": 1,
-      "x": 0,
-      "y": 0
-     },
-     {
-      "h": 2,
-      "i": "caseinfoid-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
-      "maxH": null,
-      "maxW": 1,
-      "minH": 1,
-      "minW": 1,
-      "moved": false,
-      "name": "Notes",
-      "static": false,
-      "type": "notes",
-      "w": 1,
-      "x": 2,
-      "y": 0
-     },
-     {
-      "displayType": "ROW",
-      "h": 2,
-      "i": "caseinfoid-6aabad20-98b1-11e9-97d7-ed26ef9e46c8",
-      "maxH": null,
-      "maxW": 1,
-      "minH": 1,
-      "minW": 1,
-      "moved": false,
-      "name": "Work Plan",
-      "static": false,
-      "type": "workplan",
-      "w": 1,
-      "x": 1,
-      "y": 2
-     },
-     {
-      "displayType": "ROW",
-      "h": 2,
-      "i": "caseinfoid-770ec200-98b1-11e9-97d7-ed26ef9e46c8",
-      "isVisible": true,
-      "maxH": null,
-      "maxW": 1,
-      "minH": 1,
-      "minW": 1,
-      "moved": false,
-      "name": "Linked Incidents",
-      "static": false,
-      "type": "linkedIncidents",
-      "w": 1,
-      "x": 1,
-      "y": 4
-     },
-     {
-      "displayType": "ROW",
-      "h": 2,
-      "i": "caseinfoid-842632c0-98b1-11e9-97d7-ed26ef9e46c8",
-      "maxH": null,
-      "maxW": 1,
-      "minH": 1,
-      "minW": 1,
-      "moved": false,
-      "name": "Child Incidents",
-      "static": false,
-      "type": "childInv",
-      "w": 1,
-      "x": 2,
-      "y": 4
-     },
-     {
-      "displayType": "ROW",
-      "h": 2,
-      "i": "caseinfoid-4a31afa0-98ba-11e9-a519-93a53c759fe0",
-      "maxH": null,
-      "maxW": 1,
-      "minH": 1,
-      "minW": 1,
-      "moved": false,
-      "name": "Evidence",
-      "static": false,
-      "type": "evidence",
-      "w": 1,
-      "x": 2,
-      "y": 2
-     },
-     {
-      "displayType": "ROW",
-      "h": 2,
-      "hideName": false,
-      "i": "caseinfoid-7717e580-9bed-11e9-9a3f-8b4b2158e260",
-      "maxH": null,
-      "maxW": 1,
-      "minH": 1,
-      "minW": 1,
-      "moved": false,
-      "name": "Team Members",
-      "static": false,
-      "type": "team",
-      "w": 1,
-      "x": 2,
-      "y": 6
-     },
-     {
-      "displayType": "ROW",
-      "h": 2,
-      "i": "caseinfoid-7ce69dd0-a07f-11e9-936c-5395a1acf11e",
-      "maxH": null,
-      "maxW": 2,
-      "minH": 1,
-      "minW": 2,
-      "moved": false,
-      "name": "Indicators",
-      "query": "",
-      "queryType": "input",
-      "static": false,
-      "type": "indicators",
-      "w": 2,
-      "x": 0,
-      "y": 6
-     },
-     {
-      "displayType": "CARD",
-      "h": 2,
-      "i": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
-      "items": [
-       {
-        "endCol": 1,
-        "fieldId": "occurred",
-        "height": 22,
-        "id": "incident-occurred-field",
-        "index": 0,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 1,
-        "fieldId": "dbotmodified",
-        "height": 22,
-        "id": "incident-modified-field",
-        "index": 1,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "dbotduedate",
-        "height": 22,
-        "id": "incident-dueDate-field",
-        "index": 2,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "dbotcreated",
-        "height": 22,
-        "id": "incident-created-field",
-        "index": 0,
-        "sectionItemType": "field",
-        "startCol": 1
-       },
-       {
-        "endCol": 2,
-        "fieldId": "dbotclosed",
-        "height": 22,
-        "id": "incident-closed-field",
-        "index": 1,
-        "sectionItemType": "field",
-        "startCol": 1
-       }
-      ],
-      "maxH": null,
-      "maxW": 1,
-      "minH": 1,
-      "minW": 1,
-      "moved": false,
-      "name": "Timeline Information",
-      "static": false,
-      "w": 1,
-      "x": 0,
-      "y": 2
-     },
-     {
-      "displayType": "ROW",
-      "h": 2,
-      "i": "caseinfoid-88e6bf70-a0b1-11e9-b27f-13ae1773d289",
-      "isVisible": true,
-      "items": [
-       {
-        "endCol": 2,
-        "fieldId": "dbotclosed",
-        "height": 22,
-        "id": "incident-dbotClosed-field",
-        "index": 0,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "closereason",
-        "height": 22,
-        "id": "incident-closeReason-field",
-        "index": 1,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "closenotes",
-        "height": 44,
-        "id": "incident-closeNotes-field",
-        "index": 2,
-        "sectionItemType": "field",
-        "startCol": 0
-       }
-      ],
-      "maxH": null,
-      "maxW": 1,
-      "minH": 1,
-      "minW": 1,
-      "moved": false,
-      "name": "Closing Information",
-      "static": false,
-      "w": 1,
-      "x": 0,
-      "y": 8
-     },
-     {
-      "displayType": "CARD",
-      "h": 2,
-      "i": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
-      "isVisible": true,
-      "items": [
-       {
-        "endCol": 2,
-        "fieldId": "details",
-        "height": 22,
-        "id": "incident-details-field",
-        "index": 0,
-        "sectionItemType": "field",
-        "startCol": 0
-       }
-      ],
-      "maxH": null,
-      "maxW": 1,
-      "minH": 1,
-      "minW": 1,
-      "moved": false,
-      "name": "Investigation Data",
-      "static": false,
-      "w": 1,
-      "x": 0,
-      "y": 4
-     },
-     {
-      "displayType": "ROW",
-      "h": 2,
-      "hideName": false,
-      "i": "caseinfoid-b0edc980-c9a2-11ea-9075-c575f8e27f6d",
-      "items": [
-       {
-        "endCol": 2,
-        "fieldId": "ticketnumber",
-        "height": 22,
-        "id": "a8ccd730-dbe2-11ea-85ad-19eb038846fa",
-        "index": 0,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "caller",
-        "height": 22,
-        "id": "a4baf870-dbe2-11ea-85ad-19eb038846fa",
-        "index": 1,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "ticketopeneddate",
-        "height": 22,
-        "id": "b1a84bf0-dbe2-11ea-85ad-19eb038846fa",
-        "index": 2,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "ticketcloseddate",
-        "height": 22,
-        "id": "b9624b20-dbe2-11ea-85ad-19eb038846fa",
-        "index": 3,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "state",
-        "height": 22,
-        "id": "fdf1ab20-c9a2-11ea-9075-c575f8e27f6d",
-        "index": 4,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "servicenowurgency",
-        "height": 22,
-        "id": "f9e5bfd0-c9a2-11ea-9075-c575f8e27f6d",
-        "index": 4,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "servicenowticketid",
-        "height": 22,
-        "id": "270d2b40-34a7-11ec-909f-631d034070e5",
-        "index": 6,
-        "sectionItemType": "field",
-        "startCol": 0
-       }
-      ],
-      "maxH": null,
-      "maxW": 1,
-      "minH": 1,
-      "minW": 1,
-      "moved": false,
-      "name": "Ticket Info",
-      "static": false,
-      "w": 1,
-      "x": 1,
-      "y": 0
-     }
-    ],
-    "type": "custom"
-   },
-   {
-    "hidden": false,
-    "id": "yyrfzsc55n",
+    "detailsV2": {
+        "tabs": [
+            {
+                "id": "caseinfoid",
+                "name": "Incident Info",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "type",
+                                "height": 22,
+                                "id": "incident-type-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "severity",
+                                "height": 22,
+                                "id": "incident-severity-field",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotsource",
+                                "height": 22,
+                                "id": "incident-source-field",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sourcebrand",
+                                "height": 22,
+                                "id": "incident-sourceBrand-field",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sourceinstance",
+                                "height": 22,
+                                "id": "incident-sourceInstance-field",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "playbookid",
+                                "height": 22,
+                                "id": "incident-playbookId-field",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "owner",
+                                "height": 22,
+                                "id": "incident-owner-field",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Case Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "h": 2,
+                        "i": "caseinfoid-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Notes",
+                        "static": false,
+                        "type": "notes",
+                        "w": 1,
+                        "x": 2,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-6aabad20-98b1-11e9-97d7-ed26ef9e46c8",
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Work Plan",
+                        "static": false,
+                        "type": "workplan",
+                        "w": 1,
+                        "x": 1,
+                        "y": 2
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-770ec200-98b1-11e9-97d7-ed26ef9e46c8",
+                        "isVisible": true,
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Linked Incidents",
+                        "static": false,
+                        "type": "linkedIncidents",
+                        "w": 1,
+                        "x": 1,
+                        "y": 4
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-842632c0-98b1-11e9-97d7-ed26ef9e46c8",
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Child Incidents",
+                        "static": false,
+                        "type": "childInv",
+                        "w": 1,
+                        "x": 2,
+                        "y": 4
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-4a31afa0-98ba-11e9-a519-93a53c759fe0",
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Evidence",
+                        "static": false,
+                        "type": "evidence",
+                        "w": 1,
+                        "x": 2,
+                        "y": 2
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "caseinfoid-7717e580-9bed-11e9-9a3f-8b4b2158e260",
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Team Members",
+                        "static": false,
+                        "type": "team",
+                        "w": 1,
+                        "x": 2,
+                        "y": 6
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-7ce69dd0-a07f-11e9-936c-5395a1acf11e",
+                        "maxH": null,
+                        "maxW": 2,
+                        "minH": 1,
+                        "minW": 2,
+                        "moved": false,
+                        "name": "Indicators",
+                        "query": "",
+                        "queryType": "input",
+                        "static": false,
+                        "type": "indicators",
+                        "w": 2,
+                        "x": 0,
+                        "y": 6
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "i": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
+                        "items": [
+                            {
+                                "endCol": 1,
+                                "fieldId": "occurred",
+                                "height": 22,
+                                "id": "incident-occurred-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 1,
+                                "fieldId": "dbotmodified",
+                                "height": 22,
+                                "id": "incident-modified-field",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotduedate",
+                                "height": 22,
+                                "id": "incident-dueDate-field",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotcreated",
+                                "height": 22,
+                                "id": "incident-created-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 1
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotclosed",
+                                "height": 22,
+                                "id": "incident-closed-field",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 1
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Timeline Information",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 2
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-88e6bf70-a0b1-11e9-b27f-13ae1773d289",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotclosed",
+                                "height": 22,
+                                "id": "incident-dbotClosed-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "closereason",
+                                "height": 22,
+                                "id": "incident-closeReason-field",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "closenotes",
+                                "height": 44,
+                                "id": "incident-closeNotes-field",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Closing Information",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 8
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "i": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "details",
+                                "height": 22,
+                                "id": "incident-details-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Investigation Data",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 4
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "caseinfoid-b0edc980-c9a2-11ea-9075-c575f8e27f6d",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "ticketnumber",
+                                "height": 22,
+                                "id": "a8ccd730-dbe2-11ea-85ad-19eb038846fa",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "caller",
+                                "height": 22,
+                                "id": "a4baf870-dbe2-11ea-85ad-19eb038846fa",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "ticketopeneddate",
+                                "height": 22,
+                                "id": "b1a84bf0-dbe2-11ea-85ad-19eb038846fa",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "ticketcloseddate",
+                                "height": 22,
+                                "id": "b9624b20-dbe2-11ea-85ad-19eb038846fa",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "state",
+                                "height": 22,
+                                "id": "fdf1ab20-c9a2-11ea-9075-c575f8e27f6d",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "servicenowurgency",
+                                "height": 22,
+                                "id": "f9e5bfd0-c9a2-11ea-9075-c575f8e27f6d",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "servicenowticketid",
+                                "height": 22,
+                                "id": "270d2b40-34a7-11ec-909f-631d034070e5",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Ticket Info",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 0
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "hidden": false,
+                "id": "yyrfzsc55n",
+                "name": "ServiceNow Ticket",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "yyrfzsc55n-b2233ec0-c0fb-11ea-accc-fd9ce33531e5",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "ticketnumber",
+                                "height": 22,
+                                "id": "b950b560-c0fb-11ea-accc-fd9ce33531e5",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "servicenowpriority",
+                                "height": 22,
+                                "id": "730d86e0-c9a3-11ea-9075-c575f8e27f6d",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "servicenowurgency",
+                                "height": 22,
+                                "id": "7d98a770-c9a3-11ea-9075-c575f8e27f6d",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "servicenowimpact",
+                                "height": 22,
+                                "id": "75d09e80-c9a3-11ea-9075-c575f8e27f6d",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "servicenowstate",
+                                "height": 22,
+                                "id": "87811f60-c9a3-11ea-9075-c575f8e27f6d",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Ticket Status",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 1
+                    },
+                    {
+                        "description": "",
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "yyrfzsc55n-c526fba0-c9a3-11ea-9075-c575f8e27f6d",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "servicenowduedate",
+                                "height": 22,
+                                "id": "f03d1a90-c9a3-11ea-9075-c575f8e27f6d",
+                                "index": 1,
+                                "listId": "yyrfzsc55n-c526fba0-c9a3-11ea-9075-c575f8e27f6d",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "servicenownotify",
+                                "height": 22,
+                                "id": "ba4863e0-c9a3-11ea-9075-c575f8e27f6d",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "escalation",
+                                "height": 22,
+                                "id": "ec9522b0-dbe2-11ea-85ad-19eb038846fa",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Ticket Handling",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 1
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "yyrfzsc55n-0a7a7b00-c9a4-11ea-9075-c575f8e27f6d",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "closenotes",
+                                "height": 44,
+                                "id": "3fe20e60-dbe3-11ea-85ad-19eb038846fa",
+                                "index": 0,
+                                "listId": "yyrfzsc55n-0a7a7b00-c9a4-11ea-9075-c575f8e27f6d",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "ticketcloseddate",
+                                "height": 22,
+                                "id": "2b0ca6d0-dbe3-11ea-85ad-19eb038846fa",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "servicenowresolvedtime",
+                                "height": 22,
+                                "id": "120c31b0-c9a4-11ea-9075-c575f8e27f6d",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Ticket Closing Information",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 3
+                    },
+                    {
+                        "h": 1,
+                        "i": "yyrfzsc55n-2d809550-f774-11ea-ba58-0ba474d6bf41",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "ServiceNow Ticket Status",
+                        "query": "ServiceNowIncidentStatus",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamic",
+                        "w": 3,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "h": 4,
+                        "i": "yyrfzsc55n-57d64a70-f774-11ea-ba58-0ba474d6bf41",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "ServiceNow Comments",
+                        "static": false,
+                        "type": "notes",
+                        "w": 2,
+                        "x": 0,
+                        "y": 3
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "hideItemTitleOnlyOne": true,
+                        "i": "yyrfzsc55n-a8816220-f774-11ea-ba58-0ba474d6bf41",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "incident_attachment",
+                                "height": 53,
+                                "id": "a81fba21-f774-11ea-ba58-0ba474d6bf41",
+                                "index": 0,
+                                "isVisible": true,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Attachments",
+                        "static": false,
+                        "type": "",
+                        "w": 1,
+                        "x": 2,
+                        "y": 5
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "yyrfzsc55n-cdc358e0-f774-11ea-ba58-0ba474d6bf41",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "servicenowassignedto",
+                                "height": 22,
+                                "id": "9f735750-c9a3-11ea-9075-c575f8e27f6d",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "assignmentgroup",
+                                "height": 22,
+                                "id": "dd343720-dbe2-11ea-85ad-19eb038846fa",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "servicenowcategory",
+                                "height": 22,
+                                "id": "a35ffad0-c9a3-11ea-9075-c575f8e27f6d",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "subcategory",
+                                "height": 22,
+                                "id": "ae9230d0-c9a3-11ea-9075-c575f8e27f6d",
+                                "index": 3,
+                                "listId": "yyrfzsc55n-cdc358e0-f774-11ea-ba58-0ba474d6bf41",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "ticketopeneddate",
+                                "height": 22,
+                                "id": "f7060480-dbe2-11ea-85ad-19eb038846fa",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Ticket Info",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 1
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "id": "warRoom",
+                "name": "War Room",
+                "type": "warRoom"
+            },
+            {
+                "id": "workPlan",
+                "name": "Work Plan",
+                "type": "workPlan"
+            },
+            {
+                "id": "evidenceBoard",
+                "name": "Evidence Board",
+                "type": "evidenceBoard"
+            },
+            {
+                "id": "relatedIncidents",
+                "name": "Related Incidents",
+                "type": "relatedIncidents"
+            },
+            {
+                "id": "canvas",
+                "name": "Canvas",
+                "type": "canvas"
+            }
+        ]
+    },
+    "group": "incident",
+    "id": "ServiceNow Ticket",
     "name": "ServiceNow Ticket",
-    "sections": [
-     {
-      "displayType": "ROW",
-      "h": 2,
-      "hideName": false,
-      "i": "yyrfzsc55n-b2233ec0-c0fb-11ea-accc-fd9ce33531e5",
-      "items": [
-       {
-        "endCol": 2,
-        "fieldId": "ticketnumber",
-        "height": 22,
-        "id": "b950b560-c0fb-11ea-accc-fd9ce33531e5",
-        "index": 0,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "servicenowpriority",
-        "height": 22,
-        "id": "730d86e0-c9a3-11ea-9075-c575f8e27f6d",
-        "index": 1,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "servicenowurgency",
-        "height": 22,
-        "id": "7d98a770-c9a3-11ea-9075-c575f8e27f6d",
-        "index": 2,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "servicenowimpact",
-        "height": 22,
-        "id": "75d09e80-c9a3-11ea-9075-c575f8e27f6d",
-        "index": 3,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "servicenowstate",
-        "height": 22,
-        "id": "87811f60-c9a3-11ea-9075-c575f8e27f6d",
-        "index": 4,
-        "sectionItemType": "field",
-        "startCol": 0
-       }
-      ],
-      "maxH": null,
-      "maxW": 1,
-      "minH": 1,
-      "minW": 1,
-      "moved": false,
-      "name": "Ticket Status",
-      "static": false,
-      "w": 1,
-      "x": 1,
-      "y": 1
-     },
-     {
-      "description": "",
-      "displayType": "ROW",
-      "h": 2,
-      "hideName": false,
-      "i": "yyrfzsc55n-c526fba0-c9a3-11ea-9075-c575f8e27f6d",
-      "items": [
-       {
-        "dropEffect": "move",
-        "endCol": 2,
-        "fieldId": "servicenowduedate",
-        "height": 22,
-        "id": "f03d1a90-c9a3-11ea-9075-c575f8e27f6d",
-        "index": 1,
-        "listId": "yyrfzsc55n-c526fba0-c9a3-11ea-9075-c575f8e27f6d",
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "servicenownotify",
-        "height": 22,
-        "id": "ba4863e0-c9a3-11ea-9075-c575f8e27f6d",
-        "index": 2,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "escalation",
-        "height": 22,
-        "id": "ec9522b0-dbe2-11ea-85ad-19eb038846fa",
-        "index": 3,
-        "sectionItemType": "field",
-        "startCol": 0
-       }
-      ],
-      "maxH": null,
-      "maxW": 1,
-      "minH": 1,
-      "minW": 1,
-      "moved": false,
-      "name": "Ticket Handling",
-      "static": false,
-      "w": 1,
-      "x": 2,
-      "y": 1
-     },
-     {
-      "displayType": "ROW",
-      "h": 2,
-      "hideName": false,
-      "i": "yyrfzsc55n-0a7a7b00-c9a4-11ea-9075-c575f8e27f6d",
-      "items": [
-       {
-        "dropEffect": "move",
-        "endCol": 2,
-        "fieldId": "closenotes",
-        "height": 44,
-        "id": "3fe20e60-dbe3-11ea-85ad-19eb038846fa",
-        "index": 0,
-        "listId": "yyrfzsc55n-0a7a7b00-c9a4-11ea-9075-c575f8e27f6d",
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "ticketcloseddate",
-        "height": 22,
-        "id": "2b0ca6d0-dbe3-11ea-85ad-19eb038846fa",
-        "index": 1,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "servicenowresolvedtime",
-        "height": 22,
-        "id": "120c31b0-c9a4-11ea-9075-c575f8e27f6d",
-        "index": 2,
-        "sectionItemType": "field",
-        "startCol": 0
-       }
-      ],
-      "maxH": null,
-      "maxW": 1,
-      "minH": 1,
-      "minW": 1,
-      "moved": false,
-      "name": "Ticket Closing Information",
-      "static": false,
-      "w": 1,
-      "x": 2,
-      "y": 3
-     },
-     {
-      "h": 1,
-      "i": "yyrfzsc55n-2d809550-f774-11ea-ba58-0ba474d6bf41",
-      "items": [
-
-      ],
-      "maxW": 3,
-      "minH": 1,
-      "minW": 1,
-      "moved": false,
-      "name": "ServiceNow Ticket Status",
-      "query": "ServiceNowIncidentStatus",
-      "queryType": "script",
-      "static": false,
-      "type": "dynamic",
-      "w": 3,
-      "x": 0,
-      "y": 0
-     },
-     {
-      "h": 4,
-      "i": "yyrfzsc55n-57d64a70-f774-11ea-ba58-0ba474d6bf41",
-      "items": [
-
-      ],
-      "maxW": 3,
-      "minH": 1,
-      "minW": 1,
-      "moved": false,
-      "name": "ServiceNow Comments",
-      "static": false,
-      "type": "notes",
-      "w": 2,
-      "x": 0,
-      "y": 3
-     },
-     {
-      "displayType": "CARD",
-      "h": 2,
-      "hideItemTitleOnlyOne": true,
-      "i": "yyrfzsc55n-a8816220-f774-11ea-ba58-0ba474d6bf41",
-      "items": [
-       {
-        "endCol": 2,
-        "fieldId": "incident_attachment",
-        "height": 53,
-        "id": "a81fba21-f774-11ea-ba58-0ba474d6bf41",
-        "index": 0,
-        "isVisible": true,
-        "sectionItemType": "field",
-        "startCol": 0
-       }
-      ],
-      "maxW": 3,
-      "minH": 1,
-      "minW": 1,
-      "moved": false,
-      "name": "Attachments",
-      "static": false,
-      "type": "",
-      "w": 1,
-      "x": 2,
-      "y": 5
-     },
-     {
-      "displayType": "ROW",
-      "h": 2,
-      "hideName": false,
-      "i": "yyrfzsc55n-cdc358e0-f774-11ea-ba58-0ba474d6bf41",
-      "items": [
-       {
-        "endCol": 2,
-        "fieldId": "servicenowassignedto",
-        "height": 22,
-        "id": "9f735750-c9a3-11ea-9075-c575f8e27f6d",
-        "index": 0,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "assignmentgroup",
-        "height": 22,
-        "id": "dd343720-dbe2-11ea-85ad-19eb038846fa",
-        "index": 1,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "servicenowcategory",
-        "height": 22,
-        "id": "a35ffad0-c9a3-11ea-9075-c575f8e27f6d",
-        "index": 2,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "dropEffect": "move",
-        "endCol": 2,
-        "fieldId": "subcategory",
-        "height": 22,
-        "id": "ae9230d0-c9a3-11ea-9075-c575f8e27f6d",
-        "index": 3,
-        "listId": "yyrfzsc55n-cdc358e0-f774-11ea-ba58-0ba474d6bf41",
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "ticketopeneddate",
-        "height": 22,
-        "id": "f7060480-dbe2-11ea-85ad-19eb038846fa",
-        "index": 4,
-        "sectionItemType": "field",
-        "startCol": 0
-       }
-      ],
-      "maxW": 3,
-      "minH": 1,
-      "minW": 1,
-      "moved": false,
-      "name": "Ticket Info",
-      "static": false,
-      "w": 1,
-      "x": 0,
-      "y": 1
-     }
-    ],
-    "type": "custom"
-   },
-   {
-    "id": "warRoom",
-    "name": "War Room",
-    "type": "warRoom"
-   },
-   {
-    "id": "workPlan",
-    "name": "Work Plan",
-    "type": "workPlan"
-   },
-   {
-    "id": "evidenceBoard",
-    "name": "Evidence Board",
-    "type": "evidenceBoard"
-   },
-   {
-    "id": "relatedIncidents",
-    "name": "Related Incidents",
-    "type": "relatedIncidents"
-   },
-   {
-    "id": "canvas",
-    "name": "Canvas",
-    "type": "canvas"
-   }
-  ]
- },
- "group": "incident",
- "id": "ServiceNow Ticket",
- "name": "ServiceNow Ticket",
- "system": false,
- "version": -1,
- "fromVersion": "6.0.0",
- "description": ""
+    "system": false,
+    "version": -1,
+    "fromVersion": "6.0.0",
+    "description": "",
+    "marketplaces": [
+        "xsoar"
+    ]
 }

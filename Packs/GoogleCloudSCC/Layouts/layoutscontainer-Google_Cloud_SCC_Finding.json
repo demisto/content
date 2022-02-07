@@ -1,2012 +1,2015 @@
 {
- "description": "Google Cloud SCC Finding Layout",
- "detailsV2": {
-  "tabs": [
-   {
-    "id": "summary",
-    "name": "Legacy Summary",
-    "type": "summary"
-   },
-   {
-    "id": "caseinfoid",
-    "name": "Incident Info",
-    "sections": [
-     {
-      "displayType": "ROW",
-      "h": 2,
-      "i": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
-      "isVisible": true,
-      "items": [
-       {
-        "endCol": 2,
-        "fieldId": "type",
-        "height": 22,
-        "id": "incident-type-field",
-        "index": 0,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "severity",
-        "height": 22,
-        "id": "incident-severity-field",
-        "index": 1,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "owner",
-        "height": 22,
-        "id": "incident-owner-field",
-        "index": 2,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "dbotsource",
-        "height": 22,
-        "id": "incident-source-field",
-        "index": 3,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "sourcebrand",
-        "height": 22,
-        "id": "incident-sourceBrand-field",
-        "index": 4,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "sourceinstance",
-        "height": 22,
-        "id": "incident-sourceInstance-field",
-        "index": 5,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "playbookid",
-        "height": 22,
-        "id": "incident-playbookId-field",
-        "index": 6,
-        "sectionItemType": "field",
-        "startCol": 0
-       }
-      ],
-      "maxH": null,
-      "maxW": 1,
-      "minH": 1,
-      "minW": 1,
-      "moved": false,
-      "name": "Case Details",
-      "static": false,
-      "w": 1,
-      "x": 0,
-      "y": 0
-     },
-     {
-      "h": 2,
-      "i": "caseinfoid-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
-      "maxH": null,
-      "maxW": 1,
-      "minH": 1,
-      "minW": 1,
-      "moved": false,
-      "name": "Notes",
-      "static": false,
-      "type": "notes",
-      "w": 1,
-      "x": 2,
-      "y": 0
-     },
-     {
-      "displayType": "ROW",
-      "h": 2,
-      "i": "caseinfoid-6aabad20-98b1-11e9-97d7-ed26ef9e46c8",
-      "maxH": null,
-      "maxW": 1,
-      "minH": 1,
-      "minW": 1,
-      "moved": false,
-      "name": "Work Plan",
-      "static": false,
-      "type": "workplan",
-      "w": 1,
-      "x": 1,
-      "y": 0
-     },
-     {
-      "displayType": "ROW",
-      "h": 2,
-      "i": "caseinfoid-770ec200-98b1-11e9-97d7-ed26ef9e46c8",
-      "isVisible": true,
-      "maxH": null,
-      "maxW": 1,
-      "minH": 1,
-      "minW": 1,
-      "moved": false,
-      "name": "Linked Incidents",
-      "static": false,
-      "type": "linkedIncidents",
-      "w": 1,
-      "x": 1,
-      "y": 6
-     },
-     {
-      "displayType": "ROW",
-      "h": 2,
-      "i": "caseinfoid-842632c0-98b1-11e9-97d7-ed26ef9e46c8",
-      "maxH": null,
-      "maxW": 1,
-      "minH": 1,
-      "minW": 1,
-      "moved": false,
-      "name": "Child Incidents",
-      "static": false,
-      "type": "childInv",
-      "w": 1,
-      "x": 2,
-      "y": 4
-     },
-     {
-      "displayType": "ROW",
-      "h": 2,
-      "i": "caseinfoid-4a31afa0-98ba-11e9-a519-93a53c759fe0",
-      "maxH": null,
-      "maxW": 1,
-      "minH": 1,
-      "minW": 1,
-      "moved": false,
-      "name": "Evidence",
-      "static": false,
-      "type": "evidence",
-      "w": 1,
-      "x": 2,
-      "y": 2
-     },
-     {
-      "displayType": "ROW",
-      "h": 2,
-      "hideName": false,
-      "i": "caseinfoid-7717e580-9bed-11e9-9a3f-8b4b2158e260",
-      "maxH": null,
-      "maxW": 1,
-      "minH": 1,
-      "minW": 1,
-      "moved": false,
-      "name": "Team Members",
-      "static": false,
-      "type": "team",
-      "w": 1,
-      "x": 2,
-      "y": 6
-     },
-     {
-      "displayType": "ROW",
-      "h": 2,
-      "i": "caseinfoid-7ce69dd0-a07f-11e9-936c-5395a1acf11e",
-      "maxH": null,
-      "maxW": 2,
-      "minH": 1,
-      "minW": 2,
-      "moved": false,
-      "name": "Indicators",
-      "query": "",
-      "queryType": "input",
-      "static": false,
-      "type": "indicators",
-      "w": 2,
-      "x": 0,
-      "y": 4
-     },
-     {
-      "displayType": "CARD",
-      "h": 2,
-      "i": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
-      "items": [
-       {
-        "endCol": 1,
-        "fieldId": "occurred",
-        "height": 22,
-        "id": "incident-occurred-field",
-        "index": 0,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 1,
-        "fieldId": "dbotmodified",
-        "height": 22,
-        "id": "incident-modified-field",
-        "index": 1,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "dbotduedate",
-        "height": 22,
-        "id": "incident-dueDate-field",
-        "index": 2,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "dbotcreated",
-        "height": 22,
-        "id": "incident-created-field",
-        "index": 0,
-        "sectionItemType": "field",
-        "startCol": 1
-       },
-       {
-        "endCol": 2,
-        "fieldId": "dbotclosed",
-        "height": 22,
-        "id": "incident-closed-field",
-        "index": 1,
-        "sectionItemType": "field",
-        "startCol": 1
-       }
-      ],
-      "maxH": null,
-      "maxW": 1,
-      "minH": 1,
-      "minW": 1,
-      "moved": false,
-      "name": "Timeline Information",
-      "static": false,
-      "w": 1,
-      "x": 0,
-      "y": 2
-     },
-     {
-      "displayType": "ROW",
-      "h": 2,
-      "i": "caseinfoid-88e6bf70-a0b1-11e9-b27f-13ae1773d289",
-      "isVisible": true,
-      "items": [
-       {
-        "endCol": 2,
-        "fieldId": "dbotclosed",
-        "height": 22,
-        "id": "incident-dbotClosed-field",
-        "index": 0,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "closereason",
-        "height": 22,
-        "id": "incident-closeReason-field",
-        "index": 1,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "closenotes",
-        "height": 22,
-        "id": "incident-closeNotes-field",
-        "index": 2,
-        "sectionItemType": "field",
-        "startCol": 0
-       }
-      ],
-      "maxH": null,
-      "maxW": 1,
-      "minH": 1,
-      "minW": 1,
-      "moved": false,
-      "name": "Closing Information",
-      "static": false,
-      "w": 1,
-      "x": 0,
-      "y": 6
-     },
-     {
-      "displayType": "CARD",
-      "h": 2,
-      "i": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
-      "isVisible": true,
-      "items": [
-       {
-        "endCol": 2,
-        "fieldId": "details",
-        "height": 22,
-        "id": "incident-details-field",
-        "index": 0,
-        "sectionItemType": "field",
-        "startCol": 0
-       }
-      ],
-      "maxH": null,
-      "maxW": 1,
-      "minH": 1,
-      "minW": 1,
-      "moved": false,
-      "name": "Investigation Data",
-      "static": false,
-      "w": 1,
-      "x": 1,
-      "y": 2
-     }
-    ],
-    "type": "custom"
-   },
-   {
-    "hidden": false,
-    "id": "plk0ymivm5",
-    "name": "Google Cloud SCC",
-    "sections": [
-     {
-      "displayType": "CARD",
-      "h": 4,
-      "hideName": false,
-      "i": "plk0ymivm5-0111ff60-51d6-11eb-8a8f-7d8a1ff77baf",
-      "items": [
-       {
-        "endCol": 2,
-        "fieldId": "googlecloudsccoverview",
-        "height": 53,
-        "id": "2aa10690-6c58-11eb-9507-cf76f3d0fbf7",
-        "index": 0,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "dropEffect": "move",
-        "endCol": 2,
-        "fieldId": "googlecloudsccfindingcategory",
-        "height": 53,
-        "id": "6649af10-6c5f-11eb-b852-8b09ebcbb278",
-        "index": 1,
-        "listId": "plk0ymivm5-0111ff60-51d6-11eb-8a8f-7d8a1ff77baf",
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "googlecloudsccfindingmostrecentlyseen",
-        "height": 53,
-        "id": "80b0c190-5ada-11eb-b006-77ca1ffddd91",
-        "index": 2,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "googlecloudsccfindingfirstdiscovered",
-        "height": 53,
-        "id": "7bf66dd0-5ada-11eb-b006-77ca1ffddd91",
-        "index": 3,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "googlecloudsccfindingurl",
-        "height": 53,
-        "id": "eba4d2c0-5be8-11eb-9413-47d322525c0d",
-        "index": 4,
-        "sectionItemType": "field",
-        "startCol": 0
-       }
-      ],
-      "maxH": null,
-      "maxW": 1,
-      "minH": 1,
-      "minW": 1,
-      "moved": false,
-      "name": "Finding Summary",
-      "static": false,
-      "w": 1,
-      "x": 0,
-      "y": 0
-     },
-     {
-      "displayType": "CARD",
-      "h": 2,
-      "hideName": false,
-      "i": "plk0ymivm5-ae8bc9a0-51d6-11eb-8a8f-7d8a1ff77baf",
-      "items": [
-       {
-        "endCol": 2,
-        "fieldId": "googlecloudsccsecuritymarks",
-        "height": 106,
-        "id": "f5e392f0-5be6-11eb-9413-47d322525c0d",
-        "index": 0,
-        "sectionItemType": "field",
-        "startCol": 0
-       }
-      ],
-      "maxH": null,
-      "maxW": 1,
-      "minH": 1,
-      "minW": 1,
-      "moved": false,
-      "name": "Security Marks",
-      "static": false,
-      "w": 1,
-      "x": 1,
-      "y": 4
-     },
-     {
-      "displayType": "CARD",
-      "h": 2,
-      "hideItemTitleOnlyOne": false,
-      "hideName": false,
-      "i": "plk0ymivm5-f95f5dc0-51d6-11eb-8a8f-7d8a1ff77baf",
-      "items": [
-       {
-        "endCol": 2,
-        "fieldId": "googlecloudsccrecommendation",
-        "height": 106,
-        "id": "a3a63d10-5c97-11eb-ad7c-f91f6c442086",
-        "index": 0,
-        "sectionItemType": "field",
-        "startCol": 0
-       }
-      ],
-      "maxH": null,
-      "maxW": 1,
-      "minH": 1,
-      "minW": 1,
-      "moved": false,
-      "name": "Recommendation",
-      "static": false,
-      "w": 1,
-      "x": 0,
-      "y": 4
-     },
-     {
-      "displayType": "CARD",
-      "h": 4,
-      "hideName": false,
-      "i": "plk0ymivm5-20c80510-51d7-11eb-8a8f-7d8a1ff77baf",
-      "items": [
-       {
-        "dropEffect": "move",
-        "endCol": 2,
-        "fieldId": "severity",
-        "height": 53,
-        "id": "c5bac6b0-51d8-11eb-8a8f-7d8a1ff77baf",
-        "index": 0,
-        "listId": "plk0ymivm5-20c80510-51d7-11eb-8a8f-7d8a1ff77baf",
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "googlecloudsccfindingcreatetime",
-        "height": 53,
-        "id": "5554f8f0-51d8-11eb-8a8f-7d8a1ff77baf",
-        "index": 1,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "googlecloudsccassetdisplayname",
-        "height": 53,
-        "id": "94bdfc40-5439-11eb-9895-433ad3f802cd",
-        "index": 2,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "dropEffect": "move",
-        "endCol": 2,
-        "fieldId": "googlecloudsccfindingeventtime",
-        "height": 53,
-        "id": "cdf4b980-5a16-11eb-9140-67587e8920aa",
-        "index": 3,
-        "listId": "plk0ymivm5-20c80510-51d7-11eb-8a8f-7d8a1ff77baf",
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "googlecloudsccfindingexternaluri",
-        "height": 53,
-        "id": "a27a1170-5439-11eb-9895-433ad3f802cd",
-        "index": 4,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "googlecloudsccfindingname",
-        "height": 53,
-        "id": "a496afe0-5439-11eb-9895-433ad3f802cd",
-        "index": 5,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "googlecloudsccresourceparentdisplayname",
-        "height": 53,
-        "id": "74bc2230-5585-11eb-8d73-ab5dbe2c181c",
-        "index": 6,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "googlecloudsccresourceprojectdisplayname",
-        "height": 53,
-        "id": "bc568d30-5439-11eb-9895-433ad3f802cd",
-        "index": 7,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "googlecloudsccresourcename",
-        "height": 53,
-        "id": "ff627dc0-6143-11eb-bf0d-b53834898c59",
-        "index": 8,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "googlecloudsccresourceprojectname",
-        "height": 53,
-        "id": "c419b420-5439-11eb-9895-433ad3f802cd",
-        "index": 9,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "googlecloudsccfindingparent",
-        "height": 53,
-        "id": "a7cbea40-5439-11eb-9895-433ad3f802cd",
-        "index": 10,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "googlecloudsccresourceparentname",
-        "height": 53,
-        "id": "b62ccaf0-5439-11eb-9895-433ad3f802cd",
-        "index": 11,
-        "sectionItemType": "field",
-        "startCol": 0
-       }
-      ],
-      "maxH": null,
-      "maxW": 1,
-      "minH": 1,
-      "minW": 1,
-      "moved": false,
-      "name": "Additional Information",
-      "static": false,
-      "w": 1,
-      "x": 1,
-      "y": 0
-     },
-     {
-      "displayType": "CARD",
-      "h": 4,
-      "hideItemTitleOnlyOne": false,
-      "hideName": false,
-      "i": "plk0ymivm5-2b06da60-51d7-11eb-8a8f-7d8a1ff77baf",
-      "items": [
-       {
-        "endCol": 2,
-        "fieldId": "sourceip",
-        "height": 53,
-        "id": "50aa8e40-51d9-11eb-8a8f-7d8a1ff77baf",
-        "index": 0,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "eventtype",
-        "height": 53,
-        "id": "cfd4e080-51d9-11eb-8a8f-7d8a1ff77baf",
-        "index": 1,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "osversion",
-        "height": 53,
-        "id": "578b00e0-51da-11eb-8a8f-7d8a1ff77baf",
-        "index": 2,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "os",
-        "height": 53,
-        "id": "422d2f70-51da-11eb-8a8f-7d8a1ff77baf",
-        "index": 3,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "alertname",
-        "height": 53,
-        "id": "7775eeb0-51da-11eb-8a8f-7d8a1ff77baf",
-        "index": 4,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "googlecloudsccfindingsourcepropertiesdstregion",
-        "height": 53,
-        "id": "ba6a2d70-54b0-11eb-8244-156c3b198745",
-        "index": 5,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "googlecloudsccfindingsourcepropertiessrczipcode",
-        "height": 53,
-        "id": "c4a8b4a0-54b0-11eb-8244-156c3b198745",
-        "index": 6,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "googlecloudsccfindingsourcepropertiesreqcnt",
-        "height": 53,
-        "id": "cee62a60-54b0-11eb-8244-156c3b198745",
-        "index": 7,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "googlecloudsccfindingsourcepropertiespageduration",
-        "height": 53,
-        "id": "d956be10-54b0-11eb-8244-156c3b198745",
-        "index": 8,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "googlecloudsccfindingsourcepropertiesinsertionepochtimestamp",
-        "height": 53,
-        "id": "ebbb0b40-5584-11eb-8d73-ab5dbe2c181c",
-        "index": 9,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "googlecloudsccfindingsourcepropertiesorigty",
-        "height": 53,
-        "id": "e3147c80-54b0-11eb-8244-156c3b198745",
-        "index": 10,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "googlecloudsccfindingsourcepropertiesslclatitude",
-        "height": 53,
-        "id": "5f9fe0f0-54b1-11eb-a6b1-4d989a83c3e1",
-        "index": 11,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "googlecloudsccfindingsourcepropertiesusergenerated",
-        "height": 53,
-        "id": "528f9c20-54b1-11eb-a6b1-4d989a83c3e1",
-        "index": 12,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "googlecloudsccfindingsourcepropertiestenantname",
-        "height": 53,
-        "id": "6d3f9480-54b1-11eb-a6b1-4d989a83c3e1",
-        "index": 13,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "googlecloudsccfindingsourcepropertiessrcgeoipsrc",
-        "height": 53,
-        "id": "7ec9efc0-54b1-11eb-a6b1-4d989a83c3e1",
-        "index": 14,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "googlecloudsccfindingsourcepropertiesappcategory",
-        "height": 53,
-        "id": "868e4f30-54b1-11eb-a6b1-4d989a83c3e1",
-        "index": 15,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "googlecloudsccfindingsourcepropertiescount",
-        "height": 53,
-        "id": "95205200-54b1-11eb-a6b1-4d989a83c3e1",
-        "index": 16,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "googlecloudsccfindingsourcepropertieslastcountry",
-        "height": 53,
-        "id": "9cf3f3b0-54b1-11eb-a6b1-4d989a83c3e1",
-        "index": 17,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "googlecloudsccfindingsourcepropertiesorganizationunit",
-        "height": 53,
-        "id": "a549bdb0-54b1-11eb-a6b1-4d989a83c3e1",
-        "index": 18,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "googlecloudsccfindingsourcepropertiesserverbytes",
-        "height": 53,
-        "id": "b3c922e0-54b1-11eb-a6b1-4d989a83c3e1",
-        "index": 19,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "googlecloudsccfindingsourcepropertiesprofileid",
-        "height": 53,
-        "id": "c288c560-54b1-11eb-a6b1-4d989a83c3e1",
-        "index": 20,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "googlecloudsccfindingsourcepropertiessrccountry",
-        "height": 53,
-        "id": "bab0ddf0-54b1-11eb-a6b1-4d989a83c3e1",
-        "index": 21,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "googlecloudsccfindingsourcepropertiesdomain",
-        "height": 53,
-        "id": "ceba1be0-54b1-11eb-a6b1-4d989a83c3e1",
-        "index": 22,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "googlecloudsccfindingsourcepropertiesdstzipcode",
-        "height": 53,
-        "id": "d6729470-54b1-11eb-a6b1-4d989a83c3e1",
-        "index": 23,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "googlecloudsccfindingsourcepropertiesdsttimezone",
-        "height": 53,
-        "id": "038c4b90-54b2-11eb-a6b1-4d989a83c3e1",
-        "index": 24,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "googlecloudsccfindingsourcepropertiespagestarttime",
-        "height": 53,
-        "id": "8f4af6e0-59cb-11eb-8d0f-71208ddea44c",
-        "index": 25,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "googlecloudsccfindingsourcepropertiesseveritylevel",
-        "height": 53,
-        "id": "5639f320-5c8b-11eb-a936-1591d3039e22",
-        "index": 26,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "googlecloudsccfindingsourcepropertieshostname",
-        "height": 53,
-        "id": "34504f20-5c8b-11eb-a936-1591d3039e22",
-        "index": 27,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "googlecloudsccfindingsourcepropertiespage",
-        "height": 53,
-        "id": "e86bde20-54b1-11eb-a6b1-4d989a83c3e1",
-        "index": 28,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "googlecloudsccfindingsourcepropertiesnumbytes",
-        "height": 53,
-        "id": "eee39950-54b1-11eb-a6b1-4d989a83c3e1",
-        "index": 29,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "googlecloudsccfindingsourcepropertiesdevice",
-        "height": 53,
-        "id": "fb3d8670-54b1-11eb-a6b1-4d989a83c3e1",
-        "index": 30,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "googlecloudsccfindingsourcepropertiesaccessmethod",
-        "height": 53,
-        "id": "14d7c910-54b2-11eb-a6b1-4d989a83c3e1",
-        "index": 31,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "googlecloudsccfindingsourcepropertiesappsessionid",
-        "height": 53,
-        "id": "0c384be0-54b2-11eb-a6b1-4d989a83c3e1",
-        "index": 32,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "googlecloudsccfindingsourcepropertiessrctimezone",
-        "height": 53,
-        "id": "2ed8a040-54b3-11eb-a6b1-4d989a83c3e1",
-        "index": 33,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "googlecloudsccfindingsourcepropertiestraffictype",
-        "height": 53,
-        "id": "46a48b80-54b3-11eb-a6b1-4d989a83c3e1",
-        "index": 34,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "googlecloudsccfindingsourcepropertiespageendtime",
-        "height": 53,
-        "id": "3699cb60-54b3-11eb-a6b1-4d989a83c3e1",
-        "index": 35,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "googlecloudsccfindingsourcepropertiesuser",
-        "height": 53,
-        "id": "17570480-6c59-11eb-b206-0db49a1c117b",
-        "index": 36,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "googlecloudsccfindingsourcepropertiesuseragent",
-        "height": 53,
-        "id": "3ddb1820-54b3-11eb-a6b1-4d989a83c3e1",
-        "index": 37,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "googlecloudsccfindingsourcepropertiesbrowsersessionid",
-        "height": 53,
-        "id": "50738800-54b3-11eb-a6b1-4d989a83c3e1",
-        "index": 38,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "googlecloudsccfindingsourcepropertiespageid",
-        "height": 53,
-        "id": "6152fd40-54b3-11eb-a6b1-4d989a83c3e1",
-        "index": 39,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "googlecloudsccfindingsourcepropertiesalerttype",
-        "height": 53,
-        "id": "5ab5dfc0-54b3-11eb-a6b1-4d989a83c3e1",
-        "index": 40,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "googlecloudsccfindingsourcepropertiesalert",
-        "height": 53,
-        "id": "6fc9d6f0-54b3-11eb-a6b1-4d989a83c3e1",
-        "index": 41,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "googlecloudsccfindingsourcepropertiesurnormalized",
-        "height": 53,
-        "id": "665c5b60-54b3-11eb-a6b1-4d989a83c3e1",
-        "index": 42,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "googlecloudsccfindingsourcepropertiesrespcnt",
-        "height": 53,
-        "id": "75780090-54b3-11eb-a6b1-4d989a83c3e1",
-        "index": 43,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "googlecloudsccfindingsourcepropertiesbrowser",
-        "height": 53,
-        "id": "7efd22d0-54b3-11eb-a6b1-4d989a83c3e1",
-        "index": 44,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "googlecloudsccfindingsourcepropertiesseverity",
-        "height": 53,
-        "id": "97704a90-54b3-11eb-a6b1-4d989a83c3e1",
-        "index": 45,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "googlecloudsccfindingsourcepropertiestimestamp",
-        "height": 53,
-        "id": "9137e250-54b3-11eb-a6b1-4d989a83c3e1",
-        "index": 46,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "googlecloudsccfindingsourcepropertiesrisklevelid",
-        "height": 53,
-        "id": "87502db0-54b3-11eb-a6b1-4d989a83c3e1",
-        "index": 47,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "googlecloudsccfindingsourcepropertiesdstcountry",
-        "height": 53,
-        "id": "a7943800-54b3-11eb-a6b1-4d989a83c3e1",
-        "index": 48,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "googlecloudsccfindingsourcepropertiessrcregion",
-        "height": 53,
-        "id": "b400c2c0-54b3-11eb-a6b1-4d989a83c3e1",
-        "index": 49,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "googlecloudsccfindingsourcepropertiesacked",
-        "height": 53,
-        "id": "c06907c0-54b3-11eb-a6b1-4d989a83c3e1",
-        "index": 50,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "googlecloudsccfindingsourcepropertieslastdevice",
-        "height": 53,
-        "id": "c89d6710-54b3-11eb-a6b1-4d989a83c3e1",
-        "index": 51,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "googlecloudsccfindingsourcepropertiesclientbytes",
-        "height": 53,
-        "id": "ba5c6a70-54b3-11eb-a6b1-4d989a83c3e1",
-        "index": 52,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "googlecloudsccfindingsourcepropertieslastapp",
-        "height": 53,
-        "id": "d01f8d60-54b3-11eb-a6b1-4d989a83c3e1",
-        "index": 53,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "googlecloudsccfindingsourcepropertiessrclocation",
-        "height": 53,
-        "id": "d74d0400-54b3-11eb-a6b1-4d989a83c3e1",
-        "index": 54,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "googlecloudsccfindingsourcepropertieslastlocation",
-        "height": 53,
-        "id": "e351cc40-54b3-11eb-a6b1-4d989a83c3e1",
-        "index": 55,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "googlecloudsccfindingsourcepropertieslastregion",
-        "height": 53,
-        "id": "df177df0-54b3-11eb-a6b1-4d989a83c3e1",
-        "index": 56,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "googlecloudsccfindingsourcepropertiesrisklevel",
-        "height": 53,
-        "id": "ec7cc090-54b3-11eb-a6b1-4d989a83c3e1",
-        "index": 57,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "googlecloudsccfindingsourcepropertiesdstlocation",
-        "height": 53,
-        "id": "fa664e60-54b3-11eb-a6b1-4d989a83c3e1",
-        "index": 58,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "googlecloudsccfindingsourcepropertiesslclongitute",
-        "height": 53,
-        "id": "33fc95d0-54b4-11eb-a6b1-4d989a83c3e1",
-        "index": 59,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "googlecloudsccfindingsourcepropertiessite",
-        "height": 53,
-        "id": "f2a45ff0-54b3-11eb-a6b1-4d989a83c3e1",
-        "index": 60,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "googlecloudsccfindingsourcepropertiesdstgeoipsrc",
-        "height": 53,
-        "id": "3e280a30-54b4-11eb-a6b1-4d989a83c3e1",
-        "index": 61,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "googlecloudsccfindingsourcepropertiesscannername",
-        "height": 53,
-        "id": "52aa21a0-54b4-11eb-a6b1-4d989a83c3e1",
-        "index": 62,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "googlecloudsccfindingsourcepropertiesexceptioninstructions",
-        "height": 53,
-        "id": "97f27d70-54b4-11eb-a6b1-4d989a83c3e1",
-        "index": 63,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "googlecloudsccfindingsourcepropertiesreactivationcount",
-        "height": 53,
-        "id": "e3bfc4e0-55a6-11eb-8b0a-b10a1edb85f2",
-        "index": 64,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "googlecloudsccfindingsourcepropertiesprojectid",
-        "height": 53,
-        "id": "59fe0c00-54b4-11eb-a6b1-4d989a83c3e1",
-        "index": 65,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "googlecloudsccfindingsourcepropertiesactivationtrigger",
-        "height": 53,
-        "id": "a055dc00-54b4-11eb-a6b1-4d989a83c3e1",
-        "index": 66,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "googlecloudsccfindingsourcepropertiesexposedservice",
-        "height": 53,
-        "id": "aa972250-54b4-11eb-a6b1-4d989a83c3e1",
-        "index": 67,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "googlecloudsccfindingsourcepropertiescci",
-        "height": 53,
-        "id": "02de0390-5c9c-11eb-a936-1591d3039e22",
-        "index": 68,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "googlecloudsccfindingsourcepropertiesccl",
-        "height": 53,
-        "id": "06b60da0-5c9c-11eb-a936-1591d3039e22",
-        "index": 69,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "googlecloudsccfindingsourcepropertiesid",
-        "height": 53,
-        "id": "42652d80-5c9d-11eb-a936-1591d3039e22",
-        "index": 70,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "googlecloudsccfindingsourcepropertiesuserkey",
-        "height": 53,
-        "id": "0d0929d0-5c9c-11eb-a936-1591d3039e22",
-        "index": 71,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "googlecloudsccfindingsourcepropertieseventtype",
-        "height": 53,
-        "id": "3e98b1a0-5c9c-11eb-a936-1591d3039e22",
-        "index": 72,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "googlecloudsccfindingsourcepropertiesuserip",
-        "height": 53,
-        "id": "607f9680-5c9c-11eb-a936-1591d3039e22",
-        "index": 73,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "googlecloudsccfindingsourcepropertiesapp",
-        "height": 53,
-        "id": "a3c62ee0-5c9c-11eb-a936-1591d3039e22",
-        "index": 74,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "googlecloudsccfindingsourcepropertiesdstip",
-        "height": 53,
-        "id": "6fd9a440-5c9c-11eb-a936-1591d3039e22",
-        "index": 75,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "googlecloudsccfindingsourcepropertiesthreshold",
-        "height": 53,
-        "id": "9665be20-6145-11eb-bf0d-b53834898c59",
-        "index": 76,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "googlecloudsccfindingsourcepropertiesbrowserversion",
-        "height": 53,
-        "id": "855afdb0-6146-11eb-bf0d-b53834898c59",
-        "index": 77,
-        "sectionItemType": "field",
-        "startCol": 0
-       }
-      ],
-      "maxH": null,
-      "maxW": 1,
-      "minH": 1,
-      "minW": 1,
-      "moved": false,
-      "name": "Source Properties",
-      "static": false,
-      "w": 1,
-      "x": 2,
-      "y": 0
-     },
-     {
-      "displayType": "CARD",
-      "h": 2,
-      "hideName": false,
-      "i": "plk0ymivm5-1f009300-5c81-11eb-9289-6fcff7ab8d62",
-      "items": [
-       {
-        "endCol": 2,
-        "fieldId": "googlecloudsccfindingsourcepropertiesmfadetails",
-        "height": 22,
-        "id": "adb92cf0-5c82-11eb-9289-6fcff7ab8d62",
-        "index": 0,
-        "sectionItemType": "field",
-        "startCol": 0
-       }
-      ],
-      "maxH": null,
-      "maxW": 1,
-      "minH": 1,
-      "minW": 1,
-      "moved": false,
-      "name": "Mfa Details",
-      "static": false,
-      "w": 1,
-      "x": 2,
-      "y": 4
-     }
-    ],
-    "type": "custom"
-   },
-   {
-    "id": "warRoom",
-    "name": "War Room",
-    "type": "warRoom"
-   },
-   {
-    "id": "workPlan",
-    "name": "Work Plan",
-    "type": "workPlan"
-   },
-   {
-    "id": "evidenceBoard",
-    "name": "Evidence Board",
-    "type": "evidenceBoard"
-   },
-   {
-    "id": "relatedIncidents",
-    "name": "Related Incidents",
-    "type": "relatedIncidents"
-   },
-   {
-    "id": "canvas",
-    "name": "Canvas",
-    "type": "canvas"
-   }
-  ]
- },
- "edit": {
-  "sections": [
-   {
-    "description": "",
-    "fields": [
-     {
-      "fieldId": "incident_name",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_occurred",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_reminder",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_owner",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_roles",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_type",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_severity",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_playbookid",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_labels",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_phase",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_details",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_attachment",
-      "isVisible": true
-     }
-    ],
-    "isVisible": true,
-    "name": "Basic Information",
-    "query": null,
-    "queryType": "",
-    "readOnly": false,
-    "type": ""
-   },
-   {
-    "description": "",
-    "fields": [
-     {
-      "fieldId": "incident_agentid",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_alertid",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_alertname",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_app",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_assigneduser",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_assignmentgroup",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_caller",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_commandline",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_country",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_dbotprediction",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_dbotpredictionprobability",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_destinationhostname",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_destinationip",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_destinationnetwork",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_destinationport",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_detectionurl",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_deviceexternalip",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_devicehash",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_deviceid",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_devicelocalip",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_devicemodel",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_devicename",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_escalation",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_eventid",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_eventtype",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_filehash",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_filename",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_filepath",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_filesize",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_firstname",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_googlecloudsccassetdisplayname",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_googlecloudsccfindingname",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_googlecloudsccfindingparent",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_googlecloudsccfindingsourcepropertiesaccessmethod",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_googlecloudsccfindingsourcepropertiesacked",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_googlecloudsccfindingsourcepropertiesactivationtrigger",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_googlecloudsccfindingsourcepropertiesalert",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_googlecloudsccfindingsourcepropertiesalerttype",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_googlecloudsccfindingsourcepropertiesapp",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_googlecloudsccfindingsourcepropertiesappcategory",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_googlecloudsccfindingsourcepropertiesappsessionid",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_googlecloudsccfindingsourcepropertiesbrowser",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_googlecloudsccfindingsourcepropertiesbrowsersessionid",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_googlecloudsccfindingsourcepropertiesbrowserversion",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_googlecloudsccfindingsourcepropertiescci",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_googlecloudsccfindingsourcepropertiesccl",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_googlecloudsccfindingsourcepropertiesclientbytes",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_googlecloudsccfindingsourcepropertiescount",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_googlecloudsccfindingsourcepropertiesdevice",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_googlecloudsccfindingsourcepropertiesdomain",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_googlecloudsccfindingsourcepropertiesdstcountry",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_googlecloudsccfindingsourcepropertiesdstgeoipsrc",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_googlecloudsccfindingsourcepropertiesdstip",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_googlecloudsccfindingsourcepropertiesdstlocation",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_googlecloudsccfindingsourcepropertiesdstregion",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_googlecloudsccfindingsourcepropertiesdsttimezone",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_googlecloudsccfindingsourcepropertiesdstzipcode",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_googlecloudsccfindingsourcepropertieseventtype",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_googlecloudsccfindingsourcepropertiesexceptioninstructions",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_googlecloudsccfindingsourcepropertiesexposedservice",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_googlecloudsccfindingsourcepropertieshostname",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_googlecloudsccfindingsourcepropertiesid",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_googlecloudsccfindingsourcepropertiesinsertionepochtimestamp",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_googlecloudsccfindingsourcepropertieslastapp",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_googlecloudsccfindingsourcepropertieslastcountry",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_googlecloudsccfindingsourcepropertieslastdevice",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_googlecloudsccfindingsourcepropertieslastlocation",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_googlecloudsccfindingsourcepropertieslastregion",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_googlecloudsccfindingsourcepropertiesnumbytes",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_googlecloudsccfindingsourcepropertiesorganizationunit",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_googlecloudsccfindingsourcepropertiesorigty",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_googlecloudsccfindingsourcepropertiespage",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_googlecloudsccfindingsourcepropertiespageduration",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_googlecloudsccfindingsourcepropertiespageendtime",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_googlecloudsccfindingsourcepropertiespageid",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_googlecloudsccfindingsourcepropertiespagestarttime",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_googlecloudsccfindingsourcepropertiesprofileid",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_googlecloudsccfindingsourcepropertiesprojectid",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_googlecloudsccfindingsourcepropertiesreactivationcount",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_googlecloudsccfindingsourcepropertiesreqcnt",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_googlecloudsccfindingsourcepropertiesrespcnt",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_googlecloudsccfindingsourcepropertiesrisklevel",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_googlecloudsccfindingsourcepropertiesrisklevelid",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_googlecloudsccfindingsourcepropertiesscannername",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_googlecloudsccfindingsourcepropertiesserverbytes",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_googlecloudsccfindingsourcepropertiesseveritylevel",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_googlecloudsccfindingsourcepropertiessite",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_googlecloudsccfindingsourcepropertiesslclatitude",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_googlecloudsccfindingsourcepropertiessrccountry",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_googlecloudsccfindingsourcepropertiessrcgeoipsrc",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_googlecloudsccfindingsourcepropertiessrclocation",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_googlecloudsccfindingsourcepropertiessrcregion",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_googlecloudsccfindingsourcepropertiessrctimezone",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_googlecloudsccfindingsourcepropertiessrczipcode",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_googlecloudsccfindingsourcepropertiestenantname",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_googlecloudsccfindingsourcepropertiesthreshold",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_googlecloudsccfindingsourcepropertiestimestamp",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_googlecloudsccfindingsourcepropertiestraffictype",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_googlecloudsccfindingsourcepropertiesurnormalized",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_googlecloudsccfindingsourcepropertiesuser",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_googlecloudsccfindingsourcepropertiesuseragent",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_googlecloudsccfindingsourcepropertiesusergenerated",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_googlecloudsccfindingsourcepropertiesuserip",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_googlecloudsccfindingsourcepropertiesuserkey",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_googlecloudsccresourceparentdisplayname",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_googlecloudsccresourceprojectdisplayname",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_googlecloudsccresourcetype",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_googlecloudsccsource",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_incomingmirrorerror",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_investigationstage",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_lastname",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_logsource",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_lowlevelcategoriesevents",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_macaddress",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_md5",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_mobiledevicemodel",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_os",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_osversion",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_outgoingmirrorerror",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_phonenumber",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_pid",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_protocol",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_sha1",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_sha256",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_sha512",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_sourcehostname",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_sourceip",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_sourcenetwork",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_sourceport",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_sourceusername",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_state",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_subcategory",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_tenantname",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_ticketcloseddate",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_ticketnumber",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_ticketopeneddate",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_urlsslverification",
-      "isVisible": true
-     },
-     {
-      "fieldId": "incident_useraccountcontrol",
-      "isVisible": true
-     }
-    ],
-    "isVisible": true,
-    "name": "Custom Fields",
-    "query": null,
-    "queryType": "",
-    "readOnly": false,
-    "type": ""
-   }
-  ]
- },
- "group": "incident",
- "id": "Google Cloud SCC Finding",
- "name": "Google Cloud SCC Finding",
- "system": false,
- "version": -1,
- "fromVersion": "6.0.0"
+    "description": "Google Cloud SCC Finding Layout",
+    "detailsV2": {
+        "tabs": [
+            {
+                "id": "summary",
+                "name": "Legacy Summary",
+                "type": "summary"
+            },
+            {
+                "id": "caseinfoid",
+                "name": "Incident Info",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "type",
+                                "height": 22,
+                                "id": "incident-type-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "severity",
+                                "height": 22,
+                                "id": "incident-severity-field",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "owner",
+                                "height": 22,
+                                "id": "incident-owner-field",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotsource",
+                                "height": 22,
+                                "id": "incident-source-field",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sourcebrand",
+                                "height": 22,
+                                "id": "incident-sourceBrand-field",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sourceinstance",
+                                "height": 22,
+                                "id": "incident-sourceInstance-field",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "playbookid",
+                                "height": 22,
+                                "id": "incident-playbookId-field",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Case Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "h": 2,
+                        "i": "caseinfoid-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Notes",
+                        "static": false,
+                        "type": "notes",
+                        "w": 1,
+                        "x": 2,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-6aabad20-98b1-11e9-97d7-ed26ef9e46c8",
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Work Plan",
+                        "static": false,
+                        "type": "workplan",
+                        "w": 1,
+                        "x": 1,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-770ec200-98b1-11e9-97d7-ed26ef9e46c8",
+                        "isVisible": true,
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Linked Incidents",
+                        "static": false,
+                        "type": "linkedIncidents",
+                        "w": 1,
+                        "x": 1,
+                        "y": 6
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-842632c0-98b1-11e9-97d7-ed26ef9e46c8",
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Child Incidents",
+                        "static": false,
+                        "type": "childInv",
+                        "w": 1,
+                        "x": 2,
+                        "y": 4
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-4a31afa0-98ba-11e9-a519-93a53c759fe0",
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Evidence",
+                        "static": false,
+                        "type": "evidence",
+                        "w": 1,
+                        "x": 2,
+                        "y": 2
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "caseinfoid-7717e580-9bed-11e9-9a3f-8b4b2158e260",
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Team Members",
+                        "static": false,
+                        "type": "team",
+                        "w": 1,
+                        "x": 2,
+                        "y": 6
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-7ce69dd0-a07f-11e9-936c-5395a1acf11e",
+                        "maxH": null,
+                        "maxW": 2,
+                        "minH": 1,
+                        "minW": 2,
+                        "moved": false,
+                        "name": "Indicators",
+                        "query": "",
+                        "queryType": "input",
+                        "static": false,
+                        "type": "indicators",
+                        "w": 2,
+                        "x": 0,
+                        "y": 4
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "i": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
+                        "items": [
+                            {
+                                "endCol": 1,
+                                "fieldId": "occurred",
+                                "height": 22,
+                                "id": "incident-occurred-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 1,
+                                "fieldId": "dbotmodified",
+                                "height": 22,
+                                "id": "incident-modified-field",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotduedate",
+                                "height": 22,
+                                "id": "incident-dueDate-field",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotcreated",
+                                "height": 22,
+                                "id": "incident-created-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 1
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotclosed",
+                                "height": 22,
+                                "id": "incident-closed-field",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 1
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Timeline Information",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 2
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-88e6bf70-a0b1-11e9-b27f-13ae1773d289",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotclosed",
+                                "height": 22,
+                                "id": "incident-dbotClosed-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "closereason",
+                                "height": 22,
+                                "id": "incident-closeReason-field",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "closenotes",
+                                "height": 22,
+                                "id": "incident-closeNotes-field",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Closing Information",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 6
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "i": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "details",
+                                "height": 22,
+                                "id": "incident-details-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Investigation Data",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 2
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "hidden": false,
+                "id": "plk0ymivm5",
+                "name": "Google Cloud SCC",
+                "sections": [
+                    {
+                        "displayType": "CARD",
+                        "h": 4,
+                        "hideName": false,
+                        "i": "plk0ymivm5-0111ff60-51d6-11eb-8a8f-7d8a1ff77baf",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "googlecloudsccoverview",
+                                "height": 53,
+                                "id": "2aa10690-6c58-11eb-9507-cf76f3d0fbf7",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "googlecloudsccfindingcategory",
+                                "height": 53,
+                                "id": "6649af10-6c5f-11eb-b852-8b09ebcbb278",
+                                "index": 1,
+                                "listId": "plk0ymivm5-0111ff60-51d6-11eb-8a8f-7d8a1ff77baf",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "googlecloudsccfindingmostrecentlyseen",
+                                "height": 53,
+                                "id": "80b0c190-5ada-11eb-b006-77ca1ffddd91",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "googlecloudsccfindingfirstdiscovered",
+                                "height": 53,
+                                "id": "7bf66dd0-5ada-11eb-b006-77ca1ffddd91",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "googlecloudsccfindingurl",
+                                "height": 53,
+                                "id": "eba4d2c0-5be8-11eb-9413-47d322525c0d",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Finding Summary",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "plk0ymivm5-ae8bc9a0-51d6-11eb-8a8f-7d8a1ff77baf",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "googlecloudsccsecuritymarks",
+                                "height": 106,
+                                "id": "f5e392f0-5be6-11eb-9413-47d322525c0d",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Security Marks",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 4
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "hideItemTitleOnlyOne": false,
+                        "hideName": false,
+                        "i": "plk0ymivm5-f95f5dc0-51d6-11eb-8a8f-7d8a1ff77baf",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "googlecloudsccrecommendation",
+                                "height": 106,
+                                "id": "a3a63d10-5c97-11eb-ad7c-f91f6c442086",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Recommendation",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 4
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 4,
+                        "hideName": false,
+                        "i": "plk0ymivm5-20c80510-51d7-11eb-8a8f-7d8a1ff77baf",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "severity",
+                                "height": 53,
+                                "id": "c5bac6b0-51d8-11eb-8a8f-7d8a1ff77baf",
+                                "index": 0,
+                                "listId": "plk0ymivm5-20c80510-51d7-11eb-8a8f-7d8a1ff77baf",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "googlecloudsccfindingcreatetime",
+                                "height": 53,
+                                "id": "5554f8f0-51d8-11eb-8a8f-7d8a1ff77baf",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "googlecloudsccassetdisplayname",
+                                "height": 53,
+                                "id": "94bdfc40-5439-11eb-9895-433ad3f802cd",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "googlecloudsccfindingeventtime",
+                                "height": 53,
+                                "id": "cdf4b980-5a16-11eb-9140-67587e8920aa",
+                                "index": 3,
+                                "listId": "plk0ymivm5-20c80510-51d7-11eb-8a8f-7d8a1ff77baf",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "googlecloudsccfindingexternaluri",
+                                "height": 53,
+                                "id": "a27a1170-5439-11eb-9895-433ad3f802cd",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "googlecloudsccfindingname",
+                                "height": 53,
+                                "id": "a496afe0-5439-11eb-9895-433ad3f802cd",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "googlecloudsccresourceparentdisplayname",
+                                "height": 53,
+                                "id": "74bc2230-5585-11eb-8d73-ab5dbe2c181c",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "googlecloudsccresourceprojectdisplayname",
+                                "height": 53,
+                                "id": "bc568d30-5439-11eb-9895-433ad3f802cd",
+                                "index": 7,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "googlecloudsccresourcename",
+                                "height": 53,
+                                "id": "ff627dc0-6143-11eb-bf0d-b53834898c59",
+                                "index": 8,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "googlecloudsccresourceprojectname",
+                                "height": 53,
+                                "id": "c419b420-5439-11eb-9895-433ad3f802cd",
+                                "index": 9,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "googlecloudsccfindingparent",
+                                "height": 53,
+                                "id": "a7cbea40-5439-11eb-9895-433ad3f802cd",
+                                "index": 10,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "googlecloudsccresourceparentname",
+                                "height": 53,
+                                "id": "b62ccaf0-5439-11eb-9895-433ad3f802cd",
+                                "index": 11,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Additional Information",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 4,
+                        "hideItemTitleOnlyOne": false,
+                        "hideName": false,
+                        "i": "plk0ymivm5-2b06da60-51d7-11eb-8a8f-7d8a1ff77baf",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "sourceip",
+                                "height": 53,
+                                "id": "50aa8e40-51d9-11eb-8a8f-7d8a1ff77baf",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "eventtype",
+                                "height": 53,
+                                "id": "cfd4e080-51d9-11eb-8a8f-7d8a1ff77baf",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "osversion",
+                                "height": 53,
+                                "id": "578b00e0-51da-11eb-8a8f-7d8a1ff77baf",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "os",
+                                "height": 53,
+                                "id": "422d2f70-51da-11eb-8a8f-7d8a1ff77baf",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "alertname",
+                                "height": 53,
+                                "id": "7775eeb0-51da-11eb-8a8f-7d8a1ff77baf",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "googlecloudsccfindingsourcepropertiesdstregion",
+                                "height": 53,
+                                "id": "ba6a2d70-54b0-11eb-8244-156c3b198745",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "googlecloudsccfindingsourcepropertiessrczipcode",
+                                "height": 53,
+                                "id": "c4a8b4a0-54b0-11eb-8244-156c3b198745",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "googlecloudsccfindingsourcepropertiesreqcnt",
+                                "height": 53,
+                                "id": "cee62a60-54b0-11eb-8244-156c3b198745",
+                                "index": 7,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "googlecloudsccfindingsourcepropertiespageduration",
+                                "height": 53,
+                                "id": "d956be10-54b0-11eb-8244-156c3b198745",
+                                "index": 8,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "googlecloudsccfindingsourcepropertiesinsertionepochtimestamp",
+                                "height": 53,
+                                "id": "ebbb0b40-5584-11eb-8d73-ab5dbe2c181c",
+                                "index": 9,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "googlecloudsccfindingsourcepropertiesorigty",
+                                "height": 53,
+                                "id": "e3147c80-54b0-11eb-8244-156c3b198745",
+                                "index": 10,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "googlecloudsccfindingsourcepropertiesslclatitude",
+                                "height": 53,
+                                "id": "5f9fe0f0-54b1-11eb-a6b1-4d989a83c3e1",
+                                "index": 11,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "googlecloudsccfindingsourcepropertiesusergenerated",
+                                "height": 53,
+                                "id": "528f9c20-54b1-11eb-a6b1-4d989a83c3e1",
+                                "index": 12,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "googlecloudsccfindingsourcepropertiestenantname",
+                                "height": 53,
+                                "id": "6d3f9480-54b1-11eb-a6b1-4d989a83c3e1",
+                                "index": 13,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "googlecloudsccfindingsourcepropertiessrcgeoipsrc",
+                                "height": 53,
+                                "id": "7ec9efc0-54b1-11eb-a6b1-4d989a83c3e1",
+                                "index": 14,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "googlecloudsccfindingsourcepropertiesappcategory",
+                                "height": 53,
+                                "id": "868e4f30-54b1-11eb-a6b1-4d989a83c3e1",
+                                "index": 15,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "googlecloudsccfindingsourcepropertiescount",
+                                "height": 53,
+                                "id": "95205200-54b1-11eb-a6b1-4d989a83c3e1",
+                                "index": 16,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "googlecloudsccfindingsourcepropertieslastcountry",
+                                "height": 53,
+                                "id": "9cf3f3b0-54b1-11eb-a6b1-4d989a83c3e1",
+                                "index": 17,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "googlecloudsccfindingsourcepropertiesorganizationunit",
+                                "height": 53,
+                                "id": "a549bdb0-54b1-11eb-a6b1-4d989a83c3e1",
+                                "index": 18,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "googlecloudsccfindingsourcepropertiesserverbytes",
+                                "height": 53,
+                                "id": "b3c922e0-54b1-11eb-a6b1-4d989a83c3e1",
+                                "index": 19,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "googlecloudsccfindingsourcepropertiesprofileid",
+                                "height": 53,
+                                "id": "c288c560-54b1-11eb-a6b1-4d989a83c3e1",
+                                "index": 20,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "googlecloudsccfindingsourcepropertiessrccountry",
+                                "height": 53,
+                                "id": "bab0ddf0-54b1-11eb-a6b1-4d989a83c3e1",
+                                "index": 21,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "googlecloudsccfindingsourcepropertiesdomain",
+                                "height": 53,
+                                "id": "ceba1be0-54b1-11eb-a6b1-4d989a83c3e1",
+                                "index": 22,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "googlecloudsccfindingsourcepropertiesdstzipcode",
+                                "height": 53,
+                                "id": "d6729470-54b1-11eb-a6b1-4d989a83c3e1",
+                                "index": 23,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "googlecloudsccfindingsourcepropertiesdsttimezone",
+                                "height": 53,
+                                "id": "038c4b90-54b2-11eb-a6b1-4d989a83c3e1",
+                                "index": 24,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "googlecloudsccfindingsourcepropertiespagestarttime",
+                                "height": 53,
+                                "id": "8f4af6e0-59cb-11eb-8d0f-71208ddea44c",
+                                "index": 25,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "googlecloudsccfindingsourcepropertiesseveritylevel",
+                                "height": 53,
+                                "id": "5639f320-5c8b-11eb-a936-1591d3039e22",
+                                "index": 26,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "googlecloudsccfindingsourcepropertieshostname",
+                                "height": 53,
+                                "id": "34504f20-5c8b-11eb-a936-1591d3039e22",
+                                "index": 27,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "googlecloudsccfindingsourcepropertiespage",
+                                "height": 53,
+                                "id": "e86bde20-54b1-11eb-a6b1-4d989a83c3e1",
+                                "index": 28,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "googlecloudsccfindingsourcepropertiesnumbytes",
+                                "height": 53,
+                                "id": "eee39950-54b1-11eb-a6b1-4d989a83c3e1",
+                                "index": 29,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "googlecloudsccfindingsourcepropertiesdevice",
+                                "height": 53,
+                                "id": "fb3d8670-54b1-11eb-a6b1-4d989a83c3e1",
+                                "index": 30,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "googlecloudsccfindingsourcepropertiesaccessmethod",
+                                "height": 53,
+                                "id": "14d7c910-54b2-11eb-a6b1-4d989a83c3e1",
+                                "index": 31,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "googlecloudsccfindingsourcepropertiesappsessionid",
+                                "height": 53,
+                                "id": "0c384be0-54b2-11eb-a6b1-4d989a83c3e1",
+                                "index": 32,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "googlecloudsccfindingsourcepropertiessrctimezone",
+                                "height": 53,
+                                "id": "2ed8a040-54b3-11eb-a6b1-4d989a83c3e1",
+                                "index": 33,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "googlecloudsccfindingsourcepropertiestraffictype",
+                                "height": 53,
+                                "id": "46a48b80-54b3-11eb-a6b1-4d989a83c3e1",
+                                "index": 34,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "googlecloudsccfindingsourcepropertiespageendtime",
+                                "height": 53,
+                                "id": "3699cb60-54b3-11eb-a6b1-4d989a83c3e1",
+                                "index": 35,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "googlecloudsccfindingsourcepropertiesuser",
+                                "height": 53,
+                                "id": "17570480-6c59-11eb-b206-0db49a1c117b",
+                                "index": 36,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "googlecloudsccfindingsourcepropertiesuseragent",
+                                "height": 53,
+                                "id": "3ddb1820-54b3-11eb-a6b1-4d989a83c3e1",
+                                "index": 37,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "googlecloudsccfindingsourcepropertiesbrowsersessionid",
+                                "height": 53,
+                                "id": "50738800-54b3-11eb-a6b1-4d989a83c3e1",
+                                "index": 38,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "googlecloudsccfindingsourcepropertiespageid",
+                                "height": 53,
+                                "id": "6152fd40-54b3-11eb-a6b1-4d989a83c3e1",
+                                "index": 39,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "googlecloudsccfindingsourcepropertiesalerttype",
+                                "height": 53,
+                                "id": "5ab5dfc0-54b3-11eb-a6b1-4d989a83c3e1",
+                                "index": 40,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "googlecloudsccfindingsourcepropertiesalert",
+                                "height": 53,
+                                "id": "6fc9d6f0-54b3-11eb-a6b1-4d989a83c3e1",
+                                "index": 41,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "googlecloudsccfindingsourcepropertiesurnormalized",
+                                "height": 53,
+                                "id": "665c5b60-54b3-11eb-a6b1-4d989a83c3e1",
+                                "index": 42,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "googlecloudsccfindingsourcepropertiesrespcnt",
+                                "height": 53,
+                                "id": "75780090-54b3-11eb-a6b1-4d989a83c3e1",
+                                "index": 43,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "googlecloudsccfindingsourcepropertiesbrowser",
+                                "height": 53,
+                                "id": "7efd22d0-54b3-11eb-a6b1-4d989a83c3e1",
+                                "index": 44,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "googlecloudsccfindingsourcepropertiesseverity",
+                                "height": 53,
+                                "id": "97704a90-54b3-11eb-a6b1-4d989a83c3e1",
+                                "index": 45,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "googlecloudsccfindingsourcepropertiestimestamp",
+                                "height": 53,
+                                "id": "9137e250-54b3-11eb-a6b1-4d989a83c3e1",
+                                "index": 46,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "googlecloudsccfindingsourcepropertiesrisklevelid",
+                                "height": 53,
+                                "id": "87502db0-54b3-11eb-a6b1-4d989a83c3e1",
+                                "index": 47,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "googlecloudsccfindingsourcepropertiesdstcountry",
+                                "height": 53,
+                                "id": "a7943800-54b3-11eb-a6b1-4d989a83c3e1",
+                                "index": 48,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "googlecloudsccfindingsourcepropertiessrcregion",
+                                "height": 53,
+                                "id": "b400c2c0-54b3-11eb-a6b1-4d989a83c3e1",
+                                "index": 49,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "googlecloudsccfindingsourcepropertiesacked",
+                                "height": 53,
+                                "id": "c06907c0-54b3-11eb-a6b1-4d989a83c3e1",
+                                "index": 50,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "googlecloudsccfindingsourcepropertieslastdevice",
+                                "height": 53,
+                                "id": "c89d6710-54b3-11eb-a6b1-4d989a83c3e1",
+                                "index": 51,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "googlecloudsccfindingsourcepropertiesclientbytes",
+                                "height": 53,
+                                "id": "ba5c6a70-54b3-11eb-a6b1-4d989a83c3e1",
+                                "index": 52,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "googlecloudsccfindingsourcepropertieslastapp",
+                                "height": 53,
+                                "id": "d01f8d60-54b3-11eb-a6b1-4d989a83c3e1",
+                                "index": 53,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "googlecloudsccfindingsourcepropertiessrclocation",
+                                "height": 53,
+                                "id": "d74d0400-54b3-11eb-a6b1-4d989a83c3e1",
+                                "index": 54,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "googlecloudsccfindingsourcepropertieslastlocation",
+                                "height": 53,
+                                "id": "e351cc40-54b3-11eb-a6b1-4d989a83c3e1",
+                                "index": 55,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "googlecloudsccfindingsourcepropertieslastregion",
+                                "height": 53,
+                                "id": "df177df0-54b3-11eb-a6b1-4d989a83c3e1",
+                                "index": 56,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "googlecloudsccfindingsourcepropertiesrisklevel",
+                                "height": 53,
+                                "id": "ec7cc090-54b3-11eb-a6b1-4d989a83c3e1",
+                                "index": 57,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "googlecloudsccfindingsourcepropertiesdstlocation",
+                                "height": 53,
+                                "id": "fa664e60-54b3-11eb-a6b1-4d989a83c3e1",
+                                "index": 58,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "googlecloudsccfindingsourcepropertiesslclongitute",
+                                "height": 53,
+                                "id": "33fc95d0-54b4-11eb-a6b1-4d989a83c3e1",
+                                "index": 59,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "googlecloudsccfindingsourcepropertiessite",
+                                "height": 53,
+                                "id": "f2a45ff0-54b3-11eb-a6b1-4d989a83c3e1",
+                                "index": 60,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "googlecloudsccfindingsourcepropertiesdstgeoipsrc",
+                                "height": 53,
+                                "id": "3e280a30-54b4-11eb-a6b1-4d989a83c3e1",
+                                "index": 61,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "googlecloudsccfindingsourcepropertiesscannername",
+                                "height": 53,
+                                "id": "52aa21a0-54b4-11eb-a6b1-4d989a83c3e1",
+                                "index": 62,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "googlecloudsccfindingsourcepropertiesexceptioninstructions",
+                                "height": 53,
+                                "id": "97f27d70-54b4-11eb-a6b1-4d989a83c3e1",
+                                "index": 63,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "googlecloudsccfindingsourcepropertiesreactivationcount",
+                                "height": 53,
+                                "id": "e3bfc4e0-55a6-11eb-8b0a-b10a1edb85f2",
+                                "index": 64,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "googlecloudsccfindingsourcepropertiesprojectid",
+                                "height": 53,
+                                "id": "59fe0c00-54b4-11eb-a6b1-4d989a83c3e1",
+                                "index": 65,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "googlecloudsccfindingsourcepropertiesactivationtrigger",
+                                "height": 53,
+                                "id": "a055dc00-54b4-11eb-a6b1-4d989a83c3e1",
+                                "index": 66,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "googlecloudsccfindingsourcepropertiesexposedservice",
+                                "height": 53,
+                                "id": "aa972250-54b4-11eb-a6b1-4d989a83c3e1",
+                                "index": 67,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "googlecloudsccfindingsourcepropertiescci",
+                                "height": 53,
+                                "id": "02de0390-5c9c-11eb-a936-1591d3039e22",
+                                "index": 68,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "googlecloudsccfindingsourcepropertiesccl",
+                                "height": 53,
+                                "id": "06b60da0-5c9c-11eb-a936-1591d3039e22",
+                                "index": 69,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "googlecloudsccfindingsourcepropertiesid",
+                                "height": 53,
+                                "id": "42652d80-5c9d-11eb-a936-1591d3039e22",
+                                "index": 70,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "googlecloudsccfindingsourcepropertiesuserkey",
+                                "height": 53,
+                                "id": "0d0929d0-5c9c-11eb-a936-1591d3039e22",
+                                "index": 71,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "googlecloudsccfindingsourcepropertieseventtype",
+                                "height": 53,
+                                "id": "3e98b1a0-5c9c-11eb-a936-1591d3039e22",
+                                "index": 72,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "googlecloudsccfindingsourcepropertiesuserip",
+                                "height": 53,
+                                "id": "607f9680-5c9c-11eb-a936-1591d3039e22",
+                                "index": 73,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "googlecloudsccfindingsourcepropertiesapp",
+                                "height": 53,
+                                "id": "a3c62ee0-5c9c-11eb-a936-1591d3039e22",
+                                "index": 74,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "googlecloudsccfindingsourcepropertiesdstip",
+                                "height": 53,
+                                "id": "6fd9a440-5c9c-11eb-a936-1591d3039e22",
+                                "index": 75,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "googlecloudsccfindingsourcepropertiesthreshold",
+                                "height": 53,
+                                "id": "9665be20-6145-11eb-bf0d-b53834898c59",
+                                "index": 76,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "googlecloudsccfindingsourcepropertiesbrowserversion",
+                                "height": 53,
+                                "id": "855afdb0-6146-11eb-bf0d-b53834898c59",
+                                "index": 77,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Source Properties",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "plk0ymivm5-1f009300-5c81-11eb-9289-6fcff7ab8d62",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "googlecloudsccfindingsourcepropertiesmfadetails",
+                                "height": 22,
+                                "id": "adb92cf0-5c82-11eb-9289-6fcff7ab8d62",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Mfa Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 4
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "id": "warRoom",
+                "name": "War Room",
+                "type": "warRoom"
+            },
+            {
+                "id": "workPlan",
+                "name": "Work Plan",
+                "type": "workPlan"
+            },
+            {
+                "id": "evidenceBoard",
+                "name": "Evidence Board",
+                "type": "evidenceBoard"
+            },
+            {
+                "id": "relatedIncidents",
+                "name": "Related Incidents",
+                "type": "relatedIncidents"
+            },
+            {
+                "id": "canvas",
+                "name": "Canvas",
+                "type": "canvas"
+            }
+        ]
+    },
+    "edit": {
+        "sections": [
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "incident_name",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_occurred",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_reminder",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_owner",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_roles",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_type",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_severity",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_playbookid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_labels",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_phase",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_details",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_attachment",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Basic Information",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            },
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "incident_agentid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_alertid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_alertname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_app",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_assigneduser",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_assignmentgroup",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_caller",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_commandline",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_country",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_dbotprediction",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_dbotpredictionprobability",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_destinationhostname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_destinationip",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_destinationnetwork",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_destinationport",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_detectionurl",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_deviceexternalip",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_devicehash",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_deviceid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_devicelocalip",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_devicemodel",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_devicename",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_escalation",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_eventid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_eventtype",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_filehash",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_filename",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_filepath",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_filesize",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_firstname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_googlecloudsccassetdisplayname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_googlecloudsccfindingname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_googlecloudsccfindingparent",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_googlecloudsccfindingsourcepropertiesaccessmethod",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_googlecloudsccfindingsourcepropertiesacked",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_googlecloudsccfindingsourcepropertiesactivationtrigger",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_googlecloudsccfindingsourcepropertiesalert",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_googlecloudsccfindingsourcepropertiesalerttype",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_googlecloudsccfindingsourcepropertiesapp",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_googlecloudsccfindingsourcepropertiesappcategory",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_googlecloudsccfindingsourcepropertiesappsessionid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_googlecloudsccfindingsourcepropertiesbrowser",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_googlecloudsccfindingsourcepropertiesbrowsersessionid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_googlecloudsccfindingsourcepropertiesbrowserversion",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_googlecloudsccfindingsourcepropertiescci",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_googlecloudsccfindingsourcepropertiesccl",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_googlecloudsccfindingsourcepropertiesclientbytes",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_googlecloudsccfindingsourcepropertiescount",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_googlecloudsccfindingsourcepropertiesdevice",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_googlecloudsccfindingsourcepropertiesdomain",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_googlecloudsccfindingsourcepropertiesdstcountry",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_googlecloudsccfindingsourcepropertiesdstgeoipsrc",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_googlecloudsccfindingsourcepropertiesdstip",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_googlecloudsccfindingsourcepropertiesdstlocation",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_googlecloudsccfindingsourcepropertiesdstregion",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_googlecloudsccfindingsourcepropertiesdsttimezone",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_googlecloudsccfindingsourcepropertiesdstzipcode",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_googlecloudsccfindingsourcepropertieseventtype",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_googlecloudsccfindingsourcepropertiesexceptioninstructions",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_googlecloudsccfindingsourcepropertiesexposedservice",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_googlecloudsccfindingsourcepropertieshostname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_googlecloudsccfindingsourcepropertiesid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_googlecloudsccfindingsourcepropertiesinsertionepochtimestamp",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_googlecloudsccfindingsourcepropertieslastapp",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_googlecloudsccfindingsourcepropertieslastcountry",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_googlecloudsccfindingsourcepropertieslastdevice",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_googlecloudsccfindingsourcepropertieslastlocation",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_googlecloudsccfindingsourcepropertieslastregion",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_googlecloudsccfindingsourcepropertiesnumbytes",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_googlecloudsccfindingsourcepropertiesorganizationunit",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_googlecloudsccfindingsourcepropertiesorigty",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_googlecloudsccfindingsourcepropertiespage",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_googlecloudsccfindingsourcepropertiespageduration",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_googlecloudsccfindingsourcepropertiespageendtime",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_googlecloudsccfindingsourcepropertiespageid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_googlecloudsccfindingsourcepropertiespagestarttime",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_googlecloudsccfindingsourcepropertiesprofileid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_googlecloudsccfindingsourcepropertiesprojectid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_googlecloudsccfindingsourcepropertiesreactivationcount",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_googlecloudsccfindingsourcepropertiesreqcnt",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_googlecloudsccfindingsourcepropertiesrespcnt",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_googlecloudsccfindingsourcepropertiesrisklevel",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_googlecloudsccfindingsourcepropertiesrisklevelid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_googlecloudsccfindingsourcepropertiesscannername",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_googlecloudsccfindingsourcepropertiesserverbytes",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_googlecloudsccfindingsourcepropertiesseveritylevel",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_googlecloudsccfindingsourcepropertiessite",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_googlecloudsccfindingsourcepropertiesslclatitude",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_googlecloudsccfindingsourcepropertiessrccountry",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_googlecloudsccfindingsourcepropertiessrcgeoipsrc",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_googlecloudsccfindingsourcepropertiessrclocation",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_googlecloudsccfindingsourcepropertiessrcregion",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_googlecloudsccfindingsourcepropertiessrctimezone",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_googlecloudsccfindingsourcepropertiessrczipcode",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_googlecloudsccfindingsourcepropertiestenantname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_googlecloudsccfindingsourcepropertiesthreshold",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_googlecloudsccfindingsourcepropertiestimestamp",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_googlecloudsccfindingsourcepropertiestraffictype",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_googlecloudsccfindingsourcepropertiesurnormalized",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_googlecloudsccfindingsourcepropertiesuser",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_googlecloudsccfindingsourcepropertiesuseragent",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_googlecloudsccfindingsourcepropertiesusergenerated",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_googlecloudsccfindingsourcepropertiesuserip",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_googlecloudsccfindingsourcepropertiesuserkey",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_googlecloudsccresourceparentdisplayname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_googlecloudsccresourceprojectdisplayname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_googlecloudsccresourcetype",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_googlecloudsccsource",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_incomingmirrorerror",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_investigationstage",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_lastname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_logsource",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_lowlevelcategoriesevents",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_macaddress",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_md5",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_mobiledevicemodel",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_os",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_osversion",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_outgoingmirrorerror",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_phonenumber",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_pid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_protocol",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_sha1",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_sha256",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_sha512",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_sourcehostname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_sourceip",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_sourcenetwork",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_sourceport",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_sourceusername",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_state",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_subcategory",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_tenantname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_ticketcloseddate",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_ticketnumber",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_ticketopeneddate",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_urlsslverification",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_useraccountcontrol",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Custom Fields",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            }
+        ]
+    },
+    "group": "incident",
+    "id": "Google Cloud SCC Finding",
+    "name": "Google Cloud SCC Finding",
+    "system": false,
+    "version": -1,
+    "fromVersion": "6.0.0",
+    "marketplaces": [
+        "xsoar"
+    ]
 }
