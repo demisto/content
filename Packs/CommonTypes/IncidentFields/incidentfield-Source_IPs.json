@@ -1,8 +1,6 @@
 {
   "associatedToAll": true,
-  "associatedTypes": [
-    "Qradar Generic"
-  ],
+  "associatedTypes": [],
   "breachScript": "",
   "caseInsensitive": true,
   "cliName": "sourceips",
