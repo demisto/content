@@ -4072,7 +4072,7 @@
             ]
         },
         {
-            "playbookID": "Cofense Intelligence v2 test",
+            "playbookID": "Cofense Intelligence v2-Test",
             "fromversion": "5.5.0",
             "integrations": [
                 "CofenseIntelligenceV2"
@@ -5095,7 +5095,6 @@
         "EWS_O365_test": "Issue 25605",
         "Cherwell - test": "Issue 26780",
         "Cherwell Example Scripts - test": "Issue 27107",
-        "Cofense Intelligence v2 test": "Issue 44499",
         "Endpoint Malware Investigation - Generic - Test": "Issue 44779",
         "Mimecast test": "Issue 26906",
         "AutoFocus V2 test": "Issue 26464",
@@ -5108,6 +5107,7 @@
     "skipped_integrations": {
         
         "_comment1": "~~~ NO INSTANCE ~~~",
+        "Vertica": "No insance issue 45719",
         "Ipstack": "Usage limit reached (Issue 38063)",
         "AnsibleAlibabaCloud": "No instance - issue 40447",
         "AnsibleAzure": "No instance - issue 40447",
@@ -5125,6 +5125,10 @@
         "SOCRadarIncidents": "No instance - developed by partner",
         "SOCRadarThreatFusion": "No instance - developed by partner",
         "trustwave secure email gateway": "No instance - developed by Qmasters",
+        "Azure Storage Table": "No instance - developed by Qmasters",
+        "Azure Storage Queue": "No instance - developed by Qmasters",
+        "Azure Storage FileShare": "No instance - developed by Qmasters",
+        "Azure Storage Container": "No instance - developed by Qmasters",
         "VMware Workspace ONE UEM (AirWatch MDM)": "No instance - developed by crest",
         "ServiceDeskPlus (On-Premise)": "No instance",
         "Forcepoint": "instance issues. Issue 28043",

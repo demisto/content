@@ -33,6 +33,10 @@
         {
           "cliName": "processpath",
           "type": "shortText"
-        }
+        },
+        {
+            "cliName": "cmdline",
+            "type": "multiSelect"
+          }
     ]
 }

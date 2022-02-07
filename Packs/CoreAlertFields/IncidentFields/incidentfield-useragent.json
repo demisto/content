@@ -27,5 +27,16 @@
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "6.5.0",
-	"x2_fields": "user_agent"
+	"x2_fields": "user_agent",
+    "Aliases": [
+        {
+          "cliName": "googlecloudsccfindingsourcepropertiesuseragent",
+          "type": "shortText"
+        },
+        {
+            "cliName": "proofpointtapuseragent",
+            "type": "shortText"
+        }
+      
+    ]
 }
