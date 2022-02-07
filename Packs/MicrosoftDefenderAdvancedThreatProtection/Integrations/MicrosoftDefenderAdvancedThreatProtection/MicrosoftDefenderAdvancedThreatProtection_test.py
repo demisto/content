@@ -922,3 +922,35 @@ def test_add_error_message_raise_error(failed_devices, all_requested_devices):
 def test_parse_indicator_batch_response(indicators_response, expected_result):
     from MicrosoftDefenderAdvancedThreatProtection import parse_indicator_batch_response
     assert parse_indicator_batch_response(indicators_response) == expected_result
+
+
+ALERT_JSON = {'id': '1', 'incidentId': 2, 'investigationId': 3, 'assignedTo': 'Automation', 'severity': 'Informational',
+              'status': 'Resolved', 'classification': None, 'determination': None,
+              'investigationState': 'SuccessfullyRemediated',
+              'detectionSource': 'WindowsDefenderAv', 'detectorId': '4',
+              'category': 'Malware', 'threatFamilyName': 'Test_File', 'title': "Test_File",
+              'description': 'Test', 'alertCreationTime': '2022-02-07T10:26:40.05748Z',
+              'firstEventTime': '2022-02-07T10:20:52.2188896Z',
+              'lastEventTime': '2022-02-07T10:20:52.2571395Z', 'lastUpdateTime': '2022-02-07T10:57:13.93Z',
+              'resolvedTime': '2022-02-07T10:57:13.773683Z', 'machineId': '4',
+              'computerDnsName': 'win2016', 'rbacGroupName': None,
+              'aadTenantId': 'ebac1a16-81bf-449b-8d43-5732c3c1d999', 'threatName': 'Test',
+              'mitreTechniques': [], 'relatedUser': None, 'comments': [],
+              'evidence': [{'entityType': 'File', 'evidenceCreationTime': '2022-02-07T10:26:40.24Z',
+                            'sha1': '33', 'sha256': '27', 'fileName': 'test.com',
+                            'filePath': 'Downloads', 'processId': None, 'processCommandLine': None,
+                            'processCreationTime': None, 'parentProcessId': None, 'parentProcessCreationTime': None,
+                            'parentProcessFileName': None, 'parentProcessFilePath': None, 'ipAddress': None,
+                            'url': None,
+                            'registryKey': None, 'registryHive': None, 'registryValueType': None, 'registryValue': None,
+                            'accountName': None, 'domainName': None, 'userSid': None, 'aadUserId': None,
+                            'userPrincipalName': None,
+                            'detectionStatus': 'Prevented'}]}
+
+
+def test_get_alert_by_id_command(mocker):
+    from MicrosoftDefenderAdvancedThreatProtection import get_alert_by_id_command
+    mocker.patch.object(client_mocker, 'get_alert_by_id', return_value=ALERT_JSON)
+    results = get_alert_by_id_command(client_mocker, {'alert_ids': ['1']})
+    assert results.outputs[0]['ID'] == '1'
+    assert len(results.outputs[0]) == len(ALERT_JSON.keys())
