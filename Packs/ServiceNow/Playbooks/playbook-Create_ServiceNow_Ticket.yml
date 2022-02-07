@@ -344,14 +344,12 @@ inputs:
 - key: Impact
   value: {}
   required: false
-  description: The impact for the new ticket. Leave empty for ServiceNow default
-    impact.
+  description: The impact for the new ticket. Leave empty for ServiceNow default impact.
   playbookInputQuery:
 - key: Urgency
   value: {}
   required: false
-  description: The urgency of the new ticket. Leave empty for ServiceNow default
-    urgency.
+  description: The urgency of the new ticket. Leave empty for ServiceNow default urgency.
   playbookInputQuery:
 - key: 'Severity '
   value: {}
@@ -368,12 +366,12 @@ inputs:
   value:
     simple: Mirror
   required: false
-  description: "The value of the desired sync method with ServiceNow Ticket. You\
-    \ can choose one of the following options:\n1. StatePolling\n2. Mirror \n3. Blank for\
-    \ none \n\nGenericPolling polls for the state of the ticket and runs until the\
-    \ ticket state is either resolved or closed. \n\nMirror - You can use the Mirror\
-    \ option to perform a full sync with the ServiceNow Ticket. The ticket data is\
-    \ synced automatically between ServiceNow and Cortex XSOAR with the ServiceNow\
+  description: "The value of the desired sync method with ServiceNow Ticket. You can\
+    \ choose one of the following options:\n1. StatePolling\n2. Mirror \n3. Blank\
+    \ for none \n\nGenericPolling polls for the state of the ticket and runs until\
+    \ the ticket state is either resolved or closed. \n\nMirror - You can use the\
+    \ Mirror option to perform a full sync with the ServiceNow Ticket. The ticket\
+    \ data is synced automatically between ServiceNow and Cortex XSOAR with the ServiceNow\
     \ mirror feature.\nIf this option is selected, FieldPolling is true by default."
   playbookInputQuery:
 - key: PollingInterval
@@ -393,26 +391,25 @@ inputs:
   required: false
   description: "In this use case, additional polling commands are relevant when using\
     \ StatePolling, and there is more than one ServiceNow instance. It will specify\
-    \ the polling command to use a specific instance to run on. \nIf so, add\
-    \ \"Using\" to the value. \nThe playbook will then take the instance name as the\
-    \ instance to use."
-    \ the polling command to use a specific instance to run on. \nIf so, please add\
-    \ \"using\" to the value. \nThe playbook will then take the instance name as the\
-    \ instance to use. "
+    \ the polling command to use a specific instance to run on. \nIf so, add \"Using\"\
+    \ to the value. \nThe playbook will then take the instance name as the instance\
+    \ to use.\"  the polling command to use a specific instance to run on. \nIf so,\
+    \ please add \"using\" to the value. \nThe playbook will then take the instance\
+    \ name as the instance to use."
   playbookInputQuery:
 - key: InstanceName
   value:
-    simple: ServiceNow v2_instance_1
+    simple:
   required: false
   description: |
-   The ServiceNow instance that will be used for mirroring/running polling commands.
+    The ServiceNow instance that will be used for mirroring/running polling commands.
   playbookInputQuery:
 - key: MirrorDirection
   value:
     simple: Both
   required: false
-  description: "The mirror direction. It should be one of the following: \n1.\
-    \ In\n2. Out\n3. Both"
+  description: "The mirror direction. It should be one of the following: \n1. In\n\
+    2. Out\n3. Both"
   playbookInputQuery:
 - key: MirrorCommentTags
   value:
@@ -431,8 +428,8 @@ inputs:
 - key: TicketType
   value: {}
   required: false
-  description: The ServiceNow ticket type. Options are "incident", "problem",
-    "change_request", "sc_request", "sc_task", or "sc_req_item". Default is "incident".
+  description: The ServiceNow ticket type. Options are "incident", "problem", "change_request",
+    "sc_request", "sc_task", or "sc_req_item". Default is "incident".
   playbookInputQuery:
 outputs:
 - contextPath: ServiceNow.Ticket.ID
