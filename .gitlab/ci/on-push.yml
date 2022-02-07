@@ -247,7 +247,7 @@ slack-notify-nightly-build:
     - .trigger-slack-notification
   rules:
     - if: '$NIGHTLY'
-      when: always
+  when: always
   variables:
     PIPELINE_TO_QUERY: $CI_PIPELINE_ID
     WORKFLOW: 'Content Nightly'
@@ -263,5 +263,5 @@ generate-build-report:
   rules:
     - if: '$NIGHTLY != "true"'
     - if: '$BUCKET_UPLOAD != "true"'
-      when: always
+  when: always
   needs: ["run-unittests-and-lint", "run-validations", "server_6_1", "server_6_2", "server_master"]
