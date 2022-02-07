@@ -210,7 +210,8 @@ def url_create_relationships(uri, host, files, **kwargs):
                 file_sh256 = file.get('SHA256')
                 if file_sh256:
                     relationships.append(EntityRelationship(
-                        name=EntityRelationship.Relationships.RELATIONSHIPS_NAMES.get('related-to'), entity_a=uri,
+                        name=EntityRelationship.Relationships.RELATED_TO,
+                        entity_a=uri,
                         entity_a_type=FeedIndicatorType.URL,
                         entity_b=file_sh256, entity_b_type=FeedIndicatorType.File,
                         reverse_name=EntityRelationship.Relationships.RELATED_TO))
