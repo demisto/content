@@ -69,22 +69,22 @@ configuration:
   type: 0
 - display: ID (received from the admin consent - see Detailed Instructions (?) section)
     (Deprecated)
-  hidden: true
   name: auth_id
   required: false
   type: 4
+  hidden: true
 - display: Token (received from the admin consent - see Detailed Instructions (?)
     (Deprecated) section)
-  hidden: true
   name: tenant_id
   required: false
   type: 4
+  hidden: true
 - display: Key (received from the admin consent - see Detailed Instructions (?) section)
     (Deprecated)
-  hidden: true
   name: enc_key
   required: false
   type: 4
+  hidden: true
 description: Microsoft Defender for Endpoint (previously Microsoft Defender Advanced
   Threat Protection (ATP)) is a unified platform for preventative protection, post-breach
   detection, automated investigation, and response.
@@ -3606,14 +3606,14 @@ script:
       name: indicator_id
       required: true
       secret: false
-    - auto: PREDEFINED
-      default: false
+    - default: false
       defaultValue: MediumHigh
       description: 'The severity of the malicious behavior identified by the data
         within the indicator. Possible values: "Informational", "Low", "MediumLow",
         "MediumHigh", and "High", where High is the most severe and Informational
         is not severe at all.'
       isArray: false
+      auto: PREDEFINED
       name: severity
       predefined:
       - Informational
@@ -3886,34 +3886,34 @@ script:
       name: indicator_value
       required: true
       secret: false
-    - auto: PREDEFINED
-      default: false
+    - default: false
+      auto: PREDEFINED
       description: 'Type of the indicator. Possible values: "FileSha1", "FileSha256",
         "IpAddress", "DomainName", and "Url".'
       isArray: false
       name: indicator_type
+      required: true
       predefined:
       - FileSha1
       - FileSha256
       - IpAddress
       - DomainName
       - Url
-      required: true
       secret: false
-    - auto: PREDEFINED
-      default: false
+    - default: false
+      auto: PREDEFINED
       description: 'The action taken if the indicator is discovered in the organization.
         Possible values: "Alert", "AlertAndBlock", and "Allowed".'
       isArray: false
       name: action
+      required: true
       predefined:
       - Alert
       - AlertAndBlock
       - Allowed
-      required: true
       secret: false
-    - auto: PREDEFINED
-      default: false
+    - default: false
+      auto: PREDEFINED
       description: 'The severity of the malicious behavior identified by the data
         within the indicator. Possible values: "Informational", "Low", "Medium", and
         "High", where High is the most severe and Informational is not severe at all.'
@@ -3927,10 +3927,10 @@ script:
       required: false
       secret: false
     - default: false
-      defaultValue: 14 days
       description: 'DateTime string indicating when the indicator expires. Format:
         (<number> <time unit>, e.g., 12 hours, 7 days).'
       isArray: false
+      defaultValue: 14 days
       name: expiration_time
       required: false
       secret: false
@@ -4083,34 +4083,34 @@ script:
       name: indicator_value
       required: true
       secret: false
-    - auto: PREDEFINED
-      default: false
+    - default: false
+      auto: PREDEFINED
       description: 'Type of the indicator. Possible values: "FileSha1", "FileSha256",
         "IpAddress", "DomainName", and "Url".'
       isArray: false
       name: indicator_type
+      required: true
       predefined:
       - FileSha1
       - FileSha256
       - IpAddress
       - DomainName
       - Url
-      required: true
       secret: false
-    - auto: PREDEFINED
-      default: false
+    - default: false
+      auto: PREDEFINED
       description: 'The action taken if the indicator is discovered in the organization.
         Possible values: "Alert", "AlertAndBlock", and "Allowed".'
       isArray: false
       name: action
+      required: true
       predefined:
       - Alert
       - AlertAndBlock
       - Allowed
-      required: true
       secret: false
-    - auto: PREDEFINED
-      default: false
+    - default: false
+      auto: PREDEFINED
       description: 'The severity of the malicious behavior identified by the data
         within the indicator. Possible values: "Informational", "Low", "Medium", and
         "High", where High is the most severe and Informational is not severe at all.'
@@ -4124,10 +4124,10 @@ script:
       required: false
       secret: false
     - default: false
-      defaultValue: 14 days
       description: 'DateTime string indicating when the indicator expires. Format:
         (<number> <time unit>, e.g., 12 hours, 7 days).'
       isArray: false
+      defaultValue: 14 days
       name: expiration_time
       required: false
       secret: false
@@ -4293,7 +4293,6 @@ script:
       name: limit
       required: false
       secret: false
-    deprecated: false
     description: Lists all indicators by the ID that the system creates when the indicator
       is ingested.
     execution: false
@@ -4404,6 +4403,7 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score.
       type: Number
+    deprecated: false
   - arguments:
     - default: true
       description: The ID of the indicator to get. The ID can be retrieved by running
@@ -4523,132 +4523,269 @@ script:
       description: The actual score.
       type: Number
   - arguments:
-      - default: true
-        description: Machine ID to add file to.
-        isArray: false
-        name: machine_id
-        required: true
-        secret: false
-      - default: false
-        description: A comment to associate with the action.
-        isArray: false
-        name: comment
-        required: true
-        secret: false
-      - default: false
-        description: File name to take from library to device.
-        isArray: false
-        name: file_name
-        required: true
-        secret: false
-    deprecated: false
-    description: Puts a file from the library to the device. Files are saved in a working folder and are deleted when the device restarts by default.
-    execution: true
-    name: microsoft-atp-live-response-put-file
-    polling: true
-    outputs:
-      - contextPath: MicrosoftATP.LiveResponseAction
-        description: The machine action ID.
-        type: String
-  - arguments:
-      - default: true
-        description: Machine ID to add file to.
-        isArray: false
-        name: machine_id
-        required: true
-        secret: false
-      - default: false
-        description: A comment to associate with the action.
-        isArray: false
-        name: comment
-        required: true
-        secret: false
-      - default: false
-        description: File path to get from device.
-        isArray: false
-        name: path
-        required: true
-        secret: false
+    - default: true
+      description: Machine ID to add file to.
+      isArray: false
+      name: machine_id
+      required: true
+      secret: false
+    - default: false
+      description: A comment to associate with the action.
+      isArray: false
+      name: comment
+      required: true
+      secret: false
+    - default: false
+      description: File path to get from device.
+      isArray: false
+      name: path
+      required: true
+      secret: false
     deprecated: false
     description: 'Collect file from a device. NOTE: Backslashes in path must be escaped.'
     execution: true
     name: microsoft-atp-live-response-get-file
-    polling: true
     outputs:
-      - contextPath: MicrosoftATP.LiveResponseAction
-        description: The machine action ID.
-        type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.id
+      description: The machine action ID.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.type
+      description: The machine action type.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.title
+      description: The machine action title.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.requestor
+      description: The machine action requestor.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.requestorComment
+      description: The machine action requestorComment.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.status
+      description: The machine action status.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.machineId
+      description: The machine ID.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.computerDnsName
+      description: The computerDnsName.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.creationDateTimeUtc
+      description: The action creationDateTimeUtc.
+      type: Date
+    - contextPath: MicrosoftATP.LiveResponseAction.lastUpdateDateTimeUtc
+      description: The machine action lastUpdateDateTimeUtc.
+      type: Date
+    - contextPath: MicrosoftATP.LiveResponseAction.cancellationRequestor
+      description: The machine action cancellationRequestor.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.cancellationComment
+      description: The machine action cancellationComment.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.cancellationDateTimeUtc
+      description: The cancellationDateTimeUtc.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.errorHResult
+      description: The errorHResult if exists.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.scope
+      description: The action scope.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.externalId
+      description: The machine action externalId.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.requestSource
+      description: The machine action requestSource.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.relatedFileInfo
+      description: The machine action relatedFileInfo.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.commands.index
+      description: The machine action command index.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.commands.startTime
+      description: The machine action command startTime.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.commands.endTime
+      description: The machine action command endTime.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.commands.commandStatus
+      description: The machine action command Status.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.commands.errors
+      description: The machine action command errors if found.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.commands.command.type
+      description: The machine action command type.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.commands.command.params.key
+      description: The machine action command params key.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.commands.command.params.value
+      description: The machine action command params value.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.troubleshootInfo
+      description: The machine action troubleshootInfo.
+      type: String
   - arguments:
-      - default: true
-        description: Machine ID to add file to.
-        isArray: false
-        name: machine_id
-        required: true
-        secret: false
-      - default: false
-        description: A comment to associate with the action.
-        isArray: false
-        name: comment
-        required: true
-        secret: false
-      - default: false
-        description: Script name to run on device
-        isArray: false
-        name: scriptName
-        required: true
-        secret: false
-      - default: false
-        description: The Arguments parameter is passed to your script.
-        isArray: false
-        name: arguments
-        required: false
-        secret: false
+    - default: true
+      description: Machine ID to add file to.
+      isArray: false
+      name: machine_id
+      required: true
+      secret: false
+    - default: false
+      description: A comment to associate with the action.
+      isArray: false
+      name: comment
+      required: true
+      secret: false
+    - default: false
+      description: Script name to run on device
+      isArray: false
+      name: scriptName
+      required: true
+      secret: false
+    - default: false
+      description: Arguments to run the script with
+      isArray: false
+      name: arguments
+      required: true
+      secret: false
     deprecated: false
     description: |-
-      Runs a script from the library on a device. Timeouts after 10 minutes.
+      Runs a script from the library on a device. The Args parameter is passed to your script. Timeouts after 10 minutes.
     execution: true
     name: microsoft-atp-live-response-run-script
+    outputs:
+    - contextPath: MicrosoftATP.LiveResponseAction.script_name
+      description: The script name.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.exit_code
+      description: The script exit code.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.script_output
+      description: The script outputs.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.script_errors
+      description: The script errors if found.
+      type: String
+  - arguments:
+    - default: true
+      description: Action ID to retrieve status and data for.
+      isArray: false
+      name: machine_action_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Puts a file from the library to the device. Files are saved in a
+      working folder and are deleted when the device restarts by default.
+    execution: true
+    name: microsoft-atp-live-response-put-file
     polling: true
     outputs:
-      - contextPath: MicrosoftATP.LiveResponseAction
-        description: The machine action ID.
-        type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.id
+      description: The machine action ID.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.type
+      description: The machine action type.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.title
+      description: The machine action title.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.requestor
+      description: The machine action requestor.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.requestorComment
+      description: The machine action requestorComment.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.status
+      description: The machine action status.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.machineId
+      description: The machine ID.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.computerDnsName
+      description: The computerDnsName.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.creationDateTimeUtc
+      description: The action creationDateTimeUtc.
+      type: Date
+    - contextPath: MicrosoftATP.LiveResponseAction.lastUpdateDateTimeUtc
+      description: The machine action lastUpdateDateTimeUtc.
+      type: Date
+    - contextPath: MicrosoftATP.LiveResponseAction.cancellationRequestor
+      description: The machine action cancellationRequestor.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.cancellationComment
+      description: The machine action cancellationComment.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.cancellationDateTimeUtc
+      description: The cancellationDateTimeUtc.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.errorHResult
+      description: The errorHResult if exists.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.scope
+      description: The action scope.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.externalId
+      description: The machine action externalId.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.requestSource
+      description: The machine action requestSource.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.relatedFileInfo
+      description: The machine action relatedFileInfo.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.commands.index
+      description: The machine action command index.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.commands.startTime
+      description: The machine action command startTime.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.commands.endTime
+      description: The machine action command endTime.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.commands.commandStatus
+      description: The machine action command Status.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.commands.errors
+      description: The machine action command errors if found.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.commands.command.type
+      description: The machine action command type.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.commands.command.params.key
+      description: The machine action command params key.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.commands.command.params.value
+      description: The machine action command params value.
+      type: String
+    - contextPath: MicrosoftATP.LiveResponseAction.troubleshootInfo
+      description: The machine action troubleshootInfo.
+      type: String
   - arguments:
-      - default: true
-        description: Action ID to retrieve status and data for.
-        isArray: false
-        name: machine_action_id
-        required: true
-        secret: false
-    deprecated: false
-    description: Retrieve action's data.
-    execution: true
-    name: microsoft-atp-get-machine-action
-    outputs:
-      - contextPath: MicrosoftATP.LiveResponseAction
-        description: The machine action ID.
-        type: String
-  - arguments:
-      - default: true
-        description: Action ID to retrieve status and data for.
-        isArray: false
-        name: machine_action_id
-        required: true
-        secret: false
-      - default: false
-        description: A command index to retrieve file for.
-        isArray: false
-        name: command_index
-        required: true
-        secret: false
+    - default: true
+      description: Action ID to retrieve status and data for.
+      isArray: false
+      name: machine_action_id
+      required: true
+      secret: false
+    - default: false
+      description: A command index to retrieve file for.
+      isArray: false
+      name: command_index
+      required: true
+      secret: false
     deprecated: false
     description: Gets a result file for a specified action.
     execution: true
     name: microsoft-atp-live-response-result
     outputs:
-      - contextPath: MicrosoftATP.LiveResponseAction
-        description: The machine action ID.
-        type: String
+    - contextPath: MicrosoftATP.LiveResponseAction
+      description: The machine action ID.
+      type: String
   dockerimage: demisto/crypto:1.0.0.24380
   feed: false
   isfetch: true
@@ -4658,6 +4795,6 @@ script:
   script: '-'
   subtype: python3
   type: python
+fromversion: 5.0.0
 tests:
 - No tests (auto formatted)
-fromversion: 5.0.0

@@ -921,7 +921,10 @@ class MsClient:
         return response
 
     def download_file(self, url_link):
-        response = self.ms_client.http_request(method='GET', full_url=url_link, resp_type='content')
+        try:
+            response = requests.get(url=url_link, verify=self.ms_client.verify)
+        except Exception as e:
+            raise Exception(f'Could not download file. {url_link=}. error: {str(e)}')
         return response
 
 
@@ -1564,8 +1567,8 @@ def get_machine_action_data(machine_action_response):
             "LastUpdateTimeUtc": machine_action_response.get('lastUpdateTimeUtc'),
             "RelatedFileInfo": {
                 "FileIdentifier": machine_action_response.get('fileIdentifier'),
-                "FileIdentifierType": machine_action_response.get('fileIdentifierType')
-
+                "FileIdentifierType": machine_action_response.get('fileIdentifierType'),
+            "Commands": machine_action_response.get('commands')
             }
         }
     return action_data
@@ -2582,7 +2585,7 @@ def get_indicator_dbot_object(indicator):
 
 
 def run_polling_command(client: MsClient, args: dict, cmd: str, action_func: Callable,
-                        results_function: Callable, post_polling_process: Optional[Callable] = None):
+                        results_function: Callable, post_polling_process: Callable):
     """
     This function is generically handling the polling flow. In the polling flow, there is always an initial call that
     starts the uploading to the API (referred here as the 'upload' function) and another call that retrieves the status
@@ -2602,7 +2605,6 @@ def run_polling_command(client: MsClient, args: dict, cmd: str, action_func: Cal
     ScheduledCommand.raise_error_if_not_supported()
     interval_in_secs = int(args.get('interval_in_seconds', 5))
     # distinguish between the initial run, which is the upload run, and the results run
-    print(f'polling {args=}, command={cmd}')
     is_first_run = 'machine_action_id' not in args
     if is_first_run:
         command_results = action_func(client, args)
@@ -2625,15 +2627,18 @@ def run_polling_command(client: MsClient, args: dict, cmd: str, action_func: Cal
     # not a first run
 
     command_result = results_function(client, args)
-    status = command_result.outputs.get("commands", [])[0].get("commandStatus")
-    if status != 'Completed':
+    action_status = command_result.outputs.get("status")
+    command_status = command_result.outputs.get("commands", [])[0].get("commandStatus")
+    if action_status == 'Failed' or command_status == 'Failed':
+        raise Exception(f'Command failed to get results. {command_result.outputs.get("errors")}')
+    elif command_status != 'Completed' or action_status == 'InProgress':
         # schedule next poll
         polling_args = {
             'interval_in_seconds': interval_in_secs,
             'polling': True,
             **args
         }
-        print(args)
+
         scheduled_command = ScheduledCommand(
             command=cmd,
             next_run_in_seconds=interval_in_secs,
@@ -2643,30 +2648,36 @@ def run_polling_command(client: MsClient, args: dict, cmd: str, action_func: Cal
         command_result = CommandResults(scheduled_command=scheduled_command)
         return command_result
 
+
+
     # action was completed
     else:
-        return post_polling_process(client, command_result)
+        return post_polling_process(client, command_result.outputs)
 
 
 def get_live_response_result_command(client, args):
-    raise Exception(f'get_live_response_result_command: {args=}')
     machine_action_id = args['machine_action_id']
     command_index = arg_to_number(args['command_index'])
     res = client.get_live_response_result(machine_action_id, command_index)
     file_link = res['value']
 
     # download link, create file result
-    demisto.results(fileResult('Response Result', client.download_file(file_link)))
+    f_data = client.download_file(file_link)
+    try:
+        outputs = f_data.json()
+    except Exception:
+        outputs = {'value': file_link}
+
+    demisto.results(fileResult('Response Result', f_data.content))
 
     return CommandResults(
         outputs_prefix='MicrosoftATP.LiveResponseResult',
-        outputs={'value': file_link}
+        outputs=outputs,
+        readable_output=f'file_link: {file_link}'
     )
 
 
 def get_machine_action_command(client, args):
-    raise Exception(f'get_machine_action_command: {args=}')
-
     id = args['machine_action_id']
     res = client.get_machine_action(id)
     md_results = {
@@ -2688,14 +2699,11 @@ def get_machine_action_command(client, args):
 # -------------- Run Script ---------------
 
 def run_live_response_script_with_polling(client, args):
-    print(args)
     return run_polling_command(client, args, 'microsoft-atp-live-response-run-script', run_live_response_script_action,
-                        get_machine_action_command, get_successfull_action_results_as_info)
+                               get_machine_action_command, get_successfull_action_results_as_info)
 
 
 def run_live_response_script_action(client, args):
-    print(f'run_live_response_script_action: {args}')
-
     machine_id = args['machine_id']
     scriptName = args['scriptName']
     comment = args['comment']
@@ -2732,28 +2740,25 @@ def get_successfull_action_results_as_info(client, res):
     machine_action_id = res['id']
     file_link = client.get_live_response_result(machine_action_id, 0)['value']
 
-    md_results = {
-        'Machine Action Id': res.get('id'),
-        'MachineId': res.get('machineId'),
-        'Hostname': res.get('computerDnsName'),
-        'Status': res.get('status'),
-        'Creation time': res.get('creationDateTimeUtc'),
-        'Commands': res.get('commands')
-    }
-
+    f_data = client.download_file(file_link)
+    try:
+        script_result = f_data.json()
+    except Exception:
+        script_result = None
     return [
         CommandResults(
             outputs_prefix='MicrosoftATP.LiveResponseAction',
-            outputs=res,
-            readable_output=tableToMarkdown('Machine Action:', md_results)
+            outputs=script_result if script_result else res,
+            readable_output=tableToMarkdown('Script Results:',
+                                            script_result) if script_result else 'Could not retrieve script results.'
         ),
-        fileResult('Response Result', client.download_file(file_link), file_type=EntryType.ENTRY_INFO_FILE)]
+        fileResult('Response Result', f_data.content, file_type=EntryType.ENTRY_INFO_FILE)]
 
 
 # -------------- Get File ---------------
 def get_live_response_file_with_polling(client, args):
     return run_polling_command(client, args, 'microsoft-atp-live-response-get-file', get_live_response_file_action,
-                        get_machine_action_command, get_file_get_successfull_action_results)
+                               get_machine_action_command, get_file_get_successfull_action_results)
 
 
 def get_live_response_file_action(client, args):
@@ -2788,7 +2793,7 @@ def get_file_get_successfull_action_results(client, res):
     file_link = client.get_live_response_result(machine_action_id, 0)['value']
 
     # download link, create file result
-    demisto.results(fileResult('Response Result', client.download_file(file_link)))
+    f_data = client.download_file(file_link)
 
     md_results = {
         'Machine Action Id': res.get('id'),
@@ -2799,31 +2804,31 @@ def get_file_get_successfull_action_results(client, res):
         'Commands': res.get('commands')
     }
 
-    return CommandResults(
+    return [fileResult('Response Result', f_data.content), CommandResults(
         outputs_prefix='MicrosoftATP.LiveResponseAction',
         outputs=res,
         readable_output=tableToMarkdown('Machine Action:', md_results)
 
-    )
+    )]
 
 
 # -------------- Put File ---------------
 def put_live_response_file_with_polling(client, args):
     return run_polling_command(client, args, 'microsoft-atp-live-response-put-file', put_live_response_file_action,
-                        get_machine_action_command, put_file_get_successfull_action_results)
+                               get_machine_action_command, put_file_get_successful_action_results)
 
 
 def put_live_response_file_action(client, args):
     machine_id = args['machine_id']
-    file_path = args['path']
+    file_path = args['file_name']
     comment = args['comment']
 
     request_body = {
         "Commands": [
             {
-                "type": "GetFile",
+                "type": "PutFile",
                 "params": [{
-                    "key": "Path",
+                    "key": "FileName",
                     "value": file_path
                 }]
             },
@@ -2838,7 +2843,7 @@ def put_live_response_file_action(client, args):
     )
 
 
-def put_file_get_successfull_action_results(client, res):
+def put_file_get_successful_action_results(client, res):
     md_results = {
         'Machine Action Id': res.get('id'),
         'MachineId': res.get('machineId'),
@@ -2853,127 +2858,6 @@ def put_file_get_successfull_action_results(client, res):
         outputs=res,
         readable_output=tableToMarkdown('Machine Action:', md_results)
     )
-
-
-# def run_live_response_script(client, args):
-#     machine_id = args['machine_id']
-#     scriptName = args['scriptName']
-#     comment = args['comment']
-#     arguments = args.get('arguments')
-#     params = [{
-#         "key": "ScriptName",
-#         "value": scriptName
-#     }]
-#     if arguments:
-#         params.append(
-#             {
-#                 "key": "Args",
-#                 "value": arguments
-#             }
-#         )
-#     request_body = {
-#         "Commands": [
-#             {
-#                 "type": "RunScript",
-#                 "params": params
-#             },
-#         ],
-#         "Comment": comment
-#     }
-#
-#     # create action:
-#     res = client.create_action(machine_id, request_body)
-#     machine_action_id = res['id']
-#
-#
-#     # polling on status until completion:
-#     action_status_res = client.get_machine_action(machine_action_id)
-#
-#     # get file link from action, since we only run 1 command, the index will always be 0.
-#     file_link = client.get_live_response_result(machine_action_id, 0)['value']
-#
-#     # download link, create filemeta result
-#     demisto.results(fileResult('Response Result', client.download_file(file_link), file_type=9))
-#
-#     return CommandResults(
-#         outputs_prefix='MicrosoftATP.LiveResponseAction',
-#         outputs=action_status_res
-#     )
-
-# def get_live_response_file_command(client, args):
-#     machine_id = args['machine_id']
-#     file_path = args['path']
-#     comment = args['comment']
-#
-#     request_body = {
-#         "Commands": [
-#             {
-#                 "type": "GetFile",
-#                 "params": [{
-#                     "key": "Path",
-#                     "value": file_path
-#                 }]
-#             },
-#         ],
-#         "Comment": comment
-#     }
-#
-#     # create action:
-#     res = client.create_action(machine_id, request_body)
-#     machine_action_id = res['id']
-#
-#     # polling on status until completion- commands.commandStatus = “Completed:
-#     action_status_res = client.get_machine_action(machine_action_id)
-#
-#     # get file link from action:
-#     file_link = client.get_live_response_result(machine_action_id, 0)['value']
-#
-#     # download link, create file result
-#     demisto.results(fileResult('Response Result', client.download_file(file_link)))
-#     return CommandResults(
-#         outputs_prefix='MicrosoftATP.LiveResponseAction',
-#         outputs=action_status_res
-#     )
-
-# def put_live_response_file_command(client, args):
-#     machine_id = args['machine_id']
-#     file_path = args['path']
-#     comment = args['comment']
-#
-#     request_body = {
-#         "Commands": [
-#             {
-#                 "type": "GetFile",
-#                 "params": [{
-#                     "key": "Path",
-#                     "value": file_path
-#                 }]
-#             },
-#         ],
-#         "Comment": comment
-#     }
-#
-#     # create action:
-#     res = client.create_action(machine_id, request_body)
-#     machine_action_id = res['id']
-#
-#     # polling on status until completion- commands.commandStatus = “Completed:
-#     action_status_res = client.get_machine_action(machine_action_id)
-#
-#     md_results = {
-#         'Machine Action Id': action_status_res.get('id'),
-#         'MachineId': action_status_res.get('machineId'),
-#         'Hostname': action_status_res.get('computerDnsName'),
-#         'Status': action_status_res.get('status'),
-#         'Creation time': action_status_res.get('creationDateTimeUtc'),
-#         'Commands': action_status_res.get('commands')
-#     }
-#
-#     return CommandResults(
-#         outputs_prefix='MicrosoftATP.LiveResponseAction',
-#         outputs=res,
-#         readable_output=tableToMarkdown('Machine Action:', md_results)
-#     )
 
 
 def main():
@@ -3124,14 +3008,12 @@ def main():
             return_results(sc_create_update_indicator_command(client, args))
         elif command == 'microsoft-atp-sc-indicator-delete':
             return_results(sc_delete_indicator_command(client, args))
-        elif command == 'microsoft-atp-live-response-put-file':  ##
+        elif command == 'microsoft-atp-live-response-put-file':
             return_results(put_live_response_file_with_polling(client, args))
         elif command == 'microsoft-atp-live-response-get-file':
             return_results(get_live_response_file_with_polling(client, args))
         elif command == 'microsoft-atp-live-response-run-script':
             return_results(run_live_response_script_with_polling(client, args))
-        elif command == 'microsoft-atp-get-machine-action':
-            return_results(get_machine_action_command(client, args))
         elif command == 'microsoft-atp-live-response-result':
             return_results(get_live_response_result_command(client, args))
     except Exception as err:

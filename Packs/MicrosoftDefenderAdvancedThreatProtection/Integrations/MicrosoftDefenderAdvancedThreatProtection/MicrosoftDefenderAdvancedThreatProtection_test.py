@@ -2,7 +2,7 @@ import demistomock as demisto
 import json
 import pytest
 from MicrosoftDefenderAdvancedThreatProtection import MsClient, get_future_time, build_std_output, parse_ip_addresses, \
-    print_ip_addresses, get_machine_details_command
+    print_ip_addresses, get_machine_details_command, run_polling_command, run_live_response_script_action
 
 ARGS = {'id': '123', 'limit': '2', 'offset': '0'}
 
@@ -777,11 +777,11 @@ def test_print_ip_addresses():
     assert print_ip_addresses(ip_addresses_result) == print_ip_addresses_result
 
 
-human_readable_result = '### Microsoft Defender ATP machine None details:\n'\
+human_readable_result = '### Microsoft Defender ATP machine None details:\n' \
                         '|ID|ComputerDNSName|OSPlatform|LastIPAddress|LastExternalIPAddress|HealthStatus|RiskScore|' \
-                        'ExposureLevel|IPAddresses|\n'\
-                        '|---|---|---|---|---|---|---|---|---|\n'\
-                        '| 123 | test-node | Windows10 | 192.0.2.12 | 2.2.2.2 | Inactive | None | High |'\
+                        'ExposureLevel|IPAddresses|\n' \
+                        '|---|---|---|---|---|---|---|---|---|\n' \
+                        '| 123 | test-node | Windows10 | 192.0.2.12 | 2.2.2.2 | Inactive | None | High |' \
                         ' 1. \\| MAC : 001122334418 \\| IP Addresses : 192.0.2.135,fe80::2413:e4aa:a3f4:d5bf \\|' \
                         ' Type : Ethernet \\| Status : Up<br>' \
                         '2. \\| MAC : 001122334436 \\| IP Addresses : 192.0.2.10,fe80::55b9:7f5a:6e9c:30ed  \\|' \
@@ -815,3 +815,82 @@ def test_get_machine_details_command(mocker):
     results = get_machine_details_command(client_mocker, {})
     assert results.outputs == json.loads(outputs_result)
     assert results.readable_output == human_readable_result
+
+
+FIRST_RUN = {'arguments': "''", 'comment': 'testing',
+             'machine_id': 'machine_id_example', 'scriptName': 'test_script.ps1'}
+SECOND_RUN = {'arguments': "''", 'comment': 'testing',
+              'machine_action_id': 'action_id_example',
+              'machine_id': 'machine_id_example', 'scriptName': 'test_script.ps1'}
+LAST_RUN = {'arguments': "''", 'comment': 'testing',
+            'machine_action_id': 'action_id_example',
+            'machine_id': 'machine_id_example', 'scriptName': 'test_script.ps1'}
+POLLING_CASES = [
+    (FIRST_RUN, '', 'PollingArgs', {'machine_action_id': 'action_id_example', 'interval_in_seconds': 5,
+                                    'polling': True, 'arguments': "''", 'comment': 'testing',
+                                    'machine_id': 'machine_id_example',
+                                    'scriptName': 'test_script.ps1'}),
+    (SECOND_RUN, 'InProgress', 'PollingArgs',
+     {'interval_in_seconds': 5, 'polling': True, 'arguments': "''", 'comment': 'testing',
+      'machine_action_id': 'action_id_example', 'machine_id': 'machine_id_example',
+      'scriptName': 'test_script.ps1'}),
+    (LAST_RUN, 'Completed', 'Contents', {'example_outputs': 'outputs'})
+
+]
+
+
+@pytest.mark.parametrize('args,request_status,args_to_compare,expected_results', POLLING_CASES)
+def test_run_script_polling_second_run(args, request_status, args_to_compare, expected_results):
+    from CommonServerPython import CommandResults
+    params: dict = demisto.params()
+    base_url: str = params.get('url', '').rstrip('/') + '/api'
+    tenant_id = params.get('tenant_id') or params.get('_tenant_id')
+    auth_id = params.get('auth_id') or params.get('_auth_id')
+    enc_key = params.get('enc_key') or (params.get('credentials') or {}).get('password')
+    use_ssl: bool = not params.get('insecure', False)
+    proxy: bool = params.get('proxy', False)
+    self_deployed: bool = params.get('self_deployed', False)
+    alert_severities_to_fetch = params.get('fetch_severity')
+    alert_status_to_fetch = params.get('fetch_status')
+    alert_time_to_fetch = params.get('first_fetch_timestamp', '3 days')
+    APP_NAME = 'ms-defender-atp'
+    client = MsClient(
+        base_url=base_url, tenant_id=tenant_id, auth_id=auth_id, enc_key=enc_key, app_name=APP_NAME, verify=use_ssl,
+        proxy=proxy, self_deployed=self_deployed, alert_severities_to_fetch=alert_severities_to_fetch,
+        alert_status_to_fetch=alert_status_to_fetch, alert_time_to_fetch=alert_time_to_fetch)
+
+    def mock_action_command(client, args):
+        return CommandResults(outputs={'action_id': 'action_id_example'})
+
+    def mock_get_status(client, args):
+        return CommandResults(outputs={'status': request_status})
+
+    def mock_post_process(client, res):
+        assert res == {'status': 'Completed'}
+        return CommandResults(outputs={'example_outputs': 'outputs'})
+
+    res = run_polling_command(client, args, 'microsoft-atp-live-response-run-script', mock_action_command,
+                              mock_get_status, mock_post_process)
+    assert res.to_context()[args_to_compare] == expected_results
+
+
+RUN_SCRIPT_CASES = [
+    (
+        {'machine_id': 'machine_id', 'scriptName': 'test_script.ps1', 'comment': 'testing'},
+        {'Commands': [{'type': 'RunScript', 'params': [{'key': 'ScriptName', 'value': 'test_script.ps1'}]}],
+         'Comment': 'testing'}
+    ),
+    (
+        {'machine_id': 'machine_id', 'scriptName': 'test_script.ps1', 'comment': 'testing', 'arguments': 'example_arg'},
+        {'Commands': [{'type': 'RunScript', 'params': [{'key': 'ScriptName', 'value': 'test_script.ps1'},
+                                                       {'key': 'Args', 'value': 'example_arg'}]}], 'Comment': 'testing'}
+
+    )
+]
+
+
+@pytest.mark.parametrize('args, expected_results', RUN_SCRIPT_CASES)
+def test_run_live_response_script_action(mocker, args, expected_results):
+    create_action_mock = mocker.patch.object(MsClient, 'create_action')
+    run_live_response_script_action(client_mocker, args)
+    assert create_action_mock.call_args[0][1] == expected_results
