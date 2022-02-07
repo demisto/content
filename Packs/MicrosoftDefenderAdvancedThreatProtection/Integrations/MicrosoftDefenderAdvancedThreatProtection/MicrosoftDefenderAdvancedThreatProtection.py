@@ -1113,7 +1113,7 @@ def get_machines_command(client: MsClient, args: dict):
     entry_context = {
         'MicrosoftATP.Machine(val.ID === obj.ID)': machines_list
     }
-    human_readable = tableToMarkdown('Microsoft Defender ATP Machines:', machines_list, headers=headers,
+    human_readable = tableToMarkdown(f'{INTEGRATION_NAME} Machines:', machines_list, headers=headers,
                                      removeNull=True)
     return human_readable, entry_context, machines_response
 
@@ -1229,7 +1229,7 @@ def get_file_related_machines_command(client: MsClient, args: dict) -> CommandRe
             failed_files[file] = e
             continue
 
-    human_readable = tableToMarkdown(f'Microsoft Defender ATP machines related to files {files}', all_machines_outputs,
+    human_readable = tableToMarkdown(f'{INTEGRATION_NAME} machines related to files {files}', all_machines_outputs,
                                      headers=headers, removeNull=True)
     human_readable += add_error_message(failed_files, files)
     return CommandResults(readable_output=human_readable,
@@ -1314,7 +1314,7 @@ def get_machine_details_command(client: MsClient, args: dict) -> CommandResults:
             failed_machines[machine_id] = e
             continue
 
-    human_readable = tableToMarkdown(f'Microsoft Defender ATP machines {machine_ids} details:',
+    human_readable = tableToMarkdown(f'{INTEGRATION_NAME} machines {machine_ids} details:',
                                      machines_readable_outputs, headers=headers, removeNull=True)
     human_readable += add_error_message(failed_machines, machine_ids)
     return CommandResults(
@@ -1377,7 +1377,7 @@ def list_alerts_command(client: MsClient, args: dict):
     entry_context = {
         'MicrosoftATP.Alert(val.ID === obj.ID)': alerts_list
     }
-    human_readable = tableToMarkdown('Microsoft Defender ATP alerts:', alerts_list, headers=headers, removeNull=True)
+    human_readable = tableToMarkdown(f'{INTEGRATION_NAME} alerts:', alerts_list, headers=headers, removeNull=True)
     return human_readable, entry_context, alerts_response
 
 
@@ -1993,9 +1993,13 @@ def get_alert_data(alert_response):
                 "CreatedTime": alert_response.get('createdTime')
             }
         ],
-        "Evidence": alert_response.get('evidence')
+        "Evidence": alert_response.get('evidence'),
+        "DetectorID": alert_response.get('detectorId'),
+        "ThreatName": alert_response.get('threatName'),
+        "RelatedUser": alert_response.get('relatedUser'),
+        "MitreTechniques": alert_response.get('mitreTechniques'),
+        "RBACGroupName": alert_response.get('rbacGroupName'),
     }
-
     return alert_data
 
 
@@ -2191,6 +2195,37 @@ def get_user_alerts_command(client: MsClient, args: dict):
         'MicrosoftATP.UserAlert(val.Username === obj.Username)': context_output
     }
     return human_readable, entry_context, response
+
+
+def get_alert_by_id_command(client: MsClient, args: dict) -> CommandResults:
+    """Retrieves a specific alert by the given ID.
+
+    Returns:
+        CommandResults.
+    """
+    headers = ['ID', 'Title', 'Description', 'IncidentID', 'Severity', 'Status', 'Classification', 'Category',
+               'ThreatFamilyName', 'MachineID']
+    alert_ids = list(dict.fromkeys(argToList(args.get('alert_ids'))))  # remove duplicates
+    raw_response = []
+    alert_outputs = []
+    failed_alerts = {}  # if we got an error, we will return the machine ids that failed
+    for alert in alert_ids:
+        try:
+            alert_response = client.get_alert_by_id(alert)
+            alerts_data = get_alert_data(alert_response)
+            raw_response.append(alert_response)
+            alert_outputs.append(alerts_data)
+        except NotFoundError:  # in case the error is not found hash, we want to return "No entries"
+            continue
+        except Exception as e:
+            failed_alerts[alert] = e
+            continue
+
+    human_readable = tableToMarkdown(f'{INTEGRATION_NAME} Alerts Info for IDs {alert_ids}:', alert_outputs,
+                                     headers=headers, removeNull=True)
+    human_readable += add_error_message(failed_alerts, alert_ids)
+    return CommandResults(outputs_prefix="MicrosoftATP.Alert", outputs=alert_outputs, readable_output=human_readable,
+                          raw_response=raw_response, outputs_key_field="ID")
 
 
 def get_user_machine_command(client: MsClient, args: dict):
@@ -2731,7 +2766,7 @@ def sc_list_indicators_command(client: MsClient, args: Dict[str, str]) -> Union[
         for indicator in raw_response:
             indicator_value = indicator.get('indicatorValue')
             dbot_indicator = get_indicator_dbot_object(indicator)
-            human_readable = tableToMarkdown(f'Results found in Microsoft Defender ATP SC for value: {indicator_value}',
+            human_readable = tableToMarkdown(f'Results found in {INTEGRATION_NAME} SC for value: {indicator_value}',
                                              indicator, headers=list(SC_INDICATORS_HEADERS), removeNull=True)
             command_results.append(CommandResults(outputs=indicator, indicator=dbot_indicator,
                                                   readable_output=human_readable, outputs_key_field='id',
@@ -2794,7 +2829,7 @@ def list_machines_by_vulnerability_command(client: MsClient, args: dict) -> Comm
             failed_cve[cve_id] = e
             continue
     machines_outputs = create_related_cve_list_for_machine(machines_outputs)
-    human_readable = tableToMarkdown(f'Microsoft Defender ATP machines by vulnerabilities: {cve_ids}',
+    human_readable = tableToMarkdown(f'{INTEGRATION_NAME} machines by vulnerabilities: {cve_ids}',
                                      machines_outputs, headers=headers, removeNull=True)
     human_readable += add_error_message(failed_cve, cve_ids)
     return CommandResults(
@@ -2868,7 +2903,7 @@ def get_file_info_command(client: MsClient, args: dict):
         except Exception as e:
             failed_hashes[file_hash] = e
             continue
-    human_readable = tableToMarkdown(f'Microsoft Defender ATP file info by hashes: {file_hashes}',
+    human_readable = tableToMarkdown(f'{INTEGRATION_NAME} file info by hashes: {file_hashes}',
                                      file_outputs, headers=headers, removeNull=True)
     human_readable += add_error_message(failed_hashes, file_hashes)
     if file_outputs:
@@ -2948,7 +2983,7 @@ def endpoint_command(client: MsClient, args: dict) -> List[CommandResults]:
         machine_data = get_machine_data(machine)
         machine_data['MACAddress'] = get_machine_mac_address(machine)
         endpoint_indicator = create_endpoint_verdict(machine_data)
-        human_readable = tableToMarkdown('Microsoft Defender ATP Machine:',
+        human_readable = tableToMarkdown(f'{INTEGRATION_NAME} Machine:',
                                          endpoint_indicator.to_context()[Common.Endpoint.CONTEXT_PATH], headers=headers,
                                          removeNull=True)
         machines_outputs.append(CommandResults(
@@ -3094,6 +3129,9 @@ def main():
 
         elif command == 'microsoft-atp-get-user-alerts':
             return_outputs(*get_user_alerts_command(client, args))
+
+        elif command == 'microsoft-atp-get-alert-by-id':
+            return_results(get_alert_by_id_command(client, args))
 
         elif command == 'microsoft-atp-get-user-machines':
             return_outputs(*get_user_machine_command(client, args))

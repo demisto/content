@@ -4774,6 +4774,112 @@ script:
     - contextPath: MicrosoftATP.Indicators.IsFailed
       description: Whether the update was failed.
       type: Boolean
+  - arguments:
+    - default: false
+      description: A comma-separated list of alert IDs.
+      isArray: true
+      name: alert_ids
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieves specific alert by the given alert ID. Note, if the given alert ID is not part of the results, it was not found.
+    execution: false
+    name: microsoft-atp-get-alert-by-id
+    outputs:
+    - contextPath: MicrosoftATP.Alert.ID
+      description: The alert ID.
+      type: String
+    - contextPath: MicrosoftATP.Alert.IncidentID
+      description: The Incident ID of the alert.
+      type: Number
+    - contextPath: MicrosoftATP.Alert.InvestigationID
+      description: The Investigation ID related to the alert.
+      type: Number
+    - contextPath: MicrosoftATP.Alert.InvestigationState
+      description: The current state of the Investigation.
+      type: String
+    - contextPath: MicrosoftATP.Alert.AssignedTo
+      description: The owner of the alert.
+      type: String
+    - contextPath: MicrosoftATP.Alert.Severity
+      description: The severity of the alert.
+      type: String
+    - contextPath: MicrosoftATP.Alert.Status
+      description: The current status of the alert.
+      type: String
+    - contextPath: MicrosoftATP.Alert.Classification
+      description: The alert Classification.
+      type: String
+    - contextPath: MicrosoftATP.Alert.Determination
+      description: The determination of the alert.
+      type: String
+    - contextPath: MicrosoftATP.Alert.DetectionSource
+      description: The detection source.
+      type: String
+    - contextPath: MicrosoftATP.Alert.Category
+      description: The category of the alert.
+      type: String
+    - contextPath: MicrosoftATP.Alert.ThreatFamilyName
+      description: The threat family.
+      type: String
+    - contextPath: MicrosoftATP.Alert.Title
+      description: The alert title.
+      type: String
+    - contextPath: MicrosoftATP.Alert.Description
+      description: The alert description.
+      type: String
+    - contextPath: MicrosoftATP.Alert.AlertCreationTime
+      description: The date and time the alert was created.
+      type: Date
+    - contextPath: MicrosoftATP.Alert.FirstEventTime
+      description: The first event time that triggered the alert on that machine.
+      type: Date
+    - contextPath: MicrosoftATP.Alert.LastEventTime
+      description: The last event time that triggered the alert on that machine.
+      type: Date
+    - contextPath: MicrosoftATP.Alert.LastUpdateTime
+      description: The first event time that triggered the alert on that machine.
+      type: Date
+    - contextPath: MicrosoftATP.Alert.ResolvedTime
+      description: The date and time in which the status of the alert was changed
+        to 'Resolved'.
+      type: Date
+    - contextPath: MicrosoftATP.Alert.MachineID
+      description: The machine ID that is associated with the alert.
+      type: String
+    - contextPath: MicrosoftATP.Alert.ComputerDNSName
+      description: The machine DNS name.
+      type: String
+    - contextPath: MicrosoftATP.Alert.AADTenantID
+      description: The AAD tenant ID.
+      type: String
+    - contextPath: MicrosoftATP.Alert.Comments.Comment
+      description: The alert comment string.
+      type: String
+    - contextPath: MicrosoftATP.Alert.Comments.CreatedBy
+      description: The alert comment created by string.
+      type: String
+    - contextPath: MicrosoftATP.Alert.Comments.CreatedTime
+      description: The alert comment created time date.
+      type: Date
+    - contextPath: MicrosoftATP.Alert.Evidence
+      description: Evidence related to the alert.
+      type: Unknown
+    - contextPath: MicrosoftATP.Alert.DetectorID
+      description: The ID of the detector that triggered the alert.
+      type: String
+    - contextPath: MicrosoftATP.Alert.ThreatName
+      description: The threat name.
+      type: String
+    - contextPath: MicrosoftATP.Alert.RelatedUser
+      description: Details of user related to a specific alert.
+      type: String
+    - contextPath: MicrosoftATP.Alert.MitreTechniques
+      description: Mitre Enterprise technique ID.
+      type: String
+    - contextPath: MicrosoftATP.Alert.RBACGroupName
+      description: The device RBAC group name.
+      type: String
   dockerimage: demisto/crypto:1.0.0.24380
   feed: false
   isfetch: true

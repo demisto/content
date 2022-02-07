@@ -4431,3 +4431,150 @@ We suggest using the [TransformIndicatorToMSDefenderIOC automation](https://gith
 >|---|---|---|
 >| 5217 | 220e7d15b011d7fac48f2bd61114db1022197f7f | false |
 >| 5218 | 2233223322332233223322332233223322332233223322332233223322332222 | false |
+
+
+### microsoft-atp-get-alert-by-id
+***
+Retrieves specific alert by the given alert ID. Note, if the given alert ID is not part of the results, it was not found.
+
+
+#### Base Command
+
+`microsoft-atp-get-alert-by-id`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| alert_ids | A comma-separated list of alert IDs. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftATP.Alert.ID | String | The alert ID. | 
+| MicrosoftATP.Alert.IncidentID | Number | The Incident ID of the alert. | 
+| MicrosoftATP.Alert.InvestigationID | Number | The Investigation ID related to the alert. | 
+| MicrosoftATP.Alert.InvestigationState | String | The current state of the Investigation. | 
+| MicrosoftATP.Alert.AssignedTo | String | The owner of the alert. | 
+| MicrosoftATP.Alert.Severity | String | The severity of the alert. | 
+| MicrosoftATP.Alert.Status | String | The current status of the alert. | 
+| MicrosoftATP.Alert.Classification | String | The alert Classification. | 
+| MicrosoftATP.Alert.Determination | String | The determination of the alert. | 
+| MicrosoftATP.Alert.DetectionSource | String | The detection source. | 
+| MicrosoftATP.Alert.Category | String | The category of the alert. | 
+| MicrosoftATP.Alert.ThreatFamilyName | String | The threat family. | 
+| MicrosoftATP.Alert.Title | String | The alert title. | 
+| MicrosoftATP.Alert.Description | String | The alert description. | 
+| MicrosoftATP.Alert.AlertCreationTime | Date | The date and time the alert was created. | 
+| MicrosoftATP.Alert.FirstEventTime | Date | The first event time that triggered the alert on that machine. | 
+| MicrosoftATP.Alert.LastEventTime | Date | The last event time that triggered the alert on that machine. | 
+| MicrosoftATP.Alert.LastUpdateTime | Date | The first event time that triggered the alert on that machine. | 
+| MicrosoftATP.Alert.ResolvedTime | Date | The date and time in which the status of the alert was changed to 'Resolved'. | 
+| MicrosoftATP.Alert.MachineID | String | The machine ID that is associated with the alert. | 
+| MicrosoftATP.Alert.ComputerDNSName | String | The machine DNS name. | 
+| MicrosoftATP.Alert.AADTenantID | String | The AAD tenant ID. | 
+| MicrosoftATP.Alert.Comments.Comment | String | The alert comment string. | 
+| MicrosoftATP.Alert.Comments.CreatedBy | String | The alert comment created by string. | 
+| MicrosoftATP.Alert.Comments.CreatedTime | Date | The alert comment created time date. | 
+| MicrosoftATP.Alert.Evidence | Unknown | Evidence related to the alert. | 
+| MicrosoftATP.Alert.DetectorID | String | The ID of the detector that triggered the alert. | 
+| MicrosoftATP.Alert.ThreatName | String | The threat name. | 
+| MicrosoftATP.Alert.RelatedUser | String | Details of user related to a specific alert. | 
+| MicrosoftATP.Alert.MitreTechniques | String | Mitre Enterprise technique ID. | 
+| MicrosoftATP.Alert.RBACGroupName | String | The device RBAC group name. | 
+
+#### Command example
+```!microsoft-atp-get-alert-by-id alert_ids=da637797972607470400_795854214,da637750706361180181_-1167994114```
+#### Context Example
+```json
+{
+    "MicrosoftATP": {
+        "Alert": [
+            {
+                "AADTenantID": "ebac1a16-81bf-449b-8d43-5732c3c1d999",
+                "AlertCreationTime": "2022-02-07T02:21:00.7470678Z",
+                "AssignedTo": "Automation",
+                "Category": "SuspiciousActivity",
+                "Classification": null,
+                "Comments": [
+                    {
+                        "Comment": null,
+                        "CreatedBy": null,
+                        "CreatedTime": null
+                    }
+                ],
+                "ComputerDNSName": "msde-agent-host-win2016-dc.msde.lab.demisto",
+                "Description": "MS Graph ATP (Application Id: 1281a70f-8ffb-4b3c-bc82-eef2a44dbb2a) initiated an Automated investigation on msde-agent-host-win2016-dc.msde.lab.demisto.\r\nThe investigation automatically identifies and reviews threat artifacts for possible remediation.\r\n\r\nDetails: testing",
+                "DetectionSource": "AutomatedInvestigation",
+                "DetectorID": "5c6b7d86-c91f-4f8c-8aec-9d2086f46527",
+                "Determination": null,
+                "Evidence": [],
+                "FirstEventTime": "2022-02-07T02:21:00.6440488Z",
+                "ID": "da637797972607470400_795854214",
+                "IncidentID": 645,
+                "InvestigationID": 656,
+                "InvestigationState": "Benign",
+                "LastEventTime": "2022-02-07T02:21:00.6440488Z",
+                "LastUpdateTime": "2022-02-07T02:53:34.76Z",
+                "MachineID": "96444b946be252d1f4550354edef5fdc23aca2c5",
+                "MitreTechniques": [],
+                "RBACGroupName": null,
+                "RelatedUser": null,
+                "ResolvedTime": "2022-02-07T02:53:34.7299762Z",
+                "Severity": "Informational",
+                "Status": "Resolved",
+                "ThreatFamilyName": null,
+                "ThreatName": null,
+                "Title": "Automated investigation started manually"
+            },
+            {
+                "AADTenantID": "ebac1a16-81bf-449b-8d43-5732c3c1d999",
+                "AlertCreationTime": "2021-12-14T09:23:56.0980302Z",
+                "AssignedTo": "Automation",
+                "Category": "SuspiciousActivity",
+                "Classification": "TruePositive",
+                "Comments": [
+                    {
+                        "Comment": null,
+                        "CreatedBy": null,
+                        "CreatedTime": null
+                    }
+                ],
+                "ComputerDNSName": "desktop-s2455r8",
+                "Description": "MS Graph ATP (Application Id: 1281a70f-8ffb-4b3c-bc82-eef2a44dbb2a) initiated an Automated investigation on desktop-s2455r8.\r\nThe investigation automatically identifies and reviews threat artifacts for possible remediation.\r\n\r\nDetails: testing",
+                "DetectionSource": "AutomatedInvestigation",
+                "DetectorID": "5c6b7d86-c91f-4f8c-8aec-9d2086f46527",
+                "Determination": null,
+                "Evidence": [],
+                "FirstEventTime": "2021-12-14T09:23:55.875227Z",
+                "ID": "da637750706361180181_-1167994114",
+                "IncidentID": 510,
+                "InvestigationID": 441,
+                "InvestigationState": "Benign",
+                "LastEventTime": "2021-12-14T09:23:55.875227Z",
+                "LastUpdateTime": "2021-12-15T01:52:41.3Z",
+                "MachineID": "4899036531e374137f63289c3267bad772c13fef",
+                "MitreTechniques": [],
+                "RBACGroupName": null,
+                "RelatedUser": null,
+                "ResolvedTime": "2021-12-14T09:52:16.8080395Z",
+                "Severity": "Informational",
+                "Status": "Resolved",
+                "ThreatFamilyName": null,
+                "ThreatName": null,
+                "Title": "Automated investigation started manually"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Microsoft Defender ATP Alerts Info for IDs ['da637797972607470400_795854214', 'da637750706361180181_-1167994114']:
+>|ID|Title|Description|IncidentID|Severity|Status|Classification|Category|MachineID|
+>|---|---|---|---|---|---|---|---|---|
+>| da637797972607470400_795854214 | Automated investigation started manually | MS Graph ATP (Application Id: 1281a70f-8ffb-4b3c-bc82-eef2a44dbb2a) initiated an Automated investigation on msde-agent-host-win2016-dc.msde.lab.demisto.<br/>The investigation automatically identifies and reviews threat artifacts for possible remediation.<br/><br/>Details: testing | 645 | Informational | Resolved |  | SuspiciousActivity | 96444b946be252d1f4550354edef5fdc23aca2c5 |
+>| da637750706361180181_-1167994114 | Automated investigation started manually | MS Graph ATP (Application Id: 1281a70f-8ffb-4b3c-bc82-eef2a44dbb2a) initiated an Automated investigation on desktop-s2455r8.<br/>The investigation automatically identifies and reviews threat artifacts for possible remediation.<br/><br/>Details: testing | 510 | Informational | Resolved | TruePositive | SuspiciousActivity | 4899036531e374137f63289c3267bad772c13fef |
+
