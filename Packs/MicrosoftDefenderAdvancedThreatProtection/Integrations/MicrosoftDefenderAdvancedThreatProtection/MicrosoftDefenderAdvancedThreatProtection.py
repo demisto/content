@@ -330,14 +330,22 @@ class MsClient:
         }
         return self.ms_client.http_request(method='POST', url_suffix=cmd_url, json_data=json_data)
 
-    def list_alerts(self, filter_req=None):
+    def list_alerts(self, filter_req=None, limit=None, evidence=False, creation_time=None):
         """Retrieves a collection of Alerts.
 
         Returns:
             dict. Alerts info
         """
         cmd_url = '/alerts'
-        params = {'$filter': filter_req} if filter_req else None
+        params = {}
+        if evidence:
+            params.update({'$expand': 'evidence'})
+        if filter_req:
+            if creation_time:
+                filter_req += f"and {create_filter_alerts_creation_time(creation_time)}"
+            params.update({'$filter': filter_req})
+        if limit:
+            params.update({'$top': limit})
         return self.ms_client.http_request(method='GET', url_suffix=cmd_url, params=params)
 
     def update_alert(self, alert_id, json_data):
@@ -1366,18 +1374,21 @@ def list_alerts_command(client: MsClient, args: dict):
                'ThreatFamilyName', 'MachineID']
     severity = args.get('severity')
     status = args.get('status')
+    limit = arg_to_number(args.get('limit', 50))
+    creation_time = arg_to_datetime(args.get('creation_time'), required=False)
     fields_to_filter_by = {
         'severity': severity,
         'status': status
     }
     filter_req = reformat_filter(fields_to_filter_by)
-    alerts_response = client.list_alerts(filter_req)
+    alerts_response = client.list_alerts(filter_req, limit, creation_time=creation_time, evidence=True)
     alerts_list = get_alerts_list(alerts_response)
 
     entry_context = {
         'MicrosoftATP.Alert(val.ID === obj.ID)': alerts_list
     }
-    human_readable = tableToMarkdown(f'{INTEGRATION_NAME} alerts:', alerts_list, headers=headers, removeNull=True)
+    human_readable = tableToMarkdown(f'{INTEGRATION_NAME} alerts with limit of {limit}:', alerts_list,
+                                     headers=headers, removeNull=True)
     return human_readable, entry_context, alerts_response
 
 

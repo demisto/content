@@ -140,6 +140,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 45. microsoft-atp-get-file-info
 46. endpoint
 47. microsoft-atp-indicator-batch-update
+48. microsoft-atp-get-alert-by-id
 
 ### 1. microsoft-atp-isolate-machine
 ---
@@ -859,127 +860,134 @@ Alert.ReadWrite.All
 ##### Base Command
 
 `microsoft-atp-list-alerts`
-##### Input
+#### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| severity | The alert's severity. Possible values: "High", "Medium", "Low", and "Informational". | Optional | 
-| status | The alert's status. Possible values: "New", "InProgress", and "Resolved". | Optional | 
-| category | The alert's category, only one can be added. | Optional | 
+| severity | Alert severity. Possible values: "High", "Medium", "Low", and "Informational". Possible values are: High, Medium, Low, Informational. | Optional |
+| status | Alert status. Possible values: "New", "InProgress", and "Resolved". Possible values are: New, InProgress, Resolved. | Optional |
+| category | Alert category, only one can be added. | Optional |
+| limit | The limit of files to display. Default is 50. | Optional |
+| creation_time | The creation timestamp from which to get alerts (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days). | Optional |
 
 
-##### Context Output
+#### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MicrosoftATP.Alert.ID | String | The ID of the alert. | 
-| MicrosoftATP.Alert.IncidentID | Number | The incident ID of the alert. | 
-| MicrosoftATP.Alert.InvestigationID | Number | The investigation ID related to the alert. | 
-| MicrosoftATP.Alert.InvestigationState | String | The current state of the investigation. | 
-| MicrosoftATP.Alert.AssignedTo | String | The owner of the alert. | 
-| MicrosoftATP.Alert.Severity | String | The severity of the alert. | 
-| MicrosoftATP.Alert.Status | String | The current status of the alert. | 
-| MicrosoftATP.Alert.Classification | String | The classification of the alert. | 
-| MicrosoftATP.Alert.Determination | String | The determination of the alert. | 
-| MicrosoftATP.Alert.DetectionSource | String | The detection source. | 
-| MicrosoftATP.Alert.Category | String | The category of the alert. | 
-| MicrosoftATP.Alert.ThreatFamilyName | String | The threat family of the alert. | 
-| MicrosoftATP.Alert.Title | String | The title of the alert. | 
-| MicrosoftATP.Alert.Description | String | The description of the alert. | 
-| MicrosoftATP.Alert.AlertCreationTime | Date | The date and time the alert was created. | 
-| MicrosoftATP.Alert.FirstEventTime | Date | The first event time that triggered the alert on that machine. | 
-| MicrosoftATP.Alert.LastEventTime | Date | The last event time that triggered the alert on that machine. | 
-| MicrosoftATP.Alert.LastUpdateTime | Date | The first event time that triggered the alert on that machine. | 
-| MicrosoftATP.Alert.ResolvedTime | Date | The date and time in which the status of the alert was changed to "Resolved". | 
-| MicrosoftATP.Alert.MachineID | String | The machine's ID that is associated with the alert. | 
-| MicrosoftATP.Alert.ComputerDNSName | String | The DNS name of the machine. | 
-| MicrosoftATP.Alert.AADTenantID | String | The AAD tenant ID. | 
-| MicrosoftATP.Alert.Comments.Comment | String | The alert comment string. | 
-| MicrosoftATP.Alert.Comments.CreatedBy | String | The alert comment created by the string. | 
-| MicrosoftATP.Alert.Comments.CreatedTime | Date | The time and date yje alert comment was created. | 
+| MicrosoftATP.Alert.ID | String | The alert ID. |
+| MicrosoftATP.Alert.IncidentID | Number | The Incident ID of the alert. |
+| MicrosoftATP.Alert.InvestigationID | Number | The Investigation ID related to the alert. |
+| MicrosoftATP.Alert.InvestigationState | String | The current state of the Investigation. |
+| MicrosoftATP.Alert.AssignedTo | String | The owner of the alert. |
+| MicrosoftATP.Alert.Severity | String | The severity of the alert. |
+| MicrosoftATP.Alert.Status | String | The current status of the alert. |
+| MicrosoftATP.Alert.Classification | String | The alert Classification. |
+| MicrosoftATP.Alert.Determination | String | The determination of the alert. |
+| MicrosoftATP.Alert.DetectionSource | String | The detection source. |
+| MicrosoftATP.Alert.Category | String | The category of the alert. |
+| MicrosoftATP.Alert.ThreatFamilyName | String | The threat family. |
+| MicrosoftATP.Alert.Title | String | The alert title. |
+| MicrosoftATP.Alert.Description | String | The alert description. |
+| MicrosoftATP.Alert.AlertCreationTime | Date | The date and time the alert was created. |
+| MicrosoftATP.Alert.FirstEventTime | Date | The first event time that triggered the alert on that machine. |
+| MicrosoftATP.Alert.LastEventTime | Date | The last event time that triggered the alert on that machine. |
+| MicrosoftATP.Alert.LastUpdateTime | Date | The first event time that triggered the alert on that machine. |
+| MicrosoftATP.Alert.ResolvedTime | Date | The date and time in which the status of the alert was changed to 'Resolved'. |
+| MicrosoftATP.Alert.MachineID | String | The machine ID that is associated with the alert. |
+| MicrosoftATP.Alert.ComputerDNSName | String | The machine DNS name. |
+| MicrosoftATP.Alert.AADTenantID | String | The AAD tenant ID. |
+| MicrosoftATP.Alert.Comments.Comment | String | The alert comment string. |
+| MicrosoftATP.Alert.Comments.CreatedBy | String | The alert comment created by string. |
+| MicrosoftATP.Alert.Comments.CreatedTime | Date | The alert comment created time date. |
+| MicrosoftATP.Alert.Evidence | Unknown | Evidence related to the alert. |
+| MicrosoftATP.Alert.DetectorID | String | The ID of the detector that triggered the alert. |
+| MicrosoftATP.Alert.ThreatName | String | The threat name. |
+| MicrosoftATP.Alert.RelatedUser | String | Details of user related to a specific alert. |
+| MicrosoftATP.Alert.MitreTechniques | String | Mitre Enterprise technique ID. |
+| MicrosoftATP.Alert.RBACGroupName | String | The device RBAC group name. |
 
-
-##### Command Example
-```!microsoft-atp-list-alerts severity=Low```
-
-##### Context Example
-```
+#### Command example
+```!microsoft-atp-list-alerts category=Malware severity=Informational status=Resolved creation_time="3 days" limit=1```
+#### Context Example
+```json
 {
-    "MicrosoftATP.Alert": [
-        {
-            "Category": "Backdoor", 
-            "ThreatFamilyName": null, 
-            "Severity": "Low", 
-            "LastEventTime": "2020-02-19T10:31:22.7894742Z", 
-            "FirstEventTime": "2020-02-19T10:31:22.7894742Z", 
+    "MicrosoftATP": {
+        "Alert": {
+            "AADTenantID": "ebac1a16-81bf-449b-8d43-5732c3c1d999",
+            "AlertCreationTime": "2022-02-07T10:26:40.05748Z",
+            "AssignedTo": "Automation",
+            "Category": "Malware",
+            "Classification": null,
             "Comments": [
                 {
-                    "Comment": null, 
-                    "CreatedTime": null, 
-                    "CreatedBy": null
+                    "Comment": null,
+                    "CreatedBy": null,
+                    "CreatedTime": null
                 }
-            ], 
-            "AADTenantID": "TENANT-ID", 
-            "AlertCreationTime": "2020-03-17T11:35:16.8861429Z", 
-            "Status": "InProgress", 
-            "Description": "testing", 
-            "InvestigationState": "PendingApproval", 
-            "MachineID": "4899036531e374137f63289c3267bad772c13fef", 
-            "Title": "testing", 
-            "InvestigationID": 10, 
-            "Determination": null, 
-            "IncidentID": 14, 
-            "AssignedTo": "Automation", 
-            "DetectionSource": "CustomerTI", 
-            "ResolvedTime": null, 
-            "ID": "da637200417169017725_183736971", 
-            "LastUpdateTime": "2020-03-23T10:00:16.8633333Z", 
-            "Classification": null, 
-            "ComputerDNSName": "desktop-s2455r8", 
-            "Evidence": []
-        }, 
-        {
-            "Category": "Backdoor", 
-            "ThreatFamilyName": null, 
-            "Severity": "Low", 
-            "LastEventTime": "2020-02-23T07:22:07.1532018Z", 
-            "FirstEventTime": "2020-02-23T07:22:07.1532018Z", 
-            "Comments": [
+            ],
+            "ComputerDNSName": "win2016-msde-agent.msde.lab.demisto",
+            "Description": "Malware and unwanted software are undesirable applications that perform annoying, disruptive, or harmful actions on affected machines. Some of these undesirable applications can replicate and spread from one machine to another. Others are able to receive commands from remote attackers and perform activities associated with cyber attacks.\n\nThis detection might indicate that the malware was stopped from delivering its payload. However, it is prudent to check the machine for signs of infection.",
+            "DetectionSource": "WindowsDefenderAv",
+            "DetectorID": "d60f5b90-ecd8-4d77-8186-a801597ec762",
+            "Determination": null,
+            "Evidence": [
                 {
-                    "Comment": null, 
-                    "CreatedTime": null, 
-                    "CreatedBy": null
+                    "aadUserId": null,
+                    "accountName": null,
+                    "detectionStatus": "Prevented",
+                    "domainName": null,
+                    "entityType": "File",
+                    "evidenceCreationTime": "2022-02-07T10:26:40.24Z",
+                    "fileName": "example.com",
+                    "filePath": "C:\\Users\\admin\\Downloads",
+                    "ipAddress": null,
+                    "parentProcessCreationTime": null,
+                    "parentProcessFileName": null,
+                    "parentProcessFilePath": null,
+                    "parentProcessId": null,
+                    "processCommandLine": null,
+                    "processCreationTime": null,
+                    "processId": null,
+                    "registryHive": null,
+                    "registryKey": null,
+                    "registryValue": null,
+                    "registryValueType": null,
+                    "sha1": "3395856ce81f2b7382dee72602f798b642f14140",
+                    "sha256": "275a021bbfb6489e54d471899f7db9d1663fc695ec2fe2a2c4538aabf651fd0f",
+                    "url": null,
+                    "userPrincipalName": null,
+                    "userSid": null
                 }
-            ], 
-            "AADTenantID": "TENANT-ID", 
-            "AlertCreationTime": "2020-03-22T15:44:23.5446957Z", 
-            "Status": "New", 
-            "Description": "test", 
-            "InvestigationState": "PendingApproval", 
-            "MachineID": "4899036531e374137f63289c3267bad772c13fef", 
-            "Title": "testing alert", 
-            "InvestigationID": 10, 
-            "Determination": null, 
-            "IncidentID": 18, 
-            "AssignedTo": null, 
-            "DetectionSource": "CustomerTI", 
-            "ResolvedTime": null, 
-            "ID": "da637204886635759335_1480542752", 
-            "LastUpdateTime": "2020-03-22T15:44:24.6533333Z", 
-            "Classification": null, 
-            "ComputerDNSName": "desktop-s2455r8", 
-            "Evidence": []
+            ],
+            "FirstEventTime": "2022-02-07T10:20:52.2188896Z",
+            "ID": "da637798264000574516_1915313662",
+            "IncidentID": 648,
+            "InvestigationID": 675,
+            "InvestigationState": "SuccessfullyRemediated",
+            "LastEventTime": "2022-02-07T10:20:52.2571395Z",
+            "LastUpdateTime": "2022-02-07T10:57:13.93Z",
+            "MachineID": "4cceb3c642212014e0e9553aa8b59e999ea515ff",
+            "MitreTechniques": [],
+            "RBACGroupName": null,
+            "RelatedUser": null,
+            "ResolvedTime": "2022-02-07T10:57:13.773683Z",
+            "Severity": "Informational",
+            "Status": "Resolved",
+            "ThreatFamilyName": "Test_File",
+            "ThreatName": "Test_File",
+            "Title": "'Test_File' malware was prevented"
         }
-    ]
+    }
 }
 ```
 
-##### Human Readable Output
-##### Microsoft Defender ATP alerts:
-|ID|Title|Description|IncidentID|Severity|Status|Category|MachineID|
-|---|---|---|---|---|---|---|---|
-| da637200417169017725_183736971 | testing | testing | 14 | Low | InProgress | Backdoor | 4899036531e374137f63289c3267bad772c13fef |
-| da637204886635759335_1480542752 | testing alert | test | 18 | Low | New | Backdoor | 4899036531e374137f63289c3267bad772c13fef |
+#### Human Readable Output
+
+>### Microsoft Defender ATP alerts with limit of 1:
+>|ID|Title|Description|IncidentID|Severity|Status|Category|ThreatFamilyName|MachineID|
+>|---|---|---|---|---|---|---|---|---|
+>| da637798264000574516_1915313662 | 'Test_File' malware was prevented | Malware and unwanted software are undesirable applications that perform annoying, disruptive, or harmful actions on affected machines. Some of these undesirable applications can replicate and spread from one machine to another. Others are able to receive commands from remote attackers and perform activities associated with cyber attacks.<br/><br/>This detection might indicate that the malware was stopped from delivering its payload. However, it is prudent to check the machine for signs of infection. | 648 | Informational | Resolved | Malware | Test_File | 4cceb3c642212014e0e9553aa8b59e999ea515ff |
 
 
 ### 8. microsoft-atp-update-alert
@@ -4437,6 +4445,8 @@ We suggest using the [TransformIndicatorToMSDefenderIOC automation](https://gith
 ***
 Retrieves specific alert by the given alert ID. Note, if the given alert ID is not part of the results, it was not found.
 
+##### Required Permissions
+Alert.ReadWrite.All	
 
 #### Base Command
 

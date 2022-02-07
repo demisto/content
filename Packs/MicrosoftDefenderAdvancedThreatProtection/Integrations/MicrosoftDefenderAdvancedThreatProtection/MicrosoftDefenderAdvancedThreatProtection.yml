@@ -569,6 +569,19 @@ script:
       name: category
       required: false
       secret: false
+    - default: false
+      defaultValue: '50'
+      description: The limit of files to display.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: The creation timestamp from which to get alerts (<number> <time unit>, e.g., 12 hours, 7 days).
+      isArray: false
+      name: creation_time
+      required: false
+      secret: false
     deprecated: false
     description: Get a list of alerts present on the system. Filtering can be done
       only on a single argument.
@@ -651,6 +664,24 @@ script:
     - contextPath: MicrosoftATP.Alert.Comments.CreatedTime
       description: The alert comment created time date.
       type: Date
+    - contextPath: MicrosoftATP.Alert.Evidence
+      description: Evidence related to the alert.
+      type: Unknown
+    - contextPath: MicrosoftATP.Alert.DetectorID
+      description: The ID of the detector that triggered the alert.
+      type: String
+    - contextPath: MicrosoftATP.Alert.ThreatName
+      description: The threat name.
+      type: String
+    - contextPath: MicrosoftATP.Alert.RelatedUser
+      description: Details of user related to a specific alert.
+      type: String
+    - contextPath: MicrosoftATP.Alert.MitreTechniques
+      description: Mitre Enterprise technique ID.
+      type: String
+    - contextPath: MicrosoftATP.Alert.RBACGroupName
+      description: The device RBAC group name.
+      type: String
   - arguments:
     - default: false
       description: Alert ID to update.
