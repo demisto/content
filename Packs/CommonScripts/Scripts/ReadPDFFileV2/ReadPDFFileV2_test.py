@@ -8,19 +8,20 @@ CWD = os.getcwd() if os.getcwd().endswith('test_data') else f'{os.getcwd()}/test
 def test_main_flow(mocker, tmp_path):
     """
     Given
-     - a valid pdf file.
+        - a valid pdf file.
 
     When
-     - trying to run the main flow.
+        - trying to run the main flow.
 
     Then
-    - the main flow runs without getting exceptions.
+        - the main flow runs without getting exceptions.
     """
     from ReadPDFFileV2 import main
     mocker.patch.object(demisto, 'args')
     mocker.patch.object(demisto, 'getFilePath', return_value={'path': f'{CWD}/lets_talk.pdf'})
+    mocker = mocker.patch('ReadPDFFileV2.return_error_without_exit')
     main()
-
+    assert not mocker.called
 
 def test_get_files_names_in_path():
     from ReadPDFFileV2 import get_files_names_in_path
