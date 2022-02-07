@@ -10,6 +10,10 @@
     "categories": [
         "Utilities"
     ],
+    "itemPrefix": [
+        "Content",
+        "Demisto"
+    ],
     "tags": [],
     "useCases": [],
     "keywords": [],
