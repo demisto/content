@@ -1,7 +1,8 @@
 from CrowdStrikeFalconX import Client,\
     send_uploaded_file_to_sandbox_analysis_command, send_url_to_sandbox_analysis_command,\
     get_full_report_command, get_report_summary_command, get_analysis_status_command,\
-    check_quota_status_command, find_sandbox_reports_command, find_submission_id_command, run_polling_command
+    check_quota_status_command, find_sandbox_reports_command, find_submission_id_command, run_polling_command, \
+    pop_polling_related_args, is_new_polling_search, arrange_args_for_upload_func, remove_polling_related_args
 from TestsInput.context import SEND_UPLOADED_FILE_TO_SENDBOX_ANALYSIS_CONTEXT, SEND_URL_TO_SANDBOX_ANALYSIS_CONTEXT,\
     GET_FULL_REPORT_CONTEXT, GET_REPORT_SUMMARY_CONTEXT, GET_ANALYSIS_STATUS_CONTEXT, CHECK_QUOTA_STATUS_CONTEXT,\
     FIND_SANDBOX_REPORTS_CONTEXT, FIND_SUBMISSION_ID_CONTEXT, MULTIPLE_ERRORS_RESULT, GET_FULL_REPORT_CONTEXT_EXTENDED
@@ -362,3 +363,53 @@ def test_running_polling_command_new_search_for_file(mocker):
 
     assert command_results.outputs == expected_outputs
     assert command_results.scheduled_command is not None
+
+
+def test_pop_polling_related_args():
+    args = {
+        'submit_file': 'submit_file',
+        'enable_tor': 'enable_tor',
+        'interval_in_seconds': 'interval_in_seconds',
+        'polling': 'polling',
+        'ids': 'ids'
+    }
+    pop_polling_related_args(args)
+    assert 'submit_file' not in args
+    assert 'enable_tor' not in args
+    assert 'interval_in_seconds' not in args
+    assert 'polling' not in args
+    assert 'ids' in args
+
+
+def test_is_new_polling_search():
+    assert not is_new_polling_search({'ids': 'a'})
+    assert is_new_polling_search({'polling': 'a'})
+
+
+def test_arrange_args_for_upload_func():
+    args = {
+        'submit_file': 'submit_file',
+        'enable_tor': 'enable_tor',
+        'interval_in_seconds': 'interval_in_seconds',
+        'polling': 'polling',
+        'ids': 'ids',
+        'extended_data': 'extended_data'
+    }
+
+    extended_data = arrange_args_for_upload_func(args)
+    assert extended_data == 'extended_data'
+    assert 'interval_in_seconds' not in args
+    assert 'polling' not in args
+    assert 'extended_data' not in args
+
+
+def test_remove_polling_related_args():
+    args = {
+        'interval_in_seconds': 'interval_in_seconds',
+        'polling': 'polling',
+        'ids': 'ids',
+        'extended_data': 'extended_data'
+    }
+    remove_polling_related_args(args)
+    assert 'interval_in_seconds' not in args
+    assert 'extended_data' not in args
