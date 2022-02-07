@@ -54,15 +54,15 @@ def test_url_command(mocker, requests_mock, query_status, tags, ):
                         return_value={'url': url_to_check})
     results = url_command(**params)
 
-    URL = results.indicator
-    if URL:
-        assert URL.url == url_to_check
+    url_indicator = results.indicator
+    if url_indicator:
+        assert url_indicator.url == url_to_check
         if query_status == 'ok':
-            assert all(elem in URL.tags for elem in tags)
-            assert URL.relationships
+            assert all(elem in url_indicator.tags for elem in tags)
+            assert url_indicator.relationships
         else:
-            assert not URL.tags
-            assert not URL.relationships
+            assert not url_indicator.tags
+            assert not url_indicator.relationships
 
 
 url_command_test_reliability_dbot_score = [
