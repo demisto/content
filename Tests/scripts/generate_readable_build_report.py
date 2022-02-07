@@ -43,12 +43,12 @@ def get_failing_tests():
         failed_tests_list = failed_tests.split('\n')
         for failed_test in failed_tests_list:
             test_data = get_test_data(failed_test)
-        write_data_to_summary_file()
+        write_data_to_summary_file(test_data)
         return f'you have {len(failed_tests_list)} failed tests on this push.\n'
     return 'no failing tests on this one. nice job!\n'
 
 
-def write_data_to_summary_file():
+def write_data_to_summary_file(data: str):
     pass
 
 
@@ -62,6 +62,7 @@ def get_test_data(failed_test_name: str) -> str:
                        f'.*' \
                        f'------ Test playbook: {failed_test_name}.*end ------'
     re.search(test_log_pattern, log_data)
+    return ''
 
 
 def main():
