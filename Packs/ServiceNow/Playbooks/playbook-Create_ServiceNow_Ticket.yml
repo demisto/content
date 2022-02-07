@@ -396,6 +396,9 @@ inputs:
     \ the polling command to use a specific instance to run on. \nIf so, add\
     \ \"Using\" to the value. \nThe playbook will then take the instance name as the\
     \ instance to use."
+    \ the polling command to use a specific instance to run on. \nIf so, please add\
+    \ \"using\" to the value. \nThe playbook will then take the instance name as the\
+    \ instance to use. "
   playbookInputQuery:
 - key: InstanceName
   value:

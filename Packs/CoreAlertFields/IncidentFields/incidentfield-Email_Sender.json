@@ -1,0 +1,82 @@
+{
+    "associatedToAll": true,
+    "caseInsensitive": true,
+    "cliName": "emailsender",
+    "closeForm": false,
+    "content": true,
+    "description": "The email sender value of a firewall alerts triggered on a the content of a malicious email.",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_emailsender",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Email Sender",
+    "neverSetAsRequired": false,
+    "openEnded": true,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "multiSelect",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.5.0",
+    "x2_fields": "fw_email_sender",
+    "Aliases": [
+        {
+          "cliName": "emailfrom",
+          "type": "shortText"
+        },
+        {
+          "cliName": "ironscalessenderemail",
+          "type": "shortText"
+        },
+        {
+          "cliName": "proofpointtapsenderaddress",
+          "type": "shortText"
+        },
+        {
+          "cliName": "apdmessagemailfrom",
+          "type": "shortText"
+        },
+        {
+          "cliName": "cofensetriagereportfromaddress",
+          "type": "shortText"
+        },
+        {
+          "cliName": "cymulatesourceemailaddress",
+          "type": "shortText"
+        },
+        {
+          "cliName": "cyrenexternalfrom",
+          "type": "shortText"
+        },
+        {
+          "cliName": "cyrenexternalsender",
+          "type": "shortText"
+        },
+        {
+          "cliName": "cyrenfromaddress",
+          "type": "shortText"
+        },
+        {
+          "cliName": "cyrensenderaddress",
+          "type": "shortText"
+        },
+        {
+          "cliName": "digitalguardianemailsender",
+          "type": "shortText"
+        },
+        {
+          "cliName": "phisheremailfrom",
+          "type": "shortText"
+        }
+    ]
+}

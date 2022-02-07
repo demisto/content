@@ -89,6 +89,9 @@ RESPONSE_TICKET_MIRROR = {'result': [{
     }]
 }
 
+USER_RESPONSE = {
+    'result': {'first_name': 'Oscar', 'email': 'oscar@example.com'}}
+
 
 RESPONSE_CLOSING_TICKET_MIRROR = {'result': [{
     'parent': '', 'made_sla': 'false', 'caused_by': '', 'watch_list': '', 'upon_reject': '',

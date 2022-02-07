@@ -1,70 +1,51 @@
 {
-    "associatedToAll": false,
-    "associatedTypes": [
-        "Qradar Generic",
-        "FW change management"
-    ],
-    "caseInsensitive": true,
-    "cliName": "sourceips",
-    "closeForm": false,
-    "content": true,
-    "description": "The source IPs of the event.",
-    "editForm": true,
-    "group": 0,
-    "hidden": false,
-    "id": "incident_sourceips",
-    "isExtractingSpecificIndicatorTypes": false,
-    "isReadOnly": false,
-    "locked": false,
-    "name": "Source IPs",
-    "neverSetAsRequired": false,
-    "ownerOnly": false,
-    "propagationLabels": [
-        "all"
-    ],
-    "required": false,
-    "sla": 0,
-    "system": false,
-    "threshold": 72,
-    "type": "multiSelect",
-    "unmapped": false,
-    "unsearchable": true,
-    "useAsKpi": false,
-    "version": -1,
-    "fromVersion": "6.0.0",
-    "openEnded": true,
-    "Aliases": [
-        {
-            "cliName": "sourceipoffense",
-            "type": "multiSelect"
-        },
-        {
-            "cliName": "digitalguardiansourceaddress",
-            "type": "shortText"
-        },
-        {
-            "cliName": "digitalguardiansourceip",
-            "type": "shortText"
-        },
-        {
-            "cliName": "f5silverlinegeolocationsourceip",
-            "type": "shortText"
-        },
-        {
-            "cliName": "f5silverlinemessageoriginatorsourceip",
-            "type": "shortText"
-        },
-        {
-            "cliName": "f5silverlinetranslatedsourceip",
-            "type": "shortText"
-        },
-        {
-            "cliName": "irondefensesrcip",
-            "type": "shortText"
-        },
-        {
-            "cliName": "sourceip",
-            "type": "shortText"
-        }
-    ]
+  "associatedToAll": true,
+  "associatedTypes": [
+    "Qradar Generic"
+  ],
+  "breachScript": "",
+  "caseInsensitive": true,
+  "cliName": "sourceips",
+  "closeForm": false,
+  "columns": null,
+  "content": true,
+  "defaultRows": null,
+  "description": "The source IPs of the event.",
+  "editForm": true,
+  "extractIndicatorTypesIDs": [],
+  "fieldCalcScript": "",
+  "fromServerVersion": "",
+  "group": 0,
+  "hidden": false,
+  "id": "incident_sourceips",
+  "isExtractingSpecificIndicatorTypes": false,
+  "isReadOnly": false,
+  "itemVersion": "",
+  "locked": false,
+  "name": "Source IPs",
+  "neverSetAsRequired": false,
+  "ownerOnly": false,
+  "placeholder": "",
+  "propagationLabels": [
+    "all"
+  ],
+  "required": false,
+  "script": "",
+  "selectValues": [],
+  "sla": 0,
+  "system": false,
+  "systemAssociatedTypes": null,
+  "threshold": 72,
+  "toServerVersion": "",
+  "type": "multiSelect",
+  "unmapped": false,
+  "unsearchable": false,
+  "useAsKpi": false,
+  "validationRegex": "",
+  "version": -1,
+  "fromVersion": "6.0.0",
+  "openEnded": true,
+  "marketplaces": [
+    "xsoar"
+  ]
 }
