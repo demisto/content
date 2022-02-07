@@ -8,7 +8,7 @@ CWD = os.getcwd() if os.getcwd().endswith('test_data') else f'{os.getcwd()}/test
 def test_main_flow(mocker, tmp_path):
     """
     Given
-     - a valid pdf file that contains text only.
+     - a valid pdf file.
 
     When
      - trying to run the main flow.
@@ -18,7 +18,7 @@ def test_main_flow(mocker, tmp_path):
     """
     from ReadPDFFileV2 import main
     mocker.patch.object(demisto, 'args')
-    mocker.patch.object(demisto, 'getFilePath', return_value={'path': f'{CWD}/text-only.pdf'})
+    mocker.patch.object(demisto, 'getFilePath', return_value={'path': f'{CWD}/Docker-Cookbook.pdf'})
     main()
 
 
