@@ -39,10 +39,6 @@
           "type": "shortText"
         },
         {
-          "cliName": "microsoft365defenderusers",
-          "type": "grid"
-        },
-        {
           "cliName": "prismacloudcomputeuser",
           "type": "shortText"
         },
@@ -64,10 +60,6 @@
         },
         {
           "cliName": "tidyuser",
-          "type": "shortText"
-        },
-        {
-          "cliName": "username",
           "type": "shortText"
         },
         {
