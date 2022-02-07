@@ -800,6 +800,9 @@ class Taxii2FeedClient:
                 # now we have a list of objects, go over each obj, save id with obj, parse the obj
                 if obj_type != "relationship":
                     for obj in stix_objects:
+                        # we currently don't support extension object
+                        if obj.get('type') == 'extension-definition':
+                            continue
                         self.id_to_object[obj.get('id')] = obj
                         result = parse_objects_func[obj_type](obj)
                         if not result:
