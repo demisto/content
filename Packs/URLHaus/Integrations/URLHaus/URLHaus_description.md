@@ -1,19 +1,57 @@
 ## How DBot Score is Calculated
 
-### DBot Score: Bad
-URL: receive a DBot score of Bad if their status is online.
+### URL
+Determined by the status of the URL.
+  <table>
+    <tr>
+    <th>Status</th>
+    <th>DBotScore</th>
+  </tr>
+    <tr>
+    <th>online</th>
+    <th>Malicious</th>
+  </tr>
+    <tr>
+    <th>offline</th>
+    <th>Suspicious</th>
+  </tr>
+    <tr>
+    <th>unknown</th>
+    <th>Unknown</th>
+  </tr>
+    </table>
 
-Domain: receive a DBot score of Bad if their status in the blacklist is:
-    spammer_domain/phishing_domain/botnet_cc_domain/listed
-### DBot Score: Suspicious
-URL: receive a DBot score of Suspicious if their status is offline.
+### Domain
+Determined by the blacklist spamhaus_dbl/surbl of the Domain.
+  <table>
+    <tr>
+    <th>Status</th>
+    <th>DBotScore</th>
+  </tr>
+    <tr>
+    <th>spammer_domain/ phishing_domain/ 
+        botnet_cc_domain/ listed</th>
+    <th>Malicious</th>
+  </tr>
+    <tr>
+    <th>not listed</th>
+    <th>Unknown</th>
+  </tr>
+    <tr>
+    <th>-</th>
+    <th>Benign</th>
+  </tr>
+    </table>
 
-Domain: There is no such an option.
-### DBot Score: Good
-URL: receive a DBot score of Good If there is no information about url status.
-
-Domain: receive a DBot score of Good If there is no information about domain blacklist.
-### DBot Score: Empty
-URL: will not receive a DBot score if their status is unknown.
-
-If there is no information for the URLs and domains, they will not receive a DBot score.
+### File
+Score is Malicious.
+  <table>
+    <tr>
+    <th>Status</th>
+    <th>DBotScore</th>
+  </tr>
+    <tr>
+    <th>-</th>
+    <th>Malicious</th>
+  </tr>
+    </table>

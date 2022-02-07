@@ -4,6 +4,14 @@ import io
 import demistomock as demisto
 from CommonServerPython import Common
 
+params = {
+    "api_url": "http://test.com/api/v1",
+    "use_ssl": "True",
+    "reliability": "C - Fairly reliable",
+    "create_relationships": True,
+    "max_num_of_relationships": 1
+}
+
 
 def util_load_json(path):
     with io.open(path, mode='r', encoding='utf-8') as f:
@@ -23,29 +31,28 @@ url_command_test = [
 def test_url_command(mocker, requests_mock, query_status, tags, ):
     """
         Given
-        - An URL.
+        - A URL.
 
         When
-        - Running url_command with the url.
+        - Calling url_command() methood.
 
         Then
-        - Validate that the Tags were created
+        - Validate that the Tags were created.
         - Validate that the URL and DBotScore entry context have the proper values.
-        - Validate that the relationships were created
+        - Validate that the relationships were created.
 
     """
     from URLHaus import url_command
 
     url_to_check = 'www.test_url.com'
     mock_response = util_load_json('test_data/url_command.json')
-    mock_params = util_load_json('test_data/params.json')
     mock_response['query_status'] = query_status
     mock_response['tags'] = tags
     requests_mock.post('http://test.com/api/v1/url/',
                        json=mock_response)
     mocker.patch.object(demisto, 'args',
                         return_value={'url': url_to_check})
-    results = url_command(**mock_params)
+    results = url_command(**params)
 
     URL = results.indicator
     if URL:
@@ -72,13 +79,13 @@ def test_url_reliability_dbot_score(status, excepted_output):
     """
 
     Given:
-        - Url status from URLhaus database.
+        - A URL status.
 
     When:
-        - Calculating dbot score.
+        - Calling calculate_dbot_score() method.
 
     Then:
-        - Successes with right dbot score.
+        - Make sure the DBot Score is calculated correctly.
 
     """
     from URLHaus import calculate_dbot_score
@@ -113,15 +120,15 @@ def test_url_create_payloads(test_data, excepted_output):
     """
 
     Given:
-        - Url information including payloads which contain files info.
+        - A URL information including payloads which contain files info.
 
     When:
-        - Creating list of files.
+        - Calling url_create_payloads() method.
 
     Then:
-        - list of {name,type,md5,sha256,vt}
+        - Make sure the payload lists is created correctly.
 
-        """
+    """
     from URLHaus import url_create_payloads
     assert url_create_payloads(url_information=test_data) == excepted_output
 
@@ -143,13 +150,13 @@ def test_url_create_blacklists(test_data, excepted_output):
     """
 
     Given:
-        - Url information including blacklists which contain name,status.
+        - A URL information including blacklists which contain name,status.
 
     When:
-        - Creating list of blacklist.
+        - Calling url_create_blacklist() method.
 
     Then:
-        - Return list of {name,status}.
+        - Make sure the blacklist is created correctly.
 
     """
     from URLHaus import url_create_blacklist
@@ -172,19 +179,19 @@ url_command_test_create_relationships = [
 ]
 
 
-@pytest.mark.parametrize('host,host_type,create_relationship,max_num_relationships',
+@pytest.mark.parametrize('host,host_type,create_relationships,max_num_relationships',
                          url_command_test_create_relationships)
-def test_url_command_create_relationships(host, host_type, create_relationship, max_num_relationships):
+def test_url_command_create_relationships(host, host_type, create_relationships, max_num_relationships):
     """
 
     Given:
-        - Url host, file list, Create relationship table(T/F), max number of relationships(Limited to 1000).
+        - A URL host, file list, Create relationship table(T/F), max number of relationships(Limited to 1000).
 
     When:
-        - Creating relationships table for url command.
+        - Calling url_create_relationships() method.
 
     Then:
-        - Return indicators relationships table {Relationship,EntityA,EntityAType,EntityB,EntityBType}.
+        - Make sure the relationships list is created correctly.
 
     """
     from URLHaus import url_create_relationships
@@ -201,7 +208,7 @@ def test_url_command_create_relationships(host, host_type, create_relationship, 
     } for i in range(10000)]
     uri = 'test_uri'
     excepted_output = []
-    if create_relationship:
+    if create_relationships:
         excepted_output = [{
             'Relationship': 'related-to' if host_type == 'IP' else 'hosted-on',
             'EntityA': uri,
@@ -216,8 +223,7 @@ def test_url_command_create_relationships(host, host_type, create_relationship, 
             'EntityB': files[i].get('SHA256'),
             'EntityBType': 'File',
         } for i in range(max_num_relationships - 1)])
-    kwargs = {'create_relationships': create_relationship, 'max_num_of_relationships': max_num_relationships}
-    results = url_create_relationships(uri, host, files, **kwargs)
+    results = url_create_relationships(uri, host, files, create_relationships, max_num_relationships)
     assert len(results) == len(excepted_output)
     for i in range(len(results)):
         assert results[i].to_context() == excepted_output[i]
@@ -243,25 +249,24 @@ def test_domain_command(requests_mock, mocker, query_status, spamhaus_dbl, expec
         - A Domain.
 
         When
-        - Running domain_command with the domain.
+        - Calling domain_command() method.
 
         Then
-        - Validate that the Tags were created
-        - Validate that the relationships were created
+        - Validate that the Tags were created correctly.
+        - Validate that the relationships were created correctly.
 
     """
     from URLHaus import domain_command
 
     domain_to_check = "test.com"
     mock_response = util_load_json('test_data/domain_command.json')
-    mock_params = util_load_json('test_data/params.json')
     mock_response['query_status'] = query_status
     mock_response['blacklists']['spamhaus_dbl'] = spamhaus_dbl
     requests_mock.post('http://test.com/api/v1/host/',
                        json=mock_response)
     mocker.patch.object(demisto, 'args',
                         return_value={'domain': domain_to_check})
-    results = domain_command(**mock_params)
+    results = domain_command(**params)
 
     Domain = results.outputs.get('Domain', '')
     if Domain:
@@ -308,13 +313,13 @@ def test_domain_reliability_dbot_score(blacklist, excepted_output):
     """
 
     Given:
-        - Domain blacklist from URLhaus database.
+        - A Domain blacklist from URLhaus database.
 
     When:
-        - Calculating dbot score.
+        - Calling calculate_dbot_score() method.
 
     Then:
-        - Successes with right dbot score.
+        - Make sure the DBot Score is calculated correctly.
 
     """
     from URLHaus import calculate_dbot_score
@@ -340,19 +345,19 @@ domain_command_test_create_relationships = [
 ]
 
 
-@pytest.mark.parametrize('create_relationship,max_num_relationships',
+@pytest.mark.parametrize('create_relationships,max_num_relationships',
                          domain_command_test_create_relationships)
-def test_domain_command_test_create_relationships(create_relationship, max_num_relationships):
+def test_domain_command_test_create_relationships(create_relationships, max_num_relationships):
     """
 
     Given:
-        - Blacklist status.
+        - A Domain, urls list, Create relationship table(T/F), max number of relationships(Limited to 1000).
 
     When:
-        - Adding tags from blacklist if they have relevant information.
+        - Calling domain_create_relationships() method.
 
     Then:
-        - Add blacklist status information to the tags list.
+        - Make sure the relationships list is created correctly.
 
     """
     from URLHaus import domain_create_relationships
@@ -362,7 +367,7 @@ def test_domain_command_test_create_relationships(create_relationship, max_num_r
     } for i in range(10000)]  # Large amounts of urls
     domain = "test_domain"
     excepted_output = []
-    if create_relationship:
+    if create_relationships:
         excepted_output.extend([{
             'Relationship': 'hosts',
             'EntityA': domain,
@@ -370,8 +375,7 @@ def test_domain_command_test_create_relationships(create_relationship, max_num_r
             'EntityB': urls[i].get('url'),
             'EntityBType': 'URL',
         } for i in range(max_num_relationships)])
-    kwargs = {'create_relationships': create_relationship, 'max_num_of_relationships': max_num_relationships}
-    results = domain_create_relationships(urls, domain, **kwargs)
+    results = domain_create_relationships(urls, domain, create_relationships, max_num_relationships)
     assert len(results) == len(excepted_output)
     for i in range(len(results)):
         assert results[i] == excepted_output[i]
@@ -394,13 +398,13 @@ def test_domain_add_tags(blacklist_status, excepted_output):
     """
 
     Given:
-        - Create relationship table(T/F),max number of relationships(Limited to 1000).
+        - A Blacklist status, tags.
 
     When:
-        - Creating relationships table for domain command.
+        - Calling domain_add_tags() method.
 
     Then:
-        - Return indicators relationships table {Relationship,EntityA,EntityAType,EntityB,EntityBType}.
+        - Make sure tags are added correctly.
 
     """
     from URLHaus import domain_add_tags
@@ -423,10 +427,10 @@ file_command_test = [
 def test_file_command(mocker, requests_mock, query_status, ssdeep, expected_ssdeep):
     """
         Given
-        - A File.
+        - A file.
 
         When
-        - Running file_command with the file.
+        - Calling file_command() method.
 
         Then
         - Validate that the Tags were created.
@@ -437,14 +441,13 @@ def test_file_command(mocker, requests_mock, query_status, ssdeep, expected_ssde
 
     file_to_check = 'a' * 32
     mock_response = util_load_json('test_data/file_command.json')
-    mock_params = util_load_json('test_data/params.json')
     mock_response['query_status'] = query_status
     mock_response['ssdeep'] = ssdeep
     requests_mock.post('http://test.com/api/v1/payload/',
                        json=mock_response)
     mocker.patch.object(demisto, 'args',
                         return_value={'file': file_to_check})
-    results = file_command(**mock_params)
+    results = file_command(**params)
 
     File = '' if not results.outputs else results.outputs.get('File', '')
     if File:
@@ -458,14 +461,13 @@ def test_file_reliability_dbot_score():
     """
 
     Given:
-        - File.
+        - A file.
 
     When:
-        - Calculating dbot score.
+        - calling calculate_dbot_score() method.
 
     Then:
-        - Return Bad sbot score.
-
+        - Make sure the DBot Score is calculated correctly.
     """
     from URLHaus import calculate_dbot_score
     dbot_score = calculate_dbot_score('file', '')[0]
@@ -481,19 +483,19 @@ file_command_test_create_relationships = [
 ]
 
 
-@pytest.mark.parametrize('create_relationship,max_num_relationships',
+@pytest.mark.parametrize('create_relationships,max_num_relationships',
                          file_command_test_create_relationships)
-def test_file_create_relationships(create_relationship, max_num_relationships):
+def test_file_create_relationships(create_relationships, max_num_relationships):
     """
 
     Given:
         - Create relationship table(T/F), max number of relationships(Limited to 1000).
 
     When:
-        - Creating relationships table for file command.
+        - Calling file_create_relationships() method.
 
     Then:
-        - Return indicators relationships table {Relationship,EntityA,EntityAType,EntityB,EntityBType}.
+        - Make sure the relationships list is created correctly.
 
     """
     from URLHaus import file_create_relationships
@@ -503,7 +505,7 @@ def test_file_create_relationships(create_relationship, max_num_relationships):
     file = '123123123123123123123'
     sig = 'test_signature'
     excepted_output = []
-    if create_relationship:
+    if create_relationships:
         excepted_output = [{
             'Relationship': 'indicator-of',
             'EntityA': file,
@@ -518,8 +520,9 @@ def test_file_create_relationships(create_relationship, max_num_relationships):
             'EntityB': urls[i].get('url'),
             'EntityBType': 'URL',
         } for i in range(max_num_relationships - 1)])
-    kwargs = {'create_relationships': create_relationship, 'max_num_of_relationships': max_num_relationships}
-    results = file_create_relationships(file=file, urls=urls, sig=sig, **kwargs)
+    kwargs = {'create_relationships': create_relationships, 'max_num_of_relationships': max_num_relationships}
+    results = file_create_relationships(file=file, urls=urls, sig=sig, create_relationships=create_relationships,
+                                        max_num_of_relationships=max_num_relationships)
     assert len(results) == len(excepted_output)
     for i in range(len(results)):
         assert results[i] == excepted_output[i]
