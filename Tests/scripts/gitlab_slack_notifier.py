@@ -20,10 +20,9 @@ GITLAB_PROJECT_ID = os.getenv('CI_PROJECT_ID') or 2596  # the default is the id 
 GITLAB_SERVER_URL = os.getenv('CI_SERVER_URL', 'https://code.pan.run')  # disable-secrets-detection
 CONTENT_NIGHTLY = 'Content Nightly'
 BUCKET_UPLOAD = 'Upload Packs to Marketplace Storage'
-BUCKET_V2_UPLOAD = 'Upload Packs to Marketplace v2 Storage'
 SDK_NIGHTLY = 'Demisto SDK Nightly'
 PRIVATE_NIGHTLY = 'Private Nightly'
-WORKFLOW_TYPES = {CONTENT_NIGHTLY, SDK_NIGHTLY, BUCKET_UPLOAD, PRIVATE_NIGHTLY, BUCKET_V2_UPLOAD}
+WORKFLOW_TYPES = {CONTENT_NIGHTLY, SDK_NIGHTLY, BUCKET_UPLOAD, PRIVATE_NIGHTLY}
 
 
 def options_handler():
@@ -168,7 +167,7 @@ def construct_slack_msg(triggering_workflow, pipeline_url, pipeline_failed_jobs)
     failed_jobs_names = {job.name for job in pipeline_failed_jobs}
     if failed_jobs_names:
         content_fields.append({
-            'title": f'Failed Jobs - ({len(failed_jobs_names)})',
+            "title": f'Failed Jobs - ({len(failed_jobs_names)})',
             "value": '\n'.join(failed_jobs_names),
             "short": False
         })
