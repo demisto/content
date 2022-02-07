@@ -1,0 +1,46 @@
+{
+    "associatedToAll": true,
+    "caseInsensitive": true,
+    "cliName": "destinationzonename",
+    "closeForm": false,
+    "content": true,
+    "description": "The destination zone of the connection for firewall alerts.",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_destinationzonename",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Destination Zone Name",
+    "neverSetAsRequired": false,
+    "openEnded": true,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "multiSelect",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.5.0",
+    "x2_fields": "fw_interface_to",
+    "Aliases": [
+        {
+            "cliName": "destinationnetwork",
+            "type": "shortText"
+        },
+        {
+            "cliName": "destinationnetworkoffense",
+            "type": "multiSelect"
+        },
+        {
+            "cliName": "irondefensedstnetworkid",
+            "type": "shortText"
+        }
+    ]
+}

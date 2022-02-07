@@ -374,7 +374,7 @@ def main():
             pack.cleanup()
             continue
 
-        task_status = pack.load_user_metadata()
+        task_status = pack.load_user_metadata(marketplace)
         if not task_status:
             pack.status = PackStatus.FAILED_LOADING_USER_METADATA.name
             pack.cleanup()
