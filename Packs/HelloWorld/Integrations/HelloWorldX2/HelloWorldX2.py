@@ -616,7 +616,7 @@ def say_hello_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 def fetch_alerts(client: Client, max_results: int, last_run: Dict[str, int],
                  first_fetch_time: Optional[int], alert_status: Optional[str],
                  min_severity: str, alert_type: Optional[str]
-                ) -> Tuple[Dict[str, int], List[dict]]:
+                 ) -> Tuple[Dict[str, int], List[dict]]:
     """This function retrieves new alerts every interval (default is 1 minute).
 
     This function has to implement the logic of making sure that alerts are
