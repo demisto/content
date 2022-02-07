@@ -432,6 +432,27 @@ script:
     - contextPath: csfalconx.resource.tags
       description: Analysis tags.
       type: String
+    - contextPath: resource.sandbox.http_requests.header
+      description: The header of the http request.
+      type: String
+    - contextPath: resource.sandbox.http_requests.Accept
+      description: The accept of the http request.
+      type: String
+    - contextPath: resource.sandbox.http_requests.host_ip
+      description: The host ip of the http request.
+      type: String
+    - contextPath: resource.sandbox.http_requests.host_port
+      description: The host port of the http request.
+      type: Number
+    - contextPath: resource.sandbox.http_requests.method
+      description: The method of the http request.
+      type: String
+    - contextPath: resource.sandbox.http_requests.url
+      description: The URL of the http request.
+      type: String
+    - contextPath: resource.sandbox.User-Agent
+      description: The user agent of the http request.
+      type: String
     - contextPath: csfalconx.resource.sandbox.processes.command_line
       description: The sandbox process command line.
       type: String
@@ -640,6 +661,27 @@ script:
     outputs:
     - contextPath: csfalconx.resource.tags
       description: Analysis tags.
+      type: String
+    - contextPath: resource.sandbox.http_requests.header
+      description: The header of the http request.
+      type: String
+    - contextPath: resource.sandbox.http_requests.Accept
+      description: The accept of the http request.
+      type: String
+    - contextPath: resource.sandbox.http_requests.host_ip
+      description: The host ip of the http request.
+      type: String
+    - contextPath: resource.sandbox.http_requests.host_port
+      description: The host port of the http request.
+      type: Number
+    - contextPath: resource.sandbox.http_requests.method
+      description: The method of the http request.
+      type: String
+    - contextPath: resource.sandbox.http_requests.url
+      description: The URL of the http request.
+      type: String
+    - contextPath: resource.sandbox.User-Agent
+      description: The user agent of the http request.
       type: String
     - contextPath: csfalconx.resource.sandbox.processes.command_line
       description: The sandbox process command line.
@@ -1227,6 +1269,27 @@ script:
       type: String
     - contextPath: csfalconx.resource.tags
       description: Analysis tags.
+      type: String
+    - contextPath: resource.sandbox.http_requests.header
+      description: The header of the http request.
+      type: String
+    - contextPath: resource.sandbox.http_requests.Accept
+      description: The accept of the http request.
+      type: String
+    - contextPath: resource.sandbox.http_requests.host_ip
+      description: The host ip of the http request.
+      type: String
+    - contextPath: resource.sandbox.http_requests.host_port
+      description: The host port of the http request.
+      type: Number
+    - contextPath: resource.sandbox.http_requests.method
+      description: The method of the http request.
+      type: String
+    - contextPath: resource.sandbox.http_requests.url
+      description: The URL of the http request.
+      type: String
+    - contextPath: resource.sandbox.User-Agent
+      description: The user agent of the http request.
       type: String
     - contextPath: csfalconx.resource.sandbox.processes.command_line
       description: The sandbox process command line.
