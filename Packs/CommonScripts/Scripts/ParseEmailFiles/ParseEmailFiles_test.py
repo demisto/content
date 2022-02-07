@@ -1279,10 +1279,10 @@ def test_decode_attachment_payload_base64(payload, answer):
 
 
 @pytest.mark.parametrize('nesting_level_to_return, output, res', [('All files', ['output1'], ('output1', ['output1'])),
-                                                                 ('Outer file', ['output1', 'output2', 'output3'],
-                                                                  ('output1', 'output1')),
-                                                                 ('Inner file', ['output1', 'output2', 'output3'],
-                                                                  ('output3', 'output3'))])
+                                                                  ('Outer file', ['output1', 'output2', 'output3'],
+                                                                   ('output1', 'output1')),
+                                                                  ('Inner file', ['output1', 'output2', 'output3'],
+                                                                   ('output3', 'output3'))])
 def test_parse_nesting_level(nesting_level_to_return, output, res):
     """
     Given:
