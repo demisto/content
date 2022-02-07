@@ -834,7 +834,7 @@ POLLING_CASES = [
      {'interval_in_seconds': 5, 'polling': True, 'arguments': "''", 'comment': 'testing',
       'machine_action_id': 'action_id_example', 'machine_id': 'machine_id_example',
       'scriptName': 'test_script.ps1'}),
-    (LAST_RUN, 'Completed', 'Contents', {'example_outputs': 'outputs'})
+    (LAST_RUN, 'Succeeded', 'Contents', {'example_outputs': 'outputs'})
 
 ]
 
@@ -863,10 +863,10 @@ def test_run_script_polling_second_run(args, request_status, args_to_compare, ex
         return CommandResults(outputs={'action_id': 'action_id_example'})
 
     def mock_get_status(client, args):
-        return CommandResults(outputs={'status': request_status})
+        return CommandResults(outputs={'status': request_status, 'commands': [{'commandStatus': 'Completed'}]})
 
     def mock_post_process(client, res):
-        assert res == {'status': 'Completed'}
+        assert res == {'commands': [{'commandStatus': 'Completed'}], 'status': 'Succeeded'}
         return CommandResults(outputs={'example_outputs': 'outputs'})
 
     res = run_polling_command(client, args, 'microsoft-atp-live-response-run-script', mock_action_command,

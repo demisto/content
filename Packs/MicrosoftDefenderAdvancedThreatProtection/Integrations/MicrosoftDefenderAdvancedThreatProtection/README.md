@@ -3776,3 +3776,239 @@ Creates a new indicator.
 >|---|---|---|---|---|---|---|
 >| 5143 | Allowed | 2.2.2.2 | IpAddress | Informational | title | test |
 
+### microsoft-atp-live-response-put-file
+***
+Puts a file from the library to the device. Files are saved in a working folder and are deleted when the device restarts by default.
+
+
+#### Base Command
+
+`microsoft-atp-live-response-put-file`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| machine_id | Machine ID to add file to. | Required | 
+| comment | A comment to associate with the action. | Required | 
+| file_name | File name to take from library to device. | Required | 
+| machine_action_id | Action ID to retrieve status and data for. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftATP.LiveResponseAction.id | String | The machine action ID. | 
+| MicrosoftATP.LiveResponseAction.type | String | The machine action type. | 
+| MicrosoftATP.LiveResponseAction.title | String | The machine action title. | 
+| MicrosoftATP.LiveResponseAction.requestor | String | The machine action requestor. | 
+| MicrosoftATP.LiveResponseAction.requestorComment | String | The machine action requestorComment. | 
+| MicrosoftATP.LiveResponseAction.status | String | The machine action status. | 
+| MicrosoftATP.LiveResponseAction.machineId | String | The machine ID. | 
+| MicrosoftATP.LiveResponseAction.computerDnsName | String | The computerDnsName. | 
+| MicrosoftATP.LiveResponseAction.creationDateTimeUtc | Date | The action creationDateTimeUtc. | 
+| MicrosoftATP.LiveResponseAction.lastUpdateDateTimeUtc | Date | The machine action lastUpdateDateTimeUtc. | 
+| MicrosoftATP.LiveResponseAction.cancellationRequestor | String | The machine action cancellationRequestor. | 
+| MicrosoftATP.LiveResponseAction.cancellationComment | String | The machine action cancellationComment. | 
+| MicrosoftATP.LiveResponseAction.cancellationDateTimeUtc | String | The cancellationDateTimeUtc. | 
+| MicrosoftATP.LiveResponseAction.errorHResult | String | The errorHResult if exists. | 
+| MicrosoftATP.LiveResponseAction.scope | String | The action scope. | 
+| MicrosoftATP.LiveResponseAction.externalId | String | The machine action externalId. | 
+| MicrosoftATP.LiveResponseAction.requestSource | String | The machine action requestSource. | 
+| MicrosoftATP.LiveResponseAction.relatedFileInfo | String | The machine action relatedFileInfo. | 
+| MicrosoftATP.LiveResponseAction.commands.index | String | The machine action command index. | 
+| MicrosoftATP.LiveResponseAction.commands.startTime | String | The machine action command startTime. | 
+| MicrosoftATP.LiveResponseAction.commands.endTime | String | The machine action command endTime. | 
+| MicrosoftATP.LiveResponseAction.commands.commandStatus | String | The machine action command Status. | 
+| MicrosoftATP.LiveResponseAction.commands.errors | String | The machine action command errors if found. | 
+| MicrosoftATP.LiveResponseAction.commands.command.type | String | The machine action command type. | 
+| MicrosoftATP.LiveResponseAction.commands.command.params.key | String | The machine action command params key. | 
+| MicrosoftATP.LiveResponseAction.commands.command.params.value | String | The machine action command params value. | 
+| MicrosoftATP.LiveResponseAction.troubleshootInfo | String | The machine action troubleshootInfo. | 
+
+#### Command example
+```!microsoft-atp-live-response-put-file machine_id="4899036531e374137f63289c3267bad772c13fef" comment="testing" file_name="C:\Users\demisto\Desktop\test.txt"```
+#### Context Example
+```json
+{
+    "MicrosoftATP": {
+        "LiveResponseAction": {
+            "@odata.context": "https://api-us.securitycenter.microsoft.com/api/$metadata#MachineActions/$entity",
+            "cancellationComment": null,
+            "cancellationDateTimeUtc": null,
+            "cancellationRequestor": null,
+            "commands": [
+                {
+                    "command": {
+                        "params": [
+                            {
+                                "key": "FileName",
+                                "value": "C:\Users\demisto\Desktop\test.txt"
+                            }
+                        ],
+                        "type": "PutFile"
+                    },
+                    "commandStatus": "Created",
+                    "endTime": null,
+                    "errors": [],
+                    "index": 0,
+                    "startTime": null
+                }
+            ],
+            "computerDnsName": "desktop-s2455r8",
+            "creationDateTimeUtc": "2022-02-07T10:32:14.1704612Z",
+            "errorHResult": 0,
+            "externalId": null,
+            "id": "20d1de3f-acef-4715-8bed-a92223c5553c",
+            "lastUpdateDateTimeUtc": "2022-02-07T10:32:14.1704612Z",
+            "machineId": "4899036531e374137f63289c3267bad772c13fef",
+            "relatedFileInfo": null,
+            "requestSource": "PublicApi",
+            "requestor": "2f48b784-5da5-4e61-9957-012d2630f1e4",
+            "requestorComment": "testing",
+            "scope": null,
+            "status": "Pending",
+            "title": null,
+            "troubleshootInfo": null,
+            "type": "LiveResponse"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Machine Action:
+>|Commands|Creation time|Hostname|Machine Action Id|MachineId|Status|
+>|---|---|---|---|---|---|
+>| {'index': 0, 'startTime': None, 'endTime': None, 'commandStatus': 'Created', 'errors': [], 'command': {'type': 'PutFile', 'params': [{'key': 'FileName', 'value': 'C:\Users\demisto\Desktop\test.txt'}]}} | 2022-02-07T10:32:14.1704612Z | desktop-s2455r8 | 20d1de3f-acef-4715-8bed-a92223c5553c | 4899036531e374137f63289c3267bad772c13fef | Failed |
+
+### microsoft-atp-live-response-run-script
+***
+Runs a script from the library on a device. The Args parameter is passed to your script. Timeouts after 10 minutes.
+
+
+#### Base Command
+
+`microsoft-atp-live-response-run-script`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| machine_id | Machine ID to add file to. | Required | 
+| comment | A comment to associate with the action. | Required | 
+| scriptName | Script name to run on device. | Required | 
+| arguments | Arguments to run the script with. | Optional | 
+| machine_action_id | Action ID to retrieve status and data for. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftATP.LiveResponseAction.script_name | String | The script name. | 
+| MicrosoftATP.LiveResponseAction.exit_code | String | The script exit code. | 
+| MicrosoftATP.LiveResponseAction.script_output | String | The script outputs. | 
+| MicrosoftATP.LiveResponseAction.script_errors | String | The script errors if found. | 
+### microsoft-atp-live-response-get-file
+***
+Collect file from a device. NOTE: Backslashes in path must be escaped.
+
+
+#### Base Command
+
+`microsoft-atp-live-response-get-file`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| machine_id | Machine ID to add file to. | Required | 
+| comment | A comment to associate with the action. | Required | 
+| path | File path to get from device. | Required | 
+| machine_action_id | Action ID to retrieve status and data for. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftATP.LiveResponseAction.id | String | The machine action ID. | 
+| MicrosoftATP.LiveResponseAction.type | String | The machine action type. | 
+| MicrosoftATP.LiveResponseAction.title | String | The machine action title. | 
+| MicrosoftATP.LiveResponseAction.requestor | String | The machine action requestor. | 
+| MicrosoftATP.LiveResponseAction.requestorComment | String | The machine action requestorComment. | 
+| MicrosoftATP.LiveResponseAction.status | String | The machine action status. | 
+| MicrosoftATP.LiveResponseAction.machineId | String | The machine ID. | 
+| MicrosoftATP.LiveResponseAction.computerDnsName | String | The computerDnsName. | 
+| MicrosoftATP.LiveResponseAction.creationDateTimeUtc | Date | The action creationDateTimeUtc. | 
+| MicrosoftATP.LiveResponseAction.lastUpdateDateTimeUtc | Date | The machine action lastUpdateDateTimeUtc. | 
+| MicrosoftATP.LiveResponseAction.cancellationRequestor | String | The machine action cancellationRequestor. | 
+| MicrosoftATP.LiveResponseAction.cancellationComment | String | The machine action cancellationComment. | 
+| MicrosoftATP.LiveResponseAction.cancellationDateTimeUtc | String | The cancellationDateTimeUtc. | 
+| MicrosoftATP.LiveResponseAction.errorHResult | String | The errorHResult if exists. | 
+| MicrosoftATP.LiveResponseAction.scope | String | The action scope. | 
+| MicrosoftATP.LiveResponseAction.externalId | String | The machine action externalId. | 
+| MicrosoftATP.LiveResponseAction.requestSource | String | The machine action requestSource. | 
+| MicrosoftATP.LiveResponseAction.relatedFileInfo | String | The machine action relatedFileInfo. | 
+| MicrosoftATP.LiveResponseAction.commands.index | String | The machine action command index. | 
+| MicrosoftATP.LiveResponseAction.commands.startTime | String | The machine action command startTime. | 
+| MicrosoftATP.LiveResponseAction.commands.endTime | String | The machine action command endTime. | 
+| MicrosoftATP.LiveResponseAction.commands.commandStatus | String | The machine action command Status. | 
+| MicrosoftATP.LiveResponseAction.commands.errors | String | The machine action command errors if found. | 
+| MicrosoftATP.LiveResponseAction.commands.command.type | String | The machine action command type. | 
+| MicrosoftATP.LiveResponseAction.commands.command.params.key | String | The machine action command params key. | 
+| MicrosoftATP.LiveResponseAction.commands.command.params.value | String | The machine action command params value. | 
+| MicrosoftATP.LiveResponseAction.troubleshootInfo | String | The machine action troubleshootInfo. | 
+### microsoft-atp-live-response-result
+***
+Gets a result file for a specified action.
+
+
+#### Base Command
+
+`microsoft-atp-live-response-result`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| machine_action_id | Action ID to retrieve status and data for. | Required | 
+| command_index | A command index to retrieve file for. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftATP.LiveResponseAction | String | The machine action ID. | 
+
+#### Command example
+```!microsoft-atp-live-response-result machine_action_id=11a86b87-12b8-423b-9e8d-9775ab2da78f command_index=0```
+#### Context Example
+```json
+{
+    "File": {
+        "EntryID": "230@c1c0b1a7-2a6b-40be-8479-7399ee467a6b",
+        "Info": "application/json",
+        "MD5": "1f2bc070ced88de8c80323acfcdbd33c",
+        "Name": "Response Result",
+        "SHA1": "eb7568c1342d7fac8c570e53e2ce8103025b605b",
+        "SHA256": "9df3ced59fd1f346aad035016beb5ebf89838b2f02b1610ee7e0cbfd396cbf02",
+        "SHA512": "a62de5d64827f60a9885e95658d203f4a7eb7d070873a0379c5ac52d8b013fc12c0e9187c3f83103dcb1bf937d88bf0b48f32f77e72ead30231e5eefca681de9",
+        "SSDeep": "6:YWGc00ZR/+MqifdvuxAbimLPsYRa7+R98A7V/NJviD5BW+yWrbmD3he6an:YWGb0ZRmKQODYqa7+X7XSB9y+bmhan",
+        "Size": 293,
+        "Type": "JSON data"
+    },
+    "MicrosoftATP": {
+        "LiveResponseResult": {
+            "exit_code": 0,
+            "script_errors": "",
+            "script_name": "test_script.ps1",
+            "script_output": "Transcript started, output file is C:\\ProgramData\\Microsoft\\Windows Defender Advanced Threat Protection\\Temp\\PSScriptOutputs\\PSScript_Transcript_{1954B499-1836-4928-90A2-86DE508BD1B0}.txt\n\u0000"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>file_link: https:<span>//</span>automatedirstrprdeus.blob.core.windows.net/investigation-actions-data/b7df6ab7-5c73-4e13-8cd3-82e1f3d849ed/CustomPlaybookCommandOutput/7ef257a5069c45fe790be86d479d1518?se=2022-02-07T14%3A33%3A07Z&sp=rt&sv=2020-06-12&sr=b&rscd=attachment%3B%20filename%3Doutput_11a86b87-12b8-423b-9e8d-9775ab2da78f_0.json&skoid=34334208-452d-4d6d-afc6-0c319d62a726&sktid=124edf19-b350-4797-aefc-3206115ffdb3&skt=2022-02-07T13%3A48%3A07Z&ske=2022-02-07T14%3A33%3A07Z&sks=b&skv=2020-06-12&sig=IRxMKavzQqHplTsAL350holkkm%2B3NI2mhUUWxaHbOAM%3D

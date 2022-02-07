@@ -4523,24 +4523,31 @@ script:
       description: The actual score.
       type: Number
   - arguments:
-    - default: true
-      description: Machine ID to add file to.
-      isArray: false
-      name: machine_id
-      required: true
-      secret: false
-    - default: false
-      description: A comment to associate with the action.
-      isArray: false
-      name: comment
-      required: true
-      secret: false
-    - default: false
-      description: File path to get from device.
-      isArray: false
-      name: path
-      required: true
-      secret: false
+      - default: true
+        description: Machine ID to add file to.
+        isArray: false
+        name: machine_id
+        required: true
+        secret: false
+      - default: false
+        description: A comment to associate with the action.
+        isArray: false
+        name: comment
+        required: true
+        secret: false
+      - default: false
+        description: File path to get from device.
+        isArray: false
+        name: path
+        required: true
+        secret: false
+      - default: false
+        description: Action ID to retrieve status and data for.
+        isArray: false
+        name: machine_action_id
+        required: false
+        secret: false
+        deprecated: true
     deprecated: false
     description: 'Collect file from a device. NOTE: Backslashes in path must be escaped.'
     execution: true
@@ -4650,8 +4657,15 @@ script:
       description: Arguments to run the script with
       isArray: false
       name: arguments
-      required: true
+      required: false
       secret: false
+    - default: false
+      description: Action ID to retrieve status and data for.
+      isArray: false
+      name: machine_action_id
+      required: false
+      secret: false
+      deprecated: true
     deprecated: false
     description: |-
       Runs a script from the library on a device. The Args parameter is passed to your script. Timeouts after 10 minutes.
@@ -4671,12 +4685,31 @@ script:
       description: The script errors if found.
       type: String
   - arguments:
-    - default: true
-      description: Action ID to retrieve status and data for.
-      isArray: false
-      name: machine_action_id
-      required: true
-      secret: false
+      - default: true
+        description: Machine ID to add file to.
+        isArray: false
+        name: machine_id
+        required: true
+        secret: false
+      - default: false
+        description: A comment to associate with the action.
+        isArray: false
+        name: comment
+        required: true
+        secret: false
+      - default: false
+        description: File name to take from library to device.
+        isArray: false
+        name: file_name
+        required: true
+        secret: false
+      - default: false
+        description: Action ID to retrieve status and data for.
+        isArray: false
+        name: machine_action_id
+        required: false
+        secret: false
+        deprecated: true
     deprecated: false
     description: Puts a file from the library to the device. Files are saved in a
       working folder and are deleted when the device restarts by default.

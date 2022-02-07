@@ -1568,8 +1568,8 @@ def get_machine_action_data(machine_action_response):
             "RelatedFileInfo": {
                 "FileIdentifier": machine_action_response.get('fileIdentifier'),
                 "FileIdentifierType": machine_action_response.get('fileIdentifierType'),
+            },
             "Commands": machine_action_response.get('commands')
-            }
         }
     return action_data
 
@@ -2606,6 +2606,7 @@ def run_polling_command(client: MsClient, args: dict, cmd: str, action_func: Cal
     interval_in_secs = int(args.get('interval_in_seconds', 5))
     # distinguish between the initial run, which is the upload run, and the results run
     is_first_run = 'machine_action_id' not in args
+    demisto.debug(f'polling args: {args}')
     if is_first_run:
         command_results = action_func(client, args)
         outputs = command_results.outputs
@@ -2647,8 +2648,6 @@ def run_polling_command(client: MsClient, args: dict, cmd: str, action_func: Cal
 
         command_result = CommandResults(scheduled_command=scheduled_command)
         return command_result
-
-
 
     # action was completed
     else:
