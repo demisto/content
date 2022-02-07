@@ -145,7 +145,7 @@ def file_calculate_score(args):
          Returns:
              dbot_score,description (tuple): The DBot Score and the description associated with it.
      """
-    return Common.DBotScore.BAD, ''
+    return Common.DBotScore.BAD, 'This file is malicious'
 
 
 def calculate_dbot_score(command, arg: Union[dict, str]):
@@ -324,7 +324,7 @@ def build_context_url_ok_status(url_information, uri, **kwargs):
     )
     relationships = url_create_relationships(uri, url_information.get('host'), payloads,
                                              kwargs.get('create_relationships', True),
-                                             kwargs.get('max_num_of_relationships', 1))
+                                             kwargs.get('max_num_of_relationships', 10))
     url_indicator = Common.URL(url=uri, dbot_score=dbot_score, tags=url_create_tags(urlhaus_data),
                                relationships=relationships)
     human_readable = tableToMarkdown(f'URLhaus reputation for {uri}',
@@ -523,7 +523,7 @@ def domain_command(**kwargs):
             }
         relationships = domain_create_relationships(urlhaus_data.get('URL'), domain,
                                                     kwargs.get('create_relationships', True),
-                                                    kwargs.get('max_num_of_relationships', 1))
+                                                    kwargs.get('max_num_of_relationships', 10))
         if relationships:
             ec['Domain']['Relationships'] = relationships
         ec['URLhaus.Domain(val.Name && val.Name === obj.Name)'] = urlhaus_data
@@ -556,7 +556,6 @@ def domain_command(**kwargs):
             raw_response=domain_information)
     else:
         raise DemistoException(f'Query results = {domain_information["query_status"]}', res=domain_information)
-
 
 
 def file_create_relationships(urls, sig, file, create_relationships, max_num_of_relationships):
@@ -637,12 +636,14 @@ def file_command(**kwargs):
                 'Link': file_information.get('virustotal', {'link': ''})['link']
             }
 
+        score, description = calculate_dbot_score('file', '')
         dbot_score = Common.DBotScore(
             indicator=hash,
             integration_name='URLhaus',
             indicator_type=DBotScoreType.FILE,
             reliability=kwargs.get('reliability'),
-            score=Common.DBotScore.BAD
+            score=score,
+            malicious_description=description
         ).to_context()
 
         ec = {
@@ -658,7 +659,7 @@ def file_command(**kwargs):
         }
         relationships = file_create_relationships(urlhaus_data['URL'], urlhaus_data['Signature'], hash,
                                                   kwargs.get('create_relationships', True),
-                                                  kwargs.get('max_num_of_relationships', 1))
+                                                  kwargs.get('max_num_of_relationships', 10))
 
         if relationships:
             ec['File']['Relationships'] = relationships
@@ -693,6 +694,7 @@ def file_command(**kwargs):
             raw_response=file_information)
     else:
         raise DemistoException(f'Query results = {file_information["query_status"]}', res=file_information)
+
 
 def urlhaus_download_sample_command(**kwargs):
     """
@@ -746,8 +748,7 @@ def main():
             'use_ssl': not demisto_params.get('insecure', False),
             'threshold': int(demisto_params.get('threshold', 1)),
             'create_relationships': demisto_params.get('create_relationships', True),
-            'max_num_of_relationships': int(demisto_params.get('max_num_of_relationships', 1)) if int(
-                demisto_params.get('max_num_of_relationships', 1)) < 1000 else 1000,
+            'max_num_of_relationships': min(1000, int(demisto_params.get('max_num_of_relationships', 10))),
         }
 
         reliability = demisto_params.get('integrationReliability', DBotScoreReliability.C)

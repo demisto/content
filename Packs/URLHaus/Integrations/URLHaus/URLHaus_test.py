@@ -520,7 +520,6 @@ def test_file_create_relationships(create_relationships, max_num_relationships):
             'EntityB': urls[i].get('url'),
             'EntityBType': 'URL',
         } for i in range(max_num_relationships - 1)])
-    kwargs = {'create_relationships': create_relationships, 'max_num_of_relationships': max_num_relationships}
     results = file_create_relationships(file=file, urls=urls, sig=sig, create_relationships=create_relationships,
                                         max_num_of_relationships=max_num_relationships)
     assert len(results) == len(excepted_output)

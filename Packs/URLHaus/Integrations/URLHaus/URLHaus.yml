@@ -90,9 +90,21 @@ script:
     - contextPath: URL.Tags
       description: A list of tags associated with the queried malware URL.
       type: string
-    - contextPath: URL.Relationships
-      description: A list of Relationships associated with the queried malware URL(Optional on configurtion).
-      type: Unknown
+    - contextPath: URL.Relationships.EntityA
+      description: The source of the relationship.
+      type: String
+    - contextPath: URL.Relationships.EntityB
+      description: The destination of the relationship.
+      type: String
+    - contextPath: URL.Relationships.Relationship
+      description: The name of the relationship.
+      type: String
+    - contextPath: URL.Relationships.EntityAType
+      description: The type of the source of the relationship.
+      type: String
+    - contextPath: URL.Relationships.EntityBType
+      description: The type of the destination of the relationship.
+      type: String
     - contextPath: URLhaus.URL.ID
       description: Unique identifier of the URLhaus database entry.
       type: String
@@ -240,9 +252,21 @@ script:
     - contextPath: File.Type
       description: Type of the file.
       type: stringd
-    - contextPath: File.Relationships
-      description: A list of Relationships associated with the queried malware file(Optional on configurtion).
-      type: Unknown
+    - contextPath: File.Relationships.EntityA
+      description: The source of the relationship.
+      type: String
+    - contextPath: File.Relationships.EntityB
+      description: The destination of the relationship.
+      type: String
+    - contextPath: File.Relationships.Relationship
+      description: The name of the relationship.
+      type: String
+    - contextPath: File.Relationships.EntityAType
+      description: The type of the source of the relationship.
+      type: String
+    - contextPath: File.Relationships.EntityBType
+      description: The type of the destination of the relationship.
+      type: String
     - contextPath: URLhaus.File.MD5
       description: MD5 hash of the file.
       type: String
