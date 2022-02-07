@@ -14,7 +14,7 @@ DEFAULT_TIMEOUT = 10.0
 
 
 def perform_copy_command(ssh_client: SSHClient, file_path: str, destination_path: str, copy_to_remote: bool,
-                         socket_timeout: float) -> str:
+                         socket_timeout: float) -> Union[str, bytes]:
     """
     Function to perform copy to or copy from remote machine.
     This helper function was separated from command functions mainly for easier mocking in tests.
@@ -44,7 +44,7 @@ def perform_copy_command(ssh_client: SSHClient, file_path: str, destination_path
                 with tempfile.TemporaryDirectory() as temp_dir:
                     scp_client.get(file_path, f'{temp_dir}/{destination_path}')
                     with open(f'{temp_dir}/{destination_path}', 'rb') as f:
-                        return str(f.read())
+                        return f.read()
     except (FileNotFoundError, SCPException) as e:
         if 'No such file or directory' in str(e):
             raise DemistoException(f'Could not find the given path {file_path} in the local machine.\n'
