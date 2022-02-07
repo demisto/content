@@ -5,6 +5,23 @@ from ReadPDFFileV2 import ShellException
 CWD = os.getcwd() if os.getcwd().endswith('test_data') else f'{os.getcwd()}/test_data'
 
 
+def test_main_flow(mocker, tmp_path):
+    """
+    Given
+     - a valid pdf file that contains text only.
+
+    When
+     - trying to run the main flow.
+
+    Then
+    - the main flow runs without getting exceptions.
+    """
+    from ReadPDFFileV2 import main
+    mocker.patch.object(demisto, 'args')
+    mocker.patch.object(demisto, 'getFilePath', return_value={'path': f'{CWD}/text-only.pdf'})
+    main()
+
+
 def test_get_files_names_in_path():
     from ReadPDFFileV2 import get_files_names_in_path
     pdf_file_names = get_files_names_in_path('test_data', '*.pdf')
