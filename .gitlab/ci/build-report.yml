@@ -8,17 +8,17 @@ default:
     when: always
 
 stages:
-  - notify
+  - report
 
 
 include:
   - local: .gitlab/ci/global.yml
 
 
-build_report:
+build-report:
   tags:
     - gke
-  stage: notify
+  stage: report
   extends: .default-job-settings
   script:
     - python3 ./Tests/scripts/generate_readable_build_report.py -p "$PIPELINE_TO_QUERY" -c "$GITLAB_STATUS_TOKEN" -tw "$WORKFLOW"

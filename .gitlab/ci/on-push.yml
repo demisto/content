@@ -256,25 +256,12 @@ slack-notify-nightly-build:
     # when triggering pipeline with alternate env variable value passed in the API call
     SLACK_CHANNEL: $SLACK_CHANNEL
 
-fan-in:
-  tags:
-    - gke
-  stage: fan-in
-  rules:
-    - if: '$NIGHTLY!= "true"'
-    - if: '$BUCKET_UPLOAD != "true"'
-      when: always
-  script:
-    - echo "fan in"
-
 
 generate-build-report:
   extends:
     - .trigger-build-report
   rules:
-    - if: '$NIGHTLY!= "true"'
+    - if: '$NIGHTLY != "true"'
     - if: '$BUCKET_UPLOAD != "true"'
       when: always
-  variables:
-    PIPELINE_TO_QUERY: $CI_PIPELINE_ID
-    JOB_NAME: 'fan-in'
+  needs: ["run-unittests-and-lint", "run-validations", "server_6_1", "server_6_2", "server_master"]
