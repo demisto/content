@@ -1,7 +1,7 @@
 Microsoft Cloud App Security is a multimode Cloud Access Security Broker (CASB). It provides rich visibility, control over data travel, and sophisticated analytics to identify and combat cyber threats across all your cloud services. Use the integration to view and resolve alerts, view activities, view files, and view user accounts.
 This integration was integrated and tested with version 178 of MicrosoftCloudAppSecurity.
 
-For more details about how to generate a new token, see [Microsoft Cloud App Security - Managing API tokens](https://docs.microsoft.com/en-us/cloud-app-security/api-authentication).
+For more details about how to generate a new token, see [Microsoft Cloud App Security - Managing API tokens](https://docs.microsoft.com/en-us/defender-cloud-apps/api-tokens-legacy).
 
 For more information about which permissions are required for the token owner in Microsoft Cloud App Security, see [Microsoft Cloud App Security - Manage admin access](https://docs.microsoft.com/en-us/cloud-app-security/manage-admins).
 

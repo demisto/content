@@ -1,0 +1,43 @@
+{
+    "associatedToAll": true,
+    "caseInsensitive": true,
+    "cliName": "mitreattcktactic",
+    "closeForm": false,
+    "content": true,
+    "description": "Displays the type of MITRE ATT&CK tactic on which the alert was triggered.",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_mitreattcktactic",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Mitre ATT&CK Tactic",
+    "neverSetAsRequired": false,
+    "openEnded": true,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "multiSelect",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.5.0",
+    "x2_fields": "mitre_tactic_id_and_name",
+    "Aliases": [
+        {
+          "cliName": "tactic",
+          "type": "multiSelect"
+        },
+        {
+          "cliName": "tacticid",
+          "type": "multiSelect"
+        }
+    ]
+
+}
