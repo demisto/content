@@ -1,0 +1,36 @@
+{
+	"autorun": false,
+	"closureScript": "",
+	"color": "#3d8b10",
+	"days": 0,
+	"daysR": 0,
+	"default": false,
+	"definitionId": "",
+	"detached": false,
+	"disabled": false,
+	"extractSettings": {
+		"fieldCliNameToExtractSettings": {},
+		"mode": "All"
+	},
+	"fromServerVersion": "",
+	"hours": 0,
+	"hoursR": 0,
+	"id": "Cryptosim CorrelationAlert",
+	"itemVersion": "",
+	"layout": "",
+	"locked": false,
+	"name": "Cryptosim CorrelationAlert",
+	"onChangeRepAlg": 0,
+	"packID": "9744afd2-736a-4c9f-8203-50e14e8dc71d",
+	"preProcessingScript": "",
+	"propagationLabels": [
+		"all"
+	],
+	"readonly": false,
+	"reputationCalc": 0,
+	"system": false,
+	"toServerVersion": "",
+	"version": -1,
+	"weeks": 0,
+	"weeksR": 0
+}

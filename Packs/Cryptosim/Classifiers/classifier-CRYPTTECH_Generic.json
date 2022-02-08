@@ -1,0 +1,107 @@
+{
+	"brands": null,
+	"defaultIncidentType": "",
+	"definitionId": "",
+	"description": "",
+	"feed": false,
+	"fromServerVersion": "",
+	"id": "3567f136-eaf2-4ad1-872a-f53672c3a9eb",
+	"incidentSamples": null,
+	"indicatorSamples": null,
+	"instanceIds": null,
+	"itemVersion": "",
+	"keyTypeMap": {},
+	"locked": false,
+	"logicalVersion": 0,
+	"mapping": {
+		"Cryptosim CorrelationAlert": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+				"Alert ID": {
+					"simple": "Data.[0].CorrelationAlert.ID"
+				},
+				"Category ID": {
+					"simple": "Data.[0].Log.catid"
+				},
+				"Correlation ID": {
+					"simple": "Data.[0].CorrelationAlert.CORRELATIONID"
+				},
+				"Destination IP": {
+					"simple": "Data.[0].CorrelationAlert.DST_IP"
+				},
+				"Destination Port": {
+					"simple": "Data.[0].CorrelationAlert.DST_PORT"
+				},
+				"Device Name": {
+					"simple": "Data.[0].Log.dvcname"
+				},
+				"Event Start Date": {
+					"simple": "Data.[0].CorrelationAlert.CREATEDATE"
+				},
+				"File Name": {
+					"simple": "Data.[0].Log.fname"
+				},
+				"Log Date": {
+					"simple": "Data.[0].Log.date1"
+				},
+				"Log Type": {
+					"simple": "Data.[0].Log.type"
+				},
+				"Plugin ID": {
+					"simple": "Data.[0].Log.plgid"
+				},
+				"Protocol": {
+					"simple": "Data.[0].Log.proto"
+				},
+				"Rule Name": {
+					"simple": "Data.[0].CorrelationAlert.NAME"
+				},
+				"Source IP": {
+					"simple": "Data.[0].CorrelationAlert.SRC_IP"
+				},
+				"Source Port": {
+					"simple": "Data.[0].CorrelationAlert.SRC_PORT"
+				},
+				"Sub Category": {
+					"simple": "Data.[0].Log.cat"
+				},
+				"details": {
+					"simple": "Data.[0].CorrelationAlert.MESSAGE"
+				},
+				"severity": {
+					"simple": "Data.[0].Log.svr"
+				}
+			}
+		},
+		"dbot_classification_incident_type_all": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+				"Alert ID": {
+					"simple": "Data.[0].CorrelationAlert.ID"
+				},
+				"Correlation ID": {
+					"simple": "Data.[0].CorrelationAlert.CORRELATIONID"
+				},
+				"Event Start Date": {
+					"simple": "Data.[0].CorrelationAlert.CREATEDATE"
+				},
+				"Rule Name": {
+					"simple": "Data.[0].CorrelationAlert.NAME"
+				}
+			}
+		}
+	},
+	"name": "CRYPTTECH Generic",
+	"nameRaw": "CRYPTTECH Generic",
+	"packID": "9744afd2-736a-4c9f-8203-50e14e8dc71d",
+	"propagationLabels": [
+		"all"
+	],
+	"sourceClassifierId": "",
+	"system": false,
+	"toServerVersion": "",
+	"transformer": {},
+	"type": "mapping-incoming",
+	"unclassifiedCases": null,
+	"version": -1
+}
