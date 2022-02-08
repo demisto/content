@@ -290,6 +290,8 @@ def default_ranges_if_not_specified(spreadsheet: str, ranges: str, include_grid_
         first_sheet_title = response.get("sheets", [])[0].get("properties", {}).get("title")
         default_range = first_sheet_title + "!A1:T500"
         return default_range
+    elif ranges == 'None':
+        return None
     else:
         return ranges
 
