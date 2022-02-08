@@ -10,8 +10,7 @@ import shutil
 import json
 from typing import List
 
-
-url_extraction_regex = r'(?:(?:https?|ftp|hxxps?):\/\/|www\[?\.\]?|ftp\[?\.\]?)(?:[-\w\d]+\[?\.\]?)+' \
+URL_EXTRACTION_REGEX = r'(?:(?:https?|ftp|hxxps?):\/\/|www\[?\.\]?|ftp\[?\.\]?)(?:[-\w\d]+\[?\.\]?)+' \
                        r'[-\w\d]+(?::\d+)?(?:(?:\/|\?)[-\w\d+&@#\/%=~_$?!\-:,.\(\);]*[\w\d+&@#\/%=~_$\(\);])?'
 
 
@@ -254,6 +253,11 @@ def get_urls_from_binary_file(file_path):
     return binary_file_urls
 
 
+def get_urls_and_emails_from_pdf_html_content(cpy_file_path, output_folder):
+    pdf_html_content = get_pdf_htmls_content(cpy_file_path, output_folder)
+    return set(re.findall(urlRegex, pdf_html_content)), set(re.findall(EMAIL_REGXEX, pdf_html_content))
+
+
 def main():
     entry_id = demisto.args()["entryID"]
     # File entity
@@ -289,11 +293,7 @@ def main():
                 text = get_pdf_text(cpy_file_path, pdf_text_output_path)
 
                 # Get URLS + emails:
-                pdf_html_content = get_pdf_htmls_content(cpy_file_path, output_folder)
-                urls = re.findall(url_extraction_regex, pdf_html_content)
-                urls_set = set(urls)
-                emails_set = set(re.findall(EMAIL_REGXEX, pdf_html_content))
-
+                urls_set, emails_set = get_urls_and_emails_from_pdf_html_content(cpy_file_path, output_folder)
                 urls_set = urls_set.union(binary_file_urls)
 
                 # this url is always generated with the pdf html file, and that's why we remove it

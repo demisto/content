@@ -5,23 +5,27 @@ from ReadPDFFileV2 import ShellException
 CWD = os.getcwd() if os.getcwd().endswith('test_data') else f'{os.getcwd()}/test_data'
 
 
-def test_main_flow(mocker, tmp_path):
+def open_html_file(file):
+    with open(file, "r", encoding='utf-8') as f:
+        return f.read()
+
+
+def test_urls_are_found_correctly(mocker):
     """
     Given
-        - a valid pdf file.
+        - a pdf html content.
 
     When
-        - trying to run the main flow.
+        - trying extract the urls from that html.
 
     Then
-        - the main flow runs without getting exceptions.
+        - the correct url is extracted from the html content.
     """
-    from ReadPDFFileV2 import main
-    mocker.patch.object(demisto, 'args')
-    mocker.patch.object(demisto, 'getFilePath', return_value={'path': f'{CWD}/lets_talk.pdf'})
-    err_mocker = mocker.patch('ReadPDFFileV2.return_error_without_exit')
-    main()
-    assert not err_mocker.called
+    from ReadPDFFileV2 import get_urls_and_emails_from_pdf_html_content
+    mocker.patch('ReadPDFFileV2.get_pdf_htmls_content', return_value=open_html_file(f'{CWD}/pdf-html-content.html'))
+    urls, _ = get_urls_and_emails_from_pdf_html_content('', '')
+    assert urls == {'http://www.w3.org/1999/xhtml'}
+
 
 def test_get_files_names_in_path():
     from ReadPDFFileV2 import get_files_names_in_path
