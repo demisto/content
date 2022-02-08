@@ -439,7 +439,7 @@ def get_latest_version_from_bucket(pack_id: str, production_bucket: Bucket) -> s
 
     logging.debug(f'Found the following zips for {pack_id} pack: {pack_versions}')
     if pack_versions:
-        pack_latest_version = max(pack_versions).vstring
+        pack_latest_version = str(max(pack_versions))
         return pack_latest_version
     else:
         logging.error(f'Could not find any versions for pack {pack_id} in bucket path {pack_bucket_path}')

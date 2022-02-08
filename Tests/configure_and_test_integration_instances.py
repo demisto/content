@@ -1335,7 +1335,7 @@ def update_content_on_servers(build: Build) -> bool:
         both before that update and after the update.
     """
     installed_content_packs_successfully = True
-    if LooseVersion(build.server_numeric_version) < LooseVersion('6.0.0'):
+    if Version(build.server_numeric_version) < Version('6.0.0'):
         update_content_till_v6(build)
     elif not build.is_nightly:
         set_marketplace_url(build.servers, build.branch_name, build.ci_build_number)
@@ -1379,7 +1379,7 @@ def install_packs_pre_update(build: Build) -> bool:
         A boolean that indicates whether the installation was successful or not
     """
     installed_content_packs_successfully = False
-    if LooseVersion(build.server_numeric_version) >= LooseVersion('6.0.0'):
+    if Version(build.server_numeric_version) >= Version('6.0.0'):
         if build.is_nightly:
             install_nightly_pack(build)
             installed_content_packs_successfully = True
