@@ -11,12 +11,9 @@ import urllib.parse
 import warnings
 from datetime import datetime, timedelta
 from distutils.util import strtobool
-<<<<<<< HEAD
+
 from packaging.version import Version
-=======
-from distutils.version import LooseVersion
 from pathlib import Path
->>>>>>> origin/master
 from typing import Tuple, Any, Union, List, Dict, Optional
 from zipfile import ZipFile, ZIP_DEFLATED
 
