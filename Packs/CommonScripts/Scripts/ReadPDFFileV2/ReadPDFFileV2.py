@@ -258,7 +258,7 @@ def get_urls_and_emails_from_pdf_html_content(cpy_file_path, output_folder):
     Extract the URLs and emails from the pdf html content.
 
     Args:
-        cpy_file_path (str): the path of the PDF.
+        cpy_file_path (str): the path of the PDF file.
         output_folder (str): the folder output to get the HTML files from.
 
     Returns:
