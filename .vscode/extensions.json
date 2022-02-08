@@ -9,11 +9,12 @@
         "ms-python.vscode-pylance",
         "ms-toolsai.jupyter",
         "timonwong.shellcheck",
-        "PKief.material-icon-theme",
-        "GitHub.vscode-pull-request-github",
+        "pkief.material-icon-theme",
+        "github.vscode-pull-request-github",
         "eamodio.gitlens",
         "ms-azuretools.vscode-docker",
-        "ms-vscode-remote.remote-containers"
+        "ms-vscode-remote.remote-containers",
+        "cschleiden.vscode-github-actions"
     ],
     // List of extensions recommended by VS Code that should not be recommended for users of this workspace.
     "unwantedRecommendations": [

@@ -1,0 +1,125 @@
+category: Analytics & SIEM
+commonfields:
+  id: Cyptosim
+  version: -1
+configuration:
+- display: Your server URL
+  name: url
+  required: true
+  type: 0
+- display: User
+  additionalinfo: The User name of CRYPTOSIM
+  name: credentials
+  required: true
+  hiddenusername: false
+  type: 9
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: 'CRYPTOSIM correlations and correlation alerts.'
+display: Cyptosim
+name: Cyptosim
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: 'This denotes the start date of the search period. It must be used in all API fields. E.g.: “startDate”: “2021-04-24T12:00:00”'  
+      isArray: false
+      name: startDate
+      required: true
+      secret: false
+    - default: false
+      description: 'This denotes the end date of the search period. It must be used in all API fields. E.g.: endDate: “2021-04-24T24:00:00”'
+      isArray: false
+      name: endDate
+      required: true
+      secret: false
+    - default: true
+      defaultValue: false
+      description: 'Boolean, show only solved correlations if the parameter is true, otherwise take all correlations'
+      isArray: false
+      name: showSolved
+      required: false
+      secret: false
+    - default: true
+      defaultValue: -1
+      description: 'If user want to take specific correlation, can take it when ID of correlation is given as parameter.'
+      isArray: false
+      name: crrPluginId
+      required: false
+      secret: false
+    - default: null
+      description: 'This is used to search for a word specified in the request. (Contains String) E.g.: “containStr”: “Unsuccessful”'
+      isArray: false
+      name: containStr
+      required: false
+      secret: false
+    - default: true
+      defaultValue: -1
+      description: 'The risk level of correlation rules to filter. Default: -1. Default get all.'
+      isArray: false
+      name: risk
+      required: false
+      secret: false
+    - default: true
+      defaultValue: null
+      description: 'This  used  to  search  the  source  IP address in the request. E.g.: “srcIPPort”: “127.0.0.1”'
+      isArray: false
+      name: srcIPPort
+      required: false
+      secret: false
+    - default: true
+      defaultValue: null
+      description: 'This  used  to  search  the  destination  IP address in the request. E.g.: “dest IPPort”: “127.0.0.1”'
+      isArray: false
+      name: destIPPort
+      required: false
+      secret: false
+    - default: true
+      defaultValue: null
+      description: 'This  is  used  to  filter  the  responses using the source port. E.g.: “srcPort”: “6335”'
+      isArray: false
+      name: srcPort
+      required: false
+      secret: false
+    - default: true
+      defaultValue: null
+      description: 'This  is  used  to  filter  the  responses using the source port. E.g.: “destPort”: “6335”'
+      isArray: false
+      name: destPort
+      required: false
+      secret: false
+    - default: true
+      defaultValue: 'equal'
+      description: 'risk operator name. It can be equal, greaternumber, greaterorequalnumber, lessnumber, lessnumberorequal, notequal. Default: equal'
+      isArray: false
+      name: riskOperatorID
+      required: false
+      secret: false
+    deprecated: false
+    description: 'The command is used to get correlation alerts.'
+    execution: false
+    name: cryptosim-get-correlation-alerts
+    outputs:
+    - contextPath: CorrelationAlerts.Output
+      description: 'Return StatusCode, Data or ErrorMessage and Outparameters. StatusCode represent html response code. If it is 200, return Data as list of desired Correlation object. If not, return ErrorMessage. OutParameters is empty.'
+      type: Dictionary
+  - arguments:
+    deprecated: false
+    description: 'The command is used to get the list of active correlations.'
+    execution: false
+    name: cryptosim-get-correlations
+    outputs:
+    - contextPath: Correlations.Output. If not, return ErrorMessage. OutParameters is empty.'
+      type: Dictionary
+      description: 'Return StatusCode, Data or ErrorMessage and Outparameters. StatusCode represent html response code. If it is 200, return Data as list of active Correlations.'
+  isfetch: true
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.9.8.24399
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)
