@@ -1,6 +1,9 @@
 import pytest
 
-from FireEyeApiModule import to_fe_datetime_converter, alert_severity_to_dbot_score
+# from FireEyeApiModule import to_fe_datetime_converter, alert_severity_to_dbot_score, FireEyeClient
+from CommonServerPython import BaseClient, DemistoException
+from FireEyeApiModule import FireEyeClient
+
 
 
 def test_to_fe_datetime_converter():
@@ -41,3 +44,12 @@ def test_alert_severity_to_dbot_score(severity_str, dbot_score):
     - Validate that the dbot score is as expected
     """
     assert alert_severity_to_dbot_score(severity_str) == dbot_score
+
+
+def test_exception_in__generate_token(mocker):
+
+    err = "Some error"
+    mocker.patch.object(BaseClient, '_http_request', side_effect=DemistoException(err))
+    with pytest.raises(DemistoException, match=f'Token request failed. message: {err}'):
+        FireEyeClient(base_url='https://test.com', username='test_user', password='password', verify=False,
+                           proxy=False)
