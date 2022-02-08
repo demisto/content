@@ -310,7 +310,7 @@ def build_context_url_ok_status(url_information: dict, uri: str, params: dict) -
     relationships = url_create_relationships(uri, url_information.get('host', ''), payloads,
                                              params.get('create_relationships'),
                                              params.get('max_num_of_relationships'))
-    url_indicator = Common.URL(url=uri, dbot_score=dbot_score, tags=str(url_create_tags(urlhaus_data)),
+    url_indicator = Common.URL(url=uri, dbot_score=dbot_score, tags=url_create_tags(urlhaus_data),
                                relationships=relationships)
     human_readable = tableToMarkdown(f'URLhaus reputation for {uri}',
                                      {
@@ -631,7 +631,8 @@ def file_command(params: dict) -> CommandResults:
                                                   params.get('create_relationships'),
                                                   params.get('max_num_of_relationships'))
 
-        file_indicator = Common.File(sha256=hash, dbot_score=dbot_score, relationships=relationships)
+        file_indicator = Common.File(sha256=hash, dbot_score=dbot_score, relationships=relationships,
+                                     ssdeep=file_information.get('ssdeep'), file_type=file_information.get('file_type'))
 
         human_readable = tableToMarkdown(f'URLhaus reputation for {hash_type.upper()} : {hash}',
                                          {
