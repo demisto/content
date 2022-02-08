@@ -12,7 +12,7 @@ def util_load_json(path):
 
 UPSERT_COMMAND_DATA_BAD_CASES=[
     (
-        {'policyName':"test","policyId":"test"},
+        {"policyName":"test","policyId":"test"},
         "Enter a name or ID but not both"
     )
 ]
@@ -30,7 +30,7 @@ def test_list_policy_command_failed(demisto_args,expected_results):
         - failing when missing required data
     """
 
-    from FireEyeHX_v2 import  list_policy_command
+    from FireEyeHXv2 import  list_policy_command
 
     client = ""#Client(base_url='some_mock_url', verify=False)
     
@@ -59,7 +59,7 @@ def test_list_host_set_policy_command_failed(demisto_args,expected_results):
         - failing when missing required data
     """
 
-    from FireEyeHX_v2 import  list_host_set_policy_command
+    from FireEyeHXv2 import  list_host_set_policy_command
 
     client = ""#Client(base_url='some_mock_url', verify=False)
     
@@ -100,7 +100,7 @@ def test_assign_host_set_policy_command_failed(demisto_args,expected_results):
         - failing when missing required data
     """
 
-    from FireEyeHX_v2 import  assign_host_set_policy_command
+    from FireEyeHXv2 import  assign_host_set_policy_command
 
     client = ""#Client(base_url='some_mock_url', verify=False)
     
@@ -131,7 +131,7 @@ def test_get_host_information_command_failed(demisto_args,expected_results):
         - failing when missing required data
     """
 
-    from FireEyeHX_v2 import  get_host_information_command
+    from FireEyeHXv2 import  get_host_information_command
 
     client = ""#Client(base_url='some_mock_url', verify=False)
     
@@ -162,7 +162,7 @@ def test_host_containment_command_failed(demisto_args,expected_results):
         - failing when missing required data
     """
 
-    from FireEyeHX_v2 import host_containment_command
+    from FireEyeHXv2 import host_containment_command
 
     client = ""
 
@@ -190,7 +190,7 @@ def test_approve_containment_command_failed(demisto_args,expected_results):
         - failing when missing required data
     """
 
-    from FireEyeHX_v2 import approve_containment_command
+    from FireEyeHXv2 import approve_containment_command
 
     client = ""
 
@@ -220,7 +220,7 @@ def test_cancel_containment_command_failed(demisto_args,expected_results):
         - failing when missing required data
     """
 
-    from FireEyeHX_v2 import cancel_containment_command
+    from FireEyeHXv2 import cancel_containment_command
 
     client = ""
 
@@ -261,7 +261,7 @@ def test_get_indicator_command_failed(demisto_args,expected_results):
         - failing when missing required data
     """
 
-    from FireEyeHX_v2 import get_indicator_command
+    from FireEyeHXv2 import get_indicator_command
 
     client = ""
 
@@ -293,7 +293,7 @@ def test_search_stop_command_failed(demisto_args,expected_results):
         - failing when missing required data
     """
 
-    from FireEyeHX_v2 import search_stop_command
+    from FireEyeHXv2 import search_stop_command
 
     client = ""
 
@@ -335,7 +335,7 @@ def test_append_conditions_command_failed(demisto_args,expected_results):
         - failing when missing required data
     """
 
-    from FireEyeHX_v2 import append_conditions_command
+    from FireEyeHXv2 import append_conditions_command
 
     client = ""
 
@@ -367,7 +367,7 @@ def test_search_result_get_command_failed(demisto_args,expected_results):
         - failing when missing required data
     """
 
-    from FireEyeHX_v2 import search_result_get_command
+    from FireEyeHXv2 import search_result_get_command
 
     client = ""
 
@@ -407,7 +407,7 @@ def test_data_acquisition_failed(demisto_args,expected_results):
         - failing when missing required data
     """
 
-    from FireEyeHX_v2 import data_acquisition
+    from FireEyeHXv2 import data_acquisition
 
     client = ""
 
@@ -439,7 +439,7 @@ def test_delete_data_acquisition_command_failed(demisto_args,expected_results):
         - failing when missing required data
     """
 
-    from FireEyeHX_v2 import delete_data_acquisition_command
+    from FireEyeHXv2 import delete_data_acquisition_command
 
     client = ""
 
@@ -471,7 +471,7 @@ def test_file_acquisition_command_failed(demisto_args,expected_results):
         - failing when missing required data
     """
 
-    from FireEyeHX_v2 import file_acquisition_command
+    from FireEyeHXv2 import file_acquisition_command
 
     client = ""
 
@@ -503,7 +503,7 @@ def test_get_data_acquisition_command_failed(demisto_args,expected_results):
         - failing when missing required data
     """
 
-    from FireEyeHX_v2 import get_data_acquisition_command
+    from FireEyeHXv2 import get_data_acquisition_command
 
     client = ""
 
@@ -531,7 +531,7 @@ UPSERT_COMMAND_DATA_CASES = [
 @pytest.mark.parametrize('demisto_args,call_count,expected_results', UPSERT_COMMAND_DATA_CASES)
 def test_host_information(mocker,demisto_args,call_count,expected_results):
 
-    from FireEyeHX_v2 import get_host_information_command, Client
+    from FireEyeHXv2 import get_host_information_command, Client
     mocker.patch.object(Client,"get_token_request",return_value="test")
     client = Client(
             base_url="base_url",
@@ -567,7 +567,7 @@ UPSERT_COMMAND_DATA_CASES2 = [
 @pytest.mark.parametrize('demisto_args,call_count,return_value_mock,expected_results', UPSERT_COMMAND_DATA_CASES2)
 def test_get_all_hosts_information(mocker,demisto_args,call_count,return_value_mock,expected_results):
 
-    from FireEyeHX_v2 import get_all_hosts_information_command, Client
+    from FireEyeHXv2 import get_all_hosts_information_command, Client
     mocker.patch.object(Client,"get_token_request",return_value="test")
     client = Client(
             base_url="base_url",
@@ -605,7 +605,7 @@ UPSERT_COMMAND_DATA_CASES2 = [
 @pytest.mark.parametrize('demisto_args,return_value_mock,expected_results', UPSERT_COMMAND_DATA_CASES2)
 def test_get_host_set_information(mocker,demisto_args,return_value_mock,expected_results):
 
-    from FireEyeHX_v2 import get_host_set_information_command, Client
+    from FireEyeHXv2 import get_host_set_information_command, Client
     mocker.patch.object(Client,"get_token_request",return_value="test")
     client = Client(
             base_url="base_url",
@@ -635,7 +635,7 @@ UPSERT_COMMAND_DATA_CASES3 = [
 @pytest.mark.parametrize('demisto_args,call_count,expected_results', UPSERT_COMMAND_DATA_CASES3)
 def test_host_containment(mocker,demisto_args,call_count,expected_results):
 
-    from FireEyeHX_v2 import host_containment_command, Client
+    from FireEyeHXv2 import host_containment_command, Client
     mocker.patch.object(Client,"get_token_request",return_value="test")
     client = Client(
             base_url="base_url",
@@ -643,7 +643,7 @@ def test_host_containment(mocker,demisto_args,call_count,expected_results):
             proxy=True,
             auth=("userName","password"))
     
-    get_agentId = mocker.patch("FireEyeHX_v2.get_agent_id_by_host_name",return_value="")
+    get_agentId = mocker.patch("FireEyeHXv2.get_agent_id_by_host_name",return_value="")
     mocker.patch.object(client,"host_containmet_request",return_value=None)
     mocker.patch.object(client,"approve_containment_request",return_value=None)
     mocker.patch.object(client,"get_hosts_by_agentId_request",return_value={"data":{}})
@@ -663,7 +663,7 @@ UPSERT_COMMAND_DATA_CASES4 = [
 @pytest.mark.parametrize('demisto_args,call_count', UPSERT_COMMAND_DATA_CASES4)
 def test_approve_containment_command(mocker,demisto_args,call_count):
 
-    from FireEyeHX_v2 import approve_containment_command, Client
+    from FireEyeHXv2 import approve_containment_command, Client
     mocker.patch.object(Client,"get_token_request",return_value="test")
     client = Client(
             base_url="base_url",
@@ -692,7 +692,7 @@ UPSERT_COMMAND_DATA_CASES5 = [
 @pytest.mark.parametrize('demisto_args,call_count', UPSERT_COMMAND_DATA_CASES5)
 def test_cancel_containment_command(mocker,demisto_args,call_count):
 
-    from FireEyeHX_v2 import cancel_containment_command, Client
+    from FireEyeHXv2 import cancel_containment_command, Client
     mocker.patch.object(Client,"get_token_request",return_value="test")
     client = Client(
             base_url="base_url",
@@ -700,7 +700,7 @@ def test_cancel_containment_command(mocker,demisto_args,call_count):
             proxy=True,
             auth=("userName","password"))
     
-    get_agentId = mocker.patch("FireEyeHX_v2.get_agent_id_by_host_name",return_value="")
+    get_agentId = mocker.patch("FireEyeHXv2.get_agent_id_by_host_name",return_value="")
     mocker.patch.object(client,"cancel_containment_request",return_value=None)
     result = cancel_containment_command(client,demisto_args)
     assert get_agentId.call_count == call_count
@@ -720,7 +720,7 @@ UPSERT_COMMAND_DATA_CASES6 = [
 @pytest.mark.parametrize('demisto_args,call_count', UPSERT_COMMAND_DATA_CASES6)
 def test_data_acquisition(mocker,demisto_args,call_count):
 
-    from FireEyeHX_v2 import data_acquisition, Client
+    from FireEyeHXv2 import data_acquisition, Client
     mocker.patch.object(Client,"get_token_request",return_value="test")
     client = Client(
             base_url="base_url",
@@ -728,7 +728,7 @@ def test_data_acquisition(mocker,demisto_args,call_count):
             proxy=True,
             auth=("userName","password"))
     
-    get_agentId = mocker.patch("FireEyeHX_v2.get_agent_id_by_host_name",return_value="")
+    get_agentId = mocker.patch("FireEyeHXv2.get_agent_id_by_host_name",return_value="")
     mocker.patch.object(client,"data_acquisition_request",return_value={"data":""})
     result = data_acquisition(client,demisto_args)
     assert get_agentId.call_count == call_count
@@ -752,7 +752,7 @@ UPSERT_COMMAND_DATA_CASES7 = [
 @pytest.mark.parametrize('demisto_args,state,call_count,expected_results', UPSERT_COMMAND_DATA_CASES7)
 def test_data_acquisition_command(mocker,demisto_args,state,call_count,expected_results):
 
-    from FireEyeHX_v2 import data_acquisition_command, Client
+    from FireEyeHXv2 import data_acquisition_command, Client
     mocker.patch.object(Client,"get_token_request",return_value="test")
     client = Client(
             base_url="base_url",
@@ -760,10 +760,10 @@ def test_data_acquisition_command(mocker,demisto_args,state,call_count,expected_
             proxy=True,
             auth=("userName","password"))
     
-    data_acquisition_call = mocker.patch("FireEyeHX_v2.data_acquisition",return_value={"_id":"test"})
+    data_acquisition_call = mocker.patch("FireEyeHXv2.data_acquisition",return_value={"_id":"test"})
     mocker.patch.object(client,"data_acquisition_information_request",return_value={"state":state})
     mocker.patch.object(client,"data_collection_request",return_value="")
-    ScheduledCommand_call = mocker.patch("FireEyeHX_v2.ScheduledCommand",return_value="test")
+    ScheduledCommand_call = mocker.patch("FireEyeHXv2.ScheduledCommand",return_value="test")
     result = data_acquisition_command(client,demisto_args)
     assert ScheduledCommand_call.call_count == call_count["ScheduledCommand"]
     assert data_acquisition_call.call_count == call_count["data_acquisition"]
@@ -794,7 +794,7 @@ UPSERT_COMMAND_DATA_CASES8 = [
 @pytest.mark.parametrize('demisto_args,state,call_count,expected_results', UPSERT_COMMAND_DATA_CASES8)
 def test_file_acquisition_command(mocker,demisto_args,state,call_count,expected_results):
 
-    from FireEyeHX_v2 import file_acquisition_command, Client
+    from FireEyeHXv2 import file_acquisition_command, Client
     mocker.patch.object(Client,"get_token_request",return_value="test")
     client = Client(
             base_url="base_url",
@@ -802,13 +802,13 @@ def test_file_acquisition_command(mocker,demisto_args,state,call_count,expected_
             proxy=True,
             auth=("userName","password"))
     
-    get_agentId = mocker.patch("FireEyeHX_v2.get_agent_id_by_host_name",return_value={"agentId":"test"})
+    get_agentId = mocker.patch("FireEyeHXv2.get_agent_id_by_host_name",return_value={"agentId":"test"})
     mocker.patch.object(client,"file_acquisition_information_request",return_value={"state":state})
     mocker.patch.object(client,"file_acquisition_request",return_value={"_id":"test"})
     mocker.patch.object(client,"file_acquisition_package_request",return_value={"state":state})
-    ScheduledCommand_call = mocker.patch("FireEyeHX_v2.ScheduledCommand",return_value="test")
-    mocker.patch("FireEyeHX_v2.fileResult",return_value="test")
-    mocker.patch("FireEyeHX_v2.os.path.splitext",return_value="test")
+    ScheduledCommand_call = mocker.patch("FireEyeHXv2.ScheduledCommand",return_value="test")
+    mocker.patch("FireEyeHXv2.fileResult",return_value="test")
+    mocker.patch("FireEyeHXv2.os.path.splitext",return_value="test")
     result = file_acquisition_command(client,demisto_args)
     assert ScheduledCommand_call.call_count == call_count["ScheduledCommand"]
     assert get_agentId.call_count == call_count["get_agentId"]
@@ -833,7 +833,7 @@ UPSERT_COMMAND_DATA_CASES8 = [
 @pytest.mark.parametrize('demisto_args,state,call_count,expected_results', UPSERT_COMMAND_DATA_CASES8)
 def test_get_data_acquisition_command(mocker,demisto_args,state,call_count,expected_results):
 
-    from FireEyeHX_v2 import get_data_acquisition_command, Client
+    from FireEyeHXv2 import get_data_acquisition_command, Client
     mocker.patch.object(Client,"get_token_request",return_value="test")
     client = Client(
             base_url="base_url",
@@ -844,7 +844,7 @@ def test_get_data_acquisition_command(mocker,demisto_args,state,call_count,expec
     mocker.patch.object(client,"data_acquisition_information_request",return_value={"host":{"_id":"test"},"state":state})
     mocker.patch.object(client,"get_hosts_by_agentId_request",return_value={"data":{}})
     get_data_call = mocker.patch.object(client,"data_collection_request",return_value="test")
-    mocker.patch("FireEyeHX_v2.fileResult",return_value="test")
+    mocker.patch("FireEyeHXv2.fileResult",return_value="test")
     result = get_data_acquisition_command(client,demisto_args)
     assert get_data_call.call_count == call_count["get_data"]
     assert isinstance(result, expected_results) == True
@@ -872,7 +872,7 @@ UPSERT_COMMAND_DATA_CASES9 = [
 @pytest.mark.parametrize('demisto_arg1,demisto_arg2,expected_results', UPSERT_COMMAND_DATA_CASES9)
 def test_oneFromList(demisto_arg1,demisto_arg2,expected_results):
 
-    from FireEyeHX_v2 import oneFromList
+    from FireEyeHXv2 import oneFromList
 
     result = oneFromList(listOfArgs= demisto_arg1,**demisto_arg2)
     assert result == expected_results
@@ -899,7 +899,7 @@ UPSERT_COMMAND_DATA_CASES10 = [
 @pytest.mark.parametrize('demisto_args,results_mocker,expected_results', UPSERT_COMMAND_DATA_CASES10)
 def test_get_alerts(mocker,demisto_args,results_mocker,expected_results):
 
-    from FireEyeHX_v2 import get_alerts, Client
+    from FireEyeHXv2 import get_alerts, Client
 
     client = ""
     mocker.patch.object(Client,"get_alerts_request",side_effect = results_mocker)
@@ -930,7 +930,7 @@ UPSERT_COMMAND_DATA_CASES11 = [
 @pytest.mark.parametrize('limit,results_mocker,expected_results', UPSERT_COMMAND_DATA_CASES11)
 def test_get_all_indicators(mocker,limit,results_mocker,expected_results):
 
-    from FireEyeHX_v2 import get_all_indicators, Client
+    from FireEyeHXv2 import get_all_indicators, Client
 
     client = ""
     mocker.patch.object(Client,"get_indicators_request",side_effect = results_mocker)
@@ -957,7 +957,7 @@ UPSERT_COMMAND_DATA_CASES12 = [
 @pytest.mark.parametrize('category,name,results_mock,expected_results', UPSERT_COMMAND_DATA_CASES12)
 def test_get_all_enabled_conditions(mocker,category,name,results_mock,expected_results):
 
-    from FireEyeHX_v2 import get_all_enabled_conditions, Client
+    from FireEyeHXv2 import get_all_enabled_conditions, Client
 
     mocker.patch.object(Client,"get_indicator_conditions_request",side_effect = results_mock)
     result = get_all_enabled_conditions(Client, category,name)
@@ -980,7 +980,7 @@ UPSERT_COMMAND_DATA_CASES13 = [
 @pytest.mark.parametrize('reported_at,expected_results', UPSERT_COMMAND_DATA_CASES13)
 def test_organize_reported_at(reported_at,expected_results):
 
-    from FireEyeHX_v2 import organize_reportedAt
+    from FireEyeHXv2 import organize_reportedAt
 
     result = organize_reportedAt(reported_at)
 
@@ -1013,11 +1013,11 @@ UPSERT_COMMAND_DATA_CASES14 = [
 @pytest.mark.parametrize('args,searchInfo,call_count', UPSERT_COMMAND_DATA_CASES14)
 def test_start_search_command(mocker, args, searchInfo, call_count):
 
-    from FireEyeHX_v2 import start_search_command, Client
+    from FireEyeHXv2 import start_search_command, Client
 
     mocker.patch.object(Client,"get_search_by_id_request",return_value = searchInfo)
-    scheduled_command = mocker.patch("FireEyeHX_v2.ScheduledCommand",return_value = "test")
-    search_result = mocker.patch("FireEyeHX_v2.search_result_get_command",return_value = [CommandResults(readable_output="")])
+    scheduled_command = mocker.patch("FireEyeHXv2.ScheduledCommand",return_value = "test")
+    search_result = mocker.patch("FireEyeHXv2.search_result_get_command",return_value = [CommandResults(readable_output="")])
     search_stop = mocker.patch.object(Client,"search_stop_request")
     search_delete = mocker.patch.object(Client,"delete_search_request")
     result = start_search_command(Client, args)
@@ -1049,9 +1049,9 @@ UPSERT_COMMAND_DATA_CASES15 = [
 @pytest.mark.parametrize('args, call_count', UPSERT_COMMAND_DATA_CASES15)
 def test_organize_search_body_host(mocker,args,call_count):
 
-    from FireEyeHX_v2 import organize_search_body_host, Client
+    from FireEyeHXv2 import organize_search_body_host, Client
 
-    get_agent_id = mocker.patch("FireEyeHX_v2.get_agent_id_by_host_name", return_value = None)
+    get_agent_id = mocker.patch("FireEyeHXv2.get_agent_id_by_host_name", return_value = None)
     get_host_set = mocker.patch.object(Client,"get_host_set_information_request",return_value = {"data":{"entries":[{"_id":"test"}]}})
     organize_search_body_host(Client, arg = args,body = {})
 

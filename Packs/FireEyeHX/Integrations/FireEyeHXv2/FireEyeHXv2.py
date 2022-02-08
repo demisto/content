@@ -1569,7 +1569,7 @@ def list_policy_command(client: Client, args: Dict[str, Any]) -> CommandResults:
                         "Description":entry["description"],
                         "Priority":entry["priority"],
                         "Enabled":entry["enabled"]})
-    headers_for_table=["Policy Id","Policy Name","Description","Priority","Enabled"]
+    headers_for_table=["Policy Name","Policy Id","Description","Priority","Enabled"]
 
     md=tableToMarkdown(name="FireEye HX List Policies",t=for_table,headers=headers_for_table)
 
@@ -1631,32 +1631,36 @@ def assign_host_set_policy_command(client:Client, args:Dict[str,Any])->CommandRe
     if not policyId or not hostSetId:
         raise ValueError("policy ID and hostSetId are required")
     
+    message = ""
+    response = None
     try:
-        response=client.assign_host_set_policy_request({
+        response = client.assign_host_set_policy_request({
             "persist_id":hostSetId,
             "policy_id":policyId})
+        message = "Success"
     except Exception as e:
         if e.res.status_code == 400:
-            raise ValueError("This hostset may already be included in this policy")
-        raise ValueError(e)
+            message = "This hostset may already be included in this policy"
+        else:
+            raise ValueError(e)
 
     return CommandResults(
-        readable_output="Success" if response['message']=="OK" else f"Failure \n {response['message']}",
-        outputs_prefix="FireEyeHX.Policy",
-        outputs=response
+        readable_output = message,
+        outputs_prefix = "FireEyeHX.Policy",
+        outputs = response
     )
     
 
 def get_list_containment_command(client:Client,args:Dict[str,Any])->CommandResults:
 
-    stateUpdateTime=args.get("state_update_time")
-    offset=args.get("offset")
-    limit=args.get("limit")
+    stateUpdateTime = args.get("state_update_time")
+    offset = args.get("offset")
+    limit = args.get("limit")
 
     if not offset:
-        offset=0
+        offset = 0
     if not limit:
-        limit=50
+        limit = 50
     
     response=client.get_list_containment_request(offset,limit,stateUpdateTime)["data"]["entries"]
 
@@ -1673,14 +1677,14 @@ def get_list_containment_command(client:Client,args:Dict[str,Any])->CommandResul
             "Last System information date":entry["last_sysinfo"]
             })
     
-    headers_for_table=["Id","State","Request Origin","Request Date","Containment Origin","Containment Date","Last System information date"]
-    md=tableToMarkdown(name="List Containment", t=for_table, headers=headers_for_table)
+    headers_for_table = ["Id","State","Request Origin","Request Date","Containment Origin","Containment Date","Last System information date"]
+    md = tableToMarkdown(name="List Containment", t=for_table, headers=headers_for_table)
 
     return CommandResults(
-        outputs_prefix="FireEyeHX.Hosts",
-        outputs_key_field="_id",
-        outputs=response,
-        readable_output=md
+        outputs_prefix = "FireEyeHX.Hosts",
+        outputs_key_field = "_id",
+        outputs = response,
+        readable_output = md
     )
 
 """
@@ -1694,13 +1698,13 @@ def get_all_hosts_information_command(client:Client,args:Dict[str,Any])->Command
     hosts = []
 
     while True:
-        hosts_partial=client.get_hosts_request(offset=offset,limit=1000)
+        hosts_partial = client.get_hosts_request(offset=offset,limit=1000)
         if not hosts_partial["data"]["entries"]:
             break
         hosts.extend(hosts_partial["data"]["entries"])
-        offset=len(hosts)
+        offset = len(hosts)
     
-    outputs=[]
+    outputs = []
     for host in hosts:
         outputs.append({
             'Host Name': host.get('hostname'),
@@ -1714,26 +1718,26 @@ def get_all_hosts_information_command(client:Client,args:Dict[str,Any])->Command
             'Last Alert': host.get('last_alert')
         })
     
-    headers_for_table=['Host Name', 'Host IP', 'Agent ID', 'Agent Version', 'OS', 'Last Poll', 'Containment State', 'Domain', 'Last Alert']
-    md=tableToMarkdown(
+    headers_for_table = ['Host Name', 'Host IP', 'Agent ID', 'Agent Version', 'OS', 'Last Poll', 'Containment State', 'Domain', 'Last Alert']
+    md = tableToMarkdown(
         name = "FireEye HX Get Hosts Information",
         t = outputs,
         headers = headers_for_table
     )
 
     return CommandResults(
-        outputs_prefix="FireEyeHX.Hosts",
-        outputs_key_field="_id",
-        outputs=outputs,
+        outputs_prefix = "FireEyeHX.Hosts",
+        outputs_key_field = "_id",
+        outputs = outputs,
         raw_response = hosts,
-        readable_output=md
+        readable_output = md
     )
     
 
 def get_host_information_command(client:Client, args:Dict[str,Any])->CommandResults:
 
-    agentId=args.get("agentId")
-    hostName=args.get("hostName")
+    agentId = args.get("agentId")
+    hostName = args.get("hostName")
 
 
     if not agentId and not hostName:
@@ -1741,18 +1745,18 @@ def get_host_information_command(client:Client, args:Dict[str,Any])->CommandResu
     
     if agentId:
         try:
-            host=client.get_hosts_by_agentId_request(agentId)["data"]
+            host = client.get_hosts_by_agentId_request(agentId)["data"]
         except:
             raise ValueError(f"agentId {agentId} is not correct")#*************
 
     else: 
         try:
-            host:Dict=client.get_hosts_request(limit=1, host_name=hostName)["data"]["entries"][0]
+            host:Dict = client.get_hosts_request(limit=1, host_name=hostName)["data"]["entries"][0]
         except:
             raise ValueError(f"{hostName} is not found")#*****************
 
-    headers_for_table=['Host Name', 'Host IP', 'Agent ID', 'Agent Version', 'OS', 'Last Poll', 'Containment State', 'Domain', 'Last Alert']
-    for_table=[{
+    headers_for_table = ['Host Name', 'Host IP', 'Agent ID', 'Agent Version', 'OS', 'Last Poll', 'Containment State', 'Domain', 'Last Alert']
+    for_table = [{
         'Host Name': host.get('hostname'),
         'Last Poll': host.get('last_poll_timestamp'),
         'Agent ID': host.get('_id'),
@@ -1764,17 +1768,17 @@ def get_host_information_command(client:Client, args:Dict[str,Any])->CommandResu
         'Last Alert': host.get('last_alert')
     }]
 
-    md=tableToMarkdown(
-        name="FireEye HX Get Host Information",
-        t=for_table,
-        headers=headers_for_table
+    md = tableToMarkdown(
+        name = "FireEye HX Get Host Information",
+        t = for_table,
+        headers = headers_for_table
     )
 
     return CommandResults(
-        outputs_prefix="FireEyeHX.Hosts",
-        outputs_key_field="_id",
-        outputs=host,
-        readable_output=md
+        outputs_prefix = "FireEyeHX.Hosts",
+        outputs_key_field = "_id",
+        outputs = host,
+        readable_output = md
     )
     
 
@@ -1786,7 +1790,7 @@ def get_host_set_information_command(client:Client, args:Dict[str, Any])->Comman
     """
     hostSetID = args.get('hostSetID')
     
-    body =assign_params( 
+    body = assign_params( 
         limit =  args.get('limit'),
         offset = args.get('offset'),
         search = args.get('search'),
@@ -1814,13 +1818,13 @@ def get_host_set_information_command(client:Client, args:Dict[str, Any])->Comman
         md_table = tableToMarkdown(
             name = 'FireEye HX Get Host Sets Information',
             t = host_set_entry(host_set),
-            headers=['Name', 'ID', 'Type']
+            headers = ['Name', 'ID', 'Type']
         )
 
     return CommandResults(
-        outputs_prefix="FireEyeHX.HostSets",
-        outputs_key_field="_id",
-        outputs=host_set,
+        outputs_prefix = "FireEyeHX.HostSets",
+        outputs_key_field = "_id",
+        outputs = host_set,
         readable_output = md_table
         )
     
@@ -1830,14 +1834,14 @@ HOST CONTAINMENT
 
 def host_containment_command(client:Client,args:Dict[str,Any])->CommandResults:
 
-    agentId=args.get("agentId")
-    hostName=args.get("hostName")
+    agentId = args.get("agentId")
+    hostName = args.get("hostName")
 
     if not agentId and not hostName:
         raise ValueError("Please provide either agentId or hostName")
     
     if not agentId:
-        agentId=get_agent_id_by_host_name(client,hostName)
+        agentId = get_agent_id_by_host_name(client,hostName)
 
     try:
         client.host_containmet_request(agentId)
@@ -1859,8 +1863,8 @@ def host_containment_command(client:Client,args:Dict[str,Any])->CommandResults:
     
     host = client.get_hosts_by_agentId_request(agentId)
 
-    return [CommandResults(outputs_prefix="FireEyeHX.Hosts",outputs=host, readable_output=message),
-            CommandResults(outputs_prefix="Endpoint",outputs=collect_endpoint_contxt(host["data"]))]  
+    return [CommandResults(outputs_prefix = "FireEyeHX.Hosts",outputs = host, readable_output = message),
+            CommandResults(outputs_prefix = "Endpoint",outputs = collect_endpoint_contxt(host["data"]))]  
     
 
 def approve_containment_command(client:Client,args:Dict[str,Any])->CommandResults:
@@ -2077,9 +2081,9 @@ def initiate_data_acquisition_command(client:Client, args:Dict[str,Any])->Comman
     acquisition_info["instance"] = demisto.integrationInstance()
 
     return CommandResults(
-        outputs_prefix="FireEyeHX.Acquisitions.Data",
-        outputs=acquisition_info,
-        readable_output=f'Acquisition ID: {acquisition_info.get("_id")} on Instance: {acquisition_info.get("instance")}'
+        outputs_prefix = "FireEyeHX.Acquisitions.Data",
+        outputs = acquisition_info,
+        readable_output = f'Acquisition ID: {acquisition_info.get("_id")} on Instance: {acquisition_info.get("instance")}'
     )
 
 
