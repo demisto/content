@@ -1,12 +1,36 @@
 import os
 import re
-from gitlab_slack_notifier import get_artifact_data
+from typing import Optional
 from demisto_sdk.commands.test_content.execute_test_content import _add_pr_comment
 from demisto_sdk.commands.test_content.execute_test_content import ParallelLoggingManager
 
 ARTIFACTS_FOLDER = os.getenv('ARTIFACTS_FOLDER', './artifacts')
 JOB_ID = os.environ.get('CI_JOB_ID')
 SUMMARY = ''
+
+
+def get_artifact_data(artifact_folder, artifact_relative_path: str) -> Optional[str]:
+    """
+    Retrieves artifact data according to the artifact relative path from 'ARTIFACTS_FOLDER' given.
+    Args:
+        artifact_folder (str): Full path of the artifact root folder.
+        artifact_relative_path (str): Relative path of an artifact file.
+
+    Returns:
+        (Optional[str]): data of the artifact as str if exists, None otherwise.
+    """
+    artifact_data = None
+    try:
+        file_name = os.path.join(artifact_folder, artifact_relative_path)
+        if os.path.isfile(file_name):
+            print(f'Extracting {artifact_relative_path}')
+            with open(file_name, 'r') as file_data:
+                artifact_data = file_data.read()
+        else:
+            print(f'Did not find {artifact_relative_path} file')
+    except Exception:
+        print(f'Error getting {artifact_relative_path} file')
+    return artifact_data
 
 
 def create_pr_comment():
