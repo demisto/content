@@ -40,7 +40,7 @@ contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ""
     itemVersion: ""
-    packID: 49605b06-4209-4e62-8f84-0dccc6a2bcc5
+    packID: b4f1a994-08ae-4f70-8fce-d51939590bd1
     propagationLabels:
     - all
     toServerVersion: ""
@@ -54,10 +54,10 @@ script:
     - description: pass incidentId
       name: incidentId
       required: true
-    - description: Pass addInternalNotes object.
+    - description: Pass Internal Notes
       name: Notes
       required: true
-    description: Add Internal Notes
+    description: Used to add Internal Notes in the specified incident
     name: wolken-add-internal-notes
     outputs:
     - contextPath: Wolken.UpdateIncidents.status
@@ -67,33 +67,51 @@ script:
       description: ""
       type: String
   - arguments:
-    - description: Please pass this mandatory fields - (RequestorEmail, Subject, Description)
-        for creating Incident request. For, Reminder Date pass timestamp value.
+    - description: Pass Subject of the Incident
       name: Subject
       required: true
-    - name: Description
+    - description: Pass Description of the Incident
+      name: Description
       required: true
-    - name: SubCategoryName
+    - description: Pass Sub-Category of the Incident
+      name: SubCategoryName
       required: true
-    - name: ItemName
-    - name: PriorityId
-    - name: RequestorEmail
+    - description: Pass Item Name of the Incident
+      name: ItemName
+    - description: Pass Priority Id of the Incident
+      name: PriorityId
+    - description: Pass Requester Email Id of the Incident
+      name: RequestorEmail
       required: true
-    - name: PreferredContactModeNumber
-    - name: ContactTypeId
-    - name: Category
-    - name: Sub_Category
-    - name: TeamId
-    - name: Reminder
-    - name: Reminder_Notes
-    - name: ImpactId
-    - name: UrgencyId
-    - name: Location
-    - name: Configuration_Item
-    - name: file_name
-    - name: file_type
-    - name: file_entryId
-    description: Create new incident
+    - description: Pass Contact Number of the Requester
+      name: PreferredContactModeNumber
+    - description: Pass Contact Type Id of the Incident
+      name: ContactTypeId
+    - description: Pass Category of the incident
+      name: Category
+    - description: Pass Sub Category of the Incident
+      name: Sub_Category
+    - description: Pass required Team Id
+      name: TeamId
+    - description: Pass Reminder of the incident
+      name: Reminder
+    - description: Pass Remider Notes of the Incident
+      name: Reminder_Notes
+    - description: Pass Impact Id of the Incident
+      name: ImpactId
+    - description: Pass Urgency Id of the Incident
+      name: UrgencyId
+    - description: Pass Location
+      name: Location
+    - description: Pass Configuration Item of the incident
+      name: Configuration_Item
+    - description: Pass file name required to add in the incident
+      name: file_name
+    - description: Pass file type required to add in the incident
+      name: file_type
+    - description: Pass file entry Id required to add in the incident
+      name: file_entryId
+    description: Creates new Wolken ITSM incident
     name: wolken-create-incident-requestv1
     outputs:
     - contextPath: Wolken.CreateIncidents.status
@@ -106,7 +124,9 @@ script:
       description: ""
       type: String
   - arguments: []
-    description: Get access token
+    description: Use to get access token and save it in integration context . Refresh
+      Token saved in integration context will be used to create new access token after
+      expiration.
     name: wolken-get-access-token
     outputs:
     - contextPath: Wolken.Token.access_token
@@ -125,23 +145,26 @@ script:
       description: ""
       type: String
   - arguments:
-    - description: Incident Id
+    - description: Pass Incident Id required for searching
       name: incidentId
       required: true
-    description: Find incident by incident id
+    description: Find incident using the specified incident id
     name: wolken-get-incident-by-id
     outputs:
     - contextPath: Wolken.GetIncidents.status
       description: ""
       type: String
   - arguments:
-    - description: Incident Id
+    - description: Pass Incident Id
       name: incidentId
       required: true
-    - name: file_name
-    - name: file_type
-    - name: file_entryId
-    description: Add Attachments
+    - description: Pass file name required to add in the incident
+      name: file_name
+    - description: Pass file type required to add in the incident
+      name: file_type
+    - description: Pass file entry Id required to add in the incident
+      name: file_entryId
+    description: Add Attachment to the specified Incident Id using entry Id
     name: wolken-post-api-v1-incidents-add-attachments
     outputs:
     - contextPath: Wolken.UpdateIncidents.status
@@ -154,10 +177,10 @@ script:
     - description: pass incidentId
       name: incidentId
       required: true
-    - description: Pass addOutboundNotes object.
+    - description: Pass Outbound Notes object.
       name: Notes
       required: true
-    description: Add Outbound Notes
+    description: Add Outbound Notes to the specified Incident Id
     name: wolken-post-api-v1-incidents-add-outbound-notes
     outputs:
     - contextPath: Wolken.UpdateIncidents.status
@@ -167,15 +190,17 @@ script:
       description: ""
       type: String
   - arguments:
-    - description: Incident Id
+    - description: Pass Incident Id
       name: incidentId
       required: true
-    - description: Pass incidentUpdate object
+    - description: Pass incident 2Update object
       name: SourceId
       required: true
-    - name: Subject
+    - description: Pass the subject of the incident
+      name: Subject
       required: true
-    - name: Description
+    - description: Pass the description of the incident
+      name: Description
       required: true
     description: Update an existing incident
     name: wolken-post-api-v1-incidents-by-incident-id
@@ -187,20 +212,26 @@ script:
       description: ""
       type: String
   - arguments:
-    - description: Incident Id
+    - description: Pass Incident Id
       name: incidentId
       required: true
-    - name: Resolution_Code
+    - description: Pass the required Resolution code
+      name: Resolution_Code
       required: true
-    - name: Resolution_Notes
+    - description: 'Pass Resolution Notes '
+      name: Resolution_Notes
       required: true
-    - name: Closure_Description
+    - description: Pass Closure description while closing the incident
+      name: Closure_Description
       required: true
-    - name: StatusId
+    - description: 'Pass Status Id of the incident '
+      name: StatusId
       required: true
-    - name: SubStatusId
+    - description: Pass Sub Status Id of the incident
+      name: SubStatusId
       required: true
-    - name: Owner
+    - description: Pass Owner of the incident
+      name: Owner
       required: true
     description: Close an Incident
     name: wolken-post-api-v1-incidents-close
@@ -212,10 +243,10 @@ script:
       description: ""
       type: String
   - arguments:
-    - description: Incident Id
+    - description: Pass Incident Id
       name: incidentId
       required: true
-    - description: Pass incidentCancel object
+    - description: Pass description for incident Cancellation
       name: Description
       required: true
     description: Cancel an Incident
@@ -264,7 +295,7 @@ script:
       name: updatedTimeLT
     - description: Updated By User Id
       name: updatedByUserId
-    description: Search using any  parameters in Incidents
+    description: Search in the list of incident using any parameters
     name: wolken-search-incidents-by-params
     outputs:
     - contextPath: Wolken.GetIncidents.status
