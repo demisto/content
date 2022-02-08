@@ -3,6 +3,7 @@ import pytest
 import io
 import demistomock as demisto
 from CommonServerPython import Common
+from typing import *
 
 params = {
     "api_url": "http://test.com/api/v1",
@@ -13,7 +14,7 @@ params = {
 }
 
 
-def util_load_json(path):
+def util_load_json(path: str) -> Any:
     with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
@@ -28,7 +29,7 @@ url_command_test = [
 
 
 @pytest.mark.parametrize('query_status,tags', url_command_test)
-def test_url_command(mocker, requests_mock, query_status, tags, ):
+def test_url_command(mocker, requests_mock, query_status: str, tags: List[str]):
     """
         Given
         - A URL.
@@ -75,7 +76,7 @@ url_command_test_reliability_dbot_score = [
 
 
 @pytest.mark.parametrize('status,excepted_output', url_command_test_reliability_dbot_score)
-def test_url_reliability_dbot_score(status, excepted_output):
+def test_url_reliability_dbot_score(status: str, excepted_output: Tuple[int, str]):
     """
 
     Given:
@@ -116,7 +117,7 @@ url_command_test_create_payloads = [
 
 
 @pytest.mark.parametrize('test_data,excepted_output', url_command_test_create_payloads)
-def test_url_create_payloads(test_data, excepted_output):
+def test_url_create_payloads(test_data: dict, excepted_output: List[dict]):
     """
 
     Given:
@@ -146,7 +147,7 @@ url_command_test_create_blacklists = [
 
 
 @pytest.mark.parametrize('test_data,excepted_output', url_command_test_create_blacklists)
-def test_url_create_blacklists(test_data, excepted_output):
+def test_url_create_blacklists(test_data: dict, excepted_output: List[dict]):
     """
 
     Given:
@@ -181,7 +182,8 @@ url_command_test_create_relationships = [
 
 @pytest.mark.parametrize('host,host_type,create_relationships,max_num_relationships',
                          url_command_test_create_relationships)
-def test_url_command_create_relationships(host, host_type, create_relationships, max_num_relationships):
+def test_url_command_create_relationships(host: str, host_type: str, create_relationships: bool,
+                                          max_num_relationships: int):
     """
 
     Given:
@@ -243,7 +245,7 @@ domain_command_test = [
 
 
 @pytest.mark.parametrize('query_status,spamhaus_dbl,expected_tag', domain_command_test)
-def test_domain_command(requests_mock, mocker, query_status, spamhaus_dbl, expected_tag):
+def test_domain_command(requests_mock, mocker, query_status: str, spamhaus_dbl: str, expected_tag: str):
     """
         Given
         - A Domain.
@@ -268,12 +270,12 @@ def test_domain_command(requests_mock, mocker, query_status, spamhaus_dbl, expec
                         return_value={'domain': domain_to_check})
     results = domain_command(**params)
 
-    Domain = results.outputs.get('Domain', '')
+    Domain = results.indicator
     if Domain:
-        assert 'Name' in Domain
+        assert Domain.domain == domain_to_check
         if expected_tag:
-            assert Domain['Tags'][0] == expected_tag if query_status == 'ok' else 'Tags' not in Domain
-        assert len(Domain['Relationships']) == 1 if query_status == 'ok' else 'Relationships' not in Domain
+            assert Domain.tags[0] == expected_tag if query_status == 'ok' else not Domain.tags
+        assert len(Domain.relationships) == 1 if query_status == 'ok' else not Domain.relationships
 
 
 domain_command_test_reliability_dbot_score = [
@@ -309,7 +311,7 @@ domain_command_test_reliability_dbot_score = [
 
 
 @pytest.mark.parametrize('blacklist,excepted_output', domain_command_test_reliability_dbot_score)
-def test_domain_reliability_dbot_score(blacklist, excepted_output):
+def test_domain_reliability_dbot_score(blacklist: dict, excepted_output: Tuple[int, str]):
     """
 
     Given:
@@ -347,7 +349,7 @@ domain_command_test_create_relationships = [
 
 @pytest.mark.parametrize('create_relationships,max_num_relationships',
                          domain_command_test_create_relationships)
-def test_domain_command_test_create_relationships(create_relationships, max_num_relationships):
+def test_domain_command_test_create_relationships(create_relationships: bool, max_num_relationships: int):
     """
 
     Given:
@@ -378,7 +380,7 @@ def test_domain_command_test_create_relationships(create_relationships, max_num_
     results = domain_create_relationships(urls, domain, create_relationships, max_num_relationships)
     assert len(results) == len(excepted_output)
     for i in range(len(results)):
-        assert results[i] == excepted_output[i]
+        assert results[i].to_context() == excepted_output[i]
 
 
 domain_add_tags = [
@@ -394,7 +396,7 @@ domain_add_tags = [
 
 @pytest.mark.parametrize('blacklist_status,excepted_output',
                          domain_add_tags)
-def test_domain_add_tags(blacklist_status, excepted_output):
+def test_domain_add_tags(blacklist_status: str, excepted_output: List[str]):
     """
 
     Given:
@@ -424,7 +426,7 @@ file_command_test = [
 
 
 @pytest.mark.parametrize('query_status,ssdeep,expected_ssdeep', file_command_test)
-def test_file_command(mocker, requests_mock, query_status, ssdeep, expected_ssdeep):
+def test_file_command(mocker, requests_mock, query_status: str, ssdeep: str, expected_ssdeep: str):
     """
         Given
         - A file.
@@ -485,7 +487,7 @@ file_command_test_create_relationships = [
 
 @pytest.mark.parametrize('create_relationships,max_num_relationships',
                          file_command_test_create_relationships)
-def test_file_create_relationships(create_relationships, max_num_relationships):
+def test_file_create_relationships(create_relationships: bool, max_num_relationships: int):
     """
 
     Given:
