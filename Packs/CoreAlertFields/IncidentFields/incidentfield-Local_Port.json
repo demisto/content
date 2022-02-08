@@ -1,0 +1,67 @@
+{
+    "associatedToAll": true,
+    "caseInsensitive": true,
+    "cliName": "localport",
+    "closeForm": false,
+	"description": "If the alert triggered on network activity (the Event Type is Network Connection) this is the port on the endpoint that triggered the alert. If not, then N/A.",
+    "content": true,
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_localport",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Local Port",
+    "neverSetAsRequired": false,
+    "openEnded": true,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "multiSelect",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.5.0",
+	"x2_fields": "action_local_port",
+    "Aliases": [
+        {
+          "cliName": "fireeyenxalertvictimport",
+          "type": "shortText"
+        },
+        {
+          "cliName": "fireeyenxeventvictimport",
+          "type": "shortText"
+        },
+        {
+          "cliName": "sourceport",
+          "type": "shortText"
+        },
+        {
+        "cliName": "srcports",
+        "type": "shortText" 
+        },
+        {
+          "cliName": "f5silverlineclientport",
+          "type": "shortText" 
+        },
+        {
+          "cliName": "f5silverlinetranslatedsourceport",
+          "type": "shortText" 
+        },
+        {
+          "cliName": "shadowitport",
+          "type": "number"
+        },
+        {
+          "cliName": "expanseport",
+          "type": "number"
+        }
+
+    ]
+}

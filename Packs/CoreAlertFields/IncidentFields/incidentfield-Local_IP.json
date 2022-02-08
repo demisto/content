@@ -1,0 +1,92 @@
+{
+    "associatedToAll": true,
+    "caseInsensitive": true,
+    "cliName": "localip",
+    "closeForm": false,
+	"description": "If the alert triggered on network activity (the Event Type is Network Connection) this is the IP address of the host that triggered the alert. If not, then N/A.",
+    "content": true,
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_localip",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Local IP",
+    "neverSetAsRequired": false,
+    "openEnded": true,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "multiSelect",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.5.0",
+	"x2_fields": "action_local_ip",
+    "Aliases": [
+        {
+          "cliName": "sourceipoffense",
+          "type": "multiSelect"
+        },
+
+        {
+          "cliName": "f5silverlinegeolocationsourceip",
+          "type": "shortText"
+        },
+        {
+          "cliName": "f5silverlinemessageoriginatorsourceip",
+          "type": "shortText"
+        },
+        {
+          "cliName": "f5silverlinetranslatedsourceip",
+          "type": "shortText"
+        },
+        {
+          "cliName": "sourceip",
+          "type": "shortText"
+        },
+        {
+          "cliName": "sourceips",
+          "type": "multiSelect"
+        },
+        {
+          "cliName": "src",
+          "type": "shortText"
+        },
+        {
+          "cliName": "srcs",
+          "type": "multiSelect"
+        },
+        {
+          "cliName": "srcs",
+          "type": "multiSelect"
+        },
+        {
+          "cliName": "devicelocalip",
+          "type": "shortText"
+        },
+        {
+          "cliName": "sourceipv6",
+          "type": "multiSelect"
+        },
+        {
+          "cliName": "threathuntingdetectedip",
+          "type": "multiSelect"
+        },
+        {
+          "cliName": "detectedinternalips",
+          "type": "shortText"
+        },
+        {
+          "cliName": "digitalguardiansourceip",
+          "type": "shortText"
+        }
+
+    ]
+}
