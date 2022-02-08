@@ -1,6 +1,6 @@
 category: Analytics & SIEM
 commonfields:
-  id: Cyptosim
+  id: Cryptosim
   version: -1
 configuration:
 - display: Your server URL
@@ -18,8 +18,8 @@ configuration:
   required: false
   type: 8
 description: 'CRYPTOSIM correlations and correlation alerts.'
-display: Cyptosim
-name: Cyptosim
+display: Cryptsoim
+name: Cryptosim
 script:
   commands:
   - arguments:

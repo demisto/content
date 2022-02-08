@@ -25,13 +25,13 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 class Client(BaseClient):
 
     def correlation_alerts(self, dummy: str) -> Dict[str, str]:
-        return self._http_request("POST", url_suffix="correlationalertswithlogs", data=dummy).text
+        return self._http_request("POST", url_suffix="correlationalertswithlogs", data=dummy)
 
     def correlations(self):
-        return self._http_request("GET", data={}, url_suffix="correlations").text
+        return self._http_request("GET", data={}, url_suffix="correlations")
 
     def baseintegration_dummy(self):
-        return self._http_request("GET", url_suffix="correlations", data={}).text
+        return self._http_request("GET", url_suffix="correlations", data={})
 
 ''' HELPER FUNCTIONS '''
 
@@ -151,6 +151,8 @@ def main() -> None:
     """
     params = demisto.params()
     return_results(params)
+    return_results("------divider")
+    return_results(demisto.args())
     authorization = params.get('credentials').get('identifier') + ":" + params.get('credentials').get('password')
     auth_byte= authorization.encode('utf-8')
     base64_byte = base64.b64encode(auth_byte)
