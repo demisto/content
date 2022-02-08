@@ -1,0 +1,32 @@
+{
+    "associatedToAll": true,
+    "caseInsensitive": true,
+    "cliName": "cgovendor",
+    "closeForm": false,
+    "content": true,
+    "description": "The name of the software publishing vendor that signed the file in the causality chain that led up to the alert.",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_cgovendor",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "CGO signer",
+    "neverSetAsRequired": false,
+    "openEnded": true,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "multiSelect",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.5.0",
+    "x2_fields": "causality_actor_process_signature_vendor"
+}
