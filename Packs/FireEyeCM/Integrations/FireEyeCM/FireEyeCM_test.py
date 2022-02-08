@@ -345,17 +345,18 @@ def test_fetch_incidents_last_alert_ids(mocker):
     - mock the Client's get_alerts_request.
     Then
     - Validate that no incidents will be returned.
-    - Validate that the last_run is at the latest incident fetched
+    - Validate that the last_run is pushed in two days from the latest incident fetched
     """
     mocker.patch.object(FireEyeClient, '_get_token', return_value='token')
     client = Client(base_url="https://fireeye.cm.com/", username='user', password='pass', verify=False, proxy=False)
     mocker.patch.object(FireEyeClient, 'get_alerts_request', return_value=util_load_json('test_data/alerts.json'))
     last_run_time = '2021-05-18T12:02:54+00:00'
     next_run_time = (dateparser.parse(last_run_time[:-6]) + timedelta(hours=48)).isoformat()
+    last_alert_ids = '["35267", "35268", "35269", "35272", "35273", "35274", "35275", "35276", "35277", "35278", ' \
+                     '"35279"]'
     last_run = {
         'time': last_run_time,
-        'last_alert_ids': '["35267", "35268", "35269", "35272", "35273", "35274", "35275", "35276", "35277", "35278", '
-                          '"35279"]'
+        'last_alert_ids': last_alert_ids
     }
     next_run, incidents = fetch_incidents(client=client,
                                           last_run=last_run,
@@ -365,4 +366,5 @@ def test_fetch_incidents_last_alert_ids(mocker):
 
     assert len(incidents) == 0
     # trim miliseconds to avoid glitches such as 2021-05-19T10:21:52.121+00:00 != 2021-05-19T10:21:52.123+00:00
-    assert next_run.get('time')[:-9] == next_run_time
+    assert next_run.get('time')[:-6] == next_run_time
+    assert next_run.get('last_alert_ids') == last_alert_ids
