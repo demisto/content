@@ -126,7 +126,7 @@ class FireEyeClient(BaseClient):
 
         integration_context = get_integration_context()
         integration_context.update({'token': token})
-        time_buffer = 10  # minutes by which to lengthen the validity period
+        time_buffer = 600  # 600 seconds (10 minutes) by which to lengthen the validity period
         integration_context.update({'valid_until': datetime.timestamp(datetime.now() + timedelta(seconds=time_buffer))})
         set_integration_context(integration_context)
 

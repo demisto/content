@@ -35,8 +35,5 @@
     "unmapped": false,
     "unsearchable": false,
     "useAsKpi": false,
-    "validationRegex": "",
-    "marketplaces": [
-       "xsoar"
-    ]
+    "validationRegex": ""
 }
