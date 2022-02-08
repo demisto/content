@@ -142,7 +142,7 @@ def bucket_upload_results(bucket_artifact_folder):
         }]
 
     if successful_private_packs:
-        # No need to indicate the marketplace name as private pack only upload to xsoar marketplace
+        # No need to indicate the marketplace name as private packs only upload to xsoar marketplace.
         steps_fields += [{
             'title': 'Successful Private Packs:',
             'value': '\n'.join(sorted([pack_name for pack_name in {*successful_private_packs}],
