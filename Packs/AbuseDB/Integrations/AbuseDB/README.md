@@ -106,6 +106,7 @@
 <td style="width: 58px;">unknown</td>
 <td style="width: 414px;">Analysis score</td>
 </tr>
+<img src
 <tr>
 <td style="width: 268px;">DBotScore.Vendor</td>
 <td style="width: 58px;">unknown</td>
