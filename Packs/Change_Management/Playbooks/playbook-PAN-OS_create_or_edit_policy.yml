@@ -429,7 +429,7 @@ tasks:
     task:
       id: 5e1a775e-4a08-41fa-8554-200b99205450
       version: -1
-      name: 'Create new rule or edit existing? '
+      name: 'Create new rule or edit existing?'
       tags:
       - comment
       - comments
@@ -470,13 +470,13 @@ tasks:
       replyOptions:
       - Create
       - Edit
-      - 'Manually review the rule '
+      - 'Manually review the rule'
     form:
       questions:
       - id: "0"
         label: ""
         labelarg:
-          simple: 'Add rule or modify existing rule? '
+          simple: 'Add rule or modify existing rule?'
         required: false
         gridcolumns: []
         defaultrows: []
@@ -490,7 +490,7 @@ tasks:
         placeholder: ""
         tooltip: ""
         readonly: false
-      title: Which action would you like to preform?
+      title: Which action would you like to perform?
       description: Choose one of the following actions.
       sender: ""
       expired: false
@@ -603,7 +603,7 @@ tasks:
     task:
       id: f88b18a8-85a1-448d-87eb-ba939766420d
       version: -1
-      name: 'Manually review the relevant rule '
+      name: 'Manually review the relevant rule'
       description: Manually review the relevant rule in the firewall interface.
       tags:
       - comment
