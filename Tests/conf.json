@@ -4790,7 +4790,7 @@
                 "Demisto REST API"
             ],
             "playbookID": "AutoFocusTagsFeed-test",
-            "timeout": 300,
+            "timeout": 1500,
             "fromversion": "6.5.0"
         },
         {
