@@ -53,7 +53,7 @@ def test_url_command(mocker, requests_mock, query_status: str, tags: List[str]):
                        json=mock_response)
     mocker.patch.object(demisto, 'args',
                         return_value={'url': url_to_check})
-    results = url_command(**params)
+    results = url_command(params)
 
     url_indicator = results.indicator
     if url_indicator:
@@ -89,9 +89,9 @@ def test_url_reliability_dbot_score(status: str, excepted_output: Tuple[int, str
         - Make sure the DBot Score is calculated correctly.
 
     """
-    from URLHaus import calculate_dbot_score
+    from URLHaus import url_calculate_score
 
-    output = calculate_dbot_score('url', status)
+    output = url_calculate_score(status)
     for i in range(len(excepted_output)):
         assert output[i] == excepted_output[i]
 
@@ -234,10 +234,10 @@ def test_url_command_create_relationships(host: str, host_type: str, create_rela
 domain_command_test = [
     ('ok', 'spammer_domain', 'spammer'),
     ('ok', 'phishing_domain', 'phishing'),
-    ('ok', 'botnet_cc_domain', 'botnet'),
-    ('ok', 'abused_legit_spam', 'spam'),
-    ('ok', 'abused_legit_malware', 'malware'),
-    ('ok', 'abused_legit_phishing', 'phishing'),
+    ('ok', 'botnet_cc_domain', 'botnet_cc'),
+    ('ok', 'abused_legit_spam', 'abused_legit_spam'),
+    ('ok', 'abused_legit_malware', 'abused_legit_malware'),
+    ('ok', 'abused_legit_phishing', 'abused_legit_phishing'),
     ('ok', 'not listed', ''),
     ('no_results', 'not listed', ''),
     ('invalid_host', 'spammer_domain', 'spammer')
@@ -268,7 +268,7 @@ def test_domain_command(requests_mock, mocker, query_status: str, spamhaus_dbl: 
                        json=mock_response)
     mocker.patch.object(demisto, 'args',
                         return_value={'domain': domain_to_check})
-    results = domain_command(**params)
+    results = domain_command(params)
 
     Domain = results.indicator
     if Domain:
@@ -324,9 +324,9 @@ def test_domain_reliability_dbot_score(blacklist: dict, excepted_output: Tuple[i
         - Make sure the DBot Score is calculated correctly.
 
     """
-    from URLHaus import calculate_dbot_score
+    from URLHaus import domain_calculate_score
 
-    output = calculate_dbot_score('domain', blacklist)
+    output = domain_calculate_score(blacklist)
     for i in range(len(excepted_output)):
         assert output[i] == excepted_output[i]
 
@@ -386,7 +386,7 @@ def test_domain_command_test_create_relationships(create_relationships: bool, ma
 domain_add_tags = [
     ('spammer_domain', ['spammer']),
     ('phishing_domain', ['phishing']),
-    ('botnet_cc_domain', ['botnet']),
+    ('botnet_cc_domain', ['botnet_cc']),
     ('listed', []),
     ('not listed', []),
     ('', []),
@@ -449,7 +449,7 @@ def test_file_command(mocker, requests_mock, query_status: str, ssdeep: str, exp
                        json=mock_response)
     mocker.patch.object(demisto, 'args',
                         return_value={'file': file_to_check})
-    results = file_command(**params)
+    results = file_command(params)
 
     File = '' if not results.outputs else results.outputs.get('File', '')
     if File:
@@ -471,27 +471,30 @@ def test_file_reliability_dbot_score():
     Then:
         - Make sure the DBot Score is calculated correctly.
     """
-    from URLHaus import calculate_dbot_score
-    dbot_score = calculate_dbot_score('file', '')[0]
+    from URLHaus import file_calculate_score
+    dbot_score = file_calculate_score()[0]
     assert dbot_score == Common.DBotScore.BAD
 
 
 file_command_test_create_relationships = [
-    (True, 1),
-    (True, 22),
-    (False, 22),
-    (True, 1000),
-    (False, 1000),
+    (True, 1, 'test_signature'),
+    (True, 22, 'test_signature'),
+    (False, 22, 'test_signature'),
+    (True, 1000, 'test_signature'),
+    (False, 1000, 'test_signature'),
+    (False, 22, ''),
+    (True, 1000, ''),
+    (False, 1000, ''),
 ]
 
 
-@pytest.mark.parametrize('create_relationships,max_num_relationships',
+@pytest.mark.parametrize('create_relationships,max_num_relationships,sig',
                          file_command_test_create_relationships)
-def test_file_create_relationships(create_relationships: bool, max_num_relationships: int):
+def test_file_create_relationships(create_relationships: bool, max_num_relationships: int, sig: str):
     """
 
     Given:
-        - Create relationship table(T/F), max number of relationships(Limited to 1000).
+        - Create relationship table(T/F), max number of relationships(Limited to 1000), file signature.
 
     When:
         - Calling file_create_relationships() method.
@@ -505,25 +508,25 @@ def test_file_create_relationships(create_relationships: bool, max_num_relations
         'url': f'test_url{i}',
     } for i in range(10000)]  # Large amounts of urls
     file = '123123123123123123123'
-    sig = 'test_signature'
     excepted_output = []
     if create_relationships:
-        excepted_output = [{
-            'Relationship': 'indicator-of',
-            'EntityA': file,
-            'EntityAType': 'File',
-            'EntityB': sig,
-            'EntityBType': 'Malware',
-        }]
+        if sig:
+            excepted_output = [{
+                'Relationship': 'indicator-of',
+                'EntityA': file,
+                'EntityAType': 'File',
+                'EntityB': sig,
+                'EntityBType': 'Malware',
+            }]
         excepted_output.extend([{
             'Relationship': 'related-to',
             'EntityA': file,
             'EntityAType': 'File',
             'EntityB': urls[i].get('url'),
             'EntityBType': 'URL',
-        } for i in range(max_num_relationships - 1)])
+        } for i in range(max_num_relationships - len(excepted_output))])
     results = file_create_relationships(file=file, urls=urls, sig=sig, create_relationships=create_relationships,
                                         max_num_of_relationships=max_num_relationships)
     assert len(results) == len(excepted_output)
     for i in range(len(results)):
-        assert results[i] == excepted_output[i]
+        assert results[i].to_context() == excepted_output[i]
