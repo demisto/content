@@ -653,14 +653,17 @@ class Pack(object):
 
             if os.path.exists(dependency_metadata_path):
                 # Case 1: the dependency is found in the index.zip
+                logging.warning("NOY_LOGS: Case 1")
                 with open(dependency_metadata_path, 'r') as metadata_file:
                     dependency_metadata = json.load(metadata_file)
+                    logging.warning(f"NOY_LOGS:{self._pack_name} dependencies metadata from metadata.json: {dependency_metadata}")
                     dependencies_data_result[dependency_pack_id] = dependency_metadata
 
             elif dependency_pack_id in pack_names:
                 if id_set:
                     pack_info = id_set.get('Packs', {}).get(dependency_pack_id)
                     if not pack_info:
+                        logging.warning("NOY_LOGS: Case 2.1")
                         # Case 2 option 1: the dependency is not in the index since it is not a part of the current
                         # marketplace. Here we check if the pack is not in the id set - this happens in the
                         # marketplace v2 id set.
@@ -671,6 +674,7 @@ class Pack(object):
                     logging.debug(f'pack {dependency_pack_id} info in ID set:\n {pack_info}')
 
                     if marketplace not in pack_info.get('marketplaces'):
+                        logging.warning("NOY_LOGS: Case 2.2")
                         # Case 2 option 2: the dependency is not in the index since it is not a part of the current
                         # marketplace. Here we check if the current marketplace is under the pack's marketplaces in the
                         # id set. This happens in the xsoar id set.
@@ -681,6 +685,8 @@ class Pack(object):
                 # Case 3: If we reached here, then the dependency is not in the index since it is a new pack,
                 # but it is in the id set and in this current marketplace.
                 self._is_missing_dependencies = True
+                logging.warning("NOY_LOGS: Case 3")
+
                 logging.warning(f"{self._pack_name} pack dependency with id {dependency_pack_id} "
                                 f"was not found in index, marking it as missing dependencies - to be resolved in "
                                 f"next iteration over packs")
@@ -1811,6 +1817,8 @@ class Pack(object):
 
                 if current_directory in PackFolders.pack_displayed_items():
                     content_item_key = content_item_name_mapping[current_directory]
+                    logging.success(f"NOY_LOGS: Adding {current_directory} to {self._pack_name} pack")
+
                     content_items_result[content_item_key] = \
                         content_items_result.get(content_item_key, []) + folder_collected_items
 
@@ -1820,6 +1828,8 @@ class Pack(object):
             logging.exception(f"Failed collecting content items in {self._pack_name} pack")
         finally:
             self._content_items = content_items_result
+            logging.success(f"NOY_LOGS: self._content_items of {self._pack_name} pack: {self._content_items}")
+
             return task_status
 
     def load_user_metadata(self, marketplace='xsoar'):
@@ -1992,6 +2002,7 @@ class Pack(object):
             logging.info(f"Loading pack dependencies for {self._pack_name} pack")
             dependencies_data, is_missing_dependencies = \
                 self._load_pack_dependencies(index_folder_path, pack_names, id_set, marketplace)
+            logging.info(f"NOY_LOGS: {dependencies_data}")
 
             self._enhance_pack_attributes(index_folder_path, pack_was_modified, dependencies_data, statistics_handler,
                                           format_dependencies_only)

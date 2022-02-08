@@ -25,6 +25,7 @@ fi
 
 
 echo "Preparing content packs for testing ..."
+pip install gcloud
 gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" > auth.out 2>&1
 echo "Auth loaded successfully."
 
@@ -64,7 +65,7 @@ else
 fi
 
 echo "Copying master files at: gs://$GCS_MARKET_BUCKET/$SOURCE_PATH to target path: gs://$BUILD_BUCKET_CONTENT_DIR_FULL_PATH ..."
-gsutil -m cp -r "gs://$GCS_MARKET_BUCKET/$SOURCE_PATH" "gs://$BUILD_BUCKET_CONTENT_DIR_FULL_PATH" > "$ARTIFACTS_FOLDER/logs/Prepare Content Packs For Testing gsutil.log" 2>&1
+gsutil -m cp -r "gs://$GCS_MARKET_BUCKET/$SOURCE_PATH" "gs://$BUILD_BUCKET_CONTENT_DIR_FULL_PATH" #> "$ARTIFACTS_FOLDER/logs/Prepare Content Packs For Testing gsutil.log" 2>&1
 echo "Finished copying successfully."
 
 if [ -z "${BUCKET_UPLOAD}" ]; then
