@@ -4790,7 +4790,8 @@
                 "Demisto REST API"
             ],
             "playbookID": "AutoFocusTagsFeed-test",
-            "timeout": 300
+            "timeout": 300,
+            "fromversion": "6.5.0"
         },
         {
             "integrations": [
@@ -4798,7 +4799,8 @@
                 "Demisto REST API"
             ],
             "playbookID": "Unit42 Intel Objects Feed - Test",
-            "timeout": 300
+            "timeout": 300,
+            "fromversion": "6.5.0"
         },
         {
             "playbookID": "Tanium Threat Response V2 Test",
