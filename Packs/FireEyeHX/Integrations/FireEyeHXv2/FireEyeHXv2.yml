@@ -1,6 +1,6 @@
 category: Endpoint
 commonfields:
-  id: FireEyeHX_v2
+  id: FireEyeHX v2
   version: -1
 configuration:
 - display: Server URL (e.g. https://192.168.0.1:3000)
@@ -16,7 +16,7 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
-  defaultvalue: true
+  defaultvalue: ""
   type: 8
   additionalinfo:
 - display: Use system proxy settings
@@ -34,7 +34,7 @@ configuration:
   type: 13
 - defaultvalue: '50'
   display: Fetch limit
-  name: fetch_limit
+  name: max_fetch
   required: false
   type: 0
 - defaultvalue: 3 days
@@ -52,8 +52,8 @@ description: "FireEye Endpoint Security is an integrated solution that detects w
   \ integration provides access to information about endpoints, acquisitions, alerts,\
   \ indicators, and containment. Customers can extract critical data and effectively\
   \ operate security operations automated playbook"
-display: FireEye HX V2
-name: FireEyeHX_v2
+display: FireEyeHX v2
+name: FireEyeHX v2
 script:
   commands:
   - arguments:
@@ -213,9 +213,10 @@ script:
     - description: The agent id running on the host to be contained. If the agentId
         is not specified, the hostName must be specified.
       name: agentId
-    description: Apply containment for a specific host, so that it no longer has access to other systems,
-      If the user does not have the necessary permissions, the command will not approve the request,
-      The permissions necessary to approve the request are api_admin role.
+    description: Apply containment for a specific host, so that it no longer has access
+      to other systems, If the user does not have the necessary permissions, the command
+      will not approve the request, The permissions necessary to approve the request
+      are api_admin role.
     name: fireeye-hx-host-containment
     outputs:
     - contextPath: FireEyeHX.Hosts._id
@@ -399,8 +400,8 @@ script:
       default: false
       isArray: false
       predefined:
-      - true
-      - false
+      - "true"
+      - "false"
       required: false
       secret: false
     description: Get a list of all policy.
@@ -444,10 +445,10 @@ script:
       type: Unknown
     - contextPath: FireEyeHX.Policy.display_created_at
       description: ""
-      type: Unknown 
+      type: Unknown
     - contextPath: FireEyeHX.Policy.display_updated_at
       description: ""
-      type: Unknown       
+      type: Unknown
   - arguments:
     - description: ""
       name: offset
@@ -523,7 +524,8 @@ script:
       description: ""
       type: Unknown
   - arguments:
-    - description: "Specifies which record to start with in the response, The default is 0"
+    - description: "Specifies which record to start with in the response, The default\
+        \ is 0"
       name: offset
       required: false
     - description: "Specifies how many records are returned, The default is 50"
@@ -536,9 +538,10 @@ script:
       predefined:
       - RUNNING
       - STOPPED
-    - description: "Sorts the results by the specified field, The default is sorting by _id"
+    - description: "Sorts the results by the specified field, The default is sorting\
+        \ by _id"
       name: sort
-      required: false 
+      required: false
       auto: PREDEFINED
       predefined:
       - _id
@@ -553,7 +556,8 @@ script:
     - description: "Filter searches by host set ID - <Integer>"
       name: hostSetId
       required: false
-    - description: "Gets a single enterprise search record, If you enter this argument there is no need another arguments"
+    - description: "Gets a single enterprise search record, If you enter this argument\
+        \ there is no need another arguments"
       name: searchId
       isArray: true
       required: false
@@ -741,7 +745,7 @@ script:
       description: ""
       type: Unknown
   - arguments:
-    - description: searchId 
+    - description: searchId
       name: searchId
       deprecated: true
     - description: IDs of agents to be searched
@@ -810,8 +814,8 @@ script:
       predefined:
       - stopAndDelete
       - stop
-    - description: searchable fields - if this argument selected,
-                   the 'fieldSearchOperator' and 'fieldSearchValue'  arguments are required
+    - description: searchable fields - if this argument selected, the 'fieldSearchOperator'
+        and 'fieldSearchValue'  arguments are required
       name: fieldSearchName
       auto: PREDEFINED
       predefined:
@@ -1175,7 +1179,8 @@ script:
     - description: The Agent ID - this argument is required
       name: agentId
       required: true
-    description: Approve pending containment requests made by other components or users, The permissions necessary are api_admin role.
+    description: Approve pending containment requests made by other components or
+      users, The permissions necessary are api_admin role.
     name: fireeye-hx-approve-containment
   - arguments:
     - description: The Host Set ID - this argument is required
@@ -1497,7 +1502,7 @@ script:
   script: "-"
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.1.25933
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)

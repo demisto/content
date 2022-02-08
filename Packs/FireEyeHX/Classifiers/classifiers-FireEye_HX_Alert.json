@@ -1,56 +1,39 @@
 {
-	"brands": null,
-	"cacheVersn": 0,
-	"defaultIncidentType": "",
-	"definitionId": "",
-	"description": "",
-	"feed": false,
-	"fromServerVersion": "",
-	"id": "f2f7ad3f-1401-45a7-8574-bf249afe8e1c",
-	"incidentSamples": null,
-	"indicatorSamples": null,
-	"instanceIds": null,
-	"itemVersion": "",
-	"keyTypeMap": {
-		"FIREEYE": "FireEye HX Alert"
-	},
-	"locked": false,
-	"logicalVersion": 0,
-	"mapping": null,
-	"name": "FireEye HX Alert",
-	"nameRaw": "FireEye HX Alert",
-	"packID": "",
-	"propagationLabels": [
-		"all"
-	],
-	"sourceClassifierId": "",
-	"system": false,
-	"toServerVersion": "",
-	"transformer": {
-		"complex": {
-			"accessor": "display_name",
-			"filters": [],
-			"root": "indicator",
-			"transformers": [
-				{
-					"args": {
-						"from": {
-							"value": {
-								"simple": "0"
-							}
-						},
-						"to": {
-							"value": {
-								"simple": "7"
-							}
-						}
-					},
-					"operator": "substring"
-				}
-			]
-		}
-	},
-	"type": "classification",
-	"unclassifiedCases": null,
-	"version": -1
+    "description": "",
+    "feed": false,
+    "id": "f2f7ad3f-1401-45a7-8574-bf249afe8e1c",
+    "keyTypeMap": {
+        "FIREEYE": "FireEye HX Alert"
+    },
+    "name": "FireEye HX Alert",
+    "propagationLabels": [
+        "all"
+    ],
+    "transformer": {
+        "complex": {
+            "accessor": "display_name",
+            "filters": [],
+            "root": "indicator",
+            "transformers": [
+                {
+                    "args": {
+                        "from": {
+                            "value": {
+                                "simple": "0"
+                            }
+                        },
+                        "to": {
+                            "value": {
+                                "simple": "7"
+                            }
+                        }
+                    },
+                    "operator": "substring"
+                }
+            ]
+        }
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.0.0"
 }

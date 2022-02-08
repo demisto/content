@@ -18,9 +18,6 @@
     "group": 0,
     "hidden": false,
     "openEnded": false,
-    "AssociatedTypes": [
-        "FireEye HX Alert"
-    ],
     "associatedToAll": false,
     "unmapped": false,
     "unsearchable": true,
