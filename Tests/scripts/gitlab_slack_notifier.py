@@ -121,7 +121,7 @@ def unit_tests_results():
 def bucket_upload_results(bucket_artifact_folder):
     steps_fields = []
     pack_results_path = os.path.join(bucket_artifact_folder, BucketUploadFlow.PACKS_RESULTS_FILE)
-    marketplace_name = os.path.basename(bucket_artifact_folder)
+    marketplace_name = os.path.basename(bucket_artifact_folder).upper()
 
     logging.info(f'retrieving upload data from "{pack_results_path}"')
     successful_packs, failed_packs, successful_private_packs, _ = get_upload_data(
