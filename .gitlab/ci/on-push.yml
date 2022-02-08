@@ -142,7 +142,7 @@ prepare-testing-bucket-mpv2:
     - zip -r $ARTIFACTS_FOLDER/all_content.zip $ARTIFACTS_FOLDER/all_content
     - zip -r $ARTIFACTS_FOLDER/content_new.zip $ARTIFACTS_FOLDER/content_new
     - zip -r $ARTIFACTS_FOLDER/content_test.zip $ARTIFACTS_FOLDER/content_test
-    - rm -rf $ARTIFACTS_FOLDER/content_packs &; rm -rf $ARTIFACTS_FOLDER/all_content &; rm -rf $ARTIFACTS_FOLDER/content_new &; rm -rf $ARTIFACTS_FOLDER/content_test &;
+    - rm -rf $ARTIFACTS_FOLDER/content_packs $ARTIFACTS_FOLDER/all_content $ARTIFACTS_FOLDER/content_new rm -rf $ARTIFACTS_FOLDER/content_test
     - section_end "Replace Cortex XSOAR"
 
     - section_start "Collect Tests and Content Packs"
