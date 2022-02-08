@@ -57,4 +57,4 @@ script:
       description: May Include more parseable fields of the script output.
     description: Scan targets with the given parameters
     execution: true
-  dockerimage: devdemisto/nmap:1.0.0.26597
+  dockerimage: demisto/nmap:1.0.0.26630

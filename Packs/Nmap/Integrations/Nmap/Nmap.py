@@ -57,6 +57,7 @@ if demisto.command() == 'nmap-scan':
                 'Elements': hostscript.get('elements'),
             })
         md += tableToMarkdown('Services', svc, ['Port', 'Protocol', 'State', 'Service', 'Banner'])
+        md += tableToMarkdown('Extras', extras, ['ID', 'Output', 'Elements'])
         h['Services'] = svc
         h['Extras'] = extras
         hosts.append(h)
