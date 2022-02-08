@@ -11,7 +11,12 @@ import urllib.parse
 import warnings
 from datetime import datetime, timedelta
 from distutils.util import strtobool
+<<<<<<< HEAD
 from packaging.version import Version
+=======
+from distutils.version import LooseVersion
+from pathlib import Path
+>>>>>>> origin/master
 from typing import Tuple, Any, Union, List, Dict, Optional
 from zipfile import ZipFile, ZIP_DEFLATED
 
@@ -55,9 +60,11 @@ class Pack(object):
     EXCLUDE_DIRECTORIES = [PackFolders.TEST_PLAYBOOKS.value]
     RELEASE_NOTES = "ReleaseNotes"
 
-    def __init__(self, pack_name, pack_path):
+    def __init__(self, pack_name, pack_path, marketplace):
         self._pack_name = pack_name
         self._pack_path = pack_path
+        self._zip_path = None  # zip_path will be updated as part of zip_pack
+        self._marketplace = marketplace
         self._status = None
         self._public_storage_path = ""
         self._remove_files_list = []  # tracking temporary files, in order to delete in later step
@@ -105,6 +112,7 @@ class Pack(object):
         self._contains_transformer = False  # initialized in collect_content_items function
         self._contains_filter = False  # initialized in collect_content_items function
         self._is_missing_dependencies = False  # a flag that specifies if pack is missing dependencies
+        self.should_upload_to_marketplace = True  # initialized in load_user_metadata function
 
     @property
     def name(self):
@@ -321,6 +329,10 @@ class Pack(object):
     @property
     def is_missing_dependencies(self):
         return self._is_missing_dependencies
+
+    @property
+    def zip_path(self):
+        return self._zip_path
 
     def _get_latest_version(self):
         """ Return latest semantic version of the pack.
@@ -609,11 +621,22 @@ class Pack(object):
 
         return pack_metadata
 
-    def _load_pack_dependencies(self, index_folder_path, pack_names):
+    def _load_pack_dependencies(self, index_folder_path, pack_names, id_set, marketplace):
         """ Loads dependencies metadata and returns mapping of pack id and it's loaded data.
+            There are 3 cases for dependencies:
+              Case 1: The dependency is present in the index.zip. In this case, we add it to the dependencies results.
+              Case 2: The dependency is missing from the index.zip since it is not a part of this marketplace.
+                In this case, ignore it. For this case there are two options - option 1 is that it is missing from the
+                id set, option 2 is that it is in the id set but doesn't have the current marketplace under the matching
+                key in the id set.
+              Case 3: The dependency is missing from the index.zip since it is a new pack. In this case, handle missing
+                dependency - This means we mark this pack as 'missing dependency', and once the new index.zip is created, and
+                therefore it contains the new pack, we call this function again, and hitting case 1.
         Args:
             index_folder_path (str): full path to download index folder.
             pack_names (set): List of all packs.
+            id_set (dict): Loaded id_set.json.
+            marketplace (str): Marketplace of current upload.
 
         Returns:
             dict: pack id as key and loaded metadata of packs as value.
@@ -633,18 +656,38 @@ class Pack(object):
             dependency_metadata_path = os.path.join(index_folder_path, dependency_pack_id, Pack.METADATA)
 
             if os.path.exists(dependency_metadata_path):
+                # Case 1: the dependency is found in the index.zip
                 with open(dependency_metadata_path, 'r') as metadata_file:
                     dependency_metadata = json.load(metadata_file)
                     dependencies_data_result[dependency_pack_id] = dependency_metadata
+
             elif dependency_pack_id in pack_names:
-                # If the pack is dependent on a new pack (which is not yet in the index.json)
-                # we will note that it is missing dependencies.
-                # And finally after updating all the packages in index.json.
-                # We will go over the pack again to add what was missing
+                if id_set:
+                    pack_info = id_set.get('Packs', {}).get(dependency_pack_id)
+                    if not pack_info:
+                        # Case 2 option 1: the dependency is not in the index since it is not a part of the current
+                        # marketplace. Here we check if the pack is not in the id set - this happens in the
+                        # marketplace v2 id set.
+                        logging.warning(f"{self._pack_name} pack dependency with id {dependency_pack_id} is not part of"
+                                        f" the current marketplace, ignoring dependency.")
+                        continue
+
+                    logging.debug(f'pack {dependency_pack_id} info in ID set:\n {pack_info}')
+
+                    if marketplace not in pack_info.get('marketplaces'):
+                        # Case 2 option 2: the dependency is not in the index since it is not a part of the current
+                        # marketplace. Here we check if the current marketplace is under the pack's marketplaces in the
+                        # id set. This happens in the xsoar id set.
+                        logging.warning(f"{self._pack_name} pack dependency with id {dependency_pack_id} is not part of"
+                                        f" the current marketplace, ignoring dependency.")
+                        continue
+
+                # Case 3: If we reached here, then the dependency is not in the index since it is a new pack,
+                # but it is in the id set and in this current marketplace.
                 self._is_missing_dependencies = True
                 logging.warning(f"{self._pack_name} pack dependency with id {dependency_pack_id} "
-                                f"was not found in index, marking it as missing dependencies - to be resolved in next"
-                                f" iteration over packs")
+                                f"was not found in index, marking it as missing dependencies - to be resolved in "
+                                f"next iteration over packs")
 
             else:
                 logging.warning(f"{self._pack_name} pack dependency with id {dependency_pack_id} was not found")
@@ -779,6 +822,31 @@ class Pack(object):
             return task_status
 
     @staticmethod
+    def zip_folder_items(source_path, source_name, zip_pack_path):
+        """
+        Zips the source_path
+        Args:
+            source_path (str): The source path of the folder the items are in.
+            zip_pack_path (str): The path to the zip folder.
+            source_name (str): The name of the source that should be zipped.
+        """
+        task_status = False
+        try:
+            with ZipFile(zip_pack_path, 'w', ZIP_DEFLATED) as pack_zip:
+                for root, dirs, files in os.walk(source_path, topdown=True):
+                    for f in files:
+                        full_file_path = os.path.join(root, f)
+                        relative_file_path = os.path.relpath(full_file_path, source_path)
+                        pack_zip.write(filename=full_file_path, arcname=relative_file_path)
+
+            task_status = True
+            logging.success(f"Finished zipping {source_name} folder.")
+        except Exception:
+            logging.exception(f"Failed in zipping {source_name} folder")
+        finally:
+            return task_status
+
+    @staticmethod
     def encrypt_pack(zip_pack_path, pack_name, encryption_key, extract_destination_path,
                      private_artifacts_dir, secondary_encryption_key):
         """ decrypt the pack in order to see that the pack was encrypted in the first place.
@@ -871,7 +939,7 @@ class Pack(object):
         """
         return self.decrypt_pack(encrypted_zip_pack_path, decryption_key)
 
-    def zip_pack(self, extract_destination_path="", pack_name="", encryption_key="",
+    def zip_pack(self, extract_destination_path="", encryption_key="",
                  private_artifacts_dir='private_artifacts', secondary_encryption_key=""):
         """ Zips pack folder.
 
@@ -879,28 +947,21 @@ class Pack(object):
             bool: whether the operation succeeded.
             str: full path to created pack zip.
         """
-        zip_pack_path = f"{self._pack_path}.zip" if not encryption_key else f"{self._pack_path}_not_encrypted.zip"
-        task_status = False
-
-        try:
-            with ZipFile(zip_pack_path, 'w', ZIP_DEFLATED) as pack_zip:
-                for root, dirs, files in os.walk(self._pack_path, topdown=True):
-                    for f in files:
-                        full_file_path = os.path.join(root, f)
-                        relative_file_path = os.path.relpath(full_file_path, self._pack_path)
-                        pack_zip.write(filename=full_file_path, arcname=relative_file_path)
-
-            if encryption_key:
-                self.encrypt_pack(zip_pack_path, pack_name, encryption_key, extract_destination_path,
+        self._zip_path = f"{self._pack_path}.zip" if not encryption_key else f"{self._pack_path}_not_encrypted.zip"
+        source_path = self._pack_path
+        source_name = self._pack_name
+        task_status = self.zip_folder_items(source_path, source_name, self._zip_path)
+        # if failed to zip, skip encryption
+        if task_status and encryption_key:
+            try:
+                Pack.encrypt_pack(self._zip_path, source_name, encryption_key, extract_destination_path,
                                   private_artifacts_dir, secondary_encryption_key)
-            task_status = True
-            logging.success(f"Finished zipping {self._pack_name} pack.")
-        except Exception:
-            logging.exception(f"Failed in zipping {self._pack_name} folder")
-        finally:
-            # If the pack needs to be encrypted, it is initially at a different location than this final path
-            final_path_to_zipped_pack = f"{self._pack_path}.zip"
-            return task_status, final_path_to_zipped_pack
+                # If the pack needs to be encrypted, it is initially at a different location than this final path
+            except Exception:
+                task_status = False
+                logging.exception(f"Failed in encrypting {source_name} folder")
+        final_path_to_zipped_pack = f"{source_path}.zip"
+        return task_status, final_path_to_zipped_pack
 
     def detect_modified(self, content_repo, index_folder_path, current_commit_hash, previous_commit_hash):
         """ Detects pack modified files.
@@ -964,11 +1025,12 @@ class Pack(object):
             return task_status, modified_rn_files_paths, pack_was_modified
 
     def upload_to_storage(self, zip_pack_path, latest_version, storage_bucket, override_pack, storage_base_path,
-                          private_content=False, pack_artifacts_path=None):
+                          private_content=False, pack_artifacts_path=None, overridden_upload_path=None):
         """ Manages the upload of pack zip artifact to correct path in cloud storage.
-        The zip pack will be uploaded to following path: /content/packs/pack_name/pack_latest_version.
+        The zip pack will be uploaded by defaualt to following path: /content/packs/pack_name/pack_latest_version.
         In case that zip pack artifact already exist at constructed path, the upload will be skipped.
         If flag override_pack is set to True, pack will forced for upload.
+        If item_upload_path is provided it will override said path, and will save the item to that destination.
 
         Args:
             zip_pack_path (str): full path to pack zip artifact.
@@ -976,7 +1038,11 @@ class Pack(object):
             storage_bucket (google.cloud.storage.bucket.Bucket): google cloud storage bucket.
             override_pack (bool): whether to override existing pack.
             private_content (bool): Is being used in a private content build.
+            storage_base_path (str): The upload destination in the target bucket for all packs (in the format of
+                                     <some_path_in_the_target_bucket>/content/Packs).
+
             pack_artifacts_path (str): Path to where we are saving pack artifacts.
+            overridden_upload_path (str): If provided, will override version_pack_path calculation and will use this path instead
 
         Returns:
             bool: whether the operation succeeded.
@@ -986,20 +1052,26 @@ class Pack(object):
         task_status = True
 
         try:
-            version_pack_path = os.path.join(storage_base_path, self._pack_name, latest_version)
-            existing_files = [f.name for f in storage_bucket.list_blobs(prefix=version_pack_path)]
+            if overridden_upload_path:
+                if private_content:
+                    logging.warning("Private content does not support overridden argument")
+                    return task_status, True, None
+                zip_to_upload_full_path = overridden_upload_path
+            else:
+                version_pack_path = os.path.join(storage_base_path, self._pack_name, latest_version)
+                existing_files = [Path(f.name).name for f in storage_bucket.list_blobs(prefix=version_pack_path)]
 
-            if override_pack:
-                logging.warning(f"Uploading {self._pack_name} pack to storage and overriding the existing pack "
-                                f"files already in storage.")
+                if override_pack:
+                    logging.warning(f"Uploading {self._pack_name} pack to storage and overriding the existing pack "
+                                    f"files already in storage.")
 
-            elif existing_files:
-                logging.warning(f"The following packs already exist at storage: {', '.join(existing_files)}")
-                logging.warning(f"Skipping step of uploading {self._pack_name}.zip to storage.")
-                return task_status, True, None
+                elif existing_files:
+                    logging.warning(f"The following packs already exist in the storage: {', '.join(existing_files)}")
+                    logging.warning(f"Skipping step of uploading {self._pack_name}.zip to storage.")
+                    return task_status, True, None
 
-            pack_full_path = os.path.join(version_pack_path, f"{self._pack_name}.zip")
-            blob = storage_bucket.blob(pack_full_path)
+                zip_to_upload_full_path = os.path.join(version_pack_path, f"{self._pack_name}.zip")
+            blob = storage_bucket.blob(zip_to_upload_full_path)
             blob.cache_control = "no-cache,max-age=0"  # disabling caching for pack blob
 
             with open(zip_pack_path, "rb") as pack_zip:
@@ -1010,7 +1082,7 @@ class Pack(object):
                                                                     secondary_encryption_key_pack_name)
 
                 #  In some cases the path given is actually a zip.
-                if pack_artifacts_path.endswith('content_packs.zip'):
+                if isinstance(pack_artifacts_path, str) and pack_artifacts_path.endswith('content_packs.zip'):
                     _pack_artifacts_path = pack_artifacts_path.replace('/content_packs.zip', '')
                 else:
                     _pack_artifacts_path = pack_artifacts_path
@@ -1030,9 +1102,9 @@ class Pack(object):
                             f'{_pack_artifacts_path}/packs/{self._pack_name}.zip')
 
             self.public_storage_path = blob.public_url
-            logging.success(f"Uploaded {self._pack_name} pack to {pack_full_path} path.")
+            logging.success(f"Uploaded {self._pack_name} pack to {zip_to_upload_full_path} path.")
 
-            return task_status, False, pack_full_path
+            return task_status, False, zip_to_upload_full_path
         except Exception:
             task_status = False
             logging.exception(f"Failed in uploading {self._pack_name} pack to gcs.")
@@ -1104,7 +1176,43 @@ class Pack(object):
                     self._aggregation_str = agg_str
             logging.success(f"Uploaded {self._pack_name} pack to {prod_pack_zip_path} path.")
 
+        # handle dependenices zip upload when found in build bucket
+        self.copy_and_upload_dependencies_zip_to_storage(
+            build_bucket,
+            build_bucket_base_path,
+            production_bucket,
+            storage_base_path
+        )
+
         return task_status, False
+
+    def copy_and_upload_dependencies_zip_to_storage(self, build_bucket, build_bucket_base_path, production_bucket,
+                                                    storage_base_path):
+        pack_with_deps_name = f'{self._pack_name}_with_dependencies.zip'
+        build_pack_with_deps_path = os.path.join(build_bucket_base_path, self._pack_name, pack_with_deps_name)
+        existing_bucket_deps_files = [f.name for f in build_bucket.list_blobs(prefix=build_pack_with_deps_path)]
+        if existing_bucket_deps_files:
+            logging.info(f"{self._pack_name} with dependencies was found. path {build_pack_with_deps_path}.")
+
+            # We upload the pack dependencies zip object taken from the build bucket into the production bucket
+            prod_version_pack_deps_zip_path = os.path.join(storage_base_path, self._pack_name, pack_with_deps_name)
+            build_pack_deps_zip_blob = build_bucket.blob(build_pack_with_deps_path)
+
+            try:
+                copied_blob = build_bucket.copy_blob(
+                    blob=build_pack_deps_zip_blob,
+                    destination_bucket=production_bucket,
+                    new_name=prod_version_pack_deps_zip_path
+                )
+                copied_blob.cache_control = "no-cache,max-age=0"  # disabling caching for pack blob
+                self.public_storage_path = copied_blob.public_url
+                dep_task_status = copied_blob.exists()
+                if not dep_task_status:
+                    logging.error(f"Failed in uploading {self._pack_name} pack with dependencies to production gcs.")
+            except Exception as e:
+                pack_deps_zip_suffix = os.path.join(self._pack_name, pack_with_deps_name)
+                logging.exception(f"Failed copying {pack_deps_zip_suffix}. Additional Info: {str(e)}")
+
 
     def get_changelog_latest_rn(self, changelog_index_path: str) -> Tuple[dict, Version, str]:
         """
@@ -1719,7 +1827,7 @@ class Pack(object):
             self._content_items = content_items_result
             return task_status
 
-    def load_user_metadata(self):
+    def load_user_metadata(self, marketplace='xsoar'):
         """ Loads user defined metadata and stores part of it's data in defined properties fields.
 
         Returns:
@@ -1747,6 +1855,7 @@ class Pack(object):
             self.display_name = user_metadata.get(Metadata.NAME, '')  # type: ignore[misc]
             self._user_metadata = user_metadata
             self.eula_link = user_metadata.get(Metadata.EULA_LINK, Metadata.EULA_URL)
+            self.should_upload_to_marketplace = marketplace in user_metadata.get('marketplaces', ['xsoar'])
 
             logging.info(f"Finished loading {self._pack_name} pack user metadata")
             task_status = True
@@ -1850,7 +1959,8 @@ class Pack(object):
         )
 
     def format_metadata(self, index_folder_path, packs_dependencies_mapping, build_number, commit_hash,
-                        pack_was_modified, statistics_handler, pack_names=None, format_dependencies_only=False):
+                        pack_was_modified, statistics_handler, pack_names=None, id_set=None, marketplace='xsoar',
+                        format_dependencies_only=False):
         """ Re-formats metadata according to marketplace metadata format defined in issue #19786 and writes back
         the result.
 
@@ -1861,9 +1971,12 @@ class Pack(object):
             commit_hash (str): current commit hash.
             pack_was_modified (bool): Indicates whether the pack was modified or not.
             statistics_handler (StatisticsHandler): The marketplace statistics handler
-            pack_names (set): List of all packs.
+            pack_names (set): List of all pack names.
+            id_set (dict): Dict of id_set.json
+            marketplace (str): Marketplace of current upload.
             format_dependencies_only (bool): Indicates whether the metadata formation is just for formatting the
              dependencies or not.
+
         Returns:
             bool: True is returned in case metadata file was parsed successfully, otherwise False.
             bool: True is returned in pack is missing dependencies.
@@ -1875,17 +1988,19 @@ class Pack(object):
 
         try:
             self.set_pack_dependencies(packs_dependencies_mapping)
+
             if Metadata.DISPLAYED_IMAGES not in self.user_metadata and self._user_metadata:
+                logging.info(f"Adding auto generated display images for {self._pack_name} pack")
                 self._user_metadata[Metadata.DISPLAYED_IMAGES] = packs_dependencies_mapping.get(
                     self._pack_name, {}).get(Metadata.DISPLAYED_IMAGES, [])
-                logging.info(f"Adding auto generated display images for {self._pack_name} pack")
-            dependencies_data, is_missing_dependencies = \
-                self._load_pack_dependencies(index_folder_path, pack_names)
 
-            self._enhance_pack_attributes(
-                index_folder_path, pack_was_modified, dependencies_data, statistics_handler,
-                format_dependencies_only
-            )
+            logging.info(f"Loading pack dependencies for {self._pack_name} pack")
+            dependencies_data, is_missing_dependencies = \
+                self._load_pack_dependencies(index_folder_path, pack_names, id_set, marketplace)
+
+            self._enhance_pack_attributes(index_folder_path, pack_was_modified, dependencies_data, statistics_handler,
+                                          format_dependencies_only)
+
             formatted_metadata = self._parse_pack_metadata(build_number, commit_hash)
             metadata_path = os.path.join(self._pack_path, Pack.METADATA)  # deployed metadata path after parsing
             json_write(metadata_path, formatted_metadata)  # writing back parsed metadata
@@ -1960,12 +2075,14 @@ class Pack(object):
         if Metadata.DEPENDENCIES not in self.user_metadata and self._user_metadata:
             self._user_metadata[Metadata.DEPENDENCIES] = {}
 
+        core_packs = GCPConfig.get_core_packs(self._marketplace)
+
         # If it is a core pack, check that no new mandatory packs (that are not core packs) were added
         # They can be overridden in the user metadata to be not mandatory so we need to check there as well
-        if self._pack_name in GCPConfig.CORE_PACKS_LIST:
+        if self._pack_name in core_packs:
             mandatory_dependencies = [k for k, v in pack_dependencies.items()
                                       if v.get(Metadata.MANDATORY, False) is True
-                                      and k not in GCPConfig.CORE_PACKS_LIST
+                                      and k not in core_packs
                                       and k not in self.user_metadata[Metadata.DEPENDENCIES].keys()]
             if mandatory_dependencies:
                 raise Exception(f'New mandatory dependencies {mandatory_dependencies} were '
@@ -2529,14 +2646,17 @@ class Pack(object):
             return list(bc_version_to_text.values())[0]
         # Handle cases of two or more BC versions in entry.
         text_of_bc_versions, bc_without_text = self._split_bc_versions_with_and_without_text(bc_version_to_text)
-        # Case one: Not even one BC version contains breaking text.
+
         if len(text_of_bc_versions) == 0:
+            # Case 1: Not even one BC version contains breaking text.
             return None
-        # Case two: Only part of BC versions contains breaking text.
+
         elif len(text_of_bc_versions) < len(bc_version_to_text):
+            # Case 2: Only part of BC versions contains breaking text.
             return self._handle_many_bc_versions_some_with_text(release_notes_dir, text_of_bc_versions, bc_without_text)
-        # Case 3: All BC versions contains text.
+
         else:
+            # Case 3: All BC versions contains text.
             # Important: Currently, implementation of aggregating BCs was decided to concat between them
             # In the future this might be needed to re-thought.
             return '\n'.join(bc_version_to_text.values())  # type: ignore[arg-type]
@@ -3078,3 +3198,25 @@ def underscore_file_name_to_dotted_version(file_name: str) -> str:
         (str): Dotted version of file name
     """
     return os.path.splitext(file_name)[0].replace('_', '.')
+
+
+def get_all_packs_by_id_set(packs_list, extract_destination_path, id_set, marketplace):
+    """
+    Collect all packs from the id_set that are not in packs_dict
+    Args:
+        packs_list (List[Pack]): List of packs collected before
+        extract_destination_path (str): Base destination of Packs folder
+        id_set (dict): Dict of id_set.json.
+        marketplace (str): Marketplace version
+    Returns:
+         (dict, list): Dictionary of pack_name:Pack and list of all Pack in id_set.json
+    """
+    packs_dict = {pack.name: pack for pack in packs_list}
+    if not id_set:
+        return packs_dict
+    for pack_name in id_set:
+        if pack_name not in packs_dict:
+            pack = Pack(pack_name, os.path.join(extract_destination_path, pack_name), marketplace)
+            packs_dict[pack_name] = pack
+            packs_list.append(pack)
+    return packs_dict, packs_list

@@ -1,0 +1,42 @@
+{
+    "associatedToAll": true,
+    "caseInsensitive": true,
+    "cliName": "fwname",
+    "closeForm": false,
+    "content": true,
+    "description": "Name of firewall on which a firewall alert was raised.",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_fwname",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "FW Name",
+    "neverSetAsRequired": false,
+    "openEnded": true,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "multiSelect",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.5.0",
+    "x2_fields": "fw_device_name",
+    "Aliases": [
+        {
+          "cliName": "appliancename",
+          "type": "shortText"
+        },
+        {
+          "cliName": "riskiqassetgcpfirewallname",
+          "type": "shortText"
+        }
+    ]
+}

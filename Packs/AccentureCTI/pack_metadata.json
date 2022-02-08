@@ -1,8 +1,8 @@
 {
     "name": "Accenture CTI v2",
-    "description": "Accenture Cyber Threat Intelligence",
+    "description": "Accenture CTI provides intelligence regarding security threats and vulnerabilities.",
     "support": "partner",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.1.0",
     "author": "Accenture",
     "url": "https://www.accenture.com/us-en/services/security/cyber-defense",
     "email": "CTI.AcctManagement@accenture.com",
