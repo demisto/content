@@ -247,21 +247,19 @@ tasks:
     scriptarguments:
       email:
         complex:
-          root: Account
-          accessor: Email
-          transformers:
-          - operator: WhereFieldEquals
-            args:
-              equalTo:
+          root: Account.Email
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Account.Email.NetworkType
+                iscontext: true
+              right:
                 value:
                   simple: Internal
-              field:
-                value:
-                  simple: NetworkType
-              getField:
-                value:
-                  simple: Address
-          - operator: uniq
+          accessor: Address
+          transformers:
+            - operator: uniq
     reputationcalc: 1
     separatecontext: false
     view: |-
