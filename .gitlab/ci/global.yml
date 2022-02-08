@@ -145,12 +145,12 @@
     - .default-before-script
 
 
-.trigger-build-report:
+.trigger-slack-notification:
   stage: .post
   trigger:
     strategy: depend
     include:
-      - local: .gitlab/ci/build-report.yml
+      - local: .gitlab/ci/slack-notify.yml
 
 
 .run-unittests-and-lint:
