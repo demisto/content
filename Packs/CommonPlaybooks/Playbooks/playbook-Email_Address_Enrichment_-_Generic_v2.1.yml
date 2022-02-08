@@ -257,6 +257,7 @@ tasks:
               right:
                 value:
                   simple: Internal
+              ignorecase: true
           accessor: Address
           transformers:
             - operator: uniq
