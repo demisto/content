@@ -5123,6 +5123,7 @@
         "AnsibleMicrosoftWindows": "No instance - issue 40447",
         "AnsibleVMware": "No instance - issue 40447",
         "SolarWinds": "No instance - developed by Crest",
+        "Atlassian Confluence Cloud": "No instance - developed by Crest",
         "SOCRadarIncidents": "No instance - developed by partner",
         "SOCRadarThreatFusion": "No instance - developed by partner",
         "trustwave secure email gateway": "No instance - developed by Qmasters",
