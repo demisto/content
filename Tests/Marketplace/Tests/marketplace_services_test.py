@@ -10,7 +10,7 @@ import glob
 from unittest.mock import mock_open
 from mock_open import MockOpen
 from google.cloud.storage.blob import Blob
-from packging.version import Version
+from packaging.version import Version
 from freezegun import freeze_time
 from datetime import datetime, timedelta
 from typing import List, Dict, Optional, Tuple, Any
