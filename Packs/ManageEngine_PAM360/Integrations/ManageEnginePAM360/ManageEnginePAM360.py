@@ -2,7 +2,6 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 import urllib3
-
 urllib3.disable_warnings()
 
 
@@ -245,7 +244,7 @@ def pam360_fetch_password(
         ticket_id: str = ""
 ):
     creds_list = client.fetch_password("GET", resource_id, account_id, reason, ticket_id)
-    readable_output = f'{creds_list}'
+    readable_output = tableToMarkdown('Fetch Password', creds_list.get("operation"))
     results = CommandResults(
         outputs=creds_list,
         raw_response=creds_list,
@@ -278,7 +277,7 @@ def pam360_create_resource(
                                              password, notes, location, dnsname, department, resource_description,
                                              domain_name, resourcegroup_name, owner_name, resource_password_policy,
                                              account_password_policy)
-    readable_output = f'{create_resource}'
+    readable_output = tableToMarkdown('Create Resource', create_resource.get("operation"))
     results = CommandResults(
         outputs=create_resource,
         raw_response=create_resource,
@@ -298,7 +297,7 @@ def pam360_create_account(
         account_password_policy: str = ""
 ):
     create_account = client.create_account("POST", resource_id, account_name, password, notes, account_password_policy)
-    readable_output = f'{create_account}'
+    readable_output = tableToMarkdown('Create Account', create_account.get("operation"))
     results = CommandResults(
         outputs=create_account,
         raw_response=create_account,
@@ -325,7 +324,7 @@ def pam360_update_resource(
     update_resource = client.update_resource("PUT", resource_id, resource_name, resource_type, resource_url,
                                              resource_description, resource_password_policy, location, department,
                                              dnsname, owner_name)
-    readable_output = f'{update_resource}'
+    readable_output = tableToMarkdown('Update Resource', update_resource.get("operation"))
     results = CommandResults(
         outputs=update_resource,
         raw_response=update_resource,
@@ -347,7 +346,7 @@ def pam360_update_account(
 ):
     update_account = client.update_account("PUT", resource_id, account_id, account_name, notes, owner_name,
                                            account_password_policy)
-    readable_output = f'{update_account}'
+    readable_output = tableToMarkdown('Update Account', update_account.get("operation"))
     results = CommandResults(
         outputs=update_account,
         raw_response=update_account,
@@ -364,7 +363,7 @@ def pam360_fetch_account_details(
         account_id: str = ""
 ):
     account_details = client.fetch_account_details("GET", resource_id, account_id)
-    readable_output = f'{account_details}'
+    readable_output = tableToMarkdown('Fetch Account Details', account_details.get("operation"))
     results = CommandResults(
         outputs=account_details,
         raw_response=account_details,
@@ -377,7 +376,7 @@ def pam360_fetch_account_details(
 
 def pam360_list_resources(client, **args):
     resource_list = client.fetch_resources("GET")
-    readable_output = f'{resource_list}'
+    readable_output = tableToMarkdown('List all Resources', resource_list.get("operation"))
     results = CommandResults(
         outputs=resource_list,
         raw_response=resource_list,
@@ -393,7 +392,7 @@ def pam360_list_accounts(
         resource_id: str = ""
 ):
     account_list = client.fetch_accounts("GET", resource_id)
-    readable_output = f'{account_list}'
+    readable_output = tableToMarkdown('List all Accounts', account_list.get("operation"))
     results = CommandResults(
         outputs=account_list,
         raw_response=account_list,
@@ -414,7 +413,7 @@ def pam360_update_account_password(
         ticket_id: str = ""
 ):
     update_password = client.update_account_password("PUT", resource_id, account_id, new_password, reset_type, reason, ticket_id)
-    readable_output = f'{update_password}'
+    readable_output = tableToMarkdown('Update Account Password', update_password.get("operation"))
     results = CommandResults(
         outputs=update_password,
         raw_response=update_password,
@@ -431,7 +430,7 @@ def pam360_fetch_resource_account_id(
         account_name: str = ""
 ):
     fetch_id = client.fetch_resource_account_id("GET", resource_name, account_name)
-    readable_output = f'{fetch_id}'
+    readable_output = tableToMarkdown('Fetch Resource Account ID', fetch_id.get("operation"))
     results = CommandResults(
         outputs=fetch_id,
         raw_response=fetch_id,
