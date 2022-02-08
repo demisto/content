@@ -242,6 +242,14 @@ fan-in-nightly:
     - echo "fan in"
 
 
+generate-report:
+  stage: report
+  rules:
+    - if: '$NIGHTLY != "true"'
+      when: always
+  script:
+    - python3 ./Tests/scripts/generate_readable_build_report.py
+
 slack-notify-nightly-build:
   extends:
     - .trigger-slack-notification
@@ -255,12 +263,3 @@ slack-notify-nightly-build:
     # when triggering pipeline with alternate env variable value passed in the API call
     SLACK_CHANNEL: $SLACK_CHANNEL
 
-
-generate-build-report:
-  extends:
-    - .trigger-build-report
-  rules:
-    - if: '$NIGHTLY != "true"'
-    - if: '$BUCKET_UPLOAD != "true"'
-    - when: always
-  needs: ["run-unittests-and-lint", "run-validations", "server_6_1", "server_6_2", "server_master"]

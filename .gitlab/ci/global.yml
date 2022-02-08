@@ -145,14 +145,6 @@
     - .default-before-script
 
 
-.trigger-slack-notification:
-  stage: .post
-  trigger:
-    strategy: depend
-    include:
-      - local: .gitlab/ci/slack-notify.yml
-
-
 .trigger-build-report:
   stage: .post
   trigger:
