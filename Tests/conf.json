@@ -4799,7 +4799,7 @@
                 "Demisto REST API"
             ],
             "playbookID": "Unit42 Intel Objects Feed - Test",
-            "timeout": 1500,
+            "timeout": 15000,
             "fromversion": "6.5.0"
         },
         {
