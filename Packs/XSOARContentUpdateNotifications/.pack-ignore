@@ -15,3 +15,15 @@ ignore=CJ105
 
 [file:CollectPacksData.yml]
 ignore=CJ105
+
+[file:playbook-Content_Update_Manager.yml]
+ignore=PB106
+
+[file:playbook-Check_For_Content_Installation.yml]
+ignore=PB106
+
+[file:incidentfield-Demisto_REST_API_Instance_Name.json]
+ignore=IF113
+
+[file:incidentfield-Content_Updates_Auto_Install.json]
+ignore=IF113
