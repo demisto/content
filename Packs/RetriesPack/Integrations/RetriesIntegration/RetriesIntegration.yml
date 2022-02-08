@@ -6,7 +6,7 @@ configuration:
 - defaultvalue: https://example.com/
   display: Your server URL
   name: url
-  required: false
+  required: true
   type: 0
 - displaypassword: API Key
   additionalinfo: The API Key to use for connection
