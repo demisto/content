@@ -4,7 +4,6 @@ from CommonServerPython import BaseClient, DemistoException
 from FireEyeApiModule import FireEyeClient, to_fe_datetime_converter, alert_severity_to_dbot_score
 
 
-
 def test_to_fe_datetime_converter():
     """Unit test
     Given
