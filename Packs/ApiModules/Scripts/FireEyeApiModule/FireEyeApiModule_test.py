@@ -46,9 +46,17 @@ def test_alert_severity_to_dbot_score(severity_str, dbot_score):
 
 
 def test_exception_in__generate_token(mocker):
+    """
+    Check exception handling in _generate_token func
+    Given:
+        A FireEyeClient
+    When:
+        Generating new token
+    Then:
+        Ensure that Exceptions are caught and parsed correctly.
 
+    """
     err = "Some error"
     mocker.patch.object(BaseClient, '_http_request', side_effect=DemistoException(err))
     with pytest.raises(DemistoException, match=f'Token request failed. message: {err}'):
-        FireEyeClient(base_url='https://test.com', username='test_user', password='password', verify=False,
-                           proxy=False)
+        FireEyeClient(base_url='https://test.com', username='test_user', password='password', verify=False, proxy=False)
