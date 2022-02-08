@@ -246,7 +246,7 @@ def get_urls_from_binary_file(file_path):
     binary_file_urls = set()
     # make sure the urls match the url regex
     for url in urls:
-        mached_url = re.findall(urlRegex, url)
+        mached_url = re.findall(URL_EXTRACTION_REGEX, url)
         if len(mached_url) != 0:
             binary_file_urls.add(mached_url[0])
 
@@ -258,7 +258,7 @@ def get_urls_and_emails_from_pdf_html_content(cpy_file_path, output_folder):
     Extract the URLs and emails from the pdf html content.
     """
     pdf_html_content = get_pdf_htmls_content(cpy_file_path, output_folder)
-    return set(re.findall(urlRegex, pdf_html_content)), set(re.findall(EMAIL_REGXEX, pdf_html_content))
+    return set(re.findall(URL_EXTRACTION_REGEX, pdf_html_content)), set(re.findall(EMAIL_REGXEX, pdf_html_content))
 
 
 def main():
