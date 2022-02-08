@@ -1,4 +1,6 @@
 from datetime import datetime, timedelta
+from http import cookies
+from http.cookiejar import Cookie
 import json
 import base64
 import requests
@@ -26,7 +28,7 @@ class Client(BaseClient):
         return self._http_request("POST", url_suffix="correlationalertswithlogs", data=dummy).text
 
     def correlations(self):
-        return self._http_request("GET", data={}, full_url="http://172.17.6.41/api/service/correlations").text
+        return self._http_request("GET", data={}, url_suffix="correlations").text
 
     def baseintegration_dummy(self):
         return self._http_request("GET", url_suffix="correlations", data={}).text
@@ -148,6 +150,7 @@ def main() -> None:
     :rtype:
     """
     params = demisto.params()
+    return_results(params)
     authorization = params.get('credentials').get('identifier') + ":" + params.get('credentials').get('password')
     auth_byte= authorization.encode('utf-8')
     base64_byte = base64.b64encode(auth_byte)
@@ -182,7 +185,7 @@ def main() -> None:
         elif demisto.command() == 'cryptosim-get-correlation-alerts':
             return_results(correlation_alerts_command(client, demisto.args()))
         
-        elif demisto.command() == 'cryptosim-fetch-incidents':
+        elif demisto.command() == 'fetch-incidents':
             fetch_incidents(client, demisto.args())
 
     
