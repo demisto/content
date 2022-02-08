@@ -341,15 +341,9 @@ def generic_ansible(integration_name: str, command: str,
             if each_host_event['event'] in ["runner_on_failed", "runner_on_unreachable"]:
                 return_error(msg)
 
-    if not results:
-        return CommandResults(
-            readable_output=f'Action f{command} was performed successfully'
-        )
-
-    else:
-        return CommandResults(
-            readable_output=readable_output,
-            outputs_prefix=integration_name + '.' + title_case(command),
-            outputs_key_field=outputs_key_field,
-            outputs=results
-        )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=integration_name + '.' + title_case(command),
+        outputs_key_field=outputs_key_field,
+        outputs=results
+    )
