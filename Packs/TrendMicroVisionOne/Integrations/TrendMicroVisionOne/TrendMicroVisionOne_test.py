@@ -16,7 +16,6 @@ from TrendMicroVisionOne import (
     get_endpoint_info
 )
 
-
 # Provide valid API KEY
 api_key = "test api key"
 
@@ -649,6 +648,10 @@ def test_check_task_status(mocker):
     mocker.patch(
         "TrendMicroVisionOne.Client.http_request",
         check_task_status_mock_response)
+    mocker.patch(
+        "CommonServerPython.ScheduledCommand.raise_error_if_not_supported",
+        lambda: None
+    )
     client = Client("https://api.xdr.trendmicro.com", api_key)
     args = {
         "actionId": "00001108"
