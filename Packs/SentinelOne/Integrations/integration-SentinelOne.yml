@@ -23,14 +23,14 @@ configuration:
   defaultvalue: "2.0"
   type: 0
   required: false
-- display: Trust any certificate (not secure)
-  name: insecure
-  type: 8
-  required: false
 - display: Token
   name: token
   defaultvalue: ""
   type: 4
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
   required: false
 script:
   script: >-
