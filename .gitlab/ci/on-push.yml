@@ -250,6 +250,7 @@ generate-report:
   script:
     - python3 ./Tests/scripts/generate_readable_build_report.py
 
+
 slack-notify-nightly-build:
   extends:
     - .trigger-slack-notification
@@ -262,4 +263,3 @@ slack-notify-nightly-build:
     # Passes the environment variable from the parent pipeline to the child which can be useful for cases
     # when triggering pipeline with alternate env variable value passed in the API call
     SLACK_CHANNEL: $SLACK_CHANNEL
-

@@ -12,6 +12,7 @@ stages:
   - create-instances
   - run-instances
   - upload-to-marketplace
+  - report
   - fan-in  # concentrate pipeline artifacts to single job before triggering child slack pipeline
 
 
