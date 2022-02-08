@@ -1,0 +1,39 @@
+{
+	"autorun": true,
+	"closureScript": "",
+	"color": "#3C64C5",
+	"days": 0,
+	"daysR": 0,
+	"default": false,
+	"definitionId": "",
+	"detached": false,
+	"disabled": false,
+	"extractSettings": {
+		"fieldCliNameToExtractSettings": {},
+		"mode": "All"
+	},
+	"fromServerVersion": "",
+	"hours": 4,
+	"hoursR": 2,
+	"id": "FireEyeHX",
+	"itemVersion": "",
+	"layout": "5f22361b-978e-4074-8428-e15aa1857847",
+	"locked": false,
+	"name": "FireEyeHX",
+	"onChangeRepAlg": 0,
+	"packID": "c9b17fa6-f880-4ed0-8647-a5c15ba52006",
+	"playbookId": "8c691e0b-7394-4160-8486-5111a29f4fe8",
+	"preProcessingScript": "",
+	"propagationLabels": [
+		"all"
+	],
+	"readonly": false,
+	"reputationCalc": 0,
+	"sla": 4,
+	"slaReminder": 2,
+	"system": false,
+	"toServerVersion": "",
+	"version": -1,
+	"weeks": 0,
+	"weeksR": 0
+}

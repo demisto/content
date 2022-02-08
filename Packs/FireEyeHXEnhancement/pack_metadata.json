@@ -1,0 +1,17 @@
+{
+    "name": "FireEye HX Enhancement",
+    "description": "This Pack Contains a basic classifier for FireEye HX incidents and a mapper to map FireEye HX alert fields into XSOAR incidents plus some custom incident fields. Also it contains a basic playbook for Getting host information and an automation to populate endpoint details correctly.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Ahmed Wael",
+    "url": "",
+    "email": "",
+    "created": "2022-02-08T15:55:33Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "awn1"
+    ]
+}

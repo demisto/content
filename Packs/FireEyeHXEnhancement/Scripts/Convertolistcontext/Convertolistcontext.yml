@@ -1,0 +1,29 @@
+args:
+- name: contextval
+  required: true
+comment: Convert To List | HX Layout Helper
+commonfields:
+  id: f82e8e0d-4658-48e6-80cb-8f0d5d10ec5b
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: c9b17fa6-f880-4ed0-8647-a5c15ba52006
+    propagationLabels:
+    - all
+    toServerVersion: ""
+dockerimage: demisto/python3:3.10.1.25933
+enabled: true
+engineinfo: {}
+mainengineinfo: {}
+name: convertolistcontext
+pswd: ""
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python

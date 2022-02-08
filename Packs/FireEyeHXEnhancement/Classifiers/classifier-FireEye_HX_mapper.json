@@ -1,0 +1,408 @@
+{
+	"brands": null,
+	"defaultIncidentType": "",
+	"definitionId": "",
+	"description": "A custom mapper for  FireEye HX incidents fields.",
+	"feed": false,
+	"fromServerVersion": "",
+	"id": "ea1d98cb-5e7f-4081-876f-918b70bab62f",
+	"incidentSamples": null,
+	"indicatorSamples": null,
+	"instanceIds": null,
+	"itemVersion": "",
+	"keyTypeMap": {},
+	"locked": false,
+	"logicalVersion": 15,
+	"mapping": {
+		"FireEyeHX": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Agent ID": {
+					"complex": {
+						"accessor": "_id",
+						"filters": [],
+						"root": "agent",
+						"transformers": []
+					}
+				},
+				"Alert ID": {
+					"simple": "_id"
+				},
+				"Alert Name": {
+					"simple": "event_values.detections.detection.[0].infection.infection-type"
+				},
+				"Alert Type ID": {
+					"simple": "_id"
+				},
+				"File Hash": {
+					"simple": "md5values.[0]"
+				},
+				"File MD5": {
+					"simple": "event_values.detections.detection.[0].infected-object.file-object.md5sum"
+				},
+				"File Name": {
+					"simple": "event_values.scanned-object.file-event.actor-process.path"
+				},
+				"File Path": {
+					"complex": {
+						"accessor": "scanned-object.file-event.file-path",
+						"filters": [],
+						"root": "event_values",
+						"transformers": []
+					}
+				},
+				"File SHA1": {
+					"simple": "event_values.detections.detection.[0].infected-object.file-object.sha1sum"
+				},
+				"File SHA256": {
+					"simple": "event_values.detections.detection.[0].action.actioned-object.file-object.sha256sum"
+				},
+				"File Size": {
+					"complex": {
+						"accessor": "detections.detection.[0].action.actioned-object.file-object.size-in-bytes",
+						"filters": [],
+						"root": "event_values",
+						"transformers": []
+					}
+				},
+				"FireEyeHXResolution": {
+					"complex": {
+						"filters": [],
+						"root": "resolution",
+						"transformers": []
+					}
+				},
+				"OS": {
+					"complex": {
+						"accessor": "name",
+						"filters": [],
+						"root": "event_values.os-details.$",
+						"transformers": []
+					}
+				},
+				"OS Version": {
+					"simple": "event_values.os-details.$.version"
+				},
+				"PID": {
+					"complex": {
+						"accessor": "scanned-object.file-event.actor-process.pid",
+						"filters": [],
+						"root": "event_values",
+						"transformers": []
+					}
+				},
+				"Process Path": {
+					"complex": {
+						"accessor": "scanned-object.file-event.actor-process.path",
+						"filters": [],
+						"root": "event_values",
+						"transformers": []
+					}
+				},
+				"SHA1": {
+					"simple": "event_values.detections.detection.[0].infected-object.file-object.sha1sum"
+				},
+				"SHA256": {
+					"simple": "event_values.detections.detection.[0].infected-object.file-object.sha256sum"
+				},
+				"Src OS": {
+					"simple": "event_values.os-details.$.name"
+				},
+				"State": {
+					"complex": {
+						"accessor": "containment_state",
+						"filters": [],
+						"root": "agent",
+						"transformers": []
+					}
+				},
+				"User": {
+					"complex": {
+						"accessor": "scanned-object.file-event.actor-process.user.username",
+						"filters": [],
+						"root": "event_values",
+						"transformers": []
+					}
+				},
+				"Users": {
+					"simple": "event_values.scanned-object.file-event.actor-process.user.username"
+				},
+				"name": {
+					"complex": {
+						"accessor": "infection-name",
+						"filters": [],
+						"root": "event_values.detections.detection.[0].infection",
+						"transformers": [
+							{
+								"args": {
+									"prefix": {
+										"value": {
+											"simple": "FireEyeHX "
+										}
+									},
+									"suffix": {}
+								},
+								"operator": "concat"
+							}
+						]
+					}
+				},
+				"occurred": {
+					"complex": {
+						"filters": [],
+						"root": "event_at",
+						"transformers": []
+					}
+				}
+			}
+		},
+		"Malware": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Agent ID": {
+					"complex": {
+						"accessor": "_id",
+						"filters": [],
+						"root": "agent",
+						"transformers": []
+					}
+				},
+				"Alert ID": {
+					"simple": "_id"
+				},
+				"Alert Name": {
+					"simple": "event_values.detections.detection.[0].infection.infection-type"
+				},
+				"File Path": {
+					"complex": {
+						"accessor": "scanned-object.file-event.file-path",
+						"filters": [],
+						"root": "event_values",
+						"transformers": []
+					}
+				},
+				"File Size": {
+					"complex": {
+						"accessor": "detections.detection.[0].action.actioned-object.file-object.size-in-bytes",
+						"filters": [],
+						"root": "event_values",
+						"transformers": []
+					}
+				},
+				"OS": {
+					"complex": {
+						"accessor": "os-details.$.os-language",
+						"filters": [],
+						"root": "event_values",
+						"transformers": []
+					}
+				},
+				"PID": {
+					"complex": {
+						"accessor": "scanned-object.file-event.actor-process.pid",
+						"filters": [],
+						"root": "event_values",
+						"transformers": []
+					}
+				},
+				"Process Path": {
+					"complex": {
+						"accessor": "scanned-object.file-event.actor-process.path",
+						"filters": [],
+						"root": "event_values",
+						"transformers": []
+					}
+				},
+				"State": {
+					"complex": {
+						"accessor": "containment_state",
+						"filters": [],
+						"root": "agent",
+						"transformers": []
+					}
+				},
+				"User": {
+					"complex": {
+						"accessor": "scanned-object.file-event.actor-process.user.username",
+						"filters": [],
+						"root": "event_values",
+						"transformers": []
+					}
+				},
+				"occurred": {
+					"complex": {
+						"filters": [],
+						"root": "event_at",
+						"transformers": []
+					}
+				}
+			}
+		},
+		"Malware Fireeye": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Agent ID": {
+					"simple": "agent._id"
+				}
+			}
+		},
+		"dbot_classification_incident_type_all": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Agent ID": {
+					"complex": {
+						"accessor": "_id",
+						"filters": [],
+						"root": "agent",
+						"transformers": []
+					}
+				},
+				"Alert Category": {
+					"simple": "source"
+				},
+				"Alert ID": {
+					"simple": "_id"
+				},
+				"Alert Name": {
+					"simple": "event_values.detections.detection.[0].infection.infection-type"
+				},
+				"Alert Type ID": {
+					"simple": "_id"
+				},
+				"File Hash": {
+					"simple": "md5values.[0]"
+				},
+				"File MD5": {
+					"simple": "event_values.detections.detection.[0].infected-object.file-object.md5sum"
+				},
+				"File Name": {
+					"simple": "event_values.detections.detection.[0].infected-object.file-object.original-file-name"
+				},
+				"File Path": {
+					"complex": {
+						"accessor": "scanned-object.file-event.file-path",
+						"filters": [],
+						"root": "event_values",
+						"transformers": []
+					}
+				},
+				"File SHA1": {
+					"simple": "event_values.detections.detection.[0].infected-object.file-object.sha1sum"
+				},
+				"File SHA256": {
+					"simple": "event_values.detections.detection.[0].action.actioned-object.file-object.sha256sum"
+				},
+				"File Size": {
+					"complex": {
+						"accessor": "detections.detection.[0].action.actioned-object.file-object.size-in-bytes",
+						"filters": [],
+						"root": "event_values",
+						"transformers": []
+					}
+				},
+				"FireEyeHXResolution": {
+					"complex": {
+						"filters": [],
+						"root": "resolution",
+						"transformers": []
+					}
+				},
+				"OS": {
+					"complex": {
+						"accessor": "name",
+						"filters": [],
+						"root": "event_values.os-details.$",
+						"transformers": []
+					}
+				},
+				"OS Version": {
+					"simple": "event_values.os-details.$.version"
+				},
+				"PID": {
+					"complex": {
+						"accessor": "scanned-object.file-event.actor-process.pid",
+						"filters": [],
+						"root": "event_values",
+						"transformers": []
+					}
+				},
+				"Process Path": {
+					"complex": {
+						"accessor": "scanned-object.file-event.actor-process.path",
+						"filters": [],
+						"root": "event_values",
+						"transformers": []
+					}
+				},
+				"SHA1": {
+					"simple": "event_values.detections.detection.[0].infected-object.file-object.sha1sum"
+				},
+				"SHA256": {
+					"simple": "event_values.detections.detection.[0].infected-object.file-object.sha256sum"
+				},
+				"Src OS": {
+					"simple": "event_values.os-details.$.name"
+				},
+				"State": {
+					"complex": {
+						"accessor": "containment_state",
+						"filters": [],
+						"root": "agent",
+						"transformers": []
+					}
+				},
+				"User": {
+					"complex": {
+						"accessor": "scanned-object.file-event.actor-process.user.username",
+						"filters": [],
+						"root": "event_values",
+						"transformers": []
+					}
+				},
+				"Users": {
+					"simple": "event_values.scanned-object.file-event.actor-process.user.username"
+				},
+				"name": {
+					"complex": {
+						"accessor": "infection-name",
+						"filters": [],
+						"root": "event_values.detections.detection.[0].infection",
+						"transformers": [
+							{
+								"args": {
+									"prefix": {
+										"value": {
+											"simple": "FireEyeHX "
+										}
+									},
+									"suffix": {}
+								},
+								"operator": "concat"
+							}
+						]
+					}
+				},
+				"occurred": {
+					"complex": {
+						"filters": [],
+						"root": "event_at",
+						"transformers": []
+					}
+				}
+			}
+		}
+	},
+	"name": "FireEye HX mapper",
+	"nameRaw": "FireEye HX mapper",
+	"packID": "c9b17fa6-f880-4ed0-8647-a5c15ba52006",
+	"propagationLabels": [
+		"all"
+	],
+	"sourceClassifierId": "685847a4-4fc6-484e-893c-f95e329f4c7e",
+	"system": false,
+	"toServerVersion": "",
+	"transformer": {},
+	"type": "mapping-incoming",
+	"unclassifiedCases": null,
+	"version": -1
+}

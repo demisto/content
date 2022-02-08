@@ -1,0 +1,35 @@
+{
+	"brands": null,
+	"defaultIncidentType": "FireEyeHX",
+	"definitionId": "",
+	"description": "",
+	"feed": false,
+	"fromServerVersion": "",
+	"id": "4e801ee2-31fd-4425-8363-dbff75b5103f",
+	"incidentSamples": null,
+	"indicatorSamples": null,
+	"instanceIds": null,
+	"itemVersion": "",
+	"keyTypeMap": {
+		"IOC": "FireEye HX IOC",
+		"MAL": "FireEyeHX"
+	},
+	"locked": false,
+	"logicalVersion": 2,
+	"mapping": null,
+	"name": "FireEye Hx Classification ",
+	"nameRaw": "FireEye Hx Classification ",
+	"packID": "c9b17fa6-f880-4ed0-8647-a5c15ba52006",
+	"propagationLabels": [
+		"all"
+	],
+	"sourceClassifierId": "e2df06e9-b745-4435-8db9-5c59ba7a49b6",
+	"system": false,
+	"toServerVersion": "",
+	"transformer": {
+		"simple": "source"
+	},
+	"type": "classification",
+	"unclassifiedCases": null,
+	"version": -1
+}

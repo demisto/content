@@ -1,0 +1,36 @@
+{
+	"autorun": false,
+	"closureScript": "",
+	"color": "#CE9057",
+	"days": 0,
+	"daysR": 0,
+	"default": false,
+	"definitionId": "",
+	"detached": false,
+	"disabled": false,
+	"extractSettings": {
+		"fieldCliNameToExtractSettings": {},
+		"mode": "Specific"
+	},
+	"fromServerVersion": "",
+	"hours": 0,
+	"hoursR": 0,
+	"id": "FireEye HX IOC",
+	"itemVersion": "",
+	"layout": "",
+	"locked": false,
+	"name": "FireEye HX IOC",
+	"onChangeRepAlg": 0,
+	"packID": "c9b17fa6-f880-4ed0-8647-a5c15ba52006",
+	"preProcessingScript": "",
+	"propagationLabels": [
+		"all"
+	],
+	"readonly": false,
+	"reputationCalc": 0,
+	"system": false,
+	"toServerVersion": "",
+	"version": -1,
+	"weeks": 0,
+	"weeksR": 0
+}

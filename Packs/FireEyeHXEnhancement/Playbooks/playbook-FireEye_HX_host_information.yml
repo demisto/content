@@ -1,0 +1,193 @@
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: c9b17fa6-f880-4ed0-8647-a5c15ba52006
+    propagationLabels:
+    - all
+    toServerVersion: ""
+id: 2987c737-6f68-4975-8acf-c9dc40c1cdbb
+inputs: []
+name: FireEye HX host information
+outputs: []
+sourceplaybookid: 8a629753-aa1d-4a26-8454-df4598c5a65f
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 60dd7c85-fca9-479f-816c-5b862fc40842
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 60dd7c85-fca9-479f-816c-5b862fc40842
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 0
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      agentId:
+        complex:
+          accessor: agentid
+          root: incident
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: FireEye HX
+      description: Get information on a host associated with an agent.
+      id: 25650784-27e6-4263-8c4c-388795f2abb6
+      iscommand: true
+      name: fireeye-hx-get-host-information
+      script: FireEye HX|||fireeye-hx-get-host-information
+      type: regular
+      version: -1
+    taskid: 25650784-27e6-4263-8c4c-388795f2abb6
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 160
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      contextval:
+        complex:
+          root: Endpoint
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Convert To List | HX Layout Helper
+      id: 14dd4e1f-4f21-441c-8963-4ba1bedf3966
+      iscommand: false
+      name: Convert Endpoint Details to List
+      scriptName: convertolistcontext
+      type: regular
+      version: -1
+    taskid: 14dd4e1f-4f21-441c-8963-4ba1bedf3966
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 330
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      columns:
+        simple: Endpoint Hostname,Endpoint ID,Endpoint IP Address,Endpoint MAC Address,Endpoint
+          OS,Endpoint Vendor
+      context_path:
+        simple: convertedEndpoint
+      grid_id:
+        simple: Endpoint
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Creates a Grid table from items or key-value pairs.
+      id: 1508823d-f6a1-4833-8d76-b440a97884b7
+      iscommand: false
+      name: Populating Endpoint details in Layout
+      scriptName: SetGridField
+      type: regular
+      version: -1
+    taskid: 1508823d-f6a1-4833-8d76-b440a97884b7
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 510
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: d8b070cb-a6f9-43d0-8771-6d9765cb03e1
+      iscommand: false
+      name: End
+      type: title
+      version: -1
+    taskid: d8b070cb-a6f9-43d0-8771-6d9765cb03e1
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 760
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 825,
+        "width": 380,
+        "x": 50,
+        "y": 0
+      }
+    }
+  }
