@@ -23,7 +23,7 @@ configuration:
   required: false
   type: 8
 description: '[Enter a comprehensive, yet concise, description of what the integration
-  does, what use cases it is designed for, etc.]'
+  does, what use cases it is designed for, etc.].'
 display: RetriesIntegration
 name: RetriesIntegration
 script:
