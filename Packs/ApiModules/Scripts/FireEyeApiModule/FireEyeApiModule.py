@@ -115,7 +115,7 @@ class FireEyeClient(BaseClient):
     @logger
     def _generate_token(self) -> str:
         try:
-            resp = self._http_request(method='POST', url_suffix='auth/login', resp_type='response', retries=3)
+            resp = self._http_request(method='POST', url_suffix='auth/login', resp_type='response')
         except DemistoException as er:
             raise DemistoException(
                 f'Token request failed. message: {str(er)}')
