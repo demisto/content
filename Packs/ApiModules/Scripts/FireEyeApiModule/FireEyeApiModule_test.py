@@ -1,8 +1,7 @@
 import pytest
 
-# from FireEyeApiModule import to_fe_datetime_converter, alert_severity_to_dbot_score, FireEyeClient
 from CommonServerPython import BaseClient, DemistoException
-from FireEyeApiModule import FireEyeClient
+from FireEyeApiModule import FireEyeClient, to_fe_datetime_converter, alert_severity_to_dbot_score
 
 
 
