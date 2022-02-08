@@ -1,36 +1,12 @@
-"""Base Integration for Cortex XSOAR (aka Demisto)
-
-This is an empty Integration with some basic structure according
-to the code conventions.
-
-MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS ""
-
-Developer Documentation: https://xsoar.pan.dev/docs/welcome
-Code Conventions: https://xsoar.pan.dev/docs/integrations/code-conventions
-Linting: https://xsoar.pan.dev/docs/integrations/linting
-
-This is an empty structure file. Check an example at;
-https://github.com/demisto/content/blob/master/Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py
-
-"""
-
-# from Tests.demistomock.demistomock import args, command, params
-
-# from os import name
-# from sys import _OptExcInfo
 
 
-
-from requests.adapters import Response
 import demistomock as demisto
-from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
-#from CommonServerUserPython import *  # noqa
+from CommonServerPython import *  
 
 import base64
 import json
 import os
 import re
-import time
 import urllib.parse
 import requests
 import traceback
@@ -689,14 +665,7 @@ SYS_SCRIPT_MAP = {
 
 
 class Client(BaseClient):
-    """Client class to interact with the service API
-
-    This Client implements API calls, and does not contain any XSOAR logic.
-    Should only do requests and return data.
-    It inherits from BaseClient defined in CommonServer Python.
-    Most calls use _http_request() that handles proxy, SSL verification, etc.
-    For this  implementation, no special attributes defined
-    """
+    
     def __init__(self, base_url, verify=True, proxy=False, ok_codes=..., auth=None):
             
         headers={'X-FeApi-Token':self.get_token_request(base_url,verify,auth)}
@@ -1039,18 +1008,13 @@ class Client(BaseClient):
 
     def get_indicators_request(self, params):
 
-        response = self._http_request(
-            method='GET',
-            url_suffix="/indicators" if not params.get("category") else f"/indicators/{params.get('category')}",
-            params=params,
-            )
         try:
-            
-            data = response['data']
-            # no results found
-            if data['total'] == 0:
-                return None
-            return data['entries']
+            return self._http_request(
+                method='GET',
+                url_suffix="/indicators" if not params.get("category") else f"/indicators/{params.get('category')}",
+                params=params,
+                )
+
         except Exception as e:
             LOG(e)
             raise ValueError('Failed to parse response body')
@@ -1063,16 +1027,14 @@ class Client(BaseClient):
         if no results are found- returns None
 
         """
-        url = f'/indicators/{category}/{name}/conditions'
         params = {'offset': offset, 'enabled': True}
 
-        
         try:
             return self._http_request(
                 method='GET',
                 url_suffix=f'/indicators/{category}/{name}/conditions',
                 params=params
-                )['data']['entries']
+                )
         
         except Exception as e:
             LOG(e)
@@ -1081,12 +1043,27 @@ class Client(BaseClient):
 
     def append_conditions_request(self, name:str, category:str, body:str):
 
+        self._headers['Content-Type']= 'text/plain'
         return self._http_request(
             method="PATCH",
             url_suffix=f"/indicators/{category}/{name}/conditions",
-            data=body,
-            return_empty_response=True
+            data=body
             )
+
+
+    def new_indicator_request(self, category):
+        """
+        Create a new indicator
+        """
+        
+        try:
+            return self._http_request(
+                method='POST',
+                url_suffix=f"indicators/{category}"
+                )
+        except Exception as e:
+            LOG(e)
+            raise ValueError('Failed to parse response body, unexpected response structure from the server.')
 
     """
     SEARCHES REQUEST
@@ -1178,7 +1155,7 @@ def get_alerts(client:Client, args:Dict[str,Any])->List:
             filterQuery=args.get("filterQuery")
         )
         # empty list
-        if not alerts_partial_results['data']['entries']:
+        if len(alerts_partial_results['data']['entries']) == 0:
             break
         alerts.extend(alerts_partial_results['data']['entries'])
         offset = len(alerts)
@@ -1206,7 +1183,7 @@ def host_set_entry(host_sets: List[Dict])->List[Dict]:
 def general_context_from_event(alert:Dict):
 
     def file_context(values:Dict):
-        dbot = Common.DBotScore(None,DBotScoreType.FILE,integration_name="FireEye-HX",score=Common.DBotScore.NONE)
+        dbot = Common.DBotScore(values.get('fileWriteEvent/md5'),DBotScoreType.FILE,integration_name="FireEye-HX",score=Common.DBotScore.NONE)
         return Common.File(
             dbot,
             name=values.get('fileWriteEvent/fileName'),
@@ -1225,17 +1202,9 @@ def general_context_from_event(alert:Dict):
             )
         return Common.IP(values.get("ipv4NetworkEvent/remoteIP"),dbot_score=dbot)
 
-    def registry_key_context(values:Dict):
-
-        return {
-            'Path': values.get('regKeyEvent/path'),
-            'Name': values.get('regKeyEvent/valueName'),
-            'Value': values.get('regKeyEvent/value')
-        }
     context_map = {
         'fileWriteEvent': file_context,
-        'ipv4NetworkEvent': ip_context,
-        'regKeyEvent': registry_key_context
+        'ipv4NetworkEvent': ip_context
     }
 
     if context_map.get(alert['event_type']) is not None:
@@ -1389,6 +1358,39 @@ def indicator_entry(indicator: Dict):
     return indicator_entry
 
 
+def organization_of_indicator(alert: Dict)->CommandResults:
+
+    if alert.get("event_type") == 'fileWriteEvent':
+        indicator = general_context_from_event(alert)
+        event_values = alert.get('event_values')
+        md_table = tableToMarkdown(
+            name = "File",
+            t = {'Name': event_values.get('fileWriteEvent/fileName'),
+                'md5':event_values.get('fileWriteEvent/md5'),
+                'Extension': event_values.get('fileWriteEvent/fileExtension'),
+                'Path': event_values.get('fileWriteEvent/fullPath')},
+            headers = ['Name', 'md5', 'Extension', 'Path'] 
+        )
+        return CommandResults(
+            outputs_prefix = "File",
+            indicator = indicator,
+            readable_output= md_table
+            )
+    
+    if alert.get("event_type") == 'ipv4NetworkEvent':
+        indicator = general_context_from_event(alert)
+        event_values = alert.get('event_values')
+        md_table = tableToMarkdown(
+            name = "File",
+            t = {'Ipv4': event_values.get('ipv4NetworkEvent/remoteIP')} 
+        )
+        return CommandResults(
+            outputs_prefix = "Ip",
+            indicator = indicator,
+            readable_output= md_table
+            )
+
+
 def condition_entry(condition):
 
     indicator_entry = {
@@ -1415,7 +1417,7 @@ def get_all_indicators(client:Client, category=None, search=None, share_mode=Non
 
     # get all results
     while len(indicators) < max_records:
-        indicators_partial_results = client.get_indicators_request(params)
+        indicators_partial_results = client.get_indicators_request(params)["data"]["entries"]
         if not indicators_partial_results:
             break
         indicators.extend(indicators_partial_results)
@@ -1439,7 +1441,7 @@ def get_all_enabled_conditions(client:Client, indicator_category, indicator_name
             indicator_category,
             indicator_name,
             offset=offset
-        )
+        )['data']['entries']
         if not conditions_partial_results:
             break
         conditions.extend(conditions_partial_results)
@@ -1476,29 +1478,30 @@ def get_indicator_conditions(client:Client, args:Dict[str,Any])->CommandResults:
 
 """helper fetch-incidents"""
 
-def organize_reportedAt(reportedAt):
+def organize_reportedAt(reported_at):
 
-    milisecond = int(reportedAt[-4:-1])+1
+    milisecond = int(reported_at[-4:-1])+1
     if milisecond == 1000:
-        reportedAt = date_to_timestamp(reportedAt[:-5],date_format="%Y-%m-%dT%H:%M:%S")+1000
-        return timestamp_to_datestring(reportedAt)
+        reported_at = date_to_timestamp(reported_at[:-5], date_format="%Y-%m-%dT%H:%M:%S") + 1000
+        reported_at = timestamp_to_datestring(reported_at, date_format="%Y-%m-%dT%H:%M:%S") + ".000Z"
     else:
         if milisecond<10:
-            return reportedAt[:-4]+'00'+str(milisecond)+reportedAt[-1]
+            reported_at = reported_at[:-4] + '00' + str(milisecond) + reported_at[-1]
         if milisecond<100:
-            return reportedAt[:-4]+'0'+str(milisecond)+reportedAt[-1]
-        return reportedAt[:-4]+str(milisecond)+reportedAt[-1]
+            reported_at = reported_at[:-4] + '0' + str(milisecond) + reported_at[-1]
+        reported_at = reported_at[:-4] + str(milisecond) + reported_at[-1]
+
+    return reported_at
 
 
-def query_fetch(reportedAt=None):
+def query_fetch(reported_at= None, first_fetch: str = None):
     
-    query='{"operator":"between","arg":['
-    if reportedAt:
-        # reportedAt = reportedAt[:-2]+reportedAt[-2]
-        query += '"'+reportedAt+'"'+','
+    query = '{"operator":"between","arg":['
+    if reported_at:
+        query += '"' + reported_at + '"' + ','
     else:
-        query+='"'+timestamp_to_datestring(parse_date_range("3 day",to_timestamp=True,utc=False)[0])+'"'+','
-    query+='"'+timestamp_to_datestring(parse_date_range("3 day",to_timestamp=True,utc=False)[1])+'"'+'],"field":"reported_at"}'
+        query += '"' + timestamp_to_datestring(parse_date_range(first_fetch, to_timestamp=True, utc=False)[0]) + '"' + ','
+    query += '"' + timestamp_to_datestring(parse_date_range("1 days", to_timestamp=True, utc=False)[1]) + '"' + '],"field":"reported_at"}'
 
     return query
 
@@ -1606,15 +1609,15 @@ def list_host_set_policy_command(client:Client, args:Dict[str,Any])->CommandResu
     for_table=[]
     for entry in response["data"]["entries"]:
         for_table.append({
-            "Policy Id":entry["persist_id"],
-            "Host Set Id":entry["policy_id"]
+            "Policy Id":entry["policy_id"],
+            "Host Set Id":entry["persist_id"]
         })
     headers_for_table=["Policy Id","Host Set Id"]
     md=tableToMarkdown(name="FireEye HX Host Set Policies",t=for_table,headers=headers_for_table)
 
     return CommandResults(
         outputs_prefix="FireEyeHX.HostSets.Policy",
-        #***what is key field***********
+        outputs_key_field="_id",
         outputs=response["data"]["entries"],
         readable_output=md
     )
@@ -1628,9 +1631,14 @@ def assign_host_set_policy_command(client:Client, args:Dict[str,Any])->CommandRe
     if not policyId or not hostSetId:
         raise ValueError("policy ID and hostSetId are required")
     
-    response=client.assign_host_set_policy_request({
-        "persist_id":hostSetId,
-         "policy_id":policyId})
+    try:
+        response=client.assign_host_set_policy_request({
+            "persist_id":hostSetId,
+            "policy_id":policyId})
+    except Exception as e:
+        if e.res.status_code == 400:
+            raise ValueError("This hostset may already be included in this policy")
+        raise ValueError(e)
 
     return CommandResults(
         readable_output="Success" if response['message']=="OK" else f"Failure \n {response['message']}",
@@ -1715,8 +1723,9 @@ def get_all_hosts_information_command(client:Client,args:Dict[str,Any])->Command
 
     return CommandResults(
         outputs_prefix="FireEyeHX.Hosts",
-        outputs_key_field="",#**************
+        outputs_key_field="_id",
         outputs=outputs,
+        raw_response = hosts,
         readable_output=md
     )
     
@@ -1762,7 +1771,7 @@ def get_host_information_command(client:Client, args:Dict[str,Any])->CommandResu
     )
 
     return CommandResults(
-        outputs_prefix="FireEyeHX.Host",
+        outputs_prefix="FireEyeHX.Hosts",
         outputs_key_field="_id",
         outputs=host,
         readable_output=md
@@ -1825,15 +1834,32 @@ def host_containment_command(client:Client,args:Dict[str,Any])->CommandResults:
     hostName=args.get("hostName")
 
     if not agentId and not hostName:
-        raise ValueError("Please provide either agentId or hostName")#***************
+        raise ValueError("Please provide either agentId or hostName")
     
     if not agentId:
-        agentId=get_agent_id_by_host_name(client,hostName)#**********
+        agentId=get_agent_id_by_host_name(client,hostName)
 
-    client.host_containmet_request(agentId)
+    try:
+        client.host_containmet_request(agentId)
+    except Exception as e:
+        
+        pass
 
-    host=client.get_hosts_by_agentId_request(agentId)
-    return [CommandResults(outputs_prefix="FireEyeHX.Hosts",outputs=host, readable_output="Containment rquest for the host was sent and approved successfully"),
+    message = ""
+    try:
+        client.approve_containment_request(agentId)
+        message = "Containment request for the host was sent and approved successfully"
+    except Exception as e:
+        if e.res.status_code == 422:
+            message = "You do not have the required permissions for containment approve\nThe containment request sent, but it is not approve."
+        elif e.res.status_code == 409:
+            return CommandResults(readable_output= "This host may already in containment")
+        else:
+            raise ValueError(e)
+    
+    host = client.get_hosts_by_agentId_request(agentId)
+
+    return [CommandResults(outputs_prefix="FireEyeHX.Hosts",outputs=host, readable_output=message),
             CommandResults(outputs_prefix="Endpoint",outputs=collect_endpoint_contxt(host["data"]))]  
     
 
@@ -1842,17 +1868,19 @@ def approve_containment_command(client:Client,args:Dict[str,Any])->CommandResult
     agentId=args.get("agentId")
 
     if not agentId:
-        raise ValueError("Agent ID is required")#**********
-    
+        raise ValueError("Agent ID is required")
+    message = "Containment for the host was approved successfully"
     try:
         client.approve_containment_request(agentId)
-
     except Exception as e:
-        raise ValueError(e)
-
+        if e.res.status_code == 409:
+            message = "This host may already in containment"
+        else:
+            message = "Containment for the host failed, check if you have the necessary permissions"
+        
     return CommandResults(
-        outputs_prefix="FireEyeHX.Hosts",
-        readable_output="Containment for the host was approved successfully" 
+        outputs_prefix = "FireEyeHX.Hosts",
+        readable_output = message 
     )
     
 
@@ -1866,42 +1894,22 @@ def cancel_containment_command(client:Client,args:Dict[str,Any])->CommandResults
     
     if not agentId:
         agentId=get_agent_id_by_host_name(client, hostName)
-    
-    client.cancel_containment_request(agentId)
 
+    message = "Success"
+    try:
+        client.cancel_containment_request(agentId)
+    except Exception as e:
+        if e.res.status_code == 409:
+            message = "This host may already in uncontain"
+        else:
+            raise ValueError(e)
     
-    return CommandResults(readable_output="Success")
+    return CommandResults(readable_output=message)
 
 """
 ACQUISITION
 """
-'''
 
-fe-tst
-    args:
-        - a
-        - b
-        - c
-    
-    args = {
-        "a": 1,
-        "b": 2,
-        "c": 3
-    }
-    
-    fe_tst_command(client, args)
-    def fe_tst_command(client, args):
-        a = args.get('a')
-        b = args.get('b')
-        c = args.get('c')
-        return a == b == c
-
-
-    fe_tst_command(client, **args)
-    def fe_tst_command(client, a, b, c):
-        return a == b == c
-
-'''
 
 def data_acquisition_command(client:Client, args:Dict[str,Any])->CommandResults:
     
@@ -2120,12 +2128,13 @@ def get_all_alerts_command(client:Client, args:Dict[str,Any])->CommandResults:
         args['sort'] = f"{sort_map.get(args['sort'])}+{args.get('sortOrder', 'ascending')}"
 
     if args.get('hostName'):
-        args['agentId'] = get_agent_id_by_host_name(args.get('hostName'))#*******i need implement this function
+        args['agentId'] = get_agent_id_by_host_name(args.get('hostName'))
 
     if args.get('limit'):
         args['limit'] = int(args['limit'])
+    else:
+        args['limit'] = 50
     
-    #****
     alerts=get_alerts(client,args)
 
     # parse each alert to a record displayed in the human readable table
@@ -2137,21 +2146,30 @@ def get_all_alerts_command(client:Client, args:Dict[str,Any])->CommandResults:
         t=alerts_entries,
         headers=headers_for_table
     )
+
+    registry_key = []
     indicators = []
     for alert in alerts:
-        indicators.append(general_context_from_event(alert))
+        if alert["event_type"] == 'regKeyEvent':
+            registry_key.append({
+            'Path': alert.get("event_values").get('regKeyEvent/path'),
+            'Name': alert.get("event_values").get('regKeyEvent/valueName'),
+            'Value': alert.get("event_values").get('regKeyEvent/value')
+            })
+        else:
+            indicators.append(general_context_from_event(alert))
+    
+    results_outputs = assign_params(FireEyeHX = {"Alerts": alerts}, RegistryKey = registry_key)
     
     return CommandResults(
-        outputs_prefix="FireEyeHX.Alerts",
-        outputs_key_field="",
-        outputs=alerts,
-        readable_output=md_table,
-        indicators=indicators
+
+        outputs_key_field = "_id",
+        outputs = results_outputs,
+        readable_output = md_table,
+        indicators = indicators
         )
+
     
-
-    #return command_results
-
 def get_alert_command(client:Client,args:Dict[str,Any])->CommandResults:
 
     alert_id = args.get('alertId')
@@ -2174,12 +2192,19 @@ def get_alert_command(client:Client,args:Dict[str,Any])->CommandResults:
         t=alert.get('event_values')
     )
 
-    return CommandResults(
+    result = [CommandResults(
         outputs_prefix="FireEyeHX.Alerts",
         outputs_key_field="_id",
         outputs=alert,
         readable_output=f'{alert_table}\n{event_table}'
-    )
+        )]
+
+    
+    indicator = organization_of_indicator(alert)
+    if indicator:
+        result.append(indicator)
+
+    return result
     
 
 def suppress_alert_command(client:Client, args:Dict[str,Any])->CommandResults:
@@ -2302,16 +2327,41 @@ def append_conditions_command(client:Client,args:Dict[str,Any])->CommandResults:
     })
 
     return CommandResults(
+        outputs_prefix="FireEyeHX.Conditions",
         outputs=response,
         readable_output=md
         )
 
+
+def create_indicator_command(client:Client, args:Dict[str,Any])->CommandResults:
+    """
+    Get new indicator details
+    returns a success message to the war room
+    """
+
+    category = args.get('category')
+
+    response = client.new_indicator_request(category)["data"]
+
+    md_table = tableToMarkdown('FireEye HX New Indicator created successfully',{'ID': response.get('_id')})
+
+    return CommandResults(
+        outputs_prefix="FireEyeHX.Indicators",
+        outputs_key_field="_id",
+        outputs=response,
+        readable_output=md_table
+    )
+    
 """
 SEARCHES
 """
+# def cantUseWithPolling():
+#     version = int(demisto.demistoVersion().get("version").replace(".",''))
+#     return version < 662
+    
 
 def start_search_command(client:Client, args:Dict[str,Any])->CommandResults:
-
+    
     if not args.get("searchId"):
         # checking if provided only one of these following arguments
         listOfArgs = ["agentsIds", "hostsNames", "hostSet", "hostSetName"]
@@ -2338,6 +2388,9 @@ def start_search_command(client:Client, args:Dict[str,Any])->CommandResults:
         except Exception as e:
             raise ValueError(e)
 
+    # if cantUseWithPolling() :
+    #     return CommandResults(readable_output= f"The search is running ...,\nyou can get the search results with the command fireeye-hx-search-result-get searchId={searchId}")
+
     if not args.get("limit"):
         limit = 1000
 
@@ -2348,7 +2401,7 @@ def start_search_command(client:Client, args:Dict[str,Any])->CommandResults:
 
     if searchInfo.get("state") !="STOPPED" and matched < limit and pending != 0:
 
-        readable_output = f'Searche is not STOPPED, started polling for id {searchId}' if 'searchId' not in args else None
+        readable_output = f'Searching... , started polling for id {searchId}' if 'searchId' not in args else None
         if not args.get("searchId"):
             args["searchId"] = searchId
         scheduled_command = ScheduledCommand(
@@ -2361,7 +2414,7 @@ def start_search_command(client:Client, args:Dict[str,Any])->CommandResults:
     
     commandResult = search_result_get_command(client, {"searchId":str(searchId)})
 
-    message = None
+    message = f"The Search {searchInfo.get('state')}" if searchInfo.get("state") == "STOPPED" else "The Search is still RUNNING"
     try:
         if args.get('stopSearch') == 'stop':
             message = 'Failed to stop search'
@@ -2374,7 +2427,6 @@ def start_search_command(client:Client, args:Dict[str,Any])->CommandResults:
             message = "The search was deleted successfully"
     except Exception as e:
         LOG('{}\n{}'.format(message, e))
-        pass
     
     commandResult[0].readable_output += f"\n\n {message}"
     return commandResult
@@ -2446,7 +2498,7 @@ def search_stop_command(client:Client, args:Dict[str, Any])->CommandResults:
     if not args.get("searchId"):
         raise ValueError("Search Id is must be")
 
-    searchesIds = args.get("searchId").split(",")
+    searchesIds = str(args.get("searchId")).split(",")
     responses = []
     md = ""
     for searchId in searchesIds:
@@ -2471,11 +2523,13 @@ def search_result_get_command(client:Client, args:Dict[str,Any])->CommandResults
     if not args.get("searchId"):
         raise ValueError("Search Id is must be")
     
-    searchesIds = args.get("searchId").split(",")
+    searchesIds = str(args.get("searchId")).split(",")
 
     results : List[List[Dict]] = []
     for searchId in searchesIds:
-        results.append(client.search_result_get_request(searchId)["data"]["entries"])
+        result = client.search_result_get_request(searchId)["data"]["entries"]
+        if result:
+            results.append(result)
 
     commandsResults = []
     for result in results:
@@ -2485,23 +2539,23 @@ def search_result_get_command(client:Client, args:Dict[str,Any])->CommandResults
             for res in entry.get("results"):
                 for_table.append({
                     "Item Type": res.get("type"),
-                    "Summery": [f"**{k}:** {v}" for k,v in res.get("data").items()]
+                    "Summary": [f"**{k}:** {v}" for k,v in res.get("data").items()]
                 })
 
 
             md = tableToMarkdown(
                 name = Title,
                 t = for_table,
-                headers=["Item Type","Summery"]
+                headers=["Item Type","Summary"]
             )
 
             commandsResults.append(CommandResults(
                 outputs_prefix="FireEyeHX.Search",
-                outputs_key_field= "",
+                outputs_key_field= "_id",
                 outputs= entry,
                 readable_output= md
                 ))
-    return commandsResults
+    return commandsResults if commandsResults else [CommandResults(readable_output="No Results")]
 
 """
 FETCH INCIDENT
@@ -2513,13 +2567,14 @@ def fetch_incidents(client:Client,args:Dict[str,Any])->List:
     alerts = []  # type: List[Dict[str, str]]
     fetch_limit = int(args.get('fetch_limit') or '50')
     
-    args={"sort":"reported_at+ascending","limit":fetch_limit}
+    args["sort"] = "reported_at+ascending"
+    args["limit"] = fetch_limit
 
     # Checks if this is the first call to a function or not
     if last_run and last_run.get('reported_at'):
         
         # Design the filterQuery argument with last reported_at, and convert it to urlEncoding
-        query=query_fetch(organize_reportedAt(last_run.get('reported_at')))
+        query=query_fetch(reported_at = organize_reportedAt(last_run.get('reported_at')))
         args["filterQuery"] = urllib.parse.quote_plus(query)
         
         # Get all alerts with reported_at greater than last reported_at
@@ -2530,7 +2585,8 @@ def fetch_incidents(client:Client,args:Dict[str,Any])->List:
 
     else:
         # Design the filterQuery argument, and convert it to urlEncoding
-        query=query_fetch()
+        first_fetch = args.get("first_fetch") if args.get("first_fetch") else "3 days"
+        query = query_fetch(first_fetch=first_fetch)
         args["filterQuery"] = urllib.parse.quote_plus(query)
         
         # Receive alerts from last 3 days - if they are more than 50 return the 50 older alerts
@@ -2538,7 +2594,7 @@ def fetch_incidents(client:Client,args:Dict[str,Any])->List:
 
         # Results are sorted in ascending order - the last alert holds the greatest time
         reported_at = alerts[-1].get("reported_at") if alerts else None
-    
+        
     # Parse the alerts as the incidents
     incidents = [parse_alert_to_incident(alert) for alert in alerts]
     
@@ -2575,7 +2631,7 @@ def main() -> None:
         "fireeye-hx-append-conditions":append_conditions_command,
         "fireeye-hx-get-indicators":get_indicators_command,
         "fireeye-hx-get-indicator":get_indicator_command,
-        "fireeye-hx-create-indicator":"",
+        "fireeye-hx-create-indicator":create_indicator_command,
         "fireeye-hx-data-acquisition":data_acquisition_command,
         "fireeye-hx-delete-data-acquisition":delete_data_acquisition_command,
         "fireeye-hx-file-acquisition":file_acquisition_command,
@@ -2594,8 +2650,8 @@ def main() -> None:
     }
     
     params=demisto.params()
-    userName=params.get("credentials").get('identifier')
-    password=params.get("credentials").get('password')
+    userName=params.get("userName").get('identifier')
+    password=params.get("userName").get('password')
     if not userName or not password:
         raise("User Name and Password are required")
     
@@ -2617,10 +2673,6 @@ def main() -> None:
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
 
-        # TODO: Make sure you add the proper headers for authentication
-        # (i.e. "Authorization": {api key})
-        headers: Dict = {}
-
         client = Client(
             base_url=base_url,
             verify=verify_certificate,
@@ -2628,6 +2680,7 @@ def main() -> None:
             auth=(userName,password))
         
         if command == 'test-module':
+            test_result=get_alerts(client,{"limit":1})
             return_results('ok')
         if command == 'fetch-incidents':
             incidents=fetch_incidents(client,params)

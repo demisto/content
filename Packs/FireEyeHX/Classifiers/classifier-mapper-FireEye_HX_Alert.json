@@ -1,0 +1,77 @@
+{
+	"brands": null,
+	"cacheVersn": 0,
+	"defaultIncidentType": "",
+	"definitionId": "",
+	"description": "",
+	"feed": false,
+	"fromServerVersion": "",
+	"id": "7217e416-68b7-4bc8-8552-9909e1f3942b",
+	"incidentSamples": null,
+	"indicatorSamples": null,
+	"instanceIds": null,
+	"itemVersion": "",
+	"keyTypeMap": {},
+	"locked": false,
+	"logicalVersion": 3,
+	"mapping": {
+		"FireEye HX Alert": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+				"Agents ID": {
+					"simple": "agent._id"
+				},
+				"Alert Action": {
+					"simple": "resolution"
+				},
+				"Alert Category": {
+					"simple": "event_type"
+				},
+				"Alert Source": {
+					"simple": "source"
+				},
+				"Appliance ID": {
+					"simple": "appliance._id"
+				},
+				"Event ID": {
+					"simple": "event_id"
+				},
+				"File MD5": {
+					"complex": {
+						"filters": [],
+						"root": "md5values",
+						"transformers": []
+					}
+				},
+				"FireEye Agent Containment State": {
+					"simple": "agent.containment_state"
+				},
+				"FireEye Match Count": {
+					"simple": "_id"
+				},
+				"FireEye Matched Time": {
+					"simple": "matched_at"
+				},
+				"Fireeye Matched Time": {
+					"simple": "matched_at"
+				},
+				"occurred": {
+					"simple": "event_at"
+				}
+			}
+		}
+	},
+	"name": "FireEye HX - Incoming Mapper",
+	"nameRaw": "FireEye HX - Incoming Mapper",
+	"packID": "",
+	"propagationLabels": [
+		"all"
+	],
+	"sourceClassifierId": "",
+	"system": false,
+	"toServerVersion": "",
+	"transformer": {},
+	"type": "mapping-incoming",
+	"unclassifiedCases": null,
+	"version": -1
+}

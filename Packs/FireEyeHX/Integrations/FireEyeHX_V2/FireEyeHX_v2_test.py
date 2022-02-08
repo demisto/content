@@ -1,22 +1,10 @@
-"""Base Integration for Cortex XSOAR - Unit Tests file
-
-Pytest Unit Tests: all funcion names must start with "test_"
-
-More details: https://xsoar.pan.dev/docs/integrations/unit-testing
-
-MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
-
-You must add at least a Unit Test function for every XSOAR command
-you are implementing with your integration
-"""
-# from Packs.FireEyeHX.Integrations.FireEyeHX.CommonServerPython import CommandResults
-from http.client import responses
 import demistomock as demisto
 import json
 import io
 import pytest
 
 from CommonServerPython import CommandResults
+
 def util_load_json(path):
     with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
@@ -29,7 +17,7 @@ UPSERT_COMMAND_DATA_BAD_CASES=[
     )
 ]
 @pytest.mark.parametrize('demisto_args,expected_results', UPSERT_COMMAND_DATA_BAD_CASES)
-def test_list_policy_command_faild(demisto_args,expected_results):
+def test_list_policy_command_failed(demisto_args,expected_results):
     
     """
     Given:
@@ -58,7 +46,7 @@ UPSERT_COMMAND_DATA_BAD_CASES=[
     )
 ]
 @pytest.mark.parametrize('demisto_args,expected_results', UPSERT_COMMAND_DATA_BAD_CASES)
-def test_list_host_set_policy_command_faild(demisto_args,expected_results):
+def test_list_host_set_policy_command_failed(demisto_args,expected_results):
     
     """
     Given:
@@ -99,7 +87,7 @@ UPSERT_COMMAND_DATA_BAD_CASES=[
 
 ] 
 @pytest.mark.parametrize('demisto_args,expected_results', UPSERT_COMMAND_DATA_BAD_CASES)
-def test_assign_host_set_policy_command_faild(demisto_args,expected_results):
+def test_assign_host_set_policy_command_failed(demisto_args,expected_results):
     
     """
     Given:
@@ -130,7 +118,7 @@ UPSERT_COMMAND_DATA_BAD_CASES=[
     
 ] 
 @pytest.mark.parametrize('demisto_args,expected_results', UPSERT_COMMAND_DATA_BAD_CASES)
-def test_get_host_information_command_faild(demisto_args,expected_results):
+def test_get_host_information_command_failed(demisto_args,expected_results):
     
     """
     Given:
@@ -161,7 +149,7 @@ UPSERT_COMMAND_DATA_BAD_CASES=[
     
 ]    
 @pytest.mark.parametrize('demisto_args,expected_results', UPSERT_COMMAND_DATA_BAD_CASES)
-def test_host_containment_command_faild(demisto_args,expected_results):
+def test_host_containment_command_failed(demisto_args,expected_results):
 
     """
     Given:
@@ -189,7 +177,7 @@ UPSERT_COMMAND_DATA_BAD_CASES = [
     )
 ]
 @pytest.mark.parametrize('demisto_args,expected_results', UPSERT_COMMAND_DATA_BAD_CASES)
-def test_approve_containment_command_faild(demisto_args,expected_results):
+def test_approve_containment_command_failed(demisto_args,expected_results):
 
     """
     Given:
@@ -219,7 +207,7 @@ UPSERT_COMMAND_DATA_BAD_CASES = [
     )
 ]
 @pytest.mark.parametrize('demisto_args,expected_results', UPSERT_COMMAND_DATA_BAD_CASES)
-def test_cancel_containment_command_faild(demisto_args,expected_results):
+def test_cancel_containment_command_failed(demisto_args,expected_results):
 
     """
     Given:
@@ -260,7 +248,7 @@ UPSERT_COMMAND_DATA_BAD_CASES = [
 
 ]
 @pytest.mark.parametrize('demisto_args,expected_results', UPSERT_COMMAND_DATA_BAD_CASES)
-def test_get_indicator_command_faild(demisto_args,expected_results):
+def test_get_indicator_command_failed(demisto_args,expected_results):
     
     """
     Given:
@@ -292,7 +280,7 @@ UPSERT_COMMAND_DATA_BAD_CASES = [
 
 ]
 @pytest.mark.parametrize('demisto_args,expected_results', UPSERT_COMMAND_DATA_BAD_CASES)
-def test_search_stop_command_faild(demisto_args,expected_results):
+def test_search_stop_command_failed(demisto_args,expected_results):
 
     """
     Given:
@@ -334,7 +322,7 @@ UPSERT_COMMAND_DATA_BAD_CASES = [
 
 ]
 @pytest.mark.parametrize('demisto_args,expected_results', UPSERT_COMMAND_DATA_BAD_CASES)
-def test_append_conditions_command_faild(demisto_args,expected_results):
+def test_append_conditions_command_failed(demisto_args,expected_results):
 
     """
     Given:
@@ -366,7 +354,7 @@ UPSERT_COMMAND_DATA_BAD_CASES = [
 
 ]
 @pytest.mark.parametrize('demisto_args,expected_results', UPSERT_COMMAND_DATA_BAD_CASES)
-def test_search_result_get_command_faiild(demisto_args,expected_results):
+def test_search_result_get_command_failed(demisto_args,expected_results):
 
     """
     Given:
@@ -406,7 +394,7 @@ UPSERT_COMMAND_DATA_BAD_CASES = [
 
 ]
 @pytest.mark.parametrize('demisto_args,expected_results', UPSERT_COMMAND_DATA_BAD_CASES)
-def test_data_acquisition_faiild(demisto_args,expected_results):
+def test_data_acquisition_failed(demisto_args,expected_results):
 
     """
     Given:
@@ -438,7 +426,7 @@ UPSERT_COMMAND_DATA_BAD_CASES = [
 
 ]
 @pytest.mark.parametrize('demisto_args,expected_results', UPSERT_COMMAND_DATA_BAD_CASES)
-def test_delete_data_acquisition_command_faiild(demisto_args,expected_results):
+def test_delete_data_acquisition_command_failed(demisto_args,expected_results):
 
     """
     Given:
@@ -470,7 +458,7 @@ UPSERT_COMMAND_DATA_BAD_CASES = [
 
 ]
 @pytest.mark.parametrize('demisto_args,expected_results', UPSERT_COMMAND_DATA_BAD_CASES)
-def test_file_acquisition_command_faiild(demisto_args,expected_results):
+def test_file_acquisition_command_failed(demisto_args,expected_results):
 
     """
     Given:
@@ -502,7 +490,7 @@ UPSERT_COMMAND_DATA_BAD_CASES = [
 
 ]
 @pytest.mark.parametrize('demisto_args,expected_results', UPSERT_COMMAND_DATA_BAD_CASES)
-def test_get_data_acquisition_command_faiild(demisto_args,expected_results):
+def test_get_data_acquisition_command_failed(demisto_args,expected_results):
 
     """
     Given:
@@ -597,6 +585,7 @@ def test_get_all_hosts_information(mocker,demisto_args,call_count,return_value_m
     else:
         assert len(result.outputs) == expected_results[1]
 
+
 UPSERT_COMMAND_DATA_CASES2 = [
 
     (
@@ -656,6 +645,7 @@ def test_host_containment(mocker,demisto_args,call_count,expected_results):
     
     get_agentId = mocker.patch("FireEyeHX_v2.get_agent_id_by_host_name",return_value="")
     mocker.patch.object(client,"host_containmet_request",return_value=None)
+    mocker.patch.object(client,"approve_containment_request",return_value=None)
     mocker.patch.object(client,"get_hosts_by_agentId_request",return_value={"data":{}})
     result = host_containment_command(client,demisto_args)
     assert get_agentId.call_count == call_count
@@ -749,13 +739,13 @@ UPSERT_COMMAND_DATA_CASES7 = [
     (
         {},
         "RUNNING",
-        {"data_acquisition_call":1,"ScheduledCommand_call":1},
+        {"data_acquisition":1,"ScheduledCommand":1},
         CommandResults
     ),
     (
         {"acquisition_id":"test"},
         "COMPLETE",
-        {"data_acquisition_call":0,"ScheduledCommand_call":0},
+        {"data_acquisition":0,"ScheduledCommand":0},
         list
     )
 ]
@@ -775,8 +765,8 @@ def test_data_acquisition_command(mocker,demisto_args,state,call_count,expected_
     mocker.patch.object(client,"data_collection_request",return_value="")
     ScheduledCommand_call = mocker.patch("FireEyeHX_v2.ScheduledCommand",return_value="test")
     result = data_acquisition_command(client,demisto_args)
-    assert ScheduledCommand_call.call_count == call_count["ScheduledCommand_call"]
-    assert data_acquisition_call.call_count == call_count["data_acquisition_call"]
+    assert ScheduledCommand_call.call_count == call_count["ScheduledCommand"]
+    assert data_acquisition_call.call_count == call_count["data_acquisition"]
     assert isinstance(result, expected_results) == True
 
 
@@ -860,7 +850,213 @@ def test_get_data_acquisition_command(mocker,demisto_args,state,call_count,expec
     assert isinstance(result, expected_results) == True
 
 
+UPSERT_COMMAND_DATA_CASES9 = [
+
+    (
+        ["test1","test2"],
+        {"test1":1},
+        ("test1",1)
+    ),
+    (
+        ["test1","test2"],
+        {"test1":1,"test2":2},
+        False
+    ),
+    (
+        ["test1","test2"],
+        {},
+        False 
+    )
+    
+]
+@pytest.mark.parametrize('demisto_arg1,demisto_arg2,expected_results', UPSERT_COMMAND_DATA_CASES9)
+def test_oneFromList(demisto_arg1,demisto_arg2,expected_results):
+
+    from FireEyeHX_v2 import oneFromList
+
+    result = oneFromList(listOfArgs= demisto_arg1,**demisto_arg2)
+    assert result == expected_results
 
 
+UPSERT_COMMAND_DATA_CASES10 = [
+
+    (
+        {"limit":2},
+        [{"data":{"entries":["test","test"]}},{"data":{"entries":[]}}],
+        2
+    ),
+    (
+        {"limit":2},
+        [{"data":{"entries":[]}}],
+        0
+    ),
+    (
+        {"limit":1},
+        [{"data":{"entries":["test","test"]}},{"data":{"entries":[]}}],
+        1
+    )
+]
+@pytest.mark.parametrize('demisto_args,results_mocker,expected_results', UPSERT_COMMAND_DATA_CASES10)
+def test_get_alerts(mocker,demisto_args,results_mocker,expected_results):
+
+    from FireEyeHX_v2 import get_alerts, Client
+
+    client = ""
+    mocker.patch.object(Client,"get_alerts_request",side_effect = results_mocker)
+    result = get_alerts(Client, demisto_args)
+    
+
+    assert len(result) == expected_results
+
+
+UPSERT_COMMAND_DATA_CASES11 = [
+
+    (
+        2,
+        [{"data":{"entries":["test","test"]}},{"data":{"entries":[]}}],
+        2
+    ),
+    (
+        2,
+        [{"data":{"entries":[]}}],
+        0
+    ),
+    (
+        1,
+        [{"data":{"entries":["test","test"]}},{"data":{"entries":[]}}],
+        1
+    )
+]
+@pytest.mark.parametrize('limit,results_mocker,expected_results', UPSERT_COMMAND_DATA_CASES11)
+def test_get_all_indicators(mocker,limit,results_mocker,expected_results):
+
+    from FireEyeHX_v2 import get_all_indicators, Client
+
+    client = ""
+    mocker.patch.object(Client,"get_indicators_request",side_effect = results_mocker)
+    result = get_all_indicators(Client, limit=limit)
+
+    assert len(result) == expected_results
+
+
+UPSERT_COMMAND_DATA_CASES12 = [
+
+    (
+        "test",
+        "test",
+        [{"data":{"entries":["test","test"]}},{"data":{"entries":[]}}],
+        2
+    ),
+    (
+        "test",
+        "test",
+        [{"data":{"entries":[]}}],
+        0
+    )
+]
+@pytest.mark.parametrize('category,name,results_mock,expected_results', UPSERT_COMMAND_DATA_CASES12)
+def test_get_all_enabled_conditions(mocker,category,name,results_mock,expected_results):
+
+    from FireEyeHX_v2 import get_all_enabled_conditions, Client
+
+    mocker.patch.object(Client,"get_indicator_conditions_request",side_effect = results_mock)
+    result = get_all_enabled_conditions(Client, category,name)
+
+    assert len(result) == expected_results
+
+
+UPSERT_COMMAND_DATA_CASES13 = [
+
+    (
+        "1990-06-24T22:16:26.865Z",
+        "1990-06-24T22:16:26.866Z"
+    ),
+    
+    (
+        "1990-06-24T22:16:26.999Z",
+        "1990-06-24T22:16:27.000Z"
+    )
+]
+@pytest.mark.parametrize('reported_at,expected_results', UPSERT_COMMAND_DATA_CASES13)
+def test_organize_reported_at(reported_at,expected_results):
+
+    from FireEyeHX_v2 import organize_reportedAt
+
+    result = organize_reportedAt(reported_at)
+
+    assert result == expected_results
+
+
+UPSERT_COMMAND_DATA_CASES14 = [
+
+    (
+        {"searchId":12},
+        {"data":{"state":"RUNNING","stats":{"search_state":{"MATCHED":0,"PENDING":1}}}},
+        {"ScheduledCommand": 1, "searchResult": 0, "searchStop": 0, "searchDelete": 0}
+    ),
+    (
+        {"searchId":12},
+        {"data":{"state":"STOPPED","stats":{"search_state":{"MATCHED":0,"PENDING":1}}}},
+        {"ScheduledCommand": 0, "searchResult": 1, "searchStop": 0, "searchDelete": 0} 
+    ),
+    (
+        {"searchId":12, "stopSearch": "stop"},
+        {"data":{"state":"STOPPED","stats":{"search_state":{"MATCHED":0,"PENDING":1}}}},
+        {"ScheduledCommand": 0, "searchResult": 1, "searchStop": 1, "searchDelete": 0} 
+    ),
+    (
+        {"searchId":12, "stopSearch": "stopAndDelete"},
+        {"data":{"state":"STOPPED","stats":{"search_state":{"MATCHED":0,"PENDING":1}}}},
+        {"ScheduledCommand": 0, "searchResult": 1, "searchStop": 0, "searchDelete": 1} 
+    )
+]
+@pytest.mark.parametrize('args,searchInfo,call_count', UPSERT_COMMAND_DATA_CASES14)
+def test_start_search_command(mocker, args, searchInfo, call_count):
+
+    from FireEyeHX_v2 import start_search_command, Client
+
+    mocker.patch.object(Client,"get_search_by_id_request",return_value = searchInfo)
+    scheduled_command = mocker.patch("FireEyeHX_v2.ScheduledCommand",return_value = "test")
+    search_result = mocker.patch("FireEyeHX_v2.search_result_get_command",return_value = [CommandResults(readable_output="")])
+    search_stop = mocker.patch.object(Client,"search_stop_request")
+    search_delete = mocker.patch.object(Client,"delete_search_request")
+    result = start_search_command(Client, args)
+    
+    assert search_result.call_count == call_count["searchResult"]
+    assert scheduled_command.call_count == call_count["ScheduledCommand"]
+    assert search_stop.call_count == call_count["searchStop"]
+    assert search_delete.call_count == call_count["searchDelete"]
+
+
+UPSERT_COMMAND_DATA_CASES15 = [
+    (
+        ("hostsNames","localhost"),
+        {"get_agent_id": 1, "get_host_set": 0}
+    ),
+    (
+        ("agentsIds","GfLI00Q4zpidezw9I11rV6"),
+        {"get_agent_id": 0, "get_host_set": 0}
+    ),
+    (
+        ("hostSetName","Demisto"),
+        {"get_agent_id": 0, "get_host_set": 1}
+    ),
+    (
+        ("hostSet",1001),
+        {"get_agent_id": 0, "get_host_set": 0} 
+    )
+]
+@pytest.mark.parametrize('args, call_count', UPSERT_COMMAND_DATA_CASES15)
+def test_organize_search_body_host(mocker,args,call_count):
+
+    from FireEyeHX_v2 import organize_search_body_host, Client
+
+    get_agent_id = mocker.patch("FireEyeHX_v2.get_agent_id_by_host_name", return_value = None)
+    get_host_set = mocker.patch.object(Client,"get_host_set_information_request",return_value = {"data":{"entries":[{"_id":"test"}]}})
+    organize_search_body_host(Client, arg = args,body = {})
+
+    assert get_agent_id.call_count == call_count["get_agent_id"]
+    assert get_host_set.call_count == call_count["get_host_set"]
 
 #TODO: ADD HERE unit tests for every command
+
