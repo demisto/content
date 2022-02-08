@@ -2,7 +2,8 @@ import demistomock as demisto
 import json
 import pytest
 from MicrosoftDefenderAdvancedThreatProtection import MsClient, get_future_time, build_std_output, parse_ip_addresses, \
-    print_ip_addresses, get_machine_details_command, run_polling_command, run_live_response_script_action
+    print_ip_addresses, get_machine_details_command, run_polling_command, run_live_response_script_action, \
+    get_live_response_file_action, put_live_response_file_action
 
 ARGS = {'id': '123', 'limit': '2', 'offset': '0'}
 
@@ -893,4 +894,41 @@ RUN_SCRIPT_CASES = [
 def test_run_live_response_script_action(mocker, args, expected_results):
     create_action_mock = mocker.patch.object(MsClient, 'create_action')
     run_live_response_script_action(client_mocker, args)
+    assert create_action_mock.call_args[0][1] == expected_results
+
+
+GET_FILE_CASES = [
+    (
+        {'machine_id': 'machine_id',
+         'comment': "testing",
+         'path': "C:\\Users\\example\\Desktop\\test.txt"},
+        {'Commands': [
+            {'type': 'GetFile', 'params': [{'key': 'Path', 'value': 'C:\\Users\\example\\Desktop\\test.txt'}]}],
+            'Comment': 'testing'}
+    ),
+]
+
+
+@pytest.mark.parametrize('args, expected_results', GET_FILE_CASES)
+def test_get_live_response_file_action(mocker, args, expected_results):
+    create_action_mock = mocker.patch.object(MsClient, 'create_action')
+    get_live_response_file_action(client_mocker, args)
+    assert create_action_mock.call_args[0][1] == expected_results
+
+
+PUT_FILE_CASES = [
+    (
+        {'machine_id': 'machine_id',
+         'comment': "testing",
+         'file_name': "test_script.ps1"},
+        {'Commands': [{'type': 'PutFile', 'params': [{'key': 'FileName', 'value': 'test_script.ps1'}]}],
+         'Comment': 'testing'}
+    ),
+]
+
+
+@pytest.mark.parametrize('args, expected_results', PUT_FILE_CASES)
+def test_put_live_response_file_action(mocker, args, expected_results):
+    create_action_mock = mocker.patch.object(MsClient, 'create_action')
+    put_live_response_file_action(client_mocker, args)
     assert create_action_mock.call_args[0][1] == expected_results
