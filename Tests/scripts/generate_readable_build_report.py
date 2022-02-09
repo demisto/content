@@ -74,13 +74,8 @@ def get_failing_tests():
         failed_tests_list = failed_tests.split('\n')
         for failed_test in failed_tests_list:
             test_data = get_test_data(failed_test)
-        gather_all_data_to_summary_file(test_data)
-        return f'you have {len(failed_tests_list)} failed tests on this push.\n'
+        return f'you have {len(failed_tests_list)} failed tests on this push {test_data}.\n'
     return 'no failing tests on this one. nice job!\n'
-
-
-def gather_all_data_to_summary_file(data: str):
-    pass
 
 
 def get_test_data(failed_test_name: str) -> str:
