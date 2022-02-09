@@ -9,7 +9,7 @@ configuration:
   required: true
   type: 0
 - display: API Key for accessing Lastline APIs
-  name: key_and_token
+  name: creds_key_and_token
   required: false
   type: 9
   displaypassword: API Token for accessing Lastline APIs
