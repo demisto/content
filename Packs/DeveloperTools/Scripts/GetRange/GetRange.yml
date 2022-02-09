@@ -11,14 +11,18 @@ args:
   name: value
   required: true
   secret: false
-comment:
-  Get a range of indexes from a list.
+comment: Get a range of indexes from a list.
 commonfields:
   id: GetRange
   version: -1
 enabled: false
 name: GetRange
+outputs:
+- contextPath: Value
+  description: Transformed list.
+  type: Array
 script: '-'
+subtype: python3
 system: false
 tags:
 - transformer
@@ -27,6 +31,5 @@ tags:
 - entirelist
 timeout: '0'
 type: python
-subtype: python3
 dockerimage: demisto/python3:3.9.7.24076
 fromversion: 5.5.0

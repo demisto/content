@@ -3,35 +3,35 @@ import demistomock as demisto
 from CommonServerPython import *
 
 
-def get_range_command(args):
+def get_range_command(indexes: List[str], val: List[Any]) -> CommandResults:
     """
-         Filter value list with an input range.
+         Filter list with a given range.
          Args:
-             args- dict(value to filter , index (list | str)
+             indexes (list): indexes to filter.
+             val (list): list to filter.
          Returns:
              filtered list.
      """
-    val = args['value']
-    indexes = list(args['range']) if '[' in args['range'] else args['range']
-    demisto.results(type(indexes))
-    if isinstance(indexes, (list, tuple)):
-        return CommandResults(
-            outputs={'value': [val[index] for index in indexes]})
-    if isinstance(indexes, str):
-        if '-' in indexes:
-            start, end = indexes.split('-')
+    result = []
+    for index in indexes:
+        if '-' in str(index):
+            start, end = index.split('-')
             start = int(start) if start else 0
             end = int(end) if end else len(val)
-            return CommandResults(
-                outputs={'value': val[start:end + 1]})
+            for element in val[start:end + 1]:
+                result.append(element)
+        else:
+            result.append(val[int(index)])
     return CommandResults(
-        outputs={'value': []})
+        outputs={'Value': result},
+    )
 
 
 def main():
     try:
-        demisto.results(demisto.args())
-        return_results(results=get_range_command(demisto.args()))
+        val = safe_load_json(demisto.args().get('value', ''))
+        indexes = argToList(demisto.args().get('range', ''))
+        return_results(results=get_range_command(indexes, val))
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute GetRange. Error: {str(ex)}')
