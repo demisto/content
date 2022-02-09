@@ -98,7 +98,7 @@ def url_calculate_score(status: str) -> Tuple[int, str]:
 
     status_dict = {'online': (Common.DBotScore.BAD, "The URL is active (online) and currently serving a payload"),
                    'offline': (Common.DBotScore.SUSPICIOUS, "The URL is inadctive (offline) and serving no payload"),
-                   'unknown': (Common.DBotScore.NONE, "The URL status could not be determined")}
+                   'unknown': (Common.DBotScore.NONE, "The URL status could not be determined")} 
     if status_dict.get(status):
         return status_dict[status]
     return Common.DBotScore.GOOD, "The URL is not listed"
