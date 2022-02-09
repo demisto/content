@@ -368,3 +368,40 @@ def test_fetch_incidents_last_alert_ids(mocker):
     # trim miliseconds to avoid glitches such as 2021-05-19T10:21:52.121+00:00 != 2021-05-19T10:21:52.123+00:00
     assert next_run.get('time')[:-6] == next_run_time
     assert next_run.get('last_alert_ids') == last_alert_ids
+
+
+# We freeze the time since we are using dateparser.parse('now') in the fetch incidents
+@freeze_time('2021-02-15T17:10:00+00:00')
+def test_fetch_incidents_no_alerts(mocker):
+    """Unit test
+    Given
+    - Current time is 2021-02-15 17:10:00 +00:00
+    - Fetch incidents command is called
+
+    When
+    - No results returned from the search for the start_time = 2021-02-14 17:01:14 +00:00 (no new alerts created until
+    now)
+
+    Then
+    - Validate that no incident will be returned.
+    - Validate that the last_run is set to the current time minus ten minutes (2021-02-15 17:00:00 +00:00)
+    - Validate last_alert_ids is reset to empty list
+    """
+    mocker.patch.object(FireEyeClient, '_get_token', return_value='token')
+    client = Client(base_url="https://fireeye.cm.com/", username='user', password='pass', verify=False, proxy=False)
+    mocker.patch.object(FireEyeClient, 'get_alerts_request', return_value=util_load_json('test_data/no_alerts.json'))
+    last_run_time = '2021-02-14T17:01:14+00:00'
+    last_alert_ids = '["1", "2", "3", "4", "5"]'
+    last_run = {
+        'time': last_run_time,
+        'last_alert_ids': last_alert_ids
+    }
+    next_run, incidents = fetch_incidents(client=client,
+                                          last_run=last_run,
+                                          first_fetch='1 year',
+                                          max_fetch=50,
+                                          info_level='concise')
+
+    assert len(incidents) == 0
+    assert next_run.get('time') == '2021-02-15T17:00:00+00:00'
+    assert next_run.get('last_alert_ids') == []
