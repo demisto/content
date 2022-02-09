@@ -12,7 +12,7 @@ configuration:
   type: 0
   required: true
 - displaypassword: Demisto Server API Key
-  name: api_key
+  name: creds_apikey
   type: 9
   required: false
   hiddenusername: true
