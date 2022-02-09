@@ -108,7 +108,6 @@ class Client(BaseClient):
 
     def handle_csv(self, file_params):
         self._session.post(self._base_url + '/papi/login', data=self.credentials, verify=self._verify)
-
         with open(file_params['path'], 'rb') as file_:
             result = self._session.post(self._base_url + '/papi/analysis/submit_file',
                                         data={'filename': file_params['name']},

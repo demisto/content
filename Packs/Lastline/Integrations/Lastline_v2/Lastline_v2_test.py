@@ -1,5 +1,6 @@
 import pytest
 from Lastline_v2 import *
+import Lastline_v2
 
 from CommonServerPython import DemistoException
 
@@ -146,3 +147,27 @@ def test_test_module_wrong_credentials(mocker, params):
     client = Client(base_url=params.get('url'), api_params=api_params, credentials=params.get('credentials'))
     with pytest.raises(DemistoException, match='Authentication Error.'):
         client.test_module_command()
+
+
+@pytest.mark.parametrize('params', [{'url': 'testurl.com',
+                                     'credentials': {'identifier': 'identifier',
+                                                     'password': 'password'}}])
+def test_csvs_handles_correctly(mocker, params):
+    """
+        Given:
+        - Valid params and a csv file to upload
+
+    When:
+        - Running the integration upload-file command
+
+    Then:
+        - Validating that handle_csv is being called
+    """
+    client = Client(base_url=params.get('url'), credentials=params.get('credentials'), api_params={'EntryID': '1234@'})
+    mocker.patch.object(demisto, 'getFilePath', return_value={'id': id, 'path': 'test/test.txt', 'name': 'test.csv'})
+    mocker.patch.object(os.path, 'splitext', return_value=['test', '.csv'])
+    mocker.patch.object(Lastline_v2, 'file_hash', return_value='dummyhash1234')
+    # if test failed, then this line wasn't effective, meaning handle_csv was not being called
+    mocker.patch.object(client, 'handle_csv', return_value={})
+    mocker.patch.object(Lastline_v2, 'report_generator', return_value=({}, {}))
+    assert client.upload_file() == ({}, {}, {})

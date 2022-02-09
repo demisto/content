@@ -67,6 +67,7 @@ NoneType
 CreateIncidents
 EML
 LastSeen
+Lastline
 IntelGraph
 Accenture
 CTI
