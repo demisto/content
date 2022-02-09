@@ -5,11 +5,11 @@ commonfields:
 configuration:
 - display: Server URL (e.g. https://example.net)
   name: url
-  required: true
+  required: false
   type: 0
 - display: API Key ID
   name: apikey_id
-  required: true
+  required: false
   type: 4
 - display: API Key
   name: apikey

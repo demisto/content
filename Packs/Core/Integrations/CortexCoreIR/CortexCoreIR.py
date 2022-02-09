@@ -2721,11 +2721,10 @@ def report_incorrect_wildfire_command(client: Client, args) -> CommandResults:
     )
 
     response = client.report_incorrect_wildfire(file_hash, new_verdict, reason, email)
-    reply = response.get('reply')
     return CommandResults(
-        readable_output=tableToMarkdown(f'Reported incorrect WildFire on {hash}', reply),
+        readable_output=f'Reported incorrect WildFire on {file_hash}',
         outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.WildFire',
-        outputs=reply,
+        outputs={"file_hash": file_hash, "new_verdict": new_verdict},
         raw_response=response,
     )
 
@@ -2809,35 +2808,6 @@ def main():
     """
     Executes an integration command
     """
-    # command = demisto.command()
-    # LOG(f'Command being called is {command}')
-    # args = demisto.args()
-    # api_key = demisto.getLicenseCustomField("Core.ApiKey")
-    # api_host_name = demisto.getLicenseCustomField("Core.ApiHostName")
-    # api_header = demisto.getLicenseCustomField("Core.ApiHeader")
-    # base_url = urljoin("http://" + demisto.getLicenseCustomField("Core.ApiHost"), '/public_api/v1')
-    # proxy = demisto.params().get('proxy')
-    # verify_cert = not demisto.params().get('insecure', False)
-    # try:
-    #     timeout = int(demisto.params().get('timeout', 120))
-    # except ValueError as e:
-    #     demisto.debug(f'Failed casting timeout parameter to int, falling back to 120 - {e}')
-    #     timeout = 120
-    #
-    # headers = {
-    #               "HOST": api_host_name,
-    #               api_header: api_key,
-    #               "Content-Type": "application/json"
-    #           }
-    # demisto.log(headers)
-    # client = Client(
-    #     base_url=base_url,
-    #     proxy=proxy,
-    #     verify=verify_cert,
-    #     headers=headers,
-    #     timeout=timeout
-    # )
-
     command = demisto.command()
     LOG(f'Command being called is {command}')
     args = demisto.args()
@@ -2850,7 +2820,7 @@ def main():
             demisto.getLicenseCustomField("Core.ApiHeader"): demisto.getLicenseCustomField("Core.ApiKey"),
             "Content-Type": "application/json"
         }
-        url = "http://" + demisto.getLicenseCustomField("Core.ApiHost")
+        url = "http://" + demisto.getLicenseCustomField("Core.ApiHost") + "/api/webapp/"
     else:
         headers = {
             "Content-Type": "application/json",

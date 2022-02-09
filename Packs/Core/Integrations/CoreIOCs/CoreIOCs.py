@@ -47,7 +47,7 @@ class Client:
     def __init__(self, params: Dict):
         url = params.get('url')
         if not url:
-            url = "http://" + demisto.getLicenseCustomField("Core.ApiHost")
+            url = "http://" + demisto.getLicenseCustomField("Core.ApiHost") + "/api/webapp/"
         self._base_url: str = urljoin(url, '/public_api/v1/indicators/')
         self._verify_cert: bool = not params.get('insecure', False)
         self._params = params
