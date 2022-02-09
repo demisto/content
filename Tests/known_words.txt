@@ -84,4 +84,5 @@ FireEye
 FormatURL
 Gitlab
 GitHub
+DomainTools
 Lastline
