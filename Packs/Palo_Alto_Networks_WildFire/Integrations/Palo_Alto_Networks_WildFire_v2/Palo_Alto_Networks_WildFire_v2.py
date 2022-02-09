@@ -775,10 +775,10 @@ def parse_file_report(reports, file_info):
         if 'evidence' in report and report["evidence"]:
             if 'file' in report["evidence"]:
                 if isinstance(report["evidence"]["file"], dict) and 'entry' in report["evidence"]["file"]:
-                    if '-md5' in report["evidence"]["file"]["entry"]:
-                        evidence_md5.append(report["evidence"]["file"]["entry"]["-md5"])
-                    if '-text' in report["evidence"]["file"]["entry"]:
-                        evidence_text.append(report["evidence"]["file"]["entry"]["-text"])
+                    if '@md5' in report["evidence"]["file"]["entry"]:
+                        evidence_md5.append(report["evidence"]["file"]["entry"]["@md5"])
+                    if '@text' in report["evidence"]["file"]["entry"]:
+                        evidence_text.append(report["evidence"]["file"]["entry"]["@text"])
 
         if 'elf_info' in report and report["elf_info"]:
             if 'Domains' in report["elf_info"]:
