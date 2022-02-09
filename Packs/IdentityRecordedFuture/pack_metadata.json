@@ -1,0 +1,27 @@
+{
+    "name": "Recorded Future Identity",
+    "description": "Recorded Future App for Identity",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "Recorded Future",
+    "url": "https://www.recordedfuture.com/integrations/",
+    "email": "support@recordedfuture.com",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": ["Security", "Email"],
+    "created": "2021-11-27T13:09:02Z",
+    "updated": "2021-11-27T13:09:02Z",
+    "useCases": [],
+    "keywords": [
+        "recorded future",
+        "recordedfuture",
+        "rf",
+        "identity",
+        "identities"
+    ],
+    "dependencies": {},
+    "githubUser": [
+        "rderkachrf"
+    ]
+}
