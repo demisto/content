@@ -779,7 +779,7 @@ script:
       name: basedn
     description: Updates attributes of an existing Active Directory group.
     name: ad-update-group
-  dockerimage: demisto/py3-tools:0.0.1.25751
+  dockerimage: demisto/py3-tools:0.0.1.26536
   runonce: false
   ismappable: true
   isremotesyncout: true
