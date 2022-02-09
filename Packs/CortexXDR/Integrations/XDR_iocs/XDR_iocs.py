@@ -450,7 +450,7 @@ def get_sync_file():
         os.remove(temp_file_path)
 
 
-def main():     # pragma: no cover
+def main():   # pragma: no cover
     # """
     # Executes an integration command
     # """

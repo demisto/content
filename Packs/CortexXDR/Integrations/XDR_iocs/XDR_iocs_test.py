@@ -274,7 +274,6 @@ class TestCreateFile:
         all_iocs['iocs'].append(defective_indicator)
         all_iocs['total'] += 1
         mocker.patch.object(demisto, 'searchIndicators', return_value=all_iocs)
-        mocker.patch.object(demisto, 'debug')
         create_file_sync(TestCreateFile.path)
         data = self.get_file(TestCreateFile.path)
         assert data == expected_data, f'create_file_sync with all iocs\n\tcreates: {data}\n\tinstead: {expected_data}'
