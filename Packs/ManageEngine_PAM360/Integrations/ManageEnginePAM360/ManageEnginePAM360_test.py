@@ -92,7 +92,7 @@ def test_manageengine_pam360_commands(command, args, http_response, context, moc
     - create the context
     - validate the expected_result and the created context
     """
-    client = Client(server_url="https://pam30:8282", app_token="B698EF92-B151-4E5C-969D-CA7B50DF4E9D", verify_certificate=False,
+    client = Client(server_url="https://pam30:8282", app_token="test", verify_certificate=False,
                     proxy=False)
 
     mocker.patch.object(Client, '_http_request', return_value=http_response)
