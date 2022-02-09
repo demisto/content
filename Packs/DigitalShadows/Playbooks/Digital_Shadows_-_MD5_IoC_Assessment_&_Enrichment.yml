@@ -1,0 +1,554 @@
+id: 2e834b02-fcdb-4783-8298-2cf5d205ba02
+version: 7
+vcShouldKeepItemLegacyProdMachine: false
+name: Digital Shadows - MD5_IoC Assessment & Enrichment
+description: Enrichment of MD5 IOC types - sub-playbook for IOC Assessment & Enrichment playbook
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: c20c79e4-3ae5-456e-825d-ad4d86ef59ed
+    type: start
+    task:
+      id: c20c79e4-3ae5-456e-825d-ad4d86ef59ed
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "48"
+      - "50"
+      - "52"
+      - "54"
+      - "44"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 0448548c-3b09-42b5-8936-5efc2ad17649
+    type: title
+    task:
+      id: 0448548c-3b09-42b5-8936-5efc2ad17649
+      version: -1
+      name: End
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: 7445f515-2046-40cf-86ca-31caea7f772a
+    type: regular
+    task:
+      id: 7445f515-2046-40cf-86ca-31caea7f772a
+      version: -1
+      name: ds-search - THREAT FEEDS
+      description: Perform a textual search against the available record types
+      script: Digital Shadows|||ds-search
+      type: regular
+      iscommand: true
+      brand: Digital Shadows
+    nexttasks:
+      '#none#':
+      - "45"
+    scriptarguments:
+      extend-context:
+        simple: MD5 Associated Indicators=content.entity.indicators.title
+      filter_types:
+        simple: INDICATOR_FEED
+      query:
+        simple: ${inputs.IoC_MD5}
+      sort_property:
+        simple: sortDate
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: 8a2f6cc7-1dee-4dcd-8932-49ca93e79139
+    type: condition
+    task:
+      id: 8a2f6cc7-1dee-4dcd-8932-49ca93e79139
+      version: -1
+      name: is Associated Indicators blank?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "46"
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              simple: ${MD5 Associated Indicators}
+            iscontext: true
+    - label: "no"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ${MD5 Associated Indicators}
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: 91b77bd3-a1c6-40a1-8e63-cabf4cc682f4
+    type: regular
+    task:
+      id: 91b77bd3-a1c6-40a1-8e63-cabf4cc682f4
+      version: -1
+      name: createNewIndicator
+      description: Change the properties of an indicator
+      script: Builtin|||createNewIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "47"
+    scriptarguments:
+      value:
+        simple: ${MD5 Associated Indicators}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: 3e87bd44-9fb4-4f6e-8251-007b1f752476
+    type: regular
+    task:
+      id: 3e87bd44-9fb4-4f6e-8251-007b1f752476
+      version: -1
+      name: associateIndicatorsToIncident
+      description: Associate one or more indicators to incident. You can specify the
+        indicators by either indicator ID or the value of the indicator
+      script: Builtin|||associateIndicatorsToIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      incidentId:
+        simple: ${incident.id}
+      indicatorsValues:
+        complex:
+          root: CreatedIndicator
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: Value
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "48":
+    id: "48"
+    taskid: beb50b56-ff8c-45c9-8cb3-b17ccadac6aa
+    type: regular
+    task:
+      id: beb50b56-ff8c-45c9-8cb3-b17ccadac6aa
+      version: -1
+      name: ds-search - INTEL UPDATES
+      description: Perform a textual search against the available record types
+      script: Digital Shadows|||ds-search
+      type: regular
+      iscommand: true
+      brand: Digital Shadows
+    nexttasks:
+      '#none#':
+      - "49"
+    scriptarguments:
+      extend-context:
+        simple: MD5 Intel Summary=content.entity.summary
+      filter_types:
+        simple: INTEL_INCIDENT
+      query:
+        simple: ${inputs.IoC_MD5}
+      sort_property:
+        simple: sortDate
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "49":
+    id: "49"
+    taskid: e0b27315-4227-469e-8332-a9e3b4c16005
+    type: regular
+    task:
+      id: e0b27315-4227-469e-8332-a9e3b4c16005
+      version: -1
+      name: AddEvidence - INTEL UPDATES
+      description: |
+        Adds provided entries to the incident Evidence Board. In playbook, can be positioned after a task to add the previous task's entries to Evidence Board automatically (with no need to provide arguments)
+      scriptName: AddEvidence
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      desc:
+        simple: Summary
+      description:
+        simple: ${MD5 Intel Summary}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "50":
+    id: "50"
+    taskid: 0b4223a3-af47-409b-8d64-0cd6b1a8e854
+    type: regular
+    task:
+      id: 0b4223a3-af47-409b-8d64-0cd6b1a8e854
+      version: -1
+      name: ds-search - PROFILE INTELLIGENCE
+      description: Perform a textual search against the available record types
+      script: Digital Shadows|||ds-search
+      type: regular
+      iscommand: true
+      brand: Digital Shadows
+    nexttasks:
+      '#none#':
+      - "51"
+    scriptarguments:
+      extend-context:
+        simple: MD5 Profile Name=content.entity.primaryTag.name
+      filter_types:
+        simple: INTELLIGENCE
+      query:
+        simple: '${inputs.IoC_MD5} '
+      sort_property:
+        simple: sortDate
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "51":
+    id: "51"
+    taskid: 98b91235-46e3-42dd-8375-43a4b6e9881f
+    type: regular
+    task:
+      id: 98b91235-46e3-42dd-8375-43a4b6e9881f
+      version: -1
+      name: AddEvidence - INTEL PROFILES
+      description: |
+        Adds provided entries to the incident Evidence Board. In playbook, can be positioned after a task to add the previous task's entries to Evidence Board automatically (with no need to provide arguments)
+      scriptName: AddEvidence
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      desc:
+        simple: Profiles
+      description:
+        simple: ${MD5 Profile Name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "52":
+    id: "52"
+    taskid: 5316dc54-ea28-4789-8bba-7e98b8598938
+    type: regular
+    task:
+      id: 5316dc54-ea28-4789-8bba-7e98b8598938
+      version: -1
+      name: ds-search - MITRE TECHNIQUES
+      description: Perform a textual search against the available record types
+      script: Digital Shadows|||ds-search
+      type: regular
+      iscommand: true
+      brand: Digital Shadows
+    nexttasks:
+      '#none#':
+      - "53"
+    scriptarguments:
+      extend-context:
+        simple: MD5 TTP Profiles=content.entity.primaryTag.name
+      filter_types:
+        simple: TECHNIQUE
+      query:
+        simple: ${inputs.IoC_MD5}
+      sort_property:
+        simple: sortDate
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1555,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "53":
+    id: "53"
+    taskid: 8cafd4a6-f69e-495b-80b3-fffd142d0296
+    type: regular
+    task:
+      id: 8cafd4a6-f69e-495b-80b3-fffd142d0296
+      version: -1
+      name: AddEvidence - MITRE TECHNIQUES
+      description: |
+        Adds provided entries to the incident Evidence Board. In playbook, can be positioned after a task to add the previous task's entries to Evidence Board automatically (with no need to provide arguments)
+      scriptName: AddEvidence
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      desc:
+        simple: Associated TTPs
+      description:
+        simple: ${MD5 TTP Profiles}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1555,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "54":
+    id: "54"
+    taskid: 7ebab087-f1d7-4581-8eb4-8e15efb42793
+    type: regular
+    task:
+      id: 7ebab087-f1d7-4581-8eb4-8e15efb42793
+      version: -1
+      name: ds-search - CONFIRMED ACTIVITY
+      description: Perform a textual search against the available record types
+      script: Digital Shadows|||ds-search
+      type: regular
+      iscommand: true
+      brand: Digital Shadows
+    nexttasks:
+      '#none#':
+      - "55"
+    scriptarguments:
+      extend-context:
+        simple: MD5 Confirmed Activity=total
+      filter_types:
+        simple: INDICATOR_FEED
+      query:
+        simple: ${inputs.IoC_MD5}
+      sort_property:
+        simple: sortDate
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1985,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "55":
+    id: "55"
+    taskid: b698faec-bfca-448d-85f8-92cda1a96e56
+    type: regular
+    task:
+      id: b698faec-bfca-448d-85f8-92cda1a96e56
+      version: -1
+      name: AddEvidence - CONFIRMED ACTIVITY
+      description: |
+        Adds provided entries to the incident Evidence Board. In playbook, can be positioned after a task to add the previous task's entries to Evidence Board automatically (with no need to provide arguments)
+      scriptName: AddEvidence
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      desc:
+        simple: Confirmed Malicious Activity Count
+      description:
+        simple: ${MD5 Confirmed Activity}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1985,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 775,
+        "width": 2315,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: IoC_MD5
+  value:
+    complex:
+      root: File
+      accessor: MD5
+      transformers:
+      - operator: uniq
+  required: false
+  description: ""
+  playbookInputQuery: null
+outputs:
+- contextPath: DBotScore.Indicator
+  description: Indicator Value
+  type: string
+- contextPath: DBotScore.Type
+  description: Indicator Type
+  type: string
+sourceplaybookid: 387936d1-0ef0-42b9-8349-03cfa91145e3

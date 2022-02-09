@@ -1,0 +1,554 @@
+id: d3e5873c-023a-4da2-8efd-5f60f63f2fc7
+version: 7
+vcShouldKeepItemLegacyProdMachine: false
+name: Digital Shadows - CVE_IoC Assessment & Enrichment
+description: Enrichment of CVE IOC types - sub-playbook for IOC Assessment & Enrichment playbook
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: c20c79e4-3ae5-456e-825d-ad4d86ef59ed
+    type: start
+    task:
+      id: c20c79e4-3ae5-456e-825d-ad4d86ef59ed
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+      - "20"
+      - "22"
+      - "24"
+      - "26"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 0448548c-3b09-42b5-8936-5efc2ad17649
+    type: title
+    task:
+      id: 0448548c-3b09-42b5-8936-5efc2ad17649
+      version: -1
+      name: End
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1555,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: a6698220-b008-4f78-8699-37327b77c91a
+    type: regular
+    task:
+      id: a6698220-b008-4f78-8699-37327b77c91a
+      version: -1
+      name: ds-search - CONFIRMED ACTIVITY
+      description: Perform a textual search against the available record types
+      script: Digital Shadows|||ds-search
+      type: regular
+      iscommand: true
+      brand: Digital Shadows
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      extend-context:
+        simple: CVE Confirmed Activity=total
+      filter_types:
+        simple: INDICATOR_FEED
+      query:
+        simple: ${inputs.IoC_CVE}
+      sort_property:
+        simple: sortDate
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: b48e024e-6f9e-45d3-8f47-54ae2972932e
+    type: regular
+    task:
+      id: b48e024e-6f9e-45d3-8f47-54ae2972932e
+      version: -1
+      name: AddEvidence - CONFIRMED ACTIVITY
+      description: |
+        Adds provided entries to the incident Evidence Board. In playbook, can be positioned after a task to add the previous task's entries to Evidence Board automatically (with no need to provide arguments)
+      scriptName: AddEvidence
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      desc:
+        simple: Confirmed Malicious Activity Count
+      description:
+        simple: ${CVE Confirmed Activity}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: f7e6c452-fbea-481e-8798-4bbb7f065862
+    type: regular
+    task:
+      id: f7e6c452-fbea-481e-8798-4bbb7f065862
+      version: -1
+      name: ds-search - MITRE TECHNIQUES
+      description: Perform a textual search against the available record types
+      script: Digital Shadows|||ds-search
+      type: regular
+      iscommand: true
+      brand: Digital Shadows
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      extend-context:
+        simple: CVE TTP Profiles=content.entity.primaryTag.name
+      filter_types:
+        simple: TECHNIQUE
+      query:
+        simple: ${inputs.IoC_CVE}
+      sort_property:
+        simple: sortDate
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 65ce5d56-fe49-4500-803e-7d674860f15b
+    type: regular
+    task:
+      id: 65ce5d56-fe49-4500-803e-7d674860f15b
+      version: -1
+      name: AddEvidence - MITRE TECHNIQUES
+      description: |
+        Adds provided entries to the incident Evidence Board. In playbook, can be positioned after a task to add the previous task's entries to Evidence Board automatically (with no need to provide arguments)
+      scriptName: AddEvidence
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      desc:
+        simple: Associated TTPs
+      description:
+        simple: ${CVE TTP Profiles}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 9b69ba37-48ba-4d7f-81e9-5f3f3b6cf9c6
+    type: regular
+    task:
+      id: 9b69ba37-48ba-4d7f-81e9-5f3f3b6cf9c6
+      version: -1
+      name: ds-search - PROFILE INTELLIGENCE
+      description: Perform a textual search against the available record types
+      script: Digital Shadows|||ds-search
+      type: regular
+      iscommand: true
+      brand: Digital Shadows
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      extend-context:
+        simple: CVE Profile Name=content.entity.primaryTag.name
+      filter_types:
+        simple: INTELLIGENCE
+      query:
+        simple: ${inputs.IoC_CVE}
+      sort_property:
+        simple: sortDate
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: f3e94d49-cd99-4590-899c-4adec5df7405
+    type: regular
+    task:
+      id: f3e94d49-cd99-4590-899c-4adec5df7405
+      version: -1
+      name: AddEvidence - INTEL PROFILES
+      description: |
+        Adds provided entries to the incident Evidence Board. In playbook, can be positioned after a task to add the previous task's entries to Evidence Board automatically (with no need to provide arguments)
+      scriptName: AddEvidence
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      desc:
+        simple: Profiles
+      description:
+        simple: ${CVE Profile Name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 57537991-802e-4936-8186-32d525015d27
+    type: regular
+    task:
+      id: 57537991-802e-4936-8186-32d525015d27
+      version: -1
+      name: ds-search - INTEL UPDATES
+      description: Perform a textual search against the available record types
+      script: Digital Shadows|||ds-search
+      type: regular
+      iscommand: true
+      brand: Digital Shadows
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      extend-context:
+        simple: CVE Intel Summary=content.entity.summary
+      filter_types:
+        simple: INTEL_INCIDENT
+      query:
+        simple: ${inputs.IoC_CVE}
+      sort_property:
+        simple: sortDate
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 998b84f6-2be8-4f80-8fd7-e21cd8068840
+    type: regular
+    task:
+      id: 998b84f6-2be8-4f80-8fd7-e21cd8068840
+      version: -1
+      name: AddEvidence - INTEL UPDATES
+      description: |
+        Adds provided entries to the incident Evidence Board. In playbook, can be positioned after a task to add the previous task's entries to Evidence Board automatically (with no need to provide arguments)
+      scriptName: AddEvidence
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      desc:
+        simple: Summary
+      description:
+        simple: ${CVE Intel Summary}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: be4c5d95-eff1-42bd-8a7b-883eca043dfc
+    type: regular
+    task:
+      id: be4c5d95-eff1-42bd-8a7b-883eca043dfc
+      version: -1
+      name: ds-search - THREAT FEEDS
+      description: Perform a textual search against the available record types
+      script: Digital Shadows|||ds-search
+      type: regular
+      iscommand: true
+      brand: Digital Shadows
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      extend-context:
+        simple: CVE Associated Indicators=content.entity.indicators.title
+      filter_types:
+        simple: INDICATOR_FEED
+      query:
+        simple: ${inputs.IoC_CVE}
+      sort_property:
+        simple: sortDate
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: a7a458ce-0379-4c94-836c-00ce05f04df8
+    type: condition
+    task:
+      id: a7a458ce-0379-4c94-836c-00ce05f04df8
+      version: -1
+      name: is Associated Indicators blank?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "28"
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              simple: ${CVE Associated Indicators}
+            iscontext: true
+    - label: "no"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ${CVE Associated Indicators}
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: a3513b8f-4c21-453d-8750-194dc21ff155
+    type: regular
+    task:
+      id: a3513b8f-4c21-453d-8750-194dc21ff155
+      version: -1
+      name: createNewIndicator
+      description: Change the properties of an indicator
+      script: Builtin|||createNewIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      value:
+        simple: ${CVE Associated Indicators}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1985,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: e5493cec-43f8-478d-8317-9278f840bb99
+    type: regular
+    task:
+      id: e5493cec-43f8-478d-8317-9278f840bb99
+      version: -1
+      name: associateIndicatorsToIncident
+      description: Associate one or more indicators to incident. You can specify the
+        indicators by either indicator ID or the value of the indicator
+      script: Builtin|||associateIndicatorsToIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      incidentId:
+        simple: ${incident.id}
+      indicatorsValues:
+        complex:
+          root: CreatedIndicator
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: Value
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1985,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 765,
+        "width": 2315,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: IoC_CVE
+  value:
+    complex:
+      root: CVE
+      accessor: ID
+      transformers:
+      - operator: uniq
+  required: false
+  description: ""
+  playbookInputQuery: null
+outputs:
+- contextPath: DBotScore.Indicator
+  description: Indicator Value
+  type: string
+- contextPath: DBotScore.Type
+  description: Indicator Type
+  type: string
+sourceplaybookid: 387936d1-0ef0-42b9-8349-03cfa91145e3

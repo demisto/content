@@ -1,0 +1,518 @@
+id: a920cb78-2075-4c46-8749-7d858c2aa2bd
+version: 87
+vcShouldKeepItemLegacyProdMachine: false
+name: Digital Shadows - Domain Alert Intelligence (Automated)
+description: Provides intelligence and reputation outputs based on the most recent Impersonating Domain, Subdomain or Phishing URL reported by Digital Shadows SearchLight
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 8d93cb69-f5c0-47a0-8c14-a05b5e550e32
+    type: start
+    task:
+      id: 8d93cb69-f5c0-47a0-8c14-a05b5e550e32
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+      - "4"
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 76f9def5-0bdd-40f6-8f86-488867e25e8d
+    type: regular
+    task:
+      id: 76f9def5-0bdd-40f6-8f86-488867e25e8d
+      version: -1
+      name: ds-search - URL on Reputation Feed
+      description: Perform a textual search against the available record types
+      script: Digital Shadows|||ds-search
+      type: regular
+      iscommand: true
+      brand: Digital Shadows
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      extend-context:
+        simple: WebRoot Reputation=content.entity.reputation
+      filter_types:
+        simple: INDICATOR_FEED
+      query:
+        complex:
+          root: incident
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: incident.labels.subType
+                iscontext: true
+              right:
+                value:
+                  simple: PHISHING_ATTEMPT
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: labels
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: entitySummary
+          - operator: ParseJSON
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: source
+      sort_property:
+        simple: sortDate
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: a73cc1e6-7bef-49a4-8cd0-a8b972265880
+    type: regular
+    task:
+      id: a73cc1e6-7bef-49a4-8cd0-a8b972265880
+      version: -1
+      name: ds-search - DOMAIN on Whois
+      description: Perform a textual search against the available record types
+      script: Digital Shadows|||ds-search
+      type: regular
+      iscommand: true
+      brand: Digital Shadows
+    scriptarguments:
+      extend-context:
+        simple: Name Servers=content.entity.nameServers::Whois Raw=content.entity.rawText
+      filter_types:
+        simple: WHOIS
+      query:
+        complex:
+          root: incident
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: incident.labels.subType
+                iscontext: true
+              right:
+                value:
+                  simple: PHISHING_ATTEMPT
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: labels
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: entitySummary
+          - operator: ParseJSON
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: domain
+      sort_property:
+        simple: sortDate
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: d5d27fd8-a609-4f34-80de-91d55ef9ef4f
+    type: regular
+    task:
+      id: d5d27fd8-a609-4f34-80de-91d55ef9ef4f
+      version: -1
+      name: ds-search - URL on Indicator Feed
+      description: Perform a textual search against the available record types
+      script: Digital Shadows|||ds-search
+      type: regular
+      iscommand: true
+      brand: Digital Shadows
+    nexttasks:
+      '#none#':
+      - "7"
+      - "8"
+      - "13"
+    scriptarguments:
+      extend-context:
+        simple: Description=content.entity.description::Associated Indicators=content.entity.indicators.title::Phishing
+          URL=content.entity.url
+      filter_types:
+        simple: INDICATOR_FEED
+      query:
+        complex:
+          root: incident
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: incident.labels.subType
+                iscontext: true
+              right:
+                value:
+                  simple: PHISHING_ATTEMPT
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: labels
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: entitySummary
+          - operator: ParseJSON
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: source
+      sort_property:
+        simple: sortDate
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 5339b087-6628-4996-847a-0f356f08c7e4
+    type: regular
+    task:
+      id: 5339b087-6628-4996-847a-0f356f08c7e4
+      version: -1
+      name: AddEvidence - DOMAIN REPUTATION
+      description: |
+        Adds provided entries to the incident Evidence Board. In playbook, can be positioned after a task to add the previous task's entries to Evidence Board automatically (with no need to provide arguments)
+      scriptName: AddEvidence
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      desc:
+        simple: Domain Webroot Reputation
+      description:
+        simple: ${WebRoot Reputation}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 661226c6-9112-4f55-8432-f8ac436f0046
+    type: regular
+    task:
+      id: 661226c6-9112-4f55-8432-f8ac436f0046
+      version: -1
+      name: AddEvidence - PHISHING LINK
+      description: |
+        Adds provided entries to the incident Evidence Board. In playbook, can be positioned after a task to add the previous task's entries to Evidence Board automatically (with no need to provide arguments)
+      scriptName: AddEvidence
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      desc:
+        simple: Phishing Site
+      description:
+        simple: ${Phishing URL}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 8cf0fb06-4c3f-4e1b-84dc-3a5519cb172d
+    type: regular
+    task:
+      id: 8cf0fb06-4c3f-4e1b-84dc-3a5519cb172d
+      version: -1
+      name: AddEvidence - DESCRIPTION
+      description: |
+        Adds provided entries to the incident Evidence Board. In playbook, can be positioned after a task to add the previous task's entries to Evidence Board automatically (with no need to provide arguments)
+      scriptName: AddEvidence
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      desc:
+        simple: Description
+      description:
+        simple: ${Description}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 8015b4aa-15e9-4cd9-82d6-937f5d8a2b2c
+    type: regular
+    task:
+      id: 8015b4aa-15e9-4cd9-82d6-937f5d8a2b2c
+      version: -1
+      name: createNewIndicator
+      description: Change the properties of an indicator
+      script: Builtin|||createNewIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      value:
+        simple: ${Associated Indicators}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 8c941eda-9291-44d4-887a-5ef4d78a2ce9
+    type: regular
+    task:
+      id: 8c941eda-9291-44d4-887a-5ef4d78a2ce9
+      version: -1
+      name: associateIndicatorsToIncident
+      description: Associate one or more indicators to incident. You can specify the
+        indicators by either indicator ID or the value of the indicator
+      script: Builtin|||associateIndicatorsToIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      incidentId:
+        simple: ${incident.id}
+      indicatorsValues:
+        complex:
+          root: CreatedIndicator
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: Value
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 91e2c3c5-68a6-4dbb-8030-f6ff3f6380c5
+    type: title
+    task:
+      id: 91e2c3c5-68a6-4dbb-8030-f6ff3f6380c5
+      version: -1
+      name: End
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1555,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: e270c1b5-16a2-4f0e-8466-5c18201cda88
+    type: condition
+    task:
+      id: e270c1b5-16a2-4f0e-8466-5c18201cda88
+      version: -1
+      name: Is Associated Indicators Blank?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "No":
+      - "9"
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              simple: ${Associated Indicators}
+            iscontext: true
+    - label: "No"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ${Associated Indicators}
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 765,
+        "width": 1885,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: Phishing Attempt Incident ID
+  value:
+    complex:
+      root: incident
+      filters:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: incident.labels.subType
+            iscontext: true
+          right:
+            value:
+              simple: PHISHING_ATTEMPT
+      accessor: id
+  required: false
+  description: ""
+  playbookInputQuery: null
+outputs: []
