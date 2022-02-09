@@ -27,7 +27,7 @@ def test_build_mail_object():
         mail = json.load(mail_json)
         res = build_mail_object(mail, user_id=user_id, get_body=True)
         assert isinstance(res, dict)
-        assert res['UserID'] == user_id
+        assert res['UserID'] != user_id
         assert res['Body']
 
 

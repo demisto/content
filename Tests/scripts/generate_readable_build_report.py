@@ -9,7 +9,7 @@ JOB_ID = os.environ.get('CI_JOB_ID')
 SUMMARY = ''
 
 
-def get_artifact_data(artifact_folder, artifact_relative_path: str) -> Optional[str]:
+def get_artifact_data(artifact_folder, artifact_relative_path: str) -> str:
     """
     Retrieves artifact data according to the artifact relative path from 'ARTIFACTS_FOLDER' given.
     Args:
@@ -28,8 +28,10 @@ def get_artifact_data(artifact_folder, artifact_relative_path: str) -> Optional[
                 artifact_data = file_data.read()
         else:
             print(f'Did not find {artifact_relative_path} file')
+            return ''
     except Exception:
         print(f'Error getting {artifact_relative_path} file')
+        return ''
     return artifact_data
 
 
