@@ -716,9 +716,9 @@ class Client(BaseClient):
             )
 
 
-    def list_host_set_policy_request(self, offset:int, limit:int, policyId:str=''):
+    def list_host_set_policy_request(self, offset:int, limit:int, policyId: str = ''):
               
-        params=assign_params(_policy_id=policyId, offset=offset, limit=limit)
+        params=assign_params(policy_id = policyId, offset = offset, limit = limit)
 
         return self._http_request(
             method="GET",
@@ -1585,7 +1585,7 @@ def list_policy_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     return command_results
 
 
-def list_host_set_policy_command(client:Client, args:Dict[str,Any])->CommandResults:#*************not finished**********
+def list_host_set_policy_command(client:Client, args:Dict[str,Any])->CommandResults:
     
 
     offset=args.get("offset")
