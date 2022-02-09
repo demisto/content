@@ -1192,135 +1192,191 @@ async def get_bot_id_async() -> str:
     return response.get('bot_id')
 
 
+async def log_and_reset_module_health(event_type):
+    # Reset module health
+    demisto.updateModuleHealth("")
+    demisto.info(f"SlackV3 - {event_type} Event handled successfully.")
+
+
+async def process_dm(slack_event) -> bool:
+    if slack_event.channel and slack_event.channel[0] == 'D' and ENABLE_DM:
+        # DM
+        await handle_dm(slack_event.user, slack_event.text, ASYNC_CLIENT)  # type: ignore
+        return True
+    else:
+        return False
+
+
+async def process_bot_message(slack_event) -> bool:
+    if slack_event.subtype == 'bot_message' or slack_event.message_bot_id or slack_event.message.get('subtype') == 'bot_message' \
+            or \
+            slack_event.event.get('bot_id', None):
+        integration_context = get_integration_context(SYNC_CONTEXT)
+        if integration_context.get('bot_user_id'):
+            bot_id = integration_context['bot_user_id']
+            if bot_id == 'null' or bot_id is None:
+                # In some cases the bot_id can be stored as a string 'null', this handles this edge case.
+                bot_id = await get_bot_id_async()
+                set_to_integration_context_with_retries({'bot_user_id': bot_id}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
+        else:
+            bot_id = await get_bot_id_async()
+            set_to_integration_context_with_retries({'bot_user_id': bot_id}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
+        if slack_event.event.get('subtype') == 'bot_message':
+            return True
+        if slack_event.event.get('bot_id', '') == bot_id:
+            return True
+    else:
+        return False
+
+
+async def process_actions(slack_event):
+    channel = slack_event.payload.get('channel', {}).get('id', '')
+    user_id = slack_event.payload.get('user', {}).get('id', '')
+    entitlement_json = slack_event.actions[0].get('value')
+    entitlement_string = json.loads(entitlement_json)
+    entitlement_reply = json.loads(entitlement_json).get("reply", "Thank you for your reply.")
+    action_text = slack_event.actions[0].get('text').get('text')
+    user = await ASYNC_CLIENT.users_info(user=user_id)
+    answer_question(action_text, entitlement_string, user.get('user', {}).get('profile', {}).get('email'))
+    await process_entitlement_reply(entitlement_reply, user_id, action_text, channel, slack_event.message_ts)
+
+
+async def process_entitlement_reply(entitlement_reply, user_id, action_text, channel, message_ts):
+    if '{user}' in entitlement_reply:
+        entitlement_reply = entitlement_reply.replace('{user}', f'<@{user_id}>')
+    if '{response}' in entitlement_reply and action_text:
+        entitlement_reply = entitlement_reply.replace('{response}', str(action_text))
+    await send_slack_request_async(client=ASYNC_CLIENT, method='chat.update', body={
+        'channel': channel,
+        'ts': message_ts,
+        'text': entitlement_reply,
+        'blocks': []
+        })
+
+
+async def process_mirror(slack_event):
+    channel_id = slack_event.channel
+
+    if not slack_event.integration_context or 'mirrors' not in slack_event.integration_context:
+        return
+
+    mirrors = json.loads(slack_event.integration_context['mirrors'])
+    mirror_filter = list(filter(lambda m: m['channel_id'] == channel_id, mirrors))
+    if not mirror_filter:
+        await log_and_reset_module_health("Generic Message")
+        return
+
+    for mirror in mirror_filter:
+        if mirror['mirror_direction'] == 'FromDemisto' or mirror['mirror_type'] == 'none':
+            return
+
+        if not mirror['mirrored']:
+            demisto.info("Not mirrored yet")
+            # In case the investigation is not mirrored yet
+            mirror = mirrors.pop(mirrors.index(mirror))
+            if mirror['mirror_to'] and mirror['mirror_direction'] and mirror['mirror_type']:
+                investigation_id = mirror['investigation_id']
+                mirror_type = mirror['mirror_type']
+                auto_close = mirror['auto_close']
+                direction = mirror['mirror_direction']
+                if isinstance(auto_close, str):
+                    auto_close = bool(strtobool(auto_close))
+                demisto.info(f'Mirroring: {investigation_id}')
+                demisto.mirrorInvestigation(investigation_id,
+                                            f'{mirror_type}:{direction}', auto_close)
+                mirror['mirrored'] = True
+                mirrors.append(mirror)
+                set_to_integration_context_with_retries({'mirrors': mirrors},
+                                                        OBJECTS_TO_KEYS, SYNC_CONTEXT)
+
+        investigation_id = mirror['investigation_id']
+        await handle_text(ASYNC_CLIENT, investigation_id, slack_event.text, slack_event.user)  # type: ignore
+        await log_and_reset_module_health("Mirrored Message")
+
+
+class IncomingEvent:
+    def __init__(self, req):
+        data: dict = req.payload
+        self.payload = req.payload
+        self.event: dict = data.get('event', {})
+        self.subtype = data.get('subtype', '')
+        self.event_subtype = self.event.get('subtype')
+        self.text = self.event.get('text', '')
+        self.user_id = self.event.get('user', '')
+        self.channel = self.event.get('channel', '')
+        self.message_bot_id = data.get('bot_id', '')
+        self.thread = self.event.get('thread_ts', None)
+        self.message = data.get('message', {})
+        self.command = data.get('command', None)
+        self.entitlement_reply = None
+        self.action_text = None
+        self.actions = data.get('actions', [])
+        self.message_ts = self.message.get('ts', '')
+        self.integration_context = None
+        if self.user_id == '':
+            self.user = await ASYNC_CLIENT.users_info(user=self.user_id)
+        else:
+            self.user = None
+
+        data_type: str = req.type
+        if data_type == 'error':
+            error = self.payload.get('error', {})
+            error_code = error.get('code')
+            error_msg = error.get('msg')
+            await handle_listen_error(
+                f'Slack API has thrown an error. Code: {error_code}, Message: {error_msg}.')
+            return
+
+        entitlement_match = re.search(ENTITLEMENT_REGEX, self.text)
+        if entitlement_match:
+            demisto.info('Slack - handling entitlement in message.')
+            content, guid, incident_id, task_id = extract_entitlement(entitlement_match.group(), self.text)
+            demisto.handleEntitlementForUser(incident_id, guid, self.user.get('profile', {}).get('email'), content, task_id)
+            self.entitlement_reply = 'Thank you for your response.'
+
+    def fetch_context(self):
+        self.integration_context = get_integration_context(SYNC_CONTEXT)
+
+
 async def listen(client: SocketModeClient, req: SocketModeRequest):
     demisto.info("Handling request")
     if req.envelope_id:
         response = SocketModeResponse(envelope_id=req.envelope_id)
         await client.send_socket_mode_response(response)
-    data_type: str = req.type
-    payload: dict = req.payload
-    if data_type == 'error':
-        error = payload.get('error', {})
-        error_code = error.get('code')
-        error_msg = error.get('msg')
-        await handle_listen_error(
-            f'Slack API has thrown an error. Code: {error_code}, Message: {error_msg}.')
-        return
     try:
-        data: dict = req.payload
-        event: dict = data.get('event', {})
-        subtype = data.get('subtype', '')
-        text = event.get('text', '')
-        user_id = event.get('user', '')
-        channel = event.get('channel', '')
-        message_bot_id = data.get('bot_id', '')
-        thread = event.get('thread_ts', None)
-        message = data.get('message', {})
-        entitlement_reply = None
-        action_text = None
-        message_ts = message.get('ts', '')
-        # Check if slash command received. If so, ignore for now.
-        if data.get('command', None):
+        slack_event = IncomingEvent(req=req)
+
+        if slack_event.command:
+            # Check if slash command received. If so, ignore for now.
             demisto.debug("Slash command event received. Ignoring.")
             return
 
-        actions = data.get('actions', [])
-        integration_context = get_integration_context(SYNC_CONTEXT)
-        if subtype == 'bot_message' or message_bot_id or message.get('subtype') == 'bot_message' \
-                or \
-                event.get('bot_id', None):
-
-            if integration_context.get('bot_user_id'):
-                bot_id = integration_context['bot_user_id']
-                if bot_id == 'null' or bot_id is None:
-                    # In some cases the bot_id can be stored as a string 'null', this handles this edge case.
-                    bot_id = await get_bot_id_async()
-                    set_to_integration_context_with_retries({'bot_user_id': bot_id}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
-            else:
-                bot_id = await get_bot_id_async()
-                set_to_integration_context_with_retries({'bot_user_id': bot_id}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
-            if event.get('subtype') == 'bot_message':
-                demisto.debug("Received bot_message event type. Ignoring.")
-                return
-            if event.get('bot_id', '') == bot_id:
-                demisto.debug("Received bot message from the current bot. Ignoring.")
-                return
-        if event.get('subtype') == 'message_changed':
-            demisto.debug("Received message_changed event type. Ignoring.")
+        if await process_dm(slack_event):
+            await log_and_reset_module_health("DM")
             return
 
-        if len(actions) > 0:
-            channel = data.get('channel', {}).get('id', '')
-            user_id = data.get('user', {}).get('id', '')
-            entitlement_json = actions[0].get('value')
-            entitlement_string = json.loads(entitlement_json)
-            entitlement_reply = json.loads(entitlement_json).get("reply", "Thank you for your reply.")
-            action_text = actions[0].get('text').get('text')
-            user = await ASYNC_CLIENT.users_info(user=user_id)
-            answer_question(action_text, entitlement_string, user.get('user', {}).get('profile', {}).get('email'))
+        if await process_bot_message(slack_event):
+            await log_and_reset_module_health("Bot Message")
+            return
 
+        if slack_event.event_subtype == 'message_changed':
+            await log_and_reset_module_health("Message Changed")
+            return
+
+        if len(slack_event.actions) > 0:
+            await process_actions(slack_event)
+            await log_and_reset_module_health("Action")
+            return
+
+        # by this point we will probably need the context
+        slack_event.fetch_context()
+        if slack_event.user_id != '':
+            # User ID is returned as an empty string
+            slack_event.entitlement_reply = await check_and_handle_entitlement(slack_event)  # type: ignore
+            await process_entitlement_reply(slack_event.entitlement_reply, slack_event.user_id, slack_event.action_text,
+                                            slack_event.channel, slack_event.message_ts)
         else:
-            if user_id != '':
-                # User ID is returned as an empty string
-                user = await get_user_by_id_async(ASYNC_CLIENT, user_id)  # type: ignore
-                entitlement_reply = await check_and_handle_entitlement(text, user, thread)  # type: ignore
-
-        if entitlement_reply:
-            if '{user}' in entitlement_reply:
-                entitlement_reply = entitlement_reply.replace('{user}', f'<@{user_id}>')
-            if '{response}' in entitlement_reply and action_text:
-                entitlement_reply = entitlement_reply.replace('{response}', str(action_text))
-            await send_slack_request_async(client=ASYNC_CLIENT, method='chat.update',
-                                           body={
-                                               'channel': channel,
-                                               'ts': message_ts,
-                                               'text': entitlement_reply,
-                                               'blocks': []
-                                           })
-
-        elif channel and channel[0] == 'D' and ENABLE_DM:
-            # DM
-            await handle_dm(user, text, ASYNC_CLIENT)  # type: ignore
-        else:
-            channel_id = channel
-
-            if not integration_context or 'mirrors' not in integration_context:
-                return
-
-            mirrors = json.loads(integration_context['mirrors'])
-            mirror_filter = list(filter(lambda m: m['channel_id'] == channel_id, mirrors))
-            if not mirror_filter:
-                demisto.info("No mirror filter")
-                return
-
-            for mirror in mirror_filter:
-                if mirror['mirror_direction'] == 'FromDemisto' or mirror['mirror_type'] == 'none':
-                    return
-
-                if not mirror['mirrored']:
-                    demisto.info("Not mirrored yet")
-                    # In case the investigation is not mirrored yet
-                    mirror = mirrors.pop(mirrors.index(mirror))
-                    if mirror['mirror_to'] and mirror['mirror_direction'] and mirror['mirror_type']:
-                        investigation_id = mirror['investigation_id']
-                        mirror_type = mirror['mirror_type']
-                        auto_close = mirror['auto_close']
-                        direction = mirror['mirror_direction']
-                        if isinstance(auto_close, str):
-                            auto_close = bool(strtobool(auto_close))
-                        demisto.info(f'Mirroring: {investigation_id}')
-                        demisto.mirrorInvestigation(investigation_id,
-                                                    f'{mirror_type}:{direction}', auto_close)
-                        mirror['mirrored'] = True
-                        mirrors.append(mirror)
-                        set_to_integration_context_with_retries({'mirrors': mirrors},
-                                                                OBJECTS_TO_KEYS, SYNC_CONTEXT)
-
-                investigation_id = mirror['investigation_id']
-                await handle_text(ASYNC_CLIENT, investigation_id, text, user)  # type: ignore
-        # Reset module health
-        demisto.updateModuleHealth("")
-        demisto.info("SlackV3 - Event handled successfully.")
+            await process_mirror(slack_event)
         return
     except Exception as e:
         await handle_listen_error(f'Error occurred while listening to Slack: {e}')
@@ -1336,25 +1392,10 @@ async def get_user_by_id_async(client: AsyncWebClient, user_id: str) -> dict:
     Returns:
         The slack user.
     """
-    user: dict = {}
-    users: list = []
-    integration_context = get_integration_context(SYNC_CONTEXT)
-    if integration_context.get('users'):
-        users = json.loads(integration_context['users'])
-        user_filter = list(filter(lambda u: u['id'] == user_id, users))
-        if user_filter:
-            return user_filter[0]
-    if not user:
-        body = {
-            'user': user_id
-        }
-        user = (await send_slack_request_async(client, 'users.info', http_verb='GET', body=body)).get('user', {})
-
-    if not DISABLE_CACHING:
-        users.append(format_user_results(user))
-        set_to_integration_context_with_retries({'users': users}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
-
-    return user
+    body = {
+        'user': user_id
+    }
+    return (await send_slack_request_async(client, 'users.info', http_verb='GET', body=body)).get('user', {})
 
 
 async def handle_text(client: AsyncWebClient, investigation_id: str, text: str, user: dict):
@@ -1378,7 +1419,7 @@ async def handle_text(client: AsyncWebClient, investigation_id: str, text: str, 
         demisto.info("SlackV3 - Text handled successfully.")
 
 
-async def check_and_handle_entitlement(text: str, user: dict, thread_id: str) -> str:
+async def check_and_handle_entitlement(slack_event) -> str:
     """
     Handles an entitlement message (a reply to a question)
     Args:
@@ -1390,33 +1431,20 @@ async def check_and_handle_entitlement(text: str, user: dict, thread_id: str) ->
         If the message contains entitlement, return a reply.
     """
 
-    entitlement_match = re.search(ENTITLEMENT_REGEX, text)
-    if entitlement_match:
-        demisto.info('Slack - handling entitlement in message.')
-        content, guid, incident_id, task_id = extract_entitlement(entitlement_match.group(), text)
-        demisto.handleEntitlementForUser(incident_id, guid, user.get('profile', {}).get('email'), content, task_id)
-
-        return 'Thank you for your response.'
-    else:
-        integration_context = get_integration_context(SYNC_CONTEXT)
-        questions = integration_context.get('questions', [])
-        if questions and thread_id:
-            questions = json.loads(questions)
-            question_filter = list(filter(lambda q: q.get('thread') == thread_id, questions))
-            if question_filter:
-                question = question_filter[0]
-                demisto.info('Slack - handling entitlement in thread.')
-                entitlement = question.get('entitlement')
-                reply = question.get('reply', 'Thank you for your response.')
-                content, guid, incident_id, task_id = extract_entitlement(entitlement, text)
-                demisto.handleEntitlementForUser(incident_id, guid, user.get('profile', {}).get('email'), content,
-                                                 task_id)
-                question['remove'] = True
-                set_to_integration_context_with_retries({'questions': questions}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
-
-                return reply
-
-    return ''
+    questions = slack_event.integration_context.get('questions', [])
+    if questions and slack_event.thread_id:
+        questions = json.loads(questions)
+        question_filter = list(filter(lambda q: q.get('thread') == slack_event.thread_id, questions))
+        if question_filter:
+            question = question_filter[0]
+            demisto.info('Slack - handling entitlement in thread.')
+            entitlement = question.get('entitlement')
+            slack_event.entitlement_reply = question.get('reply', 'Thank you for your response.')
+            content, guid, incident_id, task_id = extract_entitlement(entitlement, slack_event.text)
+            demisto.handleEntitlementForUser(incident_id, guid, slack_event.user.get('profile', {}).get('email'), content,
+                                             task_id)
+            question['remove'] = True
+            set_to_integration_context_with_retries({'questions': questions}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
 
 
 ''' SEND '''
