@@ -3,16 +3,6 @@
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
 
 
-generate-report:
-  stage: report
-  rules:
-    - if: '$NIGHTLY != "true"'
-      when: always
-  script:
-    - echo "demisto-sdk version $(demisto-sdk --version)"
-    - python3 ./Tests/scripts/generate_readable_build_report.py
-
-
 trigger-private-build:
   tags:
     - gke
@@ -252,13 +242,15 @@ fan-in-nightly:
     - echo "fan in"
 
 
-#generate-report:
-#  stage: report
-#  rules:
-#    - if: '$NIGHTLY != "true"'
-#      when: always
-#  script:
-#    - python3 ./Tests/scripts/generate_readable_build_report.py
+generate-report:
+  stage: report
+  rules:
+    - if: '$NIGHTLY != "true"'
+      when: always
+  extends:
+    - .default-job-settings
+  script:
+    - python3 ./Tests/scripts/generate_readable_build_report.py
 
 
 slack-notify-nightly-build:
