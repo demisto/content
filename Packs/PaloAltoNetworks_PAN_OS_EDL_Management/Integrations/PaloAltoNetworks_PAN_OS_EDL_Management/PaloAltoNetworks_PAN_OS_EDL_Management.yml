@@ -28,7 +28,7 @@ configuration:
   name: document_root
   required: false
   type: 0
-description: Deprecated. Use the Palo Alto Networks PAN-OS EDL integration instead. This integration is still supported however, for customers with over 1000 Firewalls.
+description: Deprecated. Use the Palo Alto Networks PAN-OS EDL Service integration instead. This integration is still supported however, for customers with over 1000 Firewalls.
 display: Palo Alto Networks PAN-OS EDL Management (Deprecated)
 name: palo_alto_networks_pan_os_edl_management
 script:
