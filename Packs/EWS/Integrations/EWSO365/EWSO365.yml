@@ -1165,7 +1165,9 @@ script:
       description: 'Replace {varname} variables with values from this argument. Expected
         values are in the form of a JSON document, such ase {"varname": {"value":
         "some value", "key": "context key"}}. Each var name can either be provided
-        with the value or a context key from which to retrieve the value.'
+        with the value or a context key from which to retrieve the value. Note that
+        only context data is accessible for this argument, while incident fields are
+        not.'
       isArray: false
       name: templateParams
       required: false
@@ -1182,6 +1184,19 @@ script:
         except "to", "cc", and "bcc".
       isArray: false
       name: raw_message
+      required: false
+      secret: false
+    - default: false
+      description: The email address from which to reply.
+      isArray: false
+      name: from
+      required: false
+      secret: false
+    - default: false
+      description: Email addresses that need to be used to reply to the message. Supports
+        comma-separated values.
+      isArray: true
+      name: replyTo
       required: false
       secret: false
     deprecated: false

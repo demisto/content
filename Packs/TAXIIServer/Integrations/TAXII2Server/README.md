@@ -17,7 +17,6 @@ The collections are defined by a JSON object in the following format:
 }
 ```
 You can add a collection description as is done in `collection1_name`, or enter only a collection query, as in `collection2_name`.
-a
 
 ## How to Access the TAXII2 Server
 
@@ -127,3 +126,13 @@ TIM fields (System generated and custom). A general example of these two related
         }
     }
 }
+```
+
+## Performance Benchmark
+
+
+| **Indicators Amount** | **Request time (seconds)** |
+| --- | --- |
+| 10,000 | 5-10 | 
+| 50,000 | 30-40 |
+| 100,000 | 50-90 |

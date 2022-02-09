@@ -63,11 +63,11 @@ script:
   - name: epo-command
     arguments: []
     description: Executes the ePO command. Receives the mandatory 'command' argument,
-      and other optional arguments. Run the 'epo-help' command to get a list of
-      available commands. You can control the response format to be text instead
-      of the default JSON format using resp_type=text. You can also specify the 'headers'
-      argument to filter table headers. Example/:/ !epo-command command=system.find
-      searchText=10.0.0.1 headers=EPOBranchNode.AutoID,EPOComputerProperties.ComputerName
+      and other optional arguments. Run the 'epo-help' command to get a list of available
+      commands. You can control the response format to be text instead of the default
+      JSON format using resp_type=text. You can also specify the 'headers' argument
+      to filter table headers. Example/:/ !epo-command command=system.find searchText=10.0.0.1
+      headers=EPOBranchNode.AutoID,EPOComputerProperties.ComputerName
   - name: epo-update-client-dat
     arguments:
     - name: systems
@@ -484,8 +484,8 @@ script:
     - name: searchText
       required: false
       description: List tags that contain the searchText in their name field.
-    description: List tags that contain the searchText.
-      If no searchText is specified, list all tags available in the ePO system.
+    description: List tags that contain the searchText. If no searchText is specified,
+      list all tags available in the ePO system.
     outputs:
     - contextPath: McAfee.ePO.Tags.tagId
       description: Tag ID.
@@ -500,7 +500,8 @@ script:
     arguments:
     - name: table
       description: Name of the table to retrieve.
-    description: Returns the ePO table of the table argument that is specified. If no table argument is specified, returns all ePO tables.
+    description: Returns the ePO table of the table argument that is specified. If
+      no table argument is specified, returns all ePO tables.
   - name: epo-query-table
     arguments:
     - name: target
@@ -585,7 +586,8 @@ script:
     arguments:
     - name: searchText
       required: false
-      description: List policies that contains the searchText in their name field. If no searchText is specified, list all policies in the ePO system.
+      description: List policies that contains the searchText in their name field.
+        If no searchText is specified, list all policies in the ePO system.
     description: Finds policy.
   - name: epo-assign-policy-to-group
     arguments:
@@ -612,9 +614,8 @@ script:
     arguments:
     - name: names
       required: true
-      description: Either supply a comma-separated list of names/ip
-       addresses or a comma-separated list of IDs to which the policy
-        is to be assigned.
+      description: Either supply a comma-separated list of names/ip addresses or a
+        comma-separated list of IDs to which the policy is to be assigned.
     - name: productId
       required: true
       description: Product ID (as returned by policy.find).
@@ -630,16 +631,17 @@ script:
       predefined:
       - "true"
       - "false"
-      description: If true, resets the inheritance for the specified object. Default is false.
-    description: Assigns a policy to a supplied list of systems or resets the systems' inheritance
-      for the specified policy.
+      description: If true, resets the inheritance for the specified object. Default
+        is false.
+    description: Assigns a policy to a supplied list of systems or resets the systems'
+      inheritance for the specified policy.
   - name: epo-list-issues
     arguments:
     - name: id
       required: false
       description: The ID of the issue to display.
-    description: List the issue for the ID that is specified. 
-     If no ID is specified, list all issues in the McAfee ePO system.
+    description: List the issue for the ID that is specified. If no ID is specified,
+      list all issues in the McAfee ePO system.
     outputs:
     - contextPath: McAfee.ePO.Issue.activityLog.date
       description: Date of the issue activity log.

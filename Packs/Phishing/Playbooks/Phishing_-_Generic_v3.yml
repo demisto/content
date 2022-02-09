@@ -1,19 +1,17 @@
 id: Phishing - Generic v3
 version: -1
-contentitemexportablefields:
-  contentitemfields: {}
 name: Phishing - Generic v3
-description: "This playbook investigates and remediates a potential phishing incident. It engages with the user that triggered the incident while investigating the incident itself.\n\
-  Note: Final remediation tasks are always decided by a human analyst.
-  "
+description: "This playbook investigates and remediates a potential phishing incident.\
+  \ It engages with the user that triggered the incident while investigating the incident\
+  \ itself.\nNote: Final remediation tasks are always decided by a human analyst. "
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: ac4755be-b17d-4464-8224-15aee51d29de
+    taskid: 664506b8-2e32-418e-8366-975615da1945
     type: start
     task:
-      id: ac4755be-b17d-4464-8224-15aee51d29de
+      id: 664506b8-2e32-418e-8366-975615da1945
       version: -1
       name: ""
       iscommand: false
@@ -26,8 +24,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 67.5,
-          "y": -520
+          "x": -497.5,
+          "y": -690
         }
       }
     note: false
@@ -39,10 +37,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 469675b6-c693-42e3-891c-100ee64f3dd6
+    taskid: 33c75a16-88d7-444b-8d04-8ab0af2bbe4d
     type: regular
     task:
-      id: 469675b6-c693-42e3-891c-100ee64f3dd6
+      id: 33c75a16-88d7-444b-8d04-8ab0af2bbe4d
       version: -1
       name: Assign to analyst
       description: Assigns the incident to an analyst based on the analyst's organizational
@@ -69,7 +67,7 @@ tasks:
       {
         "position": {
           "x": -260,
-          "y": 2350
+          "y": 2560
         }
       }
     note: false
@@ -81,10 +79,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: d6dfa5b6-7756-4f6f-8e97-c9c7bcd67ad7
+    taskid: eb780ec7-557a-46ae-869d-582ca2547e62
     type: regular
     task:
-      id: d6dfa5b6-7756-4f6f-8e97-c9c7bcd67ad7
+      id: eb780ec7-557a-46ae-869d-582ca2547e62
       version: -1
       name: Manually review the incident
       description: Reviews the incident to determine if the email that the user reported
@@ -100,7 +98,7 @@ tasks:
       {
         "position": {
           "x": -770,
-          "y": 2845
+          "y": 3055
         }
       }
     note: false
@@ -112,10 +110,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 11da73b5-8815-42ea-89e6-d17ed25787d9
+    taskid: ab61f1da-1a47-456b-85b8-ba23a7df2f38
     type: regular
     task:
-      id: 11da73b5-8815-42ea-89e6-d17ed25787d9
+      id: ab61f1da-1a47-456b-85b8-ba23a7df2f38
       version: -1
       name: Close investigation
       description: Closes the investigation.
@@ -132,7 +130,7 @@ tasks:
       {
         "position": {
           "x": -897.5,
-          "y": 4960
+          "y": 5360
         }
       }
     note: false
@@ -144,10 +142,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 61327623-b9c8-4683-892e-82ed6a2005f7
+    taskid: d3bc5192-aeef-474d-8c51-25102d6ed901
     type: title
     task:
-      id: 61327623-b9c8-4683-892e-82ed6a2005f7
+      id: d3bc5192-aeef-474d-8c51-25102d6ed901
       version: -1
       name: Triage
       type: title
@@ -162,7 +160,7 @@ tasks:
       {
         "position": {
           "x": -497.5,
-          "y": 190
+          "y": 300
         }
       }
     note: false
@@ -174,10 +172,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 7a7d193e-ddc1-454b-80d4-d602c72c8155
+    taskid: 0773d4ad-fe7a-451a-821e-805434cdc5e6
     type: regular
     task:
-      id: 7a7d193e-ddc1-454b-80d4-d602c72c8155
+      id: 0773d4ad-fe7a-451a-821e-805434cdc5e6
       version: -1
       name: Store the email address of the reporting user
       description: Stores the email address of the user that reported the incident.
@@ -187,8 +185,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "11"
-      - "18"
+      - "85"
     scriptarguments:
       key:
         simple: ReporterAddress
@@ -201,8 +198,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 67.5,
-          "y": -35
+          "x": -497.5,
+          "y": -75
         }
       }
     note: false
@@ -214,14 +211,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 09a01f5c-142b-48cf-8c92-4205ca9a6d42
+    taskid: 1f37541b-cd13-4a37-8f9e-169b63825248
     type: regular
     task:
-      id: 09a01f5c-142b-48cf-8c92-4205ca9a6d42
+      id: 1f37541b-cd13-4a37-8f9e-169b63825248
       version: -1
       name: Acknowledge incident was received
       description: |
-        Send an auto-response to user that reported the incident, informing them the incident was received and is being handled.
+        Sends an auto-response to the user reporting the incident that the incident was received and is being handled.
       script: '|||send-mail'
       type: regular
       iscommand: true
@@ -249,8 +246,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 682.5,
-          "y": 570
+          "x": 942.5,
+          "y": 630
         }
       }
     note: false
@@ -262,10 +259,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 64bf93c6-6ceb-4d1b-8f21-8fbfb1f046c8
+    taskid: 4f4a45c7-24f0-47d7-8443-d5b5b6230baf
     type: condition
     task:
-      id: 64bf93c6-6ceb-4d1b-8f21-8fbfb1f046c8
+      id: 4f4a45c7-24f0-47d7-8443-d5b5b6230baf
       version: -1
       name: Is the email malicious?
       description: Determines if the email is malicious based on the calculated severity.
@@ -293,7 +290,7 @@ tasks:
       {
         "position": {
           "x": -260,
-          "y": 2525
+          "y": 2735
         }
       }
     note: false
@@ -305,10 +302,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 511c7226-fa33-4a95-88b7-709566ab4f90
+    taskid: 84262d62-b6b4-48b5-8c98-eac47e0e29cb
     type: regular
     task:
-      id: 511c7226-fa33-4a95-88b7-709566ab4f90
+      id: 84262d62-b6b4-48b5-8c98-eac47e0e29cb
       version: -1
       name: Update the user that the reported email is safe
       description: Sends an email to the user explaining that the email they reported
@@ -332,60 +329,14 @@ tasks:
       subject:
         simple: 'Re: Phishing Investigation - ${incident.name}'
       to:
-        simple: $ReporterAddress}
+        simple: ${ReporterAddress}
     reputationcalc: 1
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": -1087.5,
-          "y": 3210
-        }
-      }
-    note: false
-    timertriggers:
-    - fieldname: detectionsla
-      action: stop
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "17":
-    id: "17"
-    taskid: f9a62c93-67f8-41f2-8cd5-6a6a700ed9b4
-    type: regular
-    task:
-      id: f9a62c93-67f8-41f2-8cd5-6a6a700ed9b4
-      version: -1
-      name: Update the user that the reported email is malicious
-      description: Sends an email to the user explaining that the email they reported
-        is malicious.
-      script: '|||send-mail'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "27"
-    scriptarguments:
-      body:
-        simple: |-
-          Hi ${.=function(val) { if(!(val.Account.length > 1)) return val.ReporterAddress; var reporter = val.ReporterAddress; var account = val.Account && val.Account.filter(function(acc) { return acc.DisplayName && (acc.Email  === reporter || Array.isArray(acc.Email) && acc.Email.indexOf(reporter) > -1) }); return account && account[0] && account[0].DisplayName[0] || reporter || ''; }(val)},
-          We've concluded that the email you forwarded to us is malicious. No further action is required on your part. Good job on detecting and forwarding it to us!
-
-          All the best,
-            Your security team
-      subject:
-        simple: 'Re: Phishing Investigation - ${incident.name}'
-      to:
-        simple: ${ReporterAddress}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 120,
-          "y": 3390
+          "x": -1230,
+          "y": 3610
         }
       }
     note: false
@@ -399,10 +350,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: dda5420c-7de7-4f2d-8da5-09f3ed8a12b9
+    taskid: 22acf235-b57c-4f78-8786-892dda955719
     type: title
     task:
-      id: dda5420c-7de7-4f2d-8da5-09f3ed8a12b9
+      id: 22acf235-b57c-4f78-8786-892dda955719
       version: -1
       name: Engage with User
       type: title
@@ -412,13 +363,12 @@ tasks:
     nexttasks:
       '#none#':
       - "53"
-      - "85"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 920,
-          "y": 190
+          "x": 940,
+          "y": 300
         }
       }
     note: false
@@ -430,10 +380,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: be406ffc-c93b-4890-830c-2536ffbedc6e
+    taskid: 4ffd4fc5-c549-406b-8d6d-7f6a613a6c80
     type: playbook
     task:
-      id: be406ffc-c93b-4890-830c-2536ffbedc6e
+      id: 4ffd4fc5-c549-406b-8d6d-7f6a613a6c80
       version: -1
       name: Detonate File - Generic
       playbookName: Detonate File - Generic
@@ -449,7 +399,7 @@ tasks:
       {
         "position": {
           "x": 197.5,
-          "y": 515
+          "y": 615
         }
       }
     note: false
@@ -461,10 +411,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: 798fc67b-dc69-4f59-8d20-4604ea09f0a3
+    taskid: 35e48544-2ec5-4698-88e9-071aa386e46e
     type: playbook
     task:
-      id: 798fc67b-dc69-4f59-8d20-4604ea09f0a3
+      id: 35e48544-2ec5-4698-88e9-071aa386e46e
       version: -1
       name: Process Email - Generic v2
       description: |
@@ -558,7 +508,7 @@ tasks:
       {
         "position": {
           "x": -497.5,
-          "y": 340
+          "y": 440
         }
       }
     note: false
@@ -570,10 +520,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: 421eef34-f338-4c46-89cf-844afa2a2e48
+    taskid: 4905affa-7530-4f62-869d-d5066f89c54b
     type: title
     task:
-      id: 421eef34-f338-4c46-89cf-844afa2a2e48
+      id: 4905affa-7530-4f62-869d-d5066f89c54b
       version: -1
       name: Remediation
       type: title
@@ -590,7 +540,7 @@ tasks:
       {
         "position": {
           "x": 352.5,
-          "y": 3640
+          "y": 3850
         }
       }
     note: false
@@ -604,17 +554,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: 6ad41556-9fe2-467c-8610-fc701343246b
+    taskid: 3437bc3e-7d13-4698-897f-0da0f1093f63
     type: playbook
     task:
-      id: 6ad41556-9fe2-467c-8610-fc701343246b
+      id: 3437bc3e-7d13-4698-897f-0da0f1093f63
       version: -1
       name: Search And Delete Emails - Generic v2
-      description: 'This playbook searches and deletes emails with similar attributes of a malicious email using one of the following integrations:
-        * EWS
-        * Office 365
-        * Gmail
-        * Agari Phishing Defense'
+      description: 'This playbook searches and deletes emails with similar attributes
+        of a malicious email using one of the following integrations: * EWS * Office
+        365 * Gmail * Agari Phishing Defense'
       playbookName: Search And Delete Emails - Generic v2
       type: playbook
       iscommand: false
@@ -630,11 +578,9 @@ tasks:
       From:
         complex:
           root: PhishingSender
-      O365AllowNotFoundExchangeLocations:
-        complex:
-          root: inputs.O365AllowNotFoundSearchLocations
-          transformers:
-          - operator: toLowerCase
+      ? |
+        O365AllowNotFoundExchangeLocations
+      : simple: "false"
       O365DeleteType:
         complex:
           root: inputs.O365DeleteType
@@ -650,8 +596,6 @@ tasks:
       SearchAndDeleteIntegration:
         complex:
           root: inputs.SearchAndDeleteIntegration
-      SearchThisWeek:
-        simple: "true"
       Subject:
         complex:
           root: incident
@@ -670,7 +614,7 @@ tasks:
       {
         "position": {
           "x": 352.5,
-          "y": 4545
+          "y": 4945
         }
       }
     note: false
@@ -682,10 +626,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: fc429ec3-8231-46f6-8b25-2c7a06d2f005
+    taskid: 828b23a9-1c88-44ed-85ee-6fdcb892496a
     type: title
     task:
-      id: fc429ec3-8231-46f6-8b25-2c7a06d2f005
+      id: 828b23a9-1c88-44ed-85ee-6fdcb892496a
       version: -1
       name: Done
       type: title
@@ -697,7 +641,7 @@ tasks:
       {
         "position": {
           "x": -897.5,
-          "y": 5145
+          "y": 5545
         }
       }
     note: false
@@ -709,10 +653,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: c2119cb4-091b-433a-8aeb-dac70d4a296e
+    taskid: 2b844949-4f2a-4663-8152-8c11b41c290a
     type: title
     task:
-      id: c2119cb4-091b-433a-8aeb-dac70d4a296e
+      id: 2b844949-4f2a-4663-8152-8c11b41c290a
       version: -1
       name: Email Is Malicious
       type: title
@@ -721,13 +665,13 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "123"
+      - "149"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 162.5,
-          "y": 2700
+          "y": 2910
         }
       }
     note: false
@@ -739,10 +683,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: d560749b-2218-466f-856e-18986e9a1885
+    taskid: 0e005247-eb1b-4512-8674-7717c90104dd
     type: title
     task:
-      id: d560749b-2218-466f-856e-18986e9a1885
+      id: 0e005247-eb1b-4512-8674-7717c90104dd
       version: -1
       name: Undetermined
       type: title
@@ -757,7 +701,7 @@ tasks:
       {
         "position": {
           "x": -770,
-          "y": 2700
+          "y": 2910
         }
       }
     note: false
@@ -769,10 +713,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: 231bb05f-9f96-4a43-82a4-70b3ef434bf8
+    taskid: 1f049b2b-ba22-45c2-8330-93acbd3850ef
     type: condition
     task:
-      id: 231bb05f-9f96-4a43-82a4-70b3ef434bf8
+      id: 1f049b2b-ba22-45c2-8330-93acbd3850ef
       version: -1
       name: Is the email malicious?
       description: Is the email that the user reported malicious?
@@ -781,15 +725,15 @@ tasks:
       brand: ""
     nexttasks:
       "No":
-      - "16"
-      "Yes":
-      - "123"
+      - "151"
+      "yes":
+      - "149"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": -770,
-          "y": 3010
+          "y": 3220
         }
       }
     note: false
@@ -801,16 +745,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: 945915a4-395f-444f-8500-c80791cddcfd
+    taskid: 3be84614-c9e3-436c-8d1e-96920a53e250
     type: regular
     task:
-      id: 945915a4-395f-444f-8500-c80791cddcfd
+      id: 3be84614-c9e3-436c-8d1e-96920a53e250
       version: -1
       name: Manually remediate  the incident
-      description: "To manually remediate a phishing incident you need to:\n1. Search for and delete similar emails.\n\
-        2. Inform the organization about the threat.\n3. Hunt relevant IOCs.\n4.\
-        \ Update proxies and firewalls as necessary.\n5. Block the malicious sender/\
-        \ domain in the mail-gateway. "
+      description: "To manually remediate a phishing incident you need to:\n1. Search\
+        \ for and delete similar emails.\n2. Inform the organization about the threat.\n\
+        3. Hunt relevant IOCs.\n4. Update proxies and firewalls as necessary.\n5.\
+        \ Block the malicious sender/domain in the mail-gateway. "
       type: regular
       iscommand: false
       brand: ""
@@ -821,8 +765,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -657.5,
-          "y": 3970
+          "x": -277.5,
+          "y": 4180
         }
       }
     note: false
@@ -834,13 +778,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: 7047c1ab-98bf-4a58-805b-7788d6e8a96a
+    taskid: f0762650-4a77-49d2-8030-64061db72ac0
     type: condition
     task:
-      id: 7047c1ab-98bf-4a58-805b-7788d6e8a96a
+      id: f0762650-4a77-49d2-8030-64061db72ac0
       version: -1
       name: Should emails be searched and deleted?
-      description: Checks whether the **SearchAndDelete** playbook input is set to True.
+      description: Checks whether the **SearchAndDelete** playbook input is set to
+        True.
       type: condition
       iscommand: false
       brand: ""
@@ -848,7 +793,7 @@ tasks:
       '#default#':
       - "43"
       "Yes":
-      - "138"
+      - "152"
     separatecontext: false
     conditions:
     - label: "Yes"
@@ -866,7 +811,7 @@ tasks:
       {
         "position": {
           "x": 352.5,
-          "y": 3980
+          "y": 4190
         }
       }
     note: false
@@ -878,13 +823,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: d8d3a1c3-6d94-4359-8bda-0e0be77c2f71
+    taskid: e7a7fd40-2e9e-4560-85c9-f67161231e82
     type: condition
     task:
-      id: d8d3a1c3-6d94-4359-8bda-0e0be77c2f71
+      id: e7a7fd40-2e9e-4560-85c9-f67161231e82
       version: -1
       name: Should indicators be blocked automatically?
-      description: Checks whether the **BlockIndicators** playbook input is set to True.
+      description: Checks whether the **BlockIndicators** playbook input is set to
+        True.
       type: condition
       iscommand: false
       brand: ""
@@ -917,7 +863,7 @@ tasks:
       {
         "position": {
           "x": 1000,
-          "y": 3980
+          "y": 4190
         }
       }
     note: false
@@ -929,10 +875,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "39":
     id: "39"
-    taskid: 151326c6-7adc-48bf-8710-6b0b01d86f48
+    taskid: 7f572705-6406-4e7f-8eca-be825d5205b8
     type: title
     task:
-      id: 151326c6-7adc-48bf-8710-6b0b01d86f48
+      id: 7f572705-6406-4e7f-8eca-be825d5205b8
       version: -1
       name: Start Detection Timer
       type: title
@@ -941,13 +887,13 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "134"
+      - "147"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 67.5,
-          "y": -360
+          "x": -497.5,
+          "y": -550
         }
       }
     note: false
@@ -961,10 +907,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "43":
     id: "43"
-    taskid: 17f9d1ad-24e9-4ddc-813f-15ff190032a1
+    taskid: 7e8e9dd5-d8bf-49b1-8f93-23dc2d35b8eb
     type: title
     task:
-      id: 17f9d1ad-24e9-4ddc-813f-15ff190032a1
+      id: 7e8e9dd5-d8bf-49b1-8f93-23dc2d35b8eb
       version: -1
       name: Stop Remediation Timer
       type: title
@@ -979,7 +925,7 @@ tasks:
       {
         "position": {
           "x": 690,
-          "y": 4810
+          "y": 5210
         }
       }
     note: false
@@ -993,10 +939,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "52":
     id: "52"
-    taskid: 29d97b94-fad1-490d-8ddb-b0e16c107da8
+    taskid: 389b4de3-6d86-4e74-897c-3fcf2df5463d
     type: title
     task:
-      id: 29d97b94-fad1-490d-8ddb-b0e16c107da8
+      id: 389b4de3-6d86-4e74-897c-3fcf2df5463d
       version: -1
       name: Indicator Enrichment
       type: title
@@ -1011,7 +957,7 @@ tasks:
       {
         "position": {
           "x": -260,
-          "y": 920
+          "y": 1130
         }
       }
     note: false
@@ -1023,10 +969,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "53":
     id: "53"
-    taskid: 0a30e249-1e0e-4ec0-8e94-2adda6128b22
+    taskid: 163f0f23-d373-4f5d-8da6-a5ad86598576
     type: playbook
     task:
-      id: 0a30e249-1e0e-4ec0-8e94-2adda6128b22
+      id: 163f0f23-d373-4f5d-8da6-a5ad86598576
       version: -1
       name: Email Address Enrichment - Generic v2.1
       description: |-
@@ -1062,8 +1008,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 682.5,
-          "y": 390
+          "x": 942.5,
+          "y": 450
         }
       }
     note: false
@@ -1075,39 +1021,40 @@ tasks:
     isautoswitchedtoquietmode: false
   "55":
     id: "55"
-    taskid: 675eab21-6e48-46f8-8c48-831d694b90bc
+    taskid: 6b30366b-980c-4529-8823-dd21e6d4dfff
     type: playbook
     task:
-      id: 675eab21-6e48-46f8-8c48-831d694b90bc
+      id: 6b30366b-980c-4529-8823-dd21e6d4dfff
       version: -1
       name: Extract Indicators From File - Generic v2
+      description: |-
+        This playbook extracts indicators from a file.
+        Supported file types:
+        - CSV
+        - PDF
+        - TXT
+        - HTM, HTML
+        - DOC, DOCX
+        - PPT
+        - PPTX
+        - RTF
+        - XLS
+        - XLSX
+        - XML
       playbookName: Extract Indicators From File - Generic v2
       type: playbook
       iscommand: false
       brand: ""
-      description: |-
-          This playbook extracts indicators from a file.
-          Supported file types:
-          - CSV
-          - PDF
-          - TXT
-          - HTM, HTML
-          - DOC, DOCX
-          - PPT
-          - PPTX
-          - RTF
-          - XLS
-          - XLSX
-          - XML
     nexttasks:
       '#none#':
       - "52"
+      - "143"
     separatecontext: true
     view: |-
       {
         "position": {
           "x": -727.5,
-          "y": 515
+          "y": 615
         }
       }
     note: false
@@ -1119,10 +1066,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "56":
     id: "56"
-    taskid: 54dab694-bd86-4fb5-8c85-b01dfd91a15d
+    taskid: 13e831d2-431e-4927-814f-b4fa631f51cf
     type: title
     task:
-      id: 54dab694-bd86-4fb5-8c85-b01dfd91a15d
+      id: 13e831d2-431e-4927-814f-b4fa631f51cf
       version: -1
       name: Investigation
       type: title
@@ -1139,7 +1086,7 @@ tasks:
       {
         "position": {
           "x": -260,
-          "y": 1270
+          "y": 1480
         }
       }
     note: false
@@ -1151,15 +1098,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "79":
     id: "79"
-    taskid: d18654f5-16fd-441e-8db0-4e55f0df0f43
+    taskid: 991adce8-f301-48b8-8fce-460c9e0756f6
     type: condition
     task:
-      id: d18654f5-16fd-441e-8db0-4e55f0df0f43
+      id: 991adce8-f301-48b8-8fce-460c9e0756f6
       version: -1
       name: Should the email be authenticated?
-      description: Checks whether the email should be authenticated using DKIM, SPF and DMARC.
-        This checks if "AuthenticateEmail" output is set to "True" and if
-        there are headers from an email to authenticate.
+      description: Checks whether the email should be authenticated using DKIM, SPF,
+        and DMARC. This checks if "AuthenticateEmail" output is set to "True" and
+        if there are headers from an email to authenticate.
       type: condition
       iscommand: false
       brand: ""
@@ -1192,7 +1139,7 @@ tasks:
       {
         "position": {
           "x": 390,
-          "y": 1555
+          "y": 1765
         }
       }
     note: false
@@ -1204,10 +1151,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "80":
     id: "80"
-    taskid: 254b1455-3c72-4a76-85ef-603e9cd4cda4
+    taskid: d4e9aa9c-3bfc-4e4f-8a75-8e8a112f0b93
     type: title
     task:
-      id: 254b1455-3c72-4a76-85ef-603e9cd4cda4
+      id: d4e9aa9c-3bfc-4e4f-8a75-8e8a112f0b93
       version: -1
       name: Email Authenticity Check
       type: title
@@ -1222,7 +1169,7 @@ tasks:
       {
         "position": {
           "x": 390,
-          "y": 1410
+          "y": 1620
         }
       }
     note: false
@@ -1234,10 +1181,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "82":
     id: "82"
-    taskid: 0f654686-0911-450d-86e6-0689df621d61
+    taskid: 442a2d4c-6537-4098-8a36-76d8783c6c25
     type: regular
     task:
-      id: 0f654686-0911-450d-86e6-0689df621d61
+      id: 442a2d4c-6537-4098-8a36-76d8783c6c25
       version: -1
       name: Authenticate email
       description: Checks the authenticity of an email based on the email's SPF, DMARC,
@@ -1262,7 +1209,7 @@ tasks:
       {
         "position": {
           "x": 392.5,
-          "y": 1740
+          "y": 1950
         }
       }
     note: false
@@ -1274,14 +1221,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "83":
     id: "83"
-    taskid: 3056d685-6aaf-4d07-879e-48c2bb841b19
+    taskid: 95d0d3be-5770-442e-884c-8f5c6ca4394f
     type: regular
     task:
-      id: 3056d685-6aaf-4d07-879e-48c2bb841b19
+      id: 95d0d3be-5770-442e-884c-8f5c6ca4394f
       version: -1
       name: Save authenticity check result to incident field
-      description: Saves the email authenticity verdict in an
-        incident field.
+      description: Saves the email authenticity verdict in an incident field.
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -1337,7 +1283,7 @@ tasks:
       {
         "position": {
           "x": 392.5,
-          "y": 1935
+          "y": 2145
         }
       }
     note: false
@@ -1349,10 +1295,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "84":
     id: "84"
-    taskid: 32673e2e-72fc-4a00-8054-7e0f357a6981
+    taskid: 941a16db-d34e-4100-8083-66d74c83e595
     type: playbook
     task:
-      id: 32673e2e-72fc-4a00-8054-7e0f357a6981
+      id: 941a16db-d34e-4100-8083-66d74c83e595
       version: -1
       name: Calculate Severity - Generic v2
       playbookName: Calculate Severity - Generic v2
@@ -1368,7 +1314,7 @@ tasks:
       {
         "position": {
           "x": -260,
-          "y": 2140
+          "y": 2350
         }
       }
     note: false
@@ -1380,21 +1326,21 @@ tasks:
     isautoswitchedtoquietmode: false
   "85":
     id: "85"
-    taskid: c325df0c-5e0f-4ba9-8863-0b0c18410025
+    taskid: 9b218556-45e5-42a2-855c-54c5e63e82a6
     type: regular
     task:
-      id: c325df0c-5e0f-4ba9-8863-0b0c18410025
+      id: 9b218556-45e5-42a2-855c-54c5e63e82a6
       version: -1
       name: Save reporter email address in field
-      description: Saves the email address of the email reporter in an incident
-        field.
+      description: Saves the email address of the email reporter in an incident field.
       script: Builtin|||setIncident
       type: regular
       iscommand: true
       brand: Builtin
     nexttasks:
       '#none#':
-      - "13"
+      - "18"
+      - "11"
     scriptarguments:
       reporteremailaddress:
         complex:
@@ -1404,8 +1350,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1150,
-          "y": 390
+          "x": -497.5,
+          "y": 100
         }
       }
     note: false
@@ -1417,15 +1363,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "87":
     id: "87"
-    taskid: bf7ea13b-64cd-46fb-8563-825432a1c808
+    taskid: bd41a165-d0e6-4798-8e02-c0a530b274d9
     type: regular
     task:
-      id: bf7ea13b-64cd-46fb-8563-825432a1c808
+      id: bd41a165-d0e6-4798-8e02-c0a530b274d9
       version: -1
       name: Predict phishing type using pre-trained phishing model
-      description: Predicts the specific phishing mail type using a pre-trained
-        machine learning model, and highlights the most important words used in the
-        classification decision.
+      description: Predicts the specific phishing mail type using a pre-trained machine
+        learning model, and highlights the most important words used in the classification
+        decision.
       scriptName: DBotPredictPhishingWords
       type: regular
       iscommand: false
@@ -1463,8 +1409,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1222.5,
-          "y": 680
+          "x": -1832.5,
+          "y": 1005
         }
       }
     note: false
@@ -1476,10 +1422,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "88":
     id: "88"
-    taskid: 601d6fe6-08ac-42f0-8ce1-cf65cd4fe1d1
+    taskid: b12d61c1-f30b-49d8-8e25-07a83ffb06d6
     type: title
     task:
-      id: 601d6fe6-08ac-42f0-8ce1-cf65cd4fe1d1
+      id: b12d61c1-f30b-49d8-8e25-07a83ffb06d6
       version: -1
       name: Machine Learning
       type: title
@@ -1488,13 +1434,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "87"
+      - "142"
+      - "143"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": -1222.5,
-          "y": 515
+          "x": -1522.5,
+          "y": 615
         }
       }
     note: false
@@ -1506,20 +1453,21 @@ tasks:
     isautoswitchedtoquietmode: false
   "89":
     id: "89"
-    taskid: 40fe8e89-4a2c-470f-8bd6-6bae51b4794e
+    taskid: d906c498-607e-47c1-87ee-dc15f246665d
     type: regular
     task:
-      id: 40fe8e89-4a2c-470f-8bd6-6bae51b4794e
+      id: d906c498-607e-47c1-87ee-dc15f246665d
       version: -1
       name: Update incident with predictions
-      description: Updates incident fields with the machine learning phishing model predictions.
+      description: Updates incident fields with the machine learning phishing model
+        predictions.
       script: Builtin|||setIncident
       type: regular
       iscommand: true
       brand: Builtin
     nexttasks:
       '#none#':
-      - "56"
+      - "84"
     scriptarguments:
       dbotprediction:
         complex:
@@ -1544,8 +1492,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1222.5,
-          "y": 1060
+          "x": -1572.5,
+          "y": 1465
         }
       }
     note: false
@@ -1557,10 +1505,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "90":
     id: "90"
-    taskid: 585dd252-1010-44ae-8c8d-1331c6d907ab
+    taskid: 945447ab-cc25-42b8-844c-a0d30c09834e
     type: condition
     task:
-      id: 585dd252-1010-44ae-8c8d-1331c6d907ab
+      id: 945447ab-cc25-42b8-844c-a0d30c09834e
       version: -1
       name: Did the model predict the phishing type?
       description: Checks whether the model predicted the phishing type.
@@ -1569,7 +1517,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "56"
+      - "84"
       "yes":
       - "89"
     separatecontext: false
@@ -1600,8 +1548,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1222.5,
-          "y": 860
+          "x": -1832.5,
+          "y": 1235
         }
       }
     note: false
@@ -1613,10 +1561,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "91":
     id: "91"
-    taskid: 76349d16-d4f2-4fc4-8ce6-a122526fe168
+    taskid: 7cd06dea-8fac-47cc-809b-427c05e21ce1
     type: playbook
     task:
-      id: 76349d16-d4f2-4fc4-8ce6-a122526fe168
+      id: 7cd06dea-8fac-47cc-809b-427c05e21ce1
       version: -1
       name: Block Indicators - Generic v2
       description: |+
@@ -1827,7 +1775,7 @@ tasks:
       {
         "position": {
           "x": 1000,
-          "y": 4545
+          "y": 4945
         }
       }
     note: false
@@ -1839,13 +1787,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "92":
     id: "92"
-    taskid: 823dff2d-a49d-4b44-849d-8fdb23f8156b
+    taskid: 769ef3cd-03f6-4a45-8759-74d100294283
     type: playbook
     task:
-      id: 823dff2d-a49d-4b44-849d-8fdb23f8156b
+      id: 769ef3cd-03f6-4a45-8759-74d100294283
       version: -1
       name: Entity Enrichment - Phishing v2
-      description: This playbook enriches entities using one or more integrations.
+      description: Enrich entities using one or more integrations
       playbookName: Entity Enrichment - Phishing v2
       type: playbook
       iscommand: false
@@ -1871,7 +1819,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: ReporterAddress
+                  simple: incident.reporteremailaddress
                 iscontext: true
           transformers:
           - operator: uniq
@@ -1887,12 +1835,12 @@ tasks:
           accessor: Address
           transformers:
           - operator: uniq
-      InternalRange:
-        complex:
-          root: inputs.InternalRange
       InternalDomains:
         complex:
           root: inputs.InternalDomains
+      InternalRange:
+        complex:
+          root: inputs.InternalRange
       MD5:
         complex:
           root: File
@@ -1951,7 +1899,7 @@ tasks:
       {
         "position": {
           "x": -260,
-          "y": 1060
+          "y": 1270
         }
       }
     note: false
@@ -1963,10 +1911,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "97":
     id: "97"
-    taskid: 646e672b-9f6c-4147-8e4b-4afc3b57321b
+    taskid: 8990d67e-e453-42cc-8920-031efeaef405
     type: title
     task:
-      id: 646e672b-9f6c-4147-8e4b-4afc3b57321b
+      id: 8990d67e-e453-42cc-8920-031efeaef405
       version: -1
       name: Block Indicators
       type: title
@@ -1981,7 +1929,7 @@ tasks:
       {
         "position": {
           "x": 1000,
-          "y": 3830
+          "y": 4040
         }
       }
     note: false
@@ -1993,10 +1941,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "98":
     id: "98"
-    taskid: a443be1b-8b73-4645-8aa1-acc53fcbf525
+    taskid: da2a3bb1-52b6-42bd-8d39-00572dc998ff
     type: title
     task:
-      id: a443be1b-8b73-4645-8aa1-acc53fcbf525
+      id: da2a3bb1-52b6-42bd-8d39-00572dc998ff
       version: -1
       name: Search & Delete Email
       type: title
@@ -2011,7 +1959,7 @@ tasks:
       {
         "position": {
           "x": 352.5,
-          "y": 3830
+          "y": 4040
         }
       }
     note: false
@@ -2023,10 +1971,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "99":
     id: "99"
-    taskid: 49efbf61-f01f-4883-8be2-eab322544851
+    taskid: 31f66049-7772-4d2e-858b-a3fa59232296
     type: title
     task:
-      id: 49efbf61-f01f-4883-8be2-eab322544851
+      id: 31f66049-7772-4d2e-858b-a3fa59232296
       version: -1
       name: Manual Remediation
       type: title
@@ -2040,8 +1988,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -657.5,
-          "y": 3830
+          "x": -277.5,
+          "y": 4040
         }
       }
     note: false
@@ -2053,10 +2001,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "101":
     id: "101"
-    taskid: 569afb39-ee93-47c7-8af6-9ad7ec7488d1
+    taskid: 0c94b64e-114d-4804-83ad-2d8f1b471e85
     type: title
     task:
-      id: 569afb39-ee93-47c7-8af6-9ad7ec7488d1
+      id: 0c94b64e-114d-4804-83ad-2d8f1b471e85
       version: -1
       name: Email Campaign Search
       type: title
@@ -2071,49 +2019,7 @@ tasks:
       {
         "position": {
           "x": -260,
-          "y": 1410
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "123":
-    id: "123"
-    taskid: 164f85dc-16f8-4ee8-8ced-20b4d0b4a401
-    type: condition
-    task:
-      id: 164f85dc-16f8-4ee8-8ced-20b4d0b4a401
-      version: -1
-      name: Was the incident part of a phishing campaign?
-      description: Checks whether the current incident was found to be part of a phishing
-        campaign.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "17"
-      "yes":
-      - "130"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: PartOfCampaign
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 347.5,
-          "y": 3215
+          "y": 1620
         }
       }
     note: false
@@ -2125,10 +2031,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "126":
     id: "126"
-    taskid: 7f39b05d-3937-4df7-8993-d3469af016d5
+    taskid: 26f3e34a-0db6-4961-854f-78a5b566ae72
     type: playbook
     task:
-      id: 7f39b05d-3937-4df7-8993-d3469af016d5
+      id: 26f3e34a-0db6-4961-854f-78a5b566ae72
       version: -1
       name: Detect & Manage Phishing Campaigns
       description: |-
@@ -2157,7 +2063,7 @@ tasks:
       {
         "position": {
           "x": -260,
-          "y": 1545
+          "y": 1755
         }
       }
     note: false
@@ -2167,12 +2073,694 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "130":
-    id: "130"
-    taskid: fd39af07-3674-4de7-8d83-3fb41a3d2055
+  "131":
+    id: "131"
+    taskid: 15ef4fbb-00ea-4712-8bd5-f271ca9adbe7
+    type: title
+    task:
+      id: 15ef4fbb-00ea-4712-8bd5-f271ca9adbe7
+      version: -1
+      name: Microsoft's Headers Check
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "132"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -907.5,
+          "y": 1620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "132":
+    id: "132"
+    taskid: 374e403a-75c8-456c-8ebf-e76f33c3d501
+    type: condition
+    task:
+      id: 374e403a-75c8-456c-8ebf-e76f33c3d501
+      version: -1
+      name: Check Microsoft's Headers?
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "84"
+      "yes":
+      - "133"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.CheckMicrosoftHeaders
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+    view: |-
+      {
+        "position": {
+          "x": -907.5,
+          "y": 1755
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "133":
+    id: "133"
+    taskid: 3851c221-dae8-4730-8740-fbb041c24fa5
+    type: playbook
+    task:
+      id: 3851c221-dae8-4730-8740-fbb041c24fa5
+      version: -1
+      name: Process Microsoft's Anti-Spam Headers
+      description: "This playbook stores the SCL, BCL, and PCL scores if they exist\
+        \ to the associated incident fields (Phishing SCL Score, Phishing PCL Score,\
+        \ and Phishing BCL Score).\nIt also does the following:\n1) Sets the email\
+        \ classification to \"spam\" if the SCL score is equal to or greater than\
+        \ 5.\n2) Sets the incident severity according to the playbook inputs (default\
+        \ is: PCL/BCL - Medium, SCL - Low). The severity of the incident is set only\
+        \ when one (or more) of the following occurs:\n  - PCL (Phishing Confidence\
+        \ Level) score between and including 4-8: The message content is likely to\
+        \ be phishing.\n  - [BCL](https://docs.microsoft.com/en-us/microsoft-365/security/office-365-security/bulk-complaint-level-values?view=o365-worldwide)\
+        \ (Bulk Complaint Level) score between and including 4-7: The message is from\
+        \ a bulk sender that generates a mixed number of complaints. \n    For a score\
+        \ between and including 8-9: The message is from a bulk sender that generates\
+        \ a high number of complaints.\n  - [SCL](https://docs.microsoft.com/en-us/microsoft-365/security/office-365-security/spam-confidence-levels?view=o365-worldwide)\
+        \ (Spam Confidence Level) score between and including 5-6: Spam filtering\
+        \ marks the message as spam. \n    For a score of 9: Spam filtering marks\
+        \ the message as high confidence spam. See [anti-spam stamps](https://docs.microsoft.com/en-us/exchange/antispam-and-antimalware/antispam-protection/antispam-stamps?view=exchserver-2019)."
+      playbookName: Process Microsoft's Anti-Spam Headers
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "84"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": -907.5,
+          "y": 1950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "134":
+    id: "134"
+    taskid: 57d8a1cb-52c1-42ca-86fd-580c8662b71b
     type: regular
     task:
-      id: fd39af07-3674-4de7-8d83-3fb41a3d2055
+      id: 57d8a1cb-52c1-42ca-86fd-580c8662b71b
+      version: -1
+      name: Extract the email address of the reporting user
+      description: commands.local.cmd.extract.indicators
+      script: Builtin|||extractIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      text:
+        complex:
+          root: incident
+          accessor: emailfrom
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -497.5,
+          "y": -235
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "135":
+    id: "135"
+    taskid: f87bb538-66f8-4c41-88df-55459d9ab5bc
+    type: playbook
+    task:
+      id: f87bb538-66f8-4c41-88df-55459d9ab5bc
+      version: -1
+      name: Detonate URL - Generic
+      description: This playbook detonates URLs using active integrations that support
+        URL detonation.
+      playbookName: Detonate URL - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "52"
+    scriptarguments:
+      URL:
+        complex:
+          root: URL
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": -260,
+          "y": 910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "137":
+    id: "137"
+    taskid: 80e1c4c2-b760-493f-8038-a5e7f9201cb2
+    type: condition
+    task:
+      id: 80e1c4c2-b760-493f-8038-a5e7f9201cb2
+      version: -1
+      name: Detonate URL?
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "52"
+      "yes":
+      - "135"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.DetonateURL
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": -260,
+          "y": 615
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "138":
+    id: "138"
+    taskid: 09acaeac-b9a5-4dee-8941-d635cfca3df6
+    type: regular
+    task:
+      id: 09acaeac-b9a5-4dee-8941-d635cfca3df6
+      version: -1
+      name: Extract the original email sender address
+      description: commands.local.cmd.extract.indicators
+      script: Builtin|||extractIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "139"
+    scriptarguments:
+      text:
+        complex:
+          root: incident
+          accessor: emailfrom
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 352.5,
+          "y": 4570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "139":
+    id: "139"
+    taskid: 7bce4445-b8ca-4034-810b-bb554f91064f
+    type: regular
+    task:
+      id: 7bce4445-b8ca-4034-810b-bb554f91064f
+      version: -1
+      name: Store the email address of the reporting user
+      description: Stores the email address of the user that reported the incident.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      key:
+        simple: PhishingSender
+      value:
+        complex:
+          root: ExtractedIndicators.Email
+          accessor: '[0]'
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 352.5,
+          "y": 4760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "140":
+    id: "140"
+    taskid: 8e768c46-611a-4178-8768-50cba9c5e4cc
+    type: regular
+    task:
+      id: 8e768c46-611a-4178-8768-50cba9c5e4cc
+      version: -1
+      name: Predict Phishing URLs
+      description: Predicts phishing URLs using a pre-trained model.
+      type: regular
+      iscommand: false
+      brand: ""
+      script: DBotPredictURLPhishing
+    nexttasks:
+      '#none#':
+      - "84"
+    scriptarguments:
+      emailHTML:
+        complex:
+          root: incident
+          accessor: emailhtml
+      maxNumberOfURL:
+        complex:
+          root: inputs.DBotPredictURLPhishingURLsNumber
+      urls:
+        complex:
+          root: ExtractedURLsFromFiles
+    reputationcalc: 2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1230,
+          "y": 1005
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "142":
+    id: "142"
+    taskid: 31191222-cab2-4a7f-8d17-ea36e1ff3e63
+    type: title
+    task:
+      id: 31191222-cab2-4a7f-8d17-ea36e1ff3e63
+      version: -1
+      name: Predict Phishing Type
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "87"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1832.5,
+          "y": 795
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "143":
+    id: "143"
+    taskid: 75bfc22a-3f9b-470d-8428-6f3a6e75404b
+    type: title
+    task:
+      id: 75bfc22a-3f9b-470d-8428-6f3a6e75404b
+      version: -1
+      name: Predict Phishing URLs
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "140"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1230,
+          "y": 795
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "144":
+    id: "144"
+    taskid: 0170cf97-120f-4f84-8bc6-f9f503b7ff6d
+    type: title
+    task:
+      id: 0170cf97-120f-4f84-8bc6-f9f503b7ff6d
+      version: -1
+      name: Incident Created Manually
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "145"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 172.5,
+          "y": -225
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "145":
+    id: "145"
+    taskid: eb43d263-9ede-4c65-8a30-a6e16820e5fa
+    type: condition
+    task:
+      id: eb43d263-9ede-4c65-8a30-a6e16820e5fa
+      version: -1
+      name: Was the reporter of the phishing email specified?
+      description: Checks whether the email address of the phishing email reporter
+        was specified on incident creation, so that an acknowledgement email can be
+        sent to them.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "11"
+      "yes":
+      - "146"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: reporteremailaddress
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 172.5,
+          "y": -85
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "146":
+    id: "146"
+    taskid: 20fe15ef-3a66-4fb1-8e2f-5475a1438239
+    type: regular
+    task:
+      id: 20fe15ef-3a66-4fb1-8e2f-5475a1438239
+      version: -1
+      name: Store the email address of the reporting user
+      description: Stores the email address of the user that reported the incident.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+      - "11"
+    scriptarguments:
+      key:
+        simple: ReporterAddress
+      value:
+        complex:
+          root: incident
+          accessor: reporteremailaddress
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 400,
+          "y": 100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "147":
+    id: "147"
+    taskid: d3602e32-d12d-45b9-885b-0afaf411a2d4
+    type: condition
+    task:
+      id: d3602e32-d12d-45b9-885b-0afaf411a2d4
+      version: -1
+      name: How was the incident created?
+      description: Checks whether the incident came from a mail listener integration,
+        or was created manually by the user.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "134"
+      Manually:
+      - "144"
+    separatecontext: false
+    conditions:
+    - label: Manually
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: sourceBrand
+            iscontext: true
+          right:
+            value:
+              simple: Manual
+    view: |-
+      {
+        "position": {
+          "x": -497.5,
+          "y": -410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "148":
+    id: "148"
+    taskid: 738f6593-7302-41a7-8740-f6dce8c4dd9e
+    type: regular
+    task:
+      id: 738f6593-7302-41a7-8740-f6dce8c4dd9e
+      version: -1
+      name: Update the user that the reported email is malicious
+      description: Sends an email to the user explaining that the email they reported
+        is malicious.
+      script: '|||send-mail'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      body:
+        simple: |-
+          Hi ${.=function(val) { if(!(val.Account.length > 1)) return val.ReporterAddress; var reporter = val.ReporterAddress; var account = val.Account && val.Account.filter(function(acc) { return acc.DisplayName && (acc.Email  === reporter || Array.isArray(acc.Email) && acc.Email.indexOf(reporter) > -1) }); return account && account[0] && account[0].DisplayName[0] || reporter || ''; }(val)},
+          We've concluded that the email you forwarded to us is malicious. No further action is required on your part. Good job on detecting and forwarding it to us!
+
+          All the best,
+            Your security team
+      subject:
+        simple: 'Re: Phishing Investigation - ${incident.name}'
+      to:
+        simple: ${ReporterAddress}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 110,
+          "y": 3620
+        }
+      }
+    note: false
+    timertriggers:
+    - fieldname: detectionsla
+      action: stop
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "149":
+    id: "149"
+    taskid: 849aa599-081e-4b5c-80b3-e6098463f7be
+    type: condition
+    task:
+      id: 849aa599-081e-4b5c-80b3-e6098463f7be
+      version: -1
+      name: Can the user be informed about the verdict?
+      description: Checks whether the user can be informed about the verdict of the
+        incident.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "27"
+      yes - phishing:
+      - "148"
+      yes - phishing campaign:
+      - "150"
+    separatecontext: false
+    conditions:
+    - label: yes - phishing campaign
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PartOfCampaign
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ReporterAddress
+            iscontext: true
+    - label: yes - phishing
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ReporterAddress
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 352.5,
+          "y": 3410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "150":
+    id: "150"
+    taskid: b9f96cd5-1144-4436-8293-2053e587d698
+    type: regular
+    task:
+      id: b9f96cd5-1144-4436-8293-2053e587d698
       version: -1
       name: Update the user that the email is a malicious campaign
       description: Sends an email to the user explaining that the email they reported
@@ -2200,8 +2788,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 590,
-          "y": 3390
+          "x": 580,
+          "y": 3620
         }
       }
     note: false
@@ -2213,70 +2801,38 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "131":
-    id: "131"
-    taskid: b4505dbf-4de5-4de9-893f-379efc7a6f43
-    type: title
-    task:
-      id: b4505dbf-4de5-4de9-893f-379efc7a6f43
-      version: -1
-      name: Microsoft's Headers Check
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "132"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -907.5,
-          "y": 1410
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "132":
-    id: "132"
-    taskid: bf3eb3d0-9df6-4aff-8731-b5a108227b76
+  "151":
+    id: "151"
+    taskid: 029871a7-8d95-409c-80d7-6ccef105a1ba
     type: condition
     task:
-      id: bf3eb3d0-9df6-4aff-8731-b5a108227b76
+      id: 029871a7-8d95-409c-80d7-6ccef105a1ba
       version: -1
-      name: Check Microsoft's Headers?
+      name: Can the user be informed about the verdict?
+      description: Checks whether the user can be informed about the verdict of the
+        incident.
       type: condition
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#default#':
-      - "84"
-      "yes":
-      - "133"
+      - "8"
+      "Yes":
+      - "16"
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: "Yes"
       condition:
-      - - operator: isEqualString
+      - - operator: isNotEmpty
           left:
             value:
-              simple: inputs.CheckMicrosoftHeaders
+              simple: ReporterAddress
             iscontext: true
-          right:
-            value:
-              simple: "True"
     view: |-
       {
         "position": {
-          "x": -907.5,
-          "y": 1545
+          "x": -897.5,
+          "y": 3410
         }
       }
     note: false
@@ -2286,234 +2842,36 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "133":
-    id: "133"
-    taskid: ce12dc0c-dd63-47d6-8933-5f58797eb00b
-    type: playbook
-    task:
-      id: ce12dc0c-dd63-47d6-8933-5f58797eb00b
-      version: -1
-      name: Process Microsoft's Anti-Spam Headers
-      description: |-
-        This playbook stores the SCL, BCL, and PCL scores if they exist to the associated incident fields (Phishing SCL Score, Phishing PCL Score, and Phishing BCL Score).
-        It also does the following:
-        1) Sets the email classification to "spam" if the SCL score is equal to or greater than 5.
-        2) Set the incident severity according to the playbook inputs (default is: PCL/BCL - Medium, SCL - Low). The severity of the incident is set only when one (or more) of the following occurs:
-          - PCL (Phishing Confidence Level) For a score between and including 4-8: The message content is likely to be phishing.
-          - [BCL](https://docs.microsoft.com/en-us/microsoft-365/security/office-365-security/bulk-complaint-level-values?view=o365-worldwide) (Bulk Complaint Level) For a score between and including 4-7: The message is from a bulk sender that generates a mixed number of complaints. 
-            For a score between and including 8-9: The message is from a bulk sender that generates a high number of complaints.
-          - [SCL](https://docs.microsoft.com/en-us/microsoft-365/security/office-365-security/spam-confidence-levels?view=o365-worldwide) (Spam Confidence Level) For a score between and including 5-6: Spam filtering marks the message as spam. 
-            For a score of 9: Spam filtering marks the message as high confidence spam. See [anti-spam stamps](https://docs.microsoft.com/en-us/exchange/antispam-and-antimalware/antispam-protection/antispam-stamps?view=exchserver-2019).
-      playbookName: Process Microsoft's Anti-Spam Headers
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "84"
-    separatecontext: true
-    view: |-
-      {
-        "position": {
-          "x": -907.5,
-          "y": 1740
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "134":
-    id: "134"
-    taskid: 1502ae50-bcf1-406b-83b2-467943730e37
+  "152":
+    id: "152"
+    taskid: 2df11a6c-171a-4837-8bdf-c2bb88d2174f
     type: regular
     task:
-      id: 1502ae50-bcf1-406b-83b2-467943730e37
+      id: 2df11a6c-171a-4837-8bdf-c2bb88d2174f
       version: -1
-      name: Extract the email address of the reporting user
-      description: commands.local.cmd.extract.indicators
-      script: Builtin|||extractIndicators
-      type: regular
-      iscommand: true
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "12"
-    scriptarguments:
-      text:
-        complex:
-          root: incident
-          accessor: emailfrom
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 67.5,
-          "y": -205
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "135":
-    id: "135"
-    taskid: 413fb861-e84a-4921-8f6e-76a9286241a6
-    type: playbook
-    task:
-      id: 413fb861-e84a-4921-8f6e-76a9286241a6
-      version: -1
-      name: Detonate URL - Generic
-      playbookName: Detonate URL - Generic
-      type: playbook
-      iscommand: false
-      brand: ""
-      description: 'This playbook detonates URLs using active integrations that support URL detonation.'
-    nexttasks:
-      '#none#':
-      - "52"
-    scriptarguments:
-      URL:
-        complex:
-          root: URL
-          transformers:
-          - operator: uniq
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 0
-    view: |-
-      {
-        "position": {
-          "x": -260,
-          "y": 700
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "137":
-    id: "137"
-    taskid: 6179edea-1b2e-457f-8000-26605a704e14
-    type: condition
-    task:
-      id: 6179edea-1b2e-457f-8000-26605a704e14
-      version: -1
-      name: Detonate URL?
-      type: condition
-      iscommand: false
-      brand: ""
-      description: ""
-    nexttasks:
-      '#default#':
-      - "52"
-      "yes":
-      - "135"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: inputs.DetonateURL
-            iscontext: true
-          right:
-            value:
-              simple: "True"
-          ignorecase: true
-    view: |-
-      {
-        "position": {
-          "x": -260,
-          "y": 515
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "138":
-    id: "138"
-    taskid: 46c7cd4b-d0ae-4760-8cfe-4513ac096ca4
-    type: regular
-    task:
-      id: 46c7cd4b-d0ae-4760-8cfe-4513ac096ca4
-      version: -1
-      name: Extract the original email sender address
-      description: commands.local.cmd.extract.indicators
-      script: Builtin|||extractIndicators
-      type: regular
-      iscommand: true
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "139"
-    scriptarguments:
-      text:
-        complex:
-          root: incident
-          accessor: emailfrom
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 352.5,
-          "y": 4170
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "139":
-    id: "139"
-    taskid: 95bdf590-35fa-4d5c-8d22-f12a356b3cfc
-    type: regular
-    task:
-      id: 95bdf590-35fa-4d5c-8d22-f12a356b3cfc
-      version: -1
-      name: Store the email address of the reporting user
-      description: Stores the email address of the user that reported the incident.
-      scriptName: Set
+      name: Clear previously extracted emails
+      description: Clears the previously extracted reporter email address from the
+        context, so that the phishing sender can be extracted and stored in the same
+        key.
+      scriptName: DeleteContext
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "28"
+      - "138"
     scriptarguments:
+      all:
+        simple: "no"
       key:
-        simple: PhishingSender
-      value:
-        complex:
-          root: ExtractedIndicators.Email
-          accessor: '[1]'
+        simple: ExtractedIndicators
     reputationcalc: 1
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 352.5,
-          "y": 4360
+          "y": 4370
         }
       }
     note: false
@@ -2523,26 +2881,30 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-system: true
 view: |-
   {
     "linkLabelsPosition": {
       "137_135_yes": 0.54,
+      "145_11_#default#": 0.15,
+      "147_144_Manually": 0.52,
+      "149_148_yes - phishing": 0.66,
+      "149_27_#default#": 0.21,
+      "151_8_#default#": 0.11,
       "15_31_#default#": 0.6,
-      "33_16_No": 0.64,
-      "36_43_#default#": 0.57,
-      "37_43_#default#": 0.5,
+      "33_149_yes": 0.18,
+      "36_43_#default#": 0.27,
+      "37_43_#default#": 0.12,
       "37_91_yes": 0.57,
       "79_84_#default#": 0.3,
-      "90_56_#default#": 0.3,
+      "90_84_#default#": 0.39,
       "90_89_yes": 0.48
     },
     "paper": {
       "dimensions": {
-        "height": 5730,
-        "width": 2752.5,
-        "x": -1222.5,
-        "y": -520
+        "height": 6300,
+        "width": 3212.5,
+        "x": -1832.5,
+        "y": -690
       }
     }
   }
@@ -2573,8 +2935,8 @@ inputs:
   value:
     simple: "True"
   required: false
-  description: Determines whether the authenticity of the email should be verified using SPF,
-    DKIM and DMARC.
+  description: Determines whether the authenticity of the email should be verified
+    using SPF, DKIM, and DMARC.
   playbookInputQuery:
 - key: OnCall
   value:
@@ -2587,7 +2949,7 @@ inputs:
     simple: EWS
   required: false
   description: |-
-    Determines which product and playbook is used to search and delete the phishing email from the users' inboxes.
+    Determines which product and playbook is used to search and delete the phishing email from user inboxes.
       - Set this to "O365" to use the "O365 - Security And Compliance - Search And Delete" playbook.
       - Set this to "EWS" to use the "Search And Delete Emails - EWS" playbook.
       - Set this to "Gmail" to use the "Search And Delete - Gmail" playbook.
@@ -2598,7 +2960,7 @@ inputs:
   required: false
   description: |-
     Sets the method to delete emails in the "O365 - Security And Compliance - Search And Delete" playbook. Can be "Soft" (recoverable), or "Hard" (unrecoverable). Leave empty to decide manually for each email incident.
-    This is only applicable if the SearchAndDeleteIntegration input is set to O365.
+    This is only applicable if the SearchAndDeleteIntegration input is set to "O365".
   playbookInputQuery:
 - key: O365ExchangeLocation
   value:
@@ -2606,20 +2968,19 @@ inputs:
       root: incident
       accessor: emailto
   required: false
-  description: The exchange location. Determines from where to search and delete emails using O365
-    playbooks. Use the value "All" to search all mailboxes, or use ${incident.emailto}
-    to search and delete the email only from the recipient's inbox. 
-    Note 
-    - Searching all mailboxes may take a significant amount of time.
-    - This input is used only when searching and deleting emails in O365.
-    - This input is only applicable if the SearchAndDeleteIntegration input is set to O365.
+  description: The exchange location. Determines from where to search and delete emails
+    using O365 playbooks. Use the value "All" to search all mailboxes, or use ${incident.emailto}
+    to search and delete the email only from the recipient's inbox. Note - Searching
+    all mailboxes may take a significant amount of time. - This input is used only
+    when searching and deleting emails in O365 and only applies if the SearchAndDeleteIntegration
+    input is set to O365.
   playbookInputQuery:
 - key: O365AllowNotFoundSearchLocations
   value:
     simple: "False"
   required: false
-  description: Used only when searching and deleting emails in O365. Determines whether to include
-    mailboxes other than regular user mailboxes in the compliance search.
+  description: Used only when searching and deleting emails in O365. Determines whether
+    to include mailboxes other than regular user mailboxes in the compliance search.
   playbookInputQuery:
 - key: O365ExchangeLocationExclusion
   value: {}
@@ -2632,27 +2993,27 @@ inputs:
   value:
     simple: "True"
   required: false
-  description: Check Microsoft's headers for BCL/PCL/SCL scores and set the "Severity"
-    and "Email Classification" accordingly.
+  description: Whether to check Microsoft headers for BCL/PCL/SCL scores and set the
+    "Severity" and "Email Classification" accordingly.
   playbookInputQuery:
 - key: InternalDomains
   value: {}
   required: false
-  description: A CSV list of internal domains. The list is used to determine
-    whether an email address is internal or external.
+  description: A CSV list of internal domains. The list is used to determine whether
+    an email address is internal or external.
   playbookInputQuery:
 - key: DetonateURL
   value:
     simple: "False"
   required: false
-  description: Determines whether to use the "URL Detonation" playbook. Detonating a URL
-    may take a few minutes.
+  description: Determines whether to use the "URL Detonation" playbook. Detonating
+    a URL may take a few minutes.
   playbookInputQuery:
 - key: InternalRange
   value: {}
   required: false
   description: |-
-    This input is used in the task "Entity Enrichment - Phishing v2" playbook.
+    This input is used in the "Entity Enrichment - Phishing v2" playbook.
     A list of internal IP ranges to check IP addresses against. The list should be provided in CIDR notation, separated by commas. An example of a list of ranges is: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes). If a list is not provided, uses the default list provided in the IsIPInRanges script (the known IPv4 private address ranges).
   playbookInputQuery:
 - key: PhishingModelName
@@ -2663,10 +3024,10 @@ inputs:
     type using machine learning.
   playbookInputQuery:
 - key: GetOriginalEmail
-  value: { }
+  value: {}
   required: false
   description: |-
-    For forwarded emails. When equals "True" it will retrieve the original email in the thread.
+    For forwarded emails. When "True", retrieves the original email in the thread.
 
     You must have the necessary permissions in your email service to execute global search.
 
@@ -2675,7 +3036,23 @@ inputs:
     - For MSGraph: As described in these links
     https://docs.microsoft.com/en-us/graph/api/message-get
     https://docs.microsoft.com/en-us/graph/api/user-list-messages
+  playbookInputQuery:
+- key: DBotPredictURLPhishingURLsNumber
+  value:
+    simple: "3"
+  required: false
+  description: |-
+    The number of URLs to extract from the email HTML and analyze in the "DBotPredictURLPhishing" automation.
+    This automation runs several checks to determine the score of the URLs found in the email, sets a verdict for URLs found as "Suspicious" or "Malicious", and adds these URLs as indicators. Based on the verdict, the incident severity is set (Medium for "Suspicious" and High for "Malicious").
+    Note:
+    - You need to install the "Phishing URL" pack to use this automation.
+    - False/True positives are possible.
+    - This automation may take a few minutes to run.
+    - To increase result accuracy, it is recommended to install and enable the "Whois" pack (optional).
+  playbookInputQuery:
 outputs: []
 tests:
 - Phishing v2 - Test - Incident Starter
 fromversion: 6.1.0
+contentitemexportablefields:
+  contentitemfields: {}
