@@ -178,7 +178,7 @@ Updates the attributes an account such as name, password policy, and notes if ap
 | --- | --- | --- |
 | resource_id | Denotes the ID of the resource. | Required | 
 | account_id | Denotes the ID of the account. | Required | 
-| account_name | Name of the account. | Optional | 
+| account_name | Name of the account. | Required | 
 | owner_name | Name of the account owner. | Optional |
 | notes | Optional additional notes added about the account. | Optional |
 | account_password_policy | The type of password policy set for the account. | Optional |
