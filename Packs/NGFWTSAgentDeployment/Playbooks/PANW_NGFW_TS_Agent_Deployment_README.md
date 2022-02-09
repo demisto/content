@@ -24,7 +24,7 @@ This playbook does not use any scripts.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | Host | The host to perform the deployment on  | x.x.x.x | Optional |
-| Path | The path to the TS Agent msi installer | <somefileshare>/TaInstall64.x64-10.0.4-23.msi | Optional |
+| Path | The path to the TS Agent msi installer | &lt;somefileshare&gt;/TaInstall64.x64-10.0.4-23.msi | Optional |
 | Name | The name of the TS Agent in NGFW console | Windows VDI Agent | Optional |
 | StartSize | The agent StartSize | 300 | Optional |
 | MaxSize | The agent MaxSize | 2000 | Optional |

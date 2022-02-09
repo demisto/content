@@ -1,9 +1,9 @@
-id: 46756867-c011-44d0-82ee-0b3b63468a10
-fromversion: 6.5.0
+id: NGFW Remove Offline TS Agent
+fromversion: 6.0.0
 inputs:
 - description: The TSAgent Object
   key: TSAgent
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
 name: NGFW Remove Offline TS Agent
@@ -236,3 +236,5 @@ view: |-
       }
     }
   }
+tests:
+- No tests (auto formatted)

@@ -1,87 +1,87 @@
-id: 22e93f42-f19a-4c27-8b3c-bdb7a78d74f4
-fromversion: 6.5.0
+id: PANW NGFW TS Agent Deployment
+fromversion: 6.0.0
 description: Deploy the PANW NGFW TS Agent to a Windows server
 inputs:
 - description: 'The host to perform the deployment on '
   key: Host
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
     simple: x.x.x.x
 - description: The path to the TS Agent msi installer
   key: Path
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
     simple: http://x.x.x.x:8000/TaInstall64.x64-10.0.4-23.msi
 - description: The name of the TS Agent in NGFW console
   key: Name
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
     simple: Windows VDI Agent
 - description: The agent StartSize
   key: StartSize
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
     simple: "300"
 - description: The agent MaxSize
   key: MaxSize
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
     simple: "2000"
 - description: The agent StartPort
   key: StartPort
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
     simple: "20001"
 - description: The agent EndPort
   key: EndPort
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
     simple: "39999"
 - description: The agent FreePortBlockDelay
   key: FreePortBlockDelay
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
     simple: "245"
 - description: The agent EnableTws
   key: EnableTws
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
     simple: "1"
 - description: The agent TSAgentDomain
   key: TSAgentDomain
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
     simple: pm.local
 - description: The agent OverrideDomainEnable
   key: OverrideDomainEnable
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
     simple: "1"
 - description: The agent ReservedPorts
   key: ReservedPorts
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
 - description: The agent BlockSystemPort
   key: BlockSystemPort
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
     simple: "1"
 - description: The agent HonorSrcPortRequest
   key: HonorSrcPortRequest
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
     simple: "0"
@@ -859,3 +859,5 @@ view: |-
       }
     }
   }
+tests:
+- No tests (auto formatted)
