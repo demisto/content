@@ -1240,7 +1240,8 @@
                 "ThreatQ v2",
                 "Demisto REST API"
             ],
-            "fromversion": "5.0.0"
+            "fromversion": "5.0.0",
+            "timeout": 1000
         },
         {
             "integrations": "SCADAfence CNM",
