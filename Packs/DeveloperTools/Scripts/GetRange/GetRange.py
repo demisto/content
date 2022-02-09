@@ -12,8 +12,8 @@ def get_range_command(args):
              filtered list.
      """
     val = args['value']
-    indexes = args['range']
-
+    indexes = list(args['range']) if '[' in args['range'] else args['range']
+    demisto.results(type(indexes))
     if isinstance(indexes, (list, tuple)):
         return CommandResults(
             outputs={'value': [val[index] for index in indexes]})
@@ -30,6 +30,7 @@ def get_range_command(args):
 
 def main():
     try:
+        demisto.results(demisto.args())
         return_results(results=get_range_command(demisto.args()))
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback
