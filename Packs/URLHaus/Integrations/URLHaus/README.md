@@ -14,7 +14,7 @@ This integration was integrated and tested with version v1 of URLhaus
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
     | Create relationships |  | False |
-    | Maximum number of relationships to fetch per indicator | Maximum relationships to display\(Max 1000\). | False |
+    | Maximum number of relationships to fetch per indicator | Maximal value is 1000. | False |
     | Blacklists appearances threshold |  | False |
     | Compromised (is malicious) |  | False |
     | Number of retries | Determines how many times a command should be retried before raising an error. | False |
@@ -46,7 +46,11 @@ Retrieves URL information from URLhaus.
 | URL.Malicious.Vendor | string | Vendor that reported the URL as malicious. | 
 | URL.Malicious.Description | string | Description of the malicious URL. | 
 | URL.Tags | string | A list of tags associated with the queried malware URL. | 
-| URL.Relationships | Unknown | A list of Relationships associated with the queried malware URL\(Optional on configurtion\). | 
+| URL.Relationships.EntityA | String | The source of the relationship. | 
+| URL.Relationships.EntityB | String | The destination of the relationship. | 
+| URL.Relationships.Relationship | String | The name of the relationship. | 
+| URL.Relationships.EntityAType | String | The type of the source of the relationship. | 
+| URL.Relationships.EntityBType | String | The type of the destination of the relationship. | 
 | URLhaus.URL.ID | String | Unique identifier of the URLhaus database entry. | 
 | URLhaus.URL.Status | String | The current status of the URL. | 
 | URLhaus.URL.Host | String | The extracted host of the malware URL \(IP address or domain name/FQDN\). | 
@@ -110,7 +114,11 @@ Retrieves domain information from URLhaus.
 | --- | --- | --- |
 | Domain.Name | String | The domain name, for example, google.com. | 
 | Domain.Tags | string | A list of tags associated with the queried malware Domain. | 
-| Domain.Relationships | Unknown | A list of Relationships associated with the queried malware Domain\(Optional on configurtion\). | 
+| Domain.Relationships.EntityA | String | The source of the relationship. | 
+| Domain.Relationships.EntityB | String | The destination of the relationship. | 
+| Domain.Relationships.Relationship | String | The name of the relationship. | 
+| Domain.Relationships.EntityAType | String | The type of the source of the relationship. | 
+| Domain.Relationships.EntityBType | String | The type of the destination of the relationship. | 
 | DBotScore.Indicator | String | The indicator that was tested. | 
 | DBotScore.Type | String | The indicator type. | 
 | DBotScore.Vendor | String | The vendor used to calculate the score. | 
@@ -132,7 +140,7 @@ Retrieves domain information from URLhaus.
         "Indicator": "example.com",
         "Reliability": "C - Fairly reliable",
         "Score": 0,
-        "Type": "domain",
+        "Type": "url",
         "Vendor": "URLhaus"
     },
     "Domain": {
@@ -170,7 +178,11 @@ Retrieves file information from URLhaus.
 | File.SHA256 | String | SHA256 hash of the file. | 
 | File.SSDeep | string | SSDeep of the file. | 
 | File.Type | stringd | Type of the file. | 
-| File.Relationships | Unknown | A list of Relationships associated with the queried malware file\(Optional on configurtion\). | 
+| File.Relationships.EntityA | String | The source of the relationship. | 
+| File.Relationships.EntityB | String | The destination of the relationship. | 
+| File.Relationships.Relationship | String | The name of the relationship. | 
+| File.Relationships.EntityAType | String | The type of the source of the relationship. | 
+| File.Relationships.EntityBType | String | The type of the destination of the relationship. | 
 | URLhaus.File.MD5 | String | MD5 hash of the file. | 
 | URLhaus.File.SHA256 | String | SHA256 hash of the file. | 
 | URLhaus.File.Type | String | File type guessed by URLhaus, for example: .exe, .doc. | 
