@@ -6,10 +6,9 @@ import secrets
 import string
 import tempfile
 from datetime import timezone
-from typing import Dict, Optional, List, Tuple, Union
+from typing import Dict, Optional, List, Tuple, Union, Iterable
 from dateparser import parse
 from urllib3 import disable_warnings
-from math import ceil
 
 
 disable_warnings()
@@ -129,16 +128,20 @@ def create_file_iocs_to_keep(file_path, batch_size: int = 200):
 
 def create_file_sync(file_path, batch_size: int = 200):
     with open(file_path, 'w') as _file:
-        iocs: List = get_iocs_generator(size=batch_size)
-        for ioc in map(lambda x: demisto_ioc_to_xdr(x), iocs):
+        for ioc in map(lambda x: demisto_ioc_to_xdr(x), get_iocs_generator(size=batch_size)):
             if ioc:
                 _file.write(json.dumps(ioc) + '\n')
 
 
-def get_iocs_generator(size=200, query=None) -> List:
+def get_iocs_generator(size=200, query=None) -> Iterable:
     query = query if query else Client.query
     query = f'expirationStatus:active AND ({query})'
-    return IndicatorsSearcher(size=size, query=query)
+    try:
+        for iocs in map(lambda x: x.get('iocs', []), IndicatorsSearcher(size=size, query=query)):
+            for ioc in iocs:
+                yield ioc
+    except StopIteration:
+        pass
 
 
 def demisto_expiration_to_xdr(expiration) -> int:
@@ -447,7 +450,7 @@ def get_sync_file():
         os.remove(temp_file_path)
 
 
-def main():
+def main():     # pragma: no cover
     # """
     # Executes an integration command
     # """
