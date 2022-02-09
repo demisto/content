@@ -1,8 +1,8 @@
-77.125.26.100
-172.31.43.13
-3.136.231.41
-3.2.3.37
-hash=3395856ce81f2b7382dee72602f798b642f14140
-agents_ids=657613730168123595
-8.88.8.8
-eyJiOiAiZ184NjJiYWQzNTIwN2ZmNTJmIn0=
+[file:SentinelOne-V2.yml]
+ignore=IN126,BA108,BA109,IN145
+
+[file:README.md]
+ignore=RM106
+
+[file:integration-SentinelOne.yml]
+ignore=IN145
