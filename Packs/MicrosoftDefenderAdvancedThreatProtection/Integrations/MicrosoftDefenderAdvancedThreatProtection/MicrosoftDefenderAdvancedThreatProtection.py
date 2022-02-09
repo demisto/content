@@ -1006,25 +1006,25 @@ def isolate_machine_command(client: MsClient, args: dict):
         (str, dict, dict). Human readable, context, raw response
     """
     headers = ['ID', 'Type', 'Requestor', 'RequestorComment', 'Status', 'MachineID', 'ComputerDNSName']
-    machine_ids = list(dict.fromkeys(argToList(args.get('machine_id'))))  # remove duplicates
+    machine_ids = remove_duplicates_from_list_arg(args, 'machine_id')
     comment = args.get('comment')
     isolation_type = args.get('isolation_type')
-    machines_all_action = []
+    machines_action_data = []
     raw_response = []
     failed_machines = {}  # if we got an error, we will return the machine ids that failed
     for machine_id in machine_ids:
         try:
             machine_action_response = client.isolate_machine(machine_id, comment, isolation_type)
             raw_response.append(machine_action_response)
-            machines_all_action.append(get_machine_action_data(machine_action_response))
+            machines_action_data.append(get_machine_action_data(machine_action_response))
         except Exception as e:
             # if we got an error for a machine, we want to get result for the other ones
             failed_machines[machine_id] = e
             continue
     entry_context = {
-        'MicrosoftATP.MachineAction(val.ID === obj.ID)': machines_all_action
+        'MicrosoftATP.MachineAction(val.ID === obj.ID)': machines_action_data
     }
-    human_readable = tableToMarkdown("The isolation request has been submitted successfully:", machines_all_action,
+    human_readable = tableToMarkdown("The isolation request has been submitted successfully:", machines_action_data,
                                      headers=headers, removeNull=True)
     human_readable += add_error_message(failed_machines, machine_ids)
     return human_readable, entry_context, raw_response
@@ -1037,25 +1037,25 @@ def unisolate_machine_command(client: MsClient, args: dict):
         (str, dict, dict). Human readable, context, raw response
     """
     headers = ['ID', 'Type', 'Requestor', 'RequestorComment', 'Status', 'MachineID', 'ComputerDNSName']
-    machine_ids = list(dict.fromkeys(argToList(args.get('machine_id'))))  # remove duplicates
+    machine_ids = remove_duplicates_from_list_arg(args, 'machine_id')
     comment = args.get('comment')
-    machines_all_action = []
+    machines_action_data = []
     raw_response = []
     failed_machines = {}  # if we got an error, we will return the machine ids that failed
     for machine_id in machine_ids:
         try:
             machine_action_response = client.unisolate_machine(machine_id, comment)
             raw_response.append(machine_action_response)
-            machines_all_action.append(get_machine_action_data(machine_action_response))
+            machines_action_data.append(get_machine_action_data(machine_action_response))
         except Exception as e:
             # if we got an error for a machine, we want to get result for the other ones
             failed_machines[machine_id] = e
             continue
     entry_context = {
-        'MicrosoftATP.MachineAction(val.ID === obj.ID)': machines_all_action
+        'MicrosoftATP.MachineAction(val.ID === obj.ID)': machines_action_data
     }
     human_readable = tableToMarkdown("The request to stop the isolation has been submitted successfully.",
-                                     machines_all_action, headers=headers, removeNull=True)
+                                     machines_action_data, headers=headers, removeNull=True)
     human_readable += add_error_message(failed_machines, machine_ids)
     return human_readable, entry_context, raw_response
 
@@ -1072,6 +1072,14 @@ def add_error_message(failed_devices, all_requested_devices):
     return human_readable
 
 
+def not_found_message(not_found_devices):
+    human_readable = ""
+    if not_found_devices:
+        human_readable = f"\n You don't see the following IDs in the results as they were not found: " \
+                         f"{not_found_devices}."
+    return human_readable
+
+
 def get_machines_command(client: MsClient, args: dict):
     """Retrieves a collection of machines that have communicated with WDATP cloud on the last 30 days
     New: now the hostname and ip args can be from type list, but only one can be given as a list (not both).
@@ -1081,8 +1089,8 @@ def get_machines_command(client: MsClient, args: dict):
     """
     headers = ['ID', 'ComputerDNSName', 'OSPlatform', 'LastIPAddress', 'LastExternalIPAddress', 'HealthStatus',
                'RiskScore', 'ExposureLevel']
-    hostname = list(dict.fromkeys(argToList(args.get('hostname', ''))))  # remove duplicates
-    ip = list(dict.fromkeys(argToList(args.get('ip', ''))))  # remove duplicates
+    hostname = remove_duplicates_from_list_arg(args, 'hostname')
+    ip = remove_duplicates_from_list_arg(args, 'ip')
     risk_score = args.get('risk_score', '')
     health_status = args.get('health_status', '')
     os_platform = args.get('os_platform', '')
@@ -1093,13 +1101,13 @@ def get_machines_command(client: MsClient, args: dict):
         raise DemistoException("Error: only hostname or ip can be an array, not both.")
     if more_than_one_hostname:
         ip = '' if not ip else ip[0]
-        field_from_type_list = 'computerDnsName'
+        field_with_multiple_values = 'computerDnsName'
     elif more_than_one_ip:
         hostname = '' if not hostname else hostname[0]
-        field_from_type_list = 'lastIpAddress'
+        field_with_multiple_values = 'lastIpAddress'
     else:
         # both hostname and ip are not lists (each one is empty or includes only one value)
-        field_from_type_list = ''
+        field_with_multiple_values = ''
         ip = '' if not ip else ip[0]
         hostname = '' if not hostname else hostname[0]
 
@@ -1111,8 +1119,8 @@ def get_machines_command(client: MsClient, args: dict):
         'osPlatform': os_platform
     }
 
-    if field_from_type_list:
-        filter_req = reformat_filter_with_list_arg(fields_to_filter_by, field_from_type_list)
+    if field_with_multiple_values:
+        filter_req = reformat_filter_with_list_arg(fields_to_filter_by, field_with_multiple_values)
     else:
         filter_req = reformat_filter(fields_to_filter_by)
     machines_response = client.get_machines(filter_req)
@@ -1201,12 +1209,14 @@ def reformat_filter_with_list_arg(fields_to_filter_by, field_key_from_type_list)
         # in case the list is empty or includes only one item
         fields_to_filter_by[field_key_from_type_list] = field_value_from_type_list[0]
         return reformat_filter(fields_to_filter_by)
+
     filter_all_req = []
     for item in field_value_from_type_list:
         current_fields_to_filter = {key: value for (key, value) in fields_to_filter_by.items() if
                                     key != field_key_from_type_list}
         current_fields_to_filter.update({field_key_from_type_list: item})
         filter_all_req.append(reformat_filter(current_fields_to_filter))
+
     return ' or '.join(f"({condition})" for condition in filter_all_req)
 
 
@@ -1218,11 +1228,12 @@ def get_file_related_machines_command(client: MsClient, args: dict) -> CommandRe
     """
     headers = ['ID', 'ComputerDNSName', 'OSPlatform', 'LastIPAddress', 'LastExternalIPAddress', 'HealthStatus',
                'RiskScore', 'ExposureLevel']
-    files = list(dict.fromkeys(argToList(args.get('file_hash'))))  # remove duplicates
+    files = remove_duplicates_from_list_arg(args, 'file_hash')
     raw_response = []
     context_outputs = []
     all_machines_outputs = []
     failed_files = {}  # if we got an error, we will return the file that failed
+
     for file in files:
         try:
             machines_response = client.get_file_related_machines(file)
@@ -1299,7 +1310,7 @@ def get_machine_details_command(client: MsClient, args: dict) -> CommandResults:
     """
     headers = ['ID', 'ComputerDNSName', 'OSPlatform', 'LastIPAddress', 'LastExternalIPAddress', 'HealthStatus',
                'RiskScore', 'ExposureLevel', 'IPAddresses']
-    machine_ids = list(dict.fromkeys(argToList(args.get('machine_id'))))  # remove duplicates
+    machine_ids = remove_duplicates_from_list_arg(args, 'machine_id')
     raw_response = []
     machines_outputs = []
     machines_readable_outputs = []
@@ -1340,7 +1351,7 @@ def run_antivirus_scan_command(client: MsClient, args: dict):
         (str, dict, dict). Human readable, context, raw response
     """
     headers = ['ID', 'Type', 'Requestor', 'RequestorComment', 'Status', 'MachineID', 'ComputerDNSName']
-    machine_ids = list(dict.fromkeys(argToList(args.get('machine_id'))))  # remove duplicates
+    machine_ids = remove_duplicates_from_list_arg(args, 'machine_id')
     scan_type = args.get('scan_type')
     comment = args.get('comment')
     machine_actions_data = []
@@ -1662,7 +1673,7 @@ def get_machine_action_by_id_command(client: MsClient, args: dict):
     headers = ['ID', 'Type', 'Requestor', 'RequestorComment', 'Status', 'MachineID', 'ComputerDNSName']
     action_id = args.get('id', '')
     status = args.get('status', '')
-    machine_id = list(dict.fromkeys(argToList(args.get('machine_id', ''))))  # remove duplicates
+    machine_id = remove_duplicates_from_list_arg(args, 'machine_id')
     type = args.get('type', '')
     requestor = args.get('requestor', '')
     limit = arg_to_number(args.get('limit', 50))
@@ -2216,17 +2227,20 @@ def get_alert_by_id_command(client: MsClient, args: dict) -> CommandResults:
     """
     headers = ['ID', 'Title', 'Description', 'IncidentID', 'Severity', 'Status', 'Classification', 'Category',
                'ThreatFamilyName', 'MachineID']
-    alert_ids = list(dict.fromkeys(argToList(args.get('alert_ids'))))  # remove duplicates
+    alert_ids = remove_duplicates_from_list_arg(args, 'alert_ids')
     raw_response = []
     alert_outputs = []
     failed_alerts = {}  # if we got an error, we will return the machine ids that failed
+    not_found_ids = []
+
     for alert in alert_ids:
         try:
             alert_response = client.get_alert_by_id(alert)
             alerts_data = get_alert_data(alert_response)
             raw_response.append(alert_response)
             alert_outputs.append(alerts_data)
-        except NotFoundError:  # in case the error is not found hash, we want to return "No entries"
+        except NotFoundError:  # in case the error is not found alert id, we want to return "No entries"
+            not_found_ids.append(alert)
             continue
         except Exception as e:
             failed_alerts[alert] = e
@@ -2235,6 +2249,7 @@ def get_alert_by_id_command(client: MsClient, args: dict) -> CommandResults:
     human_readable = tableToMarkdown(f'{INTEGRATION_NAME} Alerts Info for IDs {alert_ids}:', alert_outputs,
                                      headers=headers, removeNull=True)
     human_readable += add_error_message(failed_alerts, alert_ids)
+    human_readable += not_found_message(not_found_ids)
     return CommandResults(outputs_prefix="MicrosoftATP.Alert", outputs=alert_outputs, readable_output=human_readable,
                           raw_response=raw_response, outputs_key_field="ID")
 
@@ -2824,10 +2839,11 @@ def list_machines_by_vulnerability_command(client: MsClient, args: dict) -> Comm
         CommandResults. Human readable, context, raw response
     """
     headers = ['ID', 'ComputerDNSName', 'OSPlatform', 'RBACGroupID', 'RBACGroupName', 'CVE']
-    cve_ids = list(dict.fromkeys(argToList(args.get('cve_id'))))  # remove duplicates
+    cve_ids = remove_duplicates_from_list_arg(args, 'cve_id')
     raw_response = []
     machines_outputs = []
     failed_cve = {}  # if we got an error, we will return the machine ids that failed
+
     for cve_id in cve_ids:
         try:
             machines_response = client.get_list_machines_by_vulnerability(cve_id)
@@ -2839,6 +2855,7 @@ def list_machines_by_vulnerability_command(client: MsClient, args: dict) -> Comm
         except Exception as e:
             failed_cve[cve_id] = e
             continue
+
     machines_outputs = create_related_cve_list_for_machine(machines_outputs)
     human_readable = tableToMarkdown(f'{INTEGRATION_NAME} machines by vulnerabilities: {cve_ids}',
                                      machines_outputs, headers=headers, removeNull=True)
@@ -2873,6 +2890,7 @@ def create_related_cve_list_for_machine(machines):
             machine_id_to_cve_list[machine_id].append(cve_id)
         machine.pop('CVE')
         machine['CVE'] = machine_id_to_cve_list[machine_id]
+
     # handle duplicates
     unique_machines = []
     for machine in machines:
@@ -2894,12 +2912,14 @@ def get_file_info_command(client: MsClient, args: dict):
     headers = ['Sha1', 'Sha256', 'Size', 'FileType', 'Signer', 'IsValidCertificate']
     file_context_path = 'File(val.SHA1 && val.SHA1 == obj.SHA1 || val.SHA256 && val.SHA256 == obj.SHA256 || ' \
                         'val.Type && val.Type == obj.Type || val.Size && val.Size == obj.Size )'
-    file_hashes = list(dict.fromkeys(argToList(args.get('hash'))))  # remove duplicates
+    file_hashes = remove_duplicates_from_list_arg(args, 'hash')
     raw_response = []
     file_outputs = []
     file_context_outputs = []
     failed_hashes = {}  # if we got an error, we will return the machine ids that failed
     sha1_value_in_files = []  # for not adding duplicates machines to the table
+    not_found_ids = []
+
     for file_hash in file_hashes:
         try:
             file_info_response = client.get_file_data(file_hash)
@@ -2910,13 +2930,16 @@ def get_file_info_command(client: MsClient, args: dict):
             raw_response.append(file_info_response)
             file_context_outputs.append(get_file_context(file_info_response, ["sha1", "sha256", "filetype", "size"]))
         except NotFoundError:  # in case the error is not found hash, we want to return "No entries"
+            not_found_ids.append(file_hash)
             continue
         except Exception as e:
             failed_hashes[file_hash] = e
             continue
+
     human_readable = tableToMarkdown(f'{INTEGRATION_NAME} file info by hashes: {file_hashes}',
                                      file_outputs, headers=headers, removeNull=True)
     human_readable += add_error_message(failed_hashes, file_hashes)
+    human_readable += not_found_message(not_found_ids)
     if file_outputs:
         context = {
             'MicrosoftATP.File(val.Sha1 === obj.Sha1)': file_outputs,
@@ -2970,6 +2993,15 @@ def create_filter_for_endpoint_command(hostnames, ips, ids):
         field_value_list for field_value in field_value_list)
 
 
+def validate_args_endpoint_command(hostnames, ips, ids):
+    no_hostname = len(hostnames) == 0
+    no_ip = len(ips) == 0
+    no_id = len(ids) == 0
+    if no_hostname and no_ip and no_id:
+        raise DemistoException(
+            f'{INTEGRATION_NAME} - In order to run this command, please provide valid id, ip or hostname')
+
+
 def endpoint_command(client: MsClient, args: dict) -> List[CommandResults]:
     """Retrieves a collection of machines that have communicated with WDATP cloud on the last 30 days
 
@@ -2980,16 +3012,10 @@ def endpoint_command(client: MsClient, args: dict) -> List[CommandResults]:
     hostnames = argToList(args.get('hostname', ''))
     ips = argToList(args.get('ip', ''))
     ids = argToList(args.get('id', ''))
-
-    no_hostname = len(hostnames) == 0
-    no_ip = len(ips) == 0
-    no_id = len(ids) == 0
-    if no_hostname and no_ip and no_id:
-        raise DemistoException(
-            f'{INTEGRATION_NAME} - In order to run this command, please provide valid id, ip or hostname')
-
+    validate_args_endpoint_command(hostnames, ips, ids)
     machines_response = client.get_machines(create_filter_for_endpoint_command(hostnames, ips, ids))
     machines_outputs = []
+
     for machine in machines_response.get('value', []):
         machine_data = get_machine_data(machine)
         machine_data['MACAddress'] = get_machine_mac_address(machine)
@@ -3005,12 +3031,18 @@ def endpoint_command(client: MsClient, args: dict) -> List[CommandResults]:
             outputs=machine_data,
             indicator=endpoint_indicator,
         ))
+
     if not machines_outputs:
         machines_outputs.append(CommandResults(
             readable_output=f"{INTEGRATION_NAME} no device found.",
             raw_response=machines_response,
         ))
     return machines_outputs
+
+
+def remove_duplicates_from_list_arg(args: dict, field: str):
+    convert_to_list = argToList(args.get(field))
+    return list(set(convert_to_list))
 
 
 ''' EXECUTION CODE '''

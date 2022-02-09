@@ -4443,7 +4443,7 @@ We suggest using the [TransformIndicatorToMSDefenderIOC automation](https://gith
 
 ### microsoft-atp-get-alert-by-id
 ***
-Retrieves specific alert by the given alert ID. Note, if the given alert ID is not part of the results, it was not found.
+Retrieves specific alert by the given alert ID. 
 
 ##### Required Permissions
 Alert.ReadWrite.All	

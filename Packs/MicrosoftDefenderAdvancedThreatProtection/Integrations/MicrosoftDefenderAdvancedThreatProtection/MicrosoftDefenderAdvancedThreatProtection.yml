@@ -4595,7 +4595,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Retrieves file info by a file hash (Sha1 or Sha256). Note, if the given hash is not part of the results, it was not found.
+    description: Retrieves file info by a file hash (Sha1 or Sha256).
     execution: false
     name: microsoft-atp-get-file-info
     outputs:
@@ -4813,7 +4813,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Retrieves specific alert by the given alert ID. Note, if the given alert ID is not part of the results, it was not found.
+    description: Retrieves specific alert by the given alert ID.
     execution: false
     name: microsoft-atp-get-alert-by-id
     outputs:
