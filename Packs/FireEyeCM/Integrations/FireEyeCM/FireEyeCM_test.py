@@ -1,6 +1,7 @@
 import io
 
 import pytest
+from freezegun import freeze_time
 
 from FireEyeCM import *
 from test_data.result_constants import QUARANTINED_EMAILS_CONTEXT, GET_ALERTS_CONTEXT, GET_ALERTS_DETAILS_CONTEXT, \
