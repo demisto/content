@@ -4,7 +4,7 @@ import json
 import ssl
 import threading
 from distutils.util import strtobool
-from typing import Tuple
+from typing import Optional, Tuple
 
 import aiohttp
 import slack_sdk
@@ -22,7 +22,7 @@ from CommonServerUserPython import *  # noqa
 
 async def get_file(self: AsyncWebClient, url_private: str):
     demisto.debug(f'download url is {url_private=}')
-    res = requests.get(url_private, headers={'Authorization': f'Bearer {self.token}'}, verify=False)  # TODO: verify from params.
+    res = requests.get(url_private, headers={'Authorization': f'Bearer {self.token}'}, verify=VERIFY_CERT)  # TODO: verify from params.
     demisto.debug(f'{url_private} {res.status_code=}')
     return res.content
 
@@ -1341,20 +1341,18 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
                 investigation_id = mirror['investigation_id']
                 # Post to the warroom
                 if event.get('subtype') == 'file_share':
-                    if is_demisto_version_ge('5.0.0'):  # Feature supported on version 7 and up
-                        files = event.get('files', [])
-                        demisto.debug(f'Found {len(files)=} in file_share')
-                        for file_obj in files:
+                    if is_demisto_version_ge('6.7.0'):  # 
+                        for file_obj in event.get('files', []):
                             data = await get_file(ASYNC_CLIENT, file_obj.get('url_private'))
                             name = file_obj.get('name')
-                            file_ = fileResult(name, data, investigation_id=investigation_id)
-                            demisto.debug('sending file')
-                            # demisto.createFile()
+                            file_ = fileResult(name, data, investigation_id=investigation_id, comment=event.get('text'))
+
                             await handle_file(
                                 investigation_id,
                                 file_,
                                 user  # type: ignore
                             )
+                            demisto.error('done sending file')
                     else:
                         demisto.debug('Found files but server version is below 7.0.0')
 
@@ -1705,10 +1703,16 @@ def slack_send():
                 default_response = parsed_message.get('default_response')
             except Exception:
                 demisto.info('Slack - could not parse JSON from entitlement message.')
-    file_dict = MirrorInvestigation.get_file_from_incoming_entry(args)
-    demisto.debug(f'file found {file_dict}')
+    file_ = None
+    try:
+        file_ = MirrorInvestigation.get_file_from_incoming_entry(args)
+    except ValueError:
+        demisto.debug('Could not find files in the incoming entry')
+    else:
+        demisto.debug(f'file found {file_}')
+        
     response = slack_send_request(to, channel, group, entry, ignore_add_url, thread_id, message=message, blocks=blocks,
-                                  channel_id=channel_id, file_dict=file_dict)
+                                  channel_id=channel_id, file_dict=file_)
 
     if response:
         thread = response.get('ts')

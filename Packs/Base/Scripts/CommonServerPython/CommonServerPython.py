@@ -10,6 +10,7 @@ import base64
 import gc
 import json
 import logging
+from multiprocessing.sharedctypes import Value
 import os
 import re
 import socket
@@ -2224,7 +2225,7 @@ def sectionsToMarkdown(root):
     return mdResult
 
 
-def fileResult(filename, data, file_type=None, investigation_id=None):
+def fileResult(filename, data, file_type=None, investigation_id=None, comment=None):
     """
        Creates a file from the given data
 
@@ -2237,22 +2238,39 @@ def fileResult(filename, data, file_type=None, investigation_id=None):
        :type file_type: ``str``
        :param file_type: one of the entryTypes file or entryInfoFile (optional)
 
+       :type investigation_id: ``str``
+       :param investigation_id: Investigation ID to post the file to (used in long running container)
+
+       :type investigation_id: ``str``
+       :param investigation_id: Comment to add on the file (ChatModule)
+
        :return: A Demisto war room entry
        :rtype: ``dict``
     """
-    demisto.debug(f'{filename=}, {bool(data)}, {file_type=}, {investigation_id=}')
     if file_type is None:
-        file_type = EntryType.FILE
-    if investigation_id is None:
-        investigation_id = demisto.investigation()['id']
+        file_type = entryTypes['file']
     temp = demisto.uniqueFile()
     # pylint: disable=undefined-variable
     if (IS_PY3 and isinstance(data, str)) or (not IS_PY3 and isinstance(data, unicode)):  # type: ignore # noqa: F821
         data = data.encode('utf-8')
     # pylint: enable=undefined-variable
-    with open(investigation_id + '_' + temp, 'wb') as f:
+    if investigation_id is None:  # Used in long running container where the investigation ID isn't part of the context.
+        try:
+            investigation_id = demisto.investigation()['id']
+        except TypeError:
+            raise TypeError('Not found investigation ID, if running in long running container, supply one.')
+    file_path = str(investigation_id) + '_' + temp
+    with open(file_path, 'wb') as f:
         f.write(data)
-    return {'Contents': '', 'ContentsFormat': formats['text'], 'Type': file_type, 'File': filename, 'FileID': temp}
+    return {
+        'Contents': '', 
+        'ContentsFormat': formats['text'], 
+        'Type': file_type, 
+        'File': filename, 
+        'FileID': temp, 
+        'investigationId': investigation_id,
+        'comment': comment
+    }
 
 
 def hash_djb2(s, seed=5381):
@@ -8527,7 +8545,7 @@ class MirrorInvestigation(object):
         id_ = file_validator(args)
         if id_:
             return get_file_path(id_)
-        return None
+        raise ValueError('No files were found')
 
     @staticmethod
     def file_validator(args):
@@ -8536,7 +8554,7 @@ class MirrorInvestigation(object):
             entry = args.get('entry')
             demisto.debug('Found file with entryID: {}'.format(entry))
             return entry
-        return None
+        raise ValueError('Could not validate the file ID')
 
 def get_tenant_account_name():
     """Gets the tenant name from the server url.
