@@ -1929,6 +1929,7 @@ class Pack(object):
             self._keywords = input_to_list(self.user_metadata.get(Metadata.KEY_WORDS))
         self._dependencies = self._parse_pack_dependencies(
             self.user_metadata.get(Metadata.DEPENDENCIES, {}), dependencies_data)
+        logging.info(f"NOY_LOGS: self._dependencies of the pack - {self._dependencies}")
 
         # ===== Pack Private Attributes =====
         if not format_dependencies_only:
@@ -2002,12 +2003,13 @@ class Pack(object):
             logging.info(f"Loading pack dependencies for {self._pack_name} pack")
             dependencies_data, is_missing_dependencies = \
                 self._load_pack_dependencies(index_folder_path, pack_names, id_set, marketplace)
-            logging.info(f"NOY_LOGS: {dependencies_data}")
+            logging.info(f"NOY_LOGS: all dependencies data for the pack - {dependencies_data}")
 
             self._enhance_pack_attributes(index_folder_path, pack_was_modified, dependencies_data, statistics_handler,
                                           format_dependencies_only)
 
             formatted_metadata = self._parse_pack_metadata(build_number, commit_hash)
+            logging.info(f"NOY_LOGS: parsed metadata file - {formatted_metadata}")
             metadata_path = os.path.join(self._pack_path, Pack.METADATA)  # deployed metadata path after parsing
             json_write(metadata_path, formatted_metadata)  # writing back parsed metadata
 
