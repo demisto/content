@@ -1,17 +1,19 @@
 {
     "associatedToAll": true,
     "caseInsensitive": true,
-    "cliName": "filemd5",
+    "cliName": "filepath",
     "closeForm": false,
     "content": true,
+    "description": "When the alert triggered on a file (the Event Type is File) this is the path to the file on the endpoint. If not, then N/A.",
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_filemd5",
+    "id": "incident_filepath",
     "isReadOnly": false,
     "locked": false,
-    "name": "File MD5",
+    "name": "File path",
     "neverSetAsRequired": false,
+    "openEnded": true,
     "ownerOnly": false,
     "propagationLabels": [
         "all"
@@ -22,12 +24,15 @@
     "threshold": 72,
     "type": "multiSelect",
     "unmapped": false,
-    "unsearchable": false,
+    "unsearchable": true,
     "useAsKpi": false,
     "version": -1,
-    "fromVersion": "5.5.0",
-    "openEnded": true,
-    "marketplaces": [
-      "xsoar"
+    "fromVersion": "6.5.0",
+    "x2_fields": "agent_file_path",
+    "Aliases": [
+        {
+        "cliName": "filepaths",
+        "type": "multiSelect"
+        }
     ]
 }

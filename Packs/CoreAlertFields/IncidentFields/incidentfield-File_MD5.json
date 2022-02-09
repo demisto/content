@@ -4,6 +4,7 @@
     "cliName": "filemd5",
     "closeForm": false,
     "content": true,
+    "description": "MD5 hash value of the file.",
     "editForm": true,
     "group": 0,
     "hidden": false,
@@ -12,6 +13,7 @@
     "locked": false,
     "name": "File MD5",
     "neverSetAsRequired": false,
+    "openEnded": true,
     "ownerOnly": false,
     "propagationLabels": [
         "all"
@@ -22,12 +24,19 @@
     "threshold": 72,
     "type": "multiSelect",
     "unmapped": false,
-    "unsearchable": false,
+    "unsearchable": true,
     "useAsKpi": false,
     "version": -1,
-    "fromVersion": "5.5.0",
-    "openEnded": true,
-    "marketplaces": [
-      "xsoar"
+    "fromVersion": "6.5.0",
+    "x2_fields": "agent_file_md5",
+    "Aliases": [
+        {
+        "cliName": "gibinjectmd5",
+        "type": "shortText"
+        },
+        {
+        "cliName": "md5",
+        "type": "shortText"
+        }
     ]
 }
