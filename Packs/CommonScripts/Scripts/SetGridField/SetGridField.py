@@ -137,7 +137,7 @@ def get_current_table(grid_id: str) -> pd.DataFrame:
                          f"Settings->Advanced ->Fields (Incident). Also make sure that this value appears in the "
                          f"incident Context Data under incident - if not then please consult with support.")
 
-    current_table: Optional[List[dict]] = demisto.incidents()[0].get("CustomFields", {}).get(grid_id)
+    current_table: Optional[List[dict]] = custom_fields.get(grid_id)
 
     return pd.DataFrame(current_table)
 
