@@ -68,6 +68,13 @@ def search_incidents(args: Dict):
     if not is_valid_args(args):
         return
 
+    if fromdate := arg_to_datetime(args.get('fromdate')):
+        from_date = fromdate.isoformat()
+        args['fromdate'] = from_date
+    if todate := arg_to_datetime(args.get('todate')):
+        to_date = todate.isoformat()
+        args['todate'] = to_date
+
     res: List = execute_command('getIncidents', args, extract_contents=False)
     incident_found: bool = check_if_found_incident(res)
     if incident_found is False:

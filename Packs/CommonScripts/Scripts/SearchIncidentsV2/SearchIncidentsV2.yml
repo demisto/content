@@ -33,13 +33,13 @@ args:
   required: false
   secret: false
 - default: false
-  description: Filter by from date (e.g. 2006-01-02T15:04:05+07:00 or 2006-01-02T15:04:05Z)
+  description: Filter by from date (e.g. "3 days ago" or 2006-01-02T15:04:05+07:00 or 2006-01-02T15:04:05Z)
   isArray: false
   name: fromdate
   required: false
   secret: false
 - default: false
-  description: Filter by to date (e.g. 2006-01-02T15:04:05+07:00 or 2006-01-02T15:04:05Z)
+  description: Filter by to date (e.g. "3 days ago" or 2006-01-02T15:04:05+07:00 or 2006-01-02T15:04:05Z)
   isArray: false
   name: todate
   required: false
