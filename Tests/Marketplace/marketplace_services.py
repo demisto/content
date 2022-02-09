@@ -107,8 +107,9 @@ class Pack(object):
         self._pack_statistics_handler = None  # initialized in enhance_pack_attributes function
         self._contains_transformer = False  # initialized in collect_content_items function
         self._contains_filter = False  # initialized in collect_content_items function
-        self._is_missing_dependencies = False  # a flag that specifies if pack is missing dependencies
+        self._is_missing_dependencies = False  # initialized in _load_pack_dependencies function
         self.should_upload_to_marketplace = True  # initialized in load_user_metadata function
+        self._is_modified = None  # initialized in detect_modified function
 
     @property
     def name(self):
@@ -329,6 +330,10 @@ class Pack(object):
     @property
     def zip_path(self):
         return self._zip_path
+
+    @property
+    def is_modified(self):
+        return self._is_modified
 
     def _get_latest_version(self):
         """ Return latest semantic version of the pack.
@@ -1020,6 +1025,7 @@ class Pack(object):
                 pack_was_modified = not all(self.RELEASE_NOTES in path for path in modified_rn_files_paths)
                 # Filter modifications in release notes config JSON file - they will be handled later on.
                 modified_rn_files_paths = [path_ for path_ in modified_rn_files_paths if path_.endswith('.md')]
+            self._is_modified = pack_was_modified
             return
         except Exception:
             logging.exception(f"Failed in detecting modified files of {self._pack_name} pack")
@@ -3220,11 +3226,12 @@ def get_all_packs_by_id_set(packs_list, extract_destination_path, id_set, market
          (dict, list): Dictionary of pack_name:Pack and list of all Pack in id_set.json
     """
     packs_dict = {pack.name: pack for pack in packs_list}
-    if not id_set:
-        return packs_dict
-    for pack_name in id_set:
-        if pack_name not in packs_dict:
-            pack = Pack(pack_name, os.path.join(extract_destination_path, pack_name), marketplace)
-            packs_dict[pack_name] = pack
-            packs_list.append(pack)
+    # TODO: check if actually needed
+    # if not id_set:
+    #     return packs_dict
+    # for pack_name in id_set:
+    #     if pack_name not in packs_dict:
+    #         pack = Pack(pack_name, os.path.join(extract_destination_path, pack_name), marketplace)
+    #         packs_dict[pack_name] = pack
+    #         packs_list.append(pack)
     return packs_dict, packs_list
