@@ -611,13 +611,16 @@ def run_single_write_cmd(host_id: str, command_type: str, full_command: str) -> 
     """
     endpoint_url = '/real-time-response/entities/active-responder-command/v1'
     session_id = init_rtr_single_session(host_id)
-
+    print(session_id)
     body = json.dumps({
         'base_command': command_type,
         'command_string': full_command,
         'session_id': session_id
     })
+    print(endpoint_url)
+    print(body)
     response = http_request('POST', endpoint_url, data=body)
+    print(response)
     return response
 
 
@@ -1122,13 +1125,13 @@ def delete_ioc(ioc_type, value):
 
 
 def search_custom_iocs(
-    types: Optional[Union[list, str]] = None,
-    values: Optional[Union[list, str]] = None,
-    sources: Optional[Union[list, str]] = None,
-    expiration: Optional[str] = None,
-    limit: str = '50',
-    sort: Optional[str] = None,
-    offset: Optional[str] = None,
+        types: Optional[Union[list, str]] = None,
+        values: Optional[Union[list, str]] = None,
+        sources: Optional[Union[list, str]] = None,
+        expiration: Optional[str] = None,
+        limit: str = '50',
+        sort: Optional[str] = None,
+        offset: Optional[str] = None,
 ) -> dict:
     """
     :param types: A list of indicator types. Separate multiple types by comma.
@@ -1165,16 +1168,16 @@ def get_custom_ioc(ioc_id: str) -> dict:
 
 
 def upload_custom_ioc(
-    ioc_type: str,
-    value: str,
-    action: str,
-    platforms: str,
-    severity: Optional[str] = None,
-    source: Optional[str] = None,
-    description: Optional[str] = None,
-    expiration: Optional[str] = None,
-    applied_globally: Optional[bool] = None,
-    host_groups: Optional[List[str]] = None,
+        ioc_type: str,
+        value: str,
+        action: str,
+        platforms: str,
+        severity: Optional[str] = None,
+        source: Optional[str] = None,
+        description: Optional[str] = None,
+        expiration: Optional[str] = None,
+        applied_globally: Optional[bool] = None,
+        host_groups: Optional[List[str]] = None,
 ) -> dict:
     """
     Create a new IOC (or replace an existing one)
@@ -1198,21 +1201,21 @@ def upload_custom_ioc(
 
 
 def update_custom_ioc(
-    ioc_id: str,
-    action: Optional[str] = None,
-    platforms: Optional[str] = None,
-    severity: Optional[str] = None,
-    source: Optional[str] = None,
-    description: Optional[str] = None,
-    expiration: Optional[str] = None,
+        ioc_id: str,
+        action: Optional[str] = None,
+        platforms: Optional[str] = None,
+        severity: Optional[str] = None,
+        source: Optional[str] = None,
+        description: Optional[str] = None,
+        expiration: Optional[str] = None,
 ) -> dict:
     """
     Update an IOC
     """
     payload = {
         'indicators': [{
-            'id': ioc_id,
-        } | assign_params(
+                           'id': ioc_id,
+                       } | assign_params(
             action=action,
             platforms=platforms,
             severity=severity,
@@ -1713,13 +1716,13 @@ def delete_ioc_command(ioc_type, value):
 
 
 def search_custom_iocs_command(
-    types: Optional[Union[list, str]] = None,
-    values: Optional[Union[list, str]] = None,
-    sources: Optional[Union[list, str]] = None,
-    expiration: Optional[str] = None,
-    limit: str = '50',
-    sort: Optional[str] = None,
-    offset: Optional[str] = None,
+        types: Optional[Union[list, str]] = None,
+        values: Optional[Union[list, str]] = None,
+        sources: Optional[Union[list, str]] = None,
+        expiration: Optional[str] = None,
+        limit: str = '50',
+        sort: Optional[str] = None,
+        offset: Optional[str] = None,
 ) -> dict:
     """
     :param types: A list of indicator types. Separate multiple types by comma.
@@ -1752,9 +1755,9 @@ def search_custom_iocs_command(
 
 
 def get_custom_ioc_command(
-    ioc_type: Optional[str] = None,
-    value: Optional[str] = None,
-    ioc_id: Optional[str] = None,
+        ioc_type: Optional[str] = None,
+        value: Optional[str] = None,
+        ioc_id: Optional[str] = None,
 ) -> dict:
     """
     :param ioc_type: IOC type
@@ -1786,16 +1789,16 @@ def get_custom_ioc_command(
 
 
 def upload_custom_ioc_command(
-    ioc_type: str,
-    value: str,
-    action: str,
-    platforms: str,
-    severity: Optional[str] = None,
-    source: Optional[str] = None,
-    description: Optional[str] = None,
-    expiration: Optional[str] = None,
-    applied_globally: Optional[bool] = None,
-    host_groups: Optional[List[str]] = None,
+        ioc_type: str,
+        value: str,
+        action: str,
+        platforms: str,
+        severity: Optional[str] = None,
+        source: Optional[str] = None,
+        description: Optional[str] = None,
+        expiration: Optional[str] = None,
+        applied_globally: Optional[bool] = None,
+        host_groups: Optional[List[str]] = None,
 ) -> dict:
     """
     :param ioc_type: The type of the indicator.
@@ -1834,13 +1837,13 @@ def upload_custom_ioc_command(
 
 
 def update_custom_ioc_command(
-    ioc_id: str,
-    action: Optional[str] = None,
-    platforms: Optional[str] = None,
-    severity: Optional[str] = None,
-    source: Optional[str] = None,
-    description: Optional[str] = None,
-    expiration: Optional[str] = None,
+        ioc_id: str,
+        action: Optional[str] = None,
+        platforms: Optional[str] = None,
+        severity: Optional[str] = None,
+        source: Optional[str] = None,
+        description: Optional[str] = None,
+        expiration: Optional[str] = None,
 ) -> dict:
     """
     :param ioc_id: The ID of the indicator to update.
@@ -2980,6 +2983,57 @@ def test_module():
     return 'ok'
 
 
+def rtr_kill_process_command(args: dict) -> CommandResults:
+    host_id = args.get('host_id')
+    process_ids = list(dict.fromkeys(argToList(args.get('process_id'))))  # remove duplicates
+    command_type = "kill"
+    failed_process = {}
+    success_process = []
+
+    raw_response = []
+    host_ids = [host_id]
+    batch_id = init_rtr_batch_session(host_ids)
+    outputs = []
+
+    for process_id in process_ids:
+        timer = Timer(300, batch_refresh_session, kwargs={'batch_id': batch_id})
+        timer.start()
+        try:
+            response = run_batch_write_cmd(batch_id, command_type=command_type, full_command=f"{command_type} "
+                                                                                             f"{process_id}")
+        finally:
+            timer.cancel()
+
+        resources: dict = response.get('combined', {}).get('resources', {})
+        for _, resource in resources.items():
+            error = resource.get('stderr', '')
+            if error:
+                failed_process[process_id] = error
+            else:
+                success_process.append(process_id)
+            outputs.append({
+                'ProcessID': process_id,
+                'Stderr': error,
+            })
+        raw_response.append(response)
+
+    human_readable = f'{INTEGRATION_NAME} on host {host_id}: {command_type} command over the processes: ' \
+                     f'{success_process} was successful. \n'
+    human_readable += add_error_message(failed_process)
+    return CommandResults(raw_response=raw_response, readable_output=human_readable, outputs=outputs,
+                          outputs_prefix="CrowdStrike.Command", outputs_key_field="ProcessID")
+
+
+def add_error_message(failed_devices):
+    human_readable = ""
+    if failed_devices:
+        human_readable = "Note: you don't see the following IDs in the results as the request was failed " \
+                         "for them. \n"
+        for device_id in failed_devices:
+            human_readable += f'ID {device_id} failed with the error: {failed_devices[device_id]} \n'
+    return human_readable
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 LOG('Command being called is {}'.format(demisto.command()))
@@ -3099,6 +3153,13 @@ def main():
         elif command == 'cs-falcon-resolve-incident':
             return_results(resolve_incident_command(status=args.get('status'),
                                                     ids=argToList(args.get('ids'))))
+
+        elif command == 'cs-falcon-rtr-kill-process':
+            return_results(rtr_kill_process_command(args))
+
+        elif command == 'cs-falcon-rtr-remove-file':
+            pass
+
         else:
             raise NotImplementedError(f'CrowdStrike Falcon error: '
                                       f'command {command} is not implemented')
