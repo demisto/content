@@ -2121,7 +2121,7 @@ def fetch_incidents():
 # main added for unit tests
 def main():
     if not TOKEN:
-        raise Exception('api token must be provided.')
+        raise Exception('API Token must be provided.')
     handle_proxy()
     command = demisto.command()
     LOG(f'Command being called is {command}')
