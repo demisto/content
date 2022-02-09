@@ -1,4 +1,8 @@
-![Cortex XSOAR CI/CD](https://github.com/demisto/content-assets/raw/c332ede923f40990749a1498c6501fcacbf58bfd/Assets/ContentManagement/content_management_demo.mp4)
+<!-- blank line -->
+<figure class="video_container">
+  <iframe src="https://github.com/demisto/content-assets/raw/c332ede923f40990749a1498c6501fcacbf58bfd/Assets/ContentManagement/content_management_demo.mp4" frameborder="0" allowfullscreen="true"> </iframe>
+</figure>
+<!-- blank line -->
 
 The XSOAR marketplace provides some of the best use-cases that we can imagine, that will suit any organization out there, but every organization is unique, it has its own protocols, processes and needs.
 
