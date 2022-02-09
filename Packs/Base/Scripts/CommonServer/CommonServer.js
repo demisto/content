@@ -2021,22 +2021,25 @@ function setVersionedIntegrationContext(context, sync, version) {
         return setIntegrationContext(context);
     }
 }
-// version should be given if theres a known version we must update according to.
+/* version should be given if theres a known version we must update according to.
+In case of a known version, retries should be set to 0 */
 function mergeVersionedIntegrationContext({newContext, retries = 0,version, objectKey = {}}) {
-  var timesAttempted = 0;
-  var done = false;
-
-  do {
-    try {
-      var versionedIntegrationContext = getVersionedIntegrationContext(true, true) || {};
-      var context = versionedIntegrationContext.context;
-      mergeContexts(newContext, context, objectKey);
-      setVersionedIntegrationContext(context, true, version || versionedIntegrationContext.version);
-      done = true;
-    } catch (error) {
-      if (++timesAttempted >= retries + 1) throw error;
-    }
-  } while (!done && timesAttempted < retries + 1);
+    var timesAttempted = 0;
+    var done = false;
+    do {
+        logDebug("mergeVersionedIntegrationContext - retries: " + retries + " given version: " + version)
+        try {
+            var versionedIntegrationContext = getVersionedIntegrationContext(true, true) || {};
+            var context = versionedIntegrationContext.context;
+            mergeContexts(newContext, context, objectKey);
+            setVersionedIntegrationContext(context, true, version || versionedIntegrationContext.version);
+            done = true;
+        }
+        catch (error) {
+            logDebug(error.message)
+            if (++timesAttempted >= retries + 1) throw error;
+        }
+    } while (!done && timesAttempted < retries + 1);
 }
 /*
     This function will mutate existingContext, updating it according to newContext.
@@ -2044,20 +2047,20 @@ function mergeVersionedIntegrationContext({newContext, retries = 0,version, obje
 
 
 function mergeContexts(newContext, existingContext, objectKeys = {}) {
-  for (var key in newContext) {
-    existingContext[key] = existingContext[key] && objectKeys[key] ?
-        mergeContextLists(newContext[key], existingContext[key], objectKeys[key])
-        : existingContext[key] = newContext[key];
-  }
+    for (var key in newContext) {
+        existingContext[key] = existingContext[key] && objectKeys[key] ?
+            mergeContextLists(newContext[key], existingContext[key], objectKeys[key])
+            : existingContext[key] = newContext[key];
+    }
 }
 
 function mergeContextLists(newItems, oldItems, objectKey) {
-  let toMapByKey = (prev, curr) => {
-    prev[curr[objectKey]] = curr;
-    return prev;
-  };
+    let toMapByKey = (prev, curr) => {
+        prev[curr[objectKey]] = curr;
+        return prev;
+    };
 
-  oldItemsByKey = oldItems.reduce(toMapByKey, {});
-  newItemsByKey = newItems.reduce(toMapByKey, {});
-  return Object.values(Object.assign(oldItemsByKey, newItemsByKey)).filter(e => !e['remove']);
+    oldItemsByKey = oldItems.reduce(toMapByKey, {});
+    newItemsByKey = newItems.reduce(toMapByKey, {});
+    return Object.values(Object.assign(oldItemsByKey, newItemsByKey)).filter(e => !e['remove']);
 }
