@@ -1,8 +1,8 @@
-<!-- blank line -->
-<figure class="video_container">
-  <iframe src="https://github.com/demisto/content-assets/raw/c332ede923f40990749a1498c6501fcacbf58bfd/Assets/ContentManagement/content_management_demo.mp4" frameborder="0" allowfullscreen="true"> </iframe>
-</figure>
-<!-- blank line -->
+<video controls>
+    <source src="https://github.com/demisto/content-assets/raw/7982404664dc68c2035b7c701d093ec026628802/Assets/Syslog/syslog-sender-demo.mp4"
+            type="video/mp4"/>
+    Sorry, your browser doesn't support embedded videos. You can download the video at: https://github.com/demisto/content-assets/blob/7982404664dc68c2035b7c701d093ec026628802/Assets/Syslog/syslog-sender-demo.mp4 
+</video>
 
 The XSOAR marketplace provides some of the best use-cases that we can imagine, that will suit any organization out there, but every organization is unique, it has its own protocols, processes and needs.
 
