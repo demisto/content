@@ -123,19 +123,6 @@ format_funcs: List[Callable[[bytes], Optional[SyslogMessageExtract]]] = [parse_r
                                                                          parse_rfc_6587_format]
 
 
-def test_module() -> str:
-    """
-    Tests API connectivity and authentication'
-    Returning 'ok' indicates that the integration works like it is supposed to.
-    Connection to the service is successful.
-    Raises exceptions if something goes wrong.
-
-    Returns:
-        (str): 'ok' if test passed, anything else will fail the test.
-    """
-    return 'ok'
-
-
 def fetch_samples() -> None:
     """
     Retrieves samples from context.
