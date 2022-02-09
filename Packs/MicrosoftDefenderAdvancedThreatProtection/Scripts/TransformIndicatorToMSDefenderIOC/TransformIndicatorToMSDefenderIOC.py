@@ -4,7 +4,7 @@ import traceback
 POPULATE_INDICATOR_FIELDS = ["value", "indicator_type", "applications", "user", "firstSeen",
                              "expiration", "lastSeen", "score", "title", "description"]
 
-INDICATOR_FIELDS_TO_MSDE_IOC = {
+INDICATOR_FIELDS_TO_MS_DEFENDER_IOC = {
     "value": "indicatorValue",
     "indicator_type": "indicatorType",
     "applications": "application",
@@ -28,8 +28,8 @@ INDICATOR_FIELDS_TO_MSDE_IOC = {
 }
 
 # feel free to change it hard-coded.
-# Possible values in MSDE are: Informational, Low, Medium and High
-DBOT_SCORE_TO_MSDE_SEVERITY = {
+# Possible values in MS Defender are: Informational, Low, Medium and High
+DBOT_SCORE_TO_MS_DEFENDER_SEVERITY = {
     Common.DBotScore.BAD: "High",
     Common.DBotScore.SUSPICIOUS: "Medium",
     Common.DBotScore.GOOD: "Informational",
@@ -38,7 +38,7 @@ DBOT_SCORE_TO_MSDE_SEVERITY = {
 
 
 def convert_unique_fields(ioc, action):
-    ioc['Severity'] = DBOT_SCORE_TO_MSDE_SEVERITY[ioc.get('Severity')]  # XSOAR indicators always have score
+    ioc['Severity'] = DBOT_SCORE_TO_MS_DEFENDER_SEVERITY[ioc.get('Severity')]  # XSOAR indicators always have score
     if ioc.get('indicatorType'):
         indicator_type = ioc.get('indicatorType')
         indicator_value = ioc.get('indicatorValue', "")
@@ -57,15 +57,15 @@ def convert_unique_fields(ioc, action):
         elif indicator_type == "URL":
             ioc["indicatorType"] = "Url"
         else:
-            raise DemistoException(f"The indicator type: {indicator_type} does not exist in MSDE")
+            raise DemistoException(f"The indicator type: {indicator_type} does not exist in MS Defender")
     # if you want to map the action field, you can do it here.
-    # Note: the action arg is mandatory with MSDE api
+    # Note: the action arg is mandatory with MS Defender api
     # Possible values are: "Warn", "Block", "Audit", "Alert", "AlertAndBlock", "BlockAndRemediate" and "Allowed".
     ioc['action'] = action
-    # Note: the title arg is mandatory with MSDE api, please change it
+    # Note: the title arg is mandatory with MS Defender api, please change it
     if not ioc.get('title'):
         ioc['title'] = "XSOAR Indicator title"
-    # Note: the description arg is mandatory with MSDE api, please change it
+    # Note: the description arg is mandatory with MS Defender api, please change it
     if not ioc.get('description'):
         ioc['description'] = "XSOAR Indicator description"
     return ioc
@@ -75,33 +75,31 @@ def get_indicators_by_query():
     action = demisto.args().pop('action')
     demisto.args().update({'populateFields': POPULATE_INDICATOR_FIELDS})
     indicators = execute_command('GetIndicatorsByQuery', args=demisto.args())
-    msde_iocs = []
+    ms_defender_iocs = []
     if indicators:
         for indicator in indicators:
-            # convert XSOAR indicator to MSDE IOC
-            msde_ioc = {INDICATOR_FIELDS_TO_MSDE_IOC[indicator_field]: indicator_value for
-                        (indicator_field, indicator_value) in indicator.items()}
-            msde_ioc = convert_unique_fields(msde_ioc, action)
-            msde_iocs.append(msde_ioc)
-    return msde_iocs
+            # convert XSOAR indicator to MS Defender IOC
+            ms_defender_ioc = {INDICATOR_FIELDS_TO_MS_DEFENDER_IOC[indicator_field]: indicator_value for
+                               (indicator_field, indicator_value) in indicator.items()}
+            ms_defender_ioc = convert_unique_fields(ms_defender_ioc, action)
+            ms_defender_iocs.append(ms_defender_ioc)
+    return ms_defender_iocs
 
 
 def main():
     try:
-        msde_iocs = get_indicators_by_query()
+        ms_defender_iocs = get_indicators_by_query()
         human_readable = tableToMarkdown('TransformIndicatorToMSDefenderIOC id done:',
-                                         msde_iocs, removeNull=True,
-                                         headers=list(INDICATOR_FIELDS_TO_MSDE_IOC.values()))
-        # add the output in json format to the output as well
-        # msde_iocs.append({'JsonOutput': json.dumps(msde_iocs)})
+                                         ms_defender_iocs, removeNull=True,
+                                         headers=list(INDICATOR_FIELDS_TO_MS_DEFENDER_IOC.values()))
         context = {
-            'TransformIndicatorToMSDefenderIOC.JsonOutput': json.dumps(msde_iocs),
-            'TransformIndicatorToMSDefenderIOC.Indicators': msde_iocs,
+            'TransformIndicatorToMSDefenderIOC.JsonOutput': json.dumps(ms_defender_iocs),
+            'TransformIndicatorToMSDefenderIOC.Indicators': ms_defender_iocs,
         }
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['text'],
-            'Contents': msde_iocs,
+            'Contents': ms_defender_iocs,
             'EntryContext': context,
             'HumanReadable': human_readable,
         })
