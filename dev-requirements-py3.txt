@@ -15,7 +15,7 @@ pypdf2==1.26.0
 freezegun==0.3.12
 vulture==1.5
 git+https://github.com/npsolve/parinx.git@6493798ceba8089345d970f71be4a896eb6b081d#egg=parinx
-git+https://github.com/demisto/demisto-sdk.git@e88e097f03c228e57d93f2245c604dba1b65be95
+git+https://github.com/demisto/demisto-sdk.git@56ec102a25d5bdb04aee42807d9faa4c579850ba
 pylint==2.6.0
 coloredlogs==15.0
 pandas==1.2.0
