@@ -10,4 +10,4 @@ If you use PAN-OS or Panorama as your enterprise firewall and Jira or ServiceNow
 - Automatically edit the relevant rule for the change request.
 
 
-For more information, visit our [Cortex XSOAR Developer Docs](Link to article)
+For more information, visit our [Cortex XSOAR Developer Docs](https://xsoar.pan.dev/docs/reference/packs/Change_Management)
