@@ -3,7 +3,7 @@ contentitemexportablefields:
     definitionid: ""
     fromServerVersion: ""
     itemVersion: ""
-    packID: c9b17fa6-f880-4ed0-8647-a5c15ba52006
+    packID: 942dc2af-1c60-44c4-8478-fa18fa4e0a99
     propagationLabels:
     - all
     toServerVersion: ""
@@ -97,13 +97,13 @@ tasks:
     task:
       brand: ""
       description: Convert To List | HX Layout Helper
-      id: 14dd4e1f-4f21-441c-8963-4ba1bedf3966
+      id: eed422d3-a69a-41cc-8a8c-4bf73652c355
       iscommand: false
       name: Convert Endpoint Details to List
       scriptName: convertolistcontext
       type: regular
       version: -1
-    taskid: 14dd4e1f-4f21-441c-8963-4ba1bedf3966
+    taskid: eed422d3-a69a-41cc-8a8c-4bf73652c355
     timertriggers: []
     type: regular
     view: |-

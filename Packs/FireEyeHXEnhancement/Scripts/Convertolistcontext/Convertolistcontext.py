@@ -2,7 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 val = demisto.args().get('contextval')
-results = [{}]
+results = [{}]  # type: ignore
 for key in val.keys():
     if key != 'Domain':
         results[0][key] = val[key]
