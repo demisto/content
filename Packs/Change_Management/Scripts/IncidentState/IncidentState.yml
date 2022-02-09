@@ -18,6 +18,6 @@ tags:
 - dynamic-section
 - python
 type: python
-fromversion: 5.5.0
+fromversion: 6.1.0
 tests:
 - No tests (auto formatted)
