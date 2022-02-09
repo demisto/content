@@ -131,12 +131,12 @@ def fetch_samples() -> None:
     demisto.incidents(get_integration_context().get('samples'))
 
 
-def create_incident_from_syslog_message(extracted_message: SyslogMessageExtract, incident_type: str) -> dict:
+def create_incident_from_syslog_message(extracted_message: SyslogMessageExtract, incident_type: Optional[str]) -> dict:
     """
     Creates incident from the extracted Syslog message.
     Args:
         extracted_message (SyslogMessageExtract): Syslog message extraction details.
-        incident_type (str): The incident type
+        incident_type (Optional[str]): The incident type
 
     Returns:
         (dict): Incident.
@@ -260,7 +260,7 @@ def prepare_globals_and_create_server(port: int, message_regex: Optional[str], c
     Returns:
         (StreamServer): Server to listen to Syslog messages.
     """
-    global MESSAGE_REGEX
+    global MESSAGE_REGEX, INCIDENT_TYPE
     MESSAGE_REGEX = message_regex
     INCIDENT_TYPE = incident_type
     if certificate and private_key:

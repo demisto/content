@@ -153,6 +153,7 @@ def test_fetch_samples(samples: list[dict], mocker):
                                        'occurred: 2003-10-11T22:14:15.003Z',
                             'name': 'Syslog from [mymachine.example.com][2003-10-11T22:14:15.003Z]',
                             'occurred': '2003-10-11T22:14:15.003Z',
+                            'type': 'test',
                             'rawJSON': '{"app_name": "evntslog", "facility": "local4", "host_name": '
                                        '"mymachine.example.com", "msg": "BOMAn application event log '
                                        'entry", "msg_id": "ID47", "process_id": 123, "sd": '
@@ -188,6 +189,7 @@ def test_fetch_samples(samples: list[dict], mocker):
                                           'timestamp: 2021-11-09T17:07:20',
                                'name': 'Syslog from [mymachine.example.com][2021-11-09T17:07:20]',
                                'occurred': None,
+                               'type': 'test',
                                'rawJSON': '{"app_name": null, "facility": "log_alert", "host_name": '
                                           '"mymachine.example.com", "msg": "softwareupdated[288]: Removing '
                                           'client SUUpdateServiceClient pid=90550, uid=375597002, '
@@ -213,7 +215,7 @@ def test_create_incident_from_syslog_message(extracted_msg: SyslogMessageExtract
     Then:
     - Ensure expected incident is created
     """
-    assert create_incident_from_syslog_message(extracted_msg) == expected
+    assert create_incident_from_syslog_message(extracted_msg, incident_type='test') == expected
 
 
 INCIDENT_EXAMPLE = {'name': 'Syslog from [mymachine.example.com][2021-11-09T17:07:20]',
@@ -351,6 +353,7 @@ def test_perform_long_running_loop(mocker, test_data, test_name):
     """
     import Syslogv2
     tmp_reg = Syslogv2.MESSAGE_REGEX
+    tmp_incident_type = Syslogv2.INCIDENT_TYPE
     test_name_data = test_data[test_name]
     Syslogv2.MESSAGE_REGEX = test_name_data.get('message_regex')
     set_integration_context({})
@@ -369,19 +372,20 @@ def test_perform_long_running_loop(mocker, test_data, test_name):
         assert not demisto.createIncidents.called
         assert not get_integration_context()
     Syslogv2.MESSAGE_REGEX = tmp_reg
+    Syslogv2.INCIDENT_TYPE = tmp_incident_type
 
 
-@pytest.mark.parametrize('message_regex, certificate, private_key',
-                         [(None, None, None),
-                          ('reg', None, None),
-                          (None, 'a', None),
-                          (None, None, 'b'),
-                          ('a', 'b', None),
-                          ('reg', None, 'b'),
-                          (None, 'a', 'b'),
-                          ('reg', 'a', 'b')
+@pytest.mark.parametrize('message_regex, certificate, private_key, incident_type',
+                         [(None, None, None, None),
+                          ('reg', None, None, None),
+                          (None, 'a', None, None),
+                          (None, None, 'b', None),
+                          ('a', 'b', None, None),
+                          ('reg', None, 'b', None),
+                          (None, 'a', 'b', 'test'),
+                          ('reg', 'a', 'b', 'test')
                           ])
-def test_prepare_globals_and_create_server(message_regex, certificate, private_key):
+def test_prepare_globals_and_create_server(message_regex, certificate, private_key, incident_type):
     """
     Given:
     - message_regex: The message regex to match.
@@ -395,7 +399,8 @@ def test_prepare_globals_and_create_server(message_regex, certificate, private_k
     """
     from Syslogv2 import prepare_globals_and_create_server, StreamServer
     import Syslogv2
-    server: StreamServer = prepare_globals_and_create_server(33333, message_regex, certificate, private_key)
+    server: StreamServer = prepare_globals_and_create_server(33333, message_regex, certificate, private_key,
+                                                             incident_type)
     assert Syslogv2.MESSAGE_REGEX == message_regex
     if certificate and private_key:
         assert 'keyfile' in server.ssl_args and 'certfile' in server.ssl_args
