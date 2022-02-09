@@ -12,9 +12,9 @@ import demistomock as demisto
 
 
 @pytest.mark.parametrize('params, expected_result', [
-    ({'_tenant_id_': {'password': '1234'}, '_auth_id_': {'password': '1234'}}, 'Key must be provided.'),
-    ({'_tenant_id_': {'password': '1234'}, 'credentials': {'password': '1234'}}, 'ID must be provided.'),
-    ({'credentials': {'password': '1234'}, '_auth_id_': {'password': '1234'}}, 'Token must be provided.')
+    ({'creds_tenant_id': {'password': '1234'}, 'creds_auth_id': {'password': '1234'}}, 'Key must be provided.'),
+    ({'creds_tenant_id': {'password': '1234'}, 'credentials': {'password': '1234'}}, 'ID must be provided.'),
+    ({'credentials': {'password': '1234'}, 'creds_auth_id': {'password': '1234'}}, 'Token must be provided.')
 ])
 def test_params(mocker, params, expected_result):
     """

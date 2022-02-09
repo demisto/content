@@ -9,12 +9,12 @@ configuration:
   required: true
   type: 0
 - displaypassword: ID or Client ID - see Detailed Instructions (?)
-  name: _auth_id_
+  name: creds_auth_id
   required: false
   type: 9
   hiddenusername: true
 - displaypassword: Token or Tenant ID - see Detailed Instructions (?)
-  name: _tenant_id_
+  name: creds_tenant_id
   required: false
   type: 9
   hiddenusername: true
