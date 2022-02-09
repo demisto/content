@@ -25,7 +25,6 @@ fi
 
 
 echo "Preparing content packs for testing ..."
-pip install gcloud
 gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" > auth.out 2>&1
 echo "Auth loaded successfully."
 
