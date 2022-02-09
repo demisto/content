@@ -1,17 +1,17 @@
 {
     "associatedToAll": true,
     "caseInsensitive": true,
-    "cliName": "processexecutionsignature",
+    "cliName": "filemd5",
     "closeForm": false,
     "content": true,
-    "description": "Signature status of the process that triggered the alert: Unsigned, Signed, Invalid Signature, Unknown.",
+    "description": "MD5 hash value of the file.",
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_processexecutionsignature",
+    "id": "incident_filemd5",
     "isReadOnly": false,
     "locked": false,
-    "name": "Process execution signature",
+    "name": "File MD5",
     "neverSetAsRequired": false,
     "openEnded": true,
     "ownerOnly": false,
@@ -23,10 +23,20 @@
     "system": false,
     "threshold": 72,
     "type": "multiSelect",
-    "unmapped": true,
+    "unmapped": false,
     "unsearchable": true,
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "6.5.0",
-    "x2_fields": "action_process_signature_status"
+    "x2_fields": "agent_file_md5",
+    "Aliases": [
+        {
+        "cliName": "gibinjectmd5",
+        "type": "shortText"
+        },
+        {
+        "cliName": "md5",
+        "type": "shortText"
+        }
+    ]
 }
