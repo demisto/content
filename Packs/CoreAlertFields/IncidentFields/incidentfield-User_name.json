@@ -63,10 +63,6 @@
           "type": "shortText"
         },
         {
-          "cliName": "username",
-          "type": "shortText"
-        },
-        {
           "cliName": "accountname",
           "type": "shortText"
         },
