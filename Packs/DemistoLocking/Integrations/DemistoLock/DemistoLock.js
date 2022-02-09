@@ -53,7 +53,7 @@ switch (command) {
                 continue;
             }
             if (!lock.guid) {
-                try {//if set right here, should have a conflict
+                try {
                     setLock(guid, lockInfo, version);
                 } catch(err) {
                     logDebug(err.message)
