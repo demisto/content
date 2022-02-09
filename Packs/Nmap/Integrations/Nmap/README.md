@@ -48,7 +48,7 @@ Scan targets with the given parameters
 | NMAP.Scan.Hosts.Services.Service | unknown | The service name. | 
 | NMAP.Scan.Hosts.ScriptResults.ID | unknown | The name of the script used. |
 | NMAP.Scan.Hosts.ScriptResults.Output | unknown | The raw results of the script execution. |
-| NMAP.Scan.Hosts.ScriptResults.Elements | unknown | May Include more parseable fields of the script output. |
+| NMAP.Scan.Hosts.ScriptResults.Elements | unknown | Additional parseable fields from the script output. |
 
 
 #### Command Example
