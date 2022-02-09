@@ -1,0 +1,375 @@
+category: Authentication
+commonfields:
+  id: ManageEngine PAM360
+  version: -1
+name: ManageEngine PAM360
+display: ManageEngine PAM360
+description: Integration to fetch passwords from the PAM360 repository, and to manage
+  accounts, resources, and privileged credentials.
+configuration:
+- display: Server URL
+  name: url
+  type: 12
+  required: true
+- displaypassword: APP TOKEN
+  name: credentials
+  type: 9
+  required: true
+  hiddenusername: true
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: false
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: false
+  type: 8
+  required: false
+script:
+  commands:
+  - name: pam360-create-resource
+    description: Creates a new resource.
+    arguments:
+    - name: resource_name
+      description: Denotes the name of the resource.
+      required: true
+    - name: resource_type
+      description: Denotes the type of the resource.
+      required: true
+    - name: resource_url
+      description: Denotes the URL of the resource.
+    - name: domain_name
+      description: Denotes the domain name of the resource.
+    - name: resourcegroup_name
+      description: Name of the resource group to which this resource belongs.
+    - name: owner_name
+      description: Denotes the name of the resource owner.
+    - name: location
+      description: Denotes the location of the resource.
+    - name: dnsname
+      description: Denotes either the DNS Name or the IP address.
+    - name: department
+      description: The department to which the account belongs.
+    - name: resource_description
+      description: Description of the resource.
+    - name: notes
+      description: Optional additional notes added about the resource.
+    - name: account_name
+      description: Denotes the name of the account.
+      required: true
+    - name: password
+      description: Denotes the password of the account.
+      required: true
+    - name: resource_password_policy
+      description: The type of password policy set for the resource.
+    - name: account_password_policy
+      description: The type of password policy set for the account.
+    outputs:
+    - contextPath: PAM360.Resource.operation.result.message
+      description: Command execution status.
+      type: string
+    - contextPath: PAM360.Resource.operation.result.status
+      description: Status of the operation.
+      type: string
+  - name: pam360-create-account
+    description: Creates a new account under a specified resource.
+    arguments:
+    - name: resource_id
+      description: Denotes the ID of the resource.
+      required: true
+    - name: account_name
+      description: Name of the account.
+      required: true
+    - name: password
+      description: Account password.
+      required: true
+    - name: notes
+      description: Account description.
+    - name: account_password_policy
+      description: The type of password policy set for the account.
+    outputs:
+    - contextPath: PAM360.Account.operation.result.message
+      description: Command execution status.
+      type: string
+    - contextPath: PAM360.Account.operation.result.status
+      description: Status of the operation.
+      type: string
+  - name: pam360-update-resource
+    description: Updates the attributes of a resource such as name, type, URL, and
+      description.
+    arguments:
+    - name: resource_id
+      description: Denotes the ID of the resource.
+      required: true
+    - name: resource_name
+      description: Name of the resource.
+      required: true
+    - name: resource_type
+      description: Type of the resource.
+    - name: resource_url
+      description: URL of the resource.
+    - name: resource_description
+      description: Description of the resource.
+    - name: resource_password_policy
+      description: The type of password policy set for the resource.
+    - name: location
+      description: Location of the resource.
+    - name: department
+      description: The department to which the account belongs.
+    - name: dnsname
+      description: Denotes either the DNS Name or the IP address.
+    - name: owner_name
+      description: Name of the resource owner.
+    outputs:
+    - contextPath: PAM360.Resource.operation.result.message
+      description: Command execution status.
+      type: string
+    - contextPath: PAM360.Resource.operation.result.status
+      description: Status of the operation.
+      type: string
+  - name: pam360-update-account
+    description: Updates the attributes an account such as name, password policy,
+      and notes if applicable.
+    arguments:
+    - name: resource_id
+      description: Denotes the ID of the resource.
+      required: true
+    - name: account_id
+      description: Denotes the ID of the account.
+      required: true
+    - name: account_name
+      description: Name of the account.
+      required: true
+    - name: owner_name
+      description: Name of the account owner.
+    - name: notes
+      description: Optional additional notes added about the account.
+    - name: account_password_policy
+      description: The type of password policy set for the account.
+    outputs:
+    - contextPath: PAM360.Account.operation.result.message
+      description: Command execution status.
+      type: string
+    - contextPath: PAM360.Account.operation.result.status
+      description: Status of the operation.
+      type: string
+  - name: pam360-list-all-resources
+    description: Lists all resources owned by you and shared to you by other users.
+    arguments: []
+    outputs:
+    - contextPath: PAM360.Resource.operation.result.message
+      description: Command execution status.
+      type: string
+    - contextPath: PAM360.Resource.operation.result.status
+      description: Status of the operation.
+      type: string
+    - contextPath: PAM360.Resource.operation.Details.RESOURCE DESCRIPTION
+      description: Description of the resource.
+      type: string
+    - contextPath: PAM360.Resource.operation.Details.RESOURCE TYPE
+      description: Denotes the type of the resource.
+      type: string
+    - contextPath: PAM360.Resource.operation.Details.RESOURCE ID
+      description: Denotes the ID of the resource.
+      type: string
+    - contextPath: PAM360.Resource.operation.Details.RESOURCE NAME
+      description: Name of the resource.
+      type: string
+    - contextPath: PAM360.Resource.operation.Details.NOOFACCOUNTS
+      description: The number of accounts associated with the resource.
+      type: string
+  - name: pam360-list-all-accounts
+    description: Lists all accounts belonging to the resource.
+    arguments:
+    - name: resource_id
+      description: Denotes the ID of the resource.
+      required: true
+    outputs:
+    - contextPath: PAM360.Account.operation.result.message
+      description: Command execution status.
+      type: string
+    - contextPath: PAM360.Account.operation.result.status
+      description: Status of the operation.
+      type: string
+    - contextPath: PAM360.Account.operation.Details.LOCATION
+      description: Location of the account.
+      type: string
+    - contextPath: PAM360.Account.operation.Details.RESOURCE DESCRIPTION
+      description: Description of the resource.
+      type: string
+    - contextPath: PAM360.Account.operation.Details.RESOURCE TYPE
+      description: Refers to the resource type assigned to the account.
+      type: string
+    - contextPath: PAM360.Account.operation.Details.RESOURCE ID
+      description: Denotes the ID of the resource.
+      type: string
+    - contextPath: PAM360.Account.operation.Details.DEPARTMENT
+      description: The department to which the account belongs.
+      type: string
+    - contextPath: PAM360.Account.operation.Details.RESOURCE OWNER
+      description: Refers to the name of the resource owner.
+      type: string
+    - contextPath: PAM360.Account.operation.Details.RESOURCE PASSWORD POLICY
+      description: The password policy of the resource to which the account belongs.
+      type: string
+    - contextPath: PAM360.Account.operation.Details.RESOURCE URL
+      description: The URL of the resource.
+      type: string
+    - contextPath: PAM360.Account.operation.Details.DOMAIN NAME
+      description: The domain name of the resource.
+      type: string
+    - contextPath: PAM360.Account.operation.Details.RESOURCE NAME
+      description: The name of the resource to which the account belongs.
+      type: string
+    - contextPath: PAM360.Account.operation.Details.DNS NAME
+      description: The DNS name of the resource.
+      type: string
+    - contextPath: PAM360.Account.operation.Details.ACCOUNT LIST.ACCOUNT ID
+      description: Denotes the ID of the account.
+      type: string
+    - contextPath: PAM360.Account.operation.Details.ACCOUNT LIST.ACCOUNT NAME
+      description: Denotes the name of the account.
+      type: string
+    - contextPath: PAM360.Account.operation.Details.ACCOUNT LIST.PASSWORD STATUS
+      description: Refers to the availability status of the password. Denotes whether
+        the password is available for check-out or in use by another user.
+      type: string
+    - contextPath: PAM360.Account.operation.Details.ACCOUNT LIST.ACCOUNT PASSWORD
+        POLICY
+      description: The type of password policy set for the account.
+      type: string
+    - contextPath: PAM360.Account.operation.Details.ACCOUNT LIST.PASSWDID
+      description: Refers to the ID required to perform password-based operations.
+      type: string
+    - contextPath: PAM360.Account.operation.Details.ACCOUNT LIST.ISREASONREQUIRED
+      description: Refers to the reason provided to access the password.
+      type: string
+  - name: pam360-fetch-account-details
+    description: Fetches the details of an account using the corresponding account
+      ID.
+    arguments:
+    - name: resource_id
+      description: Denotes the ID of the resource.
+      required: true
+    - name: account_id
+      description: Denotes the ID of the account.
+      required: true
+    outputs:
+    - contextPath: PAM360.Account.operation.result.message
+      description: Command execution status.
+      type: string
+    - contextPath: PAM360.Account.operation.result.status
+      description: Status of the operation.
+      type: string
+    - contextPath: PAM360.Account.operation.Details.DESCRIPTION
+      description: Description of the account.
+      type: string
+    - contextPath: PAM360.Account.operation.Details.PASSWDID
+      description: Refers to the ID required to perform password-based operations.
+      type: string
+    - contextPath: PAM360.Account.operation.Details.LAST MODIFIED TIME
+      description: The time at which the account was last modified.
+      type: string
+    - contextPath: PAM360.Account.operation.Details.EXPIRY STATUS
+      description: Denotes the expiry status of the account password.
+      type: string
+    - contextPath: PAM360.Account.operation.Details.COMPLIANT REASON
+      description: Reason for the password not being compliant with the password policy.
+      type: string
+    - contextPath: PAM360.Account.operation.Details.PASSWORD STATUS
+      description: Refers to the availability status of the password. Denotes whether
+        the password is available for check-out or in use by another user.
+      type: string
+    - contextPath: PAM360.Account.operation.Details.PASSWORD POLICY
+      description: The type of password policy set for the account.
+      type: string
+    - contextPath: PAM360.Account.operation.Details.COMPLIANT STATUS
+      description: Status of whether the account password is compliant with the password
+        policy for it.
+      type: string
+    - contextPath: PAM360.Account.operation.Details.LAST ACCESSED TIME
+      description: The time at which the account was last accessed.
+      type: string
+  - name: pam360-fetch-resource-account-id
+    description: Fetches the IDs of the resources and accounts.
+    arguments:
+    - name: resource_name
+      description: Denotes the name of the resource.
+      required: true
+    - name: account_name
+      description: Denotes the name of the account.
+      required: true
+    outputs:
+    - contextPath: PAM360.Resource.operation.result.message
+      description: Command execution status.
+      type: string
+    - contextPath: PAM360.Resource.operation.result.status
+      description: Status of the operation.
+      type: string
+    - contextPath: PAM360.Resource.operation.Details.RESOURCEID
+      description: Denotes the ID of a resource.
+      type: string
+    - contextPath: PAM360.Resource.operation.Details.ACCOUNTID
+      description: Denotes the ID of an account.
+      type: string
+  - name: pam360-fetch-password
+    description: Fetches the account password using the Resource and Account IDs.
+    arguments:
+    - name: resource_id
+      description: Denotes the ID of a resource.
+      required: true
+    - name: account_id
+      description: Denotes the ID of an account.
+      required: true
+    - name: reason
+      description: The reason provided to request for the password of an account.
+    - name: ticket_id
+      description: Valid ticket ID required when the ticketing system integration
+        is enabled.
+    outputs:
+    - contextPath: PAM360.Account.operation.Details.PASSWORD
+      description: Account password.
+      type: string
+    - contextPath: PAM360.Account.operation.result.message
+      description: Command execution status.
+      type: string
+    - contextPath: PAM360.Account.operation.result.status
+      description: Status of the operation.
+      type: string
+  - name: pam360-update-account-password
+    description: Updates the account password.
+    arguments:
+    - name: resource_id
+      description: Denotes the ID of the resource.
+      required: true
+    - name: account_id
+      description: Denotes the ID of the account.
+      required: true
+    - name: new_password
+      description: Password to be updated.
+      required: true
+    - name: reset_type
+      description: Refers to the type of password reset to be done - LOCAL or REMOTE.
+      required: true
+    - name: reason
+      description: Refers to the reason provided to update the password of an account.
+    - name: ticket_id
+      description: Valid ticket ID required when the ticketing system integration
+        is enabled.
+    outputs:
+    - contextPath: PAM360.Account.operation.result.message
+      description: Command execution status.
+      type: string
+    - contextPath: PAM360.Account.operation.result.status
+      description: Status of the operation.
+      type: string
+  isfetch: false
+  runonce: false
+  script: "-"
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.10.1.25933
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
