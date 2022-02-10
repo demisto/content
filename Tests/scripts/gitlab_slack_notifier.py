@@ -222,7 +222,7 @@ def collect_pipeline_data(gitlab_client, project_id, pipeline_id) -> Tuple[str, 
 
 
 def construct_coverage_slack_msg():
-    coverage_today = get_total_coverage(filename=os.path.join(ARTIFACTS_FOLDER_XSOAR, 'coverage_report/coverage-min.json'))
+    coverage_today = get_total_coverage(filename=os.path.join(ROOT_ARTIFACTS_FOLDER, 'coverage_report/coverage-min.json'))
     yasterday = datetime.now() - timedelta(days=1)
     coverage_yasterday = get_total_coverage(date=yasterday)
     color = 'good' if coverage_today >= coverage_yasterday else 'danger'
