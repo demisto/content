@@ -1,4 +1,6 @@
 import pytest
+import requests
+
 from Lastline_v2 import *
 import Lastline_v2
 
@@ -149,25 +151,31 @@ def test_test_module_wrong_credentials(mocker, params):
         client.test_module_command()
 
 
-@pytest.mark.parametrize('params', [{'url': 'testurl.com',
-                                     'credentials': {'identifier': 'identifier',
-                                                     'password': 'password'}}])
-def test_csvs_handles_correctly(mocker, params):
+def test_upload_file_with_csv_type(mocker):
     """
-        Given:
+    Given:
         - Valid params and a csv file to upload
 
     When:
         - Running the integration upload-file command
 
     Then:
-        - Validating that handle_csv is being called
+        - Validating that the login API endpoint was called
     """
+    params = {
+        'url': 'testurl.com',
+        'credentials': {
+            'identifier': 'identifier',
+            'password': 'password'
+        }
+    }
+
     client = Client(base_url=params.get('url'), credentials=params.get('credentials'), api_params={'EntryID': '1234@'})
-    mocker.patch.object(demisto, 'getFilePath', return_value={'id': id, 'path': 'test/test.txt', 'name': 'test.csv'})
-    mocker.patch.object(os.path, 'splitext', return_value=['test', '.csv'])
+    mocker.patch.object(demisto, 'getFilePath', return_value={'id': id, 'path': 'test/test.csv', 'name': 'test.csv'})
     mocker.patch.object(Lastline_v2, 'file_hash', return_value='dummyhash1234')
-    # if test failed, then this line wasn't effective, meaning handle_csv was not being called
-    mocker.patch.object(client, 'handle_csv', return_value={})
+    post_mock = mocker.patch.object(requests.Session, 'post')
+    mocker.patch('builtins.open')
     mocker.patch.object(Lastline_v2, 'report_generator', return_value=({}, {}))
-    assert client.upload_file() == ({}, {}, {})
+    client.upload_file()
+    assert 'papi/login' in post_mock.call_args_list[0][0][0]
+
