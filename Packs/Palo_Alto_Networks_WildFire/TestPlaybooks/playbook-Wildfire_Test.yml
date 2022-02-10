@@ -667,17 +667,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: 18e38d0a-f5f0-4ce2-8250-4cede5f37649
+    taskid: f97bb219-f62b-4a33-8c90-2f12ac8d9e8e
     type: regular
     task:
-      id: 18e38d0a-f5f0-4ce2-8250-4cede5f37649
+      id: f97bb219-f62b-4a33-8c90-2f12ac8d9e8e
       version: -1
       name: file - with sha1 value in the argument file
       description: Retrieve results for a file hash using WildFire.
-      script: WildFire-v2_copy|||file
+      script: WildFire-v2|||file
       type: regular
       iscommand: true
-      brand: WildFire-v2_copy
+      brand: WildFire-v2
     nexttasks:
       '#none#':
       - "29"
@@ -1199,17 +1199,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "41":
     id: "41"
-    taskid: e204c198-a619-4384-8fbb-509e733ddadd
+    taskid: 3c330113-238d-4a75-8845-2214c9a9d78f
     type: regular
     task:
-      id: e204c198-a619-4384-8fbb-509e733ddadd
+      id: 3c330113-238d-4a75-8845-2214c9a9d78f
       version: -1
       name: file - no network data
       description: Retrieve results for a file hash using WildFire.
-      script: WildFire-v2_copy|||file
+      script: WildFire-v2|||file
       type: regular
       iscommand: true
-      brand: WildFire-v2_copy
+      brand: WildFire-v2
     nexttasks:
       '#none#':
       - "25"
@@ -1419,17 +1419,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "47":
     id: "47"
-    taskid: b6fa6a37-b073-4eaa-8add-a40f301f619b
+    taskid: acb67fa0-1d69-472a-82b4-3fb3795842a1
     type: regular
     task:
-      id: b6fa6a37-b073-4eaa-8add-a40f301f619b
+      id: acb67fa0-1d69-472a-82b4-3fb3795842a1
       version: -1
       name: file - with no report found
       description: Retrieve results for a file hash using WildFire.
-      script: WildFire-v2_copy|||file
+      script: WildFire-v2|||file
       type: regular
       iscommand: true
-      brand: WildFire-v2_copy
+      brand: WildFire-v2
     nexttasks:
       '#none#':
       - "48"
