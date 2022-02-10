@@ -46,12 +46,12 @@ def get_breach_data():
         t['acquisition_date'] = transform(r, 'acquisition_date')
         breachdata.append(t)
 
-    command_results = CommandResults(
+    CommandResults(
         outputs_prefix='SpyCloud.Breaches',
         outputs_key_field='uuid',
         outputs=breachdata
     )
-    return command_results
+    return 
 
 
 def list_breaches():
@@ -87,13 +87,13 @@ def list_breaches():
         t['acquisition_date'] = transform(r, 'acquisition_date')
         breachdata.append(t)
 
-    command_results = CommandResults(
+    CommandResults(
         outputs_prefix='SpyCloud.Breaches',
         outputs_key_field='uuid',
         outputs=breachdata
     )
 
-    return command_results
+    return 
 
 
 def get_domain_data():
@@ -136,13 +136,13 @@ def get_domain_data():
         t['password_plaintext'] = transform(r, 'password_plaintext')
         spydata.append(t)
 
-    command_results = CommandResults(
+    CommandResults(
         outputs_prefix='SpyCloud.Results',
         outputs_key_field='document_id',
         outputs=spydata
     )
 
-    return command_results
+    return 
 
 
 def get_email_data():
@@ -194,12 +194,12 @@ def get_email_data():
         t['target_url'] = transform(r, 'target_url')
         spydata.append(t)
 
-    command_results = CommandResults(
+    CommandResults(
         outputs_prefix='SpyCloud.Emails',
         outputs_key_field='document_id',
         outputs=spydata
     )
-    return command_results
+    return
 
 
 def get_watchlist_data():
@@ -247,13 +247,13 @@ def get_watchlist_data():
         t['domain'] = transform(r, 'domain')
         spydata.append(t)
 
-    command_results = CommandResults(
+    CommandResults(
         outputs_prefix='SpyCloud.Watchlist',
         outputs_key_field='document_id',
         outputs=spydata
     )
 
-    return command_results
+    return 
 
 
 def test_mod():
@@ -282,6 +282,3 @@ try:
         test_mod()
 except Exception as e:
     demisto.debug(e)
-    LOG(e)
-    LOG.print_log()
-    return_error(e)
