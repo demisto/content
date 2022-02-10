@@ -4072,7 +4072,7 @@
             ]
         },
         {
-            "playbookID": "Cofense Intelligence v2 test",
+            "playbookID": "Cofense Intelligence v2-Test",
             "fromversion": "5.5.0",
             "integrations": [
                 "CofenseIntelligenceV2"
@@ -4790,7 +4790,8 @@
                 "Demisto REST API"
             ],
             "playbookID": "AutoFocusTagsFeed-test",
-            "timeout": 300
+            "timeout": 1500,
+            "fromversion": "6.5.0"
         },
         {
             "integrations": [
@@ -4798,7 +4799,8 @@
                 "Demisto REST API"
             ],
             "playbookID": "Unit42 Intel Objects Feed - Test",
-            "timeout": 300
+            "timeout": 15000,
+            "fromversion": "6.5.0"
         },
         {
             "playbookID": "Tanium Threat Response V2 Test",
@@ -5082,7 +5084,6 @@
         "RemoteAccessTest": "Issue 44245",
         "test_Qradar_v2": "the integration is deprecated as we released Qradar V3",
         "XsoarPowershellTesting-Test": "Issue 32689",
-        "Unit42 Intel Objects Feed - Test": "Issue 44100",
         "MicrosoftManagementActivity - Test": "Issue 43922",
         "Google-Vault-Generic-Test": "Issue 24347",
         "Google_Vault-Search_And_Display_Results_test": "Issue 24348",
@@ -5095,7 +5096,6 @@
         "EWS_O365_test": "Issue 25605",
         "Cherwell - test": "Issue 26780",
         "Cherwell Example Scripts - test": "Issue 27107",
-        "Cofense Intelligence v2 test": "Issue 44499",
         "Endpoint Malware Investigation - Generic - Test": "Issue 44779",
         "Mimecast test": "Issue 26906",
         "AutoFocus V2 test": "Issue 26464",
@@ -5108,6 +5108,7 @@
     "skipped_integrations": {
         
         "_comment1": "~~~ NO INSTANCE ~~~",
+        "Vertica": "No insance issue 45719",
         "Ipstack": "Usage limit reached (Issue 38063)",
         "AnsibleAlibabaCloud": "No instance - issue 40447",
         "AnsibleAzure": "No instance - issue 40447",
@@ -5122,9 +5123,14 @@
         "AnsibleMicrosoftWindows": "No instance - issue 40447",
         "AnsibleVMware": "No instance - issue 40447",
         "SolarWinds": "No instance - developed by Crest",
+        "Atlassian Confluence Cloud": "No instance - developed by Crest",
         "SOCRadarIncidents": "No instance - developed by partner",
         "SOCRadarThreatFusion": "No instance - developed by partner",
         "trustwave secure email gateway": "No instance - developed by Qmasters",
+        "Azure Storage Table": "No instance - developed by Qmasters",
+        "Azure Storage Queue": "No instance - developed by Qmasters",
+        "Azure Storage FileShare": "No instance - developed by Qmasters",
+        "Azure Storage Container": "No instance - developed by Qmasters",
         "VMware Workspace ONE UEM (AirWatch MDM)": "No instance - developed by crest",
         "ServiceDeskPlus (On-Premise)": "No instance",
         "Forcepoint": "instance issues. Issue 28043",

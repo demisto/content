@@ -13,7 +13,7 @@
     "locked": false,
     "name": "Host FQDN",
     "neverSetAsRequired": false,
-    "openEnded": true,
+    "openEnded": false,
     "ownerOnly": false,
     "propagationLabels": [
         "all"
@@ -22,11 +22,25 @@
     "sla": 0,
     "system": false,
     "threshold": 72,
-    "type": "multiSelect",
+    "type": "shortText",
     "unmapped": false,
     "unsearchable": true,
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "6.5.0",
-    "x2_fields": "agent_fqdn"
+    "x2_fields": "agent_fqdn",
+    "Aliases": [
+        {
+            "cliName": "dnsname",
+            "type": "shortText"
+        },
+        {
+            "cliName": "prismacloudcomputefqdn",
+            "type": "shortText"
+        },
+        {
+            "cliName": "shadowitfqdn",
+            "type": "shortText"
+        }
+    ]
 }

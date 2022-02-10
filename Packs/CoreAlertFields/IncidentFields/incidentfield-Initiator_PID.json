@@ -28,5 +28,17 @@
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "6.5.0",
-    "x2_fields": "actor_process_os_pid"
+    "x2_fields": "actor_process_os_pid",
+    "Aliases": [
+        {
+          "cliName": "carbonblackesprocessid",
+          "type": "shortText"
+        },
+        {
+            "cliName": "pid",
+            "type": "multiSelect"
+          }
+    ]
+
+
 }

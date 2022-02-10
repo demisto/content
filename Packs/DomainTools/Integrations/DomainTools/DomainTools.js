@@ -301,8 +301,9 @@ var callWhoisHistory = function(url, domain){
 
 var url = params.server.replace(/[\/]+$/, '');
 params.key = params.key || params.credentials.password
-if (!params.key) {
-    throw 'API key must be provided.'
+params.username = params.username || params.credentials.identifier
+if (!params.key || !params.username) {
+    throw 'Username and API key must be provided.'
 }
 switch (command) {
     case 'test-module':

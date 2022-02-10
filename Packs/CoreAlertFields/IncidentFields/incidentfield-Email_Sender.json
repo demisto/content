@@ -73,6 +73,10 @@
         {
           "cliName": "digitalguardianemailsender",
           "type": "shortText"
-        }        
+        },
+        {
+          "cliName": "phisheremailfrom",
+          "type": "shortText"
+        }
     ]
 }

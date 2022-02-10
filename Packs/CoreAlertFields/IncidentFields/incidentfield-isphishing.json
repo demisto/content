@@ -13,7 +13,7 @@
     "locked": false,
     "name": "Is Phishing",
     "neverSetAsRequired": false,
-    "openEnded": false,
+    "openEnded": true,
     "ownerOnly": false,
     "propagationLabels": [
         "all"
@@ -22,8 +22,8 @@
     "sla": 0,
     "system": false,
     "threshold": 72,
-    "type": "boolean",
-    "unmapped": false,
+    "type": "multiSelect",
+    "unmapped": true,
     "unsearchable": true,
     "useAsKpi": false,
     "version": -1,

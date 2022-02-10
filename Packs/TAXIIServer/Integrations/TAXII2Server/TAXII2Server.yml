@@ -85,6 +85,21 @@ configuration:
   name: nginx_server_conf
   required: false
   type: 12
+- display: STIX types for STIX indicator Domain Object
+  name: provide_as_indicator
+  type: 16
+  required: false
+  options:
+  - ipv4-addr
+  - domain-name
+  - ipv6-addr
+  - user-account
+  - email-addr
+  - windows-registry-key
+  - file
+  - url
+  additionalinfo: Choose which STIX Cyber Observable Object provides as STIX Domain
+    Object of 'indicator'
 description: This integration provides TAXII2 Services for system indicators (Outbound feed).
 display: TAXII2 Server
 name: TAXII2 Server
