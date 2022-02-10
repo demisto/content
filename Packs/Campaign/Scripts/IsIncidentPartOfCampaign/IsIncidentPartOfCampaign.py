@@ -39,7 +39,6 @@ def get_incidents_ids_by_type(incident_type: str) -> Iterable[str]:
         incidents = execute_command("getIncidents", search_args)['data']
 
 
-
 ''' COMMAND FUNCTION '''
 
 
