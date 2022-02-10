@@ -1,3 +1,4 @@
+from tkinter import E
 from urllib.parse import quote
 
 import pytest
@@ -19,11 +20,16 @@ import demistomock as demisto
 def test_params(mocker, params, expected_result):
     """
     Given:
-      - Configuration parameters
+      - Case 1: tenant id and auth id but no key.
+      - Case 2: tenant id and key but no auth id.
+      - Case 3: key and auth id but no tenant id.
     When:
-      - One of the required parameters are missed.
+      - Setting an instance
     Then:
       - Ensure the exception message as expected.
+      - Case 1: Should return "Key must be provided.".
+      - Case 2: Should return "ID must be provided.".
+      - Case 3: Should return "Token must be provided.".
     """
 
     mocker.patch.object(demisto, 'params', return_value=params)
@@ -32,6 +38,32 @@ def test_params(mocker, params, expected_result):
         main()
 
     assert expected_result in str(e.value)
+
+
+@pytest.mark.parametrize('params, expected_result', [
+    ({'creds_tenant_id': {'password': '1234'}, 'creds_auth_id': {'password': '1234'}, 
+      'credentials': {'password': '1234'}}, 'Key must be provided.'),
+])
+def test_params_working(mocker, params, expected_result):
+    """
+    Given:
+      - Case 1: tenant id and auth id but no key.
+      - Case 2: tenant id and key but no auth id.
+      - Case 3: key and auth id but no tenant id.
+    When:
+      - Setting an instance
+    Then:
+      - Ensure the exception message as expected.
+      - Case 1: Should return "Key must be provided.".
+      - Case 2: Should return "ID must be provided.".
+      - Case 3: Should return "Token must be provided.".
+    """
+
+    mocker.patch.object(demisto, 'params', return_value=params)
+    try:
+        main()
+    except Exception as e:
+        pytest.fail(f'Encountered an unexpected exception: {e}')
 
 
 def test_build_mail_object():

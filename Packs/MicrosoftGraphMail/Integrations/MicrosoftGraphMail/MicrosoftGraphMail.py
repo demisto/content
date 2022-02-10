@@ -1594,6 +1594,7 @@ def main():
     args: dict = demisto.args()
     params: dict = demisto.params()
     self_deployed: bool = params.get('self_deployed', False)
+    # There're several options for tenant_id & auth_and_token_url due to the recent credentials set supoort enhancment.
     tenant_id: str = params.get('tenant_id', '') or params.get('_tenant_id', '') or (params.get('creds_tenant_id')
                                                                                      or {}).get('password', '')
     auth_and_token_url: str = params.get('auth_id', '') or params.get('_auth_id', '') or (params.get('creds_auth_id')
