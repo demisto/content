@@ -172,7 +172,7 @@ outputs:
   description: A list with links to the incidents returned from the query.
   type: Unknown
 - contextPath: foundIncidents.searchResultsLabel
-  description: The value of as search_results_label.
+  description: A value to set as the searchresultslabel argument.
   type: String
 script: '-'
 subtype: python3

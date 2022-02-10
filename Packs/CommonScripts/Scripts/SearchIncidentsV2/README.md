@@ -65,7 +65,7 @@ This script is used in the following playbooks and scripts.
 | foundIncidents.details | Details of the incidents returned from the query. | Unknown |
 | foundIncidents.dueDate | A list of incident due dates returned from the query. | Unknown |
 | foundIncidents.phase | A list of incident phases returned from the query. | Unknown |
-| foundIncidents.searchResultsLabel| The value of as search_results_label. | String |
+| foundIncidents.searchResultsLabel| A value to set as the searchresultslabel argument. | String |
 
 
 ## Script Example
