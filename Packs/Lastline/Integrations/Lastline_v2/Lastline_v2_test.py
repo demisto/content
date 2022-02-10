@@ -178,4 +178,3 @@ def test_upload_file_with_csv_type(mocker):
     mocker.patch.object(Lastline_v2, 'report_generator', return_value=({}, {}))
     client.upload_file()
     assert 'papi/login' in post_mock.call_args_list[0][0][0]
-
