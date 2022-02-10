@@ -960,7 +960,7 @@ def prepare_and_zip_pack(pack, signature_key, marketplace, index_folder_path, pa
         return False, is_missing_dependencies
     task_status, is_missing_dependencies = pack.format_metadata(index_folder_path,
                                                                 packs_dependencies_mapping, build_number,
-                                                                current_commit_hash, pack.is_modified(),
+                                                                current_commit_hash, pack.is_modified,
                                                                 statistics_handler, pack_names, id_set, marketplace)
     if not task_status:
         pack.status = PackStatus.FAILED_METADATA_PARSING.name
@@ -1218,7 +1218,7 @@ def main():
             pack.cleanup()
             continue
 
-        task_status, not_updated_build = pack.prepare_release_notes(index_folder_path, build_number, pack.is_modified(),
+        task_status, not_updated_build = pack.prepare_release_notes(index_folder_path, build_number, pack.is_modified,
                                                                     modified_rn_files_paths)
         if not task_status:
             pack.status = PackStatus.FAILED_RELEASE_NOTES.name
@@ -1231,7 +1231,7 @@ def main():
             continue
 
         task_status, skipped_upload, _ = pack.upload_to_storage(pack.zip_path, pack.latest_version, storage_bucket,
-                                                                override_all_packs or pack.is_modified(),
+                                                                override_all_packs or pack.is_modified,
                                                                 storage_base_path)
 
         if not task_status:
