@@ -400,6 +400,7 @@ def url_command(params: dict) -> CommandResults:
              result (CommandResults): The CommandResults object representing the url command results.
     """
     url = demisto.args().get('url')
+
     try:
         url_information = query_url_information(url, params.get('api_url'), params.get('use_ssl')).json()
     except UnicodeEncodeError:
@@ -444,8 +445,6 @@ def domain_add_tags(bl_status: str, tags: List[str]) -> None:
             bl_status (str): The Blacklist status associated with the Domain.
             tags (list): A list of tags to return.
 
-        Returns:
-            void.
     """
     if bl_status:
         tag_to_add = bl_status.replace('_domain', '') if bl_status.endswith('domain') else \

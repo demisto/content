@@ -1,5 +1,5 @@
 URLhaus has the goal of sharing malicious URLs that are being used for malware distribution.
-This integration was integrated and tested with version xx of URLhaus
+This integration was integrated and tested with version v1 of URLhaus
 
 ## Configure URLhaus on Cortex XSOAR
 
