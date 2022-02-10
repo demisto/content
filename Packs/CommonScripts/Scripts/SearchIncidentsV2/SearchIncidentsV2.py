@@ -91,8 +91,9 @@ def main():  # pragma: no cover
     args: Dict = demisto.args()
     try:
         readable_output, outputs, raw_response = search_incidents(args)
-        if search_results_label := args.get('search_results_label'):
-            outputs['searchResultsLabel'] = search_results_label
+        if search_results_label := args.get('searchresultslabel'):
+            for output in outputs:
+                output['searchResultsLabel'] = search_results_label
         results = CommandResults(
             outputs_prefix='foundIncidents',
             outputs_key_field='id',

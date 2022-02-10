@@ -120,7 +120,7 @@ args:
 - default: false
   description: Custom context field, to use in playbooks.
   isArray: false
-  name: search_results_label
+  name: searchresultslabel
   required: false
   secret: false
 comment: |-

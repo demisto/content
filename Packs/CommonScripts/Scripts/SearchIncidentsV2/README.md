@@ -47,7 +47,7 @@ This script is used in the following playbooks and scripts.
 | page | Filter by the page number |
 | size | Number of incidents per page \(per fetch\) |
 | sort | Sort in format of field.asc,field.desc,... |
-| search_results_label | Custom context field, to use in playbooks. |
+| searchresultslabel | Custom context field, to use in playbooks. |
 
 ## Outputs
 ---
