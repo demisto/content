@@ -41,6 +41,7 @@ PhishUp Url investigation
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
+| PhishUp.Url | String | Incoming Url |
 | PhishUp.Result | String | response types "Clean", "Phish" | 
 | PhishUp.Score | Number | Phishup Engine Url Score | 
 

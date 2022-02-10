@@ -73,18 +73,19 @@ def investigate_url_command(client: Client, args, apikey):
             dbot_score=dbot_score
         )
 
-        readable_output = tableToMarkdown("URL", phishup_result)
+        readable_output = tableToMarkdown("URL", {**phishup_result["Status"], **phishup_result["Result"]})
 
         command_results.append(CommandResults(
             readable_output=readable_output,
             outputs_prefix="PhishUp.URLs",
             outputs_key_field='URLs',
             outputs={
+                "Url": phishup_result["Result"]["IncomingUrl"],
                 "Result": phishup_result["Result"]["PhishUpStatus"],
                 "Score": phishup_result["Result"]["PhishUpScore"]
             },
             indicator=url_standard_context,
-            raw_response=phishup_result["Result"]
+            raw_response=phishup_result
         ))
     return command_results
 

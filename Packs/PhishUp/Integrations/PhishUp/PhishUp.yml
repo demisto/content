@@ -50,6 +50,9 @@ script:
     execution: false
     name: url
     outputs:
+    - contextPath: PhishUp.Url
+      description: Incoming URL
+      type: String
     - contextPath: PhishUp.Result
       description: response types "Clean", "Phish", "Error"
       type: String
