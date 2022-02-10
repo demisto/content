@@ -85,3 +85,4 @@ FormatURL
 Gitlab
 GitHub
 TAXII
+DomainTools

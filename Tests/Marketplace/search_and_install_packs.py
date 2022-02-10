@@ -10,7 +10,7 @@ import demisto_client
 from threading import Thread, Lock
 from demisto_sdk.commands.common.tools import run_threads_list
 from google.cloud.storage import Bucket
-from distutils.version import LooseVersion
+from packaging.version import Version
 from typing import List
 
 from Tests.Marketplace.marketplace_services import init_storage_client, Pack, load_json
@@ -429,15 +429,17 @@ def get_latest_version_from_bucket(pack_id: str, production_bucket: Bucket) -> s
     # Adding the '/' in the end of the prefix to search for the exact pack id
     pack_versions_paths = [f.name for f in production_bucket.list_blobs(prefix=f'{pack_bucket_path}/') if
                            f.name.endswith('.zip')]
+
     pack_versions = []
     for path in pack_versions_paths:
         versions = PACK_PATH_VERSION_REGEX.findall(path)
         if not versions:
             continue
-        pack_versions.append(LooseVersion(versions[0]))
+        pack_versions.append(Version(versions[0]))
+
     logging.debug(f'Found the following zips for {pack_id} pack: {pack_versions}')
     if pack_versions:
-        pack_latest_version = max(pack_versions).vstring
+        pack_latest_version = str(max(pack_versions))
         return pack_latest_version
     else:
         logging.error(f'Could not find any versions for pack {pack_id} in bucket path {pack_bucket_path}')
@@ -520,7 +522,7 @@ def install_all_content_packs_from_build_bucket(client: demisto_client, host: st
             hidden = pack_metadata.get(Metadata.HIDDEN, False)
             # Check if the server version is greater than the minimum server version required for this pack or if the
             # pack is hidden (deprecated):
-            if ('Master' in server_version or LooseVersion(server_version) >= LooseVersion(server_min_version)) and \
+            if ('Master' in server_version or Version(server_version) >= Version(server_min_version)) and \
                     not hidden:
                 logging.debug(f"Appending pack id {pack_id}")
                 all_packs.append(get_pack_installation_request_data(pack_id, pack_version))
