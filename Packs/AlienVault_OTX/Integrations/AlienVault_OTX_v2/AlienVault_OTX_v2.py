@@ -182,8 +182,8 @@ def extract_attack_ids(raw_response: dict):
     :returns:
         the attack_ids field if exists, otherwise, an empty string.
     """
-    attack_id_field = dict_safe_get(raw_response, ['pulse_info', 'pulses'], [{}])
-    return dict_safe_get(([{}] if attack_id_field == [] else attack_id_field)[0], ['attack_ids'], [''])
+    attack_id_field = dict_safe_get(raw_response, ['pulse_info', 'pulses']) or [{}]
+    return attack_id_field[0].get('attack_ids', [])
 
 
 def relationships_manager(client: Client, entity_a: str, entity_a_type: str, indicator_type: str,
@@ -203,26 +203,22 @@ def relationships_manager(client: Client, entity_a: str, entity_a_type: str, ind
     """
     relationships: list = []
 
-    if client.max_indicator_relationships != 0:
-        params = {'limit': str(client.max_indicator_relationships)}
-        _, _, urls_raw_response = alienvault_get_related_urls_by_indicator_command(client, indicator_type, indicator, params)
-        urls_raw_response = delete_duplicated_relationships(dict_safe_get(urls_raw_response, ['url_list'], ['']), 'url')
+    if client.max_indicator_relationships > 0:
+        limit = str(client.max_indicator_relationships)
+        _, _, urls_raw_response = alienvault_get_related_urls_by_indicator_command(client, indicator_type, indicator, limit)
+        urls_raw_response = delete_duplicated_entities(urls_raw_response.get('url_list', []), 'url')
         relationships += create_relationships(client, urls_raw_response, entity_a, entity_a_type, 'url', FeedIndicatorType.URL)
 
-        _, _, hash_raw_response = alienvault_get_related_hashes_by_indicator_command(client, indicator_type, indicator, params)
-        hash_raw_response = delete_duplicated_relationships(dict_safe_get(hash_raw_response, ['data'], ['']), 'hash')
+        _, _, hash_raw_response = alienvault_get_related_hashes_by_indicator_command(client, indicator_type, indicator, limit)
+        hash_raw_response = delete_duplicated_entities(hash_raw_response.get('data', []), 'hash')
         relationships += create_relationships(client, hash_raw_response, entity_a, entity_a_type, 'hash', FeedIndicatorType.File)
 
         _, _, passive_dns_raw_response = alienvault_get_passive_dns_data_by_indicator_command(client, indicator_type,
-                                                                                              indicator, params)
-        if len(dict_safe_get(passive_dns_raw_response, ['passive_dns'], [''])) > client.max_indicator_relationships:
-            passive_dns_raw_response = delete_duplicated_relationships(passive_dns_raw_response.get('passive_dns')
-                                                                       [0:client.max_indicator_relationships],
-                                                                       field_for_passive_dns_rs)
-        else:
-            passive_dns_raw_response = delete_duplicated_relationships(dict_safe_get(passive_dns_raw_response, ['passive_dns'],
-                                                                                     ['']), field_for_passive_dns_rs)
+                                                                                              indicator, limit)
+        passive_dns_raw_response = delete_duplicated_entities(passive_dns_raw_response.get('passive_dns', []),
+                                                              field_for_passive_dns_rs)
         passive_dns_raw_response = validate_string_is_not_url(passive_dns_raw_response, field_for_passive_dns_rs)
+        passive_dns_raw_response = passive_dns_raw_response[0:client.max_indicator_relationships]
         relationships += create_relationships(client, passive_dns_raw_response, entity_a,
                                               entity_a_type, field_for_passive_dns_rs, feed_indicator_type_for_passive_dns_rs)
 
@@ -263,16 +259,34 @@ def create_relationships(client: Client, relevant_field: dict, entity_a: str,
     return relationships
 
 
-def delete_duplicated_relationships(rs_list: List[Dict], field_name: str):
+def delete_duplicated_entities(entities_list: List[Dict], field_name: str):
+    """delete duplicated results from a response
+
+    Args:
+        entities_list: The list of the entities brought back from the query.
+        field_name: The field to compare according to between the given entities.
+
+    Returns:
+        a list without duplicated entities.
+    """
     unique_dict: Dict = {}
-    for entity_dict in rs_list:
-        if isinstance(entity_dict, dict) and entity_dict.get(field_name) not in unique_dict.keys():
-            unique_dict[entity_dict.get(field_name)] = entity_dict
+    for entity_dict in entities_list:
+        if isinstance(entity_dict, dict) and (ind_value := entity_dict.get(field_name)) not in unique_dict.keys():
+            unique_dict[ind_value] = entity_dict
     return list(unique_dict.values())
 
 
-def validate_string_is_not_url(dicts_list: List[Dict], field_name: str):
-    return [dict for dict in dicts_list if not auto_detect_indicator_type(dict.get(field_name)) == "URL"]
+def validate_string_is_not_url(entities_list: List[Dict], field_name: str):
+    """delete url type entities from a given list.
+
+    Args:
+        entities_list: The list of the entities brought back from the query.
+        field_name: The field to compare according to between the given entities.
+
+    Returns:
+        a list without url type entities.
+    """
+    return [dict for dict in entities_list if not auto_detect_indicator_type(dict.get(field_name)) == "URL"]
 
 
 def lowercase_protocol_callback(pattern: re.Match) -> str:
@@ -324,6 +338,7 @@ def ip_command(client: Client, ip_address: str, ip_version: str) -> List[Command
                                     argument=ip_)
         if raw_response and raw_response != 404:
             ip_version = FeedIndicatorType.IP if ip_version == 'IPv4' else FeedIndicatorType.IPv6
+            print(((raw_response.get('pulse_info', {})).get('pulses', {})).get('malware_families'))
             relationships = create_relationships(client, extract_attack_ids(raw_response), ip_, ip_version, 'display_name',
                                                  FeedIndicatorType.indicator_type_by_server_version("STIX Attack Pattern"))
             relationships += relationships_manager(client, entity_a=ip_, entity_a_type=ip_version,
@@ -647,7 +662,7 @@ def alienvault_search_cve_command(client: Client, cve_id: str) -> Tuple[str, Dic
 
 
 @logger
-def alienvault_get_related_urls_by_indicator_command(client: Client, indicator_type: str, indicator: str, params: dict = None) \
+def alienvault_get_related_urls_by_indicator_command(client: Client, indicator_type: str, indicator: str, limit: str = '') \
         -> Tuple[str, Dict, Dict]:
     """Get related urls by indicator (IPv4,IPv6,domain,hostname,url)
 
@@ -661,6 +676,9 @@ def alienvault_get_related_urls_by_indicator_command(client: Client, indicator_t
     """
     if indicator_type == "IP":
         indicator_type = "IPv4"
+    params = {}
+    if limit:
+        params['limit'] = limit
     raw_response = client.query(section=indicator_type,
                                 argument=indicator,
                                 sub_section='url_list',
@@ -679,7 +697,7 @@ def alienvault_get_related_urls_by_indicator_command(client: Client, indicator_t
 
 
 @logger
-def alienvault_get_related_hashes_by_indicator_command(client: Client, indicator_type: str, indicator: str, params: dict = None) \
+def alienvault_get_related_hashes_by_indicator_command(client: Client, indicator_type: str, indicator: str, limit: str = '') \
         -> Tuple[str, Dict, Dict]:
     """Get related file hashes by indicator (IPv4,IPv6,domain,hostname)
 
@@ -693,6 +711,9 @@ def alienvault_get_related_hashes_by_indicator_command(client: Client, indicator
        """
     if indicator_type == "IP":
         indicator_type = "IPv4"
+    params = {}
+    if limit:
+        params['limit'] = limit
     raw_response = client.query(section=indicator_type,
                                 argument=indicator,
                                 sub_section='malware',
@@ -714,7 +735,7 @@ def alienvault_get_related_hashes_by_indicator_command(client: Client, indicator
 
 @logger
 def alienvault_get_passive_dns_data_by_indicator_command(client: Client, indicator_type: str, indicator: str,
-                                                         params: dict = None) -> Tuple[str, Dict, Dict]:
+                                                         limit: str = '') -> Tuple[str, Dict, Dict]:
     """Get related file hashes by indicator (IPv4,IPv6,domain,hostname)
 
        Args:
@@ -727,6 +748,9 @@ def alienvault_get_passive_dns_data_by_indicator_command(client: Client, indicat
        """
     if indicator_type == "IP":
         indicator_type = "IPv4"
+    params = {}
+    if limit:
+        params['limit'] = limit
     raw_response = client.query(section=indicator_type,
                                 argument=indicator,
                                 sub_section='passive_dns',
@@ -827,7 +851,7 @@ def main():
     verify_ssl = not params.get('insecure', False)
     proxy = params.get('proxy')
     default_threshold = int(params.get('default_threshold', 2))
-    max_indicator_relationships = int(params.get('max_indicator_relationships', 0))
+    max_indicator_relationships = arg_to_number(params.get('max_indicator_relationships', 0))
     token = params.get('api_token')
     reliability = params.get('integrationReliability')
     reliability = reliability if reliability else DBotScoreReliability.C

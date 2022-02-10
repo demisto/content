@@ -10,7 +10,7 @@ Query Indicators of Compromise in AlienVault OTX.
     | Server address |  | True |
     | API Token |  | False |
     | Indicator Threshold. The minimum number of pulses to consider the indicator as malicious. |  | False |
-    | max indicator relationships | Maximum number of relationships for indicators | False |
+    | Maximum number of relationships for indicators | Maximum number of relationships for indicators | False |
     | Source Reliability | Reliability of the source providing the intelligence data. | True |
     | Create relationships | Create relationships between indicators as part of Enrichment. | False |
     | Trust any certificate (not secure) |  | False |

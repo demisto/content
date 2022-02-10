@@ -4,7 +4,8 @@
 import pytest
 
 # Import local packages
-from AlienVault_OTX_v2 import calculate_dbot_score, Client, file_command, url_command, domain_command, ip_command
+from AlienVault_OTX_v2 import \
+    calculate_dbot_score, Client, file_command, url_command, domain_command, ip_command, delete_duplicated_entities
 from CommonServerPython import *
 import demistomock as demisto
 
@@ -741,3 +742,26 @@ def test_ip_command_on_404(mocker, ip_, raw_response, expected):
     mocker.patch.object(client, 'query', side_effect=[raw_response])
     command_results = ip_command(client, ip_, 'IPv4')
     assert command_results[0].readable_output == expected
+
+
+@pytest.mark.parametrize('entities_list,field_name,expected_results', [
+    ([{'name': 'some_name'}, {'name': 'some_name1'}, {'name': 'some_name2'}, {'name': 'some_name3'}], 'name',
+     [{'name': 'some_name'}, {'name': 'some_name1'}, {'name': 'some_name2'}, {'name': 'some_name3'}]),
+    ([{'url': 'www.site1.com'}, {'url': 'www.site1.com'}, {'url': 'www.site2.com'}, {'url': 'www.site1.com'}], 'url',
+     [{'url': 'www.site1.com'}, {'url': 'www.site2.com'}]),
+])
+def test_delete_duplicated_entities(entities_list, field_name, expected_results):
+    """
+    Given
+    - Case 1: List containing 4 different entities and their field name.
+    - Case 2: List containing 2 different entities where one of them appear 3 times and their field name.
+
+    When
+    - Running delete_duplicated_entities on input.
+
+    Then
+    - Ensure the duplicated entities were deleted.
+    - Case 1: Should return the exact same list.
+    - Case 2: Should return a list of length two containing only 1 occurrence of each entity from the input.
+    """
+    assert delete_duplicated_entities(entities_list, field_name) == expected_results
