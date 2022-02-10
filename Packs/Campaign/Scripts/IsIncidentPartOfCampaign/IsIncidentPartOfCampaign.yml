@@ -16,6 +16,7 @@ args:
   defaultValue: Phishing Campaign
 - name: IncidentIDs
   required: true
+  isArray: true
   description: Comma separated list of incidents ids to search for.
 outputs:
 - contextPath: ExistingCampaignID
