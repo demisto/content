@@ -920,64 +920,44 @@ def map_pack_dependencies_graph(pack_name, first_level_graph, full_dep_graph):
                     pack_deps.add(inner_dep_name)
     return full_dep_graph
 
-# Check what else was between the functions inserted here and see if can be realted to the usecases and tags
-def prepare_and_zip_pack(pack, signature_key, marketplace, index_folder_path, packs_dependencies_mapping, build_number,
-                         current_commit_hash, statistics_handler, pack_names, id_set, delete_test_playbooks=True):
+
+def prepare_and_zip_pack(pack, signature_key):
     """
     Prepares the pack before zip, and then zips it.
     Args:
         pack (Pack): Pack to be zipped.
         signature_key (str): Base64 encoded string used to sign the pack.
-        marketplace: The name of the marketplace of this current upload.
-        index_folder_path (str): downloaded index folder directory path.
-        packs_dependencies_mapping (dict): all packs dependencies lookup mapping.
-        build_number (str): CI build number.
-        current_commit_hash (str): current commit hash.
-        statistics_handler (StatisticsHandler): The marketplace statistics handler
-        pack_names (set): List of all pack names.
-        id_set (dict): Dict of id_set.json
-        marketplace (str): Marketplace of current upload.
-        delete_test_playbooks (bool): Whether to delete test playbooks folder.
 
     Returns:
         (bool): Whether the zip was successful
     """
-    is_missing_dependencies = False
 
     if not pack.should_upload_to_marketplace:
         logging.warning(f"Skipping {pack.name} pack as it is not supported in the current marketplace.")
         pack.status = PackStatus.NOT_RELEVANT_FOR_MARKETPLACE.name
         pack.cleanup()
-        return False, is_missing_dependencies
-    task_status = pack.collect_content_items()
-    if not task_status:
-        pack.status = PackStatus.FAILED_COLLECT_ITEMS.name
-        pack.cleanup()
-        return False, is_missing_dependencies
-    task_status, is_missing_dependencies = pack.format_metadata(index_folder_path,
-                                                                packs_dependencies_mapping, build_number,
-                                                                current_commit_hash, pack.is_modified,
-                                                                statistics_handler, pack_names, id_set, marketplace)
-    if not task_status:
-        pack.status = PackStatus.FAILED_METADATA_PARSING.name
-        pack.cleanup()
-        return False, is_missing_dependencies
-    task_status = pack.remove_unwanted_files(delete_test_playbooks)
+        return False
+    # task_status = pack.collect_content_items()
+    # if not task_status:
+    #     pack.status = PackStatus.FAILED_COLLECT_ITEMS.name
+    #     pack.cleanup()
+    #     return False
+    task_status = pack.remove_unwanted_files()
     if not task_status:
         pack.status = PackStatus.FAILED_REMOVING_PACK_SKIPPED_FOLDERS
         pack.cleanup()
-        return False, is_missing_dependencies
+        return False
     task_status = pack.sign_pack(signature_key)
     if not task_status:
         pack.status = PackStatus.FAILED_SIGNING_PACKS.name
         pack.cleanup()
-        return False, is_missing_dependencies
+        return False
     task_status, _ = pack.zip_pack()
     if not task_status:
         pack.status = PackStatus.FAILED_ZIPPING_PACK_ARTIFACTS.name
         pack.cleanup()
-        return False, is_missing_dependencies
-    return task_status, is_missing_dependencies
+        return False
+    return task_status
 
 
 def upload_packs_with_dependencies_zip(extract_destination_path, packs_dependencies_mapping, signature_key,
@@ -1019,9 +999,7 @@ def upload_packs_with_dependencies_zip(extract_destination_path, packs_dependenc
                 continue
             pack_deps = full_deps_graph[pack.name]
             if not (pack.zip_path and os.path.isfile(pack.zip_path)):
-                task_status, _ = prepare_and_zip_pack(pack, signature_key, marketplace, index_folder_path,
-                                                      packs_dependencies_mapping, build_number, current_commit_hash,
-                                                      statistics_handler, pack_names, id_set)
+                task_status = prepare_and_zip_pack(pack, signature_key)
                 if not task_status:
                     logging.warning(f"Skipping dependencies collection for {pack.name}. Failed zipping")
                     continue
@@ -1034,9 +1012,7 @@ def upload_packs_with_dependencies_zip(extract_destination_path, packs_dependenc
                 else:
                     dep_pack = packs_dict[dep_name]
                 if not (dep_pack.zip_path and os.path.isfile(dep_pack.zip_path)):
-                    task_status, _ = prepare_and_zip_pack(dep_pack, signature_key, marketplace, index_folder_path,
-                                                          packs_dependencies_mapping, build_number, current_commit_hash,
-                                                          statistics_handler, pack_names, id_set)
+                    task_status = prepare_and_zip_pack(dep_pack, signature_key)
                     if not task_status:
                         logging.error(f"Skipping dependency {pack.name}. Failed zipping")
                         continue
@@ -1181,19 +1157,21 @@ def main():
 
     # starting iteration over packs
     for pack in packs_list:
-
         task_status = pack.load_user_metadata(marketplace)
         if not task_status:
             pack.status = PackStatus.FAILED_LOADING_USER_METADATA.value
             pack.cleanup()
-            return False
+            continue
 
-        # detect if the pack is modified and return modified RN files
-        task_status, modified_rn_files_paths = pack.detect_modified(content_repo, index_folder_path,
-                                                                    current_commit_hash, previous_commit_hash)
+        if not pack.should_upload_to_marketplace:
+            logging.warning(f"Skipping {pack.name} pack as it is not supported in the current marketplace.")
+            pack.status = PackStatus.NOT_RELEVANT_FOR_MARKETPLACE.name
+            pack.cleanup()
+            continue
 
+        task_status = pack.collect_content_items()
         if not task_status:
-            pack.status = PackStatus.FAILED_DETECTING_MODIFIED_FILES.name
+            pack.status = PackStatus.FAILED_COLLECT_ITEMS.name
             pack.cleanup()
             continue
 
@@ -1204,23 +1182,36 @@ def main():
             continue
 
         task_status = pack.upload_author_image(storage_bucket, storage_base_path, diff_files_list, True)
+
         if not task_status:
             pack.status = PackStatus.FAILED_AUTHOR_IMAGE_UPLOAD.name
             pack.cleanup()
             continue
 
-        task_status, is_missing_dependencies = prepare_and_zip_pack(pack, signature_key, marketplace, index_folder_path,
-                                                                    packs_dependencies_mapping, build_number,
-                                                                    current_commit_hash, statistics_handler, pack_names,
-                                                                    id_set, remove_test_playbooks)
+        # detect if the pack is modified and return modified RN files
+        task_status, modified_rn_files_paths = pack.detect_modified(content_repo, index_folder_path,
+                                                                    current_commit_hash, previous_commit_hash)
+
         if not task_status:
+            pack.status = PackStatus.FAILED_DETECTING_MODIFIED_FILES.name
+            pack.cleanup()
             continue
+
+        task_status, is_missing_dependencies = pack.format_metadata(index_folder_path,
+                                                                    packs_dependencies_mapping, build_number,
+                                                                    current_commit_hash, pack.is_modified,
+                                                                    statistics_handler, pack_names)
 
         if is_missing_dependencies:
             # If the pack is dependent on a new pack, therefore it is not yet in the index.zip as it might not have
             # been iterated yet, we will note that it is missing dependencies, and after updating the index.zip with
             # all new packs - we will go over the pack again to add what was missing.
             packs_with_missing_dependencies.append(pack)
+
+        if not task_status:
+            pack.status = PackStatus.FAILED_METADATA_PARSING.name
+            pack.cleanup()
+            continue
 
         task_status, not_updated_build = pack.prepare_release_notes(index_folder_path, build_number, pack.is_modified,
                                                                     modified_rn_files_paths)
@@ -1231,6 +1222,24 @@ def main():
 
         if not_updated_build:
             pack.status = PackStatus.PACK_IS_NOT_UPDATED_IN_RUNNING_BUILD.name
+            pack.cleanup()
+            continue
+
+        task_status = pack.remove_unwanted_files(remove_test_playbooks)
+        if not task_status:
+            pack.status = PackStatus.FAILED_REMOVING_PACK_SKIPPED_FOLDERS
+            pack.cleanup()
+            continue
+
+        task_status = pack.sign_pack(signature_key)
+        if not task_status:
+            pack.status = PackStatus.FAILED_SIGNING_PACKS.name
+            pack.cleanup()
+            continue
+
+        task_status, zip_pack_path = pack.zip_pack()
+        if not task_status:
+            pack.status = PackStatus.FAILED_ZIPPING_PACK_ARTIFACTS.name
             pack.cleanup()
             continue
 

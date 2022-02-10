@@ -2001,7 +2001,7 @@ class Pack(object):
                 logging.info(f"Adding auto generated display images for {self._pack_name} pack")
                 self._user_metadata[Metadata.DISPLAYED_IMAGES] = packs_dependencies_mapping.get(
                     self._pack_name, {}).get(Metadata.DISPLAYED_IMAGES, [])
-
+            logging.info(f"Loading pack dependencies for {self._pack_name} pack")
             dependencies_data, is_missing_dependencies = \
                 self._load_pack_dependencies(index_folder_path, pack_names, id_set, marketplace)
 
