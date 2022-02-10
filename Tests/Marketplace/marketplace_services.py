@@ -1055,6 +1055,7 @@ class Pack(object):
         Returns:
             bool: whether the operation succeeded.
             bool: True in case of pack existence at targeted path and upload was skipped, otherwise returned False.
+            str: Path to pack's zip in the bucket after the upload.
 
         """
         task_status = True
