@@ -920,7 +920,7 @@ def map_pack_dependencies_graph(pack_name, first_level_graph, full_dep_graph):
                     pack_deps.add(inner_dep_name)
     return full_dep_graph
 
-
+# Check what else was between the functions inserted here and see if can be realted to the usecases and tags
 def prepare_and_zip_pack(pack, signature_key, marketplace, index_folder_path, packs_dependencies_mapping, build_number,
                          current_commit_hash, statistics_handler, pack_names, id_set, delete_test_playbooks=True):
     """
@@ -943,14 +943,10 @@ def prepare_and_zip_pack(pack, signature_key, marketplace, index_folder_path, pa
         (bool): Whether the zip was successful
     """
     is_missing_dependencies = False
-    task_status = pack.load_user_metadata(marketplace)
+
     if not pack.should_upload_to_marketplace:
         logging.warning(f"Skipping {pack.name} pack as it is not supported in the current marketplace.")
         pack.status = PackStatus.NOT_RELEVANT_FOR_MARKETPLACE.name
-        pack.cleanup()
-        return False, is_missing_dependencies
-    if not task_status:
-        pack.status = PackStatus.FAILED_LOADING_USER_METADATA.value
         pack.cleanup()
         return False, is_missing_dependencies
     task_status = pack.collect_content_items()
@@ -1185,6 +1181,13 @@ def main():
 
     # starting iteration over packs
     for pack in packs_list:
+
+        task_status = pack.load_user_metadata(marketplace)
+        if not task_status:
+            pack.status = PackStatus.FAILED_LOADING_USER_METADATA.value
+            pack.cleanup()
+            return False
+
         # detect if the pack is modified and return modified RN files
         task_status, modified_rn_files_paths = pack.detect_modified(content_repo, index_folder_path,
                                                                     current_commit_hash, previous_commit_hash)
@@ -1214,12 +1217,9 @@ def main():
             continue
 
         if is_missing_dependencies:
-            # If the pack is dependent on a new pack
-            # (which is not yet in the index.zip as it might not have been iterated yet)
-            # we will note that it is missing dependencies.
-            # And finally after updating all the packages in index.zip - i.e. the new pack exists now.
-            # We will go over the pack again to add what was missing.
-            # See issue #37290
+            # If the pack is dependent on a new pack, therefore it is not yet in the index.zip as it might not have
+            # been iterated yet, we will note that it is missing dependencies, and after updating the index.zip with
+            # all new packs - we will go over the pack again to add what was missing.
             packs_with_missing_dependencies.append(pack)
 
         task_status, not_updated_build = pack.prepare_release_notes(index_folder_path, build_number, pack.is_modified,
