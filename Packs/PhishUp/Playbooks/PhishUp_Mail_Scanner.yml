@@ -169,7 +169,7 @@ tasks:
       description: ""
     nexttasks:
       '#none#':
-      - "6"
+      - "23"
     separatecontext: false
     view: |-
       {
@@ -275,7 +275,7 @@ tasks:
       {
         "position": {
           "x": -730,
-          "y": 1280
+          "y": 1360
         }
       }
     note: false
@@ -287,10 +287,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: b2bd5841-c058-4251-8a8b-9ceb160f1fb2
+    taskid: 344f1e3c-19fe-47ef-8dca-cd8ced179d65
     type: regular
     task:
-      id: b2bd5841-c058-4251-8a8b-9ceb160f1fb2
+      id: 344f1e3c-19fe-47ef-8dca-cd8ced179d65
       version: -1
       name: Gmail Delete Mail
       description: Deletes an email in the user's mailbox.
@@ -303,11 +303,11 @@ tasks:
       - "19"
     scriptarguments:
       message-id:
-        simple: ${incident.labels.Email/ID}
+        simple: ${incident.emailmessageid}
       permanent:
         simple: "False"
       user-id:
-        simple: ${incident.labels.Email/Header/delivered-to}
+        simple: ${incident.emailto}
     separatecontext: false
     view: |-
       {
@@ -339,7 +339,7 @@ tasks:
       '#default#':
       - "2"
       No URL:
-      - "14"
+      - "24"
     separatecontext: false
     conditions:
     - label: No URL
@@ -354,36 +354,6 @@ tasks:
         "position": {
           "x": 50,
           "y": 160
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "14":
-    id: "14"
-    taskid: 3025d569-fe20-4a56-838c-32dd1dd657ba
-    type: title
-    task:
-      id: 3025d569-fe20-4a56-838c-32dd1dd657ba
-      version: -1
-      name: If extract-indicator function does not find any URL
-      type: title
-      iscommand: false
-      brand: ""
-      description: ""
-    nexttasks:
-      '#none#':
-      - "6"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 630,
-          "y": 880
         }
       }
     note: false
@@ -411,7 +381,7 @@ tasks:
       "False":
       - "6"
       "True":
-      - "8"
+      - "25"
     separatecontext: false
     conditions:
     - label: "True"
@@ -468,8 +438,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -730,
-          "y": 1460
+          "x": -720,
+          "y": 1510
         }
       }
     note: false
@@ -524,7 +494,7 @@ tasks:
       {
         "position": {
           "x": -730,
-          "y": 1640
+          "y": 1670
         }
       }
     note: false
@@ -536,10 +506,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: c2bd98b2-662b-41e7-8c1d-57b279e86fa5
+    taskid: 59a07f93-1155-4a7f-8fe0-b7e041c32c43
     type: regular
     task:
-      id: c2bd98b2-662b-41e7-8c1d-57b279e86fa5
+      id: 59a07f93-1155-4a7f-8fe0-b7e041c32c43
       version: -1
       name: Move Mail to Spam Folder
       description: Moves an email to a different folder.
@@ -554,11 +524,11 @@ tasks:
       add-labels:
         simple: SPAM
       message-id:
-        simple: ${incident.labels.Email/ID}
+        simple: ${incident.emailmessageid}
       remove-labels:
         simple: INBOX
       user-id:
-        simple: ${incident.labels.Email/Header/delivered-to}
+        simple: ${incident.emailto}
     separatecontext: false
     view: |-
       {
@@ -668,6 +638,121 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: ed436d52-2d8b-4f79-8cf5-f38bb58b9c18
+    type: regular
+    task:
+      id: ed436d52-2d8b-4f79-8cf5-f38bb58b9c18
+      version: -1
+      name: Clean Mail Close Investigation
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      closeNotes:
+        simple: The is no Phishing Url in Email
+      closeReason:
+        simple: The is no Phishing Url in Email
+      id:
+        complex:
+          root: incident
+          accessor: id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1035
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 44d63ddd-5d2f-4048-8f98-2ec931d2afa7
+    type: regular
+    task:
+      id: 44d63ddd-5d2f-4048-8f98-2ec931d2afa7
+      version: -1
+      name: If extract-indicator function does not find any URL
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      closeNotes:
+        simple: The is no Url in Email
+      closeReason:
+        simple: The is no Url in Email
+      id:
+        complex:
+          root: incident
+          accessor: id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 660,
+          "y": 820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: f893eb01-3369-4ac6-8a5d-b77018f5ac1a
+    type: regular
+    task:
+      id: f893eb01-3369-4ac6-8a5d-b77018f5ac1a
+      version: -1
+      name: Set Incident Severity to Critical
+      description: Optionally increases the incident severity to the new value if
+        it is greater than the existing severity.
+      scriptName: IncreaseIncidentSeverity
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      severity:
+        simple: Critical
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -730,
+          "y": 1200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -676,7 +761,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 2815,
-        "width": 2400,
+        "width": 2430,
         "x": -1390,
         "y": -130
       }
@@ -685,17 +770,17 @@ view: |-
 inputs:
 - key: EmailBodyHtml
   value:
-    simple: ${incident.labels.Email/html}
+    simple: ${incident.emailbodyhtml}
   required: true
   description: Email Mail Body for extracting URLs. Default Value is "${incident.emailbodyhtml}"
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: ShouldPhishUpActionWork
   value:
     simple: "True"
   required: true
   description: If you do not want actions such as deleting mail and moving to spam
     in PhishUp playbook, you should set the value False. Default value is True
-  playbookInputQuery:
+  playbookInputQuery: null
 outputs:
 - contextPath: Phishup.Result
   description: Phishup Service Response (Clean, Phish, Error)
