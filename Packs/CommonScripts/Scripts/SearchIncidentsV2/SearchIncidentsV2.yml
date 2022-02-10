@@ -172,5 +172,5 @@ tags:
 - Utility
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.9.8.24399
+dockerimage: demisto/python3:3.10.1.25933
 fromversion: 5.0.0
