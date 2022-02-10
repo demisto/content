@@ -1,0 +1,233 @@
+category: Analytics & SIEM
+commonfields:
+  id: SpyCloud
+  version: -1
+configuration:
+- display: Base URL of SpyCloud
+  name: url
+  required: true
+  type: 0
+- display: API Key of SpyCloud
+  name: apikey
+  required: true
+  type: 4
+description: "With the SpyCloud integration data from breaches can be pulled and further processed in Playbooks. Filtering parameters can be used to filter the data set"
+display: SpyCloud
+name: SpyCloud
+script:
+  commands:
+  - arguments:
+    - name: query
+      defaultValue: 'empty'
+      description: 'Give a keyword to search for in the dataset.'
+    - name: since
+      defaultValue: '2010-01-01'
+      description: 'Search the dataset since this date. Format is yyyy-mm-dd and default value is 2010-01-01'
+    - name: until
+      defaultValue: '2100-01-01'
+      description: 'Search the dataset until this date. Format is yyyy-mm-dd and default value is 2100-01-01 (aka get everything)'
+    description: Lists the breaches identified. By default this lists all breaches
+      known in Spycloud. With the arguments it's possible to scope the results on
+      date and keywords.
+    name: spycloud-list-breaches
+    outputs:
+    - contextPath: SpyCloud.Breaches.uuid
+      description: ''
+      type: String
+    - contextPath: SpyCloud.Breaches.title
+      description: ''
+      type: String
+    - contextPath: SpyCloud.Breaches.type
+      description: ''
+      type: String
+    - contextPath: SpyCloud.Breaches.description
+      description: ''
+      type: String
+    - contextPath: SpyCloud.Breaches.acquisition_date
+      description: ''
+      type: Date
+    - contextPath: SpyCloud.Breaches.site
+      description: ''
+      type: String
+    - contextPath: SpyCloud.Breaches.spycloud_publish_date
+      description: ''
+      type: Date
+    - contextPath: SpyCloud.Breaches.num_records
+      description: ''
+      type: Number
+    - contextPath: SpyCloud.Breaches.id
+      description: ''
+      type: Number
+  - arguments:
+    - name: id
+      required: true
+    description: Retrieves the breach details. While very similar to list-breaches, this command obtains one specific breach, which is easier for automation tasks 
+    name: spycloud-get-breach-data
+    outputs:
+    - contextPath: SpyCloud.Breaches.uuid
+      description: ''
+      type: String
+    - contextPath: SpyCloud.Breaches.title
+      description: ''
+      type: String
+    - contextPath: SpyCloud.Breaches.type
+      description: ''
+      type: String
+    - contextPath: SpyCloud.Breaches.description
+      description: ''
+      type: String
+    - contextPath: SpyCloud.Breaches.acquisition_date
+      description: ''
+      type: Date
+    - contextPath: SpyCloud.Breaches.site
+      description: ''
+      type: String
+    - contextPath: SpyCloud.Breaches.spycloud_publish_date
+      description: ''
+      type: Date
+    - contextPath: SpyCloud.Breaches.num_records
+      description: ''
+      type: Number
+    - contextPath: SpyCloud.Breaches.id
+      description: ''
+      type: Number
+  - arguments:
+    - name: domain
+      required: true
+    - defaultValue: corporate
+      description: 'Allowed values: corporate, infected. Default is corporate. Infected returns the infected employees and customers'
+      name: type
+    - defaultValue: "2"
+      description: 'Allowed values: 2, 5, 10, 15, 20, 25. Default is 2'
+      name: severity
+    - description: The starting point for a date range query on the spycloud_publish_date.
+        The value provided must follow the standard ISO 8601 date format (yyyy-mm-dd)
+      name: since
+      required: true
+    description: Get all the data from a monitored domain and the breaches occurred
+      that relates with it. Can be scoped by domain, type and severity
+    name: spycloud-domain-data
+    outputs:
+    - contextPath: SpyCloud.Results.document_id
+      description: 'The unique ID of the identified record'
+      type: String
+    - contextPath: SpyCloud.Results.spycloud_publish_date
+      description: 'The date SpyCloud has found the data record'
+      type: Date
+    - contextPath: SpyCloud.Results.username
+      description: 'The username that was found in the breach dataset'
+      type: String
+    - contextPath: SpyCloud.Results.email
+      description: 'The email that was found in the breach dataset'
+      type: String
+    - contextPath: SpyCloud.Results.infected_time
+      description: 'The date the user got infected'
+      type: String
+    - contextPath: SpyCloud.Results.target_url
+      description: 'Which URL the credentials are for'
+      type: String
+    - contextPath: SpyCloud.Results.source_id
+      description: 'breach source ID'
+      type: String
+    - contextPath: SpyCloud.Results.password_plaintext
+      description: 'Plaintext password identified'
+      type: String
+  - arguments:
+    - name: emailaddr
+      required: true
+    - defaultValue: '2'
+      description: 'Allowed values: 2, 5, 10, 15, 20, 25. Default is 2'
+      name: severity
+    - defaultValue: 'empty'
+      description: 'The breach ID to search in'
+      name: breach_id
+    - description: The starting point for a date range query on the spycloud_publish_date.
+        The value provided must follow the standard ISO 8601 date format (yyyy-mm-dd)
+      name: since
+      required: true
+    - description: The until date for a date range query on the spycloud_publish_date.
+        The value provided must follow the standard ISO 8601 date format (yyyy-mm-dd)
+      name: until
+      defaultValue: '2100-01-01'
+    description: Get all the data from a monitored email address and the breaches occurred
+      that relates with it. Can be scoped by date, severity and breach
+    name: spycloud-email-data
+    outputs:
+    - contextPath: SpyCloud.Emails.document_id
+      description: 'The unique ID of the identified record'
+      type: String
+    - contextPath: SpyCloud.Emails.spycloud_publish_date
+      description: 'The date SpyCloud has found the data record'
+      type: Date
+    - contextPath: SpyCloud.Emails.username
+      description: 'The username that was found in the breach dataset'
+      type: String
+    - contextPath: SpyCloud.Emails.email
+      description: 'The email that was found in the breach dataset'
+      type: String
+    - contextPath: SpyCloud.Emails.source_id
+      description: 'breach source ID'
+      type: String
+    - contextPath: SpyCloud.Emails.domain
+      description: 'The domain that the user/pass is used on'
+      type: String
+    - contextPath: SpyCloud.Emails.password
+      description: 'Password found. Can be plaintext or hashed, good to check'
+      type: String
+    - contextPath: SpyCloud.Emails.user_browser
+      description: 'The browser of the user'
+      type: String
+    - contextPath: SpyCloud.Emails.target_url
+      description: 'The target url of the credentials'
+      type: String
+  - arguments:
+    - name: watchlist_type
+      required: true
+      description: 'Allowed values are ip, domain, email.'
+    - defaultValue: corporate
+      description: 'Allowed values: corporate or infected. Default is corporate.'
+      name: type
+    - defaultValue: empty
+      description: 'The breach ID to search in'
+      name: breach_id
+    - description: The starting point for a date range query on the spycloud_publish_date.
+        The value provided must follow the standard ISO 8601 date format (yyyy-mm-dd)
+      name: since
+      required: true
+    - description: The until date for a date range query on the spycloud_publish_date.
+        The value provided must follow the standard ISO 8601 date format (yyyy-mm-dd)
+      name: until
+      defaultValue: '2100-01-01'
+    description: Get all the data from a watchlist.  
+    name: spycloud-watchlist-data
+    outputs:
+    - contextPath: SpyCloud.Watchlist.document_id
+      description: 'The unique ID of the identified record'
+      type: String
+    - contextPath: SpyCloud.Watchlist.username
+      description: 'The username of the identified record'
+      type: String
+    - contextPath: SpyCloud.Watchlist.target_url
+      description: 'The targeted url'
+      type: String
+    - contextPath: SpyCloud.Watchlist.breach_id
+      description: 'The breach ID'
+      type: String
+    - contextPath: SpyCloud.Watchlist.password
+      description: 'The password of the user being exposed'
+      type: String
+    - contextPath: SpyCloud.Watchlist.spycloud_publish_date'
+      description: 'Date when Spycloud published the breach'
+      type: String
+    - contextPath: SpyCloud.Watchlist.email
+      description: 'The email address involved (if email watchlist type selected)'
+      type: String
+    - contextPath: SpyCloud.Watchlist.domain
+      description: 'The domain involved of the watchlist (if that type is selected)'
+      type: String
+  dockerimage: demisto/python3:3.8.6.12176
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+sourcemoduleid: SplunkPy
