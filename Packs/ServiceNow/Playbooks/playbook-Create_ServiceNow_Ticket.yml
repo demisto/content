@@ -7,7 +7,7 @@ description: "Create ServiceNow Ticket allows you to open new tickets as a task 
   \ a parent playbook.\nWhen creating the ticket, you can decide to update based on\
   \ on the ticket's state, which will wait for the ticket to resolve or close with\
   \ StatePolling. \nAlternatively, you can select to mirror the ServiceNow ticket\
-  \ and incident fields.  To apply either of these options, set the SyncTicket value\
+  \ and incident fields. To apply either of these options, set the SyncTicket value\
   \ in the playbook inputs to one of the following options: \n1. StatePolling\n2.\
   \ Mirror\n3. Leave Blank to use none."
 starttaskid: "0"
@@ -39,6 +39,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "8":
     id: "8"
     taskid: a90ee65d-6502-423e-8527-feb58987e15d
@@ -64,6 +66,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "9":
     id: "9"
     taskid: ccbdd637-fa6d-4c61-8c8f-5335843393b4
@@ -119,6 +123,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "11":
     id: "11"
     taskid: e19b8ff2-09e8-4991-8b5b-fc0e9c3af1fd
@@ -129,12 +135,12 @@ tasks:
       name: Mirror ServiceNow Ticket
       description: |-
         Mirror ServiceNow Ticket is designed to serve as a sub-playbook, which enables ticket mirroring with ServiceNow.
-        It enables you to manage ServiceNow tickets in Cortex xSOAR while data is continuously synced between ServiceNow and Cortex xSOAR, including ServiceNow schema, fields, comments, work notes, and attachments.
-        To enable OOTB mirroring, use the ServiceNow Create ticket  - common mappers for incoming and outgoing mirroring.
+        It enables you to manage ServiceNow tickets in Cortex xSOAR while data is continuously synced between ServiceNow and Cortex XSOAR, including ServiceNow schema, fields, comments, work notes, and attachments.
+        To enable out-of-the-box mirroring, use the ServiceNow Create ticket - common mappers for incoming and outgoing mirroring.
 
-        FieldPolling - You can the FieldPolling value to true if you only want to be informed when the ticket is resolved or closed. If FieldPolling is set to true, the FieldPolling Playbook will poll for the state(ServiceNow State field) of the ServiceNow ticket until it marks as either resolved or closed.
+        FieldPolling - You can set the FieldPolling value to true if you only want to be informed when the ticket is resolved or closed. If FieldPolling is set to true, the FieldPolling Playbook will poll for the state (ServiceNow State field) of the ServiceNow ticket until it is marked as either resolved or closed.
 
-        In Addition to the playbook, we recommend that you use the included layout for ServiceNow Ticket, which helps visualize ServiceNow ticket information in Cortex xSOAR.
+        In addition to the playbook, Palo Alto Networks recommends that you use the included layout for ServiceNow Ticket, which helps visualize ServiceNow ticket information in Cortex XSOAR.
         You can add the new layout as a tab to existing layouts using the Edit Layout page.
       playbookName: Mirror ServiceNow Ticket
       type: playbook
@@ -184,6 +190,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "12":
     id: "12"
     taskid: 1d87781e-ad25-4ba4-8b68-d4d803e85cf6
@@ -235,6 +243,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "13":
     id: "13"
     taskid: c5b89716-e739-462c-817d-29ad856a6034
@@ -296,6 +306,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 system: true
 view: |-
   {
@@ -317,7 +329,7 @@ inputs:
 - key: Category
   value: {}
   required: false
-  description: Set the category of the ServiceNow Ticket.
+  description: The category of the ServiceNow Ticket.
   playbookInputQuery:
 - key: AssignmentGroup
   value: {}
@@ -327,106 +339,139 @@ inputs:
 - key: ShortDescription
   value: {}
   required: false
-  description: Set a short description of the ticket.
+  description: A short description of the ticket.
   playbookInputQuery:
 - key: Impact
   value: {}
   required: false
-  description: Set the impact for the new ticket. Leave empty for ServiceNow default
-    impact.
+  description: The impact for the new ticket. Leave empty for ServiceNow default impact.
   playbookInputQuery:
 - key: Urgency
   value: {}
   required: false
-  description: Set the urgency of the new ticket. Leave empty for ServiceNow default
-    urgency.
+  description: The urgency of the new ticket. Leave empty for ServiceNow default urgency.
   playbookInputQuery:
 - key: 'Severity '
   value: {}
   required: false
-  description: Set the severity of the new ticket. Leave empty for ServiceNow default
+  description: The severity of the new ticket. Leave empty for ServiceNow default
     severity.
   playbookInputQuery:
 - key: Comment
   value: {}
   required: false
-  description: Add a comment for the created ticket.
+  description: A comment for the created ticket.
   playbookInputQuery:
 - key: SyncTicket
-  value: {}
+  value:
+    simple: Mirror
   required: false
-  description: "Set the value of the desired sync method with ServiceNow Ticket. you\
-    \ can choose one of three options:\n1. StatePolling\n2. Mirror \n3. Blank for\
-    \ none \n\nGenericPolling polls for the state of the ticket and runs until the\
-    \ ticket state is either resolved or closed. \n\nMirror - You can use the Mirror\
-    \ option to perform a full sync with the ServiceNow Ticket. The ticket data is\
-    \ synced automatically between ServiceNow and Cortex xSOAR with the ServiceNow\
-    \ mirror feature.\nIf this option is selected, FieldPolling is true by default. "
+  description: "The value of the desired sync method with ServiceNow Ticket. You can\
+    \ choose one of the following options:\n1. StatePolling\n2. Mirror \n3. Blank\
+    \ for none \n\nGenericPolling polls for the state of the ticket and runs until\
+    \ the ticket state is either resolved or closed. \n\nMirror - You can use the\
+    \ Mirror option to perform a full sync with the ServiceNow Ticket. The ticket\
+    \ data is synced automatically between ServiceNow and Cortex XSOAR with the ServiceNow\
+    \ mirror feature.\nIf this option is selected, FieldPolling is true by default."
   playbookInputQuery:
 - key: PollingInterval
   value: {}
   required: false
   description: |-
-    Set interval time for the polling to run
-    (In minutes)
+    The interval time (in minutes) for the polling to run.
   playbookInputQuery:
 - key: PollingTimeout
   value: {}
   required: false
   description: |-
-    Set the amount of time to poll the status of the ticket before declaring a timeout and resuming the playbook.
-    (In minutes)
+    The amount of time (in minutes) to poll the status of the ticket before declaring a timeout and resuming the playbook.
   playbookInputQuery:
 - key: AdditionalPollingCommandName
   value: {}
   required: false
-  description: "In this use case, Additional polling commands are relevant when using\
+  description: "In this use case, additional polling commands are relevant when using\
     \ StatePolling, and there is more than one ServiceNow instance. It will specify\
-    \ the polling command to use a specific instance to run on. \nIf so, please add\
-    \ \"Using\" to the value. \nThe playbook will then take the instance name as the\
-    \ instance to use. "
+    \ the polling command to use a specific instance to run on. \nIf so, add \"Using\"\
+    \ to the value. \nThe playbook will then take the instance name as the instance\
+    \ to use.\"  the polling command to use a specific instance to run on. \nIf so,\
+    \ please add \"using\" to the value. \nThe playbook will then take the instance\
+    \ name as the instance to use."
   playbookInputQuery:
 - key: InstanceName
-  value: {}
+  value:
+    simple:
   required: false
   description: |
-    Set the ServiceNow Instance that will be used for mirroring/running polling commands.
+    The ServiceNow instance that will be used for mirroring/running polling commands.
   playbookInputQuery:
 - key: MirrorDirection
   value:
     simple: Both
   required: false
-  description: "Set the mirror direction. It should be one of the following: \n1. In\n\
+  description: "The mirror direction. It should be one of the following: \n1. In\n\
     2. Out\n3. Both"
   playbookInputQuery:
 - key: MirrorCommentTags
   value:
     simple: comments,work_notes,ForServiceNow
   required: false
-  description: Set tags for mirror comments and files to ServiceNow.
+  description: The tags for mirror comments and files to ServiceNow.
   playbookInputQuery:
 - key: FieldPolling
-  value:
-    simple: "true"
+  value: {}
   required: false
   description: |-
-    Set the value to true or false to determine if the playbook will execute the FieldPolling sub playbook.
+    Set the value to true or false to determine if the playbook will execute the FieldPolling sub-playbook.
     It is useful when it is needed to wait for the ServiceNow ticket to be resolved and continue the parent playbook.
     FieldPolling will run until the ticket state is either resolved or closed.
   playbookInputQuery:
 - key: TicketType
   value: {}
   required: false
-  description: Set the ServiceNow ticket type. Options are "incident", "problem", "change_request", "sc_request",
-    "sc_task", or "sc_req_item". Default is "incident".
+  description: The ServiceNow ticket type. Options are "incident", "problem", "change_request",
+    "sc_request", "sc_task", or "sc_req_item". Default is "incident".
   playbookInputQuery:
-outputs: []
+outputs:
+- contextPath: ServiceNow.Ticket.ID
+  description: Ticket ID.
+  type: string
+- contextPath: ServiceNow.Ticket.OpenedBy
+  description: Ticket opener ID.
+  type: string
+- contextPath: ServiceNow.Ticket.CreatedOn
+  description: Ticket creation date.
+  type: string
+- contextPath: ServiceNow.Ticket.Assignee
+  description: Ticket assignee ID.
+  type: string
+- contextPath: ServiceNow.Ticket.State
+  description: Ticket state.
+  type: string
+- contextPath: ServiceNow.Ticket.Summary
+  description: Ticket short summary.
+  type: string
+- contextPath: ServiceNow.Ticket.Number
+  description: Ticket number.
+  type: string
+- contextPath: ServiceNow.Ticket.Active
+  description: Ticket active.
+  type: string
+- contextPath: ServiceNow.Ticket.AdditionalComments
+  description: Ticket comments.
+  type: string
+- contextPath: ServiceNow.Ticket.Priority
+  description: Ticket priority.
+  type: string
+- contextPath: ServiceNow.Ticket.OpenedAt
+  description: Ticket opening time.
+  type: string
+- contextPath: ServiceNow.Ticket.ResolvedBy
+  description: Ticket resolver ID.
+  type: string
+- contextPath: ServiceNow.Ticket.CloseCode
+  description: Ticket close code.
+  type: string
 tests:
 - Create ServiceNow Ticket and Mirror Test
 - Create ServiceNow Ticket and State Polling Test
-- ServiceNow_CMDB_OAuth_Test
-- ServiceNow_CMDB_Test
-- ServiceNow_OAuth_Test
-- servicenow_test_v2
-- ServiceNow IAM - Test Playbook
 fromversion: 6.0.0

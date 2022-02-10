@@ -59,6 +59,9 @@ tasks:
         simple: ContentPreData=response(val.updateAvailable==true)
       uri:
         simple: /contentpacks/installed-expired
+      using:
+        complex:
+          root: inputs.demisto_rest_api_name
     separatecontext: false
     view: |-
       {
@@ -1428,7 +1431,7 @@ tasks:
       channel:
         complex:
           root: incident
-          accessor: contentnotificationslackchannel
+          accessor: contentnotificationslackusername
       ignoreAddURL:
         simple: "true"
       message:
@@ -2007,6 +2010,11 @@ tasks:
           right:
             value:
               simple: "yes"
+        - operator: isTrue
+          left:
+            value:
+              simple: inputs.auto_update
+            iscontext: true
     view: |-
       {
         "position": {
@@ -2237,8 +2245,8 @@ tasks:
     task:
       id: 8ea57849-9250-4e06-8c8b-3f675deb3762
       version: -1
-      name: Set description to layout
-      description: Set description to layout
+      name: Set description to layout and set default pack selection
+      description: Set description to layout and set default pack selection
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -2247,6 +2255,17 @@ tasks:
       '#none#':
       - "21"
     scriptarguments:
+      contentpackselection:
+        complex:
+          root: incident
+          accessor: contentpackselection
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: All
       usecasedescription:
         simple: |-
           This playbook will check to see if there are any content updates available for chosen installed content packs, and notify users via e-mail or Slack.
@@ -2323,7 +2342,7 @@ tasks:
     scriptarguments:
       content_data:
         complex:
-          root: ${ContentData}
+          root: ContentData
     separatecontext: false
     view: |-
       {
@@ -2463,6 +2482,12 @@ inputs:
       root: incident
       accessor: contentpackselection
       transformers:
+      - operator: SetIfEmpty
+        args:
+          applyIfEmpty: {}
+          defaultValue:
+            value:
+              simple: All
       - operator: split
         args:
           delimiter:
@@ -2472,12 +2497,24 @@ inputs:
   description: A CSV of packs to monitor.
   playbookInputQuery:
 - key: auto_update
-  value: {}
+  value:
+    complex:
+      root: incident
+      accessor: contentupdatesautoinstall
   required: false
   description: |-
     Establishes whether to automatically update the content packs if there are available updates or wait for an analyst's approval or the manual update process.
     Specify 'Yes' for auto-update or 'No' for manual update.
   playbookInputQuery:
+- key: demisto_rest_api_name
+  value:
+    complex:
+      root: incident
+      accessor: demistorestapiname
+  required: true
+  description: Defines which instance of a configured Demisto API to use for checking
+    updates against.
+  playbookInputQuery: null
 outputs: []
 tests:
 - No tests (auto formatted)

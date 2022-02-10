@@ -81,3 +81,9 @@ Botsink
 Dbot
 OTX
 QRadar
+AdditionalPollingCommandName
+FireEye
+FormatURL
+Gitlab
+GitHub
+DomainTools

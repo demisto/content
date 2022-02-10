@@ -1,0 +1,58 @@
+{
+    "associatedToAll": true,
+    "caseInsensitive": true,
+    "cliName": "country",
+    "closeForm": false,
+    "content": true,
+    "description": "",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_country",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Country",
+    "neverSetAsRequired": false,
+    "openEnded": true,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "multiSelect",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.5.0",
+    "x2_fields": "action_country",
+    "Aliases": [
+        {
+            "cliName": "countryname",
+            "type": "shortText"
+        },
+        {
+            "cliName": "companycountry",
+            "type": "shortText"
+        },
+        {
+            "cliName": "countrywherethebreachtookplace",
+            "type": "shortText"
+        },
+        {
+            "cliName": "googlecloudsccfindingsourcepropertiesdstcountry",
+            "type": "shortText"
+        },
+        {
+            "cliName": "googlecloudsccfindingsourcepropertieslastcountry",
+            "type": "shortText"
+        },
+        {
+            "cliName": "previouscountry",
+            "type": "shortText"
+        }
+    ]
+}

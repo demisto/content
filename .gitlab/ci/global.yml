@@ -23,8 +23,8 @@
 
 .create-id-set-mp-v2: &create-id-set-mp-v2
   - section_start "Create ID Set" --collapsed
-  - demisto-sdk create-id-set -o ./Tests/id_set_mp_v2.json --marketplace "marketplacev2" >> $ARTIFACTS_FOLDER/logs/create_id_set.log
-  - cp ./Tests/id_set_mp_v2.json $ARTIFACTS_FOLDER
+  - demisto-sdk create-id-set -o ./Tests/id_set.json --marketplace "marketplacev2" >> $ARTIFACTS_FOLDER/logs/create_id_set.log
+  - cp ./Tests/id_set.json $ARTIFACTS_FOLDER
   - section_end "Create ID Set"
 
 .download-demisto-conf:
@@ -205,7 +205,7 @@
         mkdir ./unit-tests
         if [ -n "$SHOULD_LINT_ALL" ]; then
           echo -e  "----------\nLinting all because:\n${SHOULD_LINT_ALL}\n----------"
-          demisto-sdk lint -p 12 -a -q --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER --coverage-report $ARTIFACTS_FOLDER/coverage_report -dt 120
+          demisto-sdk lint -p 12 -a -q --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER --coverage-report $ARTIFACTS_FOLDER/coverage_report -dt 120 --time-measurements-dir $ARTIFACTS_FOLDER
         else
           demisto-sdk lint -p 8 -g -v --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER --coverage-report $ARTIFACTS_FOLDER/coverage_report
         fi
@@ -217,6 +217,8 @@
             fi
           else
             demisto-sdk coverage-analyze -i $ARTIFACTS_FOLDER/coverage_report/.coverage --report-dir $ARTIFACTS_FOLDER/coverage_report --report-type html,xml --previous-coverage-report-url https://storage.googleapis.com/marketplace-dist-dev/code-coverage-reports/coverage-min.json
+            echo "Adding unit tests coverage comment to the pr"
+            python3 ./Tests/scripts/add_pr_comment.py
           fi
         fi
       fi

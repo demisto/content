@@ -44,71 +44,8 @@
   "validationRegex": "",
   "version": -1,
   "fromVersion": "6.0.0",
-  "openEnded": true,
-  "Aliases": [
-    {
-      "cliName": "illusivenetworkslastseenuser",
-      "type": "shortText"
-    },
-    {
-      "cliName": "logpointusername",
-      "type": "shortText"
-    },
-    {
-      "cliName": "microsoft365defenderusers",
-      "type": "grid"
-    },
-    {
-      "cliName": "prismacloudcomputeuser",
-      "type": "shortText"
-    },
-    {
-      "cliName": "safenettrustedaccessusername",
-      "type": "shortText"
-    },
-    {
-      "cliName": "securityscorecardusername",
-      "type": "shortText"
-    },
-    {
-      "cliName": "sourceusername",
-      "type": "shortText"
-    },
-    {
-      "cliName": "srcuser",
-      "type": "shortText"
-    },
-    {
-      "cliName": "tidyuser",
-      "type": "shortText"
-    },
-    {
-      "cliName": "username",
-      "type": "shortText"
-    },
-    {
-      "cliName": "accountname",
-      "type": "shortText"
-    },
-    {
-      "cliName": "chronicleuser",
-      "type": "shortText"
-    },
-    {
-      "cliName": "code42username",
-      "type": "shortText"
-    },
-    {
-      "cliName": "deviceusername",
-      "type": "shortText"
-    },
-    {
-      "cliName": "digitalguardianusername",
-      "type": "shortText"
-    },
-    {
-      "cliName": "f5silverlinedetectedusernames",
-      "type": "shortText"
-    }
-  ]
+  "marketplaces": [
+    "xsoar"
+],
+  "openEnded": true
 }
