@@ -1,10 +1,10 @@
-id: 687cc5b0-416e-4587-882f-8e33cc8557cd
+id: JOB - PANW NGFW TS Agent Cleanup
 inputs: []
 name: JOB - PANW NGFW TS Agent Cleanup
 description: Run this playbook as a job to cleanup disconnected TS Agents
 outputs: []
 starttaskid: '0'
-fromversion: 6.5.0
+fromversion: 6.0.0
 tasks:
   '0':
     id: '0'
@@ -184,3 +184,5 @@ version: -1
 view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
   \     \"height\": 955,\n      \"width\": 620,\n      \"x\": 480,\n      \"y\": 65\n\
   \    }\n  }\n}"
+tests:
+- No tests (auto formatted)
