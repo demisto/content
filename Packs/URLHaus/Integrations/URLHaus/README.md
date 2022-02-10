@@ -1,5 +1,5 @@
 URLhaus has the goal of sharing malicious URLs that are being used for malware distribution.
-This integration was integrated and tested with version v1 of URLhaus
+This integration was integrated and tested with version xx of URLhaus
 
 ## Configure URLhaus on Cortex XSOAR
 
@@ -71,27 +71,81 @@ Retrieves URL information from URLhaus.
 | URLhaus.URL.Payload.VT.Link | String | Link to the VirusTotal report. | 
 
 #### Command example
-```!url using-brand=URLhaus url=http://example.com/VMYB-ht_JAQo-gi/INV/99401FORPO/20673114777/US/Outstanding-Invoices/```
+```!url using-brand=URLhaus url=http://example.com/anklet/WQG1/?i=1```
 #### Context Example
 ```json
 {
     "DBotScore": {
-        "Indicator": "http://example.com/VMYB-ht_JAQo-gi/INV/99401FORPO/20673114777/US/Outstanding-Invoices/",
+        "Indicator": "http://example.com/anklet/WQG1/?i=1",
         "Reliability": "C - Fairly reliable",
-        "Score": 0,
+        "Score": 2,
         "Type": "url",
         "Vendor": "URLhaus"
     },
     "URL": {
-        "Data": "http://example.com/VMYB-ht_JAQo-gi/INV/99401FORPO/20673114777/US/Outstanding-Invoices/"
+        "Data": "http://example.com/anklet/WQG1/?i=1",
+        "Relationships": [
+            {
+                "EntityA": "http://example.com/anklet/WQG1/?i=1",
+                "EntityAType": "URL",
+                "EntityB": "example.com",
+                "EntityBType": "Domain",
+                "Relationship": "hosted-on"
+            }
+        ],
+        "Tags": [
+            "doc",
+            "emotet",
+            "epoch5",
+            "heodo",
+            "malware_download"
+        ]
+    },
+    "URLhaus": {
+        "URL": {
+            "Blacklist": [
+                {
+                    "Name": "spamhaus_dbl",
+                    "Status": "not listed"
+                },
+                {
+                    "Name": "surbl",
+                    "Status": "not listed"
+                }
+            ],
+            "DateAdded": "2022-01-20T14:11:09",
+            "Host": "example.com",
+            "ID": "1992762",
+            "Payload": [
+                {
+                    "MD5": "716c3aa1e0da98b6e99cadd60363ae7e",
+                    "Name": "BC-77388.xlsm",
+                    "SHA256": "64c6ba33444e5db3cc9c99613d04fd163ec1971ee5eb90041a17068e37578fc0",
+                    "Type": "xls",
+                    "VT": null
+              }
+            ],
+            "Status": "offline",
+            "Tags": [
+                "doc",
+                "emotet",
+                "epoch5",
+                "heodo",
+                "malware_download"
+            ],
+            "Threat": "malware_download"
+        }
     }
 }
 ```
 
 #### Human Readable Output
 
->## URLhaus reputation for http:<span>//</span>example.com/VMYB-ht_JAQo-gi/INV/99401FORPO/20673114777/US/Outstanding-Invoices/
->No results!
+>### URLhaus reputation for http:<span>//</span>example.com/anklet/WQG1/?i=1
+>|Date added|Description|Status|Threat|URLhaus ID|URLhaus link|
+>|---|---|---|---|---|---|
+>| 2022-01-20T14:11:09 | The URL is inadctive (offline) and serving no payload | offline | malware_download | 1992762 | https:<span>//</span>urlhaus.abuse.ch/url/1992762/ |
+
 
 ### domain
 ***
@@ -139,20 +193,60 @@ Retrieves domain information from URLhaus.
     "DBotScore": {
         "Indicator": "example.com",
         "Reliability": "C - Fairly reliable",
-        "Score": 0,
-        "Type": "url",
+        "Score": 1,
+        "Type": "domain",
         "Vendor": "URLhaus"
     },
     "Domain": {
-        "Name": "example.com"
+        "Name": "example.com",
+        "Relationships": [
+            {
+                "EntityA": "example.com",
+                "EntityAType": "Domain",
+                "EntityB": "http://example.com:443/wp-content/plugins/wp-roilbask/includes/",
+                "EntityBType": "URL",
+                "Relationship": "hosts"
+            }
+        ],
+        "Tags": [
+            "abused_legit_malware"
+        ]
+    },
+    "URLhaus": {
+        "Domain": {
+            "Blacklist": {
+                "spamhaus_dbl": "abused_legit_malware",
+                "surbl": "not listed"
+            },
+            "FirstSeen": "2022-01-27T12:51:03",
+            "URL": [
+                {
+                    "date_added": "2022-01-28 04:41:03 UTC",
+                    "id": "2010874",
+                    "larted": "false",
+                    "reporter": "Cryptolaemus1",
+                    "tags": [
+                        "IcedID"
+                    ],
+                    "takedown_time_seconds": null,
+                    "threat": "malware_download",
+                    "url": "http://example.com:443/wp-content/plugins/wp-roilbask/includes/",
+                    "url_status": "offline",
+                    "urlhaus_reference": "https://urlhaus.abuse.ch/url/2010874/"
+                }
+            ]
+        }
     }
 }
 ```
 
 #### Human Readable Output
 
->## URLhaus reputation for example.com
->No results!
+>### URLhaus reputation for example.com
+>|Description|First seen|URLhaus link|
+>|---|---|---|
+>| There is no information about Domain in the blacklist | 2022-01-27T12:51:03 | https:<span>//</span>urlhaus.abuse.ch/host/example.com/ |
+
 
 ### file
 ***
@@ -201,11 +295,68 @@ Retrieves file information from URLhaus.
 | DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
 
 #### Command example
-```!file using-brand=URLhaus file=b5cf68c7cb5bb2d21d60bf6654926f61566d95bfd7c9f9e182d032f1da5b4601```
+```!file using-brand=URLhaus file=7855068e0cfb093ab9be9ec172676e3c119e16511f3d631d715a4e77ddad9d89```
+#### Context Example
+```json
+{
+    "DBotScore": {
+        "Indicator": "7855068e0cfb093ab9be9ec172676e3c119e16511f3d631d715a4e77ddad9d89",
+        "Reliability": "C - Fairly reliable",
+        "Score": 3,
+        "Type": "file",
+        "Vendor": "URLhaus"
+    },
+    "File": {
+        "Malicious": {
+            "Description": "This file is malicious",
+            "Vendor": "URLhaus"
+        },
+        "Relationships": [
+            {
+                "EntityA": "7855068e0cfb093ab9be9ec172676e3c119e16511f3d631d715a4e77ddad9d89",
+                "EntityAType": "File",
+                "EntityB": "BazaLoader",
+                "EntityBType": "Malware",
+                "Relationship": "indicator-of"
+            }
+        ],
+        "SHA256": "7855068e0cfb093ab9be9ec172676e3c119e16511f3d631d715a4e77ddad9d89",
+        "SSDeep": "24576:la1QHwgJMrQqj/wAc6QORNx2nAjwkaMm0GV9igWwlnwXQBwfalj21X4GtZ+FdnZ8:vH5qloBMd8A",
+        "Type": "dll"
+    },
+    "URLhaus": {
+        "File": {
+            "DownloadLink": "https://urlhaus-api.abuse.ch/v1/download/7855068e0cfb093ab9be9ec172676e3c119e16511f3d631d715a4e77ddad9d89/",
+            "FirstSeen": "2022-01-18T11:18:31",
+            "LastSeen": "2022-01-28T09:36:21",
+            "MD5": "2ff9cce7a08215ded0945de5965d2a0a",
+            "SHA256": "7855068e0cfb093ab9be9ec172676e3c119e16511f3d631d715a4e77ddad9d89",
+            "Signature": "BazaLoader",
+            "Size": 1816064,
+            "Type": "dll",
+            "URL": [
+                {
+                    "filename": "DH-1643319814.xll",
+                    "firstseen": "2022-01-27",
+                    "lastseen": null,
+                    "url": "http://www.example.com/wp-content/plugins/wp-roilbask/includes/",
+                    "url_id": "2009726",
+                    "url_status": "online",
+                    "urlhaus_reference": "https://urlhaus.abuse.ch/url/2009726/"
+                }
+            ]
+        }
+    }
+}
+```
+
 #### Human Readable Output
 
->## URLhaus reputation for SHA256 : b5cf68c7cb5bb2d21d60bf6654926f61566d95bfd7c9f9e182d032f1da5b4601
->No results!
+>### URLhaus reputation for SHA256 : 7855068e0cfb093ab9be9ec172676e3c119e16511f3d631d715a4e77ddad9d89
+>|First seen|Last seen|MD5|SHA256|Signature|URLhaus link|
+>|---|---|---|---|---|---|
+>| 2022-01-18T11:18:31 | 2022-01-28T09:36:21 | 2ff9cce7a08215ded0945de5965d2a0a | 7855068e0cfb093ab9be9ec172676e3c119e16511f3d631d715a4e77ddad9d89 | BazaLoader | https://urlhaus-api.abuse.ch/v1/download/7855068e0cfb093ab9be9ec172676e3c119e16511f3d631d715a4e77ddad9d89/ |
+
 
 ### urlhaus-download-sample
 ***

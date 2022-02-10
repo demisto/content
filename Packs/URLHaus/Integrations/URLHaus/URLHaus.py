@@ -101,7 +101,7 @@ def url_calculate_score(status: str) -> Tuple[int, str]:
                    'unknown': (Common.DBotScore.NONE, "The URL status could not be determined")}
     if status_dict.get(status):
         return status_dict[status]
-    return Common.DBotScore.GOOD, "The URL is not listed"
+    raise Exception("Got bad url status")
 
 
 def domain_calculate_score(blacklist: dict) -> Tuple[int, str]:
@@ -128,10 +128,10 @@ def domain_calculate_score(blacklist: dict) -> Tuple[int, str]:
         if surbl == 'listed':
             return Common.DBotScore.BAD, "The queried Domain is listed on SURBL"
     if spamhaus_dbl:
-        if spamhaus_dbl == 'not_listed':
+        if spamhaus_dbl == 'not listed':
             return Common.DBotScore.NONE, "The queried Domain is not listed on Spamhaus DBL"
     if surbl:
-        if surbl == 'not_listed':
+        if surbl == 'not listed':
             return Common.DBotScore.NONE, "The queried Domain is not listed on SURBL"
     return Common.DBotScore.GOOD, "There is no information about Domain in the blacklist"
 
@@ -162,8 +162,8 @@ def determine_host_ioc_type(host: str) -> str:
     return 'ip' if is_ip_valid(host) else 'domain'
 
 
-def url_create_relationships(uri: str, host: str, files: List[dict], create_relationships: Optional[bool],
-                             max_num_of_relationships: Optional[int]) -> List[EntityRelationship]:
+def url_create_relationships(uri: str, host: str, files: List[dict], create_relationships: bool,
+                             max_num_of_relationships: int) -> List[EntityRelationship]:
     """
         Returns a list of relationships if create_relationships is true (limited to max_num_of_relationships).
 
@@ -308,8 +308,8 @@ def build_context_url_ok_status(url_information: dict, uri: str, params: dict) -
         malicious_description=description
     )
     relationships = url_create_relationships(uri, url_information.get('host', ''), payloads,
-                                             params.get('create_relationships'),
-                                             params.get('max_num_of_relationships'))
+                                             params.get('create_relationships', True),
+                                             params.get('max_num_of_relationships', 10))
     url_indicator = Common.URL(url=uri, dbot_score=dbot_score, tags=url_create_tags(urlhaus_data),
                                relationships=relationships)
     human_readable = tableToMarkdown(f'URLhaus reputation for {uri}',
@@ -409,8 +409,8 @@ def url_command(params: dict) -> CommandResults:
     return process_query_info(url_information, url, params)
 
 
-def domain_create_relationships(urls: List[dict], domain: str, create_relationships: Optional[bool],
-                                max_num_of_relationships: Optional[int]) -> List[EntityRelationship]:
+def domain_create_relationships(urls: List[dict], domain: str, create_relationships: bool,
+                                max_num_of_relationships: int) -> List[EntityRelationship]:
     """
         Returns a list of relationships if create_relationships is true (limited to max_num_of_relationships).
 
@@ -496,8 +496,8 @@ def domain_command(params: dict) -> CommandResults:
             malicious_description=description
         )
         relationships = domain_create_relationships(urlhaus_data.get('URL', ''), domain,
-                                                    params.get('create_relationships'),
-                                                    params.get('max_num_of_relationships'))
+                                                    params.get('create_relationships', True),
+                                                    params.get('max_num_of_relationships', False))
         domain_indicator = Common.Domain(domain=domain, dbot_score=dbot_score, tags=tags,
                                          relationships=relationships)
 
@@ -538,8 +538,8 @@ def domain_command(params: dict) -> CommandResults:
         raise DemistoException(f'Query results = {domain_information["query_status"]}', res=domain_information)
 
 
-def file_create_relationships(urls: List[dict], sig: str, file: str, create_relationships: Optional[bool],
-                              max_num_of_relationships: Optional[int]) -> List[EntityRelationship]:
+def file_create_relationships(urls: List[dict], sig: str, file: str, create_relationships: bool,
+                              max_num_of_relationships: int) -> List[EntityRelationship]:
     """
         Returns a list of relationships if create_relationships is true (limited to max_num_of_relationships).
 
@@ -628,8 +628,8 @@ def file_command(params: dict) -> CommandResults:
         )
 
         relationships = file_create_relationships(urlhaus_data['URL'], urlhaus_data.get('Signature', ''), hash,
-                                                  params.get('create_relationships'),
-                                                  params.get('max_num_of_relationships'))
+                                                  params.get('create_relationships', True),
+                                                  params.get('max_num_of_relationships', 10))
 
         file_indicator = Common.File(sha256=hash, dbot_score=dbot_score, relationships=relationships,
                                      ssdeep=file_information.get('ssdeep'), file_type=file_information.get('file_type'))
