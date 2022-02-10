@@ -1,0 +1,19 @@
+{
+    "name": "Varonis",
+    "description": "Initial Varonis pack",
+    "support": "developer",
+    "currentVersion": "1.0.0",
+    "author": "Varonis",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [
+        "Analytics & SIEM"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}
