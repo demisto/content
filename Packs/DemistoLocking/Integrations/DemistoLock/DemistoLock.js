@@ -44,13 +44,12 @@ switch (command) {
 
         var guid = guid();
         var time = 0;
-        var lock = getLock();
+        var lock, version;
 
-        while (lock.guid !== guid && time++ < lockTimeout) {
-            wait(1);
+        do{
             [lock, version] = getLock();
             if (lock.guid === guid) {
-                continue;
+                break;
             }
             if (!lock.guid) {
                 try {
@@ -59,7 +58,10 @@ switch (command) {
                     logDebug(err.message)
                 }
             }
-        }
+            wait(1);
+        } while (time++ < lockTimeout) ;
+
+        [lock, version] = getLock();
 
         if (lock.guid === guid) {
             var md = '### Demisto Locking Mechanism\n';

@@ -35,10 +35,10 @@ tasks:
       version: -1
       name: lock-info
       description: Show information on a locks
-      script: Demisto Lock|||demisto-lock-info
+      script: '|||demisto-lock-info'
       type: regular
       iscommand: true
-      brand: Demisto Lock
+      
     nexttasks:
       '#none#':
       - "14"
@@ -62,10 +62,10 @@ tasks:
       version: -1
       name: lock-get
       description: Get lock. If the lock is already in use - will wait until it is released or until timeout is reached
-      script: Demisto Lock|||demisto-lock-get
+      script: '|||demisto-lock-get'
       type: regular
       iscommand: true
-      brand: Demisto Lock
+      
     nexttasks:
       '#none#':
       - "4"
@@ -92,10 +92,10 @@ tasks:
       version: -1
       name: lock-get
       description: Get lock. If the lock is already in use - will wait until it is released or until timeout is reached
-      script: Demisto Lock|||demisto-lock-get
+      script: '|||demisto-lock-get'
       type: regular
       iscommand: true
-      brand: Demisto Lock
+      
     nexttasks:
       '#none#':
       - "7"
@@ -178,10 +178,10 @@ tasks:
       version: -1
       name: lock-release
       description: Release a lock
-      script: Demisto Lock|||demisto-lock-release
+      script: '|||demisto-lock-release'
       type: regular
       iscommand: true
-      brand: Demisto Lock
+      
     nexttasks:
       '#none#':
       - "13"
@@ -232,10 +232,10 @@ tasks:
       version: -1
       name: lock-release
       description: Release a lock
-      script: Demisto Lock|||demisto-lock-release
+      script: '|||demisto-lock-release'
       type: regular
       iscommand: true
-      brand: Demisto Lock
+      
     nexttasks:
       '#none#':
       - "13"
@@ -259,10 +259,10 @@ tasks:
       version: -1
       name: lock-info
       description: Show information on a locks
-      script: Demisto Lock|||demisto-lock-info
+      script: '|||demisto-lock-info'
       type: regular
       iscommand: true
-      brand: Demisto Lock
+      
     nexttasks:
       '#none#':
       - "8"
@@ -312,10 +312,10 @@ tasks:
       version: -1
       name: lock-release-all
       description: Release all locks
-      script: Demisto Lock|||demisto-lock-release-all
+      script: '|||demisto-lock-release-all'
       type: regular
       iscommand: true
-      brand: Demisto Lock
+      
     nexttasks:
       '#none#':
       - "1"
@@ -410,10 +410,10 @@ tasks:
       id: 2a6b27bc-01ad-4195-8f62-4b6ac7427c1c
       version: -1
       name: get-lock
-      script: Demisto Lock|||demisto-lock-get
+      script: '|||demisto-lock-get'
       type: regular
       iscommand: true
-      brand: Demisto Lock
+      
     nexttasks:
       '#none#':
       - "16"
@@ -440,10 +440,10 @@ tasks:
       id: f2b9a15c-e894-4d15-8aef-f157611d52f9
       version: -1
       name: get-lock
-      script: Demisto Lock|||demisto-lock-get
+      script: '|||demisto-lock-get'
       type: regular
       iscommand: true
-      brand: Demisto Lock
+      
     nexttasks:
       '#none#':
       - "18"
@@ -525,10 +525,10 @@ tasks:
       id: c986a6ef-68ec-4fbc-8b04-8389da3b704e
       version: -1
       name: lock-release-all
-      script: Demisto Lock|||demisto-lock-release-all
+      script: '|||demisto-lock-release-all'
       type: regular
       iscommand: true
-      brand: Demisto Lock
+      
     nexttasks:
       '#none#':
       - "28"
@@ -574,10 +574,10 @@ tasks:
       version: -1
       name: lock-get
       description: Get lock. If the lock is already in use - will wait until it is released or until timeout is reached
-      script: Demisto Lock|||demisto-lock-get
+      script: '|||demisto-lock-get'
       type: regular
       iscommand: true
-      brand: Demisto Lock
+      
     nexttasks:
       '#none#':
       - "29"
@@ -603,10 +603,10 @@ tasks:
       version: -1
       name: lock-get
       description: Get lock. If the lock is already in use - will wait until it is released or until timeout is reached
-      script: Demisto Lock|||demisto-lock-get
+      script: '|||demisto-lock-get'
       type: regular
       iscommand: true
-      brand: Demisto Lock
+      
     nexttasks:
       '#none#':
       - "30"
@@ -688,10 +688,10 @@ tasks:
       version: -1
       name: lock-release
       description: Release a lock
-      script: Demisto Lock|||demisto-lock-release
+      script: '|||demisto-lock-release'
       type: regular
       iscommand: true
-      brand: Demisto Lock
+      
     nexttasks:
       '#none#':
       - "10"
@@ -715,10 +715,10 @@ tasks:
       version: -1
       name: lock-release
       description: Release a lock
-      script: Demisto Lock|||demisto-lock-release
+      script: '|||demisto-lock-release'
       type: regular
       iscommand: true
-      brand: Demisto Lock
+      
     nexttasks:
       '#none#':
       - "10"
