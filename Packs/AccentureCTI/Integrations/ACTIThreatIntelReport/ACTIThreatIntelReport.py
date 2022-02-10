@@ -1,72 +1,32 @@
-"""Base Integration for Cortex XSOAR (aka Demisto)
-
-This is an empty Integration with some basic structure according
-to the code conventions.
-
-MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
-
-Developer Documentation: https://xsoar.pan.dev/docs/welcome
-Code Conventions: https://xsoar.pan.dev/docs/integrations/code-conventions
-Linting: https://xsoar.pan.dev/docs/integrations/linting
-
-This is an empty structure file. Check an example at;
-https://github.com/demisto/content/blob/master/Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py
-
-"""
-
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
-from CommonServerUserPython import *  # noqa
-
 import requests
 import traceback
-from typing import Dict, Any
+from typing import List
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
 
-''' CONSTANTS '''
-
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
-
-''' CLIENT CLASS '''
-
+ENDPOINTS = {
+    'document': '/rest/document'
+}
+# BASE_URL= "https://api.intelgraph.idefense.com/"
 
 class Client(BaseClient):
-    """Client class to interact with the service API
+    def __init__(self, input_url:str, api_key:str, verify_certificate: bool, proxy: bool, endpoint="/rest/document"):
+        base_url = urljoin(input_url, endpoint)
+        headers = {
+            "Content-Type": "application/json",
+            'auth-token': api_key
+        }
+        super(Client, self).__init__(base_url=base_url, headers=headers)
 
-    This Client implements API calls, and does not contain any XSOAR logic.
-    Should only do requests and return data.
-    It inherits from BaseClient defined in CommonServer Python.
-    Most calls use _http_request() that handles proxy, SSL verification, etc.
-    For this  implementation, no special attributes defined
-    """
-
-    # TODO: REMOVE the following dummy function:
-    def baseintegration_dummy(self, dummy: str) -> Dict[str, str]:
-        """Returns a simple python dict with the information provided
-        in the input (dummy).
-
-        :type dummy: ``str``
-        :param dummy: string to add in the dummy dict that is returned
-
-        :return: dict as {"dummy": dummy}
-        :rtype: ``str``
-        """
-
-        return {"dummy": dummy}
-    # TODO: ADD HERE THE FUNCTIONS TO INTERACT WITH YOUR PRODUCT API
+    def document_download(self, url_suffix: str, data: dict = {}) -> dict:
+        return self._http_request(method="GET", url_suffix=url_suffix, params=data)
 
 
-''' HELPER FUNCTIONS '''
-
-# TODO: ADD HERE ANY HELPER FUNCTION YOU MIGHT NEED (if any)
-
-''' COMMAND FUNCTIONS '''
-
-
-def test_module(client: Client) -> str:
+def test_module(client: Client) -> str:                                                                         # type: ignore
     """Tests API connectivity and authentication'
 
     Returning 'ok' indicates that the integration works like it is supposed to.
@@ -80,94 +40,92 @@ def test_module(client: Client) -> str:
     :rtype: ``str``
     """
 
-    message: str = ''
     try:
-        # TODO: ADD HERE some code to test connectivity and authentication to your service.
-        # This  should validate all the inputs given in the integration configuration panel,
-        # either manually or by using an API that uses them.
-        message = 'ok'
-    except DemistoException as e:
-        if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
-            message = 'Authorization Error: make sure API Key is correctly set'
-        else:
-            raise e
-    return message
-
-
-# TODO: REMOVE the following dummy command function
-def baseintegration_dummy_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-
-    dummy = args.get('dummy', None)
-    if not dummy:
-        raise ValueError('dummy not specified')
-
-    # Call the Client function and get the raw response
-    result = client.baseintegration_dummy(dummy)
-
-    return CommandResults(
-        outputs_prefix='BaseIntegration',
-        outputs_key_field='',
-        outputs=result,
-    )
-# TODO: ADD additional command functions that translate XSOAR inputs/outputs to Client
-
-
-''' MAIN FUNCTION '''
-
-
-def main() -> None:
-    """main function, parses params and runs command functions
-
-    :return:
-    :rtype:
-    """
-
-    # TODO: make sure you properly handle authentication
-    # api_key = demisto.params().get('credentials', {}).get('password')
-
-    # get the service API url
-    base_url = urljoin(demisto.params()['url'], '/api/v1')
-
-    # if your Client class inherits from BaseClient, SSL verification is
-    # handled out of the box by it, just pass ``verify_certificate`` to
-    # the Client constructor
-    verify_certificate = not demisto.params().get('insecure', False)
-
-    # if your Client class inherits from BaseClient, system proxy is handled
-    # out of the box by it, just pass ``proxy`` to the Client constructor
-    proxy = demisto.params().get('proxy', False)
-
-    demisto.debug(f'Command being called is {demisto.command()}')
-    try:
-
-        # TODO: Make sure you add the proper headers for authentication
-        # (i.e. "Authorization": {api key})
-        headers: Dict = {}
-
-        client = Client(
-            base_url=base_url,
-            verify=verify_certificate,
-            headers=headers,
-            proxy=proxy)
-
-        if demisto.command() == 'test-module':
-            # This is the call made when pressing the integration Test button.
-            result = test_module(client)
-            return_results(result)
-
-        # TODO: REMOVE the following dummy command case:
-        elif demisto.command() == 'baseintegration-dummy':
-            return_results(baseintegration_dummy_command(client, demisto.args()))
-        # TODO: ADD command cases for the commands you will implement
-
-    # Log exceptions and return errors
+        client.document_download(url_suffix='/v0')
+        return 'ok'
     except Exception as e:
-        demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+        if 'Error in API call [403]' in e.args[0]:
+            return_results(f"This API token doesn't have permission for accessing Document API!.\n Error: {str(e)}")
+            demisto.debug(e.args[0])
+        else:
+            raise DemistoException(f"Error in API call - check the input parameters and the API Key. Error: {e}.")
 
 
-''' ENTRY POINT '''
+def getThreatReport_command(client: Client, args: dict, reliability: DBotScoreReliability):
+    result = client.document_download(url_suffix='/v0', data = {'page_size': 4})
+    reports = _extract_results(result)
+    return reports
 
+
+
+def _extract_results(res: dict) -> List[dict]:
+
+    if not res.get('total_size'):
+        return []
+
+    results_array = res.get('results', [])
+    if not len(results_array):
+        return []
+
+    return_data = {}
+    shortened_result = []
+    demisto.debug("############## line no 72 ###############")
+    for result in results_array:
+        res_dict = {
+            'abstract': result['abstract'],
+            'title': result['title']
+        }
+        demisto.debug("############## line no 78 ###############")
+        shortened_result.append(res_dict)
+        demisto.debug(shortened_result)
+    demisto.debug("############## line no 81 ###############")
+    return {"ACTI_Report": shortened_result}
+
+def main():
+    params = demisto.params()
+    # a = {
+    #     'bodyexecutivebrief':'This section is realated to body of the report',
+    #     'name':'This is name section',
+    #     'type':'This is type section'
+    # }
+    # execute_command('createThreatIntelReport',a)
+    api_key = params.get('api_token')
+    if isinstance(api_key, dict):
+        api_key = api_key.get('password')
+
+    reliability = params.get('integrationReliability', 'B - Usually reliable')
+    base_url = urljoin(params.get('url', ''))
+    verify_certificate = not params.get('insecure', False)
+    proxy = params.get('use_proxy', False)
+
+    if DBotScoreReliability.is_valid_type(reliability):
+        reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
+    else:
+        Exception("Accenture CTI error: Please provide a valid value for the Source Reliability parameter")
+
+    commands = {
+        'acti-getThreatIntelReport' : getThreatReport_command
+    }
+
+    try:
+        command = demisto.command()
+        client = Client(base_url, api_key, verify_certificate, proxy, endpoint=ENDPOINTS['document'])
+        demisto.debug(f'Command being called is {command}')
+
+        if command == 'test-module':
+            return_results(test_module(client))
+        elif command in commands:
+        # elif command == 'acti-getThreatIntelReport':
+            # execute_command('createThreatIntelReport',a)
+            return_results(commands[command](client, demisto.args(), reliability))
+            
+
+    except Exception as e:
+        if 'Error in API call [403]' in e.args[0]:
+            return_error(f"This API token doesn't have permission for accessing document API!.\n Error: {str(e)}")
+        else:
+            demisto.error(traceback.format_exc())
+            return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
