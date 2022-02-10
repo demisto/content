@@ -9,6 +9,7 @@ urllib3.disable_warnings()
 
 ''' GLOBAL VARS '''
 APP_NAME = 'ms-defender-atp'
+TIME_FORMAT = '%Y-%m-%dT%H:%M:%S:%fZ'
 
 ''' HELPER FUNCTIONS '''
 
@@ -183,7 +184,7 @@ class MsClient:
     """
 
     def __init__(self, tenant_id, auth_id, enc_key, app_name, base_url, verify, proxy, self_deployed,
-                 alert_severities_to_fetch, alert_status_to_fetch, alert_time_to_fetch):
+                 alert_severities_to_fetch, alert_status_to_fetch, alert_time_to_fetch, max_fetch):
         self.ms_client = MicrosoftClient(
             tenant_id=tenant_id, auth_id=auth_id, enc_key=enc_key, app_name=app_name,
             base_url=base_url, verify=verify, proxy=proxy, self_deployed=self_deployed,
@@ -191,6 +192,7 @@ class MsClient:
         self.alert_severities_to_fetch = alert_severities_to_fetch,
         self.alert_status_to_fetch = alert_status_to_fetch
         self.alert_time_to_fetch = alert_time_to_fetch
+        self.max_alerts_to_fetch = max_fetch
 
     def indicators_http_request(self, *args, **kwargs):
         """ Wraps the ms_client.http_request with scope=Scopes.graph
@@ -303,14 +305,16 @@ class MsClient:
         }
         return self.ms_client.http_request(method='POST', url_suffix=cmd_url, json_data=json_data)
 
-    def list_alerts(self, filter_req=None):
+    def list_alerts(self, filter_req=None, params=None):
         """Retrieves a collection of Alerts.
 
         Returns:
             dict. Alerts info
         """
         cmd_url = '/alerts'
-        params = {'$filter': filter_req} if filter_req else None
+        if not params:
+            params = {'$filter': filter_req} if filter_req else None
+
         return self.ms_client.http_request(method='GET', url_suffix=cmd_url, params=params)
 
     def update_alert(self, alert_id, json_data):
@@ -2065,12 +2069,12 @@ def add_remove_machine_tag_command(client: MsClient, args: dict):
     return human_readable, entry_context, response
 
 
-def fetch_incidents(client: MsClient, last_run):
+def fetch_incidents(client: MsClient, last_run, fetch_evidence):
     last_alert_fetched_time = get_last_alert_fetched_time(last_run, client.alert_time_to_fetch)
     existing_ids = last_run.get('existing_ids', [])
     latest_creation_time = last_alert_fetched_time
     filter_alerts_creation_time = create_filter_alerts_creation_time(last_alert_fetched_time)
-    alerts = client.list_alerts(filter_alerts_creation_time)['value']
+    alerts = client.list_alerts(fetch_evidence, filter_alerts_creation_time)['value']
 
     incidents, new_ids, latest_creation_time = all_alerts_to_incidents(alerts, latest_creation_time, existing_ids,
                                                                        client.alert_status_to_fetch,
@@ -2081,6 +2085,41 @@ def fetch_incidents(client: MsClient, last_run):
         'existing_ids': new_ids
     })
     demisto.incidents(incidents)
+
+def new_fetch(client: MsClient, last_run, fetch_evidence):
+
+    first_fetch_time = dateparser.parse(client.alert_time_to_fetch)
+    if last_run:
+        last_fetch_time = last_run.get('last_fetch')
+    else:
+        last_fetch_time = datetime.strptime(first_fetch_time, TIME_FORMAT)
+
+    # get_alerts:
+    params = {'$filter': f'alertCreationTime+gt+{last_fetch_time}'}
+    params['$orderby'] = 'alertCreationTime asc'
+    if fetch_evidence:
+        params['$expand'] = 'evidence'
+    params['$top'] = client.max_alerts_to_fetch
+    incidents = []
+    alerts = client.list_alerts(params=params)['value']
+
+    for alert in alerts:
+        incidents.append({
+            'rawJSON': json.dumps(alert),
+            'name': f'Microsoft Defender ATP Alert {alert["id"]}',
+            'occurred': alert['alertCreationTime']
+        })
+
+    # last alert is the newest as we ordered by it ascending
+    new_last_fetch_time = alert['alertCreationTime']
+    last_run['last_fetch'] = new_last_fetch_time
+    return incidents
+
+
+
+
+
+
 
 
 def create_filter_alerts_creation_time(last_alert_fetched_time):
@@ -2574,6 +2613,7 @@ def main():
     alert_severities_to_fetch = params.get('fetch_severity')
     alert_status_to_fetch = params.get('fetch_status')
     alert_time_to_fetch = params.get('first_fetch_timestamp', '3 days')
+    max_alert_to_fetch = arg_to_number(params.get('max_fetch', 50))
     last_run = demisto.getLastRun()
 
     if not enc_key:
@@ -2590,12 +2630,14 @@ def main():
         client = MsClient(
             base_url=base_url, tenant_id=tenant_id, auth_id=auth_id, enc_key=enc_key, app_name=APP_NAME, verify=use_ssl,
             proxy=proxy, self_deployed=self_deployed, alert_severities_to_fetch=alert_severities_to_fetch,
-            alert_status_to_fetch=alert_status_to_fetch, alert_time_to_fetch=alert_time_to_fetch)
+            alert_status_to_fetch=alert_status_to_fetch, alert_time_to_fetch=alert_time_to_fetch, max_fetch=max_alert_to_fetch
+        )
         if command == 'test-module':
             test_module(client)
 
         elif command == 'fetch-incidents':
-            fetch_incidents(client, last_run)
+            fetch_evidence = True
+            fetch_incidents(client, last_run, fetch_evidence)
 
         elif command == 'microsoft-atp-isolate-machine':
             return_outputs(*isolate_machine_command(client, args))
