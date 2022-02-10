@@ -843,22 +843,6 @@ POLLING_CASES = [
 @pytest.mark.parametrize('args,request_status,args_to_compare,expected_results', POLLING_CASES)
 def test_run_script_polling_second_run(args, request_status, args_to_compare, expected_results):
     from CommonServerPython import CommandResults
-    params: dict = demisto.params()
-    base_url: str = params.get('url', '').rstrip('/') + '/api'
-    tenant_id = params.get('tenant_id') or params.get('_tenant_id')
-    auth_id = params.get('auth_id') or params.get('_auth_id')
-    enc_key = params.get('enc_key') or (params.get('credentials') or {}).get('password')
-    use_ssl: bool = not params.get('insecure', False)
-    proxy: bool = params.get('proxy', False)
-    self_deployed: bool = params.get('self_deployed', False)
-    alert_severities_to_fetch = params.get('fetch_severity')
-    alert_status_to_fetch = params.get('fetch_status')
-    alert_time_to_fetch = params.get('first_fetch_timestamp', '3 days')
-    APP_NAME = 'ms-defender-atp'
-    client = MsClient(
-        base_url=base_url, tenant_id=tenant_id, auth_id=auth_id, enc_key=enc_key, app_name=APP_NAME, verify=use_ssl,
-        proxy=proxy, self_deployed=self_deployed, alert_severities_to_fetch=alert_severities_to_fetch,
-        alert_status_to_fetch=alert_status_to_fetch, alert_time_to_fetch=alert_time_to_fetch)
 
     def mock_action_command(client, args):
         return CommandResults(outputs={'action_id': 'action_id_example'})
@@ -870,7 +854,7 @@ def test_run_script_polling_second_run(args, request_status, args_to_compare, ex
         assert res == {'commands': [{'commandStatus': 'Completed'}], 'status': 'Succeeded'}
         return CommandResults(outputs={'example_outputs': 'outputs'})
 
-    res = run_polling_command(client, args, 'microsoft-atp-live-response-run-script', mock_action_command,
+    res = run_polling_command(client_mocker, args, 'microsoft-atp-live-response-run-script', mock_action_command,
                               mock_get_status, mock_post_process)
     assert res.to_context()[args_to_compare] == expected_results
 
