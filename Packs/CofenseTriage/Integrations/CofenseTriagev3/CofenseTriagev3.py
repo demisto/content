@@ -1307,10 +1307,9 @@ def cofense_report_download_command(client: Client, args: Dict[str, str]) -> dic
         'Accept': "text/plain"
     }
     # Sending http request
-    raw_response = client.http_request(url_suffix, resp_type="text", headers=headers)
+    raw_response = client.http_request(url_suffix, resp_type="content", headers=headers)
     filename = f"Report ID - {report_id}.eml"
-    return fileResult(filename, data=str(raw_response))
-
+    return fileResult(filename, data=raw_response, file_type=entryTypes["file"])
 
 def cofense_report_image_download_command(client: Client, args: Dict[str, str]) -> dict:
     """
