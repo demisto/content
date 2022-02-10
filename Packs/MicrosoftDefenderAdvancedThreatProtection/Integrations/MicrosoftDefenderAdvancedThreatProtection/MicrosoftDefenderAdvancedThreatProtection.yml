@@ -4546,6 +4546,7 @@ script:
     deprecated: false
     description: 'Collect file from a device. NOTE: Backslashes in path must be escaped.'
     execution: true
+    polling: true
     name: microsoft-atp-live-response-get-file
     outputs:
     - contextPath: MicrosoftATP.LiveResponseAction.id
@@ -4666,6 +4667,7 @@ script:
       Runs a script from the library on a device. The Args parameter is passed to your script. Timeouts after 10 minutes.
     execution: true
     name: microsoft-atp-live-response-run-script
+    polling: true
     outputs:
     - contextPath: MicrosoftATP.LiveResponseAction.script_name
       description: The script name.
