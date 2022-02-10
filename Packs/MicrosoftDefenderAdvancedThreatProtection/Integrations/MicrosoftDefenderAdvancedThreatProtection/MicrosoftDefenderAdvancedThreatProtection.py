@@ -910,11 +910,6 @@ class MsClient:
         response = self.ms_client.http_request(method='GET', url_suffix=cmd_url)
         return response
 
-    def get_machine_action(self, action_id):
-        cmd_url = f'machineactions/{action_id}'
-        response = self.ms_client.http_request(method='GET', url_suffix=cmd_url)
-        return response
-
     def create_action(self, machine_id, request_body):
         cmd_url = f'machines/{machine_id}/runliveresponse'
         response = self.ms_client.http_request(method='POST', url_suffix=cmd_url, json_data=request_body)
@@ -2678,7 +2673,7 @@ def get_live_response_result_command(client, args):
 
 def get_machine_action_command(client, args):
     id = args['machine_action_id']
-    res = client.get_machine_action(id)
+    res = client.get_machine_action_by_id(id)
     md_results = {
         'Machine Action Id': res.get('id'),
         'MachineId': res.get('machineId'),
