@@ -36,7 +36,7 @@ microsoft-atp-sc-indicator-create action=Allowed indicator_description=test indi
 microsoft-atp-sc-indicator-update action=Allowed indicator_description=test indicator_title=title indicator_type=IpAddress indicator_value=2.2.2.2 expiration_time="1 day" severity=Low
 microsoft-atp-sc-indicator-get-by-id indicator_id=5142
 microsoft-atp-sc-indicator-delete indicator_id=5142
-microsoft-atp-live-response-put-file machine_id="4899036531e374137f63289c3267bad772c13fef" comment="testing" file_name="C:\\Users\\demisto\\Desktop\\test.txt"
+microsoft-atp-live-response-put-file machine_id="4899036531e374137f63289c3267bad772c13fef" comment="testing" file_name="C:\\Users\\example\\Desktop\\test.txt"
 microsoft-atp-live-response-run-script machine_id=f70f9fe6b29cd9511652434919c6530618f06606 scriptName=test_script.ps1 comment="testing"
 microsoft-atp-live-response-get-file machine_id="4899036531e374137f63289c3267bad772c13fef" comment="jas testing" path="C:\\windows\\TEMP\\test_script.ps1"
 microsoft-atp-live-response-result machine_action_id=11a86b87-12b8-423b-9e8d-9775ab2da78f command_index=0
