@@ -11,7 +11,8 @@ import urllib.parse
 import warnings
 from datetime import datetime, timedelta
 from distutils.util import strtobool
-from distutils.version import LooseVersion
+
+from packaging.version import Version
 from pathlib import Path
 from typing import Tuple, Any, Union, List, Dict, Optional
 from zipfile import ZipFile, ZIP_DEFLATED
@@ -348,10 +349,10 @@ class Pack(object):
 
         with open(changelog_path, "r") as changelog_file:
             changelog = json.load(changelog_file)
-            pack_versions = [LooseVersion(v) for v in changelog.keys()]
+            pack_versions = [Version(v) for v in changelog.keys()]
             pack_versions.sort(reverse=True)
 
-            return pack_versions[0].vstring
+            return str(pack_versions[0])
 
     @staticmethod
     def organize_integration_images(pack_integration_images: list, pack_dependencies_integration_images_dict: dict,
@@ -1209,7 +1210,7 @@ class Pack(object):
                 pack_deps_zip_suffix = os.path.join(self._pack_name, pack_with_deps_name)
                 logging.exception(f"Failed copying {pack_deps_zip_suffix}. Additional Info: {str(e)}")
 
-    def get_changelog_latest_rn(self, changelog_index_path: str) -> Tuple[dict, LooseVersion, str]:
+    def get_changelog_latest_rn(self, changelog_index_path: str) -> Tuple[dict, Version, str]:
         """
         Returns the changelog file contents and the last version of rn in the changelog file
         Args:
@@ -1228,10 +1229,10 @@ class Pack(object):
         else:
             changelog = {}
         # get the latest rn version in the changelog.json file
-        changelog_rn_versions = [LooseVersion(ver) for ver in changelog]
+        changelog_rn_versions = [Version(ver) for ver in changelog]
         # no need to check if changelog_rn_versions isn't empty because changelog file exists
         changelog_latest_rn_version = max(changelog_rn_versions)
-        changelog_latest_rn = changelog[changelog_latest_rn_version.vstring]["releaseNotes"]
+        changelog_latest_rn = changelog[str(changelog_latest_rn_version)]["releaseNotes"]
 
         return changelog, changelog_latest_rn_version, changelog_latest_rn
 
@@ -1301,31 +1302,31 @@ class Pack(object):
             A dict of version, rn data for all corresponding versions, and the highest version among those keys as str
 
         """
-        lowest_version = [LooseVersion(Pack.PACK_INITIAL_VERSION)]
+        lowest_version = [Version(Pack.PACK_INITIAL_VERSION)]
         lower_versions: list = []
         higher_versions: list = []
         same_block_versions_dict: dict = dict()
         for item in changelog.keys():  # divide the versions into lists of lower and higher than given version
-            (lower_versions if LooseVersion(item) < version else higher_versions).append(LooseVersion(item))
+            (lower_versions if Version(item) < Version(version) else higher_versions).append(Version(item))
         higher_nearest_version = min(higher_versions)
         lower_versions = lower_versions + lowest_version  # if the version is 1.0.0, ensure lower_versions is not empty
         lower_nearest_version = max(lower_versions)
         for rn_filename in filter_dir_files_by_extension(release_notes_dir, '.md'):
             current_version = underscore_file_name_to_dotted_version(rn_filename)
             # Catch all versions that are in the same block
-            if lower_nearest_version < LooseVersion(current_version) <= higher_nearest_version:
+            if lower_nearest_version < Version(current_version) <= higher_nearest_version:
                 with open(os.path.join(release_notes_dir, rn_filename), 'r') as rn_file:
                     rn_lines = rn_file.read()
                 same_block_versions_dict[current_version] = self._clean_release_notes(rn_lines).strip()
-        return same_block_versions_dict, higher_nearest_version.vstring
+        return same_block_versions_dict, str(higher_nearest_version)
 
-    def get_release_notes_lines(self, release_notes_dir: str, changelog_latest_rn_version: LooseVersion,
+    def get_release_notes_lines(self, release_notes_dir: str, changelog_latest_rn_version: Version,
                                 changelog_latest_rn: str) -> Tuple[str, str, list]:
         """
         Prepares the release notes contents for the new release notes entry
         Args:
             release_notes_dir (str): the path to the release notes dir
-            changelog_latest_rn_version (LooseVersion): the last version of release notes in the changelog.json file
+            changelog_latest_rn_version (Version): the last version of release notes in the changelog.json file
             changelog_latest_rn (str): the last release notes in the changelog.json file
 
         Returns: The release notes contents, the latest release notes version (in the release notes directory),
@@ -1338,21 +1339,21 @@ class Pack(object):
             version = underscore_file_name_to_dotted_version(filename)
 
             # Aggregate all rn files that are bigger than what we have in the changelog file
-            if LooseVersion(version) > changelog_latest_rn_version:
+            if Version(version) > changelog_latest_rn_version:
                 with open(os.path.join(release_notes_dir, filename), 'r') as rn_file:
                     rn_lines = rn_file.read()
                 pack_versions_dict[version] = self._clean_release_notes(rn_lines).strip()
 
-            found_versions.append(LooseVersion(version))
+            found_versions.append(Version(version))
 
         latest_release_notes_version = max(found_versions)
-        latest_release_notes_version_str = latest_release_notes_version.vstring
+        latest_release_notes_version_str = str(latest_release_notes_version)
         logging.info(f"Latest ReleaseNotes version is: {latest_release_notes_version_str}")
 
         if len(pack_versions_dict) > 1:
             # In case that there is more than 1 new release notes file, wrap all release notes together for one
             # changelog entry
-            aggregation_str = f"[{', '.join(lv.vstring for lv in found_versions if lv > changelog_latest_rn_version)}]"\
+            aggregation_str = f"[{', '.join(str(lv) for lv in found_versions if lv > changelog_latest_rn_version)}]"\
                               f" => {latest_release_notes_version_str}"
             logging.info(f"Aggregating ReleaseNotes versions: {aggregation_str}")
             release_notes_lines = aggregate_release_notes_for_marketplace(pack_versions_dict)
@@ -1383,8 +1384,8 @@ class Pack(object):
             changelog: The changelog from the production bucket.
             latest_release_notes: The latest release notes version string in the current branch
         """
-        changelog_latest_release_notes = max(changelog, key=lambda k: LooseVersion(k))  # pylint: disable=W0108
-        assert LooseVersion(latest_release_notes) >= LooseVersion(changelog_latest_release_notes), \
+        changelog_latest_release_notes = max(changelog, key=lambda k: Version(k))  # pylint: disable=W0108
+        assert Version(latest_release_notes) >= Version(changelog_latest_release_notes), \
             f'{self._pack_name}: Version mismatch detected between upload bucket and current branch\n' \
             f'Upload bucket version: {changelog_latest_release_notes}\n' \
             f'current branch version: {latest_release_notes}\n' \
@@ -1633,7 +1634,7 @@ class Pack(object):
                     # check if content item has to version
                     to_version = content_item.get('toversion') or content_item.get('toVersion')
 
-                    if to_version and LooseVersion(to_version) < LooseVersion(Metadata.SERVER_DEFAULT_MIN_VERSION):
+                    if to_version and Version(to_version) < Version(Metadata.SERVER_DEFAULT_MIN_VERSION):
                         os.remove(pack_file_path)
                         logging.info(
                             f"{self._pack_name} pack content item {pack_file_name} has to version: {to_version}. "
@@ -2059,8 +2060,8 @@ class Pack(object):
         changelog = load_json(os.path.join(index_folder_path, self._pack_name, Pack.CHANGELOG_JSON))
 
         if changelog and not pack_was_modified:
-            packs_latest_release_notes = max(LooseVersion(ver) for ver in changelog)
-            latest_changelog_version = changelog.get(packs_latest_release_notes.vstring, {})
+            packs_latest_release_notes = max(Version(ver) for ver in changelog)
+            latest_changelog_version = changelog.get(str(packs_latest_release_notes), {})
             latest_changelog_released_date = latest_changelog_version.get('released')
 
         return latest_changelog_released_date
@@ -2609,10 +2610,10 @@ class Pack(object):
         if not os.path.exists(release_notes_dir):
             return
         bc_version_to_text: Dict[str, Optional[str]] = self._breaking_changes_versions_to_text(release_notes_dir)
-        loose_versions: List[LooseVersion] = [LooseVersion(bc_ver) for bc_ver in bc_version_to_text]
-        predecessor_version: LooseVersion = LooseVersion('0.0.0')
-        for changelog_entry in sorted(changelog.keys(), key=LooseVersion):
-            rn_loose_version: LooseVersion = LooseVersion(changelog_entry)
+        loose_versions: List[Version] = [Version(bc_ver) for bc_ver in bc_version_to_text]
+        predecessor_version: Version = Version('0.0.0')
+        for changelog_entry in sorted(changelog.keys(), key=Version):
+            rn_loose_version: Version = Version(changelog_entry)
             if bc_versions := self._changelog_entry_bc_versions(predecessor_version, rn_loose_version, loose_versions,
                                                                 bc_version_to_text):
                 logging.info(f'Changelog entry {changelog_entry} contains BC versions')
@@ -2745,22 +2746,22 @@ class Pack(object):
         return bc_version_to_text
 
     @staticmethod
-    def _changelog_entry_bc_versions(predecessor_version: LooseVersion, rn_version: LooseVersion,
-                                     breaking_changes_versions: List[LooseVersion],
+    def _changelog_entry_bc_versions(predecessor_version: Version, rn_version: Version,
+                                     breaking_changes_versions: List[Version],
                                      bc_version_to_text: Dict[str, Optional[str]]) -> Dict[str, Optional[str]]:
         """
         Gets all BC versions of given changelog entry, every BC s.t predecessor_version < BC version <= rn_version.
         Args:
-            predecessor_version (LooseVersion): Predecessor version in numeric version order.
-            rn_version (LooseVersion): RN version of current processed changelog entry.
-            breaking_changes_versions (List[LooseVersion]): List of BC versions.
+            predecessor_version (Version): Predecessor version in numeric version order.
+            rn_version (Version): RN version of current processed changelog entry.
+            breaking_changes_versions (List[Version]): List of BC versions.
             bc_version_to_text (Dict[str, Optional[str]): List of all BC to text in the given RN dir.
 
         Returns:
             Dict[str, Optional[str]]: Partial list of `bc_version_to_text`, containing only relevant versions between
                                       given versions.
         """
-        return {bc_ver.vstring: bc_version_to_text.get(bc_ver.vstring) for bc_ver in breaking_changes_versions if
+        return {str(bc_ver): bc_version_to_text.get(str(bc_ver)) for bc_ver in breaking_changes_versions if
                 predecessor_version < bc_ver <= rn_version}
 
 
@@ -2979,7 +2980,7 @@ def get_updated_server_version(current_string_version, compared_content_item, pa
     try:
         compared_string_version = compared_content_item.get('fromversion') or compared_content_item.get(
             'fromVersion') or "99.99.99"
-        current_version, compared_version = LooseVersion(current_string_version), LooseVersion(compared_string_version)
+        current_version, compared_version = Version(current_string_version), Version(compared_string_version)
 
         if current_version > compared_version:
             lower_version_result = compared_string_version
@@ -3170,13 +3171,13 @@ def is_the_only_rn_in_block(release_notes_dir: str, version: str, changelog: dic
     if not changelog.get(version):
         return False
     all_rn_versions = []
-    lowest_version = [LooseVersion('1.0.0')]
+    lowest_version = [Version('1.0.0')]
     for filename in filter_dir_files_by_extension(release_notes_dir, '.md'):
         current_version = underscore_file_name_to_dotted_version(filename)
-        all_rn_versions.append(LooseVersion(current_version))
-    lower_versions_all_versions = [item for item in all_rn_versions if item < version] + lowest_version
-    lower_versions_in_changelog = [LooseVersion(item) for item in changelog.keys() if
-                                   LooseVersion(item) < version] + lowest_version
+        all_rn_versions.append(Version(current_version))
+    lower_versions_all_versions = [item for item in all_rn_versions if item < Version(version)] + lowest_version
+    lower_versions_in_changelog = [Version(item) for item in changelog.keys() if
+                                   Version(item) < Version(version)] + lowest_version
     return max(lower_versions_all_versions) == max(lower_versions_in_changelog)
 
 

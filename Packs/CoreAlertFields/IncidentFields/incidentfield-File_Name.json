@@ -1,0 +1,54 @@
+{
+    "associatedToAll": true,
+    "caseInsensitive": true,
+    "cliName": "filename",
+    "closeForm": false,
+    "content": true,
+    "description": "",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_filename",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "File Name",
+    "neverSetAsRequired": false,
+    "openEnded": true,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "multiSelect",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.5.0",
+    "x2_fields": "action_file_name",
+    "Aliases": [
+        {
+        "cliName": "gibleakedfilename",
+        "type": "shortText"
+        },
+        {
+        "cliName": "pcapfilename",
+        "type": "shortText"
+        },
+        {
+        "cliName": "digitalguardianattachmentfilename",
+        "type": "shortText"
+        },
+        {
+        "cliName": "digitalguardianfilename",
+        "type": "shortText"
+        },
+        {
+        "cliName": "filenames",
+        "type": "shortText"
+        }
+    ]
+}
