@@ -389,18 +389,17 @@ def process_query_info(url_information: dict, uri: str, params: dict) -> Command
         raise DemistoException(f'Query results = {url_information["query_status"]}', res=url_information)
 
 
-def url_command(params: dict) -> CommandResults:
+def run_url_command(url: str, params: dict) -> CommandResults:
     """
          Query the url_information from URLHaus db.
 
          Args:
             params (dict): The integration params.
+            url (str): The queried URL.
 
          Returns:
              result (CommandResults): The CommandResults object representing the url command results.
     """
-    url = demisto.args().get('url')
-
     try:
         url_information = query_url_information(url, params.get('api_url'), params.get('use_ssl')).json()
     except UnicodeEncodeError:
@@ -408,6 +407,18 @@ def url_command(params: dict) -> CommandResults:
             readable_output='Service Does not support special characters.',
         )
     return process_query_info(url_information, url, params)
+
+
+def url_command(params: dict):
+    """
+        Split urls and call run_url_command on each of them.
+
+         Args:
+            params (dict): The integration params.
+    """
+    urls = demisto.args().get('url', '')
+    for url in urls.split(','):
+        return_results(results=run_url_command(url, params))
 
 
 def domain_create_relationships(urls: List[dict], domain: str, create_relationships: bool,
@@ -453,17 +464,17 @@ def domain_add_tags(bl_status: str, tags: List[str]) -> None:
             tags.append(tag_to_add)
 
 
-def domain_command(params: dict) -> CommandResults:
+def run_domain_command(domain: str, params: dict) -> CommandResults:
     """
          Query the domain_information from URLHaus db.
 
          Args:
+            domain (str): Domain to query.
             params (dict): The integration params.
 
          Returns:
              result (CommandResults): The CommandResults object representing the domain command results.
     """
-    domain = demisto.args()['domain']
 
     domain_information = query_host_information(domain, params.get('api_url'), params.get('use_ssl')).json()
 
@@ -537,6 +548,19 @@ def domain_command(params: dict) -> CommandResults:
         raise DemistoException(f'Query results = {domain_information["query_status"]}', res=domain_information)
 
 
+def domain_command(params: dict):
+    """
+        Split domains and call run_domain_command on each of them.
+
+         Args:
+            params (dict): The integration params.
+
+    """
+    domains = demisto.args().get('domain', '')
+    for domain in domains.split(','):
+        return_results(results=run_domain_command(domain, params))
+
+
 def file_create_relationships(urls: List[dict], sig: str, file: str, create_relationships: bool,
                               max_num_of_relationships: int) -> List[EntityRelationship]:
     """
@@ -571,17 +595,17 @@ def file_create_relationships(urls: List[dict], sig: str, file: str, create_rela
     return relationships
 
 
-def file_command(params: dict) -> CommandResults:
+def run_file_command(hash: str, params: dict) -> CommandResults:
     """
-         Query the file_information from URLHaus db.
+             Query the file_information from URLHaus db.
 
-         Args:
-            params (dict): The integration params.
+             Args:
+                hash (str): file to query.
+                params (dict): The integration params.
 
-         Returns:
-             result (CommandResults): The CommandResults object representing the file command results.
-    """
-    hash = demisto.args()['file']
+             Returns:
+                 result (CommandResults): The CommandResults object representing the file command results.
+        """
     if len(hash) == 32:
         hash_type = 'md5'
     elif len(hash) == 64:
@@ -668,6 +692,19 @@ def file_command(params: dict) -> CommandResults:
         raise DemistoException(f'Query results = {file_information["query_status"]}', res=file_information)
 
 
+def file_command(params: dict):
+    """
+        Split domains and call run_domain_command on each of them.
+
+         Args:
+            params (dict): The integration params.
+
+    """
+    files = demisto.args().get('file', '')
+    for file in files.split(','):
+        return_results(results=run_file_command(file, params))
+
+
 def urlhaus_download_sample_command(**kwargs):
     """
     The response can be either the zipped sample (content-type = application/zip), or JSON (content-type = text/html)
@@ -738,11 +775,11 @@ def main():
             test_module(**params)
             demisto.results('ok')
         elif command == 'url':
-            return_results(results=url_command(params))
+            url_command(params)
         elif command == 'domain':
-            return_results(results=domain_command(params))
+            domain_command(params)
         elif command == 'file':
-            return_results(results=file_command(params))
+            file_command(params)
         elif command == 'urlhaus-download-sample':
             urlhaus_download_sample_command(**params)
 

@@ -1,7 +1,6 @@
 import json
 import pytest
 import io
-import demistomock as demisto
 from CommonServerPython import Common
 from typing import *
 
@@ -29,13 +28,13 @@ url_command_test = [
 
 
 @pytest.mark.parametrize('query_status,tags', url_command_test)
-def test_url_command(mocker, requests_mock, query_status: str, tags: List[str]):
+def test_url_command(requests_mock, query_status: str, tags: List[str]):
     """
         Given
         - A URL.
 
         When
-        - Calling url_command() methood.
+        - Calling run_url_command() methood.
 
         Then
         - Validate that the Tags were created.
@@ -43,7 +42,7 @@ def test_url_command(mocker, requests_mock, query_status: str, tags: List[str]):
         - Validate that the relationships were created.
 
     """
-    from URLHaus import url_command
+    from URLHaus import run_url_command
 
     url_to_check = 'www.test_url.com'
     mock_response = util_load_json('test_data/url_command.json')
@@ -51,9 +50,7 @@ def test_url_command(mocker, requests_mock, query_status: str, tags: List[str]):
     mock_response['tags'] = tags
     requests_mock.post('http://test.com/api/v1/url/',
                        json=mock_response)
-    mocker.patch.object(demisto, 'args',
-                        return_value={'url': url_to_check})
-    results = url_command(params)
+    results = run_url_command(url_to_check, params)
 
     url_indicator = results.indicator
     if url_indicator:
@@ -249,14 +246,14 @@ def test_domain_command(requests_mock, mocker, query_status: str, spamhaus_dbl: 
         - A Domain.
 
         When
-        - Calling domain_command() method.
+        - Calling run_domain_command() method.
 
         Then
         - Validate that the Tags were created correctly.
         - Validate that the relationships were created correctly.
 
     """
-    from URLHaus import domain_command
+    from URLHaus import run_domain_command
 
     domain_to_check = "test.com"
     mock_response = util_load_json('test_data/domain_command.json')
@@ -264,9 +261,7 @@ def test_domain_command(requests_mock, mocker, query_status: str, spamhaus_dbl: 
     mock_response['blacklists']['spamhaus_dbl'] = spamhaus_dbl
     requests_mock.post('http://test.com/api/v1/host/',
                        json=mock_response)
-    mocker.patch.object(demisto, 'args',
-                        return_value={'domain': domain_to_check})
-    results = domain_command(params)
+    results = run_domain_command(domain_to_check, params)
 
     Domain = results.indicator
     if Domain:
@@ -437,7 +432,7 @@ def test_file_command(mocker, requests_mock, query_status: str, ssdeep: str, exp
         - Validate that the relationships were created.
 
     """
-    from URLHaus import file_command
+    from URLHaus import run_file_command
 
     file_to_check = 'a' * 32
     mock_response = util_load_json('test_data/file_command.json')
@@ -445,9 +440,7 @@ def test_file_command(mocker, requests_mock, query_status: str, ssdeep: str, exp
     mock_response['ssdeep'] = ssdeep
     requests_mock.post('http://test.com/api/v1/payload/',
                        json=mock_response)
-    mocker.patch.object(demisto, 'args',
-                        return_value={'file': file_to_check})
-    results = file_command(params)
+    results = run_file_command(file_to_check, params)
 
     File = '' if not results.outputs else results.outputs.get('File', '')
     if File:
