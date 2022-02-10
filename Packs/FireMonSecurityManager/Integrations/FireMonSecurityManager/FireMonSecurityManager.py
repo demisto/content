@@ -397,13 +397,7 @@ def secmgr_secrule_search_command(client: Client, args: Dict[str, Any]):
         pageSize=page_size,
         page=int(args.get("page", 0)),
     )
-
-    try:
-        results = get_paged_search_secrule(client, auth_token, payload)
-    except DemistoException as err:
-        demisto.error(f"{err}")
-        msg = None if err.res is None else err.res.json().get("message")
-        raise DemistoException(msg)
+    results = get_paged_search_secrule(client, auth_token, payload)
 
     return CommandResults(
         outputs_prefix="FireMonSecurityManager.SIQL",
