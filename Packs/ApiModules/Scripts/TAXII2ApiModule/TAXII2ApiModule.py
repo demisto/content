@@ -227,7 +227,7 @@ class Taxii2FeedClient:
             self.init_server()
         try:
             # disable logging as we might receive client error and try 2.1
-            logging.disable()
+            logging.disable(logging.ERROR)
             # try TAXII 2.0
             self.api_root = self.server.api_roots[0]  # type: ignore[union-attr, attr-defined]
             # override _conn - api_root isn't initialized with the right _conn
