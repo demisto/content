@@ -1,5 +1,4 @@
-from CommonServerPython import CommandResults, \
-    LOG, return_error, return_results
+from CommonServerPython import *
 import demistomock as demisto
 import requests
 
@@ -120,8 +119,6 @@ def get_domain_data():
             sc_results = data["results"]
             sc_data.extend(sc_results)
     
-    print("Total records: ", len(sc_data))
-
     spydata = []
     transform = lambda x, y: x[y] if y in x.keys() else "empty"
     for r in sc_data:
