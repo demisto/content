@@ -225,7 +225,7 @@ def relationships_manager(client: Client, entity_a: str, entity_a_type: str, ind
     return relationships
 
 
-def create_relationships(client: Client, relevant_field: dict, entity_a: str,
+def create_relationships(client: Client, relevant_field: list, entity_a: str,
                          entity_a_type: str, relevant_id: str, entity_b_type: str):
     """
     create relationships list for the given fields
@@ -338,7 +338,6 @@ def ip_command(client: Client, ip_address: str, ip_version: str) -> List[Command
                                     argument=ip_)
         if raw_response and raw_response != 404:
             ip_version = FeedIndicatorType.IP if ip_version == 'IPv4' else FeedIndicatorType.IPv6
-            print((raw_response.get('pulse_info', {})).get('pulses', {})[0])
             relationships = create_relationships(client, extract_attack_ids(raw_response), ip_, ip_version, 'display_name',
                                                  FeedIndicatorType.indicator_type_by_server_version("STIX Attack Pattern"))
             relationships += relationships_manager(client, entity_a=ip_, entity_a_type=ip_version,
