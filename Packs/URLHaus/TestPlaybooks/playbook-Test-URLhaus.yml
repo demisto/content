@@ -1,5 +1,5 @@
 id: Test_URLhaus
-version: 39
+version: 45
 vcShouldKeepItemLegacyProdMachine: false
 name: Test_URLhaus
 starttaskid: "0"
@@ -385,7 +385,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "1"
+              simple: "3"
       - - operator: hasLength
           left:
             value:
