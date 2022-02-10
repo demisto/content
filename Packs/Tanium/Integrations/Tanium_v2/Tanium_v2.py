@@ -1,12 +1,12 @@
+import json
 from typing import Dict
 
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
+import demistomock as demisto  # noqa: F401
+import urllib3
+from CommonServerPython import *  # noqa: F401
+
 
 ''' IMPORTS '''
-import json
-import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 ''' GLOBALS/PARAMS '''
@@ -118,11 +118,11 @@ class Client(BaseClient):
         Returns:
             parameter_conditions (List): list of dictionaries
         """
-        parameters = parameters.split(';')
+        parameters_list = parameters.split(';')
         parameter_conditions: List[Dict[str, str]] = list()
         add_to_the_previous_pram = ''
         # Goes over the parameters from the end and any param that does not contain a key and value is added to the previous param
-        for param in reversed(parameters):
+        for param in reversed(parameters_list):
             param += add_to_the_previous_pram
             add_to_the_previous_pram = ''
             if '=' not in param or param.startswith('='):
@@ -218,8 +218,10 @@ class Client(BaseClient):
         for row in results_sets.get('rows'):
             tmp_row = {}
             for item, column in zip(row.get('data', []), columns):
-                item_value = list(map(lambda x: x.get('text', ''), item))
-                item_value = ', '.join(item_value)
+                item_value_lst = list(map(lambda x: x.get('text', ''), item))
+                if "[current result unavailable]" in item_value_lst:
+                    break
+                item_value = ', '.join(item_value_lst)
 
                 if item_value != '[no results]':
                     tmp_row[column] = item_value
