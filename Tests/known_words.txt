@@ -84,3 +84,5 @@ FireEye
 FormatURL
 Gitlab
 GitHub
+TAXII
+DomainTools
