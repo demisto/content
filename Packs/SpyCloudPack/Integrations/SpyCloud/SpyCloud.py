@@ -1,5 +1,5 @@
-#from CommonServerPython import CommandResults, \
-#    LOG, return_error, return_results
+from CommonServerPython import CommandResults, \
+    LOG, return_error, return_results
 import demistomock as demisto
 import requests
 
@@ -46,12 +46,12 @@ def get_breach_data():
         t['acquisition_date'] = transform(r, 'acquisition_date')
         breachdata.append(t)
 
-    CommandResults(
+    command_results = CommandResults(
         outputs_prefix='SpyCloud.Breaches',
         outputs_key_field='uuid',
         outputs=breachdata
     )
-    return 
+    return command_results
 
 
 def list_breaches():
@@ -87,13 +87,13 @@ def list_breaches():
         t['acquisition_date'] = transform(r, 'acquisition_date')
         breachdata.append(t)
 
-    CommandResults(
+    command_results = CommandResults(
         outputs_prefix='SpyCloud.Breaches',
         outputs_key_field='uuid',
         outputs=breachdata
     )
 
-    return 
+    return command_results
 
 
 def get_domain_data():
@@ -136,13 +136,13 @@ def get_domain_data():
         t['password_plaintext'] = transform(r, 'password_plaintext')
         spydata.append(t)
 
-    CommandResults(
+    command_results = CommandResults(
         outputs_prefix='SpyCloud.Results',
         outputs_key_field='document_id',
         outputs=spydata
     )
 
-    return 
+    return command_results 
 
 
 def get_email_data():
@@ -194,12 +194,12 @@ def get_email_data():
         t['target_url'] = transform(r, 'target_url')
         spydata.append(t)
 
-    CommandResults(
+    command_results = CommandResults(
         outputs_prefix='SpyCloud.Emails',
         outputs_key_field='document_id',
         outputs=spydata
     )
-    return
+    return command_results
 
 
 def get_watchlist_data():
@@ -247,13 +247,13 @@ def get_watchlist_data():
         t['domain'] = transform(r, 'domain')
         spydata.append(t)
 
-    CommandResults(
+    command_results = CommandResults(
         outputs_prefix='SpyCloud.Watchlist',
         outputs_key_field='document_id',
         outputs=spydata
     )
 
-    return 
+    return command_results
 
 
 def test_mod():
