@@ -1,6 +1,6 @@
 category: Forensics & Malware Analysis
 commonfields:
-  id: CrowdStrike Falcon X_copy
+  id: CrowdStrike Falcon X
   version: -1
 configuration:
 - defaultvalue: https://api.crowdstrike.com
@@ -23,7 +23,7 @@ configuration:
   type: 8
 description: Use the CrowdStrike Falcon X integration to submit files, file hashes, URLs, and FTPs for sandbox analysis, and to retrieve reports.
 display: CrowdStrike Falcon X
-name: CrowdStrike Falcon X_copy
+name: CrowdStrike Falcon X
 script:
   commands:
   - arguments:
