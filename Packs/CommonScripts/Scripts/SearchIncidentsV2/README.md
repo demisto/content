@@ -47,6 +47,7 @@ This script is used in the following playbooks and scripts.
 | page | Filter by the page number |
 | size | Number of incidents per page \(per fetch\) |
 | sort | Sort in format of field.asc,field.desc,... |
+| custom_context_field | Custom context field, to use in playbooks. |
 
 ## Outputs
 ---
@@ -64,6 +65,7 @@ This script is used in the following playbooks and scripts.
 | foundIncidents.details | Details of the incidents returned from the query. | Unknown |
 | foundIncidents.dueDate | A list of incident due dates returned from the query. | Unknown |
 | foundIncidents.phase | A list of incident phases returned from the query. | Unknown |
+| foundIncidents.customContextField| The value of as custom_context_field. | String |
 
 
 ## Script Example

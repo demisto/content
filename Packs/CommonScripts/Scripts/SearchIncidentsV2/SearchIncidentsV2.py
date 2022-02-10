@@ -91,6 +91,8 @@ def main():  # pragma: no cover
     args: Dict = demisto.args()
     try:
         readable_output, outputs, raw_response = search_incidents(args)
+        if custom_context_field := args.get('custom_context_field'):
+            outputs['customContextField'] = custom_context_field
         results = CommandResults(
             outputs_prefix='foundIncidents',
             outputs_key_field='id',

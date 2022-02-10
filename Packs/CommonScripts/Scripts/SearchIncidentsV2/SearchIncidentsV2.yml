@@ -117,6 +117,12 @@ args:
   name: sort
   required: false
   secret: false
+- default: false
+  description: Custom context field, to use in playbooks.
+  isArray: false
+  name: custom_context_field
+  required: false
+  secret: false
 comment: |-
   Searches Demisto incidents.
 
@@ -165,6 +171,9 @@ outputs:
 - contextPath: foundIncidents.incidentLink
   description: A list with links to the incidents returned from the query.
   type: Unknown
+- contextPath: foundIncidents.customContextField
+  description: The value of as custom_context_field.
+  type: String
 script: '-'
 subtype: python3
 system: false
