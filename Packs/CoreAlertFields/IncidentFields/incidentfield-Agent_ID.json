@@ -11,7 +11,7 @@
     "id": "incident_agentid",
     "isReadOnly": false,
     "locked": false,
-    "name": "Hostname",
+    "name": "Agent Id",
     "neverSetAsRequired": false,
     "openEnded": false,
     "ownerOnly": false,
@@ -28,5 +28,5 @@
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "6.5.0",
-	  "x2_fields": "agent_id"
+    "x2_fields": "agent_id"
 }
