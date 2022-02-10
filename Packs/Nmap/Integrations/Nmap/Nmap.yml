@@ -51,4 +51,4 @@ script:
       description: The service name
     description: Scan targets with the given parameters
     execution: true
-  dockerimage: demisto/nmap:1.0.0.23290
+  dockerimage: demisto/nmap:1.0.0.26630
