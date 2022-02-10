@@ -241,8 +241,9 @@ class Taxii2FeedClient:
             self.api_root = self.server.api_roots[0]  # type: ignore[union-attr, attr-defined]
             # override _conn - api_root isn't initialized with the right _conn
             self.api_root._conn = self._conn  # type: ignore[attr-defined]
-        # enable logging
-        logging.disable(logging.NOTSET)
+        finally:
+            # enable logging
+            logging.disable(logging.NOTSET)
 
     def init_collections(self):
         """
