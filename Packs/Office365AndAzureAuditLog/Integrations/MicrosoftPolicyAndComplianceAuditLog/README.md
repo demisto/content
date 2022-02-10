@@ -22,11 +22,11 @@ Use the integration to get logs from the O365 service.
 
 
 ## Required Permissions To Search Audit Logs
-- Minimum Required Exchange roles are **Audit Logs** or **View-Only Audit Logs**
-- Go to [The Microsoft Admin Portal](https://admin.microsoft.com/Adminportal#/homepage)
+- The minimum Required Exchange roles are **Audit Logs** or **View-Only Audit Logs**.
+- Go to [The Microsoft Admin Portal](https://admin.microsoft.com/Adminportal#/homepage).
 - Click **Show All** --> **Roles** --> **Roles Assignments** --> **Exchange section**.
-- Click **Add role group** --> Choose for name and description --> Choose Audit Logs or View-Only Audit Logs Roles --> Choose the members --> Add role group
-- For more information --> [How to assign permissions to search the audit log](https://docs.microsoft.com/en-us/microsoft-365/compliance/set-up-basic-audit?view=o365-worldwide#step-2-assign-permissions-to-search-the-audit-log)
+- Click **Add role group** --> Choose for name and description --> Select the **Audit Logs** or **View-Only Audit Logs** roles --> Select the members to apply the role(s) to --> Click **Add role group**.
+- For more information --> [How to assign permissions to search the audit log](https://docs.microsoft.com/en-us/microsoft-365/compliance/set-up-basic-audit?view=o365-worldwide#step-2-assign-permissions-to-search-the-audit-log).
 
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
