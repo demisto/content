@@ -130,5 +130,5 @@ def test_querying_invalid_dynamic_address_group_response(mocker, client):
         json, 'loads', return_value=read_json_file(path='test_data/invalid_dynamic_group_response.json')
     )
 
-    with pytest.raises(Exception, match='Dynamic Address Group dag_test_ag was not found.'):
-        policy_optimizer_get_dag_command(client=client, args={'dag': 'dag_test_ag'})
+    dag = policy_optimizer_get_dag_command(client=client, args={'dag': 'dag_test_ag'})
+    assert dag.readable_output == 'Dynamic Address Group dag_test_ag was not found.'
