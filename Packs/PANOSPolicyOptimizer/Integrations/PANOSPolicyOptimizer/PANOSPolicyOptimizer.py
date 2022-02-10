@@ -388,7 +388,7 @@ def policy_optimizer_app_and_usage_command(client: Client, args: dict) -> Comman
 
 def policy_optimizer_get_dag_command(client: Client, args: dict) -> CommandResults:
     """
-    Gets the DAG
+    Gets the Dynamic Address group.
     """
     dag = str(args.get('dag'))
     raw_response = client.policy_optimizer_get_dag(dag)
