@@ -120,7 +120,7 @@ args:
 - default: false
   description: Custom context field, to use in playbooks.
   isArray: false
-  name: custom_context_field
+  name: search_results_label
   required: false
   secret: false
 comment: |-
@@ -171,8 +171,8 @@ outputs:
 - contextPath: foundIncidents.incidentLink
   description: A list with links to the incidents returned from the query.
   type: Unknown
-- contextPath: foundIncidents.customContextField
-  description: The value of as custom_context_field.
+- contextPath: foundIncidents.searchResultsLabel
+  description: The value of as search_results_label.
   type: String
 script: '-'
 subtype: python3
