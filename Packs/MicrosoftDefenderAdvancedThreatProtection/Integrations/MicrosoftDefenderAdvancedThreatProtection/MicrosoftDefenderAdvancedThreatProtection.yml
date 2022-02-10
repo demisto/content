@@ -16,9 +16,11 @@ configuration:
   name: _tenant_id
   required: false
   type: 0
-- name: credentials
+- displaypassword: Key
+  name: credentials
   required: false
   type: 9
+  hiddenusername: true
 - display: Fetch incidents
   name: isFetch
   required: false
@@ -67,20 +69,18 @@ configuration:
   name: first_fetch_timestamp
   required: false
   type: 0
-- display: ID (received from the admin consent - see Detailed Instructions (?) section)
-    (Deprecated)
+- display: ID (received from the admin consent - see Detailed Instructions (?) section) (Deprecated)
   name: auth_id
   required: false
   type: 4
   hidden: true
-- display: Token (received from the admin consent - see Detailed Instructions (?)
-    (Deprecated) section)
+- display: Token (received from the admin consent - see Detailed Instructions (?) (Deprecated)
+    section)
   name: tenant_id
   required: false
   type: 4
   hidden: true
-- display: Key (received from the admin consent - see Detailed Instructions (?) section)
-    (Deprecated)
+- display: Key (received from the admin consent - see Detailed Instructions (?) section) (Deprecated)
   name: enc_key
   required: false
   type: 4
@@ -3899,7 +3899,6 @@ script:
       - IpAddress
       - DomainName
       - Url
-      secret: false
     - default: false
       auto: PREDEFINED
       description: 'The action taken if the indicator is discovered in the organization.
@@ -3911,7 +3910,6 @@ script:
       - Alert
       - AlertAndBlock
       - Allowed
-      secret: false
     - default: false
       auto: PREDEFINED
       description: 'The severity of the malicious behavior identified by the data
@@ -4096,7 +4094,6 @@ script:
       - IpAddress
       - DomainName
       - Url
-      secret: false
     - default: false
       auto: PREDEFINED
       description: 'The action taken if the indicator is discovered in the organization.
@@ -4108,7 +4105,6 @@ script:
       - Alert
       - AlertAndBlock
       - Allowed
-      secret: false
     - default: false
       auto: PREDEFINED
       description: 'The severity of the malicious behavior identified by the data
@@ -4403,7 +4399,6 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score.
       type: Number
-    deprecated: false
   - arguments:
     - default: true
       description: The ID of the indicator to get. The ID can be retrieved by running
