@@ -51,6 +51,148 @@ SECURITY_CENTER_INDICATOR_ENDPOINT = 'https://api.securitycenter.microsoft.com/a
 GRAPH_INDICATOR_ENDPOINT = 'https://graph.microsoft.com/beta/security/tiIndicators'
 
 
+class HuntingQueryBuilder:
+    @staticmethod
+    def get_time_range(time_range):
+        parsed_time = parse(time_range)
+        if parsed_time:
+            return (datetime.now() - parsed_time).total_seconds() // 60
+        else:
+            return None
+
+    @staticmethod
+    def list_to_filter_values(list_values):
+        """
+        creates a string of CSV values wrapped by parenthesis and brackets
+
+        """
+        if not list_values:
+            return list_values
+        return '("' + '","'.join(list_values) + '")'
+
+    @staticmethod
+    def remove_last_expression(query, expression):
+        return query.rsplit(expression, 1)[0]
+
+    class LateralMovementEvidence:
+        # TODO: Check whether time_range is required here
+        def __init__(self,
+                     limit: str,
+                     query_operation: str,
+                     device_name: Optional[str] = None,
+                     file_name: Optional[str] = None,
+                     sha1: Optional[str] = None,
+                     sha256: Optional[str] = None,
+                     md5: Optional[str] = None,
+                     device_id: Optional[str] = None
+                     ):
+            if not (device_name or file_name or sha1 or sha256 or md5 or device_id):
+                raise DemistoException(
+                    'Please provide at least one of the query args: "device_name", "file_name", "sha1, '
+                    '"sha256", "md5" or "device_id".')
+            self._limit = limit
+            self._query_operation = query_operation
+            self._device_name = argToList(device_name)
+            self._file_name = argToList(file_name)
+            self._sha1 = argToList(sha1)
+            self._sha256 = argToList(sha256)
+            self._md5 = argToList(md5)
+            self._device_id = argToList(device_id)
+
+        def build_shared_query(self, query):
+            op = self._query_operation
+            if self._file_name:
+                file_names = HuntingQueryBuilder.list_to_filter_values(self._file_name)
+                query += f' InitiatingProcessFileName has_any {file_names} {op}'
+            if self._sha1:
+                sha1_vals = HuntingQueryBuilder.list_to_filter_values(self._sha1)
+                query += f' InitiatingProcessSHA1 has_any {sha1_vals} {op}'
+            if self._sha256:
+                sha256_vals = HuntingQueryBuilder.list_to_filter_values(self._sha256)
+                query += f' InitiatingProcessSHA256 has_any {sha256_vals} {op}'
+            if self._device_name:
+                device_names = HuntingQueryBuilder.list_to_filter_values(self._device_name)
+                query += f'DeviceName has_any {device_names} {op}'
+            if self._md5:
+                md5_vals = HuntingQueryBuilder.list_to_filter_values(self._md5)
+                query += f' InitiatingProcessMD5 has_any {md5_vals} {op}'
+            if self._device_id:
+                device_ids = HuntingQueryBuilder.list_to_filter_values(self._device_id)
+                query += f' DeviceId in {device_ids} )'
+            else:  # remove {op} from end of query
+                query = HuntingQueryBuilder.remove_last_expression(query, f' {op}') + ' )'
+
+            return query
+
+        def network_connections(self):
+            query = self.build_shared_query(
+                'DeviceNetworkEvents\n| where (RemoteIP startswith "172.16" or RemoteIP startswith "192.168" or RemoteIP startswith "10.") and (' # noqa: E501
+            )
+            query += f'''
+| summarize TotalConnections = count() by DeviceName, RemoteIP, RemotePort, InitiatingProcessFileName
+| order by TotalConnections
+| limit {self._limit}'''
+
+            return query
+
+        def smb_connections(self):
+            query = self.build_shared_query(
+                'DeviceNetworkEvents\n| where RemotePort == 445 and InitiatingProcessId !in (0, 4) and ('
+            )
+            query += '\n| summarize RemoteIPCount=dcount(RemoteIP) by DeviceName, InitiatingProcessFileName, InitiatingProcessId, InitiatingProcessCreationTime'  # noqa: E501
+            query += f'\n| limit {self._limit}'
+
+            return query
+
+        def credential_dumping(self):
+            query = '''
+DeviceProcessEvents
+| where ((FileName has_any ("procdump.exe", "procdump64.exe") and ProcessCommandLine has "lsass") or
+(ProcessCommandLine has "lsass.exe" and (ProcessCommandLine has "-accepteula"or ProcessCommandLine contains "-ma")) ) and ('''  # noqa: E501
+            op = self._query_operation
+            if self._file_name:
+                file_names = HuntingQueryBuilder.list_to_filter_values(self._file_name)
+                query += f' FileName has_any {file_names} {op}'
+            if self._sha1:
+                sha1_vals = HuntingQueryBuilder.list_to_filter_values(self._sha1)
+                query += f' SHA1 has_any {sha1_vals} {op}'
+            if self._sha256:
+                sha256_vals = HuntingQueryBuilder.list_to_filter_values(self._sha256)
+                query += f' SHA256 has_any {sha256_vals} {op}'
+            if self._device_name:
+                device_names = HuntingQueryBuilder.list_to_filter_values(self._device_name)
+                query += f'DeviceName has_any {device_names} {op}'
+            if self._md5:
+                md5_vals = HuntingQueryBuilder.list_to_filter_values(self._md5)
+                query += f' MD5 has_any {md5_vals} {op}'
+            if self._device_id:
+                device_ids = HuntingQueryBuilder.list_to_filter_values(self._device_id)
+                query += f' DeviceId in {device_ids} )'
+            else:  # remove {op} from end of query
+                query = HuntingQueryBuilder.remove_last_expression(query, f' {op}') + ' )'
+
+            query += '\n| project Timestamp, DeviceName, ActionType, FileName, ProcessCommandLine, AccountName, InitiatingProcessIntegrityLevel, InitiatingProcessTokenElevation'  # noqa: E501
+            query += f'\n| limit {self._limit}'
+
+            return query
+
+        def network_enumeration(self):
+            query = self.build_shared_query(
+                'DeviceNetworkEvents\n| where RemotePort == 445 and InitiatingProcessId !in (0, 4) and (')
+            query += f'\n| summarize RemoteIPCount=dcount(RemoteIP) by DeviceName, InitiatingProcessFileName, InitiatingProcessId, InitiatingProcessCreationTime\n| where RemoteIPCount > 1\n| limit {self._limit}'  # noqa: E501
+
+            return query
+
+        def rdp_attempts(self):
+            query = self.build_shared_query(
+                'DeviceNetworkEvents\n| where RemotePort in (22,3389,139,135,23,1433) and ('
+            )
+            query += f'''
+| summarize TotalCount=count() by DeviceName,LocalIP,RemoteIP,RemotePort
+| order by TotalCount
+| limit {self._limit}'''
+
+
 def file_standard(observable: Dict) -> Common.File:
     """Gets a file observable and returns a context key
 
@@ -322,17 +464,20 @@ class MsClient:
         cmd_url = f'/alerts/{alert_id}'
         return self.ms_client.http_request(method='PATCH', url_suffix=cmd_url, json_data=json_data)
 
-    def get_advanced_hunting(self, query: str, timeout: int) -> dict:
+    def get_advanced_hunting(self, query: str, timeout: int, time_range: Optional[int] = None) -> dict:
         """Retrieves results according to query.
 
         Args:
             query (str): Query to do advanced hunting on
             timeout (int): Connection timeout
+            time_range (Optional[int]): Time range in minutes given in timespan format
 
         Returns:
             dict. Advanced hunting results
         """
         cmd_url = '/advancedqueries/run'
+        if time_range:
+            query += f' | where Timestamp > ago({time_range}m)'
         json_data = {
             'Query': query
         }
@@ -1292,7 +1437,8 @@ def get_advanced_hunting_command(client: MsClient, args: dict):
     """
     query = args.get('query', '')
     timeout = int(args.get('timeout', 10))
-    response = client.get_advanced_hunting(query, timeout)
+    time_range = HuntingQueryBuilder.get_time_range(args.get('time_range', ''))
+    response = client.get_advanced_hunting(query, timeout, time_range)
     results = response.get('Results')
     if isinstance(results, list) and len(results) == 1:
         report_id = results[0].get('ReportId')
@@ -2529,6 +2675,34 @@ def sc_list_indicators_command(client: MsClient, args: Dict[str, str]) -> Union[
         return CommandResults(readable_output='No indicators found')
 
 
+def sc_lateral_movement_evidence(client, args):
+    # prepare query
+    timeout = int(args.pop('timeout', 10))
+    time_range = args.pop('time_range', None)
+    query_purpose = args.pop('query_purpose')
+    query_builder = HuntingQueryBuilder.LateralMovementEvidence(**args)
+    query_options = {
+        'network_connections': query_builder.network_connections,
+        'smb_connections': query_builder.smb_connections,
+        'credential_dumping': query_builder.credential_dumping,
+        'network_enumeration': query_builder.network_enumeration,
+        'rdp_attempts': query_builder.rdp_attempts
+    }
+    if query_purpose not in query_options:
+        raise DemistoException(f'Unsupported query_purpose: {query_purpose}.')
+    query = query_options[query_purpose]()
+
+    # send request + handle result
+    response = client.get_advanced_hunting(query, timeout, time_range)
+    results = response.get('Results')
+    readable_output = tableToMarkdown('Hunt results', results, removeNull=True)
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='MicrosoftATP.Hunt.Result',
+        outputs=results
+    )
+
+
 def test_module(client: MsClient):
     client.ms_client.http_request(method='GET', url_suffix='/alerts', params={'$top': '1'})
     demisto.results('ok')
@@ -2710,6 +2884,8 @@ def main():
             return_results(sc_create_update_indicator_command(client, args))
         elif command == 'microsoft-atp-sc-indicator-delete':
             return_results(sc_delete_indicator_command(client, args))
+        elif command == 'microsoft-atp-advanced-hunting-lateral-movement-evidence':
+            return_results(sc_lateral_movement_evidence(client, args))
     except Exception as err:
         return_error(str(err))
 

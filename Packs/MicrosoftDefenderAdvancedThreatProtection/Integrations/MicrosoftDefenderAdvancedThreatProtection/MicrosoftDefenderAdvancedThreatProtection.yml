@@ -65,7 +65,6 @@ configuration:
   type: 8
 - defaultvalue: 3 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
-  hidden: false
   name: first_fetch_timestamp
   required: false
   type: 0
@@ -801,6 +800,14 @@ script:
       name: timeout
       required: false
       secret: false
+    - name: time_range
+      description: Time range to look back. Expected syntax is a human readable time
+        range, e.g. 60 minutes, 6 hours, 1 day etc.
+      required: false
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - ""
     deprecated: false
     description: 'Allows you to run programmatic queries like in Microsoft Defender
       ATP Portal (https://securitycenter.windows.com/hunting). Limitations: You can
@@ -3879,6 +3886,7 @@ script:
       Deletes the specified indicator.
     execution: false
     name: microsoft-atp-indicator-delete
+    outputs: []
   - arguments:
     - default: false
       description: The value of the indicator to update.
@@ -4281,6 +4289,7 @@ script:
     description: Deletes the specified indicator.
     execution: false
     name: microsoft-atp-sc-indicator-delete
+    outputs: []
   - arguments:
     - default: false
       defaultValue: '50'
@@ -4517,6 +4526,89 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score.
       type: Number
+  - name: microsoft-atp-advanced-hunting-lateral-movement-evidence
+    description: Is there evidence of attempted lateral movement. By selecting a “query_purpose”
+      argument, a designated query template will be used.
+    deprecated: false
+    arguments:
+    - name: query_purpose
+      description: By selecting a “query_purpose” argument, a designated query template
+        will be used. "network_connections" - The network connections initiated by
+        the host/file to other internal hosts. "smb_connections" - SMB connections.
+        "credential_dumping" - Was there a use of credential dumping? If so can we
+        detect the use of the dumped users on other hosts on the network. "network_enumeration"
+        - Enumeration of network shares. "rdp_attempts" - Attempts to RDP to other
+        hosts.
+      required: true
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - network_connections
+      - smb_connections
+      - credential_dumping
+      - network_enumeration
+      - rdp_attempts
+    - name: device_name
+      description: Device name to look for.
+      required: false
+      isArray: false
+      defaultValue: ""
+    - name: file_name
+      description: File name to look for.
+      required: false
+      isArray: false
+      defaultValue: ""
+    - name: sha1
+      description: SHA1 hash to look for.
+      required: false
+      isArray: false
+      defaultValue: ""
+    - name: sha256
+      description: SHA256 hash to look for.
+      required: false
+      isArray: false
+      defaultValue: ""
+    - name: md5
+      description: MD5 hash to look for.
+      required: false
+      isArray: false
+      defaultValue: ""
+    - name: device_id
+      description: Device ID to look for.
+      required: false
+      isArray: false
+      defaultValue: ""
+    - name: query_operation
+      description: Query operator to use with provided arguments.
+      required: false
+      isArray: false
+      defaultValue: OR
+      predefined:
+      - OR
+      - AND
+    - name: limit
+      description: Max number of results to retrieve.
+      required: false
+      isArray: false
+      defaultValue: "50"
+    - name: time_range
+      description: description
+      required: false
+      isArray: false
+      defaultValue: Time range to look back. Expected syntax is a human readable time
+        range, e.g. 60 minutes, 6 hours, 1 day etc.
+    - default: false
+      defaultValue: "10"
+      description: The amount of time (in seconds) that a request waits for the query
+        response before a timeout occurs.
+      isArray: false
+      name: timeout
+      required: false
+      secret: false
+    outputs:
+    - contextPath: MicrosoftATP.Hunt.Result
+      description: The query results.
+      type: String
   dockerimage: demisto/crypto:1.0.0.24380
   feed: false
   isfetch: true
