@@ -1,17 +1,17 @@
 {
     "associatedToAll": true,
     "caseInsensitive": true,
-    "cliName": "emailsubject",
+    "cliName": "eventtype",
     "closeForm": false,
     "content": true,
-    "description": "The email subject value of a firewall alerts triggered on a the content of a malicious email.",
+    "description": "The type of event on which the alert was triggered: File Event, Injection Event, Load Image Event, Network Event, Process Execution, Registry Event",
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_emailsubject",
+    "id": "incident_eventtype",
     "isReadOnly": false,
     "locked": false,
-    "name": "Email Subject",
+    "name": "Event Type",
     "neverSetAsRequired": false,
     "openEnded": true,
     "ownerOnly": false,
@@ -28,5 +28,5 @@
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "6.5.0",
-    "x2_fields": "fw_email_subject"
+	"x2_fields": "event_type"
 }
