@@ -659,17 +659,14 @@ class Pack(object):
 
             if os.path.exists(dependency_metadata_path):
                 # Case 1: the dependency is found in the index.zip
-                logging.warning("NOY_LOGS: Case 1")
                 with open(dependency_metadata_path, 'r') as metadata_file:
                     dependency_metadata = json.load(metadata_file)
-                    logging.warning(f"NOY_LOGS:{self._pack_name} dependencies metadata from metadata.json: {dependency_metadata}")
                     dependencies_data_result[dependency_pack_id] = dependency_metadata
 
             elif dependency_pack_id in pack_names:
                 if id_set:
                     pack_info = id_set.get('Packs', {}).get(dependency_pack_id)
                     if not pack_info:
-                        logging.warning("NOY_LOGS: Case 2.1")
                         # Case 2 option 1: the dependency is not in the index since it is not a part of the current
                         # marketplace. Here we check if the pack is not in the id set - this happens in the
                         # marketplace v2 id set.
@@ -680,7 +677,6 @@ class Pack(object):
                     logging.debug(f'pack {dependency_pack_id} info in ID set:\n {pack_info}')
 
                     if marketplace not in pack_info.get('marketplaces'):
-                        logging.warning("NOY_LOGS: Case 2.2")
                         # Case 2 option 2: the dependency is not in the index since it is not a part of the current
                         # marketplace. Here we check if the current marketplace is under the pack's marketplaces in the
                         # id set. This happens in the xsoar id set.
@@ -691,7 +687,6 @@ class Pack(object):
                 # Case 3: If we reached here, then the dependency is not in the index since it is a new pack,
                 # but it is in the id set and in this current marketplace.
                 self._is_missing_dependencies = True
-                logging.warning("NOY_LOGS: Case 3")
 
                 logging.warning(f"{self._pack_name} pack dependency with id {dependency_pack_id} "
                                 f"was not found in index, marking it as missing dependencies - to be resolved in "
@@ -1825,7 +1820,6 @@ class Pack(object):
 
                 if current_directory in PackFolders.pack_displayed_items():
                     content_item_key = content_item_name_mapping[current_directory]
-                    logging.success(f"NOY_LOGS: Adding {current_directory} to {self._pack_name} pack")
 
                     content_items_result[content_item_key] = \
                         content_items_result.get(content_item_key, []) + folder_collected_items
@@ -1836,7 +1830,6 @@ class Pack(object):
             logging.exception(f"Failed collecting content items in {self._pack_name} pack")
         finally:
             self._content_items = content_items_result
-            logging.success(f"NOY_LOGS: self._content_items of {self._pack_name} pack: {self._content_items}")
 
             return task_status
 
@@ -1878,6 +1871,7 @@ class Pack(object):
             return task_status
 
     def _collect_pack_tags(self, user_metadata, landing_page_sections, trending_packs):
+        logging.info(f"NOY_LOGS: user metadata for pack {self._pack_name}: {user_metadata}")
         tags = set(input_to_list(input_data=user_metadata.get('tags')))
         tags |= self._get_tags_from_landing_page(landing_page_sections)
         tags |= {PackTags.TIM} if self._is_feed else set()
@@ -1898,6 +1892,7 @@ class Pack(object):
             else:
                 tags -= {PackTags.TRENDING}
 
+        logging.info(f"NOY_LOGS: tags for pack {self._pack_name}: {tags}")
         return tags
 
     def _enhance_pack_attributes(self, index_folder_path, pack_was_modified,
@@ -1937,7 +1932,6 @@ class Pack(object):
             self._keywords = input_to_list(self.user_metadata.get(Metadata.KEY_WORDS))
         self._dependencies = self._parse_pack_dependencies(
             self.user_metadata.get(Metadata.DEPENDENCIES, {}), dependencies_data)
-        logging.info(f"NOY_LOGS: self._dependencies of the pack - {self._dependencies}")
 
         # ===== Pack Private Attributes =====
         if not format_dependencies_only:
@@ -2008,16 +2002,13 @@ class Pack(object):
                 self._user_metadata[Metadata.DISPLAYED_IMAGES] = packs_dependencies_mapping.get(
                     self._pack_name, {}).get(Metadata.DISPLAYED_IMAGES, [])
 
-            logging.info(f"Loading pack dependencies for {self._pack_name} pack")
             dependencies_data, is_missing_dependencies = \
                 self._load_pack_dependencies(index_folder_path, pack_names, id_set, marketplace)
-            logging.info(f"NOY_LOGS: all dependencies data for the pack - {dependencies_data}")
 
             self._enhance_pack_attributes(index_folder_path, pack_was_modified, dependencies_data, statistics_handler,
                                           format_dependencies_only)
 
             formatted_metadata = self._parse_pack_metadata(build_number, commit_hash)
-            logging.info(f"NOY_LOGS: parsed metadata file - {formatted_metadata}")
             metadata_path = os.path.join(self._pack_path, Pack.METADATA)  # deployed metadata path after parsing
             json_write(metadata_path, formatted_metadata)  # writing back parsed metadata
 
