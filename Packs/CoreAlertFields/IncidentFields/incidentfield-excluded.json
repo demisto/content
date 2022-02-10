@@ -23,7 +23,7 @@
     "system": false,
     "threshold": 72,
     "type": "shortText",
-    "unmapped": false,
+    "unmapped": true,
     "unsearchable": true,
     "useAsKpi": false,
     "version": -1,
