@@ -1,5 +1,5 @@
 {
-  "indicator": {
+  "indicator": [{
     "objects": [
           {
       "created": "2018-04-23T17:01:01.248Z",
@@ -12,8 +12,8 @@
       "valid_from": "2018-04-23T17:01:01.248Z"
       }
     ]
-  },
-  "attack-pattern": {
+  }],
+  "attack-pattern": [{
     "objects": [
           {
       "created": "2017-10-25T14:48:11.535Z",
@@ -105,10 +105,25 @@
       "x_mitre_version": "1.0",
       "x_panw_parent_technique": "Obfuscated Files or Information",
       "x_panw_parent_technique_subtechnique": "Obfuscated Files or Information: Software Packing"
-    }
+    },
+      {
+      "created": "2021-10-21T16:56:05.840605Z",
+      "created_by_ref": "identity--749249c0-f7c7-5428-a4ad-ea5e1627a221",
+      "description": "This schema adds TIM data to the object",
+      "extension_types": [
+        "property-extension"
+      ],
+      "id": "extension-definition--fc572b8c-bbe3-444b-b40b-06d3b890cd79",
+      "modified": "2021-10-21T16:56:17.747194Z",
+      "name": "Cortex XSOAR TIM Attack Pattern",
+      "schema": "https://github.com/demisto/content/tree/master/Packs/TAXIIServer/doc_files/XSOAR_indicator_schema.json",
+      "spec_version": "2.0",
+      "type": "extension-definition",
+      "version": "1.0"
+  }
     ]
-  },
-  "malware": {
+  }],
+  "malware": [{
     "objects": [
           {
     "created": "2019-10-10T14:43:27.256Z",
@@ -119,8 +134,8 @@
     "type": "malware"
   }
     ]
-  },
-  "report":{
+  }],
+  "report":[{
     "objects": [
           {
       "created": "2018-08-03T20:31:05.060Z",
@@ -140,8 +155,8 @@
       "type": "report"
     }
     ]
-  },
-  "course-of-action": {
+  }],
+  "course-of-action": [{
     "objects": [
        {
       "created": "2020-06-23T19:50:31.722Z",
@@ -167,8 +182,8 @@
       "x_panw_coa_bp_title": "Ensure that antivirus profiles are set to block on all decoders except 'imap' and 'pop3'"
     }
     ]
-  },
-  "campaign": {
+  }],
+  "campaign": [{
     "objects": [
           {
       "created": "2018-08-03T21:03:51.484Z",
@@ -181,8 +196,8 @@
       "type": "campaign"
     }
     ]
-  },
-  "intrusion-set": {
+  }],
+  "intrusion-set": [{
     "objects": [
           {
       "created": "2018-08-03T20:30:50.665Z",
@@ -192,8 +207,8 @@
       "type": "intrusion-set"
     }
     ]
-  },
-  "tool": {
+  }],
+  "tool": [{
     "objects": [
           {
       "type": "tool",
@@ -206,8 +221,8 @@
       "name": "VNC"
     }
     ]
-  },
-  "threat-actor": {
+  }],
+  "threat-actor": [{
     "objects": [
       {
       "type": "threat-actor",
@@ -227,8 +242,8 @@
       "primary_motivation": "organizational-gain"
     }
     ]
-  },
-  "infrastructure": {
+  }],
+  "infrastructure": [{
       "objects": [
     {
       "type":"infrastructure",
@@ -240,8 +255,8 @@
       "infrastructure_types": ["command-and-control"]
     }
   ]
-  },
-  "relationship": {
+  }],
+  "relationship": [{
       "objects": [
     {
       "created": "2018-08-03T21:03:51.484Z",
@@ -262,5 +277,5 @@
       "type": "relationship"
     }
   ]
-  }
+  }]
 }
