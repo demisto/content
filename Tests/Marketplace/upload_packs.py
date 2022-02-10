@@ -1000,6 +1000,12 @@ def upload_packs_with_dependencies_zip(extract_destination_path, packs_dependenc
         storage_base_path (str): The upload destination in the target bucket for all packs (in the format of
                                  <some_path_in_the_target_bucket>/content/Packs).
         storage_bucket (google.cloud.storage.bucket.Bucket): google cloud storage bucket.
+        index_folder_path (str): downloaded index folder directory path.
+        build_number (str): CI build number.
+        current_commit_hash (str): current commit hash.
+        statistics_handler (StatisticsHandler): The marketplace statistics handler
+        pack_names (set): List of all pack names.
+
     """
     logging.info("Starting to collect pack with dependencies zips")
     packs_dict, packs_list = get_all_packs_by_id_set(packs_list, extract_destination_path, id_set, marketplace)
@@ -1188,11 +1194,22 @@ def main():
             pack.cleanup()
             continue
 
+        task_status = pack.upload_integration_images(storage_bucket, storage_base_path, diff_files_list, True)
+        if not task_status:
+            pack.status = PackStatus.FAILED_IMAGES_UPLOAD.name
+            pack.cleanup()
+            continue
+
+        task_status = pack.upload_author_image(storage_bucket, storage_base_path, diff_files_list, True)
+        if not task_status:
+            pack.status = PackStatus.FAILED_AUTHOR_IMAGE_UPLOAD.name
+            pack.cleanup()
+            continue
+
         task_status, is_missing_dependencies = prepare_and_zip_pack(pack, signature_key, marketplace, index_folder_path,
                                                                     packs_dependencies_mapping, build_number,
                                                                     current_commit_hash, statistics_handler, pack_names,
                                                                     id_set, remove_test_playbooks)
-
         if not task_status:
             continue
 
@@ -1204,19 +1221,6 @@ def main():
             # We will go over the pack again to add what was missing.
             # See issue #37290
             packs_with_missing_dependencies.append(pack)
-
-        task_status = pack.upload_integration_images(storage_bucket, storage_base_path, diff_files_list, True)
-        if not task_status:
-            pack.status = PackStatus.FAILED_IMAGES_UPLOAD.name
-            pack.cleanup()
-            continue
-
-        task_status = pack.upload_author_image(storage_bucket, storage_base_path, diff_files_list, True)
-
-        if not task_status:
-            pack.status = PackStatus.FAILED_AUTHOR_IMAGE_UPLOAD.name
-            pack.cleanup()
-            continue
 
         task_status, not_updated_build = pack.prepare_release_notes(index_folder_path, build_number, pack.is_modified,
                                                                     modified_rn_files_paths)
