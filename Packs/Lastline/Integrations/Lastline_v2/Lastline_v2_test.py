@@ -172,9 +172,7 @@ def test_upload_file_with_csv_type(mocker):
 
     client = Client(base_url=params.get('url'), credentials=params.get('credentials'), api_params={'EntryID': '1234@'})
     mocker.patch.object(demisto, 'getFilePath', return_value={'id': id, 'path': 'test/test.csv', 'name': 'test.csv'})
-    mocker.patch.object(Lastline_v2, 'file_hash', return_value='dummyhash1234')
     post_mock = mocker.patch.object(requests.Session, 'post')
     mocker.patch('builtins.open')
-    mocker.patch.object(Lastline_v2, 'report_generator', return_value=({}, {}))
     client.upload_file()
     assert 'papi/login' in post_mock.call_args_list[0][0][0]
