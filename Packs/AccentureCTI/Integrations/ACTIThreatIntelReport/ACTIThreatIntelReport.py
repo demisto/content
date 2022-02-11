@@ -11,7 +11,7 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 ENDPOINTS = {
     'document': '/rest/document'
 }
-# BASE_URL= "https://api.intelgraph.idefense.com/"
+
 
 class Client(BaseClient):
     def __init__(self, input_url:str, api_key:str, verify_certificate: bool, proxy: bool, endpoint="/rest/document"):
@@ -51,45 +51,81 @@ def test_module(client: Client) -> str:                                         
             raise DemistoException(f"Error in API call - check the input parameters and the API Key. Error: {e}.")
 
 
-def getThreatReport_command(client: Client, args: dict, reliability: DBotScoreReliability):
-    result = client.document_download(url_suffix='/v0', data = {'page_size': 4})
-    reports = _extract_results(result)
-    return reports
+def _calculate_dbot_score(severity: int) -> int:
+    """
+    Calculates Dbot score according to table:
+    Dbot Score   | severity
+     0           | 0
+     1           | 1,2
+     2           | 3,4
+     3           | 5,6,7
+    Args:
+        severity: value from 1 to 5, determined by iDefense threat indicator
+
+    Returns:
+        Calculated score
+    """
+    dbot_score = Common.DBotScore.NONE
+
+    if severity > 4:
+        dbot_score = Common.DBotScore.BAD
+    elif severity > 2:
+        dbot_score = Common.DBotScore.SUSPICIOUS
+    elif severity > 0:
+        dbot_score = Common.DBotScore.GOOD
+
+    return dbot_score
 
 
+def getThreatReport_command(client: Client, args: dict , reliability: DBotScoreReliability):
+    ia_ir_url: str = str(args.get('url'))
+    ia_ir_uuid = ia_ir_url.split('/')[-1]
+    result = client.document_download(url_suffix=f'/v0/{ia_ir_uuid}')
+    context = _ia_ir_extract(result, reliability)
+    return_results(CommandResults(outputs=context,readable_output=f"Report with UUID:{result['uuid']} has been fetched"))
 
-def _extract_results(res: dict) -> List[dict]:
 
-    if not res.get('total_size'):
-        return []
-
-    results_array = res.get('results', [])
-    if not len(results_array):
-        return []
-
-    return_data = {}
-    shortened_result = []
-    demisto.debug("############## line no 72 ###############")
-    for result in results_array:
-        res_dict = {
-            'abstract': result['abstract'],
-            'title': result['title']
+def _ia_ir_extract(Res: dict, reliability: DBotScoreReliability):
+    severity = Res.get('severity')
+    if severity:
+        dbot_score = _calculate_dbot_score(severity)
+    else:
+        dbot_score = 'NA'
+    context = {
+        "Report": {
+                'created_on' : Res.get('created_on','NA'),
+                'display_text' : Res.get('display_text','NA'),
+                'dynamic_properties' : Res.get('dynamic_properties','NA'),
+                'index_timestamp' : Res.get('index_timestamp','NA'),
+                'key' : Res.get('key','NA'),
+                'last_modified' : Res.get('last_modified','NA'),
+                'last_published' : Res.get('last_published','NA'),
+                'links' : Res.get('links','NA'),
+                'sources_external' : Res.get('sources_external','NA'),
+                'threat_types' : Res.get('threat_types','NA'),
+                'title' : Res.get('title','NA'),
+                'type' : Res.get('type','NA'),
+                'uuid' : Res.get('uuid','NA'),
+                'analysis' : Res.get('analysis','NA'),
+                'conclusion' : Res.get('conclusion','NA'),
+                'report_type' : Res.get('report_type','NA'),
+                'severity' : Res.get('severity','NA'),
+                'summary' : Res.get('summary','NA')
+            },
+            "DBotScore": {
+                "Indicator": Res.get('display_text','NA'),
+                "Reliability": reliability,
+                "Score": dbot_score,
+                "Type": "Report",
+                "Vendor": "ACTI Threat Intelligence Report"
+            }
         }
-        demisto.debug("############## line no 78 ###############")
-        shortened_result.append(res_dict)
-        demisto.debug(shortened_result)
-    demisto.debug("############## line no 81 ###############")
-    return {"ACTI_Report": shortened_result}
+    return context
 
 def main():
     params = demisto.params()
-    # a = {
-    #     'bodyexecutivebrief':'This section is realated to body of the report',
-    #     'name':'This is name section',
-    #     'type':'This is type section'
-    # }
-    # execute_command('createThreatIntelReport',a)
     api_key = params.get('api_token')
+
     if isinstance(api_key, dict):
         api_key = api_key.get('password')
 
@@ -115,8 +151,6 @@ def main():
         if command == 'test-module':
             return_results(test_module(client))
         elif command in commands:
-        # elif command == 'acti-getThreatIntelReport':
-            # execute_command('createThreatIntelReport',a)
             return_results(commands[command](client, demisto.args(), reliability))
             
 
