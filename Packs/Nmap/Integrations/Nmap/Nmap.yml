@@ -49,6 +49,12 @@ script:
       description: Any captured banner from the service
     - contextPath: NMAP.Scan.Hosts.Services.Service
       description: The service name
+    - contextPath: NMAP.Scan.Hosts.ScriptResults.ID
+      description: The name of the script used.
+    - contextPath: NMAP.Scan.Hosts.ScriptResults.Output
+      description: The raw results of the script execution.
+    - contextPath: NMAP.Scan.Hosts.ScriptResults.Elements
+      description: Additional parseable fields from the script output.
     description: Scan targets with the given parameters
     execution: true
-  dockerimage: demisto/nmap:1.0.0.23290
+  dockerimage: demisto/nmap:1.0.0.26630
