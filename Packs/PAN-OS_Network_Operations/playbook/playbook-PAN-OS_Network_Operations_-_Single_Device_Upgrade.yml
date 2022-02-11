@@ -655,7 +655,7 @@ tasks:
     type: playbook
     view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": -375\n  }\n}"
 version: -1
-fromversion: 6.2.0
+fromversion: 6.5.0
 tests:
 - No tests (auto formatted)
 view: "{\n  \"linkLabelsPosition\": {\n    \"23_38_#default#\": 0.64\n  },\n  \"paper\"\

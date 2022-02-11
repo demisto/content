@@ -1078,6 +1078,6 @@ view: |-
   }
 tests:
 - No tests (auto formatted)
-fromversion: 6.2.0
+fromversion: 6.5.0
 description: Takes two snapshots of the PAN-OS operational topology before and after
   a change, comparing the two for differences.
