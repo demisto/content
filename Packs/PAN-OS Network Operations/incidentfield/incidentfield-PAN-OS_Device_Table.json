@@ -1,7 +1,7 @@
 {
     "associatedToAll": true,
     "caseInsensitive": true,
-    "cliName": "panosdevicetable",
+    "cliName": "panosnetworkoperationsdevicetable",
     "closeForm": false,
     "columns": [
         {
@@ -38,10 +38,10 @@
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_panosdevicetable",
+    "id": "incident_panosnetworkoperationsdevicetable",
     "isReadOnly": false,
     "locked": false,
-    "name": "PAN-OS Device Table",
+    "name": "PAN-OS Network Operations - Device Table",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "propagationLabels": [

@@ -632,7 +632,7 @@
                             },
                             {
                                 "endCol": 6,
-                                "fieldId": "panosbgppeersresult",
+                                "fieldId": "panosnetworkoperationsbgppeersresult",
                                 "height": 106,
                                 "id": "3848ab70-4c1a-11ec-af7a-41dcf4692d82",
                                 "index": 1,

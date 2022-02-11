@@ -359,7 +359,7 @@ tasks:
           root: PANOS.ShowBGPPeers
           transformers:
           - operator: ConvertKeysToTableFieldFormat
-    - incidentfield: PAN-OS BGP Peers Result
+    - incidentfield: PAN-OS Network Operations - BGP Peers Result
       output:
         complex:
           accessor: Result

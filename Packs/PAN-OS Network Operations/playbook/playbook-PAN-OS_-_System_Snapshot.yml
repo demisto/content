@@ -387,7 +387,7 @@ tasks:
           root: CompareTables.Result
           transformers:
           - operator: ConvertKeysToTableFieldFormat
-    - incidentfield: PAN-OS Snapshot - ARP Difference Count
+    - incidentfield: PAN-OS Network Operations - Snapshot ARP Difference Count
       output:
         complex:
           filters:
@@ -541,7 +541,7 @@ tasks:
       - - left:
             iscontext: true
             value:
-              simple: incident.panossnapshotarpdifferencecount
+              simple: incident.panosnetworkoperationssnapshotarpdifferencecount
           operator: greaterThanOrEqual
           right:
             iscontext: true
@@ -550,7 +550,7 @@ tasks:
         - left:
             iscontext: true
             value:
-              simple: incident.panossnapshotroutedifferencecount
+              simple: incident.panosnetworkoperationssnapshotroutedifferencecount
           operator: greaterThanOrEqual
           right:
             iscontext: true
@@ -561,7 +561,7 @@ tasks:
       - - left:
             iscontext: true
             value:
-              simple: incident.panossnapshotarpdifferencecount
+              simple: incident.panosnetworkoperationssnapshotarpdifferencecount
           operator: greaterThanOrEqual
           right:
             iscontext: true
@@ -577,7 +577,7 @@ tasks:
         - left:
             iscontext: true
             value:
-              simple: incident.panossnapshotroutedifferencecount
+              simple: incident.panosnetworkoperationssnapshotroutedifferencecount
           operator: greaterThanOrEqual
           right:
             iscontext: true
@@ -793,7 +793,7 @@ tasks:
           root: CompareTables.Result
           transformers:
           - operator: ConvertKeysToTableFieldFormat
-    - incidentfield: PAN-OS Snapshot - Route Difference Count
+    - incidentfield: PAN-OS Network Operations - Snapshot Route Difference Count
       output:
         complex:
           filters:
@@ -895,9 +895,9 @@ tasks:
       index_key:
         simple: peeraddress
       left:
-        simple: ${firstIncidentData.CustomFields.panosbgppeersresult}
+        simple: ${firstIncidentData.CustomFields.panosnetworkoperationsbgppeersresult}
       right:
-        simple: ${secondIncidentData.CustomFields.panosbgppeersresult}
+        simple: ${secondIncidentData.CustomFields.panosnetworkoperationsbgppeersresult}
       table_id:
         simple: bgp
     separatecontext: false
