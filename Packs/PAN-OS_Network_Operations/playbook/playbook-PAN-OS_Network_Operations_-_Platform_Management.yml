@@ -489,4 +489,4 @@ view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n
   \ -380\n    }\n  }\n}"
 tests:
 - No tests (auto formatted)
-fromversion: 6.5.0
+fromversion: 6.2.0
