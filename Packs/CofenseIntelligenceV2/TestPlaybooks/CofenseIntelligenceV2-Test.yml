@@ -1,0 +1,514 @@
+id: Cofense Intelligence v2-Test
+version: -1
+name: Cofense Intelligence v2-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 307569b2-2eb4-4bd3-8dee-0968082d4a28
+    type: start
+    task:
+      id: 307569b2-2eb4-4bd3-8dee-0968082d4a28
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "17"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: d7d7d531-d476-438d-8477-8feaa27b99b1
+    type: regular
+    task:
+      id: d7d7d531-d476-438d-8477-8feaa27b99b1
+      version: -1
+      name: email
+      description: Checks the reputation of an email address.
+      script: CofenseIntelligenceV2|||email
+      type: regular
+      iscommand: true
+      brand: CofenseIntelligenceV2
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      email:
+        simple: ${inputs.email}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: d99dc79e-f49b-4ccd-84de-ae47c6706063
+    type: condition
+    task:
+      id: d99dc79e-f49b-4ccd-84de-ae47c6706063
+      version: -1
+      name: Verify Data
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: CofenseIntelligence.Email.Data
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 1084e393-7b81-4ffc-85c0-720cd829bddf
+    type: regular
+    task:
+      id: 1084e393-7b81-4ffc-85c0-720cd829bddf
+      version: -1
+      name: file
+      description: Checks the reputation of a file hash.
+      script: CofenseIntelligenceV2|||file
+      type: regular
+      iscommand: true
+      brand: CofenseIntelligenceV2
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      file:
+        simple: 021b08963d6be1bc000605350b18a6f4
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 781e4de9-fa21-4280-8257-4bc96a3f9531
+    type: condition
+    task:
+      id: 781e4de9-fa21-4280-8257-4bc96a3f9531
+      version: -1
+      name: Verify Dbot Score
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: bc0fef59-8489-4392-8696-890dc2d6fef9
+    type: regular
+    task:
+      id: bc0fef59-8489-4392-8696-890dc2d6fef9
+      version: -1
+      name: ip
+      description: Checks the reputation of an IP address.
+      script: CofenseIntelligenceV2|||ip
+      type: regular
+      iscommand: true
+      brand: CofenseIntelligenceV2
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      ip:
+        simple: 8.8.8.8
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: d767acb2-ec70-40f3-8e96-75d12b94e900
+    type: regular
+    task:
+      id: d767acb2-ec70-40f3-8e96-75d12b94e900
+      version: -1
+      name: url
+      description: Checks the reputation of a URL.
+      script: CofenseIntelligenceV2|||url
+      type: regular
+      iscommand: true
+      brand: CofenseIntelligenceV2
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      url:
+        simple: url.url
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: f7cf9207-fe3f-424e-8ad8-cded693a7856
+    type: condition
+    task:
+      id: f7cf9207-fe3f-424e-8ad8-cded693a7856
+      version: -1
+      name: Verify Indicator
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: IP
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 53970328-9be7-405d-8848-fce95441fb20
+    type: condition
+    task:
+      id: 53970328-9be7-405d-8848-fce95441fb20
+      version: -1
+      name: Verify DBot score indicator is correct
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+          right:
+            value:
+              simple: url.url
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: be705c0f-f1ed-4992-8e92-d9a1b0ebebf2
+    type: regular
+    task:
+      id: be705c0f-f1ed-4992-8e92-d9a1b0ebebf2
+      version: -1
+      name: cofense-search
+      description: Searches for extracted strings identified within malware campaigns.
+      script: CofenseIntelligenceV2|||cofense-search
+      type: regular
+      iscommand: true
+      brand: CofenseIntelligenceV2
+    nexttasks:
+      '#none#':
+      - "15"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: d4042e09-3fbd-41ad-8820-493e96f89391
+    type: title
+    task:
+      id: d4042e09-3fbd-41ad-8820-493e96f89391
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 991dbd3e-bc80-4178-8f5d-99380ed43f8f
+    type: condition
+    task:
+      id: 991dbd3e-bc80-4178-8f5d-99380ed43f8f
+      version: -1
+      name: Verify Indicator
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Domain
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: c58a7413-9aec-4361-8142-51c27cd51d1b
+    type: regular
+    task:
+      id: c58a7413-9aec-4361-8142-51c27cd51d1b
+      version: -1
+      name: domain
+      description: Checks the reputation of the domain.
+      script: CofenseIntelligenceV2|||domain
+      type: regular
+      iscommand: true
+      brand: CofenseIntelligenceV2
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      domain:
+        simple: www.dummy.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: c0b7c6bc-7f00-4814-8f66-a85f208d28de
+    type: regular
+    task:
+      id: c0b7c6bc-7f00-4814-8f66-a85f208d28de
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: 98f20119-f6b6-4b5b-8141-6a8cfce7f753
+    type: regular
+    task:
+      id: 98f20119-f6b6-4b5b-8141-6a8cfce7f753
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "2_4_yes": 0.57
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2485,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: email
+  value:
+    simple: mail@mail.com
+  required: false
+  description: ""
+  playbookInputQuery:
+outputs: []
+fromversion: 5.5.0
+description: ''

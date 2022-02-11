@@ -7,10 +7,12 @@ configuration:
   name: url
   required: true
   type: 0
-- display: API Token
-  name: token
-  required: true
-  type: 4
+- display: ''
+  name: credentials
+  required: false
+  type: 9
+  hiddenusername: true
+  displaypassword: API Token (Recommended)
 - defaultvalue: '2.1'
   display: API Version.
   required: true
@@ -55,6 +57,11 @@ configuration:
   name: fetch_site_ids
   type: 0
   required: false
+- display: API Token (Deprecated)
+  name: token
+  required: false
+  type: 4
+  additionalinfo: Use the "API Token (Recommended)" parameter instead.
 description: Use the SentinelOne integration to send requests to your management server and get responses with data pulled from agents or from the management database.
 display: SentinelOne v2
 name: SentinelOne V2
@@ -235,13 +242,13 @@ script:
     name: sentinelone-create-white-list-item
     outputs:
     - contextPath: SentinelOne.Exclusions.ID
-      description: The whitelisted entity ID.
+      description: The entity ID on allow list.
       type: string
     - contextPath: SentinelOne.Exclusions.Type
-      description: The whitelisted item type.
+      description: The item type on allow list.
       type: string
     - contextPath: SentinelOne.Exclusions.CreatedAt
-      description: Time when the whitelist item was created.
+      description: Time when the allow list item was created.
       type: date
   - arguments:
     - default: false
@@ -1482,7 +1489,7 @@ script:
     description: Sends an uninstall command to all agents that match the input filter.
     execution: false
     name: sentinelone-uninstall-agent
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.9.8.24399
   isfetch: true
   longRunning: false
   longRunningPort: false

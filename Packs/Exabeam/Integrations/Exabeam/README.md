@@ -1270,9 +1270,9 @@ Returns sequence details for the given asset ID and time range.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Exabeam.Sequence.sequenceId | String | The ID of the sequence. | 
-| Exabeam.Sequence.isWhitelisted | Boolean | Whether or not the sequence is white listed. | 
-| Exabeam.Sequence.areAllTriggeredRulesWhiteListed | Boolean | Whether or not the sequence are all triggered rules white listed. | 
-| Exabeam.Sequence.hasBeenPartiallyWhiteListed | Boolean | Whether or not the sequence has been partially white listed. | 
+| Exabeam.Sequence.isWhitelisted | Boolean | Whether or not the sequence is on allow list. | 
+| Exabeam.Sequence.areAllTriggeredRulesWhiteListed | Boolean | Whether or not the sequence are all triggered rules allow listed. | 
+| Exabeam.Sequence.hasBeenPartiallyWhiteListed | Boolean | Whether or not the sequence has been partially allow listed. | 
 | Exabeam.Sequence.riskScore | Number | The sequence risk score. | 
 | Exabeam.Sequence.startTime | Date | Start time of the sequence. | 
 | Exabeam.Sequence.endTime | Date | End time of the sequence. | 

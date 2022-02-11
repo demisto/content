@@ -1,0 +1,359 @@
+description: Set grid for RaDark - Compromised Accounts incidents.
+id: Set RaDark Grid For Compromised Accounts
+inputs: []
+name: Set RaDark Grid For Compromised Accounts
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "14"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Playbook triggered.
+      id: 3b797f31-5450-46d4-819e-6a7e2afd5b41
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 3b797f31-5450-46d4-819e-6a7e2afd5b41
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": -1760,
+          "y": 540
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Done.
+      id: a0f63fae-1e2c-42fe-826e-dd94d35494b1
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: a0f63fae-1e2c-42fe-826e-dd94d35494b1
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": -1760,
+          "y": 1110
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      columns:
+        simple: Item ID, Bot ID, Updated Date, Resource, Username, Password, Additional
+          Data, Country, ISP, Infection Type, Price
+      context_path:
+        simple: Radark.itemDetails.items
+      grid_id:
+        simple: kelaradarktablerussianmarket
+      keys:
+        simple: item_id, bot_id, updated_date, resource, username, password, additional_data,
+          country, isp, infection_type, price
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Creates a Grid table from items or key-value pairs.
+      id: 71cead53-8b5a-4901-8bb5-67f934ee0f80
+      iscommand: false
+      name: Set Grid - Russian Market
+      script: SetGridField
+      type: regular
+      version: -1
+    taskid: 71cead53-8b5a-4901-8bb5-67f934ee0f80
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -1960,
+          "y": 930
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      columns:
+        simple: Item ID, Bot ID, Updated Date, Resource, Username, Password, Country,
+          Source IP, Infection Type
+      context_path:
+        simple: Radark.itemDetails.items
+      grid_id:
+        simple: kelaradarktableagressor
+      keys:
+        simple: item_id, bot_id, updated_date, resource, username, password, country,
+          source_ip, infection_type
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Creates a Grid table from items or key-value pairs.
+      id: d7faa192-d8a0-40d4-84d1-97366d389f7e
+      iscommand: false
+      name: Set Grid - Agressor
+      script: SetGridField
+      type: regular
+      version: -1
+    taskid: d7faa192-d8a0-40d4-84d1-97366d389f7e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -1570,
+          "y": 930
+        }
+      }
+  "11":
+    id: "11"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      columns:
+        simple: Item ID, Bot ID, Updated Date, Resource, Username, Password, Additional
+          Data, Country, Source IP, Price
+      context_path:
+        simple: Radark.itemDetails.items
+      grid_id:
+        simple: kelaradarktablebotnets
+      keys:
+        simple: item_id, bot_id, updated_date, resource, username, password, additional_data,
+          country, source_ip, price
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Creates a Grid table from items or key-value pairs.
+      id: 71822b42-56a2-4de7-8209-7f98c02f78ee
+      iscommand: false
+      name: Set Grid - Botnets
+      script: SetGridField
+      type: regular
+      version: -1
+    taskid: 71822b42-56a2-4de7-8209-7f98c02f78ee
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -1350,
+          "y": 820
+        }
+      }
+  "14":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.kelaradarksubtype
+          operator: isEqualString
+          right:
+            value:
+              simple: "16"
+      label: "16"
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.kelaradarksubtype
+          operator: isEqualString
+          right:
+            value:
+              simple: "17"
+      label: "17"
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.kelaradarksubtype
+          operator: isEqualString
+          right:
+            value:
+              simple: "18"
+      label: "18"
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.kelaradarksubtype
+          operator: isEqualString
+          right:
+            value:
+              simple: "26"
+      label: "26"
+    id: "14"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "26"
+      "16":
+      - "11"
+      "17":
+      - "8"
+      "18":
+      - "7"
+      "26":
+      - "27"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Return the sub type of the incident in order to set the proper
+        grid table.
+      id: 35bb128c-869d-4067-8d4b-1f7338130f62
+      iscommand: false
+      name: RaDark - Extract Compromised Accounts Grid Type
+      type: condition
+      version: -1
+    taskid: 35bb128c-869d-4067-8d4b-1f7338130f62
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -1760,
+          "y": 650
+        }
+      }
+  "26":
+    id: "26"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: No action required.
+      id: 1b1e8f44-4df6-44ea-81cf-69a9837abdda
+      iscommand: false
+      name: No Grid Type Incident
+      type: title
+      version: -1
+    taskid: 1b1e8f44-4df6-44ea-81cf-69a9837abdda
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": -2570,
+          "y": 820
+        }
+      }
+  "27":
+    id: "27"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      columns:
+        simple: Item ID, Bot ID, Updated Date, Resource, Username, Password, Country,
+          Tags, Price
+      context_path:
+        simple: Radark.itemDetails.items
+      grid_id:
+        simple: kelaradarktabletwoeasy
+      keys:
+        simple: item_id, bot_id, updated_date, resource, username, password, country,
+          tags, price
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Creates a Grid table from items or key-value pairs.
+      id: b7eb8cad-33a4-4c9b-8765-57e5d462a68c
+      iscommand: false
+      name: Set Grid - TwoEasy
+      script: SetGridField
+      type: regular
+      version: -1
+    taskid: b7eb8cad-33a4-4c9b-8765-57e5d462a68c
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -2170,
+          "y": 820
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "14_7_18": 0.71
+    },
+    "paper": {
+      "dimensions": {
+        "height": 635,
+        "width": 1600,
+        "x": -2570,
+        "y": 540
+      }
+    }
+  }
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

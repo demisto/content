@@ -367,7 +367,7 @@ def test_edit_url_filter_non_valid_args_8_x(mocker):
     element_value = 'gambling'
     add_remove_element = 'remove'
 
-    err_msg = 'Only the override_allow_list, override_block_list, description properties can be'\
+    err_msg = 'Only the override_allow_list, override_block_list, description properties can be' \
               ' changed in PAN-OS 8.x or earlier versions.'
     with pytest.raises(DemistoException, match=err_msg):
         panorama_edit_url_filter(url_filter_name, element_to_change, element_value, add_remove_element)
@@ -413,6 +413,38 @@ def test_edit_url_filter_non_valid_args_9_x(mocker):
               ' later versions.'
     with pytest.raises(DemistoException, match=err_msg):
         panorama_edit_url_filter(url_filter_name, element_to_change, element_value, add_remove_element)
+
+
+def http_mock(url: str, method: str, body: dict = {}):
+    return body
+
+
+@pytest.mark.parametrize('category_name, items', [('category_name', ['www.good.com'],)])
+def test_remove_from_custom_url_category(category_name, items, mocker):
+    """
+    Given:
+     - a valid argument for edit custom url group
+
+    When:
+     - running the custom_url_category_remove_items function
+
+    Then:
+     - checks an assertion
+    """
+    import Panorama
+    from Panorama import panorama_custom_url_category_remove_items
+
+    return_results_mock = mocker.patch.object(Panorama, 'return_results')
+
+    mocker.patch('Panorama.panorama_get_custom_url_category', return_value={'description': 'description',
+                                                                            'list': {'member': "www.test.com"}
+                                                                            })
+    mocker.patch('Panorama.get_pan_os_major_version', return_value=9)
+    mocker.patch('Panorama.http_request', side_effect=http_mock)
+
+    panorama_custom_url_category_remove_items(category_name, items, "URL List")
+    demisto_result_got = return_results_mock.call_args.args[0]['Contents']
+    assert "www.test.com" in demisto_result_got['element']
 
 
 def test_prettify_edl():
@@ -534,24 +566,6 @@ def test_build_policy_match_query():
     expected = '<test><security-policy-match><source>1.1.1.1</source><destination>6.7.8.9</destination>' \
                '<protocol>1</protocol><application>gmail-base</application></security-policy-match></test>'
     assert response == expected
-
-
-def test_panorama_security_policy_match_command_no_target():
-    """
-    Given:
-     - a Panorama instance(mocked parameter) without the target argument
-
-    When:
-     - running the panorama-security-policy-match command
-
-    Then:
-     - Validate a proper error is raised
-    """
-    from Panorama import panorama_security_policy_match_command
-    err_msg = "The 'panorama-security-policy-match' command is relevant for a Firewall instance " \
-              "or for a Panorama instance, to be used with the target argument."
-    with pytest.raises(DemistoException, match=err_msg):
-        panorama_security_policy_match_command(demisto.args())
 
 
 def test_panorama_register_ip_tag_command_wrongful_args(mocker):
@@ -698,3 +712,313 @@ def test_prettify_rule():
     prettify_rule = prettify_rule(rule)
 
     assert prettify_rule == expected_prettify_rule
+
+
+class TestPanoramaEditRuleCommand:
+    EDIT_SUCCESS_RESPONSE = {'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
+
+    @staticmethod
+    def test_sanity(mocker):
+        import Panorama
+        args = {
+            'rulename': 'TestRule',
+            'element_to_change': 'source',
+            'element_value': '2.3.4.5,3.3.3.3',
+            'behaviour': 'add',
+        }
+        commited_rule_item = {
+            'response': {
+                '@status': 'success',
+                '@code': '19',
+                'result': {
+                    '@total-count': '1',
+                    '@count': '1',
+                    'source': {
+                        'member': ['1.1.1.1', '3.3.3.3', '2.3.4.5'],
+                    }
+                }
+            }
+        }
+        mocker.patch('Panorama.http_request', return_value=commited_rule_item)
+        Panorama.panorama_edit_rule_command(args)
+
+    @staticmethod
+    def test_add_to_element_on_uncommited_rule(mocker):
+        import Panorama
+        args = {
+            'rulename': 'TestRule',
+            'element_to_change': 'source',
+            'element_value': '2.3.4.5',
+            'behaviour': 'add',
+        }
+        uncommited_rule_item = {
+            'response': {
+                '@status': 'success',
+                '@code': '19',
+                'result': {
+                    '@total-count': '1',
+                    '@count': '1',
+                    'source': {
+                        '@admin': 'admin',
+                        '@dirtyId': '1616',
+                        '@time': '2021/11/27 10:55:18',
+                        'member': {
+                            '@admin': 'admin',
+                            '@dirtyId': '1616',
+                            '@time': '2021/11/27 10:55:18',
+                            '#text': '3.3.3.3',
+                        }
+                    }
+                }
+            }
+        }
+        mocker.patch('Panorama.http_request', return_value=uncommited_rule_item)
+
+        with pytest.raises(DemistoException):
+            Panorama.panorama_edit_rule_command(args)
+
+
+class MockedResponse:
+    def __init__(self, text, status_code, reason):
+        self.status_code = status_code
+        self.text = text
+        self.reason = reason
+
+
+@pytest.mark.parametrize('args, expected_request_params, request_result, expected_demisto_result',
+                         [pytest.param({'device-group': 'some_device', 'admin_name': 'some_admin_name'},
+                                       {'action': 'partial',
+                                        'cmd': '<commit><device-group><entry '
+                                               'name="some_device"/></device-group><partial><admin>'
+                                               '<member>some_admin_name</member></admin></partial></commit>',
+                                        'key': 'thisisabogusAPIKEY!',
+                                        'type': 'commit'},
+                                       MockedResponse(text='<response status="success" code="19"><result><msg>'
+                                                           '<line>Commit job enqueued with jobid 19420</line></msg>'
+                                                           '<job>19420</job></result></response>', status_code=200,
+                                                      reason=''),
+                                       {'Panorama.Commit(val.JobID == obj.JobID)': {'Description': None,
+                                                                                    'JobID': '19420',
+                                                                                    'Status': 'Pending'}},
+                                       id='only admin changes commit'),
+                          pytest.param({'device-group': 'some_device', 'force_commit': 'true'},
+                                       {'cmd': '<commit><device-group><entry name="some_device"/></device-group><force>'
+                                               '</force></commit>',
+                                        'key': 'thisisabogusAPIKEY!',
+                                        'type': 'commit'},
+                                       MockedResponse(text='<response status="success" code="19"><result><msg>'
+                                                           '<line>Commit job enqueued with jobid 19420</line></msg>'
+                                                           '<job>19420</job></result></response>', status_code=200,
+                                                      reason=''),
+                                       {'Panorama.Commit(val.JobID == obj.JobID)': {'Description': None,
+                                                                                    'JobID': '19420',
+                                                                                    'Status': 'Pending'}},
+                                       id="force commit"),
+                          pytest.param({'device-group': 'some_device', 'exclude_device_network_configuration': 'true'},
+                                       {'action': 'partial',
+                                        'cmd': '<commit><device-group><entry name="some_device"/></device-group>'
+                                               '<partial><device-and-network>excluded</device-and-network></partial>'
+                                               '</commit>',
+                                        'key': 'thisisabogusAPIKEY!',
+                                        'type': 'commit'},
+                                       MockedResponse(text='<response status="success" code="19"><result><msg>'
+                                                           '<line>Commit job enqueued with jobid 19420</line></msg>'
+                                                           '<job>19420</job></result></response>', status_code=200,
+                                                      reason=''),
+                                       {'Panorama.Commit(val.JobID == obj.JobID)': {'Description': None,
+                                                                                    'JobID': '19420',
+                                                                                    'Status': 'Pending'}},
+                                       id="device and network excluded"),
+                          pytest.param({'device-group': 'some_device', 'exclude_shared_objects': 'true'},
+                                       {'action': 'partial',
+                                        'cmd': '<commit><device-group><entry name="some_device"/></device-group>'
+                                               '<partial><shared-object>excluded</shared-object></partial></commit>',
+                                        'key': 'thisisabogusAPIKEY!',
+                                        'type': 'commit'},
+                                       MockedResponse(text='<response status="success" code="19"><result><msg>'
+                                                           '<line>Commit job enqueued with jobid 19420</line></msg>'
+                                                           '<job>19420</job></result></response>', status_code=200,
+                                                      reason=''),
+                                       {'Panorama.Commit(val.JobID == obj.JobID)': {'Description': None,
+                                                                                    'JobID': '19420',
+                                                                                    'Status': 'Pending'}},
+                                       id="exclude shared objects"),
+                          pytest.param({'device-group': 'some_device'},
+                                       {'cmd': '<commit><device-group><entry name="some_device"/></device-group>'
+                                               '</commit>',
+                                        'key': 'thisisabogusAPIKEY!',
+                                        'type': 'commit'},
+                                       MockedResponse(text='<response status="success" code="19"><result><msg>'
+                                                           '<line>Commit job enqueued with jobid 19420</line></msg>'
+                                                           '<job>19420</job></result></response>', status_code=200,
+                                                      reason=''),
+                                       {'Panorama.Commit(val.JobID == obj.JobID)': {'Description': None,
+                                                                                    'JobID': '19420',
+                                                                                    'Status': 'Pending'}},
+                                       id="no args")
+                          ])
+def test_panorama_commit_command(mocker, args, expected_request_params, request_result, expected_demisto_result):
+    """
+    Given:
+        - command args
+        - request result
+    When:
+        - Running panorama-commit command
+    Then:
+        - Assert the request url is as expected
+        - Assert demisto results contain the relevant result information
+    """
+    import Panorama
+    import requests
+    from Panorama import panorama_commit_command
+
+    Panorama.API_KEY = 'thisisabogusAPIKEY!'
+    return_results_mock = mocker.patch.object(Panorama, 'return_results')
+    request_mock = mocker.patch.object(requests, 'request', return_value=request_result)
+    panorama_commit_command(args)
+
+    called_request_params = request_mock.call_args.kwargs['data']  # The body part of the request
+    assert called_request_params == expected_request_params
+
+    demisto_result_got = return_results_mock.call_args.args[0]['EntryContext']
+    assert demisto_result_got == expected_demisto_result
+
+
+@pytest.mark.parametrize('args, expected_request_params, request_result, expected_demisto_result',
+                         [pytest.param({},
+                                       {'action': 'all',
+                                        'cmd': '<commit-all><shared-policy><device-group><entry name="some_device"/>'
+                                               '</device-group></shared-policy></commit-all>',
+                                        'key': 'thisisabogusAPIKEY!',
+                                        'type': 'commit'},
+                                       MockedResponse(text='<response status="success" code="19"><result><msg>'
+                                                           '<line>Commit job enqueued with jobid 19420</line></msg>'
+                                                           '<job>19420</job></result></response>', status_code=200,
+                                                      reason=''),
+                                       {'Panorama.Push(val.JobID == obj.JobID)': {'DeviceGroup': 'some_device',
+                                                                                  'JobID': '19420',
+                                                                                  'Status': 'Pending'}},
+                                       id='no args'),
+                          pytest.param({'serial_number': '1337'},
+                                       {'action': 'all',
+                                        'cmd': '<commit-all><shared-policy><device-group><entry name="some_device">'
+                                               '<devices><entry name="1337"/></devices></entry></device-group>'
+                                               '</shared-policy></commit-all>',
+                                        'key': 'thisisabogusAPIKEY!',
+                                        'type': 'commit'},
+                                       MockedResponse(text='<response status="success" code="19"><result><msg>'
+                                                           '<line>Commit job enqueued with jobid 19420</line></msg>'
+                                                           '<job>19420</job></result></response>', status_code=200,
+                                                      reason=''),
+                                       {'Panorama.Push(val.JobID == obj.JobID)': {'DeviceGroup': 'some_device',
+                                                                                  'JobID': '19420',
+                                                                                  'Status': 'Pending'}},
+                                       id='serial number'),
+                          pytest.param({'include-template': 'false'},
+                                       {'action': 'all',
+                                        'cmd': '<commit-all><shared-policy><device-group><entry name="some_device"/>'
+                                               '</device-group><include-template>no</include-template></shared-policy>'
+                                               '</commit-all>',
+                                        'key': 'thisisabogusAPIKEY!',
+                                        'type': 'commit'},
+                                       MockedResponse(text='<response status="success" code="19"><result><msg>'
+                                                           '<line>Commit job enqueued with jobid 19420</line></msg>'
+                                                           '<job>19420</job></result></response>', status_code=200,
+                                                      reason=''),
+                                       {'Panorama.Push(val.JobID == obj.JobID)': {'DeviceGroup': 'some_device',
+                                                                                  'JobID': '19420',
+                                                                                  'Status': 'Pending'}},
+                                       id='do not include template')
+                          ])
+def test_panorama_push_to_device_group_command(mocker, args, expected_request_params, request_result,
+                                               expected_demisto_result):
+    """
+    Given:
+        - command args
+        - request result
+    When:
+        - Running panorama-push-to-device-group command
+    Then:
+        - Assert the request url is as expected
+        - Assert demisto results contain the relevant result information
+    """
+    import Panorama
+    import requests
+    from Panorama import panorama_push_to_device_group_command
+
+    return_results_mock = mocker.patch.object(Panorama, 'return_results')
+    request_mock = mocker.patch.object(requests, 'request', return_value=request_result)
+    Panorama.DEVICE_GROUP = 'some_device'
+    Panorama.API_KEY = 'thisisabogusAPIKEY!'
+    panorama_push_to_device_group_command(args)
+
+    called_request_params = request_mock.call_args.kwargs['data']  # The body part of the request
+    assert called_request_params == expected_request_params
+
+    demisto_result_got = return_results_mock.call_args.args[0]['EntryContext']
+    assert demisto_result_got == expected_demisto_result
+
+
+def test_get_url_category__url_length_gt_1278(mocker):
+    """
+    Given:
+        - Error in response indicating the url to get category for is over the allowed length (1278 chars)
+
+    When:
+        - Run get_url_category command
+
+    Then:
+        - Validate a commandResult is returned with detailed readable output
+    """
+
+    # prepare
+    import Panorama
+    import requests
+    from Panorama import panorama_get_url_category_command
+    Panorama.DEVICE_GROUP = ''
+    mocked_res_dict = {
+        'response': {
+            '@status': 'error',
+            '@code': '20',
+            'msg': {'line': 'test -> url Node can be at most 1278 characters, but current length: 1288'}
+        }}
+    mocked_res_obj = requests.Response()
+    mocked_res_obj.status_code = 200
+    mocked_res_obj._content = json.dumps(mocked_res_dict).encode('utf-8')
+    mocker.patch.object(requests, 'request', return_value=mocked_res_obj)
+    mocker.patch.object(Panorama, 'xml2json', return_value=mocked_res_obj._content)
+    return_results_mock = mocker.patch.object(Panorama, 'return_results')
+
+    # run
+    panorama_get_url_category_command(url_cmd='url', url='test_url', additional_suspicious=[], additional_malicious=[])
+
+    # validate
+    assert 'URL Node can be at most 1278 characters.' == return_results_mock.call_args[0][0][1].readable_output
+
+
+class TestDevices:
+
+    def test_with_fw(self):
+        import Panorama
+        Panorama.VSYS = 'this is a FW instance'
+        assert list(Panorama.devices()) == [(None, None)]
+
+    def test_with_specific_target_and_vsys(self):
+        import Panorama
+        Panorama.VSYS = None  # this a Panorama instance
+        assert list(Panorama.devices(targets=['target'], vsys_s=['vsys1', 'vsys2'])) == [('target', 'vsys1'),
+                                                                                         ('target', 'vsys2')]
+
+    def test_with_specific_target_only(self, requests_mock):
+        import Panorama
+        with open('test_data/devices_list.xml', 'r') as data_file:
+            requests_mock.get(Panorama.URL, text=data_file.read())
+        Panorama.VSYS = None  # this a Panorama instance
+        assert list(Panorama.devices(targets=['target1'])) == [('target1', 'vsys1'), ('target1', 'vsys2')]
+
+    def test_without_specify(self, requests_mock):
+        import Panorama
+        with open('test_data/devices_list.xml', 'r') as data_file:
+            requests_mock.get(Panorama.URL, text=data_file.read())
+        Panorama.VSYS = None  # this a Panorama instance
+        assert list(Panorama.devices()) == [('target1', 'vsys1'), ('target1', 'vsys2'), ('target2', None)]

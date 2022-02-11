@@ -1,0 +1,36 @@
+{
+    "name": "PicusAutomation",
+    "description": "Run commands on Picus and automate security validation with playbooks.",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "Picus Security",
+    "url": "http://support.picussecurity.com",
+    "email": "blueteam@picussecurity.com",
+    "categories": [
+        "Network Security"
+    ],
+    "tags": [
+        "Attack",
+        "Breach",
+        "Network",
+        "Security",
+        "Simulation"
+    ],
+    "useCases": [],
+    "keywords": [
+        "Attack",
+        "Breach",
+        "Network",
+        "Security",
+        "Simulation",
+        "Picus",
+        "Validation"
+    ],
+    "githubUser": [],
+    "dependencies": {},
+    "displayedImages": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}

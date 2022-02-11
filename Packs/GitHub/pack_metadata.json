@@ -2,7 +2,7 @@
     "name": "GitHub",
     "description": "Manage GitHub issues and pull requests directly from Cortex XSOAR",
     "support": "xsoar",
-    "currentVersion": "1.3.10",
+    "currentVersion": "1.3.14",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -18,5 +18,9 @@
             "mandatory": true,
             "display_name": "IAM SCIM"
         }
-    }
+    },
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

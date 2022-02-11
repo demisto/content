@@ -1,0 +1,103 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "Microsoft Defender For Endpoint Mapper",
+    "mapping": {
+        "Microsoft Defender For Endpoint": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Alert Category": {
+                    "simple": "category"
+                },
+                "Investigation Stage": {
+                    "simple": "investigationState"
+                },
+                "Last Update Time": {
+                    "simple": "lastUpdateTime"
+                },
+                "Start Time": {
+                    "simple": "firstEventTime"
+                },
+                "name": {
+                    "simple": "title"
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Alert ID": {
+                    "simple": "id"
+                },
+                "Alert Name": {
+                    "simple": "title"
+                },
+                "Assigned User": {
+                    "simple": "assignedTo"
+                },
+                "Categories": {
+                    "simple": "category"
+                },
+                "Classification": {
+                    "simple": "classification"
+                },
+                "Cloud Instance ID": {
+                    "simple": "aadTenantId"
+                },
+                "Description": {
+                    "simple": "description"
+                },
+                "Device Id": {
+                    "simple": "machineId"
+                },
+                "Hostnames": {
+                    "simple": "computerDnsName"
+                },
+                "State": {
+                    "simple": "status"
+                },
+                "Sub Category": {
+                    "simple": "detectionSource"
+                },
+                "Technique": {
+                    "simple": "mitreTechniques"
+                },
+                "Threat Family Name": {
+                    "simple": "threatFamilyName"
+                },
+                "Threat Name": {
+                    "simple": "threatName"
+                },
+                "Ticket Number": {
+                    "simple": "incidentId"
+                },
+                "name": {
+                    "complex": {
+                        "filters": [],
+                        "root": "title",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "prefix": {
+                                        "value": {
+                                            "simple": " Microsoft Defender ATP Alert - "
+                                        }
+                                    },
+                                    "suffix": {}
+                                },
+                                "operator": "concat"
+                            }
+                        ]
+                    }
+                },
+                "severity": {
+                    "simple": "severity"
+                }
+            }
+        }
+    },
+    "name": "Microsoft Defender For Endpoint Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

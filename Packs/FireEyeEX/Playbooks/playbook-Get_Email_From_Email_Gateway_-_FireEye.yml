@@ -1,0 +1,571 @@
+description: This playbook retrieves a specified EML/MSG file directly from FireEye Email Security
+  or Central Management.
+id: Get Email From Email Gateway - FireEye
+inputs:
+- description: The email UUID provided by FireEye.
+  key: MessageID
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: |
+    The Timestamp of the email received.
+  key: EmailTimestamp
+  playbookInputQuery:
+  required: false
+  value: {}
+name: Get Email From Email Gateway - FireEye
+outputs:
+- contextPath: File
+  description: The MSG/EML file.
+  type: unknown
+- contextPath: FireEyeCM.QuarantinedEmail
+  description: The queue email.
+  type: unknown
+- contextPath: FireEyeEX.QuarantinedEmail
+  description: The queue email.
+  type: unknown
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 496443be-5825-4875-81a9-9e98e316e5b2
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 496443be-5825-4875-81a9-9e98e316e5b2
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": -140
+        }
+      }
+  "1":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: brand
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: FireEye Email Security
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: FireEye EX
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: brand
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: FireEye Central Management
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: sensorname
+                root: incident
+          operator: isNotEmpty
+      label: FireEye CM
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "4"
+      FireEye CM:
+      - "2"
+      FireEye EX:
+      - "7"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks if FireEyeEX or FireEyeCM are enabled.
+      id: c8c4bfb1-cdbe-4d75-8d0f-8c552737e3ac
+      iscommand: false
+      name: Is FireEye EX or FireEye CM enabled?
+      type: condition
+      version: -1
+    taskid: c8c4bfb1-cdbe-4d75-8d0f-8c552737e3ac
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 370
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      end_time:
+        simple: ${alertEndTime}
+      from:
+        complex:
+          accessor: emailfrom
+          root: incident
+      start_time:
+        simple: ${alertStartTime}
+      subject:
+        complex:
+          accessor: emailsubject
+          root: incident
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Searches and retrieves quarantined emails.
+      id: 360dfb83-db17-4780-89c8-fb9c2996631f
+      iscommand: true
+      name: Retrieve Email File
+      script: '|||fireeye-cm-get-quarantined-emails'
+      type: regular
+      version: -1
+    taskid: 360dfb83-db17-4780-89c8-fb9c2996631f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 170,
+          "y": 590
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 2
+    scriptarguments:
+      queue_id:
+        complex:
+          accessor: queue_id
+          root: FireEyeCM.QuarantinedEmail
+      retry-count:
+        simple: "3"
+      retry-interval:
+        simple: "5"
+      sensor_name:
+        complex:
+          accessor: sensorname
+          root: incident
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Downloads quarantined emails.
+      id: 1d04c5fd-3274-4dc3-8ba7-96b3e6e9e14d
+      iscommand: true
+      name: Download Quarantined Email
+      script: '|||fireeye-cm-download-quarantined-emails'
+      type: regular
+      version: -1
+    taskid: 1d04c5fd-3274-4dc3-8ba7-96b3e6e9e14d
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 170,
+          "y": 1020
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 70f8180c-a411-4eb8-8c22-30641bf15003
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 70f8180c-a411-4eb8-8c22-30641bf15003
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 1210
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: alertStartTime
+      value:
+        complex:
+          root: inputs.EmailTimestamp
+          transformers:
+          - args:
+              formatter:
+                value:
+                  simple: '%Y-%m-%dT%H:%M:%SZ'
+            operator: FormattedDateToEpoch
+          - args:
+              by:
+                value:
+                  simple: "120"
+            operator: subtraction
+          - operator: TimeStampToDate
+          - args:
+              limit: {}
+              replaceWith: {}
+              toReplace:
+                value:
+                  simple: Z
+            operator: replace
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: a16a467f-0d4c-4a22-82a7-9286fd987549
+      iscommand: false
+      name: Set Start Time
+      script: Set
+      type: regular
+      version: -1
+    taskid: a16a467f-0d4c-4a22-82a7-9286fd987549
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 10
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: alertEndTime
+      value:
+        complex:
+          root: inputs.EmailTimestamp
+          transformers:
+          - args:
+              formatter:
+                value:
+                  simple: '%Y-%m-%dT%H:%M:%SZ'
+            operator: FormattedDateToEpoch
+          - args:
+              by:
+                value:
+                  simple: "120"
+            operator: addition
+          - operator: TimeStampToDate
+          - args:
+              limit: {}
+              replaceWith: {}
+              toReplace:
+                value:
+                  simple: Z
+            operator: replace
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: aaa3eb6f-4209-4d01-81ce-a05a1d440129
+      iscommand: false
+      name: Set End Time
+      script: Set
+      type: regular
+      version: -1
+    taskid: aaa3eb6f-4209-4d01-81ce-a05a1d440129
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 190
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      end_time:
+        simple: ${alertEndTime}
+      from:
+        complex:
+          accessor: emailfrom
+          root: incident
+      start_time:
+        simple: ${alertStartTime}
+      subject:
+        complex:
+          accessor: emailsubject
+          root: incident
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Searches and retrieves quarantined emails.
+      id: b5b9a2f2-394b-4792-8aec-1d09c31dbf13
+      iscommand: true
+      name: Retrieve Email File
+      script: '|||fireeye-ex-get-quarantined-emails'
+      type: regular
+      version: -1
+    taskid: b5b9a2f2-394b-4792-8aec-1d09c31dbf13
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1190,
+          "y": 590
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 2
+    scriptarguments:
+      queue_id:
+        complex:
+          accessor: queue_id
+          root: FireEyeEX.QuarantinedEmail
+      retry-count:
+        simple: "3"
+      retry-interval:
+        simple: "5"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Downloads quarantined emails.
+      id: 6e863d78-f48b-4a6a-8560-6bf0895c4e4e
+      iscommand: true
+      name: Download Quarantined Email
+      script: '|||fireeye-ex-download-quarantined-emails'
+      type: regular
+      version: -1
+    taskid: 6e863d78-f48b-4a6a-8560-6bf0895c4e4e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1190,
+          "y": 1020
+        }
+      }
+  "9":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: email_uuid
+                root: FireEyeEX.QuarantinedEmail
+          operator: isNotEmpty
+      label: "yes"
+    id: "9"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "8"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks if the EML file was successfully retrieved.
+      id: 5eba4443-4bde-48a5-8b25-4f20da843ed3
+      iscommand: false
+      name: Does the email retrieved successfully?
+      type: condition
+      version: -1
+    taskid: 5eba4443-4bde-48a5-8b25-4f20da843ed3
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1190,
+          "y": 790
+        }
+      }
+  "10":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: email_uuid
+                root: FireEyeCM.QuarantinedEmail
+          operator: isNotEmpty
+      label: "yes"
+    id: "10"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks if the EML file was successfully retrieved.
+      id: 0c03f95f-5d9a-4881-8b60-c3e9d7c5d6cb
+      iscommand: false
+      name: Does the email retrieved successfully?
+      type: condition
+      version: -1
+    taskid: 0c03f95f-5d9a-4881-8b60-c3e9d7c5d6cb
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 170,
+          "y": 790
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "10_3_yes": 0.52,
+      "10_4_#default#": 0.38,
+      "1_4_#default#": 0.1,
+      "9_4_#default#": 0.38,
+      "9_8_yes": 0.52
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1415,
+        "width": 1400,
+        "x": 170,
+        "y": -140
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

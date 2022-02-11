@@ -21,6 +21,7 @@ Content-Type: text/html; charset="UTF-8"
 
 <div dir="ltr"><br></div>
 <p>C:\Users</p>
+<p>C:\\Users</p>
 
 --0000000000002b271405ac80bf8b--
 """
@@ -60,7 +61,7 @@ EXPECTED_LABELS = [
     {'type': 'Email/headers/Content-Type',
      'value': 'multipart/alternative; boundary="0000000000002b271405ac80bf8b"'},
     {'type': 'Email', 'value': 'to@test1.com'},
-    {'type': 'Email/html', 'value': '<div dir="ltr"><br></div>\n<p>C:\\\\Users</p>'}]
+    {'type': 'Email/html', 'value': '<div dir="ltr"><br></div>\n<p>C:\\\\Users</p>\n<p>C:\\\\Users</p>'}]
 
 
 def test_convert_to_incident():
@@ -84,10 +85,11 @@ def test_convert_to_incident():
 
 
 @pytest.mark.parametrize(
-    'time_to_fetch_from, permitted_from_addresses, permitted_from_domains, uid_to_fetch_from, expected_query',
+    'time_to_fetch_from, with_header, permitted_from_addresses, permitted_from_domains, uid_to_fetch_from, expected_query',
     [
         (
             datetime(year=2020, month=10, day=1),
+            False,
             ['test1@mail.com', 'test2@mail.com'],
             ['test1.com', 'domain2.com'],
             4,
@@ -96,13 +98,41 @@ def test_convert_to_incident():
                 'OR',
                 'OR',
                 'FROM',
-                'test1@mail.com',
-                'FROM',
-                'test2@mail.com',
+                'domain2.com',
                 'FROM',
                 'test1.com',
                 'FROM',
+                'test1@mail.com',
+                'FROM',
+                'test2@mail.com',
+                'SINCE',
+                datetime(year=2020, month=10, day=1),
+                'UID',
+                '4:*'
+            ]
+        ),
+        (
+            datetime(year=2020, month=10, day=1),
+            True,
+            ['test1@mail.com', 'test2@mail.com'],
+            ['test1.com', 'domain2.com'],
+            4,
+            [
+                'OR',
+                'OR',
+                'OR',
+                'HEADER',
+                'FROM',
                 'domain2.com',
+                'HEADER',
+                'FROM',
+                'test1.com',
+                'HEADER',
+                'FROM',
+                'test1@mail.com',
+                'HEADER',
+                'FROM',
+                'test2@mail.com',
                 'SINCE',
                 datetime(year=2020, month=10, day=1),
                 'UID',
@@ -111,6 +141,7 @@ def test_convert_to_incident():
         ),
         (
             None,
+            '',
             [],
             [],
             1,
@@ -122,7 +153,7 @@ def test_convert_to_incident():
     ]
 )
 def test_generate_search_query(
-        time_to_fetch_from, permitted_from_addresses, permitted_from_domains, uid_to_fetch_from, expected_query
+        time_to_fetch_from, with_header, permitted_from_addresses, permitted_from_domains, uid_to_fetch_from, expected_query
 ):
     """
     Given:
@@ -140,7 +171,7 @@ def test_generate_search_query(
     """
     from MailListenerV2 import generate_search_query
     assert generate_search_query(
-        time_to_fetch_from, permitted_from_addresses, permitted_from_domains, uid_to_fetch_from
+        time_to_fetch_from, with_header, permitted_from_addresses, permitted_from_domains, uid_to_fetch_from
     ) == expected_query
 
 

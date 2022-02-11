@@ -2,7 +2,7 @@
     "name": "DNSOverHttps",
     "description": "Use this pack to make DNS queries over HTTPS to Cloudflare or Google DoH service.",
     "support": "community",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.0.1",
     "author": "Harri Ruuttila",
     "url": "",
     "email": "",
@@ -15,5 +15,9 @@
     "keywords": [],
     "githubUser": [
         "Hruuttila"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }

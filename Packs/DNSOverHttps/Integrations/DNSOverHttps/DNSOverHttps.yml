@@ -53,7 +53,7 @@ script:
     - contextPath: DNSoOverHTTPS.Results
       description: DNS query results
       type: list
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.9.8.24399
   runonce: false
   script: ''
   subtype: python3

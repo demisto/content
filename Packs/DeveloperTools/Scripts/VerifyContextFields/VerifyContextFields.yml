@@ -1,0 +1,31 @@
+commonfields:
+  id: VerifyContextFields
+  version: -1
+name: VerifyContextFields
+script: ''
+type: javascript
+tags:
+- Utility
+comment: Deprecated. Use playbook filters instead. Verify fields are in context.
+enabled: true
+args:
+- name: field1
+  description: "field to verify"
+  default: true
+- name: value1
+  description: "optional field1 value validation"
+- name: field2
+  description: "field to verify"
+- name: value2
+  description: "optional field2 value validation"
+- name: field3
+  description: "field to verify"
+- name: value3
+  description: "optional field3 value validation"
+- name: field4
+  description: "field to verify"
+- name: value4
+  description: "optional field4 value validation"
+scripttarget: 0
+deprecated: true
+fromversion: 5.0.0

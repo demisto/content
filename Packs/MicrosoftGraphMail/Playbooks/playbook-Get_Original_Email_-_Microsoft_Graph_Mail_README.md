@@ -1,8 +1,5 @@
-Use this playbook to retrieve the original email using Microsoft Graph Mail integration.
-
-You must have the necessary permissions in the Microsoft Graph Mail integration as described here:
-      * https://docs.microsoft.com/en-us/graph/api/message-get
-      * https://docs.microsoft.com/en-us/graph/api/user-list-messages
+This playbook retrieves the original email using the Microsoft Graph Mail integration.
+Note: You must have the necessary permissions in the Microsoft Graph Mail integration as described in the [message-get API](https://docs.microsoft.com/en-us/graph/api/message-get) and the [user-list-messages API](https://docs.microsoft.com/en-us/graph/api/user-list-messages)
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -17,8 +14,8 @@ This playbook does not use any sub-playbooks.
 * IsIntegrationAvailable
 
 ### Commands
-* msgraph-mail-list-emails
 * msgraph-mail-get-email-as-eml
+* msgraph-mail-list-emails
 
 ## Playbook Inputs
 ---
@@ -28,13 +25,14 @@ This playbook does not use any sub-playbooks.
 | UserID | The email address of the reporting user. |  | Optional |
 | MessageID | The InReplyTo header in the forwarded email. |  | Optional |
 | ThreadTopic | The ThreadTopic header in the forwarded email. |  | Optional |
+| PagesToPull | The number of pages of emails to return \(maximum is 10 emails per page\). | 10 | Optional |
 
 ## Playbook Outputs
 ---
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| File | The original email as an eml file. | string |
+| File | The original email as an EML file. | string |
 
 ## Playbook Image
 ---

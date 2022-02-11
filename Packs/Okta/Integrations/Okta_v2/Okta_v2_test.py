@@ -1,7 +1,9 @@
 from Okta_v2 import Client, get_user_command, get_group_members_command, create_user_command, \
     verify_push_factor_command, get_groups_for_user_command, get_user_factors_command, get_logs_command, \
-    get_zone_command, list_zones_command, update_zone_command
+    get_zone_command, list_zones_command, update_zone_command, list_users_command
 import pytest
+import json
+import io
 
 
 client = Client(base_url="demisto.com")
@@ -554,6 +556,14 @@ okta_zone = {
 }
 
 
+def util_load_json(path: str):
+    """
+    Utility to load json data from a local folder.
+    """
+    with io.open(path, mode='r', encoding='utf-8') as file:
+        return json.loads(file.read())
+
+
 @pytest.mark.parametrize(
     # Write and define the expected
     "args ,expected_context, expected_readable",
@@ -576,6 +586,31 @@ def test_get_user_command(mocker, args, expected_context, expected_readable):
     mocker.patch.object(client, 'get_user', return_value=user_data)
     readable, outputs, _ = get_user_command(client, args)
     assert outputs.get('Account(val.ID && val.ID === obj.ID)')[0] == expected_context
+    assert expected_readable in readable
+
+
+@pytest.mark.parametrize(
+    # Write and define the expected
+    "args ,expected_context, expected_readable",
+    [
+        ({"userId": "TestID", "username": "", "verbose": 'false'},
+         {'ID': 'TestID', 'Username': 'test@this.com', 'DisplayName': 'test this', 'Email': 'test@this.com',
+          'Status': 'PROVISIONED', 'Type': 'Okta', 'Created': "2020-02-19T08:18:20.000Z",
+          'Activated': "2020-02-20T11:44:43.000Z",
+          'StatusChanged': "2020-02-20T11:45:24.000Z",
+          'PasswordChanged': "2020-02-19T08:18:21.000Z"}, 'test@this.com'),
+        ({"userId": "", "username": "test@this.com", "verbose": 'true'},
+         {'ID': 'TestID', 'Username': 'test@this.com', 'DisplayName': 'test this', 'Email': 'test@this.com',
+          'Status': 'PROVISIONED', 'Type': 'Okta', 'Created': "2020-02-19T08:18:20.000Z",
+          'Activated': "2020-02-20T11:44:43.000Z",
+          'StatusChanged': "2020-02-20T11:45:24.000Z",
+          'PasswordChanged': "2020-02-19T08:18:21.000Z"}, 'Additional Data'),
+    ]
+)
+def test_list_user_command(mocker, args, expected_context, expected_readable):
+    mocker.patch.object(client, 'list_users', return_value=user_data)
+    readable, outputs, _ = list_users_command(client, args)
+    assert outputs.get('Account(val.ID && val.ID == obj.ID)')[0] == expected_context
     assert expected_readable in readable
 
 
@@ -695,18 +730,39 @@ def test_update_zone_command(mocker, args):
     assert 'NewZoneName' == outputs.get('Okta.Zone(val.id && val.id === obj.id)').get('name', '')
 
 
-# #
-# #
+EXPEXTED_LOGS_RESULT = \
+    [
+        {
+            "Actor": "dummy name (User)",
+            "ActorAlternaneId": "example",
+            "EventInfo": "Remove user from group membership",
+            "EventOutcome": "SUCCESS",
+            "EventSeverity": "INFO",
+            "Client": "Unknown browser on Unknown OS Unknown device",
+            "RequestIP": "8.8.8.8",
+            "ChainIP": [
+                "8.8.8.8"
+            ],
+            "Targets": "test this (User)\ntest1 (UserGroup)\n",
+            "Time": "12/13/2021, 01:47:08"
+        },
+        {
+            "Actor": "dummy name (User)",
+            "ActorAlternaneId": "example",
+            "EventInfo": "Remove user from group membership",
+            "EventOutcome": "SUCCESS",
+            "EventSeverity": "INFO",
+            "Client": "Unknown browser on Unknown OS Unknown device",
+            "RequestIP": "8.8.8.8",
+            "ChainIP": [],
+            "Targets": "test this (User)\ntest1 (UserGroup)\n",
+            "Time": "12/13/2021, 01:47:08"
+        }
+    ]
 
 
-# def test_say_hello_over_http(requests_mock):
-#     mock_response = {'result': 'Hello Dbot'}
-#     requests_mock.get('https://test.com/hello/Dbot', json=mock_response)
-# #
-#     client = Client(base_url='https://test.com', verify=False, auth=('test', 'test'))
-#     args = {
-#         'name': 'Dbot'
-#     }
-#     _, outputs, _ = say_hello_over_http_command(client, args)
-#
-#     assert outputs['hello'] == 'Hello Dbot'
+def test_get_readable_logs():
+    logs_raw_response = util_load_json('test_data/get_logs_response.json')
+    result = client.get_readable_logs(logs_raw_response)
+    assert len(result) == 2
+    assert result == EXPEXTED_LOGS_RESULT

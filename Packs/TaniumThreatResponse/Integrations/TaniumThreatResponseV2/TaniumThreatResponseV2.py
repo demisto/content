@@ -1,5 +1,3 @@
-import copy
-
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -12,8 +10,9 @@ import json
 import urllib3
 import urllib.parse
 from dateutil.parser import parse
-from typing import Any, Tuple
+from typing import Any, Tuple, List
 from lxml import etree
+import copy
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -110,7 +109,7 @@ class Client(BaseClient):
                 'password': self.password
             }
 
-            res = self._http_request('GET', '/api/v2/session/login', json_data=body, ok_codes=(200,))
+            res = self._http_request('POST', '/api/v2/session/login', json_data=body, ok_codes=(200,))
 
             self.session = res.get('data').get('session')
         else:  # no API token and no credentials were provided, raise an error:
@@ -165,6 +164,25 @@ def convert_to_int(int_to_parse: Any) -> Optional[int]:
     except (TypeError, ValueError):
         res = None
     return res
+
+
+def are_filters_match_response_content(all_filter_arguments: List[Tuple[list, str]], api_response: dict) -> bool:
+    """
+    Verify whether any filter arguments of a command match the api response content.
+
+    Args:
+        all_filter_arguments (list[tuple]): pairs of filter arguments inputs & a response key.
+        api_response (dict): api response.
+
+    Returns:
+        bool: True if in any of the filter arguments there was a match, False otherwise.
+    """
+    for arguments in all_filter_arguments:
+        command_args, resp_key = arguments
+        for arg in command_args:
+            if arg == api_response.get(resp_key):
+                return True
+    return False
 
 
 def filter_to_tanium_api_syntax(filter_str):
@@ -319,6 +337,17 @@ def update_content_from_xml(file_path: str, intrinsic_id: str) -> str:
     return ''
 
 
+def get_quick_scan_item(quick_scan):
+    return {
+        'IntelDocId': quick_scan.get('intelDocId'),
+        'ComputerGroupId': quick_scan.get('computerGroupId'),
+        'ID': quick_scan.get('id'),
+        'AlertCount': quick_scan.get('alertCount'),
+        'CreatedAt': quick_scan.get('createdAt'),
+        'UserId': quick_scan.get('userId'),
+        'QuestionId': quick_scan.get('questionId')}
+
+
 ''' ALERTS DOCS HELPER FUNCTIONS '''
 
 
@@ -357,6 +386,7 @@ def alarm_to_incident(client, alarm):
         'name': f'{host} found {intel_doc}',
         'occurred': alarm.get('alertedAt'),
         'starttime': alarm.get('createdAt'),
+        'alertid': alarm.get('id'),
         'rawJSON': json.dumps(alarm)}
 
 
@@ -394,6 +424,7 @@ def fetch_incidents(client, alerts_states_to_retrieve, last_run, fetch_time, max
     last_fetch = last_run.get('time')
     last_id = int(last_run.get('id', '0'))
     alerts_states = argToList(alerts_states_to_retrieve)
+    offset = 0
 
     # Handle first time fetch, fetch incidents retroactively
     if not last_fetch:
@@ -402,29 +433,48 @@ def fetch_incidents(client, alerts_states_to_retrieve, last_run, fetch_time, max
     demisto.debug(f'Get last run: last_id {last_id}, last_time: {last_fetch}.\n')
 
     last_fetch = parse(last_fetch)
-    current_fetch = last_fetch
 
-    url_suffix = '/plugin/products/detect3/api/v1/alerts?' + state_params_suffix(alerts_states) + '&limit=500'
-
-    raw_response = client.do_request('GET', url_suffix)
-
-    # convert the data/events to demisto incidents
+    alerts_states_suffix = state_params_suffix(alerts_states)
     incidents = []
-    for alarm in raw_response:
-        incident = alarm_to_incident(client, alarm)
-        temp_date = parse(incident.get('starttime'))
 
-        # update last run
-        if temp_date > last_fetch:
-            last_fetch = temp_date
+    while True:
+        demisto.debug(f'Sending new alerts api request with offset: {offset}.')
+        url_suffix = '/plugin/products/detect3/api/v1/alerts?' + alerts_states_suffix + \
+                     f'&sort=-createdAt&limit=500&offset={offset}'
 
-        # avoid duplication due to weak time query
-        if temp_date >= current_fetch and (new_id := alarm.get('id', last_id)) > last_id:
-            incidents.append(incident)
-            last_id = new_id
-
-        if len(incidents) >= max_fetch:
+        raw_response = client.do_request('GET', url_suffix)
+        if not raw_response:
+            demisto.debug('Stop fetch loop, no incidents in raw response.')
             break
+
+        # convert the data/events to demisto incidents
+        for alarm in raw_response:
+            incident = alarm_to_incident(client, alarm)
+            temp_date = parse(incident.get('starttime'))
+            new_id = incident.get('alertid')
+            demisto.debug(f'Fetched new alert, id: {new_id}, created_at: {temp_date}.\n')
+
+            if temp_date >= last_fetch and new_id > last_id:
+                demisto.debug(f'Adding new incident with id: {new_id}')
+                incidents.append(incident)
+            else:
+                demisto.debug(f'Stop fetch loop, temp date < last fetch: {temp_date} < {last_fetch}.')
+                break
+
+        if temp_date >= last_fetch:
+            offset += 500
+        else:
+            demisto.debug(f'Stop fetch loop, temp date < last fetch: {temp_date} < {last_fetch}.')
+            break
+
+    if len(incidents) > max_fetch:
+        demisto.debug('Re-sizing incidents list.')
+        incidents = incidents[len(incidents) - max_fetch:]
+
+    if incidents:
+        last_incident = incidents[0]
+        last_fetch = parse(last_incident.get('starttime'))
+        last_id = last_incident.get('alertid')
 
     next_run = {'time': datetime.strftime(last_fetch, DATE_FORMAT), 'id': str(last_id)}
 
@@ -749,6 +799,40 @@ def update_intel_doc(client: Client, data_args: dict) -> Tuple[str, dict, Union[
     return human_readable, outputs, raw_response
 
 
+def delete_intel_doc(client, data_args):
+    params = {
+        'id': data_args.get('intel_doc_id')
+    }
+    raw_response = client.do_request('DELETE', '/plugin/products/detect3/api/v1/intels/', params=params)
+
+    return 'Intel Doc deleted', {}, raw_response
+
+
+def start_quick_scan(client, data_args):
+    # get computer group ID from computer group name
+    computer_group_name = data_args.get('computer_group_name')
+    raw_response = client.do_request('GET', f"/api/v2/groups/by-name/{computer_group_name}")
+    raw_response_data = raw_response.get('data')
+    if not raw_response_data:
+        msg = f'No group exists with name {computer_group_name} or' \
+              f' your account does not have sufficient permissions to access the groups'
+        raise DemistoException(msg)
+
+    data = {
+        'intelDocId': int(data_args.get('intel_doc_id')),
+        'computerGroupId': int(raw_response_data.get('id'))
+    }
+    raw_response = client.do_request('POST', '/plugin/products/detect3/api/v1/quick-scans/', data=data)
+    quick_scan = get_quick_scan_item(raw_response)
+
+    context = createContext(quick_scan, removeNull=True)
+    outputs = {'Tanium.QuickScan(val.ID && val.ID === obj.ID)': context}
+
+    human_readable = tableToMarkdown('Quick Scan started', quick_scan, headerTransform=pascalToSpace, removeNull=True)
+
+    return human_readable, outputs, raw_response
+
+
 def deploy_intel(client: Client, data_args: dict) -> Tuple[str, dict, Union[list, dict]]:
     """ Deploys intel using the service account context.
 
@@ -1017,38 +1101,60 @@ def delete_local_snapshot(client, data_args) -> Tuple[str, dict, Union[list, dic
 ''' CONNECTIONS COMMANDS FUNCTIONS '''
 
 
-def get_connections(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
-    """ List all connections.
-
-        :type client: ``Client``
-        :param client: client which connects to api.
-        :type data_args: ``dict``
-        :param data_args: request arguments.
-
-        :return: human readable format, context output and the original raw response.
-        :rtype: ``tuple``
-
+def get_connections(client, command_args) -> Tuple[str, dict, Union[list, dict]]:
     """
-    limit = arg_to_number(data_args.get('limit'))
-    offset = arg_to_number(data_args.get('offset'))
-    raw_response = client.do_request('GET', '/plugin/products/threat-response/api/v1/conns')
+    Implement the 'tanium-tr-list-connections' command - Get list of user connections.
+
+    Note:
+        Given either ip/status/hostname/platform as command arguments, the output of the connections will be filtered.
+
+    Args:
+        client (Client): client that connects to the Tanium-Threat-Response API.
+        command_args (dict): command arguments entered by the user. (limit, offset, ip, status, hostname, platform).
+
+    Returns:
+        tuple (str, dict, list[dict]): table output, context output and raw response by the Tanium-Threat-Response API.
+    """
+    limit = arg_to_number(command_args.get('limit'))
+    offset = arg_to_number(command_args.get('offset'))
+    ips = argToList(arg=command_args.get('ip'))
+    statuses = argToList(arg=command_args.get('status'))
+    hostnames = argToList(arg=command_args.get('hostname'))
+    platforms = argToList(arg=command_args.get('platform'))
+
+    raw_response = client.do_request(method='GET', url_suffix='/plugin/products/threat-response/api/v1/conns')
 
     from_idx = min(offset, len(raw_response))
     to_idx = min(offset + limit, len(raw_response))  # type: ignore
 
+    is_resp_filtering_required = ips or statuses or hostnames or platforms
+    filter_arguments = [(ips, 'ip'), (statuses, 'status'), (hostnames, 'hostname'), (platforms, 'platform')]
+
     connections = raw_response[from_idx:to_idx]
+    filtered_connections = []
+
     for connection in connections:
         if connected_at := connection.get('connectedAt'):
             connection['connectedAt'] = timestamp_to_datestring(connected_at)
         if initiated_at := connection.get('initiatedAt'):
             connection['initiatedAt'] = timestamp_to_datestring(initiated_at)
 
-    context = createContext(connections, removeNull=True)
+        if is_resp_filtering_required and are_filters_match_response_content(
+                all_filter_arguments=filter_arguments,
+                api_response=connection
+        ):
+            filtered_connections.append(connection)
+
+    if is_resp_filtering_required:
+        connections = filtered_connections
+
+    context = createContext(data=connections, removeNull=True)
     outputs = {'Tanium.Connection(val.id === obj.id)': context}
-    headers = ['id', 'status', 'hostname', 'message', 'ip', 'platform', 'connectedAt']
-    human_readable = tableToMarkdown('Connections', connections, headers=headers,
-                                     headerTransform=pascalToSpace, removeNull=True)
-    return human_readable, outputs, raw_response
+    table_headers = ['id', 'status', 'hostname', 'message', 'ip', 'platform', 'connectedAt']
+    output_table = tableToMarkdown(
+        name='Connections', t=connections, headers=table_headers, headerTransform=pascalToSpace, removeNull=True
+    )
+    return output_table, outputs, raw_response
 
 
 def create_connection(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
@@ -1218,36 +1324,55 @@ def get_label(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
 ''' FILES COMMANDS FUNCTIONS '''
 
 
-def get_file_downloads(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
-    """ Get list all file downloads.
-
-        :type client: ``Client``
-        :param client: client which connects to api.
-        :type data_args: ``dict``
-        :param data_args: request arguments.
-
-        :return: human readable format, context output and the original raw response.
-        :rtype: ``tuple``
-
+def get_file_downloads(client, command_args) -> Tuple[str, dict, Union[list, dict]]:
     """
-    limit = arg_to_number(data_args.get('limit'))
-    offset = arg_to_number(data_args.get('offset'))
-    sort = data_args.get('sort')
+    Implement the 'tanium-tr-list-file-downloads' command - get a list of all file evidences.
+
+    Note:
+        Given either hash, hostname, process_time_start as command arguments,
+        the output of the connections will be filtered.
+
+    Args:
+        client (Client): client that connects to the Tanium-Threat-Response API.
+        command_args (dict): command arguments entered by the user. (limit, offset, ip, status, hostname, platform).
+
+    Returns:
+        tuple (str, dict, list[dict]): table output, context output and raw response by the Tanium-Threat-Response API.
+    """
+    limit = arg_to_number(command_args.get('limit'))
+    offset = arg_to_number(command_args.get('offset'))
+    sort = command_args.get('sort')
+    hashes = argToList(arg=command_args.get('hash'))
+    hostnames = argToList(arg=command_args.get('hostname'))
+    process_time_start = command_args.get('process_time_start')
+
+    is_filtering_resp_required = hashes or hostnames or process_time_start
+    filter_arguments = [(hostnames, 'hostname'), (hashes, 'hash'), ([process_time_start], 'process_creation_time')]
+
     params = assign_params(limit=limit, offset=offset, sort=sort)
     raw_response = client.do_request('GET', '/plugin/products/threat-response/api/v1/filedownload', params=params)
 
     files = raw_response.get('fileEvidence', [])
+    filtered_files = []
+
     for file in files:
         if evidence_type := file.get('evidenceType'):
             file['evidence_type'] = evidence_type
             del file['evidenceType']
+        if is_filtering_resp_required and are_filters_match_response_content(
+                all_filter_arguments=filter_arguments, api_response=file
+        ):
+            filtered_files.append(file)
+
+    if is_filtering_resp_required:
+        files = filtered_files
 
     context = createContext(files, removeNull=True, keyTransform=lambda x: underscoreToCamelCase(x, upper_camel=False))
     outputs = {'Tanium.FileDownload(val.uuid === obj.uuid)': context}
-    headers = ['uuid', 'path', 'evidenceType', 'hostname', 'processCreationTime', 'size']
-    human_readable = tableToMarkdown('File downloads', context, headers=headers,
-                                     headerTransform=pascalToSpace, removeNull=True)
-    return human_readable, outputs, raw_response
+    table_headers = ['uuid', 'path', 'evidenceType', 'hostname', 'processCreationTime', 'size']
+    table = tableToMarkdown('File downloads', context, headers=table_headers,
+                            headerTransform=pascalToSpace, removeNull=True)
+    return table, outputs, raw_response
 
 
 def get_downloaded_file(client, data_args):
@@ -1612,41 +1737,56 @@ def get_process_tree(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
 ''' EVIDENCE COMMANDS FUNCTIONS '''
 
 
-def list_evidence(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
-    """ Get all evidences, can sort them using sort param
-
-        :type client: ``Client``
-        :param client: client which connects to api.
-        :type data_args: ``dict``
-        :param data_args: request arguments.
-
-        :return: human readable format, context output and the original raw response.
-        :rtype: ``tuple``
-
+def list_evidence(client, commands_args) -> Tuple[str, dict, Union[list, dict]]:
     """
-    limit = arg_to_number(data_args.get('limit'))
-    offset = arg_to_number(data_args.get('offset'))
-    sort = data_args.get('sort')
+    Implement the 'tanium-tr-event-evidence-list' command - get combined evidence across all types.
 
-    params = assign_params(sort=sort)
+    Note:
+        Given either type/hostname as command arguments, the output of the connections will be filtered.
+
+    Args:
+        client (Clinet): client that connects to the Tanium-Threat-Response API.
+        command_args (dict): command arguments entered by the user. (limit, offset, hostname, sort, type).
+
+    Returns:
+        tuple (str, dict, list[dict]): table output, context output and raw response by the Tanium-Threat-Response API.
+    """
+    limit = arg_to_number(commands_args.get('limit'))
+    offset = arg_to_number(commands_args.get('offset'))
+    hostnames = argToList(arg=commands_args.get('hostname'))
+    sort = commands_args.get('sort')
+    type = commands_args.get('type')
+
+    params = assign_params(sort=sort, type=type)
     raw_response = client.do_request('GET', '/plugin/products/threat-response/api/v1/evidence', params=params)
+
+    filter_arguments = [(hostnames, 'hostname')]
 
     from_idx = min(offset, len(raw_response))
     to_idx = min(offset + limit, len(raw_response))  # type: ignore
+
     evidences = raw_response[from_idx:to_idx]
+    filtered_evidences_by_hostname = []
+
     for item in evidences:
         if created := item.get('createdAt'):
             try:
                 item['createdAt'] = timestamp_to_datestring(created)
             except ValueError:
                 pass
+        if hostnames and are_filters_match_response_content(all_filter_arguments=filter_arguments, api_response=item):
+            filtered_evidences_by_hostname.append(item)
 
-    context = createContext(evidences, removeNull=True)
+    if hostnames:
+        evidences = filtered_evidences_by_hostname
+
+    context = createContext(data=evidences, removeNull=True)
     outputs = {'Tanium.Evidence(val.uuid && val.uuid === obj.uuid)': context}
-    headers = ['uuid', 'name', 'evidenceType', 'hostname', 'createdAt', 'username']
-    human_readable = tableToMarkdown('Evidence list', evidences, headers=headers,
-                                     headerTransform=pascalToSpace, removeNull=True)
-    return human_readable, outputs, raw_response
+    table_headers = ['uuid', 'name', 'evidenceType', 'hostname', 'createdAt', 'username']
+    table_output = tableToMarkdown(
+        name='Evidence list', t=evidences, headers=table_headers, headerTransform=pascalToSpace, removeNull=True
+    )
+    return table_output, outputs, raw_response
 
 
 def event_evidence_get_properties(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
@@ -1790,20 +1930,37 @@ def get_task_by_id(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
     return human_readable, outputs, raw_response
 
 
-def get_system_status(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
-    """ Get system status, to get client-id for `create-connection` command.
-
-        :type client: ``Client``
-        :param client: client which connects to api.
-        :type data_args: ``dict``
-        :param data_args: request arguments.
-
-        :return: human readable format, context output and the original raw response.
-        :rtype: ``tuple``
-
+def get_system_status(client, command_args) -> Tuple[str, dict, Union[list, dict]]:
     """
-    limit = arg_to_number(data_args.get('limit'))
-    offset = arg_to_number(data_args.get('offset'))
+    Implement the 'tanium-tr-get-system-status' command - get system status, to get client-id for
+    `create-connection` command.
+
+    Note:
+        Given either ip/status/hostname/platform as command arguments, the output of the connections will be filtered.
+
+    Args:
+        client (Client): client that connects to the Tanium-Threat-Response API.
+        command_args (dict): command arguments entered by the user. (limit, offset, ip, status, hostname, platform).
+
+    Returns:
+        tuple (str, dict, list[dict]): table output, context output and raw response by the Tanium-Threat-Response API.
+    """
+    limit = arg_to_number(command_args.get('limit'))
+    offset = arg_to_number(command_args.get('offset'))
+    statuses = argToList(arg=command_args.get('status'))
+    hostnames = argToList(arg=command_args.get('hostname'))
+    ipaddrs_client = argToList(arg=command_args.get('ip_client'))
+    ipaddrs_server = argToList(arg=command_args.get('ip_server'))
+    port = arg_to_number(arg=command_args.get('port'))
+
+    is_resp_filtering_required = statuses or hostnames or ipaddrs_client or ipaddrs_client or ipaddrs_server or port
+    filter_arguments = [
+        (statuses, 'status'),
+        (hostnames, 'host_name'),
+        (ipaddrs_client, 'ipaddress_client'),
+        (ipaddrs_server, 'ipaddress_server'),
+        ([port], 'port_number')
+    ]
 
     raw_response = client.do_request('GET', '/api/v2/system_status')
     data = raw_response.get('data', [{}])
@@ -1815,7 +1972,11 @@ def get_system_status(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
     for item in data[from_idx:to_idx]:
         if client_id := item.get('computer_id'):
             item['client_id'] = client_id
-            active_computers.append(item)
+            if is_resp_filtering_required:
+                if are_filters_match_response_content(all_filter_arguments=filter_arguments, api_response=item):
+                    active_computers.append(item)
+            else:
+                active_computers.append(item)
 
     context = createContext(active_computers, removeNull=True,
                             keyTransform=lambda x: underscoreToCamelCase(x, upper_camel=False))
@@ -1864,8 +2025,10 @@ def main():
         'tanium-tr-intel-docs-remove-label': remove_intel_docs_label,
         'tanium-tr-intel-doc-create': create_intel_doc,
         'tanium-tr-intel-doc-update': update_intel_doc,
+        'tanium-tr-intel-doc-delete': delete_intel_doc,
         'tanium-tr-intel-deploy': deploy_intel,
         'tanium-tr-intel-deploy-status': get_deploy_status,
+        'tanium-tr-start-quick-scan': start_quick_scan,
 
         'tanium-tr-list-alerts': get_alerts,
         'tanium-tr-get-alert-by-id': get_alert,
@@ -1928,7 +2091,9 @@ def main():
 
         if command in commands:
             human_readable, outputs, raw_response = commands[command](client, demisto.args())
-            return_outputs(readable_output=human_readable, outputs=outputs, raw_response=raw_response)
+            return_results(
+                results=CommandResults(readable_output=human_readable, outputs=outputs, raw_response=raw_response)
+            )
 
     except Exception as e:
         if command == 'fetch-incidents':

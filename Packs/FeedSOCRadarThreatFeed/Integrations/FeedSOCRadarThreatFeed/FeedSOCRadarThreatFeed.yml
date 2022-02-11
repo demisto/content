@@ -1,0 +1,247 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: FeedSOCRadarThreatFeed
+  version: -1
+configuration:
+- additionalinfo: The API Key to use for connection
+  display: API Key
+  name: apikey
+  required: true
+  type: 4
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Feed Name
+  hidden: false
+  name: collections_to_fetch
+  options:
+  - ALL
+  - SOCRadar-Attackers-Recommended-Block-Hash
+  - SOCRadar-Attackers-Recommended-Block-IP
+  - SOCRadar-Attackers-Recommended-Block-Domain
+  - SOCRadar-Recommended-Ransomware-Hash
+  - SOCRadar-Recommended-Phishing-Global
+  - SOCRadar-Recommended-Block-Hash
+  - SOCRadar-Recommended-Phishing-Local
+  - SOCRadar-APT-Recommended-Block-IP
+  - SOCRadar-APT-Recommended-Block-Domain
+  - SOCRadar-APT-Recommended-Block-Hash
+  - SOCRadar-Botnet C&C - Block-Domain
+  - SOCRadar-Botnet C&C - Block-IP
+  required: true
+  type: 16
+- defaultvalue: 'true'
+  display: Fetch indicators
+  name: feed
+  required: false
+  type: 8
+- additionalinfo: Indicators from this integration instance will be marked with this
+    reputation.
+  defaultvalue: Good
+  display: Indicator Reputation
+  name: feedReputation
+  options:
+  - None
+  - Good
+  - Suspicious
+  - Bad
+  required: false
+  type: 18
+- additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: A - Completely reliable
+  display: Source Reliability
+  name: feedReliability
+  options:
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
+- name: feedExpirationPolicy
+  display: ''
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
+  required: false
+  type: 17
+- defaultvalue: '20160'
+  name: feedExpirationInterval
+  display: ''
+  required: false
+  type: 1
+- defaultvalue: '1440'
+  display: Feed Fetch Interval
+  name: feedFetchInterval
+  required: false
+  type: 19
+- additionalinfo: When selected, the exclusion list is ignored for indicators from
+    this feed. This means that if an indicator from this feed is on the exclusion
+    list, the indicator might still be added to the system.
+  display: Bypass exclusion list
+  name: feedBypassExclusionList
+  required: false
+  type: 8
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
+    fetched from the feed.
+  defaultvalue: GREEN
+  display: Traffic Light Protocol Color
+  name: tlp_color
+  options:
+  - RED
+  - AMBER
+  - GREEN
+  - WHITE
+  required: false
+  type: 15
+- additionalinfo: Supports CSV values.
+  display: Tags
+  hidden: false
+  name: feedTags
+  required: false
+  type: 0
+- additionalinfo: Incremental feeds pull only new or modified indicators that have
+    been sent from the integration. As the determination if the indicator is new or
+    modified happens on the 3rd-party vendor's side, and only indicators that are
+    new or modified are sent to Cortex XSOAR, all indicators coming from these feeds
+    are labeled new or modified.
+  display: Incremental Feed
+  name: feedIncremental
+  defaultvalue: true
+  required: false
+  type: 8
+  hidden: true
+description: Retrieve indicators provided by collections via SOCRadar Threat Intelligence
+  Feeds.
+display: SOCRadar Threat Feed
+name: FeedSOCRadarThreatFeed
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: The maximum number of indicators to be retrieved.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: ALL
+      description: Names of the collections that intended to be retrieved indicators
+        from.
+      isArray: false
+      name: collections_to_fetch
+      predefined:
+      - ALL
+      - SOCRadar-Attackers-Recommended-Block-Hash
+      - SOCRadar-Attackers-Recommended-Block-IP
+      - SOCRadar-Attackers-Recommended-Block-Domain
+      - SOCRadar-Recommended-Ransomware-Hash
+      - SOCRadar-Recommended-Phishing-Global
+      - SOCRadar-Recommended-Block-Hash
+      - SOCRadar-Recommended-Phishing-Local
+      - SOCRadar-APT-Recommended-Block-IP
+      - SOCRadar-APT-Recommended-Block-Domain
+      - SOCRadar-APT-Recommended-Block-Hash
+      - SOCRadar-Botnet C&C - Block-Domain
+      - SOCRadar-Botnet C&C - Block-IP
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves SOCRadar Recommended Threat Intelligences Collections.
+    execution: false
+    name: socradar-get-indicators
+    outputs:
+    - contextPath: SOCRadarThreatFeed.Indicators[0].Indicator
+      description: The value of the indicator.
+      type: String
+    - contextPath: SOCRadarThreatFeed.Indicators[0].Indicator Type
+      description: The type of the indicator.
+      type: String
+    - contextPath: SOCRadarThreatFeed.Indicators[0].Feed Maintainer Name
+      description: Name of the maintainer that the indicator found from.
+      type: String
+    - contextPath: SOCRadarThreatFeed.Indicators[0].First Seen Date
+      description: The date that the indicator was in SOCRadar collections for the
+        first time.
+      type: Date
+    - contextPath: SOCRadarThreatFeed.Indicators[0].Last Seen Date
+      description: The latest date that the indicator was seen in SOCRadar collections.
+      type: Date
+    - contextPath: SOCRadarThreatFeed.Indicators[0].Seen Count
+      description: The feed description.
+      type: Number
+    - contextPath: SOCRadarThreatFeed.Indicators[0].rawJSON
+      description: Raw JSON object that contains the value and type of the indicator.
+      type: JSON
+    - contextPath: SOCRadarThreatFeed.Indicators[0].Geo Location.ASN
+      description: ASN field Geographical location information of the IP type indicator.
+      type: Number
+    - contextPath: SOCRadarThreatFeed.Indicators[0].Geo Location.AsnCode
+      description: ASN code field Geographical location information of the IP type
+        indicator.
+      type: Number
+    - contextPath: SOCRadarThreatFeed.Indicators[0].Geo Location.AsnName
+      description: ASN name field Geographical location information of the IP type
+        indicator.
+      type: String
+    - contextPath: SOCRadarThreatFeed.Indicators[0].Geo Location.Cidr
+      description: CIDR field Geographical location information of the IP type indicator.
+      type: String
+    - contextPath: SOCRadarThreatFeed.Indicators[0].Geo Location.CityName
+      description: City name field Geographical location information of the IP type
+        indicator.
+      type: String
+    - contextPath: SOCRadarThreatFeed.Indicators[0].Geo Location.CountryCode
+      description: Country code field Geographical location information of the IP
+        type indicator.
+      type: String
+    - contextPath: SOCRadarThreatFeed.Indicators[0].Geo Location.CountryName
+      description: Country name field Geographical location information of the IP
+        type indicator.
+      type: String
+    - contextPath: SOCRadarThreatFeed.Indicators[0].Geo Location.Latitude
+      description: Latitude field Geographical location information of the IP type
+        indicator.
+      type: Number
+    - contextPath: SOCRadarThreatFeed.Indicators[0].Geo Location.Longitude
+      description: Longitude field Geographical location information of the IP type
+        indicator.
+      type: Number
+    - contextPath: SOCRadarThreatFeed.Indicators[0].Geo Location.RegionName
+      description: Region name field Geographical location information of the IP type
+        indicator.
+      type: String
+    - contextPath: SOCRadarThreatFeed.Indicators[0].Geo Location.Timezone
+      description: Timezone field Geographical location information of the IP type
+        indicator.
+      type: String
+    - contextPath: SOCRadarThreatFeed.Indicators[0].Geo Location.ZipCode
+      description: Zip code field Geographical location information of the IP type
+        indicator.
+      type: String
+  - deprecated: false
+    description: Resets the indicator fetch history.
+    execution: false
+    name: socradar-reset-fetch-indicators
+  dockerimage: demisto/python3:3.9.8.24399
+  feed: true
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- FeedSOCRadarThreatFeed-Test
+fromversion: 6.0.0

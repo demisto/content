@@ -2,7 +2,7 @@
     "name": "HYAS Protect",
     "description": "Use the HYAS Protect integration to get the verdict information for FQDN, IP Address and NameServer.",
     "support": "partner",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.0.1",
     "author": "HYAS",
     "url": "https://www.hyas.com/contact",
     "email": "support@hyas.com",
@@ -12,5 +12,9 @@
     "tags": [],
     "useCases": [],
     "keywords": [],
-    "githubUser": []
+    "githubUser": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

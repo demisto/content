@@ -1,0 +1,133 @@
+commonfields:
+  id: AlgoSec
+  version: -1
+name: AlgoSec
+display: AlgoSec
+system: true
+category: Network Security
+description: Algosec BusinessFlow(ABF), Firewall Analyzer (AFA) and FireFlow(AFF).
+configuration:
+- display: Server URL (e.g. https://192.168.0.1)
+  name: server
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Credentials
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: true
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+script:
+  script: ''
+  type: javascript
+  commands:
+  - name: algosec-get-ticket
+    arguments:
+    - name: ticketId
+      required: true
+      default: true
+      description: ID of requested change request
+    description: Retrieves a FireFlow change request by its ID
+  - name: algosec-create-ticket
+    arguments:
+    - name: description
+      description: A free text description of the issue
+    - name: devices
+      description: A list of device names, on which the change should be made
+    - name: action
+      required: true
+      description: |
+        The device action to perform for the traffic. This can be either
+        of the following: \U0010FC00 1 - Allow the traffic \U0010FC00 0 - Block the
+        traffic
+      predefined:
+      - "0"
+      - "1"
+    - name: destAddress
+      required: true
+      description: The destination address to perform the action on
+    - name: sourceAddress
+      required: true
+      description: The source address to perform the action on
+    - name: requestor
+      required: true
+      description: The email address of the requestor
+    - name: subject
+      required: true
+      description: The change request's title
+    - name: service
+      required: true
+      description: The device service or port for the connection, for example, "http"
+        or ￼￼￼￼￼￼￼￼Mandatory "tcp/123"
+    - name: user
+      required: true
+      description: The user for the connection
+    - name: application
+      required: true
+      description: The application for the connection
+    description: Creates a new FireFlow change request
+  - name: algosec-get-applications
+    arguments:
+    - name: address
+      required: true
+      default: true
+      description: The IP/Subnet to search
+    - name: type
+      auto: PREDEFINED
+      predefined:
+      - INTERSECT
+      - CONTAINED
+      - CONTAINING
+      - EXACT
+      description: The search method for the address
+    description: Find applications containing network objects related to IP address
+      using BusinessFlow
+  - name: algosec-get-network-object
+    arguments:
+    - name: address
+      required: true
+      default: true
+      description: The IP/Subnet to search
+    - name: type
+      auto: PREDEFINED
+      predefined:
+      - INTERSECT
+      - CONTAINED
+      - CONTAINING
+      - EXACT
+      description: The search method for the address (default is INTERSECT)
+    description: Find network objects related to IP address
+  - name: algosec-query
+    arguments:
+    - name: source
+      required: true
+      default: true
+      description: source(s) for the query. Multiple values are separated by commas
+        (,)
+    - name: destination
+      required: true
+      description: destination(s) for the query. Multiple values are separated by
+        commas (,)
+    - name: service
+      required: true
+      description: service(s) for the query. Multiple values are separated by commas
+        (,)
+    - name: user
+      description: user for the query
+    - name: application
+      description: application for the query
+    description: Performs a batch traffic simulation query using Firewall Analyzer
+  runonce: false
+tests:
+- No tests
+fromversion: 5.0.0

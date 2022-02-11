@@ -33,7 +33,7 @@ tasks:
     task:
       id: 119f2064-ccc9-4395-8edc-35cccbfc24d7
       version: -1
-      name: Create white list
+      name: Create allow list
       script: Builtin|||createList
       type: regular
       iscommand: true
@@ -214,7 +214,7 @@ tasks:
     task:
       id: 55c33444-6ca3-4328-88e1-9e3656655777
       version: -1
-      name: Create white list
+      name: Create allow list
       script: Builtin|||createList
       type: regular
       iscommand: true
@@ -430,7 +430,7 @@ tasks:
     task:
       id: b270cc68-b5fe-41ca-8206-3c9b2fd25bf1
       version: -1
-      name: Create white list with capital case
+      name: Create allow list with capital case
       script: Builtin|||createList
       type: regular
       iscommand: true

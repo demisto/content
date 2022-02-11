@@ -2,7 +2,7 @@
     "name": "Atlassian IAM",
     "description": "Atlassian IAM Integration allows the customers to do the generic ILM management operations such as create, update, delete, etc.",
     "support": "xsoar",
-    "currentVersion": "1.1.3",
+    "currentVersion": "1.1.4",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -10,5 +10,9 @@
     "categories": [],
     "tags": [],
     "useCases": [],
-    "keywords": []
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

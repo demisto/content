@@ -122,7 +122,7 @@ script:
       description: Date of the last TCP session acknowledgment of the device associated with the specified email address
       type: number
     - contextPath: AwakeSecurity.Devices.whiteListed
-      description: Is the device associated with the specified email address in the white list
+      description: Is the device associated with the specified email address in the allow list
       type: bool
     description: Query devices in Awake Security
   - name: awake-query-activities
@@ -250,7 +250,7 @@ script:
       description: Notability score of the domain
       type: number
     - contextPath: AwakeSecurity.Domains.whiteListed
-      description: Is the specified domain in white list
+      description: Is the specified domain in allow list
       type: bool
     description: Query domains in Awake Security
   - name: awake-pcap-download
@@ -359,7 +359,7 @@ script:
       description: Total number of devices that accessed the specified domain
       type: number
     - contextPath: AwakeSecurity.Domains.whiteListed
-      description: Is the specified domain in white list
+      description: Is the specified domain in allow list
       type: boolean
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -471,7 +471,7 @@ script:
       description: Date of the last TCP session acknowledgment of the device associated with the specified email address
       type: string
     - contextPath: AwakeSecurity.Emails.whiteListed
-      description: Is the device associated with the specified email address in the white list
+      description: Is the device associated with the specified email address in the allow list
       type: bool
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -607,7 +607,7 @@ script:
       description: Date of the last TCP session acknowledgment of the specified device
       type: string
     - contextPath: AwakeSecurity.Devices.whiteListed
-      description: Is the device associated with the specified email address in the white list
+      description: Is the device associated with the specified email address in the allow list
       type: bool
     - contextPath: AwakeSecurity.Devices.protocols.name
       description: Type of protocol used by the specified device

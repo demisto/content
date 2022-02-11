@@ -72,7 +72,7 @@ configuration:
   required: false
   type: 8
 description: 'Use Trend Micro Cloud App Security integration to protect against ransomware, phishing, malware, and unauthorized transmission of sensitive data for cloud applications, such as Microsoft 365, Box, Dropbox, Google G Suite and Salesforce.'
-display: TrendMicro Cloud App Security
+display: Trend Micro Cloud App Security
 name: TrendMicro Cloud App Security
 script:
   commands:
@@ -726,7 +726,7 @@ script:
     - contextPath: TrendMicroCAS.BlockedList.urls
       description: A list of blocked URLs.
       type: String
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.10.1.25933
   feed: false
   isfetch: true
   longRunning: false

@@ -7,6 +7,7 @@ import splunklib.client as client
 import demistomock as demisto
 from CommonServerPython import *
 from datetime import timedelta, datetime
+from collections import namedtuple
 
 RETURN_ERROR_TARGET = 'SplunkPy.return_error'
 
@@ -167,6 +168,28 @@ RAW_STANDARD = '"Test="success"'
 RAW_JSON_AND_STANDARD_OUTPUT = {"Test": "success"}
 
 
+class Jobs:
+    def __init__(self, status):
+        self.oneshot = None
+        state = namedtuple('state', 'content')
+        self.state = state(content={'dispatchState': str(status)})
+
+    def __getitem__(self, arg):
+        return 0
+
+    def create(self, query, latest_time, app, earliest_time, exec_mode):
+        return {'sid': '123456', 'resultCount': 0}
+
+
+class Service:
+    def __init__(self, status):
+        self.jobs = Jobs(status)
+        self.status = status
+
+    def job(self, sid):
+        return Jobs(self.status)
+
+
 def test_raw_to_dict():
     actual_raw = DICT_RAW_RESPONSE
     response = splunk.rawToDict(actual_raw)
@@ -188,6 +211,53 @@ def test_raw_to_dict():
     assert splunk.rawToDict(RAW_STANDARD) == RAW_JSON_AND_STANDARD_OUTPUT
 
     assert splunk.rawToDict('drilldown_search="key IN ("test1","test2")') == {'drilldown_search': 'key IN (test1,test2)'}
+
+
+@pytest.mark.parametrize('text, output', [
+    ('', ['']),
+    ('"",', ['"",']),
+    #   a value shouldn't do anything special
+    ('woopwoop', ['woopwoop']),
+    #  a normal key value without quotes
+    ('abc=123', ['abc="123"']),
+    #  add a comma at the end
+    ('abc=123,', ['abc="123"']),
+    #  a normal key value with quotes
+    ('cbd="123"', ['cbd="123"']),
+    #  check all wrapped with quotes removed
+    ('"abc="123""', ['abc="123"']),
+    #   we need to remove 111 at the start.
+    ('111, cbd="123"', ['cbd="123"']),
+    # Testing with/without quotes and/or spaces:
+    ('abc=123,cbd=123', ['abc="123"', 'cbd="123"']),
+    ('abc=123,cbd="123"', ['abc="123"', 'cbd="123"']),
+    ('abc="123",cbd=123', ['abc="123"', 'cbd="123"']),
+    ('abc="123",cbd="123"', ['abc="123"', 'cbd="123"']),
+    ('abc=123, cbd=123', ['abc="123"', 'cbd="123"']),
+    ('abc=123, cbd="123"', ['abc="123"', 'cbd="123"']),
+    ('cbd="123", abc=123', ['abc="123"', 'cbd="123"']),
+    ('cbd="123",abc=123', ['abc="123"', 'cbd="123"']),
+    # Continue testing quotes with more values:
+    ('xyz=321,cbd=123,abc=123', ['xyz="321"', 'abc="123"', 'cbd="123"']),
+    ('xyz=321,cbd="123",abc=123', ['xyz="321"', 'abc="123"', 'cbd="123"']),
+    ('xyz="321",cbd="123",abc=123', ['xyz="321"', 'abc="123"', 'cbd="123"']),
+    ('xyz="321",cbd="123",abc="123"', ['xyz="321"', 'abc="123"', 'cbd="123"']),
+    # Testing nested quotes (the main reason for quote_group):
+    #   Try to remove the start 111.
+    ('111, cbd="a="123""', ['cbd="a="123""']),
+    ('cbd="a="123""', ['cbd="a="123""']),
+    ('cbd="a="123", b=321"', ['cbd="a="123", b="321""']),
+    ('cbd="a=123, b=321"', ['cbd="a="123", b="321""']),
+    ('cbd="a=123, b="321""', ['cbd="a="123", b="321""']),
+    ('cbd="a="123", b="321""', ['cbd="a="123", b="321""']),
+    ('cbd="a=123, b=321"', ['cbd="a="123", b="321""']),
+    ('xyz=123, cbd="a="123", b=321"', ['xyz="123"', 'cbd="a="123", b="321""']),
+    ('xyz="123", cbd="a="123", b="321""', ['xyz="123"', 'cbd="a="123", b="321""']),
+    ('xyz="123", cbd="a="123", b="321"", qqq=2', ['xyz="123"', 'cbd="a="123", b="321""', 'qqq="2"']),
+    ('xyz="123", cbd="a="123", b="321"", qqq="2"', ['xyz="123"', 'cbd="a="123", b="321""', 'qqq="2"']),
+])
+def test_quote_group(text, output):
+    assert sorted(splunk.quote_group(text)) == sorted(output)
 
 
 data_test_replace_keys = [
@@ -237,6 +307,12 @@ def test_parse_time_to_minutes_invalid_time_unit(mocker):
 
 SEARCH_RESULT = [
     {
+        "But": {
+            "This": "is"
+        },
+        "Very": "Unique"
+    },
+    {
         "Something": "regular",
         "But": {
             "This": "is"
@@ -264,6 +340,7 @@ REGEX_CHOSEN_FIELDS_SUBSET = [
     "Some*",
     "Very"
 ]
+
 NON_EXISTING_FIELDS = [
     "SDFAFSD",
     "ASBLFKDJK"
@@ -551,7 +628,7 @@ def test_reset_enriching_fetch_mechanism(mocker):
     (datetime.utcnow().isoformat(), datetime.utcnow().isoformat(), 5, False),
     ((datetime.utcnow() - timedelta(minutes=6)).isoformat(), datetime.utcnow().isoformat(), 5, True)
 ])
-def test_is_enrichment_exceeding_timeout(drilldown_creation_time, asset_creation_time, enrichment_timeout, output):
+def test_is_enrichment_exceeding_timeout(mocker, drilldown_creation_time, asset_creation_time, enrichment_timeout, output):
     """
     Scenario: When one of the notable's enrichments is exceeding the timeout, we want to create an incident we all
      the data gathered so far.
@@ -566,7 +643,7 @@ def test_is_enrichment_exceeding_timeout(drilldown_creation_time, asset_creation
     Then:
     - Return the expected result
     """
-    splunk.ENABLED_ENRICHMENTS = [splunk.DRILLDOWN_ENRICHMENT, splunk.ASSET_ENRICHMENT]
+    mocker.patch.object(splunk, 'ENABLED_ENRICHMENTS', return_value=[splunk.DRILLDOWN_ENRICHMENT, splunk.ASSET_ENRICHMENT])
     notable = splunk.Notable({splunk.EVENT_ID: 'id'})
     notable.enrichments.append(splunk.Enrichment(splunk.DRILLDOWN_ENRICHMENT, creation_time=drilldown_creation_time))
     notable.enrichments.append(splunk.Enrichment(splunk.ASSET_ENRICHMENT, creation_time=asset_creation_time))
@@ -1075,6 +1152,63 @@ def test_build_search_human_readable(mocker):
     assert headers == expected_headers
 
 
+@pytest.mark.parametrize('polling', [False, True])
+def test_build_search_kwargs(polling):
+    """
+    Given:
+        The splunk-search command args.
+
+    When:
+        Running the build_search_kwargs to build the search query kwargs.
+
+    Then:
+        Ensure the query kwargs as expected.
+
+    """
+    args = {'earliest_time': '2021-11-23T10:10:10', 'latest_time': '2021-11-23T10:10:20', 'app': 'test_app', 'polling': polling}
+    kwargs_normalsearch = splunk.build_search_kwargs(args, polling)
+    for field in args:
+        if field == 'polling':
+            assert 'exec_mode' in kwargs_normalsearch
+            if polling:
+                assert kwargs_normalsearch['exec_mode'] == 'normal'
+            else:
+                assert kwargs_normalsearch['exec_mode'] == 'blocking'
+        else:
+            assert field in kwargs_normalsearch
+
+
+@pytest.mark.parametrize('polling,status', [
+    (False, 'DONE'), (True, 'DONE'), (True, 'RUNNING')
+])
+def test_splunk_search_command(mocker, polling, status):
+    """
+    Given:
+        A search query with args.
+
+    When:
+        Running the splunk_search_command with and without polling.
+
+    Then:
+        Ensure the result as expected in polling and in regular search.
+
+    """
+
+    mocker.patch.object(demisto, 'args', return_value={'query': 'query', 'earliest_time': '2021-11-23T10:10:10',
+                                                       'latest_time': '2020-10-20T10:10:20', 'app': 'test_app',
+                                                       'polling': polling})
+    mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported')
+
+    search_result = splunk.splunk_search_command(Service(status))
+
+    if search_result.scheduled_command:
+        assert search_result.outputs['Status'] == status
+        assert search_result.scheduled_command._args['sid'] == '123456'
+    else:
+        assert search_result.outputs['Splunk.Result'] == []
+        assert search_result.readable_output == '### Splunk Search results for query: query\n**No entries.**\n'
+
+
 @pytest.mark.parametrize(
     argnames='credentials',
     argvalues=[{'username': 'test', 'password': 'test'}, {'splunkToken': 'token', 'password': 'test'}]
@@ -1163,3 +1297,81 @@ def test_module_hec_url(mocker):
 
     # validate
     assert requests.get.call_args[0][0] == 'test_hec_url/services/collector/health'
+
+
+def test_labels_with_non_str_values(mocker):
+    """
+    Given:
+        - Raw response with values in _raw that stored as dict or list
+
+    When:
+        - Fetch incidents
+
+    Then:
+        - Validate the Labels created in the incident are well formatted to avoid server errors on json.Unmarshal
+    """
+
+    # prepare
+    raw = {
+        "message": "Authentication of user via Radius",
+        "actor_obj": {
+            "id": "test",
+            "type": "User",
+            "alternateId": "test",
+            "displayName": "test"
+        },
+        "actor_list": [{
+            "id": "test",
+            "type": "User",
+            "alternateId": "test",
+            "displayName": "test"
+        }],
+        "actor_tuple": ("id", "test"),
+        "num_val": 100,
+        "bool_val": False,
+        "float_val": 100.0
+    }
+    mocked_response = SAMPLE_RESPONSE[0].copy()
+    mocked_response['_raw'] = json.dumps(raw)
+    mock_last_run = {'time': '2018-10-24T14:13:20'}
+    mock_params = {'fetchQuery': "something", "parseNotableEventsRaw": True}
+    mocker.patch.object(demisto, 'incidents')
+    mocker.patch.object(demisto, 'setLastRun')
+    mocker.patch('demistomock.getLastRun', return_value=mock_last_run)
+    mocker.patch('demistomock.params', return_value=mock_params)
+    mocker.patch('splunklib.results.ResultsReader', return_value=[mocked_response])
+
+    # run
+    service = mocker.patch('splunklib.client.connect', return_value=None)
+    splunk.fetch_incidents(service)
+    incidents = demisto.incidents.call_args[0][0]
+
+    # validate
+    assert demisto.incidents.call_count == 1
+    assert len(incidents) == 1
+    labels = incidents[0]["labels"]
+    assert len(labels) >= 7
+    assert all(isinstance(label['value'], str) for label in labels)
+
+
+def test_empty_string_as_app_param_value(mocker):
+    """
+    Given:
+        - A mock to demisto.params that contains an 'app' key with an empty string as its value
+
+    When:
+        - Run splunk.get_connection_args() function
+
+    Then:
+        - Validate that the value of the 'app' key in connection_args is '-'
+    """
+
+    # prepare
+    mock_params = {'app': '', 'host': '111', 'port': '111'}
+    mocker.patch('demistomock.params', return_value=mock_params)
+
+    # run
+    connection_args = splunk.get_connection_args()
+
+    # validate
+    assert connection_args.get('app') == '-'

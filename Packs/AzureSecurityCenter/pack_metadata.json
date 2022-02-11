@@ -2,7 +2,7 @@
     "name": "Azure Security Center",
     "description": "Unified security management and advanced threat protection across hybrid cloud workloads.",
     "support": "xsoar",
-    "currentVersion": "1.1.12",
+    "currentVersion": "1.2.0",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -12,5 +12,9 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": []
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

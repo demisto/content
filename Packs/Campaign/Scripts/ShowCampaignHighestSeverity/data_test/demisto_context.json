@@ -1,0 +1,166 @@
+{
+    "EmailCampaign": {
+        "incidents": [
+            {
+                "emailfrom": "paypalsupport@test.com",
+                "emailfromdomain": "test.com",
+                "id": "937",
+                "name": "Verify your PayPal account",
+                "occurred": "2021-11-29T14:05:55.943892951Z",
+                "recipients": [
+                    "victim-test9@victim-test.com"
+                ],
+                "recipientsdomain": [
+                    "victim-test.com"
+                ],
+                "severity": 0,
+                "similarity": 1,
+                "status": 1
+            },
+            {
+                "emailfrom": "paypalsupport@test.com",
+                "emailfromdomain": "test.com",
+                "id": "934",
+                "name": "Verify your PayPal account",
+                "occurred": "2021-11-29T14:05:55.843710823Z",
+                "recipients": [
+                    "victim-test7@victim-test.com"
+                ],
+                "recipientsdomain": [
+                    "victim-test.com"
+                ],
+                "severity": 0,
+                "similarity": 0.9704949588309458,
+                "status": 1
+            },
+            {
+                "emailfrom": "paypalsupport@test.com",
+                "emailfromdomain": "test.com",
+                "id": "935",
+                "name": "Verify your PayPal account",
+                "occurred": "2021-11-29T14:05:55.871110761Z",
+                "recipients": [
+                    "victim-test4@victim-test.com"
+                ],
+                "recipientsdomain": [
+                    "victim-test.com"
+                ],
+                "severity": 0,
+                "similarity": 0.9704949588309458,
+                "status": 1
+            },
+            {
+                "emailfrom": "paypalsupport@test.com",
+                "emailfromdomain": "test.com",
+                "id": "936",
+                "name": "Verify your PayPal account",
+                "occurred": "2021-11-29T14:05:55.900750285Z",
+                "recipients": [
+                    "victim-test3@victim-test.com"
+                ],
+                "recipientsdomain": [
+                    "victim-test.com"
+                ],
+                "severity": 0,
+                "similarity": 0.9704949588309458,
+                "status": 1
+            },
+            {
+                "emailfrom": "paypalsupport@test.com",
+                "emailfromdomain": "test.com",
+                "id": "940",
+                "name": "Verify your PayPal account",
+                "occurred": "2021-11-29T14:05:56.072580588Z",
+                "recipients": [
+                    "victim-test9@victim-test.com"
+                ],
+                "recipientsdomain": [
+                    "victim-test.com"
+                ],
+                "severity": 0,
+                "similarity": 1,
+                "status": 1
+            },
+            {
+                "emailfrom": "paypalsupport@test.com",
+                "emailfromdomain": "test.com",
+                "id": "944",
+                "name": "Verify your PayPal account",
+                "occurred": "2021-11-29T14:06:34.36326099Z",
+                "recipients": [
+                    "victim-test6@victim-test.com"
+                ],
+                "recipientsdomain": [
+                    "victim-test.com"
+                ],
+                "severity": 0,
+                "similarity": 1,
+                "status": 1
+            },
+            {
+                "emailfrom": "paypalsupport@test.com",
+                "emailfromdomain": "test.com",
+                "id": "943",
+                "name": "Verify your PayPal account",
+                "occurred": "2021-11-29T14:06:34.344665733Z",
+                "recipients": [
+                    "victim-test1@victim-test.com"
+                ],
+                "recipientsdomain": [
+                    "victim-test.com"
+                ],
+                "severity": 0,
+                "similarity": 1,
+                "status": 1
+            },
+            {
+                "emailfrom": "paypalsupport@test.com",
+                "emailfromdomain": "test.com",
+                "id": "938",
+                "name": "Verify your PayPal account",
+                "occurred": "2021-11-29T14:05:55.982675877Z",
+                "recipients": [
+                    "victim-test10@victim-test.com"
+                ],
+                "recipientsdomain": [
+                    "victim-test.com"
+                ],
+                "severity": 0,
+                "similarity": 1,
+                "status": 1
+            },
+            {
+                "emailfrom": "paypalsupport@test.com",
+                "emailfromdomain": "test.com",
+                "id": "941",
+                "name": "Verify your PayPal account",
+                "occurred": "2021-11-29T14:05:56.486408676Z",
+                "recipients": [
+                    "victim-test5@victim-test.com"
+                ],
+                "recipientsdomain": [
+                    "victim-test.com"
+                ],
+                "severity": 0,
+                "similarity": 1,
+                "status": 1
+            },
+            {
+                "emailfrom": "paypalsupport@test.com",
+                "emailfromdomain": "test.com",
+                "id": "939",
+                "name": "Verify your PayPal account",
+                "occurred": "2021-11-29T14:05:56.025209917Z",
+                "recipients": [
+                    "victim-test8@victim-test.com"
+                ],
+                "recipientsdomain": [
+                    "victim-test.com"
+                ],
+                "severity": 0,
+                "similarity": 1,
+                "status": 1
+            }
+        ]
+    }
+}

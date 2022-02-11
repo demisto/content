@@ -101,6 +101,20 @@ configuration:
   name: enable_dm
   required: false
   type: 8
+- display: Disable Caching of Users and Channels
+  additionalinfo: This parameter prevents this integration from storing Users and Channels into the integration
+    context. This parameter also prevents paginated calls which can result in timeout errors for large workspaces.
+  hidden: false
+  name: disable_caching
+  required: false
+  type: 8
+  defaultvalue: false
+- display: Common Channels
+  name: common_channels
+  type: 12
+  required: false
+  additionalinfo: For workspaces where a handful of channels are consistently being
+    used, you may add them as a CSV in the format ChannelName:ChannelID.
 description: Send messages and notifications to your Slack team.
 display: Slack v3
 name: SlackV3
@@ -207,6 +221,12 @@ script:
       required: false
       secret: false
     - default: false
+      description: The id of the Slack channel to which to send the message.
+      isArray: false
+      name: channel_id
+      required: false
+      secret: false
+    - default: false
       description: An entry ID to send as a link.
       isArray: false
       name: entry
@@ -253,6 +273,13 @@ script:
       name: channel
       required: false
       secret: false
+    - default: false
+      description: The id of the channel to archive. If not provided, the mirrored
+        investigation channel is archived (if the channel exists).
+      isArray: false
+      name: channel_id
+      required: false
+      secret: false
     deprecated: false
     description: Archives a Slack channel.
     execution: false
@@ -285,6 +312,12 @@ script:
       required: false
       secret: false
     - default: false
+      description: The id of the Slack channel to which to send the file.
+      isArray: false
+      name: channel_id
+      required: false
+      secret: false
+    - default: false
       description: The ID of the thread to which to reply - can be retrieved from
         a previous send-notification command.
       isArray: false
@@ -308,6 +341,13 @@ script:
         channel is set (if the channel exists).
       isArray: false
       name: channel
+      required: false
+      secret: false
+    - default: false
+      description: The channel id. If not specified, the topic of the mirrored investigation
+        channel is set (if the channel exists).
+      isArray: false
+      name: channel_id
       required: false
       secret: false
     - default: true
@@ -347,6 +387,13 @@ script:
       secret: false
     deprecated: false
     description: Creates a channel in Slack.
+    outputs:
+    - contextPath: Slack.Channel.ID
+      description: The ID of the channel.
+      type: String
+    - contextPath: Slack.Channel.Name
+      description: The name of the channel.
+      type: String
     execution: false
     name: slack-create-channel
   - arguments:
@@ -363,6 +410,14 @@ script:
         is used (if the channel exists).
       isArray: false
       name: channel
+      required: false
+      secret: false
+    - default: false
+      description: The id of the channel to which to invite the users. If the id
+        of the channel is not specified, the id of the mirrored investigation channel
+        is used (if the channel exists).
+      isArray: false
+      name: channel_id
       required: false
       secret: false
     deprecated: false
@@ -385,6 +440,14 @@ script:
       name: channel
       required: false
       secret: false
+    - default: false
+      description: The id of the channel from which to remove the users. If the
+        id of the channel is not specified, the mirrored investigation channel is
+        used (if the channel exists).
+      isArray: false
+      name: channel_id
+      required: false
+      secret: false
     deprecated: false
     description: Removes users from the specified channel.
     execution: false
@@ -402,6 +465,14 @@ script:
         exists).
       isArray: false
       name: channel
+      required: false
+      secret: false
+    - default: false
+      description: The current id of the channel. If the id of the channel is
+        not specified, the mirrored investigation channel is used (if the channel
+        exists).
+      isArray: false
+      name: channel_id
       required: false
       secret: false
     deprecated: false
@@ -446,7 +517,7 @@ script:
       description: The channel containing the message.
       isArray: false
       name: channel
-      required: true
+      required: false
       secret: false
     - default: false
       description: The ID of the thread of which to pin - can be retrieved from
@@ -454,6 +525,12 @@ script:
       isArray: false
       name: threadID
       required: true
+      secret: false
+    - default: false
+      description: The ID for the channel containing the message.
+      isArray: false
+      name: channel_id
+      required: false
       secret: false
     deprecated: false
     description: Pins a selected message to the given channel.
@@ -465,6 +542,12 @@ script:
       description: The channel the message is posted in.
       isArray: false
       name: channel
+      required: false
+      secret: false
+    - default: false
+      description: The id for the channel the message is posted in.
+      isArray: false
+      name: channel_id
       required: false
       secret: false
     - default: false
@@ -508,7 +591,7 @@ script:
     - contextPath: Slack.Thread.Text
       description: The text the message was updated with.
       type: String
-  dockerimage: demisto/slackv3:1.0.0.23423
+  dockerimage: demisto/slackv3:1.0.0.25130
   feed: false
   isfetch: false
   longRunning: true
@@ -520,3 +603,4 @@ script:
 fromversion: 5.5.0
 tests:
 - SlackV3 TestPB
+- Test_SlackV3_NonCaching

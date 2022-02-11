@@ -6229,7 +6229,7 @@ script:
         for items in the table.
     - contextPath: AWS-DynamoDB.TimeToLiveSpecification
       description: Represents the output of an UpdateTimeToLive operation.
-  dockerimage: demisto/boto3py3:1.0.0.24037
+  dockerimage: demisto/boto3py3:1.0.0.26671
   runonce: false
   script: ''
   subtype: python3

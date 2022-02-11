@@ -2,7 +2,7 @@
     "name": "BruteForce Feed",
     "description": "Indicators feed from BruteForceBlocker",
     "support": "xsoar",
-    "currentVersion": "1.1.9",
+    "currentVersion": "1.1.13",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -15,5 +15,9 @@
     "keywords": [
         "BruteForceBlocker",
         "Feed"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }

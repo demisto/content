@@ -18,8 +18,8 @@ configuration:
   name: use_oauth
   required: false
   type: 8
-- additionalinfo: 'The ticket type can be: incident, problem, change_request, sc_request,
-    sc_task or sc_req_item.'
+- additionalinfo: 'The ticket type can be incident, problem, change_request, sc_request,
+    sc_task, sc_req_item or sn_si_incident'
   defaultvalue: incident
   display: Default ticket type for running ticket commands and fetching incidents
   name: ticket_type
@@ -50,9 +50,9 @@ configuration:
   required: false
   type: 0
 - defaultvalue: opened_at
-  display: |-
-    Timestamp field to filter by (e.g., `opened_at`) This is how the filter is applied to the query: "ORDERBYopened_at^opened_at>[Last Run]".
-    To prevent duplicate incidents, this field is mandatory for fetching incidents.
+  display: "Timestamp field to filter by (e.g., `opened_at`) This is how the filter\
+    \ is applied to the query: \"ORDERBYopened_at^opened_at>[Last Run]\".\nTo prevent\
+    \ duplicate incidents, this field is mandatory for fetching incidents."
   name: timestamp_field
   required: false
   type: 0
@@ -107,7 +107,8 @@ configuration:
   name: file_tag
   required: false
   type: 0
-- additionalinfo: According to the timestamp in this field, records will be queried to check for updates.
+- additionalinfo: According to the timestamp in this field, records will be queried
+    to check for updates.
   defaultvalue: sys_updated_on
   display: Timestamp field to query for updates as part of the mirroring flow
   name: update_timestamp_field
@@ -124,9 +125,9 @@ configuration:
   name: custom_fields
   required: false
   type: 12
-  additionalinfo: 'Custom (user defined) fields in the format: u_fieldname1,u_fieldname2
-    custom fields start with a ''u_''. These fields will be included in the mirroring capabilities,
-    if added here.'
+  additionalinfo: "Custom (user defined) fields in the format: u_fieldname1,u_fieldname2\
+    \ custom fields start with a 'u_'. These fields will be included in the mirroring\
+    \ capabilities, if added here."
 - additionalinfo: When selected, closing the ServiceNow ticket is mirrored in Cortex
     XSOAR.
   defaultvalue: 'false'
@@ -169,7 +170,7 @@ script:
       default: false
       defaultValue: incident
       description: Ticket type. Can be "incident", "problem", "change_request", "sc_request",
-        "sc_task", or "sc_req_item". Default is "incident".
+        "sc_task", "sc_req_item" or "sn_si_incident". Default is "incident".
       isArray: false
       name: ticket_type
       predefined:
@@ -179,6 +180,7 @@ script:
       - sc_request
       - sc_task
       - sc_req_item
+      - sn_si_incident
       required: false
       secret: false
     - default: false
@@ -298,7 +300,7 @@ script:
       default: false
       defaultValue: incident
       description: Ticket type. Can be "incident", "problem", "change_request", "sc_request",
-        "sc_task", or "sc_req_item". Default is "incident".
+        "sc_task", "sc_req_item" or "sn_si_incident". Default is "incident".
       isArray: false
       name: ticket_type
       predefined:
@@ -308,6 +310,7 @@ script:
       - sc_request
       - sc_task
       - sc_req_item
+      - sn_si_incident
       required: false
       secret: false
     - auto: PREDEFINED
@@ -429,10 +432,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Ticket's close code. Can be "Solved (Work
-        Around)", "Solved (Permanently)", "Solved Remotely (Work Around)", "Solved
-        Remotely (Permanently)", "Not Solved (Not Reproducible)", "Not Solved (Too
-        Costly)", or "Closed/Resolved by Caller".
+      description: Ticket's close code. Can be "Solved (Work Around)", "Solved (Permanently)",
+        "Solved Remotely (Work Around)", "Solved Remotely (Permanently)", "Not Solved
+        (Not Reproducible)", "Not Solved (Too Costly)", or "Closed/Resolved by Caller".
       isArray: false
       name: close_code
       predefined:
@@ -798,6 +800,23 @@ script:
       name: fields_delimiter
       required: false
       secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Business criticallity of the ticket.
+      isArray: false
+      name: business_criticality
+      predefined:
+        - 3 - Non-Critical
+        - 2 - High
+        - 1 - Critical
+      required: false
+      secret: false
+    - default: false
+      description: Incident risk score.
+      isArray: false
+      name: risk_score
+      required: false
+      secret: false
     deprecated: false
     description: Creates new ServiceNow ticket.
     execution: false
@@ -853,7 +872,7 @@ script:
       default: false
       defaultValue: incident
       description: Ticket type. Can be "incident", "problem", "change_request", "sc_request",
-        "sc_task", or "sc_req_item". Default is "incident".
+        "sc_task", "sc_req_item" or "sn_si_incident". Default is "incident".
       isArray: false
       name: ticket_type
       predefined:
@@ -863,6 +882,7 @@ script:
       - sc_request
       - sc_task
       - sc_req_item
+      - sn_si_incident
       required: false
       secret: false
     - auto: PREDEFINED
@@ -985,10 +1005,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Ticket's close code. Can be "Solved (Work
-        Around)", "Solved (Permanently)", "Solved Remotely (Work Around)", "Solved
-        Remotely (Permanently)", "Not Solved (Not Reproducible)", "Not Solved (Too
-        Costly)", or "Closed/Resolved by Caller".
+      description: Ticket's close code. Can be "Solved (Work Around)", "Solved (Permanently)",
+        "Solved Remotely (Work Around)", "Solved Remotely (Permanently)", "Not Solved
+        (Not Reproducible)", "Not Solved (Too Costly)", or "Closed/Resolved by Caller".
       isArray: false
       name: close_code
       predefined:
@@ -1346,6 +1365,29 @@ script:
       name: fields_delimiter
       required: false
       secret: false
+    - default: false
+      description: A comma-separated list of fields to clear.
+      isArray: true
+      name: clear_fields
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Business criticallity of the ticket.
+      isArray: false
+      name: business_criticality
+      predefined:
+        - 3 - Non-Critical
+        - 2 - High
+        - 1 - Critical
+      required: false
+      secret: false
+    - default: false
+      description: Incident risk score.
+      isArray: false
+      name: risk_score
+      required: false
+      secret: false
     deprecated: false
     description: Updates the specified ticket.
     execution: false
@@ -1360,7 +1402,7 @@ script:
     - auto: PREDEFINED
       default: false
       description: Ticket type. Can be "incident", "problem", "change_request", "sc_request",
-        "sc_task", or "sc_req_item".
+        "sc_task", "sc_req_item", or "sn_si_incident".
       isArray: false
       name: ticket_type
       predefined:
@@ -1370,6 +1412,7 @@ script:
       - sc_request
       - sc_task
       - sc_req_item
+      - sn_si_incident
       required: false
       secret: false
     deprecated: false
@@ -1388,7 +1431,7 @@ script:
       default: false
       defaultValue: incident
       description: Ticket type. Can be "incident", "problem", "change_request", "sc_request",
-        "sc_task", or "sc_req_item". Default is "incident".
+        "sc_task", "sc_req_item" or "sn_si_incident". Default is "incident".
       isArray: false
       name: ticket_type
       predefined:
@@ -1398,6 +1441,7 @@ script:
       - sc_request
       - sc_task
       - sc_req_item
+      - sn_si_incident
       required: false
       secret: false
     - default: false
@@ -1482,7 +1526,7 @@ script:
       default: false
       defaultValue: incident
       description: Ticket type. Can be "incident", "problem", "change_request", "sc_request",
-        "sc_task", or "sc_req_item". Default is "incident".
+        "sc_task", "sc_req_item" or "sn_si_incident". Default is "incident".
       isArray: false
       name: ticket_type
       predefined:
@@ -1491,6 +1535,7 @@ script:
       - change_request
       - sc_request
       - sc_task
+      - sn_si_incident
       required: false
       secret: false
     - default: false
@@ -1528,7 +1573,7 @@ script:
       default: false
       defaultValue: incident
       description: Ticket type. Can be "incident", "problem", "change_request", "sc_request",
-        "sc_task", or "sc_req_item". Default is "incident".
+        "sc_task", "sc_req_item" or "sn_si_incident". Default is "incident".
       isArray: false
       name: ticket_type
       predefined:
@@ -1537,6 +1582,7 @@ script:
       - change_request
       - sc_request
       - sc_task
+      - sn_si_incident
       required: false
       secret: false
     - default: false
@@ -1572,7 +1618,7 @@ script:
       default: false
       defaultValue: incident
       description: Ticket type. Can be "incident", "problem", "change_request", "sc_request",
-        "sc_task", or "sc_req_item". Default is "incident".
+        "sc_task", "sc_req_item" or "sn_si_incident". Default is "incident".
       isArray: false
       name: ticket_type
       predefined:
@@ -1581,6 +1627,7 @@ script:
       - change_request
       - sc_request
       - sc_task
+      - sn_si_incident
       required: false
       secret: false
     - default: false
@@ -1825,6 +1872,12 @@ script:
         in an argument for this command. Default is ';'.
       isArray: false
       name: fields_delimiter
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of fields to clear.
+      isArray: true
+      name: clear_fields
       required: false
       secret: false
     deprecated: false
@@ -2171,7 +2224,7 @@ script:
       default: false
       defaultValue: incident
       description: Ticket type. Can be "incident", "problem", "change_request", "sc_request",
-        "sc_task", or "sc_req_item". Default is "incident".
+        "sc_task", "sc_req_item" or "sn_si_incident". Default is "incident".
       isArray: false
       name: ticket_type
       predefined:
@@ -2181,6 +2234,7 @@ script:
       - sc_request
       - sc_task
       - sc_req_item
+      - sn_si_incident
       required: false
       secret: false
     deprecated: false
@@ -2395,19 +2449,94 @@ script:
     name: servicenow-oauth-test
   - arguments:
     - default: false
-      description: Date string in local time representing the last time the incident was updated.
-        The incident is only returned if it was modified after the last update time.
+      description: Date string in local time representing the last time the incident
+        was updated. The incident is only returned if it was modified after the last
+        update time.
       isArray: false
       name: lastUpdate
       required: false
       secret: false
     deprecated: false
-    description: Gets the list of incidents that were modified since the last update time.
-      Note that this method is here for debugging purposes. The get-modified-remote-data command
-      is used as part of a Mirroring feature, which is available from version 6.1.
+    description: Gets the list of incidents that were modified since the last update
+      time. Note that this method is here for debugging purposes. The get-modified-remote-data
+      command is used as part of a Mirroring feature, which is available from version
+      6.1.
     execution: false
     name: get-modified-remote-data
-  dockerimage: demisto/python3:3.9.8.24399
+  - arguments:
+    - default: false
+      description: Template for creating a standard change request.
+      isArray: false
+      name: template
+      required: true
+      secret: false
+    name: servicenow-create-co-from-template
+    description: Create a change request from a template.
+    outputs:
+    - contextPath: ServiceNow.Ticket.ID
+      description: ServiceNow ticket ID.
+      type: Unknown
+    - contextPath: ServiceNow.Ticket.OpenedBy
+      description: ServiceNow ticket opener ID.
+      type: Unknown
+    - contextPath: ServiceNow.Ticket.CreatedOn
+      description: ServiceNow ticket creation date.
+      type: Unknown
+    - contextPath: ServiceNow.Ticket.Assignee
+      description: ServiceNow ticket assignee ID.
+      type: Unknown
+    - contextPath: ServiceNow.Ticket.State
+      description: ServiceNow ticket state.
+      type: Unknown
+    - contextPath: ServiceNow.Ticket.Summary
+      description: ServiceNow ticket short summary.
+      type: Unknown
+    - contextPath: ServiceNow.Ticket.Number
+      description: ServiceNow ticket number.
+      type: Unknown
+    - contextPath: ServiceNow.Ticket.Active
+      description: ServiceNow ticket active.
+      type: Unknown
+    - contextPath: ServiceNow.Ticket.AdditionalComments
+      description: ServiceNow ticket comments.
+      type: Unknown
+    - contextPath: ServiceNow.Ticket.Priority
+      description: ServiceNow ticket priority.
+      type: Unknown
+    - contextPath: ServiceNow.Ticket.OpenedAt
+      description: ServiceNow ticket opening time.
+      type: Unknown
+    - contextPath: ServiceNow.Ticket.ResolvedBy
+      description: ServiceNow ticket resolver ID.
+      type: Unknown
+    - contextPath: ServiceNow.Ticket.CloseCode
+      description: ServiceNow ticket close code.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: ID of the change request
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    deprecated: false
+    description: gets the tasks associated to change request
+    execution: false
+    name: servicenow-get-tasks-for-co
+    outputs:
+    - contextPath: ServiceNow.Tasks.ID
+      description: Task ID
+      type: String
+    - contextPath: ServiceNow.Tasks.Description
+      description: Description of task
+      type: Unknown
+    - contextPath: ServiceNow.Tasks.Name
+      description: Name of task
+      type: Unknown
+    - contextPath: ServiceNow.Tasks.State
+      description: state of task
+      type: Unknown
+  dockerimage: demisto/python3:3.10.1.25933
   feed: false
   isfetch: true
   longRunning: false

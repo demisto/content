@@ -1,0 +1,74 @@
+{
+    "incidents": [
+        {
+            "priority": "HIGH",
+            "tagged": false,
+            "date": "2021-11-24T23:15:40Z",
+            "users": [
+                {
+                    "name": "John Doe",
+                    "email": "john_doe@armorblox.dev",
+                    "is_vip": false
+                },
+                {
+                    "name": "Admin",
+                    "email": "demo@armorblox.dev",
+                    "is_vip": false
+                }
+            ],
+            "reporters": [
+                {
+                    "name": "Admin",
+                    "email": "demo@armorblox.dev",
+                    "is_vip": false
+                }
+            ],
+            "policy_names": [
+                "Abuse Report"
+            ],
+            "title": "randomtext 24 Nov 15:14:50",
+            "remediation_actions": [
+                "ALERT"
+            ],
+            "resolution_state": "OPEN_INCIDENT_RESOLUTION_STATE",
+            "object_type": "CONTENT_MAIL",
+            "id": "6484",
+            "research_status": "TRUE_POSITIVE",
+            "app_name": "MICROSOFT_OUTLOOK",
+            "external_users": [
+                {
+                    "name": "Drake Hammes",
+                    "email": "drake_hammes@fake-donny.org",
+                    "is_vip": false
+                },
+                {
+                    "name": "Melissa Dach",
+                    "email": "melissa_dach@fake-bessie.com",
+                    "is_vip": false
+                },
+                {
+                    "name": "Tiffany Koss",
+                    "email": "tiffany_koss@fake-joaquin.info",
+                    "is_vip": false
+                }
+            ],
+            "external_senders": [
+                "drake_hammes@fake-donny.org",
+                "melissa_dach@fake-bessie.com",
+                "tiffany_koss@fake-joaquin.info"
+            ],
+            "status_counts": {
+                "done_count": "3",
+                "process_count": "0",
+                "error_count": "0"
+            }
+        }
+    ],
+    "total_count": "101",
+    "next_page_token": "1",
+    "status_counts": {
+        "done_count": "1",
+        "process_count": "0",
+        "error_count": "0"
+    }
+}

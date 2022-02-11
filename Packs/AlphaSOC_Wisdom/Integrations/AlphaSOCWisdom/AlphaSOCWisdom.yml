@@ -1,0 +1,59 @@
+commonfields:
+  id: AlphaSOC Wisdom
+  version: -1
+name: AlphaSOC Wisdom
+display: AlphaSOC Wisdom
+category: Data Enrichment & Threat Intelligence
+description: DNS and IP threat intelligence via the AlphaSOC platform
+configuration:
+- display: AlphaSOC Wisdom API Key
+  name: APIKey
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+script:
+  script: ''
+  type: javascript
+  commands:
+  - name: wisdom-domain-flags
+    arguments:
+    - name: domain
+      required: true
+      description: Enter a domain or URL (e.g. www.cnn.com)
+    outputs:
+    - contextPath: Domain.Name
+      description: Domain name
+    - contextPath: Wisdom.Flag
+      description: The AlphaSOC security category or feature
+    description: Returns a list of flags (categories and features) assigned to a domain
+      by AlphaSOC Threat Intelligence
+  - name: wisdom-ip-flags
+    arguments:
+    - name: proto
+      required: true
+      description: Transport layer protocol (tcp, udp, icmp)
+      defaultValue: tcp
+    - name: ip
+      required: true
+      description: IPv4 or IPv6
+    - name: port
+      required: true
+      description: Destination port
+    outputs:
+    - contextPath: Wisdom.Flag
+      description: The AlphaSOC security category or feature
+    description: Returns a list of flags (categories and features) assigned to an
+      IP connection (defined by protocol, destination address and port number) by
+      AlphaSOC Threat Intelligence
+  runonce: false
+fromversion: 5.0.0

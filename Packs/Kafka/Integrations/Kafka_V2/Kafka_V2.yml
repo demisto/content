@@ -63,8 +63,10 @@ configuration:
   name: max_bytes_per_message
   required: false
   type: 0
-description: The Open source distributed streaming platform
-display: Kafka v2
+description: 'Deprecated. Use the Kafka v3 integration instead.
+The Open source distributed streaming platform.'
+display: Kafka v2 (Deprecated)
+deprecated: true
 name: Kafka V2
 script:
   commands:

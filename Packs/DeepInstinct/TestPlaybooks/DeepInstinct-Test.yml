@@ -98,8 +98,8 @@ tasks:
     task:
       id: 7076bcd6-6a50-4074-869c-341e0515dd9a
       version: -1
-      name: add hash to whitelist
-      description: add file hash to whitelist
+      name: add hash to allow list
+      description: add file hash to allow list
       script: '|||deepinstinct-add-hash-to-whitelist'
       type: regular
       iscommand: true
@@ -131,8 +131,8 @@ tasks:
     task:
       id: 0b41eddc-f319-456e-85b3-53b05349c3f9
       version: -1
-      name: add hash to blacklist
-      description: add file hash to blacklist
+      name: add hash to block list
+      description: add file hash to block list
       script: '|||deepinstinct-add-hash-to-blacklist'
       type: regular
       iscommand: true
@@ -545,8 +545,8 @@ tasks:
     task:
       id: 97fd0dbe-72bd-44ff-84d6-88e797a8885b
       version: -1
-      name: Remove hash from whitelist
-      description: remove file hash from whitelist
+      name: Remove hash from allow list
+      description: remove file hash from allow list
       script: '|||deepinstinct-remove-hash-from-whitelist'
       type: regular
       iscommand: true
@@ -577,8 +577,8 @@ tasks:
     task:
       id: 85cce36e-fb20-4fec-8064-20e53be704fe
       version: -1
-      name: Remove hash from blacklist
-      description: remove file hash from blacklist
+      name: Remove hash from block list
+      description: remove file hash from block list
       script: '|||deepinstinct-remove-hash-from-blacklist'
       type: regular
       iscommand: true

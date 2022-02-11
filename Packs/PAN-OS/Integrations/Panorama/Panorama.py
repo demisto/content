@@ -86,6 +86,10 @@ class PAN_OS_Not_Found(Exception):
         pass
 
 
+class InvalidUrlLengthException(Exception):
+    pass
+
+
 def http_request(uri: str, method: str, headers: dict = {},
                  body: dict = {}, params: dict = {}, files: dict = None, is_pcap: bool = False) -> Any:
     """
@@ -119,15 +123,18 @@ def http_request(uri: str, method: str, headers: dict = {},
     # handle non success
     if json_result['response']['@status'] != 'success':
         if 'msg' in json_result['response'] and 'line' in json_result['response']['msg']:
+            response_msg = json_result['response']['msg']['line']
             # catch non existing object error and display a meaningful message
-            if json_result['response']['msg']['line'] == 'No such node':
+            if response_msg == 'No such node':
                 raise Exception(
                     'Object was not found, verify that the name is correct and that the instance was committed.')
 
             #  catch urlfiltering error and display a meaningful message
-            elif str(json_result['response']['msg']['line']).find('test -> url') != -1:
+            elif str(response_msg).find('test -> url') != -1:
                 if DEVICE_GROUP:
                     raise Exception('URL filtering commands are only available on Firewall devices.')
+                if 'Node can be at most 1278 characters' in response_msg:
+                    raise InvalidUrlLengthException('URL Node can be at most 1278 characters.')
                 raise Exception('The URL filtering license is either expired or not active.'
                                 ' Please contact your PAN-OS representative.')
 
@@ -497,13 +504,43 @@ def panorama_command(args: dict):
 @logger
 def panorama_commit(args):
     command: str = ''
+    partial_command: str = ''
+    is_partial = False
     if device_group := args.get('device-group'):
         command += f'<device-group><entry name="{device_group}"/></device-group>'
+
+    admin_name = args.get('admin_name')
+    if admin_name:
+        is_partial = True
+        partial_command += f'<admin><member>{admin_name}</member></admin>'
+
+    force_commit = argToBoolean(args.get('force_commit')) if args.get('force_commit') else None
+    if force_commit:
+        command += '<force></force>'
+
+    exclude_device_network = args.get('exclude_device_network_configuration')
+    exclude_device_network_configuration = argToBoolean(exclude_device_network) if exclude_device_network else None
+    if exclude_device_network_configuration:
+        is_partial = True
+        partial_command += '<device-and-network>excluded</device-and-network>'
+
+    exclude_shared_objects_str = args.get('exclude_shared_objects')
+    exclude_shared_objects = argToBoolean(exclude_shared_objects_str) if exclude_shared_objects_str else None
+    if exclude_shared_objects:
+        is_partial = True
+        partial_command += '<shared-object>excluded</shared-object>'
+
+    if is_partial:
+        command = f'{command}<partial>{partial_command}</partial>'
+
     params = {
         'type': 'commit',
         'cmd': f'<commit>{command}</commit>',
         'key': API_KEY
     }
+    if is_partial:
+        params['action'] = 'partial'
+
     result = http_request(
         URL,
         'POST',
@@ -603,6 +640,11 @@ def panorama_commit_status_command(args: dict):
 def panorama_push_to_device_group(args: dict):
     command: str = ''
     command += f'<device-group><entry name="{DEVICE_GROUP}"/></device-group>'
+
+    serial_number = args.get('serial_number')
+    if serial_number:
+        command = f'<device-group><entry name="{DEVICE_GROUP}"><devices><entry name="{serial_number}"/>' \
+                  f'</devices></entry></device-group>'
 
     if argToBoolean(args.get('validate-only', 'false')):
         command += '<validate-only>yes</validate-only>'
@@ -2168,9 +2210,10 @@ def panorama_custom_url_category_remove_items(custom_url_category_name: str, ite
         raise Exception('Please commit the instance prior to editing the Custom URL Category.')
     description = custom_url_category.get('description')
 
+    custom_url_category_items = None
     if 'list' in custom_url_category:
         if 'member' in custom_url_category['list']:
-            custom_url_category_items = custom_url_category['list']['member']
+            custom_url_category_items = argToList(custom_url_category['list']['member'])
     if not custom_url_category_items:
         raise Exception('Custom url category does not contain sites or categories.')
 
@@ -2286,17 +2329,25 @@ def panorama_get_url_category_command(url_cmd: str, url: str, additional_suspici
     categories_dict_hr: Dict[str, list] = {}
     command_results: List[CommandResults] = []
     for url in urls:
-        category = panorama_get_url_category(url_cmd, url)
-        if category in categories_dict:
-            categories_dict[category].append(url)
-            categories_dict_hr[category].append(url)
-        else:
-            categories_dict[category] = [url]
-            categories_dict_hr[category] = [url]
-        context_urls = populate_url_filter_category_from_context(category)
-        categories_dict[category] = list((set(categories_dict[category])).union(set(context_urls)))
+        err_readable_output = None
+        try:
+            category = panorama_get_url_category(url_cmd, url)
+            if category in categories_dict:
+                categories_dict[category].append(url)
+                categories_dict_hr[category].append(url)
+            else:
+                categories_dict[category] = [url]
+                categories_dict_hr[category] = [url]
+            context_urls = populate_url_filter_category_from_context(category)
+            categories_dict[category] = list((set(categories_dict[category])).union(set(context_urls)))
 
-        score = calculate_dbot_score(category.lower(), additional_suspicious, additional_malicious)
+            score = calculate_dbot_score(category.lower(), additional_suspicious, additional_malicious)
+
+        except InvalidUrlLengthException as e:
+            score = 0
+            category = None
+            err_readable_output = str(e)
+
         dbot_score = Common.DBotScore(
             indicator=url,
             indicator_type=DBotScoreType.URL,
@@ -2308,9 +2359,10 @@ def panorama_get_url_category_command(url_cmd: str, url: str, additional_suspici
             dbot_score=dbot_score,
             category=category
         )
+        readable_output = err_readable_output or tableToMarkdown('URL', url_obj.to_context())
         command_results.append(CommandResults(
             indicator=url_obj,
-            readable_output=tableToMarkdown('URL', url_obj.to_context())
+            readable_output=readable_output
         ))
 
     url_category_output_hr = []
@@ -2904,10 +2956,11 @@ def panorama_get_current_element(element_to_change: str, xpath: str) -> list:
         return []
 
     result = response.get('response').get('result')
-    if '@dirtyId' in result:
+    current_object = result.get(element_to_change, {})
+    if '@dirtyId' in result or '@dirtyId' in current_object:
         LOG(f'Found uncommitted item:\n{result}')
-        raise Exception('Please commit the instance prior to editing the Security rule.')
-    current_object = result.get(element_to_change)
+        raise DemistoException('Please commit the instance prior to editing the Security rule.')
+
     if 'list' in current_object:
         current_objects_items = argToList(current_object['list']['member'])
     elif 'member' in current_object:
@@ -2991,7 +3044,6 @@ def panorama_edit_rule_command(args: dict):
             'action': 'edit',
             'key': API_KEY
         }
-
         if element_to_change in ['action', 'description', 'log-setting']:
             params['element'] = add_argument_open(element_value, element_to_change, False)
         elif element_to_change in ['source', 'destination', 'application', 'category', 'source-user', 'service', 'tag']:
@@ -3002,6 +3054,7 @@ def panorama_edit_rule_command(args: dict):
         elif element_to_change == 'profile-setting':
             params['element'] = add_argument_profile_setting(element_value, 'profile-setting')
         else:
+            # element_to_change == 'disabled'
             params['element'] = add_argument_yes_no(element_value, element_to_change)
 
         if DEVICE_GROUP:
@@ -3950,7 +4003,7 @@ def build_traffic_logs_query(source: str, destination: Optional[str], receive_ti
     if destination and len(destination) > 0:
         if len(query) > 0 and query[-1] == ')':
             query += ' and '
-        query += '(addr.dst in ' + source + ')'
+        query += '(addr.dst in ' + destination + ')'
     if receive_time and len(receive_time) > 0:
         if len(query) > 0 and query[-1] == ')':
             query += ' and '
@@ -4592,8 +4645,9 @@ def panorama_security_policy_match(application: Optional[str] = None, category: 
                                    destination: Optional[str] = None, destination_port: Optional[str] = None,
                                    from_: Optional[str] = None, to_: Optional[str] = None,
                                    protocol: Optional[str] = None, source: Optional[str] = None,
-                                   source_user: Optional[str] = None, target: Optional[str] = None):
-    params = {'type': 'op', 'key': API_KEY, 'target': target,
+                                   source_user: Optional[str] = None, target: Optional[str] = None,
+                                   vsys: Optional[str] = None):
+    params = {'type': 'op', 'key': API_KEY, 'target': target, 'vsys': vsys,
               'cmd': build_policy_match_query(application, category, destination, destination_port, from_, to_,
                                               protocol, source, source_user)}
 
@@ -4606,7 +4660,7 @@ def panorama_security_policy_match(application: Optional[str] = None, category: 
     return result['response']['result']
 
 
-def prettify_matching_rule(matching_rule: dict):
+def prettify_matching_rule(matching_rule: dict, device: dict = {}):
     pretty_matching_rule = {}
 
     if '@name' in matching_rule:
@@ -4624,16 +4678,19 @@ def prettify_matching_rule(matching_rule: dict):
     if 'action' in matching_rule:
         pretty_matching_rule['Action'] = matching_rule['action']
 
+    for key, val in device.items():
+        pretty_matching_rule[f'Device{key}'] = val
+
     return pretty_matching_rule
 
 
-def prettify_matching_rules(matching_rules: Union[list, dict]):
+def prettify_matching_rules(matching_rules: Union[list, dict], device):
     if not isinstance(matching_rules, list):  # handle case of only one log that matched the query
-        return prettify_matching_rule(matching_rules)
+        return prettify_matching_rule(matching_rules, device)
 
     pretty_matching_rules_arr = []
     for matching_rule in matching_rules:
-        pretty_matching_rule = prettify_matching_rule(matching_rule)
+        pretty_matching_rule = prettify_matching_rule(matching_rule, device)
         pretty_matching_rules_arr.append(pretty_matching_rule)
 
     return pretty_matching_rules_arr
@@ -4659,13 +4716,72 @@ def prettify_query_fields(application: Optional[str] = None, category: Optional[
     return pretty_query_fields
 
 
-def panorama_security_policy_match_command(args: dict):
-    target = args.get('target')
-    if not VSYS and not target:
-        err_msg = "The 'panorama-security-policy-match' command is relevant for a Firewall instance " \
-                  "or for a Panorama instance, to be used with the target argument."
-        raise DemistoException(err_msg)
+def devices(targets=None, vsys_s=None):
+    """
+    This method is used to determine the target and vsys that should be used,
+    or iterate over all the connected target and vsys.
+    e.g. none of then in case of an FW instance.
+    Args:
+        targets(str): A list of all the serial number for the FW targets
+        vsys_s(str): A list of all the vsys names for the targets.
 
+    Yields:
+        target, vsys
+    """
+    if VSYS:    # for FW intstances
+        yield None, None
+    elif targets and vsys_s:
+        for target in targets:
+            for vsys in vsys_s:
+                yield target, vsys
+    else:
+        res = http_request(URL, 'GET', params={'key': API_KEY, 'type': 'op',
+                                               'cmd': '<show><devices><all></all></devices></show>'})
+        devices_entry = dict_safe_get(res, ['response', 'result', 'devices', 'entry'])
+        devices_entry = devices_entry if isinstance(devices_entry, list) else [devices_entry]
+        devices_entry = filter(lambda x: x['serial'] in targets, devices_entry) if targets else devices_entry
+        for device in devices_entry:
+            if not vsys_s:
+                if device.get('multi-vsys', 'no') == 'yes':
+                    vsys_s_entry = dict_safe_get(device, ['vsys', 'entry'])
+                    vsys_s_entry = vsys_s_entry if isinstance(vsys_s_entry, list) else [vsys_s_entry]
+                    final_vsys_s = map(lambda x: x['@name'], vsys_s_entry)
+                else:
+                    final_vsys_s = iter([None])
+            else:
+                final_vsys_s = vsys_s
+            for vsys in final_vsys_s:
+                yield device['serial'], vsys
+
+
+def format_readable_security_policy_match_headers(hedear_name):
+    formated_headers = {
+        'From': 'From zone',
+        'To': 'To zone',
+    }
+    return formated_headers.get(hedear_name, hedear_name)
+
+
+def readable_security_policy_match_outputs(context_list):
+    readable_list = []
+    for context in context_list:
+        vsys = dict_safe_get(context, ['Device', 'Vsys'])
+        target = dict_safe_get(context, ['Device', 'Serial'])
+        if vsys and target:
+            table_name = f'Matching Security Policies in `{target}/{vsys}` FW:'
+        elif target:
+            table_name = f'Matching Security Policies in `{target}` FW:'
+        else:
+            table_name = 'Matching Security Policies:'
+
+        readable_list.append(tableToMarkdown(table_name, context['Rules'], removeNull=True,
+                                             headers=['Name', 'Action', 'From', 'Source', 'To', 'Destination', 'Application'],
+                                             headerTransform=format_readable_security_policy_match_headers))
+
+    return '\n'.join(readable_list)
+
+
+def panorama_security_policy_match_command(args: dict):
     application = args.get('application')
     category = args.get('category')
     destination = args.get('destination')
@@ -4676,26 +4792,33 @@ def panorama_security_policy_match_command(args: dict):
     source = args.get('source')
     source_user = args.get('source-user')
 
-    matching_rules = panorama_security_policy_match(application, category, destination, destination_port, from_, to_,
-                                                    protocol, source, source_user, target)
-    if not matching_rules:
+    context_list = []
+    raw_list = []
+    for target, vsys in devices(targets=argToList(args.get('target')), vsys_s=argToList(args.get('vsys'))):
+        matching_rules = panorama_security_policy_match(application, category, destination, destination_port, from_, to_,
+                                                        protocol, source, source_user, target, vsys)
+        if matching_rules:
+
+            device = {key: val for key, val in zip(['Serial', 'Vsys'], [target, vsys]) if val} if target or vsys else {}
+            context = {
+                'Rules': prettify_matching_rules(matching_rules['rules']['entry'], device),
+                'QueryFields': prettify_query_fields(application, category, destination, destination_port, from_,
+                                                     to_, protocol, source, source_user),
+                'Query': build_policy_match_query(application, category, destination, destination_port, from_,
+                                                  to_, protocol, source, source_user)
+            }
+            if device:
+                context['Device'] = device
+            context_list.append(context)
+            raw_list.extend(matching_rules) if isinstance(matching_rules, list) else raw_list.append(matching_rules)
+    if not context_list:
         return_results('The query did not match a Security policy.')
     else:
-        ec_ = {'Rules': prettify_matching_rules(matching_rules['rules']['entry']),
-               'QueryFields': prettify_query_fields(application, category, destination, destination_port,
-                                                    from_, to_, protocol, source, source_user),
-               'Query': build_policy_match_query(application, category, destination, destination_port,
-                                                 from_, to_, protocol, source, source_user)}
-        return_results({
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['json'],
-            'Contents': matching_rules,
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('Matching Security Policies:', ec_['Rules'],
-                                             ['Name', 'Action', 'From', 'To', 'Source', 'Destination', 'Application'],
-                                             removeNull=True),
-            'EntryContext': {"Panorama.SecurityPolicyMatch(val.Query == obj.Query)": ec_}
-        })
+        readable_output = readable_security_policy_match_outputs(context_list)
+
+        return_results(CommandResults(
+            outputs_prefix='Panorama.SecurityPolicyMatch(val.Query == obj.Query && val.Device == obj.Device)',
+            raw_response=raw_list, outputs=context_list, readable_output=readable_output))
 
 
 ''' Static Routes'''
@@ -6980,7 +7103,9 @@ def initialize_instance(args: Dict[str, str], params: Dict[str, str]):
         raise DemistoException('Set a port for the instance')
 
     URL = params.get('server', '').rstrip('/:') + ':' + params.get('port', '') + '/api/'
-    API_KEY = str(params.get('key'))
+    API_KEY = str(params.get('key')) or str((params.get('credentials') or {}).get('password', ''))  # type: ignore
+    if not API_KEY:
+        raise Exception('API Key must be provided.')
     USE_SSL = not params.get('insecure')
     USE_URL_FILTERING = params.get('use_url_filtering')
 
@@ -7126,14 +7251,13 @@ def main():
     try:
         args = demisto.args()
         params = demisto.params()
-        additional_malicious = argToList(demisto.params().get('additional_malicious'))
-        additional_suspicious = argToList(demisto.params().get('additional_suspicious'))
+        additional_malicious = argToList(params.get('additional_malicious'))
+        additional_suspicious = argToList(params.get('additional_suspicious'))
         initialize_instance(args=args, params=params)
         LOG(f'Command being called is: {demisto.command()}')
 
         # Remove proxy if not set to true in params
         handle_proxy()
-
 
         if demisto.command() == 'test-module':
             panorama_test()
@@ -7492,7 +7616,7 @@ def main():
         else:
             raise NotImplementedError(f'Command {demisto.command()} was not implemented.')
     except Exception as err:
-        return_error(str(err))
+        return_error(str(err), error=traceback.format_exc())
 
     finally:
         LOG.print_log()

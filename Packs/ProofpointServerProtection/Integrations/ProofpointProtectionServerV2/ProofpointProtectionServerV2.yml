@@ -585,7 +585,7 @@ script:
     description: Downloads a quarantine email message's raw data.
     execution: false
     name: proofpoint-pps-quarantine-message-download
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.9.8.24399
   feed: false
   isfetch: false
   longRunning: false

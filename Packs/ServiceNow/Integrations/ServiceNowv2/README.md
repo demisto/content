@@ -1,10 +1,11 @@
-IT service management. Cortex XSOAR interfaces with ServiceNow to help streamline security-related service management and IT operations. For example, you can use the ‘ServiceNow’ integration in order to:
+IT service management. Cortex XSOAR interfaces with ServiceNow to help streamline security-related service management and IT operations. For example, you can use the `ServiceNow` integration in order to:
 
-- View, create, update or delete a ServiceNow ticket directly from the Cortex XSOAR CLI and enrich it with Cortex XSOAR data.
+- View, create, update or delete a ServiceNow ticket directly from the Cortex XSOAR CLI, and enrich it with Cortex XSOAR data.
 - View, create, update and delete records from any ServiceNow table.
 - Query ServiceNow data with the ServiceNow query syntax.
+- Manage Security Incident Response (SIR) tickets with Cortex XSOAR, update tickets and enrich them with data.
 
-Please refer to ServiceNow documentation for additional information. We especially recommend the Operators available for filters and queries page: https://docs.servicenow.com/bundle/istanbul-servicenow-platform/page/use/common-ui-elements/reference/r_OpAvailableFiltersQueries.html
+Please refer to ServiceNow documentation for additional information. We especially recommend the [Operators available for filters and queries](https://docs.servicenow.com/bundle/istanbul-servicenow-platform/page/use/common-ui-elements/reference/r_OpAvailableFiltersQueries.html) page.
 
 This integration was integrated and tested with the Orlando version of ServiceNow.
 
@@ -35,15 +36,14 @@ These scripts are wrapped around the incident table, so to wrap them around anot
 4. To ensure that mirroring works:
    1. Select the **Fetches incidents** radio button.
    2. Under **Classifier**, select ServiceNow Classifier.
-   3. Under **Incident type**, select ServiceNowTicket.
-   4. Under **Mapper (incoming)**, select ServiceNow - Incoming Mapper.
-   5. Under **Mapper (outgoing)**, select ServiceNow - Outgoing Mapper.
-   6. To enable mirroring when closing an incident or ticket in Cortex XSOAR and ServiceNow, select the **Close Mirrored XSOAR Incident** and **Close Mirrored ServiceNow Ticket** checkboxes, respectively.
+   3. Under **Mapper (incoming)**, select ServiceNow - Incoming Mapper.
+   4. Under **Mapper (outgoing)**, select ServiceNow - Outgoing Mapper.
+   5. To enable mirroring when closing an incident or ticket in Cortex XSOAR and ServiceNow, select the **Close Mirrored XSOAR Incident** and **Close Mirrored ServiceNow Ticket** checkboxes, respectively.
 
         ![image](https://raw.githubusercontent.com/demisto/content/8038ce7e02dfd47b75adc9bedf1f7e9747dd77d5/Packs/ServiceNow/Integrations/ServiceNowv2/doc_files/closing-params.png)
         
 ## Instance Creation Flow
-The integration supports two types of authorization:
+This integration supports two types of authorization:
 1. Basic authorization using username and password.
 2. OAuth 2.0 authorization.
 
@@ -57,7 +57,7 @@ To use OAuth 2.0 authorization follow the next steps:
 
 **Notes:**
 1. When running the `!servicenow-oauth-login` command, a refresh token is generated and will be used to produce new access tokens after the current access token has expired.
-2. Every time the refresh token expires you will have to run the `servicenow-oauth-login` command again. Hence, we recommend to set the `Refresh Token Lifespan` field in the endpoint created in step 1 to a long period (can be set to several years). 
+2. Every time the refresh token expires you will have to run the `servicenow-oauth-login` command again. Hence, we recommend setting the `Refresh Token Lifespan` field in the endpoint created in step 1 to a long period (can be set to several years). 
 
 
 ### Using Multi Factor Authentication (MFA)
@@ -100,13 +100,11 @@ If MFA is enabled for your user, follow the next steps:
 5. Click **Test** to validate the URLs, token, and connection.
 6. Click **Done.**
 
-Note: Fetch incidents and mirroring is not currently supported for the ServiceNow Security Incident Response (SIR) module.
-
 ## Fetch Incidents
 The integration fetches newly created tickets according to the following parameters,
 which you define in the instance configuration: ticket_type, query, and limit.
 For the first fetch, the integration will fetch incidents that were created 10 minutes earlier. 
-After that, it will fetch incidents that were created after the timestamp of the last fetch.
+After that, the integration will fetch incidents created after the timestamp of the last fetch.
 
 ## Configure Incident Mirroring
 **This feature is compliant with XSOAR version 6.0 and above.**
@@ -255,7 +253,7 @@ Retrieves ticket information by ticket ID.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | Ticket system ID for which to retrieve information. | Optional | 
-| ticket_type | Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", or "sc_req_item". Default is "incident". | Optional | 
+| ticket_type | Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", "sc_req_item", or "sn_si_incident". Default is "incident". | Optional |
 | number | Ticket number to retrieve. | Optional | 
 | get_attachments | If "true" will retrieve ticket attachments. Default is "false". | Optional | 
 | custom_fields | Custom fields on which to query. For example: state_code=AR,time_zone=PST. | Optional | 
@@ -347,7 +345,7 @@ Creates new ServiceNow ticket.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | short_description | Short description of the ticket. | Optional | 
-| ticket_type | Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", or "sc_req_item". Default is "incident". | Optional | 
+| ticket_type | Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", "sc_req_item", or "sn_si_incident". Default is "incident". | Optional |
 | urgency | Ticket urgency. You can either select from the predefined options or enter another value, for example: "Urgent" or "5". | Optional | 
 | severity | Ticket severity. You can either select from the predefined options or enter another value, for example: "Urgent" or "5". | Optional | 
 | impact | Ticket impact. | Optional | 
@@ -360,7 +358,8 @@ Creates new ServiceNow ticket.
 | business_duration | Business duration, in the format: YYYY-MM-DD HH:MM:SS. | Optional | 
 | business_service | Business service. | Optional | 
 | business_stc | Business source. | Optional | 
-| calendar_duration | Calendar duration, in the format: YYYY-MM-DD HH:MM:SS. | Optional | 
+| business_criticality | Business criticallity of the ticket. | Optional |
+| calendar_duration | Calendar duration, in the format: YYYY-MM-DD HH:MM:SS. | Optional |
 | caller_id | Caller ID (UID format). | Optional | 
 | category | Category of the ticket. | Optional | 
 | caused_by | UID Format | Optional | 
@@ -392,9 +391,10 @@ Creates new ServiceNow ticket.
 | parent_incident | UID Format | Optional | 
 | problem_id | UID Format | Optional | 
 | reassignment_count | The number of users included in this ticket. | Optional | 
-| reopen_count | How many times the ticket has been reopened. | Optional | 
-| resolved_at | The date/time that the ticket was resolved, in the format: YYYY-MM-DD HH:MM:SS. | Optional | 
-| resolved_by | ID of the user that resolved the ticket. | Optional | 
+| reopen_count | How many times the ticket has been reopened. | Optional |
+| resolved_at | The date/time that the ticket was resolved, in the format: YYYY-MM-DD HH:MM:SS. | Optional |
+| resolved_by | ID of the user that resolved the ticket. | Optional |
+| risk_score | Incident risk score. | Optional |
 | rfc | UID | Optional | 
 | sla_due | SLA due date/time, in the format: YYYY-MM-DD HH:MM:SS. | Optional | 
 | subcategory | Ticket subcategory. | Optional | 
@@ -498,7 +498,7 @@ Updates the specified ticket.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | short_description | Short description of the ticket. | Optional | 
-| ticket_type | Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", or "sc_req_item". Default is "incident". | Optional | 
+| ticket_type | Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", "sc_req_item", or "sn_si_incident". Default is "incident". | Optional |
 | urgency | Ticket urgency. You can either select from the predefined options or enter another value, for example: "Urgent" or "5". | Optional | 
 | severity | Ticket severity. You can either select from the predefined options or enter another value, for example: "Urgent" or "5". | Optional | 
 | impact | Ticket impact. | Optional | 
@@ -509,9 +509,10 @@ Updates the specified ticket.
 | approval_set | The ticket approval set date/time, in the format: "2016-07-02 21:51:11". | Optional | 
 | assigned_to | User assigned to the ticket. | Optional | 
 | business_duration | Business duration, in the format: YYYY-MM-DD HH:MM:SS. | Optional | 
-| business_service | Business service. | Optional | 
-| business_stc | Business source. | Optional | 
-| calendar_duration | Calendar duration, in the format: YYYY-MM-DD HH:MM:SS. | Optional | 
+| business_service | Business service. | Optional |
+| business_stc | Business source. | Optional |
+| business_criticality | Business criticallity of the ticket. | Optional |
+| calendar_duration | Calendar duration, in the format: YYYY-MM-DD HH:MM:SS. | Optional |
 | caller_id | Caller ID (UID format). | Optional | 
 | category | Category name. | Optional | 
 | caused_by | UID format. | Optional | 
@@ -545,7 +546,8 @@ Updates the specified ticket.
 | reassignment_count | The number of users included in this ticket. | Optional | 
 | reopen_count | The number of times the ticket has been reopened. | Optional | 
 | resolved_at | Date/time the ticket was resolved, in the format: YYYY-MM-DD HH:MM:SS. | Optional | 
-| resolved_by | Resolved by (UID format). | Optional | 
+| resolved_by | Resolved by (UID format). | Optional |
+| risk_score | Incident risk score. | Optional |
 | rfc | UID | Optional | 
 | sla_due | SLA due date/time, in the format: YYYY-MM-DD HH:MM:SS. | Optional | 
 | subcategory | Ticket subcategory. | Optional | 
@@ -569,6 +571,7 @@ Updates the specified ticket.
 | approval | Ticket approval. | Optional | 
 | additional_fields | Additional fields in the format: fieldname1=value;fieldname2=value; | Optional | 
 | input_display_value | Flag that indicates whether to set field values using the display value or the actual value. True will treat the input value as the display value. False treats the input values as actual values. The default setting is false. | Optional |
+| clear_fields | A comma-separated list of fields to clear. | Optional | 
 
 For more information regarding the input_display_value Argument, please see: https://docs.servicenow.com/bundle/orlando-platform-administration/page/administer/exporting-data/concept/query-parameters-display-value.html
 
@@ -622,7 +625,7 @@ Deletes a ticket from ServiceNow.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | Ticket System ID | Required | 
-| ticket_type | Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", or "sc_req_item". | Optional | 
+| ticket_type | Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", "sc_req_item", or "sn_si_incident". | Optional |
 
 
 #### Context Output
@@ -654,7 +657,7 @@ Retrieves ticket information according to the supplied query.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | limit | The maximum number of tickets to retrieve. | Optional | 
-| ticket_type | Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", or "sc_req_item". Default is "incident". | Optional | 
+| ticket_type | Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", "sc_req_item", or "sn_si_incident". Default is "incident". | Optional |
 | query | The query to run. To learn about querying in ServiceNow, see https://docs.servicenow.com/bundle/istanbul-servicenow-platform/page/use/common-ui-elements/reference/r_OpAvailableFiltersQueries.html | Optional | 
 | offset | Starting record index to begin retrieving records from. | Optional | 
 | additional_fields | Additional fields to present in the War Room entry and incident context. | Optional || system_params | System parameters in the format: fieldname1=value;fieldname2=value. For example: "sysparm_display_value=al;&sysparm_exclude_reference_link=True" | Optional | 
@@ -799,7 +802,7 @@ Adds a link to the specified ticket.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | Ticket System ID. | Required | 
-| ticket_type | Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", or "sc_req_item". Default is "incident". | Optional | 
+| ticket_type | Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", "sc_req_item", or "sn_si_incident". Default is "incident". | Optional |
 | link | The actual link to publish in ServiceNow ticket, in a valid URL format, for example, http://www.demisto.com. | Required | 
 | post-as-comment | Whether to publish the link as comment on the ticket. Can be "true" or "false". If false will publish the link as WorkNote. | Optional | 
 | text | The text to represent the link. | Optional | 
@@ -838,7 +841,7 @@ Adds a comment to the specified ticket, by ticket ID.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | Ticket System ID. | Required | 
-| ticket_type | Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", or "sc_req_item". Default is "incident". | Optional | 
+| ticket_type | Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", "sc_req_item", or "sn_si_incident". Default is "incident". | Optional |
 | comment | Comment to add. | Required | 
 | post-as-comment | Whether to publish the note as comment on the ticket. Can be "true" or "false". Default is "false". | Optional | 
 
@@ -876,7 +879,7 @@ Uploads a file to the specified ticket.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | Ticket System ID. | Required | 
-| ticket_type | Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", or "sc_req_item". Default is "incident". | Optional | 
+| ticket_type | Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", "sc_req_item", or "sn_si_incident". Default is "incident". | Optional |
 | file_id | War Room entry ID that includes the file. | Required | 
 | file_name | Filename of the uploaded file to override the existing file name in the entry. | Optional | 
 
@@ -1103,6 +1106,7 @@ Updates a record in the specified ServiceNow table.
 | fields | Fields and their values to update in the record, in the format: fieldname1=value;fieldname2=value;... | Optional | 
 | custom_fields | Custom (user defined) fields and their values to update in the record, in the format: fieldname1=value;fieldname2=value;... | Optional |
 | input_display_value | Flag that indicates whether to set field values using the display value or the actual value. True will treat the input value as the display value. False treats the input values as actual values. The default setting is false. | Optional |
+| clear_fields | A comma-separated list of fields to clear. | Optional | 
 
 For more information regarding the input_display_value Argument, please see: https://docs.servicenow.com/bundle/orlando-platform-administration/page/administer/exporting-data/concept/query-parameters-display-value.html
 
@@ -1792,7 +1796,7 @@ Adds a tag to a ticket. The tag will be visible in the label_entry table and can
 | id | Ticket System ID. | Required | 
 | tag_id | Tag system ID. Can be retrieved using the "!servicenow-query-table table_name=label fields=name,active,sys_id" command. | Required | 
 | title | Tag title. For example: "Incident - INC000001". | Required | 
-| ticket_type | Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", or "sc_req_item". Default is "incident". | Optional | 
+| ticket_type | Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", "sc_req_item", or "sn_si_incident". Default is "incident". | Optional |
 
 
 #### Context Output

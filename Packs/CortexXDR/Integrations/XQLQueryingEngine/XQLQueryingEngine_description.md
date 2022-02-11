@@ -20,3 +20,6 @@ XQL Query Engine enables you to run XQL queries on your data sources.
 
 ### Note
 If you choose to use the credentials from XSOAR credential manager, create two credentials, one for the api-key and one for the api-key-id, then enter the key in the password field.
+
+---
+[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/cortex-xdr---xql-query-engine)

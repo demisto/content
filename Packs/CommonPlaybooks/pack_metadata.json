@@ -2,7 +2,7 @@
     "name": "Common Playbooks",
     "description": "Frequently used playbooks pack.",
     "support": "xsoar",
-    "currentVersion": "2.1.2",
+    "currentVersion": "2.1.12",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -32,6 +32,10 @@
             "mandatory": false,
             "display_name": "McAfee ePO"
         },
+        "McAfee ePO v2": {
+            "mandatory": false,
+            "display_name": "McAfee ePO v2"
+        },
         "CheckpointFirewall": {
             "mandatory": false,
             "display_name": "Check Point Firewall"
@@ -57,7 +61,7 @@
             "display_name": "Akamai WAF"
         },
         "ImageOCR": {
-            "mandatory": true,
+            "mandatory": false,
             "display_name": "Image OCR"
         },
         "rasterize": {
@@ -77,7 +81,7 @@
             "display_name": "ARIAPacketIntelligence"
         },
         "Phishing": {
-            "mandatory": true,
+            "mandatory": false,
             "display_name": "Phishing"
         },
         "RiskSense": {
@@ -153,7 +157,7 @@
             "display_name": "Rapid7 Nexpose"
         },
         "Active_Directory_Query": {
-            "mandatory": true,
+            "mandatory": false,
             "display_name": "Active Directory Query"
         },
         "CrowdStrikeFalcon": {
@@ -343,6 +347,11 @@
         "JoeSecurity",
         "IllusiveNetworks",
         "McAfee-TIE",
-        "EWS"
+        "EWS",
+        "McAfee ePO v2"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }
