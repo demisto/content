@@ -1643,7 +1643,7 @@ def convert_events_to_actionable_incidents(events: list) -> list:
 
 
 def fetch_detections(client_obj, start_time, end_time, max_fetch, detection_to_process, detection_to_pull,
-                     pending_rule_or_version_id: list, alert_state, simple_backoff_rules):
+                     pending_rule_or_version_id: list, alert_state, simple_backoff_rules, fetch_detection_by_list_basis):
     """
     Fetch detections in given time slot. This method calls the get_max_fetch_detections method.
     If detections are more than max_fetch then it partition it into 2 part, from which
@@ -1657,7 +1657,7 @@ def fetch_detections(client_obj, start_time, end_time, max_fetch, detection_to_p
     # get detections using API call.
     detection_to_process, detection_to_pull, pending_rule_or_version_id, simple_backoff_rules = get_max_fetch_detections(
         client_obj, start_time, end_time, max_fetch, detection_to_process, detection_to_pull,
-        pending_rule_or_version_id, alert_state, simple_backoff_rules)
+        pending_rule_or_version_id, alert_state, simple_backoff_rules, fetch_detection_by_list_basis)
 
     if len(detection_to_process) > max_fetch:
         events, detection_to_process = detection_to_process[:max_fetch], detection_to_process[max_fetch:]
@@ -1669,7 +1669,7 @@ def fetch_detections(client_obj, start_time, end_time, max_fetch, detection_to_p
 
 
 def get_max_fetch_detections(client_obj, start_time, end_time, max_fetch, detection_incidents, detection_to_pull,
-                             pending_rule_or_version_id, alert_state, simple_backoff_rules):
+                             pending_rule_or_version_id, alert_state, simple_backoff_rules, fetch_detection_by_list_basis):
     """
     Get list of detection using detection_to_pull and pending_rule_or_version_id. If the API responds
     with 429, 500 error then it will retry it for 60 times(each attempt take one minute). If it responds
@@ -1694,7 +1694,7 @@ def get_max_fetch_detections(client_obj, start_time, end_time, max_fetch, detect
 
         try:
             _, raw_resp = get_detections(client_obj, rule_id, max_fetch, start_time, end_time, next_page_token,
-                                         alert_state)
+                                         alert_state, list_basis=fetch_detection_by_list_basis)
         except ValueError as e:
             if str(e).endswith('Reattempt will be initiated.'):
                 attempts = simple_backoff_rules.get('attempts', 0)
@@ -1929,7 +1929,7 @@ def fetch_incidents_detection_alerts(client_obj, params: Dict[str, Any], start_t
 
     delayed_start_time = generate_delayed_start_time(time_window, start_time)
     fetch_detection_by_alert_state = pending_rule_or_version_id_with_alert_state.get('alert_state', '')
-
+    fetch_detection_by_list_basis = pending_rule_or_version_id_with_alert_state.get('listBasis', 'CREATED_TIME')
     # giving priority to comma separated detection ids over check box of fetch all live detections
     if not pending_rule_or_version_id_with_alert_state.get("rule_id") and \
             not detection_to_pull and not detection_to_process and not simple_backoff_rules:
@@ -1939,6 +1939,7 @@ def fetch_incidents_detection_alerts(client_obj, params: Dict[str, Any], start_t
 
         fetch_detection_by_alert_state = params.get('fetch_detection_by_alert_state',
                                                     fetch_detection_by_alert_state)
+        fetch_detection_by_list_basis = params.get('fetch_detection_by_list_basis', fetch_detection_by_list_basis)
         if not fetch_detection_by_ids:
             fetch_detection_by_ids = get_all_live_rules(client_obj, max_live_rules=50)
 
@@ -1947,12 +1948,14 @@ def fetch_incidents_detection_alerts(client_obj, params: Dict[str, Any], start_t
         # when 1st time fetch or when pending_rule_or_version_id got emptied in last sync.
         # when detection_to_pull has some rule ids
         pending_rule_or_version_id_with_alert_state.update({'rule_id': fetch_detection_by_ids,
-                                                            'alert_state': fetch_detection_by_alert_state})
+                                                            'alert_state': fetch_detection_by_alert_state,
+                                                            'listBasis': fetch_detection_by_list_basis})
 
     events, detection_to_process, detection_to_pull, pending_rule_or_version_id, simple_backoff_rules \
         = fetch_detections(client_obj, delayed_start_time, end_time, int(max_fetch), detection_to_process,
                            detection_to_pull, pending_rule_or_version_id_with_alert_state.get('rule_id', ''),
-                           pending_rule_or_version_id_with_alert_state.get('alert_state', ''), simple_backoff_rules)
+                           pending_rule_or_version_id_with_alert_state.get('alert_state', ''), simple_backoff_rules,
+                           pending_rule_or_version_id_with_alert_state.get('listBasis'))
 
     # The batch processing is in progress i.e. detections for pending rules are yet to be fetched
     # so updating the end_time to the start time when considered for current batch
@@ -1963,7 +1966,8 @@ def fetch_incidents_detection_alerts(client_obj, params: Dict[str, Any], start_t
         demisto.info(f"End of current time window from START-TIME : {start_time} to END_TIME : {end_time}")
 
     pending_rule_or_version_id_with_alert_state.update({'rule_id': pending_rule_or_version_id,
-                                                        'alert_state': fetch_detection_by_alert_state})
+                                                        'alert_state': fetch_detection_by_alert_state,
+                                                        'listBasis': fetch_detection_by_list_basis})
 
     detection_identifiers, unique_detections = deduplicate_detections(events, detection_identifiers)
 
