@@ -4,6 +4,6 @@ Integration for the SpyCloud ATO service. Retrieve breach data for
 - Email searches
 - Breaches
 
-Filter arguments are added as well. 
+Filter arguments are added as well.
 
 **Make sure to whitelist your outbound IP address XSOAR uses to connect**
