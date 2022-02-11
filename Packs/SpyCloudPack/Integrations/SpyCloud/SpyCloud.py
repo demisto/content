@@ -12,26 +12,26 @@ headers = {
 }
 
 """MAIN FUNCTIONS"""
+
+
 def download_data(URL_SUFFIX, cursor=' '):
     """ General download function for Spycloud breach data. Cannot be used for catalog """
 
-    jdata = requests.get(URL_SUFFIX+"&cursor="+str(cursor), headers=headers, timeout=10).json()
+    jdata = requests.get(URL_SUFFIX + "&cursor=" + str(cursor), headers=headers, timeout=10).json()
 
     return jdata
+
 
 def get_breach_data():
     """Func to get a specific breach SpyCloud has"""
     breach_id = demisto.args().get('id')
 
     # form the URL with the arguments and execute GET request
-    URL_SUFFIX = BASE_URL+"breach/catalog/{}".format(
-       breach_id
-        )
+    URL_SUFFIX = BASE_URL + "breach/catalog/{}".format(breach_id)
     resp = requests.get(URL_SUFFIX, headers=headers, timeout=30)
     jdata = resp.json()
 
     breachdata = []
-    transform = lambda x, y: x[y] if y in x.keys() else "empty"
     for r in jdata['results']:
         t = dict()
         t['uuid'] = transform(r, 'uuid')
@@ -61,18 +61,17 @@ def list_breaches():
 
     # form the URL with the arguments and execute GET request
     if query == "empty":
-        URL_SUFFIX = BASE_URL+"breach/catalog?&since={}&until={}".format(
+        URL_SUFFIX = BASE_URL + "breach/catalog?&since={}&until={}".format(
             since, until
         )
     else:
-        URL_SUFFIX = BASE_URL+"breach/catalog?&since={}&until={}&query={}".format(
+        URL_SUFFIX = BASE_URL + "breach/catalog?&since={}&until={}&query={}".format(
             since, until, query
         )
     resp = requests.get(URL_SUFFIX, headers=headers, timeout=10)
     jdata = resp.json()
 
     breachdata = []
-    transform = lambda x, y: x[y] if y in x.keys() else "empty"
     for r in jdata['results']:
         t = dict()
         t['uuid'] = transform(r, 'uuid')
@@ -109,18 +108,16 @@ def get_domain_data():
     sc_data = []
     cursor = ' '
     total_records = download_data(URL_SUFFIX)['hits']
-    total_queries = -(-total_records//1000) # Account for 1000 records per cursor
+    total_queries = -(-total_records // 1000)
 
     for i in range(total_queries):
         data = download_data(URL_SUFFIX, cursor=cursor)
         cursor = data["cursor"]
         if "hits" in data and "results" in data:
-            sc_hits = data["hits"]
             sc_results = data["results"]
             sc_data.extend(sc_results)
-    
+
     spydata = []
-    transform = lambda x, y: x[y] if y in x.keys() else "empty"
     for r in sc_data:
         t = dict()
         t['document_id'] = transform(r, 'document_id')
@@ -139,7 +136,7 @@ def get_domain_data():
         outputs=spydata
     )
 
-    return command_results 
+    return command_results
 
 
 def get_email_data():
@@ -164,20 +161,16 @@ def get_email_data():
     sc_data = []
     cursor = ' '
     total_records = download_data(URL_SUFFIX)['hits']
-    total_queries = -(-total_records//1000) # Account for 1000 records per cursor
+    total_queries = -(-total_records // 1000)
 
     while cursor:
         for i in range(total_queries):
             data = download_data(URL_SUFFIX, cursor=cursor)
             cursor = data["cursor"]
             if "hits" in data and "results" in data:
-                sc_hits = data["hits"]
-                sc_results = data["results"]
                 sc_data.extend(data["results"])
 
-
     spydata = []
-    transform = lambda x, y: x[y] if y in x.keys() else "empty"
     for r in sc_data:
         t = dict()
         t['document_id'] = transform(r, 'document_id')
@@ -219,19 +212,16 @@ def get_watchlist_data():
     sc_data = []
     cursor = ' '
     total_records = download_data(URL_SUFFIX)['hits']
-    total_queries = -(-total_records//1000) # Account for 1000 records per cursor
+    total_queries = -(-total_records // 1000)
 
     while cursor:
         for i in range(total_queries):
             data = download_data(URL_SUFFIX, cursor=cursor)
             cursor = data["cursor"]
             if "hits" in data and "results" in data:
-                sc_hits = data["hits"]
-                sc_results = data["results"]
                 sc_data.extend(data["results"])
 
     spydata = []
-    transform = lambda x, y: x[y] if y in x.keys() else "empty"
     for r in sc_data:
         t = dict()
         t['document_id'] = transform(r, 'document_id')
@@ -253,9 +243,19 @@ def get_watchlist_data():
     return command_results
 
 
+def transform(spydata, key):
+
+    if key in spydata.keys():
+        transformed_data = spydata[key]
+    else:
+        transformed_data = "empty"
+
+    return transformed_data
+
+
 def test_mod():
     """Simple test function to verify it works from the BYOI screen"""
-    URL_SUFFIX = BASE_URL+"breach/data/domains/google.com/"
+    URL_SUFFIX = BASE_URL + "breach/data/domains/google.com/"
     resp = requests.get(URL_SUFFIX, headers=headers, timeout=30)
     if resp.status_code == 200:
         demisto.results('ok')
