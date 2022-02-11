@@ -782,8 +782,8 @@ inputs:
     in PhishUp playbook, you should set the value False. Default value is True
   playbookInputQuery: null
 outputs:
-- contextPath: Phishup.Result
-  description: Phishup Service Response (Clean, Phish)
+- contextPath: PhishUp.Evaluation
+  description: Phishing Result for URLs inside the HTML (Clean, Phish)
   type: string
 tests:
 - No tests (auto formatted)

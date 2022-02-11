@@ -7,20 +7,20 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any sub-playbooks.
 
 ### Integrations
-* PhishUp
 * Gmail
+* PhishUp
 
 ### Scripts
 * IncreaseIncidentSeverity
 
 ### Commands
-* gmail-move-mail
-* closeInvestigation
 * phishup-evaluate-response
-* gmail-delete-mail
 * url
 * extractIndicators
+* closeInvestigation
+* gmail-delete-mail
 * phishup-get-chosen-action
+* gmail-move-mail
 
 ## Playbook Inputs
 ---
@@ -35,7 +35,7 @@ This playbook does not use any sub-playbooks.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| Phishup.Result | Phishup Service Response \(Clean, Phish\) | string |
+| PhishUp.Evaluation | Phishing Result for URLs inside the HTML \(Clean, Phish\) | string |
 
 ## Playbook Image
 ---
