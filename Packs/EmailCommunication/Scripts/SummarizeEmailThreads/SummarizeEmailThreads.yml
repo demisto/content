@@ -1,0 +1,19 @@
+comment: |-
+  Dynamic-section script for 'Email Threads' layout.
+  This script searches for email threads stored in the Incident context and outputs a table summarizing them.
+commonfields:
+  id: 5b97a387-4403-4da9-8d52-4c8d1e3be4e3
+  version: -1
+dockerimage: demisto/python3:3.10.1.25933
+enabled: true
+engineinfo: {}
+name: SummarizeEmailThreads
+pswd: ""
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- dynamic-section
+type: python

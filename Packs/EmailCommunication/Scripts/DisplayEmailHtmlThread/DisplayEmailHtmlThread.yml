@@ -1,0 +1,19 @@
+comment: |-
+  Dynamic-section script for 'Email Threads' layout.
+  This script renders all email messages with the thread number specified in the "Email Selected Thread" field and outputs them as a single HTML output.
+commonfields:
+  id: e832dd9b-11a7-4d79-830f-96a0e6ab96f7
+  version: -1
+dockerimage: demisto/python3:3.10.1.25933
+enabled: true
+engineinfo: {}
+name: DisplayEmailHtmlThread
+pswd: ""
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- dynamic-section
+type: python
