@@ -1,0 +1,113 @@
+{
+	"associatedToAll": false,
+	"associatedTypes": [
+		"PAN-OS Network Operations - System Information"
+	],
+	"breachScript": "",
+	"caseInsensitive": true,
+	"cliName": "panosarpsummary",
+	"closeForm": false,
+	"columns": [
+		{
+			"displayName": "HostID",
+			"fieldCalcScript": "",
+			"isDefault": true,
+			"isReadOnly": false,
+			"key": "hostid",
+			"required": false,
+			"script": "",
+			"selectValues": null,
+			"type": "shortText",
+			"width": 150
+		},
+		{
+			"displayName": "DP",
+			"fieldCalcScript": "",
+			"isDefault": true,
+			"isReadOnly": false,
+			"key": "dp",
+			"required": false,
+			"script": "",
+			"selectValues": null,
+			"type": "shortText",
+			"width": 150
+		},
+		{
+			"displayName": "Max",
+			"fieldCalcScript": "",
+			"isDefault": true,
+			"isReadOnly": false,
+			"key": "max",
+			"required": false,
+			"script": "",
+			"selectValues": null,
+			"type": "number",
+			"width": 150
+		},
+		{
+			"displayName": "Total",
+			"fieldCalcScript": "",
+			"isDefault": true,
+			"isReadOnly": false,
+			"key": "total",
+			"required": false,
+			"script": "",
+			"selectValues": null,
+			"type": "number",
+			"width": 150
+		},
+		{
+			"displayName": "Timeout",
+			"fieldCalcScript": "",
+			"isDefault": true,
+			"isReadOnly": false,
+			"key": "timeout",
+			"required": false,
+			"script": "",
+			"selectValues": null,
+			"type": "number",
+			"width": 150
+		}
+	],
+	"content": false,
+	"defaultRows": [
+		{},
+		{},
+		{}
+	],
+	"description": "ARP Table summary from all PAN-OS NGFW Devices",
+	"editForm": true,
+	"fieldCalcScript": "",
+	"fromServerVersion": "",
+	"group": 0,
+	"hidden": false,
+	"id": "incident_panosarpsummary",
+	"isReadOnly": false,
+	"itemVersion": "",
+	"locked": false,
+	"mergeStrategy": "",
+	"name": "PAN-OS ARP Summary",
+	"neverSetAsRequired": false,
+	"ownerOnly": false,
+	"packID": "7d11d0ad-c9e3-4c8e-8263-f83c6d043993",
+	"placeholder": "",
+	"propagationLabels": [
+		"all"
+	],
+	"required": false,
+	"runScriptAfterUpdate": false,
+	"script": "",
+	"selectValues": [],
+	"sla": 0,
+	"system": false,
+	"systemAssociatedTypes": null,
+	"threshold": 72,
+	"toServerVersion": "",
+	"type": "grid",
+	"unmapped": false,
+	"unsearchable": false,
+	"useAsKpi": false,
+	"validatedError": "",
+	"validationRegex": "",
+	"version": -1
+}

@@ -1,0 +1,111 @@
+{
+	"associatedToAll": false,
+	"associatedTypes": [
+		"PAN-OS Visibility Hygiene"
+	],
+	"breachScript": "",
+	"caseInsensitive": true,
+	"cliName": "panosconfigurationhygieneissues",
+	"closeForm": false,
+	"columns": [
+		{
+			"displayName": "hostid",
+			"fieldCalcScript": "",
+			"isDefault": true,
+			"isReadOnly": false,
+			"key": "hostid",
+			"required": false,
+			"script": "",
+			"selectValues": null,
+			"type": "shortText",
+			"width": 150
+		},
+		{
+			"displayName": "container_name",
+			"fieldCalcScript": "",
+			"isDefault": true,
+			"isReadOnly": false,
+			"key": "containername",
+			"required": false,
+			"script": "",
+			"selectValues": null,
+			"type": "shortText",
+			"width": 150
+		},
+		{
+			"displayName": "issue_code",
+			"fieldCalcScript": "",
+			"isDefault": true,
+			"isReadOnly": false,
+			"key": "issuecode",
+			"required": false,
+			"script": "",
+			"selectValues": null,
+			"type": "shortText",
+			"width": 150
+		},
+		{
+			"displayName": "description",
+			"fieldCalcScript": "",
+			"isDefault": true,
+			"isReadOnly": false,
+			"key": "description",
+			"required": false,
+			"script": "",
+			"selectValues": null,
+			"type": "shortText",
+			"width": 150
+		},
+		{
+			"displayName": "name",
+			"fieldCalcScript": "",
+			"isDefault": true,
+			"isReadOnly": false,
+			"key": "name",
+			"required": false,
+			"script": "",
+			"selectValues": null,
+			"type": "shortText",
+			"width": 150
+		}
+	],
+	"content": false,
+	"defaultRows": [
+		{}
+	],
+	"description": "Auto Generated",
+	"editForm": true,
+	"fieldCalcScript": "",
+	"fromServerVersion": "",
+	"group": 0,
+	"hidden": false,
+	"id": "incident_panosconfigurationhygieneissues",
+	"isReadOnly": false,
+	"itemVersion": "",
+	"locked": false,
+	"mergeStrategy": "",
+	"name": "PAN-OS Configuration Hygiene Issues",
+	"neverSetAsRequired": false,
+	"ownerOnly": false,
+	"packID": "7d11d0ad-c9e3-4c8e-8263-f83c6d043993",
+	"placeholder": "",
+	"propagationLabels": [
+		"all"
+	],
+	"required": false,
+	"runScriptAfterUpdate": false,
+	"script": "",
+	"selectValues": [],
+	"sla": 0,
+	"system": false,
+	"systemAssociatedTypes": null,
+	"threshold": 72,
+	"toServerVersion": "",
+	"type": "grid",
+	"unmapped": false,
+	"unsearchable": false,
+	"useAsKpi": false,
+	"validatedError": "",
+	"validationRegex": "",
+	"version": -1
+}

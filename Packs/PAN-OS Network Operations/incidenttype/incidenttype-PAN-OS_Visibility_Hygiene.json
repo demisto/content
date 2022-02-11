@@ -1,0 +1,36 @@
+{
+	"autorun": true,
+	"closureScript": "",
+	"color": "#4B897A",
+	"days": 0,
+	"daysR": 0,
+	"default": false,
+	"detached": false,
+	"disabled": false,
+	"extractSettings": {
+		"fieldCliNameToExtractSettings": {},
+		"mode": "Specific"
+	},
+	"fromServerVersion": "",
+	"hours": 0,
+	"hoursR": 0,
+	"id": "PAN-OS Visibility Hygiene",
+	"itemVersion": "",
+	"layout": "dc5302f8-4e49-49fd-85f1-a79fd9eb68ab",
+	"locked": false,
+	"name": "PAN-OS Visibility Hygiene",
+	"onChangeRepAlg": 0,
+	"packID": "7d11d0ad-c9e3-4c8e-8263-f83c6d043993",
+	"playbookId": "ba6f503c-1e97-4bbb-8b60-16607aea58e5",
+	"preProcessingScript": "",
+	"propagationLabels": [
+		"all"
+	],
+	"readonly": false,
+	"reputationCalc": 0,
+	"system": false,
+	"toServerVersion": "",
+	"version": -1,
+	"weeks": 0,
+	"weeksR": 0
+}

@@ -1,0 +1,404 @@
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 7d11d0ad-c9e3-4c8e-8263-f83c6d043993
+    propagationLabels:
+    - all
+    toServerVersion: ""
+id: 147fadc4-5dbf-4beb-853a-6f0362baa026
+inputs:
+- description: ""
+  key: device
+  playbookInputQuery: null
+  required: false
+  value:
+    simple: ${incident.target}
+name: PAN-OS - Device Information
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: fee33e93-41eb-4302-8e36-b55975c7a5b3
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: fee33e93-41eb-4302-8e36-b55975c7a5b3
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -550
+        }
+      }
+  "1":
+    fieldMapping:
+    - incidentfield: Management IP
+      output:
+        complex:
+          accessor: ip_address
+          root: PANOS.ShowSystemInfo.Summary
+          transformers:
+          - operator: FirstArrayElement
+    - incidentfield: Management Netmask
+      output:
+        complex:
+          accessor: netmask
+          root: PANOS.ShowSystemInfo.Result
+          transformers:
+          - operator: FirstArrayElement
+    - incidentfield: Management URL
+      output:
+        complex:
+          accessor: ip_address
+          root: PANOS.ShowSystemInfo.Result
+          transformers:
+          - args:
+              prefix:
+                value:
+                  simple: https://
+              suffix: {}
+            operator: concat
+          - operator: FirstArrayElement
+    - incidentfield: System Uptime
+      output:
+        complex:
+          accessor: uptime
+          root: PANOS.ShowSystemInfo.Result
+          transformers:
+          - operator: FirstArrayElement
+    - incidentfield: Running Software Version
+      output:
+        complex:
+          accessor: sw_version
+          root: PANOS.ShowSystemInfo.Summary
+          transformers:
+          - operator: FirstArrayElement
+    - incidentfield: Running Antivirus Version
+      output:
+        complex:
+          accessor: av_version
+          root: PANOS.ShowSystemInfo.Result
+          transformers:
+          - operator: FirstArrayElement
+    - incidentfield: Device Model
+      output:
+        complex:
+          accessor: model
+          root: PANOS.ShowSystemInfo.Result
+          transformers:
+          - operator: FirstArrayElement
+    - incidentfield: Running  Threat Version
+      output:
+        complex:
+          accessor: threat_version
+          root: PANOS.ShowSystemInfo.Result
+          transformers:
+          - operator: FirstArrayElement
+    - incidentfield: Threat Content Release Date
+      output:
+        complex:
+          accessor: threat_release_date
+          root: PANOS.ShowSystemInfo.Result
+          transformers:
+          - operator: FirstArrayElement
+    - incidentfield: Running App Version
+      output:
+        complex:
+          accessor: app_version
+          root: PANOS.ShowSystemInfo.Result
+          transformers:
+          - operator: FirstArrayElement
+    - incidentfield: App Content Release Date
+      output:
+        complex:
+          accessor: app_release_date
+          root: PANOS.ShowSystemInfo.Result
+          transformers:
+          - operator: FirstArrayElement
+    - incidentfield: Running Wildfire Version
+      output:
+        complex:
+          accessor: wildfire_version
+          root: PANOS.ShowSystemInfo.Result
+          transformers:
+          - operator: FirstArrayElement
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      device_filter_string:
+        simple: ${inputs.device}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Gets information from all PAN-OS systems in the topology.
+      id: b41fc211-ed04-4686-8c7b-c0afd2b3c540
+      iscommand: true
+      name: Get System Data
+      script: '|||pan-os-platform-get-system-info'
+      type: regular
+      version: -1
+    taskid: b41fc211-ed04-4686-8c7b-c0afd2b3c540
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 420
+        }
+      }
+  "2":
+    fieldMapping:
+    - incidentfield: High Availability State
+      output:
+        complex:
+          accessor: status
+          root: PANOS.HAState
+          transformers:
+          - operator: FirstArrayElement
+    - incidentfield: High Availability Peer
+      output:
+        complex:
+          accessor: peer
+          root: PANOS.HAState
+          transformers:
+          - operator: FirstArrayElement
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      device_filter_string:
+        simple: ${incident.target}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Get the HA state and assocaited details from the given device and
+        any other details.
+      id: 249cac3b-a266-4508-8274-0e0722d5a63f
+      iscommand: true
+      name: Get HA Information
+      script: '|||pan-os-platform-get-ha-state'
+      type: regular
+      version: -1
+    taskid: 249cac3b-a266-4508-8274-0e0722d5a63f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 570
+        }
+      }
+  "3":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.panosnetworkoperationsparentincidentid
+          operator: isNotEmpty
+      label: "yes"
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "4"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 87b81270-140c-4125-8db5-46ae2364f803
+      iscommand: false
+      name: Do we have a parent incident?
+      type: condition
+      version: -1
+    taskid: 87b81270-140c-4125-8db5-46ae2364f803
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -410
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      linkedIncidentIDs:
+        simple: ${incident.panosnetworkoperationsparentincidentid}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.linkIncidents
+      id: 43b1779c-26bf-4c98-805b-ecb1530433a7
+      iscommand: true
+      name: Link to parent
+      script: Builtin|||linkIncidents
+      type: regular
+      version: -1
+    taskid: 43b1779c-26bf-4c98-805b-ecb1530433a7
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 180,
+          "y": -240
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 70646cf4-25fc-4286-8c8d-6d926e1a01f4
+      iscommand: false
+      name: Gather Device Information
+      type: title
+      version: -1
+    taskid: 70646cf4-25fc-4286-8c8d-6d926e1a01f4
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -20
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      id: 747a393d-d711-4275-84d0-d7b6b6a2f139
+      iscommand: false
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: 747a393d-d711-4275-84d0-d7b6b6a2f139
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 80
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: a1cda69e-d382-4e9d-8907-96061219fa33
+      iscommand: false
+      name: Update Occurred Time
+      playbookId: 355364b6-49ac-4e25-80a9-2359d180223a
+      type: playbook
+      version: -1
+    taskid: a1cda69e-d382-4e9d-8907-96061219fa33
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 260
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1215,
+        "width": 650,
+        "x": 180,
+        "y": -550
+      }
+    }
+  }

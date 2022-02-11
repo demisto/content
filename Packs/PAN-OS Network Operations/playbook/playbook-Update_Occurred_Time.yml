@@ -1,0 +1,150 @@
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 7d11d0ad-c9e3-4c8e-8263-f83c6d043993
+    propagationLabels:
+    - all
+    toServerVersion: ""
+id: 355364b6-49ac-4e25-80a9-2359d180223a
+inputs: []
+name: Update Occurred Time
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 1b87bbc9-047e-4223-8568-7744a515dcc0
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 1b87bbc9-047e-4223-8568-7744a515dcc0
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      dateFormat:
+        simple: ISO
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |
+        Retrieves the current date and time.
+      id: 3a182c94-5a94-47a5-8fb1-e00acf464196
+      iscommand: false
+      name: Get Current Time in ISO Format
+      scriptName: GetTime
+      type: regular
+      version: -1
+    taskid: 3a182c94-5a94-47a5-8fb1-e00acf464196
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 180
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      occurred:
+        simple: ${TimeNow}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 5d4083c6-e7f8-4b57-8073-2d8af29e5f4e
+      iscommand: true
+      name: Set Occurred Time
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 5d4083c6-e7f8-4b57-8073-2d8af29e5f4e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 330
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 8048296b-bcaa-4614-8729-ef79f4d22335
+      iscommand: false
+      name: Finish
+      type: title
+      version: -1
+    taskid: 8048296b-bcaa-4614-8729-ef79f4d22335
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 480
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 495,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }

@@ -1,0 +1,735 @@
+{
+	"close": null,
+	"description": "",
+	"detached": false,
+	"details": null,
+	"detailsV2": {
+		"TypeName": "",
+		"tabs": [
+			{
+				"id": "summary",
+				"name": "Legacy Summary",
+				"type": "summary"
+			},
+			{
+				"id": "caseinfoid",
+				"name": "Incident Info",
+				"sections": [
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "caseinfoid-field-changed-caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+						"isVisible": true,
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "type",
+								"height": 22,
+								"id": "incident-type-field",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "severity",
+								"height": 22,
+								"id": "incident-severity-field",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "owner",
+								"height": 22,
+								"id": "incident-owner-field",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "sourcebrand",
+								"height": 22,
+								"id": "incident-sourceBrand-field",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "sourceinstance",
+								"height": 22,
+								"id": "incident-sourceInstance-field",
+								"index": 4,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "playbookid",
+								"height": 22,
+								"id": "incident-playbookId-field",
+								"index": 5,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxH": null,
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Case Details",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 0
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "caseinfoid-field-changed-caseinfoid-6aabad20-98b1-11e9-97d7-ed26ef9e46c8",
+						"maxH": null,
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Work Plan",
+						"static": false,
+						"type": "workplan",
+						"w": 1,
+						"x": 1,
+						"y": 0
+					},
+					{
+						"displayType": "ROW",
+						"h": 5,
+						"hideItemTitleOnlyOne": false,
+						"hideName": false,
+						"i": "caseinfoid-field-changed-caseinfoid-84967a40-45c9-11ec-80ca-3b8865052ace",
+						"items": [
+							{
+								"dropEffect": "move",
+								"endCol": 4,
+								"fieldId": "panossysteminfo",
+								"height": 106,
+								"id": "892fb170-45c9-11ec-80ca-3b8865052ace",
+								"index": 0,
+								"listId": "caseinfoid-84967a40-45c9-11ec-80ca-3b8865052ace",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"args": {
+									"name": {
+										"simple": "Platform Upgrade - Initiated by #${incident.id}"
+									},
+									"panosnetworkoperationsparentincidentid": {
+										"simple": "${incident.id}"
+									},
+									"type": {
+										"simple": "PAN-OS Platform Upgrade"
+									}
+								},
+								"buttonClass": "error",
+								"endCol": 6,
+								"fieldId": "",
+								"height": 44,
+								"id": "e71a0ea0-5b3d-11ec-b0df-1140bbf5ce0f",
+								"index": 0,
+								"name": "Upgrade PAN-OS Platform",
+								"scriptId": "Builtin|||createNewIncident",
+								"sectionItemType": "button",
+								"startCol": 4
+							},
+							{
+								"args": {
+									"name": {
+										"simple": "Firewall Platform Upgrade - Initiated by #${incident.id}"
+									},
+									"panosnetworkoperationsparentincidentid": {
+										"simple": "${incident.id}"
+									},
+									"panosupgradepanoramaupgradeswitch": {
+										"simple": "False"
+									},
+									"type": {
+										"simple": "PAN-OS Platform Upgrade"
+									}
+								},
+								"buttonClass": "warning",
+								"endCol": 6,
+								"fieldId": "",
+								"height": 44,
+								"id": "1863c880-5bba-11ec-9fb9-afa6ec258e0a",
+								"index": 1,
+								"name": "Upgrade Firewalls",
+								"scriptId": "Builtin|||createNewIncident",
+								"sectionItemType": "button",
+								"startCol": 4
+							},
+							{
+								"args": {
+									"name": {
+										"simple": "Panorama Platform Upgrade - Initiated by #${incident.id}"
+									},
+									"panosnetworkoperationsparentincidentid": {
+										"simple": "${incident.id}"
+									},
+									"panosupgradefirewallupgradeswitch": {
+										"simple": "False"
+									},
+									"type": {
+										"simple": "PAN-OS Platform Upgrade"
+									}
+								},
+								"buttonClass": "warning",
+								"dropEffect": "move",
+								"endCol": 6,
+								"fieldId": "",
+								"height": 44,
+								"id": "43480200-5bba-11ec-9fb9-afa6ec258e0a",
+								"index": 2,
+								"listId": "caseinfoid-84967a40-45c9-11ec-80ca-3b8865052ace",
+								"name": "Upgrade Panorama",
+								"scriptId": "Builtin|||createNewIncident",
+								"sectionItemType": "button",
+								"startCol": 4
+							},
+							{
+								"args": {
+									"name": {
+										"simple": "Visibility Hygiene Test - Initiated by #${incident.id}"
+									},
+									"panosnetworkoperationsparentincidentid": {
+										"simple": "${incident.id}"
+									},
+									"type": {
+										"simple": "PAN-OS Visibility Hygiene"
+									}
+								},
+								"buttonClass": "success",
+								"endCol": 6,
+								"fieldId": "",
+								"height": 44,
+								"id": "24876150-5c94-11ec-96c0-15bb6e35d311",
+								"index": 3,
+								"name": "Check for Configuration issues affecting threat Visibility",
+								"scriptId": "Builtin|||createNewIncident",
+								"sectionItemType": "button",
+								"startCol": 4
+							},
+							{
+								"args": {
+									"name": {
+										"simple": "System Snapshot - Initiated by #${incident.id}"
+									},
+									"panosnetworkoperationsparentincidentid": {
+										"simple": "${incident.id}"
+									},
+									"type": {
+										"simple": "PAN-OS Snapshot Comparison"
+									}
+								},
+								"buttonClass": "success",
+								"endCol": 6,
+								"fieldId": "",
+								"height": 44,
+								"id": "446b1250-5bc7-11ec-80e0-87bf096ec802",
+								"index": 4,
+								"name": "Start Snapshot Comparison",
+								"scriptId": "Builtin|||createNewIncident",
+								"sectionItemType": "button",
+								"startCol": 4
+							},
+							{
+								"args": {
+									"name": {
+										"simple": "PAN-OS Network Operations - System Information"
+									}
+								},
+								"buttonClass": "success",
+								"endCol": 6,
+								"fieldId": "",
+								"height": 44,
+								"id": "be5e0660-5d2c-11ec-a42f-eba1a4d4e526",
+								"index": 5,
+								"name": "Refresh System Information",
+								"scriptId": "Builtin|||setPlaybook",
+								"sectionItemType": "button",
+								"startCol": 4
+							}
+						],
+						"maxH": null,
+						"maxW": 3,
+						"minH": 1,
+						"minW": 3,
+						"moved": false,
+						"name": "Platform and Device Information",
+						"static": false,
+						"w": 3,
+						"x": 0,
+						"y": 8
+					},
+					{
+						"columns": [
+							{
+								"displayed": true,
+								"isDefault": true,
+								"key": "id",
+								"width": 110
+							},
+							{
+								"displayed": true,
+								"isDefault": true,
+								"key": "name",
+								"width": 300
+							},
+							{
+								"displayed": true,
+								"isDefault": true,
+								"key": "type",
+								"width": 200
+							},
+							{
+								"displayed": true,
+								"isDefault": true,
+								"key": "status",
+								"width": 80
+							},
+							{
+								"displayed": true,
+								"key": "Device Model",
+								"width": 200
+							},
+							{
+								"displayed": true,
+								"key": "Target",
+								"width": 180
+							}
+						],
+						"h": 2,
+						"i": "caseinfoid-field-changed-caseinfoid-037b8c80-5bcb-11ec-80e0-87bf096ec802",
+						"items": [],
+						"maxH": null,
+						"maxW": 3,
+						"minH": 1,
+						"minW": 3,
+						"moved": false,
+						"name": "Linked Incidents and Devices",
+						"static": false,
+						"type": "linkedIncidents",
+						"w": 3,
+						"x": 0,
+						"y": 4
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"hideItemTitleOnlyOne": true,
+						"hideName": false,
+						"i": "caseinfoid-field-changed-caseinfoid-0843c2f0-5bcb-11ec-80e0-87bf096ec802",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "panosnetworkoperationsincidentdescription",
+								"height": 106,
+								"id": "12b037f0-5bcb-11ec-80e0-87bf096ec802",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxH": null,
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Incident Description",
+						"static": false,
+						"w": 1,
+						"x": 2,
+						"y": 0
+					},
+					{
+						"h": 2,
+						"i": "caseinfoid-1b7e2180-741c-11ec-80ed-45290f921d72",
+						"items": [],
+						"maxH": null,
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Last Hygiene Check",
+						"query": "5cf71f56-a9c7-4a5b-8c30-6497febf9147",
+						"queryType": "script",
+						"static": false,
+						"type": "dynamic",
+						"w": 1,
+						"x": 1,
+						"y": 2
+					},
+					{
+						"h": 2,
+						"i": "caseinfoid-f08f15c0-741f-11ec-b977-ddc5c4c6c9df",
+						"items": [],
+						"maxH": null,
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Last Refreshed",
+						"query": "40a5bc67-a733-4110-8072-821c97da2e0f",
+						"queryType": "script",
+						"static": false,
+						"type": "dynamic",
+						"w": 1,
+						"x": 0,
+						"y": 2
+					},
+					{
+						"h": 2,
+						"i": "caseinfoid-563656e0-7420-11ec-b977-ddc5c4c6c9df",
+						"items": [],
+						"maxH": null,
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Last System Snapshot",
+						"query": "a48e9708-f2d7-4433-8dd8-5ff3db94a20b",
+						"queryType": "script",
+						"static": false,
+						"type": "dynamic",
+						"w": 1,
+						"x": 2,
+						"y": 2
+					},
+					{
+						"description": "Number of currently open firewall change requests",
+						"h": 2,
+						"hideName": true,
+						"i": "caseinfoid-95225760-8acc-11ec-a182-2b2c392e56f5",
+						"items": [],
+						"maxH": null,
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Open Policy Change Requests",
+						"query": "afff3346-0922-445d-8488-ee841c883089",
+						"queryType": "script",
+						"static": false,
+						"type": "dynamic",
+						"w": 1,
+						"x": 1,
+						"y": 6
+					},
+					{
+						"description": "Number of open visibility hygiene issues",
+						"h": 2,
+						"hideName": true,
+						"i": "caseinfoid-008029c0-8ad1-11ec-a182-2b2c392e56f5",
+						"items": [],
+						"maxH": null,
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "General Purpose Dynamic Section",
+						"query": "fbe51dd5-2a0f-4107-8c0f-b98b56eaf1dc",
+						"queryType": "script",
+						"static": false,
+						"type": "dynamic",
+						"w": 1,
+						"x": 0,
+						"y": 6
+					},
+					{
+						"description": "Number of devices currently waiting or undergoing device upgrade.",
+						"h": 2,
+						"hideName": true,
+						"i": "caseinfoid-967f08c0-8aee-11ec-930f-93ef893e9b24",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Active Device Upgrades",
+						"query": "1bcad766-5b5e-4e6b-87f8-56397ce6513c",
+						"queryType": "script",
+						"static": false,
+						"type": "dynamic",
+						"w": 1,
+						"x": 2,
+						"y": 6
+					}
+				],
+				"type": "custom"
+			},
+			{
+				"hidden": false,
+				"id": "zfz2gmojss",
+				"name": "Summary Tables",
+				"sections": [
+					{
+						"displayType": "ROW",
+						"h": 4,
+						"hideItemTitleOnlyOne": true,
+						"hideName": false,
+						"i": "caseinfoid-d4acbed0-7978-11ec-82bf-ef1561a42901",
+						"items": [
+							{
+								"dropEffect": "move",
+								"endCol": 3,
+								"fieldId": "panosarpsummary",
+								"height": 106,
+								"id": "db4dace0-7978-11ec-82bf-ef1561a42901",
+								"index": 0,
+								"listId": "caseinfoid-d4acbed0-7978-11ec-82bf-ef1561a42901",
+								"sectionItemType": "field",
+								"startCol": 1
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "ARP",
+						"static": false,
+						"w": 2,
+						"x": 0,
+						"y": 0
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"hideName": false,
+						"i": "caseinfoid-e42b4480-7978-11ec-82bf-ef1561a42901",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "panosbgppeers",
+								"height": 22,
+								"id": "ebc5fbe0-7978-11ec-82bf-ef1561a42901",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Routing Protocols",
+						"static": false,
+						"w": 1,
+						"x": 2,
+						"y": 0
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"hideName": false,
+						"i": "caseinfoid-f345b130-7978-11ec-82bf-ef1561a42901",
+						"items": [
+							{
+								"dropEffect": "move",
+								"endCol": 3,
+								"fieldId": "panosroutes",
+								"height": 106,
+								"id": "fe1ef1c0-7978-11ec-82bf-ef1561a42901",
+								"index": 0,
+								"listId": "caseinfoid-d4acbed0-7978-11ec-82bf-ef1561a42901",
+								"sectionItemType": "field",
+								"startCol": 1
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Routing Tables",
+						"static": false,
+						"w": 2,
+						"x": 0,
+						"y": 4
+					}
+				],
+				"type": "custom"
+			},
+			{
+				"hidden": false,
+				"id": "3tdhknuqku",
+				"name": "Detailed Tables",
+				"sections": [
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"hideItemTitleOnlyOne": true,
+						"hideName": false,
+						"i": "caseinfoid-dedd2fb0-4b2a-11ec-9fa6-397da0e728c4",
+						"items": [
+							{
+								"endCol": 6,
+								"fieldId": "panossysteminforesult",
+								"height": 106,
+								"id": "e7942c80-4b2a-11ec-9fa6-397da0e728c4",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 3,
+						"moved": false,
+						"name": "System Info",
+						"static": false,
+						"w": 3,
+						"x": 0,
+						"y": 0
+					},
+					{
+						"description": "",
+						"displayType": "ROW",
+						"h": 4,
+						"hideItemTitleOnlyOne": true,
+						"hideName": false,
+						"i": "caseinfoid-38da24a0-4b2b-11ec-9fa6-397da0e728c4",
+						"items": [
+							{
+								"endCol": 6,
+								"fieldId": "panosarptableresult",
+								"height": 106,
+								"id": "40648850-4b2b-11ec-9fa6-397da0e728c4",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "ARP Tables",
+						"static": false,
+						"w": 3,
+						"x": 0,
+						"y": 6
+					},
+					{
+						"displayType": "ROW",
+						"h": 4,
+						"hideName": false,
+						"i": "caseinfoid-4a9d4320-4b2b-11ec-9fa6-397da0e728c4",
+						"items": [
+							{
+								"endCol": 6,
+								"fieldId": "panosroutesresult",
+								"height": 106,
+								"id": "4f30d500-4b2b-11ec-9fa6-397da0e728c4",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 6,
+								"fieldId": "panosbgppeersresult",
+								"height": 106,
+								"id": "3848ab70-4c1a-11ec-af7a-41dcf4692d82",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "New Section",
+						"static": false,
+						"w": 3,
+						"x": 0,
+						"y": 2
+					}
+				],
+				"type": "custom"
+			},
+			{
+				"id": "warRoom",
+				"name": "War Room",
+				"type": "warRoom"
+			},
+			{
+				"id": "workPlan",
+				"name": "Work Plan",
+				"type": "workPlan"
+			},
+			{
+				"hidden": true,
+				"id": "evidenceBoard",
+				"name": "Evidence Board",
+				"type": "evidenceBoard"
+			},
+			{
+				"hidden": true,
+				"id": "relatedIncidents",
+				"name": "Related Incidents",
+				"type": "relatedIncidents"
+			},
+			{
+				"hidden": true,
+				"id": "canvas",
+				"name": "Canvas",
+				"type": "canvas"
+			}
+		]
+	},
+	"edit": {
+		"sections": [
+			{
+				"description": "",
+				"fields": [
+					{
+						"fieldId": "incident_name",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_owner",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_type",
+						"isVisible": true
+					}
+				],
+				"isVisible": true,
+				"name": "Basic Information",
+				"query": null,
+				"queryType": "",
+				"readOnly": false,
+				"type": ""
+			}
+		]
+	},
+	"fromServerVersion": "",
+	"group": "incident",
+	"id": "8b2ca1fc-9aed-40f7-8ba3-36fa42bee602",
+	"indicatorsDetails": null,
+	"indicatorsQuickView": null,
+	"itemVersion": "",
+	"locked": false,
+	"mobile": null,
+	"name": "PAN-OS System Information",
+	"packID": "7d11d0ad-c9e3-4c8e-8263-f83c6d043993",
+	"propagationLabels": [
+		"all"
+	],
+	"quickView": null,
+	"system": false,
+	"toServerVersion": "",
+	"version": -1
+}

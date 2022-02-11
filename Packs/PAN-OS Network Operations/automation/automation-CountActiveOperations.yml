@@ -1,0 +1,63 @@
+comment: Used as a dynamic field, retrieves all the currently active operations for
+  a given firewall.
+commonfields:
+  id: 453adbd1-0f28-4a5f-8053-baf7651114db
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 7d11d0ad-c9e3-4c8e-8263-f83c6d043993
+    propagationLabels:
+    - all
+    toServerVersion: ""
+dockerimage: demisto/python3:3.9.8.24399
+enabled: true
+engineinfo: {}
+name: CountActiveOperations
+pswd: ""
+runas: DBotWeakRole
+runonce: false
+script: |+
+  incident = demisto.incidents()[0]
+  target = incident.get('CustomFields', {}).get('target')
+  res = demisto.executeCommand("GetIncidentsByQuery", {
+      "query": f"-status:closed -category:job target:{target} -type:\"PAN-OS Device\""
+  })
+  if is_error(res):
+      return_error(get_error(res))
+
+  incidents = json.loads(res[0]['Contents'])
+
+
+  data = {
+      "Type": 17,
+      "ContentsFormat": "number",
+      "Contents": {
+        "stats": len(incidents),
+        "params": {
+            "layout": "horizontal",
+            "name": f"Active Operations for {target}",
+            "sign": "",
+            "colors": {
+              "items": {
+                "#00CD33": {
+                  "value": 5
+                },
+                "#FAC100": {
+                  "value": 0
+                },
+              }
+            },
+          "type": "above"
+        }
+      }
+  }
+
+  demisto.results(data)
+
+scripttarget: 0
+subtype: python3
+tags:
+- dynamic-section
+type: python

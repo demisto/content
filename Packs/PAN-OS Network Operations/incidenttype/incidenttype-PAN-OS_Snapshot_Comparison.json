@@ -1,0 +1,36 @@
+{
+	"autorun": true,
+	"closureScript": "",
+	"color": "#9FA8DA",
+	"days": 0,
+	"daysR": 0,
+	"default": false,
+	"detached": false,
+	"disabled": false,
+	"extractSettings": {
+		"fieldCliNameToExtractSettings": {},
+		"mode": "Specific"
+	},
+	"fromServerVersion": "",
+	"hours": 0,
+	"hoursR": 0,
+	"id": "PAN-OS Snapshot Comparison",
+	"itemVersion": "",
+	"layout": "26040e50-dc8e-40e5-899f-57dad179d55b",
+	"locked": false,
+	"name": "PAN-OS Snapshot Comparison",
+	"onChangeRepAlg": 0,
+	"packID": "7d11d0ad-c9e3-4c8e-8263-f83c6d043993",
+	"playbookId": "650abbfa-f581-4889-8fe6-142fb65905f1",
+	"preProcessingScript": "",
+	"propagationLabels": [
+		"all"
+	],
+	"readonly": false,
+	"reputationCalc": 0,
+	"system": false,
+	"toServerVersion": "",
+	"version": -1,
+	"weeks": 0,
+	"weeksR": 0
+}

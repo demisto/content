@@ -1,0 +1,101 @@
+{
+	"associatedToAll": false,
+	"associatedTypes": [
+		"PAN-OS Snapshot Comparison"
+	],
+	"breachScript": "",
+	"caseInsensitive": true,
+	"cliName": "panossnapshotarpdifferences",
+	"closeForm": false,
+	"columns": [
+		{
+			"displayName": "Table ID",
+			"fieldCalcScript": "",
+			"isDefault": true,
+			"isReadOnly": false,
+			"key": "tableid",
+			"required": false,
+			"script": "",
+			"selectValues": null,
+			"type": "shortText",
+			"width": 150
+		},
+		{
+			"displayName": "Key",
+			"fieldCalcScript": "",
+			"isDefault": true,
+			"isReadOnly": false,
+			"key": "key",
+			"required": false,
+			"script": "",
+			"selectValues": null,
+			"type": "shortText",
+			"width": 150
+		},
+		{
+			"displayName": "Value",
+			"fieldCalcScript": "",
+			"isDefault": true,
+			"isReadOnly": false,
+			"key": "value",
+			"required": false,
+			"script": "",
+			"selectValues": null,
+			"type": "shortText",
+			"width": 150
+		},
+		{
+			"displayName": "Description",
+			"fieldCalcScript": "",
+			"isDefault": true,
+			"isReadOnly": false,
+			"key": "description",
+			"required": false,
+			"script": "",
+			"selectValues": null,
+			"type": "shortText",
+			"width": 150
+		}
+	],
+	"content": false,
+	"defaultRows": [
+		{},
+		{},
+		{}
+	],
+	"description": "Differences between ARP tables between two snapshots.",
+	"editForm": true,
+	"fieldCalcScript": "",
+	"fromServerVersion": "",
+	"group": 0,
+	"hidden": false,
+	"id": "incident_panossnapshotarpdifferences",
+	"isReadOnly": false,
+	"itemVersion": "",
+	"locked": false,
+	"mergeStrategy": "",
+	"name": "PAN-OS Snapshot - ARP Differences",
+	"neverSetAsRequired": false,
+	"ownerOnly": false,
+	"packID": "7d11d0ad-c9e3-4c8e-8263-f83c6d043993",
+	"placeholder": "",
+	"propagationLabels": [
+		"all"
+	],
+	"required": false,
+	"runScriptAfterUpdate": false,
+	"script": "",
+	"selectValues": [],
+	"sla": 0,
+	"system": false,
+	"systemAssociatedTypes": null,
+	"threshold": 72,
+	"toServerVersion": "",
+	"type": "grid",
+	"unmapped": false,
+	"unsearchable": false,
+	"useAsKpi": false,
+	"validatedError": "",
+	"validationRegex": "",
+	"version": -1
+}

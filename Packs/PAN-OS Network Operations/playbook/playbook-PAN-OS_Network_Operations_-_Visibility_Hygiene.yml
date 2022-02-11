@@ -1,0 +1,602 @@
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 7d11d0ad-c9e3-4c8e-8263-f83c6d043993
+    propagationLabels:
+    - all
+    toServerVersion: ""
+description: Check the PANOS Platform for configuration hygiene issues, such as misconfigured
+  profiles, zones, and log forwarding.
+id: ba6f503c-1e97-4bbb-8b60-16607aea58e5
+inputs:
+- description: ""
+  key: target
+  playbookInputQuery: null
+  required: false
+  value:
+    simple: ${incident.target}
+name: PAN-OS Network Operations - Visibility Hygiene
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: b600d557-96f5-46a6-8fa1-3c023db7e44b
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: b600d557-96f5-46a6-8fa1-3c023db7e44b
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -220
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "12"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Delete field from context
+      id: 78ac232a-21fe-468b-8d25-0733b532dfaf
+      iscommand: false
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: 78ac232a-21fe-468b-8d25-0733b532dfaf
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -80
+        }
+      }
+  "2":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.panosnetworkoperationsparentincidentid
+          operator: isNotEmpty
+      label: "yes"
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 70b236f2-cc81-49b9-82db-633499f03095
+      iscommand: false
+      name: Do we have a parent incident?
+      type: condition
+      version: -1
+    taskid: 70b236f2-cc81-49b9-82db-633499f03095
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 420
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      linkedIncidentIDs:
+        simple: ${incident.panosnetworkoperationsparentincidentid}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.linkIncidents
+      id: 31b05846-e27c-42e2-8fd7-3510bd1f7e1a
+      iscommand: true
+      name: Link to parent
+      script: Builtin|||linkIncidents
+      type: regular
+      version: -1
+    taskid: 31b05846-e27c-42e2-8fd7-3510bd1f7e1a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 620
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "5"
+      - "6"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 2065463c-59b8-4854-84bd-4a54db75c5b2
+      iscommand: false
+      name: Collect Hygiene Information
+      type: title
+      version: -1
+    taskid: 2065463c-59b8-4854-84bd-4a54db75c5b2
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 790
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      device_filter_string:
+        simple: ${inputs.target}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 2e08c8b9-1e95-4fe1-89c3-f922efb4e8f9
+      iscommand: true
+      name: Check Log Forwarding
+      script: '|||pan-os-hygiene-check-log-forwarding'
+      type: regular
+      version: -1
+    taskid: 2e08c8b9-1e95-4fe1-89c3-f922efb4e8f9
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 940
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      device_filter_string:
+        simple: ${inputs.target}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check configured security zones have correct settings.
+      id: 9ae3a6ff-565a-4cea-8b85-2e97e68642d0
+      iscommand: true
+      name: Check Security Zone Settings
+      script: '|||pan-os-hygiene-check-security-zones'
+      type: regular
+      version: -1
+    taskid: 9ae3a6ff-565a-4cea-8b85-2e97e68642d0
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 660,
+          "y": 940
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "14"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      device_filter_string:
+        simple: ${inputs.target}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks the configured Anti-spyware profiles to ensure at least
+        one meets best practices.
+      id: 27659990-dba6-45c7-8e46-cf0720158047
+      iscommand: true
+      name: Check Spyware Profiles
+      script: '|||pan-os-hygiene-check-spyware-profiles'
+      type: regular
+      version: -1
+    taskid: 27659990-dba6-45c7-8e46-cf0720158047
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 30,
+          "y": 1260
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "7"
+      - "9"
+      - "10"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 0508e450-270b-470e-8e07-5bd551cecfa4
+      iscommand: false
+      name: Collect Profile Hygiene
+      type: title
+      version: -1
+    taskid: 0508e450-270b-470e-8e07-5bd551cecfa4
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1120
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "14"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      device_filter_string:
+        simple: ${inputs.target}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks the configured Vulnerability profiles to ensure at least
+        one meets best practices.
+      id: 4fb2a626-90ef-435d-889d-2364b8684311
+      iscommand: true
+      name: Check VulnerabilityProfiles
+      script: '|||pan-os-hygiene-check-vulnerability-profiles'
+      type: regular
+      version: -1
+    taskid: 4fb2a626-90ef-435d-889d-2364b8684311
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1260
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "14"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      device_filter_string:
+        simple: ${inputs.target}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks the configured URL Filtering profiles to ensure at least
+        one meets best practices.
+      id: 6a203404-1502-41fe-89b0-f8e59250cd95
+      iscommand: true
+      name: Check URL Filtering profiles
+      script: '|||pan-os-hygiene-check-url-filtering-profiles'
+      type: regular
+      version: -1
+    taskid: 6a203404-1502-41fe-89b0-f8e59250cd95
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 850,
+          "y": 1260
+        }
+      }
+  "11":
+    id: "11"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "16"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      panosconfigurationhygienecheck:
+        complex:
+          accessor: Summary
+          root: PANOS.ConfigurationHygiene
+          transformers:
+          - operator: ConvertKeysToTableFieldFormat
+      panosconfigurationhygieneissues:
+        complex:
+          accessor: Result
+          root: PANOS.ConfigurationHygiene
+          transformers:
+          - operator: ConvertKeysToTableFieldFormat
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: bbfbbc17-962e-4308-8bdc-1121ebaca5c1
+      iscommand: true
+      name: Set Incident
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: bbfbbc17-962e-4308-8bdc-1121ebaca5c1
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1750
+        }
+      }
+  "12":
+    id: "12"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "13"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      panosnetworkoperationsincidentdescription:
+        simple: "<h4>PAN-OS Visibility Hygiene</h4>\nThis incident type checks all
+          PAN-OS configuration settings for issues that would limit visibility of
+          threats in the environment. "
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 143a9c86-2c41-42ff-89f3-9b7e576479f0
+      iscommand: true
+      name: Set Incident Description
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 143a9c86-2c41-42ff-89f3-9b7e576479f0
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 80
+        }
+      }
+  "13":
+    id: "13"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: f4af7242-4f66-471c-8bf3-500cf36961f2
+      iscommand: false
+      name: Update Occurred Time
+      playbookId: 355364b6-49ac-4e25-80a9-2359d180223a
+      type: playbook
+      version: -1
+    taskid: f4af7242-4f66-471c-8bf3-500cf36961f2
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 250
+        }
+      }
+  "14":
+    id: "14"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "15"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 63e78871-275b-4f37-8635-53c9f20cd42f
+      iscommand: false
+      name: Check Security Rules
+      type: title
+      version: -1
+    taskid: 63e78871-275b-4f37-8635-53c9f20cd42f
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1440
+        }
+      }
+  "15":
+    id: "15"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "11"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      device_filter_string:
+        simple: ${inputs.target}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check security rules are configured correctly.
+      id: f1492c31-5239-4197-8c59-578e2e9ed541
+      iscommand: true
+      name: Check Security Rules
+      script: '|||pan-os-hygiene-check-security-rules'
+      type: regular
+      version: -1
+    taskid: f1492c31-5239-4197-8c59-578e2e9ed541
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1575
+        }
+      }
+  "16":
+    id: "16"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 127cca62-e174-4c87-8ee0-c64617c1f7ae
+      iscommand: false
+      name: Finish
+      type: title
+      version: -1
+    taskid: 127cca62-e174-4c87-8ee0-c64617c1f7ae
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1900
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2185,
+        "width": 1200,
+        "x": 30,
+        "y": -220
+      }
+    }
+  }

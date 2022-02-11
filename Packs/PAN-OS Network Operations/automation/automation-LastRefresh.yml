@@ -1,0 +1,69 @@
+comment: Duration widget tracking the last time this incident was refreshed using
+  the occurred time.
+commonfields:
+  id: 40a5bc67-a733-4110-8072-821c97da2e0f
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 7d11d0ad-c9e3-4c8e-8263-f83c6d043993
+    propagationLabels:
+    - all
+    toServerVersion: ""
+dockerimage: demisto/python3:3.10.1.25933
+enabled: true
+engineinfo: {}
+name: LastRefresh
+pswd: ""
+runas: DBotWeakRole
+runonce: false
+script: |
+  """Reports the duration since the occurred time, representing the last time this incident was refreshed."""
+  # -- This is a way to get around trimming commonserverpython on import
+  import datetime
+
+  try:
+      demisto.args()
+  except:
+      from CommonServerPython import *
+
+  incident = demisto.incidents()[0]
+
+  occurred_time = datetime.datetime.strptime(incident.get("occurred").split(".")[0], "%Y-%m-%dT%H:%M:%S")
+  current_time = datetime.datetime.now()
+  time_delta = current_time - occurred_time
+
+  data = {
+      "Type": 17,
+      "ContentsFormat": "duration",
+      "Contents": {
+          "stats": time_delta.seconds,
+          "params": {
+              "layout": "horizontal",
+              "name": "Last run visibility incident",
+              "sign": "@",
+              "colors": {
+                  "items": {
+                      "#00CD33": {
+                          "value": 10
+                      },
+                      "#FAC100": {
+                          "value": 20
+                      },
+                      "green": {
+                          "value": 40
+                      }
+                  }
+              },
+              "type": "above"
+          }
+      }
+  }
+
+  demisto.results(data)
+scripttarget: 0
+subtype: python3
+tags:
+- dynamic-section
+type: python

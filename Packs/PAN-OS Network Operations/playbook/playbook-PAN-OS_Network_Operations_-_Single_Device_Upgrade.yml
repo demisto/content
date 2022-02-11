@@ -1,0 +1,781 @@
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 7d11d0ad-c9e3-4c8e-8263-f83c6d043993
+    propagationLabels:
+    - all
+    toServerVersion: ""
+description: Runs a complete upgrade process for a single device
+id: 7aaaef78-2e98-4870-813f-bf0390485970
+inputs:
+- description: Target firewall to upgrade
+  key: target
+  playbookInputQuery: null
+  required: true
+  value: {}
+- description: Target version to upgrade to.
+  key: target_version
+  playbookInputQuery: null
+  required: true
+  value: {}
+name: PAN-OS Network Operations - Single Device Upgrade
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "25"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 5f851366-dfd1-45a6-8846-2c8aeb33d125
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 5f851366-dfd1-45a6-8846-2c8aeb33d125
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -2110
+        }
+      }
+  "14":
+    continueonerror: true
+    id: "14"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "21"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      hostid:
+        simple: ${inputs.target}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Reboot the given host.
+      id: c722191a-a16a-4080-8ca6-06f1ce8b35fb
+      iscommand: true
+      name: Reboot the system
+      script: '|||pan-os-platform-reboot'
+      type: regular
+      version: -1
+    taskid: c722191a-a16a-4080-8ca6-06f1ce8b35fb
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -205
+        }
+      }
+  "15":
+    id: "15"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 0
+      scriptArguments:
+        AdditionalPollingCommandArgNames:
+          simple: id
+        AdditionalPollingCommandArgValues:
+          complex:
+            accessor: id
+            root: PANOS.JobStatus.Summary
+            transformers:
+            - operator: FirstArrayElement
+        Ids:
+          complex:
+            accessor: id
+            root: PANOS.JobStatus.Summary
+            transformers:
+            - operator: FirstArrayElement
+        Interval:
+          simple: "1"
+        PollingCommandArgName:
+          simple: ids
+        PollingCommandName:
+          simple: pan-os-platform-get-jobs
+        Timeout:
+          simple: "10"
+        dt:
+          simple: PANOS.JobStatus.Result(val.status!=="FIN").id
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "18"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      Ids:
+        simple: ${inputs.target}
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: hostid
+      PollingCommandName:
+        simple: pan-os-platform-get-system-status
+      Timeout:
+        simple: "30"
+      dt:
+        simple: PANOS.SystemStatus(!val.up).hostid
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      id: 31aa7efe-9d43-4eac-865f-bc33fbd38ebc
+      iscommand: false
+      name: GenericPolling
+      playbookId: GenericPolling
+      type: playbook
+      version: -1
+    taskid: 31aa7efe-9d43-4eac-865f-bc33fbd38ebc
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 160
+        }
+      }
+  "16":
+    id: "16"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 2e322c42-753d-4118-86e2-325cf859339b
+      iscommand: false
+      name: Finish
+      type: title
+      version: -1
+    taskid: 2e322c42-753d-4118-86e2-325cf859339b
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 685
+        }
+      }
+  "18":
+    id: "18"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "19"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      device_filter_string:
+        simple: ${inputs.target}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Gets information from all PAN-OS systems in the topology.
+      id: f2cce206-f4bc-4b18-87db-c71e03dd235a
+      iscommand: true
+      name: Get System Info
+      script: '|||pan-os-platform-get-system-info'
+      type: regular
+      version: -1
+    taskid: f2cce206-f4bc-4b18-87db-c71e03dd235a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 310
+        }
+      }
+  "19":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: PANOS.ShowSystemInfo.Result.sw_version
+          operator: isEqualString
+          right:
+            iscontext: true
+            value:
+              simple: inputs.target_version
+      label: "yes"
+    id: "19"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "20"
+      "yes":
+      - "16"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: a34d3541-e0d2-4b82-85f9-912b6ce93a1f
+      iscommand: false
+      name: Check System running new version
+      type: condition
+      version: -1
+    taskid: a34d3541-e0d2-4b82-85f9-912b6ce93a1f
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 490
+        }
+      }
+  "20":
+    id: "20"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      message:
+        simple: Installation completed, reboot completed, but device still on old
+          software version.
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prints an error entry with a given message
+      id: 3cfec269-6cff-4f74-8bf0-0b9c108e63f5
+      iscommand: false
+      name: Fail message
+      scriptName: PrintErrorEntry
+      type: regular
+      version: -1
+    taskid: 3cfec269-6cff-4f74-8bf0-0b9c108e63f5
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 670
+        }
+      }
+  "21":
+    id: "21"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "15"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      seconds:
+        simple: "25"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Sleep for X seconds
+      id: ed2fcd1c-a629-4bd7-8a12-85d8743e86dc
+      iscommand: false
+      name: Sleep to let device shutdown gracefully
+      scriptName: Sleep
+      type: regular
+      version: -1
+    taskid: ed2fcd1c-a629-4bd7-8a12-85d8743e86dc
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -30
+        }
+      }
+  "22":
+    id: "22"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "35"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      device_filter_string:
+        simple: ${inputs.target}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check the devices for software that is available to be installed.
+      id: 1686ce12-78ab-4c25-80b6-aabc0302f25b
+      iscommand: true
+      name: Get Available Software
+      script: '|||pan-os-platform-get-available-software'
+      type: regular
+      version: -1
+    taskid: 1686ce12-78ab-4c25-80b6-aabc0302f25b
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -1460
+        }
+      }
+  "23":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: version
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: PANOS.SoftwareVersions.Summary.downloaded
+                    operator: isTrue
+                root: PANOS.SoftwareVersions.Summary
+          operator: containsGeneral
+          right:
+            iscontext: true
+            value:
+              simple: inputs.target_version
+      label: "yes"
+    id: "23"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "38"
+      "yes":
+      - "39"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 96b5fb96-32d3-40f1-8831-d073738bd9bc
+      iscommand: false
+      name: Has the software already been downloaded?
+      type: condition
+      version: -1
+    taskid: 96b5fb96-32d3-40f1-8831-d073738bd9bc
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -760
+        }
+      }
+  "24":
+    id: "24"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "22"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      hostid:
+        simple: ${inputs.target}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Get the device state from the provided device.
+      id: cda97c07-22bf-45a0-8d67-6f1fec20379e
+      iscommand: true
+      name: Save Device State
+      script: '|||pan-os-platform-get-device-state'
+      type: regular
+      version: -1
+    taskid: cda97c07-22bf-45a0-8d67-6f1fec20379e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -1640
+        }
+      }
+  "25":
+    id: "25"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "26"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      device_filter_string:
+        simple: ${inputs.target}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Gets information from all PAN-OS systems in the topology.
+      id: e52615b9-574e-40e5-80a2-75632779928b
+      iscommand: true
+      name: Get System Info
+      script: '|||pan-os-platform-get-system-info'
+      type: regular
+      version: -1
+    taskid: e52615b9-574e-40e5-80a2-75632779928b
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -1980
+        }
+      }
+  "26":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: PANOS.ShowSystemInfo.Summary.family
+          operator: isEqualString
+          right:
+            value:
+              simple: pc
+      label: Panorama
+    id: "26"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "24"
+      Panorama:
+      - "22"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 51ccdbf8-c9ca-41f7-8198-deb827651850
+      iscommand: false
+      name: System Type
+      type: condition
+      version: -1
+    taskid: 51ccdbf8-c9ca-41f7-8198-deb827651850
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -1830
+        }
+      }
+  "27":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: BaseImage
+          operator: in
+          right:
+            iscontext: true
+            value:
+              complex:
+                accessor: version
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: PANOS.SoftwareVersions.Summary.downloaded
+                    operator: isTrue
+                root: PANOS.SoftwareVersions.Summary
+      label: "yes"
+    id: "27"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "37"
+      "yes":
+      - "23"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 0e806d92-9ceb-46ac-85a1-dd34b97a4080
+      iscommand: false
+      name: Is the base version of this image downloaded?
+      type: condition
+      version: -1
+    taskid: 0e806d92-9ceb-46ac-85a1-dd34b97a4080
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -1110
+        }
+      }
+  "35":
+    id: "35"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "27"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: BaseImage
+      value:
+        complex:
+          root: inputs.target_version
+          transformers:
+          - args:
+              delimiter:
+                value:
+                  simple: .
+            operator: split
+          - args:
+              from:
+                value:
+                  simple: "0"
+              to:
+                value:
+                  simple: "2"
+            operator: slice
+          - args:
+              separator:
+                value:
+                  simple: .
+            operator: join
+          - args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ".0"
+            operator: concat
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: c25bce95-2d46-47f0-89e7-139d7adb6897
+      iscommand: false
+      name: Set BASE Software Version
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: c25bce95-2d46-47f0-89e7-139d7adb6897
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -1300
+        }
+      }
+  "37":
+    id: "37"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "23"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      target:
+        simple: ${inputs.target}
+      target_version:
+        simple: ${BaseImage}
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 1b088e2d-3076-4c4d-83ba-0419058eccf1
+      iscommand: false
+      name: PAN-OS Network Operations - Download Software
+      playbookId: ea66a096-6880-4273-80e8-fbdfaf53be43
+      type: playbook
+      version: -1
+    taskid: 1b088e2d-3076-4c4d-83ba-0419058eccf1
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": -930
+        }
+      }
+  "38":
+    id: "38"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "39"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      target:
+        simple: ${inputs.target}
+      target_version:
+        simple: ${inputs.target_version}
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: dad4c789-9192-4088-8dc6-565b12a39814
+      iscommand: false
+      name: PAN-OS Network Operations - Download Software
+      playbookId: ea66a096-6880-4273-80e8-fbdfaf53be43
+      type: playbook
+      version: -1
+    taskid: dad4c789-9192-4088-8dc6-565b12a39814
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": -565
+        }
+      }
+  "39":
+    id: "39"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 0
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "14"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      target:
+        simple: ${inputs.target}
+      target_version:
+        simple: ${inputs.target_version}
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 686ebf99-307e-424a-87db-ed1b1b52ff5d
+      iscommand: false
+      name: PAN-OS Network Operations - Install Software
+      playbookId: cbed6394-07b4-498b-80ca-cf1b90c3a272
+      type: playbook
+      version: -1
+    taskid: 686ebf99-307e-424a-87db-ed1b1b52ff5d
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -375
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "23_38_#default#": 0.64
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2875,
+        "width": 830,
+        "x": 450,
+        "y": -2110
+      }
+    }
+  }

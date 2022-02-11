@@ -1,0 +1,67 @@
+comment: Used as a dynamic field, retrieves all the currently active hygiene incidents
+  and the issues within them.
+commonfields:
+  id: fbe51dd5-2a0f-4107-8c0f-b98b56eaf1dc
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 7d11d0ad-c9e3-4c8e-8263-f83c6d043993
+    propagationLabels:
+    - all
+    toServerVersion: ""
+dockerimage: demisto/python3:3.9.8.24399
+enabled: true
+engineinfo: {}
+name: CountActiveVisibilityHygieneIssues
+pswd: ""
+runas: DBotWeakRole
+runonce: false
+script: |+
+  """
+  Counts the number of open FW Change requests for the platform, if the change management pack is in use.
+  """
+  res = demisto.executeCommand("GetIncidentsByQuery", {
+      "query": f"-status:closed -category:job type:\"PAN-OS Visibility Hygiene\""
+  })
+  if is_error(res):
+      return_error(get_error(res))
+
+  incidents = json.loads(res[0]['Contents'])
+
+  issue_list = []
+  for incident in incidents:
+      grid_field = incident.get("CustomFields").get("panosconfigurationhygieneissues")
+      issue_list += grid_field
+
+  count = len(issue_list)
+
+  data = {
+      "Type": 17,
+      "ContentsFormat": "number",
+      "Contents": {
+        "stats": count,
+        "params": {
+            "layout": "horizontal",
+            "name": "Configuration Hygiene Issues",
+            "sign": "",
+            "colors": {
+              "items": {
+                  "#00CD33": {"value": -1},
+                  "#FF9000": {"value": 0},
+                  "#FF1744": {"value": 10},
+              }
+            },
+          "type": "above"
+        }
+      }
+  }
+
+  demisto.results(data)
+
+scripttarget: 0
+subtype: python3
+tags:
+- dynamic-section
+type: python
