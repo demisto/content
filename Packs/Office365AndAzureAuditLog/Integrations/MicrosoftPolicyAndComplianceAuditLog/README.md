@@ -22,7 +22,7 @@ Use the integration to get logs from the O365 service.
 
 
 ## Required Permissions To Search Audit Logs
-- The minimum Required Exchange roles are **Audit Logs** or **View-Only Audit Logs**.
+- The minimum required exchange permissions are **Audit Logs** or **View-Only Audit Logs**.
 - Go to [The Microsoft Admin Portal](https://admin.microsoft.com/Adminportal#/homepage).
 - Click **Show All** --> **Roles** --> **Roles Assignments** --> **Exchange section**.
 - Click **Add role group** --> Choose for name and description --> Select the **Audit Logs** or **View-Only Audit Logs** roles --> Select the members to apply the role(s) to --> Click **Add role group**.
