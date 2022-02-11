@@ -126,7 +126,8 @@ prepare-testing-bucket-mpv2:
     - !reference [.create-release-notes-and-common-docs]
 
     - section_start "Create Content Artifacts and Update Conf" --collapsed
-    - demisto-sdk create-content-artifacts -a $ARTIFACTS_FOLDER --cpus 8 --content_version $CONTENT_VERSION --marketplace "marketplacev2" -fbi -idp ./Tests/id_set.json >> $ARTIFACTS_FOLDER/logs/create_content_artifacts.log
+    - if [ -f ./Tests/id_set.json ]; then echo "ID set exists"; fi
+    - demisto-sdk create-content-artifacts -a $ARTIFACTS_FOLDER --cpus 8 --content_version $CONTENT_VERSION --marketplace "marketplacev2" -fbi -idp ./Tests/id_set.json
     - zip -j $ARTIFACTS_FOLDER/uploadable_packs_mpv2.zip $ARTIFACTS_FOLDER/uploadable_packs/* >> $ARTIFACTS_FOLDER/logs/zipping_uploadable_packs.log || echo "failed to zip the uploadable packs, ignoring the failure"
     - rm -rf $ARTIFACTS_FOLDER/uploadable_packs
     - cp "./Tests/conf.json" "$ARTIFACTS_FOLDER/conf.json"
