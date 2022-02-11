@@ -783,7 +783,7 @@ inputs:
   playbookInputQuery: null
 outputs:
 - contextPath: Phishup.Result
-  description: Phishup Service Response (Clean, Phish, Error)
+  description: Phishup Service Response (Clean, Phish)
   type: string
 tests:
 - No tests (auto formatted)
