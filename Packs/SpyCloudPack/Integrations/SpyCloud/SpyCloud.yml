@@ -11,7 +11,8 @@ configuration:
   name: apikey
   required: true
   type: 4
-description: "With the SpyCloud integration data from breaches can be pulled and further processed in Playbooks. Filtering parameters can be used to filter the data set"
+description: "With the SpyCloud integration data from breaches can be pulled and further\
+  \ processed in Playbooks. Filtering parameters can be used to filter the data set"
 display: SpyCloud
 name: SpyCloud
 script:
@@ -22,10 +23,12 @@ script:
       description: 'Give a keyword to search for in the dataset.'
     - name: since
       defaultValue: '2010-01-01'
-      description: 'Search the dataset since this date. Format is yyyy-mm-dd and default value is 2010-01-01'
+      description: 'Search the dataset since this date. Format is yyyy-mm-dd and default
+        value is 2010-01-01'
     - name: until
       defaultValue: '2100-01-01'
-      description: 'Search the dataset until this date. Format is yyyy-mm-dd and default value is 2100-01-01 (aka get everything)'
+      description: 'Search the dataset until this date. Format is yyyy-mm-dd and default
+        value is 2100-01-01 (aka get everything)'
     description: Lists the breaches identified. By default this lists all breaches
       known in Spycloud. With the arguments it's possible to scope the results on
       date and keywords.
@@ -61,7 +64,9 @@ script:
   - arguments:
     - name: id
       required: true
-    description: Retrieves the breach details. While very similar to list-breaches, this command obtains one specific breach, which is easier for automation tasks 
+      description: The breach ID to filter on
+    description: Retrieves the breach details. While very similar to list-breaches,
+      this command obtains one specific breach, which is easier for automation tasks
     name: spycloud-get-breach-data
     outputs:
     - contextPath: SpyCloud.Breaches.uuid
@@ -94,8 +99,10 @@ script:
   - arguments:
     - name: domain
       required: true
+      description: The domain to search for in the data
     - defaultValue: corporate
-      description: 'Allowed values: corporate, infected. Default is corporate. Infected returns the infected employees and customers'
+      description: 'Allowed values: corporate, infected. Default is corporate. Infected
+        returns the infected employees and customers'
       name: type
     - defaultValue: "2"
       description: 'Allowed values: 2, 5, 10, 15, 20, 25. Default is 2'
@@ -134,6 +141,7 @@ script:
       type: String
   - arguments:
     - name: emailaddr
+      description: 'Email address to search for'
       required: true
     - defaultValue: '2'
       description: 'Allowed values: 2, 5, 10, 15, 20, 25. Default is 2'
@@ -149,8 +157,8 @@ script:
         The value provided must follow the standard ISO 8601 date format (yyyy-mm-dd)
       name: until
       defaultValue: '2100-01-01'
-    description: Get all the data from a monitored email address and the breaches occurred
-      that relates with it. Can be scoped by date, severity and breach
+    description: Get all the data from a monitored email address and the breaches
+      occurred that relates with it. Can be scoped by date, severity and breach
     name: spycloud-email-data
     outputs:
     - contextPath: SpyCloud.Emails.document_id
@@ -198,7 +206,7 @@ script:
         The value provided must follow the standard ISO 8601 date format (yyyy-mm-dd)
       name: until
       defaultValue: '2100-01-01'
-    description: Get all the data from a watchlist.  
+    description: Get all the data from a watchlist.
     name: spycloud-watchlist-data
     outputs:
     - contextPath: SpyCloud.Watchlist.document_id
@@ -225,9 +233,11 @@ script:
     - contextPath: SpyCloud.Watchlist.domain
       description: 'The domain involved of the watchlist (if that type is selected)'
       type: String
-  dockerimage: demisto/python3:3.8.6.12176
+  dockerimage: demisto/python3:3.10.1.25933
   runonce: false
   script: ''
   subtype: python3
   type: python
-sourcemoduleid: SplunkPy
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
