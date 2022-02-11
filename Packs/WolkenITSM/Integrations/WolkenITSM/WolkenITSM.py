@@ -2,13 +2,12 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 '''IMPORTS'''
-import ast
 import traceback
-from operator import itemgetter
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict
 
 import urllib3
-from _collections import defaultdict
+
+# from _collections import defaultdict
 
 
 class Client(BaseClient):
@@ -27,7 +26,7 @@ class Client(BaseClient):
         return response
 
     def create_incident_requestv1_request(self, clientId, domain, serviceAccount, Authorization, formData, file):
-        formData = assign_params(formData=formData, file=file)
+        formData = assign_params(formData=formData)
         formData = str(formData)
         headers = self._headers
         headers.update({
@@ -35,7 +34,9 @@ class Client(BaseClient):
         })
 
         headers['accept'] = 'application/json'
-
+        print(formData)
+        print(headers)
+        print(type(formData))
         response = self._http_request('post', 'api/v1/incidents', data=formData, headers=headers)
         return response
 
@@ -45,7 +46,6 @@ class Client(BaseClient):
         """
         data = assign_params(grant_type=grant_type, refresh_token=refresh_token, domain=domain)
         headers = self._headers
-        #headers['Content-Type'] = 'multipart/form-data'
         headers['accept'] = 'application/json'
 
         try:
@@ -67,7 +67,7 @@ class Client(BaseClient):
             set_integration_context(TokenParam)
 
         except Exception as e:
-            return_error(f'Login failed. Please check the instance configuration and the given domain,authorization,refresh_token.\n'
+            return_error(f'Login failed. Please check instance configuration and given domain,authorization,refresh_token.\n'
                          f'{e.args[0]}')
 
     def get_incident_by_id_request(self, incidentId, clientId, domain, serviceAccount, Authorization):
@@ -86,13 +86,12 @@ class Client(BaseClient):
             'Authorization': 'Bearer ' + Authorization
         })
 
-        formData = {}
+        Data: Dict[str, Any] = {}
 
-        response = self._http_request(
-            'post', f'api/v1/incidents/{incidentId}/addAttachments', json_data=formData, files=file, headers=headers)
-        return response
+        res = self._http_request('post', f'api/v1/incidents/{incidentId}/addAttachments', data=Data, file=file, headers=headers)
+        return res
 
-    def post_api_v1_incidents_add_outbound_notes_request(self, incidentId, clientId, domain, serviceAccount, Authorization, formData):
+    def add_outbound_notes_request(self, incidentId, clientId, domain, serviceAccount, Authorization, formData):
         formData = assign_params(formData=formData)
         headers = self._headers
 
@@ -103,7 +102,7 @@ class Client(BaseClient):
         response = self._http_request('post', f'api/v1/incidents/{incidentId}/addOutboundNotes', data=formData, headers=headers)
         return response
 
-    def post_api_v1_incidents_by_incident_id_request(self, incidentId, clientId, domain, serviceAccount, Authorization, formData, file):
+    def incident_id_request(self, incidentId, clientId, domain, serviceAccount, Authorization, formData, file):
         formData = assign_params(formData=formData)
         headers = self._headers
 
@@ -131,17 +130,17 @@ class Client(BaseClient):
         return response
 
     def put_api_v1_incidents_cancel_request(self, incidentId, clientId, domain, serviceAccount, Authorization, formData):
-        formData = assign_params(formData=formData)
+        Data = assign_params(formData=formData)
 
         headers = self._headers
         headers.update({
             'Authorization': 'Bearer ' + Authorization
         })
 
-        response = self._http_request('put', f'api/v1/incidents/{incidentId}/cancel', data=formData, headers=headers)
-        return response
+        res = self._http_request('put', f'api/v1/incidents/{incidentId}/cancel', data=Data, headers=headers)
+        return res
 
-    def search_incidents_by_params_request(self, limit, offset, userPsNo, statusId, subStatusId, teamId, unitId, creatorId, requesterId, itemId, priorityId, assignedUserId, createdTimeGTE, createdTimeLT, updatedTimeGTE, updatedTimeLT, updatedByUserId, clientId, domain, serviceAccount, Authorization):
+    def SearchRequest(self, limit, offset, userPsNo, statusId, subStatusId, teamId, unitId, creatorId, requesterId, itemId, priorityId, assignedUserId, createdTimeGTE, createdTimeLT, updatedTimeGTE, updatedTimeLT, updatedByUserId, clientId, domain, serviceAccount, Authorization):
         params = assign_params(userPsNo=userPsNo, statusId=statusId, subStatusId=subStatusId, teamId=teamId, unitId=unitId, creatorId=creatorId, requesterId=requesterId, itemId=itemId, priorityId=priorityId,
                                assignedUserId=assignedUserId, createdTimeGTE=createdTimeGTE, createdTimeLT=createdTimeLT, updatedTimeGTE=updatedTimeGTE, updatedTimeLT=updatedTimeLT, updatedByUserId=updatedByUserId)
         headers = self._headers
@@ -158,7 +157,7 @@ class Client(BaseClient):
         Get an access token that was previously created if it is still valid, else, generate a new access token from
         the client id, client secret and refresh token.
         """
-        ok_codes = (200, 201, 401)
+        # ok_codes = (200, 201, 401)
         previous_token = get_integration_context()
 
         time_now2 = date_to_timestamp(datetime.now())
@@ -256,9 +255,14 @@ def create_incident_requestv1_command(client: Client, args: Dict[str, Any]) -> C
         formData['Location'] = args.get('Location')
     if args.get('Configuration_Item'):
         formData['Configuration Item'] = args.get('Configuration_Item')
+    if args.get('SourceId'):
+        formData['SourceId'] = args.get('SourceId')
 
     formData = str(formData)
     file = []
+    filename = None
+    filetype = None
+    fileentryId = None
     if args.get('file_name'):
         filename = args.get('file_name')
         filename = str(filename)
@@ -268,9 +272,11 @@ def create_incident_requestv1_command(client: Client, args: Dict[str, Any]) -> C
     if args.get('file_entryId'):
         fileentryId = args.get('file_entryId')
 
-    file = [
-        ('file', (filename, fileentryId, filetype))
-    ]
+    if filename is not None and filetype is not None and fileentryId is not None:
+        # print("123")
+        file = [
+            ('file', (filename, fileentryId, filetype))
+        ]
 
     response = client.create_incident_requestv1_request(clientId, domain, serviceAccount, Authorization, formData, file)
 
@@ -290,7 +296,7 @@ def add_internal_notes_command(client: Client, args: Dict[str, Any]) -> CommandR
     Authorization = access_token
     incidentId = args.get('incidentId')
 
-    if incidentId.startswith('INC'):
+    if incidentId is not None and incidentId.startswith('INC'):
         incidentId = incidentId[3:]
 
     formData = {}
@@ -324,7 +330,16 @@ def get_access_token_command(client: Client, args: Dict[str, Any]) -> CommandRes
         return_error(f'Failed to login. Please verify that the provided username and password are correct, and that you'
                      f' entered the correct client id and client secret in the instance configuration (see ? for'
                      f'correct usage when using OAuth).\n\n{e}')
-    return hr
+
+    command_results = CommandResults(
+        # outputs_prefix='Wolken.UpdateIncidents',
+        # outputs_key_field='',
+        # outputs=response,
+        raw_response=hr
+    )
+    # return hr
+
+    CommandResults()
 
 
 def get_incident_by_id_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -334,7 +349,7 @@ def get_incident_by_id_command(client: Client, args: Dict[str, Any]) -> CommandR
 
     incidentId = args.get('incidentId')
 
-    if incidentId.startswith('INC'):
+    if incidentId is not None and incidentId.startswith('INC'):
         incidentId = incidentId[3:]
 
     response = client.get_incident_by_id_request(incidentId, clientId, domain, serviceAccount, Authorization)
@@ -355,10 +370,13 @@ def post_api_v1_incidents_add_attachments_command(client: Client, args: Dict[str
 
     incidentId = args.get('incidentId')
 
-    if incidentId.startswith('INC'):
+    if incidentId is not None and incidentId.startswith('INC'):
         incidentId = incidentId[3:]
 
     file = []
+    filename = None
+    filetype = None
+    fileentryId = None
     if args.get('file_name'):
         filename = args.get('file_name')
         filename = str(filename)
@@ -368,9 +386,10 @@ def post_api_v1_incidents_add_attachments_command(client: Client, args: Dict[str
     if args.get('file_entryId'):
         fileentryId = args.get('file_entryId')
 
-    file = [
-        ('file', (filename, fileentryId, filetype))
-    ]
+    if filename is not None and filetype is not None and fileentryId is not None:
+        file = [
+            ('file', (filename, fileentryId, filetype))
+        ]
 
     response = client.post_api_v1_incidents_add_attachments_request(
         incidentId, clientId, domain, serviceAccount, Authorization, file)
@@ -391,22 +410,20 @@ def post_api_v1_incidents_add_outbound_notes_command(client: Client, args: Dict[
 
     incidentId = args.get('incidentId')
 
-    if incidentId.startswith('INC'):
+    if incidentId is not None and incidentId.startswith('INC'):
         incidentId = incidentId[3:]
 
     formData = {}
     formData['Notes'] = args.get('Notes')
     formData = str(formData)
 
-    response = client.post_api_v1_incidents_add_outbound_notes_request(
-        incidentId, clientId, domain, serviceAccount, Authorization, formData)
+    response = client.add_outbound_notes_request(incidentId, clientId, domain, serviceAccount, Authorization, formData)
     command_results = CommandResults(
         outputs_prefix='Wolken.UpdateIncidents',
         outputs_key_field='',
         outputs=response,
         raw_response=response
     )
-
     return command_results
 
 
@@ -414,11 +431,9 @@ def post_api_v1_incidents_by_incident_id_command(client: Client, args: Dict[str,
     incidentId = str(args.get('incidentId', ''))
     if incidentId.startswith('INC'):
         incidentId = incidentId[3:]
-
     clientId, domain, serviceAccount = client.get_parameters()
     access_token = client.get_access_token()
     Authorization = access_token
-
     formData = {}
     if args.get('SourceId'):
         formData['SourceId'] = args.get('SourceId')
@@ -429,16 +444,13 @@ def post_api_v1_incidents_by_incident_id_command(client: Client, args: Dict[str,
 
     formData = str(formData)
     file = str(args.get('file', ''))
-
-    response = client.post_api_v1_incidents_by_incident_id_request(
-        incidentId, clientId, domain, serviceAccount, Authorization, formData, file)
+    response = client.incident_id_request(incidentId, clientId, domain, serviceAccount, Authorization, formData, file)
     command_results = CommandResults(
         outputs_prefix='Wolken.UpdateIncidents',
         outputs_key_field='',
         outputs=response,
         raw_response=response
     )
-
     return command_results
 
 
@@ -449,7 +461,6 @@ def post_api_v1_incidents_close_command(client: Client, args: Dict[str, Any]) ->
     clientId, domain, serviceAccount = client.get_parameters()
     access_token = client.get_access_token()
     Authorization = access_token
-
     formData = {}
     if args.get('Owner'):
         formData['AssignedUserPsNo'] = args.get('Owner')
@@ -463,9 +474,7 @@ def post_api_v1_incidents_close_command(client: Client, args: Dict[str, Any]) ->
         formData['StatusId'] = args.get('StatusId')
     if args.get('SubStatusId'):
         formData['SubStatusId'] = args.get('SubStatusId')
-
     formData = str(formData)
-
     response = client.post_api_v1_incidents_close_request(incidentId, clientId, domain, serviceAccount, Authorization, formData)
     command_results = CommandResults(
         outputs_prefix='Wolken.UpdateIncidents',
@@ -473,24 +482,19 @@ def post_api_v1_incidents_close_command(client: Client, args: Dict[str, Any]) ->
         outputs=response,
         raw_response=response
     )
-
     return command_results
 
 
 def put_api_v1_incidents_cancel_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     incidentId = str(args.get('incidentId', ''))
-
     clientId, domain, serviceAccount = client.get_parameters()
     access_token = client.get_access_token()
     Authorization = access_token
-
     if incidentId.startswith('INC'):
         incidentId = incidentId[3:]
-
     formData = {}
     formData['Description'] = args.get('Description')
     formData = str(formData)
-
     response = client.put_api_v1_incidents_cancel_request(incidentId, clientId, domain, serviceAccount, Authorization, formData)
     command_results = CommandResults(
         outputs_prefix='Wolken.UpdateIncidents',
@@ -498,7 +502,6 @@ def put_api_v1_incidents_cancel_command(client: Client, args: Dict[str, Any]) ->
         outputs=response,
         raw_response=response
     )
-
     return command_results
 
 
@@ -522,19 +525,16 @@ def search_incidents_by_params_command(client: Client, args: Dict[str, Any]) -> 
     updatedByUserId = args.get('updatedByUserId', None)
 
     clientId, domain, serviceAccount = client.get_parameters()
-
     access_token = client.get_access_token()
     Authorization = access_token
-
-    response = client.search_incidents_by_params_request(limit, offset, userPsNo, statusId, subStatusId, teamId, unitId, creatorId, requesterId, itemId, priorityId,
-                                                         assignedUserId, createdTimeGTE, createdTimeLT, updatedTimeGTE, updatedTimeLT, updatedByUserId, clientId, domain, serviceAccount, Authorization)
+    response = client.SearchRequest(limit, offset, userPsNo, statusId, subStatusId, teamId, unitId, creatorId, requesterId, itemId, priorityId,
+                                    assignedUserId, createdTimeGTE, createdTimeLT, updatedTimeGTE, updatedTimeLT, updatedByUserId, clientId, domain, serviceAccount, Authorization)
     command_results = CommandResults(
         outputs_prefix='Wolken.GetIncidents',
         outputs_key_field='',
         outputs=response,
         raw_response=response
     )
-
     return command_results
 
 
@@ -546,7 +546,6 @@ def test_module(client: Client) -> None:
 
 
 def main() -> None:
-
     params: Dict[str, Any] = demisto.params()
     args: Dict[str, Any] = demisto.args()
     url = params.get('url')
@@ -590,7 +589,6 @@ def main() -> None:
             'wolken-put-api-v1-incidents-cancel': put_api_v1_incidents_cancel_command,
 
             'wolken-search-incidents-by-params': search_incidents_by_params_command,
-
         }
 
         if command == 'test-module':

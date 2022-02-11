@@ -40,7 +40,7 @@ contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ""
     itemVersion: ""
-    packID: a7d1d235-66fe-482f-886a-9a4812955464
+    packID: 28ef71d8-1a45-488f-8a6d-3748f8cec171
     propagationLabels:
     - all
     toServerVersion: ""
@@ -111,6 +111,7 @@ script:
       name: file_type
     - description: Pass file entry Id required to add in the incident
       name: file_entryId
+    - name: SourceId
     description: Creates new Wolken ITSM incident
     name: wolken-create-incident-requestv1
     outputs:
