@@ -1,65 +1,59 @@
 contentitemexportablefields:
   contentitemfields:
-    fromServerVersion: ""
-    itemVersion: ""
+    fromServerVersion: ''
+    itemVersion: ''
     packID: 7d11d0ad-c9e3-4c8e-8263-f83c6d043993
     propagationLabels:
     - all
-    toServerVersion: ""
+    toServerVersion: ''
 description: Runs a complete upgrade process for a single device
 id: 7aaaef78-2e98-4870-813f-bf0390485970
 inputs:
 - description: Target firewall to upgrade
   key: target
-  playbookInputQuery: null
+  playbookInputQuery:
   required: true
   value: {}
 - description: Target version to upgrade to.
   key: target_version
-  playbookInputQuery: null
+  playbookInputQuery:
   required: true
   value: {}
 name: PAN-OS Network Operations - Single Device Upgrade
 outputs: []
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "25"
+      - '25'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: 5f851366-dfd1-45a6-8846-2c8aeb33d125
       iscommand: false
-      name: ""
+      name: ''
       version: -1
     taskid: 5f851366-dfd1-45a6-8846-2c8aeb33d125
     timertriggers: []
     type: start
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": -2110
-        }
-      }
-  "14":
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": -2110\n  }\n}"
+  '14':
     continueonerror: true
-    id: "14"
+    id: '14'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "21"
+      - '21'
     note: false
     quietmode: 0
     scriptarguments:
@@ -68,7 +62,7 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Reboot the given host.
       id: c722191a-a16a-4080-8ca6-06f1ce8b35fb
       iscommand: true
@@ -79,20 +73,14 @@ tasks:
     taskid: c722191a-a16a-4080-8ca6-06f1ce8b35fb
     timertriggers: []
     type: regular
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": -205
-        }
-      }
-  "15":
-    id: "15"
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": -205\n  }\n}"
+  '15':
+    id: '15'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     loop:
-      exitCondition: ""
+      exitCondition: ''
       iscommand: false
       max: 0
       scriptArguments:
@@ -111,46 +99,44 @@ tasks:
             transformers:
             - operator: FirstArrayElement
         Interval:
-          simple: "1"
+          simple: '1'
         PollingCommandArgName:
           simple: ids
         PollingCommandName:
           simple: pan-os-platform-get-jobs
         Timeout:
-          simple: "10"
+          simple: '10'
         dt:
           simple: PANOS.JobStatus.Result(val.status!=="FIN").id
       wait: 1
     nexttasks:
       '#none#':
-      - "18"
+      - '18'
     note: false
     quietmode: 0
     scriptarguments:
       Ids:
         simple: ${inputs.target}
       Interval:
-        simple: "1"
+        simple: '1'
       PollingCommandArgName:
         simple: hostid
       PollingCommandName:
         simple: pan-os-platform-get-system-status
       Timeout:
-        simple: "30"
+        simple: '30'
       dt:
         simple: PANOS.SystemStatus(!val.up).hostid
     separatecontext: true
     skipunavailable: false
     task:
-      brand: ""
-      description: |-
-        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
-        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
-        The remote action should have the following structure:
-
-        1. Initiate the operation.
-        2. Poll to check if the operation completed.
-        3. (optional) Get the results of the operation.
+      brand: ''
+      description: "Use this playbook as a sub-playbook to block execution of the\
+        \ master playbook until a remote action is complete.\nThis playbook implements\
+        \ polling by continuously running the command in Step \\#2 until the operation\
+        \ completes.\nThe remote action should have the following structure:\n\n1.\
+        \ Initiate the operation.\n2. Poll to check if the operation completed.\n\
+        3. (optional) Get the results of the operation."
       id: 31aa7efe-9d43-4eac-865f-bc33fbd38ebc
       iscommand: false
       name: GenericPolling
@@ -160,15 +146,9 @@ tasks:
     taskid: 31aa7efe-9d43-4eac-865f-bc33fbd38ebc
     timertriggers: []
     type: playbook
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 160
-        }
-      }
-  "16":
-    id: "16"
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 160\n  }\n}"
+  '16':
+    id: '16'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
@@ -177,7 +157,7 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: 2e322c42-753d-4118-86e2-325cf859339b
       iscommand: false
       name: Finish
@@ -186,21 +166,15 @@ tasks:
     taskid: 2e322c42-753d-4118-86e2-325cf859339b
     timertriggers: []
     type: title
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 685
-        }
-      }
-  "18":
-    id: "18"
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 685\n  }\n}"
+  '18':
+    id: '18'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "19"
+      - '19'
     note: false
     quietmode: 0
     scriptarguments:
@@ -209,7 +183,7 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Gets information from all PAN-OS systems in the topology.
       id: f2cce206-f4bc-4b18-87db-c71e03dd235a
       iscommand: true
@@ -220,14 +194,8 @@ tasks:
     taskid: f2cce206-f4bc-4b18-87db-c71e03dd235a
     timertriggers: []
     type: regular
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 310
-        }
-      }
-  "19":
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 310\n  }\n}"
+  '19':
     conditions:
     - condition:
       - - left:
@@ -239,22 +207,22 @@ tasks:
             iscontext: true
             value:
               simple: inputs.target_version
-      label: "yes"
-    id: "19"
+      label: true
+    id: '19'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#default#':
-      - "20"
-      "yes":
-      - "16"
+      - '20'
+      true:
+      - '16'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: a34d3541-e0d2-4b82-85f9-912b6ce93a1f
       iscommand: false
       name: Check System running new version
@@ -263,15 +231,9 @@ tasks:
     taskid: a34d3541-e0d2-4b82-85f9-912b6ce93a1f
     timertriggers: []
     type: condition
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 490
-        }
-      }
-  "20":
-    id: "20"
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 490\n  }\n}"
+  '20':
+    id: '20'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
@@ -284,7 +246,7 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Prints an error entry with a given message
       id: 3cfec269-6cff-4f74-8bf0-0b9c108e63f5
       iscommand: false
@@ -295,30 +257,24 @@ tasks:
     taskid: 3cfec269-6cff-4f74-8bf0-0b9c108e63f5
     timertriggers: []
     type: regular
-    view: |-
-      {
-        "position": {
-          "x": 900,
-          "y": 670
-        }
-      }
-  "21":
-    id: "21"
+    view: "{\n  \"position\": {\n    \"x\": 900,\n    \"y\": 670\n  }\n}"
+  '21':
+    id: '21'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "15"
+      - '15'
     note: false
     quietmode: 0
     scriptarguments:
       seconds:
-        simple: "25"
+        simple: '25'
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Sleep for X seconds
       id: ed2fcd1c-a629-4bd7-8a12-85d8743e86dc
       iscommand: false
@@ -329,21 +285,15 @@ tasks:
     taskid: ed2fcd1c-a629-4bd7-8a12-85d8743e86dc
     timertriggers: []
     type: regular
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": -30
-        }
-      }
-  "22":
-    id: "22"
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": -30\n  }\n}"
+  '22':
+    id: '22'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "35"
+      - '35'
     note: false
     quietmode: 0
     scriptarguments:
@@ -352,7 +302,7 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Check the devices for software that is available to be installed.
       id: 1686ce12-78ab-4c25-80b6-aabc0302f25b
       iscommand: true
@@ -363,14 +313,8 @@ tasks:
     taskid: 1686ce12-78ab-4c25-80b6-aabc0302f25b
     timertriggers: []
     type: regular
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": -1460
-        }
-      }
-  "23":
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": -1460\n  }\n}"
+  '23':
     conditions:
     - condition:
       - - left:
@@ -390,22 +334,22 @@ tasks:
             iscontext: true
             value:
               simple: inputs.target_version
-      label: "yes"
-    id: "23"
+      label: true
+    id: '23'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#default#':
-      - "38"
-      "yes":
-      - "39"
+      - '38'
+      true:
+      - '39'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: 96b5fb96-32d3-40f1-8831-d073738bd9bc
       iscommand: false
       name: Has the software already been downloaded?
@@ -414,21 +358,15 @@ tasks:
     taskid: 96b5fb96-32d3-40f1-8831-d073738bd9bc
     timertriggers: []
     type: condition
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": -760
-        }
-      }
-  "24":
-    id: "24"
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": -760\n  }\n}"
+  '24':
+    id: '24'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "22"
+      - '22'
     note: false
     quietmode: 0
     scriptarguments:
@@ -437,7 +375,7 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Get the device state from the provided device.
       id: cda97c07-22bf-45a0-8d67-6f1fec20379e
       iscommand: true
@@ -448,21 +386,15 @@ tasks:
     taskid: cda97c07-22bf-45a0-8d67-6f1fec20379e
     timertriggers: []
     type: regular
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": -1640
-        }
-      }
-  "25":
-    id: "25"
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": -1640\n  }\n}"
+  '25':
+    id: '25'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "26"
+      - '26'
     note: false
     quietmode: 0
     scriptarguments:
@@ -471,7 +403,7 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Gets information from all PAN-OS systems in the topology.
       id: e52615b9-574e-40e5-80a2-75632779928b
       iscommand: true
@@ -482,14 +414,8 @@ tasks:
     taskid: e52615b9-574e-40e5-80a2-75632779928b
     timertriggers: []
     type: regular
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": -1980
-        }
-      }
-  "26":
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": -1980\n  }\n}"
+  '26':
     conditions:
     - condition:
       - - left:
@@ -501,21 +427,21 @@ tasks:
             value:
               simple: pc
       label: Panorama
-    id: "26"
+    id: '26'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#default#':
-      - "24"
+      - '24'
       Panorama:
-      - "22"
+      - '22'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: 51ccdbf8-c9ca-41f7-8198-deb827651850
       iscommand: false
       name: System Type
@@ -524,14 +450,8 @@ tasks:
     taskid: 51ccdbf8-c9ca-41f7-8198-deb827651850
     timertriggers: []
     type: condition
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": -1830
-        }
-      }
-  "27":
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": -1830\n  }\n}"
+  '27':
     conditions:
     - condition:
       - - left:
@@ -551,22 +471,22 @@ tasks:
                         simple: PANOS.SoftwareVersions.Summary.downloaded
                     operator: isTrue
                 root: PANOS.SoftwareVersions.Summary
-      label: "yes"
-    id: "27"
+      label: true
+    id: '27'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#default#':
-      - "37"
-      "yes":
-      - "23"
+      - '37'
+      true:
+      - '23'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: 0e806d92-9ceb-46ac-85a1-dd34b97a4080
       iscommand: false
       name: Is the base version of this image downloaded?
@@ -575,21 +495,15 @@ tasks:
     taskid: 0e806d92-9ceb-46ac-85a1-dd34b97a4080
     timertriggers: []
     type: condition
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": -1110
-        }
-      }
-  "35":
-    id: "35"
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": -1110\n  }\n}"
+  '35':
+    id: '35'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "27"
+      - '27'
     note: false
     quietmode: 0
     scriptarguments:
@@ -607,10 +521,10 @@ tasks:
           - args:
               from:
                 value:
-                  simple: "0"
+                  simple: '0'
               to:
                 value:
-                  simple: "2"
+                  simple: '2'
             operator: slice
           - args:
               separator:
@@ -621,12 +535,12 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: ".0"
+                  simple: '.0'
             operator: concat
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Set a value in context under the key you entered.
       id: c25bce95-2d46-47f0-89e7-139d7adb6897
       iscommand: false
@@ -637,26 +551,20 @@ tasks:
     taskid: c25bce95-2d46-47f0-89e7-139d7adb6897
     timertriggers: []
     type: regular
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": -1300
-        }
-      }
-  "37":
-    id: "37"
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": -1300\n  }\n}"
+  '37':
+    id: '37'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     loop:
-      exitCondition: ""
+      exitCondition: ''
       iscommand: false
       max: 100
       wait: 1
     nexttasks:
       '#none#':
-      - "23"
+      - '23'
     note: false
     quietmode: 0
     scriptarguments:
@@ -667,36 +575,30 @@ tasks:
     separatecontext: true
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: 1b088e2d-3076-4c4d-83ba-0419058eccf1
       iscommand: false
       name: PAN-OS Network Operations - Download Software
-      playbookId: ea66a096-6880-4273-80e8-fbdfaf53be43
+      playbookId: PAN-OS Network Operations - Download Software
       type: playbook
       version: -1
     taskid: 1b088e2d-3076-4c4d-83ba-0419058eccf1
     timertriggers: []
     type: playbook
-    view: |-
-      {
-        "position": {
-          "x": 690,
-          "y": -930
-        }
-      }
-  "38":
-    id: "38"
+    view: "{\n  \"position\": {\n    \"x\": 690,\n    \"y\": -930\n  }\n}"
+  '38':
+    id: '38'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     loop:
-      exitCondition: ""
+      exitCondition: ''
       iscommand: false
       max: 100
       wait: 1
     nexttasks:
       '#none#':
-      - "39"
+      - '39'
     note: false
     quietmode: 0
     scriptarguments:
@@ -707,36 +609,30 @@ tasks:
     separatecontext: true
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: dad4c789-9192-4088-8dc6-565b12a39814
       iscommand: false
       name: PAN-OS Network Operations - Download Software
-      playbookId: ea66a096-6880-4273-80e8-fbdfaf53be43
+      playbookId: PAN-OS Network Operations - Download Software
       type: playbook
       version: -1
     taskid: dad4c789-9192-4088-8dc6-565b12a39814
     timertriggers: []
     type: playbook
-    view: |-
-      {
-        "position": {
-          "x": 690,
-          "y": -565
-        }
-      }
-  "39":
-    id: "39"
+    view: "{\n  \"position\": {\n    \"x\": 690,\n    \"y\": -565\n  }\n}"
+  '39':
+    id: '39'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     loop:
-      exitCondition: ""
+      exitCondition: ''
       iscommand: false
       max: 0
       wait: 1
     nexttasks:
       '#none#':
-      - "14"
+      - '14'
     note: false
     quietmode: 0
     scriptarguments:
@@ -747,35 +643,21 @@ tasks:
     separatecontext: true
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: 686ebf99-307e-424a-87db-ed1b1b52ff5d
       iscommand: false
       name: PAN-OS Network Operations - Install Software
-      playbookId: cbed6394-07b4-498b-80ca-cf1b90c3a272
+      playbookId: PAN-OS Network Operations - Install Software
       type: playbook
       version: -1
     taskid: 686ebf99-307e-424a-87db-ed1b1b52ff5d
     timertriggers: []
     type: playbook
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": -375
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": -375\n  }\n}"
 version: -1
-view: |-
-  {
-    "linkLabelsPosition": {
-      "23_38_#default#": 0.64
-    },
-    "paper": {
-      "dimensions": {
-        "height": 2875,
-        "width": 830,
-        "x": 450,
-        "y": -2110
-      }
-    }
-  }
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)
+view: "{\n  \"linkLabelsPosition\": {\n    \"23_38_#default#\": 0.64\n  },\n  \"paper\"\
+  : {\n    \"dimensions\": {\n      \"height\": 2875,\n      \"width\": 830,\n   \
+  \   \"x\": 450,\n      \"y\": -2110\n    }\n  }\n}"

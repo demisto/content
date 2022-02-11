@@ -1,24 +1,20 @@
 contentitemexportablefields:
   contentitemfields:
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: 7d11d0ad-c9e3-4c8e-8263-f83c6d043993
     propagationLabels:
     - all
-    toServerVersion: ""
 description: 'Prompts the analyst for software versions to upgrade the entire environment
   to, then creates upgrade incidents to manage that upgrade process. '
-id: 66bb1556-c53a-4b4a-82a8-8851eacb7a7d
+id: PAN-OS Network Operations - Platform Upgrade
 inputs:
 - description: Upgrade Panorama devices.
   key: upgrade_panorama
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
     simple: ${incident.panosupgradepanoramaupgradeswitch}
 - description: Upgrade Panorama devices.
   key: upgrade_firewall
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
     simple: ${incident.panosupgradefirewallupgradeswitch}
@@ -29,8 +25,6 @@ tasks:
   "0":
     id: "0"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
       - "9"
@@ -44,6 +38,7 @@ tasks:
       iscommand: false
       name: ""
       version: -1
+      description: ''
     taskid: 1eaaea1f-4447-4acf-8e37-e4cfd6ea5129
     timertriggers: []
     type: start
@@ -57,8 +52,6 @@ tasks:
   "1":
     id: "1"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
       - "2"
@@ -73,6 +66,7 @@ tasks:
       name: Gather System Requirements
       type: title
       version: -1
+      description: ''
     taskid: b1a2d551-b8e8-4f94-832f-d03ef3ae641d
     timertriggers: []
     type: title
@@ -86,8 +80,6 @@ tasks:
   "2":
     id: "2"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
       - "6"
@@ -128,8 +120,6 @@ tasks:
       label: "yes"
     id: "3"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#default#':
       - "28"
@@ -159,8 +149,6 @@ tasks:
   "6":
     id: "6"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
       - "3"
@@ -190,8 +178,6 @@ tasks:
   "9":
     id: "9"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
       - "25"
@@ -224,8 +210,6 @@ tasks:
   "11":
     id: "11"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
       - "30"
@@ -291,8 +275,6 @@ tasks:
   "13":
     id: "13"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
       - "15"
@@ -333,8 +315,6 @@ tasks:
   "14":
     id: "14"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
       - "16"
@@ -376,8 +356,6 @@ tasks:
   "15":
     id: "15"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
       - "28"
@@ -410,8 +388,6 @@ tasks:
   "16":
     id: "16"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
       - "24"
@@ -444,8 +420,6 @@ tasks:
   "17":
     id: "17"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
       - "22"
@@ -502,8 +476,6 @@ tasks:
   "18":
     id: "18"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
       - "21"
@@ -551,8 +523,6 @@ tasks:
   "19":
     id: "19"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
       - "20"
@@ -584,8 +554,6 @@ tasks:
   "20":
     id: "20"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
       - "21"
@@ -628,8 +596,6 @@ tasks:
   "21":
     id: "21"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
       - "23"
@@ -685,8 +651,6 @@ tasks:
       label: "No"
     id: "22"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#default#':
       - "13"
@@ -724,8 +688,6 @@ tasks:
       label: "no"
     id: "23"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#default#':
       - "14"
@@ -755,8 +717,6 @@ tasks:
   "24":
     id: "24"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     note: false
     quietmode: 0
     separatecontext: false
@@ -768,6 +728,7 @@ tasks:
       name: Finish
       type: title
       version: -1
+      description: ''
     taskid: 5039d3e9-8a1c-4055-80a4-c5fae6bd5be9
     timertriggers: []
     type: title
@@ -789,8 +750,6 @@ tasks:
       label: "yes"
     id: "25"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#default#':
       - "1"
@@ -820,8 +779,6 @@ tasks:
   "26":
     id: "26"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
       - "1"
@@ -866,8 +823,6 @@ tasks:
             operator: join
     id: "27"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
       - "29"
@@ -933,8 +888,6 @@ tasks:
   "28":
     id: "28"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
       - "11"
@@ -949,6 +902,7 @@ tasks:
       name: Upgrade Firewalls
       type: title
       version: -1
+      description: ''
     taskid: cd3fd184-b71f-44ec-8e1a-807ecd790127
     timertriggers: []
     type: title
@@ -1034,34 +988,22 @@ tasks:
       sender: Your SOC team
       title: Panorama Upgrade Questions
       totalanswers: 0
-    formDisplay:
-      bodybackgroundcolor: ""
-      bodyfontcolor: ""
-      headerbackgroundcolor: ""
-      headerfontcolor: ""
-      isexternalrtl: false
-      sender: ""
-      submitbuttonbackgroundcolor: ""
-      submitbuttonfontcolor: ""
-      submittext: ""
     id: "29"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     message:
-      bcc: null
+      bcc:
       body:
         simple: Please complete the following survey to proceed with the platform
           upgrade process.
-      cc: null
+      cc:
       format: ""
       methods: []
-      subject: null
+      subject:
       timings:
         completeafterreplies: 1
         retriescount: 2
         retriesinterval: 360
-      to: null
+      to:
     nexttasks:
       '#none#':
       - "31"
@@ -1165,34 +1107,22 @@ tasks:
       sender: Your SOC team
       title: Firewall Upgrade Questions
       totalanswers: 0
-    formDisplay:
-      bodybackgroundcolor: ""
-      bodyfontcolor: ""
-      headerbackgroundcolor: ""
-      headerfontcolor: ""
-      isexternalrtl: false
-      sender: ""
-      submitbuttonbackgroundcolor: ""
-      submitbuttonfontcolor: ""
-      submittext: ""
     id: "30"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     message:
-      bcc: null
+      bcc:
       body:
         simple: Please complete the following survey to proceed with the platform
           upgrade process.
-      cc: null
+      cc:
       format: ""
       methods: []
-      subject: null
+      subject:
       timings:
         completeafterreplies: 1
         retriescount: 2
         retriesinterval: 360
-      to: null
+      to:
     nexttasks:
       '#none#':
       - "32"
@@ -1220,8 +1150,6 @@ tasks:
   "31":
     id: "31"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
       - "17"
@@ -1254,8 +1182,6 @@ tasks:
   "32":
     id: "32"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
       - "19"
@@ -1298,3 +1224,6 @@ view: |-
       }
     }
   }
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0

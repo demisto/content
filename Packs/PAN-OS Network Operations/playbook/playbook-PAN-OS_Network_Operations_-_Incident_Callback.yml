@@ -1,14 +1,10 @@
 contentitemexportablefields:
   contentitemfields:
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: 7d11d0ad-c9e3-4c8e-8263-f83c6d043993
     propagationLabels:
     - all
-    toServerVersion: ""
 description: Checks to see if this incident has a parent incident and if so, links
   the two incidents.
-id: 9c208441-3e57-4623-8fe7-564355bee3b8
+id: PAN-OS Network Operations - Incident Callback
 inputs: []
 name: PAN-OS Network Operations - Incident Callback
 outputs: []
@@ -17,8 +13,6 @@ tasks:
   "0":
     id: "0"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
       - "4"
@@ -32,6 +26,7 @@ tasks:
       iscommand: false
       name: ""
       version: -1
+      description: ''
     taskid: 9f2ea60e-d4be-4726-867c-17fa177903c2
     timertriggers: []
     type: start
@@ -45,8 +40,6 @@ tasks:
   "2":
     id: "2"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
       - "3"
@@ -81,8 +74,6 @@ tasks:
   "3":
     id: "3"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     note: false
     quietmode: 0
     separatecontext: false
@@ -94,6 +85,7 @@ tasks:
       name: Done
       type: title
       version: -1
+      description: ''
     taskid: e089f6a0-9be6-407b-8d62-7bfb6ce16b19
     timertriggers: []
     type: title
@@ -115,8 +107,6 @@ tasks:
       label: "yes"
     id: "4"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#default#':
       - "3"
@@ -156,3 +146,6 @@ view: |-
       }
     }
   }
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0

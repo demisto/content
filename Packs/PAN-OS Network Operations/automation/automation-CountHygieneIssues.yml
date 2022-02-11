@@ -2,21 +2,14 @@ args:
 - description: The custom grid field to count.
   name: custom_field
 commonfields:
-  id: 416fa993-9d19-41ee-858a-e9725f052c51
+  id: CountHygieneIssues
   version: -1
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ""
-    itemVersion: ""
-    packID: 7d11d0ad-c9e3-4c8e-8263-f83c6d043993
-    propagationLabels:
-    - all
-    toServerVersion: ""
 dockerimage: demisto/python3:3.9.8.24399
 enabled: true
-engineinfo: {}
 name: CountHygieneIssues
-pswd: ""
 runas: DBotWeakRole
 runonce: false
 script: |+
@@ -54,3 +47,6 @@ subtype: python3
 tags:
 - dynamic-section
 type: python
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)

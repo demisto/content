@@ -1,14 +1,10 @@
 contentitemexportablefields:
   contentitemfields:
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: 7d11d0ad-c9e3-4c8e-8263-f83c6d043993
     propagationLabels:
     - all
-    toServerVersion: ""
 description: Finds and correct visibility related configuration issues specifically
   in regards to security rules.
-id: 0611628a-8b81-492e-8829-c7f52bb5fd05
+id: PAN-OS Network Operations - Visibility Hygiene - Security Rule Visibility
 inputs: []
 name: PAN-OS Network Operations - Visibility Hygiene - Security Rule Visibility
 outputs:
@@ -19,8 +15,6 @@ tasks:
   "0":
     id: "0"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
       - "1"
@@ -35,6 +29,7 @@ tasks:
       iscommand: false
       name: ""
       version: -1
+      description: ''
     taskid: 67ce65c4-a9ea-462a-879b-4292d08e16af
     timertriggers: []
     type: start
@@ -92,8 +87,6 @@ tasks:
       label: "Yes"
     id: "1"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#default#':
       - "5"
@@ -212,20 +205,18 @@ tasks:
       totalanswers: 0
     id: "2"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     message:
-      bcc: null
-      body: null
-      cc: null
+      bcc:
+      body:
+      cc:
       format: ""
       methods: []
-      subject: null
+      subject:
       timings:
         completeafterreplies: 1
         retriescount: 2
         retriesinterval: 360
-      to: null
+      to:
     nexttasks:
       '#none#':
       - "3"
@@ -264,8 +255,6 @@ tasks:
       label: "yes"
     id: "3"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#default#':
       - "5"
@@ -295,8 +284,6 @@ tasks:
   "4":
     id: "4"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
       - "5"
@@ -350,8 +337,6 @@ tasks:
   "5":
     id: "5"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
       - "8"
@@ -366,6 +351,7 @@ tasks:
       name: Profile Group Settings
       type: title
       version: -1
+      description: ''
     taskid: 907cd283-3e3d-40f9-8f18-5a606bc9797a
     timertriggers: []
     type: title
@@ -423,8 +409,6 @@ tasks:
       label: "Yes"
     id: "6"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#default#':
       - "5"
@@ -454,8 +438,6 @@ tasks:
   "7":
     id: "7"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
       - "2"
@@ -507,8 +489,6 @@ tasks:
       label: "Yes"
     id: "8"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#default#':
       - "11"
@@ -538,8 +518,6 @@ tasks:
   "9":
     id: "9"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
       - "10"
@@ -663,20 +641,18 @@ tasks:
       totalanswers: 0
     id: "10"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     message:
-      bcc: null
-      body: null
-      cc: null
+      bcc:
+      body:
+      cc:
       format: ""
       methods: []
-      subject: null
+      subject:
       timings:
         completeafterreplies: 1
         retriescount: 2
         retriesinterval: 360
-      to: null
+      to:
     nexttasks:
       '#none#':
       - "12"
@@ -704,8 +680,6 @@ tasks:
   "11":
     id: "11"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     note: false
     quietmode: 0
     separatecontext: false
@@ -717,6 +691,7 @@ tasks:
       name: Finish
       type: title
       version: -1
+      description: ''
     taskid: 5208ef51-bd64-4409-861e-b15d6d5a58b2
     timertriggers: []
     type: title
@@ -730,8 +705,6 @@ tasks:
   "12":
     id: "12"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
       - "11"
@@ -787,3 +760,6 @@ view: |-
       }
     }
   }
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0

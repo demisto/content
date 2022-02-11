@@ -1,617 +1,602 @@
 {
-	"close": null,
-	"description": "",
-	"detached": false,
-	"details": null,
-	"detailsV2": {
-		"TypeName": "",
-		"tabs": [
-			{
-				"id": "summary",
-				"name": "Legacy Summary",
-				"type": "summary"
-			},
-			{
-				"id": "caseinfoid",
-				"name": "Incident Info",
-				"sections": [
-					{
-						"displayType": "ROW",
-						"h": 2,
-						"i": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
-						"isVisible": true,
-						"items": [
-							{
-								"endCol": 2,
-								"fieldId": "type",
-								"height": 22,
-								"id": "incident-type-field",
-								"index": 0,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "severity",
-								"height": 22,
-								"id": "incident-severity-field",
-								"index": 1,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "owner",
-								"height": 22,
-								"id": "incident-owner-field",
-								"index": 2,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "sourcebrand",
-								"height": 22,
-								"id": "incident-sourceBrand-field",
-								"index": 3,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "sourceinstance",
-								"height": 22,
-								"id": "incident-sourceInstance-field",
-								"index": 4,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "playbookid",
-								"height": 22,
-								"id": "incident-playbookId-field",
-								"index": 5,
-								"sectionItemType": "field",
-								"startCol": 0
-							}
-						],
-						"maxH": null,
-						"maxW": 3,
-						"minH": 1,
-						"minW": 1,
-						"moved": false,
-						"name": "Case Details",
-						"static": false,
-						"w": 1,
-						"x": 0,
-						"y": 0
-					},
-					{
-						"h": 2,
-						"i": "caseinfoid-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
-						"maxH": null,
-						"maxW": 3,
-						"minH": 1,
-						"minW": 1,
-						"moved": false,
-						"name": "Notes",
-						"static": false,
-						"type": "notes",
-						"w": 1,
-						"x": 2,
-						"y": 0
-					},
-					{
-						"displayType": "ROW",
-						"h": 2,
-						"i": "caseinfoid-6aabad20-98b1-11e9-97d7-ed26ef9e46c8",
-						"maxH": null,
-						"maxW": 3,
-						"minH": 1,
-						"minW": 1,
-						"moved": false,
-						"name": "Work Plan",
-						"static": false,
-						"type": "workplan",
-						"w": 1,
-						"x": 1,
-						"y": 0
-					},
-					{
-						"displayType": "ROW",
-						"h": 2,
-						"i": "caseinfoid-770ec200-98b1-11e9-97d7-ed26ef9e46c8",
-						"isVisible": true,
-						"maxH": null,
-						"maxW": 3,
-						"minH": 1,
-						"minW": 3,
-						"moved": false,
-						"name": "Linked Incidents",
-						"static": false,
-						"type": "linkedIncidents",
-						"w": 3,
-						"x": 0,
-						"y": 9
-					},
-					{
-						"displayType": "CARD",
-						"h": 3,
-						"i": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
-						"isVisible": true,
-						"items": [
-							{
-								"endCol": 2,
-								"fieldId": "managementip",
-								"height": 53,
-								"id": "223fdf30-6ce3-11ec-b785-f9c6d12419ba",
-								"index": 0,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"dropEffect": "move",
-								"endCol": 2,
-								"fieldId": "managementnetmask",
-								"height": 53,
-								"id": "282bae10-6ce3-11ec-b785-f9c6d12419ba",
-								"index": 1,
-								"listId": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"dropEffect": "move",
-								"endCol": 2,
-								"fieldId": "managementdefaultgateway",
-								"height": 53,
-								"id": "2abd0750-6ce3-11ec-b785-f9c6d12419ba",
-								"index": 2,
-								"listId": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "managementurl",
-								"height": 53,
-								"id": "243b6110-6ce3-11ec-b785-f9c6d12419ba",
-								"index": 3,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "devicemodel",
-								"height": 53,
-								"id": "3d615e10-6ce3-11ec-b785-f9c6d12419ba",
-								"index": 4,
-								"sectionItemType": "field",
-								"startCol": 0
-							}
-						],
-						"maxH": null,
-						"maxW": 3,
-						"minH": 1,
-						"minW": 1,
-						"moved": false,
-						"name": "Device System Information",
-						"static": false,
-						"w": 1,
-						"x": 0,
-						"y": 6
-					},
-					{
-						"displayType": "ROW",
-						"h": 3,
-						"hideName": false,
-						"i": "caseinfoid-45c0c500-6ce3-11ec-b785-f9c6d12419ba",
-						"items": [
-							{
-								"dropEffect": "move",
-								"endCol": 2,
-								"fieldId": "runningsoftwareversion",
-								"height": 22,
-								"id": "5aec62e0-6ce3-11ec-b785-f9c6d12419ba",
-								"index": 0,
-								"listId": "caseinfoid-45c0c500-6ce3-11ec-b785-f9c6d12419ba",
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "runningantivirusversion",
-								"height": 22,
-								"id": "59bf2d80-6ce3-11ec-b785-f9c6d12419ba",
-								"index": 1,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "runningthreatversion",
-								"height": 22,
-								"id": "99769590-6cec-11ec-8b99-fd211975954b",
-								"index": 2,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "threatcontentreleasedate",
-								"height": 22,
-								"id": "a5217e00-6cec-11ec-8b99-fd211975954b",
-								"index": 3,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "runningappversion",
-								"height": 22,
-								"id": "9d3412c0-6cec-11ec-8b99-fd211975954b",
-								"index": 4,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"dropEffect": "move",
-								"endCol": 2,
-								"fieldId": "appcontentreleasedate",
-								"height": 22,
-								"id": "a2e91a30-6cec-11ec-8b99-fd211975954b",
-								"index": 5,
-								"listId": "caseinfoid-45c0c500-6ce3-11ec-b785-f9c6d12419ba",
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "runningwildfireversion",
-								"height": 22,
-								"id": "9f4df210-6cec-11ec-8b99-fd211975954b",
-								"index": 6,
-								"sectionItemType": "field",
-								"startCol": 0
-							}
-						],
-						"maxH": null,
-						"maxW": 3,
-						"minH": 1,
-						"minW": 1,
-						"moved": false,
-						"name": "Software Information",
-						"static": false,
-						"w": 1,
-						"x": 1,
-						"y": 6
-					},
-					{
-						"displayType": "ROW",
-						"h": 3,
-						"hideName": false,
-						"i": "caseinfoid-7072a2e0-6cee-11ec-8b99-fd211975954b",
-						"items": [
-							{
-								"endCol": 2,
-								"fieldId": "highavailabilitypeer",
-								"height": 22,
-								"id": "0a6382c0-6cef-11ec-8b99-fd211975954b",
-								"index": 0,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "highavailabilitystate",
-								"height": 22,
-								"id": "0c598660-6cef-11ec-8b99-fd211975954b",
-								"index": 1,
-								"sectionItemType": "field",
-								"startCol": 0
-							}
-						],
-						"maxH": null,
-						"maxW": 3,
-						"minH": 1,
-						"minW": 1,
-						"moved": false,
-						"name": "High Availability",
-						"static": false,
-						"w": 1,
-						"x": 2,
-						"y": 6
-					},
-					{
-						"displayType": "ROW",
-						"h": 2,
-						"hideName": false,
-						"i": "caseinfoid-2a9eda80-6cef-11ec-8b99-fd211975954b",
-						"items": [
-							{
-								"args": {
-									"name": {
-										"simple": "Device Upgrade"
-									},
-									"panosnetworkoperationsparentincidentid": {
-										"simple": "${incident.id}"
-									},
-									"panosupgradetargetdevice": {
-										"simple": "${incident.target}"
-									},
-									"target": {
-										"simple": "${incident.target}"
-									},
-									"type": {
-										"simple": "PAN-OS Network Operations - Device Upgrade"
-									}
-								},
-								"buttonClass": "warning",
-								"endCol": 2,
-								"fieldId": "",
-								"height": 44,
-								"id": "6a1a3a10-6cef-11ec-8b99-fd211975954b",
-								"index": 0,
-								"name": "Start Software Upgrade",
-								"scriptId": "Builtin|||createNewIncident",
-								"sectionItemType": "button",
-								"startCol": 0
-							}
-						],
-						"maxH": null,
-						"maxW": 3,
-						"minH": 1,
-						"minW": 1,
-						"moved": false,
-						"name": "Software Update Actions",
-						"static": false,
-						"w": 1,
-						"x": 1,
-						"y": 4
-					},
-					{
-						"displayType": "ROW",
-						"h": 2,
-						"hideName": false,
-						"i": "caseinfoid-2fb86540-6cef-11ec-8b99-fd211975954b",
-						"items": [
-							{
-								"args": {
-									"name": {
-										"simple": "PAN-OS - Device Information"
-									}
-								},
-								"buttonClass": "success",
-								"endCol": 2,
-								"fieldId": "",
-								"height": 44,
-								"id": "47683d00-6cef-11ec-8b99-fd211975954b",
-								"index": 0,
-								"name": "Refresh device",
-								"scriptId": "Builtin|||setPlaybook",
-								"sectionItemType": "button",
-								"startCol": 0
-							},
-							{
-								"args": {
-									"name": {
-										"simple": "${incident.target} - Visibility Hygiene"
-									},
-									"panosnetworkoperationsparentincidentid": {
-										"simple": "${incident.id}"
-									},
-									"target": {
-										"simple": "${incident.target}"
-									},
-									"type": {
-										"simple": "PAN-OS Visibility Hygiene"
-									}
-								},
-								"buttonClass": "primary",
-								"endCol": 2,
-								"fieldId": "",
-								"height": 22,
-								"id": "53691100-6d18-11ec-8cde-8fe6b7ad095a",
-								"index": 1,
-								"name": "Check for Visibility Issues",
-								"scriptId": "Builtin|||createNewIncident",
-								"sectionItemType": "button",
-								"startCol": 0
-							}
-						],
-						"maxH": null,
-						"maxW": 3,
-						"minH": 1,
-						"minW": 1,
-						"moved": false,
-						"name": "Basic Actions",
-						"static": false,
-						"w": 1,
-						"x": 0,
-						"y": 4
-					},
-					{
-						"displayType": "ROW",
-						"h": 2,
-						"hideName": false,
-						"i": "caseinfoid-374783e0-6cef-11ec-8b99-fd211975954b",
-						"items": [
-							{
-								"args": {
-									"hostid": {
-										"simple": "${incident.target}"
-									},
-									"state": {
-										"simple": "functional"
-									}
-								},
-								"buttonClass": "success",
-								"dropEffect": "move",
-								"endCol": 2,
-								"fieldId": "",
-								"height": 44,
-								"id": "73101f30-6cf0-11ec-8b99-fd211975954b",
-								"index": 0,
-								"listId": "caseinfoid-374783e0-6cef-11ec-8b99-fd211975954b",
-								"name": "Make Device Functional",
-								"scriptId": "PANOS_Network Operations|||pan-netops-update-ha-state",
-								"sectionItemType": "button",
-								"startCol": 0
-							},
-							{
-								"args": {
-									"hostid": {
-										"simple": "${incident.target}"
-									},
-									"state": {
-										"simple": "suspend"
-									}
-								},
-								"buttonClass": "error",
-								"endCol": 2,
-								"fieldId": "",
-								"height": 44,
-								"id": "4b4ea980-6cf0-11ec-8b99-fd211975954b",
-								"index": 1,
-								"name": "Suspend Device",
-								"scriptId": "PANOS_Network Operations|||pan-netops-update-ha-state",
-								"sectionItemType": "button",
-								"startCol": 0
-							}
-						],
-						"maxH": null,
-						"maxW": 3,
-						"minH": 1,
-						"minW": 1,
-						"moved": false,
-						"name": "HA Actions",
-						"static": false,
-						"w": 1,
-						"x": 2,
-						"y": 4
-					},
-					{
-						"h": 2,
-						"i": "caseinfoid-f7c68200-7420-11ec-b99b-1dfd56174b6d",
-						"items": [],
-						"maxH": null,
-						"maxW": 3,
-						"minH": 1,
-						"minW": 1,
-						"moved": false,
-						"name": "Last Refreshed",
-						"query": "40a5bc67-a733-4110-8072-821c97da2e0f",
-						"queryType": "script",
-						"static": false,
-						"type": "dynamic",
-						"w": 1,
-						"x": 1,
-						"y": 2
-					},
-					{
-						"h": 2,
-						"i": "caseinfoid-05c852c0-7421-11ec-b99b-1dfd56174b6d",
-						"items": [],
-						"maxH": null,
-						"maxW": 3,
-						"minH": 1,
-						"minW": 1,
-						"moved": false,
-						"name": "Last Hygiene Check",
-						"query": "5cf71f56-a9c7-4a5b-8c30-6497febf9147",
-						"queryType": "script",
-						"static": false,
-						"type": "dynamic",
-						"w": 1,
-						"x": 2,
-						"y": 2
-					},
-					{
-						"h": 2,
-						"hideName": true,
-						"i": "caseinfoid-1ba6c5e0-7421-11ec-b99b-1dfd56174b6d",
-						"items": [],
-						"maxH": null,
-						"maxW": 3,
-						"minH": 1,
-						"minW": 1,
-						"moved": false,
-						"name": "Active Operations",
-						"query": "453adbd1-0f28-4a5f-8053-baf7651114db",
-						"queryType": "script",
-						"static": false,
-						"type": "dynamic",
-						"w": 1,
-						"x": 0,
-						"y": 2
-					}
-				],
-				"type": "custom"
-			},
-			{
-				"id": "warRoom",
-				"name": "War Room",
-				"type": "warRoom"
-			},
-			{
-				"id": "workPlan",
-				"name": "Work Plan",
-				"type": "workPlan"
-			},
-			{
-				"hidden": true,
-				"id": "evidenceBoard",
-				"name": "Evidence Board",
-				"type": "evidenceBoard"
-			},
-			{
-				"id": "relatedIncidents",
-				"name": "Related Incidents",
-				"type": "relatedIncidents"
-			},
-			{
-				"hidden": true,
-				"id": "canvas",
-				"name": "Canvas",
-				"type": "canvas"
-			}
-		]
-	},
-	"edit": {
-		"sections": [
-			{
-				"description": "",
-				"fields": [
-					{
-						"fieldId": "incident_name",
-						"isVisible": true
-					}
-				],
-				"isVisible": true,
-				"name": "Basic Information",
-				"query": null,
-				"queryType": "",
-				"readOnly": false,
-				"type": ""
-			}
-		]
-	},
-	"fromServerVersion": "",
-	"group": "incident",
-	"id": "4339d5ef-82fa-4e2f-82c0-4ff8ab1ace45",
-	"indicatorsDetails": null,
-	"indicatorsQuickView": null,
-	"itemVersion": "",
-	"locked": false,
-	"mobile": null,
-	"name": "PAN-OS Device Layout",
-	"packID": "7d11d0ad-c9e3-4c8e-8263-f83c6d043993",
-	"propagationLabels": [
-		"all"
-	],
-	"quickView": null,
-	"system": false,
-	"toServerVersion": "",
-	"version": -1
+    "detailsV2": {
+        "tabs": [
+            {
+                "id": "summary",
+                "name": "Legacy Summary",
+                "type": "summary"
+            },
+            {
+                "id": "caseinfoid",
+                "name": "Incident Info",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "type",
+                                "height": 22,
+                                "id": "incident-type-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "severity",
+                                "height": 22,
+                                "id": "incident-severity-field",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "owner",
+                                "height": 22,
+                                "id": "incident-owner-field",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sourcebrand",
+                                "height": 22,
+                                "id": "incident-sourceBrand-field",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sourceinstance",
+                                "height": 22,
+                                "id": "incident-sourceInstance-field",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "playbookid",
+                                "height": 22,
+                                "id": "incident-playbookId-field",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Case Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "h": 2,
+                        "i": "caseinfoid-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Notes",
+                        "static": false,
+                        "type": "notes",
+                        "w": 1,
+                        "x": 2,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-6aabad20-98b1-11e9-97d7-ed26ef9e46c8",
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Work Plan",
+                        "static": false,
+                        "type": "workplan",
+                        "w": 1,
+                        "x": 1,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-770ec200-98b1-11e9-97d7-ed26ef9e46c8",
+                        "isVisible": true,
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 3,
+                        "moved": false,
+                        "name": "Linked Incidents",
+                        "static": false,
+                        "type": "linkedIncidents",
+                        "w": 3,
+                        "x": 0,
+                        "y": 9
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 3,
+                        "i": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "managementip",
+                                "height": 53,
+                                "id": "223fdf30-6ce3-11ec-b785-f9c6d12419ba",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "managementnetmask",
+                                "height": 53,
+                                "id": "282bae10-6ce3-11ec-b785-f9c6d12419ba",
+                                "index": 1,
+                                "listId": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "managementdefaultgateway",
+                                "height": 53,
+                                "id": "2abd0750-6ce3-11ec-b785-f9c6d12419ba",
+                                "index": 2,
+                                "listId": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "managementurl",
+                                "height": 53,
+                                "id": "243b6110-6ce3-11ec-b785-f9c6d12419ba",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "devicemodel",
+                                "height": 53,
+                                "id": "3d615e10-6ce3-11ec-b785-f9c6d12419ba",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Device System Information",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 6
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "hideName": false,
+                        "i": "caseinfoid-45c0c500-6ce3-11ec-b785-f9c6d12419ba",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "runningsoftwareversion",
+                                "height": 22,
+                                "id": "5aec62e0-6ce3-11ec-b785-f9c6d12419ba",
+                                "index": 0,
+                                "listId": "caseinfoid-45c0c500-6ce3-11ec-b785-f9c6d12419ba",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "runningantivirusversion",
+                                "height": 22,
+                                "id": "59bf2d80-6ce3-11ec-b785-f9c6d12419ba",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "runningthreatversion",
+                                "height": 22,
+                                "id": "99769590-6cec-11ec-8b99-fd211975954b",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "threatcontentreleasedate",
+                                "height": 22,
+                                "id": "a5217e00-6cec-11ec-8b99-fd211975954b",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "runningappversion",
+                                "height": 22,
+                                "id": "9d3412c0-6cec-11ec-8b99-fd211975954b",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "appcontentreleasedate",
+                                "height": 22,
+                                "id": "a2e91a30-6cec-11ec-8b99-fd211975954b",
+                                "index": 5,
+                                "listId": "caseinfoid-45c0c500-6ce3-11ec-b785-f9c6d12419ba",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "runningwildfireversion",
+                                "height": 22,
+                                "id": "9f4df210-6cec-11ec-8b99-fd211975954b",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Software Information",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 6
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "hideName": false,
+                        "i": "caseinfoid-7072a2e0-6cee-11ec-8b99-fd211975954b",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "highavailabilitypeer",
+                                "height": 22,
+                                "id": "0a6382c0-6cef-11ec-8b99-fd211975954b",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "highavailabilitystate",
+                                "height": 22,
+                                "id": "0c598660-6cef-11ec-8b99-fd211975954b",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "High Availability",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 6
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "caseinfoid-2a9eda80-6cef-11ec-8b99-fd211975954b",
+                        "items": [
+                            {
+                                "args": {
+                                    "name": {
+                                        "simple": "Device Upgrade"
+                                    },
+                                    "panosnetworkoperationsparentincidentid": {
+                                        "simple": "${incident.id}"
+                                    },
+                                    "panosupgradetargetdevice": {
+                                        "simple": "${incident.target}"
+                                    },
+                                    "target": {
+                                        "simple": "${incident.target}"
+                                    },
+                                    "type": {
+                                        "simple": "PAN-OS Network Operations - Device Upgrade"
+                                    }
+                                },
+                                "buttonClass": "warning",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "id": "6a1a3a10-6cef-11ec-8b99-fd211975954b",
+                                "index": 0,
+                                "name": "Start Software Upgrade",
+                                "scriptId": "Builtin|||createNewIncident",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Software Update Actions",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 4
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "caseinfoid-2fb86540-6cef-11ec-8b99-fd211975954b",
+                        "items": [
+                            {
+                                "args": {
+                                    "name": {
+                                        "simple": "PAN-OS - Device Information"
+                                    }
+                                },
+                                "buttonClass": "success",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "id": "47683d00-6cef-11ec-8b99-fd211975954b",
+                                "index": 0,
+                                "name": "Refresh device",
+                                "scriptId": "Builtin|||setPlaybook",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {
+                                    "name": {
+                                        "simple": "${incident.target} - Visibility Hygiene"
+                                    },
+                                    "panosnetworkoperationsparentincidentid": {
+                                        "simple": "${incident.id}"
+                                    },
+                                    "target": {
+                                        "simple": "${incident.target}"
+                                    },
+                                    "type": {
+                                        "simple": "PAN-OS Visibility Hygiene"
+                                    }
+                                },
+                                "buttonClass": "primary",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 22,
+                                "id": "53691100-6d18-11ec-8cde-8fe6b7ad095a",
+                                "index": 1,
+                                "name": "Check for Visibility Issues",
+                                "scriptId": "Builtin|||createNewIncident",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Basic Actions",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 4
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "caseinfoid-374783e0-6cef-11ec-8b99-fd211975954b",
+                        "items": [
+                            {
+                                "args": {
+                                    "hostid": {
+                                        "simple": "${incident.target}"
+                                    },
+                                    "state": {
+                                        "simple": "functional"
+                                    }
+                                },
+                                "buttonClass": "success",
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "id": "73101f30-6cf0-11ec-8b99-fd211975954b",
+                                "index": 0,
+                                "listId": "caseinfoid-374783e0-6cef-11ec-8b99-fd211975954b",
+                                "name": "Make Device Functional",
+                                "scriptId": "PANOS_Network Operations|||pan-netops-update-ha-state",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {
+                                    "hostid": {
+                                        "simple": "${incident.target}"
+                                    },
+                                    "state": {
+                                        "simple": "suspend"
+                                    }
+                                },
+                                "buttonClass": "error",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "id": "4b4ea980-6cf0-11ec-8b99-fd211975954b",
+                                "index": 1,
+                                "name": "Suspend Device",
+                                "scriptId": "PANOS_Network Operations|||pan-netops-update-ha-state",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "HA Actions",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 4
+                    },
+                    {
+                        "h": 2,
+                        "i": "caseinfoid-f7c68200-7420-11ec-b99b-1dfd56174b6d",
+                        "items": [],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Last Refreshed",
+                        "query": "40a5bc67-a733-4110-8072-821c97da2e0f",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamic",
+                        "w": 1,
+                        "x": 1,
+                        "y": 2
+                    },
+                    {
+                        "h": 2,
+                        "i": "caseinfoid-05c852c0-7421-11ec-b99b-1dfd56174b6d",
+                        "items": [],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Last Hygiene Check",
+                        "query": "5cf71f56-a9c7-4a5b-8c30-6497febf9147",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamic",
+                        "w": 1,
+                        "x": 2,
+                        "y": 2
+                    },
+                    {
+                        "h": 2,
+                        "hideName": true,
+                        "i": "caseinfoid-1ba6c5e0-7421-11ec-b99b-1dfd56174b6d",
+                        "items": [],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Active Operations",
+                        "query": "453adbd1-0f28-4a5f-8053-baf7651114db",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamic",
+                        "w": 1,
+                        "x": 0,
+                        "y": 2
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "id": "warRoom",
+                "name": "War Room",
+                "type": "warRoom"
+            },
+            {
+                "id": "workPlan",
+                "name": "Work Plan",
+                "type": "workPlan"
+            },
+            {
+                "hidden": true,
+                "id": "evidenceBoard",
+                "name": "Evidence Board",
+                "type": "evidenceBoard"
+            },
+            {
+                "id": "relatedIncidents",
+                "name": "Related Incidents",
+                "type": "relatedIncidents"
+            },
+            {
+                "hidden": true,
+                "id": "canvas",
+                "name": "Canvas",
+                "type": "canvas"
+            }
+        ]
+    },
+    "edit": {
+        "sections": [
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "incident_name",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Basic Information",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            }
+        ]
+    },
+    "group": "incident",
+    "id": "PAN-OS Device Layout",
+    "name": "PAN-OS Device Layout",
+    "system": false,
+    "version": -1,
+    "fromVersion": "6.0.0",
+    "description": ""
 }

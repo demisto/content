@@ -1,27 +1,23 @@
 contentitemexportablefields:
   contentitemfields:
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: 7d11d0ad-c9e3-4c8e-8263-f83c6d043993
     propagationLabels:
     - all
-    toServerVersion: ""
 description: Download PAN-OS System software.
-id: ea66a096-6880-4273-80e8-fbdfaf53be43
+id: PAN-OS Network Operations - Download Software
 inputs:
 - description: ""
   key: target
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
 - description: ""
   key: target_version
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
 - description: Default max timeout value
   key: timeout
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
     simple: "45"
@@ -32,8 +28,6 @@ tasks:
   "0":
     id: "0"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
       - "1"
@@ -47,6 +41,7 @@ tasks:
       iscommand: false
       name: ""
       version: -1
+      description: ''
     taskid: 5277fa60-978f-4dad-874a-20145b5dcd4f
     timertriggers: []
     type: start
@@ -60,8 +55,6 @@ tasks:
   "1":
     id: "1"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
       - "2"
@@ -96,8 +89,6 @@ tasks:
   "2":
     id: "2"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
       - "3"
@@ -136,8 +127,6 @@ tasks:
   "3":
     id: "3"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     loop:
       exitCondition: ""
       iscommand: false
@@ -213,8 +202,6 @@ tasks:
   "4":
     id: "4"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
       - "5"
@@ -271,8 +258,6 @@ tasks:
       label: "yes"
     id: "5"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#default#':
       - "8"
@@ -302,8 +287,6 @@ tasks:
   "6":
     id: "6"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     note: false
     quietmode: 0
     separatecontext: false
@@ -315,6 +298,7 @@ tasks:
       name: Finish
       type: title
       version: -1
+      description: ''
     taskid: cd3fa6e7-fd8b-415e-844e-130278388d88
     timertriggers: []
     type: title
@@ -328,8 +312,6 @@ tasks:
   "8":
     id: "8"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     note: false
     quietmode: 0
     scriptarguments:
@@ -369,3 +351,6 @@ view: |-
       }
     }
   }
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0

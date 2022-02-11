@@ -1,52 +1,41 @@
 contentitemexportablefields:
   contentitemfields:
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: 7d11d0ad-c9e3-4c8e-8263-f83c6d043993
     propagationLabels:
     - all
-    toServerVersion: ""
-id: 147fadc4-5dbf-4beb-853a-6f0362baa026
+id: PAN-OS - Device Information
 inputs:
-- description: ""
+- description: ''
   key: device
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
     simple: ${incident.target}
 name: PAN-OS - Device Information
 outputs: []
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: fee33e93-41eb-4302-8e36-b55975c7a5b3
       iscommand: false
-      name: ""
+      name: ''
       version: -1
+      description: ''
     taskid: fee33e93-41eb-4302-8e36-b55975c7a5b3
     timertriggers: []
     type: start
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": -550
-        }
-      }
-  "1":
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": -550\n  }\n}"
+  '1':
     fieldMapping:
     - incidentfield: Management IP
       output:
@@ -138,13 +127,11 @@ tasks:
           root: PANOS.ShowSystemInfo.Result
           transformers:
           - operator: FirstArrayElement
-    id: "1"
+    id: '1'
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
     note: false
     quietmode: 0
     scriptarguments:
@@ -153,7 +140,7 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Gets information from all PAN-OS systems in the topology.
       id: b41fc211-ed04-4686-8c7b-c0afd2b3c540
       iscommand: true
@@ -164,14 +151,8 @@ tasks:
     taskid: b41fc211-ed04-4686-8c7b-c0afd2b3c540
     timertriggers: []
     type: regular
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 420
-        }
-      }
-  "2":
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 420\n  }\n}"
+  '2':
     fieldMapping:
     - incidentfield: High Availability State
       output:
@@ -187,10 +168,8 @@ tasks:
           root: PANOS.HAState
           transformers:
           - operator: FirstArrayElement
-    id: "2"
+    id: '2'
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     note: false
     quietmode: 0
     scriptarguments:
@@ -199,7 +178,7 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Get the HA state and assocaited details from the given device and
         any other details.
       id: 249cac3b-a266-4508-8274-0e0722d5a63f
@@ -211,14 +190,8 @@ tasks:
     taskid: 249cac3b-a266-4508-8274-0e0722d5a63f
     timertriggers: []
     type: regular
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 570
-        }
-      }
-  "3":
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 570\n  }\n}"
+  '3':
     conditions:
     - condition:
       - - left:
@@ -226,22 +199,20 @@ tasks:
             value:
               simple: incident.panosnetworkoperationsparentincidentid
           operator: isNotEmpty
-      label: "yes"
-    id: "3"
+      label: yes
+    id: '3'
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#default#':
-      - "5"
-      "yes":
-      - "4"
+      - '5'
+      yes:
+      - '4'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: 87b81270-140c-4125-8db5-46ae2364f803
       iscommand: false
       name: Do we have a parent incident?
@@ -250,21 +221,13 @@ tasks:
     taskid: 87b81270-140c-4125-8db5-46ae2364f803
     timertriggers: []
     type: condition
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": -410
-        }
-      }
-  "4":
-    id: "4"
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": -410\n  }\n}"
+  '4':
+    id: '4'
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
-      - "5"
+      - '5'
     note: false
     quietmode: 0
     scriptarguments:
@@ -284,65 +247,47 @@ tasks:
     taskid: 43b1779c-26bf-4c98-805b-ecb1530433a7
     timertriggers: []
     type: regular
-    view: |-
-      {
-        "position": {
-          "x": 180,
-          "y": -240
-        }
-      }
-  "5":
-    id: "5"
+    view: "{\n  \"position\": {\n    \"x\": 180,\n    \"y\": -240\n  }\n}"
+  '5':
+    id: '5'
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
-      - "6"
+      - '6'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: 70646cf4-25fc-4286-8c8d-6d926e1a01f4
       iscommand: false
       name: Gather Device Information
       type: title
       version: -1
+      description: ''
     taskid: 70646cf4-25fc-4286-8c8d-6d926e1a01f4
     timertriggers: []
     type: title
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": -20
-        }
-      }
-  "6":
-    id: "6"
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": -20\n  }\n}"
+  '6':
+    id: '6'
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
-      - "7"
+      - '7'
     note: false
     quietmode: 0
     scriptarguments:
       all:
-        simple: "yes"
+        simple: yes
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
-      description: |-
-        Delete field from context.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      brand: ''
+      description: "Delete field from context.\n\nThis automation runs using the default\
+        \ Limited User role, unless you explicitly change the permissions.\nFor more\
+        \ information, see the section about permissions here:\nhttps://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html"
       id: 747a393d-d711-4275-84d0-d7b6b6a2f139
       iscommand: false
       name: Delete Context
@@ -352,53 +297,35 @@ tasks:
     taskid: 747a393d-d711-4275-84d0-d7b6b6a2f139
     timertriggers: []
     type: regular
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 80
-        }
-      }
-  "7":
-    id: "7"
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 80\n  }\n}"
+  '7':
+    id: '7'
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
-      - "1"
+      - '1'
     note: false
     quietmode: 0
     separatecontext: true
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: a1cda69e-d382-4e9d-8907-96061219fa33
       iscommand: false
-      name: Update Occurred Time
-      playbookId: 355364b6-49ac-4e25-80a9-2359d180223a
+      name: 355364b6-49ac-4e25-80a9-2359d180223a
+      playbookId: Update Occurred Time
       type: playbook
       version: -1
+      description: ''
     taskid: a1cda69e-d382-4e9d-8907-96061219fa33
     timertriggers: []
     type: playbook
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 260
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 260\n  }\n}"
 version: -1
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 1215,
-        "width": 650,
-        "x": 180,
-        "y": -550
-      }
-    }
-  }
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 1215,\n      \"width\": 650,\n      \"x\": 180,\n      \"y\":\
+  \ -550\n    }\n  }\n}"
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0
+description: Gathers all relevant information for a specific PAN-OS device.

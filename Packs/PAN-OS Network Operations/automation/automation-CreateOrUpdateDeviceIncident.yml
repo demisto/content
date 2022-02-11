@@ -3,26 +3,19 @@ args:
   name: target
   required: true
 commonfields:
-  id: 187ccc90-ecbb-4f0b-8502-40211a747ef3
+  id: CreateOrUpdateDeviceIncident
   version: -1
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ""
-    itemVersion: ""
-    packID: 7d11d0ad-c9e3-4c8e-8263-f83c6d043993
-    propagationLabels:
-    - all
-    toServerVersion: ""
 dockerimage: demisto/python3:3.7.3.286
 enabled: true
-engineinfo: {}
 name: CreateOrUpdateDeviceIncident
 outputs:
 - contextPath: DeviceIncidents.device_incident_id
   description: 'The Incident ID of the created or existing incident. '
 - contextPath: DeviceIncidents.device_incident_link
   description: A link to the associated device incident.
-pswd: ""
 runas: DBotWeakRole
 runonce: false
 script: |+
@@ -92,3 +85,6 @@ scripttarget: 0
 subtype: python3
 tags: []
 type: python
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)

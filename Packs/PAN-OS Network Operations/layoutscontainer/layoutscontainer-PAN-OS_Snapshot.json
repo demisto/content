@@ -1,371 +1,355 @@
 {
-	"close": null,
-	"description": "",
-	"detached": false,
-	"details": null,
-	"detailsV2": {
-		"TypeName": "",
-		"tabs": [
-			{
-				"id": "summary",
-				"name": "Legacy Summary",
-				"type": "summary"
-			},
-			{
-				"id": "caseinfoid",
-				"name": "Incident Info",
-				"sections": [
-					{
-						"displayType": "ROW",
-						"h": 2,
-						"i": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
-						"isVisible": true,
-						"items": [
-							{
-								"endCol": 2,
-								"fieldId": "type",
-								"height": 22,
-								"id": "incident-type-field",
-								"index": 0,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "severity",
-								"height": 22,
-								"id": "incident-severity-field",
-								"index": 1,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "owner",
-								"height": 22,
-								"id": "incident-owner-field",
-								"index": 2,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "sourcebrand",
-								"height": 22,
-								"id": "incident-sourceBrand-field",
-								"index": 3,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "sourceinstance",
-								"height": 22,
-								"id": "incident-sourceInstance-field",
-								"index": 4,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "playbookid",
-								"height": 22,
-								"id": "incident-playbookId-field",
-								"index": 5,
-								"sectionItemType": "field",
-								"startCol": 0
-							}
-						],
-						"maxW": 3,
-						"moved": false,
-						"name": "Case Details",
-						"static": false,
-						"w": 1,
-						"x": 0,
-						"y": 0
-					},
-					{
-						"displayType": "ROW",
-						"h": 2,
-						"i": "caseinfoid-6aabad20-98b1-11e9-97d7-ed26ef9e46c8",
-						"maxW": 3,
-						"moved": false,
-						"name": "Work Plan",
-						"static": false,
-						"type": "workplan",
-						"w": 1,
-						"x": 1,
-						"y": 0
-					},
-					{
-						"displayType": "CARD",
-						"h": 2,
-						"i": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
-						"items": [
-							{
-								"endCol": 1,
-								"fieldId": "occurred",
-								"height": 53,
-								"id": "incident-occurred-field",
-								"index": 0,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 1,
-								"fieldId": "dbotmodified",
-								"height": 53,
-								"id": "incident-modified-field",
-								"index": 1,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "dbotduedate",
-								"height": 53,
-								"id": "incident-dueDate-field",
-								"index": 2,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "dbotclosed",
-								"height": 53,
-								"id": "incident-closed-field",
-								"index": 0,
-								"sectionItemType": "field",
-								"startCol": 1
-							},
-							{
-								"dropEffect": "move",
-								"endCol": 2,
-								"fieldId": "dbotcreated",
-								"height": 53,
-								"id": "incident-created-field",
-								"index": 1,
-								"listId": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
-								"sectionItemType": "field",
-								"startCol": 1
-							}
-						],
-						"maxW": 3,
-						"moved": false,
-						"name": "Timeline Information",
-						"static": false,
-						"w": 1,
-						"x": 2,
-						"y": 0
-					},
-					{
-						"displayType": "ROW",
-						"h": 3,
-						"hideName": false,
-						"i": "caseinfoid-4987f0d0-4b52-11ec-ba99-a3742f561aa3",
-						"items": [
-							{
-								"endCol": 6,
-								"fieldId": "panossnapshotarpdifferencecount",
-								"height": 22,
-								"id": "90d63e40-4be0-11ec-ad72-29a9834a63cc",
-								"index": 0,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 6,
-								"fieldId": "panossnapshotarpdifferences",
-								"height": 106,
-								"id": "50626570-4b52-11ec-ba99-a3742f561aa3",
-								"index": 1,
-								"sectionItemType": "field",
-								"startCol": 0
-							}
-						],
-						"maxW": 3,
-						"minH": 1,
-						"minW": 1,
-						"moved": false,
-						"name": "ARP Differences",
-						"static": false,
-						"w": 3,
-						"x": 0,
-						"y": 4
-					},
-					{
-						"displayType": "ROW",
-						"h": 3,
-						"hideItemTitleOnlyOne": false,
-						"hideName": false,
-						"i": "caseinfoid-79bbefc0-4be0-11ec-ad72-29a9834a63cc",
-						"items": [
-							{
-								"endCol": 2,
-								"fieldId": "panossnapshotroutedifferencecount",
-								"height": 22,
-								"id": "713e2400-4be3-11ec-ad72-29a9834a63cc",
-								"index": 0,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 6,
-								"fieldId": "panossnapshotroutedifferences",
-								"height": 106,
-								"id": "82f38e40-4be0-11ec-ad72-29a9834a63cc",
-								"index": 1,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "panossnapshotbgpdifferencecount",
-								"height": 22,
-								"id": "593ddc50-4c25-11ec-b02c-cdb794c31374",
-								"index": 2,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 6,
-								"fieldId": "panossnapshotbgpdifferences",
-								"height": 106,
-								"id": "55ffc850-4c25-11ec-b02c-cdb794c31374",
-								"index": 2,
-								"sectionItemType": "field",
-								"startCol": 0
-							}
-						],
-						"maxW": 3,
-						"minH": 1,
-						"minW": 1,
-						"moved": false,
-						"name": "Route Differences",
-						"static": false,
-						"w": 3,
-						"x": 0,
-						"y": 7
-					},
-					{
-						"columns": [
-							{
-								"displayed": true,
-								"isDefault": true,
-								"key": "id",
-								"width": 110
-							},
-							{
-								"displayed": true,
-								"isDefault": true,
-								"key": "name",
-								"width": 300
-							},
-							{
-								"displayed": true,
-								"isDefault": true,
-								"key": "type",
-								"width": 200
-							},
-							{
-								"displayed": true,
-								"isDefault": true,
-								"key": "status",
-								"width": 80
-							}
-						],
-						"h": 2,
-						"i": "caseinfoid-0b3caa60-4be2-11ec-ad72-29a9834a63cc",
-						"items": [],
-						"maxW": 3,
-						"minH": 1,
-						"minW": 1,
-						"moved": false,
-						"name": "Linked Incidents",
-						"static": false,
-						"type": "linkedIncidents",
-						"w": 2,
-						"x": 1,
-						"y": 2
-					},
-					{
-						"displayType": "ROW",
-						"h": 2,
-						"hideItemTitleOnlyOne": true,
-						"hideName": false,
-						"i": "caseinfoid-d6baab20-5bc7-11ec-80e0-87bf096ec802",
-						"items": [
-							{
-								"endCol": 2,
-								"fieldId": "panosnetworkoperationsincidentdescription",
-								"height": 22,
-								"id": "e6d82ff0-5bc7-11ec-80e0-87bf096ec802",
-								"index": 0,
-								"sectionItemType": "field",
-								"startCol": 0
-							}
-						],
-						"maxW": 3,
-						"minH": 1,
-						"minW": 1,
-						"moved": false,
-						"name": "Description",
-						"static": false,
-						"w": 1,
-						"x": 0,
-						"y": 2
-					}
-				],
-				"type": "custom"
-			},
-			{
-				"hidden": false,
-				"id": "warRoom",
-				"name": "War Room",
-				"type": "warRoom"
-			},
-			{
-				"hidden": false,
-				"id": "workPlan",
-				"name": "Work Plan",
-				"type": "workPlan"
-			},
-			{
-				"hidden": true,
-				"id": "evidenceBoard",
-				"name": "Evidence Board",
-				"type": "evidenceBoard"
-			},
-			{
-				"hidden": true,
-				"id": "relatedIncidents",
-				"name": "Related Incidents",
-				"type": "relatedIncidents"
-			},
-			{
-				"hidden": true,
-				"id": "canvas",
-				"name": "Canvas",
-				"type": "canvas"
-			}
-		]
-	},
-	"edit": null,
-	"fromServerVersion": "",
-	"group": "incident",
-	"id": "26040e50-dc8e-40e5-899f-57dad179d55b",
-	"indicatorsDetails": null,
-	"indicatorsQuickView": null,
-	"itemVersion": "",
-	"locked": false,
-	"mobile": null,
-	"name": "PAN-OS Snapshot",
-	"packID": "7d11d0ad-c9e3-4c8e-8263-f83c6d043993",
-	"propagationLabels": [
-		"all"
-	],
-	"quickView": null,
-	"system": false,
-	"toServerVersion": "",
-	"version": -1
+    "detailsV2": {
+        "tabs": [
+            {
+                "id": "summary",
+                "name": "Legacy Summary",
+                "type": "summary"
+            },
+            {
+                "id": "caseinfoid",
+                "name": "Incident Info",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "type",
+                                "height": 22,
+                                "id": "incident-type-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "severity",
+                                "height": 22,
+                                "id": "incident-severity-field",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "owner",
+                                "height": 22,
+                                "id": "incident-owner-field",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sourcebrand",
+                                "height": 22,
+                                "id": "incident-sourceBrand-field",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sourceinstance",
+                                "height": 22,
+                                "id": "incident-sourceInstance-field",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "playbookid",
+                                "height": 22,
+                                "id": "incident-playbookId-field",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Case Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-6aabad20-98b1-11e9-97d7-ed26ef9e46c8",
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Work Plan",
+                        "static": false,
+                        "type": "workplan",
+                        "w": 1,
+                        "x": 1,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "i": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
+                        "items": [
+                            {
+                                "endCol": 1,
+                                "fieldId": "occurred",
+                                "height": 53,
+                                "id": "incident-occurred-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 1,
+                                "fieldId": "dbotmodified",
+                                "height": 53,
+                                "id": "incident-modified-field",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotduedate",
+                                "height": 53,
+                                "id": "incident-dueDate-field",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotclosed",
+                                "height": 53,
+                                "id": "incident-closed-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 1
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "dbotcreated",
+                                "height": 53,
+                                "id": "incident-created-field",
+                                "index": 1,
+                                "listId": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
+                                "sectionItemType": "field",
+                                "startCol": 1
+                            }
+                        ],
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Timeline Information",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "hideName": false,
+                        "i": "caseinfoid-4987f0d0-4b52-11ec-ba99-a3742f561aa3",
+                        "items": [
+                            {
+                                "endCol": 6,
+                                "fieldId": "panossnapshotarpdifferencecount",
+                                "height": 22,
+                                "id": "90d63e40-4be0-11ec-ad72-29a9834a63cc",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 6,
+                                "fieldId": "panossnapshotarpdifferences",
+                                "height": 106,
+                                "id": "50626570-4b52-11ec-ba99-a3742f561aa3",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "ARP Differences",
+                        "static": false,
+                        "w": 3,
+                        "x": 0,
+                        "y": 4
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "hideItemTitleOnlyOne": false,
+                        "hideName": false,
+                        "i": "caseinfoid-79bbefc0-4be0-11ec-ad72-29a9834a63cc",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "panossnapshotroutedifferencecount",
+                                "height": 22,
+                                "id": "713e2400-4be3-11ec-ad72-29a9834a63cc",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 6,
+                                "fieldId": "panossnapshotroutedifferences",
+                                "height": 106,
+                                "id": "82f38e40-4be0-11ec-ad72-29a9834a63cc",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "panossnapshotbgpdifferencecount",
+                                "height": 22,
+                                "id": "593ddc50-4c25-11ec-b02c-cdb794c31374",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 6,
+                                "fieldId": "panossnapshotbgpdifferences",
+                                "height": 106,
+                                "id": "55ffc850-4c25-11ec-b02c-cdb794c31374",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Route Differences",
+                        "static": false,
+                        "w": 3,
+                        "x": 0,
+                        "y": 7
+                    },
+                    {
+                        "columns": [
+                            {
+                                "displayed": true,
+                                "isDefault": true,
+                                "key": "id",
+                                "width": 110
+                            },
+                            {
+                                "displayed": true,
+                                "isDefault": true,
+                                "key": "name",
+                                "width": 300
+                            },
+                            {
+                                "displayed": true,
+                                "isDefault": true,
+                                "key": "type",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "isDefault": true,
+                                "key": "status",
+                                "width": 80
+                            }
+                        ],
+                        "h": 2,
+                        "i": "caseinfoid-0b3caa60-4be2-11ec-ad72-29a9834a63cc",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Linked Incidents",
+                        "static": false,
+                        "type": "linkedIncidents",
+                        "w": 2,
+                        "x": 1,
+                        "y": 2
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
+                        "i": "caseinfoid-d6baab20-5bc7-11ec-80e0-87bf096ec802",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "panosnetworkoperationsincidentdescription",
+                                "height": 22,
+                                "id": "e6d82ff0-5bc7-11ec-80e0-87bf096ec802",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Description",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 2
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "hidden": false,
+                "id": "warRoom",
+                "name": "War Room",
+                "type": "warRoom"
+            },
+            {
+                "hidden": false,
+                "id": "workPlan",
+                "name": "Work Plan",
+                "type": "workPlan"
+            },
+            {
+                "hidden": true,
+                "id": "evidenceBoard",
+                "name": "Evidence Board",
+                "type": "evidenceBoard"
+            },
+            {
+                "hidden": true,
+                "id": "relatedIncidents",
+                "name": "Related Incidents",
+                "type": "relatedIncidents"
+            },
+            {
+                "hidden": true,
+                "id": "canvas",
+                "name": "Canvas",
+                "type": "canvas"
+            }
+        ]
+    },
+    "group": "incident",
+    "id": "PAN-OS Snapshot",
+    "name": "PAN-OS Snapshot",
+    "system": false,
+    "version": -1,
+    "fromVersion": "6.0.0",
+    "description": ""
 }

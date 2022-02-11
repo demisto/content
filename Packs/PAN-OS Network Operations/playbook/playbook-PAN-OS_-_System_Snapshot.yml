@@ -1,18 +1,14 @@
 contentitemexportablefields:
   contentitemfields:
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: 7d11d0ad-c9e3-4c8e-8263-f83c6d043993
     propagationLabels:
     - all
-    toServerVersion: ""
-id: 650abbfa-f581-4889-8fe6-142fb65905f1
+id: PAN-OS - System Snapshot
 inputs:
 - description: Default change threshold. Greater or equal than the number equals a
     medium severity, greater or equal to double the number is high, and 5x the number
     is critical.
   key: change_threshold
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
     simple: "2"
@@ -23,8 +19,6 @@ tasks:
   "0":
     id: "0"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
       - "12"
@@ -38,6 +32,7 @@ tasks:
       iscommand: false
       name: ""
       version: -1
+      description: ''
     taskid: 27a5fccb-c384-48ee-8a42-14cd23664c20
     timertriggers: []
     type: start
@@ -51,8 +46,6 @@ tasks:
   "2":
     id: "2"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
       - "33"
@@ -67,6 +60,7 @@ tasks:
       name: Run First Snapshot
       type: title
       version: -1
+      description: ''
     taskid: cc9a4a5b-f768-4df6-81de-93adf4178ef6
     timertriggers: []
     type: title
@@ -80,8 +74,6 @@ tasks:
   "3":
     id: "3"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
       - "6"
@@ -96,6 +88,7 @@ tasks:
       name: Run Second Snapshot
       type: title
       version: -1
+      description: ''
     taskid: 4a237f16-183a-4150-8d91-f34cb1918c60
     timertriggers: []
     type: title
@@ -109,8 +102,6 @@ tasks:
   "4":
     id: "4"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
       - "34"
@@ -147,8 +138,6 @@ tasks:
   "5":
     id: "5"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
       - "3"
@@ -178,8 +167,6 @@ tasks:
   "6":
     id: "6"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
       - "20"
@@ -220,8 +207,6 @@ tasks:
   "7":
     id: "7"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
       - "13"
@@ -237,6 +222,7 @@ tasks:
       name: Run Comparison
       type: title
       version: -1
+      description: ''
     taskid: 021c9c72-928c-4664-8bf3-d6567b6f257e
     timertriggers: []
     type: title
@@ -250,8 +236,6 @@ tasks:
   "12":
     id: "12"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
       - "31"
@@ -284,8 +268,6 @@ tasks:
   "13":
     id: "13"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
       - "17"
@@ -324,8 +306,6 @@ tasks:
   "14":
     id: "14"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
       - "17"
@@ -364,8 +344,6 @@ tasks:
   "15":
     id: "15"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
       - "7"
@@ -426,8 +404,6 @@ tasks:
           - operator: count
     id: "16"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
       - "22"
@@ -471,8 +447,6 @@ tasks:
   "17":
     id: "17"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
       - "16"
@@ -489,6 +463,7 @@ tasks:
       name: Run Comparisons
       type: title
       version: -1
+      description: ''
     taskid: 4ff54981-fff2-4741-8934-e7b2f9d8aedd
     timertriggers: []
     type: title
@@ -502,8 +477,6 @@ tasks:
   "20":
     id: "20"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
       - "15"
@@ -537,8 +510,6 @@ tasks:
   "22":
     id: "22"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
       - "23"
@@ -553,6 +524,7 @@ tasks:
       name: Calculate Severity
       type: title
       version: -1
+      description: ''
     taskid: 9ce5d64a-963e-415e-80aa-fdb7615cd4cc
     timertriggers: []
     type: title
@@ -621,8 +593,6 @@ tasks:
       label: High
     id: "23"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#default#':
       - "26"
@@ -654,8 +624,6 @@ tasks:
   "24":
     id: "24"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
       - "27"
@@ -688,8 +656,6 @@ tasks:
   "25":
     id: "25"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
       - "27"
@@ -722,8 +688,6 @@ tasks:
   "26":
     id: "26"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
       - "27"
@@ -756,8 +720,6 @@ tasks:
   "27":
     id: "27"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
       - "28"
@@ -772,6 +734,7 @@ tasks:
       name: Close Snapshot Incidents
       type: title
       version: -1
+      description: ''
     taskid: 15e407b3-2235-47d6-8b75-0ce419783eff
     timertriggers: []
     type: title
@@ -785,8 +748,6 @@ tasks:
   "28":
     id: "28"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     note: false
     quietmode: 0
     scriptarguments:
@@ -849,8 +810,6 @@ tasks:
           - operator: count
     id: "29"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
       - "22"
@@ -925,8 +884,6 @@ tasks:
           - operator: count
     id: "30"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
       - "22"
@@ -976,8 +933,6 @@ tasks:
       label: "yes"
     id: "31"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#default#':
       - "2"
@@ -1007,8 +962,6 @@ tasks:
   "32":
     id: "32"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
       - "2"
@@ -1041,8 +994,6 @@ tasks:
   "33":
     id: "33"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
       - "4"
@@ -1080,8 +1031,6 @@ tasks:
   "34":
     id: "34"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
       - "5"
@@ -1127,3 +1076,8 @@ view: |-
       }
     }
   }
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0
+description: Takes two snapshots of the PAN-OS operational topology before and after
+  a change, comparing the two for differences.

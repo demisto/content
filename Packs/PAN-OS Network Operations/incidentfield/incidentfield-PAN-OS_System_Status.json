@@ -1,75 +1,62 @@
 {
-	"associatedToAll": false,
-	"associatedTypes": [
-		"PAN-OS Network Operations - System Information"
-	],
-	"breachScript": "",
-	"caseInsensitive": true,
-	"cliName": "panossystemstatus",
-	"closeForm": false,
-	"columns": [
-		{
-			"displayName": "hostid",
-			"fieldCalcScript": "",
-			"isDefault": true,
-			"isReadOnly": false,
-			"key": "hostid",
-			"required": false,
-			"script": "",
-			"selectValues": null,
-			"type": "shortText",
-			"width": 150
-		},
-		{
-			"displayName": "up",
-			"fieldCalcScript": "",
-			"isDefault": true,
-			"isReadOnly": false,
-			"key": "up",
-			"required": false,
-			"script": "",
-			"selectValues": null,
-			"type": "shortText",
-			"width": 150
-		}
-	],
-	"content": false,
-	"defaultRows": [
-		{}
-	],
-	"description": "Auto Generated",
-	"editForm": true,
-	"fieldCalcScript": "",
-	"fromServerVersion": "",
-	"group": 0,
-	"hidden": false,
-	"id": "incident_panossystemstatus",
-	"isReadOnly": false,
-	"itemVersion": "",
-	"locked": false,
-	"mergeStrategy": "",
-	"name": "PAN-OS System Status",
-	"neverSetAsRequired": false,
-	"ownerOnly": false,
-	"packID": "7d11d0ad-c9e3-4c8e-8263-f83c6d043993",
-	"placeholder": "",
-	"propagationLabels": [
-		"all"
-	],
-	"required": false,
-	"runScriptAfterUpdate": false,
-	"script": "",
-	"selectValues": [],
-	"sla": 0,
-	"system": false,
-	"systemAssociatedTypes": null,
-	"threshold": 72,
-	"toServerVersion": "",
-	"type": "grid",
-	"unmapped": false,
-	"unsearchable": false,
-	"useAsKpi": false,
-	"validatedError": "",
-	"validationRegex": "",
-	"version": -1
+    "associatedToAll": false,
+    "associatedTypes": [
+        "PAN-OS Network Operations - System Information"
+    ],
+    "caseInsensitive": true,
+    "cliName": "panossystemstatus",
+    "closeForm": false,
+    "columns": [
+        {
+            "displayName": "hostid",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "hostid",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        },
+        {
+            "displayName": "up",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "up",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        }
+    ],
+    "content": true,
+    "defaultRows": [
+        {}
+    ],
+    "description": "Auto Generated",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_panossystemstatus",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "PAN-OS System Status",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "grid",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "5.5.0"
 }

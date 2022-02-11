@@ -15,13 +15,7 @@ commonfields:
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ""
-    itemVersion: ""
-    packID: 7d11d0ad-c9e3-4c8e-8263-f83c6d043993
-    propagationLabels:
-    - all
-    toServerVersion: ""
 dockerimage: demisto/python3:3.9.8.24399
-engineinfo: {}
 name: FilterAvailableSoftwareImages
 outputs:
 - contextPath: FilteredSoftwareVersions.Result.hostid
@@ -54,7 +48,6 @@ outputs:
 - contextPath: FilteredSoftwareVersions.Result.uploaded
   description: True if the software version has been uploaded to the system
   type: Unknown
-pswd: ""
 runas: DBotWeakRole
 runonce: false
 script: |
@@ -182,3 +175,6 @@ scripttarget: 0
 subtype: python3
 tags: []
 type: python
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)

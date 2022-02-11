@@ -1,46 +1,42 @@
 contentitemexportablefields:
   contentitemfields:
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: 7d11d0ad-c9e3-4c8e-8263-f83c6d043993
     propagationLabels:
     - all
-    toServerVersion: ""
 description: Commits to either a single device, or across all devices in the topology.
   PAN-OS integration will attempt to only commit to devices that require it, not blanket
   to all possible devices.
-id: 14bd3e24-c304-49d8-8ef1-a113b008edb8
+id: PAN-OS Network Operations - Commit Configuration
 inputs:
 - description: Commit only on specific devices. Note this does not affect Panorama
     push operation - to limit the scope of the push, use device_group_filter and template_stack_filter.
   key: device_filter_string
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
     simple: ${incident.target}
 - description: 'Panorama Only: If required, a csv list of device-groups to push. If
     not specified, all device groups will be pushed after a commit.'
   key: device_group_filter
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
 - description: 'Panorama Only: If required, a csv list of template-stacks to push.
     If not specified, all template stacks will be pushed after a commit.'
   key: template_stack_filter
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
 - description: If set to Yes, the configuration will be committed to all firewalls
     and panorama. If no, a data collection task will prompt for the scope first.
   key: auto_commit
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
     simple: "No"
 - description: If set to Yes, the configuration will be automatically pushed to all
     device groups and template stacks.
   key: auto_push
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
     simple: "No"
@@ -51,8 +47,6 @@ tasks:
   "0":
     id: "0"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
       - "11"
@@ -66,6 +60,7 @@ tasks:
       iscommand: false
       name: ""
       version: -1
+      description: ''
     taskid: d39604e9-b6b4-4213-8be6-74a04f6599d4
     timertriggers: []
     type: start
@@ -79,8 +74,6 @@ tasks:
   "1":
     id: "1"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
       - "3"
@@ -114,8 +107,6 @@ tasks:
   "2":
     id: "2"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     loop:
       exitCondition: ""
       iscommand: false
@@ -181,8 +172,6 @@ tasks:
   "3":
     id: "3"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
       - "7"
@@ -231,8 +220,6 @@ tasks:
       label: "yes"
     id: "4"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#default#':
       - "9"
@@ -262,8 +249,6 @@ tasks:
   "5":
     id: "5"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
       - "10"
@@ -315,8 +300,6 @@ tasks:
   "6":
     id: "6"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     loop:
       exitCondition: ""
       iscommand: false
@@ -401,8 +384,6 @@ tasks:
       label: "yes"
     id: "7"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#default#':
       - "4"
@@ -451,8 +432,6 @@ tasks:
       label: "yes"
     id: "8"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#default#':
       - "9"
@@ -482,8 +461,6 @@ tasks:
   "9":
     id: "9"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     note: false
     quietmode: 0
     separatecontext: false
@@ -495,6 +472,7 @@ tasks:
       name: Finish
       type: title
       version: -1
+      description: ''
     taskid: 42af5daf-076b-48e6-884c-26db72f52415
     timertriggers: []
     type: title
@@ -508,8 +486,6 @@ tasks:
   "10":
     id: "10"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
       - "8"
@@ -553,8 +529,6 @@ tasks:
       label: "yes"
     id: "11"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#default#':
       - "17"
@@ -584,8 +558,6 @@ tasks:
   "12":
     id: "12"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
       - "13"
@@ -618,8 +590,6 @@ tasks:
   "13":
     id: "13"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
       - "15"
@@ -661,8 +631,6 @@ tasks:
       label: "yes"
     id: "14"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#default#':
       - "12"
@@ -729,20 +697,18 @@ tasks:
       totalanswers: 0
     id: "15"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     message:
-      bcc: null
-      body: null
-      cc: null
+      bcc:
+      body:
+      cc:
       format: ""
       methods: []
-      subject: null
+      subject:
       timings:
         completeafterreplies: 1
         retriescount: 2
         retriesinterval: 360
-      to: null
+      to:
     nexttasks:
       '#none#':
       - "16"
@@ -770,8 +736,6 @@ tasks:
   "16":
     id: "16"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
       - "10"
@@ -809,8 +773,6 @@ tasks:
   "17":
     id: "17"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
       - "1"
@@ -848,3 +810,6 @@ view: |-
       }
     }
   }
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0
