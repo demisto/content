@@ -79,6 +79,7 @@ What if R1 is deleted rule id? Would it be able to fetch R2 and R3 detections?
     * __Detections to fetch by Rule ID or Version ID__
     * __Fetch all live rules detections__
     * __Filter detections by alert state__
+    * __List Basis__  
     * __Trust any certificate (not secure)__
     * __Use system proxy settings__
 4. Click __Test__ to validate the URLs, token, and connection.
