@@ -1,14 +1,13 @@
 commonfields:
   id: Postmark Spamcheck
   version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: Postmark Spamcheck
 display: Postmark Spamcheck
 category: Messaging
 description: Postmark's spam API, Spamcheck, is a RESTfull interface to the Spam filter
   tool SpamAssassin.
 configuration:
-- display: ' URL'
+- display: 'URL'
   name: base_url
   defaultvalue: https://spamcheck.postmarkapp.com
   type: 0
@@ -54,6 +53,9 @@ script:
     - contextPath: Postmark.Spamcheck.report
       description: Detailed SpamAssassin report
     description: Check the spamscore of your email message
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.10.1.25933
   runonce: false
   subtype: python3
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

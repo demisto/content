@@ -9,7 +9,7 @@ Postmark's spam API, Spamcheck, is a RESTfull interface to the Spam filter tool 
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    |  URL | Postmark Spamcheck API URL | True |
+    | URL | Postmark Spamcheck API URL | True |
     | Trust any certificate (not secure) | When ‘trust any certificate’ is selected, the integration ignores TLS/SSL certificate validation errors. Used to test connection issues or connect to a server without a valid certificate. | False |
     | Use system proxy settings | Runs the integration instance using the proxy server \(HTTP or HTTPS\) that you defined in the server configuration. | False |
 
