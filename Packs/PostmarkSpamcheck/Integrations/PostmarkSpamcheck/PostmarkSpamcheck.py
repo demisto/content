@@ -1,8 +1,9 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
+import traceback
 
 import requests
-import traceback
+
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -14,6 +15,7 @@ requests.packages.urllib3.disable_warnings()
 class Client(BaseClient):
     """Client class to interact with the Postmark Spamcheck API
     """
+
     def __init__(self, base_url: str, proxy: bool, verify: bool):
         super().__init__(base_url=base_url, proxy=proxy, verify=verify)
 

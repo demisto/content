@@ -5,16 +5,8 @@ vcShouldKeepItemLegacyProdMachine: false
 name: Postmark Spamcheck
 display: Postmark Spamcheck
 category: Messaging
-image: data:image/png;base64,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
 description: Postmark's spam API, Spamcheck, is a RESTfull interface to the Spam filter
   tool SpamAssassin.
-detaileddescription: |
-  ### Community Contributed Integration
-   #### Integration Author: NVISO
-   No support or maintenance is provided by the author. Customers are encouraged to engage with the user community for questions and guidance at the [Cortex XSOAR Live Discussions](https://live.paloaltonetworks.com/t5/cortex-xsoar-discussions/bd-p/Cortex_XSOAR_Discussions).
-  ***
-  ## Postmark Spamcheck
-  - Use default value https://spamcheck.postmarkapp.com as API URL
 configuration:
 - display: ' URL'
   name: base_url
@@ -38,130 +30,7 @@ configuration:
   additionalinfo: Runs the integration instance using the proxy server (HTTP or HTTPS)
     that you defined in the server configuration.
 script:
-  script: |
-    import requests
-    import traceback
-
-    # Disable insecure warnings
-    requests.packages.urllib3.disable_warnings()
-
-
-    ''' CLIENT CLASS '''
-
-
-    class Client(BaseClient):
-        """Client class to interact with the Postmark Spamcheck API
-        """
-        def __init__(self, base_url: str, proxy: bool, verify: bool):
-            super().__init__(base_url=base_url, proxy=proxy, verify=verify)
-
-        def spamcheck(self, email: bytes, options: str) -> dict:
-            """Get spam score of EML file
-            Returns the spam score result returned by the Postmark Spamcheck API as a dictionary.
-
-            :type email: ``str``
-            :param email: EML file to be sent to the Postmark Spamcheck API
-            :type options: ``str``
-            :param options: Must either be "long" for a full report of processing rules, or "short" for a score request.
-
-            :return: Spam score result returned by the Postmark Spamcheck API as dict
-            :rtype: ``dict``
-            """
-            return self._http_request(method='POST', url_suffix='filter', data={'email': email, 'options': options},
-                                      resp_type='json', ok_codes=(200,))
-
-
-    ''' COMMAND FUNCTIONS '''
-
-
-    def test_module_command(client):
-        """
-        Tests Postmark Spamcheck API connectivity
-        """
-        result = client.spamcheck(email='', options='short')
-        if result:
-            return 'ok'
-
-
-    def spamcheck_command(client: Client, file_path: str, args: dict) -> dict:
-        """Returns the spam score result returned by the Postmark Spamcheck API as a dictionary.
-
-        :type client: ``Client``
-        :param client: Instance of Client class to interact with the Postmark Spamcheck API
-        :type file_path: ``str``
-        :param file_path: File path to EML file in XSOAR
-        :type args: ``dict``
-        :param args: Command arguments
-
-        :return: Spam score result returned by the Postmark Spamcheck API as dict
-        :rtype: ``dict``
-        """
-        if not file_path:
-            raise ValueError('entry file path not found')
-
-        email = open(file_path, "rb").read()
-        short = args.get('short', False)
-
-        if short:
-            options = 'short'
-        else:
-            options = 'long'
-
-        response = client.spamcheck(email=email, options=options)
-
-        if not response and not response.get('success'):
-            raise Exception('Failed submitting mail to Postmark Spamcheck API: %s\n' % file_path)
-        else:
-            return response
-
-
-    ''' MAIN FUNCTION '''
-
-
-    def main() -> None:
-        """main function, parses params and runs command functions
-
-        """
-        params = demisto.params()
-        args = demisto.args()
-        command = demisto.command()
-
-        base_url = params.get('base_url')
-        verify = not params.get('insecure', False)
-        proxy = params.get('proxy', False)
-
-        try:
-            client = Client(
-                base_url=base_url,
-                verify=verify,
-                proxy=proxy
-            )
-
-            if command == 'test-module':
-                return_results(test_module_command(client))
-            elif command == 'postmark-spamcheck':
-                entry_id = args.get('entryid')
-                file_path = demisto.getFilePath(entry_id).get('path')
-                result = spamcheck_command(client=client, file_path=file_path, args=args)
-                result['entryid'] = entry_id
-                command_results = CommandResults(
-                    readable_output=tableToMarkdown('Postmark - Spamcheck', result, metadata='Spamcheck completed',
-                                                    removeNull=True),
-                    outputs_prefix='Postmark.Spamcheck',
-                    outputs_key_field='entryid',
-                    outputs=result
-                )
-                return_results(command_results)
-        except Exception as e:
-            demisto.error(traceback.format_exc())  # print the traceback
-            return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
-
-
-    ''' ENTRY POINT '''
-
-
-    if __name__ in ('__main__', 'builtin', 'builtins'):
-        main()
+  script: ''
   type: python
   commands:
   - name: postmark-spamcheck
