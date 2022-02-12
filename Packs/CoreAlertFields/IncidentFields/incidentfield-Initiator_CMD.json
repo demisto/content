@@ -28,21 +28,22 @@
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "6.5.0",
-	"x2_fields": "actor_process_command_line",
+    "x2_fields": "actor_process_command_line",
     "Aliases": [
         {
-          "cliName": "cmd",
-          "type": "multiSelect"
+            "cliName": "cmd",
+            "type": "multiSelect",
+            "name": "CMD"
         },
-        
         {
-          "cliName": "commandline",
-          "type": "shortText"
+            "cliName": "commandline",
+            "type": "shortText",
+            "name": "Command Line"
         },
-        
         {
             "cliName": "digitalguardiancommandline",
-            "type": "shortText"   
+            "type": "shortText",
+            "name": ""
         }
     ]
 }

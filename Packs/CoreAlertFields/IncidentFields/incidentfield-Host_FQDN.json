@@ -32,15 +32,18 @@
     "Aliases": [
         {
             "cliName": "dnsname",
-            "type": "shortText"
+            "type": "shortText",
+            "name": "DNS Name"
         },
         {
             "cliName": "prismacloudcomputefqdn",
-            "type": "shortText"
+            "type": "shortText",
+            "name": "Prisma Cloud Compute FQDN"
         },
         {
             "cliName": "shadowitfqdn",
-            "type": "shortText"
+            "type": "shortText",
+            "name": "Shadow IT FQDN"
         }
     ]
 }
