@@ -1,5 +1,5 @@
 Postmark's spam API, Spamcheck, is a RESTfull interface to the Spam filter tool SpamAssassin.
-This integration was integrated and tested with version xx of Postmark Spamcheck
+
 
 ## Configure Postmark Spamcheck on Cortex XSOAR
 
