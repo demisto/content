@@ -17,7 +17,7 @@ class Client(BaseClient):
     def __init__(self, base_url: str, proxy: bool, verify: bool):
         super().__init__(base_url=base_url, proxy=proxy, verify=verify)
 
-    def spamcheck(self, email: str, options: str) -> dict:
+    def spamcheck(self, email: bytes, options: str) -> dict:
         """Get spam score of EML file
         Returns the spam score result returned by the Postmark Spamcheck API as a dictionary.
 
@@ -107,8 +107,8 @@ def main() -> None:
             result = spamcheck_command(client=client, file_path=file_path, args=args)
             result['entryid'] = entry_id
             command_results = CommandResults(
-                readable_output=tableToMarkdown('Postmark - Spamcheck', result, metadata='Spamcheck completed'
-                                                , removeNull=True),
+                readable_output=tableToMarkdown('Postmark - Spamcheck', result, metadata='Spamcheck completed',
+                                                removeNull=True),
                 outputs_prefix='Postmark.Spamcheck',
                 outputs_key_field='entryid',
                 outputs=result
