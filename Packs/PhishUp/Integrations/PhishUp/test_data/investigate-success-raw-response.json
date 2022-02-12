@@ -1,1 +1,1 @@
-{"IncomingUrl": "https://www.paloaltonetworks.com/", "TargetHostname": "www.paloaltonetworks.com", "IsRouted": false, "PhishUpStatus": "Clean", "PhishUpScore": "1.00"}
+{"Status": {"Result": "Success", "Message": ""}, "Result": {"IncomingUrl": "https://www.paloaltonetworks.com/", "TargetHostname": "www.paloaltonetworks.com", "IsRouted": false, "PhishUpStatus": "Clean", "PhishUpScore": "1.00"}}
