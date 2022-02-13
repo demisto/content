@@ -194,7 +194,7 @@
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "panosupgradetargetfirewallversion",
+                                "fieldId": "panosnetworkoperationsupgradetargetfirewallversion",
                                 "height": 53,
                                 "id": "8b346430-4da2-11ec-93e7-4db504804573",
                                 "index": 0,
@@ -203,7 +203,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "panosupgradepanoramaversion",
+                                "fieldId": "panosnetworkoperationsupgradepanoramaversion",
                                 "height": 53,
                                 "id": "4379c850-4d80-11ec-aad9-3b7ece0e895a",
                                 "index": 1,
@@ -212,7 +212,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "panosupgradeupgradeversions",
+                                "fieldId": "panosnetworkoperationsupgradeupgradeversions",
                                 "height": 53,
                                 "id": "f31a83c0-4cdc-11ec-88b8-25787cc14a5c",
                                 "index": 1,
@@ -222,7 +222,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "panosupgradetargetpanoramaversion",
+                                "fieldId": "panosnetworkoperationsupgradetargetpanoramaversion",
                                 "height": 53,
                                 "id": "8d750560-4da2-11ec-93e7-4db504804573",
                                 "index": 1,

@@ -255,7 +255,7 @@
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "panosupgradetargetdevice",
+                                "fieldId": "panosnetworkoperationsupgradetargetdevice",
                                 "height": 53,
                                 "id": "bc811450-518c-11ec-8192-5b2617803d78",
                                 "index": 0,
@@ -264,7 +264,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "panosupgradetargetversion",
+                                "fieldId": "panosnetworkoperationsupgradetargetversion",
                                 "height": 53,
                                 "id": "bea68c60-518c-11ec-8192-5b2617803d78",
                                 "index": 1,
@@ -360,11 +360,11 @@
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_panosupgradetargetdevice",
+                        "fieldId": "incident_panosnetworkoperationsupgradetargetdevice",
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_panosupgradetargetversion",
+                        "fieldId": "incident_panosnetworkoperationsupgradetargetversion",
                         "isVisible": true
                     }
                 ],

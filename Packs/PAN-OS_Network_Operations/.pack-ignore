@@ -1,0 +1,5 @@
+# below fields become too long when using the SDK recommended naming convention.
+[file:incidentfield-App_Content_Release_Date.json]
+ignore=IF113
+[file:incidentfield-Management_IP.json]
+ignore=IF113

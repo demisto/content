@@ -332,7 +332,7 @@
                                     "panosnetworkoperationsparentincidentid": {
                                         "simple": "${incident.id}"
                                     },
-                                    "panosupgradetargetdevice": {
+                                    "panosnetworkoperationsupgradetargetdevice": {
                                         "simple": "${incident.target}"
                                     },
                                     "target": {

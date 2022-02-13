@@ -147,7 +147,7 @@
                                     "panosnetworkoperationsparentincidentid": {
                                         "simple": "${incident.id}"
                                     },
-                                    "panosupgradepanoramaupgradeswitch": {
+                                    "panosnetworkoperationsupgradepanoramaupgradeswitch": {
                                         "simple": "False"
                                     },
                                     "type": {
@@ -173,7 +173,7 @@
                                     "panosnetworkoperationsparentincidentid": {
                                         "simple": "${incident.id}"
                                     },
-                                    "panosupgradefirewallupgradeswitch": {
+                                    "panosnetworkoperationsupgradefirewallupgradeswitch": {
                                         "simple": "False"
                                     },
                                     "type": {

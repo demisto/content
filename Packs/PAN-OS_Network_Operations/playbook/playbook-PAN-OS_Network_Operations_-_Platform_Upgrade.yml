@@ -11,13 +11,13 @@ inputs:
   playbookInputQuery:
   required: false
   value:
-    simple: ${incident.panosupgradepanoramaupgradeswitch}
+    simple: ${incident.panosnetworkoperationsupgradepanoramaupgradeswitch}
 - description: Upgrade Panorama devices.
   key: upgrade_firewall
   playbookInputQuery:
   required: false
   value:
-    simple: ${incident.panosupgradefirewallupgradeswitch}
+    simple: ${incident.panosnetworkoperationsupgradefirewallupgradeswitch}
 name: PAN-OS Network Operations - Platform Upgrade
 outputs: []
 starttaskid: "0"
@@ -285,9 +285,9 @@ tasks:
         simple: PAN-OS Panorama Upgrade - ${PanoramaDevices}
       panosnetworkoperationsparentincidentid:
         simple: ${incident.id}
-      panosupgradetargetdevice:
+      panosnetworkoperationsupgradetargetdevice:
         simple: ${PanoramaDevices}
-      panosupgradetargetversion:
+      panosnetworkoperationsupgradetargetversion:
         simple: ${Panorama Upgrade Questions.Answers.0}
       type:
         simple: PAN-OS Network Operations - Device Upgrade
@@ -325,10 +325,10 @@ tasks:
         simple: PAN-OS Firewall Upgrade Upgrade-  ${ActiveFirewalls}
       panosnetworkoperationsparentincidentid:
         simple: ${incident.id}
-      panosupgradetargetdevice:
+      panosnetworkoperationsupgradetargetdevice:
         complex:
           root: ActiveFirewalls
-      panosupgradetargetversion:
+      panosnetworkoperationsupgradetargetversion:
         simple: ${Firewall Upgrade Questions.Answers.0}
       type:
         simple: PAN-OS Network Operations - Device Upgrade
@@ -448,7 +448,7 @@ tasks:
               right:
                 iscontext: true
                 value:
-                  simple: incident.panosupgradetargetpanoramaversion
+                  simple: incident.panosnetworkoperationsupgradetargetpanoramaversion
           root: FilteredSoftwareVersions.Result
           transformers:
           - operator: uniq
@@ -810,7 +810,7 @@ tasks:
       }
   "27":
     fieldMapping:
-    - incidentfield: PAN-OS Upgrade - Panorama Version
+    - incidentfield: PAN-OS Network Operations - Upgrade Panorama Version
       output:
         complex:
           accessor: version
@@ -1156,7 +1156,7 @@ tasks:
     note: false
     quietmode: 0
     scriptarguments:
-      panosupgradetargetpanoramaversion:
+      panosnetworkoperationsupgradetargetpanoramaversion:
         simple: ${Panorama Upgrade Questions.Answers.0}
     separatecontext: false
     skipunavailable: false
@@ -1188,7 +1188,7 @@ tasks:
     note: false
     quietmode: 0
     scriptarguments:
-      panosupgradetargetfirewallversion:
+      panosnetworkoperationsupgradetargetfirewallversion:
         simple: ${Firewall Upgrade Questions.Answers.0}
     separatecontext: false
     skipunavailable: false

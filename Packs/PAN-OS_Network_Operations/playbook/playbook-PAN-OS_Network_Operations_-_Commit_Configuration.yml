@@ -230,6 +230,7 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
+      description: "Check if the topology includes at least one Panorama system."
       brand: ""
       id: 2da3101e-3eda-4da8-8b6e-3eedad776176
       iscommand: false
@@ -394,6 +395,7 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
+      description: "True if at least one system in the topology committed changes."
       brand: ""
       id: 5be6694e-07f2-4b2b-8791-437e633f9ec7
       iscommand: false
@@ -442,6 +444,7 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
+      description: "Checks if the Panorama configuration needs to be pushed to any device-group or template."
       brand: ""
       id: dbc60519-c913-418f-870c-dca0cc63e70a
       iscommand: false
@@ -539,6 +542,7 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
+      description: "Checks if the playbook input is set to automatically commit the config."
       brand: ""
       id: 89aeb7ca-1824-4758-82cd-4719542137ae
       iscommand: false
@@ -642,6 +646,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
+      description: "Check if the playbook input it set to automatically push the configuration."
       id: b5fe9f11-81a5-4fc0-8e42-635d3fe6636b
       iscommand: false
       name: Auto-Push?
@@ -718,6 +723,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
+      description: "Ask the user for the scope of the Panorama config push."
       id: f10e7502-52d4-4d40-8c55-87dcb4a3925b
       iscommand: false
       name: Specify Push Scope
@@ -782,6 +788,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
+      description: "Manual task to pause before committing to all devices."
       id: 1ea0032b-2beb-4a11-8405-d4b1c4d9605c
       iscommand: false
       name: Mark Complete to commit to all devices

@@ -10,19 +10,19 @@ inputs:
   playbookInputQuery:
   required: false
   value:
-    simple: ${incident.panosupgradetargetdevice}
+    simple: ${incident.panosnetworkoperationsupgradetargetdevice}
 - description: Peer firewall (if any)
   key: peer_device
   playbookInputQuery:
   required: false
   value:
-    simple: ${incident.panosupgradepeerfirewall}
+    simple: ${incident.panosnetworkoperationsupgradepeerfirewall}
 - description: Target version of upgrade
   key: target_version
   playbookInputQuery:
   required: false
   value:
-    simple: ${incident.panosupgradetargetversion}
+    simple: ${incident.panosnetworkoperationsupgradetargetversion}
 name: PAN-OS Network Operations - Device Upgrade
 outputs: []
 starttaskid: '0'
@@ -1018,7 +1018,7 @@ tasks:
       expired: false
       questions:
       - defaultrows: []
-        fieldassociated: panosupgradetargetversion
+        fieldassociated: panosnetworkoperationsupgradetargetversion
         gridcolumns: []
         id: '0'
         label: ''

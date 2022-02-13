@@ -1,7 +1,7 @@
 {
     "associatedToAll": true,
     "caseInsensitive": true,
-    "cliName": "panosdeviceconnectivitystatus",
+    "cliName": "panosnetworkoperationsdeviceconnectivitystatus",
     "closeForm": false,
     "columns": [
         {
@@ -37,10 +37,10 @@
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_panosdeviceconnectivitystatus",
+    "id": "incident_panosnetworkoperationsdeviceconnectivitystatus",
     "isReadOnly": false,
     "locked": false,
-    "name": "PAN-OS Device Connectivity Status",
+    "name": "PAN-OS Network Operations - Device Connectivity Status",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "propagationLabels": [
