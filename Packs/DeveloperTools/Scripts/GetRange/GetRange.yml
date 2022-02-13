@@ -1,26 +1,22 @@
 args:
 - default: true
-  description: start_index - end_index or [i_1,i_2,...,i_n].
+  description: 'Comma separated list of indexes to slice by (0,1-3,6-7,...,etc).'
   isArray: true
   name: range
   required: true
   secret: false
 - default: true
-  description: List or single object
+  description: 'List'
   isArray: true
   name: value
   required: true
   secret: false
-comment: Get a range of indexes from a list.
+comment: 'Get a range of indexes from a list.'
 commonfields:
   id: GetRange
   version: -1
 enabled: false
 name: GetRange
-outputs:
-- contextPath: Value
-  description: Transformed list.
-  type: Array
 script: '-'
 subtype: python3
 system: false

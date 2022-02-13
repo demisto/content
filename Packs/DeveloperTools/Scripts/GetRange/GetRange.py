@@ -3,7 +3,7 @@ import demistomock as demisto
 from CommonServerPython import *
 
 
-def get_range_command(indexes: List[str], val: List[Any]) -> CommandResults:
+def get_range_command(indexes: List[str], val: List[Any]) -> List[Any]:
     """
          Filter list with a given range.
          Args:
@@ -22,15 +22,14 @@ def get_range_command(indexes: List[str], val: List[Any]) -> CommandResults:
                 result.append(element)
         else:
             result.append(val[int(index)])
-    return CommandResults(
-        outputs={'Value': result},
-    )
+    return result
 
 
 def main():
     try:
-        val = safe_load_json(demisto.args().get('value', ''))
-        indexes = argToList(demisto.args().get('range', ''))
+        args = demisto.args()
+        val = safe_load_json(args.get('value', ''))
+        indexes = argToList(args.get('range', ''))
         return_results(results=get_range_command(indexes, val))
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback

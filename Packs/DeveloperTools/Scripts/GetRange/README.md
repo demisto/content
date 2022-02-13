@@ -12,45 +12,11 @@ Get a range of indexes from a list.
 ## Inputs
 ---
 
-| **Argument Name** | **Description** |
-| --- | --- |
-| range | start_index - end_index or \[i_1,i_2,...,i_n\]. |
-| value | List or single object |
+| **Argument Name** | **Description**                                                   |
+| --- |-------------------------------------------------------------------|
+| range | Comma separated list of indexes to slice by \(0,1-3,6-7,...,etc\). |
+| value | List                                             |
 
 ## Outputs
 ---
-
-| **Path** | **Description** | **Type** |
-| --- | --- | --- |
-| Value | Transformed list. | Array |
-
-
-## Script Examples
-### Example command
-```!GetRange range=0,1,3-5,7 value=[0,1,2,3,4,5,6,7,8,9]```
-### Context Example
-```json
-{
-    "Value": [
-        0,
-        1,
-        3,
-        4,
-        5,
-        7
-    ]
-}
-```
-
-### Human Readable Output
-
->### Results
->|Value|
->|---|
->| 0 |
->| 1 |
->| 3 |
->| 4 |
->| 5 |
->| 7 |
-
+There are no outputs for this script.
