@@ -2,6 +2,8 @@
 
 Use the CrowdStrike Falcon Sandbox integration to submit and analyze files and URLs.
 
+This integration is backwards compatible with CrowdStrike Falcon Sandbox v1.
+
 The maximum file upload size is 100 MB.
 
 
@@ -11,14 +13,9 @@ Make sure you have the API key for CrowdStrike Falcon Sandbox v2.
 
 Each API key has an associated authorization level, which determines the available endpoints. By default, all free, non-vetted accounts can issue restricted keys. You can upgrade to full default keys, enabling file submissions and downloads.
 
-Authorization levels:
-
-- Restricted
-- Default
-- Elevated
-- Super
-
 ### Get an API Key
+You must have an account with Hybrid-Analysis. If you do not have an account, you can [sign up here.](https://www.hybrid-analysis.com/signup)
+
 Obtain an API key by:
 1. In your [profile page](https://www.hybrid-analysis.com/my-account?tab=%23api-key-tab), from the top right menu navigate to the **API key** tab. 
 2. Click the **Create API key** button.
