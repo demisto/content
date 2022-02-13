@@ -345,7 +345,7 @@ class Pack(object):
         changelog_path = os.path.join(self._pack_path, Pack.CHANGELOG_JSON)
 
         if not os.path.exists(changelog_path):
-            return self.PACK_INITIAL_VERSION
+            return self._current_version
 
         with open(changelog_path, "r") as changelog_file:
             changelog = json.load(changelog_file)
@@ -1481,22 +1481,28 @@ class Pack(object):
                                     changelog, version, release_notes=modified_release_notes_lines)
                                 changelog[version] = updated_entry
 
-                else:  # will enter only on initial version and release notes folder still was not created
-                    if len(changelog.keys()) > 1 or Pack.PACK_INITIAL_VERSION not in changelog:
+                else:
+                    if len(changelog.keys()) > 1:
+                        # If there is no release notes dir but the changelog has a few entries in it,
+                        # there is a mismatch
                         logging.warning(
                             f"{self._pack_name} pack mismatch between {Pack.CHANGELOG_JSON} and {Pack.RELEASE_NOTES}")
                         task_status, not_updated_build = True, True
                         return task_status, not_updated_build
 
-                    changelog[Pack.PACK_INITIAL_VERSION] = self._create_changelog_entry(
-                        release_notes=self.description,
-                        version_display_name=Pack.PACK_INITIAL_VERSION,
-                        build_number=build_number,
-                        initial_release=True,
-                        new_version=False)
+                    else:
+                        # allow changing the initial changelog version
+                        first_key_in_changelog = list(changelog.keys())[0]
+                        changelog[first_key_in_changelog] = self._create_changelog_entry(
+                            release_notes=self.description,
+                            version_display_name=first_key_in_changelog,
+                            build_number=build_number,
+                            initial_release=True,
+                            new_version=False)
 
-                    logging.info(f"Found existing release notes for version: {Pack.PACK_INITIAL_VERSION} "
-                                 f"in the {self._pack_name} pack.")
+                        logging.info(f"Found existing release notes in {Pack.CHANGELOG_JSON} for version: "
+                                     f"{first_key_in_changelog} of pack {self._pack_name}. Modifying this version in "
+                                     f"{Pack.CHANGELOG_JSON}")
 
             elif self._hidden:
                 logging.warning(f"Pack {self._pack_name} is deprecated. Skipping release notes handling.")
@@ -1517,6 +1523,8 @@ class Pack(object):
                 changelog = {
                     self._current_version: version_changelog
                 }
+                logging.info(f'Created {Pack.CHANGELOG_JSON} for pack {self._pack_name} starting at version'
+                             f' {self._current_version}')
             # else:
             #     logging.error(f"No release notes found for: {self._pack_name}")
             #     task_status = False
