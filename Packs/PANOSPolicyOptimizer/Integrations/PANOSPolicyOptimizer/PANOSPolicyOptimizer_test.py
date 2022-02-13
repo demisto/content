@@ -1,8 +1,7 @@
 import pytest
-import json
 import io
 from CommonServerPython import *
-from PANOSPolicyOptimizer import Client, policy_optimizer_get_rules_command
+from PANOSPolicyOptimizer import Client, policy_optimizer_get_rules_command, policy_optimizer_get_dag_command
 
 
 BASE_URL = 'https://test.com'
@@ -111,3 +110,25 @@ def test_querying_rules_is_valid(mocker, client):
     assert isinstance(rules.outputs, list)
     assert len(rules.outputs) > 0
     assert 'PolicyOptimizer Unused-security-rules' in rules.readable_output
+
+
+@pytest.mark.parametrize("client", CLIENTS)
+def test_querying_invalid_dynamic_address_group_response(mocker, client):
+    """
+    Given
+        - a response which indicates no dynamic address group was found.
+
+    When
+        - querying for a specific dynamic group.
+
+    Then
+        - an entry indicating that no dynamic address group was found.
+    """
+    mocker.patch.object(client, 'token_generator', return_value='123')
+    mocker.patch.object(client.session, 'post')
+    mocker.patch.object(
+        json, 'loads', return_value=read_json_file(path='test_data/invalid_dynamic_group_response.json')
+    )
+
+    dag = policy_optimizer_get_dag_command(client=client, args={'dag': 'dag_test_ag'})
+    assert dag.readable_output == 'Dynamic Address Group dag_test_ag was not found.'
