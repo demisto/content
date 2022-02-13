@@ -1,7 +1,9 @@
 commonfields:
   id: DemistoVersion
+  id_x2: CoreVersion
   version: -1
 name: DemistoVersion
+name_x2: CoreVersion
 script: ''
 type: python
 tags: []

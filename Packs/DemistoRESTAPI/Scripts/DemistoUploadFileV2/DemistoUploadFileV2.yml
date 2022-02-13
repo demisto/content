@@ -1,8 +1,10 @@
 commonfields:
   id: DemistoUploadFileV2
+  id_x2: CoreUploadFileV2
   version: -1
 enabled: true
 name: DemistoUploadFileV2
+name_x2: CoreUploadFileV2
 fromversion: 5.0.0
 script: '-'
 args:

@@ -1,7 +1,9 @@
 commonfields:
   id: DemistoUploadFile
+  id_x2: CoreUploadFile
   version: -1
 name: DemistoUploadFile
+name_x2: CoreUploadFile
 deprecated: true
 script: ''
 type: javascript

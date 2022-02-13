@@ -1,7 +1,9 @@
 commonfields:
   id: DemistoCreateList
+  id_x2: CoreCreateList
   version: -1
 name: DemistoCreateList
+name_x2: CoreCreateList
 script: ''
 type: javascript
 tags:

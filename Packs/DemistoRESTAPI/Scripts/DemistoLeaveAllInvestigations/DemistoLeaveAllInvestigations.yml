@@ -1,7 +1,9 @@
 commonfields:
   id: DemistoLeaveAllInvestigations
+  id_x2: CoreLeaveAllInvestigations
   version: -1
 name: DemistoLeaveAllInvestigations
+name_x2: CoreLeaveAllInvestigations
 script: ''
 type: javascript
 tags:

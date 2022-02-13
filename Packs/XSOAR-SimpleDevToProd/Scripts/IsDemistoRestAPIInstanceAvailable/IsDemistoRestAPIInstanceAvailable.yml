@@ -6,10 +6,12 @@ comment: Checks if the provided Demisto REST API instance is available for the X
   Simple Dev to Prod workflow.
 commonfields:
   id: IsDemistoRestAPIInstanceAvailable
+  id_x2: IsCoreRestAPIInstanceAvailable
   version: -1
 dockerimage: demisto/python3:3.9.7.24076
 enabled: true
 name: IsDemistoRestAPIInstanceAvailable
+name_x2: IsCoreRestAPIInstanceAvailable
 outputs:
 - contextPath: "yes"
   description: The instance is available.

@@ -1,7 +1,9 @@
 commonfields:
   id: DemistoLinkIncidents
+  id_x2: CoreLinkIncidents
   version: -1
 name: DemistoLinkIncidents
+name_x2: CoreLinkIncidents
 script: ''
 type: javascript
 tags:

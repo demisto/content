@@ -1,7 +1,9 @@
 commonfields:
   id: DemistoDeleteIncident
+  id_x2: CoreDeleteIncident
   version: -1
 name: DemistoDeleteIncident
+name_x2: CoreDeleteIncident
 script: >-
   var body = {
       ids: [args.id],

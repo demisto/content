@@ -23,8 +23,8 @@ args:
 scripttarget: 0
 dependson:
   must:
-  - Demisto REST API|||demisto-api-post
-  - Demisto REST API|||demisto-api-get
+  - demisto-api-post
+  - demisto-api-get
 runonce: false
 dockerimage: demisto/python3:3.9.7.24076
 runas: DBotWeakRole

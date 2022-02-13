@@ -1,7 +1,9 @@
 commonfields:
   id: DemistoSendInvite
+  id_x2: CoreSendInvite
   version: -1
 name: DemistoSendInvite
+name_x2: CoreSendInvite
 script: ''
 type: javascript
 tags:

@@ -1,7 +1,9 @@
 commonfields:
   id: DemistoGetIncidentTasksByState
+  id_x2: CoreGetIncidentTasksByState
   version: -1
 name: DemistoGetIncidentTasksByState
+name_x2: CoreGetIncidentTasksByState
 script: ''
 type: javascript
 tags:
