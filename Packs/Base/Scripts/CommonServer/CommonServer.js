@@ -2024,22 +2024,26 @@ function setVersionedIntegrationContext(context, sync, version) {
 /* version should be given if theres a known version we must update according to.
 In case of a known version, retries should be set to 0 */
 function mergeVersionedIntegrationContext({newContext, retries = 0,version, objectKey = {}}) {
-    var timesAttempted = 0;
-    var done = false;
+    var savedSuccessfully = false;
     do {
-        logDebug("mergeVersionedIntegrationContext - retries: " + retries + " given version: " + version)
-        try {
-            var versionedIntegrationContext = getVersionedIntegrationContext(true, true) || {};
-            var context = versionedIntegrationContext.context;
-            mergeContexts(newContext, context, objectKey);
-            setVersionedIntegrationContext(context, true, version || versionedIntegrationContext.version);
-            done = true;
+        logDebug("mergeVersionedIntegrationContext - retries: " + retries  + " given version: " + version)
+
+        var versionedIntegrationContext = getVersionedIntegrationContext(true, true) || {};
+        var context = versionedIntegrationContext.context;
+        mergeContexts(newContext, context, objectKey);
+        var response = setVersionedIntegrationContext(context, true, version || versionedIntegrationContext.version);
+        if(response.Error){
+            logDebug(response.Error)
         }
-        catch (error) {
-            logDebug(error.message)
-            if (++timesAttempted >= retries + 1) throw error;
+        else
+        {
+            savedSuccessfully = true;
         }
-    } while (!done && timesAttempted < retries + 1);
+
+    } while (!savedSuccessfully && retries-- > 0);
+    if(!savedSuccessfully){
+        throw 'Did not merge context successfully.'
+    }
 }
 /*
     This function will mutate existingContext, updating it according to newContext.
