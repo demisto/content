@@ -1145,8 +1145,7 @@ def test_get_tasks_for_co_command(mocker):
         - Validate the output is correct.
     """
     client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password', 'verify', 'fetch_time',
-                    'sysparm_query', 'sysparm_limit', 'timestamp_field', 'ticket_type', 'get_attachments',
-                    'incident_name')
+                    'sysparm_query', 'sysparm_limit', 'timestamp_field', 'problem', 'get_attachments', 'incident_name')
 
     args = {"id": "a9e9c33dc61122760072455df62663d2"}
     mocker.patch.object(client,

@@ -132,6 +132,7 @@ def prepare_args(command, args):
             'to_recipients': argToList(args.get('to')),
             'cc_recipients': argToList(args.get('cc')),
             'bcc_recipients': argToList(args.get('bcc')),
+            'replyTo': argToList(args.get('replyTo')),
             'subject': args.get('subject', ''),
             'body': email_body,
             'body_type': args.get('body_type', 'html'),
@@ -587,7 +588,7 @@ class MsGraphClient:
 
     @staticmethod
     def _build_message(to_recipients, cc_recipients, bcc_recipients, subject, body, body_type, flag, importance,
-                       internet_message_headers, attach_ids, attach_names, attach_cids, manual_attachments):
+                       internet_message_headers, attach_ids, attach_names, attach_cids, manual_attachments, replyTo):
         """
         Builds valid message dict.
         For more information https://docs.microsoft.com/en-us/graph/api/resources/message?view=graph-rest-1.0
@@ -596,6 +597,7 @@ class MsGraphClient:
             'toRecipients': MsGraphClient._build_recipient_input(to_recipients),
             'ccRecipients': MsGraphClient._build_recipient_input(cc_recipients),
             'bccRecipients': MsGraphClient._build_recipient_input(bcc_recipients),
+            'replyTo': MsGraphClient._build_recipient_input(replyTo),
             'subject': subject,
             'body': MsGraphClient._build_body_input(body=body, body_type=body_type),
             'bodyPreview': body[:255],
