@@ -66,7 +66,7 @@ script:
           isArray: false
         - name: hide_polling_output
           deprecated: true
-          description: ""
+          description: ''
           required: false
           isArray: false
       outputs:
@@ -86,19 +86,19 @@ script:
           description: 'The file type.'
           type: String
         - contextPath: CrowdStrike.Report.type_short
-          description: ''
+          description: 'The short description of the file type.'
           type: String
         - contextPath: CrowdStrike.Report.target_url
-          description: ''
+          description: 'The target url.'
           type: String
         - contextPath: CrowdStrike.Report.state
           description: 'The report state.'
           type: String
         - contextPath: CrowdStrike.Report.error_type
-          description: ''
+          description: 'The error type.'
           type: String
         - contextPath: CrowdStrike.Report.error_origin
-          description: ''
+          description: 'The error origin.'
           type: String
         - contextPath: CrowdStrike.Report.submit_name
           description: 'The name of the file when submitted'
@@ -128,10 +128,10 @@ script:
           description: 'The file malware family.'
           type: String
         - contextPath: CrowdStrike.Report.url_analysis
-          description: ''
+          description: 'Whether this report is url analysis.'
           type: Boolean
         - contextPath: CrowdStrike.Report.analysis_start_time
-          description: ''
+          description: 'The start time of the analysis.'
           type: Date
         - contextPath: CrowdStrike.Report.threat_score
           description: 'The file threat score.'
@@ -146,13 +146,13 @@ script:
           description: 'The file verdict.'
           type: String
         - contextPath: CrowdStrike.Report.total_network_connections
-          description: ''
+          description: 'The total number of network connections.'
           type: Number
         - contextPath: CrowdStrike.Report.total_processes
-          description: ''
+          description: 'The total number of processes.'
           type: Number
         - contextPath: CrowdStrike.Report.total_signatures
-          description: ''
+          description: 'The total number of signatures.'
           type: Number
         - contextPath: CrowdStrike.Report.file_metadata
           description: 'The file metadata.'
@@ -161,16 +161,16 @@ script:
           description: 'The submission ID.'
           type: String
         - contextPath: CrowdStrike.Report.submissions.filename
-          description: ''
+          description: 'The name of the file.'
           type: String
         - contextPath: CrowdStrike.Report.submissions.url
-          description: ''
+          description: 'The url.'
           type: String
         - contextPath: CrowdStrike.Report.submissions.created_at
-          description: ''
+          description: 'When the submission was created.'
           type: Date
         - contextPath: CrowdStrike.Report.network_mode
-          description: ''
+          description: 'The network mode.'
           type: String
         - contextPath: File.SHA256
           description: The SHA256 hash of the file.
@@ -231,7 +231,7 @@ script:
           isArray: false
         - name: hide_polling_output
           deprecated: true
-          description: ""
+          description: ''
           required: false
           isArray: false
       outputs:
@@ -242,7 +242,7 @@ script:
           description: 'The report environment ID.'
           type: Number
         - contextPath: CrowdStrike.Report.environment_description
-          description: ''
+          description: 'The environment description.'
           type: String
         - contextPath: CrowdStrike.Report.size
           description: 'The file size.'
@@ -251,19 +251,19 @@ script:
           description: 'The file type.'
           type: String
         - contextPath: CrowdStrike.Report.type_short
-          description: ''
+          description: 'The short description of the file type.'
           type: String
         - contextPath: CrowdStrike.Report.target_url
-          description: ''
+          description: 'The target url.'
           type: String
         - contextPath: CrowdStrike.Report.state
           description: 'The report state.'
           type: String
         - contextPath: CrowdStrike.Report.error_type
-          description: ''
+          description: 'The error type.'
           type: String
         - contextPath: CrowdStrike.Report.error_origin
-          description: ''
+          description: 'The error origin.'
           type: String
         - contextPath: CrowdStrike.Report.submit_name
           description: 'The file name when submitted.'
@@ -293,10 +293,10 @@ script:
           description: 'The file malware family.'
           type: String
         - contextPath: CrowdStrike.Report.url_analysis
-          description: ''
+          description: 'Whether this report is url analysis.'
           type: Boolean
         - contextPath: CrowdStrike.Report.analysis_start_time
-          description: ''
+          description: 'The start time of the analysis.'
           type: Date
         - contextPath: CrowdStrike.Report.threat_score
           description: 'The file threat score.'
@@ -311,13 +311,13 @@ script:
           description: 'The file verdict.'
           type: String
         - contextPath: CrowdStrike.Report.total_network_connections
-          description: ''
+          description: 'The total number of network connections.'
           type: Number
         - contextPath: CrowdStrike.Report.total_processes
-          description: ''
+          description: 'The total number of processes.'
           type: Number
         - contextPath: CrowdStrike.Report.total_signatures
-          description: ''
+          description: 'The total number of signatures.'
           type: Number
         - contextPath: CrowdStrike.Report.file_metadata
           description: 'The file metadata.'
@@ -326,16 +326,16 @@ script:
           description: 'The report submission ID.'
           type: String
         - contextPath: CrowdStrike.Report.submissions.filename
-          description: ''
+          description: 'The name of the file.'
           type: String
         - contextPath: CrowdStrike.Report.submissions.url
-          description: ''
+          description: 'The url.'
           type: String
         - contextPath: CrowdStrike.Report.submissions.created_at
-          description: ''
+          description: 'When the submission was created.'
           type: Date
         - contextPath: CrowdStrike.Report.network_mode
-          description: ''
+          description: 'The network mode.'
           type: String
         - contextPath: File.SHA256
           description: The SHA256 hash of the file.
@@ -619,7 +619,7 @@ script:
           description: 'The report environment ID.'
           type: Number
         - contextPath: CrowdStrike.Report.environment_description
-          description: ''
+          description: 'The environment description.'
           type: String
         - contextPath: CrowdStrike.Report.size
           description: 'The file size.'
@@ -628,19 +628,19 @@ script:
           description: 'The file type.'
           type: String
         - contextPath: CrowdStrike.Report.type_short
-          description: ''
+          description: 'The short description of the file type.'
           type: String
         - contextPath: CrowdStrike.Report.target_url
-          description: ''
+          description: 'The target url.'
           type: String
         - contextPath: CrowdStrike.Report.state
           description: 'The report state.'
           type: String
         - contextPath: CrowdStrike.Report.error_type
-          description: ''
+          description: 'The error type.'
           type: String
         - contextPath: CrowdStrike.Report.error_origin
-          description: ''
+          description: 'The error origin.'
           type: String
         - contextPath: CrowdStrike.Report.submit_name
           description: 'The name of the file when submitted.'
@@ -670,10 +670,10 @@ script:
           description: 'The file malware family.'
           type: String
         - contextPath: CrowdStrike.Report.url_analysis
-          description: ''
+          description: 'Whether this report is url analysis.'
           type: Boolean
         - contextPath: CrowdStrike.Report.analysis_start_time
-          description: ''
+          description: 'The start time of the analysis.'
           type: Date
         - contextPath: CrowdStrike.Report.threat_score
           description: 'The file threat score.'
@@ -688,13 +688,13 @@ script:
           description: 'The file verdict.'
           type: String
         - contextPath: CrowdStrike.Report.total_network_connections
-          description: ''
+          description: 'The total number of network connections.'
           type: Number
         - contextPath: CrowdStrike.Report.total_processes
-          description: ''
+          description: 'The total number of processes.'
           type: Number
         - contextPath: CrowdStrike.Report.total_signatures
-          description: ''
+          description: 'The total number of signatures.'
           type: Number
         - contextPath: CrowdStrike.Report.file_metadata
           description: 'The file metadata.'
@@ -703,16 +703,16 @@ script:
           description: 'The submission ID'
           type: String
         - contextPath: CrowdStrike.Report.submissions.filename
-          description: ''
+          description: 'The name of the file.'
           type: String
         - contextPath: CrowdStrike.Report.submissions.url
-          description: ''
+          description: 'The url.'
           type: String
         - contextPath: CrowdStrike.Report.submissions.created_at
-          description: ''
+          description: 'When the submission was created.'
           type: Date
         - contextPath: CrowdStrike.Report.network_mode
-          description: ''
+          description: 'The network mode.'
           type: String
         - contextPath: File.SHA256
           description: The SHA256 hash of the file.
@@ -774,7 +774,7 @@ script:
             - "300"
         - name: environmentId
           deprecated: true
-          description: ''
+          description: 'The environment ID'
         - name: polling
           description: Whether the command should poll until the result is ready.
           required: false
@@ -1079,58 +1079,58 @@ script:
           description: The file family classification.
           type: string
         - contextPath: File.Extension
-          description: ""
+          description: 'The file extension.'
           type: string
         - contextPath: File.MalwareFamily
           description: The malware family associated with the file.
           type: String
         - contextPath: CrowdStrike.Search.search_terms.id
-          description: ""
+          description: 'The id of the search term.'
           type: String
         - contextPath: CrowdStrike.Search.search_terms.value
-          description: ""
+          description: 'The value of the search term.'
           type: String
         - contextPath: CrowdStrike.Search.count
-          description: ""
+          description: 'The number of results for this search.'
           type: Number
         - contextPath: CrowdStrike.Search.result.verdict
-          description: ""
+          description: 'The file verdict.'
           type: String
         - contextPath: CrowdStrike.Search.result.av_detect
-          description: ""
+          description: 'The AV Multiscan range, for example 50-70 (min 0, max 100).'
           type: String
         - contextPath: CrowdStrike.Search.result.threat_score
-          description: ""
+          description: 'The file threat score.'
           type: Number
         - contextPath: CrowdStrike.Search.result.vx_family
-          description: ""
+          description: 'The file malware family.'
           type: String
         - contextPath: CrowdStrike.Search.result.job_id
-          description: ""
+          description: 'The JobID of the result.'
           type: String
         - contextPath: CrowdStrike.Search.result.sha256
-          description: ""
+          description: 'The sha256 hash of the file.'
           type: String
         - contextPath: CrowdStrike.Search.result.environment_id
-          description: ""
+          description: 'The environment ID.'
           type: Number
         - contextPath: CrowdStrike.Search.result.analysis_start_time
-          description: ""
+          description: 'The start time of the analysis.'
           type: Date
         - contextPath: CrowdStrike.Search.result.submit_name
-          description: ""
+          description: 'The name of the file.'
           type: String
         - contextPath: CrowdStrike.Search.result.environment_description
-          description: ""
+          description: 'The environment description.'
           type: String
         - contextPath: CrowdStrike.Search.result.size
-          description: ""
+          description: 'The size of the file.'
           type: Number
         - contextPath: CrowdStrike.Search.result.type
-          description: ""
+          description: 'The file type.'
           type: String
         - contextPath: CrowdStrike.Search.result.type_short
-          description: ""
+          description: 'The short description of the file type.'
           type: String
     - name: crowdstrike-search
       description: Deprecated. Use cs-falcon-sandbox-search instead.
@@ -1271,58 +1271,58 @@ script:
           description: The file family classification.
           type: string
         - contextPath: File.Extension
-          description: ""
+          description: 'The file extension.'
           type: string
         - contextPath: File.MalwareFamily
           description: The malware family associated with the file.
           type: String
         - contextPath: CrowdStrike.Search.search_terms.id
-          description: ""
+          description: 'The ID of the search term.'
           type: String
         - contextPath: CrowdStrike.Search.search_terms.value
-          description: ""
+          description: 'The value of the search term.'
           type: String
         - contextPath: CrowdStrike.Search.count
-          description: ""
+          description: 'The number of results for this search.'
           type: Number
         - contextPath: CrowdStrike.Search.result.verdict
-          description: ""
+          description: 'The file verdict.'
           type: String
         - contextPath: CrowdStrike.Search.result.av_detect
-          description: ""
+          description: 'The AV Multiscan range, for example 50-70 (min 0, max 100).'
           type: String
         - contextPath: CrowdStrike.Search.result.threat_score
-          description: ""
+          description: 'The file threat score.'
           type: Number
         - contextPath: CrowdStrike.Search.result.vx_family
-          description: ""
+          description: 'The file malware family.'
           type: String
         - contextPath: CrowdStrike.Search.result.job_id
-          description: ""
+          description: 'The JobID of the result.'
           type: String
         - contextPath: CrowdStrike.Search.result.sha256
-          description: ""
+          description: 'The sha256 of the file.'
           type: String
         - contextPath: CrowdStrike.Search.result.environment_id
-          description: ""
+          description: 'The environment ID.'
           type: Number
         - contextPath: CrowdStrike.Search.result.analysis_start_time
-          description: ""
+          description: 'The start time of the analysis.'
           type: Date
         - contextPath: CrowdStrike.Search.result.submit_name
-          description: ""
+          description: 'The name of the file.'
           type: String
         - contextPath: CrowdStrike.Search.result.environment_description
-          description: ""
+          description: 'The environment description.'
           type: String
         - contextPath: CrowdStrike.Search.result.size
-          description: ""
+          description: 'The size of the file.'
           type: Number
         - contextPath: CrowdStrike.Search.result.type
-          description: ""
+          description: 'The file type.'
           type: String
         - contextPath: CrowdStrike.Search.result.type_short
-          description: ""
+          description: 'The short description of the file type.'
           type: String
     - name: cs-falcon-sandbox-result
       polling: true
@@ -1345,7 +1345,7 @@ script:
           defaultValue: ""
         - name: hide_polling_output
           deprecated: true
-          description: ""
+          description: ''
           required: false
           isArray: false
         - name: environmentID
@@ -1392,7 +1392,7 @@ script:
           description: 'The report environment ID.'
           type: Number
         - contextPath: CrowdStrike.Report.environment_description
-          description: ''
+          description: 'The environment description.'
           type: String
         - contextPath: CrowdStrike.Report.size
           description: 'The file size.'
@@ -1401,19 +1401,19 @@ script:
           description: 'The file type.'
           type: String
         - contextPath: CrowdStrike.Report.type_short
-          description: ''
+          description: 'The short description of the file type.'
           type: String
         - contextPath: CrowdStrike.Report.target_url
-          description: ''
+          description: 'The target url.'
           type: String
         - contextPath: CrowdStrike.Report.state
           description: 'The report state.'
           type: String
         - contextPath: CrowdStrike.Report.error_type
-          description: ''
+          description: 'The error type.'
           type: String
         - contextPath: CrowdStrike.Report.error_origin
-          description: ''
+          description: 'The error origin.'
           type: String
         - contextPath: CrowdStrike.Report.submit_name
           description: 'The file name when submitted.'
@@ -1443,10 +1443,10 @@ script:
           description: 'The file malware family.'
           type: String
         - contextPath: CrowdStrike.Report.url_analysis
-          description: ''
+          description: 'Whether this report is url analysis.'
           type: Boolean
         - contextPath: CrowdStrike.Report.analysis_start_time
-          description: ''
+          description: 'The start time of the analysis.'
           type: Date
         - contextPath: CrowdStrike.Report.threat_score
           description: 'The file threat score.'
@@ -1461,31 +1461,31 @@ script:
           description: 'The file verdict.'
           type: String
         - contextPath: CrowdStrike.Report.total_network_connections
-          description: ''
+          description: 'The total number of network connections.'
           type: Number
         - contextPath: CrowdStrike.Report.total_processes
-          description: ''
+          description: 'The total number of processes.'
           type: Number
         - contextPath: CrowdStrike.Report.total_signatures
-          description: ''
+          description: 'The total number of signatures.'
           type: Number
         - contextPath: CrowdStrike.Report.file_metadata
           description: 'The file metadata.'
           type: Object
         - contextPath: CrowdStrike.Report.submissions.submission_id
-          description: ''
+          description: 'The ID of the submission.'
           type: String
         - contextPath: CrowdStrike.Report.submissions.filename
-          description: ''
+          description: 'The name of the file.'
           type: String
         - contextPath: CrowdStrike.Report.submissions.url
-          description: ''
+          description: 'The url.'
           type: String
         - contextPath: CrowdStrike.Report.submissions.created_at
-          description: ''
+          description: 'When the submission was created.'
           type: Date
         - contextPath: CrowdStrike.Report.network_mode
-          description: ''
+          description: 'The network mode.'
           type: String
         - contextPath: File.SHA256
           description: The SHA256 hash of the file.
@@ -1559,7 +1559,7 @@ script:
           defaultValue: ""
         - name: hide_polling_output
           deprecated: true
-          description: ""
+          description: ''
           required: false
           isArray: false
         - name: environmentID
@@ -1579,7 +1579,7 @@ script:
             - "300"
         - name: environmentId
           deprecated: true
-          description: ''
+          description: 'The environment ID.'
         - name: JobID
           description: The file job ID to generate a report for.
           required: false
@@ -1610,7 +1610,7 @@ script:
           description: 'The report environment ID.'
           type: Number
         - contextPath: CrowdStrike.Report.environment_description
-          description: ''
+          description: 'The environment description.'
           type: String
         - contextPath: CrowdStrike.Report.size
           description: 'The file size.'
@@ -1619,19 +1619,19 @@ script:
           description: 'The file type.'
           type: String
         - contextPath: CrowdStrike.Report.type_short
-          description: ''
+          description: 'The short description of the file type.'
           type: String
         - contextPath: CrowdStrike.Report.target_url
-          description: ''
+          description: 'The target url.'
           type: String
         - contextPath: CrowdStrike.Report.state
           description: 'The report state.'
           type: String
         - contextPath: CrowdStrike.Report.error_type
-          description: ''
+          description: 'The error type.'
           type: String
         - contextPath: CrowdStrike.Report.error_origin
-          description: ''
+          description: 'The error origin.'
           type: String
         - contextPath: CrowdStrike.Report.submit_name
           description: 'The file name when submitted.'
@@ -1661,10 +1661,10 @@ script:
           description: 'The file malware family.'
           type: String
         - contextPath: CrowdStrike.Report.url_analysis
-          description: ''
+          description: 'Whether this report is url analysis.'
           type: Boolean
         - contextPath: CrowdStrike.Report.analysis_start_time
-          description: ''
+          description: 'The start time of the analysis.'
           type: Date
         - contextPath: CrowdStrike.Report.threat_score
           description: 'The file threat score.'
@@ -1679,13 +1679,13 @@ script:
           description: 'The file verdict.'
           type: String
         - contextPath: CrowdStrike.Report.total_network_connections
-          description: ''
+          description: 'The total number of network connections.'
           type: Number
         - contextPath: CrowdStrike.Report.total_processes
-          description: ''
+          description: 'The total number of processes.'
           type: Number
         - contextPath: CrowdStrike.Report.total_signatures
-          description: ''
+          description: 'The total number of signatures.'
           type: Number
         - contextPath: CrowdStrike.Report.file_metadata
           description: 'The file metadata.'
@@ -1694,16 +1694,16 @@ script:
           description: 'The submission ID.'
           type: String
         - contextPath: CrowdStrike.Report.submissions.filename
-          description: ''
+          description: 'The name of the file.'
           type: String
         - contextPath: CrowdStrike.Report.submissions.url
-          description: ''
+          description: 'The url.'
           type: String
         - contextPath: CrowdStrike.Report.submissions.created_at
-          description: ''
+          description: 'When the submission was created.'
           type: Date
         - contextPath: CrowdStrike.Report.network_mode
-          description: ''
+          description: 'The network mode.'
           type: String
         - contextPath: File.SHA256
           description: The SHA256 hash of the file.
@@ -1938,7 +1938,7 @@ script:
           description: 'The The submitted report job ID.'
           type: String
         - contextPath: CrowdStrike.Submit.submission_type
-          description: ''
+          description: 'The type of the submission.'
           type: String
         - contextPath: CrowdStrike.Submit.submission_id
           description: 'The submission ID.'
@@ -1956,7 +1956,7 @@ script:
           description: 'The report environment ID.'
           type: Number
         - contextPath: CrowdStrike.Report.environment_description
-          description: ''
+          description: 'The environment description.'
           type: String
         - contextPath: CrowdStrike.Report.size
           description: 'The file size.'
@@ -1965,19 +1965,19 @@ script:
           description: 'The file type.'
           type: String
         - contextPath: CrowdStrike.Report.type_short
-          description: ''
+          description: 'The short description of the file type.'
           type: String
         - contextPath: CrowdStrike.Report.target_url
-          description: ''
+          description: 'The target url.'
           type: String
         - contextPath: CrowdStrike.Report.state
           description: 'The report state.'
           type: String
         - contextPath: CrowdStrike.Report.error_type
-          description: ''
+          description: 'The error type.'
           type: String
         - contextPath: CrowdStrike.Report.error_origin
-          description: ''
+          description: 'The error origin.'
           type: String
         - contextPath: CrowdStrike.Report.submit_name
           description: 'The file name when submitted.'
@@ -2007,10 +2007,10 @@ script:
           description: 'The file malware famil.'
           type: String
         - contextPath: CrowdStrike.Report.url_analysis
-          description: ''
+          description: 'Whether this report is url analysis.'
           type: Boolean
         - contextPath: CrowdStrike.Report.analysis_start_time
-          description: ''
+          description: 'The start time of the analysis.'
           type: Date
         - contextPath: CrowdStrike.Report.threat_score
           description: 'The file threat score.'
@@ -2025,13 +2025,13 @@ script:
           description: 'The file verdict.'
           type: String
         - contextPath: CrowdStrike.Report.total_network_connections
-          description: ''
+          description: 'The total number of network connections.'
           type: Number
         - contextPath: CrowdStrike.Report.total_processes
-          description: ''
+          description: 'The total number of processes.'
           type: Number
         - contextPath: CrowdStrike.Report.total_signatures
-          description: ''
+          description: 'The total number of signatures.'
           type: Number
         - contextPath: CrowdStrike.Report.file_metadata
           description: 'The file metadata.'
@@ -2040,16 +2040,16 @@ script:
           description: 'The submission ID.'
           type: String
         - contextPath: CrowdStrike.Report.submissions.filename
-          description: ''
+          description: 'The name of the file.'
           type: String
         - contextPath: CrowdStrike.Report.submissions.url
-          description: ''
+          description: 'The url.'
           type: String
         - contextPath: CrowdStrike.Report.submissions.created_at
-          description: ''
+          description: 'When the submission was created.'
           type: Date
         - contextPath: CrowdStrike.Report.network_mode
-          description: ''
+          description: 'The network mode.'
           type: String
         - contextPath: File.SHA256
           description: The SHA256 hash of the file.
@@ -2266,7 +2266,7 @@ script:
           description: 'The JobID of the file'
           type: String
         - contextPath: CrowdStrike.Submit.submission_type
-          description: ''
+          description: 'The type of the submission.'
           type: String
         - contextPath: CrowdStrike.Submit.submission_id
           description: 'The submission id'
@@ -2369,91 +2369,91 @@ script:
           description: The SHA256 hash of the file.
           type: String
         - contextPath: CrowdStrike.AnalysisOverview.last_file_name
-          description: ""
+          description: 'The last name of the file.'
           type: String
         - contextPath: CrowdStrike.AnalysisOverview.threat_score
-          description: ""
+          description: 'The file threat score.'
           type: Number
         - contextPath: CrowdStrike.AnalysisOverview.verdict
-          description: ""
+          description: 'The file verdict.'
           type: String
         - contextPath: CrowdStrike.AnalysisOverview.url_analysis
-          description: ""
+          description: 'Whether this report is url analysis.'
           type: Boolean
         - contextPath: CrowdStrike.AnalysisOverview.size
-          description: ""
+          description: 'The size of the file.'
           type: Number
         - contextPath: CrowdStrike.AnalysisOverview.type
-          description: ""
+          description: 'The file type.'
           type: String
         - contextPath: CrowdStrike.AnalysisOverview.type_short
-          description: ""
+          description: 'The short description of the file type.'
           type: String
         - contextPath: CrowdStrike.AnalysisOverview.analysis_start_time
-          description: ""
+          description: 'The start time of the analysis.'
           type: Date
         - contextPath: CrowdStrike.AnalysisOverview.last_multi_scan
-          description: ""
+          description: 'The last multi-scan.'
           type: Date
         - contextPath: CrowdStrike.AnalysisOverview.architecture
-          description: ""
+          description: 'The environment architecture.'
           type: String
         - contextPath: CrowdStrike.AnalysisOverview.multiscan_result
-          description: ""
+          description: 'The multi-scan result.'
           type: Number
         - contextPath: CrowdStrike.AnalysisOverview.scanners.name
-          description: ""
+          description: 'The name of the scanner.'
           type: String
         - contextPath: CrowdStrike.AnalysisOverview.scanners.status
-          description: ""
+          description: 'The status of the scanner.'
           type: String
         - contextPath: CrowdStrike.AnalysisOverview.scanners.error_message
-          description: ""
+          description: 'The error message.'
           type: String
         - contextPath: CrowdStrike.AnalysisOverview.scanners.progress
-          description: ""
+          description: 'The progress of the scanner.'
           type: Number
         - contextPath: CrowdStrike.AnalysisOverview.scanners.total
-          description: ""
+          description: 'The total number of scanners.'
           type: Number
         - contextPath: CrowdStrike.AnalysisOverview.scanners.positives
-          description: ""
+          description: 'The number of positives.'
           type: Number
         - contextPath: CrowdStrike.AnalysisOverview.scanners.percent
-          description: ""
+          description: 'The percent of the scanner.'
           type: Number
         - contextPath: CrowdStrike.AnalysisOverview.scanners.anti_virus_results.name
-          description: ""
+          description: 'The name of the antivirus results.'
           type: String
         - contextPath: CrowdStrike.AnalysisOverview.scanners.anti_virus_results.result
-          description: ""
+          description: 'The antivirus result.'
           type: Boolean
         - contextPath: CrowdStrike.AnalysisOverview.scanners.anti_virus_results.threat_found
-          description: ""
+          description: 'The threat found the the scanner.'
           type: String
         - contextPath: CrowdStrike.AnalysisOverview.reports
-          description: ""
+          description: 'The reports of the analysis.'
           type: String
         - contextPath: CrowdStrike.AnalysisOverview.whitelisted
-          description: ""
+          description: 'If the result is whitelisted.'
           type: Boolean
         - contextPath: CrowdStrike.AnalysisOverview.children_in_queue
-          description: ""
+          description: 'The number of children in queue.'
           type: Number
         - contextPath: CrowdStrike.AnalysisOverview.children_in_progress
-          description: ""
+          description: 'The number of children in progress.'
           type: Number
         - contextPath: File.Size
-          description: ""
+          description: 'The file size.'
           type: number
         - contextPath: File.SHA256
-          description: ""
+          description: The SHA256 hash of the file.
           type: string
         - contextPath: File.Name
-          description: ""
+          description: 'The file name.'
           type: string
-        - contextPath: File.Type
-          description: ""
+        - contextPath: File.type
+          description: 'The file type.'
           type: string
     - name: cs-falcon-sandbox-analysis-overview-summary
       description: Returns the hash overview.
@@ -2463,7 +2463,7 @@ script:
           description: The SHA256 hash of the file.
           required: true
           isArray: false
-          defaultValue: ""
+          defaultValue: ''
       outputs:
         - contextPath: CrowdStrike.AnalysisOverviewSummary.sha256
           description: 'The SHA256 hash of the file.'
@@ -2475,13 +2475,13 @@ script:
           description: 'The file verdict.'
           type: String
         - contextPath: CrowdStrike.AnalysisOverviewSummary.analysis_start_time
-          description: ''
+          description: 'The start time of the analysis.'
           type: Date
         - contextPath: CrowdStrike.AnalysisOverviewSummary.last_multi_scan
-          description: ''
+          description: 'The last multi-scan.'
           type: Date
         - contextPath: CrowdStrike.AnalysisOverviewSummary.multiscan_result
-          description: ''
+          description: 'The multi-scan result.'
           type: Number
     - name: cs-falcon-sandbox-analysis-overview-refresh
       description: Refreshes the overview and downloads fresh data from external services.
@@ -2491,7 +2491,7 @@ script:
           description: The SHA256 hash of the file.
           required: true
           isArray: false
-          defaultValue: ""
+          defaultValue: ''
       outputs: []
     - name: file
       description: Returns file information and reputation.
@@ -2509,7 +2509,7 @@ script:
           description: 'The report environment ID.'
           type: Number
         - contextPath: CrowdStrike.Report.environment_description
-          description: ''
+          description: 'The environment description.'
           type: String
         - contextPath: CrowdStrike.Report.size
           description: 'The file size.'
@@ -2518,19 +2518,19 @@ script:
           description: 'The file type.'
           type: String
         - contextPath: CrowdStrike.Report.type_short
-          description: ''
+          description: 'The short description of the file type.'
           type: String
         - contextPath: CrowdStrike.Report.target_url
-          description: ''
+          description: 'The target url.'
           type: String
         - contextPath: CrowdStrike.Report.state
           description: 'The report state.'
           type: String
         - contextPath: CrowdStrike.Report.error_type
-          description: ''
+          description: 'The error type.'
           type: String
         - contextPath: CrowdStrike.Report.error_origin
-          description: ''
+          description: 'The error origin.'
           type: String
         - contextPath: CrowdStrike.Report.submit_name
           description: 'The file name when submitted.'
@@ -2560,10 +2560,10 @@ script:
           description: 'The file malware family.'
           type: String
         - contextPath: CrowdStrike.Report.url_analysis
-          description: ''
+          description: 'Whether this report is url analysis.'
           type: Boolean
         - contextPath: CrowdStrike.Report.analysis_start_time
-          description: ''
+          description: 'The start time of the analysis.'
           type: Date
         - contextPath: CrowdStrike.Report.threat_score
           description: 'The file threat score.'
@@ -2578,13 +2578,13 @@ script:
           description: 'The file verdict.'
           type: String
         - contextPath: CrowdStrike.Report.total_network_connections
-          description: ''
+          description: 'The total number of network connections.'
           type: Number
         - contextPath: CrowdStrike.Report.total_processes
-          description: ''
+          description: 'The total number of processes.'
           type: Number
         - contextPath: CrowdStrike.Report.total_signatures
-          description: ''
+          description: 'The total number of signatures.'
           type: Number
         - contextPath: CrowdStrike.Report.file_metadata
           description: 'The file metadata.'
@@ -2593,16 +2593,16 @@ script:
           description: 'The submission ID.'
           type: String
         - contextPath: CrowdStrike.Report.submissions.filename
-          description: ''
+          description: 'The name of the file.'
           type: String
         - contextPath: CrowdStrike.Report.submissions.url
-          description: ''
+          description: 'The url.'
           type: String
         - contextPath: CrowdStrike.Report.submissions.created_at
-          description: ''
+          description: 'When the submission was created.'
           type: Date
         - contextPath: CrowdStrike.Report.network_mode
-          description: ''
+          description: 'The network mode.'
           type: String
         - contextPath: File.SHA256
           description: The SHA256 hash of the file.
@@ -2645,7 +2645,7 @@ script:
           description: The SHA256 hash of the file.
           required: true
           isArray: false
-          defaultValue: ""
+          defaultValue: ''
       outputs:
         - contextPath: File.SHA1
           description: The SHA1 hash of the file.
@@ -2704,16 +2704,16 @@ script:
           isArray: false
       outputs:
         - contextPath: CrowdStrike.State.state
-          description: ''
+          description: 'The state of the report.'
           type: String
         - contextPath: CrowdStrike.State.error_type
-          description: ''
+          description: 'The error type of the report.'
           type: String
         - contextPath: CrowdStrike.State.error_origin
-          description: ''
+          description: 'The error origin.'
           type: String
         - contextPath: CrowdStrike.State.error
-          description: ''
+          description: 'The error description.'
           type: String
   runonce: false
 tests:

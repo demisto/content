@@ -8896,11 +8896,11 @@ class PollResult:
         Constructor for PollResult
 
         :type response: ``Any``
-        :param response:  The response of the command in the event of success,
+        :param response: The response of the command in the event of success,
         or in case of failure but Polling is false
 
         :type continue_to_poll: ``Union[bool, Callable]``
-        :param continue_to_poll: an iterable of relevant keys list from the json. Notice we save it as a set in the class
+        :param continue_to_poll: An iterable of relevant keys list from the json. Notice we save it as a set in the class
 
         :type args_for_next_run: ``Dict``
         :param args_for_next_run: The arguments to use in the next iteration. Will use the input args in case of None
@@ -8923,16 +8923,20 @@ def polling_function(name, interval=30, timeout=600, poll_message='Fetching Resu
     and a hidden hide_polling_output argument.
     Commands that use this decorator should return a PollResult.
     ----------
-    name : str
-        The name of the command
-    interval : int
-        How many seconds until the next run
-    timeout : int
-        How long
-    poll_message : str
-        The message to display in the war room while polling
-    requires_polling_arg: bool
-        Whether a polling argument should be expected as one of the demisto args
+    :type name: ``str``
+    :param name: The name of the command
+
+    :type interval: ``int``
+    :param interval: How many seconds until the next run
+
+    :type timeout: ``int``
+    :param timeout: How long
+
+    :type poll_message: ``str``
+    :param poll_message: The message to display in the war room while polling
+
+    :type requires_polling_arg: ``bool``
+    :param requires_polling_arg: Whether a polling argument should be expected as one of the demisto args
     Raises
     ------
     DemistoException

@@ -4,8 +4,6 @@ Use the CrowdStrike Falcon Sandbox integration to submit and analyze files and U
 
 This integration is backwards compatible with the CrowdStrike Falcon Sandbox integration.
 
-The maximum file upload size is 100 MB.
-
 
 ## Prerequisites
 
@@ -59,6 +57,7 @@ Obtain an API key by:
 - MIME RFC 822 (*.eml)
 - Outlook (*.msg files)
 
+The maximum file upload size is 100 MB.
 
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI as part of an automation or in a playbook.

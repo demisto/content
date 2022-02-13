@@ -1,3 +1,5 @@
+from requests import Response
+
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 import requests
@@ -21,45 +23,45 @@ SUBMISSION_PARAMETERS = ('environmentID', 'environmentId', 'no_share_third_party
 
 class Client(BaseClient):
 
-    def get_environments(self):
+    def get_environments(self) -> List[Dict]:
         return self._http_request(method='GET', url_suffix='/system/environments')
 
-    def get_screenshots(self, key: str):
+    def get_screenshots(self, key: str) -> List[Dict[str, Any]]:
         return self._http_request(method='GET', url_suffix=f'/report/{key}/screenshots')
 
     def search(self, query_args: Dict[str, Any]):
         self._headers['Content-Type'] = 'application/x-www-form-urlencoded'
         return self._http_request(method='POST', url_suffix='/search/terms', data=query_args)
 
-    def scan(self, files: List[str]):
+    def scan(self, files: List[str]) -> List[Dict[str, Any]]:
         self._headers['Content-Type'] = 'application/x-www-form-urlencoded'
         return self._http_request(method='POST', url_suffix='/search/hashes', data={'hashes[]': files})
 
-    def analysis_overview(self, sha256hash: str):
+    def analysis_overview(self, sha256hash: str) -> Dict[str, Any]:
         return self._http_request(method='GET', url_suffix=f'/overview/{sha256hash}')
 
-    def analysis_overview_summary(self, sha256hash: str):
+    def analysis_overview_summary(self, sha256hash: str) -> Dict[str, Any]:
         return self._http_request(method='GET', url_suffix=f'/overview/{sha256hash}/summary')
 
     def analysis_overview_refresh(self, sha256hash: str):
         self._http_request(method='GET', url_suffix=f'/overview/{sha256hash}/refresh')
 
-    def get_report(self, key: str, filetype: str):
-        return self._http_request(method='GET', url_suffix=f'/report/{key}/report/{filetype}', resp_type='all',
+    def get_report(self, key: str, filetype: str) -> Response:
+        return self._http_request(method='GET', url_suffix=f'/report/{key}/report/{filetype}', resp_type='response',
                                   ok_codes=(200, 404))
 
-    def get_state(self, key: str):
+    def get_state(self, key: str) -> Dict[str, Any]:
         return self._http_request(method='GET', url_suffix=f'/report/{key}/state')
 
-    def submit_url(self, url: str, params: Dict[str, Any]):
+    def submit_url(self, url: str, params: Dict[str, Any]) -> Dict[str, Any]:
         return self._http_request(method='POST', data={'url': url, **params},
                                   url_suffix='/submit/url')
 
-    def submit_file(self, file_contents: Dict, params: Dict[str, Any]):
+    def submit_file(self, file_contents: Dict, params: Dict[str, Any]) -> Dict:
         return self._http_request(method='POST', data=params, url_suffix='/submit/file',
                                   files={'file': (file_contents['name'], open(file_contents['path'], 'rb'))})
 
-    def download_sample(self, sha256hash: str):
+    def download_sample(self, sha256hash: str) -> Response:
         return self._http_request(method='GET', url_suffix=f'/overview/{sha256hash}/sample', resp_type='response')
 
 
@@ -68,11 +70,11 @@ def map_dict_keys(obj: Dict, map_rules: Dict[str, str], only_given_fields: bool 
     """
     This function will switch the keys of a dictionary according to the provided map_rules.
     Example: map_dict_keys( {'a' : 'b', 'c' : 'd' }, {'a' : 'y', 'c' : 'z' }) -> {'y' : 'b' , 'z' : 'd'}
-
-    @param obj: The original dictionary
-    @param map_rules: The mapping the keys should be changed by
-    @param only_given_fields: whether fields besides for those in map_rules should be used
-    @return: a Dict according to the map_rules
+    Args:
+        obj: The original dictionary
+        map_rules: The mapping the keys should be changed by
+        only_given_fields: whether fields besides for those in map_rules should be used
+    Returns : a Dict according to the map_rules
     """
     return {map_rules.get(key, key): obj[key] for key in obj.keys() if not only_given_fields or key in map_rules}
 
@@ -97,7 +99,7 @@ def split_query_to_term_args(query: str) -> Dict[str, Any]:
     return {get_key(term): get_value(term) for term in query.split(',') if get_value(term)}
 
 
-def validated_term(key: str, val):
+def validated_term(key: str, val: Any) -> Any:
     if key == 'verdict':
         return translate_verdict(val)
     if key == 'country' and len(val) != 3:
@@ -174,7 +176,7 @@ class BWCFile(Common.File):
         self.key_change_map = key_change_map
         self.only_given_fields = only_given_fields
 
-    def to_context(self):
+    def to_context(self) -> Any:
         super_ret = super().to_context()
         for key in super_ret.keys():
             if key.startswith('File'):
@@ -182,7 +184,7 @@ class BWCFile(Common.File):
         return super_ret
 
 
-def create_scan_results_readable_output(scan_response):
+def create_scan_results_readable_output(scan_response) -> Any:
     table_field_dict = {
         'submit_name': 'submit name',
         'threat_level': 'threat level',
@@ -209,7 +211,7 @@ def create_scan_results_readable_output(scan_response):
 
 
 def get_dbot_score(filehash, threat_score: int) -> Common.DBotScore:
-    def calc_score():
+    def calc_score() -> int:
         return {3: 0,
                 2: 3,
                 1: 2,
@@ -321,7 +323,7 @@ def crowdstrike_scan_command(client: Client, args: Dict[str, Any]):
     hashes = args['file'].split(',')
     scan_response = client.scan(hashes)
 
-    def file_with_bwc_fields(res):
+    def file_with_bwc_fields(res) -> CommandResults:
         return CommandResults(
             readable_output=create_scan_results_readable_output(res),
             indicator=BWCFile(res, only_given_fields=False, size=res.get('size'),
