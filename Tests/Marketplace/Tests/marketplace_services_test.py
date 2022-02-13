@@ -1482,7 +1482,7 @@ class TestSetDependencies:
         dependencies = json.dumps(generated_dependencies['HelloWorld']['dependencies'])
         dependencies = json.loads(dependencies)
 
-        p.set_pack_dependencies(generated_dependencies)
+        p.set_pack_dependencies(generated_dependencies, {'HelloWorld': ''})
 
         assert p.user_metadata['dependencies'] == dependencies
 

@@ -2066,9 +2066,9 @@ class Pack(object):
         displayed_images_dependent_on_packs = pack_dependencies_mapping.get(Metadata.DISPLAYED_IMAGES, [])
 
         # filter out packs that are not a part of the marketplace this upload is for
-        first_level_dependencies = {k: v for k, v in first_level_dependencies if k in packs_dict}
-        all_levels_dependencies = {k: v for k, v in all_levels_dependencies if k in packs_dict}
-        displayed_images_dependent_on_packs = {k: v for k, v in displayed_images_dependent_on_packs if k in packs_dict}
+        first_level_dependencies = {k: v for k, v in first_level_dependencies.items() if k in packs_dict}
+        all_levels_dependencies = {k for k in all_levels_dependencies if k in packs_dict}
+        displayed_images_dependent_on_packs = {k for k in displayed_images_dependent_on_packs if k in packs_dict}
 
         if Metadata.DISPLAYED_IMAGES not in self._user_metadata:
             self._user_metadata[Metadata.DISPLAYED_IMAGES] = displayed_images_dependent_on_packs
