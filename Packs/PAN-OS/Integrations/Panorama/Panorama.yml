@@ -3460,6 +3460,3364 @@ script:
     - contextPath: Panorama.Content.Install.Status
       description: Installation status.
       type: string
+  - arguments:
+    - auto: PREDEFINED
+      description: Action to be taken, such as show, get, set, edit, delete, rename,
+        clone, move, override, multi-move, multi-clone, or complete.
+      name: action
+      predefined:
+      - set
+      - edit
+      - delete
+      - rename
+      - clone
+      - move
+      - override
+      - muti-move
+      - multi-clone
+      - complete
+      - show
+      - get
+    - description: Category parameter. For example, when exporting a configuration
+        file, use "category=configuration".
+      name: category
+    - description: Specifies the xml structure that defines the command. Used for
+        operation commands.
+      name: cmd
+    - description: Run a command. For example, command =<show><arp><entry name='all'/></arp></show>
+      name: command
+    - description: Specifies a destination.
+      name: dst
+    - description: Used to define a new value for an object.
+      name: element
+    - description: End time (used when cloning an object).
+      name: to
+    - description: Start time (used when cloning an object).
+      name: from
+    - description: Sets a key value.
+      name: key
+    - description: Retrieves log types. For example, log-type=threat for threat logs.
+      name: log-type
+    - description: Specifies the type of a move operation (for example, where=after,
+        where=before, where=top, where=bottom).
+      name: where
+    - description: Time period. For example, period=last-24-hrs
+      name: period
+    - description: xpath location. For example, xpath=/config/predefined/application/entry[@name='hotmail']
+      name: xpath
+    - description: PCAP ID included in the threat log.
+      name: pcap-id
+    - description: Specifies the device serial number.
+      name: serialno
+    - description: Chooses the report type, such as dynamic, predefined or custom.
+      name: reporttype
+    - description: Report name.
+      name: reportname
+    - defaultValue: keygen,config,commit,op,report,log,import,export,user-id,version
+      description: Request type (e.g. export, import, log, config).
+      name: type
+    - description: The time that the PCAP was received on the firewall. Used for threat
+        PCAPs.
+      name: search-time
+    - description: Target number of the firewall. Use only on a Panorama instance.
+      name: target
+    - description: Job ID.
+      name: job-id
+    - description: Query string.
+      name: query
+    - description: The name of the virtual system to be configured. If no vsys is
+        mentioned, this command will not use the vsys parameter.
+      name: vsys
+    description: Run any command supported in the API.
+    name: pan-os
+  - arguments:
+    - description: The firewall managed by Panorama from which to retrieve the predefined
+        threats.
+      name: target
+    description: Gets the predefined threats list from a Firewall or Panorama and
+      stores it as a JSON file in the context.
+    name: pan-os-get-predefined-threats-list
+    outputs:
+    - contextPath: File.Size
+      description: File size.
+      type: number
+    - contextPath: File.Name
+      description: File name.
+      type: string
+    - contextPath: File.Type
+      description: File type.
+      type: string
+    - contextPath: File.Info
+      description: File information.
+      type: string
+    - contextPath: File.Extension
+      description: File extension.
+      type: string
+    - contextPath: File.EntryID
+      description: File entry ID.
+      type: string
+    - contextPath: File.MD5
+      description: MD5 hash of the file.
+      type: string
+    - contextPath: File.SHA1
+      description: SHA1 hash of the file.
+      type: string
+    - contextPath: File.SHA256
+      description: SHA256 hash of the file.
+      type: string
+    - contextPath: File.SHA512
+      description: SHA512 hash of the file.
+      type: string
+    - contextPath: File.SSDeep
+      description: SSDeep hash of the file.
+      type: string
+  - arguments:
+    - description: Commit description.
+      name: description
+    - description: To commit admin-level changes on a firewall, include the administrator
+        name in the request.
+      name: admin_name
+    - auto: PREDEFINED
+      description: Force Commit.
+      name: force_commit
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      description: Partial commit while excluding device and network configuration.
+      name: exclude_device_network_configuration
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      description: Partial commit while excluding shared objects.
+      name: exclude_shared_objects
+      predefined:
+      - 'true'
+      - 'false'
+    description: Commits a configuration to the Palo Alto firewall or Panorama, but
+      does not validate if the commit was successful. Committing to Panorama does
+      not push the configuration to the firewalls. To push the configuration, run
+      the panorama-push-to-device-group command.
+    name: pan-os-commit
+    outputs:
+    - contextPath: Panorama.Commit.JobID
+      description: Job ID to commit.
+      type: number
+    - contextPath: Panorama.Commit.Status
+      description: Commit status.
+      type: string
+  - arguments:
+    - default: true
+      description: The device group to which to push (Panorama instances).
+      name: device-group
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Pre policy validation.
+      name: validate-only
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      defaultValue: 'true'
+      description: Whether to include template changes.
+      name: include-template
+      predefined:
+      - 'true'
+      - 'false'
+    - description: Push description.
+      name: description
+    - description: The serial number for a virtual system commit. If provided, the
+        commit will be a virtual system commit.
+      name: serial_number
+    description: Pushes rules from PAN-OS to the configured device group. In order
+      to push the configuration to Prisma Access managed tenants (single or multi
+      tenancy), use the device group argument with the device group which is associated
+      with the tenant ID.
+    name: pan-os-push-to-device-group
+    outputs:
+    - contextPath: Panorama.Push.DeviceGroup
+      description: Device group in which the policies were pushed.
+      type: String
+    - contextPath: Panorama.Push.JobID
+      description: Job ID of the polices that were pushed.
+      type: Number
+    - contextPath: Panorama.Push.Status
+      description: Push status.
+      type: String
+    - contextPath: Panorama.Push.Warnings
+      description: Push warnings.
+      type: String
+    - contextPath: Panorama.Push.Errors
+      description: Push erros.
+      type: String
+  - arguments:
+    - description: The device group for which to return addresses (Panorama instances).
+      name: device-group
+    - description: Tag for which to filter the list of addresses.
+      name: tag
+    description: Returns a list of addresses.
+    name: pan-os-list-addresses
+    outputs:
+    - contextPath: Panorama.Addresses.Name
+      description: Address name.
+      type: string
+    - contextPath: Panorama.Addresses.Description
+      description: Address description.
+      type: string
+    - contextPath: Panorama.Addresses.FQDN
+      description: Address FQDN.
+      type: string
+    - contextPath: Panorama.Addresses.IP_Netmask
+      description: Address IP Netmask.
+      type: string
+    - contextPath: Panorama.Addresses.IP_Range
+      description: Address IP range.
+      type: string
+    - contextPath: Panorama.Addresses.DeviceGroup
+      description: Address device group.
+      type: String
+    - contextPath: Panorama.Addresses.Tags
+      description: Address tags.
+      type: String
+  - arguments:
+    - description: Address name.
+      name: name
+      required: true
+    - description: The device group for which to return addresses (Panorama instances).
+      name: device-group
+    description: Returns address details for the supplied address name.
+    name: pan-os-get-address
+    outputs:
+    - contextPath: Panorama.Addresses.Name
+      description: Address name.
+      type: string
+    - contextPath: Panorama.Addresses.Description
+      description: Address description.
+      type: string
+    - contextPath: Panorama.Addresses.FQDN
+      description: Address FQDN.
+      type: string
+    - contextPath: Panorama.Addresses.IP_Netmask
+      description: Address IP Netmask.
+      type: string
+    - contextPath: Panorama.Addresses.IP_Range
+      description: Address IP range.
+      type: string
+    - contextPath: Panorama.Addresses.DeviceGroup
+      description: Device group for the address (Panorama instances).
+      type: String
+    - contextPath: Panorama.Addresses.Tags
+      description: Address tags.
+      type: String
+  - arguments:
+    - description: New address name.
+      name: name
+      required: true
+    - description: New address description.
+      name: description
+    - description: FQDN of the new address.
+      name: fqdn
+    - description: IP Netmask of the new address. For example, 10.10.10.10/24
+      name: ip_netmask
+    - description: IP range of the new address IP. For example, 10.10.10.0-10.10.10.255
+      name: ip_range
+    - description: The device group for which to return addresses (Panorama instances).
+      name: device-group
+    - description: The tag for the new address.
+      isArray: true
+      name: tag
+    description: Creates an address object.
+    name: pan-os-create-address
+    outputs:
+    - contextPath: Panorama.Addresses.Name
+      description: Address name.
+      type: string
+    - contextPath: Panorama.Addresses.Description
+      description: Address description.
+      type: string
+    - contextPath: Panorama.Addresses.FQDN
+      description: Address FQDN.
+      type: string
+    - contextPath: Panorama.Addresses.IP_Netmask
+      description: Address IP Netmask.
+      type: string
+    - contextPath: Panorama.Addresses.IP_Range
+      description: Address IP range.
+      type: string
+    - contextPath: Panorama.Addresses.DeviceGroup
+      description: Device group for the address (Panorama instances).
+      type: String
+    - contextPath: Panorama.Addresses.Tag
+      description: Address tag.
+      type: String
+  - arguments:
+    - description: Name of the address to delete.
+      name: name
+      required: true
+    - description: The device group for which to return addresses (Panorama instances).
+      name: device-group
+    description: Delete an address object
+    name: pan-os-delete-address
+    outputs:
+    - contextPath: Panorama.Addresses.Name
+      description: Address name that was deleted.
+      type: string
+    - contextPath: Panorama.Addresses.DeviceGroup
+      description: Device group for the address (Panorama instances).
+      type: String
+  - arguments:
+    - description: The device group for which to return addresses (Panorama instances).
+      name: device-group
+    - description: Tag for which to filter the Address groups.
+      name: tag
+    description: Returns a list of address groups.
+    name: pan-os-list-address-groups
+    outputs:
+    - contextPath: Panorama.AddressGroups.Name
+      description: Address group name.
+      type: string
+    - contextPath: Panorama.AddressGroups.Type
+      description: Address group type.
+      type: string
+    - contextPath: Panorama.AddressGroups.Match
+      description: Dynamic Address group match.
+      type: string
+    - contextPath: Panorama.AddressGroups.Description
+      description: Address group description.
+      type: string
+    - contextPath: Panorama.AddressGroups.Addresses
+      description: Static Address group addresses.
+      type: String
+    - contextPath: Panorama.AddressGroups.DeviceGroup
+      description: Device group for the address group (Panorama instances).
+      type: String
+    - contextPath: Panorama.AddressGroups.Tag
+      description: Address group tag.
+      type: String
+  - arguments:
+    - description: Address group name.
+      name: name
+      required: true
+    - description: The device group for which to return addresses (Panorama instances).
+      name: device-group
+    description: Get details for the specified address group
+    name: pan-os-get-address-group
+    outputs:
+    - contextPath: Panorama.AddressGroups.Name
+      description: Address group name.
+      type: string
+    - contextPath: Panorama.AddressGroups.Type
+      description: Address group type.
+      type: string
+    - contextPath: Panorama.AddressGroups.Match
+      description: Dynamic Address group match.
+      type: string
+    - contextPath: Panorama.AddressGroups.Description
+      description: Address group description.
+      type: string
+    - contextPath: Panorama.AddressGroups.Addresses
+      description: Static Address group addresses.
+      type: string
+    - contextPath: Panorama.AddressGroups.DeviceGroup
+      description: Device group for the address group (Panorama instances).
+      type: String
+    - contextPath: Panorama.AddressGroups.Tags
+      description: Address group tags.
+      type: String
+  - arguments:
+    - description: Address group name.
+      name: name
+      required: true
+    - auto: PREDEFINED
+      description: Address group type.
+      name: type
+      predefined:
+      - dynamic
+      - static
+      required: true
+    - description: 'Dynamic Address group match. e.g: "1.1.1.1 or 2.2.2.2"'
+      name: match
+    - description: Static address group list of addresses.
+      isArray: true
+      name: addresses
+    - description: Address group description.
+      name: description
+    - description: The device group for which to return addresses (Panorama instances).
+      name: device-group
+    - description: The tags for the Address group.
+      isArray: true
+      name: tags
+    description: Creates a static or dynamic address group.
+    name: pan-os-create-address-group
+    outputs:
+    - contextPath: Panorama.AddressGroups.Name
+      description: Address group name.
+      type: string
+    - contextPath: Panorama.AddressGroups.Type
+      description: Address group type.
+      type: string
+    - contextPath: Panorama.AddressGroups.Match
+      description: Dynamic Address group match.
+      type: string
+    - contextPath: Panorama.AddressGroups.Addresses
+      description: Static Address group list of addresses.
+      type: string
+    - contextPath: Panorama.AddressGroups.Description
+      description: Address group description.
+      type: string
+    - contextPath: Panorama.AddressGroups.DeviceGroup
+      description: Device group for the address group (Panorama instances).
+      type: String
+    - contextPath: Panorama.AddressGroups.Tag
+      description: Address group tags.
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      description: 'Type of session rejection. Possible values are: "drop", "alert",
+        "block-ip", "reset-both", "reset-client", and "reset-server". Default is "drop".'
+      name: drop_mode
+      predefined:
+      - drop
+      - alert
+      - block-ip
+      - reset-both
+      - reset-client
+      - reset-server
+    - description: Name of vulnerability profile.
+      name: vulnerability_profile
+      required: true
+    - description: Numerical threat ID.
+      name: threat_id
+      required: true
+    description: Sets a vulnerability signature to block mode.
+    name: pan-os-block-vulnerability
+    outputs:
+    - contextPath: Panorama.Vulnerability.ID
+      description: ID of vulnerability that has been blocked/overridden.
+      type: string
+    - contextPath: Panorama.Vulnerability.NewAction
+      description: New action for the vulnerability.
+      type: string
+  - arguments:
+    - description: Name of address group to delete.
+      name: name
+      required: true
+    - description: The device group for which to return addresses (Panorama instances).
+      name: device-group
+    description: Deletes an address group.
+    name: pan-os-delete-address-group
+    outputs:
+    - contextPath: Panorama.AddressGroups.Name
+      description: Name of address group that was deleted.
+      type: string
+    - contextPath: Panorama.AddressGroups.DeviceGroup
+      description: Device group for the address group (Panorama instances).
+      type: String
+  - arguments:
+    - description: Name of the address group to edit.
+      name: name
+      required: true
+    - auto: PREDEFINED
+      description: Address group type.
+      name: type
+      predefined:
+      - static
+      - dynamic
+      required: true
+    - description: Address group new match. For example, '1.1.1.1 and 2.2.2.2'.
+      name: match
+    - description: Element to add to the list of the static address group. Only existing
+        Address objects can be added.
+      name: element_to_add
+    - description: Element to remove from the list of the static address group. Only
+        existing Address objects can be removed.
+      name: element_to_remove
+    - description: Address group new description.
+      name: description
+    - description: The tag of the Address group to edit.
+      isArray: true
+      name: tags
+    description: Edits a static or dynamic address group.
+    name: pan-os-edit-address-group
+    outputs:
+    - contextPath: Panorama.AddressGroups.Name
+      description: Address group name.
+      type: string
+    - contextPath: Panorama.AddressGroups.Type
+      description: Address group type.
+      type: string
+    - contextPath: Panorama.AddressGroups.Filter
+      description: Dynamic Address group match.
+      type: string
+    - contextPath: Panorama.AddressGroups.Description
+      description: Address group description.
+      type: string
+    - contextPath: Panorama.AddressGroups.Addresses
+      description: Static Address group addresses.
+      type: string
+    - contextPath: Panorama.AddressGroups.DeviceGroup
+      description: Device group for the address group (Panorama instances).
+      type: String
+    - contextPath: Panorama.AddressGroups.Tags
+      description: Address group tags.
+      type: String
+  - arguments:
+    - description: The device group for which to return addresses (Panorama instances).
+      name: device-group
+    - description: Tag for which to filter the Services.
+      name: tag
+    description: Returns a list of addresses.
+    name: pan-os-list-services
+    outputs:
+    - contextPath: Panorama.Services.Name
+      description: Service name.
+      type: string
+    - contextPath: Panorama.Services.Protocol
+      description: Service protocol.
+      type: string
+    - contextPath: Panorama.Services.Description
+      description: Service description.
+      type: string
+    - contextPath: Panorama.Services.DestinationPort
+      description: Service destination port.
+      type: string
+    - contextPath: Panorama.Services.SourcePort
+      description: Service source port.
+      type: string
+    - contextPath: Panorama.Services.DeviceGroup
+      description: Device group in which the service was configured (Panorama instances).
+      type: string
+    - contextPath: Panorama.Services.Tags
+      description: Service tags.
+      type: String
+  - arguments:
+    - description: Service name.
+      name: name
+      required: true
+    - description: The device group for which to return addresses (Panorama instances).
+      name: device-group
+    description: Returns service details for the supplied service name.
+    name: pan-os-get-service
+    outputs:
+    - contextPath: Panorama.Services.Name
+      description: Service name.
+      type: string
+    - contextPath: Panorama.Services.Protocol
+      description: Service protocol.
+      type: string
+    - contextPath: Panorama.Services.Description
+      description: Service description.
+      type: string
+    - contextPath: Panorama.Services.DestinationPort
+      description: Service destination port.
+      type: string
+    - contextPath: Panorama.Services.SourcePort
+      description: Service source port.
+      type: string
+    - contextPath: Panorama.Services.DeviceGroup
+      description: Device group for the service (Panorama instances).
+      type: string
+    - contextPath: Panorama.Service.Tags
+      description: Service tags.
+      type: String
+  - arguments:
+    - description: Name for the new service.
+      name: name
+      required: true
+    - auto: PREDEFINED
+      description: Protocol for the new service.
+      name: protocol
+      predefined:
+      - tcp
+      - udp
+      - sctp
+      required: true
+    - description: Destination port  for the new service.
+      name: destination_port
+      required: true
+    - description: Source port  for the new service.
+      name: source_port
+    - description: Description for the new service.
+      name: description
+    - description: The device group for which to return addresses (Panorama instances).
+      name: device-group
+    - description: Tags for the new service.
+      isArray: true
+      name: tags
+    description: Creates a service.
+    name: pan-os-create-service
+    outputs:
+    - contextPath: Panorama.Services.Name
+      description: Service name.
+      type: string
+    - contextPath: Panorama.Services.Protocol
+      description: Service protocol.
+      type: string
+    - contextPath: Panorama.Services.Descritpion
+      description: Service description.
+      type: string
+    - contextPath: Panorama.Services.DestinationPort
+      description: Service destination port.
+      type: string
+    - contextPath: Panorama.Services.SourcePort
+      description: Service source port.
+      type: string
+    - contextPath: Panorama.Services.DeviceGroup
+      description: Device group for the service (Panorama instances).
+      type: string
+    - contextPath: Panorama.Services.Tags
+      description: Service tags.
+      type: String
+  - arguments:
+    - description: Name of the service to delete.
+      name: name
+      required: true
+    - description: The device group for which to return addresses (Panorama instances).
+      name: device-group
+    description: Deletes a service.
+    name: pan-os-delete-service
+    outputs:
+    - contextPath: Panorama.Services.Name
+      description: Name of the deleted service.
+      type: string
+    - contextPath: Panorama.Services.DeviceGroup
+      description: Device group for the service (Panorama instances).
+      type: string
+  - arguments:
+    - description: The device group for which to return addresses (Panorama instances).
+      name: device-group
+    - description: Tags for which to filter the Service groups.
+      isArray: true
+      name: tag
+    description: Returns a list of service groups.
+    name: pan-os-list-service-groups
+    outputs:
+    - contextPath: Panorama.ServiceGroups.Name
+      description: Service group name.
+      type: string
+    - contextPath: Panorama.ServiceGroups.Services
+      description: Service group related services.
+      type: string
+    - contextPath: Panorama.ServiceGroups.DeviceGroup
+      description: Device group for the service group (Panorama instances).
+      type: string
+    - contextPath: Panorama.ServiceGroups.Tags
+      description: Service group tags.
+      type: String
+  - arguments:
+    - description: Service group name.
+      name: name
+      required: true
+    - description: The device group for which to return addresses (Panorama instances).
+      name: device-group
+    description: Returns details for the specified service group.
+    name: pan-os-get-service-group
+    outputs:
+    - contextPath: Panorama.ServiceGroups.Name
+      description: Service group name.
+      type: string
+    - contextPath: Panorama.ServiceGroups.Services
+      description: Service group related services.
+      type: string
+    - contextPath: Panorama.ServiceGroups.DeviceGroup
+      description: Device group for the service group (Panorama instances).
+      type: string
+    - contextPath: Panorama.ServiceGroups.Tags
+      description: Service group tags.
+      type: String
+  - arguments:
+    - description: Service group name.
+      name: name
+      required: true
+    - description: Service group related services.
+      isArray: true
+      name: services
+      required: true
+    - description: The device group for which to return addresses (Panorama instances).
+      name: device-group
+    - description: Tags for which to filter Service groups.
+      isArray: true
+      name: tags
+    description: Creates a service group.
+    name: pan-os-create-service-group
+    outputs:
+    - contextPath: Panorama.ServiceGroups.Name
+      description: Service group name.
+      type: string
+    - contextPath: Panorama.ServiceGroups.Services
+      description: Service group related services.
+      type: string
+    - contextPath: Panorama.ServiceGroups.DeviceGroup
+      description: Device group for the service group (Panorama instances).
+      type: string
+    - contextPath: Panorama.ServiceGroups.Tags
+      description: Service group tags.
+      type: String
+  - arguments:
+    - description: Name of the service group to delete.
+      name: name
+      required: true
+    - description: The device group for which to return addresses (Panorama instances).
+      name: device-group
+    description: Deletes a service group.
+    name: pan-os-delete-service-group
+    outputs:
+    - contextPath: Panorama.ServiceGroups.Name
+      description: Name of the deleted service group.
+      type: string
+    - contextPath: Panorama.ServiceGroups.DeviceGroup
+      description: Device group for the service group (Panorama instances).
+      type: string
+  - arguments:
+    - description: Name of the service group to edit.
+      name: name
+      required: true
+    - description: Services to add to the service group. Only existing Services objects
+        can be added.
+      isArray: true
+      name: services_to_add
+    - description: Services to remove from the service group. Only existing Services
+        objects can be removed.
+      name: services_to_remove
+    - description: Tag of the Service group to edit.
+      isArray: true
+      name: tags
+    description: Edit a service group.
+    name: pan-os-edit-service-group
+    outputs:
+    - contextPath: Panorama.ServiceGroups.Name
+      description: Service group name.
+      type: string
+    - contextPath: Panorama.ServiceGroups.Services
+      description: Service group related services.
+      type: string
+    - contextPath: Panorama.ServiceGroups.DeviceGroup
+      description: Device group for the service group (Panorama instances).
+      type: string
+    - contextPath: Panorama.ServiceGroups.Tags
+      description: Service group tags.
+      type: String
+  - arguments:
+    - description: Custom URL category name.
+      name: name
+      required: true
+    - description: The device group for which to return addresses for the custom URL
+        category (Panorama instances).
+      name: device-group
+    description: Returns information for a custom URL category.
+    name: pan-os-get-custom-url-category
+    outputs:
+    - contextPath: Panorama.CustomURLCategory.Name
+      description: The category name of the custom URL.
+      type: String
+    - contextPath: Panorama.CustomURLCategory.Description
+      description: The category description of the custom URL.
+      type: String
+    - contextPath: Panorama.CustomURLCategory.Sites
+      description: The list of sites of the custom URL category.
+      type: String
+    - contextPath: Panorama.CustomURLCategory.DeviceGroup
+      description: The device group for the custom URL Category (Panorama instances).
+      type: String
+    - contextPath: Panorama.CustomURLCategory.Categories
+      description: The list of categories of the custom URL category.
+      type: String
+    - contextPath: Panorama.CustomURLCategory.Type
+      description: The category type of the custom URL.
+      type: String
+  - arguments:
+    - description: The name of the custom URL category to create.
+      name: name
+      required: true
+    - description: Description of the custom URL category to create.
+      name: description
+    - description: List of sites for the custom URL category.
+      isArray: true
+      name: sites
+    - description: The device group for which to return addresses for the custom URL
+        category (Panorama instances).
+      name: device-group
+    - auto: PREDEFINED
+      description: The category type of the URL. Relevant from PAN-OS v9.x.
+      name: type
+      predefined:
+      - URL List
+      - Category Match
+    - description: The list of categories. Relevant from PAN-OS v9.x.
+      isArray: true
+      name: categories
+    description: Creates a custom URL category.
+    name: pan-os-create-custom-url-category
+    outputs:
+    - contextPath: Panorama.CustomURLCategory.Name
+      description: Custom URL category name.
+      type: String
+    - contextPath: Panorama.CustomURLCategory.Description
+      description: Custom URL category description.
+      type: String
+    - contextPath: Panorama.CustomURLCategory.Sites
+      description: Custom URL category list of sites.
+      type: String
+    - contextPath: Panorama.CustomURLCategory.DeviceGroup
+      description: Device group for the Custom URL Category (Panorama instances).
+      type: String
+    - contextPath: Panorama.CustomURLCategory.Sites
+      description: Custom URL category list of categories.
+      type: String
+    - contextPath: Panorama.CustomURLCategory.Type
+      description: Custom URL category type.
+      type: String
+  - arguments:
+    - description: Name of the custom URL category to delete.
+      name: name
+    - description: The device group for which to return addresses (Panorama instances).
+      name: device-group
+    description: Deletes a custom URL category.
+    name: pan-os-delete-custom-url-category
+    outputs:
+    - contextPath: Panorama.CustomURLCategory.Name
+      description: Name of the custom URL category to delete.
+      type: string
+    - contextPath: Panorama.CustomURLCategory.DeviceGroup
+      description: Device group for the Custom URL Category (Panorama instances).
+      type: string
+  - arguments:
+    - description: Name of the custom URL category to add or remove sites.
+      name: name
+      required: true
+    - description: A comma separated list of sites to add to the custom URL category.
+      isArray: true
+      name: sites
+    - auto: PREDEFINED
+      description: Adds or removes sites or categories. Can be "add",or "remove".
+      isArray: true
+      name: action
+      predefined:
+      - add
+      - remove
+      required: true
+    - description: A comma separated list of categories to add to the custom URL category.
+      isArray: true
+      name: categories
+    description: Adds or removes sites to and from a custom URL category.
+    name: pan-os-edit-custom-url-category
+    outputs:
+    - contextPath: Panorama.CustomURLCategory.Name
+      description: Custom URL category name.
+      type: string
+    - contextPath: Panorama.CustomURLCategory.Description
+      description: Custom URL category description.
+      type: string
+    - contextPath: Panorama.CustomURLCategory.Sites
+      description: Custom URL category list of sites.
+      type: string
+    - contextPath: Panorama.CustomURLCategory.DeviceGroup
+      description: Device group for the Custom URL Category (Panorama instances).
+      type: string
+  - arguments:
+    - default: true
+      description: URL to check.
+      isArray: true
+      name: url
+    description: Gets a URL category from URL filtering. This command is only available
+      on Firewall devices.
+    name: pan-os-get-url-category
+    outputs:
+    - contextPath: Panorama.URLFilter.URL
+      description: URL.
+      type: string
+    - contextPath: Panorama.URLFilter.Category
+      description: URL category.
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: URL.Data
+      description: The URL address.
+      type: String
+    - contextPath: URL.Category
+      description: The URL category.
+      type: String
+  - arguments:
+    - description: The URL to check.
+      isArray: true
+      name: url
+      required: true
+    description: Returns a URL category from URL filtering. This command is only available
+      on Firewall devices.
+    name: pan-os-get-url-category-from-cloud
+    outputs:
+    - contextPath: Panorama.URLFilter.URL
+      description: The URL.
+      type: string
+    - contextPath: Panorama.URLFilter.Category
+      description: The URL category.
+      type: string
+  - arguments:
+    - description: The URL to check.
+      isArray: true
+      name: url
+      required: true
+    description: Returns a URL category from URL filtering. This command is only available
+      on Firewall devices.
+    name: pan-os-get-url-category-from-host
+    outputs:
+    - contextPath: Panorama.URLFilter.URL
+      description: The URL.
+      type: string
+    - contextPath: Panorama.URLFilter.Category
+      description: The URL category.
+      type: string
+  - arguments:
+    - description: URL Filter name.
+      name: name
+      required: true
+    - description: The device group for which to return addresses for the URL Filter
+        (Panorama instances).
+      name: device-group
+    description: Returns information for a URL filtering rule.
+    name: pan-os-get-url-filter
+    outputs:
+    - contextPath: Panorama.URLFilter.Name
+      description: URL Filter name.
+      type: string
+    - contextPath: Panorama.URLFilter.Category.Name
+      description: URL Filter category name.
+      type: string
+    - contextPath: Panorama.URLFilter.Category.Action
+      description: Action for the URL category.
+      type: string
+    - contextPath: Panorama.URLFilter.OverrideBlockList
+      description: URL Filter override block list.
+      type: string
+    - contextPath: Panorama.URLFilter.OverrideAllowList
+      description: URL Filter override allow list.
+      type: string
+    - contextPath: Panorama.URLFilter.Description
+      description: URL Filter description.
+      type: string
+    - contextPath: Panorama.URLFilter.DeviceGroup
+      description: Device group for the URL Filter (Panorama instances).
+      type: string
+  - arguments:
+    - description: Name of the URL filter to create.
+      name: name
+      required: true
+    - description: URL categories.
+      isArray: true
+      name: url_category
+      required: true
+    - auto: PREDEFINED
+      description: Action for the URL categories. Can be "allow", "block", "alert",
+        "continue", or "override".
+      name: action
+      predefined:
+      - allow
+      - block
+      - alert
+      - continue
+      - override
+      required: true
+    - description: CSV list of URLs to exclude from the allow list.
+      isArray: true
+      name: override_allow_list
+    - description: CSV list of URLs to exclude from the blocked list.
+      isArray: true
+      name: override_block_list
+    - description: URL Filter description.
+      name: description
+    - description: The device group for which to return addresses for the URL Filter
+        (Panorama instances).
+      name: device-group
+    description: Creates a URL filtering rule.
+    name: pan-os-create-url-filter
+    outputs:
+    - contextPath: Panorama.URLFilter.Name
+      description: URL Filter name.
+      type: string
+    - contextPath: Panorama.URLFilter.Category.Name
+      description: URL Filter category name.
+      type: string
+    - contextPath: Panorama.URLFilter.Category.Action
+      description: Action for the URL category.
+      type: string
+    - contextPath: Panorama.URLFilter.OverrideBlockList
+      description: URL Filter override allow list.
+      type: string
+    - contextPath: Panorama.URLFilter.OverrideBlockList
+      description: URL Filter override blocked list.
+      type: string
+    - contextPath: Panorama.URLFilter.Description
+      description: URL Filter description.
+      type: string
+    - contextPath: Panorama.URLFilter.DeviceGroup
+      description: Device group for the URL Filter (Panorama instances).
+      type: string
+  - arguments:
+    - description: Name of the URL filter to edit.
+      name: name
+      required: true
+    - auto: PREDEFINED
+      description: Element to change.
+      name: element_to_change
+      predefined:
+      - override_allow_list
+      - override_block_list
+      - allow_categories
+      - block_categories
+      - description
+      required: true
+    - description: Element value. Limited to one value.
+      name: element_value
+      required: true
+    - auto: PREDEFINED
+      defaultValue: add
+      description: Add or remove an element from the Allow List or Block List fields.
+        Default is to 'add' the element_value to the list.
+      name: add_remove_element
+      predefined:
+      - add
+      - remove
+    description: Edit a URL filtering rule.
+    name: pan-os-edit-url-filter
+    outputs:
+    - contextPath: Panorama.URLFilter.Name
+      description: URL Filter name.
+      type: string
+    - contextPath: Panorama.URLFilter.Description
+      description: URL Filter description.
+      type: string
+    - contextPath: Panorama.URLFilter.Category.Name
+      description: URL Filter category.
+      type: string
+    - contextPath: Panorama.URLFilter.Action
+      description: Action for the URL category.
+      type: string
+    - contextPath: Panorama.URLFilter.OverrideAllowList
+      description: Allow Overrides for the URL category.
+      type: string
+    - contextPath: Panorama.URLFilter.OverrideBlockList
+      description: Block Overrides for the URL category.
+      type: string
+    - contextPath: Panorama.URLFilter.DeviceGroup
+      description: Device group for the URL Filter (Panorama instances).
+      type: string
+  - arguments:
+    - description: Name of the URL filter rule to delete.
+      name: name
+      required: true
+    - description: The device group for which to return addresses for the URL filter
+        (Panorama instances)
+      name: device-group
+    description: Deletes a URL filtering rule.
+    name: pan-os-delete-url-filter
+    outputs:
+    - contextPath: Panorama.URLFilter.Name
+      description: URL filter rule name.
+      type: string
+    - contextPath: Panorama.URLFilter.DeviceGroup
+      description: Device group for the URL Filter (Panorama instances).
+      type: string
+  - arguments:
+    - description: The device group for which to return addresses for the EDL (Panorama
+        instances).
+      name: device-group
+    description: Returns a list of external dynamic lists.
+    name: pan-os-list-edls
+    outputs:
+    - contextPath: Panorama.EDL.Name
+      description: Name of the EDL.
+      type: string
+    - contextPath: Panorama.EDL.Type
+      description: The type of EDL.
+      type: string
+    - contextPath: Panorama.EDL.URL
+      description: URL in which the EDL is stored.
+      type: string
+    - contextPath: Panorama.EDL.Description
+      description: Description of the EDL.
+      type: string
+    - contextPath: Panorama.EDL.CertificateProfile
+      description: EDL certificate profile.
+      type: string
+    - contextPath: Panorama.EDL.Recurring
+      description: Time interval that the EDL was pulled and updated.
+      type: string
+    - contextPath: Panorama.EDL.DeviceGroup
+      description: Device group for the EDL (Panorama instances).
+      type: string
+  - arguments:
+    - description: Name of the EDL.
+      name: name
+      required: true
+    - description: The device group for which to return addresses for the EDL (Panorama
+        instances).
+      name: device-group
+    description: Returns information for an external dynamic list
+    name: pan-os-get-edl
+    outputs:
+    - contextPath: Panorama.EDL.Name
+      description: Name of the EDL.
+      type: string
+    - contextPath: Panorama.EDL.Type
+      description: The type of EDL.
+      type: string
+    - contextPath: Panorama.EDL.URL
+      description: URL in which the EDL is stored.
+      type: string
+    - contextPath: Panorama.EDL.Description
+      description: Description of the EDL.
+      type: string
+    - contextPath: Panorama.EDL.CertificateProfile
+      description: EDL certificate profile.
+      type: string
+    - contextPath: Panorama.EDL.Recurring
+      description: Time interval that the EDL was pulled and updated.
+      type: string
+    - contextPath: Panorama.EDL.DeviceGroup
+      description: Device group for the EDL (Panorama instances).
+      type: string
+  - arguments:
+    - description: Name of the EDL.
+      name: name
+      required: true
+    - description: URL from which to pull the EDL.
+      name: url
+      required: true
+    - auto: PREDEFINED
+      description: The type of EDL.
+      name: type
+      predefined:
+      - ip
+      - url
+      - domain
+      required: true
+    - auto: PREDEFINED
+      description: Time interval for pulling and updating the EDL.
+      name: recurring
+      predefined:
+      - five-minute
+      - hourly
+      required: true
+    - description: Certificate Profile name for the URL that was previously uploaded.
+        to PAN OS.
+      name: certificate_profile
+    - description: Description of the EDL.
+      name: description
+    - description: The device group for which to return addresses for the EDL (Panorama
+        instances).
+      name: device-group
+    description: Creates an external dynamic list.
+    name: pan-os-create-edl
+    outputs:
+    - contextPath: Panorama.EDL.Name
+      description: Name of theEDL.
+      type: string
+    - contextPath: Panorama.EDL.Type
+      description: Type of the EDL.
+      type: string
+    - contextPath: Panorama.EDL.URL
+      description: URL in which the EDL is stored.
+      type: string
+    - contextPath: Panorama.EDL.Description
+      description: Description of the EDL.
+      type: string
+    - contextPath: Panorama.EDL.CertificateProfile
+      description: EDL certificate profile.
+      type: string
+    - contextPath: Panorama.EDL.Recurring
+      description: Time interval that the EDL was pulled and updated.
+      type: string
+    - contextPath: Panorama.EDL.DeviceGroup
+      description: Device group for the EDL (Panorama instances).
+      type: string
+  - arguments:
+    - description: Name of the external dynamic list to edit.
+      name: name
+      required: true
+    - auto: PREDEFINED
+      description: The element to change (“url”, “recurring”, “certificate_profile”,
+        “description”).
+      name: element_to_change
+      predefined:
+      - url
+      - recurring
+      - certificate_profile
+      - description
+      required: true
+    - description: The element value.
+      name: element_value
+      required: true
+    description: Modifies an element of an external dynamic list.
+    name: pan-os-edit-edl
+    outputs:
+    - contextPath: Panorama.EDL.Name
+      description: Name of the EDL.
+      type: string
+    - contextPath: Panorama.EDL.URL
+      description: URL where the EDL is stored.
+      type: string
+    - contextPath: Panorama.EDL.Description
+      description: Description of the EDL.
+      type: string
+    - contextPath: Panorama.EDL.CertificateProfile
+      description: EDL certificate profile.
+      type: string
+    - contextPath: Panorama.EDL.Recurring
+      description: Time interval that the EDL was pulled and updated.
+      type: string
+    - contextPath: Panorama.EDL.DeviceGroup
+      description: Device group for the EDL (Panorama instances).
+      type: string
+  - arguments:
+    - description: Name of the EDL to delete.
+      name: name
+      required: true
+    - description: The device group for which to return addresses for the EDL (Panorama
+        instances).
+      name: device-group
+    description: Deletes an external dynamic list.
+    name: pan-os-delete-edl
+    outputs:
+    - contextPath: Panorama.EDL.Name
+      description: Name of the EDL that was deleted.
+      type: string
+    - contextPath: Panorama.EDL.DeviceGroup
+      description: Device group for the EDL (Panorama instances).
+      type: string
+  - arguments:
+    - description: Name of the EDL
+      name: name
+      required: true
+    - description: The device group for which to return addresses for the EDL (Panorama
+        instances).
+      name: device-group
+    - auto: PREDEFINED
+      description: The type of the EDL. Required when refreshing an EDL object which
+        is configured on Panorama.
+      name: edl_type
+      predefined:
+      - ip
+      - url
+      - domain
+    - description: The location of the EDL. Required when refreshing an EDL object
+        which is configured on Panorama.
+      name: location
+    - description: The Vsys of the EDL. Required when refreshing an EDL object which
+        is configured on Panorama.
+      name: vsys
+    description: Refreshes the specified external dynamic list.
+    name: pan-os-refresh-edl
+  - arguments:
+    - description: Name of the rule to create.
+      name: rulename
+    - description: Description of the rule to create.
+      name: description
+    - auto: PREDEFINED
+      description: Action for the rule. Can be "allow", "deny", or "drop".
+      name: action
+      predefined:
+      - allow
+      - deny
+      - drop
+      required: true
+    - description: A comma-separated list of address object names, address group object
+        names, or EDL object names.
+      isArray: true
+      name: source
+    - description: A comma-separated list of address object names, address group object
+        names, or EDL object names.
+      isArray: true
+      name: destination
+    - description: A comma-separated list of source zones.
+      isArray: true
+      name: source_zone
+    - description: A comma-separated list of destination zones.
+      isArray: true
+      name: destination_zone
+    - auto: PREDEFINED
+      description: Whether to negate the source (address, address group). Can be "Yes"
+        or "No".
+      name: negate_source
+      predefined:
+      - Yes
+      - No
+    - auto: PREDEFINED
+      description: Whether to negate the destination (address, address group). Can
+        be "Yes" or "No".
+      name: negate_destination
+      predefined:
+      - Yes
+      - No
+    - description: A comma-separated list of service object names for the rule.
+      isArray: true
+      name: service
+    - auto: PREDEFINED
+      defaultValue: No
+      description: Whether to disable the rule. Can be "Yes" or "No" (default is "No").
+      name: disable
+      predefined:
+      - Yes
+      - No
+    - defaultValue: any
+      description: A comma-separated list of application object names for the rule.
+        to create.
+      isArray: true
+      name: application
+    - defaultValue: any
+      description: Source user for the rule to create.
+      name: source_user
+    - auto: PREDEFINED
+      description: Pre rule or Post rule (Panorama instances).
+      name: pre_post
+      predefined:
+      - pre-rulebase
+      - post-rulebase
+    - description: Specifies a target firewall for the rule (Panorama instances).
+      name: target
+    - description: Log forwarding profile.
+      name: log_forwarding
+    - description: The device group for which to return addresses for the rule (Panorama
+        instances).
+      name: device-group
+    - description: Rule tags to create.
+      isArray: true
+      name: tags
+    - description: A comma-separated list of URL categories.
+      name: category
+    - description: A profile setting group.
+      name: profile_setting
+    - auto: PREDEFINED
+      defaultValue: bottom
+      description: Where to move the rule. Can be "before", "after", "top", or "bottom".
+        If you specify "top" or "bottom", you need to supply the "dst" argument.
+      name: where
+      predefined:
+      - before
+      - after
+      - top
+      - bottom
+    - description: Destination rule relative to the rule that you are moving. This
+        field is only relevant if you specify "top" or "bottom" in the "where" argument.
+      name: dst
+    description: Creates a policy rule.
+    execution: true
+    name: pan-os-create-rule
+    outputs:
+    - contextPath: Panorama.SecurityRule.Name
+      description: Rule name.
+      type: string
+    - contextPath: Panorama.SecurityRule.Description
+      description: Rule description.
+      type: string
+    - contextPath: Panorama.SecurityRule.Action
+      description: Action for the rule.
+      type: string
+    - contextPath: Panorama.SecurityRule.Source
+      description: Source address.
+      type: string
+    - contextPath: Panorama.SecurityRule.Destination
+      description: Destination address.
+      type: string
+    - contextPath: Panorama.SecurityRule.NegateSource
+      description: Whether the source is negated (address, address group).
+      type: boolean
+    - contextPath: Panorama.SecurityRule.NegateDestination
+      description: Whether the destination negated (address, address group).
+      type: boolean
+    - contextPath: Panorama.SecurityRule.Service
+      description: Service for the rule.
+      type: string
+    - contextPath: Panorama.SecurityRule.Disabled
+      description: Whether the rule is disabled.
+      type: string
+    - contextPath: Panorama.SecurityRule.Application
+      description: Application for the rule.
+      type: string
+    - contextPath: Panorama.SecurityRule.Target
+      description: Target firewall (Panorama instances).
+      type: string
+    - contextPath: Panorama.SecurityRule.LogForwarding
+      description: Log forwarding profile (Panorama instances).
+      type: string
+    - contextPath: Panorama.SecurityRule.DeviceGroup
+      description: Device group for the rule (Panorama instances).
+      type: string
+    - contextPath: Panorama.SecurityRules.Tags
+      description: Rule tags.
+      type: String
+    - contextPath: Panorama.SecurityRules.ProfileSetting
+      description: Profile setting group.
+      type: String
+  - arguments:
+    - description: Name of the custom block policy rule to create.
+      name: rulename
+    - auto: PREDEFINED
+      description: Object type to block in the policy rule. Can be "ip", "address-group",
+        "edl", or "custom-url-category".
+      name: object_type
+      predefined:
+      - ip
+      - address-group
+      - application
+      - url-category
+      - edl
+      required: true
+    - description: A comma-separated list of object values for the object_type argument.
+      isArray: true
+      name: object_value
+      required: true
+    - auto: PREDEFINED
+      defaultValue: both
+      description: Direction to block. Can be "to", "from", or "both". Default is
+        "both". This argument is not applicable to the "custom-url-category" object_type.
+      name: direction
+      predefined:
+      - to
+      - from
+      - both
+    - auto: PREDEFINED
+      description: Pre rule or Post rule (Panorama instances).
+      name: pre_post
+      predefined:
+      - pre-rulebase
+      - post-rulebase
+    - description: Specifies a target firewall for the rule (Panorama instances).
+      name: target
+    - description: Log forwarding profile.
+      name: log_forwarding
+    - description: The device group for which to return addresses for the rule (Panorama
+        instances).
+      name: device-group
+    - description: Tags for which to use for the custom block policy rule.
+      isArray: true
+      name: tags
+    - auto: PREDEFINED
+      defaultValue: bottom
+      description: Where to move the rule. Can be "before", "after", "top", or "bottom".
+        If you specify "top" or "bottom", you need to supply the "dst" argument.
+      name: where
+      predefined:
+      - before
+      - after
+      - top
+      - bottom
+    - description: Destination rule relative to the rule that you are moving. This
+        field is only relevant if you specify "top" or "bottom" in the "where" argument.
+      name: dst
+    description: Creates a custom block policy rule.
+    execution: true
+    name: pan-os-custom-block-rule
+    outputs:
+    - contextPath: Panorama.SecurityRule.Name
+      description: Rule name.
+      type: string
+    - contextPath: Panorama.SecurityRule.Object
+      description: Blocked object.
+      type: string
+    - contextPath: Panorama.SecurityRule.Direction
+      description: Direction blocked.
+      type: string
+    - contextPath: Panorama.SecurityRule.Target
+      description: Target firewall (Panorama instances)
+      type: string
+    - contextPath: Panorama.SecurityRule.LogForwarding
+      description: Log forwarding profile (Panorama instances).
+      type: string
+    - contextPath: Panorama.SecurityRule.DeviceGroup
+      description: Device group for the rule (Panorama instances).
+      type: string
+    - contextPath: Panorama.SecurityRule.Tags
+      description: Rule tags.
+      type: String
+    - contextPath: Panorama.SecurityRules.ProfileSetting
+      description: Profile setting group.
+      type: String
+  - arguments:
+    - description: Name of the rule to move.
+      name: rulename
+      required: true
+    - auto: PREDEFINED
+      description: Where to move the rule. Can be "before", "after", "top", or "bottom".
+        If you specify "top" or "bottom", you need to supply the "dst" argument.
+      name: where
+      predefined:
+      - before
+      - after
+      - top
+      - bottom
+      required: true
+    - description: Destination rule relative to the rule that you are moving. This
+        field is only relevant if you specify "top" or "bottom" in the "where" argument.
+      name: dst
+    - auto: PREDEFINED
+      description: Rule location. Mandatory for Panorama instances.
+      name: pre_post
+      predefined:
+      - pre-rulebase
+      - post-rulebase
+    - description: The device group for which to return addresses for the rule (Panorama
+        instances).
+      name: device-group
+    description: Changes the location of a policy rule.
+    execution: true
+    name: pan-os-move-rule
+    outputs:
+    - contextPath: Panorama.SecurityRule.Name
+      description: Rule name.
+      type: string
+    - contextPath: Panorama.SecurityRule.DeviceGroup
+      description: Device group for the rule (Panorama instances).
+      type: string
+  - arguments:
+    - description: Name of the rule to edit.
+      name: rulename
+      required: true
+    - auto: PREDEFINED
+      description: Parameter in the security rule to change. Can be 'source', 'destination',
+        'application', 'action', 'category', 'description', 'disabled', 'target',
+        'log-forwarding', 'tag', 'source-user', 'service' or 'profile-setting'.
+      name: element_to_change
+      predefined:
+      - source
+      - destination
+      - application
+      - action
+      - category
+      - description
+      - disabled
+      - target
+      - log-forwarding
+      - tag
+      - profile-setting
+      - source-user
+      - service
+      required: true
+    - description: The new value for the parameter.
+      name: element_value
+      required: true
+    - auto: PREDEFINED
+      description: Pre-rule or post-rule (Panorama instances).
+      name: pre_post
+      predefined:
+      - pre-rulebase
+      - post-rulebase
+    - auto: PREDEFINED
+      defaultValue: replace
+      description: Whether to replace, add, or remove the element_value from the current
+        rule object value.
+      name: behaviour
+      predefined:
+      - replace
+      - add
+      - remove
+    description: Edits a policy rule.
+    execution: true
+    name: pan-os-edit-rule
+    outputs:
+    - contextPath: Panorama.SecurityRule.Name
+      description: Rule name.
+      type: string
+    - contextPath: Panorama.SecurityRule.Description
+      description: Rule description.
+      type: string
+    - contextPath: Panorama.SecurityRule.Action
+      description: Action for the rule.
+      type: string
+    - contextPath: Panorama.SecurityRule.Source
+      description: Source address.
+      type: string
+    - contextPath: Panorama.SecurityRule.Destination
+      description: Destination address.
+      type: string
+    - contextPath: Panorama.SecurityRule.NegateSource
+      description: Whether the source is negated (address, address group).
+      type: boolean
+    - contextPath: Panorama.SecurityRule.NegateDestination
+      description: Whether the destination is negated (address, address group).
+      type: boolean
+    - contextPath: Panorama.SecurityRule.Service
+      description: Service for the rule.
+      type: string
+    - contextPath: Panorama.SecurityRule.Disabled
+      description: Whether the rule is disabled.
+      type: string
+    - contextPath: Panorama.SecurityRule.Application
+      description: Application for the rule.
+      type: string
+    - contextPath: Panorama.SecurityRule.Target
+      description: Target firewall (Panorama instances).
+      type: string
+    - contextPath: Panorama.SecurityRule.DeviceGroup
+      description: Device group for the rule (Panorama instances).
+      type: string
+    - contextPath: Panorama.SecurityRule.Tags
+      description: Tags for the rule.
+      type: String
+  - arguments:
+    - description: Name of the rule to delete.
+      name: rulename
+      required: true
+    - auto: PREDEFINED
+      description: Pre rule or Post rule (Panorama instances).
+      name: pre_post
+      predefined:
+      - pre-rulebase
+      - post-rulebase
+    - description: The device group for which to return addresses for the rule (Panorama
+        instances).
+      name: device-group
+    description: Deletes a policy rule.
+    execution: true
+    name: pan-os-delete-rule
+    outputs:
+    - contextPath: Panorama.SecurityRule.Name
+      description: Rule name.
+      type: string
+    - contextPath: Panorama.SecurityRule.DeviceGroup
+      description: Device group for the rule (Panorama instances).
+      type: string
+  - arguments:
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Whether to list predefined applications or not.
+      name: predefined
+      predefined:
+      - 'true'
+      - 'false'
+    description: Returns a list of applications.
+    name: pan-os-list-applications
+    outputs:
+    - contextPath: Panorama.Applications.Name
+      description: Application name.
+      type: string
+    - contextPath: Panorama.Applications.Id
+      description: Application ID.
+      type: number
+    - contextPath: Panorama.Applications.Category
+      description: Application category.
+      type: string
+    - contextPath: Panorama.Applications.SubCategory
+      description: Application sub-category.
+      type: string
+    - contextPath: Panorama.Applications.Technology
+      description: Application technology.
+      type: string
+    - contextPath: Panorama.Applications.Risk
+      description: Application risk (1 to 5).
+      type: number
+    - contextPath: Panorama.Applications.Description
+      description: Application description.
+      type: string
+  - arguments:
+    - description: Job ID to check.
+      name: job_id
+      required: true
+    description: Returns commit status for a configuration.
+    name: pan-os-commit-status
+    outputs:
+    - contextPath: Panorama.Commit.JobID
+      description: Job ID of the configuration to be committed.
+      type: number
+    - contextPath: Panorama.Commit.Status
+      description: Commit status.
+      type: string
+    - contextPath: Panorama.Commit.Details
+      description: Job ID details.
+      type: string
+    - contextPath: Panorama.Commit.Warnings
+      description: Job ID warnings
+      type: String
+  - arguments:
+    - description: Job ID to check.
+      name: job_id
+      required: true
+    description: Returns the push status for a configuration.
+    name: pan-os-push-status
+    outputs:
+    - contextPath: Panorama.Push.DeviceGroup
+      description: Device group to which the policies were pushed.
+      type: string
+    - contextPath: Panorama.Push.JobID
+      description: Job ID of the configuration to be pushed.
+      type: number
+    - contextPath: Panorama.Push.Status
+      description: Push status.
+      type: string
+    - contextPath: Panorama.Push.Details
+      description: Job ID details.
+      type: string
+    - contextPath: Panorama.Push.Warnings
+      description: Job ID warnings
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      description: Type of Packet Capture.
+      name: pcapType
+      predefined:
+      - application-pcap
+      - filter-pcap
+      - threat-pcap
+      - dlp-pcap
+      required: true
+    - description: The serial number of the firewall to download the PCAP from.
+      name: serialNumber
+    - description: The
+      name: from
+    - description: The new name for the PCAP file after downloading. If this argument
+        is not specified, the file name is the PCAP file name set in the firewall.
+      name: localName
+    - description: Serial number for the request. For further information, see the
+        Panorama XML API Documentation.
+      name: serialNo
+    - description: 'The Search time for the request. For example: "2019/12/26 00:00:00",
+        "2020/01/10". For more information, see the Panorama XML API documentation.'
+      name: searchTime
+    - description: The ID of the PCAP for the request. For further information, see
+        the Panorama XML API Documentation.
+      name: pcapID
+    - description: Password for Panorama, needed for the 'dlp-pcap' PCAP type only.
+      name: password
+    - description: The Device Name on which the PCAP is stored. For further information,
+        see the Panorama XML API Documentation.
+      name: deviceName
+    - description: The Session ID of the PCAP. For further information, see the Panorama
+        XML API Documentation.
+      name: sessionID
+    description: Returns information for a Panorama PCAP file. The recommended maximum
+      file size is 5 MB. If the limit is exceeded, you might need to SSH the firewall
+      and run the scp export command to export the PCAP file. For more information,
+      see the Palo Alto Networks documentation.
+    name: pan-os-get-pcap
+    outputs:
+    - contextPath: File.Size
+      description: File size.
+      type: number
+    - contextPath: File.Name
+      description: File name.
+      type: string
+    - contextPath: File.Type
+      description: File type.
+      type: string
+    - contextPath: File.Info
+      description: File info.
+      type: string
+    - contextPath: File.Extension
+      description: File extension.
+      type: string
+    - contextPath: File.EntryID
+      description: FIle entryID.
+      type: string
+    - contextPath: File.MD5
+      description: MD5 hash of the file.
+      type: string
+    - contextPath: File.SHA1
+      description: SHA1 hash of the file.
+      type: string
+    - contextPath: File.SHA256
+      description: SHA256 hash of the file.
+      type: string
+    - contextPath: File.SHA512
+      description: SHA512 hash of the file.
+      type: string
+    - contextPath: File.SSDeep
+      description: SSDeep hash of the file.
+      type: string
+  - arguments:
+    - auto: PREDEFINED
+      description: Type of Packet Capture.
+      name: pcapType
+      predefined:
+      - application-pcap
+      - filter-pcap
+      - dlp-pcap
+      required: true
+    - description: The serial number of the firewall to download the PCAP from.
+      name: serialNumber
+    - description: Password for Panorama. Relevant for the 'dlp-pcap' PCAP type.
+      name: password
+    description: Returns a list of all PCAP files by PCAP type. Not available for
+      threat PCAPs.
+    name: pan-os-list-pcaps
+  - arguments:
+    - description: Tag for which to register IP addresses.
+      name: tag
+      required: true
+    - description: IP addresses to register.
+      isArray: true
+      name: IPs
+      required: true
+    - auto: PREDEFINED
+      defaultValue: 'true'
+      description: Whether the IP addresses remain registered to the tag after the
+        device reboots ('true':persistent, 'false':non-persistent). Default is 'true'.
+      name: persistent
+      predefined:
+      - 'true'
+      - 'false'
+    - description: Timeout value to automatically unregister the IPs. Only applicable
+        to PAN-OS 9.x and higher. Can not be used with persistent as true.
+      name: timeout
+    description: Registers IP addresses to a tag.
+    name: pan-os-register-ip-tag
+    outputs:
+    - contextPath: Panorama.DynamicTags.Tag
+      description: Name of the tag.
+      type: string
+    - contextPath: Panorama.DynamicTags.IPs
+      description: Registered IP addresses.
+      type: string
+  - arguments:
+    - description: Tag for which to unregister IP addresses.
+      name: tag
+      required: true
+    - description: IP addresses to unregister.
+      isArray: true
+      name: IPs
+      required: true
+    description: Unregisters IP addresses from a tag.
+    name: pan-os-unregister-ip-tag
+  - arguments:
+    - description: Tag for which to register users.
+      name: tag
+      required: true
+    - description: A comma-separated list of users to register.
+      isArray: true
+      name: Users
+      required: true
+    description: Registers users to a tag. This command is only available for PAN-OS
+      version 9.x and above.
+    name: pan-os-register-user-tag
+    outputs:
+    - contextPath: Panorama.DynamicTags.Tag
+      description: Name of the tag.
+      type: string
+    - contextPath: Panorama.DynamicTags.Users
+      description: List of registered users.
+      type: string
+  - arguments:
+    - description: Tag from which to unregister users.
+      name: tag
+      required: true
+    - description: A comma-separated list of users to unregister.
+      isArray: true
+      name: Users
+      required: true
+    description: Unregisters users from a tag. This command is only available for
+      PAN-OS version 9.x and above.
+    name: pan-os-unregister-user-tag
+  - arguments:
+    - description: Specifies the match criteria for the logs. This is similar to the
+        query provided in the web interface under the Monitor tab, when viewing the
+        logs.
+      name: query
+    - defaultValue: '100'
+      description: The number of logs to retrieve. The default is 100. Maximum is
+        5000.
+      name: number_of_logs
+    - auto: PREDEFINED
+      defaultValue: backward
+      description: |-
+        Whether logs are shown oldest first (forward) or newest
+        first (backward). Default is backward.
+      name: direction
+      predefined:
+      - backward
+      - forward
+    - description: Source address for the query.
+      name: source
+    - description: Destination address for the query.
+      name: destination
+    - description: Date and time after which logs were received in the format YYYY/MM/DD
+        HH:MM:SS.
+      name: receive_time
+    - description: Application for the query.
+      name: application
+    - description: Destination port for the query.
+      name: to_port
+    - description: Action for the query.
+      name: action
+    deprecated: true
+    description: Deprecated. Use the panorama-query-logs command instead.
+    name: pan-os-query-traffic-logs
+    outputs:
+    - contextPath: Panorama.TrafficLogs.JobID
+      description: Job ID of the traffic logs query.
+      type: Number
+    - contextPath: Panorama.TrafficLogs.Status
+      description: Status of the traffic logs query.
+      type: String
+  - arguments:
+    - description: Job ID of the query.
+      name: job_id
+      required: true
+    deprecated: true
+    description: Deprecated. Use the panorama-check-logs-status command instead.
+    name: pan-os-check-traffic-logs-status
+    outputs:
+    - contextPath: Panorama.TrafficLogs.JobID
+      description: Job ID of the traffic logs query.
+      type: Number
+    - contextPath: Panorama.TrafficLogs.Status
+      description: Status of the traffic logs query.
+      type: String
+  - arguments:
+    - description: Job ID of the query.
+      name: job_id
+      required: true
+    deprecated: true
+    description: Deprecated. Use the panorama-get-logs command instead.
+    name: pan-os-get-traffic-logs
+    outputs:
+    - contextPath: Panorama.TrafficLogs.JobID
+      description: Job ID of the traffic logs query.
+      type: Number
+    - contextPath: Panorama.TrafficLogs.Status
+      description: Status of the traffic logs query.
+      type: String
+    - contextPath: Panorama.TrafficLogs.Logs.Action
+      description: Action of the traffic log.
+      type: String
+    - contextPath: Panorama.TrafficLogs.Logs.ActionSource
+      description: Action source of the traffic log.
+      type: String
+    - contextPath: Panorama.TrafficLogs.Logs.Application
+      description: Application of the traffic log.
+      type: String
+    - contextPath: Panorama.TrafficLogs.Logs.Category
+      description: Category of the traffic log.
+      type: String
+    - contextPath: Panorama.TrafficLogs.Logs.DeviceName
+      description: Device name of the traffic log.
+      type: String
+    - contextPath: Panorama.TrafficLogs.Logs.Destination
+      description: Destination of the traffic log.
+      type: String
+    - contextPath: Panorama.TrafficLogs.Logs.DestinationPort
+      description: Destination port of the traffic log.
+      type: String
+    - contextPath: Panorama.TrafficLogs.Logs.FromZone
+      description: The from zone of the traffic log.
+      type: String
+    - contextPath: Panorama.TrafficLogs.Logs.Protocol
+      description: Protocol of the traffic log.
+      type: String
+    - contextPath: Panorama.TrafficLogs.Logs.ReceiveTime
+      description: Receive time of the traffic log.
+      type: String
+    - contextPath: Panorama.TrafficLogs.Logs.Rule
+      description: Rule of the traffic log.
+      type: String
+    - contextPath: Panorama.TrafficLogs.Logs.SessionEndReason
+      description: Session end reason of the traffic log.
+      type: String
+    - contextPath: Panorama.TrafficLogs.Logs.Source
+      description: Source of the traffic log.
+      type: String
+    - contextPath: Panorama.TrafficLogs.Logs.SourcePort
+      description: Source port of the traffic log.
+      type: String
+    - contextPath: Panorama.TrafficLogs.Logs.StartTime
+      description: Start time of the traffic log.
+      type: String
+    - contextPath: Panorama.TrafficLogs.Logs.ToZone
+      description: The to zone of the traffic log.
+      type: String
+    - contextPath: Panorama.TrafficLogs.Logs.Bytes
+      description: Total log bytes.
+      type: String
+    - contextPath: Panorama.TrafficLogs.Logs.BytesReceived
+      description: Log bytes received.
+      type: String
+    - contextPath: Panorama.TrafficLogs.Logs.BytesSent
+      description: Log bytes sent.
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      description: Rules location. Can be 'pre-rulebase' or 'post-rulebase'. Mandatory
+        for Panorama instances.
+      name: pre_post
+      predefined:
+      - pre-rulebase
+      - post-rulebase
+    - description: The device group for which to return addresses (Panorama instances).
+      name: device-group
+    - description: Tag for which to filter the rules.
+      name: tag
+    description: Returns a list of predefined Security Rules.
+    name: pan-os-list-rules
+    outputs:
+    - contextPath: Panorama.SecurityRule.Name
+      description: Rule name.
+      type: String
+    - contextPath: Panorama.SecurityRule.Action
+      description: Action for the rule.
+      type: String
+    - contextPath: Panorama.SecurityRule.Location
+      description: Rule location.
+      type: String
+    - contextPath: Panorama.SecurityRule.Category
+      description: Rule category.
+      type: String
+    - contextPath: Panorama.SecurityRule.Application
+      description: Application for the rule.
+      type: String
+    - contextPath: Panorama.SecurityRule.Destination
+      description: Destination address.
+      type: String
+    - contextPath: Panorama.SecurityRule.From
+      description: Rule from.
+      type: String
+    - contextPath: Panorama.SecurityRule.Service
+      description: Service for the rule.
+      type: String
+    - contextPath: Panorama.SecurityRule.To
+      description: Rule to.
+      type: String
+    - contextPath: Panorama.SecurityRule.Source
+      description: Source address.
+      type: String
+    - contextPath: Panorama.SecurityRule.DeviceGroup
+      description: Device group for the rule (Panorama instances).
+      type: string
+    - contextPath: Panorama.SecurityRules.Tags
+      description: Rule tags.
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      description: The log type. Can be "threat", "traffic", "wildfire", "url", or
+        "data".
+      name: log-type
+      predefined:
+      - threat
+      - traffic
+      - wildfire
+      - url
+      - data
+      required: true
+    - description: The query string by which to match criteria for the logs. This
+        is similar to the query provided in the web interface under the Monitor tab
+        when viewing the logs.
+      name: query
+    - description: |-
+        The time that the log was generated from the timestamp and prior to it.
+        e.g "2019/08/11 01:10:44".
+      name: time-generated
+    - description: Source address.
+      isArray: true
+      name: addr-src
+    - description: Destination address.
+      isArray: true
+      name: addr-dst
+    - description: Source or destination IP address.
+      isArray: true
+      name: ip
+    - description: Source zone.
+      isArray: true
+      name: zone-src
+    - description: Destination Source.
+      isArray: true
+      name: zone-dst
+    - description: Rule action.
+      isArray: true
+      name: action
+    - description: Destination port.
+      isArray: true
+      name: port-dst
+    - description: Rule name, e.g "Allow all outbound".
+      isArray: true
+      name: rule
+    - description: URL, e.g "safebrowsing.googleapis.com".
+      isArray: true
+      name: url
+    - description: File hash (for WildFire logs only).
+      isArray: true
+      name: filedigest
+    - defaultValue: '100'
+      description: Maximum number of logs to retrieve. If empty, the default is 100.
+        The maximum is 5,000.
+      name: number_of_logs
+    description: Query logs in Panorama.
+    name: pan-os-query-logs
+    outputs:
+    - contextPath: Panorama.Monitor.JobID
+      description: Job ID of the logs query.
+      type: String
+    - contextPath: Panorama.Monitor.Status
+      description: Status of the logs query.
+      type: String
+    - contextPath: Panorama.Monitor.Message
+      description: Message of the logs query.
+      type: String
+  - arguments:
+    - description: Job ID of the query.
+      isArray: true
+      name: job_id
+      required: true
+    description: Checks the status of a logs query.
+    name: pan-os-check-logs-status
+    outputs:
+    - contextPath: Panorama.Monitor.JobID
+      description: Job ID of the logs query.
+      type: String
+    - contextPath: Panorama.Monitor.Status
+      description: Status of the logs query.
+      type: String
+  - arguments:
+    - description: Job ID of the query.
+      isArray: true
+      name: job_id
+      required: true
+    - defaultValue: 'true'
+      description: Whether to auto-enrich the War Room entry. If "true", entry is
+        not auto-enriched. If "false", entry is auto-extracted. Default is "true".
+      name: ignore_auto_extract
+    description: Retrieves the data of a logs query.
+    name: pan-os-get-logs
+    outputs:
+    - contextPath: Panorama.Monitor.Logs.Action
+      description: Action taken for the session. Can be "alert", "allow", "deny",
+        "drop", "drop-all-packets", "reset-client", "reset-server", "reset-both",
+        or "block-url".
+      type: String
+    - contextPath: Panorama.Monitor.Logs.Application
+      description: Application associated with the session.
+      type: String
+    - contextPath: Panorama.Monitor.Logs.Category
+      description: The URL category of the URL subtype. For WildFire subtype, it is
+        the verdict on the file, and can be either "malicious", "phishing", "grayware"’,
+        or "benign". For other subtypes, the value is "any".
+      type: String
+    - contextPath: Panorama.Monitor.Logs.DeviceName
+      description: The hostname of the firewall on which the session was logged.
+      type: String
+    - contextPath: Panorama.Monitor.Logs.DestinationAddress
+      description: Original session destination IP address.
+      type: String
+    - contextPath: Panorama.Monitor.Logs.DestinationUser
+      description: Username of the user to which the session was destined.
+      type: String
+    - contextPath: Panorama.Monitor.Logs.DestinationCountry
+      description: Destination country or internal region for private addresses. Maximum
+        length is 32 bytes.
+      type: String
+    - contextPath: Panorama.Monitor.Logs.DestinationPort
+      description: Destination port utilized by the session.
+      type: String
+    - contextPath: Panorama.Monitor.Logs.FileDigest
+      description: Only for the WildFire subtype, all other types do not use this
+        field. The filedigest string shows the binary hash of the file sent to be
+        analyzed by the WildFire service.
+      type: String
+    - contextPath: Panorama.Monitor.Logs.FileName
+      description: |-
+        File name or file type when the subtype is file.
+        File name when the subtype is virus.
+        File name when the subtype is wildfire-virus.
+        File name when the subtype is wildfire.
+      type: String
+    - contextPath: Panorama.Monitor.Logs.FileType
+      description: |-
+        Only for the WildFire subtype, all other types do not use this field.
+        Specifies the type of file that the firewall forwarded for WildFire analysis.
+      type: String
+    - contextPath: Panorama.Monitor.Logs.FromZone
+      description: The zone from which the session was sourced.
+      type: String
+    - contextPath: Panorama.Monitor.Logs.URLOrFilename
+      description: |-
+        The actual URL when the subtype is url.
+        File name or file type when the subtype is file.
+        File name when the subtype is virus.
+        File name when the subtype is wildfire-virus.
+        File name when the subtype is wildfire.
+        URL or file name when the subtype is vulnerability (if applicable).
+      type: String
+    - contextPath: Panorama.Monitor.Logs.NATDestinationIP
+      description: If destination NAT performed, the post-NAT destination IP address.
+      type: String
+    - contextPath: Panorama.Monitor.Logs.NATDestinationPort
+      description: Post-NAT destination port.
+      type: String
+    - contextPath: Panorama.Monitor.Logs.NATSourceIP
+      description: If source NAT performed, the post-NAT source IP address.
+      type: String
+    - contextPath: Panorama.Monitor.Logs.NATSourcePort
+      description: Post-NAT source port.
+      type: String
+    - contextPath: Panorama.Monitor.Logs.PCAPid
+      description: |-
+        The packet capture (pcap) ID is a 64 bit unsigned integral denoting
+        an ID to correlate threat pcap files with extended pcaps taken as a part of
+        that flow. All threat logs will contain either a pcap_id of 0 (no associated
+        pcap), or an ID referencing the extended pcap file.
+      type: String
+    - contextPath: Panorama.Monitor.Logs.IPProtocol
+      description: IP protocol associated with the session.
+      type: String
+    - contextPath: Panorama.Monitor.Logs.Recipient
+      description: |-
+        Only for the WildFire subtype, all other types do not use this field.
+        Specifies the name of the receiver of an email that WildFire determined to be malicious when analyzing an email link forwarded by the firewall.
+      type: String
+    - contextPath: Panorama.Monitor.Logs.Rule
+      description: Name of the rule that the session matched.
+      type: String
+    - contextPath: Panorama.Monitor.Logs.RuleID
+      description: ID of the rule that the session matched.
+      type: String
+    - contextPath: Panorama.Monitor.Logs.ReceiveTime
+      description: Time the log was received at the management plane.
+      type: String
+    - contextPath: Panorama.Monitor.Logs.Sender
+      description: |-
+        Only for the WildFire subtype; all other types do not use this field.
+        Specifies the name of the sender of an email that WildFire determined to be malicious when analyzing an email link forwarded by the firewall.
+      type: String
+    - contextPath: Panorama.Monitor.Logs.SessionID
+      description: An internal numerical identifier applied to each session.
+      type: String
+    - contextPath: Panorama.Monitor.Logs.DeviceSN
+      description: The serial number of the firewall on which the session was logged.
+      type: String
+    - contextPath: Panorama.Monitor.Logs.Severity
+      description: |-
+        Severity associated with the threat. Can be "informational", "low",
+        "medium", "high", or "critical".
+      type: String
+    - contextPath: Panorama.Monitor.Logs.SourceAddress
+      description: Original session source IP address.
+      type: String
+    - contextPath: Panorama.Monitor.Logs.SourceCountry
+      description: |-
+        Source country or internal region for private addresses. Maximum
+        length is 32 bytes.
+      type: String
+    - contextPath: Panorama.Monitor.Logs.SourceUser
+      description: Username of the user who initiated the session.
+      type: String
+    - contextPath: Panorama.Monitor.Logs.SourcePort
+      description: Source port utilized by the session.
+      type: String
+    - contextPath: Panorama.Monitor.Logs.ThreatCategory
+      description: |-
+        Describes threat categories used to classify different types of
+        threat signatures.
+      type: String
+    - contextPath: Panorama.Monitor.Logs.Name
+      description: |-
+        Palo Alto Networks identifier for the threat. It is a description
+        string followed by a 64-bit numerical identifier
+      type: String
+    - contextPath: Panorama.Monitor.Logs.ID
+      description: Palo Alto Networks ID for the threat.
+      type: String
+    - contextPath: Panorama.Monitor.Logs.ToZone
+      description: The zone to which the session was destined.
+      type: String
+    - contextPath: Panorama.Monitor.Logs.TimeGenerated
+      description: Time that the log was generated on the dataplane.
+      type: String
+    - contextPath: Panorama.Monitor.Logs.URLCategoryList
+      description: |-
+        A list of the URL filtering categories that the firewall used to
+        enforce the policy.
+      type: String
+    - contextPath: Panorama.Monitor.Logs.Bytes
+      description: Total log bytes.
+      type: String
+    - contextPath: Panorama.Monitor.Logs.BytesReceived
+      description: Log bytes received.
+      type: String
+    - contextPath: Panorama.Monitor.Logs.BytesSent
+      description: Log bytes sent.
+      type: String
+    - contextPath: Panorama.Monitor.Logs.Vsys
+      description: Vsys on the firewall that generated the log.
+      type: String
+  - arguments:
+    - description: The application name.
+      name: application
+    - description: The category name.
+      name: category
+    - description: The destination IP address.
+      name: destination
+      required: true
+    - description: The destination port.
+      name: destination-port
+    - description: The from zone.
+      name: from
+    - description: The to zone.
+      name: to
+    - description: The IP protocol value.
+      name: protocol
+      required: true
+    - description: The source IP address.
+      name: source
+      required: true
+    - description: The source user.
+      name: source-user
+    - description: Target number of the firewall. Use only on a Panorama instance.
+      name: target
+      isArray: true
+    - description: Target vsys of the firewall. Use only on a Panorama instance.
+      name: vsys
+      isArray: true
+    description: Checks whether a session matches a specified security policy. This
+      command is only available on Firewall instances.
+    name: pan-os-security-policy-match
+    outputs:
+    - contextPath: Panorama.SecurityPolicyMatch.Query
+      description: Query for the session to test.
+      type: String
+    - contextPath: Panorama.SecurityPolicyMatch.Rules.Name
+      description: The matching rule name.
+      type: String
+    - contextPath: Panorama.SecurityPolicyMatch.Rules.Action
+      description: The matching rule action.
+      type: String
+    - contextPath: Panorama.SecurityPolicyMatch.Rules.Category
+      description: The matching rule category.
+      type: String
+    - contextPath: Panorama.SecurityPolicyMatch.Rules.Destination
+      description: The matching rule destination.
+      type: String
+    - contextPath: Panorama.SecurityPolicyMatch.Rules.From
+      description: The matching rule from zone.
+      type: String
+    - contextPath: Panorama.SecurityPolicyMatch.Rules.Source
+      description: The matching rule source.
+      type: String
+    - contextPath: Panorama.SecurityPolicyMatch.Rules.To
+      description: The matching rule to zone.
+      type: String
+    - contextPath: Panorama.SecurityPolicyMatch.QueryFields.Application
+      description: The application name.
+      type: String
+    - contextPath: Panorama.SecurityPolicyMatch.QueryFields.Category
+      description: The category name.
+      type: String
+    - contextPath: Panorama.SecurityPolicyMatch.QueryFields.Destination
+      description: The destination IP address.
+      type: String
+    - contextPath: Panorama.SecurityPolicyMatch.QueryFields.DestinationPort
+      description: The destination port.
+      type: Number
+    - contextPath: Panorama.SecurityPolicyMatch.QueryFields.From
+      description: The query fields from zone.
+      type: String
+    - contextPath: Panorama.SecurityPolicyMatch.QueryFields.To
+      description: The query fields to zone.
+      type: String
+    - contextPath: Panorama.SecurityPolicyMatch.QueryFields.Protocol
+      description: The IP protocol value.
+      type: String
+    - contextPath: Panorama.SecurityPolicyMatch.QueryFields.Source
+      description: The destination IP address.
+      type: String
+    - contextPath: Panorama.SecurityPolicyMatch.QueryFields.SourceUser
+      description: The source user.
+      type: String
+  - arguments:
+    - description: The name of the virtual router for which to list the static routes.
+      name: virtual_router
+      required: true
+    - description: The template to use to run the command. Overrides the template
+        parameter (Panorama instances).
+      name: template
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Whether to show an uncommitted configuration. Default is "false".
+      name: show_uncommitted
+      predefined:
+      - 'true'
+      - 'false'
+    description: Lists the static routes of a virtual router.
+    name: pan-os-list-static-routes
+    outputs:
+    - contextPath: Panorama.StaticRoutes.Name
+      description: The name of the static route.
+      type: String
+    - contextPath: Panorama.StaticRoutes.BFDProfile
+      description: The BFD profile of the static route.
+      type: String
+    - contextPath: Panorama.StaticRoutes.Destination
+      description: The destination of the static route.
+      type: String
+    - contextPath: Panorama.StaticRoutes.Metric
+      description: The metric (port) of the static route.
+      type: Number
+    - contextPath: Panorama.StaticRoutes.NextHop
+      description: The next hop of the static route. Can be an IP address, FQDN, or
+        a virtual router.
+      type: String
+    - contextPath: Panorama.StaticRoutes.RouteTable
+      description: The route table of a static route.
+      type: String
+    - contextPath: Panorama.StaticRoutes.VirtualRouter
+      description: The virtual router to which the static router belongs.
+      type: String
+    - contextPath: Panorama.StaticRoutes.Template
+      description: The template in which the static route is defined (Panorama instances
+        only).
+      type: String
+    - contextPath: Panorama.StaticRoutes.Uncommitted
+      description: Whether the static route is committed.
+      type: Boolean
+  - arguments:
+    - description: Name of the virtual router for which to display the static route.
+      name: virtual_router
+      required: true
+    - description: Name of the static route to display.
+      name: static_route
+      required: true
+    - description: The template to use to run the command. Overrides the template
+        parameter (Panorama instances).
+      name: template
+    description: Returns the specified static route of a virtual router.
+    name: pan-os-get-static-route
+    outputs:
+    - contextPath: Panorama.StaticRoutes.Name
+      description: The name of the static route.
+      type: String
+    - contextPath: Panorama.StaticRoutes.BFDProfile
+      description: The BFD profile of the static route.
+      type: String
+    - contextPath: Panorama.StaticRoutes.Destination
+      description: The destination of the static route.
+      type: String
+    - contextPath: Panorama.StaticRoutes.Metric
+      description: The metric (port) of the static route.
+      type: Number
+    - contextPath: Panorama.StaticRoutes.NextHop
+      description: The next hop of the static route. Can be an IP address, FQDN, or
+        a virtual router.
+      type: String
+    - contextPath: Panorama.StaticRoutes.RouteTable
+      description: The route table of the static route.
+      type: String
+    - contextPath: Panorama.StaticRoutes.VirtualRouter
+      description: The virtual router to which the static router belongs.
+      type: String
+    - contextPath: Panorama.StaticRoutes.Template
+      description: The template in which the static route is defined (Panorama instances
+        only).
+      type: String
+  - arguments:
+    - description: Virtual router to which the routes will be added.
+      name: virtual_router
+      required: true
+    - description: The name of the static route to add. The argument is limited to
+        a maximum of 31 characters, is case-sensitive, and supports letters, numbers,
+        spaces, hyphens, and underscores.
+      name: static_route
+      required: true
+    - description: 'The IP address and network mask in Classless Inter-domain Routing
+        (CIDR) notation: ip_address/mask. For example, 192.168.0.1/24 for IPv4 or
+        2001:db8::/32 for IPv6).'
+      name: destination
+      required: true
+    - auto: PREDEFINED
+      description: 'The type for the next hop. Can be: "ip-address", "next-vr", "fqdn",
+        or "discard".'
+      name: nexthop_type
+      predefined:
+      - ip-address
+      - next-vr
+      - fqdn
+      - discard
+      required: true
+    - description: The next hop value.
+      name: nexthop_value
+      required: true
+    - description: The metric port for the static route (1-65535).
+      name: metric
+    - description: The interface name in which to add the static route.
+      name: interface
+    - description: The template to use to run the command. Overrides the template
+        parameter (Panorama instances).
+      name: template
+    description: Adds a static route.
+    name: pan-os-add-static-route
+    outputs:
+    - contextPath: Panorama.StaticRoutes.Name
+      description: The name of the static route.
+      type: String
+    - contextPath: Panorama.StaticRoutes.BFDProfile
+      description: The BFD profile of the static route.
+      type: String
+    - contextPath: Panorama.StaticRoutes.Destination
+      description: The destination of the static route.
+      type: String
+    - contextPath: Panorama.StaticRoutes.Metric
+      description: The metric (port) of the static route.
+      type: Number
+    - contextPath: Panorama.StaticRoutes.NextHop
+      description: The next hop of the static route. Can be an IP address, FQDN, or
+        a virtual router.
+      type: String
+    - contextPath: Panorama.StaticRoutes.RouteTable
+      description: The route table of the static route.
+      type: String
+    - contextPath: Panorama.StaticRoutes.VirtualRouter
+      description: The virtual router to which the static router belongs.
+      type: String
+    - contextPath: Panorama.StaticRoutes.Template
+      description: The template in which the static route is defined (Panorama instances
+        only).
+      type: String
+  - arguments:
+    - description: The name of the static route to delete.
+      name: route_name
+      required: true
+    - description: The virtual router from which the routes will be deleted.
+      name: virtual_router
+      required: true
+    - description: The template to use to run the command. Overrides the template
+        parameter (Panorama instances).
+      name: template
+    description: Deletes a static route.
+    name: pan-os-delete-static-route
+    outputs:
+    - contextPath: Panorama.StaticRoutes.Name
+      description: The name of the static route to delete.
+      type: String
+    - contextPath: Panorama.StaticRoutes.BFDProfile
+      description: The BFD profile of the static route.
+      type: String
+    - contextPath: Panorama.StaticRoutes.Destination
+      description: The destination of the static route.
+      type: String
+    - contextPath: Panorama.StaticRoutes.Metric
+      description: The metric (port) of the static route.
+      type: Number
+    - contextPath: Panorama.StaticRoutes.NextHop
+      description: The next hop of the static route. Can be an IP address, FQDN, or
+        a virtual router.
+      type: String
+    - contextPath: Panorama.StaticRoutes.RouteTable
+      description: The route table of the static route.
+      type: String
+    - contextPath: Panorama.StaticRoutes.VirtualRouter
+      description: The virtual router to which the static router belongs.
+      type: String
+    - contextPath: Panorama.StaticRoutes.Template
+      description: The template in which the static route is defined (Panorama instances
+        only).
+      type: String
+    - contextPath: Panorama.StaticRoutes.Deleted
+      description: Whether the static route was deleted.
+      type: Boolean
+  - arguments:
+    - description: Serial number of the target device.
+      name: target
+    description: Show firewall device software version.
+    name: pan-os-show-device-version
+    outputs:
+    - contextPath: Panorama.Device.Info.Devicename
+      description: Device name of the PAN-OS.
+      type: String
+    - contextPath: Panorama.Device.Info.Model
+      description: Model of the PAN-OS.
+      type: String
+    - contextPath: Panorama.Device.Info.Serial
+      description: Serial number of the PAN-OS.
+      type: String
+    - contextPath: Panorama.Device.Info.Version
+      description: Version of the PAN-OS.
+      type: String
+  - arguments:
+    - description: The device to which to download the content update.
+      name: target
+    description: Downloads the latest content update.
+    name: pan-os-download-latest-content-update
+    outputs:
+    - contextPath: Panorama.Content.Download.JobID
+      description: Job ID of the content download.
+      type: String
+    - contextPath: Panorama.Content.Download.Status
+      description: Content download status.
+      type: String
+  - arguments:
+    - description: The device to which the content update is downloading.
+      name: target
+    - description: Job ID to check.
+      name: job_id
+      required: true
+    description: Checks the download status of a content update.
+    name: pan-os-content-update-download-status
+    outputs:
+    - contextPath: Panorama.Content.Download.JobID
+      description: Job ID to monitor.
+      type: String
+    - contextPath: Panorama.Content.Download.Status
+      description: Download status.
+      type: String
+    - contextPath: Panorama.Content.Download.Details
+      description: Job ID details.
+      type: String
+  - arguments:
+    - description: The device on which to install the content update.
+      name: target
+    description: Installs the latest content update.
+    name: pan-os-install-latest-content-update
+    outputs:
+    - contextPath: Panorama.Content.Install.JobID
+      description: Job ID of the installation.
+      type: String
+    - contextPath: Content.Install.Status
+      description: Installation status.
+      type: String
+  - arguments:
+    - description: The device on which to check the installation status of the content
+        update.
+      name: target
+    - description: Job ID of the content installation.
+      name: job_id
+      required: true
+    description: Gets the installation status of the content update.
+    name: pan-os-content-update-install-status
+    outputs:
+    - contextPath: Panorama.Content.Install.JobID
+      description: Job ID of the content installation.
+      type: String
+    - contextPath: Panorama.Content.Install.Status
+      description: Content installation status.
+      type: String
+    - contextPath: Panorama.Content.Install.Details
+      description: Content installation status details.
+      type: String
+  - arguments:
+    - description: The target device from which to get the PAN-OS software version.
+      name: target
+    description: Checks the PAN-OS software version from the repository.
+    name: pan-os-check-latest-panos-software
+  - arguments:
+    - description: The target device from which to download the PAN-OS software version.
+      name: target
+    - description: The target version number to install.
+      name: target_version
+      required: true
+    description: Downloads the target PAN-OS software version to install on the target
+      device.
+    name: pan-os-download-panos-version
+    outputs:
+    - contextPath: Panorama.PANOS.Download.JobID
+      description: Job ID of the PAN-OS download.
+      type: number
+    - contextPath: Panorama.PANOS.Download.Status
+      description: Status of the PAN-OS download.
+      type: String
+  - arguments:
+    - description: The target device from which to get the download status.
+      name: target
+    - description: Job ID to check.
+      name: job_id
+      required: true
+    description: Gets the download status of the target PAN-OS software.
+    name: pan-os-download-panos-status
+    outputs:
+    - contextPath: Panorama.PANOS.Download.JobID
+      description: Job ID of the PAN-OS download.
+      type: string
+    - contextPath: Panorama.PANOS.Download.Status
+      description: PAN-OS download status.
+      type: String
+    - contextPath: Panorama.PANOS.Download.Details
+      description: PAN-OS download details.
+      type: String
+  - arguments:
+    - description: The target device on which to install the target PAN-OS software
+        version.
+      name: target
+    - description: Target PAN-OS version to install.
+      name: target_version
+      required: true
+    description: Installs the target PAN-OS version on the specified target device.
+    name: pan-os-install-panos-version
+    outputs:
+    - contextPath: Panorama.PANOS.Install.JobID
+      description: Job ID of the PAN-OS installation.
+      type: string
+    - contextPath: Panorama.PANOS.Install.Status
+      description: Status of the PAN-OS installation.
+      type: String
+  - arguments:
+    - description: The target device from which to get the installation status.
+      name: target
+    - description: Job ID to check.
+      name: job_id
+      required: true
+    description: Gets the installation status of the PAN-OS software.
+    name: pan-os-install-panos-status
+    outputs:
+    - contextPath: Panorama.PANOS.Install.JobID
+      description: Job ID of the PAN-OS installation.
+      type: number
+    - contextPath: Panorama.PANOS.Install.Status
+      description: Status of the PAN-OS installation.
+      type: String
+    - contextPath: Panorama.PANOS.Install.Details
+      description: PAN-OS installation details.
+      type: String
+  - arguments:
+    - description: The target device on which to reboot the firewall.
+      name: target
+    description: Reboots the Firewall device.
+    name: pan-os-device-reboot
+  - arguments:
+    - description: The IP address from which to return information.
+      name: ip_address
+      required: true
+    description: Gets location information for an IP address.
+    name: pan-os-show-location-ip
+    outputs:
+    - contextPath: Panorama.Location.IP.country_code
+      description: The IP address location country code.
+      type: String
+    - contextPath: Panorama.Location.IP.country_name
+      description: The IP address location country name.
+      type: String
+    - contextPath: Panorama.Location.IP.ip_address
+      description: The IP address.
+      type: String
+    - contextPath: Panorama.Location.IP.Status
+      description: Whether the IP address was found.
+      type: String
+  - arguments: []
+    description: Gets information about available PAN-OS licenses and their statuses.
+    name: pan-os-get-licenses
+    outputs:
+    - contextPath: Panorama.License.Authcode
+      description: The authentication code of the license.
+      type: String
+    - contextPath: Panorama.License.Base-license-name
+      description: The base license name.
+      type: String
+    - contextPath: Panorama.License.Description
+      description: The description of the license.
+      type: String
+    - contextPath: Panorama.License.Expired
+      description: Whether the license has expired.
+      type: String
+    - contextPath: Panorama.License.Expires
+      description: When the license will expire.
+      type: String
+    - contextPath: Panorama.License.Feature
+      description: The feature of the license.
+      type: String
+    - contextPath: Panorama.License.Issued
+      description: When the license was issued.
+      type: String
+    - contextPath: Panorama.License.Serial
+      description: The serial number of the license.
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      description: The security profile for which to get information. Can be "data-filtering",
+        "file-blocking", "spyware", "url-filtering", "virus", "vulnerability", or
+        "wildfire-analysis".
+      name: security_profile
+      predefined:
+      - data-filtering
+      - file-blocking
+      - spyware
+      - url-filtering
+      - virus
+      - vulnerability
+      - wildfire-analysis
+    description: Gets information for the specified security profile.
+    name: pan-os-get-security-profiles
+    outputs:
+    - contextPath: Panorama.Spyware.Name
+      description: The profile name.
+      type: String
+    - contextPath: Panorama.Spyware.Rules.Action
+      description: The rule action.
+      type: String
+    - contextPath: Panorama.Spyware.Rules.Category
+      description: The category for which to apply the rule.
+      type: String
+    - contextPath: Panorama.Spyware.Rules.Name
+      description: The rule name.
+      type: String
+    - contextPath: Panorama.Spyware.Rules.Packet-capture
+      description: Whether packet capture is enabled.
+      type: String
+    - contextPath: Panorama.Spyware.Rules.Severity
+      description: The rule severity.
+      type: String
+    - contextPath: Panorama.Spyware.Rules.Threat-name
+      description: The threat name for which to apply the rule.
+      type: String
+    - contextPath: Panorama.URLFilter.Name
+      description: The profile name.
+      type: String
+    - contextPath: Panorama.URLFilter.Rules.Category.Action
+      description: The rule action to apply to the category.
+      type: String
+    - contextPath: Panorama.URLFilter.Rules.Category.Name
+      description: The category name.
+      type: String
+    - contextPath: Panorama.WildFire.Name
+      description: The WildFire profile name.
+      type: String
+    - contextPath: Panorama.WildFire.Rules.Analysis
+      description: The rule analysis.
+      type: String
+    - contextPath: Panorama.WildFire.Rules.Application
+      description: The application for which to apply the rule.
+      type: String
+    - contextPath: Panorama.WildFire.Rules.File-type
+      description: The file type for which to apply the rule.
+      type: String
+    - contextPath: Panorama.WildFire.Rules.Name
+      description: The rule name.
+      type: String
+    - contextPath: Panorama.Vulnerability.Name
+      description: The vulnerability profile name.
+      type: String
+    - contextPath: Panorama.Vulnerability.Rules.Vendor-id
+      description: The vendor ID for which to apply the rule.
+      type: String
+    - contextPath: Panorama.Vulnerability.Rules.Packet-capture
+      description: Whether packet capture is enabled.
+      type: String
+    - contextPath: Panorama.Vulnerability.Rules.Host
+      description: The rule host.
+      type: String
+    - contextPath: Panorama.Vulnerability.Rules.Name
+      description: The rule name.
+      type: String
+    - contextPath: Panorama.Vulnerability.Rules.Category
+      description: The category for which to apply the rule.
+      type: String
+    - contextPath: Panorama.Vulnerability.Rules.CVE
+      description: The CVE for which to apply the rule.
+      type: String
+    - contextPath: Panorama.Vulnerability.Rules.Action
+      description: The rule action.
+      type: String
+    - contextPath: Panorama.Vulnerability.Rules.Severity
+      description: The rule severity.
+      type: String
+    - contextPath: Panorama.Vulnerability.Rules.Threat-name
+      description: The threat for which to apply the rule.
+      type: String
+    - contextPath: Panorama.Antivirus.Name
+      description: The Antivirus profile name.
+      type: String
+    - contextPath: Panorama.Antivirus.Rules.Action
+      description: The rule action.
+      type: String
+    - contextPath: Panorama.Antivirus.Rules.Name
+      description: The rule name.
+      type: String
+    - contextPath: Panorama.Antivirus.Rules.WildFire-action
+      description: The WildFire action.
+      type: String
+    - contextPath: Panorama.FileBlocking.Name
+      description: The file blocking profile name.
+      type: String
+    - contextPath: Panorama.FileBlocking.Rules.Action
+      description: The rule action.
+      type: String
+    - contextPath: Panorama.FileBlocking.Rules.Application
+      description: The application for which to apply the rule.
+      type: String
+    - contextPath: Panorama.FileBlocking.Rules.File-type
+      description: The file type to apply the rule.
+      type: String
+    - contextPath: Panorama.FileBlocking.Rules.Name
+      description: The rule name.
+      type: String
+    - contextPath: Panorama.DataFiltering.Name
+      description: The data filtering profile name.
+      type: String
+    - contextPath: Panorama.DataFiltering.Rules.Alert-threshold
+      description: The alert threshold.
+      type: String
+    - contextPath: Panorama.DataFiltering.Rules.Application
+      description: The application to apply the rule.
+      type: String
+    - contextPath: Panorama.DataFiltering.Rules.Block-threshold
+      description: The block threshold.
+      type: String
+    - contextPath: Panorama.DataFiltering.Rules.Data-object
+      description: The data object.
+      type: String
+    - contextPath: Panorama.DataFiltering.Rules.Direction
+      description: The rule direction.
+      type: String
+    - contextPath: Panorama.DataFiltering.Rules.File-type
+      description: The file type for which to apply the rule.
+      type: String
+    - contextPath: Panorama.DataFiltering.Rules.Log-severity
+      description: The log severity.
+      type: String
+    - contextPath: Panorama.DataFiltering.Rules.Name
+      description: The rule name.
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      description: Security profile type. Can be 'data-filtering', 'file-blocking',
+        'spyware', 'url-filtering', 'virus, 'vulnerability', or wildfire-analysis.'
+      name: profile_type
+      predefined:
+      - data-filtering
+      - file-blocking
+      - spyware
+      - url-filtering
+      - virus
+      - vulnerability
+      - wildfire-analysis
+      required: true
+    - description: The rule name to apply.
+      name: rule_name
+      required: true
+    - description: The profile name to apply to the rule.
+      name: profile_name
+      required: true
+    - auto: PREDEFINED
+      description: The location of the rules. Can be 'pre-rulebase' or 'post-rulebase'.
+        Mandatory for Panorama instances.
+      name: pre_post
+      predefined:
+      - pre-rulebase
+      - post-rulebase
+    description: Apply a security profile to specific rules or rules with a specific
+      tag.
+    name: pan-os-apply-security-profile
+  - arguments:
+    - auto: PREDEFINED
+      description: The location of the rules. Can be 'pre-rulebase' or 'post-rulebase'.
+        Mandatory for Panorama instances.
+      name: pre_post
+      predefined:
+      - pre-rulebase
+      - post-rulebase
+    description: Get SSL decryption rules.
+    name: pan-os-get-ssl-decryption-rules
+    outputs:
+    - contextPath: Panorama.SSLRule.From
+      description: The SSL rule from the source.
+      type: String
+    - contextPath: Panorama.SSLRule.Name
+      description: The name of the SSL rule.
+      type: String
+    - contextPath: Panorama.SSLRule.Destination
+      description: The destination of the SSL rule.
+      type: String
+    - contextPath: Panorama.SSLRule.Target
+      description: The target of the SSL rule.
+      type: String
+    - contextPath: Panorama.SSLRule.Service
+      description: The SSL rule service.
+      type: String
+    - contextPath: Panorama.SSLRule.Action
+      description: The SSL rule action.
+      type: String
+    - contextPath: Panorama.SSLRule.Type
+      description: The SSL rule type.
+      type: String
+    - contextPath: Panorama.SSLRule.Source
+      description: The source of the SSL rule.
+      type: String
+    - contextPath: Panorama.SSLRule.To
+      description: The SSL rule to destination.
+      type: String
+    - contextPath: Panorama.SSLRule.UUID
+      description: The SSL rule UUID.
+      type: String
+    - contextPath: Panorama.SSLRule.Description
+      description: The SSL rule description.
+      type: String
+    - contextPath: Panorama.SSLRule.Source-user
+      description: The SSL rule source user.
+      type: String
+    - contextPath: Panorama.SSLRule.Category
+      description: The SSL rule category.
+      type: String
+  - arguments:
+    - description: The template name.
+      name: template
+      required: true
+    description: Retrieves the Wildfire configuration.
+    name: pan-os-get-wildfire-configuration
+    outputs:
+    - contextPath: Panorama.WildFire.Name
+      description: The file type.
+      type: String
+    - contextPath: Panorama.WildFire.Size-limit
+      description: The file size limit.
+      type: String
+    - contextPath: Panorama.WildFire.recurring
+      description: The schedule that is recurring.
+      type: String
+  - arguments:
+    - description: The url-filtering profile name. Get the name by running the get-security-profiles
+        command.
+      name: profile_name
+      required: true
+    description: Set default categories to block in the URL filtering profile.
+    name: pan-os-url-filtering-block-default-categories
+  - arguments: []
+    description: Get anti-spyware best practices.
+    name: pan-os-get-anti-spyware-best-practice
+    outputs:
+    - contextPath: Panorama.Spyware.BotentDomain.Name
+      description: The botnet domain name.
+      type: String
+    - contextPath: Panorama.Spyware.BotentDomain.Action
+      description: The botnet domain action.
+      type: String
+    - contextPath: Panorama.Spyware.BotentDomain.Packet-capture
+      description: Whether packet capture is enabled.
+      type: String
+    - contextPath: Panorama.Spyware.BotentDomain.Sinkhole.ipv4-address
+      description: The botnet domain IPv4 address.
+      type: String
+    - contextPath: Panorama.Spyware.BotentDomain.Sinkhole.ipv6-address
+      description: The Botnet domain IPv6 address.
+      type: String
+    - contextPath: Panorama.Spyware.Rule.Category
+      description: The rule category.
+      type: String
+    - contextPath: Panorama.Spyware.Rule.Action
+      description: The rule action.
+      type: String
+    - contextPath: Panorama.Spyware.Rule.Name
+      description: The rule name.
+      type: String
+    - contextPath: Panorama.Spyware.Rule.Severity
+      description: The rule severity.
+      type: String
+    - contextPath: Panorama.Spyware.Rule.Threat-name
+      description: The rule threat name.
+      type: String
+    - contextPath: Panorama.Spyware.BotentDomain.Max_version
+      description: The botnet domain max version.
+      type: String
+  - arguments: []
+    description: Get file-blocking best practices.
+    name: pan-os-get-file-blocking-best-practice
+    outputs:
+    - contextPath: Panorama.FileBlocking.Rule.Action
+      description: The rule action.
+      type: String
+    - contextPath: Panorama.FileBlocking.Rule.Application
+      description: The rule application.
+      type: String
+    - contextPath: Panorama.FileBlocking.Rule.File-type
+      description: The rule file type.
+      type: String
+    - contextPath: Panorama.FileBlocking.Rule.Name
+      description: The rule name.
+      type: String
+  - arguments: []
+    description: Get anti-virus best practices.
+    name: pan-os-get-antivirus-best-practice
+    outputs:
+    - contextPath: Panorama.Antivirus.Decoder.Action
+      description: The rule action.
+      type: String
+    - contextPath: Panorama.Antivirus.Decoder.Name
+      description: The rule name.
+      type: String
+    - contextPath: Panorama.Antivirus.Decoder.WildFire-action
+      description: The WildFire action.
+      type: String
+  - arguments: []
+    description: Get vulnerability-protection best practices.
+    name: pan-os-get-vulnerability-protection-best-practice
+    outputs:
+    - contextPath: Panorama.Vulnerability.Rule.Action
+      description: The rule action.
+      type: String
+    - contextPath: Panorama.Vulnerability.Rule.CVE
+      description: The rule CVE.
+      type: String
+    - contextPath: Panorama.Vulnerability.Rule.Category
+      description: The rule category.
+      type: String
+    - contextPath: Panorama.Vulnerability.Rule.Host
+      description: The rule host.
+      type: String
+    - contextPath: Panorama.Vulnerability.Rule.Name
+      description: The rule name.
+      type: String
+    - contextPath: Panorama.Vulnerability.Rule.Severity
+      description: The rule severity.
+      type: String
+    - contextPath: Panorama.Vulnerability.Rule.Threat-name
+      description: The threat name.
+      type: String
+    - contextPath: Panorama.Vulnerability.Rule.Vendor-id
+      description: The vendor ID.
+      type: String
+  - arguments: []
+    description: View WildFire best practices.
+    name: pan-os-get-wildfire-best-practice
+    outputs:
+    - contextPath: Panorama.WildFire.Analysis
+      description: The WildFire analysis.
+      type: String
+    - contextPath: Panorama.WildFire.Application
+      description: The WildFire application.
+      type: String
+    - contextPath: Panorama.WildFire.File.File-size
+      description: The recommended file size.
+      type: String
+    - contextPath: Panorama.WildFire.File.Name
+      description: The file name.
+      type: String
+    - contextPath: Panorama.WildFire.File-type
+      description: The WildFire profile file type.
+      type: String
+    - contextPath: Panorama.WildFire.Name
+      description: The WildFire profile name.
+      type: String
+    - contextPath: Panorama.WildFire.SSLDecrypt
+      description: The SSL decrypt content.
+      type: String
+    - contextPath: Panorama.WildFire.Schedule.Action
+      description: The WildFire schedule action.
+      type: String
+    - contextPath: Panorama.WildFire.Schedule.Recurring
+      description: The WildFire schedule recurring.
+      type: String
+  - arguments: []
+    description: View URL filtering best practices.
+    name: pan-os-get-url-filtering-best-practice
+    outputs:
+    - contextPath: Panorama.URLFilter.Category.Action
+      description: The action to perform on the category.
+      type: String
+    - contextPath: Panorama.URLFilter.Category.Name
+      description: The category name.
+      type: String
+    - contextPath: Panorama.URLFilter.DeviceGroup
+      description: The device group name.
+      type: String
+    - contextPath: Panorama.URLFilter.Name
+      description: The Profile name.
+      type: String
+    - contextPath: Panorama.URLFilter.Header.log-container-page-only
+      description: The log container page only.
+      type: String
+    - contextPath: Panorama.URLFilter.Header.log-http-hdr-referer
+      description: The log HTTP header referer.
+      type: String
+    - contextPath: Panorama.URLFilter.Header.log-http-hdr-user
+      description: The log HTTP header user.
+      type: String
+    - contextPath: Panorama.URLFilter.Header.log-http-hdr-xff
+      description: The log HTTP header xff.
+      type: String
+  - arguments:
+    - description: The template name.
+      name: template
+      required: true
+    description: Enforces wildfire best practices to upload files to the maximum size,
+      forwards all file types, and updates the schedule.
+    name: pan-os-enforce-wildfire-best-practice
+  - arguments:
+    - description: The name of the profile to create.
+      name: profile_name
+      required: true
+    description: Creates an antivirus best practice profile.
+    name: pan-os-create-antivirus-best-practice-profile
+  - arguments:
+    - description: The profile name to create.
+      name: profile_name
+      required: true
+    description: Creates an Anti-Spyware best practice profile.
+    name: pan-os-create-anti-spyware-best-practice-profile
+  - arguments:
+    - description: The profile name.
+      name: profile_name
+      required: true
+    description: Creates a vulnerability protection best practice profile.
+    name: pan-os-create-vulnerability-best-practice-profile
+  - arguments:
+    - description: The profile name.
+      name: profile_name
+      required: true
+    description: Creates a URL filtering best practice profile.
+    name: pan-os-create-url-filtering-best-practice-profile
+  - arguments:
+    - description: The name of the profile.
+      name: profile_name
+      required: true
+    description: Creates a file blocking best practice profile.
+    name: pan-os-create-file-blocking-best-practice-profile
+  - arguments:
+    - description: The name of the profile.
+      name: profile_name
+      required: true
+    description: Creates a WildFire analysis best practice profile.
+    name: pan-os-create-wildfire-best-practice-profile
+  - arguments:
+    - description: The template to use when running the command. Overrides the template
+        parameter (Panorama instances). If not given, will use the integration parameter.
+      name: template
+    - description: The template stack to use when running the command.
+      name: template_stack
+    - description: "The name of the virtual system to be configured. Will use the\
+        \ configured VSYS parameter if exists. If given a value, will override the\
+        \ VSYS parameter. If neither the VSYS parameter and this argument are entered,\
+        \ will default to 'vsys1'. "
+      name: vsys
+    description: Shows the user ID interface configuration.
+    name: pan-os-show-user-id-interfaces-config
+    outputs:
+    - contextPath: Panorama.UserInterfaces.Name
+      description: The name of the user interface.
+      type: String
+    - contextPath: Panorama.UserInterfaces.Zone
+      description: The zone to which the interface is connected
+      type: String
+    - contextPath: Panorama.UserInterfaces.EnableUserIdentification
+      description: Whether user identification is enabled.
+      type: String
+  - arguments:
+    - description: The template to use when running the command. Overrides the template
+        parameter (Panorama instances). If not given, will use the integration parameter.
+      name: template
+    - description: The template stack to use when running the command.
+      name: template_stack
+    - description: "The name of the virtual system to be configured. Will use the\
+        \ configured VSYS parameter if exists. If given a value, will override the\
+        \ VSYS parameter. If neither the VSYS parameter and this argument are entered,\
+        \ will default to 'vsys1'. "
+      name: vsys
+    description: Shows the zones configuration.
+    name: pan-os-show-zones-config
+    outputs:
+    - contextPath: Panorama.Zone.Name
+      description: The name of the zone.
+      type: String
+    - contextPath: Panorama.Zone.Network
+      description: The network to which the zone connected
+      type: String
+    - contextPath: Panorama.Zone.EnableUserIdentification
+      description: Whether user identification is enabled.
+      type: String
+    - contextPath: Panorama.Zone.ZoneProtectionProfile
+      description: The zone protection profile.
+      type: String
+    - contextPath: Panorama.Zone.LogSetting
+      description: The log setting for the zone
+      type: String
+  - arguments:
+    - description: The template to use when running the command. Overrides the template
+        parameter (Panorama instances). If not given, will use the integration parameter.
+      name: template
+    - description: The template stack to use when running the command.
+      name: template_stack
+    - description: "The name of the virtual system to be configured. Will use the\
+        \ configured VSYS parameter if exists. If given a value, will override the\
+        \ VSYS parameter. If neither the VSYS parameter and this argument are entered,\
+        \ will default to 'vsys1'. "
+      name: vsys
+    description: Retrieves list of user-ID agents configured in the system.
+    name: pan-os-list-configured-user-id-agents
+    outputs:
+    - contextPath: Panorama.UserIDAgents.Name
+      description: The user-ID Agent name.
+      type: String
+    - contextPath: Panorama.UserIDAgents.Host
+      description: The user-ID Agent host.
+      type: String
+    - contextPath: Panorama.UserIDAgents.Port
+      description: The user-ID Agent port.
+      type: Number
+    - contextPath: Panorama.UserIDAgents.LdapProxy
+      description: Whether LDAP proxy is used in the user-ID agent.
+      type: String
+    - contextPath: Panorama.UserIDAgents.NtlmAuth
+      description: Whether NLTM authentication is used in the user-ID agent.
+      type: String
+    - contextPath: Panorama.UserIDAgents.EnableHipCollection
+      description: Whether HIP collection is enabled in the user-ID agent.
+      type: String
+    - contextPath: Panorama.UserIDAgents.IpUserMapping
+      description: Whether IP user mapping is enabled in the user-ID agent.
+      type: String
+    - contextPath: Panorama.UserIDAgents.SerialNumber
+      description: The serial number associated with the user-ID agent.
+      type: Unknown
+    - contextPath: Panorama.UserIDAgents.CollectorName
+      description: The user-ID agent collector name.
+      type: String
+    - contextPath: Panorama.UserIDAgents.Secret
+      description: The user-ID agent secret.
+      type: String
+    - contextPath: Panorama.UserIDAgents.Disabled
+      description: Whether the user-ID agent is disbaled.
+      type: String
+  - arguments:
+    - description: Entry ID of the file to upload.
+      name: entryID
+      required: true
+    - auto: PREDEFINED
+      description: The category of the content.
+      name: category
+      predefined:
+      - wildfire
+      - anti-virus
+      - content
+      required: true
+    description: Uploads a content file to Panorama.
+    name: pan-os-upload-content-update-file
+    outputs:
+    - contextPath: Panorama.Content.Upload.Status
+      description: Content upload status.
+      type: string
+    - contextPath: Panorama.Content.Upload.Message
+      description: Content upload message.
+      type: string
+  - arguments:
+    - description: Update file name to be installed on PAN-OS.
+      name: version_name
+      required: true
+    - auto: PREDEFINED
+      description: The category of the content.
+      name: category
+      predefined:
+      - wildfire
+      - anti-virus
+      - content
+      required: true
+    - auto: PREDEFINED
+      defaultValue: no
+      description: Skips file validity check with PAN-OS update server. Use this option
+        for air-gapped networks and only if you trust the content file.
+      name: skip_validity_check
+      predefined:
+      - yes
+      - no
+      required: true
+    description: Installs specific content update file.
+    name: pan-os-install-file-content-update
+    outputs:
+    - contextPath: Panorama.Content.Install.JobID
+      description: JobID of the installation.
+      type: string
+    - contextPath: Panorama.Content.Install.Status
+      description: Installation status.
+      type: string
+
   dockerimage: demisto/python3:3.10.1.25933
   runonce: false
   script: ''
