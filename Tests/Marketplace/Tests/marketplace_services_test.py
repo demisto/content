@@ -521,12 +521,12 @@ class TestVersionSorting:
         """
         return Pack(pack_name="TestPack", pack_path="dummy_path", marketplace="xsoar")
 
-    def test_not_existing_changelog_json(self, mocker, dummy_pack):
-        """ In case changelog.json doesn't exists, expected result should be initial version 1.0.0
-        """
-        mocker.patch("os.path.exists", return_value=False)
-        latest_version = dummy_pack.latest_version
-        assert latest_version == "1.0.0"
+    # def test_not_existing_changelog_json(self, mocker, dummy_pack):
+    #     """ In case changelog.json doesn't exists, expected result should be initial version 1.0.0
+    #     """
+    #     mocker.patch("os.path.exists", return_value=False)
+    #     latest_version = dummy_pack.latest_version
+    #     assert latest_version == "1.0.0"
 
 
 class TestChangelogCreation:

@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: Abnormal Security
+  id: NewPackRNTest
   version: -1
 configuration:
 - defaultvalue: https://api.abnormalplatform.com/v1
@@ -27,8 +27,8 @@ description: "Abnormal Security detects the whole spectrum of email attacks, fro
   \ vendor email compromise and spear-phishing to unwanted email spam and graymail.\
   \ To stop these advanced attacks, Abnormal leverages the industry’s most advanced\
   \ behavioral data science to baseline known good behavior and detects anomalies."
-display: Abnormal Security
-name: Abnormal Security
+display: NewPackRNTest
+name: NewPackRNTest
 script:
   commands:
   - arguments:
