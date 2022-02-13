@@ -36,14 +36,6 @@ configuration:
   name: Refresh Token
   required: true
   type: 4
-contentitemexportablefields:
-  contentitemfields:
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: c1091d0b-427c-4355-825d-fb6be56bb89f
-    propagationLabels:
-    - all
-    toServerVersion: ""
 description: Use The Wolken IT Service Management (ITSM) solution to modernize the
   way you manage and deliver services to your users.
 display: Wolken ITSM
@@ -303,9 +295,11 @@ script:
     - contextPath: Wolken.GetIncidents.status
       description: ""
       type: String
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.1.25933
   runonce: false
   script: ''
   subtype: python3
   type: python
-sourcemoduleid: Incident REST API
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

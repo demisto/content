@@ -1,5 +1,5 @@
 Use The Wolken IT Service Management (ITSM) solution to modernize the way you manage and deliver services to your users.
-This integration was integrated and tested with version xx of Wolken ITSM
+This integration was integrated and tested with version 1.0.0 of Wolken ITSM
 
 ## Configure Wolken ITSM on Cortex XSOAR
 

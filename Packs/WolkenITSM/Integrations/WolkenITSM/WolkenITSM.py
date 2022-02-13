@@ -5,7 +5,7 @@ from CommonServerPython import *  # noqa: F401
 import traceback
 from typing import Any, Dict
 
-import urllib3
+
 
 # from _collections import defaultdict
 
@@ -22,7 +22,8 @@ class Client(BaseClient):
             'Authorization': 'Bearer ' + Authorization
         })
 
-        response = self._http_request('post', f'api/v1/incidents/{incidentId}/addInternalNotes', data=formData, headers=headers)
+        response = self._http_request('post', f'api/v1/incidents/{incidentId}/addInternalNotes', data=formData,
+                                      headers=headers)
         return response
 
     def create_incident_requestv1_request(self, clientId, domain, serviceAccount, Authorization, formData, file):
@@ -64,8 +65,9 @@ class Client(BaseClient):
             set_integration_context(TokenParam)
 
         except Exception as e:
-            return_error(f'Login failed. Please check instance configuration and given domain,authorization,refresh_token.\n'
-                         f'{e.args[0]}')
+            return_error(
+                f'Login failed. Please check instance configuration and given domain,authorization,refresh_token.\n'
+                f'{e.args[0]}')
 
     def get_incident_by_id_request(self, incidentId, clientId, domain, serviceAccount, Authorization):
         headers = self._headers
@@ -77,7 +79,8 @@ class Client(BaseClient):
 
         return response
 
-    def post_api_v1_incidents_add_attachments_request(self, incidentId, clientId, domain, serviceAccount, Authorization, file):
+    def post_api_v1_incidents_add_attachments_request(self, incidentId, clientId, domain, serviceAccount, Authorization,
+                                                      file):
         headers = self._headers
         headers.update({
             'Authorization': 'Bearer ' + Authorization
@@ -85,7 +88,8 @@ class Client(BaseClient):
 
         Data: Dict[str, Any] = {}
 
-        res = self._http_request('post', f'api/v1/incidents/{incidentId}/addAttachments', data=Data, file=file, headers=headers)
+        res = self._http_request('post', f'api/v1/incidents/{incidentId}/addAttachments', data=Data, file=file,
+                                 headers=headers)
         return res
 
     def add_outbound_notes_request(self, incidentId, clientId, domain, serviceAccount, Authorization, formData):
@@ -96,7 +100,8 @@ class Client(BaseClient):
             'Authorization': 'Bearer ' + Authorization
         })
 
-        response = self._http_request('post', f'api/v1/incidents/{incidentId}/addOutboundNotes', data=formData, headers=headers)
+        response = self._http_request('post', f'api/v1/incidents/{incidentId}/addOutboundNotes', data=formData,
+                                      headers=headers)
         return response
 
     def incident_id_request(self, incidentId, clientId, domain, serviceAccount, Authorization, formData, file):
@@ -112,7 +117,8 @@ class Client(BaseClient):
         response = self._http_request('post', f'api/v1/incidents/{incidentId}', data=formData, headers=headers)
         return response
 
-    def post_api_v1_incidents_close_request(self, incidentId, clientId, domain, serviceAccount, Authorization, formData):
+    def post_api_v1_incidents_close_request(self, incidentId, clientId, domain, serviceAccount, Authorization,
+                                            formData):
         formData = assign_params(formData=formData)
         headers = self._headers
 
@@ -126,7 +132,8 @@ class Client(BaseClient):
 
         return response
 
-    def put_api_v1_incidents_cancel_request(self, incidentId, clientId, domain, serviceAccount, Authorization, formData):
+    def put_api_v1_incidents_cancel_request(self, incidentId, clientId, domain, serviceAccount, Authorization,
+                                            formData):
         Data = assign_params(formData=formData)
 
         headers = self._headers
@@ -137,9 +144,15 @@ class Client(BaseClient):
         res = self._http_request('put', f'api/v1/incidents/{incidentId}/cancel', data=Data, headers=headers)
         return res
 
-    def SearchRequest(self, limit, offset, userPsNo, statusId, subStatusId, teamId, unitId, creatorId, requesterId, itemId, priorityId, assignedUserId, createdTimeGTE, createdTimeLT, updatedTimeGTE, updatedTimeLT, updatedByUserId, clientId, domain, serviceAccount, Authorization):
-        params = assign_params(userPsNo=userPsNo, statusId=statusId, subStatusId=subStatusId, teamId=teamId, unitId=unitId, creatorId=creatorId, requesterId=requesterId, itemId=itemId, priorityId=priorityId,
-                               assignedUserId=assignedUserId, createdTimeGTE=createdTimeGTE, createdTimeLT=createdTimeLT, updatedTimeGTE=updatedTimeGTE, updatedTimeLT=updatedTimeLT, updatedByUserId=updatedByUserId)
+    def SearchRequest(self, limit, offset, userPsNo, statusId, subStatusId, teamId, unitId, creatorId, requesterId,
+                      itemId, priorityId, assignedUserId, createdTimeGTE, createdTimeLT, updatedTimeGTE, updatedTimeLT,
+                      updatedByUserId, clientId, domain, serviceAccount, Authorization):
+        params = assign_params(userPsNo=userPsNo, statusId=statusId, subStatusId=subStatusId, teamId=teamId,
+                               unitId=unitId, creatorId=creatorId, requesterId=requesterId, itemId=itemId,
+                               priorityId=priorityId,
+                               assignedUserId=assignedUserId, createdTimeGTE=createdTimeGTE,
+                               createdTimeLT=createdTimeLT, updatedTimeGTE=updatedTimeGTE, updatedTimeLT=updatedTimeLT,
+                               updatedByUserId=updatedByUserId)
         headers = self._headers
         headers.update({
             'Authorization': 'Bearer ' + Authorization
@@ -467,7 +480,8 @@ def post_api_v1_incidents_close_command(client: Client, args: Dict[str, Any]) ->
     if args.get('SubStatusId'):
         formData['SubStatusId'] = args.get('SubStatusId')
     formData = str(formData)
-    response = client.post_api_v1_incidents_close_request(incidentId, clientId, domain, serviceAccount, Authorization, formData)
+    response = client.post_api_v1_incidents_close_request(incidentId, clientId, domain, serviceAccount, Authorization,
+                                                          formData)
     command_results = CommandResults(
         outputs_prefix='Wolken.UpdateIncidents',
         outputs_key_field='',
@@ -487,7 +501,8 @@ def put_api_v1_incidents_cancel_command(client: Client, args: Dict[str, Any]) ->
     formData = {}
     formData['Description'] = args.get('Description')
     formData = str(formData)
-    response = client.put_api_v1_incidents_cancel_request(incidentId, clientId, domain, serviceAccount, Authorization, formData)
+    response = client.put_api_v1_incidents_cancel_request(incidentId, clientId, domain, serviceAccount, Authorization,
+                                                          formData)
     command_results = CommandResults(
         outputs_prefix='Wolken.UpdateIncidents',
         outputs_key_field='',
@@ -519,8 +534,10 @@ def search_incidents_by_params_command(client: Client, args: Dict[str, Any]) -> 
     clientId, domain, serviceAccount = client.get_parameters()
     access_token = client.get_access_token()
     Authorization = access_token
-    response = client.SearchRequest(limit, offset, userPsNo, statusId, subStatusId, teamId, unitId, creatorId, requesterId, itemId, priorityId,
-                                    assignedUserId, createdTimeGTE, createdTimeLT, updatedTimeGTE, updatedTimeLT, updatedByUserId, clientId, domain, serviceAccount, Authorization)
+    response = client.SearchRequest(limit, offset, userPsNo, statusId, subStatusId, teamId, unitId, creatorId,
+                                    requesterId, itemId, priorityId,
+                                    assignedUserId, createdTimeGTE, createdTimeLT, updatedTimeGTE, updatedTimeLT,
+                                    updatedByUserId, clientId, domain, serviceAccount, Authorization)
     command_results = CommandResults(
         outputs_prefix='Wolken.GetIncidents',
         outputs_key_field='',
@@ -559,7 +576,8 @@ def main() -> None:
     try:
         requests.packages.urllib3.disable_warnings()
         client: Client = Client(urljoin(url, '/wolken-secure/'), verify_certificate, proxy, headers=headers,
-                                auth=None, clientId=clientId, domain=domain, serviceAccount=serviceAccount, refresh_token=refresh_token)
+                                auth=None, clientId=clientId, domain=domain, serviceAccount=serviceAccount,
+                                refresh_token=refresh_token)
 
         commands = {
             'wolken-add-internal-notes': add_internal_notes_command,
