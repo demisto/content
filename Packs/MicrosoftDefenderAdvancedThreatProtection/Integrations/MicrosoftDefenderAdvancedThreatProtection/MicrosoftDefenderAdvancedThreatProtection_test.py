@@ -843,19 +843,19 @@ POLLING_CASES = [
 @pytest.mark.parametrize('args,request_status,args_to_compare,expected_results', POLLING_CASES)
 def test_run_script_polling(mocker, args, request_status, args_to_compare, expected_results):
     import MicrosoftDefenderAdvancedThreatProtection
-    from CommonServerPython import CommandResults
+    import CommonServerPython
 
     def mock_action_command(client, args):
-        return CommandResults(outputs={'action_id': 'action_id_example'})
+        return CommonServerPython.CommandResults(outputs={'action_id': 'action_id_example'})
 
     def mock_get_status(client, args):
-        return CommandResults(outputs={'status': request_status, 'commands': [{'commandStatus': 'Completed'}]})
+        return CommonServerPython.CommandResults(outputs={'status': request_status, 'commands': [{'commandStatus': 'Completed'}]})
 
     def mock_post_process(client, res):
         assert res == {'commands': [{'commandStatus': 'Completed'}], 'status': 'Succeeded'}
-        return CommandResults(outputs={'example_outputs': 'outputs'})
+        return CommonServerPython.CommandResults(outputs={'example_outputs': 'outputs'})
 
-    mocker.patch.object(MicrosoftDefenderAdvancedThreatProtection, 'is_demisto_version_ge', return_value=True)
+    mocker.patch.object(CommonServerPython, 'is_demisto_version_ge', return_value=True)
 
 
     res = run_polling_command(client_mocker, args, 'microsoft-atp-live-response-run-script', mock_action_command,
