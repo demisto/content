@@ -2881,7 +2881,15 @@ def main():
                                                command_decision_field="action_id",
                                                results_function=get_endpoints_command,
                                                polling_field="is_isolated",
-                                               polling_value=["AGENT_UNISOLATED"],
+                                               polling_value=["AGENT_UNISOLATED",
+                                                              "CANCELLED",
+                                                              "ֿPENDING_ABORT",
+                                                              "ABORTED",
+                                                              "EXPIRED",
+                                                              "COMPLETED_PARTIAL",
+                                                              "COMPLETED_SUCCESSFULLY",
+                                                              "FAILED",
+                                                              "TIMEOUT"],
                                                stop_polling=True))
 
         elif command == 'core-get-distribution-url':
@@ -2918,9 +2926,11 @@ def main():
                                                cmd="core-quarantine-files",
                                                command_function=quarantine_files_command,
                                                command_decision_field="action_id",
-                                               results_function=get_quarantine_status_command,
+                                               results_function=action_status_get_command,
                                                polling_field="status",
-                                               polling_value=[False]))
+                                               polling_value=["PENDING",
+                                                              "IN_PROGRESS",
+                                                              "PENDING_ABORT"]))
 
         elif command == 'core-get-quarantine-status':
             return_results(get_quarantine_status_command(client, args))
