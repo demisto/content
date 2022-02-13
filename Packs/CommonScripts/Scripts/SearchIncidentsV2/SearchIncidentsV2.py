@@ -64,7 +64,7 @@ def add_incidents_link(data: List):
     return data
 
 
-def search_incidents(args: Dict):
+def search_incidents(args: Dict):   # pragma: no cover
     if not is_valid_args(args):
         return
 

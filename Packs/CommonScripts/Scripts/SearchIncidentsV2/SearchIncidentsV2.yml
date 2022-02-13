@@ -118,7 +118,7 @@ args:
   required: false
   secret: false
 - default: false
-  description: Custom context field, to use in playbooks.
+  description: If provided, the value of this argument will be set under the searchResultsLabel context key for each incident found.
   isArray: false
   name: searchresultslabel
   required: false
@@ -172,7 +172,7 @@ outputs:
   description: A list with links to the incidents returned from the query.
   type: Unknown
 - contextPath: foundIncidents.searchResultsLabel
-  description: A value to set as the searchresultslabel argument.
+  description: The value provided in the searchresultslabel argument.
   type: String
 script: '-'
 subtype: python3
