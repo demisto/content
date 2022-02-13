@@ -1451,9 +1451,9 @@ class Pack(object):
                         release_notes_dir, new_release_notes_versions, changelog, rn_files_names)
 
                     if self._current_version != latest_release_notes:
-                        logging.error(f"Version mismatch detected between current version: {self._current_version} "
-                                      f"and latest release notes version: {latest_release_notes}. "
-                                      f"Merge from master branch.")
+                        logging.error(f"Version mismatch detected between the pack's current version in "
+                                      f"pack_metadata.json: {self._current_version} and latest release notes "
+                                      f"version: {latest_release_notes}.")
                         task_status = False
                         return task_status, not_updated_build
                     else:
