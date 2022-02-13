@@ -2626,7 +2626,7 @@ def run_polling_command(client: MsClient, args: dict, cmd: str, action_func: Cal
     action_status = command_result.outputs.get("status")
     command_status = command_result.outputs.get("commands", [])[0].get("commandStatus")
     if action_status == 'Failed' or command_status == 'Failed':
-        raise Exception(f'Command failed to get results. {command_result.outputs.get("errors")}')
+        raise Exception(f'Command failed to get results. {command_result.outputs.get("commands", [])[0].get("errors")}')
     elif command_status != 'Completed' or action_status == 'InProgress':
         # schedule next poll
         polling_args = {
@@ -2674,19 +2674,11 @@ def get_live_response_result_command(client, args):
 def get_machine_action_command(client, args):
     id = args['machine_action_id']
     res = client.get_machine_action_by_id(id)
-    md_results = {
-        'Machine Action Id': res.get('id'),
-        'MachineId': res.get('machineId'),
-        'Hostname': res.get('computerDnsName'),
-        'Status': res.get('status'),
-        'Creation time': res.get('creationDateTimeUtc'),
-        'Commands': res.get('commands')
-    }
+
 
     return CommandResults(
         outputs_prefix='MicrosoftATP.MachineAction',
-        outputs=res,
-        readable_output=tableToMarkdown('Machine Action:', md_results)
+        outputs=res
     )
 
 
@@ -2785,10 +2777,10 @@ def get_file_get_successfull_action_results(client, res):
 
     # get file link from action:
     file_link = client.get_live_response_result(machine_action_id, 0)['value']
+    demisto.debug(f'Got file for downloading: {file_link}')
 
-    # download link, create file result
+    # download link, create file result. File comes back as compressed gz file.
     f_data = client.download_file(file_link)
-
     md_results = {
         'Machine Action Id': res.get('id'),
         'MachineId': res.get('machineId'),
@@ -2798,7 +2790,7 @@ def get_file_get_successfull_action_results(client, res):
         'Commands': res.get('commands')
     }
 
-    return [fileResult('Response Result', f_data.content), CommandResults(
+    return [fileResult('Response Result.gz', f_data.content), CommandResults(
         outputs_prefix='MicrosoftATP.LiveResponseAction',
         outputs=res,
         readable_output=tableToMarkdown('Machine Action:', md_results)
