@@ -6,7 +6,7 @@ from demisto_sdk.commands.test_content.execute_test_content import ParallelLoggi
 
 ARTIFACTS_FOLDER = os.getenv('ARTIFACTS_FOLDER', './artifacts')
 JOB_ID = os.environ.get('CI_JOB_ID')
-SUMMARY = ''
+summary_file = os.path.join(ARTIFACTS_FOLDER, 'summary.txt')
 
 
 def get_artifact_data(artifact_folder, artifact_relative_path: str) -> str:
@@ -65,6 +65,8 @@ def get_failing_validations():
         failed_validations_list = failed_validations.split('\n')
         for failed_validation in failed_validations_list:
             summary += failed_validation + '\n'
+        with open(summary_file, 'a') as f:
+            f.write(summary)
         return f'you have {len(failed_validations_list)} failed validations on this push.\n'
     return 'no failing validations on this one. nice job!\n'
 
