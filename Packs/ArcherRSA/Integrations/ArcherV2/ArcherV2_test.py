@@ -55,7 +55,7 @@ GET_LEVELS_BY_APP = {
     }}
 
 GET_FIElD_DEFINITION_RES = {
-    "RequestedObject": {"RelatedValuesListId": 62},
+    "RequestedObject": {"RelatedValuesListId": 62, "Type": 4},
     "IsSuccessful": True,
     "ValidationMessages": []
 }
