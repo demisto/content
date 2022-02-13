@@ -8,7 +8,7 @@ def get_range_command(indexes: List[str], val: List[Any]) -> List[Any]:
          Filter list with a given range.
          Args:
              indexes (list): indexes to filter.
-             val (list): list to filter.
+             val (list): list to filter .
          Returns:
              filtered list.
      """
