@@ -1,13 +1,9 @@
 contentitemexportablefields:
   contentitemfields:
-    fromServerVersion: ''
-    itemVersion: ''
-    packID: 7d11d0ad-c9e3-4c8e-8263-f83c6d043993
     propagationLabels:
     - all
-    toServerVersion: ''
 description: Runs a complete upgrade process for a single device
-id: 7aaaef78-2e98-4870-813f-bf0390485970
+id: PAN-OS Network Operations - Single Device Upgrade
 inputs:
 - description: Target firewall to upgrade
   key: target
@@ -157,6 +153,7 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
+      description: 'Finish'
       brand: ''
       id: 2e322c42-753d-4118-86e2-325cf859339b
       iscommand: false
@@ -222,6 +219,7 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
+      description: 'Checks whether the post-upgrade software version is correct.'
       brand: ''
       id: a34d3541-e0d2-4b82-85f9-912b6ce93a1f
       iscommand: false
@@ -349,6 +347,7 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
+      description: 'Checks if the upgrade software version is already downloaded onto the PAN-OS system.'
       brand: ''
       id: 96b5fb96-32d3-40f1-8831-d073738bd9bc
       iscommand: false
@@ -441,6 +440,7 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
+      description: 'Checks the system type.'
       brand: ''
       id: 51ccdbf8-c9ca-41f7-8198-deb827651850
       iscommand: false
@@ -486,6 +486,7 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
+      description: 'True if the base version of the upgrade image is downloaded.'
       brand: ''
       id: 0e806d92-9ceb-46ac-85a1-dd34b97a4080
       iscommand: false
@@ -582,6 +583,7 @@ tasks:
       playbookId: PAN-OS Network Operations - Download Software
       type: playbook
       version: -1
+      description: 'Downloads the PAN-OS Software.'
     taskid: 1b088e2d-3076-4c4d-83ba-0419058eccf1
     timertriggers: []
     type: playbook
@@ -610,6 +612,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
+      description: 'Downloads the given software image.'
       id: dad4c789-9192-4088-8dc6-565b12a39814
       iscommand: false
       name: PAN-OS Network Operations - Download Software
