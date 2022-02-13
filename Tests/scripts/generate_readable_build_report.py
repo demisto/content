@@ -53,6 +53,8 @@ def get_failing_ut():
         failed_ut_list = failed_ut.split('\n')
         for failed_ut in failed_ut_list:
             summary += failed_ut + '\n'
+        with open(summary_file, 'a') as f:
+            f.write(summary)
         return f'you have {len(failed_ut_list)} failed unit test on this push.\n'
     return 'no failing unit tests on this one. nice job!\n'
 
