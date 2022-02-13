@@ -138,6 +138,7 @@ script:
         mentioned, this command will not use the vsys parameter.
       name: vsys
     description: Run any command supported in the API.
+    deprecated: true
     name: panorama
   - arguments:
     - description: The firewall managed by Panorama from which to retrieve the predefined
@@ -145,6 +146,7 @@ script:
       name: target
     description: Gets the predefined threats list from a Firewall or Panorama and
       stores it as a JSON file in the context.
+    deprecated: true
     name: panorama-get-predefined-threats-list
     outputs:
     - contextPath: File.Size
@@ -208,6 +210,7 @@ script:
       does not validate if the commit was successful. Committing to Panorama does
       not push the configuration to the firewalls. To push the configuration, run
       the panorama-push-to-device-group command.
+    deprecated: true
     name: panorama-commit
     outputs:
     - contextPath: Panorama.Commit.JobID
@@ -243,6 +246,7 @@ script:
       to push the configuration to Prisma Access managed tenants (single or multi
       tenancy), use the device group argument with the device group which is associated
       with the tenant ID.
+    deprecated: true
     name: panorama-push-to-device-group
     outputs:
     - contextPath: Panorama.Push.DeviceGroup
@@ -266,6 +270,7 @@ script:
     - description: Tag for which to filter the list of addresses.
       name: tag
     description: Returns a list of addresses.
+    deprecated: true
     name: panorama-list-addresses
     outputs:
     - contextPath: Panorama.Addresses.Name
@@ -296,6 +301,7 @@ script:
     - description: The device group for which to return addresses (Panorama instances).
       name: device-group
     description: Returns address details for the supplied address name.
+    deprecated: true
     name: panorama-get-address
     outputs:
     - contextPath: Panorama.Addresses.Name
@@ -337,6 +343,7 @@ script:
       isArray: true
       name: tag
     description: Creates an address object.
+    deprecated: true
     name: panorama-create-address
     outputs:
     - contextPath: Panorama.Addresses.Name
@@ -367,6 +374,7 @@ script:
     - description: The device group for which to return addresses (Panorama instances).
       name: device-group
     description: Delete an address object
+    deprecated: true
     name: panorama-delete-address
     outputs:
     - contextPath: Panorama.Addresses.Name
@@ -381,6 +389,7 @@ script:
     - description: Tag for which to filter the Address groups.
       name: tag
     description: Returns a list of address groups.
+    deprecated: true
     name: panorama-list-address-groups
     outputs:
     - contextPath: Panorama.AddressGroups.Name
@@ -411,6 +420,7 @@ script:
     - description: The device group for which to return addresses (Panorama instances).
       name: device-group
     description: Get details for the specified address group
+    deprecated: true
     name: panorama-get-address-group
     outputs:
     - contextPath: Panorama.AddressGroups.Name
@@ -458,6 +468,7 @@ script:
       isArray: true
       name: tags
     description: Creates a static or dynamic address group.
+    deprecated: true
     name: panorama-create-address-group
     outputs:
     - contextPath: Panorama.AddressGroups.Name
@@ -500,6 +511,7 @@ script:
       name: threat_id
       required: true
     description: Sets a vulnerability signature to block mode.
+    deprecated: true
     name: panorama-block-vulnerability
     outputs:
     - contextPath: Panorama.Vulnerability.ID
@@ -515,6 +527,7 @@ script:
     - description: The device group for which to return addresses (Panorama instances).
       name: device-group
     description: Deletes an address group.
+    deprecated: true
     name: panorama-delete-address-group
     outputs:
     - contextPath: Panorama.AddressGroups.Name
@@ -548,6 +561,7 @@ script:
       isArray: true
       name: tags
     description: Edits a static or dynamic address group.
+    deprecated: true
     name: panorama-edit-address-group
     outputs:
     - contextPath: Panorama.AddressGroups.Name
@@ -577,6 +591,7 @@ script:
     - description: Tag for which to filter the Services.
       name: tag
     description: Returns a list of addresses.
+    deprecated: true
     name: panorama-list-services
     outputs:
     - contextPath: Panorama.Services.Name
@@ -607,6 +622,7 @@ script:
     - description: The device group for which to return addresses (Panorama instances).
       name: device-group
     description: Returns service details for the supplied service name.
+    deprecated: true
     name: panorama-get-service
     outputs:
     - contextPath: Panorama.Services.Name
@@ -655,6 +671,7 @@ script:
       isArray: true
       name: tags
     description: Creates a service.
+    deprecated: true
     name: panorama-create-service
     outputs:
     - contextPath: Panorama.Services.Name
@@ -685,6 +702,7 @@ script:
     - description: The device group for which to return addresses (Panorama instances).
       name: device-group
     description: Deletes a service.
+    deprecated: true
     name: panorama-delete-service
     outputs:
     - contextPath: Panorama.Services.Name
@@ -700,6 +718,7 @@ script:
       isArray: true
       name: tag
     description: Returns a list of service groups.
+    deprecated: true
     name: panorama-list-service-groups
     outputs:
     - contextPath: Panorama.ServiceGroups.Name
@@ -721,6 +740,7 @@ script:
     - description: The device group for which to return addresses (Panorama instances).
       name: device-group
     description: Returns details for the specified service group.
+    deprecated: true
     name: panorama-get-service-group
     outputs:
     - contextPath: Panorama.ServiceGroups.Name
@@ -749,6 +769,7 @@ script:
       isArray: true
       name: tags
     description: Creates a service group.
+    deprecated: true
     name: panorama-create-service-group
     outputs:
     - contextPath: Panorama.ServiceGroups.Name
@@ -770,6 +791,7 @@ script:
     - description: The device group for which to return addresses (Panorama instances).
       name: device-group
     description: Deletes a service group.
+    deprecated: true
     name: panorama-delete-service-group
     outputs:
     - contextPath: Panorama.ServiceGroups.Name
@@ -815,6 +837,7 @@ script:
         category (Panorama instances).
       name: device-group
     description: Returns information for a custom URL category.
+    deprecated: true
     name: panorama-get-custom-url-category
     outputs:
     - contextPath: Panorama.CustomURLCategory.Name
@@ -857,6 +880,7 @@ script:
       isArray: true
       name: categories
     description: Creates a custom URL category.
+    deprecated: true
     name: panorama-create-custom-url-category
     outputs:
     - contextPath: Panorama.CustomURLCategory.Name
@@ -883,6 +907,7 @@ script:
     - description: The device group for which to return addresses (Panorama instances).
       name: device-group
     description: Deletes a custom URL category.
+    deprecated: true
     name: panorama-delete-custom-url-category
     outputs:
     - contextPath: Panorama.CustomURLCategory.Name
@@ -910,6 +935,7 @@ script:
       isArray: true
       name: categories
     description: Adds or removes sites to and from a custom URL category.
+    deprecated: true
     name: panorama-edit-custom-url-category
     outputs:
     - contextPath: Panorama.CustomURLCategory.Name
@@ -998,6 +1024,7 @@ script:
       required: true
     description: Returns a URL category from URL filtering. This command is only available
       on Firewall devices.
+    deprecated: true
     name: panorama-get-url-category-from-cloud
     outputs:
     - contextPath: Panorama.URLFilter.URL
@@ -1013,6 +1040,7 @@ script:
       required: true
     description: Returns a URL category from URL filtering. This command is only available
       on Firewall devices.
+    deprecated: true
     name: panorama-get-url-category-from-host
     outputs:
     - contextPath: Panorama.URLFilter.URL
@@ -1029,6 +1057,7 @@ script:
         (Panorama instances).
       name: device-group
     description: Returns information for a URL filtering rule.
+    deprecated: true
     name: panorama-get-url-filter
     outputs:
     - contextPath: Panorama.URLFilter.Name
@@ -1083,6 +1112,7 @@ script:
         (Panorama instances).
       name: device-group
     description: Creates a URL filtering rule.
+    deprecated: true
     name: panorama-create-url-filter
     outputs:
     - contextPath: Panorama.URLFilter.Name
@@ -1132,6 +1162,7 @@ script:
       - add
       - remove
     description: Edit a URL filtering rule.
+    deprecated: true
     name: panorama-edit-url-filter
     outputs:
     - contextPath: Panorama.URLFilter.Name
@@ -1164,6 +1195,7 @@ script:
       name: device-group
     description: Deletes a URL filtering rule.
     name: panorama-delete-url-filter
+    deprecated: true
     outputs:
     - contextPath: Panorama.URLFilter.Name
       description: URL filter rule name.
@@ -1176,6 +1208,7 @@ script:
         instances).
       name: device-group
     description: Returns a list of external dynamic lists.
+    deprecated: true
     name: panorama-list-edls
     outputs:
     - contextPath: Panorama.EDL.Name
@@ -1207,6 +1240,7 @@ script:
         instances).
       name: device-group
     description: Returns information for an external dynamic list
+    deprecated: true
     name: panorama-get-edl
     outputs:
     - contextPath: Panorama.EDL.Name
@@ -1261,6 +1295,7 @@ script:
         instances).
       name: device-group
     description: Creates an external dynamic list.
+    deprecated: true
     name: panorama-create-edl
     outputs:
     - contextPath: Panorama.EDL.Name
@@ -1302,6 +1337,7 @@ script:
       name: element_value
       required: true
     description: Modifies an element of an external dynamic list.
+    deprecated: true
     name: panorama-edit-edl
     outputs:
     - contextPath: Panorama.EDL.Name
@@ -1330,6 +1366,7 @@ script:
         instances).
       name: device-group
     description: Deletes an external dynamic list.
+    deprecated: true
     name: panorama-delete-edl
     outputs:
     - contextPath: Panorama.EDL.Name
@@ -1360,6 +1397,7 @@ script:
         is configured on Panorama.
       name: vsys
     description: Refreshes the specified external dynamic list.
+    deprecated: true
     name: panorama-refresh-edl
   - arguments:
     - description: Name of the rule to create.
@@ -1456,6 +1494,7 @@ script:
     description: Creates a policy rule.
     execution: true
     name: panorama-create-rule
+    deprecated: true
     outputs:
     - contextPath: Panorama.SecurityRule.Name
       description: Rule name.
@@ -1560,6 +1599,7 @@ script:
       name: dst
     description: Creates a custom block policy rule.
     execution: true
+    deprecated: true
     name: panorama-custom-block-rule
     outputs:
     - contextPath: Panorama.SecurityRule.Name
@@ -1614,6 +1654,7 @@ script:
       name: device-group
     description: Changes the location of a policy rule.
     execution: true
+    deprecated: true
     name: panorama-move-rule
     outputs:
     - contextPath: Panorama.SecurityRule.Name
@@ -1666,6 +1707,7 @@ script:
       - remove
     description: Edits a policy rule.
     execution: true
+    deprecated: true
     name: panorama-edit-rule
     outputs:
     - contextPath: Panorama.SecurityRule.Name
@@ -1722,6 +1764,7 @@ script:
       name: device-group
     description: Deletes a policy rule.
     execution: true
+    deprecated: true
     name: panorama-delete-rule
     outputs:
     - contextPath: Panorama.SecurityRule.Name
@@ -1739,6 +1782,7 @@ script:
       - 'true'
       - 'false'
     description: Returns a list of applications.
+    deprecated: true
     name: panorama-list-applications
     outputs:
     - contextPath: Panorama.Applications.Name
@@ -1767,6 +1811,7 @@ script:
       name: job_id
       required: true
     description: Returns commit status for a configuration.
+    deprecated: true
     name: panorama-commit-status
     outputs:
     - contextPath: Panorama.Commit.JobID
@@ -1786,6 +1831,7 @@ script:
       name: job_id
       required: true
     description: Returns the push status for a configuration.
+    deprecated: true
     name: panorama-push-status
     outputs:
     - contextPath: Panorama.Push.DeviceGroup
@@ -1841,6 +1887,7 @@ script:
       file size is 5 MB. If the limit is exceeded, you might need to SSH the firewall
       and run the scp export command to export the PCAP file. For more information,
       see the Palo Alto Networks documentation.
+    deprecated: true
     name: panorama-get-pcap
     outputs:
     - contextPath: File.Size
@@ -1891,6 +1938,7 @@ script:
       name: password
     description: Returns a list of all PCAP files by PCAP type. Not available for
       threat PCAPs.
+    deprecated: true
     name: panorama-list-pcaps
   - arguments:
     - description: Tag for which to register IP addresses.
@@ -1912,6 +1960,7 @@ script:
         to PAN-OS 9.x and higher. Can not be used with persistent as true.
       name: timeout
     description: Registers IP addresses to a tag.
+    deprecated: true
     name: panorama-register-ip-tag
     outputs:
     - contextPath: Panorama.DynamicTags.Tag
@@ -1929,6 +1978,7 @@ script:
       name: IPs
       required: true
     description: Unregisters IP addresses from a tag.
+    deprecated: true
     name: panorama-unregister-ip-tag
   - arguments:
     - description: Tag for which to register users.
@@ -1940,6 +1990,7 @@ script:
       required: true
     description: Registers users to a tag. This command is only available for PAN-OS
       version 9.x and above.
+    deprecated: true
     name: panorama-register-user-tag
     outputs:
     - contextPath: Panorama.DynamicTags.Tag
@@ -1958,6 +2009,7 @@ script:
       required: true
     description: Unregisters users from a tag. This command is only available for
       PAN-OS version 9.x and above.
+    deprecated: true
     name: panorama-unregister-user-tag
   - arguments:
     - description: Specifies the match criteria for the logs. This is similar to the
@@ -1990,8 +2042,8 @@ script:
       name: to_port
     - description: Action for the query.
       name: action
-    deprecated: true
     description: Deprecated. Use the panorama-query-logs command instead.
+    deprecated: true
     name: panorama-query-traffic-logs
     outputs:
     - contextPath: Panorama.TrafficLogs.JobID
@@ -2004,8 +2056,8 @@ script:
     - description: Job ID of the query.
       name: job_id
       required: true
-    deprecated: true
     description: Deprecated. Use the panorama-check-logs-status command instead.
+    deprecated: true
     name: panorama-check-traffic-logs-status
     outputs:
     - contextPath: Panorama.TrafficLogs.JobID
@@ -2018,8 +2070,8 @@ script:
     - description: Job ID of the query.
       name: job_id
       required: true
-    deprecated: true
     description: Deprecated. Use the panorama-get-logs command instead.
+    deprecated: true
     name: panorama-get-traffic-logs
     outputs:
     - contextPath: Panorama.TrafficLogs.JobID
@@ -2098,6 +2150,7 @@ script:
     - description: Tag for which to filter the rules.
       name: tag
     description: Returns a list of predefined Security Rules.
+    deprecated: true
     name: panorama-list-rules
     outputs:
     - contextPath: Panorama.SecurityRule.Name
@@ -2191,6 +2244,7 @@ script:
         The maximum is 5,000.
       name: number_of_logs
     description: Query logs in Panorama.
+    deprecated: true
     name: panorama-query-logs
     outputs:
     - contextPath: Panorama.Monitor.JobID
@@ -2208,6 +2262,7 @@ script:
       name: job_id
       required: true
     description: Checks the status of a logs query.
+    deprecated: true
     name: panorama-check-logs-status
     outputs:
     - contextPath: Panorama.Monitor.JobID
@@ -2418,6 +2473,7 @@ script:
       isArray: true
     description: Checks whether a session matches a specified security policy. This
       command is only available on Firewall instances.
+    deprecated: true
     name: panorama-security-policy-match
     outputs:
     - contextPath: Panorama.SecurityPolicyMatch.Query
@@ -2486,6 +2542,7 @@ script:
       - 'true'
       - 'false'
     description: Lists the static routes of a virtual router.
+    deprecated: true
     name: panorama-list-static-routes
     outputs:
     - contextPath: Panorama.StaticRoutes.Name
@@ -2528,6 +2585,7 @@ script:
         parameter (Panorama instances).
       name: template
     description: Returns the specified static route of a virtual router.
+    deprecated: true
     name: panorama-get-static-route
     outputs:
     - contextPath: Panorama.StaticRoutes.Name
@@ -2591,6 +2649,7 @@ script:
         parameter (Panorama instances).
       name: template
     description: Adds a static route.
+    deprecated: true
     name: panorama-add-static-route
     outputs:
     - contextPath: Panorama.StaticRoutes.Name
@@ -2630,6 +2689,7 @@ script:
         parameter (Panorama instances).
       name: template
     description: Deletes a static route.
+    deprecated: true
     name: panorama-delete-static-route
     outputs:
     - contextPath: Panorama.StaticRoutes.Name
@@ -2665,6 +2725,7 @@ script:
     - description: Serial number of the target device.
       name: target
     description: Show firewall device software version.
+    deprecated: true
     name: panorama-show-device-version
     outputs:
     - contextPath: Panorama.Device.Info.Devicename
@@ -2683,6 +2744,7 @@ script:
     - description: The device to which to download the content update.
       name: target
     description: Downloads the latest content update.
+    deprecated: true
     name: panorama-download-latest-content-update
     outputs:
     - contextPath: Panorama.Content.Download.JobID
@@ -2698,6 +2760,7 @@ script:
       name: job_id
       required: true
     description: Checks the download status of a content update.
+    deprecated: true
     name: panorama-content-update-download-status
     outputs:
     - contextPath: Panorama.Content.Download.JobID
@@ -2713,6 +2776,7 @@ script:
     - description: The device on which to install the content update.
       name: target
     description: Installs the latest content update.
+    deprecated: true
     name: panorama-install-latest-content-update
     outputs:
     - contextPath: Panorama.Content.Install.JobID
@@ -2729,6 +2793,7 @@ script:
       name: job_id
       required: true
     description: Gets the installation status of the content update.
+    deprecated: true
     name: panorama-content-update-install-status
     outputs:
     - contextPath: Panorama.Content.Install.JobID
@@ -2744,6 +2809,7 @@ script:
     - description: The target device from which to get the PAN-OS software version.
       name: target
     description: Checks the PAN-OS software version from the repository.
+    deprecated: true
     name: panorama-check-latest-panos-software
   - arguments:
     - description: The target device from which to download the PAN-OS software version.
@@ -2753,6 +2819,7 @@ script:
       required: true
     description: Downloads the target PAN-OS software version to install on the target
       device.
+    deprecated: true
     name: panorama-download-panos-version
     outputs:
     - contextPath: Panorama.PANOS.Download.JobID
@@ -2769,6 +2836,7 @@ script:
       required: true
     description: Gets the download status of the target PAN-OS software.
     name: panorama-download-panos-status
+    deprecated: true
     outputs:
     - contextPath: Panorama.PANOS.Download.JobID
       description: Job ID of the PAN-OS download.
@@ -2787,6 +2855,7 @@ script:
       name: target_version
       required: true
     description: Installs the target PAN-OS version on the specified target device.
+    deprecated: true
     name: panorama-install-panos-version
     outputs:
     - contextPath: Panorama.PANOS.Install.JobID
@@ -2802,6 +2871,7 @@ script:
       name: job_id
       required: true
     description: Gets the installation status of the PAN-OS software.
+    deprecated: true
     name: panorama-install-panos-status
     outputs:
     - contextPath: Panorama.PANOS.Install.JobID
@@ -2817,12 +2887,14 @@ script:
     - description: The target device on which to reboot the firewall.
       name: target
     description: Reboots the Firewall device.
+    deprecated: true
     name: panorama-device-reboot
   - arguments:
     - description: The IP address from which to return information.
       name: ip_address
       required: true
     description: Gets location information for an IP address.
+    deprecated: true
     name: panorama-show-location-ip
     outputs:
     - contextPath: Panorama.Location.IP.country_code
@@ -2839,6 +2911,7 @@ script:
       type: String
   - arguments: []
     description: Gets information about available PAN-OS licenses and their statuses.
+    deprecated: true
     name: panorama-get-licenses
     outputs:
     - contextPath: Panorama.License.Authcode
@@ -2880,6 +2953,7 @@ script:
       - vulnerability
       - wildfire-analysis
     description: Gets information for the specified security profile.
+    deprecated: true
     name: panorama-get-security-profiles
     outputs:
     - contextPath: Panorama.Spyware.Name
@@ -3040,6 +3114,7 @@ script:
       - post-rulebase
     description: Apply a security profile to specific rules or rules with a specific
       tag.
+    deprecated: true
     name: panorama-apply-security-profile
   - arguments:
     - auto: PREDEFINED
@@ -3050,6 +3125,7 @@ script:
       - pre-rulebase
       - post-rulebase
     description: Get SSL decryption rules.
+    deprecated: true
     name: panorama-get-ssl-decryption-rules
     outputs:
     - contextPath: Panorama.SSLRule.From
@@ -3096,6 +3172,7 @@ script:
       name: template
       required: true
     description: Retrieves the Wildfire configuration.
+    deprecated: true
     name: panorama-get-wildfire-configuration
     outputs:
     - contextPath: Panorama.WildFire.Name
@@ -3116,6 +3193,7 @@ script:
     name: panorama-url-filtering-block-default-categories
   - arguments: []
     description: Get anti-spyware best practices.
+    deprecated: true
     name: panorama-get-anti-spyware-best-practice
     outputs:
     - contextPath: Panorama.Spyware.BotentDomain.Name
@@ -3153,6 +3231,7 @@ script:
       type: String
   - arguments: []
     description: Get file-blocking best practices.
+    deprecated: true
     name: panorama-get-file-blocking-best-practice
     outputs:
     - contextPath: Panorama.FileBlocking.Rule.Action
@@ -3169,6 +3248,7 @@ script:
       type: String
   - arguments: []
     description: Get anti-virus best practices.
+    deprecated: true
     name: panorama-get-antivirus-best-practice
     outputs:
     - contextPath: Panorama.Antivirus.Decoder.Action
@@ -3182,6 +3262,7 @@ script:
       type: String
   - arguments: []
     description: Get vulnerability-protection best practices.
+    deprecated: true
     name: panorama-get-vulnerability-protection-best-practice
     outputs:
     - contextPath: Panorama.Vulnerability.Rule.Action
@@ -3210,6 +3291,7 @@ script:
       type: String
   - arguments: []
     description: View WildFire best practices.
+    deprecated: true
     name: panorama-get-wildfire-best-practice
     outputs:
     - contextPath: Panorama.WildFire.Analysis
@@ -3241,6 +3323,7 @@ script:
       type: String
   - arguments: []
     description: View URL filtering best practices.
+    deprecated: true
     name: panorama-get-url-filtering-best-practice
     outputs:
     - contextPath: Panorama.URLFilter.Category.Action
@@ -3273,42 +3356,49 @@ script:
       required: true
     description: Enforces wildfire best practices to upload files to the maximum size,
       forwards all file types, and updates the schedule.
+    deprecated: true
     name: panorama-enforce-wildfire-best-practice
   - arguments:
     - description: The name of the profile to create.
       name: profile_name
       required: true
     description: Creates an antivirus best practice profile.
+    deprecated: true
     name: panorama-create-antivirus-best-practice-profile
   - arguments:
     - description: The profile name to create.
       name: profile_name
       required: true
     description: Creates an Anti-Spyware best practice profile.
+    deprecated: true
     name: panorama-create-anti-spyware-best-practice-profile
   - arguments:
     - description: The profile name.
       name: profile_name
       required: true
     description: Creates a vulnerability protection best practice profile.
+    deprecated: true
     name: panorama-create-vulnerability-best-practice-profile
   - arguments:
     - description: The profile name.
       name: profile_name
       required: true
     description: Creates a URL filtering best practice profile.
+    deprecated: true
     name: panorama-create-url-filtering-best-practice-profile
   - arguments:
     - description: The name of the profile.
       name: profile_name
       required: true
     description: Creates a file blocking best practice profile.
+    deprecated: true
     name: panorama-create-file-blocking-best-practice-profile
   - arguments:
     - description: The name of the profile.
       name: profile_name
       required: true
     description: Creates a WildFire analysis best practice profile.
+    deprecated: true
     name: panorama-create-wildfire-best-practice-profile
   - arguments:
     - description: The template to use when running the command. Overrides the template
@@ -3322,6 +3412,7 @@ script:
         \ will default to 'vsys1'. "
       name: vsys
     description: Shows the user ID interface configuration.
+    deprecated: true
     name: panorama-show-user-id-interfaces-config
     outputs:
     - contextPath: Panorama.UserInterfaces.Name
@@ -3345,6 +3436,7 @@ script:
         \ will default to 'vsys1'. "
       name: vsys
     description: Shows the zones configuration.
+    deprecated: true
     name: panorama-show-zones-config
     outputs:
     - contextPath: Panorama.Zone.Name
@@ -3374,6 +3466,7 @@ script:
         \ will default to 'vsys1'. "
       name: vsys
     description: Retrieves list of user-ID agents configured in the system.
+    deprecated: true
     name: panorama-list-configured-user-id-agents
     outputs:
     - contextPath: Panorama.UserIDAgents.Name
@@ -3422,6 +3515,7 @@ script:
       - content
       required: true
     description: Uploads a content file to Panorama.
+    deprecated: true
     name: panorama-upload-content-update-file
     outputs:
     - contextPath: Panorama.Content.Upload.Status
@@ -3452,6 +3546,7 @@ script:
       - no
       required: true
     description: Installs specific content update file.
+    deprecated: true
     name: panorama-install-file-content-update
     outputs:
     - contextPath: Panorama.Content.Install.JobID
@@ -6817,7 +6912,6 @@ script:
     - contextPath: Panorama.Content.Install.Status
       description: Installation status.
       type: string
-
   dockerimage: demisto/python3:3.10.1.25933
   runonce: false
   script: ''
