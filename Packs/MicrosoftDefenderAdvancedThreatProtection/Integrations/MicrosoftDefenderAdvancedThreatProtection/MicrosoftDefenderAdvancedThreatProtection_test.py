@@ -849,14 +849,14 @@ def test_run_script_polling(mocker, args, request_status, args_to_compare, expec
         return CommonServerPython.CommandResults(outputs={'action_id': 'action_id_example'})
 
     def mock_get_status(client, args):
-        return CommonServerPython.CommandResults(outputs={'status': request_status, 'commands': [{'commandStatus': 'Completed'}]})
+        return CommonServerPython.CommandResults(
+            outputs={'status': request_status, 'commands': [{'commandStatus': 'Completed'}]})
 
     def mock_post_process(client, res):
         assert res == {'commands': [{'commandStatus': 'Completed'}], 'status': 'Succeeded'}
         return CommonServerPython.CommandResults(outputs={'example_outputs': 'outputs'})
 
     mocker.patch.object(CommonServerPython, 'is_demisto_version_ge', return_value=True)
-
 
     res = run_polling_command(client_mocker, args, 'microsoft-atp-live-response-run-script', mock_action_command,
                               mock_get_status, mock_post_process)

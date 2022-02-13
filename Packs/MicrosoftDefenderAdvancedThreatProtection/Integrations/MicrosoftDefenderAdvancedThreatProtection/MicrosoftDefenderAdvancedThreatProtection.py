@@ -2675,7 +2675,6 @@ def get_machine_action_command(client, args):
     id = args['machine_action_id']
     res = client.get_machine_action_by_id(id)
 
-
     return CommandResults(
         outputs_prefix='MicrosoftATP.MachineAction',
         outputs=res
