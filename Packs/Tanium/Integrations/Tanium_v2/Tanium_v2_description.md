@@ -40,3 +40,7 @@ To use OAuth 2.0 follow the next steps:
  setting you would like to edit.
   
 4. For more information see the [**Tanium documentation**](https://docs.tanium.com/platform_user/platform_user/console_api_tokens.html).
+
+
+---
+[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/tanium-v2)
