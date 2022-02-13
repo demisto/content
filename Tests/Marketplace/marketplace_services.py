@@ -57,11 +57,11 @@ class Pack(object):
     EXCLUDE_DIRECTORIES = [PackFolders.TEST_PLAYBOOKS.value]
     RELEASE_NOTES = "ReleaseNotes"
 
-    def __init__(self, pack_name, pack_path, marketplace):
+    def __init__(self, pack_name, pack_path):
         self._pack_name = pack_name
         self._pack_path = pack_path
         self._zip_path = None  # zip_path will be updated as part of zip_pack
-        self._marketplace = marketplace
+        self._marketplaces = []  # initialized in load_user_metadata function
         self._status = None
         self._public_storage_path = ""
         self._remove_files_list = []  # tracking temporary files, in order to delete in later step
@@ -73,7 +73,7 @@ class Pack(object):
         self._description = None  # initialized in load_user_metadata function
         self._display_name = None  # initialized in load_user_metadata function
         self._user_metadata = None  # initialized in load_user_metadata function
-        self.eula_link = None  # initialized in load_user_metadata function
+        self._eula_link = None  # initialized in load_user_metadata function
         self._is_feed = False  # a flag that specifies if pack is a feed pack
         self._downloads_count = 0  # number of pack downloads
         self._bucket_url = None  # URL of where the pack was uploaded.
@@ -109,8 +109,8 @@ class Pack(object):
         self._contains_transformer = False  # initialized in collect_content_items function
         self._contains_filter = False  # initialized in collect_content_items function
         self._is_missing_dependencies = False  # initialized in _load_pack_dependencies function
-        self.should_upload_to_marketplace = True  # initialized in load_user_metadata function
         self._is_modified = None  # initialized in detect_modified function
+        self.should_upload_to_marketplace = True  # initialized in load_user_metadata function
 
     @property
     def name(self):
@@ -335,6 +335,10 @@ class Pack(object):
     @property
     def is_modified(self):
         return self._is_modified
+
+    @property
+    def marketplaces(self):
+        return self._marketplaces
 
     def _get_latest_version(self):
         """ Return latest semantic version of the pack.
@@ -591,7 +595,7 @@ class Pack(object):
             Metadata.LEGACY: self._legacy,
             Metadata.SUPPORT: self._support_type,
             Metadata.SUPPORT_DETAILS: self._support_details,
-            Metadata.EULA_LINK: self.eula_link,
+            Metadata.EULA_LINK: self._eula_link,
             Metadata.AUTHOR: self._author,
             Metadata.AUTHOR_IMAGE: self._author_image,
             Metadata.CERTIFICATION: self._certification,
@@ -623,22 +627,16 @@ class Pack(object):
 
         return pack_metadata
 
-    def _load_pack_dependencies(self, index_folder_path, pack_names, id_set, marketplace):
+    def _load_pack_dependencies(self, index_folder_path, packs_dict):
         """ Loads dependencies metadata and returns mapping of pack id and it's loaded data.
-            There are 3 cases for dependencies:
+            There are 2 cases:
               Case 1: The dependency is present in the index.zip. In this case, we add it to the dependencies results.
-              Case 2: The dependency is missing from the index.zip since it is not a part of this marketplace.
-                In this case, ignore it. For this case there are two options - option 1 is that it is missing from the
-                id set, option 2 is that it is in the id set but doesn't have the current marketplace under the matching
-                key in the id set.
-              Case 3: The dependency is missing from the index.zip since it is a new pack. In this case, handle missing
-                dependency - This means we mark this pack as 'missing dependency', and once the new index.zip is created, and
-                therefore it contains the new pack, we call this function again, and hitting case 1.
+              Case 2: The dependency is missing from the index.zip since it is a new pack. In this case, handle missing
+                dependency - This means we mark this pack as 'missing dependency', and once the new index.zip is
+                created, and therefore it contains the new pack, we call this function again, and hitting case 1.
         Args:
             index_folder_path (str): full path to download index folder.
-            pack_names (set): List of all packs.
-            id_set (dict): Loaded id_set.json.
-            marketplace (str): Marketplace of current upload.
+            packs_dict (dict): dict of all packs relevant for current marketplace, as {pack_id: pack_object}.
 
         Returns:
             dict: pack id as key and loaded metadata of packs as value.
@@ -648,8 +646,11 @@ class Pack(object):
         dependencies_data_result = {}
         first_level_dependencies = self.user_metadata.get(Metadata.DEPENDENCIES, {})
         all_level_displayed_dependencies = self.user_metadata.get(Metadata.DISPLAYED_IMAGES, [])
-        dependencies_ids = {d for d in first_level_dependencies.keys()}
+        dependencies_ids = {dep for dep in first_level_dependencies.keys()}
         dependencies_ids.update(all_level_displayed_dependencies)
+
+        # filter out dependencies that are not in this current marketplace
+        dependencies_ids = {dep for dep in dependencies_ids if dep in packs_dict.keys()}
 
         if self._pack_name != GCPConfig.BASE_PACK:  # check that current pack isn't Base Pack in order to prevent loop
             dependencies_ids.add(GCPConfig.BASE_PACK)  # Base pack is always added as pack dependency
@@ -663,31 +664,8 @@ class Pack(object):
                     dependency_metadata = json.load(metadata_file)
                     dependencies_data_result[dependency_pack_id] = dependency_metadata
 
-            elif dependency_pack_id in pack_names:
-                if id_set:
-                    pack_info = id_set.get('Packs', {}).get(dependency_pack_id)
-                    if not pack_info:
-                        # Case 2 option 1: the dependency is not in the index since it is not a part of the current
-                        # marketplace. Here we check if the pack is not in the id set - this happens in the
-                        # marketplace v2 id set.
-                        logging.warning(f"{self._pack_name} pack dependency with id {dependency_pack_id} is not part of"
-                                        f" the current marketplace, ignoring dependency.")
-                        continue
-
-                    logging.debug(f'pack {dependency_pack_id} info in ID set:\n {pack_info}')
-
-                    if marketplace not in pack_info.get('marketplaces'):
-                        # Case 2 option 2: the dependency is not in the index since it is not a part of the current
-                        # marketplace. Here we check if the current marketplace is under the pack's marketplaces in the
-                        # id set. This happens in the xsoar id set.
-                        logging.warning(f"{self._pack_name} pack dependency with id {dependency_pack_id} is not part of"
-                                        f" the current marketplace, ignoring dependency.")
-                        continue
-
-                # Case 3: If we reached here, then the dependency is not in the index since it is a new pack,
-                # but it is in the id set and in this current marketplace.
+                # Case 2: the dependency is not in the index since it is a new pack
                 self._is_missing_dependencies = True
-
                 logging.warning(f"{self._pack_name} pack dependency with id {dependency_pack_id} "
                                 f"was not found in index, marking it as missing dependencies - to be resolved in "
                                 f"next iteration over packs")
@@ -1860,8 +1838,9 @@ class Pack(object):
             self.description = user_metadata.get(Metadata.DESCRIPTION, False)
             self.display_name = user_metadata.get(Metadata.NAME, '')  # type: ignore[misc]
             self._user_metadata = user_metadata
-            self.eula_link = user_metadata.get(Metadata.EULA_LINK, Metadata.EULA_URL)
-            self.should_upload_to_marketplace = marketplace in user_metadata.get('marketplaces', ['xsoar'])
+            self._eula_link = user_metadata.get(Metadata.EULA_LINK, Metadata.EULA_URL)
+            self._marketplaces = user_metadata.get('marketplaces', ['xsoar'])
+            self.should_upload_to_marketplace = marketplace in self._marketplaces
 
             logging.info(f"Finished loading {self._pack_name} pack user metadata")
             task_status = True
@@ -1967,7 +1946,7 @@ class Pack(object):
         )
 
     def format_metadata(self, index_folder_path, packs_dependencies_mapping, build_number, commit_hash,
-                        pack_was_modified, statistics_handler, pack_names=None, id_set=None, marketplace='xsoar',
+                        pack_was_modified, statistics_handler, packs_dict=None, marketplace='xsoar',
                         format_dependencies_only=False):
         """ Re-formats metadata according to marketplace metadata format defined in issue #19786 and writes back
         the result.
@@ -1979,8 +1958,7 @@ class Pack(object):
             commit_hash (str): current commit hash.
             pack_was_modified (bool): Indicates whether the pack was modified or not.
             statistics_handler (StatisticsHandler): The marketplace statistics handler
-            pack_names (set): List of all pack names.
-            id_set (dict): Dict of id_set.json
+            packs_dict (dict): dict of all packs relevant for current marketplace, as {pack_id: pack_object}.
             marketplace (str): Marketplace of current upload.
             format_dependencies_only (bool): Indicates whether the metadata formation is just for formatting the
              dependencies or not.
@@ -1991,19 +1969,18 @@ class Pack(object):
 
         """
         task_status = False
-        pack_names = pack_names if pack_names else []
+        packs_dict = packs_dict if packs_dict else {}
         is_missing_dependencies = False
 
         try:
-            self.set_pack_dependencies(packs_dependencies_mapping)
+            self.set_pack_dependencies(packs_dependencies_mapping, marketplace)
 
             if Metadata.DISPLAYED_IMAGES not in self.user_metadata and self._user_metadata:
                 logging.info(f"Adding auto generated display images for {self._pack_name} pack")
                 self._user_metadata[Metadata.DISPLAYED_IMAGES] = packs_dependencies_mapping.get(
                     self._pack_name, {}).get(Metadata.DISPLAYED_IMAGES, [])
             logging.info(f"Loading pack dependencies for {self._pack_name} pack")
-            dependencies_data, is_missing_dependencies = \
-                self._load_pack_dependencies(index_folder_path, pack_names, id_set, marketplace)
+            dependencies_data, is_missing_dependencies = self._load_pack_dependencies(index_folder_path, packs_dict)
 
             self._enhance_pack_attributes(index_folder_path, pack_was_modified, dependencies_data, statistics_handler,
                                           format_dependencies_only)
@@ -2077,12 +2054,12 @@ class Pack(object):
 
         return latest_changelog_released_date
 
-    def set_pack_dependencies(self, packs_dependencies_mapping):
+    def set_pack_dependencies(self, packs_dependencies_mapping, marketplace='xsoar'):
         pack_dependencies = packs_dependencies_mapping.get(self._pack_name, {}).get(Metadata.DEPENDENCIES, {})
         if Metadata.DEPENDENCIES not in self.user_metadata and self._user_metadata:
             self._user_metadata[Metadata.DEPENDENCIES] = {}
 
-        core_packs = GCPConfig.get_core_packs(self._marketplace)
+        core_packs = GCPConfig.get_core_packs(marketplace)
 
         # If it is a core pack, check that no new mandatory packs (that are not core packs) were added
         # They can be overridden in the user metadata to be not mandatory so we need to check there as well
@@ -3228,3 +3205,14 @@ def get_all_packs_by_id_set(packs_list, extract_destination_path, id_set, market
     #         packs_dict[pack_name] = pack
     #         packs_list.append(pack)
     return packs_dict, packs_list
+
+def is_part_of_marketplace_by_id_set(pack_id):
+    """
+    Check if the given pack is a part of this current marketplace.
+    Args:
+        pack_id:
+
+    Returns:
+
+    """
+    pass
