@@ -31,8 +31,9 @@
     "x2_fields": "causality_actor_process_command_line",
     "Aliases": [
         {
-          "cliName": "parentcmdline",
-          "type": "multiSelect"
+            "cliName": "parentcmdline",
+            "type": "multiSelect",
+            "name": "Parent CMD line"
         }
     ]
 }
