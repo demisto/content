@@ -552,7 +552,7 @@ class Client(BaseClient):
 
         if res.get('RequestedObject') and res.get('IsSuccessful'):
 
-            if 'RelatedValuesListId' not in res['RequestedObject']:
+            if res.get('RequestedObject').get('Type') != 4:
                 raise Exception('The command returns values only for fields of type "Values List".\n')
 
             list_id = res['RequestedObject']['RelatedValuesListId']
