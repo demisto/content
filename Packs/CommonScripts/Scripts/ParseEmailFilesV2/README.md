@@ -18,6 +18,7 @@ This script is based on the [parse-emails XSOAR python package](https://github.c
 | entryid | Entry ID with the Email as a file in msg or eml format |
 | parse_only_headers | Will parse only the headers and return headers table |
 | max_depth | How many levels deep we should parse the attached emails \(e.g. email contains an emails contains an email\). Default depth level is 3. Minimum level is 1, if set to 1 the script will parse only the first level email |
+| nesting_level_to_return | In case of nested email files (for instance, an EML file inside an EML file), determines which of the email files to return as an output. |
 
 ## Outputs
 ---
