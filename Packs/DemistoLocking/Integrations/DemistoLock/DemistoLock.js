@@ -1,3 +1,43 @@
+/* version should be given if theres a known version we must update according to.
+In case of a known version, retries should be set to 0 */
+function mergeVersionedIntegrationContext({newContext, retries = 0,version, objectKey = {}}) {
+    var savedSuccessfully = false;
+    do {
+        logDebug("mergeVersionedIntegrationContext - retries: " + retries  + " given version: " + version)
+
+        var versionedIntegrationContext = getVersionedIntegrationContext(true, true) || {};
+        var context = versionedIntegrationContext.context;
+        mergeContexts(newContext, context, objectKey);
+        logDebug('Trying to save context: ' + JSON.stringify(context));
+
+        var response = setVersionedIntegrationContext(context, true, version || versionedIntegrationContext.version);
+        logDebug('response from merge: ' + JSON.stringify(response));
+        if(response.Error){
+            logDebug(response.Error)
+        }
+        else
+        {
+            savedSuccessfully = true;
+        }
+
+    } while (!savedSuccessfully && retries-- > 0);
+    if(!savedSuccessfully){
+        throw 'Did not merge context successfully.'
+    }
+}
+/*
+    This function will mutate existingContext, updating it according to newContext.
+*/
+
+
+function mergeContexts(newContext, existingContext, objectKeys = {}) {
+    for (var key in newContext) {
+        existingContext[key] = existingContext[key] && objectKeys[key] ?
+            mergeContextLists(newContext[key], existingContext[key], objectKeys[key])
+            : existingContext[key] = newContext[key];
+    }
+}
+
 function guid() {
   function s4() {
     return Math.floor((1 + Math.random()) * 0x10000)
@@ -53,7 +93,9 @@ switch (command) {
             }
             if (!lock.guid) {
                 try {
+                    logDebug('call set to lock with guid' + guid + ' ' + 'version: ' + version)
                     setLock(guid, lockInfo, version);
+                    logDebug('done with set lock')
                 } catch(err) {
                     logDebug(err.message)
                 }
@@ -62,7 +104,7 @@ switch (command) {
         } while (time++ < lockTimeout) ;
 
         [lock, version] = getLock();
-
+        logDebug('got lock after loop ' + JSON.stringify(lock))
         if (lock.guid === guid) {
             var md = '### Demisto Locking Mechanism\n';
             md += 'Lock acquired successfully\n';

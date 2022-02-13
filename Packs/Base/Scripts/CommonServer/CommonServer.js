@@ -2031,7 +2031,9 @@ function mergeVersionedIntegrationContext({newContext, retries = 0,version, obje
         var versionedIntegrationContext = getVersionedIntegrationContext(true, true) || {};
         var context = versionedIntegrationContext.context;
         mergeContexts(newContext, context, objectKey);
+        logDebug('Trying to save context: ' + JSON.stringify(context));
         var response = setVersionedIntegrationContext(context, true, version || versionedIntegrationContext.version);
+        logDebug('response from merge: ' + JSON.stringify(response));
         if(response.Error){
             logDebug(response.Error)
         }
