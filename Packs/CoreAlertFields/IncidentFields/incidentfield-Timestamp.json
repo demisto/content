@@ -32,9 +32,9 @@
             "name": "Alert Attack Time"
         },
         {
-            "cliName": "dazureactivedirectoryidentityandaccessdetecteddatetime",
+            "cliName": "azureactivedirectoryidentityandaccessdetecteddatetime",
             "type": "shortText",
-            "name": ""
+            "name": "Azure Active Directory Identity and Access Detected Date Time"
         },
         {
             "cliName": "bmcremedyforcecreateddate",
@@ -59,7 +59,7 @@
         {
             "cliName": "chroniclefirstseen",
             "type": "date",
-            "name": ""
+            "name": "Chronicle First Seen"
         },
         {
             "cliName": "code42alerttimestamp",
