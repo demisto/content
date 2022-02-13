@@ -8916,7 +8916,7 @@ class PollResult:
 
 
 def polling_function(name, interval=30, timeout=600, poll_message='Fetching Results:', polling_arg_name="polling",
-         requires_polling_arg=True):
+                     requires_polling_arg=True):
     """
     To use on a function that should rerun itself
     Commands that use this decorator must have a Polling argument, polling: true in yaml,

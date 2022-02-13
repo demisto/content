@@ -321,7 +321,8 @@ def test_crowdstrike_submit_url_command_no_poll(requests_mock):
     }
     mock_call = requests_mock.post(BASE_URL + '/submit/url', json=submit_response)
     result = crowdstrike_submit_url_command(client, {'url': BASE_URL, 'environmentID': 300, 'comment': 'some comment'})
-    assert result[0].outputs['CrowdStrike.Submit(val.submission_id && val.submission_id === obj.submission_id)'] == submit_response
+    assert result[0].outputs['CrowdStrike.Submit(val.submission_id && val.submission_id === obj.submission_id)'] == \
+           submit_response
     assert 'environment_id' in mock_call.last_request.text
     assert 'comment' in mock_call.last_request.text
 
@@ -332,7 +333,8 @@ def test_crowdstrike_submit_sample_command(mocker, requests_mock):
     mocker.patch.object(demisto, 'getFilePath',
                         return_value={'id': id, 'path': './test_data/scan_response.json', 'name': 'scan_response.json'})
     result = crowdstrike_submit_sample_command(client, {'entryId': '33'})
-    assert result[0].outputs['CrowdStrike.Submit(val.submission_id && val.submission_id === obj.submission_id)'] == submit_response
+    assert result[0].outputs['CrowdStrike.Submit(val.submission_id && val.submission_id === obj.submission_id)'] == \
+           submit_response
     assert result[0].outputs['CrowdStrike.JobID'] == submit_response['job_id']
 
 
