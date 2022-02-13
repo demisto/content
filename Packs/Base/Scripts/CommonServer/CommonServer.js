@@ -2021,3 +2021,47 @@ function setVersionedIntegrationContext(context, sync, version) {
         return setIntegrationContext(context);
     }
 }
+/* version should be given if theres a known version we must update according to.
+In case of a known version, retries should be set to 0 */
+function mergeVersionedIntegrationContext({newContext, retries = 0,version, objectKey = {}}) {
+    var savedSuccessfully = false;
+    do {
+        logDebug("mergeVersionedIntegrationContext - retries: " + retries  + " given version: " + version)
+
+        var versionedIntegrationContext = getVersionedIntegrationContext(true, true) || {};
+        var context = versionedIntegrationContext.context;
+        mergeContexts(newContext, context, objectKey);
+        var response = setVersionedIntegrationContext(context, true, version || versionedIntegrationContext.version);
+        if(response.Error){
+            logDebug(response.Error)
+        }
+        else
+        {
+            savedSuccessfully = true;
+        }
+
+    } while (!savedSuccessfully && retries-- > 0);
+    if(!savedSuccessfully){
+        throw 'Did not merge context successfully.'
+    }
+}
+/*
+    This function will mutate existingContext, updating it according to newContext.
+*/
+function mergeContexts(newContext, existingContext, objectKeys = {}) {
+    for (var key in newContext) {
+        existingContext[key] = existingContext[key] && objectKeys[key] ?
+            mergeContextLists(newContext[key], existingContext[key], objectKeys[key])
+            : existingContext[key] = newContext[key];
+    }
+}
+function mergeContextLists(newItems, oldItems, objectKey) {
+    let toMapByKey = (prev, curr) => {
+        prev[curr[objectKey]] = curr;
+        return prev;
+    };
+
+    oldItemsByKey = oldItems.reduce(toMapByKey, {});
+    newItemsByKey = newItems.reduce(toMapByKey, {});
+    return Object.values(Object.assign(oldItemsByKey, newItemsByKey)).filter(e => !e['remove']);
+}
