@@ -1,0 +1,179 @@
+id: TestIdentityRecordedFuture.yml
+name: TestIdentityRecordedFuture.yml
+version: -1
+fromversion: 6.0.0
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: '56f3e92e-623d-456c-a0ca-b10022b64e33'
+    type: start
+    task:
+      id: '56f3e92e-623d-456c-a0ca-b10022b64e33'
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 50}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '1':
+    id: 1
+    taskid: 'ad870471-c112-43ee-ab82-d65959bdf0bc'
+    type: regular
+    task:
+      id: 'ad870471-c112-43ee-ab82-d65959bdf0bc'
+      version: -1
+      name: DeleteContext
+      description: ''
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      all:
+        simple: yes
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '2':
+    id: 2
+    taskid: '10d2493e-d874-4f29-b7d5-3d0a331ad398'
+    type: regular
+    task:
+      id: '10d2493e-d874-4f29-b7d5-3d0a331ad398'
+      version: -1
+      name: recordedfuture-identity-search
+      description: ''
+      script: Recorded Future Identity|||recordedfuture-identity-search
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '3':
+    id: '3'
+    taskid: '624ddb06-2876-413a-9e27-44c2f9566eaf'
+    type: condition
+    task:
+      id: '624ddb06-2876-413a-9e27-44c2f9566eaf'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '4'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.Credentials.SearchIdentities
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '4':
+    id: 4
+    taskid: 'da88e8dd-de03-4524-a714-63dec73e429a'
+    type: regular
+    task:
+      id: 'da88e8dd-de03-4524-a714-63dec73e429a'
+      version: -1
+      name: recordedfuture-identity-lookup
+      description: ''
+      script: Recorded Future Identity|||recordedfuture-identity-lookup
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '5'
+    scriptarguments:
+      identities:
+        simple: ${RecordedFuture.Credentials.SearchIdentities}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '5':
+    id: '5'
+    taskid: '4a525b99-7c3d-49a7-a79d-88a715421666'
+    type: condition
+    task:
+      id: '4a525b99-7c3d-49a7-a79d-88a715421666'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '6'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RecordedFuture.Credentials.Identities
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 1000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '6':
+    id: '6'
+    taskid: '221622d6-26bf-4220-b603-72be2a87ea6d'
+    type: title
+    task:
+      id: '221622d6-26bf-4220-b603-72be2a87ea6d'
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 1200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+view: '{"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 200, "width":
+  380, "x": 50, "y": 50}}}'
+inputs: []
+outputs: []
+description: Test playbook for Recorded Future Identity
