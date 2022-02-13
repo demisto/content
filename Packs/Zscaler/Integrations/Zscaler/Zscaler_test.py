@@ -1,6 +1,6 @@
-from urllib.parse import urljoin
 import demistomock as demisto
 import CommonServerPython
+from CommonServerPython import urljoin
 import pytest
 import json
 import requests_mock
