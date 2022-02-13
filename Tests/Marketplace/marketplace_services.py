@@ -1505,6 +1505,8 @@ class Pack(object):
                 return task_status, not_updated_build
 
             else:
+                # if there is no changelog file for the pack, this is a new pack, and we start it's changelog at it's
+                # current version
                 version_changelog = self._create_changelog_entry(
                     release_notes=self.description,
                     version_display_name=self._current_version,
@@ -1513,7 +1515,7 @@ class Pack(object):
                     initial_release=True
                 )
                 changelog = {
-                    Pack.PACK_INITIAL_VERSION: version_changelog
+                    self._current_version: version_changelog
                 }
             # else:
             #     logging.error(f"No release notes found for: {self._pack_name}")
