@@ -347,9 +347,10 @@ def upload_index_to_storage(index_folder_path: str, extract_destination_path: st
 
 
 def create_corepacks_config(storage_bucket: Any, build_number: str, index_folder_path: str,
-                            artifacts_dir: str, storage_base_path: str, marketplace: str):
-    """Create corepacks.json file and stores it in the artifacts dir. This files contains all of the server's core packs, under
-    the key corepacks, and specifies which core packs should be upgraded upon XSOAR upgrade, under the key upgradeCorePacks.
+                            artifacts_dir: str, storage_base_path: str, marketplace: str = 'xsoar'):
+    """Create corepacks.json file and stores it in the artifacts dir. This files contains all of the server's core
+    packs, under the key corepacks, and specifies which core packs should be upgraded upon XSOAR upgrade, under the key
+    upgradeCorePacks.
 
 
      Args:
@@ -1278,7 +1279,8 @@ def main():
     # marketplace v2 isn't currently supported - dependencies zip should only be used for v1
     if is_create_dependencies_zip and marketplace == 'xsoar':
         # handle packs with dependencies zip
-        upload_packs_with_dependencies_zip(signature_key, storage_bucket, storage_base_path, packs_for_current_marketplace_dict)
+        upload_packs_with_dependencies_zip(signature_key, storage_bucket, storage_base_path,
+                                           packs_for_current_marketplace_dict)
 
 
 if __name__ == '__main__':

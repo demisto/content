@@ -63,6 +63,8 @@ AGGREGATED_CHANGELOG = {
     }
 }
 
+DUMMY_PACKS_DICT = {'HelloWorld': '', 'ServiceNow': '', 'Ipstack': '', 'Active_Directory_Query': '', 'SlackV2': '',
+                    'CommonTypes': '', 'CommonPlaybooks': ''}
 
 @pytest.fixture(scope="module")
 def dummy_pack_metadata():
@@ -96,7 +98,7 @@ class TestMetadataParsing:
         dummy_pack._user_metadata = dummy_pack_metadata
         dummy_pack._enhance_pack_attributes(
             index_folder_path="", pack_was_modified=False,
-            dependencies_data={}, statistics_handler=None
+            dependencies_metadata_dict={}, statistics_handler=None
         )
         parsed_metadata = dummy_pack._parse_pack_metadata(build_number="dummy_build_number", commit_hash="dummy_commit")
 
@@ -134,7 +136,7 @@ class TestMetadataParsing:
         dummy_pack._displayed_integration_images = []
         dummy_pack._user_metadata = dummy_pack_metadata
         dummy_pack._enhance_pack_attributes(
-            index_folder_path="", pack_was_modified=False, dependencies_data={}, statistics_handler=None
+            index_folder_path="", pack_was_modified=False, dependencies_metadata_dict={}, statistics_handler=None
         )
 
         assert dummy_pack._pack_name == 'Test Pack Name'
@@ -160,7 +162,7 @@ class TestMetadataParsing:
         dummy_pack._displayed_integration_images = []
         dummy_pack._user_metadata = {}
         dummy_pack._enhance_pack_attributes(
-            index_folder_path="", pack_was_modified=False, dependencies_data={}, statistics_handler=None
+            index_folder_path="", pack_was_modified=False, dependencies_metadata_dict={}, statistics_handler=None
         )
 
         assert dummy_pack._support_type == Metadata.XSOAR_SUPPORT
@@ -1367,7 +1369,7 @@ class TestSetDependencies:
         dependencies = json.loads(dependencies)
         dependencies.update(generated_dependencies['ImpossibleTraveler']['dependencies'])
         p._user_metadata = metadata
-        p.set_pack_dependencies(generated_dependencies)
+        p.set_pack_dependencies(generated_dependencies, DUMMY_PACKS_DICT)
 
         assert p.user_metadata['dependencies'] == dependencies
 
@@ -1423,7 +1425,7 @@ class TestSetDependencies:
         metadata['dependencies'] = {}
         p = Pack('ImpossibleTraveler', 'dummy_path')
         p._user_metadata = metadata
-        p.set_pack_dependencies(generated_dependencies)
+        p.set_pack_dependencies(generated_dependencies, DUMMY_PACKS_DICT)
 
         assert p.user_metadata['dependencies'] == generated_dependencies['ImpossibleTraveler']['dependencies']
 
@@ -1443,7 +1445,7 @@ class TestSetDependencies:
         dependencies = metadata['dependencies']
         p = Pack('ImpossibleTraveler', 'dummy_path')
         p._user_metadata = metadata
-        p.set_pack_dependencies({})
+        p.set_pack_dependencies({}, {})
         assert p.user_metadata['dependencies'] == dependencies
 
     def test_set_dependencies_core_pack(self):
@@ -1467,7 +1469,7 @@ class TestSetDependencies:
                         'mandatory': True,
                         'minVersion': '1.0.0',
                         'author': 'Cortex XSOAR',
-                        'name': 'ServiceNow',
+                        'name': 'Common Playbooks',
                         'certification': 'certified'
                     }
                 }
@@ -1482,7 +1484,7 @@ class TestSetDependencies:
         dependencies = json.dumps(generated_dependencies['HelloWorld']['dependencies'])
         dependencies = json.loads(dependencies)
 
-        p.set_pack_dependencies(generated_dependencies, {'HelloWorld': ''})
+        p.set_pack_dependencies(generated_dependencies, DUMMY_PACKS_DICT)
 
         assert p.user_metadata['dependencies'] == dependencies
 
@@ -1526,7 +1528,7 @@ class TestSetDependencies:
         p._user_metadata = metadata
 
         with pytest.raises(Exception) as e:
-            p.set_pack_dependencies(generated_dependencies)
+            p.set_pack_dependencies(generated_dependencies, DUMMY_PACKS_DICT)
 
         assert str(e.value) == "New mandatory dependencies ['SlackV2'] were found in the core pack HelloWorld"
 
@@ -1572,7 +1574,7 @@ class TestSetDependencies:
         dependencies.update(user_dependencies)
         p._user_metadata = metadata
 
-        p.set_pack_dependencies(generated_dependencies)
+        p.set_pack_dependencies(generated_dependencies, DUMMY_PACKS_DICT)
 
         assert p.user_metadata['dependencies'] == dependencies
 

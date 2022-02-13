@@ -112,9 +112,9 @@ class Pack(object):
         self.should_upload_to_marketplace = True  # initialized in load_user_metadata function
 
         # Dependencies attributes - these contain only packs that are a part of this marketplace
-        self._first_level_dependencies = None  # initialized in set_pack_dependencies function
-        self._all_levels_dependencies = None  # initialized in set_pack_dependencies function
-        self._displayed_images_dependent_on_packs = None  # initialized in set_pack_dependencies function
+        self._first_level_dependencies = {}  # initialized in set_pack_dependencies function
+        self._all_levels_dependencies = []  # initialized in set_pack_dependencies function
+        self._displayed_images_dependent_on_packs = []  # initialized in set_pack_dependencies function
         self._parsed_dependencies = None  # initialized in enhance_pack_attributes function
 
     @property
@@ -1874,8 +1874,8 @@ class Pack(object):
         logging.info(f"NOY_LOGS: tags for pack {self._pack_name}: {tags}")
         return tags
 
-    def _enhance_pack_attributes(self, index_folder_path, pack_was_modified,
-                                 dependencies_metadata_dict, statistics_handler=None, format_dependencies_only=False):
+    def _enhance_pack_attributes(self, index_folder_path, pack_was_modified, dependencies_metadata_dict,
+                                 statistics_handler=None, format_dependencies_only=False):
         """ Enhances the pack object with attributes for the metadata file
 
         Args:
@@ -2076,9 +2076,10 @@ class Pack(object):
         if Metadata.DEPENDENCIES not in self._user_metadata:
             self._user_metadata[Metadata.DEPENDENCIES] = {}
 
-        if self._pack_name != GCPConfig.BASE_PACK:
-            # add base as a mandatory pack dependency, by design for all packs
-            first_level_dependencies.update(BASE_PACK_DEPENDENCY_DICT)
+        # if self._pack_name != GCPConfig.BASE_PACK:
+        #     # add base as a mandatory pack dependency, by design for all packs
+        #     first_level_dependencies.update(BASE_PACK_DEPENDENCY_DICT)
+        # TODO: verify - results in many UT changes
 
         # update the calculated dependencies with the hardcoded dependencies
         first_level_dependencies.update(self.user_metadata[Metadata.DEPENDENCIES])
