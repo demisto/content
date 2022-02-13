@@ -1807,7 +1807,7 @@ class Pack(object):
 
             return task_status
 
-    def load_user_metadata(self, marketplace='xsoar'):
+    def load_user_metadata(self):
         """ Loads user defined metadata and stores part of it's data in defined properties fields.
 
         Returns:
@@ -1827,6 +1827,7 @@ class Pack(object):
                 user_metadata = json.load(user_metadata_file)  # loading user metadata
                 # part of old packs are initialized with empty list
                 user_metadata = {} if isinstance(user_metadata, list) else user_metadata
+
             # store important user metadata fields
             self.support_type = user_metadata.get(Metadata.SUPPORT, Metadata.XSOAR_SUPPORT)
             self.current_version = user_metadata.get(Metadata.CURRENT_VERSION, '')
@@ -1839,13 +1840,13 @@ class Pack(object):
 
             logging.info(f"Finished loading {self._pack_name} pack user metadata")
             task_status = True
+
         except Exception:
             logging.exception(f"Failed in loading {self._pack_name} user metadata.")
         finally:
             return task_status
 
     def _collect_pack_tags(self, user_metadata, landing_page_sections, trending_packs):
-        logging.info(f"NOY_LOGS: user metadata for pack {self._pack_name}: {user_metadata}")
         tags = set(input_to_list(input_data=user_metadata.get('tags')))
         tags |= self._get_tags_from_landing_page(landing_page_sections)
         tags |= {PackTags.TIM} if self._is_feed else set()
@@ -1866,7 +1867,6 @@ class Pack(object):
             else:
                 tags -= {PackTags.TRENDING}
 
-        logging.info(f"NOY_LOGS: tags for pack {self._pack_name}: {tags}")
         return tags
 
     def _enhance_pack_attributes(self, index_folder_path, pack_was_modified, dependencies_metadata_dict,

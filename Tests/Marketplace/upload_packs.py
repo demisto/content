@@ -1099,7 +1099,7 @@ def main():
     # in this loop, we load the user metadata for each pack, and filter out the packs that are not relevant for
     # this current marketplace.
     for pack in packs_list:
-        task_status = pack.load_user_metadata(marketplace)
+        task_status = pack.load_user_metadata()
         if not task_status:
             pack.status = PackStatus.FAILED_LOADING_USER_METADATA.value
             pack.cleanup()
