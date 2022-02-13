@@ -32,13 +32,11 @@
     "Aliases": [
         {
             "cliName": "appliancename",
-            "type": "shortText",
-            "name": "Appliance Name"
+            "type": "shortText"
         },
         {
             "cliName": "riskiqassetgcpfirewallname",
-            "type": "shortText",
-            "name": "RiskIQ Asset GCP Firewall Name"
+            "type": "shortText"
         }
     ]
 }

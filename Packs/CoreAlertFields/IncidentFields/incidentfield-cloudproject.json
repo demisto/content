@@ -32,23 +32,19 @@
     "Aliases": [
         {
             "cliName": "googlecloudsccfindingsourcepropertiesprojectid",
-            "type": "shortText",
-            "name": "GoogleCloudSCC Finding SourceProperties ProjectId"
+            "type": "shortText"
         },
         {
             "cliName": "googlecloudsccresourceprojectdisplayname",
-            "type": "shortText",
-            "name": "GoogleCloudSCC Resource Project DisplayName"
+            "type": "shortText"
         },
         {
             "cliName": "googlecloudsccresourceprojectname",
-            "type": "shortText",
-            "name": "GoogleCloudSCC Resource ProjectName"
+            "type": "shortText"
         },
         {
             "cliName": "prismacloudcomputeproject",
-            "type": "shortText",
-            "name": "Prisma Cloud Compute Project"
+            "type": "shortText"
         }
     ]
 }

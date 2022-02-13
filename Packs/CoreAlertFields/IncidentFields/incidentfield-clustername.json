@@ -31,23 +31,19 @@
     "Aliases": [
         {
             "cliName": "cohesityheliosclustername",
-            "type": "shortText",
-            "name": "Cohesity Helios Cluster Name"
+            "type": "shortText"
         },
         {
             "cliName": "proofpointtapcluster",
-            "type": "shortText",
-            "name": "Proofpoint TAP Cluster"
+            "type": "shortText"
         },
         {
             "cliName": "rubrikcdmclustername",
-            "type": "shortText",
-            "name": "Rubrik CDM Cluster Name"
+            "type": "shortText"
         },
         {
             "cliName": "rubrikpolariscdmclustername",
-            "type": "shortText",
-            "name": "Rubrik Polaris CDM Cluster Name"
+            "type": "shortText"
         }
     ]
 }

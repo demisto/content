@@ -32,8 +32,7 @@
     "Aliases": [
         {
             "cliName": "childprocess",
-            "type": "multiSelect",
-            "name": "Child Process"
+            "type": "multiSelect"
         }
     ]
 }

@@ -32,13 +32,11 @@
     "Aliases": [
         {
             "cliName": "gibinjectmd5",
-            "type": "shortText",
-            "name": "GIB Inject MD5"
+            "type": "shortText"
         },
         {
             "cliName": "md5",
-            "type": "shortText",
-            "name": "MD5"
+            "type": "shortText"
         }
     ]
 }

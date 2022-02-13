@@ -4,7 +4,7 @@
     "cliName": "username",
     "closeForm": false,
     "content": true,
-    "description": "The name of the user that initiated the behavior that triggered the alert. If the user is a domain user account, this field also identifies the domain. Any alert triggered based on network, authentication, or login events, displays the User Name in the follow standardized format in the Alerts and Incidents pages.<company domain>\\<username>",
+    "description": "The name of the user that initiated the behavior that triggered the alert. If the user is a domain user account, this field also identifies the domain. Any alert triggered based on network, authentication, or login events, displays the User Name in the follow standardized format in the Alerts and Incidents pages.\u003ccompany domain\u003e\\\u003cusername\u003e",
     "editForm": true,
     "group": 0,
     "hidden": false,
@@ -32,103 +32,83 @@
     "Aliases": [
         {
             "cliName": "illusivenetworkslastseenuser",
-            "type": "shortText",
-            "name": "Illusive Networks Last Seen User"
+            "type": "shortText"
         },
         {
             "cliName": "logpointusername",
-            "type": "shortText",
-            "name": "LogPoint Username"
+            "type": "shortText"
         },
         {
             "cliName": "prismacloudcomputeuser",
-            "type": "shortText",
-            "name": "Prisma Cloud Compute User"
+            "type": "shortText"
         },
         {
             "cliName": "safenettrustedaccessusername",
-            "type": "shortText",
-            "name": "SafeNet Trusted Access - Username"
+            "type": "shortText"
         },
         {
             "cliName": "securityscorecardusername",
-            "type": "shortText",
-            "name": "SecurityScorecard Username"
+            "type": "shortText"
         },
         {
             "cliName": "sourceusername",
-            "type": "shortText",
-            "name": "Source Username"
+            "type": "shortText"
         },
         {
             "cliName": "srcuser",
-            "type": "shortText",
-            "name": "Src User"
+            "type": "shortText"
         },
         {
             "cliName": "tidyuser",
-            "type": "shortText",
-            "name": "TidyUser"
+            "type": "shortText"
         },
         {
             "cliName": "accountname",
-            "type": "shortText",
-            "name": "Account Name"
+            "type": "shortText"
         },
         {
             "cliName": "chronicleuser",
-            "type": "shortText",
-            "name": "Chronicle User"
+            "type": "shortText"
         },
         {
             "cliName": "code42username",
-            "type": "shortText",
-            "name": "Code42 Username"
+            "type": "shortText"
         },
         {
             "cliName": "deviceusername",
-            "type": "shortText",
-            "name": "Device Username"
+            "type": "shortText"
         },
         {
             "cliName": "digitalguardianusername",
-            "type": "shortText",
-            "name": "Digital Guardian Username"
+            "type": "shortText"
         },
         {
             "cliName": "f5silverlinedetectedusernames",
-            "type": "shortText",
-            "name": "F5 Silverline Detected Usernames"
+            "type": "shortText"
         },
         {
             "cliName": "user",
-            "type": "shortText",
-            "name": "User"
+            "type": "shortText"
         },
         {
             "cliName": "usernames",
-            "type": "shortText",
-            "name": "Usernames"
+            "type": "shortText"
         },
         {
             "cliName": "users",
-            "type": "shortText",
-            "name": "Users"
+            "type": "shortText"
         },
         {
             "cliName": "detecteduser",
-            "type": "multiSelect",
-            "name": "Detected User"
+            "type": "multiSelect"
         },
         {
             "cliName": "detectedusers",
-            "type": "shortText",
-            "name": "Detected Users"
+            "type": "shortText"
         },
         {
             "cliName": "deviceusername",
-            "type": "shortText",
-            "name": "Device Username"
+            "type": "shortText"
         }
     ]
 }

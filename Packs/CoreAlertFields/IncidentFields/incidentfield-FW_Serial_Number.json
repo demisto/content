@@ -32,18 +32,15 @@
     "Aliases": [
         {
             "cliName": "applianceid",
-            "type": "shortText",
-            "name": "Appliance ID"
+            "type": "shortText"
         },
         {
             "cliName": "extrahopapplianceid",
-            "type": "shortText",
-            "name": "ExtraHop Appliance ID"
+            "type": "shortText"
         },
         {
             "cliName": "fwserials",
-            "type": "shortText",
-            "name": "fwserials"
+            "type": "shortText"
         }
     ]
 }

@@ -31,8 +31,7 @@
     "Aliases": [
         {
             "cliName": "prismacloudcomputecontainer",
-            "type": "shortText",
-            "name": "Prisma Cloud Compute Container"
+            "type": "shortText"
         }
     ]
 }

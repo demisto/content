@@ -32,53 +32,43 @@
     "Aliases": [
         {
             "cliName": "digitalguardiansourceaddress",
-            "type": "shortText",
-            "name": "Digital Guardian Source Address"
+            "type": "shortText"
         },
         {
             "cliName": "digitalguardiansourceip",
-            "type": "shortText",
-            "name": "Digital Guardian Source IP"
+            "type": "shortText"
         },
         {
             "cliName": "irondefensesrcip",
-            "type": "shortText",
-            "name": "IronDefense Src IP"
+            "type": "shortText"
         },
         {
             "cliName": "detectedips",
-            "type": "shortText",
-            "name": "Detected IPs"
+            "type": "shortText"
         },
         {
             "cliName": "entityipaddress",
-            "type": "shortText",
-            "name": "Entity IP Address"
+            "type": "shortText"
         },
         {
             "cliName": "expanseip",
-            "type": "shortText",
-            "name": "Expanse IP"
+            "type": "shortText"
         },
         {
             "cliName": "f5silverlinebackendserverip",
-            "type": "shortText",
-            "name": "F5 Silverline Backend Server IP"
+            "type": "shortText"
         },
         {
             "cliName": "shadowitip",
-            "type": "shortText",
-            "name": "Shadow IT IP"
+            "type": "shortText"
         },
         {
             "cliName": "sourceip",
-            "type": "shortText",
-            "name": "Source IP"
+            "type": "shortText"
         },
         {
             "cliName": "sourceips",
-            "type": "shortText",
-            "name": "Source IPs"
+            "type": "shortText"
         }
     ]
 }

@@ -32,33 +32,27 @@
     "Aliases": [
         {
             "cliName": "darktracedevicemac",
-            "type": "shortText",
-            "name": "Darktrace Device MAC"
+            "type": "shortText"
         },
         {
             "cliName": "destinationmacaddress",
-            "type": "multiSelect",
-            "name": "Destination MAC Address"
+            "type": "multiSelect"
         },
         {
             "cliName": "fireeyenxalerttargetmacaddress",
-            "type": "shortText",
-            "name": "FireEye NX Alert Target MAC Address"
+            "type": "shortText"
         },
         {
             "cliName": "fireeyenxalertvictimmacaddress",
-            "type": "shortText",
-            "name": "FireEye NX Alert Victim MAC Address"
+            "type": "shortText"
         },
         {
             "cliName": "macaddress",
-            "type": "shortText",
-            "name": ""
+            "type": "shortText"
         },
         {
             "cliName": "sourcemacaddress",
-            "type": "shortText",
-            "name": "Source MAC Address"
+            "type": "shortText"
         }
     ]
 }

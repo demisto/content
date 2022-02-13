@@ -31,13 +31,11 @@
     "Aliases": [
         {
             "cliName": "googlecloudsccfindingsourcepropertiesuseragent",
-            "type": "shortText",
-            "name": "GoogleCloudSCC Finding SourceProperties UserAgent"
+            "type": "shortText"
         },
         {
             "cliName": "proofpointtapuseragent",
-            "type": "shortText",
-            "name": "Proofpoint TAP User Agent"
+            "type": "shortText"
         }
     ]
 }

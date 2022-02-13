@@ -32,58 +32,47 @@
     "Aliases": [
         {
             "cliName": "protocol",
-            "type": "shortText",
-            "name": "Protocol"
+            "type": "shortText"
         },
         {
             "cliName": "protocols",
-            "type": "shortText",
-            "name": "Protocols"
+            "type": "shortText"
         },
         {
             "cliName": "prismacloudcomputeappid",
-            "type": "shortText",
-            "name": "Prisma Cloud Compute AppID"
+            "type": "shortText"
         },
         {
             "cliName": "protocolevent",
-            "type": "multiSelect",
-            "name": "Protocol - Event"
+            "type": "multiSelect"
         },
         {
             "cliName": "app",
-            "type": "shortText",
-            "name": "App"
+            "type": "shortText"
         },
         {
             "cliName": "applicationid",
-            "type": "shortText",
-            "name": "Application Id"
+            "type": "shortText"
         },
         {
             "cliName": "applicationname",
-            "type": "shortText",
-            "name": "Application Name"
+            "type": "shortText"
         },
         {
             "cliName": "googlecloudsccfindingsourcepropertiesapp",
-            "type": "shortText",
-            "name": "GoogleCloudSCC Finding SourceProperties App"
+            "type": "shortText"
         },
         {
             "cliName": "expanseprotocol",
-            "type": "shortText",
-            "name": "Expanse Protocol"
+            "type": "shortText"
         },
         {
             "cliName": "expanseprotocol",
-            "type": "shortText",
-            "name": "Expanse Protocol"
+            "type": "shortText"
         },
         {
             "cliName": "irondefenseprimaryappprotocol",
-            "type": "shortText",
-            "name": "IronDefense Primary App Protocol"
+            "type": "shortText"
         }
     ]
 }

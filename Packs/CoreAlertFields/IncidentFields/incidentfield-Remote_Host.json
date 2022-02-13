@@ -32,13 +32,11 @@
     "Aliases": [
         {
             "cliName": "desthostname",
-            "type": "shortText",
-            "name": "Dest Hostname"
+            "type": "shortText"
         },
         {
             "cliName": "detectedexternalhosts",
-            "type": "shortText",
-            "name": "Detected External Hosts"
+            "type": "shortText"
         }
     ]
 }

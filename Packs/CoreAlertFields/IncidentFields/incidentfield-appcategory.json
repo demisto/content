@@ -32,8 +32,7 @@
     "Aliases": [
         {
             "cliName": "googlecloudsccfindingsourcepropertiesappcategory",
-            "type": "shortText",
-            "name": "GoogleCloudSCC Finding SourceProperties AppCategory"
+            "type": "shortText"
         }
     ]
 }

@@ -28,98 +28,79 @@
     "Aliases": [
         {
             "cliName": "alertattacktime",
-            "type": "shortText",
-            "name": "Alert Attack Time"
+            "type": "shortText"
         },
         {
             "cliName": "azureactivedirectoryidentityandaccessdetecteddatetime",
-            "type": "shortText",
-            "name": "Azure Active Directory Identity and Access Detected Date Time"
+            "type": "shortText"
         },
         {
             "cliName": "bmcremedyforcecreateddate",
-            "type": "date",
-            "name": "Bmc Remedyforce Created Date"
+            "type": "date"
         },
         {
             "cliName": "carbonblackesfirsteventtime",
-            "type": "date",
-            "name": "Carbon Black ES First Event Time"
+            "type": "date"
         },
         {
             "cliName": "chronicledetectiontime",
-            "type": "date",
-            "name": "Chronicle Detection Time"
+            "type": "date"
         },
         {
             "cliName": "chronicledetectionwindowstarttime",
-            "type": "date",
-            "name": "Chronicle Detection Window Start Time"
+            "type": "date"
         },
         {
             "cliName": "chroniclefirstseen",
-            "type": "date",
-            "name": "Chronicle First Seen"
+            "type": "date"
         },
         {
             "cliName": "code42alerttimestamp",
-            "type": "date",
-            "name": "Code42 SecurityAlert Timestamp"
+            "type": "date"
         },
         {
             "cliName": "createdtime",
-            "type": "shortText",
-            "name": "Created Time"
+            "type": "shortText"
         },
         {
             "cliName": "cyberintcreateddate",
-            "type": "shortText",
-            "name": "CyberInt Created date"
+            "type": "shortText"
         },
         {
             "cliName": "datetimeofthebreach",
-            "type": "date",
-            "name": "Date/time of the breach"
+            "type": "date"
         },
         {
             "cliName": "detectionupdatetime",
-            "type": "date",
-            "name": "Detection Update Time"
+            "type": "date"
         },
         {
             "cliName": "googlecloudsccfindingcreatetime",
-            "type": "date",
-            "name": "GoogleCloudSCC Finding CreateTime"
+            "type": "date"
         },
         {
             "cliName": "googlecloudsccfindingeventtime",
-            "type": "date",
-            "name": "GoogleCloudSCC Finding EventTime"
+            "type": "date"
         },
         {
             "cliName": "gracaseopendate",
-            "type": "shortText",
-            "name": "GRA Case Open Date"
+            "type": "shortText"
         },
         {
             "cliName": "irondefensefirsteventcreated",
-            "type": "date",
-            "name": "IronDefense First Event Created"
+            "type": "date"
         },
         {
             "cliName": "logpointdetectiontimestamp",
-            "type": "number",
-            "name": "LogPoint Detection Timestamp"
+            "type": "number"
         },
         {
             "cliName": "servicenowopeneddate",
-            "type": "date",
-            "name": "ServiceNow Opened Date"
+            "type": "date"
         },
         {
             "cliName": "ticketopeneddate",
-            "type": "date",
-            "name": "Ticket Opened Date"
+            "type": "date"
         }
     ]
 }

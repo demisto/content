@@ -32,8 +32,7 @@
     "Aliases": [
         {
             "cliName": "cymulatemodule",
-            "type": "shortText",
-            "name": "Cymulate Module"
+            "type": "shortText"
         }
     ]
 }

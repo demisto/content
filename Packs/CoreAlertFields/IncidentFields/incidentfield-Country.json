@@ -4,7 +4,6 @@
     "cliName": "country",
     "closeForm": false,
     "content": true,
-    "description": "",
     "editForm": true,
     "group": 0,
     "hidden": false,
@@ -32,33 +31,27 @@
     "Aliases": [
         {
             "cliName": "countryname",
-            "type": "shortText",
-            "name": "Country Name"
+            "type": "shortText"
         },
         {
             "cliName": "companycountry",
-            "type": "shortText",
-            "name": "Company Country"
+            "type": "shortText"
         },
         {
             "cliName": "countrywherethebreachtookplace",
-            "type": "shortText",
-            "name": "Country where the breach took place"
+            "type": "shortText"
         },
         {
             "cliName": "googlecloudsccfindingsourcepropertiesdstcountry",
-            "type": "shortText",
-            "name": "GoogleCloudSCC Finding SourceProperties DstCountry"
+            "type": "shortText"
         },
         {
             "cliName": "googlecloudsccfindingsourcepropertieslastcountry",
-            "type": "shortText",
-            "name": "GoogleCloudSCC Finding SourceProperties LastCountry"
+            "type": "shortText"
         },
         {
             "cliName": "previouscountry",
-            "type": "shortText",
-            "name": "Previous Country"
+            "type": "shortText"
         }
     ]
 }

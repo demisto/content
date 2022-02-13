@@ -28,5 +28,5 @@
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "6.5.0",
-	"x2_fields": "causality_actor_causality_id"
-} 
+    "x2_fields": "causality_actor_causality_id"
+}
