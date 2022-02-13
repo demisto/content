@@ -1498,10 +1498,16 @@ class Pack(object):
                     logging.info(f"Found existing release notes for version: {Pack.PACK_INITIAL_VERSION} "
                                  f"in the {self._pack_name} pack.")
 
-            elif self._current_version == Pack.PACK_INITIAL_VERSION:
+            elif self._hidden:
+                logging.warning(f"Pack {self._pack_name} is deprecated. Skipping release notes handling.")
+                task_status = True
+                not_updated_build = True
+                return task_status, not_updated_build
+
+            else:
                 version_changelog = self._create_changelog_entry(
                     release_notes=self.description,
-                    version_display_name=Pack.PACK_INITIAL_VERSION,
+                    version_display_name=self._current_version,
                     build_number=build_number,
                     new_version=True,
                     initial_release=True
@@ -1509,15 +1515,10 @@ class Pack(object):
                 changelog = {
                     Pack.PACK_INITIAL_VERSION: version_changelog
                 }
-            elif self._hidden:
-                logging.warning(f"Pack {self._pack_name} is deprecated. Skipping release notes handling.")
-                task_status = True
-                not_updated_build = True
-                return task_status, not_updated_build
-            else:
-                logging.error(f"No release notes found for: {self._pack_name}")
-                task_status = False
-                return task_status, not_updated_build
+            # else:
+            #     logging.error(f"No release notes found for: {self._pack_name}")
+            #     task_status = False
+            #     return task_status, not_updated_build
 
             # Update change log entries with BC flag.
             self.add_bc_entries_if_needed(release_notes_dir, changelog)
