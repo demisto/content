@@ -154,7 +154,7 @@ tasks:
       brand: ''
       id: 1d49cef7-d293-41d7-8ab1-ef9669129c0e
       iscommand: false
-      name: 7aaaef78-2e98-4870-813f-bf0390485970
+      name: PAN-OS Network Operations - Single Device Upgrade
       playbookId: PAN-OS Network Operations - Single Device Upgrade
       type: playbook
       version: -1
@@ -262,7 +262,7 @@ tasks:
       description: Runs a complete upgrade process for a single device
       id: 00acd143-f26d-41d8-8048-619e6306f298
       iscommand: false
-      name: 7aaaef78-2e98-4870-813f-bf0390485970
+      name: PAN-OS Network Operations - Single Device Upgrade
       playbookId: PAN-OS Network Operations - Single Device Upgrade
       type: playbook
       version: -1
@@ -426,7 +426,7 @@ tasks:
       description: Runs a complete upgrade process for a single device
       id: 47424322-978d-449c-8bdc-c7b46d70e305
       iscommand: false
-      name: 7aaaef78-2e98-4870-813f-bf0390485970
+      name: PAN-OS Network Operations - Single Device Upgrade
       playbookId: PAN-OS Network Operations - Single Device Upgrade
       type: playbook
       version: -1
