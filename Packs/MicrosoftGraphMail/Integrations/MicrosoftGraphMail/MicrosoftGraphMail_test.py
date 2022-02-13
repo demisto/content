@@ -1,4 +1,3 @@
-from tkinter import E
 from urllib.parse import quote
 
 import pytest
@@ -40,23 +39,25 @@ def test_params(mocker, params, expected_result):
     assert expected_result in str(e.value)
 
 
-@pytest.mark.parametrize('params, expected_result', [
-    ({'creds_tenant_id': {'password': '1234'}, 'creds_auth_id': {'password': '1234'}, 
-      'credentials': {'password': '1234'}}, 'Key must be provided.'),
+@pytest.mark.parametrize('params', [
+    ({'creds_tenant_id': {'password': '1234'}, 'creds_auth_id': {'password': '1234'},
+      'credentials': {'password': '1234'}}),
+    ({'tenant_id': '1234', 'enc_key': '1234', 'auth_id': '1234'}),
+    ({'_tenant_id': '1234', 'credentials': {'password': '1234'}, '_auth_id': '1234'})
 ])
-def test_params_working(mocker, params, expected_result):
+def test_params_working(mocker, params):
     """
     Given:
-      - Case 1: tenant id and auth id but no key.
-      - Case 2: tenant id and key but no auth id.
-      - Case 3: key and auth id but no tenant id.
+      - Case 1: tenant id, auth id and key where all three are part of the credentials.
+      - Case 2: tenant id, auth id and key where all three aren't part of the credentials.
+      - Case 3: tenant id, auth id and key where only the key is part of the credentials.
     When:
       - Setting an instance
     Then:
-      - Ensure the exception message as expected.
-      - Case 1: Should return "Key must be provided.".
-      - Case 2: Should return "ID must be provided.".
-      - Case 3: Should return "Token must be provided.".
+      - Ensure that the instance can Co-op with previous versions params names and that no exception is thrown.
+      - Case 1: Shouldn't throw an exception.
+      - Case 2: Shouldn't throw an exception.
+      - Case 3: Shouldn't throw an exception.
     """
 
     mocker.patch.object(demisto, 'params', return_value=params)
