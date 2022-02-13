@@ -551,6 +551,10 @@ class Client(BaseClient):
             return_error(errors)
 
         if res.get('RequestedObject') and res.get('IsSuccessful'):
+
+            if 'RelatedValuesListId' not in res['RequestedObject']:
+                raise Exception('The command returns values only for fields of type "Values List".\n')
+
             list_id = res['RequestedObject']['RelatedValuesListId']
             values_list_res = self.do_request('GET', f'{API_ENDPOINT}/core/system/valueslistvalue/valueslist/{list_id}')
             if values_list_res.get('RequestedObject') and values_list_res.get('IsSuccessful'):
