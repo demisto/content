@@ -31,12 +31,14 @@
     "x2_fields": "fw_device_name",
     "Aliases": [
         {
-          "cliName": "appliancename",
-          "type": "shortText"
+            "cliName": "appliancename",
+            "type": "shortText",
+            "name": "Appliance Name"
         },
         {
-          "cliName": "riskiqassetgcpfirewallname",
-          "type": "shortText"
+            "cliName": "riskiqassetgcpfirewallname",
+            "type": "shortText",
+            "name": "RiskIQ Asset GCP Firewall Name"
         }
     ]
 }
