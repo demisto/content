@@ -3208,36 +3208,3 @@ def underscore_file_name_to_dotted_version(file_name: str) -> str:
     """
     return os.path.splitext(file_name)[0].replace('_', '.')
 
-
-def get_all_packs_by_id_set(packs_list, extract_destination_path, id_set, marketplace):
-    """
-    Collect all packs from the id_set that are not in packs_dict
-    Args:
-        packs_list (List[Pack]): List of packs collected before
-        extract_destination_path (str): Base destination of Packs folder
-        id_set (dict): Dict of id_set.json.
-        marketplace (str): Marketplace version
-    Returns:
-         (dict, list): Dictionary of pack_name:Pack and list of all Pack in id_set.json
-    """
-    packs_dict = {pack.name: pack for pack in packs_list}
-    # TODO: check if actually needed
-    # if not id_set:
-    #     return packs_dict
-    # for pack_name in id_set:
-    #     if pack_name not in packs_dict:
-    #         pack = Pack(pack_name, os.path.join(extract_destination_path, pack_name), marketplace)
-    #         packs_dict[pack_name] = pack
-    #         packs_list.append(pack)
-    return packs_dict, packs_list
-
-def is_part_of_marketplace_by_id_set(pack_id):
-    """
-    Check if the given pack is a part of this current marketplace.
-    Args:
-        pack_id:
-
-    Returns:
-
-    """
-    pass

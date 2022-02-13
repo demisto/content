@@ -18,7 +18,7 @@ from requests import Response
 
 from Tests.Marketplace.marketplace_services import init_storage_client, Pack, \
     load_json, get_content_git_client, get_recent_commits_data, store_successful_and_failed_packs_in_ci_artifacts, \
-    json_write, get_all_packs_by_id_set
+    json_write
 from Tests.Marketplace.marketplace_statistics import StatisticsHandler
 from Tests.Marketplace.marketplace_constants import PackStatus, Metadata, GCPConfig, BucketUploadFlow, \
     CONTENT_ROOT_PATH, PACKS_FOLDER, PACKS_FULL_PATH, IGNORED_FILES, IGNORED_PATHS, LANDING_PAGE_SECTIONS_PATH
@@ -1096,8 +1096,7 @@ def main():
 
     # starting iteration over packs
     # in this loop, we load the user metadata for each pack, and filter out the packs that are not relevant for
-    # this current marketplace. we load user metadata for all packs (and not just for modified packs) for dependencies
-    # reasons - we might need the info about this pack if a modified pack is dependent on it. # TODO: verify last line
+    # this current marketplace.
     for pack in packs_list:
         task_status = pack.load_user_metadata(marketplace)
         if not task_status:
@@ -1114,6 +1113,10 @@ def main():
             packs_for_current_marketplace_dict[pack.name] = pack
 
     # iterating over packs that are for this current marketplace
+    # we iterate over all packs (and not just for modified packs) for ceveral reasons -
+    # 1. we might need the info about this pack if a modified pack is dependent on it.
+    # 2. even if the pack is not updated, we still keep some fields in it's metadata updated, such as download count,
+    # changelog, etc.
     for pack_name, pack in packs_for_current_marketplace_dict:
         task_status = pack.collect_content_items()
         if not task_status:
