@@ -662,15 +662,12 @@ class Pack(object):
                 with open(dependency_metadata_path, 'r') as metadata_file:
                     dependency_metadata = json.load(metadata_file)
                     dependencies_metadata_result[dependency_pack_id] = dependency_metadata
-
+            else:
                 # Case 2: the dependency is not in the index since it is a new pack
                 self._is_missing_dependencies = True
                 logging.warning(f"{self._pack_name} pack dependency with id {dependency_pack_id} "
                                 f"was not found in index, marking it as missing dependencies - to be resolved in "
                                 f"next iteration over packs")
-
-            else:
-                logging.warning(f"{self._pack_name} pack dependency with id {dependency_pack_id} was not found")
 
         return dependencies_metadata_result, self._is_missing_dependencies
 

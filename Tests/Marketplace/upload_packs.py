@@ -891,18 +891,18 @@ def get_images_data(packs_list: list):
     return images_data
 
 
-def prepare_and_zip_pack(pack, signature_key):
+def sign_and_zip_pack(pack, signature_key, delete_test_playbooks):
     """
     Prepares the pack before zip, and then zips it.
     Args:
         pack (Pack): Pack to be zipped.
         signature_key (str): Base64 encoded string used to sign the pack.
-
+        delete_test_playbooks (bool): whether to delete test playbooks folder.
     Returns:
         (bool): Whether the zip was successful
     """
 
-    task_status = pack.remove_unwanted_files()
+    task_status = pack.remove_unwanted_files(delete_test_playbooks)
     if not task_status:
         pack.status = PackStatus.FAILED_REMOVING_PACK_SKIPPED_FOLDERS
         pack.cleanup()
@@ -941,7 +941,7 @@ def upload_packs_with_dependencies_zip(signature_key, storage_bucket, storage_ba
             upload_path = os.path.join(storage_base_path, pack_name, pack_name + "_with_dependencies.zip")
             Path(pack_with_dep_path).mkdir(parents=True, exist_ok=True)
             if not (pack.zip_path and os.path.isfile(pack.zip_path)):
-                task_status = prepare_and_zip_pack(pack, signature_key)
+                task_status = sign_and_zip_pack(pack, signature_key)
                 if not task_status:
                     logging.warning(f"Skipping dependencies collection for {pack_name}. Failed zipping")
                     continue
@@ -949,7 +949,7 @@ def upload_packs_with_dependencies_zip(signature_key, storage_bucket, storage_ba
             for dep_name in pack.all_levels_dependencies:
                 dep_pack = packs_for_current_marketplace_dict.get(dep_name)
                 if not (dep_pack.zip_path and os.path.isfile(dep_pack.zip_path)):
-                    task_status = prepare_and_zip_pack(dep_pack, signature_key)
+                    task_status = sign_and_zip_pack(dep_pack, signature_key)
                     if not task_status:
                         logging.error(f"Skipping dependency {pack_name}. Failed zipping")
                         continue
@@ -1156,7 +1156,7 @@ def main():
         if is_missing_dependencies:
             # If the pack is dependent on a new pack, therefore it is not yet in the index.zip as it might not have
             # been iterated yet, we will note that it is missing dependencies, and after updating the index.zip with
-            # all new packs - we will go over the pack again to add what was missing.
+            # all new packs - we will go over the pack again to add what was missing. See issue #37290.
             packs_with_missing_dependencies.append(pack)
 
         if not task_status:
@@ -1176,23 +1176,7 @@ def main():
             pack.cleanup()
             continue
 
-        task_status = pack.remove_unwanted_files(remove_test_playbooks)
-        if not task_status:
-            pack.status = PackStatus.FAILED_REMOVING_PACK_SKIPPED_FOLDERS
-            pack.cleanup()
-            continue
-
-        task_status = pack.sign_pack(signature_key)
-        if not task_status:
-            pack.status = PackStatus.FAILED_SIGNING_PACKS.name
-            pack.cleanup()
-            continue
-
-        task_status, zip_pack_path = pack.zip_pack()
-        if not task_status:
-            pack.status = PackStatus.FAILED_ZIPPING_PACK_ARTIFACTS.name
-            pack.cleanup()
-            continue
+        sign_and_zip_pack(pack, signature_key, remove_test_playbooks)
 
         task_status, skipped_upload, _ = pack.upload_to_storage(pack.zip_path, pack.latest_version, storage_bucket,
                                                                 override_all_packs or pack.is_modified,
