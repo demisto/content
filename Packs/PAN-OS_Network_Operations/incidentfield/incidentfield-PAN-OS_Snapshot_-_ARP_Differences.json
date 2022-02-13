@@ -4,7 +4,7 @@
         "PAN-OS Snapshot Comparison"
     ],
     "caseInsensitive": true,
-    "cliName": "panossnapshotarpdifferences",
+    "cliName": "panosnetworkoperationssnapshotarpdifferences",
     "closeForm": false,
     "columns": [
         {
@@ -66,10 +66,10 @@
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_panossnapshotarpdifferences",
+    "id": "incident_panosnetworkoperationssnapshotarpdifferences",
     "isReadOnly": false,
     "locked": false,
-    "name": "PAN-OS Snapshot - ARP Differences",
+    "name": "PAN-OS Network Operations - Snapshot ARP Differences",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "propagationLabels": [

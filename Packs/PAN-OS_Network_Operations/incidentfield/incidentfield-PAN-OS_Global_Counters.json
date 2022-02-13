@@ -4,7 +4,7 @@
         "PAN-OS Network Operations - System Information"
     ],
     "caseInsensitive": true,
-    "cliName": "panosglobalcounters",
+    "cliName": "panosnetworkoperationsglobalcounters",
     "closeForm": false,
     "columns": [
         {
@@ -78,10 +78,10 @@
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_panosglobalcounters",
+    "id": "incident_panosnetworkoperationsglobalcounters",
     "isReadOnly": false,
     "locked": false,
-    "name": "PAN-OS Global Counters",
+    "name": "PAN-OS Network Operations - Global Counters",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "propagationLabels": [

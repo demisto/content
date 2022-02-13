@@ -130,6 +130,7 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
+      description: "Checks if the topology contains at least one Panorama device."
       brand: ""
       id: d1543a2e-ae1e-466a-8649-55332d538ec3
       iscommand: false
@@ -661,6 +662,7 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
+      description: "Checks if the user wants to upgrade Panorama, and that Panorama needs upgrading."
       brand: ""
       id: 4ac548f7-0c53-4ef1-8aff-03c712fa42f2
       iscommand: false
@@ -698,6 +700,7 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
+      description: "Checks if the user wants to upgrade the firewalls."
       brand: ""
       id: 0c98f668-d546-4a59-8f6f-c630eb126c27
       iscommand: false
@@ -761,6 +764,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
+      description: "Checks if this incident has been created by another incident type."
       id: f83161d7-4ea7-422b-8074-eb1c91988201
       iscommand: false
       name: Do we have a parent incident?
@@ -1012,6 +1016,7 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
+      description: "Collects the upgrade details from the user."
       brand: ""
       id: 12cfd7d9-9d2a-494e-8c6d-6b4bdc54fd91
       iscommand: false
@@ -1132,6 +1137,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
+      description: "Collectst the firewall version and further upgrade information"
       id: 1c593369-cdf7-4bb9-8e56-b48b20a83805
       iscommand: false
       name: Firewall Target Version and Upgrade information Questionairre

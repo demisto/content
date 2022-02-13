@@ -147,6 +147,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
+      description: 'Task that pauses until the comparison snapshot is ready.'
       id: 9ff0a328-6da5-492d-8016-248ab74a90a4
       iscommand: false
       name: Mark complete when ready for second snapshot
@@ -287,6 +288,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
+      description: 'Get the first snapshot incident data.'
       id: 0f9659db-3ea2-4358-860b-6c0b27367bd4
       iscommand: false
       name: Get First Incident Data by ID
@@ -325,6 +327,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
+      description: "Get the snapshot data from the second snapshot incident."
       id: 9b20b5fa-45fe-40aa-8a24-5e4e54f71b23
       iscommand: false
       name: Get Second Incident Data by ID
@@ -353,6 +356,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
+      description: "Automatically completed by the snapshot process to indicate the snapshot was taken successfully."
       id: 1f74f5b5-9bba-49a6-8b54-5b892c9037bc
       iscommand: false
       name: Mark Complete when Second Snapshot Complete
@@ -372,7 +376,7 @@ tasks:
       }
   "16":
     fieldMapping:
-    - incidentfield: PAN-OS Snapshot - ARP Differences
+    - incidentfield: PAN-OS Network Operations - Snapshot ARP Differences
       output:
         complex:
           filters:
@@ -605,6 +609,7 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
+      description: "Calculate whether the snapshot process has detected any errors or not."
       brand: ""
       id: b527e2bf-20d9-4e6d-82db-1ace73d82454
       iscommand: false
@@ -778,7 +783,7 @@ tasks:
       }
   "29":
     fieldMapping:
-    - incidentfield: PAN-OS Snapshot - Route Differences
+    - incidentfield: PAN-OS Network Operations - Snapshot Route Differences
       output:
         complex:
           filters:
@@ -943,6 +948,7 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
+      description: "Check if this snapshot process was initiated by another incident type."
       brand: ""
       id: f8915b18-4b7e-4d43-89f3-4516d1c5edf6
       iscommand: false

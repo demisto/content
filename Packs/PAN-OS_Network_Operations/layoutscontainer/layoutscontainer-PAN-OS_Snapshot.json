@@ -170,7 +170,7 @@
                             },
                             {
                                 "endCol": 6,
-                                "fieldId": "panossnapshotarpdifferences",
+                                "fieldId": "panosnetworkoperationssnapshotarpdifferences",
                                 "height": 106,
                                 "id": "50626570-4b52-11ec-ba99-a3742f561aa3",
                                 "index": 1,
@@ -206,7 +206,7 @@
                             },
                             {
                                 "endCol": 6,
-                                "fieldId": "panossnapshotroutedifferences",
+                                "fieldId": "panosnetworkoperationssnapshotroutedifferences",
                                 "height": 106,
                                 "id": "82f38e40-4be0-11ec-ad72-29a9834a63cc",
                                 "index": 1,

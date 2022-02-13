@@ -180,10 +180,10 @@ tasks:
     view: "{\n  \"position\": {\n    \"x\": 80,\n    \"y\": 580\n  }\n}"
   '5':
     fieldMapping:
-    - incidentfield: PAN-OS Global Counters
+    - incidentfield: PAN-OS Network Operations - Global Counters
       output:
         simple: ${PANOS.ShowCounters.Summary}
-    - incidentfield: PAN-OS Global Counters Result
+    - incidentfield: PAN-OS Network Operations - Global Counters Result
       output:
         simple: ${PANOS.ShowCounters.Result}
     id: '5'

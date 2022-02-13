@@ -3,3 +3,9 @@
 ignore=IF113
 [file:incidentfield-Management_IP.json]
 ignore=IF113
+[file:incidentfield-Running_App_Version.json]
+ignore=IF113
+[file:incidentfield-Threat_Content_Release_Date.json]
+ignore=IF113
+[file:incidentfield-High_Availability_Peer.json]
+ignore=IF113

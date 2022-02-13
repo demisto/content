@@ -4,7 +4,7 @@
         "PAN-OS Network Operations - Device Upgrade"
     ],
     "caseInsensitive": true,
-    "cliName": "panossoftwarerestartrequeststatus",
+    "cliName": "panosnetworkoperationssoftwarerestartrequeststatus",
     "closeForm": false,
     "columns": [
         {
@@ -40,10 +40,10 @@
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_panossoftwarerestartrequeststatus",
+    "id": "incident_panosnetworkoperationssoftwarerestartrequeststatus",
     "isReadOnly": false,
     "locked": false,
-    "name": "PAN-OS Software Restart request Status",
+    "name": "PAN-OS Network Operations - Software Restart request Status",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "propagationLabels": [

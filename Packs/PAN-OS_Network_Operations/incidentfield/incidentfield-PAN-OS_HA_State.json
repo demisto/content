@@ -6,7 +6,7 @@
         "PAN-OS Device"
     ],
     "caseInsensitive": true,
-    "cliName": "panoshastate",
+    "cliName": "panosnetworkoperationshastate",
     "closeForm": false,
     "columns": [
         {
@@ -66,10 +66,10 @@
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_panoshastate",
+    "id": "incident_panosnetworkoperationshastate",
     "isReadOnly": false,
     "locked": false,
-    "name": "PAN-OS HA State",
+    "name": "PAN-OS Network Operations - HA State",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "propagationLabels": [

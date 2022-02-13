@@ -4,7 +4,7 @@
         "PAN-OS Snapshot Comparison"
     ],
     "caseInsensitive": true,
-    "cliName": "panossnapshotroutedifferences",
+    "cliName": "panosnetworkoperationssnapshotroutedifferences",
     "closeForm": false,
     "columns": [
         {
@@ -66,10 +66,10 @@
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_panossnapshotroutedifferences",
+    "id": "incident_panosnetworkoperationssnapshotroutedifferences",
     "isReadOnly": false,
     "locked": false,
-    "name": "PAN-OS Snapshot - Route Differences",
+    "name": "PAN-OS Network Operations - Snapshot Route Differences",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "propagationLabels": [
