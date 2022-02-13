@@ -31,18 +31,19 @@
     "x2_fields": "fw_interface_from",
     "Aliases": [
         {
-          "cliName": "sourcenetwork",
-          "type": "shortText"
+            "cliName": "sourcenetwork",
+            "type": "shortText",
+            "name": "Source Network"
         },
         {
             "cliName": "irondefensesrcnetworkid",
-            "type": "shortText"
+            "type": "shortText",
+            "name": "IronDefense Src Network ID"
         },
         {
             "cliName": "sourcenetworkoffense",
-            "type": "shortText"
+            "type": "shortText",
+            "name": "Source Network - Offense"
         }
-      
     ]
-
 }
