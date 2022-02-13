@@ -1,19 +1,19 @@
 {
     "associatedToAll": true,
     "caseInsensitive": true,
-    "cliName": "fwrulename",
+    "cliName": "agentid",
     "closeForm": false,
     "content": true,
-    "description": "The firewall rule name that matches the network traffic that triggered the firewall alert.",
+    "description": "A unique identifier per agent.",
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_fwrulename",
+    "id": "incident_agentid",
     "isReadOnly": false,
     "locked": false,
-    "name": "FW Rule Name",
+    "name": "Agent Id",
     "neverSetAsRequired": false,
-    "openEnded": true,
+    "openEnded": false,
     "ownerOnly": false,
     "propagationLabels": [
         "all"
@@ -22,18 +22,11 @@
     "sla": 0,
     "system": false,
     "threshold": 72,
-    "type": "multiSelect",
+    "type": "shortText",
     "unmapped": false,
     "unsearchable": true,
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "6.5.0",
-    "x2_fields": "fw_rule",
-    "Aliases": [
-        {
-            "cliName": "f5silverlineirulename",
-            "type": "shortText",
-            "name": "F5 Silverline IRule Name"
-        }
-    ]
+    "x2_fields": "agent_id"
 }
