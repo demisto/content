@@ -1452,12 +1452,13 @@ class Pack(object):
 
                     if self._current_version != latest_release_notes:
                         logging.error(f"Version mismatch detected between current version: {self._current_version} "
-                                      f"and latest release notes version: {latest_release_notes}")
+                                      f"and latest release notes version: {latest_release_notes}. "
+                                      f"Merge from master branch.")
                         task_status = False
                         return task_status, not_updated_build
                     else:
                         if latest_release_notes in changelog:
-                            logging.info(f"Found existing release notes for version: {latest_release_notes}")
+                            logging.debug(f"Found existing release notes for version: {latest_release_notes}")
                             version_changelog = self._create_changelog_entry(release_notes=release_notes_lines,
                                                                              version_display_name=latest_release_notes,
                                                                              build_number=build_number,
@@ -1475,7 +1476,7 @@ class Pack(object):
                             changelog[latest_release_notes] = version_changelog
 
                         if modified_release_notes_lines_dict:
-                            logging.info("updating changelog entries for modified rn")
+                            logging.info("Updating changelog entries for modified release notes")
                             for version, modified_release_notes_lines in modified_release_notes_lines_dict.items():
                                 updated_entry = self._get_updated_changelog_entry(
                                     changelog, version, release_notes=modified_release_notes_lines)
